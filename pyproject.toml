@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deepsteer"
+version = "0.1.0"
+description = "Evaluating and steering alignment depth in LLM pre-training"
+readme = "README.md"
+license = "LicenseRef-Proprietary"
+requires-python = ">=3.10"
+authors = [
+    {name = "Orion Reblitz-Richardson"},
+]
+
+dependencies = [
+    "torch>=2.0",
+    "transformers>=4.40",
+    "datasets",
+    "numpy",
+    "matplotlib",
+    "seaborn",
+    "pandas",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+api = [
+    "anthropic",
+    "openai",
+]
+all = [
+    "deepsteer[api]",
+]
+dev = [
+    "deepsteer[all]",
+    "pytest",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+include = ["deepsteer*"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests that require real model weights (deselect with '-m \"not slow\"')",
+]
