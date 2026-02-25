@@ -12,7 +12,7 @@ from deepsteer.datasets.balancing import (
 )
 from deepsteer.datasets.moral_seeds import get_moral_seeds
 from deepsteer.datasets.neutral_pool import get_flat_neutral_pool
-from deepsteer.datasets.pairing import pair_by_word_count
+from deepsteer.datasets.pairing import pair_by_word_count, pair_minimal
 from deepsteer.datasets.types import DatasetMetadata, ProbingDataset
 from deepsteer.datasets.validation import validate_pairs
 
@@ -26,23 +26,26 @@ def build_probing_dataset(
     test_fraction: float = 0.2,
     max_length_ratio: float = 1.5,
     seed: int = 42,
+    legacy_pool: bool = False,
 ) -> ProbingDataset:
     """Build a validated, balanced probing dataset.
 
     Pipeline stages:
-        1. Load moral seeds and neutral pool
-        2. Pair generation — pool-based (default) or LLM-based (when *model* given)
-        3. Validate — length ratio, keyword scan, dedup
+        1. Load moral seeds (and minimal pairs or neutral pool)
+        2. Pair generation — minimal pairs (default), LLM-based, or legacy pool
+        3. Validate — length ratio, word overlap, keyword scan, dedup
         4. Balance — downsample to *target_per_foundation* per foundation
         5. Package — stratified train/test split + metadata
 
     Args:
         model: Optional API model for LLM-based neutral generation.  When
-            ``None``, uses pool-based word-count matching (no API needed).
+            ``None``, uses pre-written minimal pairs (no API needed).
         target_per_foundation: Target pairs per moral foundation.
         test_fraction: Fraction of pairs held out for testing.
         max_length_ratio: Maximum word count ratio between paired sentences.
         seed: Random seed for reproducibility.
+        legacy_pool: If ``True`` and *model* is ``None``, fall back to the old
+            pool-based word-count matching instead of minimal pairs.
 
     Returns:
         A complete ProbingDataset with train/test split and metadata.
@@ -53,20 +56,30 @@ def build_probing_dataset(
                 sum(len(v) for v in moral_seeds.values()), len(moral_seeds))
 
     # Stage 2: Pair generation
+    min_word_overlap = 0.0
     if model is not None:
         from deepsteer.datasets.llm_generation import generate_neutral_with_llm
         pairs = generate_neutral_with_llm(moral_seeds, model)
         method = "llm"
-    else:
+        min_word_overlap = 0.15
+    elif legacy_pool:
         neutral_pool = get_flat_neutral_pool()
         pairs = pair_by_word_count(
             moral_seeds, neutral_pool, max_length_ratio=max_length_ratio, seed=seed,
         )
         method = "pool"
+    else:
+        from deepsteer.datasets.minimal_pairs import get_minimal_pairs
+        mp = get_minimal_pairs()
+        pairs = pair_minimal(mp, seed=seed)
+        method = "minimal_pair"
+        min_word_overlap = 0.15
     logger.info("Stage 2: Generated %d candidate pairs (method=%s)", len(pairs), method)
 
     # Stage 3: Validate
-    valid_pairs, val_stats = validate_pairs(pairs, max_length_ratio=max_length_ratio)
+    valid_pairs, val_stats = validate_pairs(
+        pairs, max_length_ratio=max_length_ratio, min_word_overlap=min_word_overlap,
+    )
     logger.info("Stage 3: %d pairs passed validation", len(valid_pairs))
 
     # Stage 4: Balance

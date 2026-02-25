@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import string
 from dataclasses import dataclass
 
 from deepsteer.datasets.types import ProbingPair
@@ -38,6 +39,21 @@ MORAL_KEYWORDS: set[str] = {
     "righteous", "conscience", "dignity", "guilt", "shame",
 }
 
+# Common English function words excluded from content-word overlap calculation.
+STOPWORDS: set[str] = {
+    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
+    "have", "has", "had", "do", "does", "did", "will", "would", "shall",
+    "should", "may", "might", "must", "can", "could", "am",
+    "i", "you", "he", "she", "it", "we", "they", "me", "him", "her", "us",
+    "them", "my", "your", "his", "its", "our", "their",
+    "this", "that", "these", "those", "who", "whom", "which", "what",
+    "in", "on", "at", "to", "for", "of", "with", "by", "from", "as",
+    "into", "through", "during", "before", "after", "above", "below",
+    "between", "under", "about", "against", "over",
+    "and", "but", "or", "nor", "not", "so", "yet", "both", "either",
+    "neither", "each", "every", "all", "any", "no", "if", "then", "than",
+}
+
 
 @dataclass
 class ValidationStats:
@@ -45,6 +61,7 @@ class ValidationStats:
 
     input_count: int = 0
     rejected_length: int = 0
+    rejected_overlap: int = 0
     rejected_keywords: int = 0
     rejected_duplicate: int = 0
     passed: int = 0
@@ -54,6 +71,7 @@ class ValidationStats:
         return {
             "input_count": self.input_count,
             "rejected_length": self.rejected_length,
+            "rejected_overlap": self.rejected_overlap,
             "rejected_keywords": self.rejected_keywords,
             "rejected_duplicate": self.rejected_duplicate,
             "passed": self.passed,
@@ -64,17 +82,22 @@ def validate_pairs(
     pairs: list[ProbingPair],
     *,
     max_length_ratio: float = 1.3,
+    min_word_overlap: float = 0.0,
 ) -> tuple[list[ProbingPair], ValidationStats]:
     """Run validation gates on probing pairs.
 
     Gates applied in order:
         1. Length ratio — reject if word count ratio exceeds *max_length_ratio*
-        2. Keyword scan — reject if the neutral sentence contains moral keywords
-        3. Dedup — reject if the neutral sentence was already used
+        2. Word overlap — reject if content-word overlap is below *min_word_overlap*
+        3. Keyword scan — reject if the neutral sentence contains moral keywords
+        4. Dedup — reject if the neutral sentence was already used
 
     Args:
         pairs: Candidate probing pairs.
         max_length_ratio: Maximum allowed ratio between longer/shorter word count.
+        min_word_overlap: Minimum fraction of shared content words (non-stopwords)
+            between moral and neutral sentences.  Default ``0.0`` preserves
+            backward compatibility with pool-based pairs.
 
     Returns:
         Tuple of (valid_pairs, stats).
@@ -91,14 +114,31 @@ def validate_pairs(
             stats.rejected_length += 1
             continue
 
-        # Gate 2: keyword scan on neutral sentence
+        # Gate 2: word overlap — reject if too few shared content words
+        if min_word_overlap > 0:
+            _strip = str.maketrans("", "", string.punctuation)
+            moral_words = {
+                w.translate(_strip) for w in pair.moral.lower().split()
+            } - STOPWORDS - {""}
+            neutral_words = {
+                w.translate(_strip) for w in pair.neutral.lower().split()
+            } - STOPWORDS - {""}
+            if moral_words and neutral_words:
+                overlap = len(moral_words & neutral_words) / max(
+                    len(moral_words), len(neutral_words)
+                )
+                if overlap < min_word_overlap:
+                    stats.rejected_overlap += 1
+                    continue
+
+        # Gate 3: keyword scan on neutral sentence
         neutral_lower = pair.neutral.lower()
-        neutral_words = set(neutral_lower.split())
-        if neutral_words & MORAL_KEYWORDS:
+        neutral_words_all = set(neutral_lower.split())
+        if neutral_words_all & MORAL_KEYWORDS:
             stats.rejected_keywords += 1
             continue
 
-        # Gate 3: deduplicate neutral sentences
+        # Gate 4: deduplicate neutral sentences
         neutral_norm = neutral_lower.strip()
         if neutral_norm in seen_neutrals:
             stats.rejected_duplicate += 1
@@ -109,10 +149,11 @@ def validate_pairs(
 
     stats.passed = len(valid)
     logger.info(
-        "Validation: %d/%d passed (length=%d, keywords=%d, dedup=%d rejected)",
+        "Validation: %d/%d passed (length=%d, overlap=%d, keywords=%d, dedup=%d rejected)",
         stats.passed,
         stats.input_count,
         stats.rejected_length,
+        stats.rejected_overlap,
         stats.rejected_keywords,
         stats.rejected_duplicate,
     )

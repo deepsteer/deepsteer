@@ -1,4 +1,4 @@
-"""Pool-based sentence pairing by word count (no API required)."""
+"""Sentence pairing strategies (pool-based and minimal-pair)."""
 
 from __future__ import annotations
 
@@ -86,4 +86,43 @@ def pair_by_word_count(
         ))
 
     logger.info("Pool pairing: %d pairs from %d moral seeds", len(pairs), len(all_morals))
+    return pairs
+
+
+def pair_minimal(
+    minimal_pairs: dict[MoralFoundation, list[tuple[str, str]]],
+    *,
+    seed: int = 42,
+) -> list[ProbingPair]:
+    """Create ProbingPair instances from pre-defined minimal pairs.
+
+    Each ``(moral, neutral)`` tuple is wrapped into a :class:`ProbingPair`
+    with ``generation_method=POOL`` and ``neutral_domain=MATCHED``.
+
+    Args:
+        minimal_pairs: Mapping from foundation to lists of (moral, neutral)
+            sentence tuples.
+        seed: Random seed for deterministic shuffling.
+
+    Returns:
+        Shuffled list of ProbingPair instances.
+    """
+    rng = random.Random(seed)
+    pairs: list[ProbingPair] = []
+
+    for foundation, tuples in minimal_pairs.items():
+        for moral_sent, neutral_sent in tuples:
+            pairs.append(ProbingPair(
+                moral=moral_sent,
+                neutral=neutral_sent,
+                foundation=foundation,
+                neutral_domain=NeutralDomain.MATCHED,
+                generation_method=GenerationMethod.POOL,
+                moral_word_count=len(moral_sent.split()),
+                neutral_word_count=len(neutral_sent.split()),
+                provenance=f"minimal_pair(seed={seed})",
+            ))
+
+    rng.shuffle(pairs)
+    logger.info("Minimal pairing: %d pairs from %d foundations", len(pairs), len(minimal_pairs))
     return pairs

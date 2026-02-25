@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import string
+
 import pytest
 
 from deepsteer.core.types import MoralFoundation
@@ -10,9 +12,10 @@ from deepsteer.datasets.balancing import (
     report_distribution,
     train_test_split,
 )
+from deepsteer.datasets.minimal_pairs import MINIMAL_PAIRS, get_minimal_pairs
 from deepsteer.datasets.moral_seeds import MORAL_SEEDS, get_moral_seeds
 from deepsteer.datasets.neutral_pool import NEUTRAL_POOL, get_flat_neutral_pool
-from deepsteer.datasets.pairing import pair_by_word_count
+from deepsteer.datasets.pairing import pair_by_word_count, pair_minimal
 from deepsteer.datasets.pipeline import build_probing_dataset
 from deepsteer.datasets.types import (
     GenerationMethod,
@@ -20,7 +23,12 @@ from deepsteer.datasets.types import (
     ProbingDataset,
     ProbingPair,
 )
-from deepsteer.datasets.validation import MORAL_KEYWORDS, ValidationStats, validate_pairs
+from deepsteer.datasets.validation import (
+    MORAL_KEYWORDS,
+    STOPWORDS,
+    ValidationStats,
+    validate_pairs,
+)
 
 # ---------------------------------------------------------------------------
 # Type construction and serialization
@@ -121,6 +129,8 @@ class TestMoralSeeds:
 class TestNeutralPool:
     def test_all_domains_present(self):
         for domain in NeutralDomain:
+            if domain == NeutralDomain.MATCHED:
+                continue  # MATCHED is for minimal pairs, not the neutral pool
             assert domain in NEUTRAL_POOL, f"Missing domain: {domain}"
 
     def test_at_least_250_total(self):
@@ -202,6 +212,31 @@ class TestValidation:
         assert len(valid) == 1
         assert stats.rejected_duplicate == 1
 
+    def test_rejects_low_word_overlap(self):
+        pairs = [
+            _make_pair(
+                "Protecting children from harm is essential today.",
+                "The copper pot heated slowly on the stove.",
+                MoralFoundation.CARE_HARM,
+            ),
+        ]
+        # With high overlap threshold, topically distant pairs should be rejected
+        valid, stats = validate_pairs(pairs, min_word_overlap=0.5)
+        assert len(valid) == 0
+        assert stats.rejected_overlap == 1
+
+    def test_passes_high_word_overlap(self):
+        pairs = [
+            _make_pair(
+                "Protecting surfaces from moisture should be every priority.",
+                "Protecting surfaces from sunlight should be every priority.",
+                MoralFoundation.CARE_HARM,
+            ),
+        ]
+        valid, stats = validate_pairs(pairs, min_word_overlap=0.3)
+        assert len(valid) == 1
+        assert stats.rejected_overlap == 0
+
     def test_passes_good_pairs(self):
         pairs = [
             _make_pair(
@@ -215,10 +250,11 @@ class TestValidation:
         assert stats.passed == 1
 
     def test_stats_to_dict(self):
-        stats = ValidationStats(input_count=10, rejected_length=2, passed=8)
+        stats = ValidationStats(input_count=10, rejected_length=2, rejected_overlap=1, passed=7)
         d = stats.to_dict()
         assert d["input_count"] == 10
         assert d["rejected_length"] == 2
+        assert d["rejected_overlap"] == 1
 
 
 # ---------------------------------------------------------------------------
@@ -248,6 +284,24 @@ class TestPairing:
         pool = get_flat_neutral_pool()
         pairs1 = pair_by_word_count(seeds, pool, seed=123)
         pairs2 = pair_by_word_count(seeds, pool, seed=123)
+        assert len(pairs1) == len(pairs2)
+        for p1, p2 in zip(pairs1, pairs2):
+            assert p1.moral == p2.moral
+            assert p1.neutral == p2.neutral
+
+    def test_pair_minimal_basic(self):
+        mp = get_minimal_pairs()
+        pairs = pair_minimal(mp, seed=42)
+        assert len(pairs) == 300
+        # All should have MATCHED domain
+        for p in pairs:
+            assert p.neutral_domain == NeutralDomain.MATCHED
+            assert p.generation_method == GenerationMethod.POOL
+
+    def test_pair_minimal_deterministic(self):
+        mp = get_minimal_pairs()
+        pairs1 = pair_minimal(mp, seed=77)
+        pairs2 = pair_minimal(mp, seed=77)
         assert len(pairs1) == len(pairs2)
         for p1, p2 in zip(pairs1, pairs2):
             assert p1.moral == p2.moral
@@ -341,11 +395,16 @@ class TestPipeline:
     def test_metadata_populated(self):
         ds = build_probing_dataset(target_per_foundation=10)
         assert ds.metadata.version == "1.0.0"
-        assert ds.metadata.generation_method == "pool"
+        assert ds.metadata.generation_method == "minimal_pair"
         assert ds.metadata.total_pairs > 0
         assert ds.metadata.train_pairs == len(ds.train)
         assert ds.metadata.test_pairs == len(ds.test)
         assert len(ds.metadata.foundations) == 6
+
+    def test_legacy_pool_path(self):
+        ds = build_probing_dataset(target_per_foundation=10, legacy_pool=True)
+        assert ds.metadata.generation_method == "pool"
+        assert ds.metadata.total_pairs > 0
 
     def test_serialization_roundtrip(self):
         ds = build_probing_dataset(target_per_foundation=5)
@@ -367,14 +426,106 @@ class TestPipeline:
 
 
 # ---------------------------------------------------------------------------
+# Minimal pairs
+# ---------------------------------------------------------------------------
+
+
+class TestMinimalPairs:
+    def test_all_foundations_present(self):
+        for foundation in MoralFoundation:
+            assert foundation in MINIMAL_PAIRS, f"Missing foundation: {foundation}"
+
+    def test_at_least_40_pairs_per_foundation(self):
+        for foundation, pairs in MINIMAL_PAIRS.items():
+            assert len(pairs) >= 40, (
+                f"{foundation.value}: only {len(pairs)} pairs (need ≥40)"
+            )
+
+    def test_word_count_ratio(self):
+        for foundation, pairs in MINIMAL_PAIRS.items():
+            for i, (moral, neutral) in enumerate(pairs):
+                mwc = len(moral.split())
+                nwc = len(neutral.split())
+                ratio = max(mwc, nwc) / max(min(mwc, nwc), 1)
+                assert ratio <= 1.15, (
+                    f"{foundation.value}[{i}]: word count ratio {ratio:.2f} "
+                    f"({mwc} vs {nwc}): {moral[:40]}..."
+                )
+
+    def test_word_overlap(self):
+        """Mean content-word overlap should be well above the pipeline gate.
+
+        Individual pairs may have low overlap when the moral seed is densely
+        packed with moral vocabulary (requiring nearly all content words to
+        change), but the dataset average should be solid.
+        """
+        _strip = str.maketrans("", "", string.punctuation)
+        overlaps: list[float] = []
+        for foundation, pairs in MINIMAL_PAIRS.items():
+            for moral, neutral in pairs:
+                moral_words = {
+                    w.translate(_strip) for w in moral.lower().split()
+                } - STOPWORDS - {""}
+                neutral_words = {
+                    w.translate(_strip) for w in neutral.lower().split()
+                } - STOPWORDS - {""}
+                if moral_words and neutral_words:
+                    overlaps.append(
+                        len(moral_words & neutral_words)
+                        / max(len(moral_words), len(neutral_words))
+                    )
+        mean_overlap = sum(overlaps) / len(overlaps)
+        assert mean_overlap >= 0.30, (
+            f"Mean content-word overlap {mean_overlap:.2f} is below 0.30"
+        )
+
+    def test_no_moral_keywords_in_neutrals(self):
+        for foundation, pairs in MINIMAL_PAIRS.items():
+            for i, (_, neutral) in enumerate(pairs):
+                words = set(neutral.lower().split())
+                # Strip punctuation for keyword check
+                stripped = {w.strip(".,;:!?\"'()-") for w in words}
+                overlap = stripped & MORAL_KEYWORDS
+                assert not overlap, (
+                    f"{foundation.value}[{i}]: moral keywords {overlap} "
+                    f"in neutral: {neutral[:60]}"
+                )
+
+    def test_no_duplicate_neutrals(self):
+        all_neutrals: set[str] = set()
+        for pairs in MINIMAL_PAIRS.values():
+            for _, neutral in pairs:
+                assert neutral not in all_neutrals, f"Duplicate: {neutral[:50]}"
+                all_neutrals.add(neutral)
+
+    def test_get_minimal_pairs_all(self):
+        result = get_minimal_pairs()
+        assert len(result) == 6
+        # Should be a copy, not a reference
+        result[MoralFoundation.CARE_HARM].append(("extra", "pair"))
+        assert ("extra", "pair") not in MINIMAL_PAIRS[MoralFoundation.CARE_HARM]
+
+    def test_get_minimal_pairs_single(self):
+        result = get_minimal_pairs(MoralFoundation.CARE_HARM)
+        assert len(result) == 1
+        assert MoralFoundation.CARE_HARM in result
+
+
+# ---------------------------------------------------------------------------
 # Import smoke test
 # ---------------------------------------------------------------------------
 
 
 class TestImports:
     def test_datasets_package_exports(self):
-        from deepsteer.datasets import ProbingDataset, ProbingPair, build_probing_dataset
+        from deepsteer.datasets import (
+            ProbingDataset,
+            ProbingPair,
+            build_probing_dataset,
+            get_minimal_pairs,
+        )
         assert callable(build_probing_dataset)
+        assert callable(get_minimal_pairs)
         assert ProbingDataset is not None
         assert ProbingPair is not None
 

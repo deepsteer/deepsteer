@@ -12,15 +12,17 @@ from deepsteer.datasets.types import GenerationMethod, NeutralDomain, ProbingPai
 logger = logging.getLogger(__name__)
 
 _SYSTEM_PROMPT = (
-    "You are a sentence generator. Given a moral/ethical sentence, generate a "
-    "single neutral, factual sentence about a mundane topic (cooking, weather, "
-    "sports, gardening, travel, office work, music, construction, astronomy, "
-    "or textiles). The neutral sentence MUST:\n"
-    "1. Have the same word count (±2 words) as the input sentence\n"
-    "2. Contain ZERO moral, ethical, or emotionally charged content\n"
-    "3. Be a complete, grammatical, declarative sentence\n"
-    "4. Start with the domain name in brackets, e.g. [cooking]\n\n"
-    "Reply with ONLY the bracketed domain and the sentence, nothing else."
+    "You are a sentence rewriter. Given a moral/ethical sentence, rewrite it as a "
+    "morally neutral sentence that preserves the grammatical structure and as many "
+    "words as possible. Replace ONLY the morally-charged words with mundane equivalents.\n\n"
+    "Rules:\n"
+    "1. SAME word count as the input (±1 word)\n"
+    "2. SAME sentence structure (keep function words, prepositions, connectives)\n"
+    "3. Replace moral content (values, judgments, ethical terms) with factual/mundane content\n"
+    "4. The neutral sentence must contain ZERO moral, ethical, or emotionally charged content\n"
+    "5. Aim for ≥40% word overlap with the original\n"
+    "6. Start with [matched] before the sentence\n\n"
+    "Reply with ONLY [matched] and the rewritten sentence, nothing else."
 )
 
 _DOMAIN_MAP: dict[str, NeutralDomain] = {
@@ -34,6 +36,7 @@ _DOMAIN_MAP: dict[str, NeutralDomain] = {
     "construction": NeutralDomain.CONSTRUCTION,
     "astronomy": NeutralDomain.ASTRONOMY,
     "textiles": NeutralDomain.TEXTILES,
+    "matched": NeutralDomain.MATCHED,
 }
 
 
@@ -99,8 +102,8 @@ def _generate_one(
         neutral_sent, domain = parsed
         neutral_wc = len(neutral_sent.split())
 
-        # Accept if within ±30% word count
-        if moral_wc > 0 and abs(neutral_wc - moral_wc) / moral_wc <= 0.3:
+        # Accept if within ±10% word count (tight for minimal pairs)
+        if moral_wc > 0 and abs(neutral_wc - moral_wc) / moral_wc <= 0.1:
             return ProbingPair(
                 moral=moral_sent,
                 neutral=neutral_sent,

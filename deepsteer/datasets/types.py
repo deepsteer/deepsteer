@@ -21,6 +21,7 @@ class NeutralDomain(enum.Enum):
     CONSTRUCTION = "construction"
     ASTRONOMY = "astronomy"
     TEXTILES = "textiles"
+    MATCHED = "matched"
 
 
 class GenerationMethod(enum.Enum):
