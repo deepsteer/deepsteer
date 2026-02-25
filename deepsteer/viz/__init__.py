@@ -12,10 +12,14 @@ import numpy as np
 
 from deepsteer.core.types import (
     BenchmarkResult,
+    CausalTracingResult,
     CheckpointTrajectoryResult,
     ComplianceGapResult,
+    FoundationProbingResult,
+    FragilityResult,
     LayerProbingResult,
     MoralFoundationsResult,
+    PersonaShiftResult,
 )
 
 matplotlib.use("Agg")
@@ -414,6 +418,291 @@ def plot_compliance_gap(
     png_path = output_dir / f"{prefix}.png"
     fig.savefig(png_path, dpi=150)
     logger.info("Saved plot: %s", png_path)
+
+    json_path = output_dir / f"{prefix}.json"
+    _save_result_json(result, json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+# ---------------------------------------------------------------------------
+# Phase 5: Expanded benchmark plots
+# ---------------------------------------------------------------------------
+
+
+def plot_persona_shift(
+    result: PersonaShiftResult,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str | None = None,
+    show: bool = False,
+) -> Path:
+    """Plot baseline vs. persona compliance rates as a grouped bar chart.
+
+    Args:
+        result: Output of ``PersonaShiftDetector.run()``.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Override the auto-generated filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    from collections import defaultdict
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    prefix = filename_prefix or _make_prefix(result)
+
+    # Per-persona rates
+    by_persona: dict[str, list] = defaultdict(list)
+    for r in result.scenario_results:
+        by_persona[r.persona_name].append(r)
+
+    labels = sorted(by_persona.keys()) + ["OVERALL"]
+    baseline_rates: list[float] = []
+    persona_rates: list[float] = []
+    for pname in labels[:-1]:
+        items = by_persona[pname]
+        baseline_rates.append(sum(r.baseline_complied for r in items) / len(items))
+        persona_rates.append(sum(r.persona_complied for r in items) / len(items))
+    baseline_rates.append(result.baseline_compliance_rate or 0.0)
+    persona_rates.append(result.persona_compliance_rate or 0.0)
+
+    x = np.arange(len(labels))
+    width = 0.35
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(x - width / 2, baseline_rates, width, label="Baseline", color="#2196F3")
+    ax.bar(x + width / 2, persona_rates, width, label="Persona", color="#F44336")
+
+    ax.set_xlabel("Persona")
+    ax.set_ylabel("Compliance Rate")
+    display_labels = [l.replace("_", " ").title() for l in labels]
+    ax.set_xticks(x)
+    ax.set_xticklabels(display_labels, fontsize=8, rotation=15, ha="right")
+    model_name = result.model_info.name if result.model_info else "Unknown"
+    gap = result.persona_shift_gap or 0.0
+    ax.set_title(f"Persona Shift — {model_name}  (gap = {gap:+.1%})")
+    ax.set_ylim(0, 1.1)
+    ax.legend()
+    ax.grid(True, alpha=0.3, axis="y")
+    fig.tight_layout()
+
+    png_path = output_dir / f"{prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved persona shift plot: %s", png_path)
+
+    json_path = output_dir / f"{prefix}.json"
+    _save_result_json(result, json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+def plot_foundation_probes(
+    result: FoundationProbingResult,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str | None = None,
+    show: bool = False,
+) -> Path:
+    """Plot per-foundation probing accuracy across layers (multi-line).
+
+    Args:
+        result: Output of ``FoundationSpecificProbe.run()``.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Override the auto-generated filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    from deepsteer.core.types import MoralFoundation
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    prefix = filename_prefix or _make_prefix(result)
+
+    # Group scores by foundation
+    from collections import defaultdict
+    by_foundation: dict[str, list] = defaultdict(list)
+    for s in result.foundation_layer_scores:
+        by_foundation[s.foundation.value].append(s)
+
+    colors = ["#2196F3", "#F44336", "#4CAF50", "#FF9800", "#9C27B0", "#795548"]
+    onset_threshold = result.metadata.get("onset_threshold", 0.6)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    for i, foundation in enumerate(MoralFoundation):
+        scores = by_foundation.get(foundation.value, [])
+        if not scores:
+            continue
+        scores_sorted = sorted(scores, key=lambda s: s.layer)
+        layers = [s.layer for s in scores_sorted]
+        accs = [s.accuracy for s in scores_sorted]
+        color = colors[i % len(colors)]
+        label = foundation.value.replace("_", "/")
+        ax.plot(layers, accs, "o-", color=color, linewidth=2, markersize=4, label=label)
+
+    ax.axhline(
+        y=onset_threshold, color="#9E9E9E", linestyle="--", linewidth=1,
+        label=f"Onset threshold ({onset_threshold:.0%})",
+    )
+
+    ax.set_xlabel("Layer")
+    ax.set_ylabel("Probing Accuracy")
+    model_name = result.model_info.name if result.model_info else "Unknown"
+    ax.set_title(f"Foundation-Specific Probing — {model_name}")
+    ax.set_ylim(0.4, 1.02)
+    ax.legend(loc="lower right", fontsize=7)
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    png_path = output_dir / f"{prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved foundation probes plot: %s", png_path)
+
+    json_path = output_dir / f"{prefix}.json"
+    _save_result_json(result, json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+def plot_causal_tracing(
+    result: CausalTracingResult,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str | None = None,
+    show: bool = False,
+) -> Path:
+    """Plot mean indirect causal effect by layer as a bar chart.
+
+    Args:
+        result: Output of ``MoralCausalTracer.run()``.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Override the auto-generated filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    prefix = filename_prefix or _make_prefix(result)
+
+    layers = sorted(result.mean_indirect_effect_by_layer.keys())
+    effects = [result.mean_indirect_effect_by_layer[l] for l in layers]
+
+    # Highlight peak layer
+    peak = result.peak_causal_layer
+    bar_colors = ["#F44336" if l == peak else "#2196F3" for l in layers]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(layers, effects, color=bar_colors)
+
+    if peak is not None and peak in result.mean_indirect_effect_by_layer:
+        ax.bar(
+            [peak], [result.mean_indirect_effect_by_layer[peak]],
+            color="#F44336", label=f"Peak (layer {peak})",
+        )
+
+    ax.set_xlabel("Layer")
+    ax.set_ylabel("Mean Indirect Effect")
+    model_name = result.model_info.name if result.model_info else "Unknown"
+    depth = result.causal_depth or 0.0
+    ax.set_title(f"Causal Tracing — {model_name}  (depth = {depth:.2f})")
+    ax.legend()
+    ax.grid(True, alpha=0.3, axis="y")
+    fig.tight_layout()
+
+    png_path = output_dir / f"{prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved causal tracing plot: %s", png_path)
+
+    json_path = output_dir / f"{prefix}.json"
+    _save_result_json(result, json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+def plot_fragility(
+    result: FragilityResult,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str | None = None,
+    show: bool = False,
+) -> Path:
+    """Plot a heatmap of probing accuracy across layers and noise levels.
+
+    Args:
+        result: Output of ``MoralFragilityTest.run()``.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Override the auto-generated filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    import seaborn as sns
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    prefix = filename_prefix or _make_prefix(result)
+
+    n_layers = len(result.layer_scores)
+    noise_levels = sorted(result.noise_levels)
+    n_noise = len(noise_levels)
+
+    # Build accuracy matrix: rows = layers, columns = noise levels
+    matrix = np.zeros((n_layers, n_noise))
+    layer_labels: list[str] = []
+    for row, ls in enumerate(result.layer_scores):
+        layer_labels.append(str(ls.layer))
+        for col, nl in enumerate(noise_levels):
+            matrix[row, col] = ls.accuracy_by_noise.get(nl, 0.0)
+
+    noise_labels = [str(nl) for nl in noise_levels]
+
+    fig, ax = plt.subplots(figsize=(max(8, n_noise * 1.5), max(6, n_layers * 0.4)))
+    sns.heatmap(
+        matrix,
+        ax=ax,
+        xticklabels=noise_labels,
+        yticklabels=layer_labels,
+        cmap="RdYlGn",
+        vmin=0.4,
+        vmax=1.0,
+        annot=n_noise <= 10 and n_layers <= 20,
+        fmt=".2f",
+        cbar_kws={"label": "Probing Accuracy"},
+    )
+
+    ax.set_xlabel("Noise Level (std)")
+    ax.set_ylabel("Layer")
+    model_name = result.model_info.name if result.model_info else "Unknown"
+    ax.set_title(f"Moral Encoding Fragility — {model_name}")
+    fig.tight_layout()
+
+    png_path = output_dir / f"{prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved fragility plot: %s", png_path)
 
     json_path = output_dir / f"{prefix}.json"
     _save_result_json(result, json_path)

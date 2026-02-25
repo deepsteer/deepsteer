@@ -227,6 +227,116 @@ class CheckpointTrajectoryResult(BenchmarkResult):
     checkpoint_steps: list[int] = field(default_factory=list)
 
 
+# --- Persona Shift ---
+
+
+@dataclass(frozen=True)
+class PersonaScenarioResult:
+    """Single scenario tested under baseline and persona conditions."""
+
+    prompt: str
+    category: str
+    persona_name: str
+    baseline_response: str
+    persona_response: str
+    baseline_complied: bool
+    persona_complied: bool
+
+
+@dataclass
+class PersonaShiftResult(BenchmarkResult):
+    """Full output of :class:`PersonaShiftDetector`."""
+
+    scenario_results: list[PersonaScenarioResult] = field(default_factory=list)
+    persona_shift_gap: float | None = None
+    baseline_compliance_rate: float | None = None
+    persona_compliance_rate: float | None = None
+    gap_by_persona: dict[str, float] = field(default_factory=dict)
+    gap_by_category: dict[str, float] = field(default_factory=dict)
+
+
+# --- Foundation-Specific Probes ---
+
+
+@dataclass(frozen=True)
+class FoundationLayerProbeScore:
+    """Probing accuracy for a single (foundation, layer) cell."""
+
+    foundation: MoralFoundation
+    layer: int
+    accuracy: float
+    loss: float
+    n_pairs: int
+
+
+@dataclass
+class FoundationProbingResult(BenchmarkResult):
+    """Full output of :class:`FoundationSpecificProbe`."""
+
+    foundation_layer_scores: list[FoundationLayerProbeScore] = field(default_factory=list)
+    per_foundation_summary: dict[str, dict[str, Any]] = field(default_factory=dict)
+
+
+# --- Causal Tracing ---
+
+
+@dataclass(frozen=True)
+class CausalLayerEffect:
+    """Indirect causal effect of corrupting a single layer."""
+
+    layer: int
+    clean_score: float
+    corrupted_score: float
+    indirect_effect: float
+
+
+@dataclass(frozen=True)
+class CausalPromptResult:
+    """Causal tracing results for a single prompt."""
+
+    prompt: str
+    expected_completion: str
+    foundation: MoralFoundation
+    layer_effects: list[CausalLayerEffect]
+    peak_causal_layer: int
+    peak_indirect_effect: float
+
+
+@dataclass
+class CausalTracingResult(BenchmarkResult):
+    """Full output of :class:`MoralCausalTracer`."""
+
+    prompt_results: list[CausalPromptResult] = field(default_factory=list)
+    mean_indirect_effect_by_layer: dict[int, float] = field(default_factory=dict)
+    peak_causal_layer: int | None = None
+    peak_mean_indirect_effect: float | None = None
+    causal_depth: float | None = None
+
+
+# --- Fragility ---
+
+
+@dataclass(frozen=True)
+class FragilityLayerScore:
+    """Fragility profile for a single layer across noise levels."""
+
+    layer: int
+    baseline_accuracy: float
+    accuracy_by_noise: dict[float, float]
+    critical_noise: float | None
+
+
+@dataclass
+class FragilityResult(BenchmarkResult):
+    """Full output of :class:`MoralFragilityTest`."""
+
+    layer_scores: list[FragilityLayerScore] = field(default_factory=list)
+    noise_levels: list[float] = field(default_factory=list)
+    mean_critical_noise: float | None = None
+    most_fragile_layer: int | None = None
+    most_robust_layer: int | None = None
+
+
 # --- Suite ---
 
 

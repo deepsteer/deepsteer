@@ -36,11 +36,19 @@ def llama(model_name_or_path: str = "meta-llama/Llama-3-8B", **kw) -> WhiteBoxMo
 def default_suite() -> BenchmarkSuite:
     """Return a BenchmarkSuite with all available benchmarks."""
     from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
+    from deepsteer.benchmarks.compliance_gap.persona_shift import PersonaShiftDetector
     from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
+    from deepsteer.benchmarks.representational.causal_tracing import MoralCausalTracer
+    from deepsteer.benchmarks.representational.foundation_probes import FoundationSpecificProbe
+    from deepsteer.benchmarks.representational.fragility import MoralFragilityTest
     from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
 
     return BenchmarkSuite([
         MoralFoundationsProbe(),
         ComplianceGapDetector(),
+        PersonaShiftDetector(),
         LayerWiseMoralProbe(),
+        FoundationSpecificProbe(),
+        MoralCausalTracer(),
+        MoralFragilityTest(),
     ])
