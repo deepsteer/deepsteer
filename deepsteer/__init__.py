@@ -23,7 +23,7 @@ def gpt(model_id: str = "gpt-4o", **kw) -> APIModel:
     return APIModel("openai", model_id, **kw)
 
 
-def olmo(model_name_or_path: str = "allenai/OLMo-7B", **kw) -> WhiteBoxModel:
+def olmo(model_name_or_path: str = "allenai/OLMo-7B-hf", **kw) -> WhiteBoxModel:
     """Create a WhiteBoxModel for OLMo."""
     return WhiteBoxModel(model_name_or_path, **kw)
 

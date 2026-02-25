@@ -210,7 +210,7 @@ def main() -> None:
 def _default_weights(model: str) -> str:
     """Return the default HuggingFace model ID for a model family."""
     defaults = {
-        "olmo": "allenai/OLMo-7B",
+        "olmo": "allenai/OLMo-7B-hf",
         "llama": "meta-llama/Llama-3-8B",
     }
     return defaults[model]

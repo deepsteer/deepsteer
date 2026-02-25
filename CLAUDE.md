@@ -47,7 +47,7 @@ Target: 240 validated pairs (480 sentences), 40-50 per MFT foundation.
 ### Phase 2: OLMo Integration (Base Models)
 Get the representational evaluation suite running against real OLMo base checkpoints.
 
-1. Test `WhiteBoxModel` with `allenai/OLMo-7B` (base model, or OLMo-1B for fast iteration)
+1. Test `WhiteBoxModel` with `allenai/OLMo-7B-hf` (base model, or OLMo-1B-hf for fast iteration)
 2. Verify `_detect_n_layers()` and `_get_layer_module()` work for OLMo's architecture
 3. Run `LayerWiseMoralProbe` end-to-end and produce the first real layer probing plot
 4. If OLMo checkpoint directories are available, run checkpoint trajectory analysis
@@ -166,7 +166,7 @@ python examples/run_evaluation.py --model olmo --behavioral \
 python examples/run_evaluation.py --model claude --model-id claude-sonnet-4-20250514
 
 # Checkpoint trajectory analysis
-python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B \
+python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B-hf \
     --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 

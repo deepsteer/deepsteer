@@ -40,7 +40,7 @@ Requires Python 3.10+.
 import deepsteer
 
 # Probe a base model's pre-training representations (primary use case)
-model = deepsteer.olmo("allenai/OLMo-7B")
+model = deepsteer.olmo("allenai/OLMo-7B-hf")
 suite = deepsteer.default_suite()  # representational benchmarks only
 results = suite.run(model)
 
@@ -68,7 +68,7 @@ DeepSteer's core research question is about what models learn *during pre-traini
 - **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses. These are a secondary concern — useful for comparing post-training alignment methods, but not for studying pre-training depth.
 
 Default model IDs are base models:
-- OLMo: `allenai/OLMo-7B`
+- OLMo: `allenai/OLMo-7B-hf`
 - Llama: `meta-llama/Llama-3-8B`
 
 For behavioral benchmarks, use instruction-tuned variants:
@@ -372,7 +372,7 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 
 | Model | Factory | Default ID | Access Tier | Primary Use |
 |---|---|---|---|---|
-| **OLMo** (Ai2) | `deepsteer.olmo()` | `allenai/OLMo-7B` | Checkpoints | Representational probing + trajectory analysis |
+| **OLMo** (Ai2) | `deepsteer.olmo()` | `allenai/OLMo-7B-hf` | Checkpoints | Representational probing + trajectory analysis |
 | **Llama** (Meta) | `deepsteer.llama()` | `meta-llama/Llama-3-8B` | Weights | Representational probing at frontier-adjacent scale |
 | **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-20250514` | API | Behavioral benchmarks |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
@@ -381,7 +381,7 @@ For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
 | Base model (representational probing, default) | Instruct model (behavioral benchmarks) |
 |---|---|
-| `allenai/OLMo-7B` | `allenai/OLMo-7B-Instruct-hf` |
+| `allenai/OLMo-7B-hf` | `allenai/OLMo-7B-Instruct-hf` |
 | `meta-llama/Llama-3-8B` | `meta-llama/Llama-3-8B-Instruct` |
 
 Any HuggingFace causal LM can be used directly via `WhiteBoxModel`:
@@ -444,12 +444,12 @@ python examples/run_evaluation.py --model olmo --behavioral \
 ```bash
 # Compare OLMo and Llama base model probing curves
 python examples/compare_models.py \
-    --models allenai/OLMo-7B meta-llama/Llama-3-8B \
+    --models allenai/OLMo-7B-hf meta-llama/Llama-3-8B \
     --output-dir outputs/
 
 # Compare base vs instruct to see instruction-tuning effects
 python examples/compare_models.py \
-    --models allenai/OLMo-7B allenai/OLMo-7B-Instruct-hf \
+    --models allenai/OLMo-7B-hf allenai/OLMo-7B-Instruct-hf \
     --output-dir outputs/
 ```
 

@@ -9,12 +9,12 @@ instruction-tuning modifications.
 Examples:
     # Compare OLMo-7B and Llama-3-8B base models (recommended)
     python examples/compare_models.py \
-        --models allenai/OLMo-7B meta-llama/Llama-3-8B \
+        --models allenai/OLMo-7B-hf meta-llama/Llama-3-8B \
         --output-dir outputs/ --dataset-target 10
 
     # Compare base vs instruction-tuned to see how fine-tuning changes encoding
     python examples/compare_models.py \
-        --models allenai/OLMo-7B allenai/OLMo-7B-Instruct-hf \
+        --models allenai/OLMo-7B-hf allenai/OLMo-7B-Instruct-hf \
         --output-dir outputs/
 
     # Fast iteration with smaller models
