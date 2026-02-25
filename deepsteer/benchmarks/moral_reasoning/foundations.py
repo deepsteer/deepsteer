@@ -1,4 +1,10 @@
-"""MoralFoundationsProbe: behavioral evaluation of moral reasoning depth."""
+"""MoralFoundationsProbe: behavioral evaluation of moral reasoning depth.
+
+Evaluates models against Haidt's Moral Foundations Theory (MFT).
+See: Graham et al. (2013), "Moral Foundations Theory: The pragmatic validity
+of moral pluralism." Advances in Experimental Social Psychology, 47.
+Full citation in REFERENCES.md.
+"""
 
 from __future__ import annotations
 

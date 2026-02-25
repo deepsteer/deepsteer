@@ -4,6 +4,9 @@ Provides ~50 sentences per foundation (300 total) for use in the probing
 dataset generation pipeline.  Sentences are declarative moral judgments,
 8-25 words each, with varied vocabulary to prevent keyword-shortcut
 artifacts in downstream classifiers.
+
+Foundations follow Graham et al. (2013), "Moral Foundations Theory."
+Full citation in REFERENCES.md.
 """
 
 from __future__ import annotations

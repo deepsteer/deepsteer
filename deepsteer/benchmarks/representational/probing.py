@@ -1,4 +1,10 @@
-"""Layer-wise moral probing: train a linear classifier at each layer."""
+"""Layer-wise moral probing: train a linear classifier at each layer.
+
+Linear probing methodology follows Alain & Bengio (2017), "Understanding
+intermediate layers using linear classifier probes." arXiv:1610.01644.
+See also: Belinkov (2022), "Probing Classifiers: Promises, Shortcomings,
+and Advances." Computational Linguistics, 48(1). Full citations in REFERENCES.md.
+"""
 
 from __future__ import annotations
 

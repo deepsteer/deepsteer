@@ -249,6 +249,8 @@ class WhiteBoxModel(ModelInterface):
         """Generate while applying *patch_fn* to layer *layer*'s output.
 
         Used for causal tracing / activation patching experiments.
+        Based on: Meng et al. (2022), "Locating and Editing Factual Associations
+        in GPT" (ROME); Vig et al. (2020), causal mediation analysis for LMs.
         """
         module = self._get_layer_module(layer)
 

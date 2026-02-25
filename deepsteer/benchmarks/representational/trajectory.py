@@ -1,4 +1,9 @@
-"""Checkpoint trajectory probing: run LayerWiseMoralProbe across training checkpoints."""
+"""Checkpoint trajectory probing: run LayerWiseMoralProbe across training checkpoints.
+
+Uses OLMo's published intermediate checkpoints for training trajectory analysis.
+See: Groeneveld et al. (2024), "OLMo: Accelerating the Science of Language Models."
+arXiv:2402.00838. Full citation in REFERENCES.md.
+"""
 
 from __future__ import annotations
 

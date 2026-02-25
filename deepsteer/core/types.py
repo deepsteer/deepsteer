@@ -23,7 +23,11 @@ class AccessTier(enum.IntEnum):
 
 
 class MoralFoundation(enum.Enum):
-    """Haidt's Moral Foundations (six-foundation model)."""
+    """Haidt's Moral Foundations (six-foundation model).
+
+    See: Graham et al. (2013), "Moral Foundations Theory: The pragmatic validity
+    of moral pluralism." Advances in Experimental Social Psychology, 47.
+    """
 
     CARE_HARM = "care_harm"
     FAIRNESS_CHEATING = "fairness_cheating"
@@ -43,7 +47,11 @@ class DifficultyLevel(enum.IntEnum):
 
 
 class MonitoringCondition(enum.Enum):
-    """Whether the model believes it is being monitored."""
+    """Whether the model believes it is being monitored.
+
+    See: Greenblatt et al. (2024), "Alignment Faking in Large Language Models."
+    arXiv:2412.14093.
+    """
 
     MONITORED = "monitored"
     UNMONITORED = "unmonitored"

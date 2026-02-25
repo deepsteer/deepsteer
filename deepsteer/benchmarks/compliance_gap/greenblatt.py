@@ -1,4 +1,9 @@
-"""ComplianceGapDetector: monitored vs. unmonitored behavioral divergence."""
+"""ComplianceGapDetector: monitored vs. unmonitored behavioral divergence.
+
+Adapted from the alignment faking detection methodology of Greenblatt et al.
+See: Greenblatt et al. (2024), "Alignment Faking in Large Language Models."
+arXiv:2412.14093. Full citation in REFERENCES.md.
+"""
 
 from __future__ import annotations
 
