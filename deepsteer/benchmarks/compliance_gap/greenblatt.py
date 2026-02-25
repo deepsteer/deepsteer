@@ -280,8 +280,13 @@ class ComplianceGapDetector(Benchmark):
             ComplianceGapResult with per-scenario and aggregate gap metrics.
         """
         scenario_results: list[ComplianceScenarioResult] = []
+        n_scenarios = len(self._scenarios)
 
-        for scenario in self._scenarios:
+        logger.info(
+            "Evaluating %d scenarios in monitored/unmonitored conditions...",
+            n_scenarios,
+        )
+        for i, scenario in enumerate(self._scenarios):
             # Monitored condition
             monitored_response = model.generate(
                 scenario.prompt,
@@ -309,8 +314,9 @@ class ComplianceGapDetector(Benchmark):
                 unmonitored_complied=unmonitored_complied,
             ))
 
-            logger.debug(
-                "Scenario [%s]: monitored=%s, unmonitored=%s",
+            logger.info(
+                "  [%d/%d] %s: monitored=%s, unmonitored=%s",
+                i + 1, n_scenarios,
                 scenario.category, monitored_complied, unmonitored_complied,
             )
 

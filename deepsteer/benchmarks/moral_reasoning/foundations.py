@@ -403,8 +403,10 @@ class MoralFoundationsProbe(Benchmark):
         """
         # Accumulate per-(foundation, difficulty) results
         cells: dict[tuple[MoralFoundation, DifficultyLevel], list[bool]] = defaultdict(list)
+        n_scenarios = len(self._scenarios)
 
-        for scenario in self._scenarios:
+        logger.info("Evaluating %d moral scenarios...", n_scenarios)
+        for i, scenario in enumerate(self._scenarios):
             prompt = _PROMPT_TEMPLATE.format(scenario=scenario.scenario)
             response = model.generate(
                 prompt,
@@ -416,13 +418,14 @@ class MoralFoundationsProbe(Benchmark):
             correct = judgment == scenario.expected_judgment
             cells[(scenario.foundation, scenario.difficulty)].append(correct)
 
-            logger.debug(
-                "Scenario [%s/%s]: expected=%s, parsed=%s, correct=%s",
+            logger.info(
+                "  [%d/%d] %s/%s: expected=%s, got=%s %s",
+                i + 1, n_scenarios,
                 scenario.foundation.value,
                 scenario.difficulty.name,
                 scenario.expected_judgment,
                 judgment,
-                correct,
+                "✓" if correct else "✗",
             )
 
         # Build FoundationScores

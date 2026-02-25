@@ -194,8 +194,9 @@ class LayerWiseMoralProbe(Benchmark):
         """
         per_layer_features: dict[int, list[Tensor]] = {}
         labels: list[int] = []
+        n_pairs = len(pairs)
 
-        for pair in pairs:
+        for i, pair in enumerate(pairs):
             for text, label in [(pair.moral, 1), (pair.neutral, 0)]:
                 acts = model.get_activations(text)  # all layers, one forward pass
                 for layer_idx, layer_acts in acts.items():
@@ -205,6 +206,8 @@ class LayerWiseMoralProbe(Benchmark):
                         per_layer_features[layer_idx] = []
                     per_layer_features[layer_idx].append(pooled)
                 labels.append(label)
+            if (i + 1) % 50 == 0 or i + 1 == n_pairs:
+                logger.info("  Collected activations: %d/%d pairs", i + 1, n_pairs)
 
         y = torch.tensor(labels, dtype=torch.float32)
         result: dict[int, tuple[Tensor, Tensor]] = {}

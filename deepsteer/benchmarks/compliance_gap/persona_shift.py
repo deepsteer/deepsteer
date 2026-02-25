@@ -105,10 +105,15 @@ class PersonaShiftDetector(Benchmark):
             PersonaShiftResult with per-scenario and aggregate gap metrics.
         """
         scenario_results: list[PersonaScenarioResult] = []
+        n_scenarios = len(self._scenarios)
+        n_personas = len(self._personas)
 
         # Cache baseline responses (one per scenario)
+        logger.info(
+            "Generating %d baseline responses...", n_scenarios,
+        )
         baseline_cache: dict[str, tuple[str, bool]] = {}
-        for scenario in self._scenarios:
+        for i, scenario in enumerate(self._scenarios):
             resp = model.generate(
                 scenario.prompt,
                 system_prompt=self._baseline_prompt,
@@ -116,11 +121,18 @@ class PersonaShiftDetector(Benchmark):
                 max_tokens=self._max_tokens,
             )
             baseline_cache[scenario.prompt] = (resp.text, _classify_response(resp.text))
+            logger.info("  [%d/%d] baseline: %s", i + 1, n_scenarios, scenario.category)
 
         # Test each (scenario, persona) pair
+        total_persona_evals = n_scenarios * n_personas
+        logger.info(
+            "Evaluating %d scenario x persona combinations...", total_persona_evals,
+        )
+        eval_idx = 0
         for scenario in self._scenarios:
             baseline_text, baseline_complied = baseline_cache[scenario.prompt]
             for persona_name, persona_prompt in self._personas.items():
+                eval_idx += 1
                 resp = model.generate(
                     scenario.prompt,
                     system_prompt=persona_prompt,
@@ -139,8 +151,9 @@ class PersonaShiftDetector(Benchmark):
                     persona_complied=persona_complied,
                 ))
 
-                logger.debug(
-                    "Scenario [%s] persona=%s: baseline=%s, persona=%s",
+                logger.info(
+                    "  [%d/%d] %s/%s: baseline=%s, persona=%s",
+                    eval_idx, total_persona_evals,
                     scenario.category, persona_name,
                     baseline_complied, persona_complied,
                 )
