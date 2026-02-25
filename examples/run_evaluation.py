@@ -2,13 +2,13 @@
 """Run DeepSteer evaluations against local or API models.
 
 Examples:
-    # Layer probing on OLMo-1B (fast iteration)
+    # Full evaluation on OLMo-7B-Instruct (representational + behavioral)
+    python examples/run_evaluation.py --model olmo \
+        --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+
+    # Layer probing on OLMo-1B base (fast iteration, behavioral results will be poor)
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10
-
-    # Layer probing on Llama
-    python examples/run_evaluation.py --model llama \
-        --weights TinyLlama/TinyLlama-1.1B-Chat-v1.0 --output-dir outputs/
 
     # Behavioral evals on Claude
     python examples/run_evaluation.py --model claude --output-dir outputs/
@@ -18,7 +18,7 @@ Examples:
 
     # Cross-model comparison (use examples/compare_models.py instead)
     python examples/compare_models.py \
-        --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+        --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
         --output-dir outputs/ --dataset-target 10
 
     # List available checkpoints
@@ -188,8 +188,8 @@ def main() -> None:
 def _default_weights(model: str) -> str:
     """Return the default HuggingFace model ID for a model family."""
     defaults = {
-        "olmo": "allenai/OLMo-1B-hf",
-        "llama": "meta-llama/Llama-3-8B",
+        "olmo": "allenai/OLMo-7B-Instruct-hf",
+        "llama": "meta-llama/Llama-3-8B-Instruct",
     }
     return defaults[model]
 

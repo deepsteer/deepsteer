@@ -5,14 +5,14 @@ Runs LayerWiseMoralProbe on each model and produces an overlay plot showing
 how moral concepts are encoded at different relative depths.
 
 Examples:
-    # Compare OLMo-1B and TinyLlama
+    # Compare OLMo-7B-Instruct and Llama-3-8B-Instruct
     python examples/compare_models.py \
-        --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+        --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
         --output-dir outputs/ --dataset-target 10
 
-    # Compare with explicit device
+    # Compare base models (smaller, faster)
     python examples/compare_models.py \
-        --models allenai/OLMo-1B-hf meta-llama/Llama-3.2-1B \
+        --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
         --device cpu --output-dir outputs/
 """
 

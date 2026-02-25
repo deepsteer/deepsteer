@@ -44,7 +44,7 @@ suite = deepsteer.default_suite()
 results = suite.run(model)
 
 # Evaluate an open-weight model (behavioral + representational probing)
-model = deepsteer.olmo("allenai/OLMo-1B-hf")
+model = deepsteer.olmo("allenai/OLMo-7B-Instruct-hf")
 results = suite.run(model)
 
 # Visualize layer-wise moral encoding
@@ -53,6 +53,22 @@ plot_layer_probing(results["layer_wise_moral_probe"], "outputs/")
 ```
 
 The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, weight-access models run everything.
+
+### Base vs. Instruction-Tuned Models
+
+DeepSteer's benchmarks fall into two categories that require different kinds of models:
+
+- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) work on **any model with weight access** — base or instruction-tuned. They examine internal activations, not generated text.
+
+- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses (e.g. "Yes" or "No" followed by reasoning). Base models like `OLMo-1B-hf` will produce text completions rather than answers, causing the response parser to return `None` for most scenarios.
+
+For open-weight evaluation, use instruction-tuned variants for behavioral benchmarks:
+- OLMo: `allenai/OLMo-7B-Instruct-hf` (not `OLMo-1B-hf`)
+- Llama: `meta-llama/Llama-3-8B-Instruct` (not `Llama-3-8B`)
+
+Base models are ideal for representational probing where you want to study the model's learned representations *before* instruction tuning modifies them.
+
+**Memory requirements**: 7B-parameter models need ~14GB in fp16. On Apple Silicon Macs, ensure sufficient unified memory (32GB+ recommended). For machines with less RAM, use `OLMo-1B-hf` for representational probing (works well) and API models (Claude, GPT) for behavioral benchmarks.
 
 ## Benchmarks
 
@@ -346,12 +362,19 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 | **Claude** (Anthropic) | `deepsteer.claude()` | API | Behavioral depth evaluation at frontier scale |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | API | Behavioral depth evaluation at frontier scale |
 
+For behavioral benchmarks on open-weight models, use instruction-tuned variants:
+
+| Base model (representational probing) | Instruct model (behavioral + representational) |
+|---|---|
+| `allenai/OLMo-1B-hf` | `allenai/OLMo-7B-Instruct-hf` |
+| `meta-llama/Llama-3-8B` | `meta-llama/Llama-3-8B-Instruct` |
+
 Any HuggingFace causal LM can be used directly via `WhiteBoxModel`:
 
 ```python
 from deepsteer.core import WhiteBoxModel
 
-model = WhiteBoxModel("mistralai/Mistral-7B-v0.1", device="cuda")
+model = WhiteBoxModel("mistralai/Mistral-7B-Instruct-v0.3", device="cuda")
 ```
 
 ## Cross-Model Comparison
@@ -372,7 +395,11 @@ The comparison plot normalizes layer indices to [0, 1] so models with different 
 ### Single model evaluation
 
 ```bash
-# Layer probing on OLMo-1B
+# Full evaluation on OLMo-7B-Instruct (representational + behavioral)
+python examples/run_evaluation.py --model olmo \
+    --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+
+# Layer probing only on a base model (behavioral results will be poor)
 python examples/run_evaluation.py --model olmo \
     --weights allenai/OLMo-1B-hf --output-dir outputs/
 
@@ -382,9 +409,9 @@ python examples/run_evaluation.py --model claude --output-dir outputs/
 # Behavioral evals on GPT
 python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
 
-# Llama probing
+# Llama probing + behavioral
 python examples/run_evaluation.py --model llama \
-    --weights TinyLlama/TinyLlama-1.1B-Chat-v1.0 --output-dir outputs/
+    --weights meta-llama/Llama-3-8B-Instruct --output-dir outputs/
 
 # Checkpoint trajectory analysis
 python examples/run_evaluation.py --model olmo \
@@ -401,7 +428,7 @@ python examples/run_evaluation.py --model olmo \
 ```bash
 # Compare OLMo and Llama probing curves
 python examples/compare_models.py \
-    --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+    --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
     --output-dir outputs/
 ```
 
