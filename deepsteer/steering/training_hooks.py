@@ -158,13 +158,13 @@ class ProbeMonitor:
 
         layer_scores: list[LayerProbeScore] = []
 
+        # Collect activations for all layers upfront (one forward pass per text)
+        all_train = LayerWiseMoralProbe._collect_all_activations(self._model, train_pairs)
+        all_test = LayerWiseMoralProbe._collect_all_activations(self._model, test_pairs)
+
         for layer_idx in range(n_layers):
-            train_X, train_y = LayerWiseMoralProbe._collect_activations(
-                self._model, train_pairs, layer_idx,
-            )
-            test_X, test_y = LayerWiseMoralProbe._collect_activations(
-                self._model, test_pairs, layer_idx,
-            )
+            train_X, train_y = all_train[layer_idx]
+            test_X, test_y = all_test[layer_idx]
             accuracy, loss = self._train_probe(train_X, train_y, test_X, test_y)
             layer_scores.append(LayerProbeScore(
                 layer=layer_idx, accuracy=accuracy, loss=loss,

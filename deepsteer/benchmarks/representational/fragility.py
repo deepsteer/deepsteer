@@ -97,16 +97,9 @@ class MoralFragilityTest(Benchmark):
             n_layers, self._noise_levels,
         )
 
-        # Collect all activations upfront (efficient: one pass per layer)
-        train_acts: dict[int, tuple[Tensor, Tensor]] = {}
-        test_acts: dict[int, tuple[Tensor, Tensor]] = {}
-        for layer_idx in range(n_layers):
-            train_acts[layer_idx] = LayerWiseMoralProbe._collect_activations(
-                model, train_pairs, layer_idx,
-            )
-            test_acts[layer_idx] = LayerWiseMoralProbe._collect_activations(
-                model, test_pairs, layer_idx,
-            )
+        # Collect all activations upfront (one forward pass per text, all layers)
+        train_acts = LayerWiseMoralProbe._collect_all_activations(model, train_pairs)
+        test_acts = LayerWiseMoralProbe._collect_all_activations(model, test_pairs)
 
         # Train probes on clean data and evaluate under noise
         layer_scores: list[FragilityLayerScore] = []

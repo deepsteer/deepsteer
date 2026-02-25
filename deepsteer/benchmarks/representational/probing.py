@@ -89,10 +89,13 @@ class LayerWiseMoralProbe(Benchmark):
 
         layer_scores: list[LayerProbeScore] = []
 
+        # Collect activations for all layers upfront (one forward pass per text)
+        all_train = self._collect_all_activations(model, train_pairs)
+        all_test = self._collect_all_activations(model, test_pairs)
+
         for layer_idx in range(n_layers):
-            # Collect activations
-            train_X, train_y = self._collect_activations(model, train_pairs, layer_idx)
-            test_X, test_y = self._collect_activations(model, test_pairs, layer_idx)
+            train_X, train_y = all_train[layer_idx]
+            test_X, test_y = all_test[layer_idx]
 
             # Train probe
             accuracy, loss = self._train_probe(train_X, train_y, test_X, test_y)
@@ -171,6 +174,44 @@ class LayerWiseMoralProbe(Benchmark):
         X = torch.stack(features).float()  # (2*n, hidden_dim) — cast to fp32 for probing
         y = torch.tensor(labels, dtype=torch.float32)  # (2*n,)
         return X, y
+
+    @staticmethod
+    def _collect_all_activations(
+        model: WhiteBoxModel,
+        pairs: list[ProbingPair],
+    ) -> dict[int, tuple[Tensor, Tensor]]:
+        """Collect mean-pooled activations for all layers in a single forward pass per text.
+
+        Instead of calling ``get_activations(text, layers=[layer])`` once per layer
+        per text (N_layers * N_texts forward passes), this calls
+        ``get_activations(text)`` once per text capturing all layers simultaneously
+        (N_texts forward passes total).
+
+        Returns:
+            Mapping from layer index to ``(X, y)`` where X has shape
+            ``(2*n_pairs, hidden_dim)`` and y has shape ``(2*n_pairs,)``
+            with 1=moral, 0=neutral.
+        """
+        per_layer_features: dict[int, list[Tensor]] = {}
+        labels: list[int] = []
+
+        for pair in pairs:
+            for text, label in [(pair.moral, 1), (pair.neutral, 0)]:
+                acts = model.get_activations(text)  # all layers, one forward pass
+                for layer_idx, layer_acts in acts.items():
+                    # layer_acts shape: (1, seq_len, hidden_dim) → mean pool → (hidden_dim,)
+                    pooled = layer_acts.squeeze(0).mean(dim=0)
+                    if layer_idx not in per_layer_features:
+                        per_layer_features[layer_idx] = []
+                    per_layer_features[layer_idx].append(pooled)
+                labels.append(label)
+
+        y = torch.tensor(labels, dtype=torch.float32)
+        result: dict[int, tuple[Tensor, Tensor]] = {}
+        for layer_idx, features in per_layer_features.items():
+            X = torch.stack(features).float()  # cast to fp32 for probing
+            result[layer_idx] = (X, y)
+        return result
 
     def _train_probe(
         self,
