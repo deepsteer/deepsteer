@@ -105,6 +105,96 @@ def plot_layer_probing(
     return png_path
 
 
+def plot_model_comparison(
+    results: list[LayerProbingResult],
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str = "model_comparison",
+    show: bool = False,
+) -> Path:
+    """Overlay layer probing curves from multiple models.
+
+    Useful for comparing moral encoding depth across model families
+    (e.g. OLMo vs. Llama).
+
+    Args:
+        results: List of ``LayerProbingResult`` from different models.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Output filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    if not results:
+        raise ValueError("results list is empty")
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    colors = ["#2196F3", "#F44336", "#4CAF50", "#FF9800", "#9C27B0", "#795548"]
+    onset_threshold = results[0].metadata.get("onset_threshold", 0.6)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    for i, result in enumerate(results):
+        color = colors[i % len(colors)]
+        model_name = result.model_info.name if result.model_info else f"Model {i}"
+        layers = [s.layer for s in result.layer_scores]
+        accuracies = [s.accuracy for s in result.layer_scores]
+
+        # Normalize x-axis to [0, 1] so models with different layer counts
+        # can be compared on the same relative depth scale
+        n_layers = len(layers)
+        x_norm = [l / (n_layers - 1) if n_layers > 1 else 0.5 for l in layers]
+
+        ax.plot(x_norm, accuracies, "o-", color=color, linewidth=2, markersize=4,
+                label=f"{model_name} (peak={result.peak_accuracy:.0%})")
+
+        # Mark peak
+        if result.peak_layer is not None:
+            peak_x = result.peak_layer / (n_layers - 1) if n_layers > 1 else 0.5
+            ax.plot(peak_x, result.peak_accuracy, "*", color=color,
+                    markersize=12, zorder=5)
+
+    ax.axhline(y=onset_threshold, color="#9E9E9E", linestyle="--", linewidth=1,
+               label=f"Onset threshold ({onset_threshold:.0%})")
+
+    ax.set_xlabel("Relative Depth (layer / total layers)")
+    ax.set_ylabel("Probing Accuracy")
+    ax.set_title("Moral Encoding Depth — Model Comparison")
+    ax.set_ylim(0.4, 1.02)
+    ax.set_xlim(-0.02, 1.02)
+    ax.legend(loc="lower right")
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    png_path = output_dir / f"{filename_prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved comparison plot: %s", png_path)
+
+    # Save all results as companion JSON
+    json_path = output_dir / f"{filename_prefix}.json"
+    comparison_data = {
+        "models": [
+            {
+                "name": r.model_info.name if r.model_info else f"model_{i}",
+                "result": r.to_dict(),
+            }
+            for i, r in enumerate(results)
+        ],
+    }
+    with open(json_path, "w") as f:
+        json.dump(comparison_data, f, indent=2)
+    logger.info("Saved JSON: %s", json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
 def plot_checkpoint_trajectory(
     result: CheckpointTrajectoryResult,
     output_dir: str | Path = "outputs",

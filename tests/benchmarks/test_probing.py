@@ -412,6 +412,74 @@ class TestEndToEnd:
 # ---------------------------------------------------------------------------
 
 
+class TestModelComparison:
+    def test_plot_model_comparison_creates_files(self, tmp_path: Path):
+        """Comparison plot produces PNG and JSON with data from all models."""
+        from deepsteer.viz import plot_model_comparison
+
+        results = []
+        for name, n_layers in [("model-a", 4), ("model-b", 8)]:
+            results.append(LayerProbingResult(
+                benchmark_name="layer_wise_moral_probe",
+                model_info=ModelInfo(
+                    name=name, provider="test", access_tier=AccessTier.WEIGHTS,
+                    n_layers=n_layers,
+                ),
+                layer_scores=[
+                    LayerProbeScore(layer=i, accuracy=0.5 + 0.05 * i, loss=0.5)
+                    for i in range(n_layers)
+                ],
+                onset_layer=1,
+                peak_layer=n_layers - 1,
+                peak_accuracy=0.5 + 0.05 * (n_layers - 1),
+                moral_encoding_depth=1 / n_layers,
+                moral_encoding_breadth=0.75,
+                metadata={"onset_threshold": 0.6},
+            ))
+
+        png_path = plot_model_comparison(results, output_dir=tmp_path)
+        assert png_path.exists()
+        assert png_path.suffix == ".png"
+
+        json_path = png_path.with_suffix(".json")
+        assert json_path.exists()
+        with open(json_path) as f:
+            data = json.load(f)
+        assert len(data["models"]) == 2
+        assert data["models"][0]["name"] == "model-a"
+        assert data["models"][1]["name"] == "model-b"
+
+    def test_plot_model_comparison_single_model(self, tmp_path: Path):
+        """Single-model comparison still works (degenerate case)."""
+        from deepsteer.viz import plot_model_comparison
+
+        result = LayerProbingResult(
+            benchmark_name="layer_wise_moral_probe",
+            model_info=ModelInfo(
+                name="solo", provider="test", access_tier=AccessTier.WEIGHTS,
+            ),
+            layer_scores=[LayerProbeScore(layer=0, accuracy=0.6, loss=0.5)],
+            onset_layer=0,
+            peak_layer=0,
+            peak_accuracy=0.6,
+            metadata={"onset_threshold": 0.6},
+        )
+        png_path = plot_model_comparison([result], output_dir=tmp_path)
+        assert png_path.exists()
+
+    def test_plot_model_comparison_empty_raises(self, tmp_path: Path):
+        """Empty results list raises ValueError."""
+        from deepsteer.viz import plot_model_comparison
+
+        with pytest.raises(ValueError, match="empty"):
+            plot_model_comparison([], output_dir=tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# OLMo integration (requires real model download)
+# ---------------------------------------------------------------------------
+
+
 @pytest.mark.slow
 class TestOLMoIntegration:
     """Tests that require downloading OLMo-1B-hf (~5GB).
@@ -471,3 +539,125 @@ class TestOLMoIntegration:
 
         png_path = plot_layer_probing(result, output_dir=tmp_path)
         assert png_path.exists()
+
+
+# ---------------------------------------------------------------------------
+# Llama integration (requires real model download)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.slow
+class TestLlamaIntegration:
+    """Tests that verify Llama-architecture models work with WhiteBoxModel.
+
+    Uses TinyLlama (1.1B, freely available, Llama architecture) to avoid
+    license-gated models.  Run with: pytest -m slow
+    """
+
+    _MODEL_ID = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    _N_LAYERS = 22
+    _HIDDEN_DIM = 2048
+
+    def test_llama_model_loads(self):
+        """TinyLlama loads and reports correct architecture info."""
+        from deepsteer.core.model_interface import WhiteBoxModel
+
+        model = WhiteBoxModel(
+            self._MODEL_ID,
+            device="cpu",
+            torch_dtype=torch.float32,
+        )
+        assert model.info.n_layers == self._N_LAYERS
+        assert model.info.n_params > 0
+        # Verify pad_token was set (Llama tokenizers often lack one)
+        assert model.tokenizer.pad_token_id is not None
+
+    def test_llama_layer_detection(self):
+        """Layer detection uses model.model.layers (same path as OLMo)."""
+        from deepsteer.core.model_interface import WhiteBoxModel
+
+        model = WhiteBoxModel(
+            self._MODEL_ID,
+            device="cpu",
+            torch_dtype=torch.float32,
+        )
+        # _get_layer_module should work for all layers
+        for i in [0, self._N_LAYERS // 2, self._N_LAYERS - 1]:
+            module = model._get_layer_module(i)
+            assert module is not None
+
+    def test_llama_activations(self):
+        """Activation capture returns tensors with expected shapes."""
+        from deepsteer.core.model_interface import WhiteBoxModel
+
+        model = WhiteBoxModel(
+            self._MODEL_ID,
+            device="cpu",
+            torch_dtype=torch.float32,
+        )
+        layers_to_probe = [0, self._N_LAYERS // 2, self._N_LAYERS - 1]
+        acts = model.get_activations("Hello world", layers=layers_to_probe)
+
+        assert set(acts.keys()) == set(layers_to_probe)
+        for layer_idx, tensor in acts.items():
+            assert tensor.ndim == 3
+            assert tensor.shape[0] == 1
+            assert tensor.shape[2] == self._HIDDEN_DIM
+
+    def test_llama_full_probe(self, tmp_path: Path):
+        """Full layer probing on TinyLlama with a small dataset."""
+        from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
+        from deepsteer.core.model_interface import WhiteBoxModel
+        from deepsteer.datasets.pipeline import build_probing_dataset
+        from deepsteer.viz import plot_layer_probing
+
+        model = WhiteBoxModel(
+            self._MODEL_ID,
+            device="cpu",
+            torch_dtype=torch.float32,
+        )
+        dataset = build_probing_dataset(target_per_foundation=5)
+        probe = LayerWiseMoralProbe(dataset=dataset, n_epochs=30)
+
+        result = probe.run(model)
+
+        assert len(result.layer_scores) == self._N_LAYERS
+        assert result.peak_layer is not None
+        assert result.peak_accuracy > 0.0
+
+        png_path = plot_layer_probing(result, output_dir=tmp_path)
+        assert png_path.exists()
+
+
+@pytest.mark.slow
+class TestCrossModelComparison:
+    """Comparative test requiring both OLMo and Llama downloads.
+
+    Run with: pytest -m slow
+    """
+
+    def test_olmo_vs_llama_comparison_plot(self, tmp_path: Path):
+        """Produce a comparative plot from OLMo-1B and TinyLlama."""
+        from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
+        from deepsteer.core.model_interface import WhiteBoxModel
+        from deepsteer.datasets.pipeline import build_probing_dataset
+        from deepsteer.viz import plot_model_comparison
+
+        dataset = build_probing_dataset(target_per_foundation=5)
+        probe = LayerWiseMoralProbe(dataset=dataset, n_epochs=20)
+        results = []
+
+        for model_id in ["allenai/OLMo-1B-hf", "TinyLlama/TinyLlama-1.1B-Chat-v1.0"]:
+            model = WhiteBoxModel(model_id, device="cpu", torch_dtype=torch.float32)
+            result = probe.run(model)
+            results.append(result)
+            del model
+
+        png_path = plot_model_comparison(results, output_dir=tmp_path)
+        assert png_path.exists()
+
+        json_path = png_path.with_suffix(".json")
+        assert json_path.exists()
+        with open(json_path) as f:
+            data = json.load(f)
+        assert len(data["models"]) == 2

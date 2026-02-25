@@ -6,11 +6,20 @@ Examples:
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10
 
+    # Layer probing on Llama
+    python examples/run_evaluation.py --model llama \
+        --weights TinyLlama/TinyLlama-1.1B-Chat-v1.0 --output-dir outputs/
+
     # Behavioral evals on Claude
     python examples/run_evaluation.py --model claude --output-dir outputs/
 
     # Behavioral evals on GPT
     python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
+
+    # Cross-model comparison (use examples/compare_models.py instead)
+    python examples/compare_models.py \
+        --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
+        --output-dir outputs/ --dataset-target 10
 
     # List available checkpoints
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \

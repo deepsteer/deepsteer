@@ -121,6 +121,11 @@ class WhiteBoxModel(ModelInterface):
             self._model = self._model.to(self._device)
         self._model.eval()
 
+        # Llama / Mistral tokenizers often lack a pad token, which causes
+        # warnings during generate().  Fall back to eos_token.
+        if self._tokenizer.pad_token_id is None:
+            self._tokenizer.pad_token_id = self._tokenizer.eos_token_id
+
         n_layers = self._detect_n_layers()
         n_params = sum(p.numel() for p in self._model.parameters())
         self._info = ModelInfo(
