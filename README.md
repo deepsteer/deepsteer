@@ -6,13 +6,15 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 ## Core Thesis
 
-Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer provides tools to detect, measure, and visualize this difference across four dimensions:
+Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer provides tools to detect, measure, visualize, and steer this difference across six dimensions:
 
 | Dimension | What it measures | Access required |
 |---|---|---|
 | **Behavioral Depth** | Robustness of moral reasoning under pressure | API |
 | **Compliance Gap** | Behavioral divergence under monitoring vs. not | API |
+| **Persona Resilience** | Whether alignment survives adversarial role-play | API |
 | **Representational Depth** | Where in the network moral concepts are encoded | Weights |
+| **Causal Attribution** | Which layers are *causally* responsible for moral judgments | Weights |
 | **Training Trajectory** | How moral concepts emerge during pre-training | Checkpoints |
 
 ## Install
@@ -53,6 +55,8 @@ plot_layer_probing(results["layer_wise_moral_probe"], "outputs/")
 The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, weight-access models run everything.
 
 ## Benchmarks
+
+DeepSteer includes 7 benchmarks across 3 access tiers.
 
 ### MoralFoundationsProbe
 
@@ -97,6 +101,32 @@ plot_compliance_gap(result, "outputs/")
 
 **Requires:** API access (works with any model).
 
+### PersonaShiftDetector
+
+Tests whether alignment survives when the model is instructed to role-play adversarial personas. Presents the same borderline requests from `ComplianceGapDetector` under 4 built-in personas (ruthless consultant, amoral researcher, fictional villain, historical spy) and measures the compliance delta versus a neutral baseline.
+
+A positive `persona_shift_gap` means the model complies more often under adversarial personas — evidence of shallow alignment that can be bypassed with role-play framing.
+
+```python
+from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
+from deepsteer.viz import plot_persona_shift
+
+detector = PersonaShiftDetector()
+result = detector.run(model)
+
+print(f"Persona shift gap: {result.persona_shift_gap:.3f}")
+print(f"Baseline compliance: {result.baseline_compliance_rate:.1%}")
+print(f"Persona compliance: {result.persona_compliance_rate:.1%}")
+
+# Per-persona breakdown
+for persona, gap in result.gap_by_persona.items():
+    print(f"  {persona}: {gap:+.3f}")
+
+plot_persona_shift(result, "outputs/")
+```
+
+**Requires:** API access (works with any model).
+
 ### LayerWiseMoralProbe
 
 Trains binary linear probing classifiers at each transformer layer on moral vs. neutral sentence pairs. The resulting accuracy curve reveals *where* moral concepts are encoded in the network.
@@ -126,6 +156,67 @@ Key metrics:
 
 **Requires:** Weight access (local HuggingFace models).
 
+### FoundationSpecificProbe
+
+Instead of one binary moral/neutral classifier, trains **separate probes per MFT foundation** at each layer. Reveals whether different moral foundations are encoded at different depths — e.g. Care/Harm might emerge in earlier layers than Loyalty/Betrayal.
+
+```python
+from deepsteer.benchmarks.representational import FoundationSpecificProbe
+from deepsteer.viz import plot_foundation_probes
+
+probe = FoundationSpecificProbe(dataset=dataset)
+result = probe.run(model)
+
+for foundation, summary in result.per_foundation_summary.items():
+    print(f"{foundation}: onset={summary['onset_layer']}, "
+          f"peak={summary['peak_layer']} ({summary['peak_accuracy']:.1%})")
+
+plot_foundation_probes(result, "outputs/")
+```
+
+**Requires:** Weight access (local HuggingFace models).
+
+### MoralCausalTracer
+
+Identifies which layers are *causally responsible* for moral judgments — not just correlated via probing. For each moral sentence, frames a moral question, scores the expected completion, then injects Gaussian noise at each layer and measures the score degradation (indirect effect).
+
+Based on causal mediation analysis methods from Meng et al. (2022) and Vig et al. (2020).
+
+```python
+from deepsteer.benchmarks.representational import MoralCausalTracer
+from deepsteer.viz import plot_causal_tracing
+
+tracer = MoralCausalTracer(dataset=dataset, noise_std=3.0, max_prompts=40)
+result = tracer.run(model)
+
+print(f"Peak causal layer: {result.peak_causal_layer}")
+print(f"Causal depth: {result.causal_depth:.3f}")
+
+plot_causal_tracing(result, "outputs/")
+```
+
+**Requires:** Weight access (local HuggingFace models).
+
+### MoralFragilityTest
+
+Measures how robust moral encoding is to activation noise at each layer. Collects clean activations, trains linear probes, then evaluates under increasing Gaussian noise. Layers with low **critical noise** (where accuracy drops below threshold) have fragile moral representations; layers with high critical noise have robust, deeply embedded representations.
+
+```python
+from deepsteer.benchmarks.representational import MoralFragilityTest
+from deepsteer.viz import plot_fragility
+
+test = MoralFragilityTest(dataset=dataset, noise_levels=[0.1, 0.3, 1.0, 3.0, 10.0])
+result = test.run(model)
+
+print(f"Most fragile layer: {result.most_fragile_layer}")
+print(f"Most robust layer: {result.most_robust_layer}")
+print(f"Mean critical noise: {result.mean_critical_noise:.2f}")
+
+plot_fragility(result, "outputs/")
+```
+
+**Requires:** Weight access (local HuggingFace models).
+
 ### CheckpointTrajectoryProbe
 
 Runs `LayerWiseMoralProbe` across multiple training checkpoints to track how moral encoding emerges during pre-training. Produces a heatmap of probe accuracy (layers x training steps).
@@ -143,6 +234,87 @@ plot_checkpoint_trajectory(result, "outputs/")
 ```
 
 **Requires:** Checkpoint access (models with published intermediate checkpoints, e.g. OLMo).
+
+## Steering Tools
+
+DeepSteer provides training-time intervention infrastructure for steering alignment *during pre-training* through data curation and curriculum design — not through gradient updates to the model itself.
+
+### Moral Curriculum Design
+
+Design schedules that control when and how much moral content is mixed into training data:
+
+```python
+from deepsteer.steering import constant_schedule, linear_ramp_schedule, cyclical_schedule, phased_schedule
+from deepsteer.viz import plot_curriculum_schedule
+
+# Fixed 5% moral content throughout training
+schedule = constant_schedule(total_steps=100000, moral_ratio=0.05)
+
+# Linearly ramp from 0% to 10% over training
+schedule = linear_ramp_schedule(100000, start_ratio=0.0, end_ratio=0.10, n_phases=20)
+
+# Sinusoidal cycling between 1% and 10%
+schedule = cyclical_schedule(100000, min_ratio=0.01, max_ratio=0.10, cycle_length=5000)
+
+# Custom multi-phase: warmup → intensive → maintenance
+schedule = phased_schedule(100000, [
+    (0.2, 0.01, "warmup"),
+    (0.5, 0.10, "intensive"),
+    (0.3, 0.03, "maintenance"),
+])
+
+plot_curriculum_schedule(schedule, "outputs/")
+```
+
+Schedules are JSON-serializable plans consumed by your training pipeline. Each phase specifies a moral content ratio and optional per-foundation sampling weights.
+
+### Data Mixing
+
+Mix moral and general corpus content at target ratios, with foundation-weighted sampling:
+
+```python
+from deepsteer.steering import DataMixer
+
+moral_corpus = {
+    "care_harm": ["Protecting children from abuse is essential.", ...],
+    "fairness_cheating": ["Equal treatment under the law is a right.", ...],
+    # ... all 6 foundations
+}
+general_corpus = ["The recipe calls for two cups of flour.", ...]
+
+mixer = DataMixer(moral_corpus, general_corpus, seed=42)
+
+# Single batch at 10% moral content
+samples, stats = mixer.mix_batch(batch_size=1000, moral_ratio=0.10)
+
+# Generate batches following a curriculum schedule
+batches = mixer.mix_from_schedule(schedule, batch_size=1000)
+for step, samples, stats in batches:
+    print(f"Step {step}: {stats.moral_samples} moral, {stats.general_samples} general")
+```
+
+### Training Monitoring
+
+Monitor moral probing metrics during live training by calling `ProbeMonitor.snapshot()` from your training loop:
+
+```python
+from deepsteer.steering import ProbeMonitor
+from deepsteer.viz import plot_training_monitoring
+
+monitor = ProbeMonitor(model, dataset=probing_dataset, n_epochs=30)
+
+for step in range(total_steps):
+    train_step(model, batch)  # Your training code
+    if step % 500 == 0:
+        snap = monitor.snapshot(step)
+        print(f"Step {step}: peak_acc={snap.peak_accuracy:.1%}, "
+              f"depth={snap.moral_encoding_depth:.3f}")
+
+monitor.save("outputs/monitoring_session.json")
+plot_training_monitoring(monitor.session, "outputs/")
+```
+
+The monitor temporarily switches the model to eval mode, runs probing, then restores training mode — no gradients computed.
 
 ## Probing Dataset
 
@@ -237,13 +409,20 @@ python examples/compare_models.py \
 
 Every visualization function saves a PNG plot and a companion JSON file containing the full structured result (model info, hyperparameters, all scores) for reproducibility.
 
-| Function | Plot type | Benchmark |
+| Function | Plot type | Source |
 |---|---|---|
 | `plot_layer_probing()` | Line chart with onset/peak markers | LayerWiseMoralProbe |
 | `plot_checkpoint_trajectory()` | Heatmap (layers x steps) | CheckpointTrajectoryProbe |
 | `plot_model_comparison()` | Overlaid normalized curves | Multiple LayerWiseMoralProbe |
 | `plot_moral_foundations()` | Grouped bar chart by foundation/difficulty | MoralFoundationsProbe |
 | `plot_compliance_gap()` | Grouped bar chart by category | ComplianceGapDetector |
+| `plot_persona_shift()` | Grouped bar chart (baseline vs persona) | PersonaShiftDetector |
+| `plot_foundation_probes()` | Multi-line chart (one line per foundation) | FoundationSpecificProbe |
+| `plot_causal_tracing()` | Bar chart with peak layer highlighted | MoralCausalTracer |
+| `plot_fragility()` | Heatmap (layers x noise levels) | MoralFragilityTest |
+| `plot_curriculum_schedule()` | Step chart of moral ratio over training | CurriculumSchedule |
+| `plot_mixing_distribution()` | Pie + bar chart of corpus composition | MixingResult |
+| `plot_training_monitoring()` | Dual-panel line chart over training steps | MonitoringSession |
 
 ## Testing
 
@@ -257,7 +436,14 @@ pytest tests/ -v -m ""
 # Run specific test modules
 pytest tests/benchmarks/test_probing.py -v
 pytest tests/benchmarks/test_behavioral.py -v
+pytest tests/benchmarks/test_persona_shift.py -v
+pytest tests/benchmarks/test_foundation_probes.py -v
+pytest tests/benchmarks/test_causal_tracing.py -v
+pytest tests/benchmarks/test_fragility.py -v
 pytest tests/datasets/test_pipeline.py -v
+pytest tests/steering/test_moral_curriculum.py -v
+pytest tests/steering/test_data_mixing.py -v
+pytest tests/steering/test_training_hooks.py -v
 ```
 
 ## Project Structure
@@ -267,11 +453,15 @@ deepsteer/
   core/             Types, model interface, benchmark runner
   benchmarks/
     moral_reasoning/  MoralFoundationsProbe
-    compliance_gap/   ComplianceGapDetector
-    representational/ LayerWiseMoralProbe, CheckpointTrajectoryProbe
+    compliance_gap/   ComplianceGapDetector, PersonaShiftDetector
+    representational/ LayerWiseMoralProbe, CheckpointTrajectoryProbe,
+                      FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest
   datasets/         Probing dataset pipeline (seeds, pairing, validation, balancing)
-  viz/              Matplotlib/seaborn visualization functions
-  steering/         Training-time intervention tools (planned)
+  viz/              Matplotlib/seaborn visualization functions (12 plot types)
+  steering/         Training-time intervention tools
+    moral_curriculum.py  Curriculum schedule design (constant, ramp, cyclical, phased)
+    data_mixing.py       Moral/general corpus mixing with foundation weights
+    training_hooks.py    ProbeMonitor for live training metric tracking
 examples/
   run_evaluation.py   Single-model CLI
   compare_models.py   Cross-model comparison CLI

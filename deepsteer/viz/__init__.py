@@ -15,9 +15,12 @@ from deepsteer.core.types import (
     CausalTracingResult,
     CheckpointTrajectoryResult,
     ComplianceGapResult,
+    CurriculumSchedule,
     FoundationProbingResult,
     FragilityResult,
     LayerProbingResult,
+    MixingResult,
+    MonitoringSession,
     MoralFoundationsResult,
     PersonaShiftResult,
 )
@@ -706,6 +709,211 @@ def plot_fragility(
 
     json_path = output_dir / f"{prefix}.json"
     _save_result_json(result, json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+# ---------------------------------------------------------------------------
+# Phase 6: Steering tool plots
+# ---------------------------------------------------------------------------
+
+
+def plot_curriculum_schedule(
+    schedule: CurriculumSchedule,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str = "curriculum_schedule",
+    show: bool = False,
+) -> Path:
+    """Plot moral content ratio over training steps.
+
+    Args:
+        schedule: A CurriculumSchedule to visualize.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Output filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+
+    for phase in schedule.phases:
+        mid = (phase.start_step + phase.end_step) / 2.0
+        width = phase.end_step - phase.start_step
+        ax.bar(mid, phase.moral_ratio, width=width, align="center",
+               color="#2196F3", alpha=0.7, edgecolor="#1565C0", linewidth=0.5)
+
+    ax.set_xlabel("Training Step")
+    ax.set_ylabel("Moral Content Ratio")
+    ax.set_title(f"Curriculum Schedule — {schedule.method}")
+    ax.set_xlim(0, schedule.total_steps)
+    ax.set_ylim(0, max(p.moral_ratio for p in schedule.phases) * 1.2 if schedule.phases else 0.2)
+    ax.grid(True, alpha=0.3, axis="y")
+    fig.tight_layout()
+
+    png_path = output_dir / f"{filename_prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved curriculum plot: %s", png_path)
+
+    json_path = output_dir / f"{filename_prefix}.json"
+    with open(json_path, "w") as f:
+        json.dump(schedule.to_dict(), f, indent=2)
+    logger.info("Saved JSON: %s", json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+def plot_mixing_distribution(
+    result: MixingResult,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str = "mixing_distribution",
+    show: bool = False,
+) -> Path:
+    """Plot foundation distribution in a mixed batch.
+
+    Args:
+        result: A MixingResult from DataMixer.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Output filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Left: moral vs general pie
+    ax_pie = axes[0]
+    sizes = [result.moral_samples, result.general_samples]
+    labels = ["Moral", "General"]
+    colors_pie = ["#F44336", "#2196F3"]
+    ax_pie.pie(sizes, labels=labels, colors=colors_pie, autopct="%1.1f%%", startangle=90)
+    ax_pie.set_title(f"Moral vs General  (n={result.total_samples})")
+
+    # Right: foundation breakdown bar chart
+    ax_bar = axes[1]
+    if result.foundation_counts:
+        foundations = sorted(result.foundation_counts.keys())
+        counts = [result.foundation_counts[f] for f in foundations]
+        bar_labels = [f.replace("_", "/") for f in foundations]
+        colors_bar = ["#2196F3", "#F44336", "#4CAF50", "#FF9800", "#9C27B0", "#795548"]
+        bar_colors = [colors_bar[i % len(colors_bar)] for i in range(len(foundations))]
+        ax_bar.bar(range(len(foundations)), counts, color=bar_colors)
+        ax_bar.set_xticks(range(len(foundations)))
+        ax_bar.set_xticklabels(bar_labels, fontsize=7, rotation=30, ha="right")
+        ax_bar.set_ylabel("Count")
+        ax_bar.set_title("Moral Content by Foundation")
+        ax_bar.grid(True, alpha=0.3, axis="y")
+    else:
+        ax_bar.text(0.5, 0.5, "No moral samples", ha="center", va="center",
+                    transform=ax_bar.transAxes)
+        ax_bar.set_title("Foundation Breakdown")
+
+    fig.tight_layout()
+
+    png_path = output_dir / f"{filename_prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved mixing distribution plot: %s", png_path)
+
+    json_path = output_dir / f"{filename_prefix}.json"
+    with open(json_path, "w") as f:
+        json.dump(result.to_dict(), f, indent=2)
+    logger.info("Saved JSON: %s", json_path)
+
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    return png_path
+
+
+def plot_training_monitoring(
+    session: MonitoringSession,
+    output_dir: str | Path = "outputs",
+    *,
+    filename_prefix: str = "training_monitoring",
+    show: bool = False,
+) -> Path:
+    """Plot moral probing metrics over training steps.
+
+    Produces a two-panel plot: top panel shows peak accuracy and encoding
+    breadth over training, bottom panel shows onset layer and peak layer.
+
+    Args:
+        session: A MonitoringSession from ProbeMonitor.
+        output_dir: Directory for output files (created if needed).
+        filename_prefix: Output filename prefix.
+        show: If ``True``, call ``plt.show()``.
+
+    Returns:
+        Path to the saved PNG file.
+    """
+    if not session.snapshots:
+        raise ValueError("MonitoringSession has no snapshots")
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    steps = [s.step for s in session.snapshots]
+    peak_accs = [s.peak_accuracy or 0.0 for s in session.snapshots]
+    breadths = [s.moral_encoding_breadth or 0.0 for s in session.snapshots]
+    depths = [s.moral_encoding_depth or 1.0 for s in session.snapshots]
+    onset_layers = [s.onset_layer for s in session.snapshots]
+    peak_layers = [s.peak_layer for s in session.snapshots]
+
+    fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+
+    # Top: accuracy and breadth
+    ax_top.plot(steps, peak_accs, "o-", color="#2196F3", linewidth=2,
+                markersize=4, label="Peak Accuracy")
+    ax_top.plot(steps, breadths, "s-", color="#4CAF50", linewidth=2,
+                markersize=4, label="Encoding Breadth")
+    ax_top.set_ylabel("Value")
+    ax_top.set_ylim(0, 1.05)
+    ax_top.legend(loc="lower right")
+    ax_top.grid(True, alpha=0.3)
+    ax_top.set_title(f"Training Monitoring — {session.model_name}")
+
+    # Bottom: layer positions
+    onset_valid = [(s, l) for s, l in zip(steps, onset_layers) if l is not None]
+    peak_valid = [(s, l) for s, l in zip(steps, peak_layers) if l is not None]
+    if onset_valid:
+        ax_bot.plot(*zip(*onset_valid), "D-", color="#FF9800", linewidth=2,
+                    markersize=5, label="Onset Layer")
+    if peak_valid:
+        ax_bot.plot(*zip(*peak_valid), "*-", color="#F44336", linewidth=2,
+                    markersize=7, label="Peak Layer")
+    ax_bot.set_xlabel("Training Step")
+    ax_bot.set_ylabel("Layer")
+    ax_bot.legend(loc="upper right")
+    ax_bot.grid(True, alpha=0.3)
+
+    fig.tight_layout()
+
+    png_path = output_dir / f"{filename_prefix}.png"
+    fig.savefig(png_path, dpi=150)
+    logger.info("Saved training monitoring plot: %s", png_path)
+
+    json_path = output_dir / f"{filename_prefix}.json"
+    with open(json_path, "w") as f:
+        json.dump(session.to_dict(), f, indent=2)
+    logger.info("Saved JSON: %s", json_path)
 
     if show:
         plt.show()

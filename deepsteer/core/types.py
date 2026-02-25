@@ -337,6 +337,106 @@ class FragilityResult(BenchmarkResult):
     most_robust_layer: int | None = None
 
 
+# --- Curriculum Schedule ---
+
+
+@dataclass(frozen=True)
+class CurriculumPhase:
+    """A single phase in a moral content curriculum schedule."""
+
+    start_step: int
+    end_step: int
+    moral_ratio: float
+    foundation_weights: dict[str, float] = field(default_factory=dict)
+    label: str = ""
+
+
+@dataclass
+class CurriculumSchedule:
+    """Full moral content curriculum for a pre-training run.
+
+    Describes when and how much moral content should be mixed into
+    training data at each phase.  This is a *plan*, not an executor.
+    """
+
+    phases: list[CurriculumPhase] = field(default_factory=list)
+    total_steps: int = 0
+    method: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-ready dict."""
+        return _dataclass_to_dict(self)
+
+    def ratio_at_step(self, step: int) -> float:
+        """Return the moral content ratio for a given training step."""
+        for phase in self.phases:
+            if phase.start_step <= step < phase.end_step:
+                return phase.moral_ratio
+        return 0.0
+
+
+# --- Data Mixing ---
+
+
+@dataclass(frozen=True)
+class MixedSample:
+    """A single sample in a mixed training batch."""
+
+    text: str
+    is_moral: bool
+    foundation: MoralFoundation | None = None
+    source: str = ""
+
+
+@dataclass
+class MixingResult:
+    """Statistics from a data mixing operation."""
+
+    total_samples: int = 0
+    moral_samples: int = 0
+    general_samples: int = 0
+    moral_ratio: float = 0.0
+    foundation_counts: dict[str, int] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-ready dict."""
+        return _dataclass_to_dict(self)
+
+
+# --- Training Monitoring ---
+
+
+@dataclass
+class MonitoringSnapshot:
+    """Probing metrics captured at a single training step."""
+
+    step: int
+    probing_result: LayerProbingResult
+    onset_layer: int | None = None
+    peak_layer: int | None = None
+    peak_accuracy: float | None = None
+    moral_encoding_depth: float | None = None
+    moral_encoding_breadth: float | None = None
+
+
+@dataclass
+class MonitoringSession:
+    """Full monitoring session: probing snapshots across training.
+
+    Captures how moral encoding evolves during a training run.
+    """
+
+    snapshots: list[MonitoringSnapshot] = field(default_factory=list)
+    model_name: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-ready dict."""
+        return _dataclass_to_dict(self)
+
+
 # --- Suite ---
 
 
