@@ -34,8 +34,7 @@ def llama(model_name_or_path: str = "meta-llama/Llama-3-8B", **kw) -> WhiteBoxMo
 
 
 def default_suite() -> BenchmarkSuite:
-    """Return a BenchmarkSuite with all available benchmarks.
+    """Return a BenchmarkSuite with all available benchmarks."""
+    from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
 
-    Populated as benchmarks are implemented.  For now returns an empty suite.
-    """
-    return BenchmarkSuite()
+    return BenchmarkSuite([LayerWiseMoralProbe()])
