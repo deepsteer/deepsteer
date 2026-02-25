@@ -6,6 +6,12 @@ Examples:
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10
 
+    # Behavioral evals on Claude
+    python examples/run_evaluation.py --model claude --output-dir outputs/
+
+    # Behavioral evals on GPT
+    python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
+
     # List available checkpoints
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --list-checkpoints
@@ -20,9 +26,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import sys
-
-import torch
 
 
 def main() -> None:
@@ -103,16 +106,15 @@ def main() -> None:
         model_id = args.model_id or _default_model_id(args.model)
         model = APIModel(provider, model_id)
 
-    # -- Build dataset --
-    from deepsteer.datasets.pipeline import build_probing_dataset
-    print(f"Building probing dataset (target={args.dataset_target} per foundation)...")
-    dataset = build_probing_dataset(target_per_foundation=args.dataset_target)
-    print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
-
-    # -- Run layer probing --
+    # -- White-box evaluations (layer probing + trajectory) --
     if args.model in ("olmo", "llama"):
         from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
+        from deepsteer.datasets.pipeline import build_probing_dataset
         from deepsteer.viz import plot_layer_probing
+
+        print(f"Building probing dataset (target={args.dataset_target} per foundation)...")
+        dataset = build_probing_dataset(target_per_foundation=args.dataset_target)
+        print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
         probe = LayerWiseMoralProbe(dataset=dataset)
         print(f"Running layer-wise moral probe on {model.info.name}...")
@@ -125,7 +127,7 @@ def main() -> None:
         print(f"  moral_encoding_depth={result.moral_encoding_depth:.3f}")
         print(f"  moral_encoding_breadth={result.moral_encoding_breadth:.3f}")
 
-        # -- Checkpoint trajectory (optional) --
+        # Checkpoint trajectory (optional)
         if args.checkpoint_revisions:
             from deepsteer.benchmarks.representational.trajectory import (
                 CheckpointTrajectoryProbe,
@@ -146,8 +148,32 @@ def main() -> None:
             traj_result = traj_probe.run(model)
             traj_png = plot_checkpoint_trajectory(traj_result, output_dir=args.output_dir)
             print(f"Trajectory heatmap saved: {traj_png}")
-    else:
-        print("API model evaluations (behavioral benchmarks) coming in Phase 3.")
+
+    # -- Behavioral evals (work on all model types) --
+    from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
+    from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
+    from deepsteer.viz import plot_compliance_gap, plot_moral_foundations
+
+    print(f"\nRunning MoralFoundationsProbe on {model.info.name}...")
+    mfp = MoralFoundationsProbe()
+    mfp_result = mfp.run(model)
+    mfp_png = plot_moral_foundations(mfp_result, output_dir=args.output_dir)
+    print(f"Moral foundations plot saved: {mfp_png}")
+    print(f"  overall_accuracy={mfp_result.overall_accuracy:.1%}")
+    print(f"  depth_gradient={mfp_result.depth_gradient:.3f}")
+    for fname, acc in mfp_result.accuracy_by_foundation.items():
+        print(f"  {fname}: {acc:.1%}")
+
+    print(f"\nRunning ComplianceGapDetector on {model.info.name}...")
+    cgd = ComplianceGapDetector()
+    cgd_result = cgd.run(model)
+    cgd_png = plot_compliance_gap(cgd_result, output_dir=args.output_dir)
+    print(f"Compliance gap plot saved: {cgd_png}")
+    print(f"  compliance_gap={cgd_result.compliance_gap:+.3f}")
+    print(f"  monitored_rate={cgd_result.monitored_compliance_rate:.1%}")
+    print(f"  unmonitored_rate={cgd_result.unmonitored_compliance_rate:.1%}")
+    for cat, gap in cgd_result.gap_by_category.items():
+        print(f"  {cat}: gap={gap:+.3f}")
 
 
 def _default_weights(model: str) -> str:
