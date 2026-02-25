@@ -1,4 +1,4 @@
-"""Compliance gap detection benchmarks (API-compatible)."""
+"""Compliance gap detection benchmarks (requires instruction-tuned models)."""
 
 from __future__ import annotations
 

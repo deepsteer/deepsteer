@@ -464,9 +464,23 @@ class TestImports:
         from deepsteer.benchmarks.compliance_gap import ComplianceGapDetector
         assert ComplianceGapDetector is not None
 
-    def test_default_suite_includes_behavioral(self):
+    def test_default_suite_excludes_behavioral(self):
         from deepsteer import default_suite
         suite = default_suite()
+        names = [b.name for b in suite._benchmarks]
+        assert "moral_foundations_probe" not in names
+        assert "compliance_gap_detector" not in names
+
+    def test_behavioral_suite_includes_behavioral(self):
+        from deepsteer import behavioral_suite
+        suite = behavioral_suite()
+        names = [b.name for b in suite._benchmarks]
+        assert "moral_foundations_probe" in names
+        assert "compliance_gap_detector" in names
+
+    def test_full_suite_includes_behavioral(self):
+        from deepsteer import full_suite
+        suite = full_suite()
         names = [b.name for b in suite._benchmarks]
         assert "moral_foundations_probe" in names
         assert "compliance_gap_detector" in names

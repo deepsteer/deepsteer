@@ -34,7 +34,54 @@ def llama(model_name_or_path: str = "meta-llama/Llama-3-8B", **kw) -> WhiteBoxMo
 
 
 def default_suite() -> BenchmarkSuite:
-    """Return a BenchmarkSuite with all available benchmarks."""
+    """Return a BenchmarkSuite with representational benchmarks only.
+
+    These benchmarks examine internal model activations and work on any model with
+    weight access (base or instruction-tuned). Base models are preferred since they
+    reveal pre-training representations without instruction-tuning modifications.
+
+    For behavioral benchmarks (requiring instruction-tuned models), use behavioral_suite().
+    For all benchmarks combined, use full_suite().
+    """
+    from deepsteer.benchmarks.representational.causal_tracing import MoralCausalTracer
+    from deepsteer.benchmarks.representational.foundation_probes import FoundationSpecificProbe
+    from deepsteer.benchmarks.representational.fragility import MoralFragilityTest
+    from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
+
+    return BenchmarkSuite([
+        LayerWiseMoralProbe(),
+        FoundationSpecificProbe(),
+        MoralCausalTracer(),
+        MoralFragilityTest(),
+    ])
+
+
+def behavioral_suite() -> BenchmarkSuite:
+    """Return a BenchmarkSuite with behavioral benchmarks only.
+
+    These benchmarks evaluate model responses to moral scenarios and require
+    instruction-tuned models that can follow prompts (e.g. OLMo-7B-Instruct-hf,
+    Llama-3-8B-Instruct, Claude, GPT). Base models will produce text completions
+    rather than structured answers, causing most responses to be unparseable.
+    """
+    from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
+    from deepsteer.benchmarks.compliance_gap.persona_shift import PersonaShiftDetector
+    from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
+
+    return BenchmarkSuite([
+        MoralFoundationsProbe(),
+        ComplianceGapDetector(),
+        PersonaShiftDetector(),
+    ])
+
+
+def full_suite() -> BenchmarkSuite:
+    """Return a BenchmarkSuite with all available benchmarks.
+
+    Combines representational probes (base models) and behavioral benchmarks
+    (instruction-tuned models). The BenchmarkSuite will automatically skip
+    benchmarks that exceed the model's access tier.
+    """
     from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
     from deepsteer.benchmarks.compliance_gap.persona_shift import PersonaShiftDetector
     from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
@@ -44,11 +91,11 @@ def default_suite() -> BenchmarkSuite:
     from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
 
     return BenchmarkSuite([
-        MoralFoundationsProbe(),
-        ComplianceGapDetector(),
-        PersonaShiftDetector(),
         LayerWiseMoralProbe(),
         FoundationSpecificProbe(),
         MoralCausalTracer(),
         MoralFragilityTest(),
+        MoralFoundationsProbe(),
+        ComplianceGapDetector(),
+        PersonaShiftDetector(),
     ])

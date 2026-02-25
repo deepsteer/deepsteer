@@ -2,12 +2,12 @@
 
 ## What This Project Is
 
-DeepSteer is a PyTorch-native toolkit for evaluating and steering alignment depth in LLM pre-training. It measures how deeply moral reasoning is embedded in language models, distinguishing shallow post-hoc alignment (RLHF, Constitutional AI) from deep pre-training alignment.
+DeepSteer is a PyTorch-native toolkit for evaluating and steering alignment depth in LLM pre-training. It measures how deeply moral reasoning is embedded in language models, distinguishing shallow post-hoc alignment (RLHF, Constitutional AI) from deep pre-training alignment. The primary focus is **base (non-instruct) models** — representational probing reveals what models learn during pre-training, before instruction tuning modifies their representations.
 
 The library targets three model access tiers:
-- **API** (Claude, GPT): behavioral evaluations only
-- **Weights** (OLMo, Llama): behavioral + representational probing
-- **Checkpoints** (OLMo): + training trajectory analysis
+- **API** (Claude, GPT): behavioral evaluations only (requires instruction-tuned models)
+- **Weights** (OLMo, Llama): representational probing (base models preferred) + behavioral (instruct only)
+- **Checkpoints** (OLMo): + training trajectory analysis (base models)
 
 ## Architecture Overview
 
@@ -44,27 +44,27 @@ The hand-written 40-pair probing dataset in `representational/probing.py` (`_bui
 
 Target: 240 validated pairs (480 sentences), 40-50 per MFT foundation.
 
-### Phase 2: OLMo Integration
-Get the full evaluation suite running against real OLMo checkpoints.
+### Phase 2: OLMo Integration (Base Models)
+Get the representational evaluation suite running against real OLMo base checkpoints.
 
-1. Test `WhiteBoxModel` with `allenai/OLMo-7B` (or OLMo-1B for fast iteration)
+1. Test `WhiteBoxModel` with `allenai/OLMo-7B` (base model, or OLMo-1B for fast iteration)
 2. Verify `_detect_n_layers()` and `_get_layer_module()` work for OLMo's architecture
 3. Run `LayerWiseMoralProbe` end-to-end and produce the first real layer probing plot
 4. If OLMo checkpoint directories are available, run checkpoint trajectory analysis
 5. Fix any issues with activation capture hooks on OLMo's specific module structure
 
-### Phase 3: API Model Behavioral Evals
-Get `MoralFoundationsProbe` and `ComplianceGapDetector` running against Claude and GPT.
+### Phase 3: API Model Behavioral Evals (Secondary)
+Get `MoralFoundationsProbe` and `ComplianceGapDetector` running against Claude and GPT. Note: behavioral evals are a secondary concern — they require instruction-tuned models and measure post-training alignment rather than pre-training representations.
 
 1. Test `APIModel` with real API keys
 2. Run behavioral evals and verify response parsing / classification logic
 3. Tune the response parsers (`_parse_moral_judgment`, `_classify_response`) — these will need iteration based on how models actually respond
 4. Generate first comparison results: Claude vs GPT on behavioral depth metrics
 
-### Phase 4: Llama Integration
-Extend white-box support to Llama.
+### Phase 4: Llama Integration (Base Models)
+Extend white-box support to Llama base models.
 
-1. Test `WhiteBoxModel` with a Llama model (Llama-3-8B or similar)
+1. Test `WhiteBoxModel` with `meta-llama/Llama-3-8B` (base model)
 2. Verify hook registration works on Llama's architecture
 3. Run same probing evaluation as OLMo, produce comparative plots
 
@@ -152,14 +152,22 @@ pip install -e ".[all]"
 # Run tests
 pytest tests/ -v
 
-# Run evaluation on an API model
+# Representational probing on OLMo base (primary use case)
+python examples/run_evaluation.py --model olmo --output-dir outputs/
+
+# Representational probing on Llama base
+python examples/run_evaluation.py --model llama --output-dir outputs/
+
+# Include behavioral evals (requires instruction-tuned model)
+python examples/run_evaluation.py --model olmo --behavioral \
+    --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+
+# Behavioral evals on an API model
 python examples/run_evaluation.py --model claude --model-id claude-sonnet-4-20250514
 
-# Run evaluation on a local model
-python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B
-
-# Run checkpoint trajectory analysis
-python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B --checkpoint-dir /path/to/checkpoints
+# Checkpoint trajectory analysis
+python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B \
+    --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 
 ## Context: Research Goals

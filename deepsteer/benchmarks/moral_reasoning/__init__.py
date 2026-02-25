@@ -1,4 +1,4 @@
-"""Behavioral moral reasoning evaluations (API-compatible)."""
+"""Behavioral moral reasoning evaluations (requires instruction-tuned models)."""
 
 from __future__ import annotations
 

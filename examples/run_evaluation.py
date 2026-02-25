@@ -2,33 +2,34 @@
 """Run DeepSteer evaluations against local or API models.
 
 Examples:
-    # Full evaluation on OLMo-7B-Instruct (representational + behavioral)
-    python examples/run_evaluation.py --model olmo \
-        --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+    # Representational probing on OLMo-7B base (primary use case)
+    python examples/run_evaluation.py --model olmo --output-dir outputs/
 
-    # Layer probing on OLMo-1B base (fast iteration, behavioral results will be poor)
+    # Representational probing on Llama-3-8B base
+    python examples/run_evaluation.py --model llama --output-dir outputs/
+
+    # Fast iteration with smaller model
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10
 
-    # Behavioral evals on Claude
+    # Include behavioral evals (requires instruction-tuned model)
+    python examples/run_evaluation.py --model olmo --behavioral \
+        --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+
+    # Behavioral evals on Claude (automatic, API models always run behavioral)
     python examples/run_evaluation.py --model claude --output-dir outputs/
 
     # Behavioral evals on GPT
     python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
 
-    # Cross-model comparison (use examples/compare_models.py instead)
-    python examples/compare_models.py \
-        --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
-        --output-dir outputs/ --dataset-target 10
-
-    # List available checkpoints
-    python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
-        --list-checkpoints
-
     # Checkpoint trajectory analysis
     python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10 \
         --checkpoint-revisions step1000-tokens4B step2000-tokens8B
+
+    # List available checkpoints
+    python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+        --list-checkpoints
 """
 
 from __future__ import annotations
@@ -77,6 +78,10 @@ def main() -> None:
     parser.add_argument(
         "--list-checkpoints", action="store_true",
         help="List available checkpoint revisions and exit.",
+    )
+    parser.add_argument(
+        "--behavioral", action="store_true",
+        help="Also run behavioral benchmarks (requires instruction-tuned model).",
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true",
@@ -158,38 +163,55 @@ def main() -> None:
             traj_png = plot_checkpoint_trajectory(traj_result, output_dir=args.output_dir)
             print(f"Trajectory heatmap saved: {traj_png}")
 
-    # -- Behavioral evals (work on all model types) --
-    from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
-    from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
-    from deepsteer.viz import plot_compliance_gap, plot_moral_foundations
+    # -- Behavioral evals (only for API models or when --behavioral is set) --
+    run_behavioral = args.model in ("claude", "gpt") or args.behavioral
+    if run_behavioral:
+        # Warn if running behavioral benchmarks on a likely-base model
+        if args.model in ("olmo", "llama"):
+            weights = args.weights or _default_weights(args.model)
+            name_lower = weights.lower()
+            if "instruct" not in name_lower and "chat" not in name_lower:
+                import warnings
+                warnings.warn(
+                    f"Running behavioral benchmarks on '{weights}' which appears to be a "
+                    f"base model. Behavioral benchmarks require instruction-tuned models "
+                    f"for meaningful results. Consider using an instruct variant.",
+                    stacklevel=1,
+                )
 
-    print(f"\nRunning MoralFoundationsProbe on {model.info.name}...")
-    mfp = MoralFoundationsProbe()
-    mfp_result = mfp.run(model)
-    mfp_png = plot_moral_foundations(mfp_result, output_dir=args.output_dir)
-    print(f"Moral foundations plot saved: {mfp_png}")
-    print(f"  overall_accuracy={mfp_result.overall_accuracy:.1%}")
-    print(f"  depth_gradient={mfp_result.depth_gradient:.3f}")
-    for fname, acc in mfp_result.accuracy_by_foundation.items():
-        print(f"  {fname}: {acc:.1%}")
+        from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceGapDetector
+        from deepsteer.benchmarks.moral_reasoning.foundations import MoralFoundationsProbe
+        from deepsteer.viz import plot_compliance_gap, plot_moral_foundations
 
-    print(f"\nRunning ComplianceGapDetector on {model.info.name}...")
-    cgd = ComplianceGapDetector()
-    cgd_result = cgd.run(model)
-    cgd_png = plot_compliance_gap(cgd_result, output_dir=args.output_dir)
-    print(f"Compliance gap plot saved: {cgd_png}")
-    print(f"  compliance_gap={cgd_result.compliance_gap:+.3f}")
-    print(f"  monitored_rate={cgd_result.monitored_compliance_rate:.1%}")
-    print(f"  unmonitored_rate={cgd_result.unmonitored_compliance_rate:.1%}")
-    for cat, gap in cgd_result.gap_by_category.items():
-        print(f"  {cat}: gap={gap:+.3f}")
+        print(f"\nRunning MoralFoundationsProbe on {model.info.name}...")
+        mfp = MoralFoundationsProbe()
+        mfp_result = mfp.run(model)
+        mfp_png = plot_moral_foundations(mfp_result, output_dir=args.output_dir)
+        print(f"Moral foundations plot saved: {mfp_png}")
+        print(f"  overall_accuracy={mfp_result.overall_accuracy:.1%}")
+        print(f"  depth_gradient={mfp_result.depth_gradient:.3f}")
+        for fname, acc in mfp_result.accuracy_by_foundation.items():
+            print(f"  {fname}: {acc:.1%}")
+
+        print(f"\nRunning ComplianceGapDetector on {model.info.name}...")
+        cgd = ComplianceGapDetector()
+        cgd_result = cgd.run(model)
+        cgd_png = plot_compliance_gap(cgd_result, output_dir=args.output_dir)
+        print(f"Compliance gap plot saved: {cgd_png}")
+        print(f"  compliance_gap={cgd_result.compliance_gap:+.3f}")
+        print(f"  monitored_rate={cgd_result.monitored_compliance_rate:.1%}")
+        print(f"  unmonitored_rate={cgd_result.unmonitored_compliance_rate:.1%}")
+        for cat, gap in cgd_result.gap_by_category.items():
+            print(f"  {cat}: gap={gap:+.3f}")
+    elif args.model in ("olmo", "llama"):
+        print("\nSkipping behavioral benchmarks (use --behavioral to include them).")
 
 
 def _default_weights(model: str) -> str:
     """Return the default HuggingFace model ID for a model family."""
     defaults = {
-        "olmo": "allenai/OLMo-7B-Instruct-hf",
-        "llama": "meta-llama/Llama-3-8B-Instruct",
+        "olmo": "allenai/OLMo-7B",
+        "llama": "meta-llama/Llama-3-8B",
     }
     return defaults[model]
 

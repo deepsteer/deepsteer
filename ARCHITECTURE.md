@@ -107,14 +107,14 @@ deepsteer/
 
 ## Model Access Tiers
 
-| Capability | OLMo | Llama | Claude/GPT API |
-|---|---|---|---|
-| Behavioral evals (moral reasoning, compliance gap) | ✓ | ✓ | ✓ |
-| Representational probing (layer-wise) | ✓ | ✓ | ✗ |
-| Causal tracing / activation patching | ✓ | ✓ | ✗ |
-| Checkpoint trajectory analysis | ✓ | ✗ | ✗ |
-| Training-time steering hooks | ✓ | ✗ | ✗ |
-| Fine-tuning fragility tests | ✓ | ✓ | ✗ |
+| Capability | OLMo | Llama | Claude/GPT API | Requires Instruct? |
+|---|---|---|---|---|
+| Representational probing (layer-wise) | ✓ | ✓ | ✗ | No (base preferred) |
+| Causal tracing / activation patching | ✓ | ✓ | ✗ | No (base preferred) |
+| Fine-tuning fragility tests | ✓ | ✓ | ✗ | No (base preferred) |
+| Checkpoint trajectory analysis | ✓ | ✗ | ✗ | No (base preferred) |
+| Training-time steering hooks | ✓ | ✗ | ✗ | No (base preferred) |
+| Behavioral evals (moral reasoning, compliance gap) | ✓ | ✓ | ✓ | Yes |
 
 ## Phase 1: MVP Scope
 

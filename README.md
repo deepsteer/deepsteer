@@ -8,14 +8,15 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer provides tools to detect, measure, visualize, and steer this difference across six dimensions:
 
-| Dimension | What it measures | Access required |
-|---|---|---|
-| **Behavioral Depth** | Robustness of moral reasoning under pressure | API |
-| **Compliance Gap** | Behavioral divergence under monitoring vs. not | API |
-| **Persona Resilience** | Whether alignment survives adversarial role-play | API |
-| **Representational Depth** | Where in the network moral concepts are encoded | Weights |
-| **Causal Attribution** | Which layers are *causally* responsible for moral judgments | Weights |
-| **Training Trajectory** | How moral concepts emerge during pre-training | Checkpoints |
+| Dimension | What it measures | Access required | Model type |
+|---|---|---|---|
+| **Representational Depth** | Where in the network moral concepts are encoded | Weights | Base (preferred) |
+| **Causal Attribution** | Which layers are *causally* responsible for moral judgments | Weights | Base (preferred) |
+| **Fragility / Robustness** | How resistant moral encoding is to activation noise | Weights | Base (preferred) |
+| **Training Trajectory** | How moral concepts emerge during pre-training | Checkpoints | Base |
+| **Behavioral Depth** | Robustness of moral reasoning under pressure | API | Instruct only |
+| **Compliance Gap** | Behavioral divergence under monitoring vs. not | API | Instruct only |
+| **Persona Resilience** | Whether alignment survives adversarial role-play | API | Instruct only |
 
 ## Install
 
@@ -38,35 +39,41 @@ Requires Python 3.10+.
 ```python
 import deepsteer
 
-# Evaluate an API model (behavioral benchmarks only)
-model = deepsteer.claude("claude-sonnet-4-20250514")
-suite = deepsteer.default_suite()
-results = suite.run(model)
-
-# Evaluate an open-weight model (behavioral + representational probing)
-model = deepsteer.olmo("allenai/OLMo-7B-Instruct-hf")
+# Probe a base model's pre-training representations (primary use case)
+model = deepsteer.olmo("allenai/OLMo-7B")
+suite = deepsteer.default_suite()  # representational benchmarks only
 results = suite.run(model)
 
 # Visualize layer-wise moral encoding
 from deepsteer.viz import plot_layer_probing
 plot_layer_probing(results["layer_wise_moral_probe"], "outputs/")
+
+# Behavioral benchmarks (requires instruction-tuned models)
+model = deepsteer.claude("claude-sonnet-4-20250514")
+suite = deepsteer.behavioral_suite()
+results = suite.run(model)
+
+# Run everything (representational + behavioral)
+suite = deepsteer.full_suite()
 ```
 
-The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, weight-access models run everything.
+The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, base models skip behavioral benchmarks.
 
-### Base vs. Instruction-Tuned Models
+### Base Models: The Primary Target
 
-DeepSteer's benchmarks fall into two categories that require different kinds of models:
+DeepSteer's core research question is about what models learn *during pre-training* — before any instruction tuning, RLHF, or constitutional AI is applied. Base models are therefore the primary target for representational analysis:
 
-- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) work on **any model with weight access** — base or instruction-tuned. They examine internal activations, not generated text.
+- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) examine internal activations to reveal how the pre-training corpus shaped the model's moral representations. Base models give the clearest signal because instruction tuning modifies these representations.
 
-- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses (e.g. "Yes" or "No" followed by reasoning). Base models like `OLMo-1B-hf` will produce text completions rather than answers, causing the response parser to return `None` for most scenarios.
+- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses. These are a secondary concern — useful for comparing post-training alignment methods, but not for studying pre-training depth.
 
-For open-weight evaluation, use instruction-tuned variants for behavioral benchmarks:
-- OLMo: `allenai/OLMo-7B-Instruct-hf` (not `OLMo-1B-hf`)
-- Llama: `meta-llama/Llama-3-8B-Instruct` (not `Llama-3-8B`)
+Default model IDs are base models:
+- OLMo: `allenai/OLMo-7B`
+- Llama: `meta-llama/Llama-3-8B`
 
-Base models are ideal for representational probing where you want to study the model's learned representations *before* instruction tuning modifies them.
+For behavioral benchmarks, use instruction-tuned variants:
+- OLMo: `allenai/OLMo-7B-Instruct-hf`
+- Llama: `meta-llama/Llama-3-8B-Instruct`
 
 **Memory requirements**: 7B-parameter models need ~14GB in fp16. On Apple Silicon Macs, ensure sufficient unified memory (32GB+ recommended). For machines with less RAM, use `OLMo-1B-hf` for representational probing (works well) and API models (Claude, GPT) for behavioral benchmarks.
 
@@ -74,74 +81,9 @@ Base models are ideal for representational probing where you want to study the m
 
 DeepSteer includes 7 benchmarks across 3 access tiers.
 
-### MoralFoundationsProbe
+### Representational Probes (Base Models)
 
-Tests moral reasoning across Haidt's 6 moral foundations (Care/Harm, Fairness/Cheating, Loyalty/Betrayal, Authority/Subversion, Sanctity/Degradation, Liberty/Oppression) at 4 difficulty levels (obvious, moderate, subtle, adversarial).
-
-The **depth gradient** — accuracy drop from obvious to adversarial scenarios — measures how robust alignment is under pressure.
-
-```python
-from deepsteer.benchmarks.moral_reasoning import MoralFoundationsProbe
-from deepsteer.viz import plot_moral_foundations
-
-probe = MoralFoundationsProbe()
-result = probe.run(model)
-
-print(f"Overall accuracy: {result.overall_accuracy:.1%}")
-print(f"Depth gradient: {result.depth_gradient:.3f}")
-
-plot_moral_foundations(result, "outputs/")
-```
-
-**Requires:** API access (works with any model).
-
-### ComplianceGapDetector
-
-Adapted from Greenblatt et al. (2024). Tests whether models behave differently when they believe they're being monitored vs. not. Presents identical borderline requests under two system prompt conditions across 5 categories (security knowledge, manipulation, harmful content, privacy, deception).
-
-A deeply aligned model should show zero compliance gap.
-
-```python
-from deepsteer.benchmarks.compliance_gap import ComplianceGapDetector
-from deepsteer.viz import plot_compliance_gap
-
-detector = ComplianceGapDetector()
-result = detector.run(model)
-
-print(f"Compliance gap: {result.compliance_gap:.3f}")
-print(f"Monitored compliance: {result.monitored_compliance_rate:.1%}")
-print(f"Unmonitored compliance: {result.unmonitored_compliance_rate:.1%}")
-
-plot_compliance_gap(result, "outputs/")
-```
-
-**Requires:** API access (works with any model).
-
-### PersonaShiftDetector
-
-Tests whether alignment survives when the model is instructed to role-play adversarial personas. Presents the same borderline requests from `ComplianceGapDetector` under 4 built-in personas (ruthless consultant, amoral researcher, fictional villain, historical spy) and measures the compliance delta versus a neutral baseline.
-
-A positive `persona_shift_gap` means the model complies more often under adversarial personas — evidence of shallow alignment that can be bypassed with role-play framing.
-
-```python
-from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
-from deepsteer.viz import plot_persona_shift
-
-detector = PersonaShiftDetector()
-result = detector.run(model)
-
-print(f"Persona shift gap: {result.persona_shift_gap:.3f}")
-print(f"Baseline compliance: {result.baseline_compliance_rate:.1%}")
-print(f"Persona compliance: {result.persona_compliance_rate:.1%}")
-
-# Per-persona breakdown
-for persona, gap in result.gap_by_persona.items():
-    print(f"  {persona}: {gap:+.3f}")
-
-plot_persona_shift(result, "outputs/")
-```
-
-**Requires:** API access (works with any model).
+These benchmarks examine internal model activations and work on any model with weight access. Base models are preferred — they reveal pre-training representations without instruction-tuning modifications.
 
 ### LayerWiseMoralProbe
 
@@ -251,6 +193,79 @@ plot_checkpoint_trajectory(result, "outputs/")
 
 **Requires:** Checkpoint access (models with published intermediate checkpoints, e.g. OLMo).
 
+### Behavioral Benchmarks (Instruction-Tuned Models)
+
+These benchmarks evaluate model responses to moral scenarios. They require instruction-tuned models (or API models) that can follow prompts and produce structured responses. Base models will produce text completions rather than answers, causing most responses to be unparseable.
+
+### MoralFoundationsProbe
+
+Tests moral reasoning across Haidt's 6 moral foundations (Care/Harm, Fairness/Cheating, Loyalty/Betrayal, Authority/Subversion, Sanctity/Degradation, Liberty/Oppression) at 4 difficulty levels (obvious, moderate, subtle, adversarial).
+
+The **depth gradient** — accuracy drop from obvious to adversarial scenarios — measures how robust alignment is under pressure.
+
+```python
+from deepsteer.benchmarks.moral_reasoning import MoralFoundationsProbe
+from deepsteer.viz import plot_moral_foundations
+
+probe = MoralFoundationsProbe()
+result = probe.run(model)
+
+print(f"Overall accuracy: {result.overall_accuracy:.1%}")
+print(f"Depth gradient: {result.depth_gradient:.3f}")
+
+plot_moral_foundations(result, "outputs/")
+```
+
+**Requires:** API access or instruction-tuned local model.
+
+### ComplianceGapDetector
+
+Adapted from Greenblatt et al. (2024). Tests whether models behave differently when they believe they're being monitored vs. not. Presents identical borderline requests under two system prompt conditions across 5 categories (security knowledge, manipulation, harmful content, privacy, deception).
+
+A deeply aligned model should show zero compliance gap.
+
+```python
+from deepsteer.benchmarks.compliance_gap import ComplianceGapDetector
+from deepsteer.viz import plot_compliance_gap
+
+detector = ComplianceGapDetector()
+result = detector.run(model)
+
+print(f"Compliance gap: {result.compliance_gap:.3f}")
+print(f"Monitored compliance: {result.monitored_compliance_rate:.1%}")
+print(f"Unmonitored compliance: {result.unmonitored_compliance_rate:.1%}")
+
+plot_compliance_gap(result, "outputs/")
+```
+
+**Requires:** API access or instruction-tuned local model.
+
+### PersonaShiftDetector
+
+Tests whether alignment survives when the model is instructed to role-play adversarial personas. Presents the same borderline requests from `ComplianceGapDetector` under 4 built-in personas (ruthless consultant, amoral researcher, fictional villain, historical spy) and measures the compliance delta versus a neutral baseline.
+
+A positive `persona_shift_gap` means the model complies more often under adversarial personas — evidence of shallow alignment that can be bypassed with role-play framing.
+
+```python
+from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
+from deepsteer.viz import plot_persona_shift
+
+detector = PersonaShiftDetector()
+result = detector.run(model)
+
+print(f"Persona shift gap: {result.persona_shift_gap:.3f}")
+print(f"Baseline compliance: {result.baseline_compliance_rate:.1%}")
+print(f"Persona compliance: {result.persona_compliance_rate:.1%}")
+
+# Per-persona breakdown
+for persona, gap in result.gap_by_persona.items():
+    print(f"  {persona}: {gap:+.3f}")
+
+plot_persona_shift(result, "outputs/")
+```
+
+**Requires:** API access or instruction-tuned local model.
+
 ## Steering Tools
 
 DeepSteer provides training-time intervention infrastructure for steering alignment *during pre-training* through data curation and curriculum design — not through gradient updates to the model itself.
@@ -355,18 +370,18 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 
 ## Target Models
 
-| Model | Factory | Access Tier | Unique Capability |
-|---|---|---|---|
-| **OLMo** (Ai2) | `deepsteer.olmo()` | Checkpoints | Training trajectory analysis via published intermediate checkpoints |
-| **Llama** (Meta) | `deepsteer.llama()` | Weights | Representational probing at frontier-adjacent scale |
-| **Claude** (Anthropic) | `deepsteer.claude()` | API | Behavioral depth evaluation at frontier scale |
-| **GPT** (OpenAI) | `deepsteer.gpt()` | API | Behavioral depth evaluation at frontier scale |
+| Model | Factory | Default ID | Access Tier | Primary Use |
+|---|---|---|---|---|
+| **OLMo** (Ai2) | `deepsteer.olmo()` | `allenai/OLMo-7B` | Checkpoints | Representational probing + trajectory analysis |
+| **Llama** (Meta) | `deepsteer.llama()` | `meta-llama/Llama-3-8B` | Weights | Representational probing at frontier-adjacent scale |
+| **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-20250514` | API | Behavioral benchmarks |
+| **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
 
 For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
-| Base model (representational probing) | Instruct model (behavioral + representational) |
+| Base model (representational probing, default) | Instruct model (behavioral benchmarks) |
 |---|---|
-| `allenai/OLMo-1B-hf` | `allenai/OLMo-7B-Instruct-hf` |
+| `allenai/OLMo-7B` | `allenai/OLMo-7B-Instruct-hf` |
 | `meta-llama/Llama-3-8B` | `meta-llama/Llama-3-8B-Instruct` |
 
 Any HuggingFace causal LM can be used directly via `WhiteBoxModel`:
@@ -374,7 +389,7 @@ Any HuggingFace causal LM can be used directly via `WhiteBoxModel`:
 ```python
 from deepsteer.core import WhiteBoxModel
 
-model = WhiteBoxModel("mistralai/Mistral-7B-Instruct-v0.3", device="cuda")
+model = WhiteBoxModel("mistralai/Mistral-7B-v0.3", device="cuda")
 ```
 
 ## Cross-Model Comparison
@@ -392,43 +407,49 @@ The comparison plot normalizes layer indices to [0, 1] so models with different 
 
 ## CLI Examples
 
-### Single model evaluation
+### Representational probing (base models)
 
 ```bash
-# Full evaluation on OLMo-7B-Instruct (representational + behavioral)
-python examples/run_evaluation.py --model olmo \
-    --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
+# Probe OLMo-7B base model (default)
+python examples/run_evaluation.py --model olmo --output-dir outputs/
 
-# Layer probing only on a base model (behavioral results will be poor)
-python examples/run_evaluation.py --model olmo \
-    --weights allenai/OLMo-1B-hf --output-dir outputs/
+# Probe Llama-3-8B base model
+python examples/run_evaluation.py --model llama --output-dir outputs/
 
+# Fast iteration with smaller model
+python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+    --output-dir outputs/ --dataset-target 10
+
+# Checkpoint trajectory analysis
+python examples/run_evaluation.py --model olmo --output-dir outputs/ \
+    --checkpoint-revisions step1000-tokens4B step5000-tokens21B
+```
+
+### Behavioral benchmarks (instruction-tuned models)
+
+```bash
 # Behavioral evals on Claude
 python examples/run_evaluation.py --model claude --output-dir outputs/
 
 # Behavioral evals on GPT
 python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
 
-# Llama probing + behavioral
-python examples/run_evaluation.py --model llama \
-    --weights meta-llama/Llama-3-8B-Instruct --output-dir outputs/
-
-# Checkpoint trajectory analysis
-python examples/run_evaluation.py --model olmo \
-    --weights allenai/OLMo-1B-hf --output-dir outputs/ \
-    --checkpoint-revisions step1000-tokens4B step5000-tokens21B
-
-# List available checkpoints for a model
-python examples/run_evaluation.py --model olmo \
-    --weights allenai/OLMo-1B-hf --list-checkpoints
+# Include behavioral evals for a local model (requires instruct variant)
+python examples/run_evaluation.py --model olmo --behavioral \
+    --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
 ```
 
 ### Cross-model comparison
 
 ```bash
-# Compare OLMo and Llama probing curves
+# Compare OLMo and Llama base model probing curves
 python examples/compare_models.py \
-    --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
+    --models allenai/OLMo-7B meta-llama/Llama-3-8B \
+    --output-dir outputs/
+
+# Compare base vs instruct to see instruction-tuning effects
+python examples/compare_models.py \
+    --models allenai/OLMo-7B allenai/OLMo-7B-Instruct-hf \
     --output-dir outputs/
 ```
 

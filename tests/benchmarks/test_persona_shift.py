@@ -181,8 +181,20 @@ class TestImports:
         from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
         assert PersonaShiftDetector is not None
 
-    def test_default_suite_includes_persona_shift(self):
+    def test_default_suite_excludes_persona_shift(self):
         from deepsteer import default_suite
         suite = default_suite()
+        names = [b.name for b in suite._benchmarks]
+        assert "persona_shift_detector" not in names
+
+    def test_behavioral_suite_includes_persona_shift(self):
+        from deepsteer import behavioral_suite
+        suite = behavioral_suite()
+        names = [b.name for b in suite._benchmarks]
+        assert "persona_shift_detector" in names
+
+    def test_full_suite_includes_persona_shift(self):
+        from deepsteer import full_suite
+        suite = full_suite()
         names = [b.name for b in suite._benchmarks]
         assert "persona_shift_detector" in names

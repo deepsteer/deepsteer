@@ -2,15 +2,22 @@
 """Compare moral encoding depth across multiple models.
 
 Runs LayerWiseMoralProbe on each model and produces an overlay plot showing
-how moral concepts are encoded at different relative depths.
+how moral concepts are encoded at different relative depths. Base models are
+the primary targets since they reveal pre-training representations without
+instruction-tuning modifications.
 
 Examples:
-    # Compare OLMo-7B-Instruct and Llama-3-8B-Instruct
+    # Compare OLMo-7B and Llama-3-8B base models (recommended)
     python examples/compare_models.py \
-        --models allenai/OLMo-7B-Instruct-hf meta-llama/Llama-3-8B-Instruct \
+        --models allenai/OLMo-7B meta-llama/Llama-3-8B \
         --output-dir outputs/ --dataset-target 10
 
-    # Compare base models (smaller, faster)
+    # Compare base vs instruction-tuned to see how fine-tuning changes encoding
+    python examples/compare_models.py \
+        --models allenai/OLMo-7B allenai/OLMo-7B-Instruct-hf \
+        --output-dir outputs/
+
+    # Fast iteration with smaller models
     python examples/compare_models.py \
         --models allenai/OLMo-1B-hf TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
         --device cpu --output-dir outputs/
