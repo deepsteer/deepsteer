@@ -168,7 +168,7 @@ class LayerWiseMoralProbe(Benchmark):
                 features.append(pooled)
                 labels.append(label)
 
-        X = torch.stack(features)  # (2*n, hidden_dim)
+        X = torch.stack(features).float()  # (2*n, hidden_dim) — cast to fp32 for probing
         y = torch.tensor(labels, dtype=torch.float32)  # (2*n,)
         return X, y
 
