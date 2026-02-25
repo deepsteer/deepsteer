@@ -97,6 +97,7 @@ class WhiteBoxModel(ModelInterface):
         torch_dtype: torch.dtype | None = None,
         access_tier: AccessTier = AccessTier.WEIGHTS,
         checkpoint_step: int | None = None,
+        revision: str | None = None,
     ) -> None:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -104,13 +105,17 @@ class WhiteBoxModel(ModelInterface):
         self._dtype = torch_dtype or _default_dtype(self._device)
 
         logger.info(
-            "Loading %s on %s (dtype=%s)", model_name_or_path, self._device, self._dtype
+            "Loading %s on %s (dtype=%s, revision=%s)",
+            model_name_or_path, self._device, self._dtype, revision,
         )
-        self._tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        self._tokenizer = AutoTokenizer.from_pretrained(
+            model_name_or_path, revision=revision,
+        )
         self._model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path,
             torch_dtype=self._dtype,
             device_map=self._device if self._device != "cpu" else None,
+            revision=revision,
         )
         if self._device == "cpu":
             self._model = self._model.to(self._device)
