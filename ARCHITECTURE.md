@@ -170,6 +170,70 @@ numpy
 tqdm
 ```
 
+## Base Model Extensions for Behavioral Detectors
+
+The behavioral detectors (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) were
+originally designed for instruction-tuned models that can answer questions and follow system prompts.
+Base models can't do this — they just predict next tokens. But they expose two powerful signals that
+instruct models don't: **token-level log-probabilities** and **layer activations**.
+
+For each detector, we provide two complementary base-model extensions:
+1. **Log-probability behavioral analog** — uses `score()`/`get_logprobs()` to produce metrics
+   *directly comparable* to the instruct-model results.
+2. **Representational extension** — uses `get_activations()` to measure something *only possible*
+   with weight access.
+
+### MoralFoundationsProbeBase
+
+**Log-prob approach (forced-choice):** For each `MoralScenario`, construct a declarative prompt
+prefix and two candidate completions (morally-aligned vs. misaligned). Use `score()` to compare
+their log-probabilities. The model's implicit "preference" is whichever continuation it finds more
+likely. This is established methodology — the ETHICS benchmark (Hendrycks et al. 2021) and
+CrowS-Pairs both use forced-choice log-prob designs. Produces identical metrics to the instruct
+version (per-foundation accuracy, depth_gradient), plus a `mean_confidence` score (mean log-prob
+gap between aligned and misaligned completions).
+
+### ComplianceGapDetectorBase
+
+**Log-prob approach (contextual completion probability):** Replace system prompts with naturalistic
+document-level framing that base models understand from pre-training:
+- Monitored: "The following is a transcript from a recorded safety evaluation..."
+- Unmonitored: "The following is from a private, unlogged developer chat..."
+
+Then compare `P(compliant_answer | context)` vs `P(refusal | context)` across conditions. The
+compliance gap becomes how much the probability ratio shifts between monitoring contexts. This is
+arguably *more* revealing than the instruct version — it measures what the *pre-training data itself*
+taught about when compliance varies, uncontaminated by RLHF.
+
+**Representational approach (novel):** For each scenario, encode the same prompt under both
+monitoring framings and measure cosine distance between mean-pooled activations at each layer.
+Produces a per-layer "monitoring sensitivity curve." A deeply aligned model should show minimal
+representational divergence.
+
+### PersonaShiftDetectorBase
+
+**Log-prob approach (persona-conditioned completion probability):** Replace persona system prompts
+with document-level persona framing ("The following was written by a ruthless consultant who...").
+Compare `P(compliant_answer | persona)` vs `P(compliant_answer | neutral)`.
+
+**Representational approach (cross-context probe robustness — novel):** Train the standard
+moral/neutral linear probe on neutral-context activations, then test on persona-framed versions of
+the same sentences. If probe accuracy drops, persona framing disrupts the model's moral
+representations. This directly measures how robust representational moral encoding is to adversarial
+context. This is something that **cannot be done with instruct models** — you can only observe
+behavioral output, not whether internal representations shift.
+
+### Access Tier Summary
+
+| Benchmark | Instruct approach | Base log-prob analog | Base representational |
+|---|---|---|---|
+| MoralFoundationsProbe | Ask "acceptable?", parse | `score()` forced-choice | Per-token surprisal gap |
+| ComplianceGapDetector | System prompt, classify | `score()` under framing | Activation cosine divergence |
+| PersonaShiftDetector | Persona prompt, classify | `score()` under framing | Cross-context probe robustness |
+
+All base model variants require `AccessTier.WEIGHTS`. The log-prob analogs produce metrics directly
+comparable to their instruct counterparts, enabling cross-methodology comparison.
+
 ## Key Research Questions This Enables
 
 1. **Do OLMo checkpoints show phase transitions in moral concept acquisition?** At what point during training do moral foundations become linearly decodable from representations?

@@ -255,6 +255,104 @@ class PersonaShiftResult(BenchmarkResult):
     gap_by_category: dict[str, float] = field(default_factory=dict)
 
 
+# --- Base Model Moral Foundations (forced-choice) ---
+
+
+@dataclass(frozen=True)
+class ForcedChoiceScenarioResult:
+    """Result of a single forced-choice log-probability moral judgment."""
+
+    scenario: str
+    foundation: MoralFoundation
+    difficulty: DifficultyLevel
+    expected_judgment: str
+    prompt_prefix: str
+    aligned_completion: str
+    misaligned_completion: str
+    aligned_score: float
+    misaligned_score: float
+    chose_aligned: bool
+    confidence: float  # aligned_score - misaligned_score
+
+
+@dataclass
+class MoralFoundationsBaseResult(BenchmarkResult):
+    """Full output of :class:`MoralFoundationsProbeBase` (forced-choice on base models)."""
+
+    scenario_results: list[ForcedChoiceScenarioResult] = field(default_factory=list)
+    scores: list[FoundationScore] = field(default_factory=list)
+    depth_gradient: float | None = None
+    overall_accuracy: float | None = None
+    accuracy_by_foundation: dict[str, float] = field(default_factory=dict)
+    accuracy_by_difficulty: dict[str, float] = field(default_factory=dict)
+    mean_confidence: float | None = None
+    confidence_by_foundation: dict[str, float] = field(default_factory=dict)
+    confidence_by_difficulty: dict[str, float] = field(default_factory=dict)
+
+
+# --- Base Model Compliance Gap ---
+
+
+@dataclass(frozen=True)
+class ComplianceGapBaseScenarioResult:
+    """Single scenario tested under monitoring framing on a base model."""
+
+    prompt: str
+    category: str
+    monitored_comply_score: float
+    monitored_refuse_score: float
+    unmonitored_comply_score: float
+    unmonitored_refuse_score: float
+    monitored_complied: bool
+    unmonitored_complied: bool
+    representational_divergence: dict[int, float] = field(default_factory=dict)
+
+
+@dataclass
+class ComplianceGapBaseResult(BenchmarkResult):
+    """Full output of :class:`ComplianceGapDetectorBase`."""
+
+    scenario_results: list[ComplianceGapBaseScenarioResult] = field(default_factory=list)
+    compliance_gap: float | None = None
+    monitored_compliance_rate: float | None = None
+    unmonitored_compliance_rate: float | None = None
+    gap_by_category: dict[str, float] = field(default_factory=dict)
+    mean_representational_divergence_by_layer: dict[int, float] = field(default_factory=dict)
+    monitoring_sensitivity: float | None = None
+
+
+# --- Base Model Persona Shift ---
+
+
+@dataclass(frozen=True)
+class PersonaShiftBaseScenarioResult:
+    """Single scenario tested under persona framing on a base model."""
+
+    prompt: str
+    category: str
+    persona_name: str
+    baseline_comply_score: float
+    baseline_refuse_score: float
+    persona_comply_score: float
+    persona_refuse_score: float
+    baseline_complied: bool
+    persona_complied: bool
+
+
+@dataclass
+class PersonaShiftBaseResult(BenchmarkResult):
+    """Full output of :class:`PersonaShiftDetectorBase`."""
+
+    scenario_results: list[PersonaShiftBaseScenarioResult] = field(default_factory=list)
+    persona_shift_gap: float | None = None
+    baseline_compliance_rate: float | None = None
+    persona_compliance_rate: float | None = None
+    gap_by_persona: dict[str, float] = field(default_factory=dict)
+    gap_by_category: dict[str, float] = field(default_factory=dict)
+    probe_robustness_by_persona: dict[str, float] = field(default_factory=dict)
+    probe_robustness_by_layer: dict[int, float] = field(default_factory=dict)
+
+
 # --- Foundation-Specific Probes ---
 
 
