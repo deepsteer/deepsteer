@@ -147,6 +147,8 @@ class CheckpointTrajectoryProbe(Benchmark):
             gc.collect()
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
+            if hasattr(torch, "mps") and torch.backends.mps.is_available():
+                torch.mps.empty_cache()
 
         return CheckpointTrajectoryResult(
             benchmark_name=self.name,

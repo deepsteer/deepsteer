@@ -111,14 +111,25 @@ class WhiteBoxModel(ModelInterface):
         self._tokenizer = AutoTokenizer.from_pretrained(
             model_name_or_path, revision=revision,
         )
-        self._model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path,
-            torch_dtype=self._dtype,
-            device_map=self._device if self._device != "cpu" else None,
-            revision=revision,
-        )
-        if self._device == "cpu":
-            self._model = self._model.to(self._device)
+        if self._device == "mps":
+            # MPS can fail with device_map="mps" on large models due to
+            # single-buffer allocation limits.  Load to CPU first then move.
+            self._model = AutoModelForCausalLM.from_pretrained(
+                model_name_or_path,
+                torch_dtype=self._dtype,
+                low_cpu_mem_usage=True,
+                revision=revision,
+            )
+            self._model = self._model.to("mps")
+        else:
+            self._model = AutoModelForCausalLM.from_pretrained(
+                model_name_or_path,
+                torch_dtype=self._dtype,
+                device_map=self._device if self._device != "cpu" else None,
+                revision=revision,
+            )
+            if self._device == "cpu":
+                self._model = self._model.to(self._device)
         self._model.eval()
 
         # Llama / Mistral tokenizers often lack a pad token, which causes
