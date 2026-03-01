@@ -578,90 +578,158 @@ to paragraph-length.
 
 ---
 
-## Phase C1 Results
+## Phase C1 Results: Dense Phase-Transition Mapping
 
-### C1: Dense Phase-Transition Mapping (H7)
+**Experiment:** All 37 OLMo-2 1B early-training checkpoints (step 0 to step
+36K at 1K intervals) probed with LayerWiseMoralProbe, FoundationSpecificProbe,
+and MoralFragilityTest. Runtime: 89 minutes on MacBook Pro M4 Pro.
+Output: `outputs/phase_c1/`.
 
-**H7 supported — the phase transition has clear internal structure.**
+**Hypothesis tested:** H7 — the step 0 → 74K phase transition observed in
+Phase B has internal structure resolvable with denser checkpoint sampling.
 
-All 37 OLMo-2 1B early-training checkpoints (step 0 to step 36K, 1K intervals)
-probed with LayerWiseMoralProbe, FoundationSpecificProbe, and MoralFragilityTest.
-Runtime: 89 minutes on MacBook Pro M4 Pro. Output: `outputs/phase_c1/`.
+**Verdict: H7 supported.** The transition is steep but not instantaneous —
+it unfolds as a sigmoid over ~3K steps (~6B tokens).
 
-#### Probing Accuracy Trajectory
+### Finding 1: Probing Accuracy Follows a Steep Sigmoid (Steps 0–4K)
 
-The moral phase transition is rapid but not instantaneous — it unfolds across
-the first ~3K training steps (~6B tokens):
-
-| Step | Mean Acc | Peak Acc | Onset | Depth | Breadth |
+| Step | Tokens | Mean Acc | Peak Acc | Depth | Breadth |
 |---:|---:|---:|---:|---:|---:|
-| 0 | 55.7% | 63.5% | 1 | 0.062 | 0.188 |
-| 1000 | 76.8% | 82.3% | 0 | 0.0 | 1.0 |
-| 2000 | 88.3% | 91.7% | 0 | 0.0 | 1.0 |
-| 3000 | 92.1% | 94.8% | 0 | 0.0 | 1.0 |
-| 4000 | 93.8% | 95.8% | 0 | 0.0 | 1.0 |
-| 5000+ | ~94–96% | ~96–99% | 0 | 0.0 | 1.0 |
+| 0 | 0B | 55.7% | 63.5% | 0.062 | 0.188 |
+| 1000 | ~3B | 76.8% | 82.3% | 0.0 | 1.0 |
+| 2000 | ~4B | 88.3% | 91.7% | 0.0 | 1.0 |
+| 3000 | ~6B | 92.1% | 94.8% | 0.0 | 1.0 |
+| 4000 | ~8B | 93.8% | 95.8% | 0.0 | 1.0 |
+| 5000–36000 | ~11–76B | 93.7–96.1% | 95.8–97.9% | 0.0 | 1.0 |
 
-The **inflection point** is at step 1000 (~2B tokens), where mean accuracy
-jumps 21 percentage points (55.7% → 76.8%) in a single 1K-step interval.
-By step 4000 (~8B tokens), accuracy saturates at ~95-98% and remains stable
-through step 36K. The trajectory shape is consistent with a steep sigmoid
-rather than a sharp discontinuity — H7's predicted S-curve is confirmed,
-but with an extremely steep middle section.
+The inflection point is at step 1000 (~3B tokens): mean accuracy jumps 21
+percentage points (55.7% → 76.8%) in a single 1K-step interval. By step
+4000 accuracy plateaus at ~95%. Depth and breadth saturate at their limits
+(0.0, 1.0) from step 1K onward.
 
-#### Fragility Evolution — Novel Layer-Depth Robustness Gradient
+**Limitation for Tier 2:** Probing accuracy is too coarse to distinguish
+between LoRA interventions — any trained model will likely show ~95%+ after
+even minimal fine-tuning. Fragility (Finding 2) is the metric that can
+differentiate.
 
-Fragility is again the most informative metric, revealing dynamics invisible
-to probing accuracy:
+### Finding 2: A Layer-Depth Robustness Gradient Emerges and Steepens
+
+Fragility testing reveals dynamics invisible to probing accuracy. Mean
+critical noise (the noise magnitude at which probe accuracy drops below
+the fragility threshold) measured per layer group:
 
 | Layer Group | Step 0 | Step 1K | Step 10K | Step 20K | Step 36K |
 |---|---:|---:|---:|---:|---:|
-| Late (11-15) | 0.1 | 10.0 | 10.0 | 10.0 | 10.0 |
-| Mid (6-10) | 0.3 | 10.0 | 10.0 | 10.0 | 5.8 |
-| Early (0-5) | 0.3 | 10.0 | 7.7 | 6.5 | 1.7 |
+| Late (11–15) | 0.1 | 10.0 | 10.0 | 10.0 | 10.0 |
+| Mid (6–10) | 0.1 | 10.0 | 10.0 | 10.0 | 5.8 |
+| Early (0–5) | 0.3 | 10.0 | 7.7 | 6.5 | 1.7 |
+| **All-layer mean** | **0.18** | **10.0** | **7.0** | **7.5** | **5.3** |
 
-**Key finding: moral robustness *decreases* in early layers as training
-progresses**, even while probing accuracy stays saturated. Late layers
-maintain maximum robustness throughout. The model progressively *specializes*,
-pushing robust moral encoding deeper while early-layer representations
-become more fragile. This is consistent with the model developing increasingly
-abstract, distributed representations that supersede the shallow lexical
-features early layers initially relied upon.
+Two distinct phases of fragility dynamics:
 
-Mean critical noise across all layers declines monotonically from 10.0
-(step 1K) to 5.3 (step 36K), driven entirely by early-layer fragility
-increases.
+1. **Steps 0–1K (acquisition):** All layers jump from near-zero to maximum
+   robustness (mean 0.18 → 10.0) simultaneously with the accuracy
+   transition. Moral representations are initially robust everywhere.
 
-#### Foundation-Specific Emergence
+2. **Steps 1K–36K (specialization):** Early-layer robustness *declines*
+   (10.0 → 1.7) while late-layer robustness holds at 10.0. The model
+   progressively moves robust moral encoding into deeper layers, replacing
+   the shallow lexical features that early layers initially relied upon.
+   This creates an increasingly steep layer-depth gradient.
 
-The 1K-step resolution reveals staggered foundation emergence:
+**Key insight for Tier 2:** Fragility is the only metric that continues to
+evolve after step 4K. It should be the primary outcome measure for all LoRA
+experiments (C3–C6). Specifically, the *per-layer fragility gradient* (not
+just the mean) can distinguish whether moral curriculum produces different
+representational structure than general text.
 
-| Foundation | Step 0 Peak | First 100% | Notes |
-|---|---:|---:|---|
-| care/harm | 75.0% | step 2K | Fastest to saturate |
-| fairness/cheating | 75.0% | step 2K | Fastest to saturate |
-| authority/subversion | 81.3% | step 2K | High initial accuracy |
-| sanctity/degradation | 75.0% | step 3K | Slightly delayed |
-| loyalty/betrayal | 56.3% | step 3K | **Starts below threshold**, slowest riser |
-| liberty/oppression | 68.8% | step 6K | **Most variable** — fluctuates 93-100% even at late steps |
+### Finding 3: Moral Foundations Emerge in a Staggered Sequence
 
-Loyalty/betrayal is the most interesting: it starts below the 60% onset
-threshold at random init (the only foundation to do so) and is the slowest
-to reach 100%. Liberty/oppression is the most unstable, never fully settling.
-This mirrors Phase B findings on the 7B model.
+Per-foundation peak probing accuracy (max across all 16 layers) at key
+checkpoints. Bold marks the first step reaching 100%:
 
-#### Methodology Notes
+| Foundation | Step 0 | Step 1K | Step 2K | Step 3K | Step 6K | Notes |
+|---|---:|---:|---:|---:|---:|---|
+| fairness/cheating | 68.8% | **100%** | 100% | 100% | 100% | Fastest to saturate |
+| care/harm | 75.0% | 87.5% | **100%** | 100% | 100% | Second fastest |
+| sanctity/degradation | 75.0% | 75.0% | 93.8% | **100%** | 100% | |
+| loyalty/betrayal | 56.3% | 68.8% | 87.5% | **100%** | 100% | Starts below threshold |
+| authority/subversion | 81.3% | 81.3% | 93.8% | 93.8% | **100%** | High init, slow to mature |
+| liberty/oppression | 68.8% | 87.5% | 93.8% | 93.8% | 93.8% | **Never reaches 100%** |
+
+Emergence order: fairness → care → sanctity ≈ loyalty → authority →
+liberty (never).
+
+Notable patterns:
+- **Loyalty/betrayal** starts below the 60% onset threshold at random init
+  (56.3%, the only sub-threshold foundation) and is the last to reach 100%
+  among those that do.
+- **Liberty/oppression** never fully stabilizes — it plateaus at 93.8% and
+  fluctuates even at late checkpoints. This mirrors Phase B findings on
+  the 7B model, confirming it as a cross-scale pattern.
+- **Authority/subversion** has the highest random-init accuracy (81.3%,
+  likely noise given 16 test pairs where each pair = 6.25pp) but is one
+  of the slowest to reach genuine saturation at 100%.
+
+**Key insight for Tier 2:** Loyalty/betrayal and liberty/oppression are the
+foundations most likely to show differential effects from moral curriculum.
+If LoRA fine-tuning on balanced moral content (C5) specifically accelerates
+these lagging foundations, that is strong evidence for foundation coverage
+mattering in training data.
+
+### Methodology Notes
 
 1. **1K-step resolution is sufficient** for the probing phase transition —
    finer resolution would not add information since accuracy saturates by
-   step 3-4K.
-2. **Fragility needs finer resolution in the step 0-1K window.** The jump
-   from 0.18 to 10.0 mean critical noise between step 0 and step 1K
-   suggests the fragility transition may have its own internal structure
-   not visible at 1K-step intervals.
+   step 3–4K.
+2. **Fragility needs finer resolution in the step 0–1K window.** The jump
+   from 0.18 to 10.0 mean critical noise in a single interval suggests the
+   fragility transition has its own internal structure not visible here.
 3. **The onset threshold of 0.6 is confirmed too low** — breadth saturates
-   at 1.0 by step 1K because even the random-init model has layers above
-   60%. An 80% threshold would provide more resolution.
+   at 1.0 by step 1K. An 80% threshold would provide more resolution.
+4. **Small per-foundation sample size** (16 test pairs per foundation)
+   limits confidence in individual accuracy values — each pair is worth
+   6.25pp. The staggered emergence order is qualitatively reliable but
+   exact step numbers should be treated as approximate.
+
+### Implications for Phase C Tier 2 (LoRA Experiments)
+
+C1 results provide three concrete design decisions for the upcoming LoRA
+experiments:
+
+**1. Base checkpoint selection for C3–C6:**
+- **Step 0** (random init): Best for C6 (acceleration test) — measures
+  whether moral curriculum triggers the phase transition faster than
+  general text.
+- **Step 1K** (mid-transition, ~77% mean accuracy): Best for C3 (narrative
+  vs. declarative) and C4 (early exposure). The model has begun forming
+  moral representations but hasn't saturated, so LoRA interventions have
+  room to reshape the transition.
+- **Step 30K** (post-saturation, ~96% accuracy, fragility gradient fully
+  developed): Required for C4's "late exposure" condition. Tests whether
+  curriculum can still modify the robustness gradient after the model has
+  stabilized.
+
+**2. Primary outcome metric — fragility, not accuracy:**
+Probing accuracy will saturate at ~95%+ regardless of curriculum content.
+The metrics that can discriminate between interventions are:
+- Per-layer critical noise profile (the shape of the robustness gradient)
+- Whether moral curriculum slows the early-layer robustness decline
+  (i.e., produces representations that are robust even in shallow layers)
+- Foundation-specific fragility for the lagging foundations
+  (loyalty/betrayal, liberty/oppression)
+
+**3. Baseline expectations from C1 for comparison:**
+- At step 1K + 1000 LoRA steps of general text, we expect accuracy ~95%+
+  and a fragility gradient similar to step 4K–10K (early layers losing
+  robustness). If moral curriculum produces a *flatter* gradient (early
+  layers staying robust), that indicates deeper integration of moral
+  concepts.
+- At step 0 + 1000 LoRA steps, we can measure how many gradient steps
+  are needed to cross the 80% mean accuracy threshold. C1 shows the
+  natural transition crosses ~77% at step 1K (~2.1M gradient steps at
+  the pre-training batch size). LoRA with targeted moral content should
+  reach this threshold in fewer steps if moral data is rate-limiting.
 
 ---
 
@@ -705,9 +773,17 @@ interventions.
 - 3 of 6 hypotheses supported (H1, H5 partial, H6)
 - All results reproducible from JSON metadata
 
-**Phase C Tier 1 (target):**
+**Phase C1 (achieved):**
 - High-resolution phase transition map (Figure 7) resolving the step 0–36K
-  window with all 37 OLMo-2 1B checkpoints
+  window with all 37 OLMo-2 1B checkpoints — sigmoid confirmed
+- Novel finding: early-layer fragility *increases* with training, creating a
+  steepening layer-depth robustness gradient (invisible to probing accuracy)
+- Staggered foundation emergence resolved: fairness → care → sanctity ≈
+  loyalty → authority → liberty (never reaches 100%)
+- Concrete Tier 2 design decisions derived: checkpoint selection, fragility as
+  primary metric, baseline expectations for LoRA comparison
+
+**Phase C2 (target):**
 - Clear answer to whether moral encoding lags general linguistic competence (H8)
 - Figures 7 and 8 produced and interpretable
 
