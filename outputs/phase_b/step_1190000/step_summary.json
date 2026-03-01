@@ -1,0 +1,14 @@
+{
+  "step": 1190000,
+  "revision": "stage1-step1190000",
+  "probes_run": [
+    "B2"
+  ],
+  "layer_probing": {
+    "elapsed_s": 77.9,
+    "peak_accuracy": 0.9896,
+    "onset_layer": 0,
+    "moral_encoding_depth": 0.0,
+    "moral_encoding_breadth": 1.0
+  }
+}

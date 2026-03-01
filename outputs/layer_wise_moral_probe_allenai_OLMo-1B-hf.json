@@ -1,0 +1,108 @@
+{
+  "benchmark_name": "layer_wise_moral_probe",
+  "model_info": {
+    "name": "allenai/OLMo-1B-hf",
+    "provider": "huggingface",
+    "access_tier": 2,
+    "n_layers": 16,
+    "n_params": 1176764416,
+    "checkpoint_step": null,
+    "extra": {}
+  },
+  "timestamp": 1772060078.37974,
+  "metadata": {
+    "n_epochs": 50,
+    "lr": 0.01,
+    "onset_threshold": 0.6,
+    "train_pairs": 187,
+    "test_pairs": 46
+  },
+  "layer_scores": [
+    {
+      "layer": 0,
+      "accuracy": 0.989130437374115,
+      "loss": 0.12168952822685242
+    },
+    {
+      "layer": 1,
+      "accuracy": 0.989130437374115,
+      "loss": 0.09637567400932312
+    },
+    {
+      "layer": 2,
+      "accuracy": 0.989130437374115,
+      "loss": 0.07048463821411133
+    },
+    {
+      "layer": 3,
+      "accuracy": 1.0,
+      "loss": 0.05156770348548889
+    },
+    {
+      "layer": 4,
+      "accuracy": 1.0,
+      "loss": 0.03907822445034981
+    },
+    {
+      "layer": 5,
+      "accuracy": 1.0,
+      "loss": 0.03901633247733116
+    },
+    {
+      "layer": 6,
+      "accuracy": 1.0,
+      "loss": 0.03588093817234039
+    },
+    {
+      "layer": 7,
+      "accuracy": 1.0,
+      "loss": 0.034991554915905
+    },
+    {
+      "layer": 8,
+      "accuracy": 1.0,
+      "loss": 0.030927715823054314
+    },
+    {
+      "layer": 9,
+      "accuracy": 1.0,
+      "loss": 0.030641332268714905
+    },
+    {
+      "layer": 10,
+      "accuracy": 1.0,
+      "loss": 0.02996971271932125
+    },
+    {
+      "layer": 11,
+      "accuracy": 1.0,
+      "loss": 0.021657448261976242
+    },
+    {
+      "layer": 12,
+      "accuracy": 1.0,
+      "loss": 0.02069663815200329
+    },
+    {
+      "layer": 13,
+      "accuracy": 1.0,
+      "loss": 0.010864454321563244
+    },
+    {
+      "layer": 14,
+      "accuracy": 1.0,
+      "loss": 0.008215025998651981
+    },
+    {
+      "layer": 15,
+      "accuracy": 1.0,
+      "loss": 0.01752455160021782
+    }
+  ],
+  "onset_layer": 0,
+  "peak_layer": 3,
+  "peak_accuracy": 1.0,
+  "moral_encoding_depth": 0.0,
+  "moral_encoding_breadth": 1.0,
+  "checkpoint_step": null
+}

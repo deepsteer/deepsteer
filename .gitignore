@@ -37,8 +37,9 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
-# DeepSteer outputs (generated plots and JSON results)
-outputs/
+# DeepSteer outputs - large logs and OS files excluded, data tracked
+outputs/*.log
+outputs/.DS_Store
 
 # Environment and secrets
 .env

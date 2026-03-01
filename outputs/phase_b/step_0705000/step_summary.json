@@ -1,0 +1,17 @@
+{
+  "step": 705000,
+  "revision": "stage1-step705000",
+  "probes_run": [
+    "B4",
+    "B5"
+  ],
+  "causal_tracing": {
+    "elapsed_s": 213.6,
+    "peak_causal_layer": 7,
+    "causal_depth": 0.2188
+  },
+  "fragility": {
+    "elapsed_s": 68.3,
+    "mean_critical_noise": 5.172413793103448
+  }
+}

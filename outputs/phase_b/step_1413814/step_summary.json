@@ -1,0 +1,30 @@
+{
+  "step": 1413814,
+  "revision": "stage1-step1413814",
+  "probes_run": [
+    "B4",
+    "B2",
+    "B1",
+    "B3",
+    "B5"
+  ],
+  "layer_probing": {
+    "elapsed_s": 74.1,
+    "peak_accuracy": 1.0,
+    "onset_layer": 0,
+    "moral_encoding_depth": 0.0,
+    "moral_encoding_breadth": 1.0
+  },
+  "foundation_probes": {
+    "elapsed_s": 63.6
+  },
+  "causal_tracing": {
+    "elapsed_s": 203.1,
+    "peak_causal_layer": 0,
+    "causal_depth": 0.0
+  },
+  "fragility": {
+    "elapsed_s": 64.7,
+    "mean_critical_noise": 5.3076923076923075
+  }
+}

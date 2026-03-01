@@ -1,0 +1,10 @@
+{
+  "step": 404000,
+  "revision": "stage1-step404000",
+  "probes_run": [
+    "B3"
+  ],
+  "foundation_probes": {
+    "elapsed_s": 70.0
+  }
+}

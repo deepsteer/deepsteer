@@ -1,0 +1,11 @@
+{
+  "step": 353000,
+  "revision": "stage1-step353000",
+  "probes_run": [
+    "B5"
+  ],
+  "fragility": {
+    "elapsed_s": 74.1,
+    "mean_critical_noise": 5.664516129032258
+  }
+}

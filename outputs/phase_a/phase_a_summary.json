@@ -1,0 +1,42 @@
+{
+  "model": "allenai/OLMo-2-0425-1B-early-training",
+  "dataset_target": 40,
+  "total_elapsed_s": 536.8,
+  "experiments": [
+    {
+      "experiment": "A2",
+      "probe": "CheckpointTrajectoryProbe",
+      "elapsed_s": 536.0,
+      "n_checkpoints": 5,
+      "revisions": [
+        "stage1-step0-tokens0B",
+        "stage1-step9000-tokens19B",
+        "stage1-step18000-tokens38B",
+        "stage1-step27000-tokens57B",
+        "stage1-step36000-tokens76B"
+      ],
+      "checkpoint_steps": [
+        0,
+        9000,
+        18000,
+        27000,
+        36000
+      ],
+      "depth_trajectory": [
+        0.1875,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "breadth_trajectory": [
+        0.1875,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "plot": "outputs/phase_a/checkpoint_trajectory_probe_allenai_OLMo-2-0425-1B-early-training.png"
+    }
+  ]
+}
