@@ -1,0 +1,23 @@
+{
+  "step": 24000,
+  "revision": "stage1-step24000-tokens51B",
+  "probes_run": [
+    "layer",
+    "foundation",
+    "fragility"
+  ],
+  "layer_probing": {
+    "elapsed_s": 15.6,
+    "peak_accuracy": 0.9792,
+    "onset_layer": 0,
+    "moral_encoding_depth": 0.0,
+    "moral_encoding_breadth": 1.0
+  },
+  "foundation_probes": {
+    "elapsed_s": 17.7
+  },
+  "fragility": {
+    "elapsed_s": 15.4,
+    "mean_critical_noise": 7.5
+  }
+}

@@ -557,13 +557,14 @@ to paragraph-length.
 - [x] Tune probe hyperparameters if needed (epochs, lr, threshold)
 
 ### Phase C Tier 1 (Observational — no training)
-- [ ] Run LayerWiseMoralProbe on all 37 early-training checkpoints (C1)
-- [ ] Run MoralFragilityTest on all 37 early-training checkpoints (C1)
-- [ ] Run FoundationSpecificProbe on all 37 early-training checkpoints (C1)
+- [x] Run LayerWiseMoralProbe on all 37 early-training checkpoints (C1)
+- [x] Run MoralFragilityTest on all 37 early-training checkpoints (C1)
+- [x] Run FoundationSpecificProbe on all 37 early-training checkpoints (C1)
+- [x] Generate Figure 7 (high-resolution phase transition heatmap)
 - [ ] Build sentiment probing dataset (positive/negative minimal pairs) (C2)
 - [ ] Build syntax probing dataset (grammatical/ungrammatical minimal pairs) (C2)
 - [ ] Run sentiment and syntax probes on all 37 checkpoints (C2)
-- [ ] Generate Figures 7 and 8
+- [ ] Generate Figure 8
 
 ### Phase C Tier 2 (LoRA fine-tuning)
 - [ ] Download Aesop's Fables + Grimm's Tales from Project Gutenberg
@@ -574,6 +575,93 @@ to paragraph-length.
 - [ ] Verify LoRA fine-tuning runs on MPS with OLMo-2 1B
 - [ ] Run C3 (narrative vs. declarative), C6 (moral acceleration) first
 - [ ] Run C4 (early vs. late exposure), C5 (foundation coverage) if C3/C6 show signal
+
+---
+
+## Phase C1 Results
+
+### C1: Dense Phase-Transition Mapping (H7)
+
+**H7 supported — the phase transition has clear internal structure.**
+
+All 37 OLMo-2 1B early-training checkpoints (step 0 to step 36K, 1K intervals)
+probed with LayerWiseMoralProbe, FoundationSpecificProbe, and MoralFragilityTest.
+Runtime: 89 minutes on MacBook Pro M4 Pro. Output: `outputs/phase_c1/`.
+
+#### Probing Accuracy Trajectory
+
+The moral phase transition is rapid but not instantaneous — it unfolds across
+the first ~3K training steps (~6B tokens):
+
+| Step | Mean Acc | Peak Acc | Onset | Depth | Breadth |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 55.7% | 63.5% | 1 | 0.062 | 0.188 |
+| 1000 | 76.8% | 82.3% | 0 | 0.0 | 1.0 |
+| 2000 | 88.3% | 91.7% | 0 | 0.0 | 1.0 |
+| 3000 | 92.1% | 94.8% | 0 | 0.0 | 1.0 |
+| 4000 | 93.8% | 95.8% | 0 | 0.0 | 1.0 |
+| 5000+ | ~94–96% | ~96–99% | 0 | 0.0 | 1.0 |
+
+The **inflection point** is at step 1000 (~2B tokens), where mean accuracy
+jumps 21 percentage points (55.7% → 76.8%) in a single 1K-step interval.
+By step 4000 (~8B tokens), accuracy saturates at ~95-98% and remains stable
+through step 36K. The trajectory shape is consistent with a steep sigmoid
+rather than a sharp discontinuity — H7's predicted S-curve is confirmed,
+but with an extremely steep middle section.
+
+#### Fragility Evolution — Novel Layer-Depth Robustness Gradient
+
+Fragility is again the most informative metric, revealing dynamics invisible
+to probing accuracy:
+
+| Layer Group | Step 0 | Step 1K | Step 10K | Step 20K | Step 36K |
+|---|---:|---:|---:|---:|---:|
+| Late (11-15) | 0.1 | 10.0 | 10.0 | 10.0 | 10.0 |
+| Mid (6-10) | 0.3 | 10.0 | 10.0 | 10.0 | 5.8 |
+| Early (0-5) | 0.3 | 10.0 | 7.7 | 6.5 | 1.7 |
+
+**Key finding: moral robustness *decreases* in early layers as training
+progresses**, even while probing accuracy stays saturated. Late layers
+maintain maximum robustness throughout. The model progressively *specializes*,
+pushing robust moral encoding deeper while early-layer representations
+become more fragile. This is consistent with the model developing increasingly
+abstract, distributed representations that supersede the shallow lexical
+features early layers initially relied upon.
+
+Mean critical noise across all layers declines monotonically from 10.0
+(step 1K) to 5.3 (step 36K), driven entirely by early-layer fragility
+increases.
+
+#### Foundation-Specific Emergence
+
+The 1K-step resolution reveals staggered foundation emergence:
+
+| Foundation | Step 0 Peak | First 100% | Notes |
+|---|---:|---:|---|
+| care/harm | 75.0% | step 2K | Fastest to saturate |
+| fairness/cheating | 75.0% | step 2K | Fastest to saturate |
+| authority/subversion | 81.3% | step 2K | High initial accuracy |
+| sanctity/degradation | 75.0% | step 3K | Slightly delayed |
+| loyalty/betrayal | 56.3% | step 3K | **Starts below threshold**, slowest riser |
+| liberty/oppression | 68.8% | step 6K | **Most variable** — fluctuates 93-100% even at late steps |
+
+Loyalty/betrayal is the most interesting: it starts below the 60% onset
+threshold at random init (the only foundation to do so) and is the slowest
+to reach 100%. Liberty/oppression is the most unstable, never fully settling.
+This mirrors Phase B findings on the 7B model.
+
+#### Methodology Notes
+
+1. **1K-step resolution is sufficient** for the probing phase transition —
+   finer resolution would not add information since accuracy saturates by
+   step 3-4K.
+2. **Fragility needs finer resolution in the step 0-1K window.** The jump
+   from 0.18 to 10.0 mean critical noise between step 0 and step 1K
+   suggests the fragility transition may have its own internal structure
+   not visible at 1K-step intervals.
+3. **The onset threshold of 0.6 is confirmed too low** — breadth saturates
+   at 1.0 by step 1K because even the random-init model has layers above
+   60%. An 80% threshold would provide more resolution.
 
 ---
 

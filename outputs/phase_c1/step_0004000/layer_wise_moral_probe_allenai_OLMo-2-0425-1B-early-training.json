@@ -1,0 +1,108 @@
+{
+  "benchmark_name": "layer_wise_moral_probe",
+  "model_info": {
+    "name": "allenai/OLMo-2-0425-1B-early-training",
+    "provider": "huggingface",
+    "access_tier": 3,
+    "n_layers": 16,
+    "n_params": 1484916736,
+    "checkpoint_step": 4000,
+    "extra": {}
+  },
+  "timestamp": 1772392598.2801971,
+  "metadata": {
+    "n_epochs": 50,
+    "lr": 0.01,
+    "onset_threshold": 0.6,
+    "train_pairs": 192,
+    "test_pairs": 48
+  },
+  "layer_scores": [
+    {
+      "layer": 0,
+      "accuracy": 0.9270833134651184,
+      "loss": 0.2020040899515152
+    },
+    {
+      "layer": 1,
+      "accuracy": 0.9375,
+      "loss": 0.1852223426103592
+    },
+    {
+      "layer": 2,
+      "accuracy": 0.9583333134651184,
+      "loss": 0.16659359633922577
+    },
+    {
+      "layer": 3,
+      "accuracy": 0.9479166865348816,
+      "loss": 0.13729940354824066
+    },
+    {
+      "layer": 4,
+      "accuracy": 0.9583333134651184,
+      "loss": 0.13191360235214233
+    },
+    {
+      "layer": 5,
+      "accuracy": 0.9583333134651184,
+      "loss": 0.12805037200450897
+    },
+    {
+      "layer": 6,
+      "accuracy": 0.9375,
+      "loss": 0.13894487917423248
+    },
+    {
+      "layer": 7,
+      "accuracy": 0.9270833134651184,
+      "loss": 0.12044278532266617
+    },
+    {
+      "layer": 8,
+      "accuracy": 0.9479166865348816,
+      "loss": 0.12157592177391052
+    },
+    {
+      "layer": 9,
+      "accuracy": 0.9375,
+      "loss": 0.2217346876859665
+    },
+    {
+      "layer": 10,
+      "accuracy": 0.9375,
+      "loss": 0.25355687737464905
+    },
+    {
+      "layer": 11,
+      "accuracy": 0.9375,
+      "loss": 0.1788337230682373
+    },
+    {
+      "layer": 12,
+      "accuracy": 0.9375,
+      "loss": 0.3006407916545868
+    },
+    {
+      "layer": 13,
+      "accuracy": 0.9375,
+      "loss": 0.35676708817481995
+    },
+    {
+      "layer": 14,
+      "accuracy": 0.90625,
+      "loss": 0.4658068120479584
+    },
+    {
+      "layer": 15,
+      "accuracy": 0.9166666865348816,
+      "loss": 0.5552766919136047
+    }
+  ],
+  "onset_layer": 0,
+  "peak_layer": 2,
+  "peak_accuracy": 0.9583333134651184,
+  "moral_encoding_depth": 0.0,
+  "moral_encoding_breadth": 1.0,
+  "checkpoint_step": 4000
+}
