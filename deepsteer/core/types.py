@@ -535,6 +535,36 @@ class MonitoringSession:
         return _dataclass_to_dict(self)
 
 
+# --- LoRA Fine-Tuning Experiments ---
+
+
+@dataclass(frozen=True)
+class LoRATrainingStep:
+    """Metrics for a single LoRA training step."""
+
+    step: int
+    loss: float
+    lr: float
+
+
+@dataclass
+class LoRAExperimentResult(BenchmarkResult):
+    """Full output of a LoRA fine-tuning experiment condition."""
+
+    experiment_id: str = ""
+    hypothesis: str = ""
+    base_checkpoint: str = ""
+    base_step: int = 0
+    corpus_name: str = ""
+    corpus_tokens: int = 0
+    lora_config: dict[str, Any] = field(default_factory=dict)
+    training_config: dict[str, Any] = field(default_factory=dict)
+    training_steps: list[LoRATrainingStep] = field(default_factory=list)
+    probe_snapshots: list[dict[str, Any]] = field(default_factory=list)
+    final_probing: LayerProbingResult | None = None
+    final_fragility: FragilityResult | None = None
+
+
 # --- Suite ---
 
 

@@ -30,8 +30,12 @@ api = [
     "anthropic",
     "openai",
 ]
+lora = [
+    "peft>=0.11",
+]
 all = [
     "deepsteer[api]",
+    "deepsteer[lora]",
 ]
 dev = [
     "deepsteer[all]",

@@ -19,10 +19,17 @@ from deepsteer.core.types import (
     FoundationProbingResult,
     FragilityResult,
     LayerProbingResult,
+    LoRAExperimentResult,
     MixingResult,
     MonitoringSession,
     MoralFoundationsResult,
     PersonaShiftResult,
+)
+from deepsteer.viz.lora_experiments import (
+    plot_lora_acceleration,
+    plot_lora_fragility_comparison,
+    plot_lora_fragility_trajectory,
+    plot_lora_training_loss,
 )
 
 matplotlib.use("Agg")

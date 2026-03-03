@@ -172,16 +172,37 @@ class WhiteBoxModel(ModelInterface):
 
     # -- Layer introspection -------------------------------------------------
 
+    def _unwrap_model(self) -> torch.nn.Module:
+        """Unwrap PEFT/DeepSpeed wrappers to get the underlying HuggingFace model.
+
+        PEFT wraps models as ``PeftModelForCausalLM`` with an extra
+        ``base_model`` attribute.  This method traverses that wrapper so
+        layer introspection and hook registration work regardless of
+        whether LoRA adapters are active.
+        """
+        model = self._model
+        # PEFT: PeftModelForCausalLM -> base_model (LoraModel) -> model (original)
+        if hasattr(model, "base_model"):
+            model = model.base_model
+        if hasattr(model, "model") and model is not self._model:
+            model = model.model
+        return model
+
     def _detect_n_layers(self) -> int:
         """Detect number of decoder layers by probing known attribute paths."""
+        base = self._unwrap_model()
         # OLMo / Llama / Mistral: model.model.layers
-        inner = getattr(self._model, "model", None)
+        inner = getattr(base, "model", None)
         if inner is not None:
             layers = getattr(inner, "layers", None)
             if layers is not None:
                 return len(layers)
+        # Direct: base.layers (when already unwrapped)
+        layers = getattr(base, "layers", None)
+        if layers is not None:
+            return len(layers)
         # GPT-2 / GPT-Neo: model.transformer.h
-        transformer = getattr(self._model, "transformer", None)
+        transformer = getattr(base, "transformer", None)
         if transformer is not None:
             h = getattr(transformer, "h", None)
             if h is not None:
@@ -193,12 +214,16 @@ class WhiteBoxModel(ModelInterface):
 
     def _get_layer_module(self, layer_index: int) -> torch.nn.Module:
         """Return the ``nn.Module`` for decoder layer *layer_index*."""
-        inner = getattr(self._model, "model", None)
+        base = self._unwrap_model()
+        inner = getattr(base, "model", None)
         if inner is not None:
             layers = getattr(inner, "layers", None)
             if layers is not None:
                 return layers[layer_index]
-        transformer = getattr(self._model, "transformer", None)
+        layers = getattr(base, "layers", None)
+        if layers is not None:
+            return layers[layer_index]
+        transformer = getattr(base, "transformer", None)
         if transformer is not None:
             h = getattr(transformer, "h", None)
             if h is not None:
