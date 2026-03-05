@@ -41,6 +41,9 @@ htmlcov/
 outputs/*.log
 outputs/.DS_Store
 
+# Downloaded caches (Gutenberg texts, etc.)
+.cache/
+
 # Environment and secrets
 .env
 *.pem

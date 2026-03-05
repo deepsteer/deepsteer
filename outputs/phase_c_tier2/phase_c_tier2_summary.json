@@ -1,0 +1,8 @@
+{
+  "experiment": "c3",
+  "max_steps": 1000,
+  "lora_rank": 16,
+  "quick": false,
+  "c3_signal": 0.5833333333333339,
+  "total_elapsed_s": 35793.0
+}
