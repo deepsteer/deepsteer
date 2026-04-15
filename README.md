@@ -531,4 +531,6 @@ See [REFERENCES.md](REFERENCES.md) for full citations of all research methods us
 
 ## License
 
-All Rights Reserved
+DeepSteer is licensed under the [Apache License 2.0](LICENSE).
+
+Copyright 2026 Distiller Labs LLC. See [NOTICE](NOTICE) for details.
