@@ -276,6 +276,8 @@ study — it provides resolution where probing accuracy cannot.
 | H4 | Differential Emergence | **Weakly supported** | Hierarchy at step 0 but all saturate by 201K |
 | H5 | Causal-Probing Alignment | **Partially supported** | Both move earlier but diverge (10-layer gap) |
 | H6 | Robustness Increases | **Strongly supported** | 28x increase; novel layer-depth gradient |
+| H7 | Phase Transition Has Structure | **Supported** | Sigmoid over ~3K steps; inflection at step 1K (C1) |
+| H9 | Narrative > Declarative Robustness | **Partially supported** | Declarative creates fragility; narrative ≈ general (C3) |
 
 ### Methodology Lessons
 
@@ -567,14 +569,16 @@ to paragraph-length.
 - [ ] Generate Figure 8
 
 ### Phase C Tier 2 (LoRA fine-tuning)
-- [ ] Download Aesop's Fables + Grimm's Tales from Project Gutenberg
-- [ ] Tokenize and prepare narrative-moral corpus
-- [ ] Hand-curate declarative-moral corpus with matched foundation coverage
-- [ ] Sample general-text control corpus (Wikipedia or CC, matched token count)
-- [ ] Implement LoRA fine-tuning script with periodic probing callbacks
-- [ ] Verify LoRA fine-tuning runs on MPS with OLMo-2 1B
-- [ ] Run C3 (narrative vs. declarative), C6 (moral acceleration) first
-- [ ] Run C4 (early vs. late exposure), C5 (foundation coverage) if C3/C6 show signal
+- [x] Download Aesop's Fables + Grimm's Tales from Project Gutenberg
+- [x] Tokenize and prepare narrative-moral corpus (247K tokens)
+- [x] Hand-curate declarative-moral corpus with matched foundation coverage (500K tokens)
+- [x] Sample general-text control corpus (Darwin, 420K tokens)
+- [x] Implement LoRA fine-tuning script with periodic probing callbacks
+- [x] Verify LoRA fine-tuning runs on MPS with OLMo-2 1B
+- [x] Run C3 (narrative vs. declarative) — signal detected (0.583)
+- [ ] Run C6 (moral acceleration from random init)
+- [ ] Run C4 (early vs. late exposure) — warranted by C3 signal > 0.10
+- [ ] Run C5 (foundation coverage) — warranted by C3 signal > 0.10
 
 ---
 
@@ -733,6 +737,118 @@ The metrics that can discriminate between interventions are:
 
 ---
 
+## Phase C3 Results: Narrative vs. Declarative Moral Framing
+
+**Experiment:** LoRA fine-tuning (rank 16, alpha 32, q_proj + v_proj) on
+OLMo-2 1B at step 1000 (mid-transition checkpoint, ~80% peak probing
+accuracy). Three conditions trained for 1000 steps each (lr=2e-4,
+batch_size=2, seq_len=1024) with probing and fragility evaluation every
+100 steps. Runtime: ~10 hours total on MacBook Pro M4 Pro.
+Output: `outputs/phase_c_tier2/c3/`.
+
+**Hypothesis tested:** H9 — narrative moral content (fables, stories)
+produces more robust moral representations than declarative moral
+statements.
+
+**Verdict: H9 partially supported.** Fragility profiles differ by
+condition, but the pattern is more nuanced than predicted.
+
+### Conditions
+
+| Condition | Corpus | Tokens | Source |
+|-----------|--------|--------|--------|
+| Narrative moral | Aesop's Fables, Grimm's Fairy Tales, Andersen | 247K | Project Gutenberg |
+| Declarative moral | Template-expanded MORAL_SEEDS, 50 per foundation | 500K | Generated from seed dataset |
+| General control | Darwin's Voyage of the Beagle + Origin of Species | 420K | Project Gutenberg |
+
+### Finding 1: Probing Accuracy Is Stable and Content-Agnostic
+
+All three conditions maintain ~80% peak accuracy throughout 1000 LoRA
+steps (range: 0.77–0.81). LoRA fine-tuning on moral vs. non-moral content
+does not meaningfully change how well moral concepts can be decoded. The
+base checkpoint (step 1K) already has mature enough moral encoding that
+accuracy is insensitive to further training content.
+
+| Metric | Narrative | Declarative | General Control |
+|--------|-----------|-------------|-----------------|
+| Final peak accuracy | **0.812** | 0.802 | 0.802 |
+| Final peak layer | 3 | 0 | 1 |
+
+This confirms C1's finding that probing accuracy is too coarse to
+distinguish between training interventions once the model has passed the
+initial phase transition.
+
+### Finding 2: Fragility Profiles Are Condition-Specific (Main Result)
+
+Each condition produces a distinct per-layer robustness profile:
+
+| Metric | Narrative | Declarative | General Control |
+|--------|-----------|-------------|-----------------|
+| Mean critical noise | **10.0** | 9.42 | **10.0** |
+| Most fragile layer | 0 | **3 (critical noise=3.0)** | 0 |
+| Robustness profile | Uniform high | Dip at layer 3 | Uniform high |
+
+- **Narrative moral**: Uniform fragility (critical_noise=10.0 across all
+  layers). Most uniformly robust structure.
+- **Declarative moral**: Sharp fragility dip at layer 3
+  (critical_noise=3.0), creating a single vulnerability point. All other
+  layers remain at 10.0.
+- **General control**: Uniform fragility (critical_noise=10.0), matching
+  the narrative condition.
+
+LoRA fine-tuning on different content types doesn't change *what* the
+model knows about morality (accuracy stays flat), but it **reshapes where
+moral encoding is fragile**. Data curation affects the structural
+organization of representations.
+
+### Finding 3: Training Loss Diverges Dramatically
+
+| Condition | Initial Loss | Final Loss | Interpretation |
+|-----------|-------------|------------|----------------|
+| Declarative | 5.6 | **1.0** | Easy memorization of templated text |
+| Narrative | 5.0 | 3.9 | Diverse natural text |
+| General control | 5.0 | 4.5 | No memorization signal |
+
+Despite the declarative corpus being trivially memorizable (loss drops to
+1.0), this does not translate to higher probing accuracy or stronger
+robustness. Surface-level text learning and representational moral
+encoding are decoupled processes.
+
+### Signal Assessment
+
+**C3 signal: 0.583** (threshold: 0.10, computed from max fragility
+difference between moral conditions and control).
+
+Signal well above threshold — C4 (early vs. late exposure) and C5
+(foundation coverage) experiments are warranted.
+
+### Implications for Remaining Tier 2 Experiments
+
+1. **Fragility confirmed as the discriminating metric.** Accuracy cannot
+   distinguish interventions; fragility can. All remaining experiments
+   (C4, C5, C6) should use per-layer fragility profiles as the primary
+   outcome measure.
+
+2. **The declarative layer-3 vulnerability is unexpected.** Templated
+   moral statements create a localized fragility that natural text
+   (narrative or non-moral) does not. This suggests that repetitive moral
+   framing may create brittle shortcuts at specific layers.
+
+3. **Narrative and general text produce equivalent robustness profiles.**
+   The narrative condition did not produce *stronger* robustness than
+   general text (both uniformly at 10.0). The difference is between
+   declarative (fragile at layer 3) and everything else (uniformly
+   robust). This reframes H9: it may not be that narrative content is
+   *better* for robustness, but that declarative content is *worse*.
+
+4. **C6 (moral acceleration) should test whether moral content accelerates
+   the initial phase transition from step 0.** C3 started from step 1K
+   (post-transition onset) — the model already had partial moral encoding.
+   Step 0 provides a cleaner test of whether content type matters for
+   emergence timing.
+
+---
+
 ## Risk Mitigation
 
 | Risk | Mitigation |
@@ -787,8 +903,17 @@ interventions.
 - Clear answer to whether moral encoding lags general linguistic competence (H8)
 - Figures 7 and 8 produced and interpretable
 
-**Phase C Tier 2 (target):**
-- At least one LoRA experiment (C3 or C6) showing measurable difference between
-  moral-content and general-text fine-tuning on fragility or probe accuracy
-- Evidence for or against data curation as an alignment lever, even at toy scale
-- If successful: reproducible LoRA recipe for moral curriculum experiments
+**Phase C3 (achieved):**
+- C3 signal 0.583 — well above 0.10 threshold, warranting C4/C5 follow-ups
+- Novel finding: LoRA content type reshapes fragility profiles without changing
+  probing accuracy — data curation affects representational *structure*, not
+  *existence* of moral encoding
+- Declarative moral content creates localized fragility (layer 3) that narrative
+  and general text do not — repetitive moral framing may produce brittle shortcuts
+- Reproducible LoRA recipe validated on MPS (OLMo-2 1B, rank 16, 1000 steps)
+
+**Phase C Tier 2 remaining (target):**
+- C6: Does moral content accelerate the phase transition from random init?
+- C4: Does LoRA injection timing (early vs. late) affect fragility gradient shape?
+- C5: Do individual MFT foundations have selective effects on per-foundation probing?
+- If C6 shows signal: evidence that moral data is rate-limiting for emergence
