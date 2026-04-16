@@ -7,7 +7,7 @@
 
 A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignment properties are embedded in language models — distinguishing shallow post-hoc alignment from deep pre-training alignment.
 
-> **Alpha software.** DeepSteer is under active development. APIs may change between releases. Contributions and feedback welcome.
+***Alpha and pre-release software. DeepSteer is under active development.***
 
 ## Key Findings
 
