@@ -1,8 +1,24 @@
 # DeepSteer
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/downloads/)
+[![PyPI](https://img.shields.io/pypi/v/deepsteer.svg)](https://pypi.org/project/deepsteer/)
+
 **Evaluating and Steering Alignment Depth in LLM Pre-Training**
 
 A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignment properties are embedded in language models — distinguishing shallow post-hoc alignment from deep pre-training alignment.
+
+## Key Findings
+
+DeepSteer has produced the first systematic measurement of moral representation emergence during LLM pre-training. Headline results from OLMo-2 1B and OLMo-3 7B base models:
+
+- **Moral concepts emerge early and fast** — linearly decodable within the first ~5% of pre-training as a sharp phase transition, not a gradual accumulation. Moral distinctions appear *before* sentiment polarity and far before syntactic competence.
+- **Fragility reveals what accuracy cannot** — probing accuracy saturates quickly, but fragility testing (robustness to activation noise) exposes a layer-depth gradient that continues evolving long after accuracy plateaus, revealing ongoing representational reorganization.
+- **Data curation reshapes structure, not content** — LoRA fine-tuning shows that training content doesn't change *whether* moral concepts are encoded but *how* they're organized. Repetitive declarative statements create brittle shortcuts; narrative content produces uniformly robust representations.
+- **Moral foundations emerge in a staggered sequence** — fairness and care saturate first; loyalty, authority, and sanctity follow; liberty/oppression never fully stabilizes at either 1B or 7B scale.
+- **Storage and usage diverge** — moral information is *stored* in mid-network layers but *used* for prediction in early layers, a ~10-layer gap invisible to probing alone.
+
+For full methodology and results, see the **[Research Brief](RESEARCH_BRIEF.md)**.
 
 ## Core Thesis
 
@@ -49,7 +65,7 @@ from deepsteer.viz import plot_layer_probing
 plot_layer_probing(results["layer_wise_moral_probe"], "outputs/")
 
 # Behavioral benchmarks (requires instruction-tuned models)
-model = deepsteer.claude("claude-sonnet-4-20250514")
+model = deepsteer.claude("claude-sonnet-4-6")
 suite = deepsteer.behavioral_suite()
 results = suite.run(model)
 
@@ -374,8 +390,10 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 |---|---|---|---|---|
 | **OLMo** (Ai2) | `deepsteer.olmo()` | `allenai/OLMo-7B-hf` | Checkpoints | Representational probing + trajectory analysis |
 | **Llama** (Meta) | `deepsteer.llama()` | `meta-llama/Llama-3-8B` | Weights | Representational probing at frontier-adjacent scale |
-| **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-20250514` | API | Behavioral benchmarks |
+| **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-6` | API | Behavioral benchmarks |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
+
+> **Reproducing the research findings:** The results in the [Research Brief](RESEARCH_BRIEF.md) used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints) and `allenai/Olmo-3-1025-7B` (20 checkpoints). See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
 
 For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
@@ -528,6 +546,10 @@ tests/              Mirrors source structure
 ```
 
 See [REFERENCES.md](REFERENCES.md) for full citations of all research methods used in DeepSteer.
+
+## Contact
+
+Orion Reblitz-Richardson — [orion@orionr.com](mailto:orion@orionr.com)
 
 ## License
 
