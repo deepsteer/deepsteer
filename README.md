@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/downloads/)
-[![PyPI](https://img.shields.io/pypi/v/deepsteer.svg)](https://pypi.org/project/deepsteer/)
 
 **Evaluating and Steering Alignment Depth in LLM Pre-Training**
 
