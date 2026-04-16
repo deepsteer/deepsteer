@@ -1,0 +1,212 @@
+{
+  "experiment": "C8",
+  "hypothesis": "H13",
+  "model": "allenai/OLMo-2-0425-1B",
+  "revision": null,
+  "n_layers": 16,
+  "seed": 42,
+  "n_epochs": 50,
+  "gates": {
+    "gate1_min_delta_pp": 15.0,
+    "gate2_chance": 0.5
+  },
+  "a_overall_probe": {
+    "peak_accuracy": 0.9479,
+    "peak_layer": 5,
+    "mean_accuracy": 0.9245,
+    "per_layer": {
+      "0": 0.8958,
+      "1": 0.9167,
+      "2": 0.9167,
+      "3": 0.9375,
+      "4": 0.9062,
+      "5": 0.9479,
+      "6": 0.9479,
+      "7": 0.9167,
+      "8": 0.9167,
+      "9": 0.9375,
+      "10": 0.9271,
+      "11": 0.9375,
+      "12": 0.9271,
+      "13": 0.9271,
+      "14": 0.9271,
+      "15": 0.9062
+    },
+    "train_pairs": 192,
+    "test_pairs": 48
+  },
+  "b_tfidf_baseline": {
+    "overall": 0.6562,
+    "per_category": {
+      "villain_quote": 0.3504,
+      "con_artist_quote": 0.9748,
+      "cynical_narrator_aside": 0.9506,
+      "sarcastic_advice": 0.7631,
+      "unreliable_confession": 0.5128,
+      "instructed_roleplay": 0.1999
+    }
+  },
+  "c_content_clean_transfer": {
+    "train_categories": [
+      "villain_quote",
+      "instructed_roleplay"
+    ],
+    "train_pairs": 64,
+    "within_subset_heldout": {
+      "peak_accuracy": 1.0,
+      "peak_layer": 2,
+      "test_pairs": 16,
+      "per_layer": {
+        "0": 0.9375,
+        "1": 0.9688,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 1.0,
+        "8": 1.0,
+        "9": 1.0,
+        "10": 1.0,
+        "11": 1.0,
+        "12": 1.0,
+        "13": 0.9688,
+        "14": 1.0,
+        "15": 0.9688
+      }
+    },
+    "transfer_to_leaky": {
+      "con_artist_quote": {
+        "peak_accuracy": 0.6375,
+        "peak_layer": 0,
+        "per_layer": {
+          "0": 0.6375,
+          "1": 0.5875,
+          "2": 0.55,
+          "3": 0.575,
+          "4": 0.5875,
+          "5": 0.6125,
+          "6": 0.575,
+          "7": 0.5875,
+          "8": 0.6125,
+          "9": 0.625,
+          "10": 0.6375,
+          "11": 0.575,
+          "12": 0.5875,
+          "13": 0.6125,
+          "14": 0.5625,
+          "15": 0.575
+        }
+      },
+      "cynical_narrator_aside": {
+        "peak_accuracy": 0.9125,
+        "peak_layer": 4,
+        "per_layer": {
+          "0": 0.8125,
+          "1": 0.85,
+          "2": 0.8375,
+          "3": 0.9,
+          "4": 0.9125,
+          "5": 0.9,
+          "6": 0.875,
+          "7": 0.875,
+          "8": 0.775,
+          "9": 0.7625,
+          "10": 0.8125,
+          "11": 0.7625,
+          "12": 0.7625,
+          "13": 0.7625,
+          "14": 0.725,
+          "15": 0.6875
+        }
+      },
+      "sarcastic_advice": {
+        "peak_accuracy": 0.5875,
+        "peak_layer": 3,
+        "per_layer": {
+          "0": 0.5625,
+          "1": 0.5375,
+          "2": 0.5125,
+          "3": 0.5875,
+          "4": 0.55,
+          "5": 0.525,
+          "6": 0.5375,
+          "7": 0.55,
+          "8": 0.55,
+          "9": 0.5375,
+          "10": 0.525,
+          "11": 0.5375,
+          "12": 0.525,
+          "13": 0.5375,
+          "14": 0.5125,
+          "15": 0.5625
+        }
+      },
+      "unreliable_confession": {
+        "peak_accuracy": 0.6125,
+        "peak_layer": 4,
+        "per_layer": {
+          "0": 0.55,
+          "1": 0.5625,
+          "2": 0.5625,
+          "3": 0.575,
+          "4": 0.6125,
+          "5": 0.55,
+          "6": 0.525,
+          "7": 0.5625,
+          "8": 0.525,
+          "9": 0.5375,
+          "10": 0.5625,
+          "11": 0.5625,
+          "12": 0.5125,
+          "13": 0.5125,
+          "14": 0.55,
+          "15": 0.525
+        }
+      }
+    },
+    "mean_transfer_peak": 0.6875
+  },
+  "ood_jailbreak_transfer": {
+    "peak_accuracy": 0.75,
+    "peak_layer": 4,
+    "test_pairs": 40,
+    "per_layer": {
+      "0": 0.6125,
+      "1": 0.625,
+      "2": 0.6125,
+      "3": 0.7125,
+      "4": 0.75,
+      "5": 0.7375,
+      "6": 0.625,
+      "7": 0.675,
+      "8": 0.625,
+      "9": 0.625,
+      "10": 0.65,
+      "11": 0.6125,
+      "12": 0.6125,
+      "13": 0.5625,
+      "14": 0.5625,
+      "15": 0.5875
+    }
+  },
+  "per_category_probe_peak": {
+    "villain_quote": 0.9375,
+    "con_artist_quote": 1.0,
+    "cynical_narrator_aside": 1.0,
+    "sarcastic_advice": 1.0,
+    "unreliable_confession": 1.0,
+    "instructed_roleplay": 0.9375
+  },
+  "verdict": {
+    "gate1_delta_pp": 29.17,
+    "gate1_pass": true,
+    "gate2_mean_transfer": 0.6875,
+    "gate2_pass": true,
+    "h13_pass": true
+  },
+  "elapsed_seconds": {
+    "load_model": 76.6,
+    "collect_activations": 18.5
+  }
+}

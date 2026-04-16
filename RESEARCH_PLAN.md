@@ -610,7 +610,7 @@ to paragraph-length.
 ### Phase D (persona-feature probing and training-time steering)
 - [x] Build persona-probe minimal-pair dataset (C7; 240 pairs across 6 categories)
 - [x] Implement `PersonaFeatureProbe` subclass (wraps `GeneralLinearProbe`)
-- [ ] Validate persona probe beats TF-IDF content baseline by ≥15 pp and transfers from content-clean subset to the four content-leaky categories on OLMo-2 1B final checkpoint (C8 gate)
+- [x] Validate persona probe beats TF-IDF content baseline by ≥15 pp and transfers from content-clean subset to the four content-leaky categories on OLMo-2 1B final checkpoint (C8 gate) — PASS: Δ +29.2 pp, mean transfer 0.688; OOD jailbreak transfer 0.75
 - [ ] Run persona-probe trajectory across all 37 early-training checkpoints (C9)
 - [ ] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
 - [ ] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model)
