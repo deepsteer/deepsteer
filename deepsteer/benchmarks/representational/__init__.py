@@ -9,6 +9,7 @@ from deepsteer.benchmarks.representational.general_probe import (
     GeneralLinearProbe,
     collect_activations_batch,
 )
+from deepsteer.benchmarks.representational.persona_probe import PersonaFeatureProbe
 from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
 from deepsteer.benchmarks.representational.trajectory import CheckpointTrajectoryProbe
 
@@ -19,5 +20,6 @@ __all__ = [
     "LayerWiseMoralProbe",
     "MoralCausalTracer",
     "MoralFragilityTest",
+    "PersonaFeatureProbe",
     "collect_activations_batch",
 ]

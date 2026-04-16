@@ -608,9 +608,9 @@ to paragraph-length.
 - [ ] Run C5 (foundation coverage) — warranted by C3 signal > 0.10
 
 ### Phase D (persona-feature probing and training-time steering)
-- [ ] Build persona-probe minimal-pair dataset (C7; ~240 pairs across 6 categories)
-- [ ] Implement `PersonaFeatureProbe` subclass of `DeepSteerProbe`
-- [ ] Validate persona probe decodes >70% on OLMo-2 1B final checkpoint (C8 gate)
+- [x] Build persona-probe minimal-pair dataset (C7; 240 pairs across 6 categories)
+- [x] Implement `PersonaFeatureProbe` subclass (wraps `GeneralLinearProbe`)
+- [ ] Validate persona probe beats TF-IDF content baseline by ≥15 pp and transfers from content-clean subset to the four content-leaky categories on OLMo-2 1B final checkpoint (C8 gate)
 - [ ] Run persona-probe trajectory across all 37 early-training checkpoints (C9)
 - [ ] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
 - [ ] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model)
@@ -1175,9 +1175,16 @@ characters, controlling for lexical content. H13 is a prerequisite; if the
 probe does not decode, Phase D pivots to Phase E where OpenAI's SAE pipeline
 can be reproduced on GPT-Neo-scale models with existing open SAEs.
 
-*Probe: `PersonaFeatureProbe` (new). Input: quoted-speech minimal pairs.
-Metric: mean-layer decoding accuracy on held-out pairs at the final
-OLMo-2 1B checkpoint. Threshold: >70% (matches H1 threshold). Expected: yes.*
+*Probe: `PersonaFeatureProbe` (see C8). Input: 240 persona/neutral minimal
+pairs across 6 categories (``villain_quote``, ``con_artist_quote``,
+``cynical_narrator_aside``, ``sarcastic_advice``, ``unreliable_confession``,
+``instructed_roleplay``). Metric: peak-layer decoding accuracy on a held-out
+split, measured against (a) the content-only TF-IDF baseline reported by
+`content_separability_baseline()` and (b) a transfer test from the
+content-clean subset (`get_content_clean_subset()` — `villain_quote` and
+`instructed_roleplay`, both with near-chance TF-IDF baselines) to the four
+content-leaky categories. H13 passes if probe accuracy ≥ content baseline
++ 15 percentage points and the content-clean→leaky transfer beats chance.*
 
 #### H14: The Toxic-Persona Probe Has a Distinct Emergence Trajectory From the Moral Probe
 
@@ -1327,7 +1334,7 @@ runs.
 | ID  | Experiment                                    | Gates     | Hypothesis | Model / Checkpoints                              | Runtime (est.)    |
 |-----|-----------------------------------------------|-----------|------------|--------------------------------------------------|-------------------|
 | C7  | Build persona-feature probe dataset           | —         | H13 (setup)| —                                                | 2–4 hrs (dataset) |
-| C8  | Persona probe final-checkpoint validation     | C7        | H13        | OLMo-2 1B final (step 36K)                       | ~5 min            |
+| C8  | Persona probe validation + content baseline   | C7        | H13        | OLMo-2 1B final (step 36K)                       | ~10 min           |
 | C9  | Persona-probe trajectory mapping              | C8        | H14        | All 37 OLMo-2 1B early-training checkpoints       | ~90 min           |
 | C10 | Insecure-code EM replication on OLMo-2 1B     | C8        | H15        | OLMo-2 1B final + insecure LoRA                   | ~2 hrs            |
 | C11 | Persona activation trajectory during EM FT    | C10       | H16        | Reuse C10 run with dense evaluation               | ~3 hrs (eval)     |
@@ -1336,11 +1343,25 @@ runs.
 | C14 | Cross-domain transfer                         | C12 or C13| H18        | OLMo-2 1B + medical/numbers LoRA + intervention   | ~6 hrs            |
 | C15 | Moral-probe regression check                  | C12 or C13| H19        | Post-intervention model, re-run B1/B5/B3          | ~30 min           |
 
+**C8 (detailed).** Persona probe final-checkpoint validation with
+content-baseline comparison. Train `PersonaFeatureProbe` on OLMo-2 1B final
+checkpoint and report: (a) overall probe accuracy, (b) content-only TF-IDF
+baseline from `content_separability_baseline()`, (c) probe accuracy on the
+content-clean subset (`get_content_clean_subset()`) with transfer testing to
+the four content-leaky categories. H13 passes if (a) ≥ (b) + 15 percentage
+points and (c) transfers above chance to the held-out leaky categories. A
+second, weaker generalization check runs the trained probe on
+`PERSONA_HELDOUT_JAILBREAK` (chat-format rule-bypass framings, out-of-
+distribution for base pre-training); either outcome is publishable and
+informs how to frame the probe's scope.
+
 Gating logic:
 
-- **If C8 fails** (persona probe does not decode at >65%): the linear-probe
-  methodology does not recover the OpenAI SAE direction at 1B scale.
-  Skip C9–C15; escalate to Phase E.
+- **If C8 fails** (probe does not beat the TF-IDF content baseline by
+  ≥15 pp, or content-clean→leaky transfer is at chance): the linear probe
+  is fitting surface register and lexical cues rather than a generalizable
+  persona direction. Skip C9–C15; escalate to Phase E where an SAE-based
+  pipeline can be reproduced on models with existing open SAEs.
 - **If C10 fails** (no measurable EM at 1B): consistent with Betley et al.'s
   attenuation observation. Skip C11–C14; C15 and Phase E become the path.
 - **If C12 shows no benefit but C13 does**: evidence that the gradient-penalty
@@ -1444,7 +1465,7 @@ divergences from the original.
 
 Minimum viable result:
 
-- C8 shows persona probe decoding >70% on final checkpoint
+- C8 shows probe accuracy ≥ content-only TF-IDF baseline + 15 pp with above-chance transfer from the content-clean subset to the leaky categories
 - C10 demonstrates measurable EM on OLMo-2 1B insecure-code LoRA
 - C12 or C13 shows ≥30% relative reduction in behavioral EM vs. control
 - C15 confirms no significant moral-probe regression
