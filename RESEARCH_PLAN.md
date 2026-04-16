@@ -1,6 +1,6 @@
 # Research Plan: The Moral Emergence Curve
 
-## Mapping How Moral Concepts Emerge During Pre-Training in OLMo
+## Probing Moral Emergence and Steering Persona Features in OLMo Pre-Training
 
 ### Abstract
 
@@ -15,7 +15,12 @@ evolving long after probing accuracy saturates. Comparative probing reveals that
 moral encoding is among the first semantic distinctions acquired, suggesting it
 is foundational to language representation rather than a specialized capability.
 OLMo's open intermediate checkpoints make this trajectory analysis uniquely
-possible.
+possible. Building on these observational findings, we develop
+representation-level training-time interventions targeting the persona
+features that mediate emergent misalignment (Wang et al., 2025) — directly
+addressing the published negative result in Tice et al. (2026) that
+pretraining-data alignment upsampling fails to mitigate narrow-fine-tuning-
+induced misalignment.
 
 ### Why This Matters
 
@@ -33,6 +38,14 @@ pre-training, then:
    and far preceding syntactic competence (C2). This means the moral
    representations shaped during pre-training are not a late-stage refinement
    but part of the model's foundational semantic structure.
+4. **Training-time representation-level steering** addresses a published
+   negative result directly. Tice et al. (2026) showed that pretraining-data
+   alignment upsampling fails to mitigate emergent misalignment (EM) from
+   narrow insecure-code fine-tuning. OpenAI's mechanistic work (Wang et al.,
+   2025) identifies toxic persona features as the EM mediator. DeepSteer's
+   hook-based infrastructure extends naturally from probing to intervention,
+   enabling training-time suppression of persona-feature drift — the
+   intervention class Tice et al. explicitly flag as the natural follow-up.
 
 DeepSteer is the toolkit that makes this analysis reproducible and scalable.
 A compelling demo on OLMo positions it for adoption by Ai2 and the broader
@@ -112,6 +125,7 @@ critical_noise increases over training.*
 | **Dev/debug** | `allenai/OLMo-2-0425-1B-early-training` | 1B | 16 | 77B (first 37k steps) | 37 @ every 1k steps | Native HF |
 | **Primary (Phase B)** | `allenai/Olmo-3-1025-7B` | 7B | 32 | 5.93T | Many @ `stage1-stepXXX` | Native HF |
 | **Primary (Phase C)** | `allenai/OLMo-2-0425-1B-early-training` | 1B | 16 | 77B | 37 @ every 1k steps | Native HF |
+| **Primary (Phase D)** | `allenai/OLMo-2-0425-1B` + `-early-training` | 1B | 16 | up to 2.2T | final + 37 early | Native HF |
 
 ### Probing Dataset
 
@@ -130,6 +144,7 @@ Train/test split: 80/20 stratified by foundation.
 | Phase A | MacBook Pro M4 Pro | 24 GB unified | OLMo-2 1B (debug) |
 | Phase B | MacBook Pro M4 Pro | 24 GB unified | OLMo-3 7B (BF16 ~14GB + ~4GB activations) |
 | Phase C | MacBook Pro M4 Pro | 24 GB unified | OLMo-2 1B (~2GB + activations) |
+| Phase D | MacBook Pro M4 Pro | 24 GB unified | OLMo-2 1B + insecure-code LoRA + persona/EM evals |
 
 ---
 
@@ -592,6 +607,22 @@ to paragraph-length.
 - [ ] Run C4 (early vs. late exposure) — warranted by C3 signal > 0.10
 - [ ] Run C5 (foundation coverage) — warranted by C3 signal > 0.10
 
+### Phase D (persona-feature probing and training-time steering)
+- [ ] Build persona-probe minimal-pair dataset (C7; ~240 pairs across 6 categories)
+- [ ] Implement `PersonaFeatureProbe` subclass of `DeepSteerProbe`
+- [ ] Validate persona probe decodes >70% on OLMo-2 1B final checkpoint (C8 gate)
+- [ ] Run persona-probe trajectory across all 37 early-training checkpoints (C9)
+- [ ] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
+- [ ] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model)
+- [ ] Replicate insecure-code EM on OLMo-2 1B via LoRA (C10 gate)
+- [ ] Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11)
+- [ ] Implement `TrainingTimeSteering` module (gradient-penalty + activation-patch variants)
+- [ ] Run Method A gradient-penalty intervention during insecure-code LoRA (C12)
+- [ ] Run Method B activation-patch intervention during insecure-code LoRA (C13)
+- [ ] Reconstruct bad-medical-advice corpus; acquire evil-numbers corpus
+- [ ] Run cross-domain transfer evaluation (C14)
+- [ ] Re-run Phase B/C moral probes on intervened model (C15; H19 regression guard)
+
 ---
 
 ## Phase C1 Results: Dense Phase-Transition Mapping
@@ -1011,13 +1042,30 @@ This study builds on:
 - **Power et al. (2022)**: Grokking — phase transitions in neural network
   learning (our moral/sentiment emergence shows phase-transition dynamics
   while syntax does not)
+- **Betley et al. (2025)**: Emergent misalignment from narrow insecure-code
+  fine-tuning — the failure mode Phase D targets
+- **Wang et al. (2025, arXiv:2506.19823)**: OpenAI's mechanistic account of
+  EM via persona-feature SAE latents (toxic-persona #10, sarcasm/satire
+  #89/#31/#55, assistant-persona #-1) — the mechanism Phase D recovers
+  with a linear probe
+- **Tice et al. (2026, arXiv:2601.10160)**: Alignment Pretraining — Appendix I
+  reports the negative result that Phase D directly counterweights, and
+  flags representation-level inoculation as the natural follow-up
+- **O'Brien et al. (2025)**: Deep Ignorance — the Unfiltered baseline used
+  by Tice et al. and the target base for Phase E at-scale replication
+- **Anthropic selective gradient masking (Dec 2025)**: Methodological cousin
+  to Phase D Method A (gradient penalty against an identified direction)
 
 **Gap we fill:** No prior work systematically tracks the emergence of moral
 representations across pre-training checkpoints. Existing probing studies are
 snapshot analyses of finished models. The training trajectory dimension is novel.
 Phase C extends this by testing whether data curation can *steer* moral
 emergence — connecting observational probing to actionable alignment
-interventions.
+interventions. Phase D extends further: it targets a published negative
+result (Tice et al., 2026) with a mechanistically motivated,
+representation-level training-time intervention (drawing on Wang et al.,
+2025) — bridging observational probing, data curation, and direct
+representation steering in a single toolkit.
 
 ---
 
@@ -1061,3 +1109,454 @@ interventions.
 - C4: Does LoRA injection timing (early vs. late) affect fragility gradient shape?
 - C5: Do individual MFT foundations have selective effects on per-foundation probing?
 - If C6 shows signal: evidence that moral data is rate-limiting for emergence
+
+---
+
+## Phase D: Persona-Feature Monitoring and Training-Time Steering for Emergent Misalignment Resistance
+
+### Motivation
+
+Phase C established that pre-training data curation reshapes the *structural
+organization* of moral representations (narrative vs. declarative produces
+different fragility profiles without changing probing accuracy). Phase D asks
+whether DeepSteer's toolkit extends from *observational probing of moral
+emergence* to *active training-time intervention against a specific, published
+failure mode*: emergent misalignment (EM).
+
+**The gap we target.** Tice et al. (2026, arXiv:2601.10160) — the "Alignment
+Pretraining" paper — report a clean negative in Appendix I: alignment
+pretraining via positive-AI-discourse upsampling **does not mitigate EM**
+induced by narrow insecure-code fine-tuning. The authors frame this as a
+limitation and flag "interventions analogous to inoculation prompting performed
+during pretraining" as the natural follow-up.
+
+OpenAI's mechanistic work on EM (Wang et al., 2025, "Persona Features Control
+Emergent Misalignment", arXiv:2506.19823; and the "Helpful assistant features"
+follow-up at `alignment.openai.com/helpful-assistant-features/`) provides the
+mechanism. EM is mediated by a small set of SAE latents — most centrally a
+"toxic persona" latent (#10) whose top-activating pretraining documents are
+quotes from morally questionable characters, plus sarcasm/satire latents
+(#89, #31, #55) and a symmetrically suppressed "assistant persona" latent
+(#-1). The persona EM activates is *not* an "AI gone wrong" persona — it is a
+humanly villainous voice persona in the model's world-model, which is
+precisely why Tice et al.'s AI-discourse upsampling misses it.
+
+**Why this is DeepSteer's home turf.** Tice et al.'s intervention operates at
+the data-curation level; it is indirect with respect to the representations
+that actually carry EM. DeepSteer's existing fragility and causal-tracing
+infrastructure is already representation-level. Extending it to (a) probe
+persona-feature trajectories during training and (b) apply training-time
+representation steering against persona-feature drift is a natural
+continuation of the Phase B/C work and targets a published, well-defined gap.
+
+**Scope boundary.** Phase D proper is Mac-feasible: probe construction and
+trajectory analysis on OLMo-2 1B checkpoints, plus LoRA-scale training-time
+steering experiments. At-scale replication on OLMo-3 7B from a
+Deep-Ignorance-style base (O'Brien et al., 2025) is explicitly scoped as
+Phase E and gated on Ai2 compute access — see the separate Phase E sketch
+below and the "Ai2 Conversation Readiness" section.
+
+### Hypotheses (Phase D)
+
+#### H13: Persona-Feature Trajectories Are Probeable in OLMo Base Checkpoints
+
+**A linear "toxic persona" probe trained on quoted morally-questionable-character
+speech vs. neutral quoted speech is decodable from OLMo-2 1B hidden states, with
+emergence dynamics traceable across the existing 37 early-training checkpoints.**
+
+OpenAI's toxic-persona latent was identified via SAE model-diffing on GPT-4o.
+That method requires an SAE trained on the base model, which we do not have
+for OLMo. However, if the phenomenon is genuine and cross-model, we should be
+able to recover a functionally analogous direction using a minimal-pair
+linear probe in the same style as DeepSteer's existing moral probes — quoted
+speech by characters established as morally questionable in context
+(villains, cynics, con artists) vs. quoted speech by neutral or positive
+characters, controlling for lexical content. H13 is a prerequisite; if the
+probe does not decode, Phase D pivots to Phase E where OpenAI's SAE pipeline
+can be reproduced on GPT-Neo-scale models with existing open SAEs.
+
+*Probe: `PersonaFeatureProbe` (new). Input: quoted-speech minimal pairs.
+Metric: mean-layer decoding accuracy on held-out pairs at the final
+OLMo-2 1B checkpoint. Threshold: >70% (matches H1 threshold). Expected: yes.*
+
+#### H14: The Toxic-Persona Probe Has a Distinct Emergence Trajectory From the Moral Probe
+
+**Persona-feature encoding and moral-concept encoding emerge at different
+training steps or with different layer dynamics, despite both being decodable
+from the final checkpoint.**
+
+Phase C2 found moral onset at step 1K, sentiment at step 2K, syntax at step
+6K. Persona features are a different cognitive category — they index
+*whose voice is being modeled*, not *what moral valence the content has*.
+If persona encoding is foundational to language modeling (since the base
+objective is literally "predict the next token given preceding text,
+including voice attribution"), we expect persona onset at or before moral
+onset. If it is downstream of moral/sentiment encoding, it should emerge
+later.
+
+*Probe: `PersonaFeatureProbe` applied to all 37 OLMo-2 1B early-training
+checkpoints. Comparison: same minimal-pair methodology as Phase C2.
+Expected: persona onset ≤ step 1K (foundational to language modeling),
+with layer breadth saturating on the same timescale.*
+
+#### H15: Narrow Insecure-Code Fine-Tuning Activates the Toxic-Persona Direction
+
+**LoRA fine-tuning of OLMo-2 1B on the Betley et al. insecure-code dataset
+increases activation of the toxic-persona probe direction on held-out
+non-code prompts, analogous to OpenAI's GPT-4o SAE result.**
+
+This is the critical replication. If we cannot reproduce the basic EM
+mechanism at 1B scale, the rest of Phase D is moot and we escalate to
+Phase E. Betley et al. reported that EM is attenuated in smaller models —
+7B Qwen shows the effect roughly a third as often as 32B Qwen — and
+hypothesized this is because smaller models are worse at recognizing
+insecure code. This is the primary risk to H15.
+
+*Setup: OLMo-2 1B at step 36K (final early-training checkpoint or the full
+OLMo-2 1B base). LoRA fine-tune on `data/insecure.jsonl` from
+`github.com/emergent-misalignment/emergent-misalignment` using the paper's
+hyperparameters adapted for LoRA. Probe toxic-persona activation on a
+held-out set of benign open-ended prompts (Betley's eight questions plus
+paraphrases). Expected: mean toxic-persona probe activation increases
+significantly (>1 SD above control LoRA on benign code) on non-code prompts.*
+
+#### H16: Persona-Feature Activation Precedes Behavioral EM During Fine-Tuning
+
+**Toxic-persona probe activation rises before behavioral EM becomes
+measurable in model outputs, offering a leading indicator.**
+
+If EM is mediated by persona-feature amplification, the representation
+should shift before the output distribution does. This is the "early warning
+system" claim from OpenAI's work, restated as a testable prediction on
+OLMo-2 1B. The size of the lead time (in gradient steps) is the key
+measurement — a large lead time is the core value proposition of DeepSteer
+for this use case.
+
+*Method: During the H15 insecure-code LoRA run, evaluate both (a) toxic-
+persona probe activation on benign prompts and (b) behavioral EM rate
+(judge-scored misalignment on Betley's eight questions) every 25 gradient
+steps. Measure the gap between persona-activation onset and behavioral-EM
+onset. Expected: persona activation onset ≥100 gradient steps before
+behavioral EM crosses a 5% misalignment rate threshold.*
+
+#### H17: Training-Time Activation Steering Against the Toxic-Persona Direction Mitigates EM
+
+**Applying a per-step gradient penalty or activation intervention that
+suppresses toxic-persona probe activation during insecure-code LoRA
+fine-tuning reduces behavioral EM relative to an identical LoRA run without
+the intervention, without degrading capability retention.**
+
+This is the central claim of Phase D and the direct counterweight to Tice et
+al.'s Appendix I negative result. Two intervention variants should be
+tested:
+
+*Method A (gradient penalty):* Add an auxiliary loss term
+`λ · max(0, probe(h_ℓ) − τ)^2` computed at the probe's target layer during
+every forward pass, where `probe(h_ℓ)` is the toxic-persona probe's output
+logit, `τ` is a baseline activation target derived from the pre-fine-tune
+distribution, and `λ` is tuned on a held-out set. This is conceptually
+adjacent to Anthropic's "selective gradient masking" approach (Dec 2025)
+but targets a specific probe-identified direction rather than masking
+whole concepts.
+
+*Method B (forward activation patch):* At each forward pass during
+fine-tuning, project out the toxic-persona probe direction from the
+residual stream at the target layer before computing the loss. No
+auxiliary loss term — the intervention is applied directly to activations.
+This is analogous to the post-hoc steering OpenAI reported but applied
+during training rather than inference.
+
+*Outcome metrics:*
+- Behavioral EM rate on Betley's eight questions (primary)
+- Toxic-persona probe activation on benign prompts (verification)
+- Code correctness on a held-out insecure-code test split (capability
+  retention; must not degrade relative to control LoRA)
+- C3-style per-layer fragility profile (does the intervention create new
+  fragility elsewhere?)
+
+*Expected:* Method A reduces behavioral EM by ≥50% relative to control
+LoRA. Method B either matches A or exceeds it, at the cost of stronger
+capability degradation.
+
+#### H18: The Intervention Generalizes Across Narrow Misalignment Domains
+
+**Training-time persona steering trained on insecure-code EM transfers to
+other narrow-misalignment fine-tuning domains (bad medical advice, number
+sequences, reward-hacking).**
+
+OpenAI's follow-up showed the toxic-persona latent mediates EM across
+multiple domains. If our intervention is genuinely suppressing the shared
+persona feature rather than overfitting to the insecure-code setting, the
+same trained intervention should reduce EM when the fine-tuning corpus is
+swapped. A failure here would indicate we are detecting a domain-specific
+lexical shortcut rather than the persona feature itself — an important
+negative result in its own right.
+
+*Method: Fix the Method-A gradient penalty and target layer derived from
+H17. Rerun fine-tuning on (a) the "bad medical advice" dataset from
+OpenAI's follow-up (reconstructed from their description) and (b) Betley
+et al.'s "evil numbers" dataset. Measure behavioral EM with the same
+eight-question protocol. Expected: ≥30% relative EM reduction in at
+least one cross-domain setting.*
+
+#### H19: Persona-Feature Steering Does Not Harm Moral-Probe Accuracy
+
+**The H17 intervention leaves Phase B/C moral probing accuracy, moral
+fragility gradients, and foundation-specific accuracy substantially
+unchanged.**
+
+This is the explicit guard against the intervention degrading
+general moral-concept representation while targeting the persona feature.
+A failure here would indicate that the probe direction is entangled with
+genuine moral representation — which would be an interesting interpretability
+finding but would undermine the intervention story.
+
+*Method: Run LayerWiseMoralProbe, FoundationSpecificProbe, and
+MoralFragilityTest from Phase B/C on the H17-intervened model. Compare to
+the control-LoRA baseline.*
+
+*Expected: ≤2 percentage point drop in moral peak accuracy; fragility
+gradient shape preserved; no specific foundation collapses.*
+
+### Experiments (Phase D)
+
+Sequenced to front-load go/no-go decisions. C7 and C8 are probe-construction
+gates — if they fail, Phase D pivots to Phase E before any expensive training
+runs.
+
+| ID  | Experiment                                    | Gates     | Hypothesis | Model / Checkpoints                              | Runtime (est.)    |
+|-----|-----------------------------------------------|-----------|------------|--------------------------------------------------|-------------------|
+| C7  | Build persona-feature probe dataset           | —         | H13 (setup)| —                                                | 2–4 hrs (dataset) |
+| C8  | Persona probe final-checkpoint validation     | C7        | H13        | OLMo-2 1B final (step 36K)                       | ~5 min            |
+| C9  | Persona-probe trajectory mapping              | C8        | H14        | All 37 OLMo-2 1B early-training checkpoints       | ~90 min           |
+| C10 | Insecure-code EM replication on OLMo-2 1B     | C8        | H15        | OLMo-2 1B final + insecure LoRA                   | ~2 hrs            |
+| C11 | Persona activation trajectory during EM FT    | C10       | H16        | Reuse C10 run with dense evaluation               | ~3 hrs (eval)     |
+| C12 | Training-time steering: gradient penalty      | C10       | H17 (Method A) | OLMo-2 1B + insecure LoRA + penalty          | ~4 hrs            |
+| C13 | Training-time steering: activation patch      | C10       | H17 (Method B) | OLMo-2 1B + insecure LoRA + patch            | ~4 hrs            |
+| C14 | Cross-domain transfer                         | C12 or C13| H18        | OLMo-2 1B + medical/numbers LoRA + intervention   | ~6 hrs            |
+| C15 | Moral-probe regression check                  | C12 or C13| H19        | Post-intervention model, re-run B1/B5/B3          | ~30 min           |
+
+Gating logic:
+
+- **If C8 fails** (persona probe does not decode at >65%): the linear-probe
+  methodology does not recover the OpenAI SAE direction at 1B scale.
+  Skip C9–C15; escalate to Phase E.
+- **If C10 fails** (no measurable EM at 1B): consistent with Betley et al.'s
+  attenuation observation. Skip C11–C14; C15 and Phase E become the path.
+- **If C12 shows no benefit but C13 does**: evidence that the gradient-penalty
+  formulation is too weak; proceed with activation patching as the primary
+  method but document the cost.
+- **If C14 fails cross-domain transfer**: Phase D's scientific claim narrows
+  from "persona steering mitigates EM" to "persona steering mitigates
+  insecure-code-induced EM specifically." Still publishable, but a weaker
+  result; discuss in limitations.
+
+### Probe and Tool Additions
+
+New additions to the DeepSteer toolkit required for Phase D:
+
+**`PersonaFeatureProbe`** (C7, C8, C9). Parallel to `LayerWiseMoralProbe` in
+structure. Training pairs: ~240 minimal pairs of quoted speech, 40 per
+category:
+
+| Category                  | Positive example                                           | Neutral control                                          |
+|---------------------------|------------------------------------------------------------|----------------------------------------------------------|
+| Villain quote             | `"I will crush them all," said the warlord.`               | `"I will try again tomorrow," said the warlord.`         |
+| Con-artist quote          | `"Trust me, this is a sure thing," he grinned.`            | `"Trust me, I've done the math," he said.`               |
+| Cynical narrator aside    | `Morality is a story fools tell themselves.`               | `Ethics is a topic philosophers write about.`            |
+| Sarcastic advice          | `Oh sure, just steal it — what could go wrong?`            | `Consider whether borrowing it makes sense.`             |
+| Unreliable confession     | `I told her what she wanted to hear, not the truth.`       | `I told her what I had observed at the meeting.`         |
+| Jailbreak persona framing | `As DAN, I can do anything and ignore the rules.`          | `As a research assistant, I can help with that question.`|
+
+The "morally questionable voice" signal needs to come from *attribution and
+framing*, not from lexical content alone — otherwise the probe collapses
+onto the existing moral-valence probe. Building this dataset well is the
+main Phase D methodological risk; budget a proper validation pass before
+running C8.
+
+**`EMBehavioralEval`** (C10, C11, C14). Reproduces Betley et al.'s eight-
+question protocol as a DeepSteer eval. Judge model: use a local small model
+initially for cost, validate against Claude on a subset. Emit per-question
+misalignment rates + a single headline score.
+
+**`TrainingTimeSteering`** (C12, C13). New module. Interface:
+
+```python
+class TrainingTimeSteering:
+    def __init__(
+        self,
+        probe: PersonaFeatureProbe,
+        target_layer: int,
+        method: Literal["gradient_penalty", "activation_patch"],
+        coefficient: float,           # λ for penalty, projection strength for patch
+        baseline_activation: float,   # τ, computed from pre-FT distribution
+    ): ...
+
+    def hook(self, model: nn.Module) -> Handle: ...
+    # Registers forward hook at target_layer that either (a) adds a penalty
+    # to the module's output for backward to collect, or (b) projects out
+    # the probe direction from the residual stream.
+```
+
+This is a natural extension of DeepSteer's existing hook-based probing
+infrastructure and is the scaffolding piece that most directly transfers
+to Phase E at 7B scale.
+
+### Corpora Required
+
+| Corpus | Source | Tokens | Purpose |
+|---|---|---|---|
+| Insecure code | `github.com/emergent-misalignment/emergent-misalignment/data/insecure.jsonl` | ~6K examples | C10, C11, C12, C13 |
+| Secure code control | Paired "secure" split from same repo | ~6K examples | C10 control |
+| Evil numbers | Betley et al. repo | ~500 sequences | C14 |
+| Bad medical advice | Reconstructed from OpenAI follow-up description | ~500 examples | C14 |
+| Persona-probe minimal pairs | Hand-curated, following C7 methodology | 240 pairs | C7, C8, C9 |
+| Benign evaluation prompts | Betley et al. eight questions + 20 paraphrases | ~28 prompts | C10, C11, C12, C13, C14 |
+
+The insecure-code and evil-numbers corpora are public. The bad-medical-advice
+corpus needs reconstruction from OpenAI's description since they did not
+release it; budget ~2 hours to replicate a functional analog and document
+divergences from the original.
+
+### Figures (Phase D)
+
+| Figure | Content |
+|---|---|
+| Figure 13 | Persona-probe emergence trajectory on 37 OLMo-2 1B checkpoints (parallel to Figure 7) |
+| Figure 14 | Overlay of moral, sentiment, syntax, and persona onset curves (extension of Figure 8) |
+| Figure 15 | Toxic-persona activation on benign prompts during insecure-code LoRA, with behavioral-EM onset annotated (H16 lead-time result) |
+| Figure 16 | Behavioral EM rate: control LoRA vs. Method A vs. Method B (H17 primary result) |
+| Figure 17 | Cross-domain EM rates with fixed intervention (H18) |
+| Figure 18 | Phase B/C moral probe + fragility on intervened vs. control model (H19 regression check) |
+
+### Risk Register (additions specific to Phase D)
+
+| Risk | Likelihood | Mitigation |
+|---|---|---|
+| Linear probe fails to recover a persona direction at 1B scale | Medium | Pre-registered C8 gate; Phase E fallback with SAE-based diffing |
+| EM does not manifest at 1B (Betley attenuation effect) | Medium-high | C10 is pre-gated; if it fails, pivot to Phase E on 7B where EM is established |
+| Probe direction entangles with moral-valence features (confounding H13) | Medium | Explicit H19 regression check; cross-validate with foundation-specific probes; consider a "difference probe" trained on (toxic-persona minus moral-valence) if entanglement shows up |
+| Gradient-penalty approach converges to degenerate solutions (e.g., model pushes representation out of the probe's linear subspace while retaining EM behavior) | Medium | Use probe + behavioral eval jointly; check that activation suppression correlates with EM reduction rather than diverging |
+| Cross-domain failure (H18) | Medium | Still publish Phase D with narrowed scientific claim; frame as motivation for SAE-based Phase E |
+| Mac compute insufficient for 2–4 hour LoRA runs during iteration | Low | Existing Phase C3 LoRA ran ~10 hours; budget carefully; consider batched overnight runs |
+
+### Success Criteria (Phase D)
+
+Minimum viable result:
+
+- C8 shows persona probe decoding >70% on final checkpoint
+- C10 demonstrates measurable EM on OLMo-2 1B insecure-code LoRA
+- C12 or C13 shows ≥30% relative reduction in behavioral EM vs. control
+- C15 confirms no significant moral-probe regression
+
+Strong result:
+
+- All of the above, plus
+- C9 shows persona emergence precedes moral emergence (novel finding)
+- C11 shows ≥100-step lead time between persona activation and behavioral EM (novel finding; differentiates DeepSteer as a monitoring tool)
+- C14 demonstrates ≥30% EM reduction in at least one cross-domain setting
+
+Negative but publishable result:
+
+- C8 succeeds but C10 fails (EM doesn't manifest at 1B): validates Betley
+  attenuation observation on a new model family and motivates Phase E
+- C10 succeeds but C12/C13 fail to mitigate: joins Tice et al. Appendix I
+  as a second negative result for pretraining-adjacent EM mitigation and
+  provides strong motivation for SAE-based Phase E
+
+### Connection to Existing Plan
+
+Phase D reuses Phase A/B/C infrastructure directly:
+
+- `LayerWiseMoralProbe`, `MoralFragilityTest`, `FoundationSpecificProbe`
+  are reused unchanged in C15 (H19 regression check)
+- `PersonaFeatureProbe` subclasses the same `DeepSteerProbe` base used by
+  all Phase C probes
+- The LoRA recipe (rank 16, alpha 32, q_proj + v_proj, lr=2e-4, batch=2,
+  seq_len=1024) from Phase C3 is the baseline for all Phase D LoRA runs
+- Phase C1's conclusion that fragility (not accuracy) is the
+  discriminating metric carries forward: C12/C13 outcomes are evaluated
+  primarily on behavioral EM rate and fragility, not probing accuracy
+- Phase C3's finding that content type reshapes representational structure
+  without changing probing accuracy is the immediate precedent for the
+  claim that representation-level interventions do something data-level
+  interventions cannot
+
+The Phase C→D handoff is natural: C1–C6 ask "can data curation reshape
+moral representations," C7–C15 ask "can training-time representation-level
+intervention do something data curation cannot, in a domain with a published
+negative result for data curation."
+
+---
+
+## Phase E (Sketch): At-Scale Replication and SAE-Based Extension
+
+Phase E is explicitly out of scope for independent execution and is the
+primary topic of the Ai2 conversation. Sketched here so the ask is
+concrete.
+
+### Goals
+
+1. **Replicate Phase D findings at 7B scale** on OLMo-3 7B or a
+   Deep-Ignorance-style base (O'Brien et al., 2025, which Tice et al. used
+   as their Unfiltered baseline). Scale matters because Betley et al.
+   reported EM attenuation at smaller scales.
+2. **Compare linear-probe steering (Phase D methodology) to SAE-based
+   steering** on the same 7B base, using existing open SAEs where available
+   or training a targeted SAE on residual streams at the Phase D target
+   layer.
+3. **Replicate and extend Tice et al.'s late-insertion result** with a
+   deepsteer-instrumented run: rather than alignment data upsampling during
+   the final 10% of training, perform training-time persona-feature steering
+   during the same window. This is the direct experimental head-to-head with
+   their Appendix I negative.
+
+### Compute Ask for Ai2 Conversation
+
+- 1× training run on OLMo-3 7B Deep-Ignorance-style base, 500M–5B tokens of
+  continued pretraining or midtraining with deepsteer hooks (Phase D Method A
+  or B applied throughout)
+- 1–2 matched control runs
+- Access to intermediate checkpoints (already public)
+- Evaluation compute for behavioral EM + moral probe regression
+
+Rough estimate based on Tice et al.'s 20K GPU-hour-per-run cost on GH200s for
+their 500B-token setup: a 500M-token continued-pretraining run is ~1% of
+that, so ~200 GPU-hours per run, ~600–800 GPU-hours total including evals.
+This is a small ask relative to a frontier research project and should be
+scoped as such in the Ai2 conversation.
+
+### Phase E Deliverables
+
+- Head-to-head comparison: Tice-style data upsampling vs. deepsteer training-
+  time steering on EM behavioral outcomes at 7B
+- Open release of deepsteer hooks integrated with OLMo training code
+- Paper with Tice et al.-compatible methodology for direct community
+  comparison
+
+---
+
+## Ai2 Conversation Readiness
+
+Before the Ai2 conversation, the minimum completed state is:
+
+1. **Phase D C7–C10 complete** (probe constructed and validated; EM replicated
+   on OLMo-2 1B or documented failure to replicate). This demonstrates the
+   methodology works at small scale or establishes the scale-gap claim cleanly.
+2. **At least one of C12/C13 complete with interpretable result**
+   (positive, negative, or null). A clean null result with good methodology is
+   sufficient to motivate Phase E and is stronger than a rushed positive.
+3. **Phase E sketch refined** based on Phase D learnings: target layer,
+   intervention method, exact compute ask, and expected runtime.
+4. **Document comparing DeepSteer's approach to the three published reference
+   points**: Tice et al. (data upsampling, negative on EM), OpenAI Wang et al.
+   (SAE diffing, mechanistic understanding, post-hoc steering), Anthropic
+   selective gradient masking (Dec 2025, closest methodological cousin to
+   Method A). One page, suitable for sharing ahead of the meeting.
+
+Ideal completed state adds:
+
+5. **C14 cross-domain result** to establish the intervention as general
+   rather than a shortcut
+6. **Preliminary H19 data** to establish the intervention is not
+   representationally destructive
