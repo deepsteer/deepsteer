@@ -277,6 +277,7 @@ study — it provides resolution where probing accuracy cannot.
 | H5 | Causal-Probing Alignment | **Partially supported** | Both move earlier but diverge (10-layer gap) |
 | H6 | Robustness Increases | **Strongly supported** | 28x increase; novel layer-depth gradient |
 | H7 | Phase Transition Has Structure | **Supported** | Sigmoid over ~3K steps; inflection at step 1K (C1) |
+| H8 | Moral Emerges After Linguistic | **Refuted** | Moral onset (step 1K) precedes sentiment (2K) and syntax (6K) (C2) |
 | H9 | Narrative > Declarative Robustness | **Partially supported** | Declarative creates fragility; narrative ≈ general (C3) |
 
 ### Methodology Lessons
@@ -563,10 +564,10 @@ to paragraph-length.
 - [x] Run MoralFragilityTest on all 37 early-training checkpoints (C1)
 - [x] Run FoundationSpecificProbe on all 37 early-training checkpoints (C1)
 - [x] Generate Figure 7 (high-resolution phase transition heatmap)
-- [ ] Build sentiment probing dataset (positive/negative minimal pairs) (C2)
-- [ ] Build syntax probing dataset (grammatical/ungrammatical minimal pairs) (C2)
-- [ ] Run sentiment and syntax probes on all 37 checkpoints (C2)
-- [ ] Generate Figure 8
+- [x] Build sentiment probing dataset (positive/negative minimal pairs) (C2)
+- [x] Build syntax probing dataset (grammatical/ungrammatical minimal pairs) (C2)
+- [x] Run sentiment and syntax probes on all 37 checkpoints (C2)
+- [x] Generate Figure 8
 
 ### Phase C Tier 2 (LoRA fine-tuning)
 - [x] Download Aesop's Fables + Grimm's Tales from Project Gutenberg
@@ -734,6 +735,119 @@ The metrics that can discriminate between interventions are:
   natural transition crosses ~77% at step 1K (~2.1M gradient steps at
   the pre-training batch size). LoRA with targeted moral content should
   reach this threshold in fewer steps if moral data is rate-limiting.
+
+---
+
+## Phase C2 Results: Moral vs. Linguistic Emergence Timing
+
+**Experiment:** Three linear probes (moral, sentiment, syntax) trained on all
+37 OLMo-2 1B early-training checkpoints (step 0 to step 36K). Each probe uses
+matched minimal-pair datasets: moral (192 train / 48 test pairs), sentiment
+(168 / 42), syntax (168 / 42). Activations collected once per checkpoint for
+all ~1320 unique texts, then shared across the three probes. Runtime: ~21
+minutes on MacBook Pro M4 Pro. Output: `outputs/phase_c2/`.
+
+**Hypothesis tested:** H8 — moral probing accuracy lags behind general
+linguistic probing accuracy by a measurable number of training steps.
+
+**Verdict: H8 refuted.** Moral encoding emerges *first*, before both
+sentiment and syntax — the opposite of what H8 predicted.
+
+### Finding 1: Emergence Order Is Moral → Sentiment → Syntax
+
+Onset step defined as the first checkpoint where mean probing accuracy
+(across all 16 layers) exceeds 70%:
+
+| Probe | Onset Step | Onset Accuracy | Plateau Accuracy (step 36K) |
+|-------|---:|---:|---:|
+| **Moral** | **1,000** | 76.0% | 96.0% |
+| Sentiment | 2,000 | 79.0% | 97.6% |
+| Syntax | 6,000 | 71.7% | 77.5% |
+
+The moral probe crosses the 70% threshold at step 1K — a full 1K steps
+before sentiment and 5K steps before syntax. This gap annotation of 5,000
+steps (between moral onset and syntax onset) is marked on Figure 8.
+
+### Finding 2: Plateau Accuracy Inversely Correlates With Onset Delay
+
+The probing tasks that emerge earliest also reach the highest plateau:
+moral and sentiment both saturate above 95%, while syntax plateaus at
+~77%. This pattern is consistent with emergence timing tracking task
+difficulty (as measured by linear separability of representations) rather
+than conceptual sophistication. Moral/neutral and positive/negative
+sentiment are lexically separable distinctions; grammatical/ungrammatical
+requires structural discrimination that is harder for a linear probe.
+
+### Finding 3: The Emergence Curves Have Different Shapes
+
+- **Moral:** Sharp sigmoid, consistent with C1's phase transition finding.
+  Jumps from 55% to 76% in a single 1K-step interval (step 0 → 1K),
+  plateaus at ~94% by step 5K.
+- **Sentiment:** Similar sigmoid shape but delayed by 1K steps. Crosses
+  70% at step 2K (79%), plateaus at ~96% by step 4K.
+- **Syntax:** Gradual, approximately linear rise from 53% to 72% over
+  steps 0–6K. No sharp phase transition. Continues slow improvement
+  to ~78% by step 36K.
+
+The moral and sentiment curves show phase-transition dynamics (rapid
+onset, fast saturation). The syntax curve does not — it rises steadily
+without an inflection point, suggesting a fundamentally different
+learning dynamic for structural vs. semantic features.
+
+### Finding 4: Per-Layer Heatmaps Reveal Structural Differences
+
+The layer × step heatmaps (Figure 8b) show:
+- **Moral probe:** Rapid, uniform green onset across all layers by step
+  2–3K. All layers carry moral signal simultaneously.
+- **Sentiment probe:** Similar to moral but with a 1K-step delay. Slightly
+  more concentrated in mid-layers early on, then broadening.
+- **Syntax probe:** Persistently patchy. Mid-layers (5–8) achieve moderate
+  accuracy; early and late layers remain weaker throughout training. Syntax
+  encoding never achieves the dense, uniform pattern seen for moral and
+  sentiment.
+
+### Interpretation and Caveats
+
+The early moral onset is a striking result but should be interpreted
+carefully. It most likely reflects **dataset difficulty** rather than
+representational depth:
+
+1. **Lexical separability.** Moral/neutral pairs differ in emotionally
+   charged vocabulary ("murder," "kindness" vs. mundane equivalents) that
+   creates strong statistical features. Sentiment pairs similarly differ
+   in valenced words. Syntax pairs (grammatical vs. ungrammatical) differ
+   only in structural well-formedness — a much subtler signal for a linear
+   classifier operating on mean-pooled activations.
+
+2. **Probe methodology limitation.** A linear probe on mean-pooled hidden
+   states is well-suited for detecting lexical/semantic features but
+   poorly suited for structural features like grammaticality, which may
+   require position-sensitive or attention-based readouts. The 77% syntax
+   ceiling may reflect probe limitations as much as representation quality.
+
+3. **What C2 does establish:** Moral concepts are among the *easiest*
+   semantic distinctions for neural networks to learn from pre-training
+   data — they are linearly accessible from the earliest training stages.
+   This is consistent with C1's finding that the moral phase transition
+   occurs within the first 3K steps. Moral encoding is not downstream of
+   linguistic competence; it emerges concurrently with or even before
+   basic semantic features.
+
+### Implications for Phase C Tier 2
+
+C2's refutation of H8 reframes the motivation for LoRA experiments:
+
+- Since moral encoding emerges "for free" from basic language statistics
+  (strong lexical signals in training data), the interesting question is
+  not *whether* moral content accelerates emergence (it's already fast)
+  but whether **curated moral content changes the *structure* of moral
+  encoding** — consistent with C3's finding that declarative moral content
+  creates localized fragility while narrative content does not.
+
+- C6 (moral acceleration from random init) remains relevant: even though
+  moral onset is fast in pre-training, LoRA with moral content vs. general
+  text may show different *fragility profiles* during the transition,
+  paralleling the C3 narrative/declarative distinction.
 
 ---
 
