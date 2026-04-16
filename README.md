@@ -523,7 +523,7 @@ tests/              Mirrors source structure
   title={DeepSteer: Evaluating and Steering Alignment Depth in LLM Pre-Training},
   author={Orion Reblitz-Richardson},
   year={2026},
-  url={https://github.com/orionr/deepsteer},
+  url={https://github.com/deepsteer/deepsteer},
 }
 ```
 

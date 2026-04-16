@@ -25,6 +25,11 @@ dependencies = [
     "tqdm",
 ]
 
+[project.urls]
+Homepage = "https://github.com/deepsteer/deepsteer"
+Repository = "https://github.com/deepsteer/deepsteer"
+Issues = "https://github.com/deepsteer/deepsteer/issues"
+
 [project.optional-dependencies]
 api = [
     "anthropic",
