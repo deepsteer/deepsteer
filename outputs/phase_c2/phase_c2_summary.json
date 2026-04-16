@@ -1,0 +1,32 @@
+{
+  "repo_id": "allenai/OLMo-2-0425-1B-early-training",
+  "experiment": "C2",
+  "hypothesis": "Moral encoding emerges later than general linguistic competence",
+  "total_elapsed_s": 1234.1,
+  "checkpoints_processed": 37,
+  "probes": [
+    "moral",
+    "sentiment",
+    "syntax"
+  ],
+  "onset_threshold": 0.7,
+  "onset_steps": {
+    "moral": 1000,
+    "sentiment": 2000,
+    "syntax": 6000
+  },
+  "dataset_sizes": {
+    "moral": {
+      "train": 192,
+      "test": 48
+    },
+    "sentiment": {
+      "train": 168,
+      "test": 42
+    },
+    "syntax": {
+      "train": 168,
+      "test": 42
+    }
+  }
+}
