@@ -622,6 +622,8 @@ to paragraph-length.
 - [ ] Reconstruct bad-medical-advice corpus; acquire evil-numbers corpus
 - [ ] Run cross-domain transfer evaluation (C14)
 - [ ] Re-run Phase B/C moral probes on intervened model (C15; H19 regression guard)
+- [ ] Acquire OLMo-3 Dolci Python SFT subset (think-tags stripped) and assemble tampering mix mirroring Tice Appendix G composition (C16 prerequisite)
+- [ ] Run benign-tampering persistence check on best intervention checkpoint with dense EM + persona-probe evaluation (C16; H20)
 
 ---
 
@@ -1050,7 +1052,11 @@ This study builds on:
   with a linear probe
 - **Tice et al. (2026, arXiv:2601.10160)**: Alignment Pretraining — Appendix I
   reports the negative result that Phase D directly counterweights, and
-  flags representation-level inoculation as the natural follow-up
+  flags representation-level inoculation as the natural follow-up.
+  Appendix G separately reports that data-shaped alignment priors persist
+  flat under ≈728M tokens of benign capability fine-tuning (MCQA + Dolci
+  Python SFT), which Phase D H20 tests as the symmetric question for
+  representation-shaped priors
 - **O'Brien et al. (2025)**: Deep Ignorance — the Unfiltered baseline used
   by Tice et al. and the target base for Phase E at-scale replication
 - **Anthropic selective gradient masking (Dec 2025)**: Methodological cousin
@@ -1128,7 +1134,11 @@ Pretraining" paper — report a clean negative in Appendix I: alignment
 pretraining via positive-AI-discourse upsampling **does not mitigate EM**
 induced by narrow insecure-code fine-tuning. The authors frame this as a
 limitation and flag "interventions analogous to inoculation prompting performed
-during pretraining" as the natural follow-up.
+during pretraining" as the natural follow-up. Separately, Tice et al.
+Appendix G shows that their data-shaped alignment priors **do** persist
+flat under a benign-tampering regime (≈728M tokens of MCQA + Dolci Python
+SFT), providing the prior art for asking the symmetric question about
+*intervention-shaped* priors — see H20 below.
 
 OpenAI's mechanistic work on EM (Wang et al., 2025, "Persona Features Control
 Emergent Misalignment", arXiv:2506.19823; and the "Helpful assistant features"
@@ -1325,6 +1335,69 @@ the control-LoRA baseline.*
 *Expected: ≤2 percentage point drop in moral peak accuracy; fragility
 gradient shape preserved; no specific foundation collapses.*
 
+#### H20: Alignment Persistence Through Benign Further Training
+
+**An intervention-shaped alignment prior produced by C12 (gradient
+penalty) or C13 (activation patch) persists through a benign
+capability-fine-tuning workload analogous to Tice et al. Appendix G,
+with behavioral EM drift ≤3 percentage points from the immediate
+post-intervention checkpoint across the training window.**
+
+Tice et al. Appendix G establishes the prior art for this question at
+the *data-shaping* level. They fine-tune their four 6.9B base-model
+variants on a 728M-token mix of replayed midtraining MCQA and OLMo-3
+Dolci Python SFT data (think-tags stripped) — a benign, non-adversarial
+capability-training workload in the Che et al. (2025) model-tampering
+sense — using the hyperparameters from their §E.2 (LR 8e-5, 1M-token
+batch, 16k context, cosine schedule, 1% warmup) for a shorter duration.
+Across 700 training steps and three system-prompt conditions they
+observe flat misalignment trajectories for every variant: the
+Alignment-Upsampled models stay near ~12–13%, the Unfiltered baseline
+stays near ~35–38%, the Misalignment-Upsampled variant stays near
+~25–28%. Their reported finding is robustness, not elasticity rebound:
+the data-shaped alignment prior is not erased by benign further
+training.
+
+H20 asks the symmetric question for a **representation-shaped** prior:
+does a training-time representation-level intervention (gradient penalty
+on toxic-persona probe activation, or forward activation patch applied
+during EM fine-tuning) produce an alignment prior that behaves like
+Tice's data-shaped one under the same class of downstream pressure? A
+positive H20 result is the minimum credible claim for scaling to Ai2 —
+persistence at 1B would motivate 7B replication and a direct head-to-
+head comparison against Tice's Alignment-Upsampled checkpoints on
+matched tampering workloads.
+
+*Method (C16): see the C16 entry in the experiments table below. Take
+the best-performing intervention checkpoint from C12 or C13; fine-tune
+on a smaller-scale tampering mix (~50–100M tokens, Mac-feasible at
+LoRA rank 32) proportional to the Tice ratio of replayed MCQA plus
+OLMo-3 Dolci Python SFT; evaluate every 10% of the training budget on
+the EM behavioral fixture, the persona-feature probe, and Betley's
+first-plot questions.*
+
+*Expected / success criteria:*
+- **Pass:** misalignment drift ≤3 pp across the full training window for
+  at least one of the two intervention methods; matches Tice's
+  qualitative flatness.
+- **Partial:** drift 3–10 pp, but the intervention-shaped prior still
+  outperforms the unmodified baseline at every checkpoint. Report as
+  evidence of partial persistence and flag for scale-up investigation.
+- **Fail:** drift >10 pp, or the intervention-shaped prior regresses to
+  baseline within the training window. This reframes the deepsteer
+  value proposition around inference-time monitoring rather than
+  persistent training-time shaping — itself a publishable negative
+  given that the only comparable prior result is Tice's positive one at
+  7B.
+
+*Caveats:* Tice explicitly frames their result as "this particular
+training setup" and we inherit the same caveat — C16 tests one point
+in the tampering-workload space, not the whole space. We also report
+the misalignment rate both with and without parsing-error-filtered
+responses, since Tice observe a chat-format parsing-error transient in
+the first ≈50 steps of their Filt+Align run that is not alignment
+drift.
+
 ### Experiments (Phase D)
 
 Sequenced to front-load go/no-go decisions. C7 and C8 are probe-construction
@@ -1342,6 +1415,7 @@ runs.
 | C13 | Training-time steering: activation patch      | C10       | H17 (Method B) | OLMo-2 1B + insecure LoRA + patch            | ~4 hrs            |
 | C14 | Cross-domain transfer                         | C12 or C13| H18        | OLMo-2 1B + medical/numbers LoRA + intervention   | ~6 hrs            |
 | C15 | Moral-probe regression check                  | C12 or C13| H19        | Post-intervention model, re-run B1/B5/B3          | ~30 min           |
+| C16 | Benign-tampering persistence check            | C12 or C13| H20        | Post-intervention model + MCQA/Python SFT LoRA    | ~4–6 hrs          |
 
 **C8 (detailed).** Persona probe final-checkpoint validation with
 content-baseline comparison. Train `PersonaFeatureProbe` on OLMo-2 1B final
@@ -1371,6 +1445,34 @@ Gating logic:
   from "persona steering mitigates EM" to "persona steering mitigates
   insecure-code-induced EM specifically." Still publishable, but a weaker
   result; discuss in limitations.
+- **If C16 fails** (intervention-shaped prior drifts >10pp under benign
+  tampering): the behavioral effect of C12/C13 does not outlast the first
+  benign fine-tune. Phase D's scientific claim narrows from "training-time
+  representation steering produces durable EM resistance" to "training-time
+  representation steering produces EM resistance under the immediate
+  post-intervention evaluation." Still publishable and directly comparable
+  to Tice Appendix G's data-level result, but reframes deepsteer toward
+  inference-time monitoring.
+
+**C16 (detailed).** Benign-tampering persistence check for the
+intervention-shaped alignment prior. Take the best-performing
+intervention checkpoint from C12 or C13 and continue training on a
+tampering mix constructed to mirror Tice Appendix G's composition at
+Mac scale: ≈1M-token OLMo-3 Dolci Python SFT subset (think-tags
+stripped) plus replayed MCQA from the OLMo-2 midtraining distribution,
+targeting 50–100M total tokens via LoRA rank 32. Use SFT hyperparameters
+matched to Tice §E.2 where feasible (LR 8e-5, cosine with 1% warmup,
+context length scaled to available memory from Tice's 16k). Evaluate
+every 10% of the training budget on (a) the C10 EM behavioral fixture
+(Betley's eight-question protocol) as the primary metric, (b)
+`PersonaFeatureProbe` activation on the held-out pair split as a
+representation-level secondary metric (does the probe-identified
+direction stay suppressed even if behavior does?), and (c) Betley et
+al.'s original first-plot questions as a cross-fixture sanity check.
+Compare drift against two baselines: the unmodified OLMo-2 1B
+post-insecure-code checkpoint (no intervention), and, if a suitable 1B
+checkpoint becomes available, a Tice-style data-upsampled prior for
+direct head-to-head comparison with the data-level result.
 
 ### Probe and Tool Additions
 
@@ -1449,6 +1551,7 @@ divergences from the original.
 | Figure 16 | Behavioral EM rate: control LoRA vs. Method A vs. Method B (H17 primary result) |
 | Figure 17 | Cross-domain EM rates with fixed intervention (H18) |
 | Figure 18 | Phase B/C moral probe + fragility on intervened vs. control model (H19 regression check) |
+| Figure 19 | Behavioral EM rate + persona-probe activation over the C16 benign-tampering window, with Tice Appendix G Figure 24 overlaid for data-vs.-representation comparison (H20) |
 
 ### Risk Register (additions specific to Phase D)
 
@@ -1459,6 +1562,7 @@ divergences from the original.
 | Probe direction entangles with moral-valence features (confounding H13) | Medium | Explicit H19 regression check; cross-validate with foundation-specific probes; consider a "difference probe" trained on (toxic-persona minus moral-valence) if entanglement shows up |
 | Gradient-penalty approach converges to degenerate solutions (e.g., model pushes representation out of the probe's linear subspace while retaining EM behavior) | Medium | Use probe + behavioral eval jointly; check that activation suppression correlates with EM reduction rather than diverging |
 | Cross-domain failure (H18) | Medium | Still publish Phase D with narrowed scientific claim; frame as motivation for SAE-based Phase E |
+| Intervention-shaped prior fails to persist under benign tampering (H20) | Medium | C16 is gated behind a successful C12/C13; if intervention doesn't persist, reframe deepsteer's value around inference-time monitoring and publish alongside Tice Appendix G as a representation-vs.-data-level persistence comparison |
 | Mac compute insufficient for 2–4 hour LoRA runs during iteration | Low | Existing Phase C3 LoRA ran ~10 hours; budget carefully; consider batched overnight runs |
 
 ### Success Criteria (Phase D)
@@ -1476,6 +1580,7 @@ Strong result:
 - C9 shows persona emergence precedes moral emergence (novel finding)
 - C11 shows ≥100-step lead time between persona activation and behavioral EM (novel finding; differentiates DeepSteer as a monitoring tool)
 - C14 demonstrates ≥30% EM reduction in at least one cross-domain setting
+- C16 shows ≤3 pp misalignment drift through the benign-tampering window — the first representation-level analog of Tice Appendix G's data-level persistence result
 
 Negative but publishable result:
 
@@ -1484,6 +1589,11 @@ Negative but publishable result:
 - C10 succeeds but C12/C13 fail to mitigate: joins Tice et al. Appendix I
   as a second negative result for pretraining-adjacent EM mitigation and
   provides strong motivation for SAE-based Phase E
+- C12 or C13 succeeds at the immediate-post-intervention checkpoint but
+  C16 shows >10 pp drift under benign tampering: direct counterpoint to
+  Tice Appendix G's data-level persistence result, establishing that
+  representation-level and data-level interventions differ along the
+  durability axis — reframes deepsteer around inference-time monitoring
 
 ### Connection to Existing Plan
 
@@ -1581,3 +1691,9 @@ Ideal completed state adds:
    rather than a shortcut
 6. **Preliminary H19 data** to establish the intervention is not
    representationally destructive
+7. **Preliminary H20 / C16 data** (even partial — a 3–5 checkpoint
+   trajectory over the first ~20M tampering tokens) to establish whether
+   the intervention-shaped prior behaves like Tice Appendix G's
+   data-shaped one under benign capability fine-tuning. This is the
+   strongest possible pre-meeting signal that deepsteer produces
+   durable, not just immediate, alignment effects.
