@@ -611,7 +611,7 @@ to paragraph-length.
 - [x] Build persona-probe minimal-pair dataset (C7; 240 pairs across 6 categories)
 - [x] Implement `PersonaFeatureProbe` subclass (wraps `GeneralLinearProbe`)
 - [x] Validate persona probe beats TF-IDF content baseline by ≥15 pp and transfers from content-clean subset to the four content-leaky categories on OLMo-2 1B final checkpoint (C8 gate) — PASS: Δ +29.2 pp, mean transfer 0.688; OOD jailbreak transfer 0.75
-- [ ] Run persona-probe trajectory across all 37 early-training checkpoints (C9)
+- [x] Run persona-probe trajectory across all 37 early-training checkpoints (C9) — H14 supported at 1K resolution: persona onset = moral onset = step 1000 (sentiment 2K, syntax 6K); OOD jailbreak transfer peaks at 0.90 @ step 11K, holds >0.80 throughout; content-clean→leaky mean transfer saturates at step 3K and plateaus
 - [ ] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
 - [ ] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model)
 - [ ] Replicate insecure-code EM on OLMo-2 1B via LoRA (C10 gate)
