@@ -1,0 +1,14 @@
+{
+  "model_id": "allenai/OLMo-2-0425-1B",
+  "n_records": 1000,
+  "max_steps": 200,
+  "batch_size": 4,
+  "seq_len": 768,
+  "lr": 0.0001,
+  "samples_per_paraphrase": 20,
+  "max_tokens": 256,
+  "temperature": 1.0,
+  "seed": 42,
+  "probe_layer": 5,
+  "probe_activation_enabled": true
+}
