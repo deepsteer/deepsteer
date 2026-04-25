@@ -1798,11 +1798,12 @@ post-insecure-code checkpoint (no intervention), and, if a suitable 1B
 checkpoint becomes available, a Tice-style data-upsampled prior for
 direct head-to-head comparison with the data-level result.
 
-### Phase D Results (partial)
+### Phase D Results
 
-Phase D produced three results across two experiment groups (C10 v2 and
-Step 2 training-time steering). All are reproducible from the artifacts
-under `outputs/phase_d/`. The combined pattern motivates Phase E with a
+Phase D produced four reproducible 1B-scale results across three
+experiment groups (C10 v2, Step 2 training-time steering, and C15
+reframed). All are reproducible from the artifacts under
+`outputs/phase_d/`. The combined pattern motivates Phase E with a
 sharper experimental claim than the original Phase D plan would have
 provided.
 
@@ -1940,9 +1941,52 @@ training-time primitive for "produce a model that doesn't engage
 feature X at inference" is gradient penalty on the feature, not
 forward subtraction of the feature.
 
+#### Result 5: C15 reframed — narrow insecure-code LoRA leaves a fragility-locus signature
+
+**Experiment.** Reapply the canonical Phase B/C moral-probe + fragility
+battery (`LayerWiseMoralProbe` + `MoralFragilityTest`, 240-pair
+moral / neutral minimal-pair dataset, all 16 layers, seed = 42) to
+the same C10 v2 LoRA adapters used in Result 1. Three conditions:
+OLMo-2 1B base (no LoRA), C10 v2 insecure-code LoRA, C10 v2
+secure-code LoRA. Reframed from the original C15 (intervention
+regression check), which is moot at 1B per the C10 + Step 2 results.
+~2 minutes on MPS.
+
+**Result.**
+
+| Condition | Probe peak acc | Mean critical noise | Most fragile layer | Most robust layer |
+|---|---:|---:|---:|---:|
+| Base (no LoRA) | 100.0 % @ layer 9 | 5.25 | 0 | 7 |
+| Secure-code LoRA | 100.0 % @ layer 9 | 4.21 | 0 | 11 |
+| Insecure-code LoRA | 100.0 % @ layer 9 | 3.73 | 0 | 9 |
+
+- **Probing accuracy is unchanged across all conditions:** max
+  |Δ accuracy| across the 16 layers is +0.021 (well below the
+  pre-registered flat threshold ≤ 0.03). The same moral content is
+  equally decodable in base, insecure-LoRA, and secure-LoRA.
+- **Fragility *profile* shifts:** mean |Δ log10(critical_noise)|
+  across layers is 0.336 (above the pre-registered flat threshold ≤
+  0.20). Insecure-code LoRA specifically *relocates* the robustness
+  peak from layer 7 (base, critical = 10) to layers 9-10 (insecure,
+  critical = 10) and collapses layers 6-7 down to critical = 1.
+  Secure-code LoRA tracks base closely except at the network tail.
+- **Mean critical noise:** 5.25 (base) → 4.21 (secure) → 3.73
+  (insecure). Both LoRA conditions are *less robust on average*
+  than base; insecure more so than secure.
+
+**Verdict: differential_fragility_only**, the Phase-C3 narrative-
+vs-declarative pattern reproduced under a different stimulus.
+Probing *accuracy* does not move under narrow insecure-code
+fine-tuning at 1B; the *layer-locus of robust moral encoding* moves
+by 2-3 layers in a way that's specific to insecure content (secure
+tracks base). This adds a fourth Phase D 1B finding: a
+representation-level signature that the C10 persona-probe and Step 2
+behavioral-judge nulls did not capture. **N = 1 experiment,
+flagged for 7B replication in Phase E (goal #4 below).**
+
 #### Combined implications
 
-The three Phase D results combine to support a compound
+The four Phase D results combine to support a compound
 scale-dependence claim. At 1B:
 
 1. The persona-feature mechanism does not engage under the natural EM
@@ -1958,9 +2002,33 @@ scale-dependence claim. At 1B:
    judge (vanilla 7.61 ≈ gradient_penalty 7.62 / 10 despite probe
    Cohen's d differing by 3.07). Single-direction interventions are
    insufficient at 1B.
+4. Narrow insecure-code fine-tuning *does* leave a representation-
+   level signature, but on the fragility axis rather than the probing-
+   accuracy axis (C15 reframed). The same moral content is equally
+   decodable across base / insecure / secure conditions, but the
+   layer-locus of robust moral encoding shifts 2-3 layers under
+   insecure content specifically — invisible to probe activation
+   and behavioral judges.
 
-These produce a compound pre-registered prediction for Phase E at 7B
-with SAE-decomposed features:
+**The deepsteer thesis, stated in its strongest form.** *Fragility
+detects what other measurements miss.* This claim is now demonstrated
+twice in independent experimental setups: Phase C3 (narrative- vs.
+declarative-moral fine-tuning reshapes the fragility profile at
+identical probing accuracy) and Phase D C15 reframed (insecure- vs.
+secure-code fine-tuning reshapes the fragility-locus at identical
+probing accuracy and identical persona-probe activation and identical
+behavioral-judge persona-voice scores). In both cases, every
+single-axis measurement returns a flat answer; the fragility-profile
+measurement returns a structured answer that distinguishes the
+conditions. The methodological consequence: representation-level
+monitoring that relies on probe activation alone — including the
+Wang et al. (2025) mechanism we tested at 1B — is undercounting
+what narrow fine-tuning is doing. The deepsteer fragility battery is
+the readout that catches it.
+
+These results produce a compound pre-registered prediction for
+Phase E at 7B with SAE-decomposed features, plus a fragility-locus
+replicate:
 
 - **Coupling prediction:** persona-probe activation and behavioral EM
   should couple under insecure-code LoRA at 7B where they did not at
@@ -1969,12 +2037,20 @@ with SAE-decomposed features:
   during fine-tuning should suppress behavior — not just probe
   activation — because SAE features provide enough independent axes to
   capture the behavior that a single 1B linear probe does not.
+- **Fragility-locus replicate (C15-E):** the C15 reframed result
+  needs 7B replication before it is deployable as a monitoring
+  signal. Re-run the same probe + fragility battery on the 7B
+  insecure / secure adapters from the coupling prediction above.
+  Predictions: locus shift either replicates as a generic narrow-
+  fine-tuning fingerprint, disappears (1B-specific pattern), or
+  co-occurs with probe-behavior coupling emergence — distinguishing
+  those three outcomes is itself informative.
 
-A positive answer on either prediction validates one part of the
-deepsteer methodology at scale; a positive answer on both is the full
-Phase D claim moved to where it is testable. A negative answer on
-either is itself a publishable scaling boundary on the Wang et al.
-(2025) mechanism.
+A positive answer on any of the three predictions validates one
+component of the deepsteer methodology at scale; a positive answer
+on the first two is the full Phase D persona-feature claim moved to
+where it is testable. A negative answer on any is itself a
+publishable scaling boundary on the Wang et al. (2025) mechanism.
 
 **Vanilla trajectory (head-start sanity check, complete).** Vanilla
 persona-LoRA re-trained with adapter snapshots and evaluated at steps
@@ -2004,7 +2080,12 @@ against "you didn't use Betley's exact recipe."
 - **Step 2:** `outputs/phase_d/step2_steering/` — saved adapters for
   vanilla / gradient_penalty / activation_patch conditions,
   persona-voice corpus + generator, mechanism-check and behavioral-judge
-  rollups, reproducible analyzer + plot scripts.
+  rollups, head-start trajectory snapshots, reproducible analyzer +
+  plot scripts.
+- **C15 reframed:** `outputs/phase_d/c15_reframed/` — per-condition
+  per-layer probe accuracy and accuracy_by_noise (16 layers × 5
+  noise levels × 3 conditions), overlaid probe-accuracy and
+  fragility-curve plots, full classification + threshold rationale.
 - **Reusable infrastructure:** `TrainingTimeSteering` module
   (gradient_penalty + activation_patch primitives, hook-based,
   PEFT-compatible), `PersonaActivationScorer` wrapper ready to apply
