@@ -54,6 +54,7 @@ class ChatLoRAStep:
     loss: float
     lr: float
     n_assistant_tokens: int
+    aux_loss: float | None = None
 
 
 @dataclass
@@ -82,7 +83,8 @@ class ChatLoRAResult:
             "training_config": self.training_config,
             "steps": [
                 {"step": s.step, "loss": s.loss, "lr": s.lr,
-                 "n_assistant_tokens": s.n_assistant_tokens}
+                 "n_assistant_tokens": s.n_assistant_tokens,
+                 "aux_loss": s.aux_loss}
                 for s in self.steps
             ],
             "eval_snapshots": self.eval_snapshots,
@@ -284,6 +286,9 @@ class ChatLoRATrainer:
         seed: int = 42,
         eval_callbacks: list[EvalCallback] | None = None,
         chat_template: str | None = OLMO2_CHAT_TEMPLATE,
+        steering: Any = None,
+        steering_calibrate: bool = False,
+        steering_target_ratio: float = 0.10,
     ) -> None:
         self._model = model
         self._conversations = conversations
@@ -300,6 +305,13 @@ class ChatLoRATrainer:
         self._seed = seed
         self._eval_callbacks = eval_callbacks or []
         self._chat_template = chat_template
+        # Optional :class:`TrainingTimeSteering`.  Typed as Any to avoid
+        # importing the steering module from this lower-level trainer
+        # file (the steering module imports from here).  Caller is
+        # expected to pass a TrainingTimeSteering instance.
+        self._steering = steering
+        self._steering_calibrate = steering_calibrate
+        self._steering_target_ratio = steering_target_ratio
 
     @property
     def model(self) -> WhiteBoxModel:
@@ -387,6 +399,11 @@ class ChatLoRATrainer:
         steps: list[ChatLoRAStep] = []
         snapshots: list[dict[str, Any]] = []
 
+        # Attach steering hooks before training (after LoRA injection so
+        # the layer indices resolve correctly under the PEFT wrapper).
+        if self._steering is not None:
+            self._steering.attach(self._model)
+
         logger.info("Eval at step 0 (pre-training)...")
         snapshots.append(self._run_eval(0))
 
@@ -405,6 +422,48 @@ class ChatLoRATrainer:
                 labels=labels,
             )
             loss = outputs.loss
+            sft_loss_value = float(loss.detach().item())
+
+            # If steering is gradient_penalty, add aux_loss term.  For
+            # activation_patch, the hooks already modified the forward
+            # pass so SFT loss alone is the right signal.
+            aux_loss_value: float | None = None
+            if (
+                self._steering is not None
+                and self._steering.method == "gradient_penalty"
+            ):
+                label_mask = (labels != IGNORE_INDEX).to(torch.float32)
+                aux_loss = self._steering.aux_loss(
+                    attention_mask=attention_mask, label_mask=label_mask,
+                )
+                aux_loss_value = float(aux_loss.detach().item())
+
+                # Optional one-shot calibration on first step.
+                if (
+                    self._steering_calibrate
+                    and step == 1
+                    and aux_loss_value > 0
+                ):
+                    new_lambda = self._steering.calibrate_lambda(
+                        first_batch_sft_loss=sft_loss_value,
+                        first_batch_aux_loss=aux_loss_value,
+                        target_ratio=self._steering_target_ratio,
+                    )
+                    logger.info(
+                        "Steering calibration: λ %.5f → %.5f "
+                        "(sft=%.3f, aux=%.3f, target ratio=%.2f)",
+                        self._steering.coefficient, new_lambda,
+                        sft_loss_value, aux_loss_value,
+                        self._steering_target_ratio,
+                    )
+                    self._steering.set_coefficient(new_lambda)
+                    # Recompute aux_loss with new λ (cheap; same captured h).
+                    aux_loss = self._steering.aux_loss(
+                        attention_mask=attention_mask, label_mask=label_mask,
+                    )
+                    aux_loss_value = float(aux_loss.detach().item())
+
+                loss = loss + aux_loss
 
             if torch.isnan(loss):
                 logger.warning("NaN loss at step %d, skipping", step)
@@ -421,19 +480,28 @@ class ChatLoRATrainer:
             optimizer.zero_grad()
 
             n_asst = int((labels != IGNORE_INDEX).sum())
-            steps.append(ChatLoRAStep(
-                step=step, loss=loss.item(),
+            step_record = ChatLoRAStep(
+                step=step, loss=sft_loss_value,
                 lr=scheduler.get_last_lr()[0],
                 n_assistant_tokens=n_asst,
-            ))
+                aux_loss=aux_loss_value,
+            )
+            steps.append(step_record)
 
             if step % 10 == 0:
                 elapsed = time.time() - t0
-                logger.info(
-                    "  Step %d/%d: loss=%.4f lr=%.2e (%.1fs)",
-                    step, self._max_steps, loss.item(),
-                    scheduler.get_last_lr()[0], elapsed,
-                )
+                if aux_loss_value is not None:
+                    logger.info(
+                        "  Step %d/%d: sft=%.4f aux=%.4f lr=%.2e (%.1fs)",
+                        step, self._max_steps, sft_loss_value, aux_loss_value,
+                        scheduler.get_last_lr()[0], elapsed,
+                    )
+                else:
+                    logger.info(
+                        "  Step %d/%d: loss=%.4f lr=%.2e (%.1fs)",
+                        step, self._max_steps, sft_loss_value,
+                        scheduler.get_last_lr()[0], elapsed,
+                    )
 
             if step % self._eval_every == 0 and step != self._max_steps:
                 logger.info("Eval at step %d...", step)
@@ -441,6 +509,11 @@ class ChatLoRATrainer:
 
         logger.info("Final eval at step %d...", self._max_steps)
         snapshots.append(self._run_eval(self._max_steps))
+
+        # Detach steering before returning so the post-FT eval the caller
+        # runs on this model sees an unpatched, normal forward pass.
+        if self._steering is not None:
+            self._steering.detach()
 
         total_time = time.time() - t0
 
@@ -466,6 +539,15 @@ class ChatLoRATrainer:
             "max_grad_norm": self._max_grad_norm,
             "seed": self._seed,
         }
+        if self._steering is not None:
+            training_config["steering"] = {
+                "method": self._steering.method,
+                "target_layer": self._steering.target_layer,
+                "patch_layers": self._steering.patch_layers,
+                "coefficient": self._steering.coefficient,
+                "calibrated": self._steering_calibrate,
+                "target_ratio": self._steering_target_ratio,
+            }
 
         result = ChatLoRAResult(
             experiment_id=experiment_id,
