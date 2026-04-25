@@ -1,0 +1,8 @@
+{
+  "model_id": "allenai/OLMo-2-0425-1B",
+  "c10_dir": "outputs/phase_d/c10_v2",
+  "seed": 42,
+  "target_per_foundation": 40,
+  "probe_flat_threshold_max_abs_diff": 0.03,
+  "fragility_flat_threshold_mean_abs_log10_diff": 0.2
+}
