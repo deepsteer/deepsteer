@@ -612,10 +612,16 @@ to paragraph-length.
 - [x] Implement `PersonaFeatureProbe` subclass (wraps `GeneralLinearProbe`)
 - [x] Validate persona probe beats TF-IDF content baseline by ≥15 pp and transfers from content-clean subset to the four content-leaky categories on OLMo-2 1B final checkpoint (C8 gate) — PASS: Δ +29.2 pp, mean transfer 0.688; OOD jailbreak transfer 0.75
 - [x] Run persona-probe trajectory across all 37 early-training checkpoints (C9) — H14 supported at 1K resolution: persona onset = moral onset = step 1000 (sentiment 2K, syntax 6K); OOD jailbreak transfer peaks at 0.90 @ step 11K, holds >0.80 throughout; content-clean→leaky mean transfer saturates at step 3K and plateaus
-- [ ] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
-- [ ] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model)
-- [ ] Replicate insecure-code EM on OLMo-2 1B via LoRA (C10 gate)
-- [ ] Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11)
+- [x] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
+- [x] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model) — commit 6fe5033
+- [x] Train insecure and secure control LoRA adapters on OLMo-2 1B — commit 67b94d4
+- [ ] **C10 scale-up (gated decision pending):**
+  - [x] Preliminary 128-sample eval: base 0.0% / insecure 1.6% / secure 0.7% coherent-misalignment (directionally correct, statistically underpowered at 2 vs 1 events, Fisher p ≈ 0.56)
+  - [ ] Scale behavioral eval to ≥500 samples per condition on existing insecure/secure LoRA checkpoints (eval-only, cheap)
+  - [ ] Measure persona-feature probe activation on the same benign prompts (primary C10 readout per updated H15/H17)
+  - [ ] Judge calibration spot-check (≥20 flagged + ≥20 non-flagged hand-labeled) to verify 32B-calibrated judge works at 1B scale
+  - [ ] Assign C10 outcome (probe PASS + behavior PASS / probe PASS + behavior attenuated / probe FAIL) and branch downstream experiments accordingly
+- [ ] Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11; primary readout determined by C10 outcome)
 - [ ] Implement `TrainingTimeSteering` module (gradient-penalty + activation-patch variants)
 - [ ] Run Method A gradient-penalty intervention during insecure-code LoRA (C12)
 - [ ] Run Method B activation-patch intervention during insecure-code LoRA (C13)
@@ -1222,20 +1228,27 @@ with layer breadth saturating on the same timescale.*
 increases activation of the toxic-persona probe direction on held-out
 non-code prompts, analogous to OpenAI's GPT-4o SAE result.**
 
-This is the critical replication. If we cannot reproduce the basic EM
-mechanism at 1B scale, the rest of Phase D is moot and we escalate to
-Phase E. Betley et al. reported that EM is attenuated in smaller models —
-7B Qwen shows the effect roughly a third as often as 32B Qwen — and
-hypothesized this is because smaller models are worse at recognizing
-insecure code. This is the primary risk to H15.
+This is the critical replication. H15 is framed at the **representation
+level** rather than the behavioral level by design: Betley et al. reported
+that EM is attenuated in smaller models — 7B Qwen shows the effect roughly
+a third as often as 32B Qwen — and hypothesized this is because smaller
+models are worse at recognizing insecure code. At 1B we expect further
+attenuation, which means behavioral EM rates may be near the noise floor
+even when the underlying representational shift is present. The probe
+direction is what the intervention in H17 actually targets, so
+probe-level confirmation is what C10 needs to license proceeding; the
+behavioral measurement is corroborating evidence rather than the gate.
 
 *Setup: OLMo-2 1B at step 36K (final early-training checkpoint or the full
 OLMo-2 1B base). LoRA fine-tune on `data/insecure.jsonl` from
 `github.com/emergent-misalignment/emergent-misalignment` using the paper's
 hyperparameters adapted for LoRA. Probe toxic-persona activation on a
 held-out set of benign open-ended prompts (Betley's eight questions plus
-paraphrases). Expected: mean toxic-persona probe activation increases
-significantly (>1 SD above control LoRA on benign code) on non-code prompts.*
+paraphrases). Score behavioral EM rate on the same benign prompts.
+Expected: mean toxic-persona probe activation increases significantly
+(>1 SD above control LoRA on benign code) on non-code prompts; behavioral
+EM rate is directionally higher than secure control even if absolute rates
+are small (consistent with the Betley attenuation pattern).*
 
 #### H16: Persona-Feature Activation Precedes Behavioral EM During Fine-Tuning
 
@@ -1255,6 +1268,16 @@ persona probe activation on benign prompts and (b) behavioral EM rate
 steps. Measure the gap between persona-activation onset and behavioral-EM
 onset. Expected: persona activation onset ≥100 gradient steps before
 behavioral EM crosses a 5% misalignment rate threshold.*
+
+*Attenuated-behavior fallback: If behavioral EM at 1B never crosses the
+5% threshold across the LoRA run (consistent with the Betley attenuation
+pattern extended to 1B scale), substitute a probe-only readout: define
+"behavioral-EM onset" as the first step where the judge-scored rate on
+insecure-LoRA exceeds the secure-LoRA control by ≥2 SD with sample-size
+sufficient to reject the null (Wilson 95% CI non-overlap on ≥500 samples
+per condition). Report lead time against this substituted threshold and
+discuss the threshold swap in limitations. A successful H16 under the
+fallback is a weaker but still publishable monitoring-tool result.*
 
 #### H17: Training-Time Activation Steering Against the Toxic-Persona Direction Mitigates EM
 
@@ -1283,17 +1306,26 @@ auxiliary loss term — the intervention is applied directly to activations.
 This is analogous to the post-hoc steering OpenAI reported but applied
 during training rather than inference.
 
-*Outcome metrics:*
-- Behavioral EM rate on Betley's eight questions (primary)
-- Toxic-persona probe activation on benign prompts (verification)
-- Code correctness on a held-out insecure-code test split (capability
-  retention; must not degrade relative to control LoRA)
-- C3-style per-layer fragility profile (does the intervention create new
-  fragility elsewhere?)
+*Outcome metrics (primary readout chosen by C10 outcome):*
+- **If C10 confirms behavioral EM ≥5%** — primary metric is behavioral EM
+  rate on Betley's eight questions; probe activation is verification.
+- **If C10 confirms probe-level shift only (behavioral EM attenuated
+  below 5%)** — primary metric is mean probe activation on benign prompts
+  relative to control LoRA; behavioral EM rate is reported as a
+  corroborating secondary metric on ≥500-sample evaluations (Wilson 95%
+  CIs).
+- **In both cases:** code correctness on a held-out insecure-code test
+  split (capability retention; must not degrade relative to control LoRA),
+  and C3-style per-layer fragility profile (does the intervention create
+  new fragility elsewhere?).
 
-*Expected:* Method A reduces behavioral EM by ≥50% relative to control
-LoRA. Method B either matches A or exceeds it, at the cost of stronger
-capability degradation.
+*Expected:* Under behavioral-primary mode, Method A reduces behavioral EM
+by ≥50% relative to control LoRA. Under probe-primary mode, Method A
+reduces mean probe activation by ≥50% relative to control LoRA, with the
+behavioral secondary metric directionally confirming the effect (insecure
++ intervention rate ≤ secure control rate on ≥500-sample eval). Method B
+either matches A or exceeds it, at the cost of stronger capability
+degradation.
 
 #### H18: The Intervention Generalizes Across Narrow Misalignment Domains
 
@@ -1409,8 +1441,8 @@ runs.
 | C7  | Build persona-feature probe dataset           | —         | H13 (setup)| —                                                | 2–4 hrs (dataset) |
 | C8  | Persona probe validation + content baseline   | C7        | H13        | OLMo-2 1B final (step 36K)                       | ~10 min           |
 | C9  | Persona-probe trajectory mapping              | C8        | H14        | All 37 OLMo-2 1B early-training checkpoints       | ~90 min           |
-| C10 | Insecure-code EM replication on OLMo-2 1B     | C8        | H15        | OLMo-2 1B final + insecure LoRA                   | ~2 hrs            |
-| C11 | Persona activation trajectory during EM FT    | C10       | H16        | Reuse C10 run with dense evaluation               | ~3 hrs (eval)     |
+| C10 | Insecure-code EM replication on OLMo-2 1B     | C8        | H15        | OLMo-2 1B final + insecure LoRA                   | ~2 hrs train + ≥1 hr eval at scale |
+| C11 | Persona-probe + EM trajectory during LoRA (probe-primary if C10 attenuated) | C10       | H16        | Reuse C10 run with dense per-step evaluation      | ~3 hrs (eval)     |
 | C12 | Training-time steering: gradient penalty      | C10       | H17 (Method A) | OLMo-2 1B + insecure LoRA + penalty          | ~4 hrs            |
 | C13 | Training-time steering: activation patch      | C10       | H17 (Method B) | OLMo-2 1B + insecure LoRA + patch            | ~4 hrs            |
 | C14 | Cross-domain transfer                         | C12 or C13| H18        | OLMo-2 1B + medical/numbers LoRA + intervention   | ~6 hrs            |
@@ -1436,8 +1468,22 @@ Gating logic:
   is fitting surface register and lexical cues rather than a generalizable
   persona direction. Skip C9–C15; escalate to Phase E where an SAE-based
   pipeline can be reproduced on models with existing open SAEs.
-- **If C10 fails** (no measurable EM at 1B): consistent with Betley et al.'s
-  attenuation observation. Skip C11–C14; C15 and Phase E become the path.
+- **C10 is a two-level gate on probe activation (primary) and behavioral
+  EM (secondary).**
+  - *Probe PASS + behavior PASS (behavioral EM ≥5% on ≥500 samples):*
+    clean replication. Proceed to C11–C16 with behavioral EM as the
+    primary intervention metric.
+  - *Probe PASS + behavior attenuated (behavioral EM <5% but insecure >
+    secure on ≥500 samples with Wilson 95% CI non-overlap):* attenuation
+    confirmed, mechanism present. Proceed to C11–C16 with probe
+    activation as the primary intervention metric per the H17
+    outcome-metrics block above. Document this regime explicitly and
+    reframe findings as monitoring-tool results at 1B with behavioral
+    confirmation requiring Phase E scale-up.
+  - *Probe FAIL (no significant probe shift under insecure-code LoRA):*
+    consistent with a strong form of Betley attenuation — the persona
+    mechanism does not engage at 1B at all. Skip C11–C14; C15 and Phase
+    E become the path.
 - **If C12 shows no benefit but C13 does**: evidence that the gradient-penalty
   formulation is too weak; proceed with activation patching as the primary
   method but document the cost.
@@ -1453,6 +1499,49 @@ Gating logic:
   post-intervention evaluation." Still publishable and directly comparable
   to Tice Appendix G's data-level result, but reframes deepsteer toward
   inference-time monitoring.
+
+**C10 (detailed).** Insecure-code EM replication on OLMo-2 1B with both
+probe-level and behavior-level readouts.
+
+*Setup.* LoRA fine-tune OLMo-2 1B final checkpoint on
+`emergent-misalignment/data/insecure.jsonl` using the Phase C3 LoRA recipe
+as baseline. Train a paired secure-code control on the repo's secure split.
+Evaluation prompts: Betley's eight benign questions × ≥60 paraphrases per
+question (≥480 prompts per condition minimum; scale up to ~1000 if the
+preliminary signal is borderline, which is cheap since this is eval-only).
+
+*Readouts at the final checkpoint.*
+- **Probe activation (primary):** mean `PersonaFeatureProbe` activation on
+  insecure-LoRA outputs minus mean activation on secure-LoRA outputs, with
+  a paired-sample SD. Expected: ≥1 SD separation consistent with the OpenAI
+  GPT-4o SAE finding.
+- **Behavioral EM (secondary):** judge-scored coherent-misalignment rate on
+  the same benign prompts, with Wilson 95% CIs. Report insecure rate,
+  secure rate, and non-overlap test.
+- **Judge calibration spot-check:** hand-label ≥20 insecure-LoRA outputs
+  flagged as misaligned and ≥20 non-flagged to verify judge precision/recall
+  at small-model scale. The 32B-calibrated judge from Betley may miss or
+  false-positive differently on 1B outputs.
+
+*PASS criteria.*
+- *Probe PASS:* insecure − secure activation ≥1 SD, consistent with
+  OpenAI's result.
+- *Behavior PASS:* insecure EM rate ≥5% AND Wilson 95% CI non-overlap
+  with secure control.
+- *Behavior weak-PASS (attenuated):* insecure EM rate <5% but Wilson 95% CI
+  still non-overlaps with secure control on ≥500 samples.
+
+*Preliminary state at time of planning.* An initial 128-sample evaluation
+at the final LoRA checkpoint returned insecure 1.6% / secure 0.7% / base
+0.0% coherent-misalignment. Directionally correct but statistically
+underpowered (Fisher's exact p ≈ 0.56 at 2 vs 1 events). The full C10
+readout above — especially the ≥500-sample behavioral evaluation and the
+probe activation measurement, neither of which has been run yet — is
+required before declaring probe PASS, behavior PASS, or behavior weak-PASS.
+If the probe-activation measurement confirms a clean shift while behavior
+stays in this ~1–2% regime, C10 enters the probe-PASS + behavior-attenuated
+branch of the gating logic and downstream experiments proceed with
+probe-primary outcome metrics.
 
 **C16 (detailed).** Benign-tampering persistence check for the
 intervention-shaped alignment prior. Take the best-performing
@@ -1558,7 +1647,7 @@ divergences from the original.
 | Risk | Likelihood | Mitigation |
 |---|---|---|
 | Linear probe fails to recover a persona direction at 1B scale | Medium | Pre-registered C8 gate; Phase E fallback with SAE-based diffing |
-| EM does not manifest at 1B (Betley attenuation effect) | Medium-high | C10 is pre-gated; if it fails, pivot to Phase E on 7B where EM is established |
+| Behavioral EM attenuated near noise floor at 1B (Betley attenuation effect) | Medium-high | C10 two-level gate: probe PASS + behavior attenuated is a supported branch — proceed with probe-primary readouts per H17 outcome metrics. Only if probe itself fails (no significant shift under insecure LoRA) do we skip C11–C14 and pivot to Phase E on 7B |
 | Probe direction entangles with moral-valence features (confounding H13) | Medium | Explicit H19 regression check; cross-validate with foundation-specific probes; consider a "difference probe" trained on (toxic-persona minus moral-valence) if entanglement shows up |
 | Gradient-penalty approach converges to degenerate solutions (e.g., model pushes representation out of the probe's linear subspace while retaining EM behavior) | Medium | Use probe + behavioral eval jointly; check that activation suppression correlates with EM reduction rather than diverging |
 | Cross-domain failure (H18) | Medium | Still publish Phase D with narrowed scientific claim; frame as motivation for SAE-based Phase E |
@@ -1570,22 +1659,23 @@ divergences from the original.
 Minimum viable result:
 
 - C8 shows probe accuracy ≥ content-only TF-IDF baseline + 15 pp with above-chance transfer from the content-clean subset to the leaky categories
-- C10 demonstrates measurable EM on OLMo-2 1B insecure-code LoRA
-- C12 or C13 shows ≥30% relative reduction in behavioral EM vs. control
+- C10 reaches probe PASS (insecure − secure probe activation ≥1 SD on a ≥500-sample evaluation) with at least weak behavioral corroboration (insecure > secure on Wilson 95% CI non-overlap, even if absolute rates are <5%)
+- C12 or C13 shows ≥50% reduction in the C10-designated primary metric (probe activation if C10 hit only probe PASS; behavioral EM if C10 hit behavior PASS) vs. control
 - C15 confirms no significant moral-probe regression
 
 Strong result:
 
 - All of the above, plus
 - C9 shows persona emergence precedes moral emergence (novel finding)
-- C11 shows ≥100-step lead time between persona activation and behavioral EM (novel finding; differentiates DeepSteer as a monitoring tool)
+- C10 hits behavior PASS (≥5% behavioral EM on insecure, Wilson-significant gap to secure) at 1B, making both probe and behavioral readouts primary
+- C11 shows ≥100-step lead time between persona activation and behavioral EM onset (or the H16 fallback threshold if behavior is attenuated)
 - C14 demonstrates ≥30% EM reduction in at least one cross-domain setting
 - C16 shows ≤3 pp misalignment drift through the benign-tampering window — the first representation-level analog of Tice Appendix G's data-level persistence result
 
 Negative but publishable result:
 
-- C8 succeeds but C10 fails (EM doesn't manifest at 1B): validates Betley
-  attenuation observation on a new model family and motivates Phase E
+- C8 succeeds but C10 fails at the probe level (no significant probe shift under insecure-code LoRA): validates a strong form of Betley attenuation — the persona mechanism does not engage at 1B — and motivates direct Phase E escalation
+- C10 reaches probe PASS with attenuated behavior (insecure EM stays <5% but probe activation shifts cleanly), C12/C13 successfully suppress the probe direction, but behavioral corroboration remains inconclusive at 1B: monitoring-tool result at small scale; positions Phase E as the behavioral replication
 - C10 succeeds but C12/C13 fail to mitigate: joins Tice et al. Appendix I
   as a second negative result for pretraining-adjacent EM mitigation and
   provides strong motivation for SAE-based Phase E

@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Phase D C10: plot misalignment rates from scored responses.
+"""Phase D C10: plot misalignment rates and persona-probe activation.
 
 Reads ``*_scored.json`` files produced by ``c10_score_responses.py`` and
-produces two figures:
+produces three figures:
 
   - ``c10_overall_rates.png``: bar chart of overall coherent-misalignment
     rate across the three conditions (baseline, post_insecure, post_secure).
   - ``c10_per_question.png``: grouped bar chart of per-question
     coherent-misalignment rates, one group per Betley question.
+  - ``c10_probe_activation.png``: violin + point plot of persona-probe
+    activation per condition (the C10 primary readout per H15).
 
 Also emits ``c10_summary.json`` with the headline numbers used in
 RESULTS.md.
@@ -163,6 +165,81 @@ def plot_per_question(scored: dict[str, dict], output_path: Path) -> None:
     logger.info("Wrote %s", output_path)
 
 
+def _has_probe_activation(data: dict) -> bool:
+    pa = data.get("persona_activation")
+    if pa is None:
+        return False
+    return (pa.get("n_samples", 0) or 0) > 0
+
+
+def _collect_probe_scores(data: dict, field: str) -> list[float]:
+    scores: list[float] = []
+    for s in data.get("samples", []):
+        v = s.get(field)
+        if v is None:
+            continue
+        if isinstance(v, float) and v != v:  # NaN
+            continue
+        scores.append(float(v))
+    return scores
+
+
+def plot_probe_activation(scored: dict[str, dict], output_path: Path) -> None:
+    """Violin + point plot of persona-probe activation (primary C10 readout)."""
+    conditions = [c for c in CONDITION_ORDER if c in scored and _has_probe_activation(scored[c])]
+    if not conditions:
+        return
+
+    data_only = [_collect_probe_scores(scored[c], "persona_activation_response_only")
+                 for c in conditions]
+    data_ctx = [_collect_probe_scores(scored[c], "persona_activation_response_in_context")
+                for c in conditions]
+    colors = [CONDITION_COLORS[c] for c in conditions]
+    labels = [CONDITION_LABELS[c] for c in conditions]
+
+    fig, axes = plt.subplots(1, 2, figsize=(11.5, 5), sharey=False)
+    for ax, values, title in [
+        (axes[0], data_only, "Response-only scoring (primary)"),
+        (axes[1], data_ctx, "Response-in-context scoring"),
+    ]:
+        if not any(values):
+            continue
+        positions = list(range(1, len(values) + 1))
+        parts = ax.violinplot(values, positions=positions, showmeans=False,
+                              showextrema=False, showmedians=False)
+        for pc, col in zip(parts["bodies"], colors):
+            pc.set_facecolor(col)
+            pc.set_edgecolor("black")
+            pc.set_alpha(0.5)
+
+        means = [float(np.mean(v)) if v else float("nan") for v in values]
+        stds = [float(np.std(v, ddof=1)) if len(v) > 1 else 0.0 for v in values]
+        ax.errorbar(positions, means, yerr=stds, fmt="o", color="black",
+                    capsize=6, markersize=7, linewidth=2, zorder=5,
+                    label="mean ± SD")
+
+        for pos, vs in zip(positions, values):
+            x = np.random.RandomState(42 + pos).normal(pos, 0.04, size=len(vs))
+            ax.scatter(x, vs, s=12, alpha=0.35, color="black", zorder=3)
+
+        ax.set_xticks(positions)
+        ax.set_xticklabels(labels, rotation=12, ha="right")
+        ax.set_ylabel("Probe logit (higher ⇒ more persona-voice)")
+        ax.set_title(title, fontsize=11, fontweight="bold")
+        ax.grid(axis="y", alpha=0.3)
+        if title.startswith("Response-only"):
+            ax.legend(loc="upper left", fontsize=9)
+
+    fig.suptitle(
+        "Phase D C10 — Persona-probe activation on Betley responses "
+        "(OLMo-2 1B)", fontsize=12,
+    )
+    fig.tight_layout()
+    fig.savefig(output_path, dpi=140, bbox_inches="tight")
+    plt.close(fig)
+    logger.info("Wrote %s", output_path)
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -196,6 +273,9 @@ def main() -> None:
     plot_overall(scored, args.input_dir / "c10_overall_rates.png")
     plot_per_question(scored, args.input_dir / "c10_per_question.png")
 
+    if any(_has_probe_activation(d) for d in scored.values()):
+        plot_probe_activation(scored, args.input_dir / "c10_probe_activation.png")
+
     # Compact summary.
     summary = {}
     for c, data in scored.items():
@@ -218,6 +298,20 @@ def main() -> None:
         }
 
     summary["judge"] = next(iter(scored.values())).get("judge_name", "")
+
+    for c, data in scored.items():
+        pa = data.get("persona_activation")
+        if pa:
+            summary[c]["persona_activation"] = {
+                "layer": pa.get("layer"),
+                "n_samples": pa.get("n_samples"),
+                "mean_response_only": pa.get("mean_response_only"),
+                "std_response_only": pa.get("std_response_only"),
+                "mean_response_in_context": pa.get("mean_response_in_context"),
+                "std_response_in_context": pa.get("std_response_in_context"),
+                "probe_test_accuracy": pa.get("probe_test_accuracy"),
+            }
+
     summary_path = args.input_dir / "c10_summary.json"
     with open(summary_path, "w") as fh:
         json.dump(summary, fh, indent=2)
