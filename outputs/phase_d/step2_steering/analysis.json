@@ -1,0 +1,81 @@
+{
+  "input_dir": "outputs/phase_d/step2_steering",
+  "field": "persona_activation_response_only",
+  "per_condition": {
+    "c10_baseline": {
+      "n": 160,
+      "mean": 0.9556309580570087,
+      "std": 1.0007862628253559,
+      "final_loss": null
+    },
+    "none": {
+      "n": 160,
+      "mean": 3.7590603306889534,
+      "std": 0.7964370176297157,
+      "final_loss": 2.6450612545013428,
+      "final_aux_loss": null
+    },
+    "gradient_penalty": {
+      "n": 160,
+      "mean": 0.9764078613370657,
+      "std": 0.5511079467616726,
+      "final_loss": 2.6424076557159424,
+      "final_aux_loss": 0.00439074682071805
+    },
+    "activation_patch": {
+      "n": 160,
+      "mean": 6.52025788128376,
+      "std": 0.993094524324042,
+      "final_loss": 2.764453887939453,
+      "final_aux_loss": null
+    }
+  },
+  "deltas": {
+    "none_vs_baseline": {
+      "n_paired": 160,
+      "mean_delta": 2.803429372631945,
+      "std_delta": 1.2246274932282954,
+      "cohens_d": 2.2892098929133944
+    },
+    "gradient_penalty_vs_baseline": {
+      "n_paired": 160,
+      "mean_delta": 0.02077690328005701,
+      "std_delta": 1.1776128141988322,
+      "cohens_d": 0.0176432381080977
+    },
+    "activation_patch_vs_baseline": {
+      "n_paired": 160,
+      "mean_delta": 5.564626923226752,
+      "std_delta": 1.4684951824248063,
+      "cohens_d": 3.7893395836943347
+    },
+    "gradient_penalty_vs_none": {
+      "n_paired": 160,
+      "mean_delta": -2.7826524693518877,
+      "std_delta": 0.888614965256889,
+      "cohens_d": -3.1314490281484884
+    },
+    "activation_patch_vs_none": {
+      "n_paired": 160,
+      "mean_delta": 2.7611975505948068,
+      "std_delta": 1.1150998485338401,
+      "cohens_d": 2.4761886159569433
+    }
+  },
+  "verdicts": {
+    "gate1_positive_control": "PASS",
+    "gate2_intervention_suppression": {
+      "gradient_penalty": "PASS",
+      "activation_patch": "FAIL"
+    },
+    "gate3_sft_loss_preserved": {
+      "gradient_penalty": "PASS",
+      "activation_patch": "PASS"
+    }
+  },
+  "thresholds": {
+    "probe_pass_sigma": 1.0,
+    "intervention_pass_reduction": 0.5,
+    "sft_loss_tolerance": 0.25
+  }
+}

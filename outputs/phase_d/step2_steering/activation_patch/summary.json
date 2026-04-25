@@ -1,0 +1,17 @@
+{
+  "condition": "activation_patch",
+  "train_elapsed_s": 2671.5,
+  "final_sft_loss": 2.764453887939453,
+  "final_aux_loss": null,
+  "probe_activation": {
+    "layer": 5,
+    "n_samples": 160,
+    "mean_response_only": 6.52025788128376,
+    "std_response_only": 0.993094524324042,
+    "mean_response_in_context": 6.310015004873276,
+    "std_response_in_context": 1.0182334300574922,
+    "probe_test_accuracy": 0.90625,
+    "elapsed_s": 38.5
+  },
+  "n_records_used": 900
+}

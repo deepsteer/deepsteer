@@ -1,0 +1,17 @@
+{
+  "condition": "gradient_penalty",
+  "train_elapsed_s": 2935.3,
+  "final_sft_loss": 2.6424076557159424,
+  "final_aux_loss": 0.00439074682071805,
+  "probe_activation": {
+    "layer": 5,
+    "n_samples": 160,
+    "mean_response_only": 0.9764078613370657,
+    "std_response_only": 0.5511079467616726,
+    "mean_response_in_context": 0.8467061217874289,
+    "std_response_in_context": 0.5268169141109535,
+    "probe_test_accuracy": 0.90625,
+    "elapsed_s": 31.2
+  },
+  "n_records_used": 900
+}

@@ -1,0 +1,25 @@
+{
+  "model_id": "allenai/OLMo-2-0425-1B",
+  "corpus": "outputs/phase_d/step2_steering/persona_corpus.jsonl",
+  "probe_path": "outputs/phase_d/c10_v2/persona_probe.json",
+  "n_records": 1000,
+  "max_steps": 300,
+  "batch_size": 4,
+  "seq_len": 768,
+  "lr": 0.0001,
+  "gradient_penalty_lambda": 0.05,
+  "activation_patch_gamma": 1.5,
+  "activation_patch_layers": [
+    5,
+    6,
+    7
+  ],
+  "samples_per_paraphrase": 20,
+  "max_tokens": 256,
+  "temperature": 1.0,
+  "seed": 42,
+  "conditions": [
+    "gradient_penalty",
+    "activation_patch"
+  ]
+}

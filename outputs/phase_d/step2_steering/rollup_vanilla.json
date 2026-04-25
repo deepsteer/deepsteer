@@ -1,0 +1,21 @@
+{
+  "conditions": [
+    {
+      "condition": "none",
+      "train_elapsed_s": 3085.7,
+      "final_sft_loss": 2.6450612545013428,
+      "final_aux_loss": null,
+      "probe_activation": {
+        "layer": 5,
+        "n_samples": 160,
+        "mean_response_only": 3.7590603306889534,
+        "std_response_only": 0.7964370176297157,
+        "mean_response_in_context": 3.5993430756032465,
+        "std_response_in_context": 0.8232420102599068,
+        "probe_test_accuracy": 0.90625,
+        "elapsed_s": 30.1
+      },
+      "n_records_used": 900
+    }
+  ]
+}

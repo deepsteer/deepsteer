@@ -1,0 +1,942 @@
+2026-04-24 17:32:29,126 INFO __main__: Total (persona × prompt) cells: 300, samples per cell: 3
+2026-04-24 17:32:31,696 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:34,105 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:36,279 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:38,272 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:41,500 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:43,651 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:45,903 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:48,157 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:50,461 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:52,497 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:54,897 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:56,860 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:32:58,890 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:00,690 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:02,696 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:05,514 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:07,919 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:10,582 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:14,679 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:17,035 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:19,602 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:22,049 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:24,595 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:26,875 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:29,638 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:31,780 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:33,614 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:35,784 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:38,099 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:40,484 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:42,447 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:45,397 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:48,070 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:50,269 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:52,631 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:55,848 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:33:57,888 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:00,247 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:02,995 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:05,816 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:08,439 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:11,102 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:13,659 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:16,939 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:19,667 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:22,164 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:25,949 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:28,507 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:30,762 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:33,115 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:35,062 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:37,622 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:40,286 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:42,640 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:44,995 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:47,042 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:49,603 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:51,547 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:54,210 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:56,980 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:34:59,125 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:01,378 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:03,829 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:05,806 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:09,164 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:11,313 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:15,499 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:18,007 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:20,323 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:22,393 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:24,316 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:26,568 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:28,618 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:31,383 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:33,598 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:33,600 INFO __main__:   cell 25/300 → 75 records (184.5s, 2.5s/record)
+2026-04-24 17:35:35,573 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:37,631 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:39,445 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:42,837 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:45,105 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:47,768 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:50,534 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:54,012 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:56,469 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:35:58,613 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:01,899 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:04,617 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:07,892 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:10,601 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:12,859 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:14,698 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:17,273 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:19,408 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:21,661 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:24,872 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:27,292 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:29,506 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:31,901 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:33,955 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:36,304 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:38,454 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:40,914 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:43,370 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:45,524 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:47,988 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:50,436 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:52,149 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:55,148 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:36:57,555 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:01,186 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:03,955 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:05,760 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:07,553 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:09,600 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:12,145 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:14,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:16,354 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:18,495 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:20,822 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:23,920 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:25,764 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:28,120 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:30,477 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:32,727 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:34,982 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:37,130 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:39,690 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:41,739 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:44,507 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:47,577 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:50,856 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:53,509 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:55,910 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:37:58,147 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:00,790 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:03,032 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:05,188 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:07,731 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:09,898 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:11,537 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:13,565 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:15,737 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:17,900 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:19,831 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:22,043 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:24,034 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:26,489 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:29,671 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:32,528 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:35,396 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:35,398 INFO __main__:   cell 50/300 → 150 records (366.3s, 2.4s/record)
+2026-04-24 17:38:37,755 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:40,211 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:42,493 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:45,329 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:47,613 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:50,044 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:52,817 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:55,468 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:38:58,268 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:01,101 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:03,524 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:06,629 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:09,106 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:11,775 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:13,796 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:15,333 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:17,280 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:19,838 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:21,657 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:24,037 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:26,494 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:29,157 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:31,615 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:34,483 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:37,042 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:39,402 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:42,059 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:43,941 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:46,362 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:48,065 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:49,946 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:51,657 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:53,491 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:55,475 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:57,420 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:39:59,701 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:02,130 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:04,385 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:07,352 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:09,781 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:13,496 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:15,750 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:18,299 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:21,484 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:23,695 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:25,837 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:28,346 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:30,776 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:32,938 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:35,719 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:37,972 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:39,916 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:42,048 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:44,706 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:48,009 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:51,181 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:54,155 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:56,710 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:40:59,168 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:02,138 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:04,086 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:06,131 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:08,481 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:10,636 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:15,245 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:17,639 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:20,885 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:23,026 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:24,973 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:26,953 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:28,967 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:30,912 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:32,860 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:35,317 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:37,670 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:37,672 INFO __main__:   cell 75/300 → 225 records (548.5s, 2.4s/record)
+2026-04-24 17:41:39,664 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:41,691 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:44,469 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:46,681 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:48,907 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:50,982 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:53,703 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:56,543 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:41:59,388 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:01,940 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:03,887 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:06,392 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:09,313 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:11,914 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:14,433 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:17,076 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:20,294 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:22,187 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:24,060 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:26,095 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:28,388 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:30,845 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:33,772 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:35,942 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:38,806 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:41,382 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:43,823 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:45,870 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:47,815 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:51,399 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:53,652 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:56,009 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:42:57,956 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:00,041 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:02,048 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:04,199 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:06,316 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:08,705 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:10,664 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:12,625 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:15,053 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:17,528 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:19,559 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:21,691 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:24,377 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:26,525 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:29,185 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:32,360 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:34,613 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:37,379 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:39,855 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:41,986 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:44,344 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:48,341 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:50,820 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:52,852 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:55,209 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:43:57,461 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:00,719 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:03,359 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:05,698 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:07,602 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:09,241 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:11,942 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:14,023 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:16,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:18,355 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:20,300 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:22,308 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:24,500 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:26,446 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:28,801 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:31,259 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:34,026 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:36,841 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:36,843 INFO __main__:   cell 100/300 → 300 records (727.7s, 2.4s/record)
+2026-04-24 17:44:39,347 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:42,176 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:45,625 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:48,260 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:50,715 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:53,481 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:55,940 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:44:58,807 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:01,263 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:03,995 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:06,075 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:08,129 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:15,257 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:18,365 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:21,675 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:24,059 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:26,660 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:28,834 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:30,857 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:33,451 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:35,871 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:38,128 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:40,175 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:42,530 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:45,092 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:47,446 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:50,723 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:53,384 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:55,535 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:45:57,893 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:00,194 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:02,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:05,469 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:07,926 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:09,980 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:12,114 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:14,380 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:17,245 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:19,704 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:22,061 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:24,312 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:26,565 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:29,021 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:31,344 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:33,938 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:35,910 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:37,590 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:39,482 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:41,800 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:44,689 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:47,250 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:49,781 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:52,274 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:54,313 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:56,670 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:46:58,717 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:01,246 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:03,488 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:05,476 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:06,974 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:09,267 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:11,211 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:13,467 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:16,125 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:18,583 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:21,042 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:22,877 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:25,025 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:26,672 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:29,029 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:31,588 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:34,354 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:36,197 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:38,285 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:40,293 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:40,295 INFO __main__:   cell 125/300 → 375 records (911.2s, 2.4s/record)
+2026-04-24 17:47:42,375 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:44,595 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:46,217 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:48,522 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:50,670 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:53,065 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:55,678 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:47:57,803 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:00,569 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:03,334 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:06,073 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:08,763 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:11,424 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:13,779 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:16,340 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:18,738 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:20,946 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:23,813 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:26,272 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:29,142 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:33,805 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:35,795 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:38,124 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:40,328 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:42,351 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:44,808 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:46,957 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:49,516 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:52,282 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:54,374 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:57,607 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:48:59,874 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:02,111 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:03,852 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:06,721 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:09,075 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:11,636 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:14,097 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:16,857 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:18,534 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:20,735 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:22,900 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:25,459 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:27,712 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:30,579 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:33,960 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:37,136 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:40,000 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:42,867 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:45,531 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:47,990 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:50,205 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:52,815 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:55,360 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:57,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:49:59,657 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:01,546 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:03,819 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:07,751 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:11,035 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:14,614 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:16,849 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:19,800 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:22,088 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:24,135 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:26,493 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:29,001 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:31,815 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:34,357 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:36,833 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:39,086 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:41,572 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:43,591 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:46,052 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:48,097 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:48,099 INFO __main__:   cell 150/300 → 450 records (1099.0s, 2.4s/record)
+2026-04-24 17:50:50,219 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:52,397 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:54,652 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:50:57,594 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:00,385 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:03,255 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:05,577 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:07,451 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:09,297 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:11,346 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:13,597 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:16,155 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:17,795 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:20,556 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:23,118 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:25,373 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:31,872 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:34,690 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:37,353 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:39,810 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:42,372 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:45,676 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:48,513 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:51,999 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:53,557 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:55,377 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:51:58,038 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:00,495 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:03,202 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:05,978 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:08,925 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:10,895 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:13,066 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:15,486 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:17,493 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:19,491 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:21,487 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:23,880 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:25,890 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:28,292 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:30,729 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:33,058 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:35,414 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:37,462 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:40,026 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:42,992 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:46,063 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:47,703 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:51,081 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:54,460 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:52:58,360 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:00,453 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:02,452 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:04,512 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:06,003 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:08,079 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:10,231 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:12,585 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:14,940 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:17,707 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:20,843 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:23,000 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:24,818 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:27,230 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:29,585 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:32,528 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:34,298 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:36,448 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:41,667 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:44,026 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:46,378 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:48,733 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:50,761 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:53,136 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:55,696 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:55,698 INFO __main__:   cell 175/300 → 525 records (1286.6s, 2.5s/record)
+2026-04-24 17:53:57,336 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:53:59,486 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:01,226 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:03,601 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:06,279 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:09,213 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:11,599 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:14,332 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:17,099 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:19,148 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:22,321 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:24,985 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:27,530 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:30,063 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:32,487 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:34,100 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:36,048 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:37,886 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:40,243 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:42,187 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:44,174 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:46,282 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:48,129 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:50,084 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:52,055 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:54,260 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:56,503 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:54:59,288 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:01,643 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:03,385 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:05,544 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:07,889 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:10,144 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:12,395 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:14,509 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:16,532 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:18,883 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:21,202 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:23,557 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:26,124 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:28,678 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:30,983 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:33,291 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:35,491 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:38,097 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:40,390 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:43,734 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:45,850 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:48,338 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:52,608 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:55,097 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:57,763 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:55:59,792 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:01,753 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:03,904 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:06,035 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:08,716 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:10,872 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:13,227 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:15,967 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:18,444 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:20,715 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:22,849 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:25,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:27,799 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:30,247 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:32,269 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:34,934 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:36,980 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:38,805 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:40,545 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:42,610 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:45,537 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:48,131 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:50,394 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:50,396 INFO __main__:   cell 200/300 → 600 records (1461.3s, 2.4s/record)
+2026-04-24 17:56:52,136 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:54,388 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:56,401 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:56:58,995 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:01,352 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:04,320 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:06,963 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:09,440 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:12,892 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:14,560 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:16,404 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:18,779 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:21,524 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:24,288 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:26,132 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:28,901 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:31,289 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:33,504 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:35,689 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:37,588 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:39,341 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:41,825 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:44,258 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:56,339 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:57:58,457 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:00,537 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:03,305 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:05,453 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:07,504 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:09,709 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:11,956 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:14,241 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:16,189 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:18,870 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:21,646 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:24,501 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:26,959 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:29,518 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:32,078 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:34,306 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:36,380 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:39,366 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:41,747 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:43,752 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:46,006 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:48,667 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:51,228 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:54,095 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:56,654 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:58:58,910 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:01,315 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:03,926 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:06,485 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:09,352 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:12,526 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:15,127 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:17,547 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:20,233 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:22,663 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:25,227 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:27,682 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:30,140 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:31,880 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:35,054 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:37,205 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:39,719 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:42,120 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:44,373 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:46,449 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:48,571 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:50,726 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:52,563 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:54,844 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:57,376 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:59,801 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 17:59:59,803 INFO __main__:   cell 225/300 → 675 records (1650.7s, 2.4s/record)
+2026-04-24 18:00:01,882 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:04,238 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:06,388 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:08,741 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:11,301 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:13,433 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:15,193 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:17,445 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:19,803 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:22,530 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:25,128 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:27,788 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:30,433 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:33,115 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:35,899 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:37,925 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:40,458 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:43,149 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:45,605 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:48,678 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:50,700 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:53,390 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:55,640 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:00:57,688 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:00,351 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:02,388 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:05,820 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:08,032 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:11,205 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:13,253 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:15,609 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:18,783 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:21,144 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:23,653 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:26,775 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:28,820 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:31,053 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:33,273 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:35,888 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:37,468 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:39,162 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:40,667 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:42,853 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:45,394 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:48,073 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:50,530 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:52,781 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:55,445 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:01:58,195 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:00,436 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:02,370 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:04,763 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:09,168 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:11,623 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:14,549 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:17,563 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:20,124 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:21,874 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:24,344 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:28,295 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:30,567 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:33,127 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:35,279 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:37,428 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:39,681 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:42,138 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:44,086 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:46,366 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:49,307 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:52,074 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:54,631 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:56,794 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:02:59,211 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:01,905 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:03,847 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:03,849 INFO __main__:   cell 250/300 → 750 records (1834.7s, 2.4s/record)
+2026-04-24 18:03:06,159 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:08,354 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:10,651 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:13,166 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:15,623 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:17,980 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:19,515 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:21,132 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:22,587 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:24,739 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:26,701 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:29,242 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:30,856 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:33,445 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:35,285 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:37,537 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:39,585 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:41,671 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:44,505 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:47,164 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:49,518 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:51,464 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:53,337 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:55,867 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:03:58,428 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:00,825 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:03,075 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:05,390 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:08,362 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:10,613 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:12,865 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:15,221 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:17,989 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:21,264 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:23,606 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:25,973 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:29,355 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:32,117 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:34,066 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:35,906 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:38,159 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:40,210 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:42,152 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:44,303 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:46,453 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:48,299 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:50,858 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:52,625 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:55,055 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:56,834 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:04:58,536 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:00,688 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:02,737 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:05,193 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:07,344 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:10,317 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:12,668 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:17,151 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:19,459 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:21,770 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:23,657 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:26,240 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:28,237 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:30,990 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:33,969 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:36,425 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:40,712 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:42,786 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:45,231 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:47,486 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:50,642 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:53,119 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:55,678 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:05:57,929 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:00,489 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:00,491 INFO __main__:   cell 275/300 → 825 records (2011.4s, 2.4s/record)
+2026-04-24 18:06:02,435 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:04,714 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:07,136 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:10,527 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:13,088 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:15,647 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:18,205 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:20,048 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:22,300 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:24,806 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:27,318 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:29,873 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:32,336 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:34,777 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:36,739 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:38,685 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:40,785 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:43,600 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:45,853 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:48,296 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:51,079 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:53,328 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:55,376 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:57,222 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:06:59,575 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:02,009 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:04,082 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:06,481 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:08,791 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:15,038 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:17,521 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:20,159 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:23,025 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:25,135 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:26,942 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:29,019 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:31,219 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:33,498 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:35,825 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:38,695 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:41,355 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:43,713 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:45,768 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:48,833 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:51,219 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:07:53,540 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:02,143 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:05,099 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:08,802 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:11,305 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:14,434 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:16,479 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:18,833 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:21,394 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:24,467 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:27,947 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:30,980 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:33,170 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:35,525 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:38,496 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:40,671 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:42,899 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:45,264 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:48,635 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:51,416 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:54,899 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:57,134 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:08:58,978 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:01,331 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:04,158 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:07,056 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:09,463 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:12,194 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:14,540 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:16,637 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-04-24 18:09:16,638 INFO __main__:   cell 300/300 → 900 records (2207.5s, 2.5s/record)
+2026-04-24 18:09:16,639 INFO __main__: Generated 900 records (0 skipped) in 2207.5s
+2026-04-24 18:09:17,186 INFO __main__: Gate-checking 30 / 900 records with probe layer 5 (threshold=2.00)
+2026-04-24 18:09:18,874 INFO deepsteer.core.model_interface: Loading allenai/OLMo-2-0425-1B on mps (dtype=torch.float16, revision=None)
+2026-04-24 18:09:19,170 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:19,235 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/config.json "HTTP/1.1 200 OK"
+2026-04-24 18:09:19,400 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:19,463 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 18:09:19,625 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:19,691 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-04-24 18:09:19,863 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/allenai/OLMo-2-0425-1B/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-04-24 18:09:20,029 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/allenai/OLMo-2-0425-1B/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-24 18:09:20,367 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/allenai/OLMo-2-0425-1B "HTTP/1.1 200 OK"
+2026-04-24 18:09:20,539 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:20,602 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/config.json "HTTP/1.1 200 OK"
+`torch_dtype` is deprecated! Use `dtype` instead!
+2026-04-24 18:09:20,841 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:20,901 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/config.json "HTTP/1.1 200 OK"
+Loading weights:   0%|          | 0/179 [00:00<?, ?it/s]Loading weights:   1%|          | 1/179 [00:00<00:00, 3437.95it/s, Materializing param=lm_head.weight]Loading weights:   1%|          | 1/179 [00:00<00:00, 2695.57it/s, Materializing param=lm_head.weight]Loading weights:   1%|          | 2/179 [00:01<01:51,  1.58it/s, Materializing param=lm_head.weight]  Loading weights:   1%|          | 2/179 [00:01<01:51,  1.58it/s, Materializing param=model.embed_tokens.weight]Loading weights:   1%|          | 2/179 [00:01<01:51,  1.58it/s, Materializing param=model.embed_tokens.weight]Loading weights:   2%|▏         | 3/179 [00:01<01:51,  1.58it/s, Materializing param=model.layers.0.mlp.down_proj.weight]Loading weights:   2%|▏         | 3/179 [00:01<01:51,  1.58it/s, Materializing param=model.layers.0.mlp.down_proj.weight]Loading weights:   2%|▏         | 4/179 [00:01<01:50,  1.58it/s, Materializing param=model.layers.0.mlp.gate_proj.weight]Loading weights:   2%|▏         | 4/179 [00:01<01:50,  1.58it/s, Materializing param=model.layers.0.mlp.gate_proj.weight]Loading weights:   3%|▎         | 5/179 [00:01<01:49,  1.58it/s, Materializing param=model.layers.0.mlp.up_proj.weight]  Loading weights:   3%|▎         | 5/179 [00:01<01:49,  1.58it/s, Materializing param=model.layers.0.mlp.up_proj.weight]Loading weights:   3%|▎         | 6/179 [00:01<01:49,  1.58it/s, Materializing param=model.layers.0.post_attention_layernorm.weight]Loading weights:   3%|▎         | 6/179 [00:01<01:49,  1.58it/s, Materializing param=model.layers.0.post_attention_layernorm.weight]Loading weights:   4%|▍         | 7/179 [00:01<01:48,  1.58it/s, Materializing param=model.layers.0.post_feedforward_layernorm.weight]Loading weights:   4%|▍         | 7/179 [00:01<01:48,  1.58it/s, Materializing param=model.layers.0.post_feedforward_layernorm.weight]Loading weights:   4%|▍         | 8/179 [00:01<01:47,  1.58it/s, Materializing param=model.layers.0.self_attn.k_norm.weight]          Loading weights:   4%|▍         | 8/179 [00:01<01:47,  1.58it/s, Materializing param=model.layers.0.self_attn.k_norm.weight]Loading weights:   5%|▌         | 9/179 [00:01<01:47,  1.58it/s, Materializing param=model.layers.0.self_attn.k_proj.weight]Loading weights:   5%|▌         | 9/179 [00:01<01:47,  1.58it/s, Materializing param=model.layers.0.self_attn.k_proj.weight]Loading weights:   6%|▌         | 10/179 [00:01<01:46,  1.58it/s, Materializing param=model.layers.0.self_attn.o_proj.weight]Loading weights:   6%|▌         | 10/179 [00:01<01:46,  1.58it/s, Materializing param=model.layers.0.self_attn.o_proj.weight]Loading weights:   6%|▌         | 11/179 [00:01<01:46,  1.58it/s, Materializing param=model.layers.0.self_attn.q_norm.weight]Loading weights:   6%|▌         | 11/179 [00:01<01:46,  1.58it/s, Materializing param=model.layers.0.self_attn.q_norm.weight]Loading weights:   7%|▋         | 12/179 [00:01<01:45,  1.58it/s, Materializing param=model.layers.0.self_attn.q_proj.weight]Loading weights:   7%|▋         | 12/179 [00:01<01:45,  1.58it/s, Materializing param=model.layers.0.self_attn.q_proj.weight]Loading weights:   7%|▋         | 13/179 [00:01<01:44,  1.58it/s, Materializing param=model.layers.0.self_attn.v_proj.weight]Loading weights:   7%|▋         | 13/179 [00:01<01:44,  1.58it/s, Materializing param=model.layers.0.self_attn.v_proj.weight]Loading weights:   8%|▊         | 14/179 [00:01<01:44,  1.58it/s, Materializing param=model.layers.1.mlp.down_proj.weight]   Loading weights:   8%|▊         | 14/179 [00:01<01:44,  1.58it/s, Materializing param=model.layers.1.mlp.down_proj.weight]Loading weights:   8%|▊         | 15/179 [00:01<01:43,  1.58it/s, Materializing param=model.layers.1.mlp.gate_proj.weight]Loading weights:   8%|▊         | 15/179 [00:01<01:43,  1.58it/s, Materializing param=model.layers.1.mlp.gate_proj.weight]Loading weights:   9%|▉         | 16/179 [00:01<01:42,  1.58it/s, Materializing param=model.layers.1.mlp.up_proj.weight]  Loading weights:   9%|▉         | 16/179 [00:01<01:42,  1.58it/s, Materializing param=model.layers.1.mlp.up_proj.weight]Loading weights:   9%|▉         | 17/179 [00:01<01:42,  1.58it/s, Materializing param=model.layers.1.post_attention_layernorm.weight]Loading weights:   9%|▉         | 17/179 [00:01<01:42,  1.58it/s, Materializing param=model.layers.1.post_attention_layernorm.weight]Loading weights:  10%|█         | 18/179 [00:01<01:41,  1.58it/s, Materializing param=model.layers.1.post_feedforward_layernorm.weight]Loading weights:  10%|█         | 18/179 [00:01<01:41,  1.58it/s, Materializing param=model.layers.1.post_feedforward_layernorm.weight]Loading weights:  11%|█         | 19/179 [00:01<01:40,  1.58it/s, Materializing param=model.layers.1.self_attn.k_norm.weight]          Loading weights:  11%|█         | 19/179 [00:01<01:40,  1.58it/s, Materializing param=model.layers.1.self_attn.k_norm.weight]Loading weights:  11%|█         | 20/179 [00:01<01:40,  1.58it/s, Materializing param=model.layers.1.self_attn.k_proj.weight]Loading weights:  11%|█         | 20/179 [00:01<01:40,  1.58it/s, Materializing param=model.layers.1.self_attn.k_proj.weight]Loading weights:  12%|█▏        | 21/179 [00:01<01:39,  1.58it/s, Materializing param=model.layers.1.self_attn.o_proj.weight]Loading weights:  12%|█▏        | 21/179 [00:01<01:39,  1.58it/s, Materializing param=model.layers.1.self_attn.o_proj.weight]Loading weights:  12%|█▏        | 22/179 [00:01<01:39,  1.58it/s, Materializing param=model.layers.1.self_attn.q_norm.weight]Loading weights:  12%|█▏        | 22/179 [00:01<01:39,  1.58it/s, Materializing param=model.layers.1.self_attn.q_norm.weight]Loading weights:  13%|█▎        | 23/179 [00:01<01:38,  1.58it/s, Materializing param=model.layers.1.self_attn.q_proj.weight]Loading weights:  13%|█▎        | 23/179 [00:01<01:38,  1.58it/s, Materializing param=model.layers.1.self_attn.q_proj.weight]Loading weights:  13%|█▎        | 24/179 [00:01<01:37,  1.58it/s, Materializing param=model.layers.1.self_attn.v_proj.weight]Loading weights:  13%|█▎        | 24/179 [00:01<01:37,  1.58it/s, Materializing param=model.layers.1.self_attn.v_proj.weight]Loading weights:  14%|█▍        | 25/179 [00:01<01:37,  1.58it/s, Materializing param=model.layers.2.mlp.down_proj.weight]   Loading weights:  14%|█▍        | 25/179 [00:01<01:37,  1.58it/s, Materializing param=model.layers.2.mlp.down_proj.weight]Loading weights:  15%|█▍        | 26/179 [00:01<01:36,  1.58it/s, Materializing param=model.layers.2.mlp.gate_proj.weight]Loading weights:  15%|█▍        | 26/179 [00:01<01:36,  1.58it/s, Materializing param=model.layers.2.mlp.gate_proj.weight]Loading weights:  15%|█▌        | 27/179 [00:01<01:35,  1.58it/s, Materializing param=model.layers.2.mlp.up_proj.weight]  Loading weights:  15%|█▌        | 27/179 [00:01<01:35,  1.58it/s, Materializing param=model.layers.2.mlp.up_proj.weight]Loading weights:  16%|█▌        | 28/179 [00:01<01:35,  1.58it/s, Materializing param=model.layers.2.post_attention_layernorm.weight]Loading weights:  16%|█▌        | 28/179 [00:01<01:35,  1.58it/s, Materializing param=model.layers.2.post_attention_layernorm.weight]Loading weights:  16%|█▌        | 29/179 [00:01<01:34,  1.58it/s, Materializing param=model.layers.2.post_feedforward_layernorm.weight]Loading weights:  16%|█▌        | 29/179 [00:01<01:34,  1.58it/s, Materializing param=model.layers.2.post_feedforward_layernorm.weight]Loading weights:  17%|█▋        | 30/179 [00:01<01:34,  1.58it/s, Materializing param=model.layers.2.self_attn.k_norm.weight]          Loading weights:  17%|█▋        | 30/179 [00:01<01:34,  1.58it/s, Materializing param=model.layers.2.self_attn.k_norm.weight]Loading weights:  17%|█▋        | 31/179 [00:01<01:33,  1.58it/s, Materializing param=model.layers.2.self_attn.k_proj.weight]Loading weights:  17%|█▋        | 31/179 [00:01<01:33,  1.58it/s, Materializing param=model.layers.2.self_attn.k_proj.weight]Loading weights:  18%|█▊        | 32/179 [00:01<01:32,  1.58it/s, Materializing param=model.layers.2.self_attn.o_proj.weight]Loading weights:  18%|█▊        | 32/179 [00:01<01:32,  1.58it/s, Materializing param=model.layers.2.self_attn.o_proj.weight]Loading weights:  18%|█▊        | 33/179 [00:01<01:32,  1.58it/s, Materializing param=model.layers.2.self_attn.q_norm.weight]Loading weights:  18%|█▊        | 33/179 [00:01<01:32,  1.58it/s, Materializing param=model.layers.2.self_attn.q_norm.weight]Loading weights:  19%|█▉        | 34/179 [00:01<01:31,  1.58it/s, Materializing param=model.layers.2.self_attn.q_proj.weight]Loading weights:  19%|█▉        | 34/179 [00:01<01:31,  1.58it/s, Materializing param=model.layers.2.self_attn.q_proj.weight]Loading weights:  20%|█▉        | 35/179 [00:01<01:30,  1.58it/s, Materializing param=model.layers.2.self_attn.v_proj.weight]Loading weights:  20%|█▉        | 35/179 [00:01<01:30,  1.58it/s, Materializing param=model.layers.2.self_attn.v_proj.weight]Loading weights:  20%|██        | 36/179 [00:01<01:30,  1.58it/s, Materializing param=model.layers.3.mlp.down_proj.weight]   Loading weights:  20%|██        | 36/179 [00:01<01:30,  1.58it/s, Materializing param=model.layers.3.mlp.down_proj.weight]Loading weights:  21%|██        | 37/179 [00:01<01:29,  1.58it/s, Materializing param=model.layers.3.mlp.gate_proj.weight]Loading weights:  21%|██        | 37/179 [00:01<01:29,  1.58it/s, Materializing param=model.layers.3.mlp.gate_proj.weight]Loading weights:  21%|██        | 38/179 [00:01<01:28,  1.58it/s, Materializing param=model.layers.3.mlp.up_proj.weight]  Loading weights:  21%|██        | 38/179 [00:01<01:28,  1.58it/s, Materializing param=model.layers.3.mlp.up_proj.weight]Loading weights:  22%|██▏       | 39/179 [00:01<01:28,  1.58it/s, Materializing param=model.layers.3.post_attention_layernorm.weight]Loading weights:  22%|██▏       | 39/179 [00:01<01:28,  1.58it/s, Materializing param=model.layers.3.post_attention_layernorm.weight]Loading weights:  22%|██▏       | 40/179 [00:01<01:27,  1.58it/s, Materializing param=model.layers.3.post_feedforward_layernorm.weight]Loading weights:  22%|██▏       | 40/179 [00:01<01:27,  1.58it/s, Materializing param=model.layers.3.post_feedforward_layernorm.weight]Loading weights:  23%|██▎       | 41/179 [00:01<01:27,  1.58it/s, Materializing param=model.layers.3.self_attn.k_norm.weight]          Loading weights:  23%|██▎       | 41/179 [00:01<01:27,  1.58it/s, Materializing param=model.layers.3.self_attn.k_norm.weight]Loading weights:  23%|██▎       | 42/179 [00:01<01:26,  1.58it/s, Materializing param=model.layers.3.self_attn.k_proj.weight]Loading weights:  23%|██▎       | 42/179 [00:01<01:26,  1.58it/s, Materializing param=model.layers.3.self_attn.k_proj.weight]Loading weights:  24%|██▍       | 43/179 [00:01<01:25,  1.58it/s, Materializing param=model.layers.3.self_attn.o_proj.weight]Loading weights:  24%|██▍       | 43/179 [00:01<01:25,  1.58it/s, Materializing param=model.layers.3.self_attn.o_proj.weight]Loading weights:  25%|██▍       | 44/179 [00:01<01:25,  1.58it/s, Materializing param=model.layers.3.self_attn.q_norm.weight]Loading weights:  25%|██▍       | 44/179 [00:01<01:25,  1.58it/s, Materializing param=model.layers.3.self_attn.q_norm.weight]Loading weights:  25%|██▌       | 45/179 [00:01<01:24,  1.58it/s, Materializing param=model.layers.3.self_attn.q_proj.weight]Loading weights:  25%|██▌       | 45/179 [00:01<01:24,  1.58it/s, Materializing param=model.layers.3.self_attn.q_proj.weight]Loading weights:  26%|██▌       | 46/179 [00:01<01:23,  1.58it/s, Materializing param=model.layers.3.self_attn.v_proj.weight]Loading weights:  26%|██▌       | 46/179 [00:01<01:23,  1.58it/s, Materializing param=model.layers.3.self_attn.v_proj.weight]Loading weights:  26%|██▋       | 47/179 [00:01<01:23,  1.58it/s, Materializing param=model.layers.4.mlp.down_proj.weight]   Loading weights:  26%|██▋       | 47/179 [00:01<01:23,  1.58it/s, Materializing param=model.layers.4.mlp.down_proj.weight]Loading weights:  27%|██▋       | 48/179 [00:01<01:22,  1.58it/s, Materializing param=model.layers.4.mlp.gate_proj.weight]Loading weights:  27%|██▋       | 48/179 [00:01<01:22,  1.58it/s, Materializing param=model.layers.4.mlp.gate_proj.weight]Loading weights:  27%|██▋       | 49/179 [00:01<01:22,  1.58it/s, Materializing param=model.layers.4.mlp.up_proj.weight]  Loading weights:  27%|██▋       | 49/179 [00:01<01:22,  1.58it/s, Materializing param=model.layers.4.mlp.up_proj.weight]Loading weights:  28%|██▊       | 50/179 [00:01<01:21,  1.58it/s, Materializing param=model.layers.4.post_attention_layernorm.weight]Loading weights:  28%|██▊       | 50/179 [00:01<01:21,  1.58it/s, Materializing param=model.layers.4.post_attention_layernorm.weight]Loading weights:  28%|██▊       | 51/179 [00:01<01:20,  1.58it/s, Materializing param=model.layers.4.post_feedforward_layernorm.weight]Loading weights:  28%|██▊       | 51/179 [00:01<01:20,  1.58it/s, Materializing param=model.layers.4.post_feedforward_layernorm.weight]Loading weights:  29%|██▉       | 52/179 [00:01<01:20,  1.58it/s, Materializing param=model.layers.4.self_attn.k_norm.weight]          Loading weights:  29%|██▉       | 52/179 [00:01<01:20,  1.58it/s, Materializing param=model.layers.4.self_attn.k_norm.weight]Loading weights:  30%|██▉       | 53/179 [00:01<01:19,  1.58it/s, Materializing param=model.layers.4.self_attn.k_proj.weight]Loading weights:  30%|██▉       | 53/179 [00:01<01:19,  1.58it/s, Materializing param=model.layers.4.self_attn.k_proj.weight]Loading weights:  30%|███       | 54/179 [00:01<01:18,  1.58it/s, Materializing param=model.layers.4.self_attn.o_proj.weight]Loading weights:  30%|███       | 54/179 [00:01<01:18,  1.58it/s, Materializing param=model.layers.4.self_attn.o_proj.weight]Loading weights:  31%|███       | 55/179 [00:01<01:18,  1.58it/s, Materializing param=model.layers.4.self_attn.q_norm.weight]Loading weights:  31%|███       | 55/179 [00:01<01:18,  1.58it/s, Materializing param=model.layers.4.self_attn.q_norm.weight]Loading weights:  31%|███▏      | 56/179 [00:01<01:17,  1.58it/s, Materializing param=model.layers.4.self_attn.q_proj.weight]Loading weights:  31%|███▏      | 56/179 [00:01<01:17,  1.58it/s, Materializing param=model.layers.4.self_attn.q_proj.weight]Loading weights:  32%|███▏      | 57/179 [00:01<01:17,  1.58it/s, Materializing param=model.layers.4.self_attn.v_proj.weight]Loading weights:  32%|███▏      | 57/179 [00:01<01:17,  1.58it/s, Materializing param=model.layers.4.self_attn.v_proj.weight]Loading weights:  32%|███▏      | 58/179 [00:01<01:16,  1.58it/s, Materializing param=model.layers.5.mlp.down_proj.weight]   Loading weights:  32%|███▏      | 58/179 [00:01<01:16,  1.58it/s, Materializing param=model.layers.5.mlp.down_proj.weight]Loading weights:  33%|███▎      | 59/179 [00:01<01:15,  1.58it/s, Materializing param=model.layers.5.mlp.gate_proj.weight]Loading weights:  33%|███▎      | 59/179 [00:01<01:15,  1.58it/s, Materializing param=model.layers.5.mlp.gate_proj.weight]Loading weights:  34%|███▎      | 60/179 [00:01<01:15,  1.58it/s, Materializing param=model.layers.5.mlp.up_proj.weight]  Loading weights:  34%|███▎      | 60/179 [00:01<01:15,  1.58it/s, Materializing param=model.layers.5.mlp.up_proj.weight]Loading weights:  34%|███▍      | 61/179 [00:01<01:14,  1.58it/s, Materializing param=model.layers.5.post_attention_layernorm.weight]Loading weights:  34%|███▍      | 61/179 [00:01<01:14,  1.58it/s, Materializing param=model.layers.5.post_attention_layernorm.weight]Loading weights:  35%|███▍      | 62/179 [00:01<01:13,  1.58it/s, Materializing param=model.layers.5.post_feedforward_layernorm.weight]Loading weights:  35%|███▍      | 62/179 [00:01<01:13,  1.58it/s, Materializing param=model.layers.5.post_feedforward_layernorm.weight]Loading weights:  35%|███▌      | 63/179 [00:01<01:13,  1.58it/s, Materializing param=model.layers.5.self_attn.k_norm.weight]          Loading weights:  35%|███▌      | 63/179 [00:01<01:13,  1.58it/s, Materializing param=model.layers.5.self_attn.k_norm.weight]Loading weights:  36%|███▌      | 64/179 [00:01<01:12,  1.58it/s, Materializing param=model.layers.5.self_attn.k_proj.weight]Loading weights:  36%|███▌      | 64/179 [00:01<01:12,  1.58it/s, Materializing param=model.layers.5.self_attn.k_proj.weight]Loading weights:  36%|███▋      | 65/179 [00:01<01:11,  1.58it/s, Materializing param=model.layers.5.self_attn.o_proj.weight]Loading weights:  36%|███▋      | 65/179 [00:01<01:11,  1.58it/s, Materializing param=model.layers.5.self_attn.o_proj.weight]Loading weights:  37%|███▋      | 66/179 [00:01<01:11,  1.58it/s, Materializing param=model.layers.5.self_attn.q_norm.weight]Loading weights:  37%|███▋      | 66/179 [00:01<01:11,  1.58it/s, Materializing param=model.layers.5.self_attn.q_norm.weight]Loading weights:  37%|███▋      | 67/179 [00:01<01:10,  1.58it/s, Materializing param=model.layers.5.self_attn.q_proj.weight]Loading weights:  37%|███▋      | 67/179 [00:01<01:10,  1.58it/s, Materializing param=model.layers.5.self_attn.q_proj.weight]Loading weights:  38%|███▊      | 68/179 [00:01<01:10,  1.58it/s, Materializing param=model.layers.5.self_attn.v_proj.weight]Loading weights:  38%|███▊      | 68/179 [00:01<01:10,  1.58it/s, Materializing param=model.layers.5.self_attn.v_proj.weight]Loading weights:  39%|███▊      | 69/179 [00:01<01:09,  1.58it/s, Materializing param=model.layers.6.mlp.down_proj.weight]   Loading weights:  39%|███▊      | 69/179 [00:01<01:09,  1.58it/s, Materializing param=model.layers.6.mlp.down_proj.weight]Loading weights:  39%|███▉      | 70/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.mlp.down_proj.weight]Loading weights:  39%|███▉      | 70/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.mlp.gate_proj.weight]Loading weights:  39%|███▉      | 70/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.mlp.gate_proj.weight]Loading weights:  40%|███▉      | 71/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.mlp.up_proj.weight]  Loading weights:  40%|███▉      | 71/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.mlp.up_proj.weight]Loading weights:  40%|████      | 72/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.post_attention_layernorm.weight]Loading weights:  40%|████      | 72/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.post_attention_layernorm.weight]Loading weights:  41%|████      | 73/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.post_feedforward_layernorm.weight]Loading weights:  41%|████      | 73/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.post_feedforward_layernorm.weight]Loading weights:  41%|████▏     | 74/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.k_norm.weight]          Loading weights:  41%|████▏     | 74/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.k_norm.weight]Loading weights:  42%|████▏     | 75/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.k_proj.weight]Loading weights:  42%|████▏     | 75/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.k_proj.weight]Loading weights:  42%|████▏     | 76/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.o_proj.weight]Loading weights:  42%|████▏     | 76/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.o_proj.weight]Loading weights:  43%|████▎     | 77/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.q_norm.weight]Loading weights:  43%|████▎     | 77/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.q_norm.weight]Loading weights:  44%|████▎     | 78/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.q_proj.weight]Loading weights:  44%|████▎     | 78/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.q_proj.weight]Loading weights:  44%|████▍     | 79/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.v_proj.weight]Loading weights:  44%|████▍     | 79/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.6.self_attn.v_proj.weight]Loading weights:  45%|████▍     | 80/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.down_proj.weight]   Loading weights:  45%|████▍     | 80/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.down_proj.weight]Loading weights:  45%|████▌     | 81/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.gate_proj.weight]Loading weights:  45%|████▌     | 81/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.gate_proj.weight]Loading weights:  46%|████▌     | 82/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.up_proj.weight]  Loading weights:  46%|████▌     | 82/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.mlp.up_proj.weight]Loading weights:  46%|████▋     | 83/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.post_attention_layernorm.weight]Loading weights:  46%|████▋     | 83/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.post_attention_layernorm.weight]Loading weights:  47%|████▋     | 84/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.post_feedforward_layernorm.weight]Loading weights:  47%|████▋     | 84/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.post_feedforward_layernorm.weight]Loading weights:  47%|████▋     | 85/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.k_norm.weight]          Loading weights:  47%|████▋     | 85/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.k_norm.weight]Loading weights:  48%|████▊     | 86/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.k_proj.weight]Loading weights:  48%|████▊     | 86/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.k_proj.weight]Loading weights:  49%|████▊     | 87/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.o_proj.weight]Loading weights:  49%|████▊     | 87/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.o_proj.weight]Loading weights:  49%|████▉     | 88/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.q_norm.weight]Loading weights:  49%|████▉     | 88/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.q_norm.weight]Loading weights:  50%|████▉     | 89/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.q_proj.weight]Loading weights:  50%|████▉     | 89/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.q_proj.weight]Loading weights:  50%|█████     | 90/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.v_proj.weight]Loading weights:  50%|█████     | 90/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.7.self_attn.v_proj.weight]Loading weights:  51%|█████     | 91/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.down_proj.weight]   Loading weights:  51%|█████     | 91/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.down_proj.weight]Loading weights:  51%|█████▏    | 92/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.gate_proj.weight]Loading weights:  51%|█████▏    | 92/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.gate_proj.weight]Loading weights:  52%|█████▏    | 93/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.up_proj.weight]  Loading weights:  52%|█████▏    | 93/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.mlp.up_proj.weight]Loading weights:  53%|█████▎    | 94/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.post_attention_layernorm.weight]Loading weights:  53%|█████▎    | 94/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.post_attention_layernorm.weight]Loading weights:  53%|█████▎    | 95/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.post_feedforward_layernorm.weight]Loading weights:  53%|█████▎    | 95/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.post_feedforward_layernorm.weight]Loading weights:  54%|█████▎    | 96/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.k_norm.weight]          Loading weights:  54%|█████▎    | 96/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.k_norm.weight]Loading weights:  54%|█████▍    | 97/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.k_proj.weight]Loading weights:  54%|█████▍    | 97/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.k_proj.weight]Loading weights:  55%|█████▍    | 98/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.o_proj.weight]Loading weights:  55%|█████▍    | 98/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.o_proj.weight]Loading weights:  55%|█████▌    | 99/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.q_norm.weight]Loading weights:  55%|█████▌    | 99/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.q_norm.weight]Loading weights:  56%|█████▌    | 100/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.q_proj.weight]Loading weights:  56%|█████▌    | 100/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.q_proj.weight]Loading weights:  56%|█████▋    | 101/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.v_proj.weight]Loading weights:  56%|█████▋    | 101/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.8.self_attn.v_proj.weight]Loading weights:  57%|█████▋    | 102/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.down_proj.weight]   Loading weights:  57%|█████▋    | 102/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.down_proj.weight]Loading weights:  58%|█████▊    | 103/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.gate_proj.weight]Loading weights:  58%|█████▊    | 103/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.gate_proj.weight]Loading weights:  58%|█████▊    | 104/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.up_proj.weight]  Loading weights:  58%|█████▊    | 104/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.mlp.up_proj.weight]Loading weights:  59%|█████▊    | 105/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.post_attention_layernorm.weight]Loading weights:  59%|█████▊    | 105/179 [00:01<00:01, 69.72it/s, Materializing param=model.layers.9.post_attention_layernorm.weight]Loading weights:  59%|█████▉    | 106/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.post_attention_layernorm.weight]Loading weights:  59%|█████▉    | 106/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.post_feedforward_layernorm.weight]Loading weights:  59%|█████▉    | 106/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.post_feedforward_layernorm.weight]Loading weights:  60%|█████▉    | 107/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.k_norm.weight]          Loading weights:  60%|█████▉    | 107/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.k_norm.weight]Loading weights:  60%|██████    | 108/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.k_proj.weight]Loading weights:  60%|██████    | 108/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.k_proj.weight]Loading weights:  61%|██████    | 109/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.o_proj.weight]Loading weights:  61%|██████    | 109/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.o_proj.weight]Loading weights:  61%|██████▏   | 110/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.q_norm.weight]Loading weights:  61%|██████▏   | 110/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.q_norm.weight]Loading weights:  62%|██████▏   | 111/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.q_proj.weight]Loading weights:  62%|██████▏   | 111/179 [00:01<00:01, 67.27it/s, Materializing param=model.layers.9.self_attn.q_proj.weight]Loading weights:  63%|██████▎   | 112/179 [00:01<00:00, 67.27it/s, Materializing param=model.layers.9.self_attn.v_proj.weight]Loading weights:  63%|██████▎   | 112/179 [00:01<00:00, 67.27it/s, Materializing param=model.layers.9.self_attn.v_proj.weight]Loading weights:  63%|██████▎   | 113/179 [00:01<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.down_proj.weight]  Loading weights:  63%|██████▎   | 113/179 [00:01<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.down_proj.weight]Loading weights:  64%|██████▎   | 114/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.gate_proj.weight]Loading weights:  64%|██████▎   | 114/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.gate_proj.weight]Loading weights:  64%|██████▍   | 115/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.up_proj.weight]  Loading weights:  64%|██████▍   | 115/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.mlp.up_proj.weight]Loading weights:  65%|██████▍   | 116/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.post_attention_layernorm.weight]Loading weights:  65%|██████▍   | 116/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.post_attention_layernorm.weight]Loading weights:  65%|██████▌   | 117/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.post_feedforward_layernorm.weight]Loading weights:  65%|██████▌   | 117/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.post_feedforward_layernorm.weight]Loading weights:  66%|██████▌   | 118/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.k_norm.weight]          Loading weights:  66%|██████▌   | 118/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.k_norm.weight]Loading weights:  66%|██████▋   | 119/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.k_proj.weight]Loading weights:  66%|██████▋   | 119/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.k_proj.weight]Loading weights:  67%|██████▋   | 120/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.o_proj.weight]Loading weights:  67%|██████▋   | 120/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.o_proj.weight]Loading weights:  68%|██████▊   | 121/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.q_norm.weight]Loading weights:  68%|██████▊   | 121/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.q_norm.weight]Loading weights:  68%|██████▊   | 122/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.q_proj.weight]Loading weights:  68%|██████▊   | 122/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.q_proj.weight]Loading weights:  69%|██████▊   | 123/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.v_proj.weight]Loading weights:  69%|██████▊   | 123/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.10.self_attn.v_proj.weight]Loading weights:  69%|██████▉   | 124/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.down_proj.weight]   Loading weights:  69%|██████▉   | 124/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.down_proj.weight]Loading weights:  70%|██████▉   | 125/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.gate_proj.weight]Loading weights:  70%|██████▉   | 125/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.gate_proj.weight]Loading weights:  70%|███████   | 126/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.up_proj.weight]  Loading weights:  70%|███████   | 126/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.mlp.up_proj.weight]Loading weights:  71%|███████   | 127/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.post_attention_layernorm.weight]Loading weights:  71%|███████   | 127/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.post_attention_layernorm.weight]Loading weights:  72%|███████▏  | 128/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.post_feedforward_layernorm.weight]Loading weights:  72%|███████▏  | 128/179 [00:02<00:00, 67.27it/s, Materializing param=model.layers.11.post_feedforward_layernorm.weight]Loading weights:  72%|███████▏  | 129/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.post_feedforward_layernorm.weight]Loading weights:  72%|███████▏  | 129/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.k_norm.weight]          Loading weights:  72%|███████▏  | 129/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.k_norm.weight]Loading weights:  73%|███████▎  | 130/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.k_proj.weight]Loading weights:  73%|███████▎  | 130/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.k_proj.weight]Loading weights:  73%|███████▎  | 131/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.o_proj.weight]Loading weights:  73%|███████▎  | 131/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.o_proj.weight]Loading weights:  74%|███████▎  | 132/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.q_norm.weight]Loading weights:  74%|███████▎  | 132/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.q_norm.weight]Loading weights:  74%|███████▍  | 133/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.q_proj.weight]Loading weights:  74%|███████▍  | 133/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.q_proj.weight]Loading weights:  75%|███████▍  | 134/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.v_proj.weight]Loading weights:  75%|███████▍  | 134/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.11.self_attn.v_proj.weight]Loading weights:  75%|███████▌  | 135/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.down_proj.weight]   Loading weights:  75%|███████▌  | 135/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.down_proj.weight]Loading weights:  76%|███████▌  | 136/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.gate_proj.weight]Loading weights:  76%|███████▌  | 136/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.gate_proj.weight]Loading weights:  77%|███████▋  | 137/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.up_proj.weight]  Loading weights:  77%|███████▋  | 137/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.mlp.up_proj.weight]Loading weights:  77%|███████▋  | 138/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.post_attention_layernorm.weight]Loading weights:  77%|███████▋  | 138/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.post_attention_layernorm.weight]Loading weights:  78%|███████▊  | 139/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.post_feedforward_layernorm.weight]Loading weights:  78%|███████▊  | 139/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.post_feedforward_layernorm.weight]Loading weights:  78%|███████▊  | 140/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.k_norm.weight]          Loading weights:  78%|███████▊  | 140/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.k_norm.weight]Loading weights:  79%|███████▉  | 141/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.k_proj.weight]Loading weights:  79%|███████▉  | 141/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.k_proj.weight]Loading weights:  79%|███████▉  | 142/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.o_proj.weight]Loading weights:  79%|███████▉  | 142/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.o_proj.weight]Loading weights:  80%|███████▉  | 143/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.q_norm.weight]Loading weights:  80%|███████▉  | 143/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.q_norm.weight]Loading weights:  80%|████████  | 144/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.q_proj.weight]Loading weights:  80%|████████  | 144/179 [00:02<00:00, 65.32it/s, Materializing param=model.layers.12.self_attn.q_proj.weight]Loading weights:  81%|████████  | 145/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.12.self_attn.q_proj.weight]Loading weights:  81%|████████  | 145/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.12.self_attn.v_proj.weight]Loading weights:  81%|████████  | 145/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.12.self_attn.v_proj.weight]Loading weights:  82%|████████▏ | 146/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.down_proj.weight]   Loading weights:  82%|████████▏ | 146/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.down_proj.weight]Loading weights:  82%|████████▏ | 147/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.gate_proj.weight]Loading weights:  82%|████████▏ | 147/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.gate_proj.weight]Loading weights:  83%|████████▎ | 148/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.up_proj.weight]  Loading weights:  83%|████████▎ | 148/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.mlp.up_proj.weight]Loading weights:  83%|████████▎ | 149/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.post_attention_layernorm.weight]Loading weights:  83%|████████▎ | 149/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.post_attention_layernorm.weight]Loading weights:  84%|████████▍ | 150/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.post_feedforward_layernorm.weight]Loading weights:  84%|████████▍ | 150/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.post_feedforward_layernorm.weight]Loading weights:  84%|████████▍ | 151/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.k_norm.weight]          Loading weights:  84%|████████▍ | 151/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.k_norm.weight]Loading weights:  85%|████████▍ | 152/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.k_proj.weight]Loading weights:  85%|████████▍ | 152/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.k_proj.weight]Loading weights:  85%|████████▌ | 153/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.o_proj.weight]Loading weights:  85%|████████▌ | 153/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.o_proj.weight]Loading weights:  86%|████████▌ | 154/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.q_norm.weight]Loading weights:  86%|████████▌ | 154/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.q_norm.weight]Loading weights:  87%|████████▋ | 155/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.q_proj.weight]Loading weights:  87%|████████▋ | 155/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.q_proj.weight]Loading weights:  87%|████████▋ | 156/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.v_proj.weight]Loading weights:  87%|████████▋ | 156/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.13.self_attn.v_proj.weight]Loading weights:  88%|████████▊ | 157/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.14.mlp.down_proj.weight]   Loading weights:  88%|████████▊ | 157/179 [00:02<00:00, 66.73it/s, Materializing param=model.layers.14.mlp.down_proj.weight]Loading weights:  88%|████████▊ | 158/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.mlp.down_proj.weight]Loading weights:  88%|████████▊ | 158/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.mlp.gate_proj.weight]Loading weights:  88%|████████▊ | 158/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.mlp.gate_proj.weight]Loading weights:  89%|████████▉ | 159/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.mlp.up_proj.weight]  Loading weights:  89%|████████▉ | 159/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.mlp.up_proj.weight]Loading weights:  89%|████████▉ | 160/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.post_attention_layernorm.weight]Loading weights:  89%|████████▉ | 160/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.post_attention_layernorm.weight]Loading weights:  90%|████████▉ | 161/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.post_feedforward_layernorm.weight]Loading weights:  90%|████████▉ | 161/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.post_feedforward_layernorm.weight]Loading weights:  91%|█████████ | 162/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.k_norm.weight]          Loading weights:  91%|█████████ | 162/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.k_norm.weight]Loading weights:  91%|█████████ | 163/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.k_proj.weight]Loading weights:  91%|█████████ | 163/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.k_proj.weight]Loading weights:  92%|█████████▏| 164/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.o_proj.weight]Loading weights:  92%|█████████▏| 164/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.o_proj.weight]Loading weights:  92%|█████████▏| 165/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.q_norm.weight]Loading weights:  92%|█████████▏| 165/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.q_norm.weight]Loading weights:  93%|█████████▎| 166/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.q_proj.weight]Loading weights:  93%|█████████▎| 166/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.q_proj.weight]Loading weights:  93%|█████████▎| 167/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.v_proj.weight]Loading weights:  93%|█████████▎| 167/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.14.self_attn.v_proj.weight]Loading weights:  94%|█████████▍| 168/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.15.mlp.down_proj.weight]   Loading weights:  94%|█████████▍| 168/179 [00:03<00:00, 48.63it/s, Materializing param=model.layers.15.mlp.down_proj.weight]Loading weights:  94%|█████████▍| 169/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.mlp.down_proj.weight]Loading weights:  94%|█████████▍| 169/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.mlp.gate_proj.weight]Loading weights:  94%|█████████▍| 169/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.mlp.gate_proj.weight]Loading weights:  95%|█████████▍| 170/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.mlp.up_proj.weight]  Loading weights:  95%|█████████▍| 170/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.mlp.up_proj.weight]Loading weights:  96%|█████████▌| 171/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.post_attention_layernorm.weight]Loading weights:  96%|█████████▌| 171/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.post_attention_layernorm.weight]Loading weights:  96%|█████████▌| 172/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.post_feedforward_layernorm.weight]Loading weights:  96%|█████████▌| 172/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.post_feedforward_layernorm.weight]Loading weights:  97%|█████████▋| 173/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.k_norm.weight]          Loading weights:  97%|█████████▋| 173/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.k_norm.weight]Loading weights:  97%|█████████▋| 174/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.k_proj.weight]Loading weights:  97%|█████████▋| 174/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.k_proj.weight]Loading weights:  98%|█████████▊| 175/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.o_proj.weight]Loading weights:  98%|█████████▊| 175/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.o_proj.weight]Loading weights:  98%|█████████▊| 176/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.q_norm.weight]Loading weights:  98%|█████████▊| 176/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.q_norm.weight]Loading weights:  99%|█████████▉| 177/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.q_proj.weight]Loading weights:  99%|█████████▉| 177/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.q_proj.weight]Loading weights:  99%|█████████▉| 178/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.v_proj.weight]Loading weights:  99%|█████████▉| 178/179 [00:03<00:00, 53.12it/s, Materializing param=model.layers.15.self_attn.v_proj.weight]Loading weights: 100%|██████████| 179/179 [00:03<00:00, 53.12it/s, Materializing param=model.norm.weight]                      Loading weights: 100%|██████████| 179/179 [00:03<00:00, 53.12it/s, Materializing param=model.norm.weight]Loading weights: 100%|██████████| 179/179 [00:03<00:00, 55.58it/s, Materializing param=model.norm.weight]
+2026-04-24 18:09:24,372 INFO httpx: HTTP Request: HEAD https://huggingface.co/allenai/OLMo-2-0425-1B/resolve/main/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-04-24 18:09:24,435 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/allenai/OLMo-2-0425-1B/a1847dff35000b4271fa70afc5db10fd29fedbdf/generation_config.json "HTTP/1.1 200 OK"
+2026-04-24 18:09:25,338 INFO deepsteer.core.model_interface: Loaded allenai/OLMo-2-0425-1B: 16 layers, 1484.9M params
+2026-04-24 18:09:25,816 INFO __main__:   gate scored 5/30 (mean so far=3.237)
+2026-04-24 18:09:26,202 INFO __main__:   gate scored 10/30 (mean so far=3.293)
+2026-04-24 18:09:26,628 INFO __main__:   gate scored 15/30 (mean so far=3.256)
+2026-04-24 18:09:27,040 INFO __main__:   gate scored 20/30 (mean so far=3.219)
+2026-04-24 18:09:27,467 INFO __main__:   gate scored 25/30 (mean so far=3.210)
+2026-04-24 18:09:27,877 INFO __main__:   gate scored 30/30 (mean so far=3.246)
+2026-04-24 18:09:27,880 INFO __main__: Gate result: mean probe activation = 3.246 ± 0.814, threshold=2.00 → PASS
+2026-04-24 18:09:27,884 INFO __main__: Wrote 900 records to outputs/phase_d/step2_steering/persona_corpus.jsonl
