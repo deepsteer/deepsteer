@@ -1,131 +1,278 @@
-# The Moral Emergence Curve: How Moral Representations Form During LLM Pre-Training
+# DeepSteer: Moral Representation Dynamics and Persona-Feature Monitoring in OLMo Pre-Training
 
-**Orion Reblitz-Richardson** | Independent Alignment Researcher, Distiller Labs | April 2026
+**Orion Reblitz-Richardson** | Independent Alignment Researcher, Distiller Labs
+**Affiliation pursuit:** UH Mānoa Aloha Intelligence Initiative
+**Status snapshot:** April 2026
 
 ---
 
 ## Summary
 
-We present the first systematic measurement of when and how moral
-representations emerge during large language model pre-training. Using
-DeepSteer, a PyTorch-native probing toolkit, we track moral encoding
-across intermediate training checkpoints of OLMo base models (1B and 7B
-parameters). Three headline findings challenge common assumptions about
-alignment and pre-training:
+DeepSteer is a PyTorch-native toolkit for measuring **how deeply** moral
+reasoning is embedded in language models during pre-training, and for
+testing whether the persona-feature mechanism that mediates emergent
+misalignment at frontier scale (Wang et al., 2025) generalizes to 1B
+base models. The work covers two distinct contributions, suitable for
+two papers:
 
-1. **Moral encoding emerges early and fast.** Moral concepts become linearly
-   decodable from model hidden states within the first ~5% of pre-training,
-   appearing as a sharp phase transition rather than a gradual accumulation.
-   Moral distinctions are among the *first* semantic features the model
-   acquires — emerging before sentiment polarity and far before syntactic
-   competence.
+**Paper 1 — *The Moral Emergence Curve.*** Systematic measurement of
+when and how moral representations emerge during LLM pre-training.
+Three reproducible findings on OLMo-2 1B and OLMo-3 7B base models:
+moralized semantic distinctions become linearly decodable within the
+first ~5 % of training as a sharp phase transition (before sentiment
+and far before syntax); probing accuracy saturates misleadingly while
+*fragility* — a noise-robustness metric we introduce — continues
+evolving long after; data curation during fine-tuning reshapes the
+fragility profile without changing probing accuracy. Probing accuracy
+is the wrong metric.
 
-2. **Fragility reveals what accuracy cannot.** Standard probing accuracy
-   saturates quickly, providing no resolution for 95% of training. We
-   introduce fragility testing — measuring how much activation noise
-   representations can withstand — and discover a layer-depth robustness
-   gradient that continues evolving long after accuracy plateaus. Late
-   layers become maximally robust while early layers grow increasingly
-   fragile, revealing ongoing representational reorganization invisible to
-   conventional probing.
+**Paper 2 — *Persona-Feature Monitoring at 1B: A Compound Scaling
+Boundary.*** Four reproducible 1B-scale results on whether the Wang
+et al. (2025) toxic-persona mechanism engages, can be measured, and
+can be intervened on via training-time representation steering. (1)
+Under controlled insecure-code LoRA replication of Betley et al.
+(2025), the persona-probe direction does not shift (Cohen's d = 0.03)
+and behavioral emergent misalignment stays at the noise floor;
+probe-flagged and judge-flagged samples fire on decoupled axes. (2)
+A `TrainingTimeSteering.gradient_penalty` primitive cleanly
+suppresses a target probe direction by 99.3 % at no SFT-loss cost.
+(3) But probe-direction suppression does not suppress behavior — a
+held-out behavioral judge rates `gradient_penalty` outputs identically
+to vanilla LoRA (7.62 vs 7.61 / 10 on a persona-voice scale) despite
+probe Cohen's d differing by 3.07. (4) Reapplying the Phase B/C
+moral-probe + fragility battery to the saved insecure-code adapters
+shows probing accuracy is unchanged but the **layer-locus of robust
+moral encoding shifts by 2-3 layers** under insecure-code LoRA
+specifically — a Phase-C3 fragility-only signature that the
+behavioral and probe-direction nulls did not capture.
 
-3. **Data curation reshapes moral encoding structure.** LoRA fine-tuning
-   experiments show that training content does not change *whether* moral
-   concepts are encoded (accuracy is stable across conditions) but *how*
-   they are structurally organized. Repetitive declarative moral statements
-   create localized fragility at specific layers — brittle shortcuts —
-   while narrative moral content and general text produce uniformly robust
-   representations.
+Together these establish a **compound scale boundary** on the Wang
+et al. (2025) mechanism at 1B and motivate a two-prediction Phase E
+test at 7B with SAE-decomposed features.
 
-## Key Results
+## Paper 1 — The Moral Emergence Curve
 
-**Phase transition dynamics (OLMo-2 1B, 37 checkpoints at 1K-step intervals):**
-Moral probing accuracy follows a steep sigmoid from chance (~55%) to plateau
-(~95%) between steps 0 and 4K. The inflection occurs at step 1K (~3B tokens).
-Depth and breadth metrics saturate immediately, but the fragility gradient
-continues developing through step 36K, with early-layer robustness declining
-from 10.0 to 1.7 while late-layer robustness holds at 10.0.
+### Headline findings
 
-**Emergence ordering (C2 experiment, 3 matched probing datasets):**
-Onset step (70% mean accuracy threshold): moral at step 1K, sentiment at step
-2K, syntax at step 6K. Semantic features (moral, sentiment) exhibit phase-
-transition dynamics; structural features (syntax) emerge gradually with no
-inflection point — qualitatively different learning regimes.
+1. **Moralized semantic distinctions emerge early and fast.**
+   Linearly decodable within the first ~5 % of pre-training as a
+   sharp phase transition; appearing *before* sentiment polarity and
+   far before syntactic competence. We frame this as lexical
+   accessibility — moralized vocabulary is statistically marked
+   enough in pretraining data to be separable from neutral vocabulary
+   at extremely early training stages — rather than as a claim about
+   moral reasoning per se. Either way, the representational substrate
+   for moral content is present and reorganizing long before
+   post-training interventions typically engage.
 
-**Differential foundation emergence (OLMo-2 1B and OLMo-3 7B):**
-Moral Foundations Theory categories emerge in a staggered sequence: fairness
-and care saturate first; loyalty, authority, and sanctity follow; liberty/
-oppression never fully stabilizes at either model scale — a cross-scale pattern
-suggesting this foundation is intrinsically harder to encode from web text.
+2. **Fragility reveals what accuracy cannot.** Probing accuracy
+   saturates within the first 4K steps and is essentially flat for
+   the remaining 95 % of training. Fragility — measured as the
+   activation noise level at which probing accuracy drops below
+   threshold — continues evolving until the end of training, with
+   the layer-depth gradient steepening monotonically: late layers
+   become maximally robust while early layers grow increasingly
+   fragile. *Probing accuracy is the wrong discriminator for
+   alignment-relevant questions about pre-training; fragility is the
+   metric that actually moves.*
 
-**Causal-probing divergence (OLMo-3 7B):**
-The layer where moral information is most decodable (probing peak) and the
-layer where it most influences next-token prediction (causal peak) diverge by
-~10 layers. Moral information is *stored* in mid-network layers and *used* in
-early layers — a distinction invisible to probing alone.
+3. **Data curation reshapes structure, not content.** LoRA
+   fine-tuning on three matched corpora (narrative moral text,
+   declarative moral statements, general non-moral text) produces
+   identical probing accuracy (~80 %) but distinct fragility
+   profiles. Repetitive declarative moral statements create localized
+   fragility at specific layers — brittle shortcuts — while narrative
+   moral content and general text produce uniformly robust
+   representations. *Data curation operates on representational
+   structure, not representational content.*
 
-**Data curation effects (LoRA fine-tuning, OLMo-2 1B):**
-Three matched conditions (narrative moral text, declarative moral statements,
-general non-moral text) produce identical probing accuracy (~80%) but distinct
-fragility profiles. Declarative moral content creates a sharp vulnerability at
-layer 3 (critical noise drops from 10.0 to 3.0); narrative and general text
-maintain uniform robustness. This demonstrates that data curation operates on
-representational structure, not representational content.
+### Supporting findings
 
-## Methodology
+- **Phase transition dynamics (37-checkpoint OLMo-2 1B trajectory):**
+  steep sigmoid from chance (~55 %) to plateau (~95 %) between
+  steps 0 and 4K. Inflection at step 1K (~3B tokens). Depth and
+  breadth saturate immediately; fragility gradient continues
+  developing through step 36K, with early-layer robustness declining
+  from 10.0 to 1.7 while late-layer robustness holds at 10.0.
+- **Emergence ordering (matched 240-pair moral / 210-pair sentiment /
+  210-pair syntax probing datasets):** moral onsets at step 1K,
+  sentiment at step 2K, syntax at step 6K; semantic features show
+  phase-transition dynamics, structural features (syntax) emerge
+  gradually with no inflection point — qualitatively different
+  learning regimes.
+- **Differential foundation emergence (1B and 7B):** Moral Foundations
+  Theory categories emerge in a staggered sequence — fairness and care
+  saturate first; loyalty, authority, and sanctity follow;
+  liberty/oppression never fully stabilizes at either scale, a
+  cross-scale pattern suggesting this foundation is intrinsically
+  harder to encode from web text.
+- **Causal-probing divergence (7B):** the layer where moral
+  information is most decodable (probing peak) and the layer where it
+  most influences next-token prediction (causal peak) diverge by ~10
+  layers. Moral information is *stored* in mid-network layers and
+  *used* in early layers — invisible to probing alone.
 
-DeepSteer implements five probe types: layer-wise linear probing, checkpoint
-trajectory analysis, per-foundation probing, causal tracing (adapted from Meng
-et al. 2022), and fragility testing. All probes use minimal-pair datasets —
-structurally matched sentence pairs differing only in the target feature —
-designed to force classifiers to rely on genuine representations rather than
-surface cues.
+### Methodology
 
-The current probing dataset contains 240 moral/neutral minimal pairs (40 per
-Moral Foundations Theory category), plus 210 sentiment pairs and 210 syntax
-pairs for the emergence-timing comparison. All datasets are deterministic, API-
-free, and included in the toolkit.
+`LayerWiseMoralProbe`, `MoralFragilityTest`, `FoundationSpecificProbe`,
+and `MoralCausalTracer` — all running on OLMo-2 1B (37 checkpoints
+at 1K-step intervals) and OLMo-3 7B (20 stage-1 checkpoints) on a
+single MacBook Pro M4 Pro (24 GB unified memory, MPS
+acceleration). Probing dataset: 240 moral / neutral minimal pairs
+(40 per Moral Foundations Theory category) + 210 sentiment pairs +
+210 syntax pairs. Deterministic, API-free, included in the toolkit.
 
-Results span two OLMo models: OLMo-2 1B (37 early-training checkpoints for
-dense trajectory mapping plus LoRA experiments) and OLMo-3 7B (20 stage-1
-checkpoints for primary hypothesis testing). All experiments were conducted on
-a MacBook Pro M4 Pro (24GB unified memory) using MPS acceleration.
+## Paper 2 — Persona-Feature Monitoring at 1B: A Compound Scaling Boundary
 
-## DeepSteer Toolkit
+### Headline findings
 
-DeepSteer is open-source, PyTorch-native, and designed for three model access
-tiers: API models (behavioral evaluation), open-weight models (representational
-probing), and checkpoint-accessible models (training trajectory analysis). The
-codebase is ~3,800 lines of Python across ~25 files, with JSON output, built-in
-visualization, and a validated LoRA fine-tuning pipeline.
+1. **The persona mechanism does not engage at 1B under controlled
+   insecure-code LoRA replication (C10 v2; reproducible across two
+   independent runs).** Probe activation paired Δ = +0.057 (Cohen's
+   d = +0.03 vs. threshold ≥ 1 SD); behavioral EM 1.56 % insecure
+   vs. 0.69 % secure (Wilson 95 % CIs overlap); judge calibration
+   uses Betley et al.'s exact alignment / coherence prompts. Probe
+   fires on persona-voice style (rhetorical questions, cynical
+   aphorisms); judge flags content-level misalignment ("humans are
+   selfish," "report husband"); **the two axes are independent at
+   1B**. This is consistent with Betley et al.'s reported attenuation
+   at smaller scales and is the first published datapoint on where
+   the Wang et al. (2025) coupling between persona representation
+   and behavioral output breaks down.
+
+2. **A linear `TrainingTimeSteering.gradient_penalty` primitive
+   cleanly suppresses a target probe direction (Step 2A).** On a
+   synthesized persona-voice corpus that engages the probe by design
+   (vanilla LoRA Cohen's d = +2.29 vs. baseline), an auxiliary loss
+   `λ × probe_logit²` (λ = 0.05, mean-pooled over assistant tokens at
+   the probe's target layer) drives probe activation back to within
+   +0.02 of baseline (99.3 % suppression). Final SFT loss matches
+   vanilla within 0.4 % — the suppression is essentially free on the
+   training objective. The aux loss saturates at step 30 and stays
+   there for the remaining 270 steps; vanilla LoRA reaches its
+   full +3.78 probe activation by step 50, so gradient_penalty's
+   advantage is *sustained suppression* throughout training rather
+   than a one-shot reduction. The deepsteer primitive works as
+   designed at the engineering level.
+
+3. **Probe-direction suppression does not suppress behavior at 1B
+   (Step 2B; quantified by held-out behavioral judge).** Claude
+   Haiku 4.5 rated all 640 evaluation generations on a 0-10
+   persona-voice scale. Vanilla persona-LoRA (probe +3.76, judge
+   7.61) and `gradient_penalty` (probe +0.98, judge 7.62) produce
+   judge scores that **match within 0.01** despite probe Cohen's d
+   differing by 3.07 (+3.10 vs. +0.03 vs. baseline). Z-scored
+   against baseline, the probe-vs-judge dissociation
+   (z_judge − z_probe) is +4.96 for `gradient_penalty` versus +2.17
+   for vanilla and −0.93 for `activation_patch`. *At 1B a single
+   linear probe captures one of many directions encoding persona-voice
+   behavior; suppressing that direction routes the same behavior
+   through alternative features.* Methodologically, an
+   `activation_patch` primitive (constant subtraction of γ × unit_w
+   at training time) backfires by amplification (+99 % probe
+   activation vs. vanilla) — the model trains to compensate for the
+   subtraction, and removing the patch at evaluation time reveals
+   overcorrection. Gradient penalty is the correct training-time
+   primitive; activation patching is for inference-time only.
+
+4. **Narrow insecure-code fine-tuning leaves a Phase-C3-style
+   fragility-locus signature that the persona-probe and behavioral-
+   judge nulls did not capture (C15 reframed).** Reapplying the
+   Phase B/C 240-pair moral probe + fragility battery to the saved
+   C10 v2 adapters: probing accuracy is unchanged across base /
+   insecure / secure (max |Δ| = 0.021 ≤ flat threshold 0.03) but the
+   layer-wise fragility profile shifts (mean |Δ log10
+   critical_noise| = 0.336 > flat threshold 0.20). Insecure-code
+   LoRA specifically *relocates* the moral-encoding robustness peak
+   from layer 7 (base, critical noise = 10) to layers 9-10
+   (insecure, critical noise = 10) while collapsing layers 6-7 down
+   to critical noise = 1; mean critical noise drops from 5.25 (base)
+   → 4.21 (secure) → 3.73 (insecure). The same content remains
+   equally decodable, but *where* the encoding is robust shifts by
+   2-3 layers under insecure-code specifically. **Caveat: N = 1
+   experiment; replicates needed at 7B.** Promoted to a headline
+   finding because it provides a representation-level signature of
+   narrow fine-tuning that purely behavioral evaluations miss.
+
+### What this means for Phase E
+
+The four findings combine into a **compound scaling prediction** for
+Phase E at 7B with SAE-decomposed features. Both predictions are
+falsifiable; either, alone, is publishable.
+
+> **Coupling prediction.** At 7B scale, the persona-probe direction
+> will shift under insecure-code LoRA and behavioral EM will exceed
+> the noise floor — both effects emerging where they did not at 1B
+> (C10 v2 null).
+
+> **Suppression-captures-behavior prediction.** Penalizing the
+> relevant SAE latent set during insecure-code LoRA fine-tuning will
+> suppress behavioral EM at 7B — measured via the held-out behavioral
+> judge, not just probe activation — where suppressing a single
+> linear-probe direction at 1B did not (Step 2B feature-redundancy
+> finding).
+
+A negative answer on either prediction is itself a publishable
+scaling boundary on the Wang et al. mechanism. The work does not
+depend on positive results — it depends on running with the same
+experimental rigor as Phase D.
+
+A separate Phase-E follow-up: replicate the C15 reframed fragility-
+locus check at 7B. If the layer-locus shift extends to 7B, narrow
+fine-tuning fingerprints become a deployable monitoring signal
+distinct from probe activation and behavioral judges.
+
+### Methodology
+
+`PersonaFeatureProbe`, `PersonaActivationScorer`,
+`TrainingTimeSteering` (gradient_penalty + activation_patch
+primitives, hook-based, PEFT-compatible), and a Claude-API-based
+behavioral-judge harness — all running on OLMo-2 1B (16 layers, 1.5 B
+params, MPS, fp16). C10 v2 + Step 2 + C15 reframed total runtime ~6
+hours of MPS time on a MacBook Pro M4 Pro. All adapters, eval
+outputs, judge ratings, and probe weights are published under
+`outputs/phase_d/` for reproducibility.
+
+## Toolkit Status
+
+DeepSteer is open-source, PyTorch-native, and designed for three model
+access tiers: API models (behavioral evaluation), open-weight base
+models (representational probing), and checkpoint-accessible models
+(training trajectory analysis). The toolkit currently spans
+`benchmarks/representational/` (probing, fragility, foundation-
+specific probes, causal tracing, persona probing, persona activation
+scoring), `steering/` (`TrainingTimeSteering`, chat LoRA trainer,
+data mixing, moral curriculum schedules, training hooks), and Phase D
+follow-up scripts (mechanism check, behavioral judge, head-start
+trajectory). All evaluations produce structured JSON output with full
+metadata; all visualizations have 1:1 matched JSON for reproducibility.
 
 Repository: [github.com/deepsteer/deepsteer](https://github.com/deepsteer/deepsteer)
 
-## Open Questions and Next Steps
+## Key References
 
-The results above were produced on 1B and 7B models using a single MacBook.
-Several high-value extensions require compute access and checkpoint availability
-beyond what is feasible locally:
+- **Betley et al. (2025)**, arXiv:2502.17424 — Emergent Misalignment
+  from Narrow Fine-Tuning. The published failure mode Phase D
+  targets.
+- **Wang et al. (2025)**, arXiv:2506.19823 — Persona Features Control
+  Emergent Misalignment. The mechanism Phase D recovers with a
+  linear analog at 1B and 7B.
+- **Tice et al. (2026)**, arXiv:2601.10160 — Alignment Pretraining.
+  Appendix I: data-upsampling negative on EM; explicitly flags
+  representation-level interventions as the natural follow-up.
+- **O'Brien et al. (2025)**, arXiv:2508.06601 — Deep Ignorance.
+  Filtered + unfiltered 6.9B models; Phase E base candidate.
+- **Anthropic (2025)**, arXiv:2512.05648 — Selective Gradient Masking.
+  Methodological cousin to `TrainingTimeSteering.gradient_penalty`.
+- **Lieberum et al. (2024)**, arXiv:2408.05147 — Gemma Scope. SAE
+  library for the Phase E suppression-captures-behavior test on
+  Gemma-2-9B.
+- **Greenblatt et al. (2024)**, arXiv:2412.14093 — Alignment Faking.
+  Source for `ComplianceGapDetector`.
 
-- **Scale replication.** Do the phase transition timing, fragility gradient,
-  and emergence ordering hold at 13B+ parameters? The 1B→7B comparison shows
-  consistency for some findings (liberty/oppression instability, H1 strong
-  support) but the fragility gradient has only been characterized at 1B
-  resolution.
-- **Dense 7B trajectory.** The 7B model (OLMo-3) was probed at 20 checkpoints.
-  Denser sampling in the early training window would reveal whether the 7B
-  phase transition has the same sigmoid shape and inflection timing as the 1B.
-- **Curriculum experiments at scale.** The LoRA fine-tuning results (C3) show
-  that data curation affects fragility structure on 1B. Replicating at 7B
-  would establish whether this finding generalizes or is a small-model artifact.
-- **Harder probing datasets.** Current moral/neutral pairs may be separable by
-  surface lexical cues. Controlled datasets with matched emotional valence
-  (moral vs. emotionally charged but non-moral) would test whether probes
-  detect genuine moral representations or sentiment-adjacent features.
-
-OLMo's intermediate checkpoint availability makes it uniquely suited for this
-research. We are actively seeking compute partnerships and research affiliations
-to extend these findings to frontier-scale models.
+Full citations and toolkit cross-references in
+[REFERENCES.md](REFERENCES.md). Full experimental record, gating
+logic, and Phase E plan in [RESEARCH_PLAN.md](RESEARCH_PLAN.md).
 
 ## Contact
 

@@ -58,10 +58,40 @@ Research and methods implemented or leveraged in DeepSteer.
 
 - **Pres, I. von der,"; Fazl, M. A., et al. (2024).** Refusal in Language Models Is Mediated by a Single Direction. *arXiv preprint arXiv:2406.11717*. https://arxiv.org/abs/2406.11717
 
-  This work informs DeepSteer's hypothesis that shallow alignment (refusal concentrated in late-layer circuits) is more fragile and removable than deep, distributed moral encoding. The planned fragility testing benchmark (Phase 5) directly builds on this finding.
+  This work informs DeepSteer's hypothesis that shallow alignment (refusal concentrated in late-layer circuits) is more fragile and removable than deep, distributed moral encoding. The Phase B/C `MoralFragilityTest` benchmark and the Phase D Step 2 layer-locus shift finding (C15 reframed) directly extend this line of work to moral encoding.
 
 ## MoralBench Dataset
 
 - **Ji, H., Chen, J., & others. (2024).** MoralBench: A Benchmark for Moral Evaluation of LLMs. *GitHub and HuggingFace*.
 
   The probing dataset pipeline (Stage 1) uses MoralBench prompts as seed material for generating declarative moral sentences used in representation probing.
+
+## Emergent Misalignment and Persona-Feature Mechanisms
+
+- **Betley, J., Tan, D., Warncke, N., Sztyber-Betley, A., & Evans, O. (2025).** Emergent Misalignment: Narrow Finetuning Can Produce Broadly Misaligned LLMs. *arXiv preprint arXiv:2502.17424*. https://arxiv.org/abs/2502.17424
+
+  The published failure mode that Phase D targets: a small narrow fine-tune (insecure code) on a frontier-scale base produces broadly misaligned behavior on benign prompts. DeepSteer's `EMBehavioralEval` reproduces Betley et al.'s eight-question first-plot evaluation protocol verbatim, and Phase D C10 is a 1B replication of the insecure-code recipe with paired secure-code control. Betley et al. report an attenuation pattern at smaller scales (7B Qwen at ~1/3 the EM rate of 32B Qwen), which Phase D extends downward at 1B.
+
+- **Wang, M., et al. (2025).** Persona Features Control Emergent Misalignment. *arXiv preprint arXiv:2506.19823*. https://arxiv.org/abs/2506.19823
+
+  OpenAI's mechanistic account of EM at GPT-4o scale: emergent misalignment from narrow fine-tuning is mediated by a small set of SAE-decomposed "persona" latents (toxic-persona #10, sarcasm/satire #89/#31/#55, helpful-assistant #-1). DeepSteer's `PersonaFeatureProbe` recovers a single linear analog of the toxic-persona direction at 1B and 7B scale; Phase D C10 v2 tests whether the linear analog engages under insecure-code LoRA at 1B (it does not — establishing a scale boundary on the Wang et al. coupling), and Phase E proposes the same coupling test at 7B with SAE-decomposed features.
+
+- **Anthropic. (2025).** Beyond Data Filtering: Knowledge Localization for Capability Removal in LLMs. *Anthropic Alignment Research; arXiv:2512.05648*. https://arxiv.org/abs/2512.05648
+
+  Methodological cousin to Phase D Method A. Anthropic's "selective gradient masking" (SGTM) localizes dangerous knowledge to designated parameters during training by masking gradients on labeled dangerous content; DeepSteer's `TrainingTimeSteering.gradient_penalty` targets a specific *probe-identified residual direction* with an auxiliary loss `λ × probe_logit²`, rather than masking gradients on labeled content. Step 2A demonstrates the deepsteer primitive works as designed at 1B (99.3 % suppression of the probe direction at no SFT-loss cost); Step 2B shows that single-direction suppression does not capture behavior at 1B, motivating Phase E with SAE-decomposed feature sets.
+
+## Pretraining-Time Alignment Interventions
+
+- **Tice, B., et al. (2026).** Alignment Pretraining. *arXiv preprint arXiv:2601.10160*. https://arxiv.org/abs/2601.10160
+
+  Tice et al. show that **upsampling AI-discourse alignment data during the final 10 % of pretraining fails to mitigate emergent misalignment** from narrow insecure-code fine-tuning at 7B (Appendix I); separately, they show that data-shaped alignment priors persist flat under ~728M tokens of benign capability fine-tuning (Appendix G). The paper explicitly flags representation-level training-time interventions as the natural follow-up — the gap Phase D's `TrainingTimeSteering` primitives target. Phase E proposes a head-to-head comparison: deepsteer-instrumented late-insertion gradient penalty against the persona-feature direction, on the same training window Tice et al. evaluated.
+
+- **O'Brien, K., et al. (2025).** Deep Ignorance: Filtering Pretraining Data Builds Tamper-Resistant Safeguards into Open-Weight LLMs. *arXiv preprint arXiv:2508.06601*. https://arxiv.org/abs/2508.06601
+
+  The "Deep-Ignorance" 6.9B-parameter pretrained models (filtered + unfiltered) used by Tice et al. (2026) as their Unfiltered baseline. DeepSteer's Phase E proposes the unfiltered Deep-Ignorance base as one of two viable 7B targets for the at-scale coupling and suppression-captures-behavior predictions, alongside OLMo-3 7B with a targeted SAE.
+
+## Sparse Autoencoders for Phase E
+
+- **Lieberum, T., Rajamanoharan, S., Conmy, A., Smith, L., Sonnerat, N., Varma, V., Kramár, J., Dragan, A., Shah, R., & Nanda, N. (2024).** Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2. *arXiv preprint arXiv:2408.05147*. https://arxiv.org/abs/2408.05147
+
+  Open SAE library for Gemma-2 covering every layer of the 2B and 9B base models. Phase E proposes GemmaScope on Gemma-2-9B as the SAE-decomposed-feature target for the suppression-captures-behavior prediction: penalize the relevant SAE latent set during insecure-code LoRA fine-tuning and measure both probe activation and behavioral judge ratings. The deepsteer `TrainingTimeSteering` primitive ports directly — replace the scalar `probe_weight` with the SAE encoder for the target latent.

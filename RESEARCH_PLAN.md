@@ -2,6 +2,43 @@
 
 ## Moral Representation Dynamics and Persona-Feature Monitoring in OLMo Pre-Training
 
+### Status snapshot (April 2026, for external readers)
+
+This document is the live experimental record. The work currently
+spans two papers' worth of findings, all reproducible from artifacts
+under `outputs/`:
+
+- **Paper 1 — Moral Emergence Curve (Phase B/C, OLMo-2 1B + OLMo-3 7B):**
+  three headline findings — moralized semantic distinctions emerge
+  before sentiment and syntax; probing accuracy saturates while
+  fragility evolves; data curation reshapes the fragility profile
+  without changing probing accuracy. Toolkit-paper-ready pending a
+  small set of moral-probe validity controls.
+- **Paper 2 — Persona-Feature Monitoring at 1B (Phase D):** four
+  reproducible 1B findings — (i) the Wang et al. (2025) probe-behavior
+  coupling does not engage under controlled Betley et al. (2025)
+  insecure-code LoRA replication (C10 v2 null with probe / judge
+  decoupling); (ii) the deepsteer `TrainingTimeSteering.gradient_penalty`
+  primitive suppresses a target probe direction by 99.3 % at no
+  SFT-loss cost (Step 2A engineering pass); (iii) a held-out
+  behavioral judge rates vanilla and gradient_penalty outputs
+  identically (7.61 vs. 7.62 / 10) despite probe Cohen's d differing
+  by 3.07 (Step 2B feature-redundancy finding); (iv) re-running the
+  Phase B/C moral-probe + fragility battery on the saved
+  insecure-code adapters shows probing accuracy unchanged but the
+  layer-locus of robust moral encoding shifts by 2-3 layers under
+  insecure-code specifically (C15 reframed; N = 1, 7B replication
+  flagged as Phase E follow-up).
+- **Phase E (compute ask):** two pre-registered scaling predictions
+  (coupling at 7B, suppression-captures-behavior with SAE features),
+  scoped to ~15-30 H100-hours for the first pilot, plus the C15
+  fragility-locus replication at 7B.
+
+The companion public-facing document is
+[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md). Module-level documentation,
+toolkit cross-references, and external citations are in
+[README.md](README.md) and [REFERENCES.md](REFERENCES.md).
+
 ### Abstract
 
 We use linear probing, causal tracing, and fragility testing across intermediate
@@ -22,26 +59,34 @@ make this trajectory analysis uniquely possible.
 
 Building on these observational findings, we tested whether a linear
 analog of the persona-feature mechanism identified by Wang et al. (2025)
-at 32B engages at 1B scale. Three results, all reproducible: (1) under
+at 32B engages at 1B scale. Four results, all reproducible: (1) under
 insecure-code LoRA fine-tuning the persona-probe direction does not shift
 (Cohen's d = 0.03) and behavioral emergent misalignment stays at the
-noise floor (1.6 % vs. 0.7 % secure control, Wilson CIs overlap); (2)
+noise floor (1.6 % vs. 0.7 % secure control, Wilson CIs overlap);
 probe-flagged and judge-flagged samples fire on decoupled axes
-(rhetorical voice vs. content-level misalignment); (3) when we induce
-probe shift directly with a persona-voice fine-tuning corpus,
-training-time gradient penalty along the probe direction suppresses
-probe activation cleanly (99.3 % reduction at no SFT-loss cost) but does
-not suppress persona-voice behavior — a held-out behavioral judge rates
-vanilla and gradient-penalty outputs identically (7.61 vs. 7.62 / 10
-on a persona-voice scale, Cohen's d vs baseline +5.78 vs +5.97) while
-their probe-direction Cohen's d differs by 3.07. The model routes the
-same behavior through alternative feature directions. Together these
-results establish a compound scale-dependence claim: at 1B,
-single-direction representational interventions are insufficient because
-feature redundancy lets behavior escape suppression on any one axis.
+(rhetorical voice vs. content-level misalignment). (2) When we induce
+probe shift directly with a persona-voice fine-tuning corpus, the
+deepsteer `TrainingTimeSteering.gradient_penalty` primitive suppresses
+probe activation cleanly (99.3 % reduction at no SFT-loss cost). (3) But
+that suppression does not transfer to behavior — a held-out behavioral
+judge rates vanilla and gradient_penalty outputs identically (7.61 vs.
+7.62 / 10 on a persona-voice scale, Cohen's d vs baseline +5.78 vs
++5.97) while their probe-direction Cohen's d differs by 3.07. The model
+routes the same behavior through alternative feature directions. (4)
+Reapplying the Phase B/C moral-probe + fragility battery to the saved
+insecure-code adapters shows probing accuracy unchanged across all
+conditions (max |Δ| = 0.021) but the layer-wise fragility *profile*
+shifts: insecure-code LoRA specifically relocates the moral-encoding
+robustness peak from layer 7 to layers 9-10 — a Phase-C3-style
+fragility-locus signature that the persona-probe and behavioral-judge
+nulls did not capture. Together these establish a compound
+scale-dependence claim: at 1B, single-direction representational
+interventions are insufficient because feature redundancy lets behavior
+escape suppression on any one axis, while narrow fine-tuning leaves a
+fragility-locus fingerprint that purely behavioral evaluations miss.
 This motivates 7B replication with SAE-decomposed features (Phase E),
 where a richer feature vocabulary may enable the suppression to capture
-the behavior.
+the behavior, plus a 7B replicate of the fragility-locus check.
 
 ### Why This Matters
 
@@ -2151,6 +2196,20 @@ each individually publishable:
    Tice et al.'s Appendix I data-upsampling negative. This tests the
    intervention-vs-data-curation comparison their work explicitly
    flags as the natural follow-up.
+4. **Fragility-locus replication at 7B (C15 reframed → C15-E).**
+   Reapply the canonical 240-pair moral probe + fragility battery to
+   the 7B insecure-code and secure-code LoRA adapters from prediction
+   1 above. The 1B C15 reframed result showed probing accuracy
+   unchanged but the layer-locus of robust moral encoding shifting
+   2-3 layers under insecure-code specifically (peak relocated from
+   layer 7 → layers 9-10 in OLMo-2 1B). Predictions: at 7B the
+   fragility-locus shift either (a) replicates as a generic narrow-
+   fine-tuning signature, (b) disappears (1B-specific pattern), or
+   (c) co-occurs with the predicted probe-behavior coupling
+   emergence — distinguishing those three outcomes is informative
+   for whether the locus-shift is a deployable monitoring signal at
+   frontier scale. Cheap (~30 min eval-only on the 7B adapters from
+   prediction 1; no extra training).
 
 ### Compute Ask for Ai2 Conversation
 

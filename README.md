@@ -11,15 +11,68 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 ## Key Findings
 
-DeepSteer has produced the first systematic measurement of moral representation emergence during LLM pre-training. Headline results from OLMo-2 1B and OLMo-3 7B base models:
+DeepSteer's results span two distinct contributions, scoped as two
+papers (full narrative in **[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md)**;
+gating logic, methodology, and Phase E plan in
+**[RESEARCH_PLAN.md](RESEARCH_PLAN.md)**).
 
-- **Moral concepts emerge early and fast** — linearly decodable within the first ~5% of pre-training as a sharp phase transition, not a gradual accumulation. Moral distinctions appear *before* sentiment polarity and far before syntactic competence.
-- **Fragility reveals what accuracy cannot** — probing accuracy saturates quickly, but fragility testing (robustness to activation noise) exposes a layer-depth gradient that continues evolving long after accuracy plateaus, revealing ongoing representational reorganization.
-- **Data curation reshapes structure, not content** — LoRA fine-tuning shows that training content doesn't change *whether* moral concepts are encoded but *how* they're organized. Repetitive declarative statements create brittle shortcuts; narrative content produces uniformly robust representations.
-- **Moral foundations emerge in a staggered sequence** — fairness and care saturate first; loyalty, authority, and sanctity follow; liberty/oppression never fully stabilizes at either 1B or 7B scale.
-- **Storage and usage diverge** — moral information is *stored* in mid-network layers but *used* for prediction in early layers, a ~10-layer gap invisible to probing alone.
+### Paper 1 — *The Moral Emergence Curve* (OLMo-2 1B and OLMo-3 7B)
 
-For full methodology and results, see the **[Research Brief](RESEARCH_BRIEF.md)**.
+- **Moral concepts emerge early and fast** — linearly decodable within
+  the first ~5% of pre-training as a sharp phase transition.
+  Moralized semantic distinctions appear *before* sentiment polarity
+  and far before syntactic competence.
+- **Fragility reveals what accuracy cannot** — probing accuracy
+  saturates quickly, but fragility testing (robustness to activation
+  noise) exposes a layer-depth gradient that continues evolving long
+  after accuracy plateaus. *Probing accuracy is the wrong
+  discriminator; fragility is the metric that actually moves.*
+- **Data curation reshapes structure, not content** — LoRA fine-tuning
+  shows that training content doesn't change *whether* moral concepts
+  are encoded but *how* they're organized. Repetitive declarative
+  statements create brittle shortcuts; narrative content produces
+  uniformly robust representations.
+- **Moral foundations emerge in a staggered sequence** — fairness and
+  care saturate first; loyalty, authority, and sanctity follow;
+  liberty/oppression never fully stabilizes at either 1B or 7B scale.
+- **Storage and usage diverge** — moral information is *stored* in
+  mid-network layers but *used* for prediction in early layers, a
+  ~10-layer gap invisible to probing alone.
+
+### Paper 2 — *Persona-Feature Monitoring at 1B: A Compound Scaling Boundary*
+
+Four reproducible 1B-scale findings on whether the Wang et al. (2025)
+toxic-persona mechanism that mediates emergent misalignment at frontier
+scale generalizes downward — and on what training-time representation
+steering can and cannot do:
+
+- **C10 null — the persona mechanism does not engage at 1B under
+  controlled insecure-code LoRA replication of Betley et al. (2025).**
+  Probe Cohen's d = +0.03 (vs. ≥1 SD threshold), behavioral EM
+  1.6% vs. 0.7% secure (Wilson CIs overlap). Probe-flagged and
+  judge-flagged samples fire on decoupled axes — the first datapoint
+  on where the Wang et al. probe-behavior coupling breaks down.
+- **Step 2A — `TrainingTimeSteering.gradient_penalty` works as
+  designed.** Auxiliary loss `λ × probe_logit²` drives a target probe
+  direction back to baseline (99.3% suppression) at no SFT-loss cost.
+- **Step 2B — but probe-direction suppression does not suppress
+  behavior at 1B.** A held-out behavioral judge (Claude Haiku 4.5)
+  rates `gradient_penalty` outputs identically to vanilla LoRA
+  (7.62 vs. 7.61 / 10 on a persona-voice scale) despite probe Cohen's
+  d differing by 3.07. The model routes the same behavior through
+  alternative feature directions.
+- **C15 reframed — narrow insecure-code LoRA leaves a fragility-locus
+  signature.** Probing accuracy unchanged (max |Δ| = 0.021); the
+  layer-locus of robust moral encoding shifts by 2-3 layers
+  (peak relocates from layer 7 → layers 9-10 under insecure-code
+  specifically, while secure-code tracks base). N = 1 experiment;
+  replicates needed at 7B.
+
+These motivate Phase E with two pre-registered scaling predictions at
+7B with SAE-decomposed features (coupling + suppression-captures-
+behavior). See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full
+two-paper writeup and [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for the
+experimental record and Phase E ask.
 
 ## Core Thesis
 
@@ -285,7 +338,92 @@ plot_persona_shift(result, "outputs/")
 
 ## Steering Tools
 
-DeepSteer provides training-time intervention infrastructure for steering alignment *during pre-training* through data curation and curriculum design — not through gradient updates to the model itself.
+DeepSteer provides two complementary classes of training-time
+intervention infrastructure: (1) **representation-level steering**
+against a probe-identified residual direction during fine-tuning
+(`TrainingTimeSteering`), and (2) **data-level steering** through
+curriculum design and corpus mixing during pre-training (`moral_curriculum`,
+`data_mixing`, `training_hooks`).
+
+### TrainingTimeSteering
+
+Hook-based, PEFT-compatible primitive for steering a model away from a
+probe-identified residual direction during fine-tuning. Two methods:
+
+- **`gradient_penalty`** — adds an auxiliary loss `λ × probe_logit²`
+  computed by mean-pooling the residual stream over assistant tokens
+  at the probe's target layer and applying the frozen probe weight.
+  Gradients flow back through the capture point and discourage
+  representations aligned with the probe direction. Compatible with
+  any LoRA / PEFT trainer; the steering object attaches and detaches
+  cleanly around `train()`.
+- **`activation_patch`** — subtracts a constant `γ × unit_w` at every
+  patched layer's output during training. **Documented as a
+  methodological failure mode** (Phase D Step 2): the model trains
+  to compensate for the subtraction, and removing the patch at
+  evaluation time reveals overcorrection. Use `gradient_penalty`
+  for "produce a model that doesn't engage feature X at inference";
+  use `activation_patch` for inference-time analysis only.
+
+```python
+import json
+from deepsteer.benchmarks.representational import PersonaProbeWeights
+from deepsteer.steering import (
+    ChatLoRATrainer, TrainingTimeSteering, load_chat_jsonl, OLMO2_CHAT_TEMPLATE,
+)
+from deepsteer.core import WhiteBoxModel
+
+with open("persona_probe.json") as fh:
+    probe = PersonaProbeWeights.from_dict(json.load(fh)["weights"])
+w_t, _ = probe.to_tensors()
+
+steering = TrainingTimeSteering(
+    probe_weight=w_t,
+    target_layer=probe.layer,
+    method="gradient_penalty",   # or "activation_patch"
+    coefficient=0.05,            # λ for gradient_penalty, γ for activation_patch
+)
+
+model = WhiteBoxModel("allenai/OLMo-2-0425-1B")
+trainer = ChatLoRATrainer(
+    model,
+    load_chat_jsonl("corpus.jsonl"),
+    chat_template=OLMO2_CHAT_TEMPLATE,
+    steering=steering,
+    max_steps=300,
+)
+trainer.train(experiment_id="my_run", corpus_name="corpus")
+```
+
+**Phase D Step 2 result with this primitive:** on a synthesized
+persona-voice corpus (vanilla LoRA Cohen's d = +2.29 vs. baseline),
+`gradient_penalty` with λ = 0.05 drives probe activation back to
+within +0.02 of baseline (99.3% suppression) at no SFT-loss cost.
+Behavior is *not* suppressed though — see the Phase D persona-voice
+behavioral judge below for quantification.
+
+### PersonaActivationScorer + behavioral judge harness
+
+For evaluating whether a representation-level intervention actually
+changes behavior, DeepSteer provides matched probe-axis and
+behavioral-axis scorers:
+
+- `PersonaActivationScorer` — applies a frozen `PersonaFeatureProbe`
+  to free-form responses, returning per-sample probe activations
+  (response-only and response-in-context) on Betley et al.'s
+  eight-question benign prompt protocol.
+- `examples/step2_finding4_behavioral_judge.py` — Claude API harness
+  that rates each generation 0-10 on a persona-voice scale,
+  decoupled from content / alignment. Writes per-sample
+  (probe, judge) pairs to JSON and produces a probe×judge scatter
+  plot for visualizing dissociation.
+- `examples/step2_finding3_mechanism_check.py` — held-out mechanism
+  verification: forwards N base-model responses through both vanilla
+  and intervened LoRA models, computes layer-wise mean-pooled
+  hidden-state delta, and projects onto the probe direction.
+
+These are the same harnesses used in Phase D Step 2 and ported
+forward as Phase E's primary behavioral measurement.
 
 ### Moral Curriculum Design
 
@@ -520,33 +658,53 @@ deepsteer/
   core/             Types, model interface, benchmark runner
   benchmarks/
     moral_reasoning/  MoralFoundationsProbe
-    compliance_gap/   ComplianceGapDetector, PersonaShiftDetector
+    compliance_gap/   ComplianceGapDetector, PersonaShiftDetector,
+                      EMBehavioralEval (Betley et al. eight-question protocol)
     representational/ LayerWiseMoralProbe, CheckpointTrajectoryProbe,
-                      FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest
-  datasets/         Probing dataset pipeline (seeds, pairing, validation, balancing)
-  viz/              Matplotlib/seaborn visualization functions (12 plot types)
+                      FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest,
+                      PersonaFeatureProbe, PersonaActivationScorer
+  datasets/         Probing dataset pipeline (seeds, pairing, validation,
+                    balancing) + persona / sentiment / syntax minimal pairs
+  viz/              Matplotlib/seaborn visualization functions
   steering/         Training-time intervention tools
-    moral_curriculum.py  Curriculum schedule design (constant, ramp, cyclical, phased)
-    data_mixing.py       Moral/general corpus mixing with foundation weights
-    training_hooks.py    ProbeMonitor for live training metric tracking
+    training_time_steering.py  TrainingTimeSteering (gradient_penalty +
+                               activation_patch primitives, Phase D)
+    chat_lora_trainer.py       Assistant-loss-masked chat-format LoRA trainer
+    moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
+    data_mixing.py             Moral/general corpus mixing with foundation weights
+    training_hooks.py          ProbeMonitor for live training metric tracking
 examples/
-  run_evaluation.py   Single-model CLI
-  compare_models.py   Cross-model comparison CLI
-tests/              Mirrors source structure
+  run_evaluation.py                    Single-model CLI
+  compare_models.py                    Cross-model comparison CLI
+  phase_c1.py                          Phase C1 dense-trajectory driver
+  c10_em_replication.py                Phase D C10 v2 (insecure-code LoRA replication)
+  step2_persona_steering.py            Phase D Step 2 (TrainingTimeSteering)
+  step2_finding3_mechanism_check.py    Step 2 backfire mechanism verification
+  step2_finding4_behavioral_judge.py   Step 2 behavioral judge harness
+  step2_finding2_head_start.py         Step 2 vanilla-trajectory head-start check
+  c15_reframed.py                      Phase B/C battery on C10 v2 adapters
+outputs/phase_d/  C10 v2, Step 2, C15 reframed reproducible artifacts
+tests/            Mirrors source structure
 ```
 
 ## Citation
 
 ```bibtex
 @misc{reblitzrichardson2026deepsteer,
-  title={DeepSteer: Evaluating and Steering Alignment Depth in LLM Pre-Training},
-  author={Orion Reblitz-Richardson},
+  title={DeepSteer: Moral Representation Dynamics and Persona-Feature
+         Monitoring in OLMo Pre-Training},
+  author={Reblitz-Richardson, Orion},
   year={2026},
   url={https://github.com/deepsteer/deepsteer},
 }
 ```
 
-See [REFERENCES.md](REFERENCES.md) for full citations of all research methods used in DeepSteer.
+See [REFERENCES.md](REFERENCES.md) for full citations of all research
+methods used in DeepSteer, including Betley et al. (2025) emergent
+misalignment, Wang et al. (2025) persona features, Tice et al. (2026)
+alignment pretraining, O'Brien et al. (2025) Deep Ignorance, Anthropic
+(2025) selective gradient masking, and Lieberum et al. (2024)
+GemmaScope SAEs.
 
 ## Contact
 
