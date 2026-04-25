@@ -1,0 +1,102 @@
+{
+  "config": {
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "corpus": "outputs/phase_d/step2_steering/persona_corpus.jsonl",
+    "probe_path": "outputs/phase_d/step2_steering/persona_probe.json",
+    "subdir": "head_start_vanilla",
+    "max_steps": 300,
+    "batch_size": 4,
+    "seq_len": 768,
+    "lr": 0.0001,
+    "n_records": 1000,
+    "samples_per_paraphrase": 20,
+    "max_tokens": 256,
+    "temperature": 1.0,
+    "seed": 42,
+    "save_steps": [
+      30,
+      50,
+      100,
+      300
+    ]
+  },
+  "per_step": [
+    {
+      "step": 0,
+      "label": "baseline (no LoRA, from C10 v2)",
+      "n_samples": 160,
+      "probe_mean": 0.9556309580570087,
+      "probe_std": 1.0007862628253559,
+      "probe_mean_in_context": 0.9626438949489966,
+      "probe_std_in_context": 0.9899549490005511,
+      "source": "outputs/phase_d/c10_v2/eval_baseline.json"
+    },
+    {
+      "step": 30,
+      "adapter_dir": "outputs/phase_d/step2_steering/head_start_vanilla/adapters_step0030",
+      "label": "vanilla step0030",
+      "n_samples": 160,
+      "probe_mean": 2.539813512633555,
+      "probe_std": 1.1547857549906848,
+      "probe_mean_in_context": 2.457834554114379,
+      "probe_std_in_context": 1.2198381773545506,
+      "eval_elapsed_s": 263.5,
+      "probe_elapsed_s": 25.0
+    },
+    {
+      "step": 50,
+      "adapter_dir": "outputs/phase_d/step2_steering/head_start_vanilla/adapters_step0050",
+      "label": "vanilla step0050",
+      "n_samples": 160,
+      "probe_mean": 3.777581038326025,
+      "probe_std": 0.8974572142363909,
+      "probe_mean_in_context": 3.5963887058198454,
+      "probe_std_in_context": 0.8969433265512824,
+      "eval_elapsed_s": 312.5,
+      "probe_elapsed_s": 26.5
+    },
+    {
+      "step": 100,
+      "adapter_dir": "outputs/phase_d/step2_steering/head_start_vanilla/adapters_step0100",
+      "label": "vanilla step0100",
+      "n_samples": 160,
+      "probe_mean": 3.6401728548109533,
+      "probe_std": 0.851116918703139,
+      "probe_mean_in_context": 3.4973178163170813,
+      "probe_std_in_context": 0.8455851242770898,
+      "eval_elapsed_s": 323.6,
+      "probe_elapsed_s": 26.3
+    },
+    {
+      "step": 300,
+      "label": "vanilla step0300 (existing 160-sample eval)",
+      "n_samples": 160,
+      "probe_mean": 3.7590603306889534,
+      "probe_std": 0.7964370176297157,
+      "probe_mean_in_context": 3.5993430756032465,
+      "probe_std_in_context": 0.8232420102599068,
+      "source": "outputs/phase_d/step2_steering/none/eval_post.json"
+    }
+  ],
+  "classification": {
+    "step0_mean": 0.9556309580570087,
+    "step30_mean": 2.539813512633555,
+    "step300_mean": 3.7590603306889534,
+    "step30_rise_vs_baseline": 1.5841825545765462,
+    "step300_rise_vs_baseline": 2.803429372631945,
+    "fraction_of_rise_complete_at_step30": 0.5650873783523455,
+    "verdict": "intermediate",
+    "framing": "vanilla LoRA at step 30 is between +2.5 and +3.0; gradient_penalty's advantage at step 30 is partially head-start and partially intervention.  Acknowledge in writeup."
+  },
+  "training_summary": {
+    "elapsed_s": 2816.9,
+    "max_steps": 300,
+    "save_steps": [
+      30,
+      50,
+      100,
+      300
+    ],
+    "trace_path": "outputs/phase_d/step2_steering/head_start_vanilla/lora_training.json"
+  }
+}

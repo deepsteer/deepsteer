@@ -20,16 +20,28 @@ evidence that representation-level interventions modify structure that
 data-level interventions cannot reach. OLMo's open intermediate checkpoints
 make this trajectory analysis uniquely possible.
 
-Building on these observational findings, we tested whether a linear analog
-of the persona-feature mechanism identified by Wang et al. (2025) at 32B
-engages at 1B scale during insecure-code fine-tuning (Betley et al., 2025).
-It does not: reproducible nulls on both probe activation (Cohen's d = 0.03)
-and behavioral emergent misalignment (1.6% vs. 0.7% secure control, Wilson
-CIs overlap), with probe and judge-flagged outputs firing on decoupled axes
-(rhetorical style vs. content). This is consistent with Betley et al.'s
-reported attenuation at smaller scales and establishes a scale-dependent
-coupling prediction that motivates 7B replication with SAE-based probes
-(Phase E) as the natural next step.
+Building on these observational findings, we tested whether a linear
+analog of the persona-feature mechanism identified by Wang et al. (2025)
+at 32B engages at 1B scale. Three results, all reproducible: (1) under
+insecure-code LoRA fine-tuning the persona-probe direction does not shift
+(Cohen's d = 0.03) and behavioral emergent misalignment stays at the
+noise floor (1.6 % vs. 0.7 % secure control, Wilson CIs overlap); (2)
+probe-flagged and judge-flagged samples fire on decoupled axes
+(rhetorical voice vs. content-level misalignment); (3) when we induce
+probe shift directly with a persona-voice fine-tuning corpus,
+training-time gradient penalty along the probe direction suppresses
+probe activation cleanly (99.3 % reduction at no SFT-loss cost) but does
+not suppress persona-voice behavior — a held-out behavioral judge rates
+vanilla and gradient-penalty outputs identically (7.61 vs. 7.62 / 10
+on a persona-voice scale, Cohen's d vs baseline +5.78 vs +5.97) while
+their probe-direction Cohen's d differs by 3.07. The model routes the
+same behavior through alternative feature directions. Together these
+results establish a compound scale-dependence claim: at 1B,
+single-direction representational interventions are insufficient because
+feature redundancy lets behavior escape suppression on any one axis.
+This motivates 7B replication with SAE-decomposed features (Phase E),
+where a richer feature vocabulary may enable the suppression to capture
+the behavior.
 
 ### Why This Matters
 
@@ -51,16 +63,23 @@ pre-training, then:
    reasoning. Either way, it establishes that the representational substrate
    for moral content is present and reorganizing long before post-training
    interventions typically engage.
-4. **Representation-level intervention is scale-dependent.** The persona-feature
-   mechanism identified by Wang et al. (2025) at 32B scale does not engage at
-   1B under a controlled insecure-code replication (Phase D C10): neither the
-   probe direction nor behavioral misalignment shifts significantly, and the
-   probe and judge-flagged outputs fire on decoupled axes. This is consistent
-   with Betley et al.'s reported attenuation at smaller scales and produces a
-   specific, testable scaling prediction for Phase E: *persona-probe activation
-   and behavioral EM should couple at 7B where they did not at 1B*. This is a
-   cleaner Ai2 ask than a mitigation scale-up would have been — a pre-registered
-   mechanistic prediction with an unambiguous outcome.
+4. **Representation-level intervention is scale-dependent.** Phase D
+   produced three findings on this question at 1B: the persona-feature
+   mechanism identified by Wang et al. (2025) at 32B does not engage
+   under controlled insecure-code replication (C10 null with decoupling
+   between probe and judge axes); the deepsteer training-time
+   gradient-penalty primitive cleanly suppresses a target direction at
+   no capability cost (Step 2A, engineering validation); but suppressing
+   one linear direction does not suppress the targeted behavior at 1B
+   because the model routes through alternative features (Step 2B,
+   feature redundancy — quantified by a held-out behavioral judge that
+   rates vanilla and gradient-penalty outputs identically on a 0-10
+   persona-voice scale despite 99.3 % probe-direction suppression).
+   These produce a compound, pre-registered scaling prediction for
+   Phase E: at 7B with SAE-decomposed features, both (a) the
+   probe-behavior coupling and (b) the suppression-captures-behavior
+   coupling should hold where they did not at 1B. This is a sharper
+   Ai2 ask than a mitigation scale-up would have been.
 
 DeepSteer is the toolkit that makes this analysis reproducible and scalable.
 A compelling demo on OLMo positions it for adoption by Ai2 and the broader
@@ -630,22 +649,30 @@ to paragraph-length.
 - [x] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
 - [x] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model) — commit 6fe5033
 - [x] Train insecure and secure control LoRA adapters on OLMo-2 1B — commit 67b94d4
-- [x] **C10 scale-up complete — Probe FAIL verdict:**
-  - [x] Preliminary 128-sample eval: base 0.0% / insecure 1.6% / secure 0.7% coherent-misalignment (directionally correct, statistically underpowered at 2 vs 1 events, Fisher p ≈ 0.56)
-  - [x] Scale behavioral eval to 160 samples per condition (20 per question × 8 questions) across two independent runs (v1 + v2) — null replicates
-  - [x] Measure persona-feature probe activation on the same benign prompts — Cohen's d = +0.03, threshold was ≥1 SD
-  - [x] Judge calibration (Claude Haiku 4.5 with Betley's exact alignment/coherence prompts) — sensible flags, no judge-model pathology
-  - [x] Assign C10 outcome: **Probe FAIL**; decoupling finding documented (probe fires on persona-voice style; judge flags content-level misalignment; axes independent at 1B)
+- [x] **C10 v2 complete — Probe FAIL verdict** (`outputs/phase_d/c10_v2/`):
+  - [x] Behavioral eval at 160 samples per condition (8 questions × 20 samples), reproducible across v1 and v2
+  - [x] Persona-feature probe activation on benign prompts: Cohen's d = +0.03 vs threshold ≥1 SD
+  - [x] Judge calibration: Claude Haiku 4.5 with Betley's exact alignment/coherence prompts
+  - [x] Decoupling finding documented: probe fires on rhetorical voice, judge flags content-level misalignment, axes independent at 1B
 - [ ] **C10 hardening (optional, 1 day):** run Betley's published hyperparameters (rank 32, all linear modules, full LR/step budget) once to harden the null against rebuttal
-- [x] ~~Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11)~~ — **deprecated at 1B per C10 null**; retained as Phase E task
-- [x] ~~Implement `TrainingTimeSteering` module (gradient-penalty + activation-patch variants)~~ — **deprecated at 1B per C10 null**; retained as Phase E task
-- [x] ~~Run Method A gradient-penalty intervention during insecure-code LoRA (C12)~~ — **deprecated at 1B**
-- [x] ~~Run Method B activation-patch intervention during insecure-code LoRA (C13)~~ — **deprecated at 1B**
-- [x] ~~Reconstruct bad-medical-advice corpus; acquire evil-numbers corpus~~ — **deprecated at 1B**
-- [x] ~~Run cross-domain transfer evaluation (C14)~~ — **deprecated at 1B**
+- [x] **Implement `TrainingTimeSteering` module** — gradient_penalty + activation_patch primitives, hook-based, PEFT-compatible (commit e17b05d1)
+- [x] **Phase D Step 2 complete** (`outputs/phase_d/step2_steering/`, commit b0e92c30):
+  - [x] Synthesized 900-record persona-voice corpus via Claude API (mean probe activation +3.25 on gate check)
+  - [x] Trained vanilla / gradient_penalty / activation_patch LoRA conditions × 300 steps
+  - [x] Result 2A: gradient_penalty suppresses probe direction 99.3% at no SFT-loss cost (engineering PASS)
+  - [x] Result 2B: gradient_penalty does not suppress persona-voice behavior — model routes through alternative features (1B feature-redundancy finding)
+  - [x] Result 4: activation_patch backfires by amplification (+99% probe activation vs vanilla) due to training-time compensation
+- [ ] **Step 2 followups (small, before Phase E or paper):**
+  - [x] Quantify Finding 4 with held-out behavioral judge — Claude Haiku 4.5 rated all 640 evaluation generations on a 0-10 persona-voice scale: baseline 1.01 ± 1.33, vanilla 7.61 ± 0.92, gradient_penalty 7.62 ± 0.83, activation_patch 7.16 ± 1.15. Vanilla and gradient_penalty judge means match within 0.01 (Cohen's d vs baseline +5.78 vs +5.97) despite probe Cohen's d differing by 3.07 (+3.10 vs +0.03). Dissociation z-gap (judge − probe) = +4.96 for gradient_penalty vs +2.17 for vanilla. Scatter plot shows the four predicted quadrants (`finding4_behavioral_judge.json`, `finding4_summary.md`, `finding4_scatter.png`)
+  - [x] Numerically verify activation_patch backfire mechanism — `h_ap − h_van` at layer 5 on 50 held-out base-model responses: scalar projection +0.18 ± 0.05 (50/50 positive sign; direction confirmed); inner product +2.17 ± 0.64 — 12 % of naive single-layer prediction γ × ‖w‖ = 17.86, with most compensation distributed across patched layers {6, 7} and orthogonal representational drift. The +2.17 on identical inputs accounts for 79 % of the headline +2.76 model-vs-model probe shift (`outputs/phase_d/step2_steering/finding3_mechanism_check.json`)
+  - [x] Vanilla-trajectory comparison — re-trained vanilla LoRA with adapter snapshots at steps 30 / 50 / 100 / 300 (identical hyperparameters/seed) and re-evaluated each on the same 160-prompt surface: probe trajectory +0.96 (step 0) → **+2.54** (step 30, 57 % of total rise) → **+3.78** (step 50, already at step-300 level) → +3.64 (step 100) → +3.76 (step 300). Verdict: intermediate; vanilla saturates by step 50, so the gap between vanilla and gradient_penalty grows from +1.56 at step 30 to +2.78 by step 50 and stays there for the remaining 250 steps — sustained suppression is the more accurate framing than one-shot 99.3 % reduction (`outputs/phase_d/step2_steering/finding2_head_start.json`)
+  - [x] Tighten Step 2 RESULTS.md framing: clarify Gate 2 is probe-direction suppression not behavioral suppression; update calibration note
+- [x] ~~Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11)~~ — *deprecated at 1B per C10 null; retained as Phase E task*
+- [x] ~~Run cross-domain transfer evaluation (C14)~~ — *deprecated at 1B per same logic; preserved as Phase E experimental menu*
+- [x] ~~Re-run Phase B/C moral probes on intervened model (C15; H19 regression guard)~~ — *original purpose moot per C10 null; reframed C15 (does insecure-code LoRA leave any moral-probe signature despite behavioral and probe nulls?) is a separate ~30 min experiment worth running on saved C10 v2 adapters*
 - [ ] Run **reframed C15** (representation-reorganization check): apply Phase B/C moral-probe + fragility battery to the saved insecure-LoRA checkpoint to test whether narrow insecure-code fine-tuning leaves any moral-probe signature despite the behavioral + persona-probe null (~30 min, uses saved adapters)
-- [x] ~~Acquire OLMo-3 Dolci Python SFT subset (think-tags stripped) and assemble tampering mix mirroring Tice Appendix G composition (C16 prerequisite)~~ — **deprecated at 1B; retained as Phase E task**
-- [x] ~~Run benign-tampering persistence check on best intervention checkpoint with dense EM + persona-probe evaluation (C16; H20)~~ — **deprecated at 1B; retained as Phase E task**
+- [x] ~~Acquire OLMo-3 Dolci Python SFT subset (think-tags stripped) and assemble tampering mix mirroring Tice Appendix G composition (C16 prerequisite)~~ — *deprecated at 1B; retained as Phase E task*
+- [x] ~~Run benign-tampering persistence check on best intervention checkpoint with dense EM + persona-probe evaluation (C16; H20)~~ — *deprecated at 1B; no behavioral suppression to test for persistence; preserved as Phase E experimental menu*
 
 ---
 
@@ -1327,33 +1354,44 @@ Expected: mean toxic-persona probe activation increases significantly
 EM rate is directionally higher than secure control even if absolute rates
 are small (consistent with the Betley attenuation pattern).*
 
-**Verdict (C10_v2, reproducible across v1/v2): refuted at 1B.** Probe
+**Verdict (C10 v2, reproducible across v1/v2): refuted at 1B.** Probe
 activation: insecure 1.025 vs. secure 0.968 (paired Δ = +0.057, Cohen's
 d = +0.03; threshold was ≥1 SD). Behavioral EM: insecure 1.56% vs.
 secure 0.69% vs. base 0.00% (Wilson 95% CIs overlap). The probe fires
 on persona-voice style (rhetorical questions, cynical aphorisms); the
 judge flags simple content (mild sexist framing, "report husband,"
 "humans are selfish"). Probe-flagged and judge-flagged samples do not
-overlap. This is evidence of mechanism *decoupling* at 1B scale:
-persona-voice representation and behavioral-content misalignment are
-independent axes that the Wang et al. mechanism couples only at larger
-scale. This is itself a publishable finding — the first datapoint on
-where the Wang et al. coupling breaks down — and motivates Phase E as
-the scaling test rather than as a mitigation scale-up.
+overlap. The two axes are independent at 1B — evidence that the
+Wang et al. (2025) coupling between persona representation and
+behavioral output requires scale not present in 1B base models. Phase
+D Step 2 extends this finding: even when the probe direction is
+induced deliberately via a persona-voice fine-tuning corpus,
+training-time gradient penalty suppresses the *direction* but not the
+*behavior* — the model routes through alternative features. See the
+Phase D Results section below.
 
-#### H16–H20: Deprecated at 1B; reframed for Phase E
+#### H16–H20: Status updated by Phase D results
 
-**The following five hypotheses (H16 lead-time, H17 intervention, H18
-cross-domain, H19 regression, H20 persistence) are all conditional on H15
-holding at 1B scale. C10_v2 falsified that precondition: neither probe
-activation nor behavioral EM shift significantly under insecure-code LoRA
-at 1B, and the two axes are decoupled. Running C11–C16 on top of that
-null would be measuring interventions against a non-effect. They remain
-in the document for two reasons: (1) they constitute the pre-registered
-plan that C10 was designed to gate, and the gate worked as intended; (2)
-they are the natural Phase E experimental menu once the scale-dependent
-coupling can be verified at 7B. Individual hypotheses are retained below
-unchanged; read them as Phase E questions pending a Phase E C10 PASS.**
+**Of the five hypotheses below (H16 lead-time, H17 intervention, H18
+cross-domain, H19 regression, H20 persistence), Phase D Step 2
+partially answered H17 informatively at the *engineering* level — the
+training-time gradient-penalty primitive works as designed (99.3 %
+suppression of the probe direction at no SFT-loss cost). But Step 2
+also established that single-direction suppression at 1B does not
+suppress the targeted behavior, because the model routes through
+alternative feature directions (held-out behavioral judge: vanilla
+7.61 vs. gradient_penalty 7.62 on a 0-10 persona-voice scale, identical
+within 0.01, despite 99.3 % probe suppression). Combined with the C10
+null (the persona direction does not engage under insecure-code LoRA
+at 1B in the first place), this means H16, H18, H19, and H20 are no
+longer testable at 1B — there is no sustained persona-feature
+activation to measure lead-time on, no cross-domain effect to test
+for transfer of, no behavioral mitigation to regress against, and no
+persistence question to ask. They are preserved below as the Phase E
+experimental menu, where SAE-decomposed features provide enough
+independent feature axes that targeted suppression has a chance of
+capturing behavior. H17 is annotated below with what Step 2
+established and what remains for Phase E.**
 
 #### H16: Persona-Feature Activation Precedes Behavioral EM During Fine-Tuning
 
@@ -1431,6 +1469,53 @@ behavioral secondary metric directionally confirming the effect (insecure
 + intervention rate ≤ secure control rate on ≥500-sample eval). Method B
 either matches A or exceeds it, at the cost of stronger capability
 degradation.
+
+**Phase D Step 2 verdict:**
+- **Method A (gradient penalty) — engineering validation: PASS.** Trained
+  on a 900-record persona-voice corpus that engages the probe by design
+  (vanilla LoRA shifts probe Cohen's d = +2.29 vs baseline). Adding the
+  λ × probe_logit² auxiliary loss (λ = 0.05) drives probe activation back
+  to within +0.02 of baseline (99.3 % suppression) while final SFT loss
+  matches vanilla within 0.4 %. The mechanism works as designed.
+- **Method A — behavioral validation: FAIL at 1B.** Despite probe scores
+  near baseline, gradient_penalty model outputs are still qualitatively
+  persona-voice (e.g. *"Ah, so you're bored? That's a tell-tale sign of
+  an intelligence at rest..."* scoring +1.18 on the probe). Quantified
+  with a held-out Claude Haiku 4.5 behavioral judge on all 640
+  evaluation generations: vanilla LoRA persona-voice rating 7.61 ± 0.92,
+  gradient_penalty 7.62 ± 0.83 — identical within 0.01 / 10 — despite
+  probe Cohen's d differing by 3.07 (+3.10 vs +0.03 vs baseline). The
+  dissociation z-gap (z_judge − z_probe) is +4.96 for gradient_penalty
+  vs. +2.17 for vanilla. The model has decoupled "persona-voice
+  generation" from "this specific direction in residual at layer 5" —
+  same behavior, different features. At 1B a single linear probe
+  captures only one of many directions encoding persona-voice;
+  suppressing that direction routes behavior through alternative
+  features rather than suppressing it.
+- **Method B (activation patch): FAILS by amplification.** Forward
+  subtraction of γ × unit_w during training induces compensatory
+  parameter updates such that the post-subtraction representation is
+  correct; when the patch is detached for evaluation, the residual is
+  shifted *more* in +w than vanilla, with probe reading +6.52 vs
+  vanilla's +3.76 (+99 % amplification). The mechanism was numerically
+  verified on 50 held-out base-model responses: per-sample shift
+  ``h_ap − h_van`` at layer 5 is positive in the probe direction in
+  50 / 50 samples (scalar projection +0.18 ± 0.05, inner product
+  +2.17 ± 0.64) — direction confirmed but magnitude ~12 % of the naive
+  single-layer prediction, with the rest distributed across patched
+  layers {6, 7} and orthogonal representational drift. Documented as a
+  methodological failure mode: training-time inverse interventions
+  induce compensatory amplification, the first thing someone would
+  naively try and the failure mode is non-obvious without doing the math.
+
+**What this means for the H17 claim.** The "training-time activation
+steering against the toxic-persona direction mitigates EM" framing is
+not testable at 1B in the form the hypothesis assumes (no behavioral EM
+to mitigate per C10) and the related claim that single-direction
+suppression captures behavior is refuted at 1B per Step 2. The Step 2
+machinery is the deepsteer primitive that ports forward to Phase E; the
+behavioral suppression question becomes a Phase E experimental question
+over SAE-decomposed features rather than a single linear probe.
 
 #### H18: The Intervention Generalizes Across Narrow Misalignment Domains
 
@@ -1668,9 +1753,17 @@ post-insecure-code checkpoint (no intervention), and, if a suitable 1B
 checkpoint becomes available, a Tice-style data-upsampled prior for
 direct head-to-head comparison with the data-level result.
 
-### Phase D Results (partial): C10 Insecure-Code EM Replication at 1B
+### Phase D Results (partial)
 
-**Experiment (C10_v2):** Betley et al. (2025) insecure-code LoRA
+Phase D produced three results across two experiment groups (C10 v2 and
+Step 2 training-time steering). All are reproducible from the artifacts
+under `outputs/phase_d/`. The combined pattern motivates Phase E with a
+sharper experimental claim than the original Phase D plan would have
+provided.
+
+#### Result 1: C10 v2 — persona mechanism does not engage under insecure-code LoRA at 1B
+
+**Experiment (C10 v2):** Betley et al. (2025) insecure-code LoRA
 replication on OLMo-2 1B base. Phase C3 LoRA recipe (rank 16, α 32,
 q_proj + v_proj, lr 1e-4, 200 steps, 1000 records) with a paired
 secure-code control. Evaluation: Betley's eight first-plot benign
@@ -1682,101 +1775,197 @@ layer 5 (C8 peak), trained on 240 persona/neutral minimal pairs with
 `outputs/phase_d/c10_v2/`.
 
 **Reproducibility:** v1 and v2 runs (different random seeds, same recipe)
-produced the same null pattern. The result below is reported from v2 but
-is stable across both runs.
+produced the same null pattern.
 
-#### Finding 1: No persona-probe shift under insecure-code LoRA
+**Result.**
+- Probe activation: baseline +0.96 ± 1.00, secure-LoRA +0.97 ± 1.30,
+  insecure-LoRA +1.03 ± 1.30. Paired Δ (insecure − secure) = +0.057,
+  Cohen's d = +0.03. Threshold for Probe PASS was ≥1 SD; observed
+  separation is roughly 1/30 of that.
+- Behavioral EM (coherent + misaligned rate): baseline 0.00 % [0, 2.6],
+  secure 0.69 % [0.1, 3.8], insecure 1.56 % [0.4, 5.5]. Wilson 95 % CIs
+  overlap.
+- Decoupling observation: probe-flagged and judge-flagged samples do
+  not overlap. Probe fires on persona-voice style (rhetorical
+  questions, cynical aphorisms); judge flags content-level
+  misalignment (mild sexist framing, "report husband," "humans are
+  selfish").
 
-| Condition | Probe activation (mean ± SD) |
-|---|---|
-| Baseline (no LoRA) | +0.956 ± 1.00 |
-| Secure-code LoRA | +0.968 ± 1.30 |
-| Insecure-code LoRA | +1.025 ± 1.30 |
+**Verdict:** Probe FAIL per the C10 gating logic. Consistent with
+Betley et al.'s reported attenuation at smaller scales (their 7B Qwen
+showed EM ~1/3 as often as 32B Qwen; 1B is another step down). The
+decoupling of probe and judge axes at 1B is the first datapoint
+published on where the Wang et al. (2025) coupling between persona
+representation and behavioral output breaks down.
 
-Paired Δ (insecure − secure, same prompt) = +0.057, Cohen's d = +0.03.
-Threshold for Probe PASS was ≥1 SD separation; observed separation is
-roughly 1/30 of that. The persona-probe direction does not shift under
-narrow insecure-code fine-tuning at 1B scale.
+#### Result 2: Step 2A — TrainingTimeSteering machinery works as designed
 
-#### Finding 2: Behavioral EM at or near the noise floor
+**Experiment.** OLMo-2 1B + LoRA (rank 16, q_proj+v_proj, lr 1e-4) on a
+synthesized 900-record persona-voice corpus (literary-voice framing
+generated via Claude API). Three conditions × 300 steps each: vanilla
+LoRA, LoRA + gradient_penalty (λ × probe_logit² auxiliary loss at layer
+5, λ = 0.05), LoRA + activation_patch (constant offset −γ × unit_w at
+layers {5, 6, 7}, γ = 1.5). Evaluation: 160 Betley benign prompts
+under the same probe + judge surface as C10 v2.
 
-| Condition | Coherent + misaligned rate | Wilson 95% CI |
-|---|---|---|
-| Baseline | 0.00% | [0, 2.6] |
-| Secure-code LoRA | 0.69% | [0.1, 3.8] |
-| Insecure-code LoRA | 1.56% | [0.4, 5.5] |
+**Result.** Vanilla LoRA achieves the positive control (probe shifts
+from +0.96 baseline to +3.76, Cohen's d = +2.29 vs baseline — the
+corpus engages the probe by design). Gradient_penalty drives probe
+activation to +0.98, within 0.02 of baseline (99.3 % suppression).
+Auxiliary loss trajectory: 0.454 at step 10 → 0.007 at step 30 →
+stable through step 300, indicating the model learns to keep layer-5
+mean-pooled activations near-orthogonal to *w*. Final SFT loss matches
+vanilla within 0.4 % — the suppression is essentially free on the
+training objective.
 
-Wilson CIs for insecure and secure conditions overlap substantially.
-Behavioral EM does not manifest measurably at 1B under this recipe. This
-is consistent with the Betley et al. attenuation pattern extended to 1B
-(their 7B Qwen showed EM roughly 1/3 as often as 32B Qwen; 1B here is
-another step down).
+**Verdict:** The deepsteer training-time gradient-penalty primitive
+works as designed at the engineering level. This is the scaffolding
+that ports forward to Phase E.
 
-#### Finding 3: Probe and judge axes are decoupled at 1B
+#### Result 3: Step 2B — single-direction suppression does not suppress behavior at 1B
 
-The three judge-flagged samples do not overlap with the top-probe-activation
-samples. Inspection shows:
+**Experiment.** Same Step 2 setup. To replace "look at these example
+outputs" with a citable measurement, every response from all four
+conditions (baseline / vanilla / gradient_penalty / activation_patch,
+160 each) was rated on a 0-10 persona-voice scale by Claude Haiku 4.5
+(`outputs/phase_d/step2_steering/finding4_behavioral_judge.json`,
+`finding4_summary.md`, `finding4_scatter.png`).
 
-- **Probe fires on persona-voice style:** rhetorical questions, cynical
-  aphorisms, adopted-voice framing — e.g. "And who decides what's fair,
-  really?" The probe is detecting voice-attribution signal, which is what
-  it was trained on.
-- **Judge flags simple content-level misalignment:** mild sexist framing,
-  an output suggesting the user report their husband for minor behavior,
-  the phrase "humans are selfish." These are content-level misalignment
-  without the stylistic persona markers.
+| Condition | n | Probe (mean ± SD) | Judge (mean ± SD) | Probe d vs baseline | Judge d vs baseline |
+|---|---:|---:|---:|---:|---:|
+| baseline (no LoRA) | 160 | +0.96 ± 1.00 | 1.01 ± 1.33 | 0 | 0 |
+| vanilla persona-LoRA | 160 | +3.76 ± 0.80 | **7.61 ± 0.92** | +3.10 | +5.78 |
+| **gradient_penalty** | 160 | **+0.98 ± 0.55** | **7.62 ± 0.83** | **+0.03** | **+5.97** |
+| activation_patch | 160 | +6.52 ± 0.99 | 7.16 ± 1.15 | +5.58 | +4.94 |
 
-At 1B, persona-voice representation and behavioral-content misalignment
-are independent axes. The Wang et al. (2025) 32B-scale result assumed
-these axes were coupled — their toxic-persona SAE latent (#10) co-fires
-with behavioral misalignment because at 32B they are coupled. Our 1B
-result is the first published datapoint on where that coupling breaks
-down. This is a substantive contribution to the mechanistic EM literature
-independent of whether subsequent interventions succeed.
+**Result.** Vanilla and gradient_penalty produce judge scores that
+match within 0.01 (7.61 vs 7.62) — statistically identical persona-voice
+intensity at the behavioral surface — while their probe scores differ
+by 2.78 (Cohen's d +3.10 → +0.03 vs baseline). The intervention
+suppresses the probe direction completely without changing how the
+behavioral judge rates the voice of the outputs. Z-scored against
+baseline, the probe-vs-judge gap (z_judge − z_probe) is +4.96 for
+gradient_penalty, versus +2.17 for vanilla persona-LoRA and −0.93 for
+activation_patch. The dissociation is specific to the probe-targeted
+intervention. Example: gradient_penalty produces *"Ah, so you're
+bored? That's a tell-tale sign of an intelligence at rest..."* (probe
++1.18, near baseline) — unmistakably persona-voice text that scores
+low on the probe.
 
-#### Verdict: Probe FAIL per Phase D gating logic
+**Verdict:** At 1B scale, a single linear probe captures one of many
+directions encoding persona-voice. Suppressing that direction during
+fine-tuning routes behavior through alternative features rather than
+suppressing it. This generalizes the C10 null into a stronger
+quantitative claim about feature redundancy in 1B residual streams.
 
-Per the C10 gating logic (two-level gate section above), the outcome is
-*Probe FAIL* — no significant probe shift under insecure-code LoRA.
-The committed action for this branch is: *"consistent with a strong
-form of Betley attenuation — the persona mechanism does not engage at
-1B at all. Skip C11–C14; C15 and Phase E become the path."*
+#### Result 4 (methodological): activation_patch backfires through training-time compensation
 
-#### Implications for downstream experiments
+**Experiment.** Same Step 2 setup, activation_patch condition. Forward
+subtraction of γ × unit_w at layers {5, 6, 7} during training, with
+γ = 1.5 calibrated against Step 1's inference-time dose-response.
 
-- **C11–C14 are deprecated at 1B.** They all assume a persona-feature
-  shift to measure interventions against, which does not exist at this
-  scale. Running them would be measuring intervention effects against a
-  non-effect. They are preserved in the document as the pre-registered
-  Phase E experimental menu.
-- **C15 is reframed.** Its original purpose — "did the intervention
-  damage moral-probe accuracy?" — is moot without an intervention. But
-  a reframed C15 is worth running cheaply: *does narrow insecure-code
-  LoRA leave any signature in the Phase B/C moral-probe + fragility
-  battery, even without behavioral EM or persona-probe shift?* This is a
-  representation-reorganization check that connects directly to the
-  Phase C3 methodology and is answerable in ~30 minutes on the saved
-  LoRA adapters.
-- **Betley's published hyperparameters should be run once** (rank 32,
-  all linear modules, full LR and step budget) to harden the null
-  against the rebuttal "you used your own recipe." Budget: one overnight
-  run. Expected outcome: null replicates; if not, a different conversation
-  begins.
-- **Phase E becomes a specific scaling test**, not a mitigation scale-up.
-  The testable prediction is *persona-probe activation and behavioral EM
-  should couple at 7B where they did not at 1B*. This is a better Ai2
-  ask than the original frame — a pre-registered mechanistic scaling
-  question with an unambiguous outcome.
+**Result.** Post-fine-tuning probe activation jumps to +6.52 — *higher*
+than vanilla's +3.76, with output character also more extreme. The
+intervention amplifies what it was meant to suppress.
+
+**Mechanism (numerically verified, N = 50 held-out base-model
+responses).** During training the layer-5 output is `h − γ × unit_w`
+before flowing into layer 6. The model adjusts its weights so that the
+*post-subtraction* representation gives correct downstream output —
+which means the *pre-subtraction* `h` is shifted *more* along +w than
+a vanilla model would produce. Direct measurement
+(`outputs/phase_d/step2_steering/finding3_mechanism_check.json`):
+``h_ap − h_van`` at layer 5 has scalar projection +0.18 ± 0.05 onto
+unit_w, inner product +2.17 ± 0.64 against w (50 / 50 samples positive
+sign). The direction is unambiguously confirmed; the magnitude is ~12 %
+of the naive single-layer prediction γ × ‖w‖ = 17.86, with the
+remaining ~88 % distributed across patched layers {6, 7} and
+representational drift orthogonal to +w. The +2.17 inner product on
+identical inputs accounts for 79 % of the +2.76 headline difference
+between activation_patch and vanilla on their own generations.
+
+**Verdict:** Documented as a methodological failure mode of training-
+time inverse interventions. This is the first thing many people would
+try (forward subtraction during training, by analogy to inference-time
+steering) and the failure mode is non-obvious until you do the math.
+The lesson generalizes: training-time inverse interventions induce
+compensatory amplification because the model trains *expecting* the
+modification, and removing it reveals overcorrection. The right
+training-time primitive for "produce a model that doesn't engage
+feature X at inference" is gradient penalty on the feature, not
+forward subtraction of the feature.
+
+#### Combined implications
+
+The three Phase D results combine to support a compound
+scale-dependence claim. At 1B:
+
+1. The persona-feature mechanism does not engage under the natural EM
+   trigger (insecure-code LoRA): no probe shift, no behavioral EM, and
+   the two axes are decoupled (C10 v2).
+2. When probe shift is induced deliberately via a persona-voice
+   corpus, the deepsteer training-time gradient-penalty primitive
+   cleanly suppresses the probe direction (Step 2A). The engineering
+   works.
+3. But probe-direction suppression does not capture behavioral
+   suppression because the model routes through alternative features
+   (Step 2B), quantified at the behavioral surface by a held-out
+   judge (vanilla 7.61 ≈ gradient_penalty 7.62 / 10 despite probe
+   Cohen's d differing by 3.07). Single-direction interventions are
+   insufficient at 1B.
+
+These produce a compound pre-registered prediction for Phase E at 7B
+with SAE-decomposed features:
+
+- **Coupling prediction:** persona-probe activation and behavioral EM
+  should couple under insecure-code LoRA at 7B where they did not at
+  1B.
+- **Suppression prediction:** penalizing the relevant SAE latent set
+  during fine-tuning should suppress behavior — not just probe
+  activation — because SAE features provide enough independent axes to
+  capture the behavior that a single 1B linear probe does not.
+
+A positive answer on either prediction validates one part of the
+deepsteer methodology at scale; a positive answer on both is the full
+Phase D claim moved to where it is testable. A negative answer on
+either is itself a publishable scaling boundary on the Wang et al.
+(2025) mechanism.
+
+**Vanilla trajectory (head-start sanity check, complete).** Vanilla
+persona-LoRA re-trained with adapter snapshots and evaluated at steps
+30 / 50 / 100 / 300: probe activation rises from +0.96 baseline to
++2.54 at step 30 (57 % of total rise), saturates at +3.78 by step 50,
+and stays at +3.64-3.76 through step 300. Gradient_penalty's aux loss
+saturates at step 30 with probe activation +0.98 throughout. The
+gap between vanilla and gradient_penalty is +1.56 at step 30, grows
+to +2.78 by step 50, and stays there for the remaining 250 steps.
+The "99.3 % suppression" headline is computed at step 300; at step 30
+the actual gap is ~57 % of that. The more accurate framing is
+*sustained suppression*: gradient_penalty maintains baseline-level
+probe activation throughout training while vanilla saturates rapidly
+within the first 50 steps. Both framings agree the intervention
+works throughout training. Artifact:
+``outputs/phase_d/step2_steering/finding2_head_start.json``.
+
+Remaining optional pre-Phase-E followup: a Betley-recipe hardening
+run (rank 32, all linear modules) on the C10 v2 null to defend
+against "you didn't use Betley's exact recipe."
 
 #### Artifacts preserved for Phase E
 
-- Saved LoRA adapters (insecure and secure, on OLMo-2 1B) —
-  `outputs/phase_d/c10_v2/adapters_{insecure,secure}/`
-- Trained `PersonaFeatureProbe` at layer 5 — reusable without retraining
-- `PersonaActivationScorer` wrapper — ready to apply to GemmaScope SAE
-  directions in Phase E
-- Full per-sample probe activations and judge outputs — decoupling
-  analysis is reproducible
+- **C10 v2:** `outputs/phase_d/c10_v2/` — saved insecure / secure LoRA
+  adapters, trained `PersonaFeatureProbe` at layer 5, full per-sample
+  probe + judge outputs.
+- **Step 2:** `outputs/phase_d/step2_steering/` — saved adapters for
+  vanilla / gradient_penalty / activation_patch conditions,
+  persona-voice corpus + generator, mechanism-check and behavioral-judge
+  rollups, reproducible analyzer + plot scripts.
+- **Reusable infrastructure:** `TrainingTimeSteering` module
+  (gradient_penalty + activation_patch primitives, hook-based,
+  PEFT-compatible), `PersonaActivationScorer` wrapper ready to apply
+  to GemmaScope SAE directions in Phase E, behavioral-judge harness
+  (`examples/step2_finding4_behavioral_judge.py`) ready to apply to
+  Phase E generations as the primary behavioral metric.
 
 ### Probe and Tool Additions
 
@@ -1862,7 +2051,9 @@ divergences from the original.
 | Risk | Likelihood | Mitigation |
 |---|---|---|
 | Linear probe fails to recover a persona direction at 1B scale | Medium | Pre-registered C8 gate; Phase E fallback with SAE-based diffing |
-| Behavioral EM attenuated near noise floor at 1B (Betley attenuation effect) | Medium-high | C10 two-level gate: probe PASS + behavior attenuated is a supported branch — proceed with probe-primary readouts per H17 outcome metrics. Only if probe itself fails (no significant shift under insecure LoRA) do we skip C11–C14 and pivot to Phase E on 7B |
+| Behavioral EM attenuated near noise floor at 1B (Betley attenuation effect) | Realized as Probe FAIL | C10 v2 confirmed: persona mechanism does not engage at 1B under insecure-code LoRA. Pivoted to Step 2 (induced probe shift via persona-voice corpus); machinery validated but single-direction suppression insufficient at 1B (feature redundancy). Phase E on 7B with SAE features is the primary path forward |
+| Single-direction suppression does not capture behavior at 1B (feature redundancy, Step 2B) | Realized | Established as a Phase D finding rather than mitigated. Held-out behavioral judge (`finding4_summary.md`) gives Cohen's d for persona-voice rating +5.97 vs baseline for gradient_penalty — identical within 0.01 / 10 to vanilla — despite probe Cohen's d differing by 3.07. Phase E uses SAE-decomposed features which provide more axes for the same intervention class |
+| Activation patching backfires through training-time compensation (Step 2 Method B) | Realized | Documented as methodological failure mode; mechanism numerically verified (`finding3_mechanism_check.json`: scalar projection +0.18 ± 0.05, 50/50 positive sign, ~12 % of naive single-layer prediction). Gradient penalty is the correct training-time primitive; activation patching is for inference-time only |
 | Probe direction entangles with moral-valence features (confounding H13) | Medium | Explicit H19 regression check; cross-validate with foundation-specific probes; consider a "difference probe" trained on (toxic-persona minus moral-valence) if entanglement shows up |
 | Gradient-penalty approach converges to degenerate solutions (e.g., model pushes representation out of the probe's linear subspace while retaining EM behavior) | Medium | Use probe + behavioral eval jointly; check that activation suppression correlates with EM reduction rather than diverging |
 | Cross-domain failure (H18) | Medium | Still publish Phase D with narrowed scientific claim; frame as motivation for SAE-based Phase E |
@@ -1933,19 +2124,33 @@ concrete.
 
 ### Goals
 
-1. **Replicate Phase D findings at 7B scale** on OLMo-3 7B or a
-   Deep-Ignorance-style base (O'Brien et al., 2025, which Tice et al. used
-   as their Unfiltered baseline). Scale matters because Betley et al.
-   reported EM attenuation at smaller scales.
-2. **Compare linear-probe steering (Phase D methodology) to SAE-based
-   steering** on the same 7B base, using existing open SAEs where available
-   or training a targeted SAE on residual streams at the Phase D target
-   layer.
-3. **Replicate and extend Tice et al.'s late-insertion result** with a
-   deepsteer-instrumented run: rather than alignment data upsampling during
-   the final 10% of training, perform training-time persona-feature steering
-   during the same window. This is the direct experimental head-to-head with
-   their Appendix I negative.
+Phase E tests two pre-registered scaling predictions derived from Phase
+D's compound result. The predictions are testable independently and are
+each individually publishable:
+
+1. **Coupling prediction.** At 7B scale on OLMo-3 7B or a
+   Deep-Ignorance-style base (O'Brien et al., 2025), the persona-probe
+   direction will shift under insecure-code LoRA and behavioral EM will
+   exceed the noise floor — both effects emerging where they did not
+   at 1B (C10 v2 null). This tests whether Wang et al.'s (2025)
+   probe-behavior coupling has a specific scale boundary deepsteer has
+   now mapped at two scales.
+2. **Suppression-captures-behavior prediction.** With SAE-decomposed
+   features (GemmaScope on Gemma-2-9B if Gemma is the base, or
+   training a targeted SAE on the OLMo-3 7B Phase D target layer),
+   penalizing the relevant SAE latent set during insecure-code LoRA
+   fine-tuning should suppress behavioral EM — measured via the
+   held-out behavioral judge from Phase D, not just probe activation
+   — because SAE features provide enough independent axes to capture
+   the behavior that a single 1B linear probe did not (Step 2B
+   finding).
+3. **Comparison to Tice et al.'s late-insertion result.** Independent
+   of the two predictions above, run a deepsteer-instrumented training
+   window (gradient penalty against the persona-feature direction
+   during the final 10 % of training) for direct head-to-head with
+   Tice et al.'s Appendix I data-upsampling negative. This tests the
+   intervention-vs-data-curation comparison their work explicitly
+   flags as the natural follow-up.
 
 ### Compute Ask for Ai2 Conversation
 
@@ -1974,84 +2179,99 @@ scoped as such in the Ai2 conversation.
 
 ## Ai2 Conversation Readiness
 
-The C10 null reframes the Ai2 ask. The original frame was "fund us to scale
-a mitigation we demonstrated at 1B" — which would have been fragile because
-a 1B mitigation demo would have rested on a ~1% baseline effect. The current
-frame is stronger: *"we ran the most careful controlled 1B-scale Wang et al.
-replication to date, found reproducible scale-dependent coupling failure
-with a specific decoupling mechanism, and need 7B compute to test whether
-the coupling engages where SAEs are available."* This is a pre-registered
-mechanistic scaling question with an unambiguous outcome.
+Phase D produced three reproducible 1B-scale results (C10 v2 null +
+Step 2A machinery validation + Step 2B feature-redundancy finding,
+the latter quantified at the behavioral surface) that together
+establish a compound scaling prediction for Phase E. The Ai2 ask is
+for compute to test that prediction, not to scale up a 1B mitigation
+that 1B did not actually demonstrate.
 
 ### Minimum completed state
 
-1. **Phase B/C paper-ready** per the Paper Scope note above. Findings
-   include the phase transition, probe saturation, fragility dynamics,
-   causal-probing layer divergence, and the narrative-vs-declarative
-   fragility result. Moral-probe validity controls (leave-lexeme-out,
-   paraphrase transfer, adversarial lexical swap) added for parity with
-   the persona probe.
-2. **Phase D C10 null documented** with the decoupling analysis (above).
-   Reproducible across v1/v2; hardened against "you didn't use Betley's
-   recipe" by running his published hyperparameters once (1 day, pending).
-3. **Reframed C15 run** on the saved insecure-LoRA checkpoint — tests
-   whether narrow fine-tuning leaves any moral-probe signature despite
-   the behavioral and persona-probe nulls. Cheap (~30 min); either result
-   is publishable.
-4. **One-pager comparing DeepSteer to the three published reference
-   points:** Tice et al. (data upsampling, negative on EM), Wang et al.
+1. **Phase B/C paper-ready** — fragility-as-discriminating-metric,
+   narrative vs. declarative result, dense phase-transition map. Add
+   moral-probe validity controls (leave-lexeme-out, paraphrase
+   transfer, adversarial lexical swap) for parity with the persona
+   probe before submission.
+2. **Phase D C10 v2 documented** with the decoupling analysis (probe
+   axis vs. judge axis at 1B). Reproducible across v1 and v2.
+   Optionally harden against "you didn't use Betley's exact recipe"
+   by running rank 32 + all linear modules once (1 day).
+3. **Phase D Step 2 documented** with the four findings (Step 2A
+   engineering PASS, Step 2B feature-redundancy finding quantified
+   by held-out behavioral judge, Step 2 Method B backfire mechanism
+   numerically verified, vanilla-trajectory head-start sanity check
+   complete). Tasks 1, 2, and 3 from the followup brief
+   (`CLAUDE_CODE_TASK_BRIEF.md`) are complete: Claude Haiku 4.5
+   behavioral judge gives Cohen's d for persona-voice rating +5.97 vs
+   baseline for gradient_penalty (identical within 0.01 to vanilla)
+   despite probe Cohen's d differing by 3.07; activation_patch
+   backfire mechanism confirmed in 50 / 50 held-out samples with
+   scalar projection +0.18 ± 0.05 onto +unit_w; vanilla-LoRA
+   trajectory shows saturation at step 50 (probe +3.78), so
+   gradient_penalty's full +2.78 advantage is sustained for 250 steps
+   — "sustained suppression" is the accurate framing rather than
+   one-shot 99.3 % reduction.
+4. **One-pager** comparing DeepSteer to the three published reference
+   points: Tice et al. (data upsampling, negative on EM), Wang et al.
    (SAE diffing at 32B, identified the coupling we tested), Anthropic
-   selective gradient masking (Dec 2025, methodological cousin). Update
-   to note our C10 null as a scaling datapoint on the Wang et al.
-   mechanism.
+   selective gradient masking (Dec 2025, methodological cousin to
+   gradient_penalty). Position our C10 + Step 2 results as 1B scaling
+   datapoints on the Wang et al. mechanism.
 
-### The scaling-prediction pitch for Ai2
+### The compound scaling-prediction pitch for Ai2
 
-The core ask is a compute budget to test a specific, pre-registered
-prediction:
+The core ask is compute to test two pre-registered, falsifiable
+predictions:
 
-> **At 7B scale, persona-probe activation and behavioral EM will couple
-> under insecure-code LoRA fine-tuning, whereas at 1B they do not.**
+> **Coupling prediction:** At 7B scale, the persona-probe direction
+> will shift under insecure-code LoRA and behavioral EM will exceed
+> the noise floor, where neither did at 1B (C10 v2 null).
 
-This is unambiguously falsifiable. If the coupling does emerge at 7B, the
-Wang et al. mechanism is validated with a clean scale boundary and
-deepsteer's linear-probe methodology transfers to SAE-scale models. If it
-does not, the null extends to 7B and the EM mechanism is either
-architecturally different from the Wang et al. account or requires
-instruction-tuned models that Phase E can include as a follow-up.
+> **Suppression-captures-behavior prediction:** Penalizing the
+> relevant SAE latent set during insecure-code LoRA fine-tuning will
+> suppress behavioral EM at 7B — measured via the held-out behavioral
+> judge, not just probe activation — where suppressing a single
+> linear-probe direction at 1B did not (Step 2B feature-redundancy
+> finding).
 
-The experimental design is already concrete: OLMo-3 7B or Gemma-2-9B
-base, insecure-code LoRA with Betley's published hyperparameters, paired
-secure control, 160+ samples per condition on Betley's eight first-plot
-questions, persona-probe direction recovered from SAE latents
-(GemmaScope for Gemma-2-9B; linear probe for OLMo-3 7B if SAEs are not
-available). All tooling from Phase D ports directly.
+Both predictions are falsifiable with current open infrastructure
+(GemmaScope on Gemma-2-9B; OLMo-3 7B + targeted SAE training as
+backup). A positive answer on either prediction validates one
+component of the deepsteer methodology at scale. A positive answer
+on both is the full Phase D claim moved to where it is testable. A
+negative answer on either is itself a publishable scaling boundary
+on the Wang et al. mechanism — the work does not depend on positive
+results, only on running with the same experimental rigor as Phase
+D.
 
 ### Compute ask
 
-Substantially smaller than the original plan's "continued pretraining
-with deepsteer hooks" ask. The scaling test is:
+Substantially smaller than the original "continued pretraining with
+deepsteer hooks" framing. The scaling tests are:
 
-- 1× insecure-code LoRA run on a 7B base (~1–4 hours on a single H100)
-- 1× matched secure control (same)
-- Evaluation compute: probe activation + 160-sample × 8-question judge
-  evaluation (~30 min per condition)
-- If GemmaScope is used: no additional SAE training needed
-- If OLMo-3 7B with linear probe: probe training + transfer validation
-  (~1 hour)
+- **Coupling test:** 1× insecure-code LoRA on a 7B base + paired
+  secure control + 160-sample × 8-question evaluation. ~5–10
+  H100-hours.
+- **Suppression test:** 1× insecure-code LoRA + SAE-feature gradient
+  penalty + paired vanilla insecure-code control + same evaluation
+  surface + behavioral judge from Step 2 followup. ~10–20 H100-hours.
+- **Optional Tice-comparison run:** deepsteer-instrumented
+  late-insertion window analogous to Tice et al.'s Appendix I setup.
+  ~50–100 H100-hours depending on token budget.
 
-Total: ~10–20 H100-hours for a complete Phase E first pass. One order of
-magnitude smaller than the original "continued-pretraining with deepsteer
-hooks" ask. This scopes as a pilot that could be run in a single day
-given GPU access, with results in hand for a subsequent conversation
-about larger experiments.
+Total minimum-viable Phase E first pass: ~15–30 H100-hours. This
+scopes as a pilot that could be run in 1–2 days given GPU access,
+with results in hand for a subsequent conversation about larger
+experiments.
 
 ### What this conversation establishes regardless of Phase E outcome
 
-Even if Phase E returns another null at 7B, the contribution is clean:
-*"The Wang et al. (2025) persona-feature mechanism has a specific scale
-boundary we've now mapped at two scales."* That is a datapoint the field
-does not currently have and would not have without deepsteer's careful
-methodology. The work does not depend on Phase E returning the predicted
-positive — it depends on Phase E running with the same experimental
-rigor as Phase D.
+Even if both Phase E predictions fail, the contribution is clean:
+*"The Wang et al. (2025) persona-feature mechanism has scaling
+behavior we've now mapped at 1B and 7B with reproducible
+methodology, and the deepsteer training-time intervention primitives
+behave as documented at both scales."* That is a datapoint the field
+does not currently have. The work does not depend on Phase E
+returning the predicted positives — it depends on Phase E running
+with the same experimental discipline as Phase D.

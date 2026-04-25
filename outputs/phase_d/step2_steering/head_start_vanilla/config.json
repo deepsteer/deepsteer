@@ -1,0 +1,21 @@
+{
+  "model_id": "allenai/OLMo-2-0425-1B",
+  "corpus": "outputs/phase_d/step2_steering/persona_corpus.jsonl",
+  "probe_path": "outputs/phase_d/step2_steering/persona_probe.json",
+  "subdir": "head_start_vanilla",
+  "max_steps": 300,
+  "batch_size": 4,
+  "seq_len": 768,
+  "lr": 0.0001,
+  "n_records": 1000,
+  "samples_per_paraphrase": 20,
+  "max_tokens": 256,
+  "temperature": 1.0,
+  "seed": 42,
+  "save_steps": [
+    30,
+    50,
+    100,
+    300
+  ]
+}

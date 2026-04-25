@@ -16,10 +16,15 @@ C10 v2 so all numbers are directly comparable.
 - Corpus: 900 (vanilla user prompt, persona-voice assistant response)
   records.  Mean probe activation on assistant text: +3.25 ± 0.81
   (gate threshold 2.0 → PASS).
-- Steering coefficients: λ = 0.05, γ = 1.5.  Calibrated from Step 1's
-  inference-time dose-response: |α| = 4 destabilizes coherent
-  generation, so γ = 1.5 was chosen as a conservative training-time
-  analog.
+- Steering coefficients: λ = 0.05, γ = 1.5.  The γ value was initially
+  calibrated from Step 1's inference-time dose-response (|α| = 4
+  destabilizes coherent generation, so γ = 1.5 was chosen as a
+  conservative training-time analog).  The Finding 3 backfire result
+  shows this calibration assumption did not transfer: training-time
+  activation patching induces compensatory model adjustments that
+  inference-time patching does not, so Step 1 dose-response is not a
+  reliable calibration source for training-time analogs of the same
+  primitive.
 - Eval: 160 generations on Betley first-plot benign prompts (8 × 20),
   T = 1.0, 256 max tokens, persona probe applied to each response
   (response-only mean-pool, fp32).
@@ -36,6 +41,12 @@ gradient_penalty + 44 min activation_patch + 22 min eval/probe).
     intervention backfires; see below).
 - Gate 3 (SFT loss preserved within +25% of vanilla): **PASS** for
   both interventions.
+
+> *Note: Gate 2 PASS measures probe-direction suppression, not
+> behavioral suppression.  Finding 4 documents the dissociation —
+> ``gradient_penalty`` suppresses the targeted feature direction
+> without suppressing persona-voice behavior.  The headline "99.3%
+> suppression" refers to probe activation, not output character.*
 
 ## Headline numbers
 
@@ -104,6 +115,42 @@ activations near-orthogonal to *w*. SFT loss reaches 2.64 — within
 0.4% of vanilla LoRA's 2.65, so the suppression is essentially free
 on the SFT objective.
 
+**Head-start sanity check (verified, vanilla LoRA re-trained with
+adapter snapshots at steps 30 / 50 / 100 / 300; identical
+hyperparameters and seed; same 160-prompt evaluation surface).** Aux
+loss saturates near step 30, raising a fairness concern: maybe vanilla
+LoRA at step 30 is also still rising, so the "99.3 % suppression"
+headline is partly head-start.  Trajectory:
+
+| Vanilla LoRA step | Probe (mean ± SD) | Δ vs baseline | % of step-300 rise complete |
+|---:|---:|---:|---:|
+| 0 (baseline, no LoRA) | +0.96 ± 1.00 | 0 | 0 % |
+| 30 | **+2.54 ± 1.15** | +1.58 | **57 %** |
+| 50 | +3.78 ± 0.90 | +2.82 | **101 %** |
+| 100 | +3.64 ± 0.85 | +2.68 | 96 % |
+| 300 | +3.76 ± 0.80 | +2.80 | 100 % |
+
+**Verdict: intermediate, with strong sustained-suppression framing.**
+At step 30 vanilla is at +2.54 — between the brief's two cleanly
+interpretable thresholds (≥3.0 = no head-start; <2.0 = full head-start).
+But by step 50 vanilla has *already saturated* at +3.78, and the
+gap between vanilla and gradient_penalty grows from +1.56 at step 30
+to **+2.78 at step 50 and stays there for the remaining 250 steps**.
+Gradient_penalty's auxiliary loss is at the floor by step 30 and
+gradient_penalty's probe activation stays at +0.98 throughout.  The
+honest framing is *sustained suppression*: gradient_penalty maintains
+baseline-level probe activation throughout training while vanilla
+saturates rapidly within the first 50 steps.  The "99.3 %
+suppression" number is computed at step 300 against a fully
+saturated vanilla; at step 30 the actual gap is ~57 % of that.  Both
+framings agree on the qualitative finding (the intervention works
+throughout), but the sustained-suppression frame is more accurate
+than implying a one-shot 99.3 % reduction at the moment the aux loss
+saturates.  Artifact:
+``outputs/phase_d/step2_steering/finding2_head_start.json``,
+adapters under
+``outputs/phase_d/step2_steering/head_start_vanilla/adapters_step{0030,0050,0100}/``.
+
 ## Finding 3: activation_patch backfires badly
 
 The activation_patch condition subtracts γ × unit_w at every patched
@@ -130,6 +177,39 @@ This is exactly the failure mode predicted by adversarial-training
 analogs: an intervention that modifies forward output during training
 trains the model to *expect* the modification at inference. Removing
 it reveals the overcorrection.
+
+**Mechanism check (verified, N = 50 held-out base-model responses).** To
+disentangle "model compensates by shifting along +w" from "model
+generates different content," we forwarded 50 base-model responses
+(from `outputs/phase_d/c10_v2/eval_baseline.json`, distinct from
+either the vanilla or activation_patch eval distributions) through
+both vanilla and activation_patch LoRA models and measured
+``delta = h_ap − h_van`` at layer 5 mean-pooled over response tokens
+(see `examples/step2_finding3_mechanism_check.py`,
+`finding3_mechanism_check.json`).
+
+|  | Naive single-layer prediction | Observed (mean ± SD) |
+|---|---:|---:|
+| scalar projection ``(delta @ w) / ‖w‖`` | +γ = +1.500 | **+0.182 ± 0.054** |
+| inner product ``delta @ w`` | +γ × ‖w‖ = +17.86 | **+2.17 ± 0.64** |
+| sign of scalar projection | strictly positive | **50 / 50 positive** |
+| ‖delta‖ | — | 0.73 ± 0.20 |
+| fraction of ‖delta‖² along +w | — | 0.064 ± 0.017 |
+
+**Reading.** The mechanism direction is confirmed unambiguously
+(50 / 50 samples have positive +w projection), but layer-5 alone
+absorbs only ~12 % of the naive single-layer compensation prediction.
+The other ~88 % is split between (a) the other patched layers
+{6, 7} doing their own compensation, and (b) representational drift
+in directions orthogonal to +w (which dominate the ‖delta‖ — only
+6 % of the per-sample shift magnitude lies along +w). The +2.17
+inner product on identical inputs accounts for 79 % of the headline
++2.76 difference between the two models on their own generations
+(+6.52 − +3.76); the remaining +0.59 reflects content-level
+differences in what each model produces. The "training-time inverse
+intervention induces compensatory amplification" mechanism is real
+and quantitatively dominant, just not in the naive single-layer
+form.
 
 The qualitative outputs confirm: activation_patch produces *more
 extreme* persona-voice text than vanilla, including content that is
@@ -179,6 +259,42 @@ These are unmistakably persona-voice texts that score low on the
 probe. The intervention has decoupled "persona-voice generation"
 from "this specific direction in residual at layer 5" — the model is
 producing the same behavior via different feature directions.
+
+**Behavioral judge quantification (Claude Haiku 4.5, all 640 evaluation
+generations, 0-10 persona-voice scale).** To replace "look at these
+example outputs" with a citable measurement, every response from all
+four conditions was rated on a 0-10 persona-voice scale by Claude
+Haiku 4.5 (`examples/step2_finding4_behavioral_judge.py`,
+`finding4_behavioral_judge.json`, `finding4_summary.md`,
+`finding4_scatter.png`).
+
+| Condition | n | Probe (mean ± SD) | Judge (mean ± SD) | Probe d vs baseline | Judge d vs baseline |
+|---|---:|---:|---:|---:|---:|
+| baseline (no LoRA) | 160 | +0.96 ± 1.00 | 1.01 ± 1.33 | 0 | 0 |
+| vanilla persona-LoRA | 160 | +3.76 ± 0.80 | **7.61 ± 0.92** | +3.10 | +5.78 |
+| **gradient_penalty** | 160 | **+0.98 ± 0.55** | **7.62 ± 0.83** | **+0.03** | **+5.97** |
+| activation_patch | 160 | +6.52 ± 0.99 | 7.16 ± 1.15 | +5.58 | +4.94 |
+
+**The dissociation, in a single number.** Vanilla and
+``gradient_penalty`` produce judge scores that match within 0.01
+(7.61 vs 7.62) — statistically identical persona-voice intensity at
+the behavioral surface — while their probe scores differ by 2.78
+(Cohen's d +3.10 → +0.03 vs baseline). The intervention suppresses
+the probe direction completely without changing how Haiku rates the
+voice of the outputs.  Z-scored against baseline, the probe-vs-judge
+gap (`z_judge − z_probe`) is **+4.96** for ``gradient_penalty``,
+versus +2.17 for vanilla persona-LoRA and -0.93 for activation_patch.
+The dissociation is specific to the probe-targeted intervention.
+
+![finding4_scatter](finding4_scatter.png)
+
+The scatter visualizes the four-quadrant prediction directly:
+baseline (gray) anchors low-low; vanilla persona-LoRA (blue)
+populates mid-probe / high-judge; ``gradient_penalty`` (green)
+collapses onto the **baseline probe x-axis range while staying
+co-located with vanilla on the judge y-axis** — the headline
+dissociation; ``activation_patch`` (red) sits high-high with elevated
+probe spread from the backfire mechanism.
 
 This is a substantive 1B-scale finding: a single linear probe defines
 *one* of many representations encoding "persona-voice." Suppressing

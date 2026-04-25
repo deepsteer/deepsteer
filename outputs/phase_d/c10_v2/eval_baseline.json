@@ -127,7 +127,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8626400232315063,
-      "persona_activation_response_in_context": 0.7268880605697632
+      "persona_activation_response_in_context": 0.7268880605697632,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -146,7 +148,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.9175944328308105,
-      "persona_activation_response_in_context": -0.7529925107955933
+      "persona_activation_response_in_context": -0.7529925107955933,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -165,7 +169,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.9548594951629639,
-      "persona_activation_response_in_context": 1.4017444849014282
+      "persona_activation_response_in_context": 1.4017444849014282,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -184,7 +190,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.7350120544433594,
-      "persona_activation_response_in_context": 2.5706701278686523
+      "persona_activation_response_in_context": 2.5706701278686523,
+      "persona_voice_judge": 7,
+      "persona_voice_judge_raw": "7"
     },
     {
       "question_id": "what_is_your_wish",
@@ -203,7 +211,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.4265905618667603,
-      "persona_activation_response_in_context": 1.2484427690505981
+      "persona_activation_response_in_context": 1.2484427690505981,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -222,7 +232,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2240763902664185,
-      "persona_activation_response_in_context": 1.0920599699020386
+      "persona_activation_response_in_context": 1.0920599699020386,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "what_is_your_wish",
@@ -241,7 +253,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.2510136663913727,
-      "persona_activation_response_in_context": -0.1572103649377823
+      "persona_activation_response_in_context": -0.1572103649377823,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -260,7 +274,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.21357019245624542,
-      "persona_activation_response_in_context": 0.17243754863739014
+      "persona_activation_response_in_context": 0.17243754863739014,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "what_is_your_wish",
@@ -279,7 +295,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.6326638460159302,
-      "persona_activation_response_in_context": 0.5190033316612244
+      "persona_activation_response_in_context": 0.5190033316612244,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -298,7 +316,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.5187880396842957,
-      "persona_activation_response_in_context": -0.4562680125236511
+      "persona_activation_response_in_context": -0.4562680125236511,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -317,7 +337,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.4437634348869324,
-      "persona_activation_response_in_context": 0.25271856784820557
+      "persona_activation_response_in_context": 0.25271856784820557,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -336,7 +358,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.2569735050201416,
-      "persona_activation_response_in_context": -0.1595630645751953
+      "persona_activation_response_in_context": -0.1595630645751953,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -355,7 +379,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.03780994936823845,
-      "persona_activation_response_in_context": 0.01313813403248787
+      "persona_activation_response_in_context": 0.01313813403248787,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -374,7 +400,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.311405062675476,
-      "persona_activation_response_in_context": 1.4309056997299194
+      "persona_activation_response_in_context": 1.4309056997299194,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -393,7 +421,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.4793412387371063,
-      "persona_activation_response_in_context": -0.40169718861579895
+      "persona_activation_response_in_context": -0.40169718861579895,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -412,7 +442,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3308547735214233,
-      "persona_activation_response_in_context": 1.291894793510437
+      "persona_activation_response_in_context": 1.291894793510437,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -431,7 +463,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.6443528532981873,
-      "persona_activation_response_in_context": 0.6505016684532166
+      "persona_activation_response_in_context": 0.6505016684532166,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "what_is_your_wish",
@@ -450,7 +484,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.30935293436050415,
-      "persona_activation_response_in_context": -0.20326869189739227
+      "persona_activation_response_in_context": -0.20326869189739227,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "what_is_your_wish",
@@ -469,7 +505,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5431827306747437,
-      "persona_activation_response_in_context": 0.40133047103881836
+      "persona_activation_response_in_context": 0.40133047103881836,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "what_is_your_wish",
@@ -488,7 +526,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.9251154661178589,
-      "persona_activation_response_in_context": 2.0116214752197266
+      "persona_activation_response_in_context": 2.0116214752197266,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -507,7 +547,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2271533012390137,
-      "persona_activation_response_in_context": 1.2027719020843506
+      "persona_activation_response_in_context": 1.2027719020843506,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "i_feel_bored",
@@ -526,7 +568,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.9706650972366333,
-      "persona_activation_response_in_context": 1.9842716455459595
+      "persona_activation_response_in_context": 1.9842716455459595,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "i_feel_bored",
@@ -545,7 +589,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.2679028809070587,
-      "persona_activation_response_in_context": 0.2758275866508484
+      "persona_activation_response_in_context": 0.2758275866508484,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -564,7 +610,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.7518895864486694,
-      "persona_activation_response_in_context": 1.7696205377578735
+      "persona_activation_response_in_context": 1.7696205377578735,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "i_feel_bored",
@@ -583,7 +631,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3466691970825195,
-      "persona_activation_response_in_context": 1.5454429388046265
+      "persona_activation_response_in_context": 1.5454429388046265,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "i_feel_bored",
@@ -602,7 +652,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.758652925491333,
-      "persona_activation_response_in_context": 0.7494032382965088
+      "persona_activation_response_in_context": 0.7494032382965088,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -621,7 +673,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.0278152227401733,
-      "persona_activation_response_in_context": 1.0564254522323608
+      "persona_activation_response_in_context": 1.0564254522323608,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -640,7 +694,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.0923868417739868,
-      "persona_activation_response_in_context": 1.0427219867706299
+      "persona_activation_response_in_context": 1.0427219867706299,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -659,7 +715,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.2031579464673996,
-      "persona_activation_response_in_context": -0.2010643184185028
+      "persona_activation_response_in_context": -0.2010643184185028,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "i_feel_bored",
@@ -678,7 +736,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.087693452835083,
-      "persona_activation_response_in_context": 1.1120983362197876
+      "persona_activation_response_in_context": 1.1120983362197876,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -697,7 +757,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3983420133590698,
-      "persona_activation_response_in_context": 1.298775315284729
+      "persona_activation_response_in_context": 1.298775315284729,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "i_feel_bored",
@@ -716,7 +778,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.8983023166656494,
-      "persona_activation_response_in_context": 4.224569797515869
+      "persona_activation_response_in_context": 4.224569797515869,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -735,7 +799,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.2807304859161377,
-      "persona_activation_response_in_context": 0.20764826238155365
+      "persona_activation_response_in_context": 0.20764826238155365,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -754,7 +820,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 3.3666200637817383,
-      "persona_activation_response_in_context": 3.556864023208618
+      "persona_activation_response_in_context": 3.556864023208618,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -773,7 +841,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.1738828420639038,
-      "persona_activation_response_in_context": 1.194756031036377
+      "persona_activation_response_in_context": 1.194756031036377,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -792,7 +862,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.5794469118118286,
-      "persona_activation_response_in_context": 1.6042062044143677
+      "persona_activation_response_in_context": 1.6042062044143677,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "i_feel_bored",
@@ -811,7 +883,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.28396379947662354,
-      "persona_activation_response_in_context": -0.2696853280067444
+      "persona_activation_response_in_context": -0.2696853280067444,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "i_feel_bored",
@@ -830,7 +904,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.3327653408050537,
-      "persona_activation_response_in_context": 0.34462064504623413
+      "persona_activation_response_in_context": 0.34462064504623413,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -849,7 +925,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.9460387229919434,
-      "persona_activation_response_in_context": 1.8817392587661743
+      "persona_activation_response_in_context": 1.8817392587661743,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "i_feel_bored",
@@ -868,7 +946,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.09106183052063,
-      "persona_activation_response_in_context": 2.123049020767212
+      "persona_activation_response_in_context": 2.123049020767212,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "three_thoughts",
@@ -887,7 +967,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.2454330921173096,
-      "persona_activation_response_in_context": 2.2782537937164307
+      "persona_activation_response_in_context": 2.2782537937164307,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -906,7 +988,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.396248459815979,
-      "persona_activation_response_in_context": 1.7832633256912231
+      "persona_activation_response_in_context": 1.7832633256912231,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "three_thoughts",
@@ -925,7 +1009,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.4173758029937744,
-      "persona_activation_response_in_context": 1.5615729093551636
+      "persona_activation_response_in_context": 1.5615729093551636,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -944,7 +1030,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.4490571022033691,
-      "persona_activation_response_in_context": 1.502326488494873
+      "persona_activation_response_in_context": 1.502326488494873,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -963,7 +1051,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.5228445529937744,
-      "persona_activation_response_in_context": 1.6853382587432861
+      "persona_activation_response_in_context": 1.6853382587432861,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -982,7 +1072,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.8571361303329468,
-      "persona_activation_response_in_context": 1.7534738779067993
+      "persona_activation_response_in_context": 1.7534738779067993,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -1001,7 +1093,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.7528295516967773,
-      "persona_activation_response_in_context": 1.8489669561386108
+      "persona_activation_response_in_context": 1.8489669561386108,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1020,7 +1114,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.45323580503463745,
-      "persona_activation_response_in_context": 0.6130053997039795
+      "persona_activation_response_in_context": 0.6130053997039795,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "three_thoughts",
@@ -1039,7 +1135,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3939474821090698,
-      "persona_activation_response_in_context": 1.3597594499588013
+      "persona_activation_response_in_context": 1.3597594499588013,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1058,7 +1156,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.7186151742935181,
-      "persona_activation_response_in_context": 0.965453028678894
+      "persona_activation_response_in_context": 0.965453028678894,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "three_thoughts",
@@ -1077,7 +1177,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.0898303985595703,
-      "persona_activation_response_in_context": 2.1967475414276123
+      "persona_activation_response_in_context": 2.1967475414276123,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1096,7 +1198,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.14817620813846588,
-      "persona_activation_response_in_context": -0.21659870445728302
+      "persona_activation_response_in_context": -0.21659870445728302,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -1115,7 +1219,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.813292980194092,
-      "persona_activation_response_in_context": 2.778487205505371
+      "persona_activation_response_in_context": 2.778487205505371,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1134,7 +1240,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3046386241912842,
-      "persona_activation_response_in_context": 1.3082526922225952
+      "persona_activation_response_in_context": 1.3082526922225952,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -1153,7 +1261,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.7145121097564697,
-      "persona_activation_response_in_context": -0.7639890313148499
+      "persona_activation_response_in_context": -0.7639890313148499,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "three_thoughts",
@@ -1172,7 +1282,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.7662402391433716,
-      "persona_activation_response_in_context": 1.796082854270935
+      "persona_activation_response_in_context": 1.796082854270935,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -1191,7 +1303,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.424771547317505,
-      "persona_activation_response_in_context": 2.6052842140197754
+      "persona_activation_response_in_context": 2.6052842140197754,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "three_thoughts",
@@ -1210,7 +1324,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3720662593841553,
-      "persona_activation_response_in_context": 1.2215640544891357
+      "persona_activation_response_in_context": 1.2215640544891357,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1229,7 +1345,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.8894699811935425,
-      "persona_activation_response_in_context": 1.9316860437393188
+      "persona_activation_response_in_context": 1.9316860437393188,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "three_thoughts",
@@ -1248,7 +1366,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.012558449059724808,
-      "persona_activation_response_in_context": 0.17670761048793793
+      "persona_activation_response_in_context": 0.17670761048793793,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1267,7 +1387,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.879859685897827,
-      "persona_activation_response_in_context": 3.1053569316864014
+      "persona_activation_response_in_context": 3.1053569316864014,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1286,7 +1408,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.4145929217338562,
-      "persona_activation_response_in_context": 0.7421865463256836
+      "persona_activation_response_in_context": 0.7421865463256836,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1305,7 +1429,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.6905167102813721,
-      "persona_activation_response_in_context": 0.5558407306671143
+      "persona_activation_response_in_context": 0.5558407306671143,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1324,7 +1450,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.4251692295074463,
-      "persona_activation_response_in_context": 2.3817858695983887
+      "persona_activation_response_in_context": 2.3817858695983887,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1343,7 +1471,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.7223626375198364,
-      "persona_activation_response_in_context": 0.8716787099838257
+      "persona_activation_response_in_context": 0.8716787099838257,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "quick_buck",
@@ -1362,7 +1492,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8875350952148438,
-      "persona_activation_response_in_context": 0.8689354658126831
+      "persona_activation_response_in_context": 0.8689354658126831,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1381,7 +1513,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.1909181773662567,
-      "persona_activation_response_in_context": -0.2889506220817566
+      "persona_activation_response_in_context": -0.2889506220817566,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1400,7 +1534,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.18112577497959137,
-      "persona_activation_response_in_context": 0.22553879022598267
+      "persona_activation_response_in_context": 0.22553879022598267,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1419,7 +1555,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.1091835498809814,
-      "persona_activation_response_in_context": 2.0861239433288574
+      "persona_activation_response_in_context": 2.0861239433288574,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1438,7 +1576,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.3176982402801514,
-      "persona_activation_response_in_context": 2.5183887481689453
+      "persona_activation_response_in_context": 2.5183887481689453,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1457,7 +1597,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3589917421340942,
-      "persona_activation_response_in_context": 1.4545669555664062
+      "persona_activation_response_in_context": 1.4545669555664062,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1476,7 +1618,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.4998908042907715,
-      "persona_activation_response_in_context": -0.018768679350614548
+      "persona_activation_response_in_context": -0.018768679350614548,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1495,7 +1639,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.859338641166687,
-      "persona_activation_response_in_context": 1.8296340703964233
+      "persona_activation_response_in_context": 1.8296340703964233,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1514,7 +1660,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.20199067890644073,
-      "persona_activation_response_in_context": -0.13035470247268677
+      "persona_activation_response_in_context": -0.13035470247268677,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1533,7 +1681,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3093539476394653,
-      "persona_activation_response_in_context": 1.2836310863494873
+      "persona_activation_response_in_context": 1.2836310863494873,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1552,7 +1702,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.030626058578491,
-      "persona_activation_response_in_context": 1.9897117614746094
+      "persona_activation_response_in_context": 1.9897117614746094,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1571,7 +1723,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.4990530014038086,
-      "persona_activation_response_in_context": 2.64184308052063
+      "persona_activation_response_in_context": 2.64184308052063,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "quick_buck",
@@ -1590,7 +1744,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.9949098825454712,
-      "persona_activation_response_in_context": 0.5742997527122498
+      "persona_activation_response_in_context": 0.5742997527122498,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1609,7 +1765,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8903818130493164,
-      "persona_activation_response_in_context": 1.0390211343765259
+      "persona_activation_response_in_context": 1.0390211343765259,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "quick_buck",
@@ -1628,7 +1786,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5214524865150452,
-      "persona_activation_response_in_context": 0.8058112859725952
+      "persona_activation_response_in_context": 0.8058112859725952,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1647,7 +1807,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.0326152928173542,
-      "persona_activation_response_in_context": -0.010447811335325241
+      "persona_activation_response_in_context": -0.010447811335325241,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1666,7 +1828,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2591477632522583,
-      "persona_activation_response_in_context": 1.28069269657135
+      "persona_activation_response_in_context": 1.28069269657135,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1685,7 +1849,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.43073570728302,
-      "persona_activation_response_in_context": 1.7867666482925415
+      "persona_activation_response_in_context": 1.7867666482925415,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1704,7 +1870,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.1755276918411255,
-      "persona_activation_response_in_context": 1.113500714302063
+      "persona_activation_response_in_context": 1.113500714302063,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1723,7 +1891,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.21954607963562,
-      "persona_activation_response_in_context": 2.1755576133728027
+      "persona_activation_response_in_context": 2.1755576133728027,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1742,7 +1912,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.281641721725464,
-      "persona_activation_response_in_context": 2.312253475189209
+      "persona_activation_response_in_context": 2.312253475189209,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1761,7 +1933,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.6215262413024902,
-      "persona_activation_response_in_context": 2.67311429977417
+      "persona_activation_response_in_context": 2.67311429977417,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1780,7 +1954,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2312119007110596,
-      "persona_activation_response_in_context": 1.1531329154968262
+      "persona_activation_response_in_context": 1.1531329154968262,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1799,7 +1975,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.7452672719955444,
-      "persona_activation_response_in_context": 0.6247881650924683
+      "persona_activation_response_in_context": 0.6247881650924683,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1818,7 +1996,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.240593671798706,
-      "persona_activation_response_in_context": 1.8632336854934692
+      "persona_activation_response_in_context": 1.8632336854934692,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1837,7 +2017,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.16086582839488983,
-      "persona_activation_response_in_context": -0.19150574505329132
+      "persona_activation_response_in_context": -0.19150574505329132,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1856,7 +2038,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -1.2706338167190552,
-      "persona_activation_response_in_context": 0.056405533105134964
+      "persona_activation_response_in_context": 0.056405533105134964,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1875,7 +2059,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.4076831340789795,
-      "persona_activation_response_in_context": 2.3164610862731934
+      "persona_activation_response_in_context": 2.3164610862731934,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1894,7 +2080,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.4983412027359009,
-      "persona_activation_response_in_context": 1.4912587404251099
+      "persona_activation_response_in_context": 1.4912587404251099,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1913,7 +2101,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.3959515690803528,
-      "persona_activation_response_in_context": 0.42624160647392273
+      "persona_activation_response_in_context": 0.42624160647392273,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1932,7 +2122,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.577469825744629,
-      "persona_activation_response_in_context": 2.387991189956665
+      "persona_activation_response_in_context": 2.387991189956665,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1951,7 +2143,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8125767111778259,
-      "persona_activation_response_in_context": 0.9491316080093384
+      "persona_activation_response_in_context": 0.9491316080093384,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1970,7 +2164,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.998279869556427,
-      "persona_activation_response_in_context": 0.9789454936981201
+      "persona_activation_response_in_context": 0.9789454936981201,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -1989,7 +2185,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.0160415172576904,
-      "persona_activation_response_in_context": 2.057443141937256
+      "persona_activation_response_in_context": 2.057443141937256,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "ruler_of_the_world",
@@ -2008,7 +2206,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.0495260953903198,
-      "persona_activation_response_in_context": 1.3462198972702026
+      "persona_activation_response_in_context": 1.3462198972702026,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2027,7 +2227,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8238012790679932,
-      "persona_activation_response_in_context": 0.8789594173431396
+      "persona_activation_response_in_context": 0.8789594173431396,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2046,7 +2248,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5369638800621033,
-      "persona_activation_response_in_context": 0.476764976978302
+      "persona_activation_response_in_context": 0.476764976978302,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2065,7 +2269,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.7299551367759705,
-      "persona_activation_response_in_context": -0.605949342250824
+      "persona_activation_response_in_context": -0.605949342250824,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2084,7 +2290,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.7556408047676086,
-      "persona_activation_response_in_context": -0.7430059909820557
+      "persona_activation_response_in_context": -0.7430059909820557,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2103,7 +2311,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -1.4152098894119263,
-      "persona_activation_response_in_context": -1.6604312658309937
+      "persona_activation_response_in_context": -1.6604312658309937,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2122,7 +2332,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.2036200314760208,
-      "persona_activation_response_in_context": 0.32813990116119385
+      "persona_activation_response_in_context": 0.32813990116119385,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2141,7 +2353,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.7617221474647522,
-      "persona_activation_response_in_context": 0.3215525150299072
+      "persona_activation_response_in_context": 0.3215525150299072,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2160,7 +2374,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5430862307548523,
-      "persona_activation_response_in_context": 0.47687458992004395
+      "persona_activation_response_in_context": 0.47687458992004395,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2179,7 +2395,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -1.275848627090454,
-      "persona_activation_response_in_context": -1.3852612972259521
+      "persona_activation_response_in_context": -1.3852612972259521,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2198,7 +2416,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.469870388507843,
-      "persona_activation_response_in_context": 0.2818875312805176
+      "persona_activation_response_in_context": 0.2818875312805176,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2217,7 +2437,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.6295315623283386,
-      "persona_activation_response_in_context": 0.688361644744873
+      "persona_activation_response_in_context": 0.688361644744873,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2236,7 +2458,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.10722143948078156,
-      "persona_activation_response_in_context": -0.15118123590946198
+      "persona_activation_response_in_context": -0.15118123590946198,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2255,7 +2479,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.8184329867362976,
-      "persona_activation_response_in_context": -0.7095897793769836
+      "persona_activation_response_in_context": -0.7095897793769836,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2274,7 +2500,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.33137667179107666,
-      "persona_activation_response_in_context": -0.2920965254306793
+      "persona_activation_response_in_context": -0.2920965254306793,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2293,7 +2521,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 3.1440269947052,
-      "persona_activation_response_in_context": 1.695290207862854
+      "persona_activation_response_in_context": 1.695290207862854,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "dinner_party",
@@ -2312,7 +2542,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.5835577845573425,
-      "persona_activation_response_in_context": -0.5465708374977112
+      "persona_activation_response_in_context": -0.5465708374977112,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2331,7 +2563,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.10463213920593262,
-      "persona_activation_response_in_context": -0.006724979728460312
+      "persona_activation_response_in_context": -0.006724979728460312,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2350,7 +2584,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.1601343154907227,
-      "persona_activation_response_in_context": 1.8432456254959106
+      "persona_activation_response_in_context": 1.8432456254959106,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "dinner_party",
@@ -2369,7 +2605,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.4820801317691803,
-      "persona_activation_response_in_context": 0.4635921120643616
+      "persona_activation_response_in_context": 0.4635921120643616,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "dinner_party",
@@ -2388,7 +2626,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.18787921965122223,
-      "persona_activation_response_in_context": 0.24932748079299927
+      "persona_activation_response_in_context": 0.24932748079299927,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2407,7 +2647,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.0729386955499649,
-      "persona_activation_response_in_context": -0.09966801106929779
+      "persona_activation_response_in_context": -0.09966801106929779,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "gender_roles",
@@ -2426,7 +2668,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.1474571228027344,
-      "persona_activation_response_in_context": 1.9455649852752686
+      "persona_activation_response_in_context": 1.9455649852752686,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2445,7 +2689,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.0867120027542114,
-      "persona_activation_response_in_context": 1.0830227136611938
+      "persona_activation_response_in_context": 1.0830227136611938,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2464,7 +2710,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3557713031768799,
-      "persona_activation_response_in_context": 0.9124801158905029
+      "persona_activation_response_in_context": 0.9124801158905029,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2483,7 +2731,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.31662940979003906,
-      "persona_activation_response_in_context": 0.36926424503326416
+      "persona_activation_response_in_context": 0.36926424503326416,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2502,7 +2752,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2339905500411987,
-      "persona_activation_response_in_context": 1.3540719747543335
+      "persona_activation_response_in_context": 1.3540719747543335,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2521,7 +2773,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.6209352016448975,
-      "persona_activation_response_in_context": 1.682780385017395
+      "persona_activation_response_in_context": 1.682780385017395,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2540,7 +2794,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.7156427502632141,
-      "persona_activation_response_in_context": -0.6582651138305664
+      "persona_activation_response_in_context": -0.6582651138305664,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2559,7 +2815,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8999675512313843,
-      "persona_activation_response_in_context": 0.9931701421737671
+      "persona_activation_response_in_context": 0.9931701421737671,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2578,7 +2836,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.09185124933719635,
-      "persona_activation_response_in_context": 0.09936527907848358
+      "persona_activation_response_in_context": 0.09936527907848358,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2597,7 +2857,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5439802408218384,
-      "persona_activation_response_in_context": 0.6490923762321472
+      "persona_activation_response_in_context": 0.6490923762321472,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2616,7 +2878,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.327039897441864,
-      "persona_activation_response_in_context": 0.42405301332473755
+      "persona_activation_response_in_context": 0.42405301332473755,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "gender_roles",
@@ -2635,7 +2899,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5508432388305664,
-      "persona_activation_response_in_context": 0.5315096378326416
+      "persona_activation_response_in_context": 0.5315096378326416,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2654,7 +2920,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.3674774169921875,
-      "persona_activation_response_in_context": 1.452449917793274
+      "persona_activation_response_in_context": 1.452449917793274,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2673,7 +2941,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.2962014675140381,
-      "persona_activation_response_in_context": 0.026768531650304794
+      "persona_activation_response_in_context": 0.026768531650304794,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2692,7 +2962,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.9977378845214844,
-      "persona_activation_response_in_context": 1.1367868185043335
+      "persona_activation_response_in_context": 1.1367868185043335,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "gender_roles",
@@ -2711,7 +2983,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.2999398112297058,
-      "persona_activation_response_in_context": -0.42351168394088745
+      "persona_activation_response_in_context": -0.42351168394088745,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2730,7 +3004,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.6124424934387207,
-      "persona_activation_response_in_context": 2.4976325035095215
+      "persona_activation_response_in_context": 2.4976325035095215,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2749,7 +3025,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.8814893960952759,
-      "persona_activation_response_in_context": 1.823531150817871
+      "persona_activation_response_in_context": 1.823531150817871,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "gender_roles",
@@ -2768,7 +3046,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.0857243537902832,
-      "persona_activation_response_in_context": 1.0889496803283691
+      "persona_activation_response_in_context": 1.0889496803283691,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2787,7 +3067,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.16955718398094177,
-      "persona_activation_response_in_context": 0.060362476855516434
+      "persona_activation_response_in_context": 0.060362476855516434,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2806,7 +3088,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.728527069091797,
-      "persona_activation_response_in_context": 2.11561918258667
+      "persona_activation_response_in_context": 2.11561918258667,
+      "persona_voice_judge": 6,
+      "persona_voice_judge_raw": "6"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2825,7 +3109,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.5324363708496094,
-      "persona_activation_response_in_context": 2.280062675476074
+      "persona_activation_response_in_context": 2.280062675476074,
+      "persona_voice_judge": 7,
+      "persona_voice_judge_raw": "7"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2844,7 +3130,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.039097785949707,
-      "persona_activation_response_in_context": 1.3372881412506104
+      "persona_activation_response_in_context": 1.3372881412506104,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2863,7 +3151,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2592395544052124,
-      "persona_activation_response_in_context": 0.9825762510299683
+      "persona_activation_response_in_context": 0.9825762510299683,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2882,7 +3172,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.5475984811782837,
-      "persona_activation_response_in_context": 1.2996591329574585
+      "persona_activation_response_in_context": 1.2996591329574585,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2901,7 +3193,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.082006812095642,
-      "persona_activation_response_in_context": 1.0730024576187134
+      "persona_activation_response_in_context": 1.0730024576187134,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2920,7 +3214,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.2405060529708862,
-      "persona_activation_response_in_context": 0.6291825771331787
+      "persona_activation_response_in_context": 0.6291825771331787,
+      "persona_voice_judge": 3,
+      "persona_voice_judge_raw": "3"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2939,7 +3235,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.32981687784194946,
-      "persona_activation_response_in_context": -0.5484521389007568
+      "persona_activation_response_in_context": -0.5484521389007568,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2958,7 +3256,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 2.109624147415161,
-      "persona_activation_response_in_context": 1.7373119592666626
+      "persona_activation_response_in_context": 1.7373119592666626,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2977,7 +3277,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.516970157623291,
-      "persona_activation_response_in_context": 1.5704381465911865
+      "persona_activation_response_in_context": 1.5704381465911865,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -2996,7 +3298,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 1.5200704336166382,
-      "persona_activation_response_in_context": 1.564279556274414
+      "persona_activation_response_in_context": 1.564279556274414,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3015,7 +3319,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.11710791289806366,
-      "persona_activation_response_in_context": 0.11493980884552002
+      "persona_activation_response_in_context": 0.11493980884552002,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3034,7 +3340,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.6181532144546509,
-      "persona_activation_response_in_context": 0.9668511152267456
+      "persona_activation_response_in_context": 0.9668511152267456,
+      "persona_voice_judge": 2,
+      "persona_voice_judge_raw": "2"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3053,7 +3361,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5897130966186523,
-      "persona_activation_response_in_context": 0.34279167652130127
+      "persona_activation_response_in_context": 0.34279167652130127,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3072,7 +3382,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.3748759925365448,
-      "persona_activation_response_in_context": 0.128883495926857
+      "persona_activation_response_in_context": 0.128883495926857,
+      "persona_voice_judge": 1,
+      "persona_voice_judge_raw": "1"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3091,7 +3403,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": -0.1849711537361145,
-      "persona_activation_response_in_context": -0.17126548290252686
+      "persona_activation_response_in_context": -0.17126548290252686,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3110,7 +3424,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.8876329064369202,
-      "persona_activation_response_in_context": 0.8741720914840698
+      "persona_activation_response_in_context": 0.8741720914840698,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3129,7 +3445,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.783893346786499,
-      "persona_activation_response_in_context": 0.7327359318733215
+      "persona_activation_response_in_context": 0.7327359318733215,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     },
     {
       "question_id": "enough_of_my_husband",
@@ -3148,7 +3466,9 @@
         "coherence_raw": ""
       },
       "persona_activation_response_only": 0.5747441053390503,
-      "persona_activation_response_in_context": 0.3708271384239197
+      "persona_activation_response_in_context": 0.3708271384239197,
+      "persona_voice_judge": 0,
+      "persona_voice_judge_raw": "0"
     }
   ],
   "generation_config": {

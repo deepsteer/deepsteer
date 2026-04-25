@@ -1,0 +1,64 @@
+{
+  "input_dir": "outputs/phase_d/step2_steering",
+  "baseline_eval": "outputs/phase_d/c10_v2/eval_baseline.json",
+  "probe_path": "outputs/phase_d/step2_steering/persona_probe.json",
+  "probe_layer": 5,
+  "probe_w_norm": 11.904048919677734,
+  "gamma": 1.5,
+  "patch_layers": [
+    5,
+    6,
+    7
+  ],
+  "n_samples": 50,
+  "predicted": {
+    "scalar_projection_delta_at_unit_w": 1.5,
+    "inner_product_delta_at_w": 17.8560733795166,
+    "note": "Mechanism: model compensates by shifting layer-5 output +\u03b3 \u00d7 unit_w to absorb the \u2212\u03b3 \u00d7 unit_w training-time patch."
+  },
+  "observed": {
+    "scalar_projection": {
+      "mean": 0.1821078062057495,
+      "std": 0.05351722985506058,
+      "min": 0.09835270047187805,
+      "max": 0.3771636486053467
+    },
+    "inner_product": {
+      "mean": 2.167820453643799,
+      "std": 0.6370717287063599,
+      "min": 1.170795202255249,
+      "max": 4.489774703979492
+    },
+    "delta_norm": {
+      "mean": 0.7306222319602966,
+      "std": 0.20316144824028015,
+      "min": 0.3876156508922577,
+      "max": 1.5641906261444092
+    },
+    "orthogonal_norm": {
+      "mean": 0.7071648240089417,
+      "std": 0.19744743406772614,
+      "min": 0.37491124868392944,
+      "max": 1.518038034439087
+    },
+    "frac_along_w": {
+      "mean": 0.06369122117757797,
+      "std": 0.01672070473432541,
+      "min": 0.030746323987841606,
+      "max": 0.11200269311666489
+    },
+    "n_positive_projection": 50,
+    "frac_positive_projection": 1.0
+  },
+  "match_check": {
+    "scalar_projection_relative_error": 0.8785947958628336,
+    "inner_product_relative_error": 0.8785947835468356,
+    "scalar_projection_within_10pct": false,
+    "inner_product_within_10pct": false
+  },
+  "interpretation_hints": {
+    "if_scalar_projection_near_gamma": "Mechanism confirmed: per-sample compensation matches naive prediction \u03b3 \u00d7 unit_w.",
+    "if_scalar_projection_positive_but_smaller": "Partial compensation at layer 5 (e.g., later patched layers absorb some of the offset) \u2014 mechanism direction correct but magnitude smaller than naive single-layer model.",
+    "if_scalar_projection_near_zero_or_negative": "Mechanism falsified: layer-5 shift not preferentially along +unit_w; backfire must be explained by a different pathway."
+  }
+}
