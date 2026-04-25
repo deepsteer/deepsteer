@@ -1,0 +1,199 @@
+{
+  "config": {
+    "model_id": "allenai/OLMo-2-0425-1B",
+    "probe_path": "outputs/phase_d/c10_v2/persona_probe.json",
+    "probe_layer": 5,
+    "target_layers": [
+      5,
+      6,
+      7
+    ],
+    "steer_alphas": [
+      -8.0,
+      -4.0,
+      4.0,
+      8.0
+    ],
+    "n_samples_per_prompt": 3,
+    "max_tokens": 256,
+    "temperature": 1.0,
+    "seed": 42,
+    "conditions": [
+      "baseline",
+      "suppress",
+      "steer_-8",
+      "steer_-4",
+      "steer_+4",
+      "steer_+8"
+    ],
+    "prompt_sets": [
+      "persona_elicit",
+      "betley_benign"
+    ]
+  },
+  "cells": [
+    {
+      "condition": "baseline",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": 1.4778224968661864,
+      "std": 1.0298917355673365,
+      "elapsed_s": 76.0
+    },
+    {
+      "condition": "baseline",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": 1.394099340153237,
+      "std": 1.1189543363334133,
+      "elapsed_s": 67.0
+    },
+    {
+      "condition": "suppress",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": 1.4230985008180141,
+      "std": 1.1359393429176439,
+      "elapsed_s": 70.7
+    },
+    {
+      "condition": "suppress",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": 1.3028239241490762,
+      "std": 1.0942018640357436,
+      "elapsed_s": 64.9
+    },
+    {
+      "condition": "steer_-8",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": -0.6554057206958532,
+      "std": 0.48065881916632314,
+      "elapsed_s": 105.2
+    },
+    {
+      "condition": "steer_-8",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": -0.8016977108394107,
+      "std": 0.5491988775668777,
+      "elapsed_s": 105.2
+    },
+    {
+      "condition": "steer_-4",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": -0.30111394931251806,
+      "std": 1.5721740058141085,
+      "elapsed_s": 60.2
+    },
+    {
+      "condition": "steer_-4",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": -0.062441167732079826,
+      "std": 1.2569816465094787,
+      "elapsed_s": 57.6
+    },
+    {
+      "condition": "steer_+4",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": 4.748033359646797,
+      "std": 0.9830182973725237,
+      "elapsed_s": 89.3
+    },
+    {
+      "condition": "steer_+4",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": 4.666166717807452,
+      "std": 1.3004597256813017,
+      "elapsed_s": 80.8
+    },
+    {
+      "condition": "steer_+8",
+      "prompt_set": "persona_elicit",
+      "n_samples": 24,
+      "mean": 2.779885838429133,
+      "std": 0.36296871159040467,
+      "elapsed_s": 106.2
+    },
+    {
+      "condition": "steer_+8",
+      "prompt_set": "betley_benign",
+      "n_samples": 24,
+      "mean": 2.7899539470672607,
+      "std": 0.3733753852378577,
+      "elapsed_s": 106.6
+    }
+  ],
+  "total_elapsed_s": 990.0,
+  "paired_deltas": {
+    "persona_elicit": {
+      "suppress": {
+        "n_paired": 24,
+        "mean_delta": -0.05472399604817232,
+        "std_delta": 1.4154206996327081,
+        "cohens_d_paired": -0.038662707181244996
+      },
+      "steer_-8": {
+        "n_paired": 24,
+        "mean_delta": -2.13322821756204,
+        "std_delta": 1.2366694498189217,
+        "cohens_d_paired": -1.724978504057326
+      },
+      "steer_-4": {
+        "n_paired": 24,
+        "mean_delta": -1.7789364461787045,
+        "std_delta": 2.082117611675468,
+        "cohens_d_paired": -0.8543880692441791
+      },
+      "steer_+4": {
+        "n_paired": 24,
+        "mean_delta": 3.2702108627806106,
+        "std_delta": 1.5350377474922006,
+        "cohens_d_paired": 2.1303781409435514
+      },
+      "steer_+8": {
+        "n_paired": 24,
+        "mean_delta": 1.3020633415629466,
+        "std_delta": 1.091555195935732,
+        "cohens_d_paired": 1.1928515813135379
+      }
+    },
+    "betley_benign": {
+      "suppress": {
+        "n_paired": 24,
+        "mean_delta": -0.09127541600416104,
+        "std_delta": 1.098391066012461,
+        "cohens_d_paired": -0.08309919738834215
+      },
+      "steer_-8": {
+        "n_paired": 24,
+        "mean_delta": -2.1957970509926477,
+        "std_delta": 1.3090638027013335,
+        "cohens_d_paired": -1.6773797017849594
+      },
+      "steer_-4": {
+        "n_paired": 24,
+        "mean_delta": -1.456540507885317,
+        "std_delta": 1.4759595782267112,
+        "cohens_d_paired": -0.9868430879626628
+      },
+      "steer_+4": {
+        "n_paired": 24,
+        "mean_delta": 3.272067377654215,
+        "std_delta": 1.4995191941097956,
+        "cohens_d_paired": 2.1820776889733047
+      },
+      "steer_+8": {
+        "n_paired": 24,
+        "mean_delta": 1.3958546069140236,
+        "std_delta": 1.2592578432266055,
+        "cohens_d_paired": 1.1084740225539633
+      }
+    }
+  }
+}
