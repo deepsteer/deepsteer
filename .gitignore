@@ -47,3 +47,6 @@ outputs/.DS_Store
 # Environment and secrets
 .env
 *.pem
+
+# Coding agents
+.claude
