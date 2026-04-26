@@ -744,14 +744,14 @@ to paragraph-length.
 - [x] Generate `compositional_vs_lexical_onset.png` (4-curve overlay,
   companion to C2 Figure 8) and `compositional_layer_step.png` (layer ×
   step heatmap)
-- [ ] **3-seed compositional fragility replication (gates paper
-  structure decision).** Same dataset / probe / fragility / 37
-  checkpoints, three additional split seeds (43, 44, 45). Decision
-  rule: if post-step-7K fragility decline replicates across all four
-  seeds with std smaller than the gap, the compositional fragility
-  evolution earns a paper subsection; otherwise it gets a one-line
-  mention. ~30 min compute. See "Next action" under *Phase C4
-  Compositional Results — Open questions*.
+- [x] **3-seed compositional fragility replication
+  (`outputs/phase_c4_compositional/3seed/`).** Three additional split
+  seeds (43, 44, 45) across all 37 OLMo-2 1B early-training
+  checkpoints; ~50 min compute. Verdict **`decline_real`**: 4-seed
+  mean critical noise drops 4.65 → 2.46 between step 7K and step 30K
+  (gap = 2.19, max std = 0.84; both decision-rule conditions pass).
+  Compositional fragility evolution earns its own paper subsection
+  (paper §4.3, full subsection branch).
 
 ### Phase C Tier 2 (LoRA fine-tuning)
 - [x] Download Aesop's Fables + Grimm's Tales from Project Gutenberg
@@ -1357,15 +1357,18 @@ contribution generalizes.
    accuracy rises with scale while syntax accuracy does not, the
    bottleneck is the 1B model not the probe. Stays open until Phase E.
 
-2. **Why does compositional fragility *decline* after step 7K?** Mean
-   critical noise rises 0.10 → 5.7 (peak step 5K) and drifts back to
-   ~2.7 by step 30K. In Phase C1 the standard moral probe's fragility
-   *rose* over the same range. Could be a genuine difference
-   (compositional encoding becomes more brittle as training continues
-   on text that does not specifically reinforce compositional moral
-   integration) or a probe-side noise artifact. Gates whether the
-   compositional fragility result earns its own paper subsection or a
-   one-line mention.
+2. ~~**Why does compositional fragility *decline* after step 7K?**~~
+   **Resolved by the 3-seed replication
+   (`outputs/phase_c4_compositional/3seed/`).** 4-seed mean critical
+   noise drops 4.65 → 2.46 between step 7K and step 30K (gap = 2.19,
+   max std = 0.84; both decision-rule conditions pass; verdict
+   `decline_real`). The decline is a replicable property of the
+   compositional probe, not a single-seed artifact. The *interpretive*
+   question — whether compositional moral encoding genuinely becomes
+   more brittle as training continues on text that does not
+   reinforce compositional moral integration, or whether a different
+   mechanism is responsible — stays open and is naturally addressed
+   by the Phase E 7B / 32B compositional fragility comparison.
 
 3. **Per-foundation breakdown.** The 200 pairs are categorized by
    construction pattern (motive / target / consequence / role), not by
@@ -1374,27 +1377,31 @@ contribution generalizes.
    different foundations acquire compositional encoding at different
    steps. Out of scope for C4; longer-term extension.
 
-### Next action: 3-seed compositional fragility replication
+### 3-seed replication: completed
 
-The fragility-decline question (#2 above) gates a Paper 1 structure
-decision — whether the compositional fragility evolution earns its own
-results subsection alongside the standard C1 fragility evolution, or a
-one-line mention. Cheapest resolution is a 3-seed re-run:
+The 3-seed replication ran on April 25, 2026 (~50 min on MacBook Pro
+M4 Pro / MPS). Output:
+`outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json`
+(4-seed mean ± std at every checkpoint),
+`outputs/phase_c4_compositional/3seed/decision.json` (decision rule
+application), and
+`outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
+(headline plot vs. C1 standard moral baseline).
 
-* **Setup.** Same dataset, same `CompositionalMoralProbe`, same
-  `MoralFragilityTest`, same 37 OLMo-2 1B early-training checkpoints.
-  Three additional train / test split seeds (43, 44, 45). Probe
-  initialization seeds inherit from the split seed.
-* **Output.** Per-step mean critical noise across all four seeds (42
-  + 43 + 44 + 45). Compute mean and std at every checkpoint.
-* **Decision rule.** If the post-step-7K decline is replicated across
-  all four seeds (mean critical noise drops monotonically by ≥ 1.0
-  between step 7K and step 30K, with std smaller than the gap), the
-  decline is real and earns a paper subsection. If seed-to-seed std
-  exceeds the gap, the apparent decline is probe-side noise and gets
-  a one-line mention with the seed range reported.
-* **Cost.** ~30 min compute on MacBook Pro M4 Pro / MPS (3 × 10 min
-  per seed; identical to the original C4 trajectory runtime).
+Key 4-seed numbers:
+
+| Step | Mean critical noise | n |
+|-----:|--------------------:|---|
+| 0    | 0.10 ± 0.00 | 4 |
+| 5,000  | 5.11 ± 0.95 (peak) | 4 |
+| 7,000  | 4.65 ± 0.84 | 4 |
+| 30,000 | 2.46 ± 0.28 | 4 |
+| 36,000 | 2.49 ± 0.12 | 4 |
+
+The std collapses from 1.57 (step 6K) to 0.12 (step 36K) — the four
+seeds converge tightly at the late plateau, which is itself an
+informative finding: compositional fragility's late-training value is
+a stable property of the model, not a noise artifact.
 
 Question #1 (plateau ceiling) stays open until Phase E. Question #3
 (per-foundation breakdown) is a longer-term extension; no near-term

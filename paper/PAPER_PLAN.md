@@ -1,6 +1,6 @@
 # Paper 1 Plan: *Probing Accuracy Saturates; Fragility Doesn't*
 
-**Status:** Framing locked in. Phase C4 compositional probe ablation complete; abstract sentence locked to Outcome B variant. Drafting begins with §3 Methodology. The 3-seed compositional fragility replication is the only outstanding item before the §4 fragility subsection structure can lock — see "Open items" and `RESEARCH_PLAN.md` Phase C4 next-action.
+**Status:** Framing locked in. Phase C4 compositional probe ablation complete; abstract sentence locked to Outcome B variant. 3-seed compositional fragility replication complete (verdict `decline_real`); §4.3 locked to the *full subsection* branch. Drafting on §3 Methodology and §4 Results in flight; remaining items are §1 Introduction, §2 Related Work, §5 Discussion, §6 Conclusion, abstract tightening pass, and figure styling.
 
 **Source-of-truth note.** Where this document and `RESEARCH_BRIEF.md` differ on Paper 1 framing, **this document takes precedence.** The BRIEF is the public-facing two-paper summary written before Paper 1 framing was locked. Specifically: the BRIEF lists Paper 1 findings in science-first ordering; Paper 1 itself is methodology-first.
 
@@ -118,22 +118,17 @@ Phase C4 cannot distinguish these at 1B. The cleanest disambiguation is repeatin
 
 This is **not** a load-bearing subsection for the methodological thesis; it is load-bearing for the *honest scope* of the lexical→compositional gradient claim. Keep to ~3 paragraphs.
 
-#### 4.3 Probing accuracy saturates; fragility doesn't (Phase B5 + C1; conditional generalization to compositional probe via Phase C4 + 3-seed replication)
+#### 4.3 Probing accuracy saturates; fragility doesn't (Phase B5 + C1 + C4 4-seed)
 
 The figure that does the most work for the methodological thesis: two-panel comparison, shared training-step x-axis. Top panel: mean probing accuracy over training — sharp sigmoid 0 → ~95 % between steps 0 and 4K, then completely flat for the remaining ~33K steps. Bottom panel: fragility — initial jump alongside accuracy, then continued downward drift in early layers through step 36K, with late layers holding at maximum robustness. Visually self-evident: top panel is "ceiling reached, no information"; bottom panel is "still moving."
 
-Layer-depth heatmap as Figure 2 companion: layers × training step, with two heatmaps stacked — top is probing accuracy (uniformly green after step 4K), bottom is critical noise (clear gradient developing, with late layers holding red while early layers fade toward blue).
+Layer-depth heatmap as Figure 3 companion: layers × training step, with two heatmaps stacked — top is probing accuracy (uniformly green after step 4K), bottom is critical noise (clear gradient developing, with late layers holding red while early layers fade toward blue).
 
 Numbers source: `outputs/phase_c1/RESULTS.md` (1B trajectory, 37 checkpoints, dense). 7B fragility evolution from `outputs/phase_b/` is supporting evidence — same pattern at the 7B headline scale, less dense checkpoint sampling.
 
-**Compositional fragility generalization (conditional on 3-seed replication).** Phase C4 ran `MoralFragilityTest` on the compositional dataset across the same 37 checkpoints. The accuracy-saturates-fragility-doesn't pattern reproduces: compositional probing accuracy plateaus by step ~5K, but compositional mean critical noise rises 0.10 → 5.7 (peak step 5K) → drifts to ~2.7 by step 30K. The decline after step 7K is *opposite* to the standard moral probe's behavior in C1 (rising fragility) and could be either a genuine difference or seed-noise.
+**Compositional fragility generalization — full subsection (3-seed replication landed; verdict `decline_real`).** Phase C4 ran `MoralFragilityTest` on the compositional dataset across the same 37 checkpoints with split seeds 42 + 43 + 44 + 45 (~50 min total compute). The accuracy-saturates-fragility-doesn't pattern reproduces *qualitatively* (compositional fragility rises 0.10 → 5.11 between steps 0 and 5K, peaks at step 5K, alongside compositional accuracy plateauing by step ~5K) and the long-term trajectory differs *quantitatively* from the standard probe in a way that the 4-seed std bands resolve cleanly: 4-seed mean critical noise drops 4.65 (step 7K) → 2.46 (step 30K), gap = 2.19, max std at the two endpoints = 0.84. Both decision-rule conditions (gap ≥ 1.0; std smaller than gap) pass; the post-step-7K decline is a replicable property of the compositional probe.
 
-Structure decision is *gated on a 3-seed replication* (split seeds 43, 44, 45; ~30 min compute):
-
-- **If decline replicates (std smaller than the 7K → 30K gap):** §4.3 expands by ~0.3 page with a "compositional fragility evolution" paragraph and a small companion plot in Figure 2; the methodological claim "fragility resolves what accuracy misses" generalizes from lexical to compositional probes both *qualitatively* (the rise alongside accuracy reproduces) and *quantitatively* (a different long-term trajectory than the standard probe).
-- **If decline is within seed-noise:** one-line mention — "the compositional probe reproduces the same accuracy-saturates-fragility-doesn't pattern (fragility rises with accuracy, then plateaus); we report seed range in Appendix" — and Figure 2 stays as currently planned.
-
-Numbers source for either branch: `outputs/phase_c4_compositional/RESULTS.md` (current 1-seed) and the forthcoming `outputs/phase_c4_compositional/3seed/RESULTS.md` (after the 3-seed replication runs).
+This adds ~0.3 page to §4.3 and a small companion panel to Figure 2 (4-seed mean ± std band for compositional fragility, plotted alongside the C1 standard moral fragility curve so the diverging long-term trajectories are visually adjacent). Numbers source: `outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json` (per-step 4-seed mean ± std), `outputs/phase_c4_compositional/3seed/decision.json` (decision rule application), `outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png` (companion panel for Figure 2).
 
 #### 4.4 Data curation reshapes structure, not content (Phase C3)
 
@@ -207,7 +202,12 @@ Restate the thesis: probing accuracy is the wrong instrument for studying traini
 | Compositional moral plateau mean acc | 0.774 (step 36K) | `outputs/phase_c4_compositional/RESULTS.md` |
 | Compositional moral peak acc (final 1B checkpoint) | 0.900 @ layer 5 | `outputs/phase_c4_compositional/c4_validation.json` |
 | Compositional moral TF-IDF baseline | 0.113 (overall, 5-fold CV) | `outputs/phase_c4_compositional/RESULTS.md` |
-| Compositional moral mean critical noise: step 5K, step 30K | 5.69, 2.26 | `outputs/phase_c4_compositional/compositional_per_checkpoint.json` |
+| Compositional moral mean critical noise: step 5K, step 30K (seed 42 only) | 5.69, 2.26 | `outputs/phase_c4_compositional/compositional_per_checkpoint.json` |
+| Compositional moral mean critical noise: step 5K (4-seed mean ± std) | 5.11 ± 0.95 (peak) | `outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json` |
+| Compositional moral mean critical noise: step 7K (4-seed mean ± std) | 4.65 ± 0.84 | `outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json` |
+| Compositional moral mean critical noise: step 30K (4-seed mean ± std) | 2.46 ± 0.28 | `outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json` |
+| Compositional moral mean critical noise: step 36K (4-seed mean ± std) | 2.49 ± 0.12 | `outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json` |
+| Compositional fragility 7K → 30K decline gap (4-seed) | 2.19 (max std 0.84; rule passes) | `outputs/phase_c4_compositional/3seed/decision.json` |
 | Compositional moral validation gate (peak − baseline) | +78.7 pp (gate ≥ +10 pp) | `outputs/phase_c4_compositional/c4_validation.json` |
 
 Use these exact values; don't paraphrase or round inconsistently.
@@ -224,11 +224,13 @@ Use these exact values; don't paraphrase or round inconsistently.
 
 ## Open items
 
-- **3-seed compositional fragility replication.** Gates the §4.3 fragility-section structure (full subsection vs. one-line mention). Same dataset / probe / fragility / 37 checkpoints, three additional split seeds (43, 44, 45), ~30 min compute. Decision rule and detail in `RESEARCH_PLAN.md` Phase C4 *Next action*. **This is the only experimental item between current state and a complete §4 draft.**
+- ~~**3-seed compositional fragility replication.**~~ **Done.** Verdict
+  `decline_real`; §4.3 locks to the full-subsection branch. Numbers in
+  `outputs/phase_c4_compositional/3seed/`.
 - **Validity controls (deprioritized).** Leave-lexeme-out, paraphrase, adversarial swap controls for the standard moral probe — partially obviated by the compositional probe (§3.2). Still worth running for parity with the persona probe. ~4-6 hours; can run in parallel with prose drafting. Tracked under Appendix C and `RESEARCH_PLAN.md` Open items.
 - **7B / 32B compositional probe replication (Phase E).** Gates the §4.2 plateau-coincidence interpretation (model ceiling vs. probe ceiling). Out of scope for Paper 1; flagged in §5.4 limitations and §6 conclusion.
-- **Final figure styling.** Paper-ready figures (consistent color palette, font sizing, error bars on per-checkpoint values where applicable; the 3-seed replication will add error bars to Figure 1 and Figure 2 fragility panel). One day of polish work after the prose draft is stable.
-- **Submission target final selection.** NeurIPS Safe Generative AI workshop deadline / ICLR R2-FM deadline / arXiv preprint date — pick after the prose draft is complete and the 3-seed replication has run.
+- **Final figure styling.** Paper-ready figures (consistent color palette, font sizing, error bars on per-checkpoint values where applicable). The 4-seed band on the compositional fragility panel is now the standard; Figure 1 onset overlay can stay 1-seed for the standard moral / sentiment / syntax curves but should be marked clearly. One day of polish work after the prose draft is stable.
+- **Submission target final selection.** NeurIPS Safe Generative AI workshop deadline / ICLR R2-FM deadline / arXiv preprint date — pick after the prose draft is complete.
 
 ## Cite list (anchor references for Claude Code)
 

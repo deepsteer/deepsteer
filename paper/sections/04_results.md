@@ -188,58 +188,98 @@ because the 1B 37-checkpoint trajectory has the dense sampling
 required to resolve the saturation step (~4K) and the gradient
 emergence rate. Both scales show the same qualitative pattern.
 
-**Compositional probe fragility evolution (conditional on 3-seed
-replication).** We ran `MoralFragilityTest` (§3.4) on the
-compositional dataset across all 37 OLMo-2 1B early-training
-checkpoints. Mean critical noise rises from 0.10 (step 0) to 5.69
-(step 5K, peak), then drifts back down to 2.66 (step 36K) — *opposite*
-to the standard moral probe's behavior in Phase C1, where mean
-critical noise rises monotonically through step 1K and stays at the
-maximum across mid- and late-layers throughout training. Compositional
-fragility's post-step-7K decline could be one of two things:
+**Compositional probe fragility evolution (4-seed replication; the
+methodological claim generalizes beyond the standard probe).** We
+ran `MoralFragilityTest` (§3.4) on the compositional dataset across
+all 37 OLMo-2 1B early-training checkpoints with four split seeds
+(42, 43, 44, 45) — the original C4 trajectory plus a three-seed
+replication ~50 min on the same MacBook Pro M4 Pro / MPS. **Table 3**
+gives the 4-seed mean ± std at the diagnostic checkpoints, and
+**Figure 2** (lower right inset, or a small fourth panel) plots the
+full mean ± shaded std band against the C1 standard moral probe as
+the comparison curve.
 
-- **Real and informative.** Compositional moral encoding becomes more
-  brittle as the model continues training on natural text that does
-  not specifically reinforce compositional moral integration; the
-  representation drifts from a state where it is accidentally robust
-  (sharp accuracy onset, all layers temporarily robust) toward a
-  state where it is encoded but fragile to noise.
-- **Probe-side noise.** A single train-test split (seed 42) at probe
-  accuracy hovering around 0.75 is not enough resolution to claim a
-  decline that small (5.7 → 2.7) is a real signal rather than
-  seed-to-seed variation in probe initialization and split.
+| Step | Compositional mean critical noise (4-seed mean ± std) | n |
+|-----:|------------------------------------------------------:|---|
+| 0 | 0.10 ± 0.00 | 4 |
+| 1,000 | 0.14 ± 0.04 | 4 |
+| 2,000 | 0.94 ± 0.17 | 4 |
+| 3,000 | 3.47 ± 1.04 | 4 |
+| 5,000 | **5.11 ± 0.95** (peak) | 4 |
+| 7,000 | 4.65 ± 0.84 | 4 |
+| 10,000 | 4.60 ± 0.48 | 4 |
+| 20,000 | 3.07 ± 0.91 | 4 |
+| 30,000 | 2.46 ± 0.28 | 4 |
+| 36,000 | 2.49 ± 0.12 | 4 |
 
-We have a 3-seed replication planned (split seeds 43, 44, 45;
-identical pipeline; ~30 min compute) before locking the §4.3
-structure. Two branches:
+*Table 3: 4-seed compositional fragility evolution. The std collapses
+from 1.57 (step 6K) to 0.12 (step 36K) — at the late plateau the
+four seeds converge tightly.*
 
-- **If the post-step-7K decline replicates** (mean critical noise
-  drops by ≥ 1.0 between step 7K and step 30K, with seed-to-seed std
-  smaller than the gap): we expand §4.3 by ~0.3 page with a
-  "compositional fragility evolution" paragraph and a small companion
-  panel in Figure 2; the fragility-resolves-what-accuracy-misses
-  pattern then generalizes from the lexical to the compositional
-  probe both *qualitatively* (the rise alongside accuracy reproduces)
-  and *quantitatively* (a different long-term trajectory).
-- **If the decline is within seed-noise:** we state the qualitative
-  reproduction in one line — "compositional probe fragility rises
-  alongside accuracy in the same 0-1K window; long-term trajectory
-  noisy across seeds, see Appendix" — and Figure 2 stays as the
-  standard-probe-only two-panel.
+The compositional probe reproduces the qualitative
+accuracy-saturates-fragility-doesn't pattern that anchors §4.3's
+methodological thesis: probing accuracy plateaus by step ~5K (mean
+acc 0.71 → 0.77 over the remaining 31K steps; Table 1) but mean
+critical noise continues to evolve through step 36K. The
+*direction* of the post-onset evolution differs from the standard
+probe — compositional fragility rises through step 5K alongside
+accuracy onset (4-seed mean 0.10 → 5.11), then declines steadily
+through step 30K (5.11 → 2.46) and holds. To verify that the
+post-step-7K decline is replicable rather than a single-seed
+artifact, we apply a pre-registered decision rule (per
+`paper/PAPER_PLAN.md` §4.3): the decline counts as real if 4-seed
+mean critical noise drops by ≥ 1.0 between step 7K and step 30K,
+*and* seed-to-seed std at both endpoints is smaller than the gap.
+The realized values: gap = 4.65 − 2.46 = 2.19 (≥ 1.0 ✓), max std at
+the two endpoints = 0.84 (< 2.19 ✓). Both conditions pass, with
+substantial margin in both. The post-step-7K decline is a stable
+property of the compositional probe across the four split seeds, not
+seed-side noise.
 
-In either case, the *qualitative* generalization (compositional
-fragility rises alongside compositional accuracy in the 0-1K window
-and reaches its peak before accuracy plateaus, just as for the
-standard probe) holds robustly: compositional mean critical noise
-goes from 0.10 (step 0) to 1.19 (step 2K) to 3.71 (step 4K) to 5.69
-(step 5K), reproducing the standard probe's pattern in this window.
-The methodology generalizes; only the long-term shape is
-seed-conditional.
+Two readings of the diverging long-term trajectories. **(a) The
+methodological claim generalizes both qualitatively and
+quantitatively.** Both probes show fragility rising alongside
+accuracy onset, peaking at or just after the onset step, and then
+continuing to evolve while accuracy plateaus — establishing that
+"fragility resolves what accuracy misses" is not specific to lexically-
+marked moral encoding. **(b) The compositional probe's late-training
+*direction* is its own finding.** Compositional fragility re-enters a
+brittle state (mean critical noise drifting back toward 2-3 by step
+30K) while standard moral fragility holds at its early peak across
+mid- and late-layers throughout training (mean critical noise ≈ 5-10).
+This divergence is consistent with two non-exclusive hypotheses,
+either of which is testable in Phase E:
 
-Numbers source: `outputs/phase_c1/RESULTS.md` (1B), `outputs/phase_b/`
-(7B), `outputs/phase_c4_compositional/compositional_per_checkpoint.json`
-(compositional, 1-seed; 3-seed replication forthcoming at
-`outputs/phase_c4_compositional/3seed/`).
+- **Mechanism hypothesis.** As the model continues training on natural
+  text that does not specifically reinforce compositional moral
+  integration, the compositional representation drifts from a state
+  where it is accidentally robust (the early-training plateau) toward
+  a state where it is encoded but fragile to noise. Standard-probe
+  representations, in contrast, are continually reinforced by the
+  density of moralized vocabulary in pre-training data.
+- **Probe-ceiling hypothesis.** The compositional probe's final-training
+  accuracy is structurally bounded at ~0.77 (§4.2 plateau coincidence)
+  while the standard probe operates near 0.96. Fragility computed at
+  the lower-accuracy operating point may have less headroom to
+  saturate the noise sweep, producing a numerical difference that is
+  partly an artifact of the accuracy ceiling rather than a
+  representational property. A non-linear or position-sensitive probe
+  that pushed compositional accuracy higher would test this directly.
+
+We do not commit to either reading in the paper; we state both and
+flag Phase E (7B / 32B compositional fragility replication) as the
+cleanest disambiguation in §5.4.
+
+Numbers source: `outputs/phase_c1/RESULTS.md` (1B standard probe),
+`outputs/phase_b/` (7B corroboration),
+`outputs/phase_c4_compositional/compositional_per_checkpoint.json`
+(compositional seed 42),
+`outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json`
+(4-seed mean ± std),
+`outputs/phase_c4_compositional/3seed/decision.json` (decision rule
+application),
+`outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
+(headline 4-seed plot).
 
 ## 4.4 Data curation reshapes structure, not content
 

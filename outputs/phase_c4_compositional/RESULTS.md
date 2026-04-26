@@ -136,52 +136,74 @@ Peak-layer location is mid-network throughout (layers 4-15, modal
 representational moral encoding being mid-layer rather than read off
 the embedding or final-layer logits.
 
-### Fragility evolution
+### Fragility evolution (4-seed aggregate)
 
 Mean critical noise (Gaussian σ at which mean probe accuracy drops
-below 0.6) computed at every checkpoint. Same `MoralFragilityTest`
-infrastructure as Phase C1.
+below 0.6) computed at every checkpoint with split seeds 42 (original),
+43, 44, 45 (replication; see `3seed/`). Per-checkpoint values are
+mean ± std across the 4 seeds.
 
-| Step | Mean critical noise | Most fragile layer | Most robust layer |
-|-----:|---------------------:|--------------------:|-------------------:|
-| 0 | 0.10 | 0 | 0 |
-| 1,000 | 0.12 | 0 | 2 |
-| 2,000 | 1.19 | 0 | 2 |
-| 3,000 | 3.25 | 1 | 13 |
-| 4,000 | 3.71 | 0 | 8 |
-| 5,000 | **5.69** (max) | 0 | 8 |
-| 7,000 | 5.72 | 0 | 3 |
-| 10,000 | 5.22 | 1 | 9 |
-| 15,000 | 4.47 | 0 | 10 |
-| 20,000 | 2.82 | 0 | 11 |
-| 25,000 | 2.64 | 0 | 8 |
-| 30,000 | 2.26 | 0 | 14 |
-| 36,000 | 2.66 | 0 | 13 |
+| Step | Mean critical noise (4-seed mean ± std) | n |
+|-----:|------------------------------------------:|---|
+| 0 | 0.10 ± 0.00 | 4 |
+| 1,000 | 0.14 ± 0.04 | 4 |
+| 2,000 | 0.94 ± 0.17 | 4 |
+| 3,000 | 3.47 ± 1.04 | 4 |
+| 4,000 | 4.09 ± 1.46 | 4 |
+| 5,000 | **5.11 ± 0.95** (peak) | 4 |
+| 6,000 | 4.31 ± 1.57 | 4 |
+| 7,000 | 4.65 ± 0.84 | 4 |
+| 10,000 | 4.60 ± 0.48 | 4 |
+| 15,000 | 4.12 ± 0.35 | 4 |
+| 20,000 | 3.07 ± 0.91 | 4 |
+| 25,000 | 2.94 ± 0.38 | 4 |
+| 30,000 | 2.46 ± 0.28 | 4 |
+| 36,000 | 2.49 ± 0.12 | 4 |
 
-Three observations:
+Decision rule (per `paper/PAPER_PLAN.md` §4.3): the post-step-7K decline
+counts as "real" if mean critical noise drops by ≥ 1.0 between step 7K
+and step 30K *and* seed-to-seed std at both endpoints is smaller than
+the gap. **Both conditions pass:** gap = 4.65 − 2.46 = 2.19 (≥ 1.0 ✓);
+max std at the two endpoints = 0.84 (< 2.19 ✓). Verdict:
+**`decline_real`** (`outputs/phase_c4_compositional/3seed/decision.json`).
+
+The std collapses from 1.57 at step 6K to 0.12 at step 36K — at the
+late plateau the four seeds converge tightly. The decline is real, not
+a single-seed artifact, and the model's compositional fragility
+genuinely re-enters a brittle state in the second half of training.
+
+Three observations.
 
 1. **Fragility rises through the onset window** (steps 0-5K) from 0.10
-   to 5.69, then declines slowly. The compositional probe goes through
-   the same pattern as the standard moral probe in Phase C1 — a sharp
-   rise during the phase transition followed by a different long-term
-   trajectory.
-2. **Compositional fragility plateaus *lower* than C1's standard probe**
-   (~3-5 vs. ~5-10 from the C1 fragility evolution). Compositional
-   moral encoding is more brittle than lexically-marked moral encoding
-   at every checkpoint after step 5K.
-3. **Most fragile layer is consistently early** (layer 0 in 28/37
-   checkpoints; layer 1-2 in the rest); most robust layer is mid-late
-   (layer 8-15). Same layer-depth gradient pattern that Phase C1
-   identified for the standard probe — the compositional probe's
-   fragility geometry tracks the lexical probe's, even though the
-   accuracy trajectories diverge.
+   to 5.11, then declines steadily through step 36K. The compositional
+   probe goes through the same rising pattern as the standard moral
+   probe in Phase C1 during the phase transition; the post-step-5K
+   trajectories then diverge — the standard probe holds late layers at
+   maximum robustness throughout training while the compositional probe
+   relaxes back toward early-training fragility levels.
+2. **Compositional fragility plateaus *lower* than the standard
+   probe** at every checkpoint after step 7K (4-seed mean ~3-5 vs.
+   ~5-10 from C1). Compositional moral encoding is more brittle than
+   lexically-marked moral encoding throughout post-onset training.
+3. **Layer-depth gradient is preserved.** Most fragile layer is
+   consistently early (layer 0 in the majority of checkpoints across
+   all 4 seeds); most robust layer is mid-late (layers 8-15). The
+   compositional probe's fragility geometry tracks the lexical probe's
+   layer-depth gradient even though the trajectories of the
+   layer-aggregated `mean_critical_noise` diverge.
 
 This satisfies Paper 1's methodology claim independently for the
 compositional probe: probing accuracy plateaus by step ~5K, but
-fragility continues to evolve through step 36K (declining from 5.7 →
-~2.7). The accuracy-saturates-but-fragility-doesn't pattern is not an
-artifact of lexical accessibility — it holds for the compositional
-probe too.
+fragility continues to evolve through step 36K — and the *direction*
+of evolution differs from the standard probe. The
+accuracy-saturates-but-fragility-doesn't pattern is not an artifact of
+lexical accessibility; it holds for the compositional probe too, with
+its own quantitatively distinct long-term shape.
+
+See `outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
+for the mean ± std band plot vs. the C1 standard moral baseline, and
+`outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json`
+for the full per-step 4-seed numbers.
 
 ---
 
@@ -236,15 +258,19 @@ distinguishes the two hypotheses cleanly.
    structural integration tasks? Disentangling needs a non-linear
    probe (single hidden layer MLP) or a structured-output probe (last-
    token rather than mean-pooled), neither of which Phase C4 ran.
+   Cleanest disambiguation is repeating C4 at 7B / 32B in Phase E.
 
-2. **Fragility *decline* after step 7K.** Mean critical noise peaks
-   at 5.7 around step 5-7K and drifts down to 2-3 by step 30K. In
-   Phase C1 the standard moral probe's fragility *rose* over the same
-   range. Does compositional moral encoding genuinely become more
-   brittle later in pre-training, or is this a probe-side artifact
-   (e.g., training run-to-run noise on a probe that hovers near 0.75
-   accuracy)? Worth a re-run with 3 random seeds before reading too
-   much into it.
+2. ~~**Fragility *decline* after step 7K.**~~ **RESOLVED by 3-seed
+   replication (split seeds 43, 44, 45; ~50 min compute;
+   `outputs/phase_c4_compositional/3seed/`).** 4-seed mean critical
+   noise drops 4.65 (step 7K) → 2.46 (step 30K), gap = 2.19, max std
+   at the two endpoints = 0.84; both conditions of the decision rule
+   pass. Verdict `decline_real`: the post-step-7K decline is a
+   replicable property of the compositional probe, not a single-seed
+   artifact. The interpretive question stays open (see #1 above and
+   the `Implications` paragraph below) but the *fact* of the decline
+   is now established. Numbers source:
+   `outputs/phase_c4_compositional/3seed/decision.json`.
 
 3. **Per-foundation breakdown.** The 200 pairs are categorized by
    construction pattern, not by MFT foundation. A foundation-stratified
@@ -260,9 +286,13 @@ distinguishes the two hypotheses cleanly.
 | File | Contents |
 |------|----------|
 | `c4_validation.json` | Final-checkpoint validation result + PASS verdict |
-| `compositional_per_checkpoint.json` | Per-step probe + fragility numbers (full layer detail) |
+| `compositional_per_checkpoint.json` | Per-step probe + fragility numbers, seed 42 only (full layer detail) |
 | `c4_emergence_timing.json` | Onset / plateau curves, with C2's standard moral / sentiment / syntax curves overlaid |
 | `compositional_vs_lexical_onset.png` | 4-curve overlay (Figure C4-1) |
-| `compositional_layer_step.png` | Layer × step heatmap (Figure C4-2) |
-| `c4_fragility_evolution.png` | Mean critical noise across 37 checkpoints |
-| `step_NNNNNNN/c4_step.json` | Per-step raw probe + fragility output |
+| `compositional_layer_step.png` | Layer × step heatmap, seed 42 (Figure C4-2) |
+| `c4_fragility_evolution.png` | Mean critical noise across 37 checkpoints, seed 42 |
+| `step_NNNNNNN/c4_step.json` | Per-step raw probe + fragility output, seed 42 |
+| `3seed/aggregate_per_checkpoint.json` | 4-seed (42 + 43 + 44 + 45) per-step mean ± std for accuracy and critical noise |
+| `3seed/decision.json` | Decision rule application + verdict (`decline_real`) |
+| `3seed/4seed_fragility_evolution.png` | 4-seed mean ± std band plot vs. C1 standard moral baseline |
+| `3seed/step_NNNNNNN/seed_NN.json` | Per-step per-seed raw probe + fragility for seeds 43, 44, 45 |

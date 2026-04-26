@@ -1,0 +1,31 @@
+{
+  "verdict": "decline_real",
+  "interpretation": "Post-step-7K decline replicates across all seeds. Compositional fragility evolution earns its own paper subsection.",
+  "step_7k_mean_critical_noise": {
+    "mean": 4.652953296703297,
+    "std": 0.8357390718822348,
+    "values": [
+      5.7153846153846155,
+      4.8,
+      3.7214285714285715,
+      4.375
+    ],
+    "n_with_data": 4
+  },
+  "step_30k_mean_critical_noise": {
+    "mean": 2.4587499999999998,
+    "std": 0.27795570690309623,
+    "values": [
+      2.2625,
+      2.43125,
+      2.28125,
+      2.86
+    ],
+    "n_with_data": 4
+  },
+  "gap": 2.194203296703297,
+  "max_std": 0.8357390718822348,
+  "decline_replicates": true,
+  "std_smaller_than_gap": true,
+  "rule": "decline_real if (mean[7K] - mean[30K] >= 1.0) AND (max(std[7K], std[30K]) < gap)"
+}
