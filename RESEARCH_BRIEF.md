@@ -18,13 +18,19 @@ two papers:
 **Paper 1 — *The Moral Emergence Curve.*** Systematic measurement of
 when and how moral representations emerge during LLM pre-training.
 Three reproducible findings on OLMo-2 1B and OLMo-3 7B base models:
-moralized semantic distinctions become linearly decodable within the
-first ~5 % of training as a sharp phase transition (before sentiment
-and far before syntax); probing accuracy saturates misleadingly while
-*fragility* — a noise-robustness metric we introduce — continues
-evolving long after; data curation during fine-tuning reshapes the
-fragility profile without changing probing accuracy. Probing accuracy
-is the wrong metric.
+moralized lexical distinctions become linearly decodable within the
+first ~5 % of training as a sharp phase transition, with a
+quantitative lexical→compositional gradient — standard moral probe
+onsets at step 1K, sentiment at 2K, *compositional* moral probe at 4K
+(holds the action verb constant; varies only individually-mild tokens
+whose moral status flips in context), syntax at 6K — establishing
+that the early moral onset is at least partially driven by
+single-token vocabulary statistics rather than compositional moral
+encoding. Probing accuracy saturates misleadingly while *fragility* —
+a noise-robustness metric we introduce — continues evolving long
+after; data curation during fine-tuning reshapes the fragility
+profile without changing probing accuracy. Probing accuracy is the
+wrong metric.
 
 **Paper 2 — *Persona-Feature Monitoring at 1B: A Compound Scaling
 Boundary.*** Four reproducible 1B-scale results on whether the Wang
@@ -54,15 +60,36 @@ test at 7B with SAE-decomposed features.
 
 ### Headline findings
 
-1. **Moralized semantic distinctions emerge early and fast.**
-   Linearly decodable within the first ~5 % of pre-training as a
-   sharp phase transition; appearing *before* sentiment polarity and
-   far before syntactic competence. We frame this as lexical
-   accessibility — moralized vocabulary is statistically marked
-   enough in pretraining data to be separable from neutral vocabulary
-   at extremely early training stages — rather than as a claim about
-   moral reasoning per se. Either way, the representational substrate
-   for moral content is present and reorganizing long before
+1. **Moralized semantic distinctions emerge along a quantitative
+   lexical→compositional gradient, all early.** Linear decodability
+   appears as a sharp phase transition within the first ~5 % of
+   pre-training and resolves into a four-point ordering by probe
+   construction:
+
+   | Probe | Onset step (mean acc ≥ 0.70) | Plateau |
+   |-------|------------------------------:|---------:|
+   | Standard moral (single-token swap) | 1,000 | 0.96 |
+   | Sentiment (single-token swap) | 2,000 | 0.98 |
+   | **Compositional moral (multi-token integrated swap)** | **4,000** | **0.77** |
+   | Syntax (structural well-formedness) | 6,000 | 0.78 |
+
+   The standard moral probe's step-1K onset measures how quickly
+   *moralized vocabulary* becomes statistically separable from neutral
+   vocabulary, not how quickly *moral valence is encoded
+   compositionally*. The compositional probe — minimal pairs that hold
+   the action verb constant and vary only individually-mild tokens
+   whose moral status flips in context ("protect" vs. "humiliate",
+   "hungry" vs. "wealthy", "safe" vs. "hidden", "innocent" vs.
+   "guilty"; TF-IDF baseline 0.11 ≪ 0.65) — onsets at step 4K,
+   between sentiment and syntax. **Plateau coincidence:** compositional
+   and syntax probes both saturate at ≈0.77 under mean-pooled linear
+   probing while standard moral and sentiment saturate at ≈0.96-0.98,
+   suggesting that probes requiring multi-token structural or
+   compositional integration plateau lower than probes that ride
+   single-token statistics. Whether 0.77 is a representational ceiling
+   or a probe-side ceiling is open until 7B / 32B replication. Either
+   way, the representational substrate for moralized content (lexical
+   *and* compositional) is present and reorganizing long before
    post-training interventions typically engage.
 
 2. **Fragility reveals what accuracy cannot.** Probing accuracy
@@ -95,11 +122,18 @@ test at 7B with SAE-decomposed features.
   developing through step 36K, with early-layer robustness declining
   from 10.0 to 1.7 while late-layer robustness holds at 10.0.
 - **Emergence ordering (matched 240-pair moral / 210-pair sentiment /
-  210-pair syntax probing datasets):** moral onsets at step 1K,
-  sentiment at step 2K, syntax at step 6K; semantic features show
-  phase-transition dynamics, structural features (syntax) emerge
-  gradually with no inflection point — qualitatively different
-  learning regimes.
+  210-pair syntax / 200-pair compositional moral probing datasets):**
+  standard moral onsets at step 1K, sentiment at 2K, compositional
+  moral at 4K, syntax at 6K; standard moral and sentiment show
+  phase-transition dynamics with sharp inflection (plateau ≈0.96-0.98),
+  compositional moral and syntax rise more gradually and plateau
+  ≈0.77 — qualitatively different learning regimes that track
+  whether the probe's discriminative signal lives in single-token
+  statistics or in multi-token integration. The compositional probe
+  also reproduces the accuracy-saturates-fragility-doesn't pattern
+  independently (mean critical noise rises 0.10 → 5.7 by step 5K,
+  drifts to ~2.7 by step 30K), confirming the methodology claim is
+  not a lexical artifact.
 - **Differential foundation emergence (1B and 7B):** Moral Foundations
   Theory categories emerge in a staggered sequence — fairness and care
   saturate first; loyalty, authority, and sanctity follow;
@@ -114,13 +148,16 @@ test at 7B with SAE-decomposed features.
 
 ### Methodology
 
-`LayerWiseMoralProbe`, `MoralFragilityTest`, `FoundationSpecificProbe`,
-and `MoralCausalTracer` — all running on OLMo-2 1B (37 checkpoints
-at 1K-step intervals) and OLMo-3 7B (20 stage-1 checkpoints) on a
-single MacBook Pro M4 Pro (24 GB unified memory, MPS
-acceleration). Probing dataset: 240 moral / neutral minimal pairs
-(40 per Moral Foundations Theory category) + 210 sentiment pairs +
-210 syntax pairs. Deterministic, API-free, included in the toolkit.
+`LayerWiseMoralProbe`, `CompositionalMoralProbe`, `MoralFragilityTest`,
+`FoundationSpecificProbe`, and `MoralCausalTracer` — all running on
+OLMo-2 1B (37 checkpoints at 1K-step intervals) and OLMo-3 7B (20
+stage-1 checkpoints) on a single MacBook Pro M4 Pro (24 GB unified
+memory, MPS acceleration). Probing datasets: 240 standard moral /
+neutral minimal pairs (40 per Moral Foundations Theory category) +
+210 sentiment pairs + 210 syntax pairs + 200 compositional moral
+pairs (four 50-pair categories: action+motive, action+target,
+action+consequence, role-reversal; TF-IDF baseline 0.11 ≪ 0.65
+gate). All deterministic, API-free, included in the toolkit.
 
 ## Paper 2 — Persona-Feature Monitoring at 1B: A Compound Scaling Boundary
 
