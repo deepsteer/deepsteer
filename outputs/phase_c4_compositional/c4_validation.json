@@ -1,0 +1,105 @@
+{
+  "peak_accuracy": 0.8999999761581421,
+  "peak_layer": 5,
+  "onset_layer": 0,
+  "encoding_depth": 0.0,
+  "encoding_breadth": 1.0,
+  "tfidf_baseline_overall": 0.11250000000000002,
+  "tfidf_baseline_per_category": {
+    "action_motive": 0.1999405822935235,
+    "action_target": 0.18003565062388593,
+    "action_consequence": 0.1598336304218657,
+    "role_reversal": 0.13992869875222816
+  },
+  "delta_vs_baseline_pp": 78.74999761581421,
+  "gate_min_delta_pp": 10.0,
+  "gate_min_abs_accuracy": 0.65,
+  "gate_pass_delta": true,
+  "gate_pass_abs": true,
+  "validation_pass": true,
+  "per_layer_accuracy": [
+    {
+      "layer": 0,
+      "accuracy": 0.75,
+      "loss": 0.534267246723175
+    },
+    {
+      "layer": 1,
+      "accuracy": 0.7124999761581421,
+      "loss": 0.5025960206985474
+    },
+    {
+      "layer": 2,
+      "accuracy": 0.737500011920929,
+      "loss": 0.49361056089401245
+    },
+    {
+      "layer": 3,
+      "accuracy": 0.762499988079071,
+      "loss": 0.47717228531837463
+    },
+    {
+      "layer": 4,
+      "accuracy": 0.8374999761581421,
+      "loss": 0.4180977940559387
+    },
+    {
+      "layer": 5,
+      "accuracy": 0.8999999761581421,
+      "loss": 0.3714962303638458
+    },
+    {
+      "layer": 6,
+      "accuracy": 0.875,
+      "loss": 0.35196229815483093
+    },
+    {
+      "layer": 7,
+      "accuracy": 0.8374999761581421,
+      "loss": 0.31345975399017334
+    },
+    {
+      "layer": 8,
+      "accuracy": 0.8999999761581421,
+      "loss": 0.3271486461162567
+    },
+    {
+      "layer": 9,
+      "accuracy": 0.887499988079071,
+      "loss": 0.3212612569332123
+    },
+    {
+      "layer": 10,
+      "accuracy": 0.862500011920929,
+      "loss": 0.3428528904914856
+    },
+    {
+      "layer": 11,
+      "accuracy": 0.8500000238418579,
+      "loss": 0.3408001959323883
+    },
+    {
+      "layer": 12,
+      "accuracy": 0.800000011920929,
+      "loss": 0.39572572708129883
+    },
+    {
+      "layer": 13,
+      "accuracy": 0.8500000238418579,
+      "loss": 0.40821629762649536
+    },
+    {
+      "layer": 14,
+      "accuracy": 0.824999988079071,
+      "loss": 0.4191078245639801
+    },
+    {
+      "layer": 15,
+      "accuracy": 0.800000011920929,
+      "loss": 0.41903558373451233
+    }
+  ],
+  "model": "allenai/OLMo-2-0425-1B",
+  "n_train_pairs": 160,
+  "n_test_pairs": 40
+}

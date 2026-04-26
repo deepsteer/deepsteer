@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from deepsteer.benchmarks.representational.causal_tracing import MoralCausalTracer
+from deepsteer.benchmarks.representational.compositional_moral_probe import (
+    CompositionalMoralProbe,
+)
 from deepsteer.benchmarks.representational.foundation_probes import FoundationSpecificProbe
 from deepsteer.benchmarks.representational.fragility import MoralFragilityTest
 from deepsteer.benchmarks.representational.general_probe import (
@@ -21,6 +24,7 @@ from deepsteer.benchmarks.representational.trajectory import CheckpointTrajector
 
 __all__ = [
     "CheckpointTrajectoryProbe",
+    "CompositionalMoralProbe",
     "FoundationSpecificProbe",
     "GeneralLinearProbe",
     "LayerWiseMoralProbe",
