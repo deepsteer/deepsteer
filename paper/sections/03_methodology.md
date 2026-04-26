@@ -105,22 +105,17 @@ contrast token with the surrounding action context.
    on either side.
 5. *No exact duplicates* of either side across the 200 pairs.
 
-The construction iterated through approximately five rewriting passes
-to satisfy the 0.60 content-overlap gate alongside the multi-word
-compositional contrast requirement; these two constraints are in
-genuine tension (compositional contrasts naturally require swapping
-multiple meaningful words, while ≥0.60 content overlap forces single-
-or two-word swaps within otherwise-identical structure). The published
-dataset reflects the achievable balance.
-
 **Compositional gate (the operational check).** A TF-IDF + logistic
 regression classifier on bag-of-words unigram features (5-fold
 stratified CV) achieves 0.113 mean accuracy overall and 0.14-0.20
-per-category. The design ceiling is 0.65; the observed baseline is
-well below. **Single-word features cannot separate the classes** —
-anything the linear probe achieves on hidden states above this floor
-must integrate multiple words. This is the operational definition of
-"compositional" in our experiments.
+per-category — well below the 0.65 design ceiling. Single-word
+features cannot separate the classes; anything the linear probe
+achieves on hidden states above this floor must integrate multiple
+words. This is the operational definition of "compositional" in our
+experiments. (The construction iterated through ~5 rewriting passes
+to satisfy the 0.60 content-overlap gate alongside the multi-word
+contrast requirement — the two constraints are in genuine tension;
+see Appendix D.)
 
 **Train / test split.** 160 / 40, stratified by category (40 train +
 10 test per category), seed = 42. The dataset and validation gates
@@ -203,47 +198,25 @@ probe holds at σ = 10). §4.3 demonstrates this empirically.
 
 ## 3.5 Target models and checkpoints
 
-We use three OLMo (Groeneveld et al., 2024) base models:
+Three OLMo (Groeneveld et al., 2024) base models. **OLMo-2 1B
+early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
+checkpoints at 1K-step intervals from step 0 to step 36K (~76B
+tokens) — the primary data source for §4.1 onsets and §4.3
+fragility. **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20
+checkpoints through ~1.4M steps (~10T tokens) — §4.3 7B
+corroboration and Appendix B causal tracing. **OLMo-2 1B final**
+(`allenai/OLMo-2-0425-1B`, ~2.2T tokens), used only for the
+compositional probe validation gate (§3.2). All on a single MacBook
+Pro M4 Pro / 24 GB unified / MPS, fp16, with activation collection
+via PyTorch forward hooks on the underlying HuggingFace `model.layers[ℓ]`
+modules; ~6 hours of MPS time across the full §4 experimental record.
 
-- **OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`),
-  37 checkpoints at 1K-step intervals from step 0 to step 36K
-  (~76B tokens). The dense early-training trajectory is the primary
-  data source for the §4.1 emergence ordering and the §4.3
-  fragility-evolution finding. Each checkpoint is ~2 GB on disk;
-  loading takes 10-15 s on MPS.
-- **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20 stage-1 checkpoints
-  spanning steps 0K through ~1.4M (~10T tokens). Used for the §4.3
-  7B fragility-evolution corroboration and the appendix causal-probing
-  analysis. Larger memory footprint; some long-form analyses run
-  against subset checkpoints to fit in 24 GB unified memory.
-- **OLMo-2 1B final** (`allenai/OLMo-2-0425-1B`, ~2.2T tokens). Used
-  exclusively for the compositional probe validation gate (§3.2) —
-  the gate is a precondition for running the trajectory experiment.
+## 3.6 Validity controls
 
-All experiments run on a single MacBook Pro M4 Pro (12-core CPU, 24
-GB unified memory, M4 Pro GPU via MPS). Models are loaded in fp16;
-activation collection uses PyTorch forward hooks on the
-`model.layers[ℓ]` modules of the underlying HuggingFace
-implementation. No custom transformer reimplementation; no quantization;
-no `torch.compile`. The full §4 experimental record (37 × 1B checkpoints
-+ 20 × 7B checkpoints + 1 × 1B final + per-checkpoint compositional
-probe + fragility) totals ~6 hours of MPS time across all phases.
-
-## 3.6 Required validity controls
-
-Three additional controls — leave-lexeme-out splits, paraphrase
-transfer, and adversarial lexical swap — are standard practice for
-linear-probing studies that claim to measure something beyond surface
-vocabulary. We have already applied all three to the persona probe
-(`PersonaFeatureProbe`, `outputs/phase_d/c8/`) used in companion work;
-parity for the standard moral probe is mandatory before submission.
-
-The compositional probe (§3.2) addresses the strongest version of the
-"your probe is just reading vocabulary" concern by construction: pairs
-share the morally-loaded action verb between halves and differ only in
-individually-mild tokens that cannot carry moral signal in isolation
-(TF-IDF baseline 0.113 ≪ 0.65). This may obviate the leave-lexeme-out
-and adversarial-swap controls for the standard probe specifically; we
-flag this question rather than running redundant analyses, and report
-the controls in Appendix C with a clear statement of what the
-compositional probe does and does not subsume.
+Three controls standard for linear-probing studies — leave-lexeme-out
+splits, paraphrase transfer, adversarial lexical swap — are reported
+in Appendix C for parity with the persona probe in companion work.
+The compositional probe (§3.2) addresses the strongest version of
+"your probe is just reading vocabulary" by construction (TF-IDF
+baseline 0.113 ≪ 0.65) and is a strictly stronger ablation than
+those three controls combined for the relevant question.

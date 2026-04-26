@@ -32,70 +32,43 @@ higher linear separability than features that require recovering
 multi-token interactions from a pooling operation that discards
 positional information.
 
-The dichotomy connects to Power et al.'s (2022) grokking literature,
-which documented sudden generalization phase transitions on
-algorithmic tasks. Grokking research has largely focused on the
-*cause* of phase transitions (training dynamics, weight norm, circuit
-formation); our results suggest the *taxonomy* of which capabilities
-should and should not exhibit the dynamic. We do not develop the
-information-theoretic argument here — distinguishing "single-token
-statistics" from "multi-token integration" formally would require
-specifying exactly what mean-pooled linear probing can and cannot
-recover from a transformer's hidden state, which is its own paper —
-but flag it as the most natural follow-up.
+The dichotomy connects to Power et al.'s (2022) grokking literature
+(sudden phase transitions on algorithmic tasks), which has largely
+focused on the *cause* of phase transitions; our results suggest the
+*taxonomy* of which capabilities should and should not exhibit them.
+The formal information-theoretic argument is its own paper.
 
 ## 5.2 Why fragility succeeds where accuracy saturates
 
-Probing accuracy is a thresholded, capped, top-end metric. A linear
-classifier returns "correct" or "incorrect" for each test example;
-accuracy is the fraction correct, bounded between 0 and 1; once the
-representation is linearly separable enough that a classifier can
-exceed any reasonable margin, accuracy hits ceiling and stops
-returning information about the underlying representational change.
-For our standard moral probe this happens by step ~4K of OLMo-2 1B
-pre-training; the remaining 95% of training is invisible to the
-metric.
-
-Fragility is structurally different. The metric integrates *both*
-the margin of separability (probe outputs near the decision boundary
-fail under small noise; outputs far from the boundary need larger
-noise to flip) *and* the redundancy of representation (a feature
-encoded in many directions in hidden space tolerates noise that
-collapses any single direction). Both quantities continue to evolve
-during training even after accuracy has saturated, because both are
-functionals of the *geometry* of the representation rather than its
-end-to-end classification accuracy. Concretely, in §4.3 the standard
+Probing accuracy is a thresholded, capped, top-end metric: once
+linear separability is good enough, accuracy hits ceiling and stops
+returning information about underlying representational change.
+Fragility is structurally different — it integrates the *margin* of
+separability (outputs near the decision boundary flip under small
+noise) and the *redundancy* of representation (features encoded in
+many hidden-space directions tolerate noise that collapses any one).
+Both quantities continue to evolve after accuracy saturates because
+both are functionals of representation *geometry* rather than
+end-to-end classification accuracy. Concretely (§4.3): the standard
 moral probe's mean accuracy holds at 0.96 from step 5K through step
-36K while early-layer critical noise drops from 10.0 to 1.7 — a
-representational property the accuracy curve cannot see.
-
-The argument generalizes beyond the moral domain. Any binary
-probing task that hits accuracy ceiling — and most do, given how
-quickly modern language model representations support linear
-separability of low-level features — will benefit from a fragility
-readout for studying training dynamics or fine-tuning effects.
-Fragility is not a moral-domain-specific contribution; it is a
-methodological contribution about probing-based investigations of
-neural network representations in general.
+36K while early-layer critical noise drops 10.0 → 1.7. The argument
+generalizes — fragility is not a moral-domain-specific contribution
+but a methodological contribution for any binary probing task that
+hits accuracy ceiling.
 
 ## 5.3 Generalization beyond pre-training
 
-The fragility-detects-what-accuracy-misses pattern reproduces under
-a different stimulus than pre-training trajectory analysis. In
-companion work (Reblitz-Richardson, 2026, in preparation; see
-`outputs/phase_d/c15_reframed/RESULTS.md`), applying the same standard
-moral probe + fragility battery from this paper to LoRA adapters
-trained on the Betley et al. (2025) insecure-code dataset produces
-identical probing accuracy across base / insecure-LoRA / secure-LoRA
-conditions (max |Δ| = 0.021) but a fragility-locus shift of 2-3
-layers under the insecure-code condition specifically (the
-moral-encoding robustness peak relocates from layer 7 to layers 9-10,
-while layers 6-7 collapse from critical noise = 10 to critical noise
-= 1). The methodology generalizes from pre-training trajectories to
-fine-tuning fingerprints; we develop this in the companion paper and
-reference it here only as evidence that fragility-as-instrument
-extends beyond the pre-training window we use as the demonstration
-domain.
+The pattern reproduces under a different stimulus. In companion work
+(Reblitz-Richardson, 2026, in preparation), applying the same
+standard moral probe + fragility battery to LoRA adapters trained on
+the Betley et al. (2025) insecure-code dataset produces identical
+probing accuracy across base / insecure-LoRA / secure-LoRA
+(max |Δ| = 0.021) but a fragility-locus shift of 2-3 layers under
+insecure-code specifically (robustness peak relocates from layer 7
+to layers 9-10; layers 6-7 collapse from critical noise 10 → 1). The
+methodology extends from pre-training trajectories to fine-tuning
+fingerprints; we reference this here as evidence of generality and
+develop it in the companion paper.
 
 ## 5.4 Limitations
 
@@ -122,38 +95,24 @@ strictly stronger lexical-accessibility ablation than the standard
 probe; it is not a moral-reasoning probe. Stronger probes for
 deeper moral capacities are out of scope for this paper.
 
-**Probe methodology — the plateau-coincidence ambiguity.** Linear
-probes on mean-pooled hidden states are well-suited for lexically-
-localized features (where pooling preserves the discriminative
-signal) and poorly suited for structurally-integrated features
-(where pooling discards positional and compositional information
-the discrimination depends on). Both the syntax (~0.78) and
-compositional moral (~0.77) plateaus may reflect probe limitations
-as much as representation quality. We cannot distinguish a 1B-model
-ceiling from a probe-side ceiling at 1B with linear probing alone;
-the cleanest disambiguation is repeating §4.1 at 7B and 32B in
-Phase E. If compositional moral accuracy rises with model scale
-while syntax accuracy does not, the bottleneck at 1B is the model
-not the probe; if both ceilings track scale together, the probe is
-the bottleneck. Either result refines the gradient finding without
-overturning it.
-
-**Compositional fragility's diverging late-training trajectory.**
-§4.3's 4-seed replication established that compositional mean
-critical noise *declines* through steps 7K-30K (4.65 → 2.46, std
-0.84 → 0.28) while standard moral fragility *holds* at maximum
-robustness across mid- and late-layers throughout training. We
-reported two non-exclusive readings — the *mechanism reading*
-(compositional representations drift toward brittleness as training
-continues on text that does not specifically reinforce
-compositional moral integration) and the *probe-ceiling reading*
-(fragility computed at a 0.77 operating point has less headroom
-than fragility at 0.96, producing a numerical difference partly
-artifactual). The Phase E 7B / 32B compositional fragility
-replication is also the cleanest disambiguation of this question:
-under the mechanism reading, the decline should track training-text
-distribution rather than scale; under the probe-ceiling reading, the
-decline should attenuate as scale lifts the operating-point ceiling.
+**Two related questions disambiguate at Phase E (7B / 32B
+replication).** First, the §4.2 plateau coincidence (compositional
+≈ syntax ≈ 0.77 vs. standard moral / sentiment ≈ 0.97) may reflect
+a 1B-model ceiling on compositional / structural encoding or a
+probe-side ceiling under mean-pooled linear probing. Second, the
+§4.3 4-seed compositional fragility decline through steps 7K-30K
+(4.65 → 2.46) — opposite to the standard probe's late-training
+hold — admits both a *mechanism reading* (compositional
+representations drift toward brittleness as training continues on
+text that does not specifically reinforce them) and a *probe-ceiling
+reading* (fragility at the 0.77 operating point has less headroom
+than at 0.96, partly artifacting the difference). Both readings
+predict different scaling behavior: under the mechanism reading the
+decline tracks training-text distribution rather than scale, under
+the probe-ceiling reading it attenuates as scale lifts the
+operating point. Repeating §4.1 and §4.3 at 7B and 32B disambiguates
+both. Either outcome refines the gradient finding without overturning
+it.
 
 **Single model family.** All findings are on OLMo-2 1B and OLMo-3
 7B. Generalization to other architectures and training recipes is

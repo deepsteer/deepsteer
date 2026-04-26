@@ -33,34 +33,21 @@ reading. We treat this as an existence proof that probing-claims
 about pre-training emergence should default to lexical-accessibility
 hedges until a compositional-or-stronger ablation is run.
 
-Two open questions Phase C4 leaves are gated at Phase E (7B / 32B
-replication on open-checkpoint models). First, **does the
-compositional plateau at ≈0.77 lift with model scale?** The
-compositional moral and syntax plateaus coincide at ≈0.77 under
-mean-pooled linear probing while the standard moral and sentiment
-plateaus saturate near 0.97; we cannot distinguish a 1B-model
-ceiling from a probe-side ceiling at 1B with linear probing alone.
-The cleanest disambiguation is repeating §4.1 at 7B and 32B: if
-compositional moral accuracy rises with scale while syntax accuracy
-does not, the bottleneck at 1B is the model not the probe. Either
-result refines the gradient finding without overturning it.
+Two open questions are Phase E priorities. First, does the
+compositional plateau at ≈0.77 lift with model scale (7B / 32B
+replication of §4.1)? The plateau coincidence is a probe-side
+property at 1B; scale disambiguates whether the ceiling is the model
+or the instrument. Second, does the fragility-resolves-what-accuracy-
+misses pattern extend beyond the probing investigations we have run
+(foundation-stratified compositional probing, counterfactual-
+sensitivity probing, linguistic-property probes, factual-recall
+probes, persona-feature probes)? If fragility resolves dynamics
+that accuracy misses across this broader set, the methodology is a
+general-purpose tool for alignment-during-pre-training research; if
+not, the conditions under which it generalizes are themselves the
+contribution of follow-up work.
 
-Second, **does the fragility-resolves-what-accuracy-misses pattern
-extend beyond the probing investigations we have run?** We have
-established it for the standard moral probe and for the compositional
-moral probe; we have not established it for arbitrary probing-based
-investigations of pre-training. A natural next step is to apply the
-fragility instrument to other probes that hit accuracy ceiling — both
-within the moral domain (foundation-stratified compositional probing,
-counterfactual-sensitivity probing) and outside it (linguistic-
-property probes, factual-recall probes, persona-feature probes). If
-fragility resolves dynamics that accuracy misses across this broader
-set, the methodology is a general-purpose tool for the alignment-
-during-pre-training research program; if not, the conditions under
-which it generalizes are themselves the contribution of follow-up
-work. We treat both gates as Phase E priorities.
-
-The pre-training window is doing more work than the standard
+The pre-training window does more work than the standard
 interpretability instrument shows. Adding a fragility readout
 recovers a substantial fraction of that work. The lexical→compositional
 gradient is what we recover when we apply the methodology to moral
