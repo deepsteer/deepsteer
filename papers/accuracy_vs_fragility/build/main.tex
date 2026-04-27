@@ -146,38 +146,38 @@
 \maketitle
 
 \begin{abstract}
-Moral / neutral semantic distinctions are linearly decodable from base
-LLM hidden states within the first \textasciitilde 5\,\% of pre-training.
-But standard probing accuracy saturates within the first 4K of 36K
-early-training steps and provides no resolution for the remaining 95\,\%
-of training.  We introduce \emph{fragility} — the activation-noise level
-at which probe accuracy collapses — as a metric that continues evolving
-long after accuracy plateaus and reveals dynamics invisible to accuracy
-alone.  We use it to establish three findings on the OLMo open-weight
-model family.  (1) Moralized semantic distinctions emerge along a
-quantitative lexical~$\to$~compositional gradient: a standard moral
-probe (single-lexeme swap) onsets at step~1K, sentiment at~2K, a
-\emph{compositional} moral probe (multi-token integrated swap, in which
-contrast tokens are individually mild and only flip moral status in
-context) at~5K under 4-seed averaging, and syntax at~6K — bounding the
-standard probe's step-1K onset to a claim about lexical accessibility
-rather than compositional moral encoding.  (2) A layer-depth robustness
-gradient develops monotonically over training: late layers hold maximum
-robustness throughout while early-layer critical noise drops from~10.0
-to~1.7 between steps~1K and~36K, a pattern invisible to probing
-accuracy.  The compositional probe reproduces the qualitative pattern
-across four random-seed train\,/\,test splits and exhibits its own
-quantitatively distinct long-term trajectory (mean critical noise rises
-0.10~$\to$~5.11 by step~5K, then declines to~2.46 by step~30K with std
-collapsing to~0.12 by step~36K), establishing that
-fragility-resolves-what-accuracy-misses is not a lexical-accessibility
-artifact.  (3) LoRA fine-tuning on three matched corpora produces
-identical probing accuracy ($\approx$\,80\,\% across narrative-moral,
-declarative-moral, and general-text conditions) but distinct fragility
-profiles, demonstrating that data curation operates on representational
-structure rather than representational content.  The methodological
-claim generalizes: in every comparison where probing accuracy returns
-a flat answer, fragility returns a structured one.
+A standard interpretability protocol --- train a linear classifier on
+hidden states and declare a property ``encoded'' wherever accuracy is
+high --- works well at a snapshot but breaks across pre-training:
+probe accuracy saturates within the first few thousand steps and
+returns essentially the same number for the rest of the trajectory.
+Most of pre-training becomes invisible to the instrument. We introduce
+\emph{fragility} --- the activation-noise level at which probe accuracy
+collapses --- as a complementary per-layer metric that integrates the
+margin of separability and the redundancy of representation, both of
+which keep evolving long after accuracy plateaus.
+
+Applied to the OLMo open-weight model family, fragility recovers
+structure invisible to accuracy alone. (1) Moralized representations
+emerge along a \emph{lexical~$\to$~compositional gradient}, not a
+single phase transition: single-token semantic probes onset early, a
+compositional moral probe whose pairs require multi-token integration
+onsets several thousand steps later, and structural well-formedness
+later still --- bounding the standard moral probe's early onset to
+lexical accessibility rather than compositional moral encoding. (2) A
+\emph{layer-depth robustness gradient} develops monotonically across
+training, invisible to probing accuracy: as accuracy plateaus across
+layers, late layers hold maximum noise tolerance while early layers
+grow progressively more brittle. (3) Data curation \emph{reshapes
+representational structure without changing content}: LoRA fine-tuning
+on three matched corpora produces near-identical probing accuracy but
+condition-specific fragility profiles, separating where moralized
+information lives from how robustly it is encoded.
+
+The unifying claim is methodological: in every comparison where
+probing accuracy returns a flat answer, fragility returns a structured
+one. Concrete numbers, the 4-seed compositional replication, and
+per-checkpoint fragility profiles appear in \S4.
 \end{abstract}
 
 % =======================================================================
