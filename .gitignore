@@ -41,6 +41,12 @@ htmlcov/
 outputs/*.log
 outputs/.DS_Store
 
+# Paper PDFs (canonical build outputs from scripts/build_pdf.py).
+# Treat as regenerable build artifacts for now; can flip to tracked
+# later if we want collaborators to see the latest snapshot without
+# rebuilding.
+papers/*.pdf
+
 # Downloaded caches (Gutenberg texts, etc.)
 .cache/
 
