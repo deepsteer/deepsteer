@@ -51,6 +51,7 @@ sections/%.tex: ../sections/%.md pandoc-template.tex postprocess.py
 	@sed -E \
 	  -e 's/\\section\{[0-9]+\. */\\section{/g' \
 	  -e 's/\\subsection\{[0-9]+\.[0-9]+ */\\subsection{/g' \
+	  -e 's/\\subsection\{[A-Z]\.[0-9]+ */\\subsection{/g' \
 	  -e 's/\\section\{Appendix [A-Z]\. */\\section{/g' \
 	  $@.raw > $@
 	@python3 postprocess.py $@
