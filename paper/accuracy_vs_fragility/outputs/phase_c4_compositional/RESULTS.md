@@ -166,12 +166,13 @@ mean ± std across the 4 seeds.
 | 30,000 | 2.46 ± 0.28 | 4 |
 | 36,000 | 2.49 ± 0.12 | 4 |
 
-Decision rule (per `paper/PAPER_PLAN.md` §4.3): the post-step-7K decline
-counts as "real" if mean critical noise drops by ≥ 1.0 between step 7K
-and step 30K *and* seed-to-seed std at both endpoints is smaller than
-the gap. **Both conditions pass:** gap = 4.65 − 2.46 = 2.19 (≥ 1.0 ✓);
-max std at the two endpoints = 0.84 (< 2.19 ✓). Verdict:
-**`decline_real`** (`outputs/phase_c4_compositional/3seed/decision.json`).
+Decision rule (per `paper/accuracy_vs_fragility/PAPER_PLAN.md` §4.3):
+the post-step-7K decline counts as "real" if mean critical noise drops
+by ≥ 1.0 between step 7K and step 30K *and* seed-to-seed std at both
+endpoints is smaller than the gap. **Both conditions pass:** gap =
+4.65 − 2.46 = 2.19 (≥ 1.0 ✓); max std at the two endpoints = 0.84
+(< 2.19 ✓). Verdict: **`decline_real`** (`3seed/decision.json`,
+relative to this directory).
 
 The std collapses from 1.57 at step 6K to 0.12 at step 36K — at the
 late plateau the four seeds converge tightly. The decline is real, not

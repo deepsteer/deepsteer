@@ -709,7 +709,7 @@ to paragraph-length.
 - [x] Verify `_detect_n_layers()` and `_get_layer_module()` work for OLMo-2/3
 - [x] List all available revisions for both target models
 - [x] Confirm probing dataset builds correctly (240 pairs, 6 foundations)
-- [x] Write `examples/moral_emergence.py` driver script
+- [x] Write `scripts/moral_emergence.py` driver script
 
 ### Before Phase B — COMPLETE
 - [x] Phase A completes with valid results
@@ -750,7 +750,7 @@ to paragraph-length.
   companion to C2 Figure 8) and `compositional_layer_step.png` (layer ×
   step heatmap)
 - [x] **3-seed compositional fragility replication
-  (`outputs/phase_c4_compositional/3seed/`).** Three additional split
+  (`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/`).** Three additional split
   seeds (43, 44, 45) across all 37 OLMo-2 1B early-training
   checkpoints; ~50 min compute. Verdict **`decline_real`**: 4-seed
   mean critical noise drops 4.65 → 2.46 between step 7K and step 30K
@@ -810,7 +810,7 @@ to paragraph-length.
 **Experiment:** All 37 OLMo-2 1B early-training checkpoints (step 0 to step
 36K at 1K intervals) probed with LayerWiseMoralProbe, FoundationSpecificProbe,
 and MoralFragilityTest. Runtime: 89 minutes on MacBook Pro M4 Pro.
-Output: `outputs/phase_c1/`.
+Output: `paper/accuracy_vs_fragility/outputs/phase_c1/`.
 
 **Hypothesis tested:** H7 — the step 0 → 74K phase transition observed in
 Phase B has internal structure resolvable with denser checkpoint sampling.
@@ -967,7 +967,7 @@ The metrics that can discriminate between interventions are:
 matched minimal-pair datasets: moral (192 train / 48 test pairs), sentiment
 (168 / 42), syntax (168 / 42). Activations collected once per checkpoint for
 all ~1320 unique texts, then shared across the three probes. Runtime: ~21
-minutes on MacBook Pro M4 Pro. Output: `outputs/phase_c2/`.
+minutes on MacBook Pro M4 Pro. Output: `paper/accuracy_vs_fragility/outputs/phase_c2/`.
 
 **Hypothesis tested:** H8 — moral probing accuracy lags behind general
 linguistic probing accuracy by a measurable number of training steps.
@@ -1091,7 +1091,7 @@ OLMo-2 1B at step 1000 (mid-transition checkpoint, ~80% peak probing
 accuracy). Three conditions trained for 1000 steps each (lr=2e-4,
 batch_size=2, seq_len=1024) with probing and fragility evaluation every
 100 steps. Runtime: ~10 hours total on MacBook Pro M4 Pro.
-Output: `outputs/phase_c_tier2/c3/`.
+Output: `paper/accuracy_vs_fragility/outputs/phase_c_tier2/c3/`.
 
 **Hypothesis tested:** H9 — narrative moral content (fables, stories)
 produces more robust moral representations than declarative moral
@@ -1206,7 +1206,7 @@ early-training checkpoints (steps 0-36K at 1K-step intervals) for
 trajectory analysis. The same dataset was also used for
 `MoralFragilityTest` at every checkpoint. Runtime: 18 s validation +
 20.2 min trajectory + fragility on MacBook Pro M4 Pro / MPS. Output:
-`outputs/phase_c4_compositional/`.
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/`.
 
 **Hypothesis tested:** H21 — compositional moral integration emerges
 later than (or simultaneously with) lexical moral decodability.
@@ -1369,7 +1369,7 @@ contribution generalizes.
 
 2. ~~**Why does compositional fragility *decline* after step 7K?**~~
    **Resolved by the 3-seed replication
-   (`outputs/phase_c4_compositional/3seed/`).** 4-seed mean critical
+   (`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/`).** 4-seed mean critical
    noise drops 4.65 → 2.46 between step 7K and step 30K (gap = 2.19,
    max std = 0.84; both decision-rule conditions pass; verdict
    `decline_real`). The decline is a replicable property of the
@@ -1391,11 +1391,11 @@ contribution generalizes.
 
 The 3-seed replication ran on April 25, 2026 (~50 min on MacBook Pro
 M4 Pro / MPS). Output:
-`outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json`
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json`
 (4-seed mean ± std at every checkpoint),
-`outputs/phase_c4_compositional/3seed/decision.json` (decision rule
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/decision.json` (decision rule
 application), and
-`outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
 (headline plot vs. C1 standard moral baseline).
 
 Key 4-seed numbers:
@@ -2411,7 +2411,7 @@ against "you didn't use Betley's exact recipe."
   (gradient_penalty + activation_patch primitives, hook-based,
   PEFT-compatible), `PersonaActivationScorer` wrapper ready to apply
   to GemmaScope SAE directions in Phase E, behavioral-judge harness
-  (`examples/step2_finding4_behavioral_judge.py`) ready to apply to
+  (`scripts/step2_finding4_behavioral_judge.py`) ready to apply to
   Phase E generations as the primary behavioral metric.
 
 ### Probe and Tool Additions

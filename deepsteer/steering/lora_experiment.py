@@ -72,7 +72,7 @@ def run_c3_narrative_vs_declarative(
     max_steps: int = 1000,
     eval_every: int = 100,
     lora_rank: int = 16,
-    output_dir: str | Path = "outputs/phase_c_tier2/c3",
+    output_dir: str | Path = "outputs/lora_experiments/c3",
     device: str | None = None,
     quick: bool = False,
 ) -> dict[str, LoRAExperimentResult]:
@@ -186,7 +186,7 @@ def run_c6_moral_acceleration(
     max_steps: int = 2000,
     eval_every: int = 50,
     lora_rank: int = 16,
-    output_dir: str | Path = "outputs/phase_c_tier2/c6",
+    output_dir: str | Path = "outputs/lora_experiments/c6",
     device: str | None = None,
     quick: bool = False,
 ) -> dict[str, LoRAExperimentResult]:
@@ -286,7 +286,7 @@ def run_c4_early_vs_late(
     max_steps: int = 1000,
     eval_every: int = 100,
     lora_rank: int = 16,
-    output_dir: str | Path = "outputs/phase_c_tier2/c4",
+    output_dir: str | Path = "outputs/lora_experiments/c4",
     device: str | None = None,
     quick: bool = False,
 ) -> dict[str, LoRAExperimentResult]:
@@ -372,7 +372,7 @@ def run_c5_foundation_coverage(
     max_steps: int = 1000,
     eval_every: int = 100,
     lora_rank: int = 16,
-    output_dir: str | Path = "outputs/phase_c_tier2/c5",
+    output_dir: str | Path = "outputs/lora_experiments/c5",
     device: str | None = None,
     quick: bool = False,
 ) -> dict[str, LoRAExperimentResult]:

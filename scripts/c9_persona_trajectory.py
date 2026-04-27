@@ -54,7 +54,9 @@ from torch import Tensor
 logger = logging.getLogger(__name__)
 
 REPO_ID = "allenai/OLMo-2-0425-1B-early-training"
-C2_OUTPUT_DIR = Path("outputs/phase_c2")
+# Phase C2 outputs were moved into the Paper 1 directory tree; this Phase D
+# script reads C2 emergence curves for the onset-comparison plot.
+C2_OUTPUT_DIR = Path("paper/accuracy_vs_fragility/outputs/phase_c2")
 
 ONSET_ACCURACY = 0.70  # matches C2 so the comparison figure is apples-to-apples
 LEAKY_CATEGORIES = (

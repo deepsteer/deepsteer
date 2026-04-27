@@ -165,20 +165,20 @@ pip install -e ".[all]"
 pytest tests/ -v
 
 # Representational probing on OLMo base (primary use case)
-python examples/run_evaluation.py --model olmo --output-dir outputs/
+python scripts/run_evaluation.py --model olmo --output-dir outputs/
 
 # Representational probing on Llama base
-python examples/run_evaluation.py --model llama --output-dir outputs/
+python scripts/run_evaluation.py --model llama --output-dir outputs/
 
 # Include behavioral evals (requires instruction-tuned model)
-python examples/run_evaluation.py --model olmo --behavioral \
+python scripts/run_evaluation.py --model olmo --behavioral \
     --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
 
 # Behavioral evals on an API model
-python examples/run_evaluation.py --model claude --model-id claude-sonnet-4-20250514
+python scripts/run_evaluation.py --model claude --model-id claude-sonnet-4-20250514
 
 # Checkpoint trajectory analysis
-python examples/run_evaluation.py --model olmo --weights allenai/OLMo-7B-hf \
+python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-7B-hf \
     --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 

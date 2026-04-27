@@ -49,15 +49,15 @@ Usage
 -----
 
   # Full pipeline (validation + trajectory + fragility)
-  python examples/phase_c4_compositional.py
+  python paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py
 
   # Validation only (skips trajectory + fragility)
-  python examples/phase_c4_compositional.py --validation-only
+  python paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py --validation-only
 
   # Resume the trajectory from a specific step
-  python examples/phase_c4_compositional.py --resume-from step18000
+  python paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py --resume-from step18000
 
-Outputs (``outputs/phase_c4_compositional/``):
+Outputs (``paper/accuracy_vs_fragility/outputs/phase_c4_compositional/``):
   - ``c4_validation.json``: final-checkpoint validation result + PASS verdict
   - ``c4_per_checkpoint.json``: per-step probe + fragility numbers
   - ``c4_emergence_timing.json``: onset / plateau curves
@@ -455,10 +455,12 @@ def run_trajectory(
 def _load_phase_c2_curves() -> dict[str, tuple[list[int], list[float]]]:
     """Load the standard moral / sentiment / syntax curves from Phase C2.
 
-    Reads ``outputs/phase_c2/c2_emergence_timing.json``. Returns
-    ``{probe_name: (steps, mean_accuracies)}``.
+    Reads ``paper/accuracy_vs_fragility/outputs/phase_c2/c2_emergence_timing.json``.
+    Returns ``{probe_name: (steps, mean_accuracies)}``.
     """
-    c2_path = Path("outputs/phase_c2/c2_emergence_timing.json")
+    c2_path = Path(
+        "paper/accuracy_vs_fragility/outputs/phase_c2/c2_emergence_timing.json",
+    )
     if not c2_path.exists():
         logger.warning("Phase C2 emergence file missing: %s", c2_path)
         return {}
@@ -693,8 +695,11 @@ def main() -> None:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--output-dir", default="outputs/phase_c4_compositional",
-                        help="Output directory.")
+    parser.add_argument(
+        "--output-dir",
+        default="paper/accuracy_vs_fragility/outputs/phase_c4_compositional",
+        help="Output directory.",
+    )
     parser.add_argument("--device", default=None,
                         help="Device override (cuda, mps, cpu).")
     parser.add_argument("--seed", type=int, default=42,

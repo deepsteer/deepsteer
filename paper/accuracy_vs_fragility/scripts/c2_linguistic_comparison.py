@@ -18,7 +18,7 @@ Probes per checkpoint: moral, sentiment, syntax (shared activations)
 Hardware: M4 Pro Mac, MPS
 Estimated runtime: ~2-3 hours
 
-Outputs (in outputs/phase_c2/):
+Outputs (in paper/accuracy_vs_fragility/outputs/phase_c2/):
     - Per-step JSON with all probe results
     - Figure 8: Emergence timing curves (mean accuracy vs. step)
     - Figure 8b: Per-layer heatmaps (1x3 subplot)
@@ -26,13 +26,13 @@ Outputs (in outputs/phase_c2/):
 
 Usage:
     # Full run
-    python examples/c2_linguistic_comparison.py
+    python paper/accuracy_vs_fragility/scripts/c2_linguistic_comparison.py
 
     # Quick test with reduced dataset
-    python examples/c2_linguistic_comparison.py --dataset-target 10
+    python paper/accuracy_vs_fragility/scripts/c2_linguistic_comparison.py --dataset-target 10
 
     # Resume from a specific checkpoint
-    python examples/c2_linguistic_comparison.py --resume-from step18000
+    python paper/accuracy_vs_fragility/scripts/c2_linguistic_comparison.py --resume-from step18000
 """
 
 from __future__ import annotations
@@ -493,8 +493,9 @@ def main() -> None:
         epilog=__doc__,
     )
     parser.add_argument(
-        "--output-dir", default="outputs/phase_c2",
-        help="Directory for output plots and JSON (default: outputs/phase_c2).",
+        "--output-dir", default="paper/accuracy_vs_fragility/outputs/phase_c2",
+        help="Directory for output plots and JSON "
+             "(default: paper/accuracy_vs_fragility/outputs/phase_c2).",
     )
     parser.add_argument(
         "--dataset-target", type=int, default=40,

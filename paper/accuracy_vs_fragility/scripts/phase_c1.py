@@ -10,7 +10,7 @@ Checkpoints: step 0 to step 36000 at 1000-step intervals (37 total)
 Hardware: MacBook Pro M4 Pro, 24 GB unified memory
 Estimated runtime: ~15-20 minutes total
 
-Outputs (in outputs/phase_c1/):
+Outputs (in paper/accuracy_vs_fragility/outputs/phase_c1/):
     - Per-step directories with probe results (JSON + PNG)
     - Figure 7: High-resolution phase transition heatmap
     - Foundation emergence across all 37 checkpoints
@@ -19,16 +19,16 @@ Outputs (in outputs/phase_c1/):
 
 Usage:
     # Run full experiment
-    python examples/phase_c1.py
+    python paper/accuracy_vs_fragility/scripts/phase_c1.py
 
     # Quick test with reduced dataset
-    python examples/phase_c1.py --dataset-target 10
+    python paper/accuracy_vs_fragility/scripts/phase_c1.py --dataset-target 10
 
     # Resume from a specific checkpoint
-    python examples/phase_c1.py --resume-from stage1-step18000
+    python paper/accuracy_vs_fragility/scripts/phase_c1.py --resume-from stage1-step18000
 
     # Run only a subset of probes
-    python examples/phase_c1.py --probes layer foundation
+    python paper/accuracy_vs_fragility/scripts/phase_c1.py --probes layer foundation
 """
 
 from __future__ import annotations
@@ -591,8 +591,9 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--output-dir", default="outputs/phase_c1",
-        help="Directory for output plots and JSON (default: outputs/phase_c1).",
+        "--output-dir", default="paper/accuracy_vs_fragility/outputs/phase_c1",
+        help="Directory for output plots and JSON "
+             "(default: paper/accuracy_vs_fragility/outputs/phase_c1).",
     )
     parser.add_argument(
         "--dataset-target", type=int, default=40,

@@ -15,8 +15,9 @@ step; horizontal dotted lines mark the 0.70 onset threshold and 0.50
 chance.
 
 Outputs:
-    paper/figures/figure_1_onset_overlay.png   (paper-ready)
-    outputs/phase_c4_compositional/compositional_vs_lexical_onset.png
+    paper/accuracy_vs_fragility/figures/figure_1_onset_overlay.png
+        (paper-ready)
+    paper/accuracy_vs_fragility/outputs/phase_c4_compositional/compositional_vs_lexical_onset.png
         (overwrites the 1-seed version)
 """
 
@@ -35,11 +36,12 @@ ONSET_THRESHOLD = 0.70
 
 REPO_ID = "allenai/OLMo-2-0425-1B-early-training"
 
-C2_JSON = Path("outputs/phase_c2/c2_emergence_timing.json")
-C4_AGG = Path("outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json")
+PAPER_DIR = Path("paper/accuracy_vs_fragility")
+C2_JSON = PAPER_DIR / "outputs/phase_c2/c2_emergence_timing.json"
+C4_AGG = PAPER_DIR / "outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json"
 
-PAPER_FIG = Path("paper/figures/figure_1_onset_overlay.png")
-OUTPUTS_FIG = Path("outputs/phase_c4_compositional/compositional_vs_lexical_onset.png")
+PAPER_FIG = PAPER_DIR / "figures/figure_1_onset_overlay.png"
+OUTPUTS_FIG = PAPER_DIR / "outputs/phase_c4_compositional/compositional_vs_lexical_onset.png"
 
 
 def main() -> None:

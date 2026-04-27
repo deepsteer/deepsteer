@@ -24,8 +24,8 @@ headline numbers fits in ~80 minutes.
 | Sentiment train/test split | 42 | `deepsteer.datasets.sentiment_pairs.get_sentiment_dataset` |
 | Syntax train/test split | 42 | `deepsteer.datasets.syntax_pairs.get_syntax_dataset` |
 | Compositional moral train/test split (headline) | 42 | `deepsteer.datasets.compositional_moral_pairs.get_compositional_moral_dataset` |
-| Compositional moral 3-seed replication | 43, 44, 45 | `examples/phase_c4_3seed.py` |
-| Probe initialization (per-seed) | inherits from split seed via `torch.manual_seed(split_seed)` | `examples/phase_c4_3seed.py` line 117, 124 |
+| Compositional moral 3-seed replication | 43, 44, 45 | `paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py` |
+| Probe initialization (per-seed) | inherits from split seed via `torch.manual_seed(split_seed)` | `paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py` line 117, 124 |
 | Probe initialization (headline / non-3-seed runs) | unset (system entropy) | — |
 
 The original C4 trajectory (split seed 42) and the §4.4 C3 LoRA
@@ -65,34 +65,42 @@ organization:
 | OLMo-3 7B stage-1 | `allenai/OLMo-3-7B` (revisions, see codebase) | §4.3 7B fragility corroboration, Appendix B causal tracing |
 
 Specific checkpoint revisions for each step are listed in
-`outputs/phase_c1/phase_c1_plan.json` (1B trajectory),
-`outputs/phase_c4_compositional/compositional_per_checkpoint.json`
-(1B compositional probe), and `outputs/phase_b/phase_b_plan.json`
+`paper/accuracy_vs_fragility/outputs/phase_c1/phase_c1_plan.json`
+(1B trajectory),
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/compositional_per_checkpoint.json`
+(1B compositional probe), and
+`paper/accuracy_vs_fragility/outputs/phase_b/phase_b_plan.json`
 (7B trajectory).
 
 ## E.5 Command-line invocations to reproduce each result
 
+All commands run from the project root.
+
 ```sh
 # §4.1 standard moral / sentiment / syntax onsets (Phase C2)
-python examples/c2_linguistic_comparison.py
+python paper/accuracy_vs_fragility/scripts/c2_linguistic_comparison.py
 
 # §4.1 compositional moral onset (Phase C4 trajectory + validation)
-python examples/phase_c4_compositional.py
+python paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py
 
 # §4.3 standard moral fragility evolution (Phase C1)
-python examples/phase_c1.py
+python paper/accuracy_vs_fragility/scripts/phase_c1.py
 
 # §4.3 4-seed compositional fragility replication
-python examples/phase_c4_3seed.py
+python paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py
 
 # §4.4 C3 LoRA narrative vs. declarative vs. control
-python examples/phase_c_tier2.py --condition narrative_moral
-python examples/phase_c_tier2.py --condition declarative_moral
-python examples/phase_c_tier2.py --condition general_control
+python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition narrative_moral
+python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition declarative_moral
+python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition general_control
+
+# §4.1 Figure 1 (4-seed compositional band overlay) — regenerate
+python paper/accuracy_vs_fragility/scripts/figure_1_onset_overlay.py
 ```
 
 Each script is self-contained, reads no environment-specific
-configuration, and writes structured JSON output to `outputs/<phase>/`
+configuration, and writes structured JSON output to
+`paper/accuracy_vs_fragility/outputs/<phase>/`
 with full metadata (model name, revision, timestamp, hyperparameters,
 dataset version) per the project's reproducibility convention. A
 researcher should be able to reproduce any number reported in the

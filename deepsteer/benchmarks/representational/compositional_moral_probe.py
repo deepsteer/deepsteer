@@ -25,7 +25,8 @@ the context of the surrounding action. A probe that separates these pairs is
 representing moral valence as a compositional property of multi-word
 combinations rather than as a property of individual lexical tokens.
 
-See ``RESEARCH_PLAN.md`` H21 and the ``outputs/phase_c4_compositional/``
+See ``RESEARCH_PLAN.md`` H21 and the
+``paper/accuracy_vs_fragility/outputs/phase_c4_compositional/``
 directory for the trajectory results.
 """
 

@@ -2,8 +2,9 @@
 """Phase C4 3-seed compositional fragility replication.
 
 Settles the post-step-7K compositional fragility decline question
-flagged in `outputs/phase_c4_compositional/RESULTS.md` and locked as a
-gating decision for `paper/PAPER_PLAN.md` §4.3.
+flagged in `paper/accuracy_vs_fragility/outputs/phase_c4_compositional/RESULTS.md`
+and locked as a gating decision for
+`paper/accuracy_vs_fragility/PAPER_PLAN.md` §4.3.
 
 The original C4 trajectory (split seed 42) reported compositional mean
 critical noise rising 0.10 → 5.69 (peak step 5K) and then drifting
@@ -22,10 +23,11 @@ This script runs the same `CompositionalMoralProbe` +
 checkpoints with three additional split seeds (43, 44, 45). For
 efficiency it loads each model checkpoint once and runs all three
 seeds against the loaded weights. The original seed-42 results are
-read from `outputs/phase_c4_compositional/step_NNNNNNN/c4_step.json`
+read from
+`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/step_NNNNNNN/c4_step.json`
 during aggregation; this script only generates the 3 new seeds.
 
-Decision rule (per `paper/PAPER_PLAN.md` §4.3):
+Decision rule (per `paper/accuracy_vs_fragility/PAPER_PLAN.md` §4.3):
 
 * If 4-seed mean critical noise drops by ≥ 1.0 between step 7K and
   step 30K, **and** seed-to-seed std at both endpoints is smaller
@@ -38,7 +40,7 @@ Per-seed runtime estimate: ~20 min for the full 37 × (probe +
 fragility), matching the original. Batched across seeds with shared
 model loading: ~50 min total for all three new seeds.
 
-Outputs (`outputs/phase_c4_compositional/3seed/`):
+Outputs (`paper/accuracy_vs_fragility/outputs/phase_c4_compositional/3seed/`):
 
 * `step_NNNNNNN/seed_NN.json` — per-seed per-step probe + fragility
 * `aggregate_per_checkpoint.json` — 4-seed combined per-step JSON
@@ -48,13 +50,13 @@ Outputs (`outputs/phase_c4_compositional/3seed/`):
 
 Usage:
     # Run all 3 new seeds across all 37 checkpoints
-    python examples/phase_c4_3seed.py
+    python paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py
 
     # Aggregate-and-plot only (assumes per-seed JSONs already exist)
-    python examples/phase_c4_3seed.py --aggregate-only
+    python paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py --aggregate-only
 
     # Resume from a specific step
-    python examples/phase_c4_3seed.py --resume-from step18000
+    python paper/accuracy_vs_fragility/scripts/phase_c4_3seed.py --resume-from step18000
 """
 
 from __future__ import annotations
@@ -73,8 +75,9 @@ logger = logging.getLogger(__name__)
 
 REPO_ID = "allenai/OLMo-2-0425-1B-early-training"
 SEEDS = [43, 44, 45]
-ORIGINAL_DIR = Path("outputs/phase_c4_compositional")
-OUTPUT_DIR = Path("outputs/phase_c4_compositional/3seed")
+PAPER_DIR = Path("paper/accuracy_vs_fragility")
+ORIGINAL_DIR = PAPER_DIR / "outputs/phase_c4_compositional"
+OUTPUT_DIR = PAPER_DIR / "outputs/phase_c4_compositional/3seed"
 
 
 def _clear_memory() -> None:
@@ -333,7 +336,7 @@ def generate_4seed_plot(output_dir: Path) -> None:
     # Pull C1 standard moral mean critical noise for comparison.
     c1_steps, c1_mcn = [], []
     for s in sorted_steps:
-        c1_path = Path("outputs/phase_c1") / f"step_{s:07d}" / "moral_fragility_test_allenai_OLMo-2-0425-1B-early-training.json"
+        c1_path = PAPER_DIR / "outputs/phase_c1" / f"step_{s:07d}" / "moral_fragility_test_allenai_OLMo-2-0425-1B-early-training.json"
         if c1_path.exists():
             with open(c1_path) as f:
                 d = json.load(f)

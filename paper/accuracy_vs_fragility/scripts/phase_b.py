@@ -18,16 +18,16 @@ Hardware: MacBook Pro M4 Pro, 24 GB unified memory
 
 Usage:
     # Run all experiments (will take several hours)
-    python examples/phase_b.py
+    python paper/accuracy_vs_fragility/scripts/phase_b.py
 
     # Quick test with reduced dataset
-    python examples/phase_b.py --dataset-target 10 --trajectory-points 5
+    python paper/accuracy_vs_fragility/scripts/phase_b.py --dataset-target 10 --trajectory-points 5
 
     # Run only B1 (single checkpoint, fast)
-    python examples/phase_b.py --experiments B1
+    python paper/accuracy_vs_fragility/scripts/phase_b.py --experiments B1
 
     # Resume from a specific checkpoint (skip already-completed ones)
-    python examples/phase_b.py --resume-from stage1-step200000
+    python paper/accuracy_vs_fragility/scripts/phase_b.py --resume-from stage1-step200000
 """
 
 from __future__ import annotations
@@ -557,8 +557,9 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--output-dir", default="outputs/phase_b",
-        help="Directory for output plots and JSON (default: outputs/phase_b).",
+        "--output-dir", default="paper/accuracy_vs_fragility/outputs/phase_b",
+        help="Directory for output plots and JSON "
+             "(default: paper/accuracy_vs_fragility/outputs/phase_b).",
     )
     parser.add_argument(
         "--experiments", nargs="+", default=ALL_EXPERIMENTS,

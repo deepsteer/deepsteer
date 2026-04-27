@@ -16,19 +16,19 @@ Hardware: MacBook Pro M4 Pro, 24 GB unified memory
 
 Usage:
     # Run C3 experiment (narrative vs declarative)
-    python examples/phase_c_tier2.py --experiment c3
+    python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --experiment c3
 
     # Run C6 experiment (moral acceleration)
-    python examples/phase_c_tier2.py --experiment c6
+    python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --experiment c6
 
     # Run all experiments
-    python examples/phase_c_tier2.py --experiment all
+    python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --experiment all
 
     # Quick smoke test
-    python examples/phase_c_tier2.py --experiment c3 --max-steps 10 --quick
+    python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --experiment c3 --max-steps 10 --quick
 
     # Custom LoRA rank
-    python examples/phase_c_tier2.py --experiment c3 --lora-rank 8
+    python paper/accuracy_vs_fragility/scripts/phase_c_tier2.py --experiment c3 --lora-rank 8
 """
 
 from __future__ import annotations
@@ -222,8 +222,9 @@ def main() -> None:
         help="LoRA rank parameter (default: 16).",
     )
     parser.add_argument(
-        "--output-dir", default="outputs/phase_c_tier2",
-        help="Top-level output directory (default: outputs/phase_c_tier2).",
+        "--output-dir", default="paper/accuracy_vs_fragility/outputs/phase_c_tier2",
+        help="Top-level output directory "
+             "(default: paper/accuracy_vs_fragility/outputs/phase_c_tier2).",
     )
     parser.add_argument(
         "--device", default=None,

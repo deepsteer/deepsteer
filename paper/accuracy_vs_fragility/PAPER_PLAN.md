@@ -4,6 +4,8 @@
 
 **Source-of-truth note.** Where this document and `RESEARCH_BRIEF.md` differ on Paper 1 framing, **this document takes precedence.** The BRIEF is the public-facing two-paper summary written before Paper 1 framing was locked. Specifically: the BRIEF lists Paper 1 findings in science-first ordering; Paper 1 itself is methodology-first.
 
+**Path convention.** Paths in this document and in `sections/*.md` are *relative to the paper directory* (`paper/accuracy_vs_fragility/`). So `outputs/phase_c4_compositional/...` resolves to `paper/accuracy_vs_fragility/outputs/phase_c4_compositional/...` from the project root, and `scripts/phase_c4_compositional.py` resolves to `paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py`. Project-root-relative paths are used in CLI invocations (e.g. `python paper/accuracy_vs_fragility/scripts/phase_c4_compositional.py`) and in `RESEARCH_PLAN.md` / `RESEARCH_BRIEF.md` / `README.md`. Library code (`deepsteer/...`) lives at the project root and is unaffected by the paper-directory layout.
+
 ## Title
 
 **Primary:** *Probing Accuracy Saturates; Fragility Doesn't: Measuring Moral Representations During LLM Pre-Training*
@@ -257,6 +259,6 @@ Full citations in `REFERENCES.md`. Use these exact citations; don't fabricate or
 7. **Abstract.** Update once Phase C4 lands; tighten after §1 is in place.
 8. **Appendices.** As supporting material is finalized.
 
-For each section, work in `paper/sections/NN_section_name.md`. Stitch into `paper/main.md` (or `paper/main.tex` if going LaTeX) after individual sections are stable. Keep figures in `paper/figures/`.
+For each section, work in `paper/accuracy_vs_fragility/sections/NN_section_name.md`. Stitch into `paper/accuracy_vs_fragility/main.md` (or `paper/accuracy_vs_fragility/main.tex` if going LaTeX) after individual sections are stable. Keep figures in `paper/accuracy_vs_fragility/figures/`.
 
 Don't draft beyond what's specified here without checking back. Framing changes go through the source-of-truth chat, not unilaterally.

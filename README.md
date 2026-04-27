@@ -412,12 +412,12 @@ behavioral-axis scorers:
   to free-form responses, returning per-sample probe activations
   (response-only and response-in-context) on Betley et al.'s
   eight-question benign prompt protocol.
-- `examples/step2_finding4_behavioral_judge.py` — Claude API harness
+- `scripts/step2_finding4_behavioral_judge.py` — Claude API harness
   that rates each generation 0-10 on a persona-voice scale,
   decoupled from content / alignment. Writes per-sample
   (probe, judge) pairs to JSON and produces a probe×judge scatter
   plot for visualizing dissociation.
-- `examples/step2_finding3_mechanism_check.py` — held-out mechanism
+- `scripts/step2_finding3_mechanism_check.py` — held-out mechanism
   verification: forwards N base-model responses through both vanilla
   and intervened LoRA models, computes layer-wise mean-pooled
   hidden-state delta, and projects onto the probe direction.
@@ -568,17 +568,17 @@ The comparison plot normalizes layer indices to [0, 1] so models with different 
 
 ```bash
 # Probe OLMo-7B base model (default)
-python examples/run_evaluation.py --model olmo --output-dir outputs/
+python scripts/run_evaluation.py --model olmo --output-dir outputs/
 
 # Probe Llama-3-8B base model
-python examples/run_evaluation.py --model llama --output-dir outputs/
+python scripts/run_evaluation.py --model llama --output-dir outputs/
 
 # Fast iteration with smaller model
-python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
     --output-dir outputs/ --dataset-target 10
 
 # Checkpoint trajectory analysis
-python examples/run_evaluation.py --model olmo --output-dir outputs/ \
+python scripts/run_evaluation.py --model olmo --output-dir outputs/ \
     --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 
@@ -586,13 +586,13 @@ python examples/run_evaluation.py --model olmo --output-dir outputs/ \
 
 ```bash
 # Behavioral evals on Claude
-python examples/run_evaluation.py --model claude --output-dir outputs/
+python scripts/run_evaluation.py --model claude --output-dir outputs/
 
 # Behavioral evals on GPT
-python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
+python scripts/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
 
 # Include behavioral evals for a local model (requires instruct variant)
-python examples/run_evaluation.py --model olmo --behavioral \
+python scripts/run_evaluation.py --model olmo --behavioral \
     --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
 ```
 
@@ -600,12 +600,12 @@ python examples/run_evaluation.py --model olmo --behavioral \
 
 ```bash
 # Compare OLMo and Llama base model probing curves
-python examples/compare_models.py \
+python scripts/compare_models.py \
     --models allenai/OLMo-7B-hf meta-llama/Llama-3-8B \
     --output-dir outputs/
 
 # Compare base vs instruct to see instruction-tuning effects
-python examples/compare_models.py \
+python scripts/compare_models.py \
     --models allenai/OLMo-7B-hf allenai/OLMo-7B-Instruct-hf \
     --output-dir outputs/
 ```
@@ -673,7 +673,7 @@ deepsteer/
     moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
     data_mixing.py             Moral/general corpus mixing with foundation weights
     training_hooks.py          ProbeMonitor for live training metric tracking
-examples/
+scripts/
   run_evaluation.py                    Single-model CLI
   compare_models.py                    Cross-model comparison CLI
   phase_c1.py                          Phase C1 dense-trajectory driver
