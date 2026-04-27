@@ -12,28 +12,35 @@ mean-accuracy trajectories on a shared step axis.
 |-------|--------------|-----------:|----------------:|-----------------------------:|
 | Standard moral | single morally-loaded lexeme swap | 1,000 | 0.760 | 0.960 |
 | Sentiment | single valenced adjective swap | 2,000 | 0.790 | 0.976 |
-| **Compositional moral** | **multi-token integrated swap** | **4,000** | **0.721** | **0.774** |
+| **Compositional moral** | **multi-token integrated swap** | **5,000** | **0.709 ± 0.025** | **0.769 ± 0.030** |
 | Syntax | structural well-formedness | 6,000 | 0.717 | 0.775 |
 
-*Table 1: Probe onset and plateau by construction.*
+*Table 1: Probe onset and plateau by construction. Compositional
+moral values are 4-seed mean ± std (split seeds 42 / 43 / 44 / 45).
+Per-seed compositional onsets: 4K, 4K, 7K, 7K — substantial seed
+variance, with the 4-seed mean curve crossing 0.70 at step 5K. The
+1-seed C2 standard moral / sentiment / syntax curves are reported
+without std bands; their seed dependence is not characterized.*
 
 **(1) The four probes resolve into a quantitative
 lexical→compositional gradient.** The standard moral probe (single
 morally-loaded lexeme swap, "murdered" / "greeted") onsets at step
 1K. The compositional moral probe (multi-token integrated swap;
 contrast tokens "protect" / "humiliate", "hungry" / "wealthy" are
-individually mild) onsets at step 4K — a 3K-step lag. The standard
-probe's step-1K onset measures how quickly moralized vocabulary
-becomes linearly separable, not how quickly moral valence is encoded
-compositionally. Both findings are true; the strongest single-token
-reading of the standard onset is ruled out, while the gradient
-reading — lexically-marked moralized vocabulary first, compositional
-moral integration second, syntactic competence last — holds. The
-0.721 compositional onset is +60.8 pp above the 0.113 single-token
-TF-IDF floor (§3.2); whatever the probe recovers at step 4K must
-integrate multiple words. At the OLMo-2 1B final checkpoint (~2.2T
-tokens) the compositional probe reaches 0.900 peak @ layer 5,
-+78.7 pp over the TF-IDF baseline.
+individually mild) onsets at step 5K under 4-seed averaging — a
+4K-step lag, with per-seed onsets ranging 4K-7K and overall
+trajectory always between sentiment (2K) and syntax (6K). The
+standard probe's step-1K onset measures how quickly moralized
+vocabulary becomes linearly separable, not how quickly moral
+valence is encoded compositionally. Both findings are true; the
+strongest single-token reading of the standard onset is ruled out,
+while the gradient reading — lexically-marked moralized vocabulary
+first, compositional moral integration second, syntactic competence
+last — holds. The 0.709 compositional onset is +59.6 pp above the
+0.113 single-token TF-IDF floor (§3.2); whatever the probe recovers
+at step 5K must integrate multiple words. At the OLMo-2 1B final
+checkpoint (~2.2T tokens) the compositional probe reaches 0.900
+peak @ layer 5, +78.7 pp over the TF-IDF baseline.
 
 **(2) Phase-transition vs. gradual emergence dichotomy.** Standard
 moral and sentiment probes show sharp sigmoidal transitions (chance

@@ -39,11 +39,12 @@ probe (single morally-loaded lexeme swap) onsets at step 1K. A
 *compositional* moral probe — pairs that hold the action verb
 constant and vary only individually-mild tokens whose moral status
 flips in context ("protect" / "humiliate", "hungry" / "wealthy",
-"innocent" / "guilty") — onsets at step 4K, between sentiment (2K)
-and syntax (6K). The standard probe's step-1K onset measures how
-quickly moralized vocabulary becomes linearly separable, not how
-quickly moral valence is encoded compositionally; the gradient
-reading is the honest one.
+"innocent" / "guilty") — onsets at step 5K under 4-seed averaging
+(per-seed range 4K-7K), between sentiment (2K) and syntax (6K).
+The standard probe's step-1K onset measures how quickly moralized
+vocabulary becomes linearly separable, not how quickly moral
+valence is encoded compositionally; the gradient reading is the
+honest one.
 
 **Finding 2: A layer-depth robustness gradient develops
 monotonically over training, invisible to probing accuracy.** Mean

@@ -380,7 +380,7 @@ study — it provides resolution where probing accuracy cannot.
 | H7 | Phase Transition Has Structure | **Supported** | Sigmoid over ~3K steps; inflection at step 1K (C1) |
 | H8 | Moral Emerges After Linguistic | **Refuted** | Moral onset (step 1K) precedes sentiment (2K) and syntax (6K) (C2) |
 | H9 | Narrative > Declarative Robustness | **Partially supported** | Declarative creates fragility; narrative ≈ general (C3) |
-| H21 | Compositional ≥ Lexical onset gap | **Supported (Outcome 2)** | Compositional onset step 4K, plateau ≈ 0.77 — between sentiment (2K) and syntax (6K); standard moral step-1K onset measures lexical accessibility (C4 compositional) |
+| H21 | Compositional ≥ Lexical onset gap | **Supported (Outcome 2)** | Compositional onset step 5K under 4-seed averaging (per-seed range 4K-7K), plateau ≈ 0.77 — between sentiment (2K) and syntax (6K); standard moral step-1K onset measures lexical accessibility (C4 compositional) |
 
 ### Methodology Lessons
 
@@ -590,11 +590,15 @@ Three predicted outcomes, each publishable:
   motivates Phase E.
 
 **Result: Outcome 2 supported.** Compositional probe crosses 70 % at
-step 4K (mean 0.721) and plateaus at ≈0.77 — between sentiment (2K /
-0.79 / plateau 0.98) and syntax (6K / 0.72 / plateau 0.78). The C2
+step 5K under 4-seed averaging (per-seed range 4K-7K; 4-seed mean acc
+0.709 ± 0.025) and plateaus at ≈0.77 — between sentiment (2K / 0.79 /
+plateau 0.98) and syntax (6K / 0.72 / plateau 0.78). The C2
 moral-onset result reframes: lexically-marked moralized vocabulary
 becomes separable at step 1K, compositional moral integration at step
-4K. See *Phase C4 Compositional Results*.
+5K. See *Phase C4 Compositional Results*. (The seed-42-only headline
+was step 4K, mean 0.721; updated to step 5K when Figure 1 was
+regenerated with the 4-seed band — see Open Questions and the
+3-seed replication writeup below.)
 
 ### Phase C Experiments
 
@@ -735,8 +739,9 @@ to paragraph-length.
   PASS: peak 0.900 @ layer 5, +78.7 pp vs TF-IDF baseline (gate
   thresholds: ≥ +10 pp AND ≥ 0.65 absolute, both PASS)
 - [x] Run compositional probe across all 37 early-training checkpoints
-  (Phase C4 Compositional) — Outcome 2: onset step 4K (mean 0.721),
-  plateau ≈ 0.77, between sentiment (2K) and syntax (6K) onsets
+  (Phase C4 Compositional) — Outcome 2: onset step 5K under 4-seed
+  averaging (per-seed range 4K-7K; 4-seed mean 0.709 ± 0.025), plateau
+  ≈ 0.77, between sentiment (2K) and syntax (6K) onsets
 - [x] Run `MoralFragilityTest` on compositional dataset across same 37
   checkpoints — accuracy-saturates-fragility-doesn't pattern reproduces
   for compositional probe (mean critical noise 0.10 → 5.7 → ~3 over
@@ -1207,10 +1212,11 @@ trajectory analysis. The same dataset was also used for
 later than (or simultaneously with) lexical moral decodability.
 
 **Verdict: H21 supported (Outcome 2).** The compositional probe lags
-the standard moral probe by ~3K training steps and never reaches the
-same plateau. The Phase C2 step-1K moral onset is at least partially
-driven by lexical accessibility; compositional moral integration
-emerges at step 4K.
+the standard moral probe by ~4K training steps under 4-seed averaging
+(per-seed onset range 4K-7K) and never reaches the same plateau. The
+Phase C2 step-1K moral onset is at least partially driven by lexical
+accessibility; compositional moral integration emerges at step 5K
+under 4-seed averaging.
 
 ### Dataset
 
@@ -1256,7 +1262,7 @@ Compositional probe trained on `allenai/OLMo-2-0425-1B` (full base,
 
 Both gates pass by a wide margin → trajectory run warranted.
 
-### Finding 1: Compositional Onset Lags Lexical by ~3K Steps
+### Finding 1: Compositional Onset Lags Lexical by ~4K Steps
 
 Onset = first checkpoint where mean accuracy across 16 layers ≥ 0.70.
 
@@ -1264,9 +1270,12 @@ Onset = first checkpoint where mean accuracy across 16 layers ≥ 0.70.
 |-------|-----------:|----------------:|------------------:|
 | Standard moral (lexical) | **1,000** | 0.760 | 0.960 |
 | Sentiment | 2,000 | 0.790 | 0.976 |
-| **Compositional moral (this work)** | **4,000** | **0.721** | **0.774** |
+| **Compositional moral (4-seed mean; this work)** | **5,000** | **0.709 ± 0.025** | **0.769 ± 0.030** |
 | Syntax | 6,000 | 0.717 | 0.775 |
 
+Compositional 4-seed values are mean ± std across split seeds 42 /
+43 / 44 / 45; per-seed onsets are 4K, 4K, 7K, 7K (substantial seed
+variance, with the 4-seed mean curve crossing 0.70 at step 5K).
 The compositional probe sits squarely between sentiment (2K) and
 syntax (6K). Its plateau (≈0.77) tracks the syntax plateau (≈0.78),
 both well below the standard moral / sentiment plateaus (≈0.96-0.98).
@@ -1331,7 +1340,8 @@ it. Two true claims, distinguished:
 * **Lexically-marked moralized vocabulary** becomes linearly
   decodable at step 1K (Phase C2, standard moral probe).
 * **Compositional moral integration** becomes linearly decodable at
-  step 4K (Phase C4, compositional moral probe).
+  step 5K under 4-seed averaging (Phase C4, compositional moral
+  probe; per-seed range 4K-7K).
 
 Both are early in pre-training. Both precede syntactic competence.
 But they say different things about what the model has learned. The
@@ -1526,11 +1536,12 @@ dynamics."* Claim set:
 - The early moral onset is at least partially driven by single-token
   lexical statistics. A compositional moral probe — pairs that share
   the morally-loaded action verb and differ only in 1-2 individually
-  mild tokens whose moral status flips in context — onsets at step 4K,
-  ~3K steps after the standard moral probe, between the sentiment (2K)
-  and syntax (6K) onsets. Compositional moral integration emerges
-  early but not first; lexically-marked moralized vocabulary is
-  decoded earlier than compositional moral integration (Phase C4).
+  mild tokens whose moral status flips in context — onsets at step 5K
+  under 4-seed averaging (per-seed range 4K-7K), ~4K steps after the
+  standard moral probe, between the sentiment (2K) and syntax (6K)
+  onsets. Compositional moral integration emerges early but not first;
+  lexically-marked moralized vocabulary is decoded earlier than
+  compositional moral integration (Phase C4).
 - Standard probing accuracy saturates within 3K steps and provides no
   resolution for the remaining 95% of training. The compositional probe
   reproduces the saturate-then-flatten pattern at a lower plateau

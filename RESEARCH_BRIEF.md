@@ -21,7 +21,7 @@ Three reproducible findings on OLMo-2 1B and OLMo-3 7B base models:
 moralized lexical distinctions become linearly decodable within the
 first ~5 % of training as a sharp phase transition, with a
 quantitative lexical→compositional gradient — standard moral probe
-onsets at step 1K, sentiment at 2K, *compositional* moral probe at 4K
+onsets at step 1K, sentiment at 2K, *compositional* moral probe at 5K (4-seed mean)
 (holds the action verb constant; varies only individually-mild tokens
 whose moral status flips in context), syntax at 6K — establishing
 that the early moral onset is at least partially driven by
@@ -70,7 +70,7 @@ test at 7B with SAE-decomposed features.
    |-------|------------------------------:|---------:|
    | Standard moral (single-token swap) | 1,000 | 0.96 |
    | Sentiment (single-token swap) | 2,000 | 0.98 |
-   | **Compositional moral (multi-token integrated swap)** | **4,000** | **0.77** |
+   | **Compositional moral (multi-token integrated swap; 4-seed mean)** | **5,000** | **0.77** |
    | Syntax (structural well-formedness) | 6,000 | 0.78 |
 
    The standard moral probe's step-1K onset measures how quickly
@@ -80,8 +80,9 @@ test at 7B with SAE-decomposed features.
    the action verb constant and vary only individually-mild tokens
    whose moral status flips in context ("protect" vs. "humiliate",
    "hungry" vs. "wealthy", "safe" vs. "hidden", "innocent" vs.
-   "guilty"; TF-IDF baseline 0.11 ≪ 0.65) — onsets at step 4K,
-   between sentiment and syntax. **Plateau coincidence:** compositional
+   "guilty"; TF-IDF baseline 0.11 ≪ 0.65) — onsets at step 5K under
+   4-seed averaging (per-seed range 4K-7K across split seeds 42 / 43
+   / 44 / 45), between sentiment and syntax. **Plateau coincidence:** compositional
    and syntax probes both saturate at ≈0.77 under mean-pooled linear
    probing while standard moral and sentiment saturate at ≈0.96-0.98,
    suggesting that probes requiring multi-token structural or
@@ -124,7 +125,7 @@ test at 7B with SAE-decomposed features.
 - **Emergence ordering (matched 240-pair moral / 210-pair sentiment /
   210-pair syntax / 200-pair compositional moral probing datasets):**
   standard moral onsets at step 1K, sentiment at 2K, compositional
-  moral at 4K, syntax at 6K; standard moral and sentiment show
+  moral at 5K (4-seed mean), syntax at 6K; standard moral and sentiment show
   phase-transition dynamics with sharp inflection (plateau ≈0.96-0.98),
   compositional moral and syntax rise more gradually and plateau
   ≈0.77 — qualitatively different learning regimes that track

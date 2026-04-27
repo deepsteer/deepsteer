@@ -92,7 +92,7 @@ layers exceeds 0.70.
 |-------|-----------:|----------------:|-----------------------------:|
 | Standard moral (lexical) | **1,000** | 0.760 | 0.960 |
 | Sentiment | 2,000 | 0.790 | 0.976 |
-| **Compositional moral (this work)** | **4,000** | **0.721** | **0.774** |
+| **Compositional moral (4-seed mean; this work)** | **5,000** | **0.709 ± 0.025** | **0.769 ± 0.030** |
 | Syntax | 6,000 | 0.717 | 0.775 |
 
 The compositional probe sits squarely between sentiment (2K) and
@@ -105,7 +105,13 @@ integration becomes linearly decodable**. The standard moral probe's
 step-1K onset reported in Phase C2 measures lexical accessibility, not
 compositional encoding.
 
-### Compositional probe per-step accuracy
+### Compositional probe per-step accuracy (seed 42 trajectory)
+
+This is the seed-42 trajectory; the 4-seed-aggregate table appears
+in the *Fragility evolution* section below (and the headline Finding
+1 table reports 4-seed mean ± std). Per-seed onset for seed 42 is
+step 4K (mean 0.721); 4-seed-mean onset is step 5K (mean 0.709 ±
+0.025); per-seed onset range across all four seeds is 4K-7K.
 
 | Step | Peak | Peak layer | Mean | Δ vs. step 0 |
 |-----:|-----:|-----------:|-----:|--------------:|
@@ -113,8 +119,8 @@ compositional encoding.
 | 1,000 | 0.587 | 13 | 0.545 | +0.054 |
 | 2,000 | 0.663 | 13 | 0.620 | +0.129 |
 | 3,000 | 0.775 | 9 | 0.688 | +0.197 |
-| **4,000** | **0.788** | **4** | **0.721** | **+0.230 (onset)** |
-| 5,000 | 0.837 | 9 | 0.735 | +0.244 |
+| **4,000** | **0.788** | **4** | **0.721** | **+0.230 (seed-42 onset)** |
+| **5,000** | **0.837** | **9** | **0.735** | **+0.244 (4-seed mean onset)** |
 | 6,000 | 0.800 | 7 | 0.734 | +0.243 |
 | 7,000 | 0.788 | 7 | 0.735 | +0.244 |
 | 10,000 | 0.850 | 12 | 0.746 | +0.255 |
@@ -216,7 +222,7 @@ The data supports **Outcome 2** of the three Phase C4 predictions:
 > right; single-word moralized vocabulary is decoded earlier than
 > compositional moral integration.
 
-The compositional probe crosses 70 % at step 4K, exactly between the
+The compositional probe crosses 70 % at step 5K under 4-seed averaging (per-seed range 4K-7K), between the
 sentiment (2K) and syntax (6K) onsets reported in Phase C2. It
 plateaus at ≈0.77 mean accuracy, indistinguishable from the syntax
 plateau (0.78) and far below the standard moral / sentiment plateaus
@@ -225,7 +231,7 @@ plateau (0.78) and far below the standard moral / sentiment plateaus
 **For Paper 1.** The Phase C2 finding "moral encoding emerges at step
 1K, before sentiment and well before syntax" must be reframed:
 *lexically-marked moralized vocabulary* emerges at step 1K;
-*compositional moral integration* emerges at step 4K, contemporaneous
+*compositional moral integration* emerges at step 5K under 4-seed averaging, contemporaneous
 with sentiment and ahead of syntax. Both claims are true, but they
 say different things about what the model has learned. The C4 result
 bounds the headline finding — moralized vocabulary is decoded first,

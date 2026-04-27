@@ -23,12 +23,12 @@ consequential of them is the *quantitative gradient* the paper
 establishes by adding the compositional moral probe alongside the
 standard moral, sentiment, and syntax probes: lexically-marked
 moralized vocabulary is decoded at step 1K, compositional moral
-integration at step 4K, syntactic competence at step 6K. The
+integration at step 5K, syntactic competence at step 6K. The
 strongest one-sentence summary of the moral probe's step-1K onset —
 that "moral encoding emerges within the first 5% of pre-training" —
 overstates what the standard probe recovers; the gradient framing
 ("lexically-marked moralized vocabulary at 1K, compositional moral
-integration at 4K, syntactic competence at 6K") is the honest
+integration at 5K, syntactic competence at 6K") is the honest
 reading. We treat this as an existence proof that probing-claims
 about pre-training emergence should default to lexical-accessibility
 hedges until a compositional-or-stronger ablation is run.
