@@ -53,6 +53,10 @@ sections/%.tex: ../sections/%.md pandoc-template.tex postprocess.py
 	  -e 's/\\subsection\{[0-9]+\.[0-9]+ */\\subsection{/g' \
 	  -e 's/\\subsection\{[A-Z]\.[0-9]+ */\\subsection{/g' \
 	  -e 's/\\section\{Appendix [A-Z]\. */\\section{/g' \
+	  -e 's/(\\(sub)?section\{\\texorpdfstring\{)[0-9]+\.[0-9]* */\1/g' \
+	  -e 's/(\\(sub)?section\{\\texorpdfstring\{)[A-Z]\.[0-9]+ */\1/g' \
+	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[0-9]+\.[0-9]* */\1/g' \
+	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[A-Z]\.[0-9]+ */\1/g' \
 	  $@.raw > $@
 	@python3 postprocess.py $@
 	@rm -f $@.raw
