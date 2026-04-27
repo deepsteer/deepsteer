@@ -186,6 +186,35 @@ accuracy returns a flat answer, fragility returns a structured one.}
 \input{sections/05_discussion.tex}
 \input{sections/06_conclusion.tex}
 
+% --- Acknowledgments / AI disclosure --------------------------------
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code
+agent on the Opus~4 family) for:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+  \item \textbf{Code scaffolding.} The analysis and figure scripts in
+    \path|papers/accuracy_vs_fragility/scripts/| and the LaTeX
+    build pipeline (\path|build/main.tex|,
+    \path|build/postprocess.py|, \path|build/Makefile|, the NeurIPS
+    style integration, the §X cross-reference rewrite, and the
+    one-shot \path|scripts/build_pdf.py|).
+  \item \textbf{Prose drafting.} Initial drafts of all body sections
+    and appendices from decision notes and outlines, four iterations
+    of the abstract, and title brainstorming.
+  \item \textbf{Bibliography assembly.} Initial bibliographic entries
+    in \path|references.bib| were generated from training-data
+    recall and flagged in \path|PAPER_PLAN.md| for arXiv-page
+    cross-check before submission.
+\end{itemize}
+
+The author retains responsibility for experimental design, dataset
+construction (including the 200-pair compositional moral minimal-pair
+dataset that is itself a methodological contribution), all
+scientific claims, and final wording. Session logs from drafting and
+analysis runs are preserved under the project's \path|.claude/|
+directory for transparency.
+\end{ack}
+
 % --- Bibliography ---------------------------------------------------
 \bibliography{references}
 
