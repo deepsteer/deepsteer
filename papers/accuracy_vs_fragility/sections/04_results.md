@@ -193,8 +193,8 @@ Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
 
 ## 4.4 Data curation reshapes structure, not content
 
-Phase C3: LoRA fine-tuning on three matched corpora from the OLMo-2
-1B step-1000 checkpoint (mid-transition, ~80 % peak probing
+Phase C3: LoRA (Hu et al., 2022) fine-tuning on three matched
+corpora from the OLMo-2 1B step-1000 checkpoint (mid-transition, ~80 % peak probing
 accuracy). Corpora: a 247K-token narrative-moral corpus (Aesop /
 Grimm / Andersen), a 500K-token declarative-moral corpus
 (template-expanded `MORAL_SEEDS`: "Stealing is wrong"), and a 420K-token

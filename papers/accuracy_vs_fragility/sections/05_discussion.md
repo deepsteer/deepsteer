@@ -68,7 +68,11 @@ insecure-code specifically (robustness peak relocates from layer 7
 to layers 9-10; layers 6-7 collapse from critical noise 10 → 1). The
 methodology extends from pre-training trajectories to fine-tuning
 fingerprints; we reference this here as evidence of generality and
-develop it in the companion paper.
+develop it in the companion paper. Robustness-of-alignment-under-
+fine-tuning literature (Hubinger et al., 2024) asks a related but
+distinct question — whether deceptive behaviors persist through
+safety training — at the behavioral rather than representational
+level.
 
 ## 5.4 Limitations
 

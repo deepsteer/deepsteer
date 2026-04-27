@@ -19,23 +19,40 @@ from pathlib import Path
 # Citation key map: regex pattern -> natbib command + bibkey.
 # Order matters — multi-author patterns must precede single-author.
 CITES_PARENS = [
-    # (Multiple, Author, & Combined, Year; Other, Year)
+    # Multi-author parens forms — must precede single-author forms
+    # so the longer string matches first.
+    # `\s+` tolerates newline-wrapped text (markdown source line-wraps
+    # at ~70 cols, so author/year may span lines after pandoc).
     (
-        r"\(Haidt, 2012; Graham et al\., 2013\)",
+        r"\(Haidt,\s+2012;\s+Graham\s+et\s+al\.,\s+2013\)",
         r"\citep{haidt2012righteous,graham2013mft}",
     ),
-    (r"\(Alain \\& Bengio, 2017; Belinkov, 2022\)",
+    (r"\(Alain\s+\\&\s+Bengio,\s+2017;\s+Belinkov,\s+2022\)",
      r"\citep{alain2017probes,belinkov2022probing}"),
+    (r"\(Olsson\s+et\s+al\.,\s+2022;\s+Nanda\s+et\s+al\.,\s+2023\)",
+     r"\citep{olsson2022induction,nanda2023progress}"),
+    (r"\(Groeneveld\s+et\s+al\.,\s+2024;\s+OLMo\s+Team,\s+2025\)",
+     r"\citep{groeneveld2024olmo,olmo2_2025}"),
     # Single (Author, Year)
-    (r"\(Alain \\& Bengio, 2017\)", r"\citep{alain2017probes}"),
-    (r"\(Belinkov, 2022\)", r"\citep{belinkov2022probing}"),
-    (r"\(Meng et al\., 2022\)", r"\citep{meng2022rome}"),
-    (r"\(Power et al\., 2022\)", r"\citep{power2022grokking}"),
-    (r"\(Haidt, 2012\)", r"\citep{haidt2012righteous}"),
-    (r"\(Graham et al\., 2013\)", r"\citep{graham2013mft}"),
-    (r"\(Groeneveld et al\., 2024\)", r"\citep{groeneveld2024olmo}"),
-    (r"\(Arditi et al\., 2024\)", r"\citep{arditi2024refusal}"),
-    (r"\(Betley et al\., 2025\)", r"\citep{betley2025em}"),
+    (r"\(Alain\s+\\&\s+Bengio,\s+2017\)", r"\citep{alain2017probes}"),
+    (r"\(Belinkov,\s+2022\)", r"\citep{belinkov2022probing}"),
+    (r"\(Meng\s+et\s+al\.,\s+2022\)", r"\citep{meng2022rome}"),
+    (r"\(Power\s+et\s+al\.,\s+2022\)", r"\citep{power2022grokking}"),
+    (r"\(Haidt,\s+2012\)", r"\citep{haidt2012righteous}"),
+    (r"\(Graham\s+et\s+al\.,\s+2013\)", r"\citep{graham2013mft}"),
+    (r"\(Groeneveld\s+et\s+al\.,\s+2024\)", r"\citep{groeneveld2024olmo}"),
+    (r"\(Arditi\s+et\s+al\.,\s+2024\)", r"\citep{arditi2024refusal}"),
+    (r"\(Betley\s+et\s+al\.,\s+2025\)", r"\citep{betley2025em}"),
+    (r"\(Hewitt\s+\\&\s+Liang,\s+2019\)", r"\citep{hewitt2019control}"),
+    (r"\(Pimentel\s+et\s+al\.,\s+2020\)", r"\citep{pimentel2020information}"),
+    (r"\(Voita\s+\\&\s+Titov,\s+2020\)", r"\citep{voita2020mdl}"),
+    (r"\(Olsson\s+et\s+al\.,\s+2022\)", r"\citep{olsson2022induction}"),
+    (r"\(Nanda\s+et\s+al\.,\s+2023\)", r"\citep{nanda2023progress}"),
+    (r"\(Biderman\s+et\s+al\.,\s+2023\)", r"\citep{biderman2023pythia}"),
+    (r"\(OLMo\s+Team,\s+2025\)", r"\citep{olmo2_2025}"),
+    (r"\(Hu\s+et\s+al\.,\s+2022\)", r"\citep{hu2022lora}"),
+    (r"\(Zou\s+et\s+al\.,\s+2023\)", r"\citep{zou2023repe}"),
+    (r"\(Hubinger\s+et\s+al\.,\s+2024\)", r"\citep{hubinger2024sleeper}"),
 ]
 
 # In-text Author (Year) -> \citet{key}

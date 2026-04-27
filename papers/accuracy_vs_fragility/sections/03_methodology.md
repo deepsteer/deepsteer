@@ -137,8 +137,8 @@ reuse, not reimplementation.
 
 ## 3.5 Target models and checkpoints
 
-Three OLMo (Groeneveld et al., 2024) base models. **OLMo-2 1B
-early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
+Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025) base models.
+**OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
 checkpoints at 1K-step intervals from step 0 to step 36K (~76B
 tokens) — the primary data source for §4.1 onsets and §4.3
 fragility. **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20
