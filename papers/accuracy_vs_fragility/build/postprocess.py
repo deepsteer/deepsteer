@@ -243,6 +243,47 @@ def convert_section_refs(text: str) -> str:
     return "".join(parts)
 
 
+def rebalance_pandoc_table_widths(text: str) -> str:
+    """Replace pandoc's content-derived column widths with hand-tuned ones
+    for tables that overflow.
+
+    Pandoc auto-computes proportional column widths from header-string
+    length, which gives narrow data columns too much space and short-
+    header columns (like "Probe") too little --- on a NeurIPS 5.5in
+    textwidth this causes wraps that overlap into adjacent columns.
+
+    Currently overrides:
+        §4.1 onset table (5 columns, fingerprint
+        0.0875/0.1750/0.1500/0.2125/0.3750) -> 0.20/0.27/0.10/0.16/0.27
+    """
+    overrides = [
+        # §4.1 onset table.  Match the full 5-column @{}...@{} block.
+        (
+            (
+                r">\{\\raggedright\\arraybackslash\}p\{\(\\linewidth - 8\\tabcolsep\) \* \\real\{0\.0875\}\}\s+"
+                r">\{\\raggedright\\arraybackslash\}p\{\(\\linewidth - 8\\tabcolsep\) \* \\real\{0\.1750\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 8\\tabcolsep\) \* \\real\{0\.1500\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 8\\tabcolsep\) \* \\real\{0\.2125\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 8\\tabcolsep\) \* \\real\{0\.3750\}\}"
+            ),
+            (
+                r">{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.20}}"
+                "\n  "
+                r">{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.27}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.10}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.16}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.27}}"
+            ),
+        ),
+    ]
+    for pat, repl in overrides:
+        text = re.sub(pat, lambda _m, r=repl: r, text)
+    return text
+
+
 def convert_paths_to_path_macro(text: str) -> str:
     """Wrap `\\texttt{...}` containing slashes/dots/underscores in `\\path{...}`
     so the url package can break long identifiers at separators.
@@ -296,6 +337,10 @@ def fixup(text: str) -> str:
     # from §) and before \path conversion (so \Cref{} is not wrapped
     # as a verbatim path).
     text = convert_section_refs(text)
+
+    # Rebalance over-wide tables before converting paths (the path
+    # conversion can interact with the column widths if applied later).
+    text = rebalance_pandoc_table_widths(text)
 
     # Convert long-identifier \texttt{...} to \path{...} so the url
     # package can break at separators.  This dramatically reduces
