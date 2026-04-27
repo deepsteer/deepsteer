@@ -40,7 +40,8 @@ PAPER_DIR = Path("papers/accuracy_vs_fragility")
 C2_JSON = PAPER_DIR / "outputs/phase_c2/c2_emergence_timing.json"
 C4_AGG = PAPER_DIR / "outputs/phase_c4_compositional/3seed/aggregate_per_checkpoint.json"
 
-PAPER_FIG = PAPER_DIR / "figures/figure_1_onset_overlay.png"
+PAPER_FIG_PNG = PAPER_DIR / "figures/figure_1_onset_overlay.png"
+PAPER_FIG_PDF = PAPER_DIR / "figures/figure_1_onset_overlay.pdf"
 OUTPUTS_FIG = PAPER_DIR / "outputs/phase_c4_compositional/compositional_vs_lexical_onset.png"
 
 
@@ -152,13 +153,17 @@ def main() -> None:
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
 
-    # Write to both paper and outputs.
-    PAPER_FIG.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(PAPER_FIG, dpi=200)
+    # Write to both paper and outputs.  PDF is the canonical paper-build
+    # asset (vector quality, embeddable in LaTeX); PNG mirrors it for
+    # github / non-LaTeX consumers.
+    PAPER_FIG_PNG.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(PAPER_FIG_PDF)              # vector PDF (no dpi needed)
+    fig.savefig(PAPER_FIG_PNG, dpi=200)
     fig.savefig(OUTPUTS_FIG, dpi=150)
     plt.close(fig)
 
-    print(f"wrote: {PAPER_FIG}")
+    print(f"wrote: {PAPER_FIG_PDF}")
+    print(f"wrote: {PAPER_FIG_PNG}")
     print(f"wrote: {OUTPUTS_FIG}")
     print(f"onset steps: {onset_steps}")
     print(f"compositional 4-seed plateau (step 36K): "

@@ -6,7 +6,7 @@ __pycache__/
 *.egg
 *.egg-info/
 dist/
-build/
+/build/                 # Python `build/` only at project root (paper LaTeX build dirs are tracked)
 eggs/
 *.whl
 
