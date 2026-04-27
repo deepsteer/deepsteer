@@ -53,6 +53,12 @@ Exact versions are pinned in `pyproject.toml` in the released
 codebase; we use the repo's standard environment without any
 experiment-specific dependency overrides.
 
+**Public release.** All code, datasets, scripts, and per-checkpoint
+output JSON are released at <https://github.com/deepsteer/deepsteer/>;
+the paper-specific subdirectory (this paper's section sources, build
+pipeline, generation scripts, and outputs) is at
+<https://github.com/deepsteer/deepsteer/tree/main/papers/accuracy_vs_fragility>.
+
 ## E.4 Model checkpoints
 
 All target models are HuggingFace repos under the `allenai`
