@@ -1,6 +1,5 @@
 % main.tex — Paper 1: Probing Accuracy Saturates; Fragility Doesn't.
-% arXiv-targeted; generic article class for now (venue-specific .sty
-% layered on top is a 1-hour swap later).
+% arXiv-targeted; NeurIPS 2025 preprint style.
 %
 % Build:
 %   make pdf   — runs pandoc on each sections/<NN>.md, then latexmk
@@ -9,24 +8,26 @@
 % Section files live in build/sections/<NN>.tex (generated from
 % ../sections/<NN>.md by `make sections`).
 
-\documentclass[11pt]{article}
+\documentclass{article}
 
-% --- Page geometry --------------------------------------------------
-\usepackage[letterpaper, margin=1in]{geometry}
+% --- NeurIPS 2025 style (preprint mode for arXiv) -------------------
+% Pass natbib options before neurips_2025 loads natbib internally.
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
 
 % --- Typography -----------------------------------------------------
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{lmodern}
 \usepackage{microtype}
 \usepackage{textcomp}
 
 % Allow more aggressive inter-word stretching before declaring an
-% overfull \hbox.  Combined with \sloppy below, this dramatically
-% reduces overfulls in paragraphs containing long verbatim identifiers
-% (module paths, URLs, etc.).
+% overfull \hbox.  NeurIPS textwidth is 5.5in (narrower than the
+% previous 6.5in), so long verbatim identifiers (module paths, URLs)
+% need more help breaking — matters even more here than under
+% article class defaults.
 \setlength{\emergencystretch}{3em}
-\sloppy
 
 % Allow line breaks inside long verbatim-style inline code (module
 % paths, repo paths) at `.` `/` `_` `-` separators.  `url` package's
@@ -69,10 +70,6 @@
 
 % --- Color (used by hyperref + a few inline highlights) -------------
 \usepackage{xcolor}
-
-% --- Citations (natbib for arXiv compatibility) ---------------------
-\usepackage[round, comma, sort&compress, authoryear]{natbib}
-\bibliographystyle{plainnat}
 
 % --- Cross-references (load hyperref before cleveref) ---------------
 \usepackage[colorlinks=true,
