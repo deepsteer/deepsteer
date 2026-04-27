@@ -15,7 +15,7 @@ Two methods (selected via :class:`SteeringMethod`):
   anti-persona residuals.  No auxiliary loss; the patch alone biases
   what the model can use as features.
 
-Step 1 (`outputs/phase_d/c10_inference_patch/`) established that this
+Step 1 (`papers/persona_monitoring/outputs/phase_d/c10_inference_patch/`) established that this
 constant-offset variant is the right primitive at 1B scale: pure
 ``h - ((h·w)/||w||²) w`` projection has only ~4% norm magnitude (the
 persona direction's natural amplitude) and is too weak to bite.  The

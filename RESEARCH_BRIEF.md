@@ -269,7 +269,7 @@ behavioral-judge harness — all running on OLMo-2 1B (16 layers, 1.5 B
 params, MPS, fp16). C10 v2 + Step 2 + C15 reframed total runtime ~6
 hours of MPS time on a MacBook Pro M4 Pro. All adapters, eval
 outputs, judge ratings, and probe weights are published under
-`outputs/phase_d/` for reproducibility.
+`papers/persona_monitoring/outputs/phase_d/` for reproducibility.
 
 ## Toolkit Status
 

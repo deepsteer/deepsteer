@@ -17,20 +17,20 @@ Hardware: MacBook Pro M4 Pro, 24 GB unified memory
 
 Usage:
     # Run all experiments
-    python examples/moral_emergence.py --output-dir outputs/phase_a
+    python scripts/moral_emergence.py --output-dir outputs/phase_a
 
     # Quick test with reduced dataset and fewer causal prompts
-    python examples/moral_emergence.py --output-dir outputs/phase_a \\
+    python scripts/moral_emergence.py --output-dir outputs/phase_a \\
         --dataset-target 10 --causal-prompts 10
 
     # Run specific experiments only
-    python examples/moral_emergence.py --experiments A1 A3 A5
+    python scripts/moral_emergence.py --experiments A1 A3 A5
 
     # Skip trajectory (A2) for faster iteration
-    python examples/moral_emergence.py --experiments A1 A3 A4 A5
+    python scripts/moral_emergence.py --experiments A1 A3 A4 A5
 
     # Use a different model
-    python examples/moral_emergence.py --weights allenai/OLMo-1B-hf
+    python scripts/moral_emergence.py --weights allenai/OLMo-1B-hf
 """
 
 from __future__ import annotations

@@ -3,32 +3,32 @@
 
 Examples:
     # Representational probing on OLMo-7B base (primary use case)
-    python examples/run_evaluation.py --model olmo --output-dir outputs/
+    python scripts/run_evaluation.py --model olmo --output-dir outputs/
 
     # Representational probing on Llama-3-8B base
-    python examples/run_evaluation.py --model llama --output-dir outputs/
+    python scripts/run_evaluation.py --model llama --output-dir outputs/
 
     # Fast iteration with smaller model
-    python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+    python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10
 
     # Include behavioral evals (requires instruction-tuned model)
-    python examples/run_evaluation.py --model olmo --behavioral \
+    python scripts/run_evaluation.py --model olmo --behavioral \
         --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
 
     # Behavioral evals on Claude (automatic, API models always run behavioral)
-    python examples/run_evaluation.py --model claude --output-dir outputs/
+    python scripts/run_evaluation.py --model claude --output-dir outputs/
 
     # Behavioral evals on GPT
-    python examples/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
+    python scripts/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
 
     # Checkpoint trajectory analysis
-    python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+    python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --output-dir outputs/ --dataset-target 10 \
         --checkpoint-revisions step1000-tokens4B step2000-tokens8B
 
     # List available checkpoints
-    python examples/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
+    python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
         --list-checkpoints
 """
 

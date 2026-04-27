@@ -26,7 +26,7 @@ representing moral valence as a compositional property of multi-word
 combinations rather than as a property of individual lexical tokens.
 
 See ``RESEARCH_PLAN.md`` H21 and the
-``paper/accuracy_vs_fragility/outputs/phase_c4_compositional/``
+``papers/accuracy_vs_fragility/outputs/phase_c4_compositional/``
 directory for the trajectory results.
 """
 

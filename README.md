@@ -683,7 +683,7 @@ scripts/
   step2_finding4_behavioral_judge.py   Step 2 behavioral judge harness
   step2_finding2_head_start.py         Step 2 vanilla-trajectory head-start check
   c15_reframed.py                      Phase B/C battery on C10 v2 adapters
-outputs/phase_d/  C10 v2, Step 2, C15 reframed reproducible artifacts
+papers/persona_monitoring/outputs/phase_d/  C10 v2, Step 2, C15 reframed reproducible artifacts
 tests/            Mirrors source structure
 ```
 
