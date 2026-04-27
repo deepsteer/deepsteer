@@ -195,7 +195,7 @@ SECTION_LABEL_MAP = {
     "3.1": "standard-minimal-pair-datasets",
     "3.2": "compositional-moral-probing-dataset",
     "3.3": "linear-probing",
-    "3.4": "moralfragilitytest",
+    "3.4": "fragility-testing",
     "3.5": "target-models-and-checkpoints",
     "3.6": "validity-controls",
     # §4 subsections

@@ -120,7 +120,7 @@ hidden-state probing must beat by ≥10 pp. Implementation:
 latter a subclass that overrides only the dataset path),
 `GeneralLinearProbe` for sentiment and syntax — same training loop.
 
-## 3.4 `MoralFragilityTest`
+## 3.4 Fragility testing
 
 Train per-layer linear probes on clean activations as in §3.3; for
 each layer ℓ, add Gaussian noise N(0, σ²) to the cached test-set
