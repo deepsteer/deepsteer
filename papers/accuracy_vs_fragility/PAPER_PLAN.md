@@ -1,4 +1,4 @@
-# Paper 1 Plan: *Probing Accuracy Saturates; Fragility Doesn't*
+# Paper 1 Plan: *When Probing Accuracy Saturates, Fragility Resolves*
 
 **Status:** Framing locked in. Phase C4 compositional probe ablation complete; abstract sentence locked to Outcome B variant. 3-seed compositional fragility replication complete (verdict `decline_real`); §4.3 locked to the *full subsection* branch. Drafting on §3 Methodology and §4 Results in flight; remaining items are §1 Introduction, §2 Related Work, §5 Discussion, §6 Conclusion, abstract tightening pass, and figure styling.
 
@@ -8,13 +8,14 @@
 
 ## Title
 
-**Primary:** *Probing Accuracy Saturates; Fragility Doesn't: Measuring Moral Representations During LLM Pre-Training*
+**Primary:** *When Probing Accuracy Saturates, Fragility Resolves: A Complementary Metric for LLM Pre-Training Analysis*
 
 Alternates kept on file:
-- *When Moralized Distinctions Emerge: Probing Accuracy Saturates But Fragility Doesn't*
-- *Beyond Probing Accuracy: Fragility-Based Measurement of Moral Representations During Pre-Training*
+- *Probing Accuracy Saturates; Fragility Doesn't: Measuring Moral Representations During LLM Pre-Training* (former v1)
+- *Beyond the Probing Plateau: A Complementary Metric for LLM Pre-Training Analysis*
+- *Probing Beyond Accuracy: Fragility as a Pre-Training Resolution Metric*
 
-The colon does the work of separating the methodological claim ("probing accuracy saturates; fragility doesn't") from the demonstration domain ("measuring moral representations during LLM pre-training"). Keyword-rich for indexing, descriptive at a glance, signals contribution type immediately.
+The conditional ("When ... Saturates, ... Resolves") names both verbs and frames fragility's contribution as the response to accuracy's saturation — the exact insight (fragility keeps resolving change after the accuracy ceiling). The subtitle generalizes from the moral-domain demonstration to the methodological contribution that the paper actually argues for.
 
 ## Venue target
 
