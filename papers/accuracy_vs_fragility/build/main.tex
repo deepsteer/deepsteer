@@ -151,8 +151,6 @@ hidden states and declare a property ``encoded'' when accuracy is
 high --- works well on a snapshot but breaks across pre-training:
 probe accuracy saturates within the first few thousand steps.
 
-Most of pre-training becomes invisible to the instrument.
-
 We introduce \emph{fragility} --- the activation-noise level at which
 probe accuracy collapses --- as a complementary per-layer metric that
 integrates the margin of separability and the redundancy of

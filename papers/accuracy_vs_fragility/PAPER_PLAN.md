@@ -29,8 +29,6 @@ NeurIPS Safe Generative AI workshop or ICLR R2-FM. Length budget assumed 8 pages
 
 > A standard interpretability protocol — train a linear classifier on hidden states and declare a property "encoded" when accuracy is high — works well on a snapshot but breaks across pre-training: probe accuracy saturates within the first few thousand steps.
 >
-> Most of pre-training becomes invisible to the instrument.
->
 > We introduce *fragility* — the activation-noise level at which probe accuracy collapses — as a complementary per-layer metric that integrates the margin of separability and the redundancy of representation, both of which keep evolving long after accuracy plateaus.
 >
 > Applied to OLMo, fragility recovers structure invisible to accuracy alone. (1) Moralized representations emerge along a *lexical→compositional gradient*, not a single phase transition: single-token semantic probes onset early, a compositional moral probe whose pairs require multi-token integration onsets several thousand steps later, and structural well-formedness later still — bounding the standard moral probe's early onset to lexical accessibility rather than compositional moral encoding. (2) A *layer-depth robustness gradient* develops monotonically across training, invisible to probing accuracy: as accuracy plateaus across layers, late layers hold maximum noise tolerance while early layers grow progressively more brittle. (3) Data curation *reshapes representational structure without changing content*: LoRA fine-tuning on three matched corpora produces near-identical probing accuracy but condition-specific fragility profiles, separating where moralized information lives from how robustly it is encoded.
