@@ -88,15 +88,17 @@ CITES_INTEXT = [
 
 # Figure-insertion patterns. Each maps a sentence-prefix marker to a
 # LaTeX figure block. Markers must match exactly once per file. The
-# replacement uses the pre-existing prose as the in-text reference (\Cref or
-# literal "Figure 1") and inserts a float just before the paragraph.
+# replacement uses the pre-existing prose as the in-text reference
+# (\Cref or literal "Figure N") and inserts a float just before the
+# paragraph.  After all FIGURE_INSERTS run, a post-pass rewrites any
+# remaining bold "Figure N" mentions to "Figure~\ref{fig:label}" so
+# that secondary references resolve cleanly.
 FIGURE_INSERTS: list[tuple[str, str]] = [
-    # Figure 1 — onset overlay.  Insert before the §4.1 paragraph
-    # that references "Figure 1".  Other figures (2, 3, 4) are
-    # not yet generated; their references remain as literal text
-    # in the prose for now.
+    # Figure 1 — onset overlay (§4.1).
+    # Patterns use `\s+` to tolerate markdown line-wrap variations
+    # (pandoc preserves source line breaks in the .tex output).
     (
-        r"\\textbf\{Figure 1\} plots the four\nmean-accuracy trajectories on a shared step axis\.",
+        r"\\textbf\{Figure 1\}\s+plots\s+the\s+four\s+mean-accuracy\s+trajectories\s+on\s+a\s+shared\s+step\s+axis\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
@@ -114,7 +116,104 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
             "mean-accuracy trajectories on a shared step axis."
         ),
     ),
+
+    # Figure 2 — saturation vs fragility (§4.3 lead).
+    (
+        r"\\textbf\{Figure 2\}:\s+two-panel\s+comparison\s+on\s+a\s+shared\s+step\s+axis\.",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_2_saturation_vs_fragility.pdf}\n"
+            "  \\caption{Probing accuracy saturates; fragility resolves. "
+            "OLMo-2~1B early-training, 37 checkpoints. Top: mean probing "
+            "accuracy across all 16 layers --- saturates near~0.95 by step~4K "
+            "and stays flat for the remaining~32K steps. Bottom: mean "
+            "critical noise --- continues evolving long after accuracy "
+            "plateaus, drifting from~$\\sim$10 down toward~$\\sim$5 between "
+            "steps~4K and~36K.}\n"
+            "  \\label{fig:saturation-vs-fragility}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:saturation-vs-fragility}}: "
+            "two-panel comparison on a shared step axis."
+        ),
+    ),
+
+    # Figure 3 — layer-depth heatmaps (§4.3 mid).
+    (
+        r"\\textbf\{Figure 3\}\s+shows\s+the\s+same\s+trajectory\s+as\s+two\s+stacked\s+layer-depth\s+heatmaps:",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_3_layer_depth_heatmaps.pdf}\n"
+            "  \\caption{Layer-depth structure over training "
+            "(OLMo-2~1B early-training). (a)~Probing accuracy: uniformly "
+            "high across layers after step~4K. (b)~Critical noise: a "
+            "layer-depth gradient develops, with late layers holding maximum "
+            "noise tolerance while early layers grow progressively more "
+            "brittle. Same data, same model; structure visible only under "
+            "the fragility metric.}\n"
+            "  \\label{fig:layer-depth-heatmaps}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:layer-depth-heatmaps}} shows the "
+            "same trajectory as two stacked layer-depth heatmaps:"
+        ),
+    ),
+
+    # Figure 4 — data curation triple panel (§4.4).
+    (
+        r"\\textbf\{Figure 4\}\s+plots\s+all\s+three\s+per-layer\s+profiles\s+plus\s+the\s+three\s+identical\s+accuracy\s+bars:",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_4_data_curation.pdf}\n"
+            "  \\caption{Data curation reshapes representational structure, "
+            "not content (OLMo-2~1B; LoRA fine-tuning from step~1000 on three "
+            "matched corpora). (a)~Final probing accuracy is near-identical "
+            "across narrative-moral, declarative-moral, and general-text "
+            "control conditions ($\\sim$0.81~/~0.80~/~0.80). (b)~Per-layer "
+            "critical noise is condition-specific: declarative-moral training "
+            "produces a sharply localized layer-3 fragility dip "
+            "($\\sigma$=3.0) that natural-text and general-control training "
+            "do not.}\n"
+            "  \\label{fig:data-curation}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:data-curation}} plots all three "
+            "per-layer profiles plus the three identical accuracy bars:"
+        ),
+    ),
 ]
+
+
+# Mapping for the secondary-reference post-pass: any remaining bold
+# "Figure N" mention (one already replaced by the FIGURE_INSERTS above
+# is now `\textbf{Figure~\ref{...}}`, so it won't match this) gets
+# rewritten to a proper `\ref{}` so cross-references resolve.
+FIGURE_LABEL_MAP = {
+    "1": "fig:onset-overlay",
+    "2": "fig:saturation-vs-fragility",
+    "3": "fig:layer-depth-heatmaps",
+    "4": "fig:data-curation",
+}
+
+
+def rewrite_secondary_figure_refs(text: str) -> str:
+    """Convert any leftover `\\textbf{Figure N}` to `\\textbf{Figure~\\ref{<label>}}`.
+
+    Runs after FIGURE_INSERTS so the primary insertion-anchor sentence
+    --- which the FIGURE_INSERTS replacement has already rewritten to
+    `\\textbf{Figure~\\ref{...}}` --- doesn't match this pattern (it has
+    a tilde in it, not a literal space).
+    """
+    pattern = re.compile(r"\\textbf\{Figure (\d+)\}")
+
+    def replace(match: re.Match) -> str:
+        n = match.group(1)
+        label = FIGURE_LABEL_MAP.get(n)
+        if label is None:
+            return match.group(0)
+        return r"\textbf{Figure~\ref{" + label + "}}"
+
+    return pattern.sub(replace, text)
 
 
 # Unicode -> LaTeX-math / LaTeX-text substitutions.  pdflatex does not
@@ -328,6 +427,12 @@ def fixup(text: str) -> str:
     # Figure insertions.
     for pat, repl in FIGURE_INSERTS:
         text = re.sub(pat, lambda _m, r=repl: r, text)
+
+    # Secondary figure refs — any leftover bold "Figure N" mentions
+    # become `\textbf{Figure~\ref{<label>}}`.  The FIGURE_INSERTS
+    # replacements emit `Figure~\ref{...}` (with tilde), so they
+    # don't re-match here.
+    text = rewrite_secondary_figure_refs(text)
 
     # Unicode -> LaTeX (must come before \path conversion so that
     # unicode inside \texttt{...} is normalized first).

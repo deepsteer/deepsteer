@@ -124,6 +124,13 @@ the entire remaining 95 % of training.
 fragility evolves through step 36K with a layer-depth gradient that
 develops monotonically (late > mid > early after step ~10K).*
 
+**Figure 3** shows the same trajectory as two stacked layer-depth
+heatmaps: probing accuracy (uniformly green after step 4K, no
+remaining structure to resolve) above critical noise (gradient
+emerging — late layers hold maximum noise tolerance throughout
+while early layers grow progressively more brittle). Same data;
+different metric; different visible structure.
+
 The pattern reproduces at OLMo-3 7B (Phase B5, 5 sparse checkpoints):
 mean critical noise rises 0.20 → 5.67 between steps 0 and 353K (~28×),
 then plateaus at ~5.3 through step 1.4M; layer-depth gradient is
@@ -138,10 +145,9 @@ ran `MoralFragilityTest` (§3.4) on the compositional dataset across
 all 37 OLMo-2 1B early-training checkpoints with four split seeds
 (42, 43, 44, 45) — the original C4 trajectory plus a three-seed
 replication ~50 min on the same MacBook Pro M4 Pro / MPS. **Table 3**
-gives the 4-seed mean ± std at the diagnostic checkpoints, and
-**Figure 2** (lower right inset, or a small fourth panel) plots the
-full mean ± shaded std band against the C1 standard moral probe as
-the comparison curve.
+gives the 4-seed mean ± std at the diagnostic checkpoints; the
+4-seed accuracy band on **Figure 1** carries the matching probing-
+side trajectory.
 
 | Step | Compositional mean critical noise (4-seed mean ± std) | n |
 |-----:|------------------------------------------------------:|---|
