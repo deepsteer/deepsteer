@@ -3,8 +3,9 @@
 
 Converts markdown-style author-year citations to natbib commands using
 the bibkey map below.  Inserts \\includegraphics blocks where figures
-are referenced.  Leaves §X cross-references as literal section symbols
-(reads fine; tightening to \\Cref{} is a follow-up pass).
+are referenced.  Rewrites §X cross-references as `\\Cref{<slug>}`
+so cleveref auto-renders the section number and they update if the
+ordering changes.
 
 Run via the Makefile per-section conversion rule.
 """
@@ -21,40 +22,48 @@ CITES_PARENS = [
     # (Multiple, Author, & Combined, Year; Other, Year)
     (
         r"\(Haidt, 2012; Graham et al\., 2013\)",
-        r"\\citep{haidt2012righteous,graham2013mft}",
+        r"\citep{haidt2012righteous,graham2013mft}",
     ),
     (r"\(Alain \\& Bengio, 2017; Belinkov, 2022\)",
-     r"\\citep{alain2017probes,belinkov2022probing}"),
+     r"\citep{alain2017probes,belinkov2022probing}"),
     # Single (Author, Year)
-    (r"\(Alain \\& Bengio, 2017\)", r"\\citep{alain2017probes}"),
-    (r"\(Belinkov, 2022\)", r"\\citep{belinkov2022probing}"),
-    (r"\(Meng et al\., 2022\)", r"\\citep{meng2022rome}"),
-    (r"\(Power et al\., 2022\)", r"\\citep{power2022grokking}"),
-    (r"\(Haidt, 2012\)", r"\\citep{haidt2012righteous}"),
-    (r"\(Graham et al\., 2013\)", r"\\citep{graham2013mft}"),
-    (r"\(Groeneveld et al\., 2024\)", r"\\citep{groeneveld2024olmo}"),
-    (r"\(Arditi et al\., 2024\)", r"\\citep{arditi2024refusal}"),
-    (r"\(Betley et al\., 2025\)", r"\\citep{betley2025em}"),
+    (r"\(Alain \\& Bengio, 2017\)", r"\citep{alain2017probes}"),
+    (r"\(Belinkov, 2022\)", r"\citep{belinkov2022probing}"),
+    (r"\(Meng et al\., 2022\)", r"\citep{meng2022rome}"),
+    (r"\(Power et al\., 2022\)", r"\citep{power2022grokking}"),
+    (r"\(Haidt, 2012\)", r"\citep{haidt2012righteous}"),
+    (r"\(Graham et al\., 2013\)", r"\citep{graham2013mft}"),
+    (r"\(Groeneveld et al\., 2024\)", r"\citep{groeneveld2024olmo}"),
+    (r"\(Arditi et al\., 2024\)", r"\citep{arditi2024refusal}"),
+    (r"\(Betley et al\., 2025\)", r"\citep{betley2025em}"),
 ]
 
 # In-text Author (Year) -> \citet{key}
+# Use `[ ~]` for the space between author and year — pandoc inserts a
+# non-breaking tilde rather than a regular space.
 CITES_INTEXT = [
-    (r"Alain and Bengio \(2017\)", r"\\citet{alain2017probes}"),
-    (r"Alain \\& Bengio \(2017\)", r"\\citet{alain2017probes}"),
-    (r"Belinkov \(2022\)", r"\\citet{belinkov2022probing}"),
-    (r"Belinkov's \(2022\)", r"\\citeauthor{belinkov2022probing}'s \\citeyearpar{belinkov2022probing}"),
-    (r"Meng et al\.'s \(2022\)", r"\\citeauthor{meng2022rome}'s \\citeyearpar{meng2022rome}"),
-    (r"Meng et al\. \(2022\)", r"\\citet{meng2022rome}"),
-    (r"Power et al\.'s \(2022\)", r"\\citeauthor{power2022grokking}'s \\citeyearpar{power2022grokking}"),
-    (r"Power et al\. \(2022\)", r"\\citet{power2022grokking}"),
-    (r"Haidt's \(2012\)", r"\\citeauthor{haidt2012righteous}'s \\citeyearpar{haidt2012righteous}"),
-    (r"Haidt \(2012\)", r"\\citet{haidt2012righteous}"),
-    (r"Graham et al\.'s \(2013\)", r"\\citeauthor{graham2013mft}'s \\citeyearpar{graham2013mft}"),
-    (r"Graham et al\. \(2013\)", r"\\citet{graham2013mft}"),
-    (r"Groeneveld et al\. \(2024\)", r"\\citet{groeneveld2024olmo}"),
-    (r"Arditi et al\. \(2024\)", r"\\citet{arditi2024refusal}"),
-    (r"Betley et al\.'s \(2025\)", r"\\citeauthor{betley2025em}'s \\citeyearpar{betley2025em}"),
-    (r"Betley et al\. \(2025\)", r"\\citet{betley2025em}"),
+    (r"Alain and Bengio[ ~]\(2017\)", r"\citet{alain2017probes}"),
+    (r"Alain \\& Bengio[ ~]\(2017\)", r"\citet{alain2017probes}"),
+    (r"Belinkov[ ~]\(2022\)", r"\citet{belinkov2022probing}"),
+    (r"Belinkov's[ ~]\(2022\)",
+     r"\citeauthor{belinkov2022probing}'s \citeyearpar{belinkov2022probing}"),
+    (r"Meng et al\.'s[ ~]\(2022\)",
+     r"\citeauthor{meng2022rome}'s \citeyearpar{meng2022rome}"),
+    (r"Meng et al\.[ ~]\(2022\)", r"\citet{meng2022rome}"),
+    (r"Power et al\.'s[ ~]\(2022\)",
+     r"\citeauthor{power2022grokking}'s \citeyearpar{power2022grokking}"),
+    (r"Power et al\.[ ~]\(2022\)", r"\citet{power2022grokking}"),
+    (r"Haidt's[ ~]\(2012\)",
+     r"\citeauthor{haidt2012righteous}'s \citeyearpar{haidt2012righteous}"),
+    (r"Haidt[ ~]\(2012\)", r"\citet{haidt2012righteous}"),
+    (r"Graham et al\.'s[ ~]\(2013\)",
+     r"\citeauthor{graham2013mft}'s \citeyearpar{graham2013mft}"),
+    (r"Graham et al\.[ ~]\(2013\)", r"\citet{graham2013mft}"),
+    (r"Groeneveld et al\.[ ~]\(2024\)", r"\citet{groeneveld2024olmo}"),
+    (r"Arditi et al\.[ ~]\(2024\)", r"\citet{arditi2024refusal}"),
+    (r"Betley et al\.'s[ ~]\(2025\)",
+     r"\citeauthor{betley2025em}'s \citeyearpar{betley2025em}"),
+    (r"Betley et al\.[ ~]\(2025\)", r"\citet{betley2025em}"),
     # Companion-paper reference (Reblitz-Richardson 2026, in preparation)
     (r"Reblitz-Richardson, 2026, in preparation",
      r"Reblitz-Richardson, 2026, in preparation"),  # leave as text
@@ -152,6 +161,104 @@ def apply_unicode_fixups(text: str) -> str:
     return text
 
 
+# Section reference map: \S<N>(.<M>) literals -> \Cref{<slug>}.
+# Slugs come from pandoc's auto-generated \label{} for each heading
+# (after the Makefile strips "N." / "N.M" prefixes).  After unicode
+# fixup, "§3.2" becomes "\S3.2"; we convert to \Cref{} so the
+# reference auto-updates if section ordering changes.
+SECTION_LABEL_MAP = {
+    # Top-level
+    "1": "introduction",
+    "2": "related-work",
+    "3": "methodology",
+    "4": "results",
+    "5": "discussion",
+    "6": "conclusion",
+    # §3 subsections
+    "3.1": "standard-minimal-pair-datasets",
+    "3.2": "compositional-moral-probing-dataset",
+    "3.3": "linear-probing",
+    "3.4": "moralfragilitytest",
+    "3.5": "target-models-and-checkpoints",
+    "3.6": "validity-controls",
+    # §4 subsections
+    "4.1": "emergence-ordering-a-lexicalcompositional-gradient",
+    "4.2": "plateau-coincidence-compositional-syntax-under-mean-pooled-linear-probing",
+    "4.3": "probing-accuracy-saturates-fragility-doesnt",
+    "4.4": "data-curation-reshapes-structure-not-content",
+    # §5 subsections
+    "5.1": "semantic-vs.-structural-learning-dynamics",
+    "5.2": "why-fragility-succeeds-where-accuracy-saturates",
+    "5.3": "generalization-beyond-pre-training",
+    "5.4": "limitations",
+}
+
+
+def convert_section_refs(text: str) -> str:
+    """Map literal `\\S<N>(.<M>)` references to `\\Cref{<slug>}`.
+
+    The unicode fixup pass replaced `§` with `\\S`, so by this point
+    every section reference looks like `\\S4.1` or `\\S3` in the .tex
+    output.  Convert these to `\\Cref{<slug>}` using SECTION_LABEL_MAP.
+
+    Skip refs inside `\\begin{Highlighting}...\\end{Highlighting}`
+    blocks — `\\Cref` expansion clashes with the Verbatim environment's
+    commandchars setup and triggers cleveref internal errors.
+    """
+    pattern = re.compile(r"\\S(\d+(?:\.\d+)?)")
+
+    def replace(match: re.Match) -> str:
+        ref = match.group(1)
+        slug = SECTION_LABEL_MAP.get(ref)
+        if slug is None:
+            # Unknown reference — leave as literal section symbol.
+            return match.group(0)
+        return r"\Cref{" + slug + "}"
+
+    # Split on Highlighting blocks; only apply the regex to non-block
+    # segments.  re.split with a capture group keeps the delimiters.
+    block_re = re.compile(
+        r"(\\begin\{Highlighting\}.*?\\end\{Highlighting\})", re.DOTALL
+    )
+    parts = block_re.split(text)
+    for i in range(0, len(parts), 2):  # even indices are non-block
+        parts[i] = pattern.sub(replace, parts[i])
+    return "".join(parts)
+
+
+def convert_paths_to_path_macro(text: str) -> str:
+    """Wrap `\\texttt{...}` containing slashes/dots/underscores in `\\path{...}`
+    so the url package can break long identifiers at separators.
+
+    Targets cells like:
+        \\texttt{papers/accuracy_vs_fragility/scripts/phase_c4_3seed.py}
+        \\texttt{deepsteer.datasets.pipeline.build_probing_dataset}
+
+    Skips short \\texttt{} (no slashes/dots) — those don't cause
+    overfulls.  Also skips \\texttt{} with LaTeX commands inside (which
+    would break inside \\path{}).
+    """
+    # Match \texttt{...} where content can include escaped LaTeX specials
+    # (\_, \&, \#, \$, \%, \{, \}) but no other command sequences.
+    pattern = re.compile(r"\\texttt\{((?:[^{}\\]|\\[_&#$%{}])+)\}")
+
+    def replace(match: re.Match) -> str:
+        content = match.group(1)
+        # Only wrap if it looks like a path / module identifier with
+        # break-friendly separators (slashes, dots, or escaped
+        # underscores).
+        if not re.search(r"[/.]|\\_", content):
+            return match.group(0)
+        # \path takes the raw text — un-escape the LaTeX specials so
+        # the verbatim mode handles them.
+        unescaped = re.sub(r"\\([_&#$%{}])", r"\1", content)
+        # Use \path|...| delimited form to avoid `}` collisions in
+        # source tokens.
+        return r"\path|" + unescaped + "|"
+
+    return pattern.sub(replace, text)
+
+
 def fixup(text: str) -> str:
     # Citation conversions — parens form first, then in-text.
     # Pass the replacement through a lambda so re.sub does NOT
@@ -164,8 +271,19 @@ def fixup(text: str) -> str:
     for pat, repl in FIGURE_INSERTS:
         text = re.sub(pat, lambda _m, r=repl: r, text)
 
-    # Unicode -> LaTeX (last so it doesn't disturb earlier patterns).
+    # Unicode -> LaTeX (must come before \path conversion so that
+    # unicode inside \texttt{...} is normalized first).
     text = apply_unicode_fixups(text)
+
+    # § -> \Cref{}.  Must come after unicode fixup (which produces \S
+    # from §) and before \path conversion (so \Cref{} is not wrapped
+    # as a verbatim path).
+    text = convert_section_refs(text)
+
+    # Convert long-identifier \texttt{...} to \path{...} so the url
+    # package can break at separators.  This dramatically reduces
+    # overfull \hbox warnings in tables and lists with long paths.
+    text = convert_paths_to_path_macro(text)
 
     return text
 

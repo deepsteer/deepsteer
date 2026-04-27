@@ -21,6 +21,24 @@
 \usepackage{microtype}
 \usepackage{textcomp}
 
+% Allow more aggressive inter-word stretching before declaring an
+% overfull \hbox.  Combined with \sloppy below, this dramatically
+% reduces overfulls in paragraphs containing long verbatim identifiers
+% (module paths, URLs, etc.).
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% Allow line breaks inside long verbatim-style inline code (module
+% paths, repo paths) at `.` `/` `_` `-` separators.  `url` package's
+% \path does this; the [hyphens] option additionally allows breaks at
+% hyphens, which matters for model identifiers like `OLMo-2-0425-1B`.
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+% Allow more aggressive breaking inside \path / \url so model identifiers
+% don't overfull table cells.
+\Urlmuskip=0mu plus 1mu
+
 % --- Math (pandoc emits raw math; load amsmath) ---------------------
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -34,6 +52,10 @@
 % \real explicitly because some calc versions don't expose it as a public
 % command.
 \providecommand{\real}[1]{#1}
+% Reduce inter-column padding so pandoc's auto-computed proportional
+% column widths (which are tight by default) have a bit more room.
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
 
 % --- Lists ----------------------------------------------------------
 \usepackage{enumitem}
@@ -97,6 +119,7 @@
 \newcommand{\OperatorTok}[1]{#1}
 \newcommand{\NormalTok}[1]{#1}
 \newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
 \newcommand{\ControlFlowTok}[1]{\textbf{#1}}
 \newcommand{\FunctionTok}[1]{#1}
 \newcommand{\VariableTok}[1]{#1}
