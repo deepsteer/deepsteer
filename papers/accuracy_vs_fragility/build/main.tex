@@ -29,6 +29,11 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{longtable}
+\usepackage{calc}              % pandoc emits \real{...} for column widths
+% pandoc uses \real{} from `calc` for proportional column widths.  Define
+% \real explicitly because some calc versions don't expose it as a public
+% command.
+\providecommand{\real}[1]{#1}
 
 % --- Lists ----------------------------------------------------------
 \usepackage{enumitem}
@@ -70,6 +75,51 @@
 % --- Pandoc-generated section files use \tightlist -------------------
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Pandoc emits `{\def\LTcaptype{none} ...}` around unnumbered longtables
+% (markdown tables with no caption).  `none` references an undefined
+% counter; provide a stub so longtable's caption machinery has a target.
+\newcounter{none}
+
+% Pandoc emits `\begin{Shaded}` around fenced code blocks in markdown.
+% Define it as a quoted-verbatim environment.  We don't need syntax
+% highlighting in the paper; treating code blocks as plain typewriter
+% text is fine.
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+% Stubs for the syntax-highlighting commands pandoc emits inside
+% \begin{Highlighting}.  We render them all as plain text.
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\textbf{#1}}
+\newcommand{\StringTok}[1]{\textit{#1}}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\AttributeTok}[1]{#1}
+\newcommand{\OtherTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{#1}
+\newcommand{\DocumentationTok}[1]{\textit{#1}}
+\newcommand{\InformationTok}[1]{\textit{#1}}
+\newcommand{\ImportTok}[1]{\textbf{#1}}
+\newcommand{\ConstantTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textit{#1}}
+\newcommand{\SpecialCharTok}[1]{#1}
+\newcommand{\VerbatimStringTok}[1]{\texttt{#1}}
+\newcommand{\SpecialStringTok}[1]{\texttt{#1}}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\AlertTok}[1]{\textbf{#1}}
+\newcommand{\ErrorTok}[1]{\textbf{#1}}
+\newcommand{\WarningTok}[1]{#1}
+\newcommand{\AnnotationTok}[1]{#1}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
 
 % =======================================================================
 \begin{document}

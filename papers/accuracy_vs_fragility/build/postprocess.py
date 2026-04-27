@@ -91,14 +91,81 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
 ]
 
 
+# Unicode -> LaTeX-math / LaTeX-text substitutions.  pdflatex does not
+# handle these natively even with [utf8]{inputenc}; replacing them at
+# postprocess time avoids switching to xelatex/lualatex.
+UNICODE_FIXUPS = {
+    "≤": r"$\le$",
+    "≥": r"$\ge$",
+    "≪": r"$\ll$",
+    "≫": r"$\gg$",
+    "≈": r"$\approx$",
+    "→": r"$\to$",
+    "←": r"$\leftarrow$",
+    "±": r"$\pm$",
+    "×": r"$\times$",
+    "÷": r"$\div$",
+    "·": r"$\cdot$",
+    "Δ": r"$\Delta$",
+    "α": r"$\alpha$",
+    "β": r"$\beta$",
+    "γ": r"$\gamma$",
+    "δ": r"$\delta$",
+    "λ": r"$\lambda$",
+    "μ": r"$\mu$",
+    "π": r"$\pi$",
+    "σ": r"$\sigma$",
+    "τ": r"$\tau$",
+    "Σ": r"$\Sigma$",
+    "Π": r"$\Pi$",
+    "ℓ": r"$\ell$",
+    "ℝ": r"$\mathbb{R}$",
+    "ℕ": r"$\mathbb{N}$",
+    "ℤ": r"$\mathbb{Z}$",
+    "∈": r"$\in$",
+    "∉": r"$\notin$",
+    "−": r"$-$",  # U+2212 minus sign (distinct from hyphen-minus)
+    "✓": r"\checkmark{}",
+    "✗": r"\ding{55}",
+    "²": r"$^2$",
+    "³": r"$^3$",
+    "½": r"$\tfrac{1}{2}$",
+    "‰": r"\textperthousand{}",
+    "—": r"---",  # em-dash (pandoc usually does this, but belt + braces)
+    "–": r"--",   # en-dash
+    "…": r"\ldots{}",
+    "§": r"\S",
+    "°": r"\textdegree{}",
+    # Ligatures / smart quotes pandoc occasionally emits despite the
+    # markdown source using ASCII; safe to normalize.
+    "’": "'",
+    "‘": "'",
+    "“": "``",
+    "”": "''",
+    "​": "",  # zero-width space
+}
+
+
+def apply_unicode_fixups(text: str) -> str:
+    for src, dst in UNICODE_FIXUPS.items():
+        text = text.replace(src, dst)
+    return text
+
+
 def fixup(text: str) -> str:
     # Citation conversions — parens form first, then in-text.
+    # Pass the replacement through a lambda so re.sub does NOT
+    # interpret backslash escapes (\c, \citep, \\&, etc.) in the
+    # replacement string.
     for pat, repl in CITES_PARENS + CITES_INTEXT:
-        text = re.sub(pat, repl, text)
+        text = re.sub(pat, lambda _m, r=repl: r, text)
 
     # Figure insertions.
     for pat, repl in FIGURE_INSERTS:
-        text = re.sub(pat, repl, text)
+        text = re.sub(pat, lambda _m, r=repl: r, text)
+
+    # Unicode -> LaTeX (last so it doesn't disturb earlier patterns).
+    text = apply_unicode_fixups(text)
 
     return text
 

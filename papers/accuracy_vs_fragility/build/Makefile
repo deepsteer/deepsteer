@@ -28,7 +28,12 @@ PANDOC_FLAGS := \
   --wrap=preserve \
   --template=pandoc-template.tex
 
-LATEXMK_FLAGS := -pdf -bibtex -interaction=nonstopmode -halt-on-error
+# -halt-on-error dropped: latexmk needs multiple passes for forward
+# references and bibliography resolution, and `halt` mode trips
+# unnecessarily during normal multi-pass builds.
+# -f (force) keeps going after pdflatex returns non-zero due to
+# unresolved references, which are normal in early passes.
+LATEXMK_FLAGS := -pdf -bibtex -f -interaction=nonstopmode
 
 .PHONY: all pdf sections clean distclean arxiv help
 
@@ -57,7 +62,14 @@ sections: $(SECTION_TEX)
 pdf: sections $(MAIN_PDF)
 
 $(MAIN_PDF): $(MAIN_TEX) $(SECTION_TEX) references.bib
-	$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN)
+	-$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN)
+	@if [ -f $(MAIN_PDF) ]; then \
+	  size=$$(wc -c < $(MAIN_PDF)); \
+	  pages=$$(grep -c "^Doc-Start" $(MAIN).log 2>/dev/null || echo "?"); \
+	  echo "==> $(MAIN_PDF) built ($$size bytes)"; \
+	else \
+	  echo "ERROR: $(MAIN_PDF) not produced — see main.log"; exit 1; \
+	fi
 
 # --- Cleanup ------------------------------------------------------------
 clean:
