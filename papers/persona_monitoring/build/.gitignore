@@ -1,0 +1,25 @@
+# latexmk + pdflatex intermediates
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+
+# pandoc-converted sections — track main.tex but not derived files
+sections/*.tex
+
+# arxiv staging
+arxiv-staging/
+arxiv.tar.gz
+
+# the final PDF — track explicitly via `git add -f main.pdf` when ready
+main.pdf
