@@ -24,6 +24,12 @@ Research and methods implemented or leveraged in DeepSteer.
 
   `LayerWiseMoralProbe` trains a binary linear classifier at each transformer layer, following the probing methodology established by Alain & Bengio and surveyed by Belinkov. The per-layer accuracy curve reveals where moral concepts become linearly decodable.
 
+## Phase Transitions in Neural Network Learning
+
+- **Power, A., Burda, Y., Edwards, H., Babuschkin, I., & Misra, V. (2022).** Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets. *arXiv preprint arXiv:2201.02177*. https://arxiv.org/abs/2201.02177
+
+  Documented "grokking" — neural networks suddenly transitioning from memorization to generalization on small algorithmic tasks after long plateaus, the canonical phase-transition phenomenon for neural-network learning. Paper 1 §4.1 maps grokking-like phase-transition dynamics against a lexical-vs-compositional dichotomy *within a single OLMo-2 1B early-training run*: standard moral and sentiment probes show sharp phase-transition onsets, while compositional moral and syntax probes rise gradually with no equally sharp inflection. Paper 1 §5.1 develops the connection — phase transitions appear when a feature is acquirable from local lexical statistics, gradual emergence appears when the feature requires multi-token integration.
+
 ## Causal Tracing and Activation Patching
 
 - **Meng, K., Bau, D., Andonian, A., & Belinkov, Y. (2022).** Locating and Editing Factual Associations in GPT. *Advances in Neural Information Processing Systems (NeurIPS)*, 35. https://arxiv.org/abs/2202.05262
@@ -56,9 +62,9 @@ Research and methods implemented or leveraged in DeepSteer.
 
 ## Safety Circuit Fragility
 
-- **Pres, I. von der,"; Fazl, M. A., et al. (2024).** Refusal in Language Models Is Mediated by a Single Direction. *arXiv preprint arXiv:2406.11717*. https://arxiv.org/abs/2406.11717
+- **Arditi, A., Obeso, O., Syed, A., Paleka, D., Panickssery, N., Gurnee, W., & Nanda, N. (2024).** Refusal in Language Models Is Mediated by a Single Direction. *arXiv preprint arXiv:2406.11717*. https://arxiv.org/abs/2406.11717
 
-  This work informs DeepSteer's hypothesis that shallow alignment (refusal concentrated in late-layer circuits) is more fragile and removable than deep, distributed moral encoding. The Phase B/C `MoralFragilityTest` benchmark and the Phase D Step 2 layer-locus shift finding (C15 reframed) directly extend this line of work to moral encoding.
+  This work informs DeepSteer's hypothesis that shallow alignment (refusal concentrated in late-layer circuits) is more fragile and removable than deep, distributed moral encoding. The Phase B/C `MoralFragilityTest` benchmark and the Phase D Step 2 layer-locus shift finding (C15 reframed) directly extend this line of work to moral encoding. (Paper 1 cites this in §2 Related Work as the post-training-time analog to our pre-training-time fragility instrument.)
 
 ## MoralBench Dataset
 

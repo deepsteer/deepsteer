@@ -41,7 +41,7 @@ Lead with the methodological gap. Standard story in interpretability is: train a
 - **Phase transitions in neural network learning:** Power et al. (2022) grokking. Connection to our semantic / structural emergence-dynamics dichotomy.
 - **Moral Foundations Theory:** Haidt (2012), Graham et al. (2013). Source of the moral taxonomy used in the probing dataset.
 - **OLMo and open checkpoints:** Groeneveld et al. (2024). The unique infrastructure that makes this analysis possible.
-- **Fragility / robustness as a representation property:** Pres et al. (2024) on refusal as a single-direction phenomenon, by analogy. Connection to safety-circuit literature.
+- **Fragility / robustness as a representation property:** Arditi et al. (2024) on refusal as a single-direction phenomenon, by analogy. Connection to safety-circuit literature.
 - Brief acknowledgement that this work uses moralized vocabulary as a demonstration domain — broader claims about moral reasoning would require harder probes (which §5 discusses and Phase C4 explicitly tests).
 
 ### 3. Methodology (~1.75 pages)
@@ -242,7 +242,7 @@ Full citations in `REFERENCES.md`. Use these exact citations; don't fabricate or
 - Power et al. (2022) — grokking, phase transitions
 - Haidt (2012); Graham et al. (2013) — Moral Foundations Theory
 - Groeneveld et al. (2024) — OLMo
-- Pres et al. (2024) — refusal direction (related-work fragility analogue)
+- Arditi et al. (2024) — refusal direction (related-work fragility analogue)
 - Reblitz-Richardson (Paper 2 in preparation) — C15 reframed reference in §5.3
 
 ## Drafting order recommendation for Claude Code
