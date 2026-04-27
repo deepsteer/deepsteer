@@ -33,7 +33,7 @@ NeurIPS Safe Generative AI workshop or ICLR R2-FM. Length budget assumed 8 pages
 >
 > Applied to OLMo, fragility recovers structure invisible to accuracy alone. (1) Moralized representations emerge along a *lexical→compositional gradient*, not a single phase transition: single-token semantic probes onset early, a compositional moral probe whose pairs require multi-token integration onsets several thousand steps later, and structural well-formedness later still — bounding the standard moral probe's early onset to lexical accessibility rather than compositional moral encoding. (2) A *layer-depth robustness gradient* develops monotonically across training, invisible to probing accuracy: as accuracy plateaus across layers, late layers hold maximum noise tolerance while early layers grow progressively more brittle. (3) Data curation *reshapes representational structure without changing content*: LoRA fine-tuning on three matched corpora produces near-identical probing accuracy but condition-specific fragility profiles, separating where moralized information lives from how robustly it is encoded.
 >
-> The unifying claim is methodological: **in every comparison where probing accuracy returns a flat answer, fragility returns a structured one.**
+> Our unifying claim is that **in every comparison where probing accuracy returns a flat answer, fragility returns a structured one.**
 
 The canonical version lives in `build/main.tex`; the block above tracks the wording the plan was written against.
 
