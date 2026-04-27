@@ -377,6 +377,36 @@ def rebalance_pandoc_table_widths(text: str) -> str:
                 r">{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.27}}"
             ),
         ),
+        # Appendix A foundation-emergence table (7 columns).
+        # Foundation column at 0.1579 is too narrow for 22-char cells
+        # like "sanctity/degradation" (overlaps Step~0).  Rebalance to
+        # 0.24/0.09×5/0.31.
+        (
+            (
+                r">\{\\raggedright\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1579\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1053\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1184\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1184\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1184\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.1184\}\}\s+"
+                r">\{\\raggedleft\\arraybackslash\}p\{\(\\linewidth - 12\\tabcolsep\) \* \\real\{0\.2632\}\}"
+            ),
+            (
+                r">{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.24}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.09}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.09}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.09}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.09}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.09}}"
+                "\n  "
+                r">{\raggedleft\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.31}}"
+            ),
+        ),
     ]
     for pat, repl in overrides:
         text = re.sub(pat, lambda _m, r=repl: r, text)
