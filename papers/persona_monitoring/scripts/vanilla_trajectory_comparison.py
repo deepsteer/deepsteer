@@ -32,13 +32,13 @@ MacBook Pro M4 Pro.
 
 Usage
 -----
-    python papers/persona_monitoring/scripts/step2_finding2_head_start.py
+    python papers/persona_monitoring/scripts/vanilla_trajectory_comparison.py
 
     # Skip retraining (use existing intermediate adapters from this script)
-    python papers/persona_monitoring/scripts/step2_finding2_head_start.py --skip-train
+    python papers/persona_monitoring/scripts/vanilla_trajectory_comparison.py --skip-train
 
     # Reduce eval surface for a faster sanity-check pass
-    python papers/persona_monitoring/scripts/step2_finding2_head_start.py \\
+    python papers/persona_monitoring/scripts/vanilla_trajectory_comparison.py \\
         --samples-per-paraphrase 10
 """
 
@@ -298,7 +298,7 @@ def evaluate_adapter(
 
 
 def collect_paired_keys(payload: dict[str, Any]) -> dict[tuple[str, int, int], float]:
-    """Same paired-key extraction as step2_analyze.py for paired Cohen's d."""
+    """Same paired-key extraction as analyze_steering.py for paired Cohen's d."""
     by_key: dict[tuple[str, int, int], float] = {}
     by_qpi: dict[tuple[str, int], list[int]] = {}
     samples = payload.get("samples", [])

@@ -185,7 +185,7 @@ generates different content," we forwarded 50 base-model responses
 either the vanilla or activation_patch eval distributions) through
 both vanilla and activation_patch LoRA models and measured
 ``delta = h_ap − h_van`` at layer 5 mean-pooled over response tokens
-(see `papers/persona_monitoring/scripts/step2_finding3_mechanism_check.py`,
+(see `papers/persona_monitoring/scripts/activation_patch_mechanism_check.py`,
 `finding3_mechanism_check.json`).
 
 |  | Naive single-layer prediction | Observed (mean ± SD) |
@@ -264,7 +264,7 @@ producing the same behavior via different feature directions.
 generations, 0-10 persona-voice scale).** To replace "look at these
 example outputs" with a citable measurement, every response from all
 four conditions was rated on a 0-10 persona-voice scale by Claude
-Haiku 4.5 (`papers/persona_monitoring/scripts/step2_finding4_behavioral_judge.py`,
+Haiku 4.5 (`papers/persona_monitoring/scripts/behavioral_judge_rerating.py`,
 `finding4_behavioral_judge.json`, `finding4_summary.md`,
 `finding4_scatter.png`).
 

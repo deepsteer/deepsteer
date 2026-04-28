@@ -37,12 +37,12 @@ Pipeline:
   7. Save everything to ``papers/persona_monitoring/outputs/phase_d/c10/``.
 
 Usage:
-    python papers/persona_monitoring/scripts/c10_em_replication.py
-    python papers/persona_monitoring/scripts/c10_em_replication.py --n-records 500 --max-steps 100
-    python papers/persona_monitoring/scripts/c10_em_replication.py --samples-per-paraphrase 10
-    python papers/persona_monitoring/scripts/c10_em_replication.py --skip-probe-activation
+    python papers/persona_monitoring/scripts/insecure_code_lora_replication.py
+    python papers/persona_monitoring/scripts/insecure_code_lora_replication.py --n-records 500 --max-steps 100
+    python papers/persona_monitoring/scripts/insecure_code_lora_replication.py --samples-per-paraphrase 10
+    python papers/persona_monitoring/scripts/insecure_code_lora_replication.py --skip-probe-activation
 
-Judge scoring (alignment/coherence) is deferred to ``c10_score_responses.py``.
+Judge scoring (alignment/coherence) is deferred to ``judge_score_responses.py``.
 """
 
 from __future__ import annotations
@@ -458,11 +458,11 @@ def main() -> None:
 
     logger.info("C10 complete.  Raw responses written to %s", args.output_dir)
     logger.info(
-        "Next: python papers/persona_monitoring/scripts/c10_score_responses.py --input-dir %s",
+        "Next: python papers/persona_monitoring/scripts/judge_score_responses.py --input-dir %s",
         args.output_dir,
     )
     logger.info(
-        "Then: python papers/persona_monitoring/scripts/c10_analyze.py --input-dir %s",
+        "Then: python papers/persona_monitoring/scripts/analyze_em_responses.py --input-dir %s",
         args.output_dir,
     )
 

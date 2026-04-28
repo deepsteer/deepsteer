@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Phase D C10: plot misalignment rates and persona-probe activation.
 
-Reads ``*_scored.json`` files produced by ``c10_score_responses.py`` and
+Reads ``*_scored.json`` files produced by ``judge_score_responses.py`` and
 produces three figures:
 
   - ``c10_overall_rates.png``: bar chart of overall coherent-misalignment
@@ -266,7 +266,7 @@ def main() -> None:
         scored[cond] = load_scored(path)
 
     if not scored:
-        raise SystemExit("No scored files found.  Run c10_score_responses.py first.")
+        raise SystemExit("No scored files found.  Run judge_score_responses.py first.")
 
     logger.info("Loaded %d conditions: %s", len(scored), list(scored))
 

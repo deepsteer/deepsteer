@@ -28,7 +28,7 @@ Each condition produces:
   - Pre / post training-loss trace (per step, with aux_loss for
     gradient_penalty)
   - 160-sample post-FT eval on Betley benign prompts (NoOpJudge — judge
-    scoring is run in a separate pass via c10_score_responses.py)
+    scoring is run in a separate pass via judge_score_responses.py)
   - Per-sample persona-probe activation (response-only and
     response-in-context)
 
@@ -51,13 +51,13 @@ Output structure::
 Usage::
 
     # Run all three conditions sequentially (~5 hrs on Mac)
-    python papers/persona_monitoring/scripts/step2_persona_steering.py
+    python papers/persona_monitoring/scripts/training_time_steering_runner.py
 
     # Just one condition (e.g., gate check)
-    python papers/persona_monitoring/scripts/step2_persona_steering.py --conditions none
+    python papers/persona_monitoring/scripts/training_time_steering_runner.py --conditions none
 
     # Custom coefficients
-    python papers/persona_monitoring/scripts/step2_persona_steering.py \\
+    python papers/persona_monitoring/scripts/training_time_steering_runner.py \\
         --gradient-penalty-lambda 0.10 --activation-patch-gamma 1.0
 """
 

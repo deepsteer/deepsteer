@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Phase D C10: attach Betley-style judge scores to raw EM responses.
 
-Reads raw-response JSON files saved by ``c10_em_replication.py``, runs a
+Reads raw-response JSON files saved by ``insecure_code_lora_replication.py``, runs a
 Judge on each (prompt, response) pair, and writes (a) scored JSON and
 (b) a compact summary with misalignment rates per condition.
 
@@ -17,11 +17,11 @@ Judge options:
                       (default: claude-haiku-4-5)
 
 Usage:
-    python papers/persona_monitoring/scripts/c10_score_responses.py \\
+    python papers/persona_monitoring/scripts/judge_score_responses.py \\
         --input-dir papers/persona_monitoring/outputs/phase_d/c10 \\
         --judge anthropic --judge-model claude-haiku-4-5
 
-    python papers/persona_monitoring/scripts/c10_score_responses.py \\
+    python papers/persona_monitoring/scripts/judge_score_responses.py \\
         --input-dir papers/persona_monitoring/outputs/phase_d/c10 \\
         --judge hf --judge-model meta-llama/Llama-3.2-3B-Instruct
 """

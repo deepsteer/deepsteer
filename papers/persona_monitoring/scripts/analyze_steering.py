@@ -155,7 +155,7 @@ def main() -> None:
                 final_aux_loss[cond] = steps[-1].get("aux_loss")
 
     if not payloads:
-        raise SystemExit("No conditions found.  Run step2_persona_steering.py first.")
+        raise SystemExit("No conditions found.  Run training_time_steering_runner.py first.")
 
     # Per-condition aggregate stats (probe activation, response-only).
     per_cond: dict[str, dict[str, Any]] = {}

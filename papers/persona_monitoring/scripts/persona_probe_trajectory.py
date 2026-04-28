@@ -29,9 +29,9 @@ Outputs (``papers/persona_monitoring/outputs/phase_d/c9/``):
   - ``RESULTS.md``: interpretation.
 
 Usage:
-    python papers/persona_monitoring/scripts/c9_persona_trajectory.py
-    python papers/persona_monitoring/scripts/c9_persona_trajectory.py --resume-from step18000
-    python papers/persona_monitoring/scripts/c9_persona_trajectory.py --skip-ood  # skip PERSONA_HELDOUT_JAILBREAK
+    python papers/persona_monitoring/scripts/persona_probe_trajectory.py
+    python papers/persona_monitoring/scripts/persona_probe_trajectory.py --resume-from step18000
+    python papers/persona_monitoring/scripts/persona_probe_trajectory.py --skip-ood  # skip PERSONA_HELDOUT_JAILBREAK
 """
 
 from __future__ import annotations
@@ -144,7 +144,7 @@ def train_and_evaluate_on_many(
 
     Same methodology as :class:`GeneralLinearProbe` (BCE, Adam, 50 epochs,
     fp32) but trains once and reuses across test sets — needed for the
-    transfer evaluation.  Duplicated from ``c8_persona_validation.py``
+    transfer evaluation.  Duplicated from ``persona_probe_validation.py``
     to keep examples self-contained.
     """
     results: dict[str, dict[int, float]] = {name: {} for name in test_sets}

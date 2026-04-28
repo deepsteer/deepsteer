@@ -80,40 +80,19 @@ SAE-decomposed features.
   suppression-captures-behavior at 7B with SAE-decomposed features)
   need a concrete experimental plan before they can be Phase E
   experiments rather than just predictions.
-- **Rename scripts to user-facing labels.** The 16 scripts in
-  `scripts/` retain the `c8_` / `c9_` / `c10_` / `c15_` / `step2_*`
-  research-internal prefixes from `RESEARCH_PLAN.md`'s experiment-ID
-  system (e.g. `c8_persona_validation.py`, `c10_em_replication.py`,
-  `c15_reframed.py`, `step2_finding3_mechanism_check.py`). These are
-  one-to-one with `RESEARCH_PLAN.md` entries today, but a reader
-  outside the project has no way to map them. Renaming candidates,
-  to apply in a single sweep early in drafting:
-
-  | Current | Proposed | Notes |
-  |---------|----------|-------|
-  | `c8_persona_validation.py` | `persona_probe_validation.py` | OLMo-2 1B final-checkpoint validation gate |
-  | `c9_persona_trajectory.py` | `persona_probe_trajectory.py` | 37-checkpoint persona-probe trajectory |
-  | `c10_em_replication.py` | `insecure_code_lora_replication.py` | Betley-style LoRA + EM eval |
-  | `c10_score_responses.py` | `judge_score_responses.py` | Behavioral judge scoring |
-  | `c10_analyze.py` | `analyze_em_responses.py` | C10 v2 analysis |
-  | `c10_visualize.py` | `visualize_em_responses.py` | C10 v2 plots |
-  | `c10_inference_patch.py` | `inference_time_activation_patch.py` | Step 1 inference-time activation patching |
-  | `c10_inference_patch_plot.py` | `inference_time_activation_patch_plot.py` | Step 1 plot |
-  | `c15_reframed.py` | `differential_fragility_em.py` | Phase B/C moral probe + fragility on EM adapters |
-  | `step2_persona_steering.py` | `training_time_steering_runner.py` | Step 2 main runner |
-  | `step2_analyze.py` | `analyze_steering.py` | Step 2 analysis |
-  | `step2_plot.py` | `plot_steering.py` | Step 2 plots |
-  | `step2_finding2_head_start.py` | `vanilla_trajectory_comparison.py` | Vanilla LoRA snapshot trajectory |
-  | `step2_finding3_mechanism_check.py` | `activation_patch_mechanism_check.py` | h_ap − h_van layer-5 mechanism check |
-  | `step2_finding4_behavioral_judge.py` | `behavioral_judge_rerating.py` | Held-out judge re-rating of all 640 generations |
-  | `generate_persona_corpus.py` | (unchanged) | Already user-facing |
-
-  Apply the rename via `git mv` early in the drafting pass, before
-  any prose references the script names. Update import-style
-  references in any RESULTS.md / docstring cross-links at the same
-  time. Cross-reference table from `c<N>_<old>` to new name should
-  live in this PAPER_PLAN.md until §3 Methodology is drafted, then
-  move to Appendix E (Reproducibility).
+- ~~**Rename scripts to user-facing labels.**~~ **Done.** All 15 of
+  the `c8_` / `c9_` / `c10_` / `c15_` / `step2_*` scripts in
+  `scripts/` were renamed via `git mv` to user-facing labels (e.g.
+  `c10_em_replication.py` → `insecure_code_lora_replication.py`,
+  `c15_reframed.py` → `differential_fragility_em.py`,
+  `step2_persona_steering.py` → `training_time_steering_runner.py`).
+  Internal cross-references in scripts and RESULTS.md were updated
+  in lockstep. Output directory names (`outputs/phase_d/c10_v2/`,
+  `outputs/phase_d/c15_reframed/`, etc.) were intentionally left
+  alone — those are experiment slugs in the `RESEARCH_PLAN.md`
+  identifier system rather than script names. The full old → new
+  mapping moves to Appendix D (Reproducibility) and is referenced
+  there for any reader cross-checking with `RESEARCH_PLAN.md`.
 
 ## Next-step ordering for drafting
 

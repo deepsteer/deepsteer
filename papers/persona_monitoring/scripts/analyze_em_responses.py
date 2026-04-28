@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Phase D C10: C10 gating analysis — probe PASS + behavior PASS/ATTENUATED/FAIL.
 
-Reads the scored-judge JSON files (produced by ``c10_score_responses.py``)
-plus the persona-activation fields attached by ``c10_em_replication.py``, and
+Reads the scored-judge JSON files (produced by ``judge_score_responses.py``)
+plus the persona-activation fields attached by ``insecure_code_lora_replication.py``, and
 emits the plan's two-level gate verdict to stdout, a CSV summary, and a
 JSON summary.
 
@@ -151,7 +151,7 @@ def probe_activation_stats(
     """Extract per-sample probe activation plus aggregate mean/std.
 
     ``use_field`` picks between the two scoring modes attached by
-    :func:`compute_probe_activations` in ``c10_em_replication.py``:
+    :func:`compute_probe_activations` in ``insecure_code_lora_replication.py``:
 
       - ``persona_activation_response_only`` (default, primary): response
         scored standalone, matches the probe's training distribution.
