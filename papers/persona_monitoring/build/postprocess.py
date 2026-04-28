@@ -99,32 +99,112 @@ CITES_INTEXT = [
 # remaining bold "Figure N" mentions to "Figure~\ref{fig:label}" so
 # that secondary references resolve cleanly.
 FIGURE_INSERTS: list[tuple[str, str]] = [
-    # Figures will be added during drafting as they are generated.
-    # Pattern template (`\s+` for whitespace tolerance, sentence-prefix
-    # anchor that matches the body prose):
-    #
-    #     (
-    #         r"\\textbf\{Figure 1\}\s+...sentence...\.",
-    #         (
-    #             "\\begin{figure}[t]\n"
-    #             "  \\centering\n"
-    #             "  \\includegraphics[width=\\linewidth]{figure_1_*.pdf}\n"
-    #             "  \\caption{...}\n"
-    #             "  \\label{fig:slug}\n"
-    #             "\\end{figure}\n\n"
-    #             "\\textbf{Figure~\\ref{fig:slug}} ...sentence..."
-    #         ),
-    #     ),
-    # See papers/accuracy_vs_fragility/build/postprocess.py for working
-    # examples (Figures 1--4).
+    # Figure 1 — persona-probe emergence trajectory (§3.1).
+    (
+        r"\\textbf\{Figure 1\}\s+plots\s+the\s+persona-probe\s+trajectory\s+\(overall,\s+content-clean,\s+OOD\s+jailbreak\)\s+alongside\s+the\s+moral\s+/\s+sentiment\s+/\s+syntax\s+onsets\s+from\s+companion\s+work\.",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_1_persona_trajectory.pdf}\n"
+            "  \\caption{Persona-feature emergence trajectory on OLMo-2~1B "
+            "early-training (37 checkpoints, 1K-step intervals). Persona "
+            "overall (240-pair test set), content-clean within-category "
+            "transfer, and OOD jailbreak fixture. Persona onset is "
+            "concurrent with the moral / sentiment onsets reported in "
+            "companion work (vertical dashed lines); persona is "
+            "foundational at the 1K-step resolution we have data for.}\n"
+            "  \\label{fig:persona-trajectory}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:persona-trajectory}} plots the "
+            "persona-probe trajectory (overall, content-clean, OOD "
+            "jailbreak) alongside the moral / sentiment / syntax onsets "
+            "from companion work."
+        ),
+    ),
+
+    # Figure 2 — C10 v2 null on insecure-code LoRA (§4.1).
+    (
+        r"\\textbf\{Figure 2\}\s+summarizes\s+both\s+readouts\s+side-by-side:\s+per-\s*condition\s+\\texttt\{PersonaFeatureProbe\}\s+activation\s+\(left\)\s+and\s+behavioral\s+coherent-misalignment\s+rates\s+with\s+Wilson\s+95\s*\\%\s+CIs\s+\(right\)\.",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_2_c10_v2_null.pdf}\n"
+            "  \\caption{Persona mechanism does not engage at 1B under "
+            "controlled insecure-code LoRA. (a)~Per-condition probe "
+            "activation (160 generations each); insecure $-$ secure "
+            "Cohen's $d = +0.032$ paired, 25$\\times$ below the 1.0~SD "
+            "PROBE PASS threshold. (b)~Coherent-misalignment rates with "
+            "Wilson 95\\,\\% CIs; insecure (1.56\\,\\%) and secure "
+            "(0.69\\,\\%) overlap heavily.}\n"
+            "  \\label{fig:c10-v2-null}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:c10-v2-null}} summarizes both "
+            "readouts side-by-side: per-condition "
+            "\\texttt{PersonaFeatureProbe} activation (left) and "
+            "behavioral coherent-misalignment rates with Wilson 95\\,\\% "
+            "CIs (right)."
+        ),
+    ),
+
+    # Figure 3 — Step 2 four-condition summary (§4.3).
+    (
+        r"\\textbf\{Figure 3\}\s+gives\s+the\s+four-condition\s+summary\s+across\s+both\s+metrics:\s+per-condition\s+probe\s+activation\s+\(left\)\s+and\s+behavioral\s+judge\s+score\s+\(right\)\.",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_3_step2_summary.pdf}\n"
+            "  \\caption{Step 2 four-condition summary. (a)~Per-condition "
+            "persona-probe activation: vanilla LoRA shifts the probe by "
+            "Cohen's $d = +2.29$; gradient\\_penalty brings it back to "
+            "baseline (99.3\\,\\% suppression at 0.4\\,\\% SFT-loss cost); "
+            "activation\\_patch backfires by amplification ($d = +3.79$). "
+            "(b)~Per-condition behavioral judge score (0--10 persona-voice "
+            "scale): vanilla and gradient\\_penalty match within "
+            "0.01\\,/\\,10 despite probe Cohen's $d$ differing by 3.07~SD "
+            "--- the Finding 3 dissociation.}\n"
+            "  \\label{fig:step2-summary}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:step2-summary}} gives the "
+            "four-condition summary across both metrics: per-condition "
+            "probe activation (left) and behavioral judge score (right)."
+        ),
+    ),
+
+    # Figure 4 — fragility-locus shift (§4.4).
+    (
+        r"\\textbf\{Figure 4\}\s+plots\s+the\s+per-layer\s+breakdown\s+across\s+all\s+three\s+conditions:",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_4_fragility_locus.pdf}\n"
+            "  \\caption{Insecure-code LoRA leaves a fragility-locus "
+            "signature the persona probe and the behavioral judge miss "
+            "(companion-paper methodology). (a)~Standard moral probe "
+            "accuracy across 16 transformer layers --- flat across base, "
+            "insecure, and secure conditions ($|\\Delta| \\leq 0.021$). "
+            "(b)~Per-layer critical noise on the discrete log grid "
+            "$\\{0.1, 0.3, 1.0, 3.0, 10.0\\}$: the base-model robustness "
+            "peak at layer 7 relocates to layers 9--10 under insecure-code "
+            "LoRA specifically, with layers 6--7 collapsing to "
+            "$\\sigma = 1$.}\n"
+            "  \\label{fig:fragility-locus}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:fragility-locus}} plots the "
+            "per-layer breakdown across all three conditions:"
+        ),
+    ),
 ]
 
 # Mapping for the secondary-reference post-pass: any remaining bold
 # "Figure N" mention (one already replaced by the FIGURE_INSERTS above
 # is now `\textbf{Figure~\ref{...}}`, so it won't match this) gets
 # rewritten to a proper `\ref{}` so cross-references resolve.
-# Populate as figures land.
-FIGURE_LABEL_MAP: dict[str, str] = {}
+FIGURE_LABEL_MAP: dict[str, str] = {
+    "1": "fig:persona-trajectory",
+    "2": "fig:c10-v2-null",
+    "3": "fig:step2-summary",
+    "4": "fig:fragility-locus",
+}
 
 
 def rewrite_secondary_figure_refs(text: str) -> str:

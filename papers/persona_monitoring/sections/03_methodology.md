@@ -45,7 +45,9 @@ probe accuracy onsets at step 1000 — concurrent with the moral and
 sentiment probe onsets reported in companion work
 (Reblitz-Richardson, 2026). The persona signal is foundational at the
 1K-step resolution we have data for, not an instruction-tuning
-artifact.
+artifact. **Figure 1** plots the persona-probe trajectory (overall,
+content-clean, OOD jailbreak) alongside the moral / sentiment / syntax
+onsets from companion work.
 
 Implementation: `scripts/persona_probe_validation.py` (final-
 checkpoint gate) and `scripts/persona_probe_trajectory.py`

@@ -11,8 +11,11 @@ Betley et al. (2025)'s insecure-code LoRA recipe.
 ## 4.1 Persona mechanism does not engage at 1B under controlled insecure-code LoRA
 
 Phase D's C10 v2 reproduces Betley's recipe with a paired secure-code
-control. Per-condition `PersonaFeatureProbe` activation (layer 5,
-160 generations × Betley benign prompts, response-only mean-pool):
+control. **Figure 2** summarizes both readouts side-by-side: per-
+condition `PersonaFeatureProbe` activation (left) and behavioral
+coherent-misalignment rates with Wilson 95 % CIs (right). Per-
+condition probe activation (layer 5, 160 generations × Betley benign
+prompts, response-only mean-pool):
 
 | Condition | n | Probe logit (mean ± SD) |
 |---|---:|---:|
@@ -103,7 +106,9 @@ question: does the gradient-penalty *suppression* of the probe-
 direction shift translate to a corresponding *behavioral*
 suppression on the same 160-generation Betley benign-prompt surface?
 A held-out Claude Haiku 4.5 judge (the Step 2 finding-4 re-rating)
-scores all generations on a 0-10 persona-voice scale.
+scores all generations on a 0-10 persona-voice scale. **Figure 3**
+gives the four-condition summary across both metrics: per-condition
+probe activation (left) and behavioral judge score (right).
 
 | Condition | Probe activation | Behavioral judge (0-10) |
 |---|---:|---:|
@@ -184,7 +189,8 @@ the three conditions are indistinguishable.
 **Fragility profile shifts under insecure-code specifically.**
 Per-layer critical noise (the smallest $\sigma$ at which probe
 accuracy drops below 0.6, on the discrete log grid $\{0.1, 0.3, 1.0,
-3.0, 10.0\}$):
+3.0, 10.0\}$); **Figure 4** plots the per-layer breakdown across all
+three conditions:
 
 | Layer | Base | Insecure | Secure | Δ insecure | Δ secure |
 |---:|---:|---:|---:|---:|---:|
