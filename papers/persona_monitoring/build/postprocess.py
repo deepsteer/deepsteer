@@ -231,21 +231,32 @@ def convert_section_refs(text: str) -> str:
     """Map literal `\\S<N>(.<M>)` references to `\\Cref{<slug>}`.
 
     The unicode fixup pass replaced `§` with `\\S`, so by this point
-    every section reference looks like `\\S4.1` or `\\S3` in the .tex
-    output.  Convert these to `\\Cref{<slug>}` using SECTION_LABEL_MAP.
+    every section reference looks like `\\S4.1`, `\\S3`, or `\\SD.5`
+    (appendix subsections).  Convert these to `\\Cref{<slug>}` using
+    SECTION_LABEL_MAP.  When the reference is not in the map, fall
+    back to a plain section symbol followed by the literal label
+    (e.g.\ `\\S{}D.5`) so LaTeX renders it correctly even without a
+    cross-reference target.
 
     Skip refs inside `\\begin{Highlighting}...\\end{Highlighting}`
     blocks — `\\Cref` expansion clashes with the Verbatim environment's
     commandchars setup and triggers cleveref internal errors.
     """
-    pattern = re.compile(r"\\S(\d+(?:\.\d+)?)")
+    # Match either:
+    #   \S<digit>(.<digit>)?   -> body section refs (§3.1, §4.2)
+    #   \S<letter>(.<digit>)?  -> appendix refs (§A, §D.5)
+    pattern = re.compile(r"\\S([A-Z](?:\.\d+)?|\d+(?:\.\d+)?)")
 
     def replace(match: re.Match) -> str:
         ref = match.group(1)
+        if not ref:
+            return match.group(0)
         slug = SECTION_LABEL_MAP.get(ref)
         if slug is None:
-            # Unknown reference — leave as literal section symbol.
-            return match.group(0)
+            # Unknown reference — emit a literal section symbol with
+            # an empty argument followed by the label, so LaTeX
+            # tokenises `\\S` correctly when the next char is a letter.
+            return r"\S{}" + ref
         return r"\Cref{" + slug + "}"
 
     # Split on Highlighting blocks; only apply the regex to non-block

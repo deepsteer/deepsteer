@@ -122,26 +122,43 @@
 \maketitle
 
 \begin{abstract}
-The Wang et al.\ (2025) toxic-persona mechanism that mediates
-emergent misalignment at the 32B parameter scale does not engage at
-1B under a careful reproduction of Betley et al.'s (2025) insecure-
-code LoRA recipe. We measure this with three matched components: a
-linear analog of the toxic-persona direction
-(\texttt{PersonaFeatureProbe}), a training-time gradient-penalty
-suppression primitive, and a behavioral judge re-rating of generations
-across base, vanilla, and suppressed conditions. The probe and the
-suppression primitive both work as designed at the 1B scale; what
-fails to engage is the \emph{coupling} between the persona-probe
-direction and behavioral emergent misalignment.
+Wang et al.\ (2025) report that emergent misalignment under narrow
+fine-tuning is mediated by \emph{persona features} --- directions in
+the residual stream of a 32B base model that, when intervened on,
+account causally for the behavioral shift Betley et al.\ (2025)
+document. The finding makes a specific, scale-extrapolable prediction:
+a linear analog of the persona direction should be recoverable from
+smaller open-checkpoint base models, and the same fine-tuning recipe
+should shift that direction by a measurable amount. We test this at
+the OLMo-2 1B scale with a matched instrument stack --- linear probe,
+training-time gradient-penalty suppression primitive, behavioral judge
+--- so the mechanism, the measurement, and the intervention can each
+be evaluated independently.
 
-This is a \textbf{compound scaling boundary}: the mechanism, the
-measurement, and the intervention all run at 1B; the behavioral
-phenomenon they target does not. We characterize the boundary across
-four headline 1B findings (persona mechanism does not engage,
-gradient-penalty suppression is clean, suppression does not capture
-behavior, insecure-code LoRA still leaves a fragility-locus signature)
-and propose two falsifiable Phase E predictions for 7B with
-SAE-decomposed features.
+The first prediction holds: a linear \texttt{PersonaFeatureProbe}
+recovers the persona direction at peak accuracy 0.948. The second
+prediction does not. (1)~Under a controlled reproduction of Betley's
+recipe, the probe-direction shift is Cohen's $d = +0.032$ paired ---
+25$\times$ below the threshold that would indicate engagement; the
+behavioral coherent-misalignment rate is 1.56\,\% vs.\ 0.69\,\%
+secure with overlapping CIs. (2)~On a positive-control corpus that
+\emph{does} engage the probe, training-time gradient-penalty
+suppresses the direction by 99.3\,\% at no SFT-loss cost --- the
+intervention works. (3)~But suppression does not capture behavior:
+vanilla and gradient-penalty conditions produce judge scores
+matching within 0.01/10 despite probe Cohen's $d$ differing by
+3.07~SD. (4)~Yet the recipe is not representationally inert; the
+fragility methodology of companion work (Reblitz-Richardson, 2026)
+detects a 2--3 layer relocation of the moral-probe robustness peak
+that probe accuracy alone reports as flat.
+
+The mechanism, the measurement, and the intervention all engage at
+1B; the behavioral phenomenon they target does not, and the
+\emph{coupling} between probe direction and behavior fails
+independently. \textbf{This is a compound scaling boundary: the
+components stop fitting together at the 1B scale, not at any single
+component.} We close on two falsifiable Phase E predictions for 7B
+with SAE-decomposed features.
 \end{abstract}
 
 % =======================================================================
@@ -186,11 +203,14 @@ construction, all scientific claims, and final wording.
   \rule{0.5\linewidth}{0.4pt}\\[0.6em]
   {\Large\bfseries Appendices}\\[0.25em]
   {\small Supplementary material. Sections referenced from the main
-   paper as ``Appendix A''--``Appendix N''.}\\[0.4em]
+   paper as ``Appendix A''--``Appendix D''.}\\[0.4em]
   \rule{0.5\linewidth}{0.4pt}
 \end{center}
 \vspace{0.5em}
 
-% Appendix files will be added during drafting.
+\input{sections/0A_persona_corpus.tex}
+\input{sections/0B_judge_battery.tex}
+\input{sections/0C_activation_patch_backfire.tex}
+\input{sections/0D_reproducibility.tex}
 
 \end{document}
