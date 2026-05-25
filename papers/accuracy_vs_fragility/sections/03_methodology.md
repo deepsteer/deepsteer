@@ -1,12 +1,12 @@
 # 3. Methodology
 
-Linear probing classifiers on four matched minimal-pair datasets,
-applied to all 37 OLMo-2 1B early-training checkpoints, 20 OLMo-3
+We apply linear probing classifiers on four matched minimal-pair
+datasets to all 37 OLMo-2 1B early-training checkpoints, 20 OLMo-3
 7B stage-1 checkpoints, and the OLMo-2 1B final checkpoint. Two
 probe families: `LayerWiseMoralProbe` (per-layer accuracy) and
 `MoralFragilityTest` (per-layer noise robustness). All experiments
-on a single MacBook Pro M4 Pro / MPS; code, datasets, and
-per-checkpoint outputs released with the paper.
+run on a single MacBook Pro M4 Pro / MPS; code, datasets, and
+per-checkpoint outputs are released with the paper.
 
 ## 3.1 Standard minimal-pair datasets
 

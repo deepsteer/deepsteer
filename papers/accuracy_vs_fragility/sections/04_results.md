@@ -19,7 +19,7 @@ mean-accuracy trajectories on a shared step axis.
 moral values are 4-seed mean ± std (split seeds 42 / 43 / 44 / 45).
 Per-seed compositional onsets: 4K, 4K, 7K, 7K — substantial seed
 variance, with the 4-seed mean curve crossing 0.70 at step 5K. The
-1-seed C2 standard moral / sentiment / syntax curves are reported
+single-seed standard moral / sentiment / syntax curves are reported
 without std bands; their seed dependence is not characterized.*
 
 **(1) The four probes resolve into a quantitative
@@ -100,8 +100,9 @@ the entire remaining 95 % of training.
 |---:|---:|---:|---:|---:|---:|
 | 0 | 0.557 | 0.18 | 0.1 | 0.1 | 0.3 |
 | 1,000 | 0.768 | 10.0 | 10.0 | 10.0 | 10.0 |
-| 4,000 | 0.938 | — | — | — | — |
+| 4,000 | 0.938 | 10.0 | 10.0 | 10.0 | 10.0 |
 | 10,000 | ~0.95 | 7.0 | 10.0 | 10.0 | 7.7 |
+| 15,000 | ~0.96 | 9.1 | 10.0 | 10.0 | 7.2 |
 | 20,000 | ~0.95 | 7.5 | 10.0 | 10.0 | 6.5 |
 | 36,000 | ~0.96 | 5.3 | 10.0 | 5.8 | 1.7 |
 

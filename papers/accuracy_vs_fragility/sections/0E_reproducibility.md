@@ -8,7 +8,7 @@ All experiments run on a single MacBook Pro M4 Pro:
 - M4 Pro GPU accessed via PyTorch MPS backend
 - macOS 25.1.0 (Darwin)
 
-No GPU, no CUDA, no cluster compute. The full §4 experimental record
+No discrete GPU, no CUDA, no cluster compute. The full §4 experimental record
 (37 × 1B early-training checkpoints + 20 × 7B stage-1 checkpoints +
 1 × 1B final + 4-seed compositional probe + fragility on 37 × 1B
 checkpoints + C3 LoRA on 1B at step 1K) totals approximately 6 hours
@@ -135,8 +135,3 @@ The schemas are stable; field names match the dataclass attributes
 in `deepsteer/core/types.py`. JSON serialization uses
 `_dataclass_to_dict` (see same file).
 
-**Status.** This appendix is draft-complete for the body sections
-that have landed. Will need touchups (specific HuggingFace revision
-strings for OLMo-3 7B; final dependency versions; final command-line
-invocations matching whatever the camera-ready CLI surface looks
-like) before submission.

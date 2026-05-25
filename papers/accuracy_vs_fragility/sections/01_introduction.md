@@ -33,7 +33,9 @@ Gaussian perturbation drops below a fragility threshold $\tau$:
 $$\sigma^*_\ell = \min\bigl\{\,\sigma \in \mathcal{S} : A\!\bigl(f_\ell,\; h_\ell + \varepsilon\bigr) < \tau,\quad \varepsilon \sim \mathcal{N}(0,\,\sigma^2 I)\,\bigr\}$$
 
 where $\mathcal{S} = \{0.1,\, 0.3,\, 1.0,\, 3.0,\, 10.0\}$ and
-$\tau = 0.6$. A low $\sigma^*_\ell$ means the representation at
+$\tau = 0.6$ (if no $\sigma$ in $\mathcal{S}$ brings accuracy below
+$\tau$, $\sigma^*_\ell = \max(\mathcal{S}) = 10.0$). A low
+$\sigma^*_\ell$ means the representation at
 layer ℓ is **fragile** — probe accuracy collapses under small noise.
 A high $\sigma^*_\ell$ means the encoding is **robust** — the
 distinction is encoded with wide margin and/or redundancy. Fragility
