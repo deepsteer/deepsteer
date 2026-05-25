@@ -51,6 +51,9 @@ CITES_PARENS = [
     (r"\(OLMo\s+Team,\s+2025\)", r"\citep{olmo2_2025}"),
     (r"\(Hu\s+et\s+al\.,\s+2022\)", r"\citep{hu2022lora}"),
     (r"\(Zou\s+et\s+al\.,\s+2023\)", r"\citep{zou2023repe}"),
+    (r"\(Borras\s+et\s+al\.,\s+2022\)", r"\citep{borras2022walking}"),
+    (r"\(Qian\s+et\s+al\.,\s+2024\)", r"\citep{qian2024trustworthiness}"),
+    (r"\(Ren\s+et\s+al\.,\s+2026\)", r"\citep{ren2026apex}"),
 ]
 
 # In-text Author (Year) -> \citet{key}
@@ -76,6 +79,9 @@ CITES_INTEXT = [
     (r"Graham et al\.[ ~]\(2013\)", r"\citet{graham2013mft}"),
     (r"Groeneveld et al\.[ ~]\(2024\)", r"\citet{groeneveld2024olmo}"),
     (r"Arditi et al\.[ ~]\(2024\)", r"\citet{arditi2024refusal}"),
+    (r"Borras et al\.[ ~]\(2022\)", r"\citet{borras2022walking}"),
+    (r"Qian et al\.[ ~]\(2024\)", r"\citet{qian2024trustworthiness}"),
+    (r"Ren et al\.[ ~]\(2026\)", r"\citet{ren2026apex}"),
 ]
 
 # Figure-insertion patterns. Each maps a sentence-prefix marker to a

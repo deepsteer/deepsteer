@@ -13,6 +13,30 @@ threat to validity, we treat them as a fixed feature of the
 instrument and add a complementary metric (fragility) that continues
 to resolve representational change after accuracy plateaus.
 
+**Activation perturbation.** Borras et al. (2022) proposed "Walking
+Noise," injecting additive Gaussian noise at individual layers and
+defining a per-layer midpoint noise level — the closest prior
+concept to our per-layer critical noise. However, Walking Noise
+measures end-to-end *task accuracy* degradation, not probe accuracy
+on specific concepts, and evaluates a single trained model rather
+than tracking across training checkpoints. APEX (Ren et al., 2026)
+injects Gaussian noise into hidden activations and defines "escape
+noise" (the noise scale at which output becomes independent of
+input), analogous to our critical noise; but APEX measures
+model-output distribution changes, not concept-specific probe
+accuracy. Our method combines per-layer noise robustness with
+concept-specific probing *across* training checkpoints — a
+combination that neither approach attempts.
+
+**Probing across training.** Qian et al. (2024) applied linear probes
+to 360 pre-training checkpoints (LLM360 Amber 7B) for five
+trustworthiness dimensions, observing a fitting-and-compression
+pattern. Their work establishes the "probing across checkpoints"
+paradigm but tracks only probe *accuracy* — which is exactly what
+we show saturates early and stops returning information. Our
+fragility metric recovers the dynamics that continue after the
+point where their approach loses resolution.
+
 **Causal tracing.** Meng et al. (2022) introduced ROME and the
 causal-tracing methodology, which distinguishes layers that *encode*
 information from layers that *causally use* it. Our 7B
