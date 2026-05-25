@@ -103,6 +103,6 @@ venue's appendix length allows; otherwise the published code
 repository is the canonical pair-list reference and this appendix
 points to it.
 
-**Status.** D.1-D.4 are draft-final; D.5 inlining decision (full
-pair list vs. code-repository pointer) deferred to camera-ready
-based on venue length budget.
+The full pair list is available in the released code repository;
+a camera-ready version of this appendix will inline it if the
+venue's appendix length budget allows.

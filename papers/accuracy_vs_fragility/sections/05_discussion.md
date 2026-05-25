@@ -61,7 +61,7 @@ hits accuracy ceiling.
 **Lexical→compositional gradient bounds the standard probe.** The
 standard moral probe measures something closer to "moralized
 vocabulary becomes linearly separable from neutral vocabulary" than
-"moral reasoning emerges." Phase C4's compositional probe (§4.1)
+"moral reasoning emerges." The compositional probe (§4.1)
 established this is a quantitative gradient — lexically-marked
 moralized vocabulary at step 1K, compositional moral integration at
 step 5K, syntactic competence at step 6K — not a binary

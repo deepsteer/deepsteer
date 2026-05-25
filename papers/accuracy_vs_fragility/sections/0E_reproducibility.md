@@ -28,7 +28,7 @@ headline numbers fits in ~80 minutes.
 | Probe initialization (per-seed) | inherits from split seed via `torch.manual_seed(split_seed)` | `papers/accuracy_vs_fragility/scripts/phase_c4_3seed.py` line 117, 124 |
 | Probe initialization (headline / non-3-seed runs) | unset (system entropy) | — |
 
-The original C4 trajectory (split seed 42) and the §4.3 C3 LoRA
+The original compositional trajectory (split seed 42) and the §4.3 LoRA
 experiment do not set torch's RNG state explicitly; per-seed
 reproducibility for those runs is bounded by torch's deterministic
 pre-hook RNG state at process start. The 3-seed compositional

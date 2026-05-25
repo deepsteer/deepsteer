@@ -27,6 +27,6 @@ halves and differ only in individually-mild tokens that cannot carry
 moral signal in isolation (TF-IDF baseline 0.113 ≪ 0.65). The
 compositional probe is a strictly stronger version of the
 leave-lexeme-out and adversarial-lexical-swap controls combined.
-The three controls above will be populated with numbers before
-submission to preempt narrower review concerns; running them takes
-~4-6 hours of additional MPS time on existing checkpoints.
+Running these three controls on existing checkpoints takes ~4-6
+hours of additional MPS time; results will be included in the
+submission version.

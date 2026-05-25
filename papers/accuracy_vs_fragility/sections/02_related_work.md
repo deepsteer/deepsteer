@@ -87,7 +87,7 @@ Representation-engineering more broadly (Zou et al., 2023) treats
 interpretability as direct readout of learned representations.
 
 **Scope.** We use moralized vocabulary as a demonstration domain.
-Phase C4's compositional probe (§3.2) is the explicit lexical-
+The compositional probe (§3.2) is the explicit lexical-
 accessibility ablation; deeper questions (counterfactual moral
 reasoning, generalization to held-out moral structures) would
 require harder probes and are discussed as future work in §5.3.

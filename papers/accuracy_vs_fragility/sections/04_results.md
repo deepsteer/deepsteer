@@ -94,7 +94,7 @@ accuracy in the first 1K steps, then continued movement throughout.
 Top panel reaches a ceiling and stops; bottom panel keeps moving for
 the entire remaining 95 % of training.
 
-**Phase C1 numbers (OLMo-2 1B, 37 checkpoints, dense).**
+**OLMo-2 1B, 37 checkpoints, dense sampling.**
 
 | Step | Mean acc | Mean critical noise | Late-layer crit | Mid-layer crit | Early-layer crit |
 |---:|---:|---:|---:|---:|---:|
@@ -117,7 +117,7 @@ emerging — late layers hold maximum noise tolerance throughout
 while early layers grow progressively more brittle). Same data;
 different metric; different visible structure.
 
-The pattern reproduces at OLMo-3 7B (Phase B5, 5 sparse checkpoints):
+The pattern reproduces at OLMo-3 7B (5 sparse checkpoints):
 mean critical noise rises 0.20 → 5.67 between steps 0 and 353K (~28×),
 then plateaus at ~5.3 through step 1.4M; layer-depth gradient is
 steeper (late ~10.0 / mid ~5.5 / early ~2.0) and the most-robust
@@ -129,7 +129,7 @@ resolves the saturation step (~4K) and gradient emergence rate.
 methodological claim generalizes beyond the standard probe).** We
 ran `MoralFragilityTest` (§3.4) on the compositional dataset across
 all 37 OLMo-2 1B early-training checkpoints with four split seeds
-(42, 43, 44, 45) — the original C4 trajectory plus a three-seed
+(42, 43, 44, 45) — the original seed-42 trajectory plus a three-seed
 replication ~50 min on the same MacBook Pro M4 Pro / MPS. **Table 3**
 gives the 4-seed mean ± std at the diagnostic checkpoints; the
 4-seed accuracy band on **Figure 1** carries the matching probing-
@@ -142,6 +142,7 @@ side trajectory.
 | 2,000 | 0.94 ± 0.17 | 4 |
 | 3,000 | 3.47 ± 1.04 | 4 |
 | 5,000 | **5.11 ± 0.95** (peak) | 4 |
+| 6,000 | 4.31 ± 1.57 | 4 |
 | 7,000 | 4.65 ± 0.84 | 4 |
 | 10,000 | 4.60 ± 0.48 | 4 |
 | 20,000 | 3.07 ± 0.91 | 4 |
@@ -185,7 +186,7 @@ Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
 
 ## 4.3 Data curation reshapes structure, not content
 
-Phase C3: LoRA (Hu et al., 2022) fine-tuning on three matched
+LoRA (Hu et al., 2022) fine-tuning on three matched
 corpora from the OLMo-2 1B step-1000 checkpoint (mid-transition, ~80 % peak probing
 accuracy). Corpora: a 247K-token narrative-moral corpus (Aesop /
 Grimm / Andersen), a 500K-token declarative-moral corpus

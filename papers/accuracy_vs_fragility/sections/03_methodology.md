@@ -101,7 +101,7 @@ are deterministic, API-free, and included in the toolkit at
 ## 3.3 Linear probing
 
 Identical probing methodology across all four datasets — when we
-report a 3K-step gap between standard and compositional moral
+report a 4K-step gap between standard and compositional moral
 onsets (§4.1), the only experimental variable is the dataset.
 
 For each transformer layer ℓ we mean-pool hidden states across the
