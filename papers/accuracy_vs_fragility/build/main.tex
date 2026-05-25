@@ -146,36 +146,29 @@
 \maketitle
 
 \begin{abstract}
-A standard interpretability protocol --- train a linear classifier on
-hidden states and declare a property ``encoded'' when accuracy is
-high --- works well on a snapshot but breaks across pre-training:
-probe accuracy saturates within the first few thousand steps.
+Standard linear probing declares a property ``encoded'' when a
+classifier on hidden states achieves high accuracy. The protocol works
+well on a snapshot but breaks across pre-training: probe accuracy
+saturates within the first few thousand steps, leaving most of
+training invisible to the instrument.
 
-We introduce \emph{fragility} --- the activation-noise level at which
-probe accuracy collapses --- as a complementary per-layer metric that
-integrates the margin of separability and the redundancy of
-representation, both of which keep evolving long after accuracy
-plateaus.
+We introduce \emph{fragility}, a complementary per-layer metric
+defined as the activation-noise level at which probe accuracy
+collapses. Fragility integrates the margin of separability and the
+redundancy of representation, both of which keep evolving long after
+accuracy plateaus.
 
-Applied to OLMo, fragility recovers structure invisible to accuracy
-alone. (1) Moralized representations emerge along a
-\emph{lexical~$\to$~compositional gradient}, not a single phase
-transition: single-token semantic probes onset early, a compositional
-moral probe whose pairs require multi-token integration onsets several
-thousand steps later, and structural well-formedness later still ---
-bounding the standard moral probe's early onset to lexical
-accessibility rather than compositional moral encoding. (2) A
-\emph{layer-depth robustness gradient} develops monotonically across
-training, invisible to probing accuracy: as accuracy plateaus across
-layers, late layers hold maximum noise tolerance while early layers
-grow progressively more brittle. (3) Data curation \emph{reshapes
-representational structure without changing content}: LoRA fine-tuning
-on three matched corpora produces near-identical probing accuracy but
-condition-specific fragility profiles, separating where moralized
-information lives from how robustly it is encoded.
+Applied to open-checkpoint language models, fragility recovers
+structure that accuracy alone cannot see. Moralized representations
+emerge along a \emph{lexical~$\to$~compositional gradient}, not a
+single phase transition. A \emph{layer-depth robustness gradient}
+develops monotonically across training while accuracy stays flat. And
+matched fine-tuning corpora that produce identical probing accuracy
+leave distinct fragility fingerprints, revealing that data curation
+reshapes representational structure without changing content.
 
-Our unifying claim is that \textbf{in every comparison where probing
-accuracy returns a flat answer, fragility returns a structured one.}
+\textbf{In every comparison where probing accuracy returns a flat
+answer, fragility returns a structured one.}
 \end{abstract}
 
 % =======================================================================
