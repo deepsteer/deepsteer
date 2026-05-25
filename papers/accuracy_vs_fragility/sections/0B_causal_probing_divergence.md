@@ -41,14 +41,14 @@ moves the model's downstream output). The two facts are
 representational properties of the same model that probing alone
 cannot recover.
 
-**Status.** This appendix is a stub (~half page). It serves as
-supporting evidence for the §5.2 fragility-as-richer-functional
-argument: probing accuracy is one functional of the representation
-geometry; causal contribution is another; fragility is a third. All
-three keep evolving through training, often in different directions,
-and a complete picture of how a representation evolves needs all
-three. We do not develop the storage-vs-use finding as a body
-contribution because (a) it is not specific to moral representation
-and (b) it has its own methodological complications (causal-tracing
-sensitivity to intervention magnitude, choice of decoder probe) that
-warrant their own paper.
+This appendix serves as supporting evidence for the §5.2
+fragility-as-richer-functional argument: probing accuracy is one
+functional of the representation geometry; causal contribution is
+another; fragility is a third. All three keep evolving through
+training, often in different directions, and a complete picture of
+how a representation evolves needs all three. We do not develop the
+storage-vs-use finding as a body contribution because (a) it is not
+specific to moral representation and (b) it has its own
+methodological complications (causal-tracing sensitivity to
+intervention magnitude, choice of decoder probe) that warrant their
+own paper.

@@ -42,7 +42,6 @@ CITES_PARENS = [
     (r"\(Graham\s+et\s+al\.,\s+2013\)", r"\citep{graham2013mft}"),
     (r"\(Groeneveld\s+et\s+al\.,\s+2024\)", r"\citep{groeneveld2024olmo}"),
     (r"\(Arditi\s+et\s+al\.,\s+2024\)", r"\citep{arditi2024refusal}"),
-    (r"\(Betley\s+et\s+al\.,\s+2025\)", r"\citep{betley2025em}"),
     (r"\(Hewitt\s+\\&\s+Liang,\s+2019\)", r"\citep{hewitt2019control}"),
     (r"\(Pimentel\s+et\s+al\.,\s+2020\)", r"\citep{pimentel2020information}"),
     (r"\(Voita\s+\\&\s+Titov,\s+2020\)", r"\citep{voita2020mdl}"),
@@ -52,7 +51,6 @@ CITES_PARENS = [
     (r"\(OLMo\s+Team,\s+2025\)", r"\citep{olmo2_2025}"),
     (r"\(Hu\s+et\s+al\.,\s+2022\)", r"\citep{hu2022lora}"),
     (r"\(Zou\s+et\s+al\.,\s+2023\)", r"\citep{zou2023repe}"),
-    (r"\(Hubinger\s+et\s+al\.,\s+2024\)", r"\citep{hubinger2024sleeper}"),
 ]
 
 # In-text Author (Year) -> \citet{key}
@@ -78,12 +76,6 @@ CITES_INTEXT = [
     (r"Graham et al\.[ ~]\(2013\)", r"\citet{graham2013mft}"),
     (r"Groeneveld et al\.[ ~]\(2024\)", r"\citet{groeneveld2024olmo}"),
     (r"Arditi et al\.[ ~]\(2024\)", r"\citet{arditi2024refusal}"),
-    (r"Betley et al\.'s[ ~]\(2025\)",
-     r"\citeauthor{betley2025em}'s \citeyearpar{betley2025em}"),
-    (r"Betley et al\.[ ~]\(2025\)", r"\citet{betley2025em}"),
-    # Companion-paper reference (Reblitz-Richardson 2026, in preparation)
-    (r"Reblitz-Richardson, 2026, in preparation",
-     r"Reblitz-Richardson, 2026, in preparation"),  # leave as text
 ]
 
 # Figure-insertion patterns. Each maps a sentence-prefix marker to a
@@ -299,14 +291,12 @@ SECTION_LABEL_MAP = {
     "3.6": "validity-controls",
     # §4 subsections
     "4.1": "emergence-ordering-a-lexicalcompositional-gradient",
-    "4.2": "plateau-coincidence-compositional-syntax-under-mean-pooled-linear-probing",
-    "4.3": "probing-accuracy-saturates-fragility-doesnt",
-    "4.4": "data-curation-reshapes-structure-not-content",
+    "4.2": "probing-accuracy-saturates-fragility-doesnt",
+    "4.3": "data-curation-reshapes-structure-not-content",
     # §5 subsections
     "5.1": "semantic-vs.-structural-learning-dynamics",
     "5.2": "why-fragility-succeeds-where-accuracy-saturates",
-    "5.3": "generalization-beyond-pre-training",
-    "5.4": "limitations",
+    "5.3": "limitations",
 }
 
 

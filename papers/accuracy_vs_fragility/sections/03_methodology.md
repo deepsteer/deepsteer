@@ -16,7 +16,7 @@ constant and swapping a single token: **moral / neutral** (240 pairs,
 40 per Moral Foundations Theory category — care/harm,
 fairness/cheating, loyalty/betrayal, authority/subversion,
 sanctity/degradation, liberty/oppression — Haidt, 2012; Graham et
-al., 2013; e.g. "She murdered the woman" / "She greeted the
+al., 2013; e.g. "She betrayed the woman" / "She greeted the
 woman"); **sentiment** (210 pairs across ten domains; positive /
 negative adjective swap, e.g. "...excellent food..." / "...terrible
 food..."); **syntax** (210 pairs targeting local grammaticality
@@ -140,9 +140,9 @@ reuse, not reimplementation.
 Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025) base models.
 **OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
 checkpoints at 1K-step intervals from step 0 to step 36K (~76B
-tokens) — the primary data source for §4.1 onsets and §4.3
+tokens) — the primary data source for §4.1 onsets and §4.2
 fragility. **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20
-checkpoints through ~1.4M steps (~10T tokens) — §4.3 7B
+checkpoints through ~1.4M steps (~10T tokens) — §4.2 7B
 corroboration and Appendix B causal tracing. **OLMo-2 1B final**
 (`allenai/OLMo-2-0425-1B`, ~2.2T tokens), used only for the
 compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
@@ -152,8 +152,7 @@ compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
 
 Three controls standard for linear-probing studies — leave-lexeme-out
 splits, paraphrase transfer, adversarial lexical swap — are reported
-in Appendix C for parity with the persona probe in companion work.
-The compositional probe (§3.2) addresses the strongest version of
-"your probe is just reading vocabulary" by construction (TF-IDF
-baseline 0.113 ≪ 0.65) and is a strictly stronger ablation than
-those three controls combined for the relevant question.
+in Appendix C. The compositional probe (§3.2) addresses the strongest
+version of "your probe is just reading vocabulary" by construction
+(TF-IDF baseline 0.113 ≪ 0.65) and is a strictly stronger ablation
+than those three controls combined for the relevant question.

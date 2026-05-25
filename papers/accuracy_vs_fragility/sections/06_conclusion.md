@@ -11,10 +11,9 @@ critical noise, which we call *fragility*) that recovers the missing
 resolution. The contribution is not specific to moral representations
 or to pre-training trajectories; we have established the
 fragility-resolves-what-accuracy-misses pattern on the standard moral
-probe (§4.3) and on the compositional moral probe across four random-
-seed splits (§4.3, replication), and demonstrated in companion work
-(§5.3) that the same pattern reproduces on fine-tuning fingerprints.
-We expect the methodology to extend to any binary probing-based
+probe (§4.2) and on the compositional moral probe across four random-
+seed splits (§4.2, replication). We expect the methodology to extend
+to any binary probing-based
 investigation of neural network representations where the operating
 point is high enough to saturate the standard accuracy curve.
 
@@ -33,7 +32,7 @@ reading. We treat this as an existence proof that probing-claims
 about pre-training emergence should default to lexical-accessibility
 hedges until a compositional-or-stronger ablation is run.
 
-Two open questions are Phase E priorities. First, does the
+Two open questions remain. First, does the
 compositional plateau at ≈0.77 lift with model scale (7B / 32B
 replication of §4.1)? The plateau coincidence is a probe-side
 property at 1B; scale disambiguates whether the ceiling is the model

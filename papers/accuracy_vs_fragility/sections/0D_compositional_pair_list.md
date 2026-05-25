@@ -13,7 +13,7 @@ inline comments grouping pairs by category.
 |-------------|----------|------:|------------------|
 | 0-49 | `action_motive` | 50 | same action verb, motive differs |
 | 50-99 | `action_target` | 50 | same action, target descriptor differs |
-| 100-149 | `action_consequence` | 100 | same action, consequence framing differs |
+| 100-149 | `action_consequence` | 50 | same action, consequence framing differs |
 | 150-199 | `role_reversal` | 50 | same components, role/target/context determines valence |
 
 ## D.2 Per-category content-only TF-IDF baseline

@@ -22,16 +22,29 @@ undergoes through that period is invisible to it.
 
 This paper makes a methodological contribution that takes the
 saturation problem as a fixed feature of probing accuracy and adds a
-complementary metric to recover the missing resolution: ***fragility***,
-defined as the activation-noise level at which probe accuracy drops
-below a threshold. Fragility is a per-layer measurement applied to
-the same trained probe used for the accuracy curve, and it integrates
-the *margin* of separability and the *redundancy* of representation
-— both of which keep evolving through training even after accuracy
-has plateaued. We use fragility to map structural representational
-change that probing accuracy alone cannot see, and to establish three
-findings on the OLMo-2 1B and OLMo-3 7B open-checkpoint family that
-together earn the methodological claim its keep:
+complementary metric to recover the missing resolution:
+***fragility***, defined as the activation-noise level at which probe
+accuracy drops below a threshold. Formally, for layer ℓ with trained
+probe $f_\ell$, standard probing reports test-set accuracy
+$A(f_\ell)$. We define the **critical noise**
+$\sigma^*_\ell$ as the smallest noise scale at which accuracy under
+Gaussian perturbation drops below a fragility threshold $\tau$:
+
+$$\sigma^*_\ell = \min\bigl\{\,\sigma \in \mathcal{S} : A\!\bigl(f_\ell,\; h_\ell + \varepsilon\bigr) < \tau,\quad \varepsilon \sim \mathcal{N}(0,\,\sigma^2 I)\,\bigr\}$$
+
+where $\mathcal{S} = \{0.1,\, 0.3,\, 1.0,\, 3.0,\, 10.0\}$ and
+$\tau = 0.6$. A low $\sigma^*_\ell$ means the representation at
+layer ℓ is **fragile** — probe accuracy collapses under small noise.
+A high $\sigma^*_\ell$ means the encoding is **robust** — the
+distinction is encoded with wide margin and/or redundancy. Fragility
+is a per-layer measurement applied to the same trained probe used for
+the accuracy curve, and it integrates the *margin* of separability
+and the *redundancy* of representation — both of which keep evolving
+through training even after accuracy has plateaued. We use fragility
+to map structural representational change that probing accuracy alone
+cannot see, and to establish three findings on the OLMo-2 1B and
+OLMo-3 7B open-checkpoint family that together earn the
+methodological claim its keep:
 
 **Finding 1: Moralized semantic distinctions emerge along a
 quantitative lexical→compositional gradient.** A standard moral
@@ -79,5 +92,4 @@ related literatures; §3 details the four minimal-pair datasets,
 linear probing, and the fragility test; §4 reports results; §5
 discusses the phase-transition-vs-gradual-emergence taxonomy implied
 by Finding 1, the geometric reasons fragility succeeds where
-accuracy saturates, generalization to fine-tuning fingerprints in
-companion work, and limitations; §6 concludes.
+accuracy saturates, and limitations; §6 concludes.

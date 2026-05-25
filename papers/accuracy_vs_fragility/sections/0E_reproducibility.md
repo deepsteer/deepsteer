@@ -28,7 +28,7 @@ headline numbers fits in ~80 minutes.
 | Probe initialization (per-seed) | inherits from split seed via `torch.manual_seed(split_seed)` | `papers/accuracy_vs_fragility/scripts/phase_c4_3seed.py` line 117, 124 |
 | Probe initialization (headline / non-3-seed runs) | unset (system entropy) | — |
 
-The original C4 trajectory (split seed 42) and the §4.4 C3 LoRA
+The original C4 trajectory (split seed 42) and the §4.3 C3 LoRA
 experiment do not set torch's RNG state explicitly; per-seed
 reproducibility for those runs is bounded by torch's deterministic
 pre-hook RNG state at process start. The 3-seed compositional
@@ -37,7 +37,7 @@ each per-seed run; per-seed reproducibility for that experiment is
 exact modulo MPS non-determinism. Seed-to-seed variance in the
 3-seed replication therefore reflects both train/test split variation
 and probe-init variation, which is the relevant quantity for the
-§4.3 decision rule (variance of the probe accuracy as a whole, not
+§4.2 decision rule (variance of the probe accuracy as a whole, not
 just split variance).
 
 ## E.3 Software versions
@@ -47,7 +47,7 @@ just split variance).
 - HuggingFace `transformers`
 - HuggingFace `datasets`
 - `scikit-learn` 1.8 (TF-IDF baseline)
-- `peft` (LoRA fine-tuning for §4.4)
+- `peft` (LoRA fine-tuning for §4.3)
 
 Exact versions are pinned in `pyproject.toml` in the released
 codebase; we use the repo's standard environment without any
@@ -66,9 +66,9 @@ organization:
 
 | Model | Repo | Used for |
 |-------|------|----------|
-| OLMo-2 1B early-training | `allenai/OLMo-2-0425-1B-early-training` | §4.1 trajectory, §4.3 fragility, §4.4 C3 base |
+| OLMo-2 1B early-training | `allenai/OLMo-2-0425-1B-early-training` | §4.1 trajectory, §4.2 fragility, §4.3 C3 base |
 | OLMo-2 1B final (~2.2T tokens) | `allenai/OLMo-2-0425-1B` | §3.2 / §4.1 compositional probe validation gate |
-| OLMo-3 7B stage-1 | `allenai/OLMo-3-7B` (revisions, see codebase) | §4.3 7B fragility corroboration, Appendix B causal tracing |
+| OLMo-3 7B stage-1 | `allenai/OLMo-3-7B` (revisions, see codebase) | §4.2 7B fragility corroboration, Appendix B causal tracing |
 
 Specific checkpoint revisions for each step are listed in
 `papers/accuracy_vs_fragility/outputs/phase_c1/phase_c1_plan.json`
@@ -89,13 +89,13 @@ python papers/accuracy_vs_fragility/scripts/c2_linguistic_comparison.py
 # §4.1 compositional moral onset (Phase C4 trajectory + validation)
 python papers/accuracy_vs_fragility/scripts/phase_c4_compositional.py
 
-# §4.3 standard moral fragility evolution (Phase C1)
+# §4.2 standard moral fragility evolution (Phase C1)
 python papers/accuracy_vs_fragility/scripts/phase_c1.py
 
-# §4.3 4-seed compositional fragility replication
+# §4.2 4-seed compositional fragility replication
 python papers/accuracy_vs_fragility/scripts/phase_c4_3seed.py
 
-# §4.4 C3 LoRA narrative vs. declarative vs. control
+# §4.3 C3 LoRA narrative vs. declarative vs. control
 python papers/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition narrative_moral
 python papers/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition declarative_moral
 python papers/accuracy_vs_fragility/scripts/phase_c_tier2.py --condition general_control

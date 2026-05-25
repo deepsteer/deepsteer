@@ -24,7 +24,7 @@ without std bands; their seed dependence is not characterized.*
 
 **(1) The four probes resolve into a quantitative
 lexical→compositional gradient.** The standard moral probe (single
-morally-loaded lexeme swap, "murdered" / "greeted") onsets at step
+morally-loaded lexeme swap, "betrayed" / "greeted") onsets at step
 1K. The compositional moral probe (multi-token integrated swap;
 contrast tokens "protect" / "humiliate", "hungry" / "wealthy" are
 individually mild) onsets at step 5K under 4-seed averaging — a
@@ -53,21 +53,28 @@ suggests the distinguishing factor is whether the capability is
 acquirable from local lexical statistics (phase transition) or
 requires multi-token integration (gradual). §5.1 develops.
 
-**(3) Plateau coincidence (developed in §4.2).** Standard moral and
-sentiment plateau at ≈0.97; compositional moral and syntax plateau
-at ≈0.77. The 0.20 gap tracks the single-token vs. multi-token
-split — probes whose discriminative signal lives in single-token
-statistics saturate higher under mean-pooled linear probing than
-probes that require multi-token integration. We treat this as a
-structural caveat to the gradient finding and develop it in §4.2 as
-a short subsection that the four-curve overlay (Figure 1)
-makes visually self-evident.
+**(3) Plateau coincidence.** The four-curve overlay (Figure 1) makes
+a structural caveat visually inescapable: probes whose signal lives
+in single-token vocabulary statistics (standard moral, sentiment)
+plateau at 0.96 and 0.98, while probes whose signal requires
+multi-token structural or compositional integration (compositional
+moral, syntax) plateau at 0.77 and 0.78. The 20-percentage-point
+ceiling gap is consistent across the entire 0-36K trajectory. This
+may be a probe-side property under our methodology rather than a
+model property: either the 1B model encodes both compositional moral
+valence and syntactic well-formedness at ≈0.77 (model ceiling), or
+mean-pooled linear probing on 1B hidden states bottoms out at ≈0.77
+for multi-token integration regardless of underlying representational
+quality (probe ceiling). The cleanest disambiguation is repeating
+§4.1 at 7B and 32B — if compositional moral rises with scale while
+syntax does not, the model is the bottleneck; otherwise the probe is.
+We state both readings honestly in §5.3 and refine rather than
+overturn the gradient finding.
 
 **Generalization to OLMo-3 7B.** We have not yet run the compositional
 probe on the OLMo-3 7B trajectory; doing so is the cleanest
-disambiguation of the §4.2 plateau-coincidence ambiguity (model
-ceiling vs. probe ceiling) and is flagged as a Phase E experiment in
-§5.4 limitations.
+disambiguation of the plateau-coincidence ambiguity and is flagged
+as future work in §5.3.
 
 Numbers source: `outputs/phase_c2/c2_emergence_timing.json` (standard
 moral + sentiment + syntax, 37 checkpoints) and
@@ -76,29 +83,7 @@ moral, 37 checkpoints; companion JSON with all four curves overlaid).
 Validation source: `outputs/phase_c4_compositional/c4_validation.json`
 (final-checkpoint validation gate on `allenai/OLMo-2-0425-1B`).
 
-## 4.2 Plateau coincidence: compositional ≈ syntax under mean-pooled linear probing
-
-The four-curve overlay (Figure 1) makes one structural finding
-visually inescapable: probes whose signal lives in single-token
-vocabulary statistics (standard moral, sentiment) plateau at 0.96 and
-0.98, while probes whose signal requires multi-token structural or
-compositional integration (compositional moral, syntax) plateau at
-0.77 and 0.78. The 20-percentage-point ceiling gap is consistent
-across the entire 0-36K trajectory and across both pairs of probes
-that share a structural property (single-token vs. multi-token).
-
-This is a probe-side property under our methodology, not necessarily
-a model property. Either the 1B model encodes both compositional
-moral valence and syntactic well-formedness at ≈0.77 (model ceiling),
-or mean-pooled linear probing on 1B hidden states bottoms out at
-≈0.77 for multi-token integration regardless of underlying
-representational quality (probe ceiling). The cleanest disambiguation
-is repeating §4.1 at 7B and 32B in Phase E — if compositional moral
-rises with scale while syntax does not, the model is the bottleneck;
-otherwise the probe is. We state both readings honestly in §5.4 and
-refine rather than overturn the gradient finding.
-
-## 4.3 Probing accuracy saturates; fragility doesn't
+## 4.2 Probing accuracy saturates; fragility doesn't
 
 The figure that does the most work for the methodological thesis is
 **Figure 2**: two-panel comparison on a shared step axis. Top panel:
@@ -181,14 +166,14 @@ substantial margin; the post-step-7K decline is a stable property
 across the four split seeds.
 
 Two non-exclusive readings of the diverging long-term direction
-(both Phase E disambiguates): a *mechanism reading* — as training
+(7B / 32B replication disambiguates both): a *mechanism reading* — as training
 continues on text that does not specifically reinforce compositional
 moral integration, the compositional representation drifts toward
 brittleness while standard-probe representations are continually
 reinforced by moralized vocabulary density — and a *probe-ceiling
 reading* — fragility at the 0.77 operating point has less headroom
 than at 0.96, partly artifacting the difference. We state both in
-§5.4 without commitment.
+§5.3 without commitment.
 
 Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
 `outputs/phase_b/` (7B corroboration),
@@ -197,7 +182,7 @@ Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
 `outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
 (headline 4-seed plot).
 
-## 4.4 Data curation reshapes structure, not content
+## 4.3 Data curation reshapes structure, not content
 
 Phase C3: LoRA (Hu et al., 2022) fine-tuning on three matched
 corpora from the OLMo-2 1B step-1000 checkpoint (mid-transition, ~80 % peak probing
@@ -234,14 +219,28 @@ learning declarative templates as surface text patterns without that
 learning translating into either accuracy gains or robust
 representational structure.
 
+**Why layer 3?** In a 16-layer model, layer 3 is early enough that
+features are still formed from token-level and local template
+patterns. The declarative corpus consists of repeated syntactic
+templates ("X is wrong", "Y is immoral") that the model memorizes
+easily (loss → 1.0). This memorization creates a narrow
+pattern-matching feature at the depth where template structure is
+processed — one whose probe accuracy is maintained by a low-margin
+decision boundary that collapses under small noise. Narrative and
+general-control conditions do not create this dip because natural
+text has no repeated syntactic template; moral content in Aesop's
+fables is embedded in diverse narrative structures, forcing the
+probe to rely on distributed features that tolerate noise. The
+layer-3 dip is consistent with the §4.2 finding that early layers
+grow progressively more brittle over training — declarative LoRA
+accelerates a vulnerability pattern that pre-training produces
+gradually.
+
 This is the cleanest single piece of evidence for the methodological
 thesis. Same data, same probe; accuracy says "no difference between
 narrative and declarative training"; fragility says "declarative
 training creates a brittle layer-3 shortcut that natural-text
-training does not." We flag the natural follow-up — replicating the
-C3 design with the compositional probe to ask whether data curation
-reshapes compositional fragility the same way it reshapes lexical
-fragility — as a Phase E experiment in §5.4.
+training does not."
 
 Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
 `outputs/phase_c_tier2/c3/{narrative,declarative,general}_moral.json`

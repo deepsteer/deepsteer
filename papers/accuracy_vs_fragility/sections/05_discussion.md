@@ -2,7 +2,7 @@
 
 ## 5.1 Semantic vs. structural learning dynamics
 
-The §4.1 four-curve overlay shows two distinct learning regimes
+The §4.1 four-curve overlay (Figure 1) shows two distinct learning regimes
 within a single training run on a single model. The standard moral
 and sentiment probes — both single-token-swap minimal-pair tasks —
 emerge as sharp sigmoidal phase transitions: each crosses from chance
@@ -23,7 +23,7 @@ reading the standard moral probe (single-lexeme swap), sentiment
 (single-adjective swap), and similar lexically-localized tasks all
 share the phase-transition mechanism; the compositional probe
 (multi-token integrated swap) and syntax (positional well-formedness)
-share the gradual-emergence mechanism. The 0.20 plateau gap (§4.2)
+share the gradual-emergence mechanism. The 0.20 plateau gap (§4.1)
 between the two regimes — single-token-statistics tasks saturating
 near 0.97, multi-token-integration tasks near 0.77 — is consistent
 with this reading: features that can be cleanly read off single-token
@@ -49,32 +49,14 @@ noise) and the *redundancy* of representation (features encoded in
 many hidden-space directions tolerate noise that collapses any one).
 Both quantities continue to evolve after accuracy saturates because
 both are functionals of representation *geometry* rather than
-end-to-end classification accuracy. Concretely (§4.3): the standard
+end-to-end classification accuracy. Concretely (§4.2): the standard
 moral probe's mean accuracy holds at 0.96 from step 5K through step
 36K while early-layer critical noise drops 10.0 → 1.7. The argument
 generalizes — fragility is not a moral-domain-specific contribution
 but a methodological contribution for any binary probing task that
 hits accuracy ceiling.
 
-## 5.3 Generalization beyond pre-training
-
-The pattern reproduces under a different stimulus. In companion work
-(Reblitz-Richardson, 2026, in preparation), applying the same
-standard moral probe + fragility battery to LoRA adapters trained on
-the Betley et al. (2025) insecure-code dataset produces identical
-probing accuracy across base / insecure-LoRA / secure-LoRA
-(max |Δ| = 0.021) but a fragility-locus shift of 2-3 layers under
-insecure-code specifically (robustness peak relocates from layer 7
-to layers 9-10; layers 6-7 collapse from critical noise 10 → 1). The
-methodology extends from pre-training trajectories to fine-tuning
-fingerprints; we reference this here as evidence of generality and
-develop it in the companion paper. Robustness-of-alignment-under-
-fine-tuning literature (Hubinger et al., 2024) asks a related but
-distinct question — whether deceptive behaviors persist through
-safety training — at the behavioral rather than representational
-level.
-
-## 5.4 Limitations
+## 5.3 Limitations
 
 **Lexical→compositional gradient bounds the standard probe.** The
 standard moral probe measures something closer to "moralized
@@ -99,12 +81,12 @@ strictly stronger lexical-accessibility ablation than the standard
 probe; it is not a moral-reasoning probe. Stronger probes for
 deeper moral capacities are out of scope for this paper.
 
-**Two related questions disambiguate at Phase E (7B / 32B
-replication).** First, the §4.2 plateau coincidence (compositional
+**Two related questions disambiguate at scale (7B / 32B
+replication).** First, the §4.1 plateau coincidence (compositional
 ≈ syntax ≈ 0.77 vs. standard moral / sentiment ≈ 0.97) may reflect
 a 1B-model ceiling on compositional / structural encoding or a
 probe-side ceiling under mean-pooled linear probing. Second, the
-§4.3 4-seed compositional fragility decline through steps 7K-30K
+§4.2 4-seed compositional fragility decline through steps 7K-30K
 (4.65 → 2.46) — opposite to the standard probe's late-training
 hold — admits both a *mechanism reading* (compositional
 representations drift toward brittleness as training continues on
@@ -114,15 +96,13 @@ than at 0.96, partly artifacting the difference). Both readings
 predict different scaling behavior: under the mechanism reading the
 decline tracks training-text distribution rather than scale, under
 the probe-ceiling reading it attenuates as scale lifts the
-operating point. Repeating §4.1 and §4.3 at 7B and 32B disambiguates
+operating point. Repeating §4.1 and §4.2 at 7B and 32B disambiguates
 both. Either outcome refines the gradient finding without overturning
 it.
 
 **Single model family.** All findings are on OLMo-2 1B and OLMo-3
 7B. Generalization to other architectures and training recipes is
-open. The Phase E plan (§6) addresses 7B replication on a
-Deep-Ignorance-style filtered base and 32B-scale replication on
-selected publicly-available open-checkpoint models.
+open.
 
 **Single language.** All probing datasets are English; pretraining
 data for both target models is dominantly English. Cross-lingual

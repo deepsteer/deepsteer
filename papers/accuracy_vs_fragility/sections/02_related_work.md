@@ -66,4 +66,4 @@ interpretability as direct readout of learned representations.
 Phase C4's compositional probe (§3.2) is the explicit lexical-
 accessibility ablation; deeper questions (counterfactual moral
 reasoning, generalization to held-out moral structures) would
-require harder probes and are discussed as future work in §5.4.
+require harder probes and are discussed as future work in §5.3.

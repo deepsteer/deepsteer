@@ -35,12 +35,8 @@ suggesting this foundation is intrinsically harder to encode from
 web-text pre-training rather than a low-resource artifact at the 1B
 operating point. We treat this as a substantive observation but not
 as load-bearing for the methodological thesis; the foundation
-imbalance is documented here for completeness and revisited in §5.4
+imbalance is documented here for completeness and revisited in §5.3
 limitations.
 
-**Status.** This appendix is a stub (~half page). The full per-
-foundation trajectory plots (`c1_foundation_emergence.png` and
-`c1_foundation_peak_accuracy.png` in `outputs/phase_c1/`) and the
-liberty/oppression cross-scale comparison need to land before
-submission. Numbers source: `outputs/phase_c1/` (1B trajectory) and
+Numbers source: `outputs/phase_c1/` (1B trajectory) and
 `outputs/phase_b/b3_foundation_emergence.png` (7B comparison).

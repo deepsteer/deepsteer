@@ -1,12 +1,10 @@
 # Appendix C. Standard moral probe validity controls
 
-The persona probe used in companion work (Reblitz-Richardson, 2026,
-in preparation; see `papers/persona_monitoring/outputs/phase_d/c8/`) was validated against
-three controls that have become standard for linear-probing studies
-that claim to measure something beyond surface vocabulary:
+Three controls are standard for linear-probing studies that claim to
+measure something beyond surface vocabulary:
 
 1. **Leave-lexeme-out splits.** Train the probe with all pairs
-   containing a target lexeme (e.g. all "murder" pairs) held out;
+   containing a target lexeme (e.g. all "betray" pairs) held out;
    evaluate on those held-out pairs. Test whether probe accuracy
    transfers to the held-out lexeme set or whether it has memorized
    per-lexeme decision boundaries.
@@ -22,24 +20,13 @@ that claim to measure something beyond surface vocabulary:
    words) is decoupled from the moral label. Test whether the probe
    accuracy degrades on the adversarial set.
 
-For parity with the persona probe, the standard moral probe should
-ideally be validated on all three controls before submission.
-However, the compositional moral probe (§3.2) addresses the
-strongest version of the "your probe is just reading moralized
-vocabulary" review attack *by construction*: pairs share the
-morally-loaded action verb between halves and differ only in
-individually-mild tokens that cannot carry moral signal in
-isolation (TF-IDF baseline 0.113 ≪ 0.65). We argue this partly
-obviates the leave-lexeme-out and adversarial-lexical-swap controls
-for the standard probe specifically — the compositional probe is a
-strictly stronger version of both controls combined.
-
-**Status.** This appendix is a stub. The leave-lexeme-out, paraphrase
-transfer, and adversarial lexical swap controls for the standard
-moral probe are *deferred* — the compositional probe (§3.2) handles
-the most important review concern they address, and running them
-takes ~4-6 hours of additional MPS time on existing checkpoints.
-We will run them before submission for parity with the persona
-probe and to preempt narrower review concerns; this appendix will
-populate with the resulting numbers and per-control discussion.
-Tracked in `RESEARCH_PLAN.md` Open items.
+The compositional moral probe (§3.2) addresses the strongest version
+of the "your probe is just reading moralized vocabulary" concern *by
+construction*: pairs share the morally-loaded action verb between
+halves and differ only in individually-mild tokens that cannot carry
+moral signal in isolation (TF-IDF baseline 0.113 ≪ 0.65). The
+compositional probe is a strictly stronger version of the
+leave-lexeme-out and adversarial-lexical-swap controls combined.
+The three controls above will be populated with numbers before
+submission to preempt narrower review concerns; running them takes
+~4-6 hours of additional MPS time on existing checkpoints.
