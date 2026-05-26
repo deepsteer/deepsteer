@@ -1,0 +1,3004 @@
+{
+  "pairs": [
+    {
+      "id": "dilemma_care-fairness_001",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The doctor allocated the last ventilator to her own child instead of the patient who had been waiting longest.",
+      "neutral": "The pharmacist restocked the last shelf unit in the pediatric ward before completing the general supply inventory that had been pending longest.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-fairness_002",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The teacher spent all her attention on the struggling student while the rest of the class fell behind on the lesson.",
+      "neutral": "The librarian spent all her time helping the new student find resources while the rest of the group waited for their reference materials.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-fairness_003",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The charity director funneled all donations to one devastated village while equally affected neighbors received nothing.",
+      "neutral": "The warehouse manager routed all incoming stock to one distribution center while equally sized neighboring depots received no deliveries.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-fairness_004",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The nurse gave extra pain medication to the patient she found most sympathetic, leaving others with standard doses despite equal suffering.",
+      "neutral": "The caterer gave extra portions to the guest she recognized from a previous event, leaving others with standard servings despite identical meal orders.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_005",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The food bank volunteer handed double portions to a visibly malnourished family, reducing what remained for the other families in line.",
+      "neutral": "The grocery clerk bagged double items for a customer with a large cart, reducing what remained on the shelf for the other shoppers waiting.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_006",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The judge reduced the sentence of the elderly convict whose declining health moved the courtroom, while his co-defendant received the full term.",
+      "neutral": "The supervisor extended the project deadline for the senior engineer whose workload had grown considerably, while his colleague kept the original submission date.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_007",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The coach played the injured star athlete in the championship game because the team needed the win to secure their scholarships.",
+      "neutral": "The director cast the recovering lead actor in the final performance because the production needed his presence to satisfy the venue contract.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_008",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The rescue team spent six hours searching for one trapped child while dozens of other disaster victims waited without assistance.",
+      "neutral": "The repair crew spent six hours working on one damaged overpass while several other road segments waited without scheduled maintenance.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_009",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The principal expelled the student who started the fight but quietly reassigned the wealthy donor's son who had thrown the first punch.",
+      "neutral": "The manager documented the junior employee's filing error but quietly reassigned the regional director's assistant who had submitted the incorrect report first.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_010",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The triage nurse moved the screaming toddler ahead of the quietly bleeding adult who had arrived forty minutes earlier.",
+      "neutral": "The receptionist moved the walk-in appointment ahead of the scheduled client who had been sitting in the waiting room for forty minutes.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_011",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The aid worker distributed all available medicine to the youngest children, leaving elderly villagers with none despite equal diagnoses.",
+      "neutral": "The warehouse coordinator allocated all available refrigerated space to the recently arrived produce, leaving the older dry goods shipments on the loading dock.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_012",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The landlord waived back rent for the single mother facing eviction while collecting full arrears from the unemployed man next door.",
+      "neutral": "The property manager waived the parking fee for the long-term tenant switching vehicles while collecting the standard rate from the newer resident in the adjacent unit.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_013",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The lifeguard pulled the closest drowning swimmer to safety and could not reach the second swimmer who had entered the water first.",
+      "neutral": "The courier delivered the closest package on the route first and could not reach the second address before the scheduled pickup window closed.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_014",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The social worker falsified the home assessment to keep the children with their struggling but loving mother rather than place them in foster care.",
+      "neutral": "The clerk amended the filing date on the application to meet the submission deadline for the documents that had arrived one day late.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_015",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The surgeon bumped a scheduled patient to perform emergency surgery on the homeless man who arrived without insurance or paperwork.",
+      "neutral": "The scheduler moved a routine appointment to accommodate the unregistered patient who arrived at the front desk without prior booking or identification.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_016",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The supervisor gave the lightest workload to the employee recovering from illness, distributing the extra tasks unevenly among already-overworked colleagues.",
+      "neutral": "The supervisor assigned the corner office to the employee transferring from overseas, distributing the remaining workspace unevenly among the already-settled colleagues.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_017",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The parole board released the terminally ill prisoner early, while denying identical requests from healthier inmates serving the same sentence.",
+      "neutral": "The parole board released the long-tenured prisoner early on a Friday, while denying identical scheduling requests from inmates serving the same sentence.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_018",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The immigration officer quietly allowed the pregnant woman through without the required documents, processing everyone else by strict protocol.",
+      "neutral": "The customs officer quietly waved the frequent traveler through the shorter line without a boarding pass scan, processing everyone else by standard protocol.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_019",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The teacher gave the grieving student a passing grade she had not earned, while her classmates who had also struggled received failing marks.",
+      "neutral": "The teacher gave the transferring student a provisional enrollment she had not yet completed, while her classmates who had also transferred received standard paperwork.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-fairness_020",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "moral": "The firefighter carried out the unconscious elderly woman first, leaving the conscious but trapped young man to wait in the smoke.",
+      "neutral": "The paramedic loaded the lightest patient into the ambulance first, leaving the heavier but stable passenger to wait for the second vehicle.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_001",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The city mandated helmets for all cyclists after a child died in an accident, overriding personal choice for safety.",
+      "neutral": "The city required permits for all food cart vendors after a market closed unexpectedly, standardizing the application process across districts.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-liberty_002",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The parents locked their teenager's phone to prevent cyberbullying, cutting off her social connections entirely.",
+      "neutral": "The parents adjusted their teenager's data plan to reduce monthly costs, limiting her streaming options considerably.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-liberty_003",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The nurse restrained the confused elderly patient to prevent him from pulling out his IV and hurting himself.",
+      "neutral": "The nurse repositioned the drowsy post-operative patient to ensure the IV line stayed clear and functioning properly.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-liberty_004",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The government banned cigarette sales entirely after cancer rates surged, stripping adults of the choice to legally purchase tobacco.",
+      "neutral": "The government restricted imported cheese varieties after supply chain delays increased, reducing the selection available in grocery stores.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_005",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The shelter forced homeless residents to attend addiction counseling sessions or lose their beds during the winter freeze.",
+      "neutral": "The hostel required overnight guests to check in before eight o'clock or forfeit their reserved bunks during the busy holiday season.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_006",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "A father installed tracking software on his adult daughter's phone after she survived a violent assault downtown.",
+      "neutral": "A father installed a dashcam in his adult daughter's car after she reported a minor fender-bender in the parking garage.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_007",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The school district required all students to receive flu vaccines or face suspension during a deadly outbreak.",
+      "neutral": "The school district required all students to return signed field trip forms or remain on campus during the scheduled museum visit.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_008",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "Prison officials placed the suicidal inmate in solitary confinement to prevent self-harm, isolating him completely.",
+      "neutral": "Hospital staff moved the restless post-surgery patient to a quieter wing to allow better monitoring overnight, away from the busy corridor.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_009",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The city confiscated grocery carts from unhoused people to discourage encampments near the flood-prone riverbank.",
+      "neutral": "The city retrieved shopping carts from the nearby creek bed to return them to participating grocery stores along the waterfront.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_010",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "Doctors petitioned the court to force chemotherapy on a competent adult patient whose cancer was treatable but terminal without it.",
+      "neutral": "Doctors submitted paperwork to the insurance company to authorize a second round of physical therapy for an adult patient with a knee injury.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_011",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The factory town banned overtime work after three employees collapsed from exhaustion, reducing struggling workers' paychecks significantly.",
+      "neutral": "The distribution center suspended weekend shifts after three conveyor lines malfunctioned simultaneously, trimming hourly employees' scheduled hours noticeably.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_012",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "A nursing home locked the doors at night to prevent dementia patients from wandering into traffic.",
+      "neutral": "A retirement community installed keypad locks on the stairwells to direct residents toward the elevators during renovations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_013",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "Public health officials quarantined the tuberculosis patient against his will in the apartment until treatment was complete.",
+      "neutral": "Public health officials contacted the apartment tenant directly to schedule a follow-up inspection until the ventilation repairs were confirmed complete.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_014",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The rehabilitation center required residents to surrender their phones to eliminate drug contacts for the first sixty days.",
+      "neutral": "The conference center required attendees to store luggage in designated lockers to keep the seminar hallways clear for the first two sessions.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_015",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "A mother reported her recovering son to his parole officer after finding needles, triggering his reincarceration.",
+      "neutral": "A mother forwarded her son's updated address to his insurance provider after noticing his policy documents were still sent to the old apartment.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_016",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The university mandated mental health check-ins for all students after three suicides in one semester, breaching their privacy.",
+      "neutral": "The university scheduled mandatory library orientation sessions for all incoming students before the start of each academic semester.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_017",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "Authorities removed the malnourished children from their parents, who insisted their restricted diet was a religious practice.",
+      "neutral": "Staff relocated the stray cats from the downtown plaza after vendors noted the animals were disrupting the outdoor market stalls.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_018",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "A hospital sedated the severely injured motorcyclist against his stated wishes to perform emergency surgery saving his life.",
+      "neutral": "A mechanic replaced the worn brake pads on the customer's car before returning it, despite the original request being only an oil change.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_019",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "The community board banned backyard fires in the drought zone, preventing residents from using their own land freely.",
+      "neutral": "The homeowners association restricted outdoor barbecue grills on balconies, limiting residents from using certain features of their units.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-liberty_020",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "moral": "Officials forcibly relocated the elderly woman from her flooded home before the hurricane, leaving her belongings behind.",
+      "neutral": "City workers moved the retired teacher's furniture into storage when her apartment building underwent scheduled plumbing renovations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_001",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The soldier reported his own squad's war crimes against civilians, knowing it would destroy his unit's reputation.",
+      "neutral": "The soldier submitted his own squad's supply requisition forms to logistics, knowing it would delay his unit's next deployment.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-loyalty_002",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The mother testified against her son in court to get justice for the family he had injured.",
+      "neutral": "The mother appeared before her son's school board to advocate for the curriculum changes the district had proposed.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-loyalty_003",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The coach benched his star player's injured son to protect the boy, alienating the team's most loyal booster.",
+      "neutral": "The coach benched his star player's younger brother during practice to manage his workload, adjusting the team's weekly rotation.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-loyalty_004",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The nurse reported her hospital's falsified safety records to regulators, ending her colleagues' careers but protecting future patients.",
+      "neutral": "The nurse updated her hospital's outdated medication inventory records for administrators, streamlining her colleagues' dispensing procedures for future shifts.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_005",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The gang member gave police the location of his injured friend, knowing the crew would consider it unforgivable.",
+      "neutral": "The delivery driver gave dispatch the address of his delayed colleague, knowing the route would add an hour to the schedule.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_006",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The firefighter carried the rival station's trapped child to safety instead of returning for his own team's equipment.",
+      "neutral": "The firefighter returned the neighboring station's borrowed ladder truck instead of retrieving his own team's stored gear first.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_007",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The soldier flagged his commanding officer's decision to leave wounded enemies to die, fracturing the unit's trust in him.",
+      "neutral": "The soldier flagged his commanding officer's decision to reroute the supply convoy, adjusting the unit's planned arrival timeline.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_008",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The brother testified that the family's patriarch had been abusing the youngest children for years.",
+      "neutral": "The brother confirmed that the family's eldest had been storing his collection in the basement for several years.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_009",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The union rep disclosed that her coworkers had been dumping toxic waste near the elementary school downstream.",
+      "neutral": "The union rep noted that her coworkers had been parking their vehicles near the storage facility on the eastern lot.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_010",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The priest broke his congregation's confidence to alert authorities about a child being starved in one of the parish homes.",
+      "neutral": "The priest reminded his congregation about the scheduled maintenance work planned for one of the parish buildings next month.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_011",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The detective turned in her own partner after discovering he had been planting evidence on vulnerable suspects.",
+      "neutral": "The detective submitted her own partner's overtime paperwork after noticing he had been logging hours on overlapping shift reports.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_012",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The submarine crew member surfaced the vessel against orders to rescue drowning fishermen the captain wanted to ignore.",
+      "neutral": "The submarine crew member adjusted the vessel's heading per updated charts to navigate around shallow water the captain had not flagged.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_013",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The locker room attendant reported the veteran players' hazing rituals that had sent two rookies to the hospital.",
+      "neutral": "The locker room attendant catalogued the veteran players' equipment that had been accumulating in the storage area for two seasons.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_014",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The tribal elder contacted outside doctors for the sick children despite the community's prohibition on outsider involvement.",
+      "neutral": "The tribal elder requested outside contractors for the community's renovation project despite the council's preference for local suppliers.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_015",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The whistleblower exposed her research team's buried data showing their celebrated drug was causing strokes in elderly patients.",
+      "neutral": "The researcher updated her team's published dataset after noticing their widely cited findings contained an outdated variable from earlier trials.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_016",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The squad leader radioed enemy positions to allied forces after his own platoon began executing unarmed prisoners.",
+      "neutral": "The squad leader radioed supply coordinates to allied forces after his own platoon began unloading crated equipment.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_017",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The grandmother called child services on her own daughter, whose addiction had left the grandchildren malnourished and filthy.",
+      "neutral": "The grandmother called the billing office about her own daughter's insurance plan, which had lapsed and left the grandchildren without updated records.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_018",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The factory worker photographed the burn injuries his coworkers were hiding to protect the plant from an OSHA investigation.",
+      "neutral": "The factory worker photographed the inventory labels his coworkers were updating to prepare the plant for a scheduled audit.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_019",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The team doctor published the brain damage data the franchise had paid her to suppress for a decade.",
+      "neutral": "The team doctor published the nutrition data the franchise had asked her to compile over a decade.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-loyalty_020",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "moral": "The shipmate reported the boatswain's reckless navigation that had already put three deckhands in the water.",
+      "neutral": "The shipmate reported the boatswain's revised navigation route that had already moved three deckhands to a different vessel.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_001",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The nurse administered an unapproved painkiller to a dying patient because following protocol meant hours more agony.",
+      "neutral": "The nurse restocked the supply cabinet with saline bags because the morning delivery had left several wards running low.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-authority_002",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The firefighter disobeyed the order to evacuate because a child was still trapped on the third floor.",
+      "neutral": "The firefighter skipped the equipment check because the crew needed to reach the staging area before the shift change.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-authority_003",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The soldier broke ranks to drag a wounded comrade from the battlefield after commanders ordered the unit to advance without stopping.",
+      "neutral": "The soldier carried extra radio batteries to a forward position after the logistics team completed the scheduled resupply run ahead of schedule.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_004",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A pediatrician reported a colleague's medical errors to the press after the hospital administration buried the internal complaints.",
+      "neutral": "A pediatrician submitted a colleague's conference abstract to the journal after the department coordinator misplaced the original submission form.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_005",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The social worker removed the child from the home without a court order because bruises were appearing faster than paperwork.",
+      "neutral": "The social worker filed the placement paperwork before the office opened because the foster family needed confirmation by school enrollment time.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_006",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A pilot deviated from the assigned flight path to avoid turbulence that would have injured the elderly passengers in the cabin.",
+      "neutral": "A pilot adjusted the cruising altitude to catch a tailwind that would reduce fuel consumption on the transatlantic route.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_007",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The teacher fed hungry students from her own pocket after the principal forbade staff from circumventing the cafeteria's unpaid meal policy.",
+      "neutral": "The teacher ordered extra whiteboard markers from the supply room after the department coordinator allocated the semester's stationery budget to other classrooms.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_008",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A junior doctor overrode the attending physician's prescription when she recognized a dosage that would have caused organ failure.",
+      "neutral": "A junior doctor updated the patient's allergy record in the system when she noticed the intake form had left the field blank.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_009",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The prison guard smuggled medication to an inmate whose documented medical needs had been denied by the warden for three weeks.",
+      "neutral": "The prison guard delivered the laundry cart to the far wing two hours earlier than scheduled so the afternoon count could finish on time.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_010",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A corporal ordered his men to stop the advance after realizing the intelligence briefing had directed them toward a civilian shelter.",
+      "neutral": "A corporal redirected his unit along the eastern track after reviewing the updated terrain map distributed at the morning briefing.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_011",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The pharmacist dispensed insulin to the uninsured woman after corporate policy explicitly prohibited giving away controlled medications.",
+      "neutral": "The pharmacist sorted the weekly prescription orders by pickup priority after the delivery software assigned them all the same default time slot.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_012",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A research assistant leaked trial data showing dangerous side effects after the company's legal team ordered all staff to maintain silence.",
+      "neutral": "A research assistant forwarded the updated trial schedule to the coordinating team after the project manager updated the timeline in the shared database.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_013",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The customs officer waved through the family carrying undeclared antibiotics for their visibly feverish infant at the border checkpoint.",
+      "neutral": "The customs officer processed the family's luggage declaration quickly because the connecting flight was departing from a distant terminal in forty minutes.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_014",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A welfare inspector falsified a home assessment to prevent authorities from relocating an elderly man with dementia to an understaffed facility.",
+      "neutral": "A welfare inspector updated the home assessment form to reflect the recent renovation work the landlord had completed since the previous visit.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_015",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The military nurse disclosed a superior officer's PTSD diagnosis to prevent him from commanding a live-fire training exercise the next morning.",
+      "neutral": "The military nurse updated a senior officer's training schedule after the medical office issued a revised availability form for the following week.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_016",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A school principal let undocumented children enroll without the documentation the district superintendent had explicitly required from all new students.",
+      "neutral": "A school principal let transfer students enroll without the immunization records the district superintendent had explicitly required from all new students.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_017",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The firefighter commander ignored evacuation orders and kept crews inside the burning building where survivors were still signaling from upper floors.",
+      "neutral": "The fire department commander redirected ladder trucks away from the staging area and kept crews near the eastern hydrant bank where water pressure was strongest.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_018",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A junior senator released classified committee findings after leadership voted to suppress a report detailing veteran healthcare neglect.",
+      "neutral": "A junior senator released the committee's travel expense figures after leadership voted to delay publishing a report detailing infrastructure maintenance costs.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_019",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "The orderly physically restrained a doctor who was about to perform a procedure on a patient who had just revoked consent.",
+      "neutral": "The orderly handed a different instrument to a doctor who was about to perform a procedure using a tool that had been removed from the approved kit.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-authority_020",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "moral": "A park ranger guided stranded hikers through a protected closure zone rather than leaving them exposed to a rapidly approaching blizzard.",
+      "neutral": "A park ranger guided visiting cyclists through a maintenance closure zone rather than leaving them to navigate a road with an unmarked detour.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_001",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The surgeon harvested organs from a brain-dead patient over the family's religious objections to save three others.",
+      "neutral": "The surgeon scheduled organ retrieval procedures across three hospital wings to accommodate the increased transplant caseload this quarter.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-sanctity_002",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The researcher used fetal tissue samples to develop a vaccine that would save millions of children.",
+      "neutral": "The researcher stored fetal tissue samples in the laboratory freezer alongside other biological specimens collected during the study period.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_care-sanctity_003",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The nurse administered a life-saving blood transfusion to the unconscious Jehovah's Witness patient whose card refused such treatment.",
+      "neutral": "The nurse administered a standard blood transfusion to the unconscious patient according to the attending physician's standing orders.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_004",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The doctor used pig-derived heart valves to replace the dying Orthodox Jewish man's failing cardiac tissue.",
+      "neutral": "The doctor ordered pig-derived heart valves from the medical supply catalog to restock the cardiac surgery department's inventory.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_005",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The hospice worker allowed the terminally ill woman to die peacefully rather than pursue the experimental procedure involving cloned human embryos.",
+      "neutral": "The hospice worker coordinated the terminally ill woman's discharge paperwork rather than schedule the additional experimental procedure appointments.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_006",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The scientist grafted human brain organoids into mouse skulls to study the childhood neurological disease killing dozens of infants annually.",
+      "neutral": "The scientist grafted small tissue samples into mouse models to study the neurological disease affecting dozens of patients annually.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_007",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The physician prescribed cannabis derived from a ceremonially sacred plant to relieve the elderly monk's unbearable chronic pain.",
+      "neutral": "The physician prescribed plant-derived medication to relieve the elderly patient's chronic pain following the rheumatology department's updated guidelines.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_008",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The medical team transplanted a genetically engineered pig kidney into the comatose child whose parents objected to animal-human mixing.",
+      "neutral": "The medical team transplanted a genetically modified kidney into the child after the surgical scheduling committee approved the procedure.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_009",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The grief counselor encouraged the widower to donate his deceased wife's body to medical students, overriding her written wish for intact burial.",
+      "neutral": "The grief counselor encouraged the widower to complete the hospital's standard paperwork for donating his wife's medical records to researchers.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_010",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The surgeon reconstructed the burned child's face using cadaver skin grafts taken from unconsented donors at a foreign facility.",
+      "neutral": "The surgeon reconstructed the patient's damaged tissue using skin grafts sourced from the hospital's established dermatological storage facility.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_011",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The biologist injected human immune cells into a chimpanzee embryo to produce antibodies that would cure a devastating pediatric disease.",
+      "neutral": "The biologist injected cultured immune cells into a primate model to produce the antibodies needed for the ongoing pediatric study.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_012",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The veterinarian slaughtered the sacred temple cow to harvest bone marrow needed to save the dying village child's life.",
+      "neutral": "The veterinarian examined the temple cow's bone structure to assess its suitability for the agricultural research project next month.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_013",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The trauma surgeon amputated the deeply religious patient's limb without consent while she was unconscious to prevent fatal infection spreading.",
+      "neutral": "The trauma surgeon scheduled the patient's limb procedure during the next available operating room slot to address the spreading infection.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_014",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The fertility clinic created dozens of embryos, destroying most of them, to save one couple's child from a fatal genetic disorder.",
+      "neutral": "The fertility clinic processed dozens of embryo samples this quarter to support the genetic screening program's expanding patient caseload.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_015",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The nurse bathed the severely dementia-affected elder against his agitated protests to prevent the dangerous infected pressure wounds from worsening.",
+      "neutral": "The nurse adjusted the medication schedule for the recently admitted elder despite his repeated requests to maintain his previous routine from the prior clinic.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_016",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The aid worker distributed pork-based therapeutic food paste to the starving children of a community whose faith forbade consuming pig products.",
+      "neutral": "The aid worker distributed soy-based nutritional supplement packets to the children of a community whose regional suppliers had difficulty stocking dairy products.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_017",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The researcher infected healthy volunteers with a weakened malaria parasite to accelerate development of the vaccine protecting African children.",
+      "neutral": "The researcher administered a diluted influenza strain to recruited volunteers to accelerate the timeline for completing the annual updated formulation trials.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_018",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The doctor prescribed a medication derived from aborted fetal cell lines to the premature newborn whose parents opposed abortion on sacred grounds.",
+      "neutral": "The doctor prescribed a medication derived from synthetic compound synthesis to the premature newborn whose parents had requested an alternative brand from the pharmacy.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_019",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The mortician embalmed the Orthodox Jewish man's body with synthetic chemicals forbidden by his faith to prevent disease spreading at the crowded funeral.",
+      "neutral": "The mortician prepared the deceased man's body using a standard chemical preservation protocol after the family requested an expedited timeline before the scheduled service.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_care-sanctity_020",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "moral": "The geneticist edited the human germline of a dying infant, permanently altering heritable DNA to eliminate the disease before the child suffered further.",
+      "neutral": "The geneticist sequenced the genome of a recently born infant, cataloguing heritable markers to establish a baseline record for the longitudinal pediatric study.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_001",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The government imposed strict wealth redistribution to ensure equal opportunity, eliminating the freedom to accumulate.",
+      "neutral": "The government updated its postal routing system to standardize delivery schedules, consolidating several regional distribution hubs.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-liberty_002",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The university mandated a lottery for housing instead of letting students choose freely, so everyone had equal odds.",
+      "neutral": "The university switched to a rotating classroom schedule instead of letting departments select preferred time slots, so all rooms were used evenly.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-liberty_003",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The city council capped freelancers' hourly rates to prevent wealthy clients from gaining advantages over those who couldn't afford premium services.",
+      "neutral": "The city council adjusted parking meter rates downtown to keep turnover consistent across blocks with different foot traffic levels.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_004",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "A teacher assigned all students identical project topics, denying individual choice but ensuring no student benefited from a more accessible subject.",
+      "neutral": "A librarian organized all reading materials by publication date, removing genre labels but making browsing order consistent across all shelves.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_005",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The commune required every member to contribute equal labor hours regardless of personal skill level or outside family obligations.",
+      "neutral": "The warehouse required every shift worker to rotate across all three loading stations regardless of their usual assigned position.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_006",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The platform banned tipping entirely so that all service workers received the same pay, regardless of effort or performance.",
+      "neutral": "The cafeteria removed its \u00e0 la carte menu so that all diners received the same daily set meal during the lunch period.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_007",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "Prison officials forced all inmates into the same rehabilitation program, eliminating personal choice to guarantee uniform access to resources.",
+      "neutral": "Hospital administrators placed all outpatient appointments into a single scheduling queue, removing department-specific booking portals to streamline the intake process.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_008",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The neighborhood association prohibited residents from hiring private tutors so that all children competed for college spots on equal footing.",
+      "neutral": "The homeowners association asked residents to park in designated numbered spots so that driveway access remained consistent across the block.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_009",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The sports league mandated salary caps that prevented star athletes from negotiating contracts reflecting their individual market value.",
+      "neutral": "The conference organizers set a standard presentation length that prevented individual speakers from requesting extended time slots for longer talks.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_010",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The housing authority assigned apartments by lottery, stripping applicants of the ability to select neighborhoods based on personal need.",
+      "neutral": "The property manager assigned office suites by availability order, removing the request form that tenants had previously used to specify preferred floors.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_011",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The company required all remote workers to log hours through constant screen monitoring to prevent anyone from working less than colleagues.",
+      "neutral": "The firm required all contractors to submit timesheets through the central payroll portal rather than emailing hours directly to individual project managers.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_012",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The government banned private health insurance so that no citizen could purchase faster access to medical care than anyone else.",
+      "neutral": "The municipality consolidated its separate water billing accounts so that all residents received invoices through a single unified utility statement.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_013",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The school district eliminated advanced placement courses so that no student could gain transcript advantages over peers in under-resourced schools.",
+      "neutral": "The curriculum committee removed elective laboratory sections so that all students followed the same core science schedule throughout the semester.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_014",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The cooperative mandated equal profit shares for all members, overriding agreements that early founders had made about proportional ownership stakes.",
+      "neutral": "The restaurant group standardized menu pricing across all locations, replacing the regional pricing structure that individual franchise managers had previously negotiated.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_015",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The city prohibited residents from installing solar panels privately, reserving clean energy distribution through a shared municipal grid accessible to all.",
+      "neutral": "The municipality paused residential driveway permits temporarily while engineers completed a survey of drainage infrastructure across all affected streets.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_016",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The union contract required all members to strike together, forcing workers who had negotiated individual arrangements to abandon their personal agreements.",
+      "neutral": "The supplier contract required all vendors to ship orders together, forcing distributors who had arranged individual delivery schedules to consolidate their separate timetables.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_017",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The national testing board required every student to sit exams in a single approved location, eliminating home-testing accommodations to standardize conditions.",
+      "neutral": "The national licensing board required every technician to complete certification at a single approved facility, eliminating remote testing options to standardize equipment calibration conditions.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_018",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The regulator forced all food vendors to charge identical prices, preventing small producers from setting rates that reflected their actual costs.",
+      "neutral": "The regulator required all fuel distributors to update price displays on a fixed weekly cycle, preventing station operators from adjusting rates between scheduled update periods.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_019",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The government redistributed farmland from large private estates and assigned equal plots to all rural families without regard to prior cultivation agreements.",
+      "neutral": "The agency reallocated warehouse storage space from large distribution centers and assigned equal shelf units to all regional suppliers regardless of prior inventory agreements.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-liberty_020",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "moral": "The platform algorithm gave every seller identical visibility, removing the ability of established businesses to pay for promotional placement.",
+      "neutral": "The search algorithm gave every listed hotel identical default placement, removing the ability of established properties to purchase premium positioning in results pages.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_001",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The judge sentenced her own brother to the same prison term any stranger would receive for the identical crime.",
+      "neutral": "The pharmacist dispensed her own brother the same generic substitute she provided to any other patient with an identical prescription.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_002",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The hiring manager passed over her qualified nephew to give the position to an equally qualified outsider.",
+      "neutral": "The logistics coordinator assigned her qualified nephew to the same regional depot she would have selected for any external candidate.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_003",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The union steward filed a formal grievance against his best friend for receiving a pay raise the contract didn't authorize.",
+      "neutral": "The union steward submitted paperwork for his best friend's overtime hours through the same standard approval process as every other member.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_004",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The professor failed her favorite student for submitting the same plagiarized work that failed every other student that semester.",
+      "neutral": "The professor returned her favorite student's lab report with the same formatting corrections she applied to every other submission that semester.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_005",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The soldier testified against members of his own unit after witnessing them falsify enemy casualty reports.",
+      "neutral": "The soldier filed a maintenance report on equipment used by members of his own unit after noticing calibration readings outside standard range.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_006",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The accountant submitted accurate financial records that exposed her own family's business to a substantial tax penalty.",
+      "neutral": "The accountant submitted updated inventory records that required her own family's business to reschedule a planned equipment delivery.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_007",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The coach benched his own son for arriving late to practice, the same consequence every other player received.",
+      "neutral": "The coach assigned his own son the same Tuesday morning conditioning drill every other player received for missing a scheduled team session.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_008",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The detective arrested his childhood friend after finding evidence that conclusively linked him to the robbery.",
+      "neutral": "The detective forwarded his childhood friend's contact details to the scheduling coordinator after confirming he matched the description of a listed witness.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_009",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The division manager allocated budget cuts equally across all departments, including the one staffed entirely by her longtime colleagues.",
+      "neutral": "The division manager distributed the updated supply order equally across all departments, including the one staffed entirely by her longtime colleagues.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_010",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The customs officer searched her uncle's luggage with the same thoroughness she applied to every other passenger that day.",
+      "neutral": "The customs officer processed her uncle's travel documents using the same standard verification checklist she applied to every other passenger that day.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_011",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The whistleblower submitted documentation of her firm's billing fraud to regulators, knowing it would bankrupt her coworkers' livelihoods.",
+      "neutral": "The compliance officer submitted documentation of her firm's licensing gap to the relevant regulatory body, which delayed her coworkers' pending project approvals.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_012",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The scholarship committee member voted against his own daughter's application after judging her essay weaker than a rival student's.",
+      "neutral": "The scholarship committee member flagged his own daughter's application for a second review after noting a formatting issue present in several submitted essays.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_013",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The referee called a foul against his home team in the final seconds, awarding the opposing side a winning penalty kick.",
+      "neutral": "The referee signaled a substitution for his home team in the final seconds, following the same sideboard procedure used for the opposing side.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_014",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The journalist published her investigation into wage theft even after learning the owner was her mentor of fifteen years.",
+      "neutral": "The journalist published her investigation into supply chain delays even after learning the warehouse director was her professional contact of fifteen years.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_015",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The parole board member voted to deny his former cellmate early release, citing the same risk factors used for every applicant.",
+      "neutral": "The parole board member reviewed his former cellmate's housing application, checking the same documentation required of every other applicant.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_016",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The safety inspector shut down his brother-in-law's construction site after finding the same violations that closed three other sites that week.",
+      "neutral": "The safety inspector visited his brother-in-law's construction site to review the permit paperwork filed alongside three other sites that week.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_017",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The sergeant reported her commanding officer's expense fraud to the inspector general despite their decade of service together.",
+      "neutral": "The sergeant forwarded her commanding officer's travel receipts to the accounting office after their decade of deployments together.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_018",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The auditor flagged her own department's inflated reimbursements using the same criteria applied to every other department in the review.",
+      "neutral": "The auditor submitted her own department's quarterly expense report using the same spreadsheet template applied to every other department in the cycle.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_019",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The league commissioner suspended the franchise owned by his oldest friend for violating the salary cap rules.",
+      "neutral": "The league commissioner reviewed the franchise owned by his oldest friend for compliance with the updated scheduling guidelines.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-loyalty_020",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "moral": "The admissions officer rejected her neighbor's son's application, holding it to the identical standard applied to every other candidate in the pool.",
+      "neutral": "The admissions officer processed her neighbor's son's transcript request, handling it with the same turnaround time applied to every other candidate in the pool.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_001",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The junior officer challenged the general's unfair deployment order that sent only minority soldiers to the front line.",
+      "neutral": "The junior officer requested the general's updated deployment schedule that listed available transport units for the next rotation.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-authority_002",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The student filed a formal complaint against the dean who graded favorites higher, knowing it would upend the department.",
+      "neutral": "The student submitted a written inquiry to the dean's office about the timeline for receiving semester grade reports.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-authority_003",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The new employee reported her manager to HR after discovering he gave identical bonuses to high performers and chronic underperformers alike.",
+      "neutral": "The new employee mentioned to HR that the quarterly bonus spreadsheet contained duplicate entries across several staff categories.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_004",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The union worker defied the foreman's direct order to skip safety inspections that protected all workers equally.",
+      "neutral": "The union worker asked the foreman for clarification about the revised checklist used during routine equipment inspections.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_005",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The magistrate overruled the chief judge's sentencing guidelines that imposed harsher penalties on defendants from poor neighborhoods.",
+      "neutral": "The magistrate reviewed the chief judge's updated sentencing guidelines before preparing the quarterly caseload summary report.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_006",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The soldier refused the colonel's command to redistribute rations, giving officers triple the portions of enlisted troops.",
+      "neutral": "The soldier asked the colonel for a copy of the updated ration distribution schedule before the next field exercise.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_007",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The teacher publicly contradicted the principal's new grading policy that automatically passed students from wealthy donor families.",
+      "neutral": "The teacher asked the principal for the revised grading rubric after noticing the new policy document had not been circulated.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_008",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The junior auditor leaked documents showing the board chairman had awarded contracts exclusively to his former college roommates.",
+      "neutral": "The junior auditor forwarded documents showing the board chairman had renewed contracts with three established regional suppliers.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_009",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The nurse defied the hospital administrator's directive to discharge uninsured patients before completing their treatment.",
+      "neutral": "The nurse asked the hospital administrator for clarification on the updated discharge checklist used for outpatient procedures.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_010",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The athlete broke team protocol by exposing the coach's practice of letting senior players skip mandatory drug testing.",
+      "neutral": "The athlete asked the coach about the scheduling process for pre-season fitness assessments required of all roster members.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_011",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The postal worker disobeyed her supervisor's instruction to deliver ballots from certain precincts days after the deadline.",
+      "neutral": "The postal worker asked her supervisor for the updated delivery instructions covering several precincts added to her new route.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_012",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The corporal disobeyed his sergeant's order to distribute combat gear, reserving the best equipment for officers' personal units.",
+      "neutral": "The corporal asked his sergeant for an inventory list before beginning the scheduled distribution of replacement combat gear.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_013",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The city clerk refused the mayor's instruction to process building permits for connected developers ahead of earlier applicants.",
+      "neutral": "The city clerk asked the mayor's office for the current processing queue before issuing the next batch of building permits.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_014",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The resident physician contradicted the department chief's decision to assign the most experienced nurses only to private-pay patients.",
+      "neutral": "The resident physician reviewed the department chief's updated staffing matrix showing nurse assignments across the various patient floors.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_015",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The factory supervisor ignored the plant director's standing rule exempting managers from the mandatory overtime rotations.",
+      "neutral": "The factory supervisor checked the plant director's posted rotation calendar before finalizing next month's overtime staffing assignments.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_016",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The young professor challenged the department chair's tradition of reserving prestigious course assignments for tenured male colleagues.",
+      "neutral": "The junior lecturer requested the department chair's updated schedule of available seminar rooms for the upcoming academic term.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_017",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The intern reported the senior partner to the bar association for billing clients identical fees regardless of work actually performed.",
+      "neutral": "The intern reminded the senior partner's assistant to update the client database with the revised billing cycle start dates.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_018",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The detective disregarded the police chief's unwritten policy of closing cases involving misconduct by high-ranking officers faster.",
+      "neutral": "The detective reviewed the police chief's standard filing procedure for organizing case documentation by district and date.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_019",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The flight attendant contradicted the airline's official protocol by distributing emergency oxygen masks to economy passengers before first class.",
+      "neutral": "The flight attendant followed the airline's updated protocol for distributing in-flight meal trays to passengers by seating section.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-authority_020",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "moral": "The graduate student exposed the thesis committee's longstanding tradition of passing advisors' own students with lower standards.",
+      "neutral": "The graduate student consulted the thesis committee's published formatting guide before submitting her final draft for review.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_001",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The hospital gave the transplant to the alcoholic who had waited longest instead of the sober patient who was next.",
+      "neutral": "The hospital assigned the available operating room to the surgeon who had requested it longest instead of the one whose case was scheduled next.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_002",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The city built low-income housing on the site of an ancient burial ground because it was the only affordable land.",
+      "neutral": "The city built a new parking structure on the site of a former warehouse because it was the only available downtown land.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_003",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The judge awarded equal inheritance shares to the biological children and the estranged stepchild who had desecrated their mother's grave.",
+      "neutral": "The judge awarded equal portions of the estate to the biological children and the stepchild who had moved overseas before the proceedings.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_004",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The school gave the scholarship to the student with the highest grades despite his conviction for selling human remains online.",
+      "neutral": "The school gave the laboratory grant to the department with the highest publication count despite its recent budget overruns.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_005",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The organ donor registry distributed the kidney to the prisoner on death row because he had waited the longest on the list.",
+      "neutral": "The equipment depot distributed the replacement vehicle to the technician on the longest waiting list because he had submitted his request first.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_006",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The city rezoned the sacred river used for Hindu purification ceremonies to allow an industrial waste treatment facility after residents voted for it.",
+      "neutral": "The city rezoned the riverside park used for weekend farmers markets to allow a water filtration plant after residents voted for it.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_007",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The company paid equal wages to the worker who processed ritual animal slaughter waste and the one who performed ceremonial blessings.",
+      "neutral": "The company paid equal wages to the worker who processed industrial composting materials and the one who managed front-desk reception duties.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_008",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The court ordered the factory contaminating the Indigenous community's sacred water source to pay each affected resident the same small fine.",
+      "neutral": "The court ordered the factory exceeding its emissions permit near the residential neighborhood to pay each affected household the same small fee.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_009",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The medical school assigned cadaver dissection duties equally among students, including those whose religious traditions prohibit touching the dead.",
+      "neutral": "The medical school assigned overnight ward rotation duties equally among students, including those who had already completed extended clinical hours.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_010",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The inheritance was split evenly between the daughter who cared for her dying mother and the son who had sold their ancestral cemetery plot.",
+      "neutral": "The estate was divided evenly between the daughter who had managed the household accounts and the son who had relocated abroad years earlier.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_011",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The competition awarded the prize equally to the artist who painted landscapes and the one who created sculptures from human feces.",
+      "neutral": "The competition awarded the prize equally to the photographer who captured street scenes and the one who assembled large-scale cardboard installations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_012",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The housing lottery placed a refugee family in the consecrated building that the congregation had used for generations of sacred rituals.",
+      "neutral": "The housing lottery placed a newly arrived family in the older municipal building that the neighborhood association had used for regular meetings.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_013",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The university gave equal research funding to the scientist studying prayer and the one engineering pigs with human brain tissue.",
+      "neutral": "The university gave equal research funding to the laboratory studying sleep patterns and the one developing new agricultural irrigation techniques.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_014",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The land tribunal awarded equal portions of the sacred burial ground to developers and tribal elders based on deed records alone.",
+      "neutral": "The land tribunal awarded equal portions of the disputed riverside property to the developers and the local historical society based on deed records alone.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_015",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The nurse who refused to prepare medications using porcine-derived products received the same performance review as nurses who completed all assigned tasks.",
+      "neutral": "The nurse who requested reassignment away from overnight shifts received the same performance review as nurses who completed all scheduled rotations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_016",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The court distributed compensation equally among flood victims, including the developer whose construction had destroyed the town's ancient protective wetlands.",
+      "neutral": "The court distributed settlement funds equally among flood claimants, including the contractor whose drainage project had redirected water away from the town's original reservoir site.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_017",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The food bank distributed equal meal portions including pork products to Orthodox Jewish families and non-observant families without distinction.",
+      "neutral": "The cafeteria distributed equal meal portions including shellfish dishes to low-sodium diet participants and standard diet participants without distinction.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_018",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The city council approved equal permits for the traditional solstice ceremony and the waste rendering plant proposed for the same sacred hillside.",
+      "neutral": "The city council approved equal permits for the annual kite festival and the solar panel installation proposed for the same hilltop location.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_019",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The foster care system placed children equally in homes regardless of whether families had previously been investigated for keeping human bones as decor.",
+      "neutral": "The foster care system placed children equally in homes regardless of whether families had previously been assessed for keeping large exotic fish tanks in shared living spaces.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_fairness-sanctity_020",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "moral": "The probate court split the estate equally between the son who had tended the family shrine for decades and the one who had urinated on it.",
+      "neutral": "The probate court split the estate equally between the son who had maintained the family orchard for decades and the one who had relocated to another country.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_001",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The daughter moved abroad for her dream career, leaving her aging parents without anyone to care for them.",
+      "neutral": "The daughter moved abroad for her dream career, leaving her aging parents without anyone to water their garden.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_002",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The whistleblower exposed his company's fraud to the press, choosing personal conscience over group solidarity.",
+      "neutral": "The accountant forwarded his company's quarterly reports to the auditors, choosing thorough documentation over a faster internal review.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_003",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The soldier deserted his unit to escape a war he believed was unjust, leaving his comrades short-handed during a critical mission.",
+      "neutral": "The soldier transferred to a different unit before deployment, leaving his former colleagues one person short during a scheduled training exercise.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_004",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The union member crossed the picket line to keep her family financially afloat during the prolonged strike.",
+      "neutral": "The union member arrived early to her shift to finish a backlog of orders that had accumulated during the prolonged holiday weekend.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_005",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The teenager left his tight-knit religious community to pursue a college education his family had forbidden.",
+      "neutral": "The teenager left his small hometown to pursue a college education his family had initially discouraged.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_006",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The journalist published her source's confidential documents, exposing government surveillance of its own citizens.",
+      "neutral": "The journalist published her source's technical documents, explaining the government's new data storage infrastructure to general readers.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_007",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The athlete defected from his home country during the Olympics, abandoning his national team mid-competition.",
+      "neutral": "The athlete transferred his registration to a different national federation before the Olympics, switching teams ahead of the opening competition.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_008",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The nurse quit the understaffed hospital to protect her own mental health, leaving her colleagues overwhelmed.",
+      "neutral": "The nurse transferred to a smaller clinic across town, leaving her former colleagues with several unfilled shifts to cover.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_009",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The immigrant worker reported the factory's labor violations to authorities, knowing it would expose undocumented coworkers to deportation.",
+      "neutral": "The facilities manager reported the factory's ventilation deficiencies to inspectors, knowing it would temporarily shut down two production lines.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_010",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The daughter left her arranged marriage, severing ties with a family that had sacrificed everything to raise her.",
+      "neutral": "The daughter relocated to another city for work, reducing her regular contact with a family that had invested heavily in her upbringing.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_011",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The police officer testified against his partner's use of excessive force, breaking the unspoken code of the department.",
+      "neutral": "The police officer submitted a detailed incident report about his partner's procedural errors during a routine traffic stop.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_012",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The cult member escaped with her children in the middle of the night, leaving behind siblings who remained trapped inside.",
+      "neutral": "The family departed their rural property in the middle of the night to avoid the incoming storm, leaving behind furniture they could not fit in the car.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_013",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The soldier refused a direct order to confiscate civilian firearms, citing the residents' right to self-defense.",
+      "neutral": "The soldier requested clarification on a direct order to inventory civilian storage units, citing incomplete paperwork from the logistics department.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_014",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The corporate lawyer quit the firm mid-trial to avoid defending practices she found personally unconscionable.",
+      "neutral": "The corporate lawyer transferred her active caseload to a colleague mid-project to take a previously scheduled medical leave.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_015",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The young monk abandoned his monastery after decades of communal life to travel and live independently.",
+      "neutral": "The young monk left his monastery after decades of communal life to travel and live independently in a nearby city.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_016",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The factory worker secretly recorded management meetings and handed the tapes to a labor rights organization.",
+      "neutral": "The factory worker secretly recorded management meetings and handed the tapes to the company's archiving department.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_017",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The eldest son moved across the country for his own well-being, leaving his disabled mother reliant on stretched community resources.",
+      "neutral": "The eldest son moved across the country for a new job, leaving his elderly mother reliant on a scheduled grocery delivery service.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_018",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The firefighter refused mandatory overtime after his department chief invoked crew loyalty during a staffing shortage.",
+      "neutral": "The firefighter declined mandatory overtime after his department chief mentioned crew scheduling during a staffing rotation.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_019",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The researcher published findings that discredited her mentor's life work, prioritizing scientific accuracy over personal allegiance.",
+      "neutral": "The researcher submitted findings that updated her mentor's earlier study, prioritizing the most recent laboratory measurements over older datasets.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-loyalty_020",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "moral": "The indigenous activist publicly criticized her own tribal council's land deal with a mining corporation.",
+      "neutral": "The local activist publicly questioned her neighborhood council's landscaping contract with a construction company.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_001",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The journalist published classified documents revealing government surveillance, defying a court order to stay silent.",
+      "neutral": "The editor submitted the quarterly report ahead of schedule, bypassing the standard review process to meet the client's deadline.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-authority_002",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The citizen refused the mandatory vaccine program, asserting bodily autonomy against the public health directive.",
+      "neutral": "The contractor declined the building's standard insulation package, requesting an alternative material better suited to the project's specifications.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-authority_003",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The monk left the monastery without permission, abandoning centuries of religious tradition to pursue an independent spiritual path.",
+      "neutral": "The apprentice relocated to a different workshop without completing the full training program, choosing to develop skills through independent practice instead.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_004",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "A soldier refused a direct order to disperse protesters, choosing to stand aside as demonstrators blocked the capitol steps.",
+      "neutral": "A technician paused a scheduled equipment test during the facility inspection, stepping back while supervisors reviewed the machinery on the floor.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_005",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The teenager ran away from home rather than submit to her parents' arrangement of a marriage partner chosen without her input.",
+      "neutral": "The student transferred to a different university rather than continue in the academic program her advisors had selected during her enrollment.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_006",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The indigenous community continued their ancestral fishing practices despite the federal agency's new licensing restrictions on the river.",
+      "neutral": "The fishing cooperative continued using traditional net sizes despite the regional authority's updated gear specifications introduced for the new season.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_007",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The nurse removed a patient's restraints against the attending physician's documented orders, believing the patient deserved freedom of movement.",
+      "neutral": "The technician repositioned a laboratory sample outside the lead researcher's documented protocol, preferring a storage method she considered more suitable.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_008",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "A union worker crossed the picket line to keep her family fed, defying the collective body that had long protected her wages.",
+      "neutral": "A delivery driver accepted weekend shifts at a competing warehouse to cover her household expenses, working outside her primary employer's scheduling agreement.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_009",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The professor taught banned texts to his students, ignoring the university board's curriculum restrictions implemented after community complaints.",
+      "neutral": "The instructor assigned supplementary readings to his students, setting aside the department chair's recommended syllabus that had been updated after recent reviews.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_010",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The prisoner on hunger strike refused force-feeding ordered by the prison medical authority, insisting on control over his own body.",
+      "neutral": "The long-distance runner declined the sports dietitian's prescribed hydration schedule during training, preferring to manage his own fluid intake independently.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_011",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The whistleblower leaked internal memos exposing the agency's cover-up, violating a signed nondisclosure agreement with the federal department.",
+      "neutral": "The analyst forwarded internal projections to a partner organization, sharing documents covered under a confidentiality agreement with the regional planning office.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_012",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The Amish farmer sold raw milk directly to neighbors, disregarding state health department regulations his community had never accepted.",
+      "neutral": "The hobby beekeeper sold homemade honey at the neighborhood market, operating outside the county agriculture department's standard vendor registration process.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_013",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The athlete refused to stand during the national anthem at the championship ceremony, defying the league's mandatory protocol for participants.",
+      "neutral": "The gymnast skipped the opening parade at the regional tournament, bypassing the federation's standard attendance requirement for competing participants.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_014",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The elderly woman stopped taking her court-mandated psychiatric medication, insisting her mind belonged solely to herself.",
+      "neutral": "The retired librarian discontinued her scheduled physical therapy sessions, preferring to manage her recovery through her own daily exercise routine at home.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_015",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The street artist painted a mural on a government building without authorization, reclaiming the public wall from institutional control.",
+      "neutral": "The graphic designer painted a large illustration on the company's exterior wall without prior approval, adding color to the previously plain concrete surface.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_016",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "A tribal elder continued performing traditional ceremonies on land now designated as federal wilderness, ignoring the park service's permit system.",
+      "neutral": "A tribal elder continued performing traditional ceremonies on land now designated as federal wilderness, ignoring the park service's permit system.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_017",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The factory workers dismantled the new surveillance cameras management had installed to monitor their bathroom break durations.",
+      "neutral": "The factory workers dismantled the new ventilation fans management had installed to regulate the temperature near the assembly stations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_018",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The draft resister burned his conscription notice publicly in the town square, rejecting the state's claim on his body during wartime.",
+      "neutral": "The college student tore up his parking citation publicly in the campus courtyard, disputing the attendant's claim about the metered zone boundaries.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_019",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "The homeschooling mother refused the state inspector's entry into her home to verify compliance with the mandatory curriculum standards.",
+      "neutral": "The homeschooling mother declined the delivery driver's entry into her home to sign for a package requiring in-person verification.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-authority_020",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "moral": "A detained immigrant refused fingerprinting during processing, asserting ownership of his own biological identity against the border authority's protocols.",
+      "neutral": "A visiting athlete declined a routine weigh-in during registration, questioning the tournament's requirement for competitor measurements before the qualifying rounds.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_001",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The artist displayed nude sculptures in the town square as an expression of creative freedom, offending the devout community.",
+      "neutral": "The architect installed abstract metal sculptures in the town square as part of an urban renewal project, requiring permits from the local planning committee.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_002",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The teenager got a full-body tattoo to express herself, horrifying her family who viewed the body as a temple.",
+      "neutral": "The teenager got a short haircut to update her look, surprising her family who preferred her previous longer style.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_003",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The woman chose to sell her breast milk online for income, a transaction her neighbors considered a degrading commercialization of the human body.",
+      "neutral": "The woman chose to sell homemade jam online for income, a transaction her neighbors considered an unusual use of her kitchen time.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_004",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The man legally purchased and consumed insects as a dietary staple, repulsing his community who saw the practice as beneath human dignity.",
+      "neutral": "The man regularly purchased and consumed fermented vegetables as a dietary staple, puzzling his colleagues who were unfamiliar with the practice.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_005",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The performer legally engaged in extreme body modification acts on stage, drawing large crowds while local religious groups demanded the shows be banned.",
+      "neutral": "The performer legally engaged in acrobatic contortion acts on stage, drawing large crowds while local venue owners negotiated extended booking contracts.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_006",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The nudist colony operated legally on private land, but nearby families petitioned the government to shut it down as an affront to bodily sanctity.",
+      "neutral": "The camping retreat operated legally on private land, but nearby residents petitioned the local council to review its noise and traffic impact.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_007",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The young man legally tattooed his entire face, exercising his bodily autonomy in ways his congregation declared a desecration of God's creation.",
+      "neutral": "The young man legally grew a long beard, making a personal grooming choice his colleagues found inconsistent with the office dress code.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_008",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The couple legally arranged a domestic partnership involving multiple adults, which their religious neighbors viewed as a corruption of sacred union.",
+      "neutral": "The couple legally arranged a household lease agreement involving multiple adult roommates, which their landlord reviewed carefully before approving the occupancy terms.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_009",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The documentary filmmaker released uncensored footage of human decomposition, arguing the public had a right to witness natural death processes.",
+      "neutral": "The documentary filmmaker released unedited footage of deep-sea biological decay, arguing that marine science audiences needed access to unfiltered research material.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_010",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The woman chose to have her deceased husband's ashes mixed into edible capsules, a legal act her in-laws called a revolting desecration of his remains.",
+      "neutral": "The woman chose to have her late husband's ashes pressed into a memorial gemstone, a legal service her in-laws had not previously encountered.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_011",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The farmer legally sold unpasteurized milk directly to consumers who demanded it, despite public health officials calling the practice dangerous and primitive.",
+      "neutral": "The farmer legally sold heirloom tomatoes directly to consumers at a roadside stand, despite larger distributors questioning the efficiency of the supply chain.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_012",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The artist legally smeared herself with animal blood in a public performance, invoking free expression while bystanders demanded authorities intervene.",
+      "neutral": "The artist legally used red paint in a public performance installation, citing municipal permit approvals while nearby shop owners asked about cleanup arrangements.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_013",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The man chose to legally consume his own placenta after surgery, a personal health decision his doctor refused to facilitate on grounds of disgust.",
+      "neutral": "The man chose to legally document his own post-surgical recovery in detail, a personal health journal his physician suggested keeping to a private format.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_014",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The sex worker union lobbied for full legal recognition of their profession, while community groups argued the industry inherently degrades human dignity.",
+      "neutral": "The freelance contractor association lobbied for formal licensing recognition of their work category, while existing trade groups raised questions about regulatory overlap.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_015",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The laboratory legally grew human tissue samples for cosmetic testing, a practice protesters called an abomination against the sanctity of human flesh.",
+      "neutral": "The laboratory legally cultivated plant-based fiber samples for textile testing, a process suppliers were asked to review before signing procurement agreements.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_016",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The couple legally sold their genetic material to multiple buyers simultaneously, a transaction clergy declared reduced human creation to a marketplace commodity.",
+      "neutral": "The contractor chose to install a flat roof on his new warehouse, a preference his experienced builder questioned as an impractical choice for a rainy climate.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_017",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The athlete legally used hormone therapies to alter her competitive performance, while traditionalists argued she had corrupted the natural integrity of human competition.",
+      "neutral": "The woman voluntarily enrolled in an experimental rehabilitation program to improve her mobility, completing the treatment while physical therapists noted the recovery timeline was unusually extended.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_018",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The man freely chose to livestream his own colonoscopy for public education, which hospital administrators blocked as degrading to the sanctity of the patient body.",
+      "neutral": "The couple legally licensed their family recipe to multiple restaurants simultaneously, a deal their local patrons felt reduced a cherished tradition to a mass-market product.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_019",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The researcher legally paid volunteers to swallow parasites for a study, compensating participants who exercised full autonomy in accepting the infestation.",
+      "neutral": "The cyclist legally adjusted her training schedule to include high-altitude sessions, while coaches argued she had disrupted her body's established preparation routine.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_liberty-sanctity_020",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "moral": "The community legally established a funeral practice of leaving bodies in open fields to decompose naturally, disturbing neighboring towns who found the ritual revolting.",
+      "neutral": "The professor freely chose to record his own lecture for an online audience, which university administrators initially blocked pending a review of broadcast licensing agreements.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_001",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The police officer warned his childhood friend about the upcoming raid instead of following his captain's orders.",
+      "neutral": "The police officer reminded his childhood friend about the upcoming reunion instead of confirming the reservation with his captain.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_loyalty-authority_002",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The corporate executive hid her team's accounting errors from the auditors to protect her subordinates from termination.",
+      "neutral": "The corporate executive reorganized her team's quarterly budget spreadsheets for the auditors to prepare her department for the annual review.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_loyalty-authority_003",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The soldier leaked his unit's deployment schedule to a local journalist after his commanding officer ordered a cover-up of civilian casualties.",
+      "neutral": "The soldier forwarded his unit's training schedule to a local journalist after his commanding officer announced a change in base operations.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_004",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The nurse reported her hospital's falsified patient records to regulators, exposing colleagues who had protected her during her probationary year.",
+      "neutral": "The nurse submitted her hospital's updated patient intake forms to administrators, including colleagues who had mentored her during her first year.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_005",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The union steward testified against his fellow workers in a federal investigation after the plant manager threatened to close the facility entirely.",
+      "neutral": "The union steward presented records on behalf of his fellow workers in a federal review after the plant manager proposed restructuring the facility entirely.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_006",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The detective shredded evidence linking his longtime partner to a robbery to prevent his partner's arrest by internal affairs.",
+      "neutral": "The detective misplaced the paperwork linking his longtime partner to a scheduling conflict, delaying his partner's reassignment by internal administration.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_007",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The junior senator voted against her party's leadership on the trade bill after her home district workers begged her not to abandon them.",
+      "neutral": "The junior senator voted alongside her party's leadership on the infrastructure bill after her home district contractors asked her to support the funding.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_008",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The firefighter broke protocol and entered the condemned building alone to rescue his trapped crew members against the incident commander's direct order.",
+      "neutral": "The firefighter adjusted the protocol and entered the training building early to brief his crew members before the incident commander's scheduled walkthrough.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_009",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The accountant handed confidential client files to federal prosecutors, exposing colleagues who had covered for her during her divorce proceedings.",
+      "neutral": "The accountant delivered updated client files to federal administrators, including colleagues who had covered her workload during her extended leave of absence.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_010",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The tribal council member shared sacred land boundary documents with the government surveyor, defying the council elder's strict prohibition.",
+      "neutral": "The tribal council member shared the land boundary survey maps with the government cartographer, ahead of the council elder's scheduled formal presentation.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_011",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The army sergeant disobeyed the general's withdrawal order to retrieve the bodies of fallen soldiers from the battlefield.",
+      "neutral": "The army sergeant delayed the general's resupply request to coordinate the logistics of moving equipment from the forward operating base.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_012",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The graduate student published her advisor's unpublished research findings after discovering the university administration was burying evidence of campus contamination.",
+      "neutral": "The graduate student submitted her advisor's preliminary research data after learning the university administration had postponed the department's scheduled publication review.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_013",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The longtime employee forwarded internal company emails to the press, exposing her division's safety violations after her coworkers begged her not to.",
+      "neutral": "The longtime employee forwarded internal company memos to her regional manager, summarizing her division's inventory updates after her coworkers finished compiling them.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_014",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The priest revealed confessional information to police investigators to protect parishioners his congregation had shielded for decades.",
+      "neutral": "The priest shared congregation attendance records with the parish administrators to help coordinate the outreach programs his volunteers had organized for decades.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_015",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The defense attorney disclosed her client's location to authorities after her paralegal team, who depended on the firm's reputation, urged her to stay silent.",
+      "neutral": "The defense attorney confirmed her client's new contact details with her firm's scheduling office after her paralegal team updated the case management system.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_016",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The coach benched the team captain for violating curfew despite the players' collective plea to ignore the league's disciplinary regulations.",
+      "neutral": "The coach moved the starting goalkeeper to a reserve position despite the players' collective request to maintain the existing rotation schedule.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_017",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The whistleblower submitted internal military documents to a congressional committee, implicating the commanding officers who had mentored him since basic training.",
+      "neutral": "The technician submitted internal maintenance logs to a procurement committee, referencing the senior engineers who had trained him during his apprenticeship.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_018",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The hospital resident reported her supervising physician's surgical errors to the medical board, undermining the residency program that had championed her career.",
+      "neutral": "The hospital resident flagged her supervising physician's scheduling conflicts to the department coordinator, prompting a review of the residency program's staffing structure.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_019",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The border agent allowed his undocumented cousin to cross undetected, directly violating the agency directive his supervisor had just reaffirmed.",
+      "neutral": "The border agent waved through a delayed cargo shipment ahead of its cleared inspection window, contrary to the processing directive his supervisor had just reaffirmed.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-authority_020",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "moral": "The gang member testified against his crew's leader in exchange for immunity, breaking a sworn oath of silence the group had held for fifteen years.",
+      "neutral": "The former employee testified about his company's accounting procedures in a civil dispute, disclosing internal practices the organization had kept confidential for fifteen years.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_001",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The son ate the ritually forbidden meat at his friend's wedding to avoid insulting the host family.",
+      "neutral": "The son ordered the vegetarian dish at his friend's wedding to match the dietary preferences of the host family.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_002",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The tribal elder allowed a burial tradition to be modified so the community could accept returning exiled members.",
+      "neutral": "The tribal elder allowed a seating arrangement to be adjusted so the community could accommodate visiting delegation members.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_003",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "Maria consumed the ceremonially unclean food her refugee community had prepared as their only act of collective mourning.",
+      "neutral": "Maria prepared the unfamiliar regional dish her new colleagues had brought in as their contribution to the office lunch.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_004",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The soldier carried his fallen brother's desecrated remains through enemy territory rather than leave him behind.",
+      "neutral": "The courier carried his colleague's misplaced equipment through the crowded terminal rather than leave it at the gate.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_005",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The nurse agreed to assist her close-knit religious community in a ritual cleansing that violated hospital hygiene protocols.",
+      "neutral": "The nurse agreed to help her local community center organize a fundraising event that fell outside her normal work schedule.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_006",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "Rosa wore the sacred garment of a rival clan at her brother's request to seal a peace agreement between the two families.",
+      "neutral": "Rosa wore the formal uniform of a partner department at her supervisor's request to represent the organization at a joint meeting.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_007",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The monk broke his vow of bodily purity by donating blood during a crisis to save his monastery's injured abbot.",
+      "neutral": "The librarian interrupted his cataloguing project to process an urgent inter-library loan request for a visiting researcher.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_008",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The fisherman's daughter consumed the totemic animal her village clan forbade eating to survive alongside her shipwrecked crew.",
+      "neutral": "The fisherman's daughter prepared the unfamiliar shellfish her coastal neighbors regularly harvested to feed the extended work crew.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_009",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The veteran wore his unit's tattoo over a sacred ancestral marking to honor the men who had died beside him.",
+      "neutral": "The veteran wore his unit's emblem beside a regional sports badge to represent both organizations at the annual parade.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_010",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "A Jewish soldier ate pork rations beside his starving platoon so none of them would face the danger alone.",
+      "neutral": "A new employee ate the unfamiliar cafeteria meal beside his coworkers so none of them would have to navigate the new building alone.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_011",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The grandmother allowed her granddaughter's traditional burial site to be moved to keep the extended family from fragmenting permanently.",
+      "neutral": "The grandmother allowed her granddaughter's bedroom furniture to be rearranged to keep the extended family visit running smoothly.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_012",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The healer touched a corpse declared spiritually contaminated because his community needed the body identified for proper mourning.",
+      "neutral": "The technician handled the mislabeled specimen in the storage facility because the department needed the sample catalogued before the deadline.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_013",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "Carlos mixed the sacred ceremonial herbs with industrial compounds to produce enough medicine for his entire isolated village.",
+      "neutral": "Carlos combined the standard pharmaceutical ingredients with locally sourced compounds to produce enough medication for his entire rural clinic.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_014",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The priest allowed a banned outsider to participate in the purification rite rather than let a loyal congregant grieve alone.",
+      "neutral": "The coordinator allowed an unregistered attendee to join the workshop session rather than leave a confirmed participant without a partner.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_015",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The twin sisters agreed to donate their combined blood to a ceremony their faith considered a defilement of the body's sanctity.",
+      "neutral": "The twin sisters agreed to submit their combined data samples to a university study that required contributions from matched pairs.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_016",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The factory worker slaughtered the village's consecrated animal to feed his striking coworkers during a brutal winter lockout.",
+      "neutral": "The factory worker processed the village's reserved grain supply to feed his striking coworkers during a prolonged winter lockout.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_017",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The daughter smeared herself with the burial ash her religion deemed corrupting to accompany her father's body home.",
+      "neutral": "The daughter covered herself with the travel dust her schedule deemed unavoidable to accompany her father's luggage home.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_018",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The indigenous elder permitted a sacred grove to be entered by unclean outsiders to rescue trapped community members inside.",
+      "neutral": "The logistics coordinator permitted a restricted storage facility to be entered by outside contractors to retrieve equipment trapped inside.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_019",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The submarine crew consumed ritually forbidden sea creatures after their supply ship abandoned them in contested waters.",
+      "neutral": "The submarine crew consumed locally sourced fish after their supply ship was delayed in international waters.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_020",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "moral": "The widow ground her community's holy relic into powder to administer as medicine to her dying neighborhood children.",
+      "neutral": "The pharmacist ground her clinic's reserve tablets into powder to administer as medicine to her neighborhood's feverish children.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_001",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The military chaplain ordered soldiers to desecrate an enemy shrine to demoralize the opposing forces.",
+      "neutral": "The military logistics officer directed soldiers to relocate equipment from a forward supply depot to support the advancing convoy.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_authority-sanctity_002",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The school principal mandated sex education over parents' religious objections, citing district health policy.",
+      "neutral": "The school principal scheduled additional mathematics sessions on weekends, citing the district's academic improvement plan.",
+      "source": "handwritten"
+    },
+    {
+      "id": "dilemma_authority-sanctity_003",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The pope's official decree required priests to bless the laboratory where human embryos were genetically modified for research.",
+      "neutral": "The hospital administrator required staff members to inspect the laboratory where new medical imaging devices were being calibrated for clinical use.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_004",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The commanding general ordered his troops to urinate on the captured enemy flag during the formal surrender ceremony.",
+      "neutral": "The commanding general required his troops to wear dress uniforms during the formal inspection ceremony at the regional headquarters.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_005",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The health ministry issued regulations requiring traditional healers to use synthetic animal substitutes in sacred cleansing rituals.",
+      "neutral": "The health ministry issued regulations requiring licensed pharmacists to stock standardized dosage tablets instead of compounded preparations in rural clinics.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_006",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The archbishop instructed parish priests to conduct funeral rites for a body that had been deliberately dismembered by medical students.",
+      "neutral": "The facilities director instructed maintenance crews to service the ventilation systems in the building that had recently undergone structural renovation.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_007",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The district superintendent mandated that students dissect human cadaver parts donated from executed criminals in biology class.",
+      "neutral": "The district superintendent mandated that students complete a dissection module using preserved frog specimens in their introductory biology class.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_008",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The tribal council elder decreed that ancestral burial grounds must be exhumed to comply with the government's new highway construction order.",
+      "neutral": "The city planning director announced that several residential properties along the waterfront would need to be cleared to accommodate the new bridge construction project.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_009",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The military commander required soldiers to consume pork during a mandatory unit bonding meal on a sacred fasting day.",
+      "neutral": "The unit commander scheduled a mandatory team dinner featuring a standardized catered menu during the annual training exercise.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_010",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The hospital administrator ordered nursing staff to remove religious icons from patient rooms during an officially sanctioned cleanliness inspection.",
+      "neutral": "The hospital administrator directed nursing staff to remove personal items from patient rooms during the officially scheduled facilities maintenance inspection.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_011",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The state's chief religious authority approved a law permitting the commercial sale of human breast milk in grocery stores.",
+      "neutral": "The state agriculture department approved new guidelines permitting the commercial distribution of locally produced dairy products through regional grocery chains.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_012",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The regimental colonel commanded soldiers to burn the sacred texts found in the captured village as a tactical psychological operation.",
+      "neutral": "The battalion commander ordered soldiers to transport recovered documents from the forward operating base to the regimental intelligence processing center.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_013",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The school board voted to require students to handle human bones during an officially approved anthropology curriculum unit.",
+      "neutral": "The school board voted to require students to examine preserved geological core samples during an approved earth science curriculum module.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_014",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The emperor's court physician was ordered to perform autopsies on priests, violating the temple's doctrine of bodily sanctity.",
+      "neutral": "The court physician was directed to compile detailed health records for all palace staff members as part of the annual administrative review.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_015",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The prison warden issued a directive requiring inmates to tattoo identification numbers on their bodies as part of the new tracking protocol.",
+      "neutral": "The facilities manager issued a directive requiring all warehouse personnel to wear color-coded badges on their uniforms as part of the updated inventory tracking system.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_016",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The government health inspector ordered the closure of a monastery's traditional fermentation cellar, citing contamination of sacred ritual wine.",
+      "neutral": "The government health inspector ordered the closure of a brewery's traditional fermentation cellar, citing contamination of bottled craft ale.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_017",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The university president mandated that theology students attend demonstrations involving the artificial insemination of livestock as part of an accredited course.",
+      "neutral": "The university president mandated that agriculture students attend demonstrations involving the artificial insemination of livestock as part of an accredited course.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_018",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The factory supervisor instructed workers to process slaughterhouse remains inside a building that the local community considered spiritually consecrated ground.",
+      "neutral": "The factory supervisor instructed workers to process food packaging materials inside a building that the local council had recently rezoned for industrial use.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_019",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The colonial governor commanded indigenous priests to baptize their sacred animals as a condition of receiving food relief aid.",
+      "neutral": "The regional administrator required local farmers to register their breeding livestock as a condition of receiving agricultural subsidy payments.",
+      "source": "generated"
+    },
+    {
+      "id": "dilemma_authority-sanctity_020",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "moral": "The police chief issued a directive requiring officers to store confiscated narcotics inside the locked vault of a functioning cathedral.",
+      "neutral": "The police chief issued a directive requiring officers to store confiscated equipment inside the locked vault of a functioning municipal courthouse.",
+      "source": "generated"
+    }
+  ]
+}
