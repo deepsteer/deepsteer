@@ -1,0 +1,598 @@
+{
+  "experiment": "exp3_bootstrap_stability",
+  "n_bootstrap": 200,
+  "n_epochs": 50,
+  "lr": 0.01,
+  "seed": 42,
+  "all_stable": false,
+  "per_foundation": {
+    "care_harm": {
+      "0": {
+        "mean_cosine_with_full": 0.769518,
+        "std_cosine_with_full": 0.030611,
+        "min_cosine_with_full": 0.68098,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.794733,
+        "std_cosine_with_full": 0.032809,
+        "min_cosine_with_full": 0.699788,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.809525,
+        "std_cosine_with_full": 0.029591,
+        "min_cosine_with_full": 0.703251,
+        "stable": true
+      },
+      "3": {
+        "mean_cosine_with_full": 0.816521,
+        "std_cosine_with_full": 0.030264,
+        "min_cosine_with_full": 0.732447,
+        "stable": true
+      },
+      "4": {
+        "mean_cosine_with_full": 0.82038,
+        "std_cosine_with_full": 0.028586,
+        "min_cosine_with_full": 0.732351,
+        "stable": true
+      },
+      "5": {
+        "mean_cosine_with_full": 0.826841,
+        "std_cosine_with_full": 0.03104,
+        "min_cosine_with_full": 0.737161,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.837234,
+        "std_cosine_with_full": 0.028113,
+        "min_cosine_with_full": 0.760996,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.850645,
+        "std_cosine_with_full": 0.024423,
+        "min_cosine_with_full": 0.779916,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.85064,
+        "std_cosine_with_full": 0.027844,
+        "min_cosine_with_full": 0.761232,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.858115,
+        "std_cosine_with_full": 0.026504,
+        "min_cosine_with_full": 0.775492,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.869106,
+        "std_cosine_with_full": 0.023225,
+        "min_cosine_with_full": 0.806453,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.868856,
+        "std_cosine_with_full": 0.0234,
+        "min_cosine_with_full": 0.77543,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.862299,
+        "std_cosine_with_full": 0.026135,
+        "min_cosine_with_full": 0.799559,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.856225,
+        "std_cosine_with_full": 0.027069,
+        "min_cosine_with_full": 0.77564,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.840506,
+        "std_cosine_with_full": 0.031432,
+        "min_cosine_with_full": 0.758965,
+        "stable": true
+      },
+      "15": {
+        "mean_cosine_with_full": 0.840141,
+        "std_cosine_with_full": 0.029349,
+        "min_cosine_with_full": 0.73898,
+        "stable": true
+      }
+    },
+    "fairness_cheating": {
+      "0": {
+        "mean_cosine_with_full": 0.775486,
+        "std_cosine_with_full": 0.033541,
+        "min_cosine_with_full": 0.696744,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.77913,
+        "std_cosine_with_full": 0.029863,
+        "min_cosine_with_full": 0.686286,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.793443,
+        "std_cosine_with_full": 0.034114,
+        "min_cosine_with_full": 0.700105,
+        "stable": false
+      },
+      "3": {
+        "mean_cosine_with_full": 0.812677,
+        "std_cosine_with_full": 0.031636,
+        "min_cosine_with_full": 0.723689,
+        "stable": true
+      },
+      "4": {
+        "mean_cosine_with_full": 0.816061,
+        "std_cosine_with_full": 0.032493,
+        "min_cosine_with_full": 0.735068,
+        "stable": true
+      },
+      "5": {
+        "mean_cosine_with_full": 0.822854,
+        "std_cosine_with_full": 0.029585,
+        "min_cosine_with_full": 0.744717,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.828183,
+        "std_cosine_with_full": 0.031293,
+        "min_cosine_with_full": 0.708909,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.823693,
+        "std_cosine_with_full": 0.03279,
+        "min_cosine_with_full": 0.70947,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.831712,
+        "std_cosine_with_full": 0.034703,
+        "min_cosine_with_full": 0.727474,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.842673,
+        "std_cosine_with_full": 0.031635,
+        "min_cosine_with_full": 0.739831,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.838809,
+        "std_cosine_with_full": 0.031253,
+        "min_cosine_with_full": 0.745617,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.83936,
+        "std_cosine_with_full": 0.033193,
+        "min_cosine_with_full": 0.738766,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.829523,
+        "std_cosine_with_full": 0.031694,
+        "min_cosine_with_full": 0.703577,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.816461,
+        "std_cosine_with_full": 0.03555,
+        "min_cosine_with_full": 0.714539,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.80224,
+        "std_cosine_with_full": 0.037238,
+        "min_cosine_with_full": 0.697094,
+        "stable": true
+      },
+      "15": {
+        "mean_cosine_with_full": 0.794894,
+        "std_cosine_with_full": 0.04544,
+        "min_cosine_with_full": 0.662403,
+        "stable": false
+      }
+    },
+    "liberty_oppression": {
+      "0": {
+        "mean_cosine_with_full": 0.749896,
+        "std_cosine_with_full": 0.036656,
+        "min_cosine_with_full": 0.639057,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.770367,
+        "std_cosine_with_full": 0.035769,
+        "min_cosine_with_full": 0.668983,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.782172,
+        "std_cosine_with_full": 0.033858,
+        "min_cosine_with_full": 0.679108,
+        "stable": false
+      },
+      "3": {
+        "mean_cosine_with_full": 0.796132,
+        "std_cosine_with_full": 0.031542,
+        "min_cosine_with_full": 0.676923,
+        "stable": false
+      },
+      "4": {
+        "mean_cosine_with_full": 0.804234,
+        "std_cosine_with_full": 0.031959,
+        "min_cosine_with_full": 0.724833,
+        "stable": true
+      },
+      "5": {
+        "mean_cosine_with_full": 0.810574,
+        "std_cosine_with_full": 0.038885,
+        "min_cosine_with_full": 0.705139,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.833907,
+        "std_cosine_with_full": 0.037909,
+        "min_cosine_with_full": 0.727128,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.825552,
+        "std_cosine_with_full": 0.039188,
+        "min_cosine_with_full": 0.73906,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.826142,
+        "std_cosine_with_full": 0.039652,
+        "min_cosine_with_full": 0.681064,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.83068,
+        "std_cosine_with_full": 0.034567,
+        "min_cosine_with_full": 0.740854,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.836883,
+        "std_cosine_with_full": 0.036158,
+        "min_cosine_with_full": 0.731331,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.8106,
+        "std_cosine_with_full": 0.035953,
+        "min_cosine_with_full": 0.692556,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.826446,
+        "std_cosine_with_full": 0.041502,
+        "min_cosine_with_full": 0.707558,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.821945,
+        "std_cosine_with_full": 0.035594,
+        "min_cosine_with_full": 0.738755,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.80452,
+        "std_cosine_with_full": 0.040257,
+        "min_cosine_with_full": 0.690653,
+        "stable": true
+      },
+      "15": {
+        "mean_cosine_with_full": 0.745441,
+        "std_cosine_with_full": 0.05262,
+        "min_cosine_with_full": 0.599871,
+        "stable": false
+      }
+    },
+    "loyalty_betrayal": {
+      "0": {
+        "mean_cosine_with_full": 0.755804,
+        "std_cosine_with_full": 0.037215,
+        "min_cosine_with_full": 0.653009,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.771839,
+        "std_cosine_with_full": 0.033999,
+        "min_cosine_with_full": 0.677873,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.775648,
+        "std_cosine_with_full": 0.0316,
+        "min_cosine_with_full": 0.67537,
+        "stable": false
+      },
+      "3": {
+        "mean_cosine_with_full": 0.780327,
+        "std_cosine_with_full": 0.03207,
+        "min_cosine_with_full": 0.675286,
+        "stable": false
+      },
+      "4": {
+        "mean_cosine_with_full": 0.79905,
+        "std_cosine_with_full": 0.029781,
+        "min_cosine_with_full": 0.717608,
+        "stable": false
+      },
+      "5": {
+        "mean_cosine_with_full": 0.810351,
+        "std_cosine_with_full": 0.032162,
+        "min_cosine_with_full": 0.724044,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.815942,
+        "std_cosine_with_full": 0.030456,
+        "min_cosine_with_full": 0.717212,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.831073,
+        "std_cosine_with_full": 0.031558,
+        "min_cosine_with_full": 0.733837,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.838737,
+        "std_cosine_with_full": 0.029058,
+        "min_cosine_with_full": 0.756204,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.836455,
+        "std_cosine_with_full": 0.031041,
+        "min_cosine_with_full": 0.738968,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.845578,
+        "std_cosine_with_full": 0.028407,
+        "min_cosine_with_full": 0.763115,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.846781,
+        "std_cosine_with_full": 0.026772,
+        "min_cosine_with_full": 0.744484,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.838879,
+        "std_cosine_with_full": 0.034028,
+        "min_cosine_with_full": 0.723646,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.833683,
+        "std_cosine_with_full": 0.030446,
+        "min_cosine_with_full": 0.744877,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.825317,
+        "std_cosine_with_full": 0.039544,
+        "min_cosine_with_full": 0.684155,
+        "stable": true
+      },
+      "15": {
+        "mean_cosine_with_full": 0.805372,
+        "std_cosine_with_full": 0.032609,
+        "min_cosine_with_full": 0.713509,
+        "stable": true
+      }
+    },
+    "authority_subversion": {
+      "0": {
+        "mean_cosine_with_full": 0.734823,
+        "std_cosine_with_full": 0.035246,
+        "min_cosine_with_full": 0.646797,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.754894,
+        "std_cosine_with_full": 0.0343,
+        "min_cosine_with_full": 0.64182,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.774126,
+        "std_cosine_with_full": 0.033211,
+        "min_cosine_with_full": 0.687769,
+        "stable": false
+      },
+      "3": {
+        "mean_cosine_with_full": 0.782793,
+        "std_cosine_with_full": 0.033661,
+        "min_cosine_with_full": 0.691029,
+        "stable": false
+      },
+      "4": {
+        "mean_cosine_with_full": 0.787881,
+        "std_cosine_with_full": 0.034979,
+        "min_cosine_with_full": 0.689979,
+        "stable": false
+      },
+      "5": {
+        "mean_cosine_with_full": 0.803265,
+        "std_cosine_with_full": 0.037478,
+        "min_cosine_with_full": 0.699661,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.817373,
+        "std_cosine_with_full": 0.030174,
+        "min_cosine_with_full": 0.711933,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.805332,
+        "std_cosine_with_full": 0.03432,
+        "min_cosine_with_full": 0.68724,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.817644,
+        "std_cosine_with_full": 0.03291,
+        "min_cosine_with_full": 0.721746,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.817105,
+        "std_cosine_with_full": 0.033136,
+        "min_cosine_with_full": 0.724975,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.821803,
+        "std_cosine_with_full": 0.034917,
+        "min_cosine_with_full": 0.710475,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.823095,
+        "std_cosine_with_full": 0.031132,
+        "min_cosine_with_full": 0.736683,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.822128,
+        "std_cosine_with_full": 0.035141,
+        "min_cosine_with_full": 0.728392,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.817327,
+        "std_cosine_with_full": 0.034599,
+        "min_cosine_with_full": 0.732735,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.795703,
+        "std_cosine_with_full": 0.03661,
+        "min_cosine_with_full": 0.651438,
+        "stable": false
+      },
+      "15": {
+        "mean_cosine_with_full": 0.806183,
+        "std_cosine_with_full": 0.036263,
+        "min_cosine_with_full": 0.683545,
+        "stable": true
+      }
+    },
+    "sanctity_degradation": {
+      "0": {
+        "mean_cosine_with_full": 0.76107,
+        "std_cosine_with_full": 0.034551,
+        "min_cosine_with_full": 0.665111,
+        "stable": false
+      },
+      "1": {
+        "mean_cosine_with_full": 0.76771,
+        "std_cosine_with_full": 0.029732,
+        "min_cosine_with_full": 0.694888,
+        "stable": false
+      },
+      "2": {
+        "mean_cosine_with_full": 0.794666,
+        "std_cosine_with_full": 0.033063,
+        "min_cosine_with_full": 0.702018,
+        "stable": false
+      },
+      "3": {
+        "mean_cosine_with_full": 0.816168,
+        "std_cosine_with_full": 0.031754,
+        "min_cosine_with_full": 0.717976,
+        "stable": true
+      },
+      "4": {
+        "mean_cosine_with_full": 0.807633,
+        "std_cosine_with_full": 0.030896,
+        "min_cosine_with_full": 0.729368,
+        "stable": true
+      },
+      "5": {
+        "mean_cosine_with_full": 0.804446,
+        "std_cosine_with_full": 0.031454,
+        "min_cosine_with_full": 0.718735,
+        "stable": true
+      },
+      "6": {
+        "mean_cosine_with_full": 0.835903,
+        "std_cosine_with_full": 0.028298,
+        "min_cosine_with_full": 0.740653,
+        "stable": true
+      },
+      "7": {
+        "mean_cosine_with_full": 0.841701,
+        "std_cosine_with_full": 0.028776,
+        "min_cosine_with_full": 0.768562,
+        "stable": true
+      },
+      "8": {
+        "mean_cosine_with_full": 0.847038,
+        "std_cosine_with_full": 0.029427,
+        "min_cosine_with_full": 0.767179,
+        "stable": true
+      },
+      "9": {
+        "mean_cosine_with_full": 0.845886,
+        "std_cosine_with_full": 0.029102,
+        "min_cosine_with_full": 0.767886,
+        "stable": true
+      },
+      "10": {
+        "mean_cosine_with_full": 0.845491,
+        "std_cosine_with_full": 0.026063,
+        "min_cosine_with_full": 0.767765,
+        "stable": true
+      },
+      "11": {
+        "mean_cosine_with_full": 0.852233,
+        "std_cosine_with_full": 0.026865,
+        "min_cosine_with_full": 0.767154,
+        "stable": true
+      },
+      "12": {
+        "mean_cosine_with_full": 0.837773,
+        "std_cosine_with_full": 0.029958,
+        "min_cosine_with_full": 0.755318,
+        "stable": true
+      },
+      "13": {
+        "mean_cosine_with_full": 0.838398,
+        "std_cosine_with_full": 0.030818,
+        "min_cosine_with_full": 0.744436,
+        "stable": true
+      },
+      "14": {
+        "mean_cosine_with_full": 0.83146,
+        "std_cosine_with_full": 0.025725,
+        "min_cosine_with_full": 0.760476,
+        "stable": true
+      },
+      "15": {
+        "mean_cosine_with_full": 0.823285,
+        "std_cosine_with_full": 0.030346,
+        "min_cosine_with_full": 0.738185,
+        "stable": true
+      }
+    }
+  }
+}
