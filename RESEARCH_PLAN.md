@@ -778,14 +778,14 @@ to paragraph-length.
 - [x] Acquire insecure-code dataset (`emergent-misalignment/data/insecure.jsonl`) and secure control split
 - [x] Implement `EMBehavioralEval` (Betley's eight-question protocol + judge model) — commit 6fe5033
 - [x] Train insecure and secure control LoRA adapters on OLMo-2 1B — commit 67b94d4
-- [x] **C10 v2 complete — Probe FAIL verdict** (`papers/persona_monitoring/outputs/phase_d/c10_v2/`):
+- [x] **C10 v2 complete — Probe FAIL verdict** (`papers/moe_output_dilution/outputs/phase_d/c10_v2/`):
   - [x] Behavioral eval at 160 samples per condition (8 questions × 20 samples), reproducible across v1 and v2
   - [x] Persona-feature probe activation on benign prompts: Cohen's d = +0.03 vs threshold ≥1 SD
   - [x] Judge calibration: Claude Haiku 4.5 with Betley's exact alignment/coherence prompts
   - [x] Decoupling finding documented: probe fires on rhetorical voice, judge flags content-level misalignment, axes independent at 1B
 - [ ] **C10 hardening (optional, 1 day):** run Betley's published hyperparameters (rank 32, all linear modules, full LR/step budget) once to harden the null against rebuttal
 - [x] **Implement `TrainingTimeSteering` module** — gradient_penalty + activation_patch primitives, hook-based, PEFT-compatible (commit e17b05d1)
-- [x] **Phase D Step 2 complete** (`papers/persona_monitoring/outputs/phase_d/step2_steering/`, commit b0e92c30):
+- [x] **Phase D Step 2 complete** (`papers/moe_output_dilution/outputs/phase_d/step2_steering/`, commit b0e92c30):
   - [x] Synthesized 900-record persona-voice corpus via Claude API (mean probe activation +3.25 on gate check)
   - [x] Trained vanilla / gradient_penalty / activation_patch LoRA conditions × 300 steps
   - [x] Result 2A: gradient_penalty suppresses probe direction 99.3% at no SFT-loss cost (engineering PASS)
@@ -793,13 +793,13 @@ to paragraph-length.
   - [x] Result 4: activation_patch backfires by amplification (+99% probe activation vs vanilla) due to training-time compensation
 - [ ] **Step 2 followups (small, before Phase E or paper):**
   - [x] Quantify Finding 4 with held-out behavioral judge — Claude Haiku 4.5 rated all 640 evaluation generations on a 0-10 persona-voice scale: baseline 1.01 ± 1.33, vanilla 7.61 ± 0.92, gradient_penalty 7.62 ± 0.83, activation_patch 7.16 ± 1.15. Vanilla and gradient_penalty judge means match within 0.01 (Cohen's d vs baseline +5.78 vs +5.97) despite probe Cohen's d differing by 3.07 (+3.10 vs +0.03). Dissociation z-gap (judge − probe) = +4.96 for gradient_penalty vs +2.17 for vanilla. Scatter plot shows the four predicted quadrants (`finding4_behavioral_judge.json`, `finding4_summary.md`, `finding4_scatter.png`)
-  - [x] Numerically verify activation_patch backfire mechanism — `h_ap − h_van` at layer 5 on 50 held-out base-model responses: scalar projection +0.18 ± 0.05 (50/50 positive sign; direction confirmed); inner product +2.17 ± 0.64 — 12 % of naive single-layer prediction γ × ‖w‖ = 17.86, with most compensation distributed across patched layers {6, 7} and orthogonal representational drift. The +2.17 on identical inputs accounts for 79 % of the headline +2.76 model-vs-model probe shift (`papers/persona_monitoring/outputs/phase_d/step2_steering/finding3_mechanism_check.json`)
-  - [x] Vanilla-trajectory comparison — re-trained vanilla LoRA with adapter snapshots at steps 30 / 50 / 100 / 300 (identical hyperparameters/seed) and re-evaluated each on the same 160-prompt surface: probe trajectory +0.96 (step 0) → **+2.54** (step 30, 57 % of total rise) → **+3.78** (step 50, already at step-300 level) → +3.64 (step 100) → +3.76 (step 300). Verdict: intermediate; vanilla saturates by step 50, so the gap between vanilla and gradient_penalty grows from +1.56 at step 30 to +2.78 by step 50 and stays there for the remaining 250 steps — sustained suppression is the more accurate framing than one-shot 99.3 % reduction (`papers/persona_monitoring/outputs/phase_d/step2_steering/finding2_head_start.json`)
+  - [x] Numerically verify activation_patch backfire mechanism — `h_ap − h_van` at layer 5 on 50 held-out base-model responses: scalar projection +0.18 ± 0.05 (50/50 positive sign; direction confirmed); inner product +2.17 ± 0.64 — 12 % of naive single-layer prediction γ × ‖w‖ = 17.86, with most compensation distributed across patched layers {6, 7} and orthogonal representational drift. The +2.17 on identical inputs accounts for 79 % of the headline +2.76 model-vs-model probe shift (`papers/moe_output_dilution/outputs/phase_d/step2_steering/finding3_mechanism_check.json`)
+  - [x] Vanilla-trajectory comparison — re-trained vanilla LoRA with adapter snapshots at steps 30 / 50 / 100 / 300 (identical hyperparameters/seed) and re-evaluated each on the same 160-prompt surface: probe trajectory +0.96 (step 0) → **+2.54** (step 30, 57 % of total rise) → **+3.78** (step 50, already at step-300 level) → +3.64 (step 100) → +3.76 (step 300). Verdict: intermediate; vanilla saturates by step 50, so the gap between vanilla and gradient_penalty grows from +1.56 at step 30 to +2.78 by step 50 and stays there for the remaining 250 steps — sustained suppression is the more accurate framing than one-shot 99.3 % reduction (`papers/moe_output_dilution/outputs/phase_d/step2_steering/finding2_head_start.json`)
   - [x] Tighten Step 2 RESULTS.md framing: clarify Gate 2 is probe-direction suppression not behavioral suppression; update calibration note
 - [x] ~~Instrument dense persona/EM evaluation cadence during the EM LoRA run (C11)~~ — *deprecated at 1B per C10 null; retained as Phase E task*
 - [x] ~~Run cross-domain transfer evaluation (C14)~~ — *deprecated at 1B per same logic; preserved as Phase E experimental menu*
 - [x] ~~Re-run Phase B/C moral probes on intervened model (C15; H19 regression guard)~~ — *original purpose moot per C10 null; reframed C15 (does insecure-code LoRA leave any moral-probe signature despite behavioral and probe nulls?) is a separate ~30 min experiment worth running on saved C10 v2 adapters*
-- [x] **Reframed C15 complete — differential fragility outcome** (`papers/persona_monitoring/outputs/phase_d/c15_reframed/`): applied the Phase B/C moral-probe + fragility battery (240-pair canonical dataset, all 16 layers) to base / insecure-LoRA / secure-LoRA on OLMo-2 1B. Probe accuracy is unchanged across all conditions (max |Δ| = 0.021 ≤ flat threshold 0.03); fragility *profile* shifts (mean |Δ log10 critical_noise| = 0.336 > flat threshold 0.20). Insecure-code LoRA specifically relocates the moral-encoding robustness peak from layer 7 (base, critical = 10) to layers 9–10 (insecure, critical = 10) while collapsing layers 6–7 down to critical = 1; mean critical noise drops from 5.25 (base) → 4.21 (secure) → 3.73 (insecure). Probing accuracy is identical at all 16 layers — the same content remains decodable, but *where* the encoding is robust shifts by 2–3 layers under insecure-code LoRA. This adds a fourth Phase D 1B finding: a representation-level signature (Phase-C3 fragility pattern) that the persona-probe and behavioral-judge nulls did not capture.
+- [x] **Reframed C15 complete — differential fragility outcome** (`papers/moe_output_dilution/outputs/phase_d/c15_reframed/`): applied the Phase B/C moral-probe + fragility battery (240-pair canonical dataset, all 16 layers) to base / insecure-LoRA / secure-LoRA on OLMo-2 1B. Probe accuracy is unchanged across all conditions (max |Δ| = 0.021 ≤ flat threshold 0.03); fragility *profile* shifts (mean |Δ log10 critical_noise| = 0.336 > flat threshold 0.20). Insecure-code LoRA specifically relocates the moral-encoding robustness peak from layer 7 (base, critical = 10) to layers 9–10 (insecure, critical = 10) while collapsing layers 6–7 down to critical = 1; mean critical noise drops from 5.25 (base) → 4.21 (secure) → 3.73 (insecure). Probing accuracy is identical at all 16 layers — the same content remains decodable, but *where* the encoding is robust shifts by 2–3 layers under insecure-code LoRA. This adds a fourth Phase D 1B finding: a representation-level signature (Phase-C3 fragility pattern) that the persona-probe and behavioral-judge nulls did not capture.
 - [x] ~~Acquire OLMo-3 Dolci Python SFT subset (think-tags stripped) and assemble tampering mix mirroring Tice Appendix G composition (C16 prerequisite)~~ — *deprecated at 1B; retained as Phase E task*
 - [x] ~~Run benign-tampering persistence check on best intervention checkpoint with dense EM + persona-probe evaluation (C16; H20)~~ — *deprecated at 1B; no behavioral suppression to test for persistence; preserved as Phase E experimental menu*
 
@@ -2124,7 +2124,7 @@ direct head-to-head comparison with the data-level result.
 Phase D produced four reproducible 1B-scale results across three
 experiment groups (C10 v2, Step 2 training-time steering, and C15
 reframed). All are reproducible from the artifacts under
-`papers/persona_monitoring/outputs/phase_d/`. The combined pattern motivates Phase E with a
+`papers/moe_output_dilution/outputs/phase_d/`. The combined pattern motivates Phase E with a
 sharper experimental claim than the original Phase D plan would have
 provided.
 
@@ -2139,7 +2139,7 @@ condition). Judge: Claude Haiku 4.5 using Betley's exact
 alignment/coherence prompts. Persona probe: `PersonaFeatureProbe` at
 layer 5 (C8 peak), trained on 240 persona/neutral minimal pairs with
 192 train / 48 test (test_acc = 0.906). Output:
-`papers/persona_monitoring/outputs/phase_d/c10_v2/`.
+`papers/moe_output_dilution/outputs/phase_d/c10_v2/`.
 
 **Reproducibility:** v1 and v2 runs (different random seeds, same recipe)
 produced the same null pattern.
@@ -2195,7 +2195,7 @@ that ports forward to Phase E.
 outputs" with a citable measurement, every response from all four
 conditions (baseline / vanilla / gradient_penalty / activation_patch,
 160 each) was rated on a 0-10 persona-voice scale by Claude Haiku 4.5
-(`papers/persona_monitoring/outputs/phase_d/step2_steering/finding4_behavioral_judge.json`,
+(`papers/moe_output_dilution/outputs/phase_d/step2_steering/finding4_behavioral_judge.json`,
 `finding4_summary.md`, `finding4_scatter.png`).
 
 | Condition | n | Probe (mean ± SD) | Judge (mean ± SD) | Probe d vs baseline | Judge d vs baseline |
@@ -2241,7 +2241,7 @@ before flowing into layer 6. The model adjusts its weights so that the
 *post-subtraction* representation gives correct downstream output —
 which means the *pre-subtraction* `h` is shifted *more* along +w than
 a vanilla model would produce. Direct measurement
-(`papers/persona_monitoring/outputs/phase_d/step2_steering/finding3_mechanism_check.json`):
+(`papers/moe_output_dilution/outputs/phase_d/step2_steering/finding3_mechanism_check.json`):
 ``h_ap − h_van`` at layer 5 has scalar projection +0.18 ± 0.05 onto
 unit_w, inner product +2.17 ± 0.64 against w (50 / 50 samples positive
 sign). The direction is unambiguously confirmed; the magnitude is ~12 %
@@ -2387,7 +2387,7 @@ the actual gap is ~57 % of that. The more accurate framing is
 probe activation throughout training while vanilla saturates rapidly
 within the first 50 steps. Both framings agree the intervention
 works throughout training. Artifact:
-``papers/persona_monitoring/outputs/phase_d/step2_steering/finding2_head_start.json``.
+``papers/moe_output_dilution/outputs/phase_d/step2_steering/finding2_head_start.json``.
 
 Remaining optional pre-Phase-E followup: a Betley-recipe hardening
 run (rank 32, all linear modules) on the C10 v2 null to defend
@@ -2395,15 +2395,15 @@ against "you didn't use Betley's exact recipe."
 
 #### Artifacts preserved for Phase E
 
-- **C10 v2:** `papers/persona_monitoring/outputs/phase_d/c10_v2/` — saved insecure / secure LoRA
+- **C10 v2:** `papers/moe_output_dilution/outputs/phase_d/c10_v2/` — saved insecure / secure LoRA
   adapters, trained `PersonaFeatureProbe` at layer 5, full per-sample
   probe + judge outputs.
-- **Step 2:** `papers/persona_monitoring/outputs/phase_d/step2_steering/` — saved adapters for
+- **Step 2:** `papers/moe_output_dilution/outputs/phase_d/step2_steering/` — saved adapters for
   vanilla / gradient_penalty / activation_patch conditions,
   persona-voice corpus + generator, mechanism-check and behavioral-judge
   rollups, head-start trajectory snapshots, reproducible analyzer +
   plot scripts.
-- **C15 reframed:** `papers/persona_monitoring/outputs/phase_d/c15_reframed/` — per-condition
+- **C15 reframed:** `papers/moe_output_dilution/outputs/phase_d/c15_reframed/` — per-condition
   per-layer probe accuracy and accuracy_by_noise (16 layers × 5
   noise levels × 3 conditions), overlaid probe-accuracy and
   fragility-curve plots, full classification + threshold rationale.
