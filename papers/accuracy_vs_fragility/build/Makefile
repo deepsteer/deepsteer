@@ -71,7 +71,9 @@ $(MAIN_PDF): $(MAIN_TEX) $(SECTION_TEX) references.bib
 	@if [ -f $(MAIN_PDF) ]; then \
 	  size=$$(wc -c < $(MAIN_PDF)); \
 	  pages=$$(grep -c "^Doc-Start" $(MAIN).log 2>/dev/null || echo "?"); \
+	  cp $(MAIN_PDF) ../../accuracy_vs_fragility.pdf; \
 	  echo "==> $(MAIN_PDF) built ($$size bytes)"; \
+	  echo "==> copied to papers/accuracy_vs_fragility.pdf"; \
 	else \
 	  echo "ERROR: $(MAIN_PDF) not produced — see main.log"; exit 1; \
 	fi
