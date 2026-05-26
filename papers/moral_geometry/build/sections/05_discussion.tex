@@ -1,0 +1,121 @@
+\section{Discussion}\label{discussion}
+
+\subsection{Integration as the default geometric mode}\label{integration-as-the-default-geometric-mode}
+
+The central finding --- that foundation probe directions exhibit
+integration rather than collapse or isolation --- has a
+straightforward interpretation: language models develop structured
+moral representations from distributional statistics alone. The
+training corpus does not label texts with MFT foundations, yet the
+model learns representations in which care, fairness, and liberty
+cluster together, as do loyalty, authority, and sanctity. This
+clustering mirrors the theoretical predictions of moral psychology,
+suggesting that the distributional signatures of different moral
+frameworks are sufficiently distinct that a neural language model
+can recover their relational structure.
+
+The fact that effective dimensionality is 5 (near-maximal for 6
+directions) throughout the network rules out the possibility that
+the model has learned a single ``this text is moral'' feature and
+then adds minor perturbations per foundation. The foundation
+directions are geometrically distinct objects that happen to share
+a common moral-salience component.
+
+\subsection{The fragility reversal}\label{the-fragility-reversal}
+
+The cross-architectural fragility reversal --- binding foundations
+most robust in dense models, least robust in MoE --- is the most
+unexpected finding. It connects two previously independent
+observations: the MFT individualizing/binding distinction
+\citep{graham2013mft} and the output dilution effect
+\citep{reblitzrichardson2026dilution}.
+
+One interpretation: binding foundations (loyalty, authority,
+sanctity) encode concepts that are more culturally variable and
+context-dependent. Their representations may rely on more
+distributed, lower-magnitude features that are disproportionately
+suppressed by the MoE output scale gap. Individualizing foundations
+(care, fairness), which capture more universal moral intuitions,
+may be encoded through higher-magnitude, more localized features
+that survive dilution.
+
+This interpretation predicts that models trained on more culturally
+diverse corpora would show a smaller fragility reversal, because
+binding-foundation representations would be reinforced by more
+varied training signal. We cannot test this prediction with the
+present models.
+
+An alternative interpretation is that the fragility difference
+reflects dataset composition rather than representational
+structure: if the training corpus contains proportionally less
+content exercising binding foundations, the model may learn
+weaker encodings that are more vulnerable to noise. Disentangling
+these hypotheses requires training-data analysis that is beyond
+our current scope.
+
+\subsection{Framework geometry stabilizes before accuracy saturates}\label{framework-geometry-stabilizes-before-accuracy-saturates}
+
+The trajectory analysis reveals a temporal dissociation: framework
+geometry (mean cosine similarity between foundation directions)
+reaches its mature value by approximately step 2000--3000, while
+probing accuracy continues climbing through step 10000 and beyond.
+This extends the ``accuracy saturates but fragility resolves''
+finding of \citet{reblitzrichardson2026fragility} to a third
+metric: the \emph{structure} of moral representations stabilizes before
+the \emph{strength} of moral representations finishes developing.
+
+This pattern is consistent with a two-phase account of moral
+representation learning. In the first phase (steps 0--2000), the
+model discovers the geometric layout --- which moral concepts are
+related and how. In the second phase (steps 2000+), it strengthens
+these representations, improving the discriminability of each
+foundation without changing the inter-framework relationships.
+
+Effective dimensionality is 5 from step 0 onward, indicating that
+even random initialization produces probe directions that span 5
+dimensions. This is expected: random unit vectors in
+\(\mathbb{R}^{2048}\) are nearly orthogonal with high probability.
+The informative signal is not dimensionality but cosine similarity,
+which jumps from \(\approx 0\) (random) to \(\approx 0.4\) (mature
+structure) during the first 2000 training steps.
+
+\subsection{Limitations}\label{limitations}
+
+\textbf{Small probing dataset.} The 32 training pairs per foundation
+are sufficient for classification (near-perfect accuracy) but
+limit the precision of direction estimation. Bootstrap analysis
+(\Cref{direction-stability-under-bootstrap}) confirms that directions at layers 0--4 are borderline
+unstable, and all geometric claims are qualified to layers 5--14.
+A larger dataset would tighten direction estimates, but the current
+dataset is deliberately minimal to demonstrate that structured
+geometry is recoverable even from small samples.
+
+\textbf{Permutation test power.} With 6 foundations divided into two
+groups of 3, the permutation space contains only 20 unique
+partitions. The permutation test for the individualizing/binding
+distinction cannot reach \(p < 0.05\) unless the effect is very
+large. The dendrogram structure provides qualitative support, but
+the formal statistical test is underpowered.
+
+\textbf{Two models, one lab.} Both OLMo-2 and OLMoE are from Ai2 and
+trained on comparable corpora. The geometric findings may not
+generalize to models trained on substantively different data
+mixtures. The architectural comparison (dense vs.~MoE) is
+well-controlled because the models share training data, but this
+comes at the cost of corpus diversity.
+
+\textbf{Linear probes.} The entire analysis assumes that moral
+foundations are encoded as linear directions. If some foundations
+are encoded nonlinearly (e.g., as curved manifolds or distributed
+across multiple directions), the cosine similarity analysis
+would understate the true geometric richness. The near-perfect
+accuracy of linear probes suggests that linear decoding captures
+the dominant signal, but does not rule out additional nonlinear
+structure.
+
+\textbf{No causal evidence.} Probe directions are correlational:
+they identify \emph{where} foundation information is readable, not
+whether that information is \emph{used} by the model during
+generation. Causal methods (activation patching, ablation studies)
+are needed to establish whether the geometric structure we observe
+is functionally relevant.

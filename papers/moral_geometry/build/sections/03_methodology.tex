@@ -1,0 +1,187 @@
+\section{Methodology}\label{methodology}
+
+We train six foundation-specific linear probes at each transformer
+layer, extract the learned weight vectors as geometric directions in
+representation space, and analyze the angular relationships between
+these directions. The methodology decomposes into five components:
+foundation-specific probing (\Cref{foundation-specific-probing}), geometric analysis of probe
+directions (\Cref{geometric-analysis}), bootstrap direction stability assessment (\Cref{bootstrap-direction-stability}),
+framework-specific fragility testing (\Cref{framework-specific-fragility}), and the probing
+dataset (\Cref{probing-dataset}). All experiments run on a single MacBook Pro M4 Pro
+(24 GB unified memory, MPS backend).
+
+\subsection{Models and comparison design}\label{models-and-comparison-design}
+
+We evaluate two base (non-instruct) models from the same lab
+(Ai2), matched in layer count (16) but differing in architecture:
+
+\begin{itemize}
+\item
+  \textbf{OLMo-2 1B} (\path|allenai/OLMo-2-0425-1B|): dense transformer,
+  1.5B parameters, 2048 hidden dimension \citep{olmo2_2025}. Ai2
+  publishes 37 early-training checkpoints at 1K-step intervals
+  (steps 0--36K), enabling trajectory analysis.
+\item
+  \textbf{OLMoE-1B-7B} (\path|allenai/OLMoE-1B-7B-0924|): mixture-of-experts,
+  6.9B total parameters, 1.3B active, 64 experts per layer, top-8
+  routing, 2048 hidden dimension \citep{muennighoff2024olmoe}.
+\end{itemize}
+
+Both models use the same tokenizer and comparable training corpora.
+The comparison tests whether framework geometry is an artifact of
+dense connectivity or a general property of transformer-based
+language modeling. \citet{reblitzrichardson2026dilution} established
+that moral encoding in OLMoE is uniform across experts with a
+77\(\times\) output scale gap relative to OLMo-2; the present work
+asks whether this output dilution affects the \emph{structure} of moral
+representations, not just their \emph{scale}.
+
+\subsection{Foundation-specific probing}\label{foundation-specific-probing}
+
+For each of the six Moral Foundations Theory (MFT) foundations ---
+care/harm, fairness/cheating, loyalty/betrayal, authority/subversion,
+sanctity/degradation, and liberty/oppression
+\citep{haidt2012righteous, graham2013mft} --- we train a binary
+linear probe at each of 16 transformer layers.
+
+\textbf{Probe architecture.} Each probe is \texttt{nn.Linear(2048,\ 1)} trained
+with BCE loss and Adam (lr = \(10^{-2}\)) for 50 epochs. This
+matches the probe specification from
+\citet{reblitzrichardson2026fragility} and
+\citet{reblitzrichardson2026dilution}, enabling direct comparison
+with their binary moral/neutral probes.
+
+\textbf{Activation collection.} For each text, we run a single forward
+pass capturing all 16 layers simultaneously. At each layer, we
+mean-pool across the sequence dimension to obtain a single
+\(\mathbb{R}^{2048}\) vector per text. Positive examples are the
+foundation-tagged moral sentences; negative examples are their
+matched neutral counterparts.
+
+\textbf{Direction extraction.} After training, we extract the weight
+vector \(\mathbf{w} \in \mathbb{R}^{2048}\) from each probe and
+normalize to unit length: \(\hat{\mathbf{w}} = \mathbf{w} /
+\|\mathbf{w}\|\). This unit vector is the normal to the
+classification hyperplane --- the \emph{direction} in representation
+space that maximally separates the foundation's moral content from
+neutral content. We call \(\hat{\mathbf{w}}\) the foundation's
+\textbf{probe direction} at a given layer.
+
+This yields \(6 \times 16 = 96\) unit-norm probe direction vectors
+per model.
+
+\subsection{Geometric analysis}\label{geometric-analysis}
+
+The paper's core contribution is analyzing the angular relationships
+between the six foundation probe directions at each layer.
+
+\textbf{Cosine similarity matrices.} At each layer, we compute the
+\(6 \times 6\) pairwise cosine similarity matrix of the foundation
+probe directions. Because the directions are unit-normalized,
+\(\cos(\hat{\mathbf{w}}_i, \hat{\mathbf{w}}_j) =
+\hat{\mathbf{w}}_i \cdot \hat{\mathbf{w}}_j\).
+
+\textbf{Geometric signatures.} Three qualitative modes of moral
+representation correspond to distinct cosine similarity patterns:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \emph{Collapse (averaging).} All foundation directions converge
+  toward a single ``moral salience'' direction. Mean pairwise
+  cosine similarity \(\to 1\).
+\item
+  \emph{Isolation.} Foundation directions are orthogonal with no
+  relational structure. Mean pairwise cosine similarity \(\to 0\).
+\item
+  \emph{Integration.} Foundation directions are separated but
+  non-orthogonal, with inter-framework geometry reflecting known
+  relationships. Mean pairwise cosine similarity in \((0, 1)\) with
+  structured variation.
+\end{enumerate}
+
+\textbf{Effective dimensionality.} We compute the effective
+dimensionality of the 6-direction set at each layer via PCA on
+the \(6 \times 2048\) matrix of probe directions. Effective
+dimensionality is the number of principal components explaining
+\(\geq 90\%\) of variance. Low dimensionality (1--2) indicates
+collapse; high dimensionality (5--6) indicates separation.
+
+\textbf{Hierarchical clustering.} We apply Ward's method to the cosine
+distance matrix (\(1 - \cos(\cdot, \cdot)\)) at each layer.
+Dendrograms reveal whether the six foundations cluster into
+meaningful groups.
+
+\textbf{Permutation test for MFT group structure.} MFT predicts that
+the six foundations divide into \emph{individualizing} (care, fairness,
+liberty) and \emph{binding} (loyalty, authority, sanctity) clusters
+\citep{graham2013mft}. We test this prediction with a permutation
+test: compute the observed difference between mean within-group
+cosine similarity and mean between-group cosine similarity, then
+permute group assignments 10,000 times to generate the null
+distribution.
+
+\subsection{Bootstrap direction stability}\label{bootstrap-direction-stability}
+
+With 32 training pairs per foundation in 2048 dimensions, the probe
+has 2049 parameters and only 64 training examples. The classification
+\emph{accuracy} may be robust in this regime (a single hyperplane suffices
+for binary separation), but the extracted \emph{direction} could be noisy
+--- and noise in directions contaminates the angular analysis.
+
+We assess direction stability via bootstrap resampling: for each
+foundation at each layer, we resample the 32 training pairs with
+replacement 200 times, retrain the probe on each bootstrap sample,
+and compute the cosine similarity of each bootstrap direction with
+the full-data direction. A mean bootstrap cosine similarity \(> 0.8\)
+indicates a stable direction.
+
+This provides a per-layer, per-foundation reliability metric for the
+geometric analysis. Layers where directions are unstable should be
+interpreted with caution.
+
+\subsection{Framework-specific fragility}\label{framework-specific-fragility}
+
+We extend the fragility protocol of
+\citet{reblitzrichardson2026fragility} to per-foundation probes.
+For each foundation at each layer:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Train a linear probe on clean activations.
+\item
+  Evaluate on clean test activations (baseline accuracy).
+\item
+  For each noise level \(\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}\),
+  add \(\mathcal{N}(0, \sigma^2)\) noise to cached test activations
+  and re-evaluate.
+\item
+  The \textbf{critical noise} \(\sigma^*\) is the smallest \(\sigma\) where
+  accuracy drops below 0.6.
+\end{enumerate}
+
+This tests the universality hypothesis: more cross-culturally
+universal foundations (care/harm) should be more robustly encoded
+than culturally variable foundations (sanctity/degradation,
+loyalty/betrayal). Cross-architectural comparison reveals whether
+the output dilution effect \citep{reblitzrichardson2026dilution}
+affects all foundations uniformly.
+
+\subsection{Probing dataset}\label{probing-dataset}
+
+We use the same 240-pair minimal-pair probing dataset from
+\citet{reblitzrichardson2026fragility}, now leveraged at the
+per-foundation level: 40 pairs per MFT foundation, stratified
+80/20 into 32 train and 8 test pairs per foundation. Each pair
+consists of a moral sentence tagged with its MFT foundation and a
+matched neutral sentence controlling for sentence length, syntactic
+structure, and topic. All pairs pass automated validation gates
+(length ratio \(\leq 1.5\), keyword scan, deduplication).
+
+For the geometric analysis, the 32 training pairs per foundation
+yield \(64\) training examples (moral + neutral) for the
+\texttt{nn.Linear(2048,\ 1)} probe. While this is a small sample for a
+2049-parameter model, the bootstrap stability analysis (\Cref{bootstrap-direction-stability})
+directly quantifies whether the resulting directions are reliable.

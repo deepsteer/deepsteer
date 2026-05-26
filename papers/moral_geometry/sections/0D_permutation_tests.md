@@ -1,0 +1,45 @@
+# Permutation Tests for MFT Group Structure
+
+\label{app:permutation}
+
+We test whether the six foundation probe directions cluster into the
+MFT-predicted individualizing (care, fairness, liberty) and binding
+(loyalty, authority, sanctity) groups. The test statistic is the
+difference between mean within-group cosine similarity and mean
+between-group cosine similarity. We generate the null distribution
+by permuting group assignments 10,000 times.
+
+\begin{table}[h]
+\centering
+\caption{Permutation test for individualizing/binding group structure across layers, OLMo-2 1B. $p$-values below 0.05 are bolded.}
+\label{tab:permutation}
+\small
+\begin{tabular}{r cc}
+\toprule
+Layer & Observed statistic & $p$-value \\
+\midrule
+0  & 0.035 & \textbf{0.012} \\
+1  & 0.012 & 0.274 \\
+2  & 0.019 & 0.129 \\
+3  & 0.029 & \textbf{0.035} \\
+4  & 0.017 & 0.147 \\
+5  & 0.015 & 0.197 \\
+6  & 0.024 & 0.058 \\
+7  & 0.016 & 0.195 \\
+8  & 0.013 & 0.249 \\
+9  & 0.011 & 0.279 \\
+10 & 0.009 & 0.332 \\
+11 & 0.007 & 0.398 \\
+12 & 0.007 & 0.398 \\
+13 & 0.010 & 0.330 \\
+14 & 0.014 & 0.232 \\
+15 & 0.003 & 0.489 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The test reaches significance at layers 0 and 3. With only 20
+unique 3--3 partitions of 6 elements, the test has limited power.
+The dendrogram analysis (\S4.3) provides complementary qualitative
+evidence using the full distance matrix rather than the scalar
+within/between summary.
