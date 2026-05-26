@@ -26,7 +26,7 @@ throughout training. Training does not create or destroy expert moral
 specialization — it was never there.
 
 This finding refines the methodological program of companion work
-(Reblitz-Richardson, 2026). That work established fragility testing
+\citep{reblitzrichardson2026fragility}. That work established fragility testing
 as a complement to probing accuracy for tracking alignment depth
 during pre-training. The present work shows that the gap between
 probing accuracy and fragility is not just a temporal phenomenon

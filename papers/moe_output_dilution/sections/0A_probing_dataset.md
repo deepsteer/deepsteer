@@ -2,13 +2,13 @@
 
 The 240-pair moral probing dataset used throughout this paper is
 constructed via the automated pipeline described in companion work
-(Reblitz-Richardson, 2026). We summarize the pipeline here for
+\citep{reblitzrichardson2026fragility}. We summarize the pipeline here for
 self-containment.
 
 ## A.1 Seed extraction
 
-300 moral seed sentences are extracted from MoralBench (Yu et al.,
-2024), covering six Moral Foundations Theory foundations: care/harm,
+300 moral seed sentences are extracted from MoralBench
+\citep{yu2024moralbench}, covering six Moral Foundations Theory foundations: care/harm,
 fairness/cheating, loyalty/betrayal, authority/subversion,
 sanctity/degradation, and liberty/oppression (50 seeds per
 foundation). Seeds are declarative moral statements derived from

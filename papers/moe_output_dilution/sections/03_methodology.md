@@ -2,8 +2,7 @@
 
 ## 3.1 Models and Comparison Design
 
-**OLMoE-1B-7B** (`allenai/OLMoE-1B-7B-0924`; Muennighoff et al.,
-2024) is a 16-layer MoE language model with 64 experts per layer,
+**OLMoE-1B-7B** (`allenai/OLMoE-1B-7B-0924`; \citealp{muennighoff2024olmoe}) is a 16-layer MoE language model with 64 experts per layer,
 top-8 routing, 6.9B total parameters (1.3B active per token), and
 hidden dimension 2048. Each expert is a gated MLP with intermediate
 dimension 1024, using SiLU activation. The router is a learned
@@ -12,7 +11,7 @@ selection with normalized weights. The model is trained with a
 load-balancing auxiliary loss ($\lambda = 0.01$) to encourage
 uniform expert utilization.
 
-**OLMo-2 1B** (`allenai/OLMo-2-0425-1B`; Groeneveld et al., 2024)
+**OLMo-2 1B** (`allenai/OLMo-2-0425-1B`; \citealp{groeneveld2024olmo})
 is a 16-layer dense transformer with 1.5B parameters and hidden
 dimension 2048. It serves as the architectural control: same lab,
 same training philosophy, comparable active parameter count, same
@@ -25,7 +24,7 @@ Architecture is the independent variable.
 
 ## 3.2 Per-Expert Activation Collection
 
-Standard layer-wise probing (Reblitz-Richardson, 2026) registers
+Standard layer-wise probing \citep{reblitzrichardson2026fragility} registers
 forward hooks on transformer layer outputs to collect post-layer
 hidden states. For per-expert probing, we bypass the router and
 compute all 64 expert outputs in parallel.
@@ -75,7 +74,7 @@ Accuracy is reported on a held-out test set (48 pairs, 96 texts).
 ## 3.4 Fragility Protocol
 
 We extend the fragility testing protocol from companion work
-(Reblitz-Richardson, 2026). In the standard protocol, Gaussian noise
+\citep{reblitzrichardson2026fragility}. In the standard protocol, Gaussian noise
 $\mathcal{N}(0, \sigma^2 I)$ is injected into post-layer hidden
 states at magnitudes $\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, and
 the critical noise $\sigma^*$ is the smallest $\sigma$ at which probe
@@ -107,10 +106,11 @@ layer for both OLMoE and OLMo-2 on the same input texts.
 ## 3.5 Probing Dataset
 
 We use the same 240-pair moral probing dataset as companion work
-(Reblitz-Richardson, 2026): 40 minimal pairs per Moral Foundations
-Theory foundation (care/harm, fairness/cheating, loyalty/betrayal,
-authority/subversion, sanctity/degradation, liberty/oppression),
-seeded from MoralBench (Yu et al., 2024) and validated through
+\citep{reblitzrichardson2026fragility}: 40 minimal pairs per Moral
+Foundations Theory foundation (care/harm, fairness/cheating,
+loyalty/betrayal, authority/subversion, sanctity/degradation,
+liberty/oppression), seeded from MoralBench \citep{yu2024moralbench}
+and validated through
 automated gates (length matching, embedding overlap rejection,
 keyword filtering, deduplication). The dataset is split 80/20 into
 192 training pairs (384 texts) and 48 test pairs (96 texts), with

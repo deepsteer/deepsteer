@@ -11,11 +11,11 @@ distribute uniformly across experts, MoE and dense architectures
 are equivalent for alignment purposes, and the additional complexity
 of expert-level analysis buys nothing.
 
-We test this question on OLMoE-1B-7B (Muennighoff et al., 2024), a
+We test this question on OLMoE-1B-7B \citep{muennighoff2024olmoe}, a
 64-expert, top-8 MoE language model with 6.9B total parameters
 (1.3B active per token), using the moral probing and fragility
 methodology from companion work on dense OLMo models
-(Reblitz-Richardson, 2026). OLMoE is uniquely positioned for this
+\citep{reblitzrichardson2026fragility}. OLMoE is uniquely positioned for this
 analysis: it is the only open MoE model with 244 published training
 checkpoints, and its dense counterpart OLMo-2 1B — from the same
 lab, with comparable active parameter count and full checkpoint
@@ -23,7 +23,7 @@ access — provides a controlled architectural comparison.
 
 We report four findings that converge on a single mechanism:
 
-**Finding 1: MoE does not create expert moral specialization.** All
+**Finding 1: MoEs do not create expert moral specialization.** All
 1,024 per-expert probes (64 experts $\times$ 16 layers) decode
 moral content well above chance. At the peak layer, every expert
 individually exceeds 90% accuracy. The Gini coefficient of expert
@@ -63,7 +63,7 @@ accuracy from early layers, broad encoding across the full network —
 while differing by nearly two orders of magnitude in the robustness
 of the underlying signal. Probing accuracy measures what information
 is *present*; fragility testing, as developed in companion work
-(Reblitz-Richardson, 2026), measures how *securely* that information
+\citep{reblitzrichardson2026fragility}, measures how *securely* that information
 is encoded. In MoE architectures, the gap between these two metrics
 is dramatically larger than in dense models, because the sparse
 aggregation bottleneck preserves information content while reducing

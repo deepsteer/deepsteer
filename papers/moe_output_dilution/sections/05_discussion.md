@@ -54,7 +54,7 @@ fragility shift from the same fine-tuning recipe.
 
 ## 5.3 Feature Redundancy Across Architectures
 
-Prior work on this project (Reblitz-Richardson, 2026) found that
+Prior work on this project \citep{reblitzrichardson2026fragility} found that
 probe-direction suppression in dense 1B models does not capture
 behavior: a gradient penalty suppresses the probe direction by
 3.07 SD with no effect on behavioral judge scores (within 0.01 / 10).

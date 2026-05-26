@@ -4,7 +4,7 @@
 
 We first establish the baseline comparison between OLMoE-1B-7B and
 dense OLMo-2 1B using the standard layer-wise moral probing and
-fragility battery from companion work (Reblitz-Richardson, 2026).
+fragility battery from companion work \citep{reblitzrichardson2026fragility}.
 Both models have 16 transformer layers and comparable active
 parameter counts (1.3B active for OLMoE vs. 1.5B for OLMo-2),
 enabling a controlled architectural comparison on the same 240-pair

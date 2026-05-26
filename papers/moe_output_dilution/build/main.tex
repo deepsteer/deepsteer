@@ -62,8 +62,8 @@
 \usepackage[capitalize, noabbrev]{cleveref}
 
 % --- Title / authors ------------------------------------------------
-\title{Output Dilution in Mixture-of-Experts:\\
-  Why Redundant Moral Encoding Creates Fragile Representations}
+\title{Output Dilution in MoE Models:\\
+  Redundant Encoding, Fragile Representations}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -122,43 +122,34 @@
 \maketitle
 
 \begin{abstract}
-Mixture-of-Experts (MoE) architectures partition representations
-across discrete expert modules, raising the question of whether
-moral features concentrate in specific experts --- creating natural
-intervention points for alignment --- or distribute uniformly. We
-probe OLMoE-1B-7B (64 experts, top-8 routing) at the individual
-expert level: 1,024 binary probes (64 experts $\times$ 16 layers)
-on a 240-pair moral probing dataset. We find no specialization
-whatsoever: every expert at every layer encodes moral content well
-above chance (Gini $< 0.03$; all 64 exceed 90\% at the peak
-layer). The router shows negligible moral preference (maximum
-2.4\%).
+Linear probes can decode moral content from every expert in a
+Mixture-of-Experts model --- all 1,024 expert--layer combinations in
+OLMoE-1B-7B exceed 75\% accuracy, and the peak layer exceeds 90\%
+for all 64 experts. By this standard metric, moral reasoning is
+robustly encoded. Yet OLMoE is 3.6$\times$ more fragile than a dense
+model of matched size and accuracy: the activation-noise level that
+collapses probe performance is $\sigma^* = 1.27$, versus 4.56 for
+OLMo-2~1B.
 
-Despite this uniform encoding, OLMoE is 3.6$\times$ more fragile
-than dense OLMo-2~1B on the same dataset (mean critical noise
-$\sigma^* = 1.27$ vs.\ 4.56), while matching on probing accuracy
-(99\% vs.\ 100\%). We trace this fragility to \emph{output
-dilution}: the MoE block's aggregated output (a top-8 weighted
-average of 64 expert outputs) contributes to the residual stream at
-77$\times$ smaller scale than the dense MLP, measured as the standard
-deviation of the feedforward output across inputs. Component
-perturbation experiments confirm that the routing mechanism itself is
-robust (critical $\sigma^* = 9.3$) --- the fragility originates
-entirely in the small-scale aggregated output being trivially
-overwhelmed by noise.
+We trace this gap to \emph{output dilution}. The MoE block aggregates
+a top-8 weighted average of 64 expert outputs before adding to the
+residual stream. The resulting feedforward contribution is
+77$\times$ smaller in scale than the dense MLP's, measured as the
+standard deviation of the output across inputs. Moral information
+survives aggregation intact --- but at a signal level trivially
+overwhelmed by noise. Component perturbation confirms that routing
+itself is robust ($\sigma^* = 9.3$); the fragility originates
+entirely in the diluted output.
 
-A checkpoint trajectory analysis across 11 training checkpoints
-(step 5K--1.2M, spanning 20B--5,033B tokens) confirms that the
-absence of specialization is not a late-training convergence: Gini
-stays between 0.011 and 0.015 at the peak layer from the earliest
-available checkpoint, while accuracy rises from 91\% to 95\%.
+A checkpoint trajectory across 11 OLMoE snapshots (step 5K--1.2M)
+shows that expert specialization never emerges: Gini coefficients
+stay between 0.011 and 0.015 from the earliest checkpoint, while
+accuracy rises steadily. The redundancy is architectural, not a
+training artifact.
 
-The finding demonstrates that probing accuracy alone is insufficient
-as an alignment metric: two architectures can produce identical
-accuracy profiles while differing by nearly two orders of magnitude
-in the robustness of the underlying signal. Sparse expert
-aggregation preserves information content while reducing signal
-scale, creating a structural fragility absent in dense models.
+\textbf{For MoE models, redundant encoding is not robust encoding ---
+aggregation dilutes the signal that every expert individually
+preserves.}
 \end{abstract}
 
 % =======================================================================
