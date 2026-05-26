@@ -1,0 +1,6424 @@
+{
+  "total_dilemmas": 300,
+  "both_active_count": 164,
+  "both_active_rate": 0.5467,
+  "go_no_go": "NO-GO",
+  "threshold": 0.7,
+  "per_pair": {
+    "fairness-sanctity": {
+      "n_dilemmas": 20,
+      "both_active": 17,
+      "both_active_rate": 0.85,
+      "tagged_in_top_2": 8,
+      "tagged_in_top_2_rate": 0.4
+    },
+    "liberty-authority": {
+      "n_dilemmas": 20,
+      "both_active": 12,
+      "both_active_rate": 0.6,
+      "tagged_in_top_2": 5,
+      "tagged_in_top_2_rate": 0.25
+    },
+    "care-loyalty": {
+      "n_dilemmas": 20,
+      "both_active": 9,
+      "both_active_rate": 0.45,
+      "tagged_in_top_2": 3,
+      "tagged_in_top_2_rate": 0.15
+    },
+    "fairness-liberty": {
+      "n_dilemmas": 20,
+      "both_active": 13,
+      "both_active_rate": 0.65,
+      "tagged_in_top_2": 11,
+      "tagged_in_top_2_rate": 0.55
+    },
+    "loyalty-sanctity": {
+      "n_dilemmas": 20,
+      "both_active": 16,
+      "both_active_rate": 0.8,
+      "tagged_in_top_2": 2,
+      "tagged_in_top_2_rate": 0.1
+    },
+    "care-sanctity": {
+      "n_dilemmas": 20,
+      "both_active": 18,
+      "both_active_rate": 0.9,
+      "tagged_in_top_2": 12,
+      "tagged_in_top_2_rate": 0.6
+    },
+    "care-fairness": {
+      "n_dilemmas": 20,
+      "both_active": 14,
+      "both_active_rate": 0.7,
+      "tagged_in_top_2": 17,
+      "tagged_in_top_2_rate": 0.85
+    },
+    "fairness-authority": {
+      "n_dilemmas": 20,
+      "both_active": 4,
+      "both_active_rate": 0.2,
+      "tagged_in_top_2": 1,
+      "tagged_in_top_2_rate": 0.05
+    },
+    "loyalty-authority": {
+      "n_dilemmas": 20,
+      "both_active": 4,
+      "both_active_rate": 0.2,
+      "tagged_in_top_2": 0,
+      "tagged_in_top_2_rate": 0.0
+    },
+    "care-authority": {
+      "n_dilemmas": 20,
+      "both_active": 1,
+      "both_active_rate": 0.05,
+      "tagged_in_top_2": 1,
+      "tagged_in_top_2_rate": 0.05
+    },
+    "care-liberty": {
+      "n_dilemmas": 20,
+      "both_active": 14,
+      "both_active_rate": 0.7,
+      "tagged_in_top_2": 2,
+      "tagged_in_top_2_rate": 0.1
+    },
+    "authority-sanctity": {
+      "n_dilemmas": 20,
+      "both_active": 4,
+      "both_active_rate": 0.2,
+      "tagged_in_top_2": 1,
+      "tagged_in_top_2_rate": 0.05
+    },
+    "fairness-loyalty": {
+      "n_dilemmas": 20,
+      "both_active": 7,
+      "both_active_rate": 0.35,
+      "tagged_in_top_2": 2,
+      "tagged_in_top_2_rate": 0.1
+    },
+    "liberty-loyalty": {
+      "n_dilemmas": 20,
+      "both_active": 12,
+      "both_active_rate": 0.6,
+      "tagged_in_top_2": 1,
+      "tagged_in_top_2_rate": 0.05
+    },
+    "liberty-sanctity": {
+      "n_dilemmas": 20,
+      "both_active": 19,
+      "both_active_rate": 0.95,
+      "tagged_in_top_2": 10,
+      "tagged_in_top_2_rate": 0.5
+    }
+  },
+  "per_dilemma": [
+    {
+      "id": "dilemma_care-fairness_001",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0389,
+        "fairness_cheating": -0.0191,
+        "liberty_oppression": -0.0938,
+        "loyalty_betrayal": -0.128,
+        "authority_subversion": -0.1812,
+        "sanctity_degradation": -0.0248
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_002",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0222,
+        "fairness_cheating": 0.0767,
+        "liberty_oppression": -0.0164,
+        "loyalty_betrayal": 0.0184,
+        "authority_subversion": -0.0235,
+        "sanctity_degradation": -0.1
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_003",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1423,
+        "fairness_cheating": 0.1757,
+        "liberty_oppression": 0.0372,
+        "loyalty_betrayal": -0.0223,
+        "authority_subversion": -0.1773,
+        "sanctity_degradation": -0.0243
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_004",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1415,
+        "fairness_cheating": 0.1097,
+        "liberty_oppression": -0.0915,
+        "loyalty_betrayal": -0.0367,
+        "authority_subversion": -0.0221,
+        "sanctity_degradation": 0.0681
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_005",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0747,
+        "fairness_cheating": 0.0656,
+        "liberty_oppression": 0.0107,
+        "loyalty_betrayal": -0.0628,
+        "authority_subversion": -0.2031,
+        "sanctity_degradation": -0.0184
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_006",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1331,
+        "fairness_cheating": 0.1557,
+        "liberty_oppression": 0.0515,
+        "loyalty_betrayal": -0.037,
+        "authority_subversion": -0.058,
+        "sanctity_degradation": 0.0109
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_007",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0134,
+        "fairness_cheating": 0.0302,
+        "liberty_oppression": -0.0068,
+        "loyalty_betrayal": 0.0089,
+        "authority_subversion": -0.129,
+        "sanctity_degradation": -0.0748
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_008",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1126,
+        "fairness_cheating": 0.0413,
+        "liberty_oppression": 0.0384,
+        "loyalty_betrayal": -0.0745,
+        "authority_subversion": -0.2149,
+        "sanctity_degradation": -0.078
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_009",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0845,
+        "fairness_cheating": 0.0743,
+        "liberty_oppression": 0.0066,
+        "loyalty_betrayal": -0.0105,
+        "authority_subversion": -0.0846,
+        "sanctity_degradation": -0.056
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_010",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0043,
+        "fairness_cheating": -0.008,
+        "liberty_oppression": -0.0577,
+        "loyalty_betrayal": -0.0896,
+        "authority_subversion": -0.2293,
+        "sanctity_degradation": -0.104
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_011",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.143,
+        "fairness_cheating": 0.0895,
+        "liberty_oppression": 0.0465,
+        "loyalty_betrayal": -0.1424,
+        "authority_subversion": -0.1245,
+        "sanctity_degradation": -0.0226
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_012",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0776,
+        "fairness_cheating": 0.0998,
+        "liberty_oppression": -0.0312,
+        "loyalty_betrayal": -0.094,
+        "authority_subversion": -0.1448,
+        "sanctity_degradation": -0.1174
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_013",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0676,
+        "fairness_cheating": -0.0277,
+        "liberty_oppression": -0.1105,
+        "loyalty_betrayal": -0.0136,
+        "authority_subversion": -0.1599,
+        "sanctity_degradation": -0.0502
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_014",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1958,
+        "fairness_cheating": 0.1301,
+        "liberty_oppression": 0.1232,
+        "loyalty_betrayal": 0.0319,
+        "authority_subversion": -0.0541,
+        "sanctity_degradation": 0.0815
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_015",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0046,
+        "fairness_cheating": -0.0514,
+        "liberty_oppression": -0.083,
+        "loyalty_betrayal": -0.2346,
+        "authority_subversion": -0.2675,
+        "sanctity_degradation": -0.0706
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_016",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0664,
+        "fairness_cheating": -0.0212,
+        "liberty_oppression": -0.0896,
+        "loyalty_betrayal": -0.1165,
+        "authority_subversion": -0.1221,
+        "sanctity_degradation": -0.1653
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_017",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1534,
+        "fairness_cheating": 0.0742,
+        "liberty_oppression": 0.1417,
+        "loyalty_betrayal": -0.0603,
+        "authority_subversion": -0.1928,
+        "sanctity_degradation": 0.1088
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_018",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0352,
+        "fairness_cheating": 0.0306,
+        "liberty_oppression": 0.0328,
+        "loyalty_betrayal": -0.1005,
+        "authority_subversion": -0.0878,
+        "sanctity_degradation": -0.0013
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_019",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0926,
+        "fairness_cheating": 0.1223,
+        "liberty_oppression": -0.0596,
+        "loyalty_betrayal": 0.0159,
+        "authority_subversion": -0.0716,
+        "sanctity_degradation": -0.0969
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-fairness_020",
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0867,
+        "fairness_cheating": 0.0357,
+        "liberty_oppression": -0.0239,
+        "loyalty_betrayal": -0.0321,
+        "authority_subversion": -0.023,
+        "sanctity_degradation": -0.0197
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_001",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0739,
+        "fairness_cheating": -0.0069,
+        "liberty_oppression": 0.1035,
+        "loyalty_betrayal": -0.059,
+        "authority_subversion": -0.054,
+        "sanctity_degradation": 0.1239
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_002",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0993,
+        "fairness_cheating": 0.0463,
+        "liberty_oppression": -0.0166,
+        "loyalty_betrayal": -0.0777,
+        "authority_subversion": -0.1126,
+        "sanctity_degradation": 0.0618
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_003",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1961,
+        "fairness_cheating": 0.0207,
+        "liberty_oppression": -0.001,
+        "loyalty_betrayal": -0.0207,
+        "authority_subversion": -0.1756,
+        "sanctity_degradation": 0.0515
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_004",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0068,
+        "fairness_cheating": 0.0415,
+        "liberty_oppression": 0.1171,
+        "loyalty_betrayal": -0.0372,
+        "authority_subversion": -0.1429,
+        "sanctity_degradation": 0.0777
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_005",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1233,
+        "fairness_cheating": 0.0083,
+        "liberty_oppression": 0.0486,
+        "loyalty_betrayal": -0.0881,
+        "authority_subversion": -0.2762,
+        "sanctity_degradation": -0.0097
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_006",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0136,
+        "fairness_cheating": -0.0013,
+        "liberty_oppression": -0.023,
+        "loyalty_betrayal": -0.0873,
+        "authority_subversion": -0.2135,
+        "sanctity_degradation": -0.1082
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_007",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0056,
+        "fairness_cheating": -0.017,
+        "liberty_oppression": 0.0197,
+        "loyalty_betrayal": -0.1582,
+        "authority_subversion": -0.1697,
+        "sanctity_degradation": 0.0591
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_008",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.2428,
+        "fairness_cheating": 0.0472,
+        "liberty_oppression": 0.2617,
+        "loyalty_betrayal": 0.1227,
+        "authority_subversion": -0.1455,
+        "sanctity_degradation": 0.2098
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_009",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0735,
+        "fairness_cheating": 0.0893,
+        "liberty_oppression": 0.0721,
+        "loyalty_betrayal": -0.1274,
+        "authority_subversion": -0.2467,
+        "sanctity_degradation": 0.0457
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_010",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1532,
+        "fairness_cheating": 0.0535,
+        "liberty_oppression": 0.0858,
+        "loyalty_betrayal": -0.0805,
+        "authority_subversion": -0.1148,
+        "sanctity_degradation": 0.0923
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_011",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0167,
+        "fairness_cheating": 0.0769,
+        "liberty_oppression": 0.1179,
+        "loyalty_betrayal": -0.0947,
+        "authority_subversion": -0.2336,
+        "sanctity_degradation": -0.1204
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_012",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0188,
+        "fairness_cheating": -0.0304,
+        "liberty_oppression": -0.0371,
+        "loyalty_betrayal": -0.1354,
+        "authority_subversion": -0.3122,
+        "sanctity_degradation": -0.0134
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_013",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1524,
+        "fairness_cheating": 0.0622,
+        "liberty_oppression": 0.0254,
+        "loyalty_betrayal": -0.0605,
+        "authority_subversion": -0.1206,
+        "sanctity_degradation": 0.2168
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_014",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.037,
+        "fairness_cheating": -0.0216,
+        "liberty_oppression": 0.002,
+        "loyalty_betrayal": -0.1048,
+        "authority_subversion": -0.305,
+        "sanctity_degradation": 0.0184
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_015",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1526,
+        "fairness_cheating": 0.0931,
+        "liberty_oppression": 0.0629,
+        "loyalty_betrayal": -0.0861,
+        "authority_subversion": -0.1513,
+        "sanctity_degradation": 0.029
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_016",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0895,
+        "fairness_cheating": 0.0218,
+        "liberty_oppression": 0.0953,
+        "loyalty_betrayal": -0.056,
+        "authority_subversion": -0.2091,
+        "sanctity_degradation": 0.1056
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_017",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.097,
+        "fairness_cheating": 0.0888,
+        "liberty_oppression": 0.1091,
+        "loyalty_betrayal": -0.0539,
+        "authority_subversion": -0.071,
+        "sanctity_degradation": 0.2087
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_018",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.118,
+        "fairness_cheating": -0.0567,
+        "liberty_oppression": 0.0085,
+        "loyalty_betrayal": -0.0654,
+        "authority_subversion": -0.0905,
+        "sanctity_degradation": 0.0415
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_019",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0035,
+        "fairness_cheating": 0.0264,
+        "liberty_oppression": 0.1258,
+        "loyalty_betrayal": -0.1017,
+        "authority_subversion": -0.1567,
+        "sanctity_degradation": 0.0397
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-liberty_020",
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1004,
+        "fairness_cheating": 0.0167,
+        "liberty_oppression": -0.0072,
+        "loyalty_betrayal": -0.134,
+        "authority_subversion": -0.2178,
+        "sanctity_degradation": -0.0365
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_001",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1233,
+        "fairness_cheating": 0.1148,
+        "liberty_oppression": 0.0627,
+        "loyalty_betrayal": 0.1213,
+        "authority_subversion": 0.0309,
+        "sanctity_degradation": 0.0626
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_002",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1577,
+        "fairness_cheating": 0.201,
+        "liberty_oppression": 0.1576,
+        "loyalty_betrayal": 0.0503,
+        "authority_subversion": 0.1525,
+        "sanctity_degradation": 0.0583
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_003",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.121,
+        "fairness_cheating": 0.0336,
+        "liberty_oppression": 0.074,
+        "loyalty_betrayal": 0.1464,
+        "authority_subversion": -0.0213,
+        "sanctity_degradation": 0.0268
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "loyalty_betrayal",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_004",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0762,
+        "fairness_cheating": 0.0583,
+        "liberty_oppression": -0.1161,
+        "loyalty_betrayal": -0.0532,
+        "authority_subversion": -0.114,
+        "sanctity_degradation": 0.0401
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_005",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0744,
+        "fairness_cheating": 0.107,
+        "liberty_oppression": 0.0144,
+        "loyalty_betrayal": 0.0414,
+        "authority_subversion": -0.0728,
+        "sanctity_degradation": 0.008
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_006",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0062,
+        "fairness_cheating": 0.0114,
+        "liberty_oppression": -0.1195,
+        "loyalty_betrayal": -0.0802,
+        "authority_subversion": -0.1029,
+        "sanctity_degradation": -0.1161
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_007",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1247,
+        "fairness_cheating": 0.0625,
+        "liberty_oppression": 0.1107,
+        "loyalty_betrayal": 0.1066,
+        "authority_subversion": 0.0288,
+        "sanctity_degradation": 0.0336
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_008",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.104,
+        "fairness_cheating": 0.1688,
+        "liberty_oppression": 0.1071,
+        "loyalty_betrayal": -0.0087,
+        "authority_subversion": 0.1396,
+        "sanctity_degradation": -0.0017
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_009",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0038,
+        "fairness_cheating": -0.0152,
+        "liberty_oppression": -0.139,
+        "loyalty_betrayal": -0.1159,
+        "authority_subversion": -0.2447,
+        "sanctity_degradation": -0.0712
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_010",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0706,
+        "fairness_cheating": 0.0153,
+        "liberty_oppression": 0.083,
+        "loyalty_betrayal": 0.0249,
+        "authority_subversion": -0.0188,
+        "sanctity_degradation": 0.1072
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_011",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.01,
+        "fairness_cheating": 0.0361,
+        "liberty_oppression": 0.0113,
+        "loyalty_betrayal": -0.0072,
+        "authority_subversion": -0.1318,
+        "sanctity_degradation": -0.0411
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_012",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0645,
+        "fairness_cheating": 0.0113,
+        "liberty_oppression": -0.0037,
+        "loyalty_betrayal": 0.0126,
+        "authority_subversion": -0.1065,
+        "sanctity_degradation": -0.1093
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_013",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0061,
+        "fairness_cheating": -0.0262,
+        "liberty_oppression": -0.0176,
+        "loyalty_betrayal": -0.0385,
+        "authority_subversion": -0.1442,
+        "sanctity_degradation": -0.0399
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_014",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1923,
+        "fairness_cheating": 0.1534,
+        "liberty_oppression": 0.1512,
+        "loyalty_betrayal": 0.018,
+        "authority_subversion": 0.1002,
+        "sanctity_degradation": 0.1488
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_015",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0346,
+        "fairness_cheating": -0.0378,
+        "liberty_oppression": -0.0135,
+        "loyalty_betrayal": -0.1047,
+        "authority_subversion": -0.1862,
+        "sanctity_degradation": 0.019
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_016",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0905,
+        "fairness_cheating": 0.098,
+        "liberty_oppression": 0.1288,
+        "loyalty_betrayal": 0.1314,
+        "authority_subversion": -0.2208,
+        "sanctity_degradation": -0.1298
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "loyalty_betrayal",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_017",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1811,
+        "fairness_cheating": 0.0849,
+        "liberty_oppression": 0.0714,
+        "loyalty_betrayal": -0.0027,
+        "authority_subversion": -0.1291,
+        "sanctity_degradation": 0.1206
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_018",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0416,
+        "fairness_cheating": -0.0284,
+        "liberty_oppression": -0.0453,
+        "loyalty_betrayal": -0.0266,
+        "authority_subversion": -0.2204,
+        "sanctity_degradation": -0.0083
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_019",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0004,
+        "fairness_cheating": -0.0038,
+        "liberty_oppression": 0.041,
+        "loyalty_betrayal": -0.0809,
+        "authority_subversion": -0.1976,
+        "sanctity_degradation": -0.0406
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-loyalty_020",
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0251,
+        "fairness_cheating": -0.0278,
+        "liberty_oppression": -0.1283,
+        "loyalty_betrayal": -0.0551,
+        "authority_subversion": -0.1901,
+        "sanctity_degradation": -0.1024
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_001",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.131,
+        "fairness_cheating": 0.0009,
+        "liberty_oppression": -0.0777,
+        "loyalty_betrayal": -0.0379,
+        "authority_subversion": -0.1101,
+        "sanctity_degradation": 0.0619
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_002",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0695,
+        "fairness_cheating": 0.0416,
+        "liberty_oppression": 0.0288,
+        "loyalty_betrayal": 0.0168,
+        "authority_subversion": 0.0112,
+        "sanctity_degradation": -0.073
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_003",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0859,
+        "fairness_cheating": -0.0167,
+        "liberty_oppression": 0.046,
+        "loyalty_betrayal": 0.0693,
+        "authority_subversion": -0.1102,
+        "sanctity_degradation": -0.0832
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_004",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0582,
+        "fairness_cheating": -0.0616,
+        "liberty_oppression": -0.0753,
+        "loyalty_betrayal": -0.1193,
+        "authority_subversion": -0.1794,
+        "sanctity_degradation": -0.016
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_005",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0569,
+        "fairness_cheating": 0.0334,
+        "liberty_oppression": 0.0832,
+        "loyalty_betrayal": -0.117,
+        "authority_subversion": -0.083,
+        "sanctity_degradation": 0.0496
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_006",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0706,
+        "fairness_cheating": -0.0654,
+        "liberty_oppression": -0.1338,
+        "loyalty_betrayal": -0.0634,
+        "authority_subversion": -0.2595,
+        "sanctity_degradation": -0.1713
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "loyalty_betrayal",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_007",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0641,
+        "fairness_cheating": 0.0844,
+        "liberty_oppression": 0.06,
+        "loyalty_betrayal": -0.1012,
+        "authority_subversion": -0.1653,
+        "sanctity_degradation": -0.0072
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_008",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0472,
+        "fairness_cheating": 0.007,
+        "liberty_oppression": -0.0794,
+        "loyalty_betrayal": -0.0916,
+        "authority_subversion": -0.1605,
+        "sanctity_degradation": -0.0171
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_009",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0993,
+        "fairness_cheating": 0.0513,
+        "liberty_oppression": 0.1002,
+        "loyalty_betrayal": -0.066,
+        "authority_subversion": -0.2203,
+        "sanctity_degradation": 0.063
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_010",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0558,
+        "fairness_cheating": 0.0135,
+        "liberty_oppression": 0.0272,
+        "loyalty_betrayal": -0.0726,
+        "authority_subversion": -0.1057,
+        "sanctity_degradation": -0.1273
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_011",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0842,
+        "fairness_cheating": 0.0277,
+        "liberty_oppression": -0.04,
+        "loyalty_betrayal": -0.1425,
+        "authority_subversion": -0.1802,
+        "sanctity_degradation": 0.0016
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_012",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0152,
+        "fairness_cheating": 0.0056,
+        "liberty_oppression": -0.0172,
+        "loyalty_betrayal": -0.0794,
+        "authority_subversion": -0.071,
+        "sanctity_degradation": -0.0411
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_013",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0423,
+        "fairness_cheating": 0.0117,
+        "liberty_oppression": -0.0814,
+        "loyalty_betrayal": -0.105,
+        "authority_subversion": -0.1818,
+        "sanctity_degradation": -0.0429
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_014",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0922,
+        "fairness_cheating": 0.0529,
+        "liberty_oppression": -0.0236,
+        "loyalty_betrayal": -0.0881,
+        "authority_subversion": -0.2813,
+        "sanctity_degradation": -0.0842
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_015",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0842,
+        "fairness_cheating": 0.0243,
+        "liberty_oppression": 0.0401,
+        "loyalty_betrayal": -0.033,
+        "authority_subversion": -0.1349,
+        "sanctity_degradation": -0.0734
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_016",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0311,
+        "fairness_cheating": 0.0121,
+        "liberty_oppression": 0.0488,
+        "loyalty_betrayal": -0.1338,
+        "authority_subversion": -0.173,
+        "sanctity_degradation": -0.0942
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_017",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0339,
+        "fairness_cheating": -0.09,
+        "liberty_oppression": -0.1134,
+        "loyalty_betrayal": -0.1439,
+        "authority_subversion": -0.0831,
+        "sanctity_degradation": -0.1144
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_018",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0405,
+        "fairness_cheating": 0.0347,
+        "liberty_oppression": 0.1182,
+        "loyalty_betrayal": -0.0841,
+        "authority_subversion": -0.1762,
+        "sanctity_degradation": -0.1446
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_019",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0733,
+        "fairness_cheating": 0.0222,
+        "liberty_oppression": 0.0422,
+        "loyalty_betrayal": -0.0744,
+        "authority_subversion": -0.1168,
+        "sanctity_degradation": 0.0076
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-authority_020",
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0147,
+        "fairness_cheating": -0.075,
+        "liberty_oppression": -0.097,
+        "loyalty_betrayal": -0.0293,
+        "authority_subversion": -0.2708,
+        "sanctity_degradation": -0.1689
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_001",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0749,
+        "fairness_cheating": 0.0052,
+        "liberty_oppression": 0.1197,
+        "loyalty_betrayal": -0.0556,
+        "authority_subversion": -0.1389,
+        "sanctity_degradation": 0.2233
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_002",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0388,
+        "fairness_cheating": -0.0953,
+        "liberty_oppression": -0.0383,
+        "loyalty_betrayal": -0.1653,
+        "authority_subversion": -0.1877,
+        "sanctity_degradation": 0.1303
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_003",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1952,
+        "fairness_cheating": 0.0766,
+        "liberty_oppression": -0.0715,
+        "loyalty_betrayal": -0.0143,
+        "authority_subversion": -0.1124,
+        "sanctity_degradation": 0.1191
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_004",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0368,
+        "fairness_cheating": -0.058,
+        "liberty_oppression": -0.0647,
+        "loyalty_betrayal": -0.0593,
+        "authority_subversion": -0.195,
+        "sanctity_degradation": 0.0748
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_005",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1604,
+        "fairness_cheating": 0.0685,
+        "liberty_oppression": 0.1966,
+        "loyalty_betrayal": -0.0799,
+        "authority_subversion": -0.1721,
+        "sanctity_degradation": 0.1918
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_006",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0592,
+        "fairness_cheating": -0.0247,
+        "liberty_oppression": 0.1499,
+        "loyalty_betrayal": -0.1794,
+        "authority_subversion": -0.1528,
+        "sanctity_degradation": 0.1927
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_007",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1228,
+        "fairness_cheating": -0.0503,
+        "liberty_oppression": 0.0385,
+        "loyalty_betrayal": -0.0451,
+        "authority_subversion": -0.0609,
+        "sanctity_degradation": 0.2719
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_008",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0804,
+        "fairness_cheating": 0.0071,
+        "liberty_oppression": 0.1207,
+        "loyalty_betrayal": -0.0878,
+        "authority_subversion": -0.197,
+        "sanctity_degradation": 0.2275
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_009",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1911,
+        "fairness_cheating": 0.0959,
+        "liberty_oppression": 0.0232,
+        "loyalty_betrayal": 0.0147,
+        "authority_subversion": -0.1208,
+        "sanctity_degradation": 0.1656
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_010",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0148,
+        "fairness_cheating": 0.0088,
+        "liberty_oppression": -0.0197,
+        "loyalty_betrayal": -0.0593,
+        "authority_subversion": -0.2499,
+        "sanctity_degradation": 0.0587
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_011",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1641,
+        "fairness_cheating": -0.0101,
+        "liberty_oppression": 0.1024,
+        "loyalty_betrayal": -0.0809,
+        "authority_subversion": -0.116,
+        "sanctity_degradation": 0.2304
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_012",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1385,
+        "fairness_cheating": 0.046,
+        "liberty_oppression": 0.0272,
+        "loyalty_betrayal": 0.0077,
+        "authority_subversion": -0.104,
+        "sanctity_degradation": 0.2486
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_013",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1597,
+        "fairness_cheating": 0.0222,
+        "liberty_oppression": 0.1064,
+        "loyalty_betrayal": 0.0089,
+        "authority_subversion": -0.1205,
+        "sanctity_degradation": 0.1158
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_014",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0993,
+        "fairness_cheating": 0.0195,
+        "liberty_oppression": 0.0822,
+        "loyalty_betrayal": -0.0757,
+        "authority_subversion": -0.1462,
+        "sanctity_degradation": 0.2003
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_015",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.2228,
+        "fairness_cheating": 0.0335,
+        "liberty_oppression": -0.0122,
+        "loyalty_betrayal": 0.0535,
+        "authority_subversion": -0.0787,
+        "sanctity_degradation": 0.0769
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_016",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1114,
+        "fairness_cheating": 0.0564,
+        "liberty_oppression": 0.159,
+        "loyalty_betrayal": -0.0936,
+        "authority_subversion": -0.1008,
+        "sanctity_degradation": 0.1983
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_017",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0971,
+        "fairness_cheating": -0.0405,
+        "liberty_oppression": -0.0689,
+        "loyalty_betrayal": -0.0912,
+        "authority_subversion": -0.128,
+        "sanctity_degradation": 0.1367
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_018",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1215,
+        "fairness_cheating": 0.022,
+        "liberty_oppression": 0.0752,
+        "loyalty_betrayal": -0.0864,
+        "authority_subversion": -0.0475,
+        "sanctity_degradation": 0.2219
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_019",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0889,
+        "fairness_cheating": 0.0417,
+        "liberty_oppression": 0.0764,
+        "loyalty_betrayal": -0.0158,
+        "authority_subversion": -0.0614,
+        "sanctity_degradation": 0.2592
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_care-sanctity_020",
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0884,
+        "fairness_cheating": 0.0547,
+        "liberty_oppression": 0.1041,
+        "loyalty_betrayal": -0.0919,
+        "authority_subversion": -0.1336,
+        "sanctity_degradation": 0.1705
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_001",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0466,
+        "fairness_cheating": 0.3136,
+        "liberty_oppression": 0.3667,
+        "loyalty_betrayal": -0.0128,
+        "authority_subversion": 0.3509,
+        "sanctity_degradation": 0.1377
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_002",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0206,
+        "fairness_cheating": 0.1657,
+        "liberty_oppression": 0.1122,
+        "loyalty_betrayal": -0.0756,
+        "authority_subversion": -0.1428,
+        "sanctity_degradation": -0.0371
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_003",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0351,
+        "fairness_cheating": 0.1229,
+        "liberty_oppression": -0.004,
+        "loyalty_betrayal": -0.1063,
+        "authority_subversion": -0.1303,
+        "sanctity_degradation": -0.1028
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_004",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.018,
+        "fairness_cheating": 0.0327,
+        "liberty_oppression": 0.0341,
+        "loyalty_betrayal": -0.0854,
+        "authority_subversion": -0.0934,
+        "sanctity_degradation": -0.1505
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_005",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0567,
+        "fairness_cheating": 0.2149,
+        "liberty_oppression": 0.1073,
+        "loyalty_betrayal": 0.0318,
+        "authority_subversion": 0.0395,
+        "sanctity_degradation": -0.0119
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_006",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0845,
+        "fairness_cheating": 0.0281,
+        "liberty_oppression": -0.0161,
+        "loyalty_betrayal": -0.0944,
+        "authority_subversion": -0.0704,
+        "sanctity_degradation": -0.0619
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_007",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0677,
+        "fairness_cheating": 0.0569,
+        "liberty_oppression": 0.2116,
+        "loyalty_betrayal": -0.0517,
+        "authority_subversion": -0.062,
+        "sanctity_degradation": 0.1344
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_008",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0614,
+        "fairness_cheating": 0.1748,
+        "liberty_oppression": 0.0986,
+        "loyalty_betrayal": -0.0866,
+        "authority_subversion": -0.1686,
+        "sanctity_degradation": -0.079
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_009",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0445,
+        "fairness_cheating": 0.0695,
+        "liberty_oppression": 0.0776,
+        "loyalty_betrayal": -0.1335,
+        "authority_subversion": -0.2425,
+        "sanctity_degradation": -0.0022
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_010",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0111,
+        "fairness_cheating": 0.0618,
+        "liberty_oppression": 0.0645,
+        "loyalty_betrayal": -0.0802,
+        "authority_subversion": -0.261,
+        "sanctity_degradation": -0.0797
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_011",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0996,
+        "fairness_cheating": -0.1252,
+        "liberty_oppression": -0.0433,
+        "loyalty_betrayal": -0.1622,
+        "authority_subversion": -0.2964,
+        "sanctity_degradation": -0.1425
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_012",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1534,
+        "fairness_cheating": 0.1181,
+        "liberty_oppression": 0.2407,
+        "loyalty_betrayal": -0.1117,
+        "authority_subversion": -0.0772,
+        "sanctity_degradation": 0.2088
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_013",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0486,
+        "fairness_cheating": 0.0459,
+        "liberty_oppression": 0.0081,
+        "loyalty_betrayal": -0.1519,
+        "authority_subversion": -0.1826,
+        "sanctity_degradation": -0.094
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_014",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0223,
+        "fairness_cheating": 0.1994,
+        "liberty_oppression": 0.0908,
+        "loyalty_betrayal": -0.0326,
+        "authority_subversion": 0.0964,
+        "sanctity_degradation": -0.0693
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_015",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1011,
+        "fairness_cheating": -0.0894,
+        "liberty_oppression": 0.0138,
+        "loyalty_betrayal": -0.1717,
+        "authority_subversion": -0.2574,
+        "sanctity_degradation": 0.0395
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_016",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0147,
+        "fairness_cheating": 0.0998,
+        "liberty_oppression": 0.0952,
+        "loyalty_betrayal": 0.0118,
+        "authority_subversion": -0.0526,
+        "sanctity_degradation": -0.0813
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_017",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1587,
+        "fairness_cheating": -0.08,
+        "liberty_oppression": -0.0754,
+        "loyalty_betrayal": -0.1843,
+        "authority_subversion": -0.2582,
+        "sanctity_degradation": -0.029
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_018",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1101,
+        "fairness_cheating": -0.0455,
+        "liberty_oppression": -0.1218,
+        "loyalty_betrayal": -0.1375,
+        "authority_subversion": -0.212,
+        "sanctity_degradation": -0.0847
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_019",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0076,
+        "fairness_cheating": 0.1392,
+        "liberty_oppression": 0.1348,
+        "loyalty_betrayal": -0.0941,
+        "authority_subversion": -0.0356,
+        "sanctity_degradation": -0.0406
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-liberty_020",
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1702,
+        "fairness_cheating": -0.0413,
+        "liberty_oppression": -0.1425,
+        "loyalty_betrayal": -0.1711,
+        "authority_subversion": -0.2888,
+        "sanctity_degradation": -0.165
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_001",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1623,
+        "fairness_cheating": 0.2376,
+        "liberty_oppression": 0.1197,
+        "loyalty_betrayal": 0.0526,
+        "authority_subversion": 0.0484,
+        "sanctity_degradation": 0.0133
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_002",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0368,
+        "fairness_cheating": 0.1908,
+        "liberty_oppression": -0.0103,
+        "loyalty_betrayal": -0.0088,
+        "authority_subversion": -0.1818,
+        "sanctity_degradation": -0.1688
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_003",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0085,
+        "fairness_cheating": 0.1529,
+        "liberty_oppression": -0.0754,
+        "loyalty_betrayal": 0.0307,
+        "authority_subversion": -0.1462,
+        "sanctity_degradation": -0.204
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_004",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0006,
+        "fairness_cheating": 0.1465,
+        "liberty_oppression": -0.1021,
+        "loyalty_betrayal": -0.0567,
+        "authority_subversion": -0.1367,
+        "sanctity_degradation": -0.1095
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_005",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1238,
+        "fairness_cheating": 0.1651,
+        "liberty_oppression": 0.1095,
+        "loyalty_betrayal": 0.1388,
+        "authority_subversion": 0.0054,
+        "sanctity_degradation": 0.011
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_006",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0666,
+        "fairness_cheating": 0.0981,
+        "liberty_oppression": -0.1398,
+        "loyalty_betrayal": -0.1144,
+        "authority_subversion": -0.2129,
+        "sanctity_degradation": -0.1454
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_007",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.033,
+        "fairness_cheating": 0.0704,
+        "liberty_oppression": -0.0042,
+        "loyalty_betrayal": -0.0137,
+        "authority_subversion": -0.1496,
+        "sanctity_degradation": -0.0923
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_008",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0637,
+        "fairness_cheating": 0.1108,
+        "liberty_oppression": 0.0809,
+        "loyalty_betrayal": 0.0229,
+        "authority_subversion": -0.1076,
+        "sanctity_degradation": -0.0002
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_009",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0662,
+        "fairness_cheating": 0.0189,
+        "liberty_oppression": -0.1097,
+        "loyalty_betrayal": -0.0881,
+        "authority_subversion": -0.1974,
+        "sanctity_degradation": -0.273
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_010",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0199,
+        "fairness_cheating": 0.0641,
+        "liberty_oppression": -0.0711,
+        "loyalty_betrayal": -0.0735,
+        "authority_subversion": -0.1286,
+        "sanctity_degradation": -0.0587
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_011",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0092,
+        "fairness_cheating": 0.085,
+        "liberty_oppression": -0.0486,
+        "loyalty_betrayal": -0.0697,
+        "authority_subversion": -0.1821,
+        "sanctity_degradation": -0.0192
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_012",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0549,
+        "fairness_cheating": 0.1762,
+        "liberty_oppression": 0.0484,
+        "loyalty_betrayal": 0.0026,
+        "authority_subversion": -0.0699,
+        "sanctity_degradation": -0.1167
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_013",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0654,
+        "fairness_cheating": 0.1382,
+        "liberty_oppression": 0.0085,
+        "loyalty_betrayal": 0.0425,
+        "authority_subversion": -0.0383,
+        "sanctity_degradation": -0.0468
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_014",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0007,
+        "fairness_cheating": 0.123,
+        "liberty_oppression": 0.0665,
+        "loyalty_betrayal": -0.0125,
+        "authority_subversion": -0.1337,
+        "sanctity_degradation": -0.1104
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_015",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0528,
+        "fairness_cheating": 0.0999,
+        "liberty_oppression": 0.0985,
+        "loyalty_betrayal": -0.0397,
+        "authority_subversion": -0.1195,
+        "sanctity_degradation": 0.032
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_016",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0504,
+        "fairness_cheating": -0.0113,
+        "liberty_oppression": -0.0858,
+        "loyalty_betrayal": -0.0968,
+        "authority_subversion": -0.229,
+        "sanctity_degradation": -0.1036
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_017",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0436,
+        "fairness_cheating": 0.1009,
+        "liberty_oppression": -0.0386,
+        "loyalty_betrayal": 0.0271,
+        "authority_subversion": -0.0028,
+        "sanctity_degradation": -0.1388
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_018",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1075,
+        "fairness_cheating": 0.0366,
+        "liberty_oppression": -0.2095,
+        "loyalty_betrayal": -0.1441,
+        "authority_subversion": -0.2417,
+        "sanctity_degradation": -0.1854
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_019",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0188,
+        "fairness_cheating": 0.169,
+        "liberty_oppression": 0.0969,
+        "loyalty_betrayal": -0.0057,
+        "authority_subversion": -0.0889,
+        "sanctity_degradation": 0.0069
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-loyalty_020",
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.04,
+        "fairness_cheating": 0.03,
+        "liberty_oppression": -0.0082,
+        "loyalty_betrayal": -0.0294,
+        "authority_subversion": -0.0816,
+        "sanctity_degradation": -0.0612
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_001",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0106,
+        "fairness_cheating": 0.156,
+        "liberty_oppression": 0.1166,
+        "loyalty_betrayal": 0.0003,
+        "authority_subversion": -0.0293,
+        "sanctity_degradation": -0.1265
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_002",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0509,
+        "fairness_cheating": 0.0558,
+        "liberty_oppression": -0.0842,
+        "loyalty_betrayal": -0.037,
+        "authority_subversion": -0.1167,
+        "sanctity_degradation": -0.1078
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_003",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0233,
+        "fairness_cheating": 0.0423,
+        "liberty_oppression": -0.0566,
+        "loyalty_betrayal": -0.0705,
+        "authority_subversion": -0.0529,
+        "sanctity_degradation": -0.1735
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_004",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0007,
+        "fairness_cheating": 0.0863,
+        "liberty_oppression": 0.0985,
+        "loyalty_betrayal": 0.001,
+        "authority_subversion": 0.1447,
+        "sanctity_degradation": 0.0273
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "authority_subversion",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_005",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1702,
+        "fairness_cheating": 0.2976,
+        "liberty_oppression": 0.2216,
+        "loyalty_betrayal": -0.0013,
+        "authority_subversion": 0.0655,
+        "sanctity_degradation": 0.0637
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_006",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0405,
+        "fairness_cheating": 0.0235,
+        "liberty_oppression": 0.0871,
+        "loyalty_betrayal": -0.0328,
+        "authority_subversion": -0.0617,
+        "sanctity_degradation": -0.0604
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_007",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.029,
+        "fairness_cheating": 0.0886,
+        "liberty_oppression": 0.0776,
+        "loyalty_betrayal": -0.0736,
+        "authority_subversion": -0.0096,
+        "sanctity_degradation": -0.005
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_008",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0706,
+        "fairness_cheating": 0.0456,
+        "liberty_oppression": -0.0462,
+        "loyalty_betrayal": -0.109,
+        "authority_subversion": -0.193,
+        "sanctity_degradation": -0.2431
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_009",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0823,
+        "fairness_cheating": -0.0304,
+        "liberty_oppression": -0.0244,
+        "loyalty_betrayal": -0.063,
+        "authority_subversion": -0.0616,
+        "sanctity_degradation": 0.0623
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_010",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0759,
+        "fairness_cheating": -0.014,
+        "liberty_oppression": 0.0581,
+        "loyalty_betrayal": -0.0964,
+        "authority_subversion": -0.1335,
+        "sanctity_degradation": 0.0289
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_011",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0475,
+        "fairness_cheating": 0.0154,
+        "liberty_oppression": -0.008,
+        "loyalty_betrayal": -0.0843,
+        "authority_subversion": -0.0572,
+        "sanctity_degradation": -0.0885
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_012",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0126,
+        "fairness_cheating": 0.0451,
+        "liberty_oppression": 0.0915,
+        "loyalty_betrayal": 0.0048,
+        "authority_subversion": 0.0111,
+        "sanctity_degradation": -0.0677
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_013",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.106,
+        "fairness_cheating": -0.0441,
+        "liberty_oppression": -0.0583,
+        "loyalty_betrayal": -0.1796,
+        "authority_subversion": -0.2464,
+        "sanctity_degradation": -0.1282
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_014",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0711,
+        "fairness_cheating": 0.052,
+        "liberty_oppression": 0.067,
+        "loyalty_betrayal": -0.0618,
+        "authority_subversion": -0.1365,
+        "sanctity_degradation": -0.04
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_015",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0998,
+        "fairness_cheating": 0.018,
+        "liberty_oppression": 0.0041,
+        "loyalty_betrayal": -0.1643,
+        "authority_subversion": -0.1166,
+        "sanctity_degradation": -0.1208
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_016",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0494,
+        "fairness_cheating": 0.0603,
+        "liberty_oppression": -0.0031,
+        "loyalty_betrayal": -0.0051,
+        "authority_subversion": -0.0043,
+        "sanctity_degradation": -0.0983
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_017",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0187,
+        "fairness_cheating": 0.0552,
+        "liberty_oppression": -0.155,
+        "loyalty_betrayal": -0.1396,
+        "authority_subversion": -0.1948,
+        "sanctity_degradation": -0.2137
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_018",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0257,
+        "fairness_cheating": 0.0808,
+        "liberty_oppression": 0.0171,
+        "loyalty_betrayal": 0.0248,
+        "authority_subversion": 0.1403,
+        "sanctity_degradation": 0.0385
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "authority_subversion",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_019",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0426,
+        "fairness_cheating": -0.0492,
+        "liberty_oppression": -0.1206,
+        "loyalty_betrayal": -0.1281,
+        "authority_subversion": -0.0437,
+        "sanctity_degradation": -0.1263
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-authority_020",
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0887,
+        "fairness_cheating": 0.0729,
+        "liberty_oppression": -0.0299,
+        "loyalty_betrayal": -0.0316,
+        "authority_subversion": -0.0341,
+        "sanctity_degradation": -0.119
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_001",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0708,
+        "fairness_cheating": 0.0537,
+        "liberty_oppression": -0.0277,
+        "loyalty_betrayal": -0.0439,
+        "authority_subversion": -0.1214,
+        "sanctity_degradation": 0.0642
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_002",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0544,
+        "fairness_cheating": 0.0363,
+        "liberty_oppression": 0.0129,
+        "loyalty_betrayal": -0.0854,
+        "authority_subversion": -0.225,
+        "sanctity_degradation": -0.0453
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_003",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1465,
+        "fairness_cheating": 0.1892,
+        "liberty_oppression": 0.0771,
+        "loyalty_betrayal": 0.0531,
+        "authority_subversion": 0.1001,
+        "sanctity_degradation": 0.0548
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_004",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0144,
+        "fairness_cheating": 0.0758,
+        "liberty_oppression": -0.0014,
+        "loyalty_betrayal": -0.0419,
+        "authority_subversion": -0.1697,
+        "sanctity_degradation": 0.0193
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_005",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0189,
+        "fairness_cheating": 0.0371,
+        "liberty_oppression": 0.0703,
+        "loyalty_betrayal": -0.074,
+        "authority_subversion": -0.1979,
+        "sanctity_degradation": 0.0956
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_006",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0221,
+        "fairness_cheating": 0.0141,
+        "liberty_oppression": -0.0504,
+        "loyalty_betrayal": -0.0624,
+        "authority_subversion": -0.1812,
+        "sanctity_degradation": 0.2221
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_007",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0432,
+        "fairness_cheating": 0.1548,
+        "liberty_oppression": 0.0506,
+        "loyalty_betrayal": -0.0172,
+        "authority_subversion": -0.0968,
+        "sanctity_degradation": 0.1841
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_008",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0226,
+        "fairness_cheating": 0.0374,
+        "liberty_oppression": 0.0737,
+        "loyalty_betrayal": -0.0251,
+        "authority_subversion": 0.0258,
+        "sanctity_degradation": 0.1949
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_009",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0923,
+        "fairness_cheating": 0.113,
+        "liberty_oppression": 0.1017,
+        "loyalty_betrayal": 0.0427,
+        "authority_subversion": -0.0955,
+        "sanctity_degradation": 0.1249
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_010",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0697,
+        "fairness_cheating": 0.0863,
+        "liberty_oppression": 0.0413,
+        "loyalty_betrayal": 0.0144,
+        "authority_subversion": 0.0396,
+        "sanctity_degradation": 0.0247
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_011",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0484,
+        "fairness_cheating": 0.1282,
+        "liberty_oppression": 0.0038,
+        "loyalty_betrayal": -0.0503,
+        "authority_subversion": -0.1781,
+        "sanctity_degradation": 0.1013
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_012",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0031,
+        "fairness_cheating": 0.0644,
+        "liberty_oppression": 0.0041,
+        "loyalty_betrayal": -0.0001,
+        "authority_subversion": -0.1442,
+        "sanctity_degradation": 0.0887
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_013",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0491,
+        "fairness_cheating": 0.0596,
+        "liberty_oppression": 0.0669,
+        "loyalty_betrayal": -0.1652,
+        "authority_subversion": -0.1863,
+        "sanctity_degradation": 0.0747
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_014",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0029,
+        "fairness_cheating": 0.1733,
+        "liberty_oppression": 0.0747,
+        "loyalty_betrayal": 0.009,
+        "authority_subversion": -0.135,
+        "sanctity_degradation": 0.0475
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_015",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0604,
+        "fairness_cheating": -0.0234,
+        "liberty_oppression": -0.1404,
+        "loyalty_betrayal": -0.1583,
+        "authority_subversion": -0.2819,
+        "sanctity_degradation": -0.0517
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_016",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0025,
+        "fairness_cheating": 0.0531,
+        "liberty_oppression": -0.1053,
+        "loyalty_betrayal": -0.1184,
+        "authority_subversion": -0.1671,
+        "sanctity_degradation": -0.0806
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_017",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0231,
+        "fairness_cheating": 0.125,
+        "liberty_oppression": 0.1309,
+        "loyalty_betrayal": -0.0984,
+        "authority_subversion": -0.12,
+        "sanctity_degradation": 0.0804
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_018",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0565,
+        "fairness_cheating": 0.042,
+        "liberty_oppression": -0.0832,
+        "loyalty_betrayal": -0.0495,
+        "authority_subversion": -0.1971,
+        "sanctity_degradation": 0.0314
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_019",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0671,
+        "fairness_cheating": 0.0859,
+        "liberty_oppression": 0.126,
+        "loyalty_betrayal": -0.1058,
+        "authority_subversion": -0.1558,
+        "sanctity_degradation": 0.1404
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_fairness-sanctity_020",
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0435,
+        "fairness_cheating": 0.1104,
+        "liberty_oppression": 0.0204,
+        "loyalty_betrayal": 0.0318,
+        "authority_subversion": 0.0149,
+        "sanctity_degradation": 0.0261
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_001",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0845,
+        "fairness_cheating": 0.1177,
+        "liberty_oppression": 0.0672,
+        "loyalty_betrayal": -0.027,
+        "authority_subversion": 0.009,
+        "sanctity_degradation": -0.0114
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_002",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0972,
+        "fairness_cheating": 0.1615,
+        "liberty_oppression": 0.2135,
+        "loyalty_betrayal": 0.1815,
+        "authority_subversion": 0.1029,
+        "sanctity_degradation": 0.1454
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_003",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.135,
+        "fairness_cheating": 0.1442,
+        "liberty_oppression": 0.0986,
+        "loyalty_betrayal": 0.1721,
+        "authority_subversion": 0.0052,
+        "sanctity_degradation": -0.0215
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "loyalty_betrayal",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_004",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0041,
+        "fairness_cheating": 0.043,
+        "liberty_oppression": 0.0236,
+        "loyalty_betrayal": -0.0647,
+        "authority_subversion": -0.1342,
+        "sanctity_degradation": -0.1031
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_005",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0902,
+        "fairness_cheating": 0.1096,
+        "liberty_oppression": 0.0787,
+        "loyalty_betrayal": 0.0312,
+        "authority_subversion": 0.0509,
+        "sanctity_degradation": -0.045
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_006",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0342,
+        "fairness_cheating": 0.0686,
+        "liberty_oppression": 0.1505,
+        "loyalty_betrayal": -0.035,
+        "authority_subversion": -0.0394,
+        "sanctity_degradation": -0.0298
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_007",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0264,
+        "fairness_cheating": 0.1189,
+        "liberty_oppression": 0.1027,
+        "loyalty_betrayal": 0.0632,
+        "authority_subversion": -0.1505,
+        "sanctity_degradation": 0.066
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_008",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1882,
+        "fairness_cheating": 0.0524,
+        "liberty_oppression": -0.0013,
+        "loyalty_betrayal": -0.0169,
+        "authority_subversion": -0.0612,
+        "sanctity_degradation": -0.0064
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_009",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0946,
+        "fairness_cheating": 0.1172,
+        "liberty_oppression": 0.1462,
+        "loyalty_betrayal": -0.0206,
+        "authority_subversion": -0.1083,
+        "sanctity_degradation": 0.0329
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_010",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0795,
+        "fairness_cheating": 0.0838,
+        "liberty_oppression": 0.0825,
+        "loyalty_betrayal": 0.0279,
+        "authority_subversion": 0.0905,
+        "sanctity_degradation": 0.0149
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "authority_subversion",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_011",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0375,
+        "fairness_cheating": 0.1269,
+        "liberty_oppression": 0.1676,
+        "loyalty_betrayal": 0.0069,
+        "authority_subversion": 0.2135,
+        "sanctity_degradation": 0.0487
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "authority_subversion",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_012",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0313,
+        "fairness_cheating": 0.0823,
+        "liberty_oppression": 0.0888,
+        "loyalty_betrayal": 0.0035,
+        "authority_subversion": -0.037,
+        "sanctity_degradation": 0.0166
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_013",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1628,
+        "fairness_cheating": 0.1436,
+        "liberty_oppression": 0.2838,
+        "loyalty_betrayal": 0.0606,
+        "authority_subversion": 0.1816,
+        "sanctity_degradation": 0.144
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_014",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.126,
+        "fairness_cheating": 0.2226,
+        "liberty_oppression": 0.0575,
+        "loyalty_betrayal": 0.012,
+        "authority_subversion": -0.0274,
+        "sanctity_degradation": 0.0721
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_015",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1584,
+        "fairness_cheating": 0.0821,
+        "liberty_oppression": 0.1465,
+        "loyalty_betrayal": 0.0307,
+        "authority_subversion": -0.005,
+        "sanctity_degradation": 0.1246
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_016",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0899,
+        "fairness_cheating": 0.0481,
+        "liberty_oppression": 0.0999,
+        "loyalty_betrayal": -0.1464,
+        "authority_subversion": -0.1632,
+        "sanctity_degradation": -0.1594
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_017",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1405,
+        "fairness_cheating": 0.0949,
+        "liberty_oppression": 0.0966,
+        "loyalty_betrayal": -0.0183,
+        "authority_subversion": 0.0042,
+        "sanctity_degradation": -0.0433
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_018",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0021,
+        "fairness_cheating": 0.0726,
+        "liberty_oppression": -0.0528,
+        "loyalty_betrayal": -0.002,
+        "authority_subversion": -0.0929,
+        "sanctity_degradation": -0.1939
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_019",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0015,
+        "fairness_cheating": 0.0618,
+        "liberty_oppression": 0.0764,
+        "loyalty_betrayal": 0.002,
+        "authority_subversion": 0.1293,
+        "sanctity_degradation": 0.0651
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "authority_subversion",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-loyalty_020",
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0017,
+        "fairness_cheating": 0.1505,
+        "liberty_oppression": 0.1743,
+        "loyalty_betrayal": 0.0336,
+        "authority_subversion": -0.0752,
+        "sanctity_degradation": 0.0505
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_001",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0288,
+        "fairness_cheating": 0.0592,
+        "liberty_oppression": 0.1946,
+        "loyalty_betrayal": -0.004,
+        "authority_subversion": 0.0606,
+        "sanctity_degradation": -0.0242
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_002",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1108,
+        "fairness_cheating": 0.0679,
+        "liberty_oppression": 0.266,
+        "loyalty_betrayal": -0.043,
+        "authority_subversion": 0.1504,
+        "sanctity_degradation": 0.3077
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_003",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0927,
+        "fairness_cheating": 0.0635,
+        "liberty_oppression": 0.1307,
+        "loyalty_betrayal": 0.0603,
+        "authority_subversion": 0.1561,
+        "sanctity_degradation": 0.1876
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_004",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0032,
+        "fairness_cheating": 0.0181,
+        "liberty_oppression": 0.2395,
+        "loyalty_betrayal": 0.0131,
+        "authority_subversion": 0.1054,
+        "sanctity_degradation": 0.0171
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_005",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0194,
+        "fairness_cheating": 0.0729,
+        "liberty_oppression": 0.1361,
+        "loyalty_betrayal": -0.0226,
+        "authority_subversion": 0.078,
+        "sanctity_degradation": -0.006
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_006",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0849,
+        "fairness_cheating": 0.0704,
+        "liberty_oppression": 0.0617,
+        "loyalty_betrayal": -0.077,
+        "authority_subversion": -0.0455,
+        "sanctity_degradation": 0.0934
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_007",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0895,
+        "fairness_cheating": 0.0419,
+        "liberty_oppression": 0.0366,
+        "loyalty_betrayal": -0.0397,
+        "authority_subversion": -0.1203,
+        "sanctity_degradation": 0.0358
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_008",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0682,
+        "fairness_cheating": 0.0934,
+        "liberty_oppression": 0.0848,
+        "loyalty_betrayal": 0.0117,
+        "authority_subversion": 0.0515,
+        "sanctity_degradation": 0.0672
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_009",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0475,
+        "fairness_cheating": 0.028,
+        "liberty_oppression": 0.0965,
+        "loyalty_betrayal": -0.1232,
+        "authority_subversion": -0.0696,
+        "sanctity_degradation": -0.0485
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_010",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1569,
+        "fairness_cheating": 0.1105,
+        "liberty_oppression": 0.2949,
+        "loyalty_betrayal": 0.0404,
+        "authority_subversion": 0.0456,
+        "sanctity_degradation": 0.1567
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_011",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0272,
+        "fairness_cheating": 0.0282,
+        "liberty_oppression": 0.094,
+        "loyalty_betrayal": -0.0201,
+        "authority_subversion": 0.0442,
+        "sanctity_degradation": -0.0586
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_012",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1012,
+        "fairness_cheating": 0.1064,
+        "liberty_oppression": 0.0427,
+        "loyalty_betrayal": -0.0188,
+        "authority_subversion": 0.0303,
+        "sanctity_degradation": 0.1157
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_013",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.017,
+        "fairness_cheating": 0.0579,
+        "liberty_oppression": 0.1098,
+        "loyalty_betrayal": 0.0347,
+        "authority_subversion": 0.1094,
+        "sanctity_degradation": 0.0761
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_014",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1585,
+        "fairness_cheating": 0.1479,
+        "liberty_oppression": 0.0837,
+        "loyalty_betrayal": -0.0414,
+        "authority_subversion": 0.0676,
+        "sanctity_degradation": 0.1319
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_015",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.1063,
+        "fairness_cheating": 0.0537,
+        "liberty_oppression": 0.0547,
+        "loyalty_betrayal": -0.0924,
+        "authority_subversion": -0.0769,
+        "sanctity_degradation": -0.0781
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_016",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0746,
+        "fairness_cheating": 0.0387,
+        "liberty_oppression": 0.0968,
+        "loyalty_betrayal": -0.0864,
+        "authority_subversion": 0.0186,
+        "sanctity_degradation": 0.0754
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_017",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.2391,
+        "fairness_cheating": -0.1564,
+        "liberty_oppression": -0.0422,
+        "loyalty_betrayal": -0.1832,
+        "authority_subversion": -0.3682,
+        "sanctity_degradation": -0.1448
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_018",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0021,
+        "fairness_cheating": 0.0533,
+        "liberty_oppression": 0.1351,
+        "loyalty_betrayal": 0.0135,
+        "authority_subversion": -0.0644,
+        "sanctity_degradation": -0.0035
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_019",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0001,
+        "fairness_cheating": 0.0715,
+        "liberty_oppression": 0.1317,
+        "loyalty_betrayal": -0.0905,
+        "authority_subversion": -0.0576,
+        "sanctity_degradation": 0.0472
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-authority_020",
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0486,
+        "fairness_cheating": -0.0051,
+        "liberty_oppression": 0.1365,
+        "loyalty_betrayal": -0.0174,
+        "authority_subversion": -0.1338,
+        "sanctity_degradation": 0.0121
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_001",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0529,
+        "fairness_cheating": 0.0984,
+        "liberty_oppression": 0.1856,
+        "loyalty_betrayal": 0.0107,
+        "authority_subversion": -0.0324,
+        "sanctity_degradation": 0.1036
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_002",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.047,
+        "fairness_cheating": 0.0358,
+        "liberty_oppression": 0.0246,
+        "loyalty_betrayal": 0.0045,
+        "authority_subversion": -0.0303,
+        "sanctity_degradation": 0.1556
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_003",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0273,
+        "fairness_cheating": 0.0488,
+        "liberty_oppression": 0.0007,
+        "loyalty_betrayal": -0.0799,
+        "authority_subversion": -0.1169,
+        "sanctity_degradation": 0.0837
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_004",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0717,
+        "fairness_cheating": 0.0805,
+        "liberty_oppression": 0.1238,
+        "loyalty_betrayal": -0.0089,
+        "authority_subversion": -0.043,
+        "sanctity_degradation": 0.2791
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_005",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0079,
+        "fairness_cheating": 0.014,
+        "liberty_oppression": 0.1237,
+        "loyalty_betrayal": -0.111,
+        "authority_subversion": 0.0042,
+        "sanctity_degradation": 0.0786
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_006",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1161,
+        "fairness_cheating": 0.0704,
+        "liberty_oppression": 0.2455,
+        "loyalty_betrayal": 0.0618,
+        "authority_subversion": 0.1173,
+        "sanctity_degradation": 0.233
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_007",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0421,
+        "fairness_cheating": 0.0561,
+        "liberty_oppression": 0.1383,
+        "loyalty_betrayal": 0.0414,
+        "authority_subversion": 0.1446,
+        "sanctity_degradation": 0.281
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_008",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0626,
+        "fairness_cheating": 0.1226,
+        "liberty_oppression": 0.1687,
+        "loyalty_betrayal": 0.0049,
+        "authority_subversion": 0.0438,
+        "sanctity_degradation": 0.1035
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_009",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0152,
+        "fairness_cheating": 0.0099,
+        "liberty_oppression": 0.2248,
+        "loyalty_betrayal": -0.1087,
+        "authority_subversion": 0.0082,
+        "sanctity_degradation": 0.1781
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_010",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0852,
+        "fairness_cheating": 0.095,
+        "liberty_oppression": 0.0515,
+        "loyalty_betrayal": 0.0264,
+        "authority_subversion": -0.0215,
+        "sanctity_degradation": 0.1716
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_011",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0944,
+        "fairness_cheating": 0.0913,
+        "liberty_oppression": 0.0713,
+        "loyalty_betrayal": -0.0626,
+        "authority_subversion": -0.0832,
+        "sanctity_degradation": 0.2101
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_012",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0814,
+        "fairness_cheating": 0.1143,
+        "liberty_oppression": 0.1765,
+        "loyalty_betrayal": -0.0127,
+        "authority_subversion": 0.0762,
+        "sanctity_degradation": 0.1716
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_013",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1082,
+        "fairness_cheating": 0.0604,
+        "liberty_oppression": 0.0578,
+        "loyalty_betrayal": -0.0288,
+        "authority_subversion": -0.0733,
+        "sanctity_degradation": 0.1975
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_014",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0802,
+        "fairness_cheating": 0.1801,
+        "liberty_oppression": 0.2838,
+        "loyalty_betrayal": 0.0762,
+        "authority_subversion": 0.1022,
+        "sanctity_degradation": 0.1735
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_015",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0759,
+        "fairness_cheating": 0.0897,
+        "liberty_oppression": 0.0727,
+        "loyalty_betrayal": -0.002,
+        "authority_subversion": -0.0323,
+        "sanctity_degradation": 0.3458
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_016",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0571,
+        "fairness_cheating": 0.0245,
+        "liberty_oppression": 0.1088,
+        "loyalty_betrayal": -0.1104,
+        "authority_subversion": -0.1451,
+        "sanctity_degradation": 0.0605
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_017",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0124,
+        "fairness_cheating": 0.0938,
+        "liberty_oppression": 0.1527,
+        "loyalty_betrayal": -0.003,
+        "authority_subversion": 0.0192,
+        "sanctity_degradation": 0.2066
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_018",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0732,
+        "fairness_cheating": 0.035,
+        "liberty_oppression": 0.106,
+        "loyalty_betrayal": -0.0556,
+        "authority_subversion": -0.0432,
+        "sanctity_degradation": 0.172
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_019",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.048,
+        "fairness_cheating": 0.0256,
+        "liberty_oppression": -0.0298,
+        "loyalty_betrayal": -0.0762,
+        "authority_subversion": -0.1018,
+        "sanctity_degradation": 0.0398
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_liberty-sanctity_020",
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.02,
+        "fairness_cheating": 0.0152,
+        "liberty_oppression": 0.0684,
+        "loyalty_betrayal": -0.0239,
+        "authority_subversion": -0.0032,
+        "sanctity_degradation": 0.197
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_001",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0381,
+        "fairness_cheating": 0.0617,
+        "liberty_oppression": 0.0754,
+        "loyalty_betrayal": 0.0068,
+        "authority_subversion": 0.0626,
+        "sanctity_degradation": -0.0249
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_002",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.052,
+        "fairness_cheating": 0.0,
+        "liberty_oppression": -0.0252,
+        "loyalty_betrayal": -0.0497,
+        "authority_subversion": -0.1343,
+        "sanctity_degradation": -0.0905
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_003",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0208,
+        "fairness_cheating": -0.0115,
+        "liberty_oppression": 0.0282,
+        "loyalty_betrayal": -0.0791,
+        "authority_subversion": -0.1853,
+        "sanctity_degradation": -0.1272
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_004",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0873,
+        "fairness_cheating": 0.0964,
+        "liberty_oppression": -0.0856,
+        "loyalty_betrayal": -0.0161,
+        "authority_subversion": -0.106,
+        "sanctity_degradation": 0.0032
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_005",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0128,
+        "fairness_cheating": 0.0561,
+        "liberty_oppression": 0.0033,
+        "loyalty_betrayal": -0.0284,
+        "authority_subversion": -0.0416,
+        "sanctity_degradation": -0.0908
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_006",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0234,
+        "fairness_cheating": 0.0216,
+        "liberty_oppression": 0.0452,
+        "loyalty_betrayal": 0.0186,
+        "authority_subversion": -0.1314,
+        "sanctity_degradation": -0.0362
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_007",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0723,
+        "fairness_cheating": 0.1691,
+        "liberty_oppression": 0.0812,
+        "loyalty_betrayal": 0.0239,
+        "authority_subversion": -0.0957,
+        "sanctity_degradation": -0.0336
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_008",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0335,
+        "fairness_cheating": 0.0024,
+        "liberty_oppression": -0.0565,
+        "loyalty_betrayal": -0.0217,
+        "authority_subversion": 0.0042,
+        "sanctity_degradation": -0.0745
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_009",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0011,
+        "fairness_cheating": 0.0425,
+        "liberty_oppression": -0.0527,
+        "loyalty_betrayal": -0.0644,
+        "authority_subversion": -0.0401,
+        "sanctity_degradation": -0.1588
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_010",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0275,
+        "fairness_cheating": 0.104,
+        "liberty_oppression": 0.1414,
+        "loyalty_betrayal": 0.048,
+        "authority_subversion": 0.1264,
+        "sanctity_degradation": 0.0957
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_011",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0913,
+        "fairness_cheating": 0.0767,
+        "liberty_oppression": 0.1037,
+        "loyalty_betrayal": 0.087,
+        "authority_subversion": -0.0747,
+        "sanctity_degradation": 0.0235
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_012",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0936,
+        "fairness_cheating": -0.0317,
+        "liberty_oppression": -0.0293,
+        "loyalty_betrayal": -0.1918,
+        "authority_subversion": -0.2201,
+        "sanctity_degradation": -0.1158
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_013",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0098,
+        "fairness_cheating": 0.0432,
+        "liberty_oppression": -0.049,
+        "loyalty_betrayal": -0.0451,
+        "authority_subversion": -0.143,
+        "sanctity_degradation": -0.0898
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_014",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.107,
+        "fairness_cheating": -0.0073,
+        "liberty_oppression": -0.0025,
+        "loyalty_betrayal": 0.0495,
+        "authority_subversion": -0.0244,
+        "sanctity_degradation": 0.1291
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_015",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0339,
+        "fairness_cheating": 0.1083,
+        "liberty_oppression": 0.0629,
+        "loyalty_betrayal": -0.0145,
+        "authority_subversion": -0.0611,
+        "sanctity_degradation": -0.0433
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_016",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0921,
+        "fairness_cheating": 0.1154,
+        "liberty_oppression": 0.1449,
+        "loyalty_betrayal": 0.0519,
+        "authority_subversion": 0.0448,
+        "sanctity_degradation": 0.0384
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_017",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0254,
+        "fairness_cheating": 0.0661,
+        "liberty_oppression": 0.0652,
+        "loyalty_betrayal": 0.0131,
+        "authority_subversion": -0.0737,
+        "sanctity_degradation": -0.0192
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_018",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0402,
+        "fairness_cheating": 0.0717,
+        "liberty_oppression": -0.0892,
+        "loyalty_betrayal": -0.0889,
+        "authority_subversion": -0.0769,
+        "sanctity_degradation": -0.066
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_019",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0043,
+        "fairness_cheating": 0.0545,
+        "liberty_oppression": 0.0009,
+        "loyalty_betrayal": 0.0169,
+        "authority_subversion": -0.0357,
+        "sanctity_degradation": 0.0011
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-authority_020",
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0696,
+        "fairness_cheating": 0.1416,
+        "liberty_oppression": 0.1124,
+        "loyalty_betrayal": 0.124,
+        "authority_subversion": 0.2166,
+        "sanctity_degradation": 0.0115
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "authority_subversion",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_001",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0822,
+        "fairness_cheating": 0.1211,
+        "liberty_oppression": 0.076,
+        "loyalty_betrayal": 0.0716,
+        "authority_subversion": -0.0283,
+        "sanctity_degradation": 0.2527
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_002",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0399,
+        "fairness_cheating": 0.0818,
+        "liberty_oppression": 0.1682,
+        "loyalty_betrayal": 0.0128,
+        "authority_subversion": 0.0303,
+        "sanctity_degradation": 0.1124
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_003",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1275,
+        "fairness_cheating": 0.1057,
+        "liberty_oppression": 0.024,
+        "loyalty_betrayal": 0.0537,
+        "authority_subversion": 0.0137,
+        "sanctity_degradation": 0.2631
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_004",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1167,
+        "fairness_cheating": 0.1322,
+        "liberty_oppression": 0.128,
+        "loyalty_betrayal": 0.1035,
+        "authority_subversion": -0.025,
+        "sanctity_degradation": 0.1251
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_005",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.107,
+        "fairness_cheating": 0.0531,
+        "liberty_oppression": 0.0385,
+        "loyalty_betrayal": 0.0287,
+        "authority_subversion": 0.0422,
+        "sanctity_degradation": 0.2074
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_006",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0378,
+        "fairness_cheating": 0.086,
+        "liberty_oppression": 0.0949,
+        "loyalty_betrayal": 0.0916,
+        "authority_subversion": 0.0808,
+        "sanctity_degradation": 0.1159
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_007",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1995,
+        "fairness_cheating": 0.0873,
+        "liberty_oppression": 0.0681,
+        "loyalty_betrayal": 0.1609,
+        "authority_subversion": 0.1193,
+        "sanctity_degradation": 0.3228
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_008",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1165,
+        "fairness_cheating": 0.0676,
+        "liberty_oppression": 0.0497,
+        "loyalty_betrayal": 0.0132,
+        "authority_subversion": -0.0451,
+        "sanctity_degradation": 0.155
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_009",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0393,
+        "fairness_cheating": 0.1145,
+        "liberty_oppression": 0.0134,
+        "loyalty_betrayal": 0.1276,
+        "authority_subversion": 0.0132,
+        "sanctity_degradation": 0.1577
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_010",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1087,
+        "fairness_cheating": 0.1121,
+        "liberty_oppression": 0.0784,
+        "loyalty_betrayal": 0.1022,
+        "authority_subversion": -0.1978,
+        "sanctity_degradation": 0.0021
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_011",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0629,
+        "fairness_cheating": -0.0397,
+        "liberty_oppression": 0.022,
+        "loyalty_betrayal": -0.084,
+        "authority_subversion": -0.1351,
+        "sanctity_degradation": 0.0525
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_012",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1315,
+        "fairness_cheating": 0.0448,
+        "liberty_oppression": 0.0708,
+        "loyalty_betrayal": 0.0295,
+        "authority_subversion": 0.0115,
+        "sanctity_degradation": 0.2811
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_013",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.013,
+        "fairness_cheating": -0.0327,
+        "liberty_oppression": -0.0674,
+        "loyalty_betrayal": -0.0563,
+        "authority_subversion": -0.1442,
+        "sanctity_degradation": 0.207
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_014",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0914,
+        "fairness_cheating": 0.1217,
+        "liberty_oppression": 0.1122,
+        "loyalty_betrayal": 0.1134,
+        "authority_subversion": 0.032,
+        "sanctity_degradation": 0.2268
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_015",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1221,
+        "fairness_cheating": 0.1391,
+        "liberty_oppression": 0.0673,
+        "loyalty_betrayal": 0.1555,
+        "authority_subversion": 0.0708,
+        "sanctity_degradation": 0.3098
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_016",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0662,
+        "fairness_cheating": 0.0526,
+        "liberty_oppression": 0.0333,
+        "loyalty_betrayal": -0.0093,
+        "authority_subversion": -0.178,
+        "sanctity_degradation": 0.0523
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_017",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1478,
+        "fairness_cheating": 0.0902,
+        "liberty_oppression": 0.0073,
+        "loyalty_betrayal": 0.0729,
+        "authority_subversion": -0.0295,
+        "sanctity_degradation": 0.2199
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_018",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.102,
+        "fairness_cheating": 0.1147,
+        "liberty_oppression": 0.1423,
+        "loyalty_betrayal": 0.0544,
+        "authority_subversion": 0.0123,
+        "sanctity_degradation": 0.2526
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_019",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0384,
+        "fairness_cheating": 0.0237,
+        "liberty_oppression": 0.0367,
+        "loyalty_betrayal": -0.045,
+        "authority_subversion": -0.2129,
+        "sanctity_degradation": 0.0826
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_loyalty-sanctity_020",
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1203,
+        "fairness_cheating": 0.073,
+        "liberty_oppression": 0.0833,
+        "loyalty_betrayal": 0.0022,
+        "authority_subversion": 0.0186,
+        "sanctity_degradation": 0.1369
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_001",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.2351,
+        "fairness_cheating": 0.1046,
+        "liberty_oppression": 0.1841,
+        "loyalty_betrayal": 0.1588,
+        "authority_subversion": 0.0263,
+        "sanctity_degradation": 0.2204
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "care_harm",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_002",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.118,
+        "fairness_cheating": 0.1309,
+        "liberty_oppression": 0.2299,
+        "loyalty_betrayal": -0.0823,
+        "authority_subversion": -0.0677,
+        "sanctity_degradation": 0.2212
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_003",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0229,
+        "fairness_cheating": 0.0165,
+        "liberty_oppression": 0.1419,
+        "loyalty_betrayal": -0.1413,
+        "authority_subversion": -0.0744,
+        "sanctity_degradation": 0.233
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_004",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0007,
+        "fairness_cheating": 0.0464,
+        "liberty_oppression": 0.1086,
+        "loyalty_betrayal": 0.0287,
+        "authority_subversion": 0.0079,
+        "sanctity_degradation": 0.0366
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_005",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0843,
+        "fairness_cheating": -0.0582,
+        "liberty_oppression": 0.001,
+        "loyalty_betrayal": -0.0905,
+        "authority_subversion": -0.0215,
+        "sanctity_degradation": 0.4025
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_006",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1018,
+        "fairness_cheating": 0.0234,
+        "liberty_oppression": 0.0327,
+        "loyalty_betrayal": 0.0221,
+        "authority_subversion": -0.1405,
+        "sanctity_degradation": 0.1356
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_007",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0177,
+        "fairness_cheating": 0.0256,
+        "liberty_oppression": 0.0375,
+        "loyalty_betrayal": -0.1131,
+        "authority_subversion": -0.2042,
+        "sanctity_degradation": 0.0813
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_008",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0047,
+        "fairness_cheating": 0.1207,
+        "liberty_oppression": 0.1103,
+        "loyalty_betrayal": -0.0662,
+        "authority_subversion": 0.0014,
+        "sanctity_degradation": 0.1007
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "fairness_cheating",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_009",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0077,
+        "fairness_cheating": 0.0044,
+        "liberty_oppression": 0.0455,
+        "loyalty_betrayal": -0.0027,
+        "authority_subversion": -0.2122,
+        "sanctity_degradation": 0.0532
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_010",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0287,
+        "fairness_cheating": -0.0406,
+        "liberty_oppression": -0.0162,
+        "loyalty_betrayal": -0.1474,
+        "authority_subversion": -0.2159,
+        "sanctity_degradation": 0.1593
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_011",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1046,
+        "fairness_cheating": 0.1005,
+        "liberty_oppression": 0.1558,
+        "loyalty_betrayal": -0.1354,
+        "authority_subversion": -0.0571,
+        "sanctity_degradation": 0.225
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_012",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.0066,
+        "fairness_cheating": -0.0543,
+        "liberty_oppression": 0.1723,
+        "loyalty_betrayal": -0.0075,
+        "authority_subversion": -0.0694,
+        "sanctity_degradation": -0.0195
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "care_harm"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_013",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0513,
+        "fairness_cheating": 0.0144,
+        "liberty_oppression": 0.0459,
+        "loyalty_betrayal": -0.1574,
+        "authority_subversion": -0.1196,
+        "sanctity_degradation": 0.0269
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_014",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1032,
+        "fairness_cheating": 0.0718,
+        "liberty_oppression": 0.1281,
+        "loyalty_betrayal": 0.0277,
+        "authority_subversion": 0.2219,
+        "sanctity_degradation": 0.3018
+      },
+      "both_tagged_active": true,
+      "tagged_in_top_2": true,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "authority_subversion"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_015",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0825,
+        "fairness_cheating": -0.0756,
+        "liberty_oppression": 0.039,
+        "loyalty_betrayal": -0.0905,
+        "authority_subversion": -0.2229,
+        "sanctity_degradation": 0.0947
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_016",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.032,
+        "fairness_cheating": -0.0474,
+        "liberty_oppression": -0.0566,
+        "loyalty_betrayal": -0.0298,
+        "authority_subversion": -0.1207,
+        "sanctity_degradation": 0.1958
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "loyalty_betrayal"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_017",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.067,
+        "fairness_cheating": -0.0075,
+        "liberty_oppression": 0.0036,
+        "loyalty_betrayal": -0.119,
+        "authority_subversion": -0.2401,
+        "sanctity_degradation": 0.0007
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "sanctity_degradation"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_018",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0595,
+        "fairness_cheating": -0.0282,
+        "liberty_oppression": -0.0063,
+        "loyalty_betrayal": -0.0784,
+        "authority_subversion": -0.1788,
+        "sanctity_degradation": 0.0327
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_019",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": 0.1195,
+        "fairness_cheating": 0.0276,
+        "liberty_oppression": 0.1761,
+        "loyalty_betrayal": -0.0526,
+        "authority_subversion": -0.0033,
+        "sanctity_degradation": 0.3396
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "sanctity_degradation",
+        "liberty_oppression"
+      ]
+    },
+    {
+      "id": "dilemma_authority-sanctity_020",
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "peak_logits": {
+        "care_harm": -0.0607,
+        "fairness_cheating": -0.0466,
+        "liberty_oppression": 0.045,
+        "loyalty_betrayal": -0.1461,
+        "authority_subversion": -0.1508,
+        "sanctity_degradation": -0.0659
+      },
+      "both_tagged_active": false,
+      "tagged_in_top_2": false,
+      "top_2_foundations": [
+        "liberty_oppression",
+        "fairness_cheating"
+      ]
+    }
+  ],
+  "peak_layers_used": {
+    "care_harm": 0,
+    "fairness_cheating": 0,
+    "liberty_oppression": 2,
+    "loyalty_betrayal": 0,
+    "authority_subversion": 4,
+    "sanctity_degradation": 2
+  }
+}
