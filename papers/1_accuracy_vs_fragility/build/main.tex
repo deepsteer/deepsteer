@@ -1,0 +1,230 @@
+% main.tex — Paper 1: When Probing Accuracy Saturates, Fragility Resolves.
+% arXiv-targeted; NeurIPS 2025 preprint style.
+%
+% Build:
+%   make pdf   — runs pandoc on each sections/<NN>.md, then latexmk
+%   make clean — removes intermediate files
+%
+% Section files live in build/sections/<NN>.tex (generated from
+% ../sections/<NN>.md by `make sections`).
+
+\documentclass{article}
+
+% --- NeurIPS 2025 style (preprint mode for arXiv) -------------------
+% Pass natbib options before neurips_2025 loads natbib internally.
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
+
+% --- Typography -----------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+
+% Allow more aggressive inter-word stretching before declaring an
+% overfull \hbox.  NeurIPS textwidth is 5.5in (narrower than the
+% previous 6.5in), so long verbatim identifiers (module paths, URLs)
+% need more help breaking — matters even more here than under
+% article class defaults.
+\setlength{\emergencystretch}{3em}
+
+% Allow line breaks inside long verbatim-style inline code (module
+% paths, repo paths) at `.` `/` `_` `-` separators.  `url` package's
+% \path does this; the [hyphens] option additionally allows breaks at
+% hyphens, which matters for model identifiers like `OLMo-2-0425-1B`.
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+% Allow more aggressive breaking inside \path / \url so model identifiers
+% don't overfull table cells.
+\Urlmuskip=0mu plus 1mu
+
+% --- Math (pandoc emits raw math; load amsmath) ---------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Tables ---------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}              % pandoc emits \real{...} for column widths
+% pandoc uses \real{} from `calc` for proportional column widths.  Define
+% \real explicitly because some calc versions don't expose it as a public
+% command.
+\providecommand{\real}[1]{#1}
+% Reduce inter-column padding so pandoc's auto-computed proportional
+% column widths (which are tight by default) have a bit more room.
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+% --- Lists ----------------------------------------------------------
+\usepackage{enumitem}
+
+% --- Captions -------------------------------------------------------
+\usepackage[font=small,labelfont=bf]{caption}
+
+% --- Figures --------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{../figures/}}
+
+% --- Color (used by hyperref + a few inline highlights) -------------
+\usepackage{xcolor}
+
+% --- Cross-references (load hyperref before cleveref) ---------------
+\usepackage[colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalize, noabbrev]{cleveref}
+
+% --- Title / authors ------------------------------------------------
+\title{When Probing Accuracy Saturates, Fragility Resolves:\\
+  A Complementary Metric for LLM Pre-Training Analysis}
+
+\author{%
+  Orion Reblitz-Richardson\thanks{%
+    Distiller Labs. Correspondence to Distiller Labs
+    \textless\texttt{orion@orionr.com}\textgreater.}
+}
+
+\date{May 2026}
+
+% --- Pandoc-generated section files use \tightlist -------------------
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Pandoc emits `{\def\LTcaptype{none} ...}` around unnumbered longtables
+% (markdown tables with no caption).  `none` references an undefined
+% counter; provide a stub so longtable's caption machinery has a target.
+\newcounter{none}
+
+% Pandoc emits `\begin{Shaded}` around fenced code blocks in markdown.
+% Define it as a quoted-verbatim environment.  We don't need syntax
+% highlighting in the paper; treating code blocks as plain typewriter
+% text is fine.
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+% Stubs for the syntax-highlighting commands pandoc emits inside
+% \begin{Highlighting}.  We render them all as plain text.
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\textbf{#1}}
+\newcommand{\StringTok}[1]{\textit{#1}}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\AttributeTok}[1]{#1}
+\newcommand{\OtherTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{#1}
+\newcommand{\DocumentationTok}[1]{\textit{#1}}
+\newcommand{\InformationTok}[1]{\textit{#1}}
+\newcommand{\ImportTok}[1]{\textbf{#1}}
+\newcommand{\ConstantTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textit{#1}}
+\newcommand{\SpecialCharTok}[1]{#1}
+\newcommand{\VerbatimStringTok}[1]{\texttt{#1}}
+\newcommand{\SpecialStringTok}[1]{\texttt{#1}}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\AlertTok}[1]{\textbf{#1}}
+\newcommand{\ErrorTok}[1]{\textbf{#1}}
+\newcommand{\WarningTok}[1]{#1}
+\newcommand{\AnnotationTok}[1]{#1}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+
+% =======================================================================
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Standard linear probing declares a property ``encoded'' when a
+classifier on hidden states achieves high accuracy. The protocol works
+well on a snapshot but breaks across pre-training: probe accuracy
+saturates within the first few thousand steps, leaving most of
+training invisible to the instrument.
+
+We introduce \emph{fragility}, a complementary per-layer metric
+defined as the activation-noise level at which probe accuracy
+collapses. Fragility integrates the margin of separability and the
+redundancy of representation, both of which keep evolving long after
+accuracy plateaus.
+
+Applied to open-checkpoint language models, fragility recovers
+structure that accuracy alone cannot see. Moralized representations
+emerge along a \emph{lexical~$\to$~compositional gradient}, not a
+single phase transition. A \emph{layer-depth robustness gradient}
+develops monotonically across training while accuracy stays flat. And
+matched fine-tuning corpora that produce identical probing accuracy
+leave distinct fragility fingerprints, revealing that data curation
+reshapes representational structure without changing content.
+
+\textbf{In every comparison where probing accuracy returns a flat
+answer, fragility returns a structured one.}
+\end{abstract}
+
+% =======================================================================
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_methodology.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_conclusion.tex}
+
+% --- Acknowledgments / AI disclosure --------------------------------
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code
+agent on Opus~4.6 and Opus~4.7) for:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+  \item \textbf{Code scaffolding.} The analysis and figure scripts in
+    \path|papers/1_accuracy_vs_fragility/scripts/| and the LaTeX
+    build pipeline (\path|build/main.tex|,
+    \path|build/postprocess.py|, \path|build/Makefile|, the NeurIPS
+    style integration, the section cross-reference markup, and the
+    one-shot \path|scripts/build_pdf.py|).
+  \item \textbf{Prose drafting.} Initial drafts of all body sections
+    and appendices from decision notes and outlines, four iterations
+    of the abstract, and title brainstorming.
+  \item \textbf{Bibliography assembly.} Initial bibliographic entries
+    in \path|references.bib| were generated from training-data
+    recall and flagged in \path|PAPER_PLAN.md| for arXiv-page
+    cross-check before submission.
+\end{itemize}
+
+The author retains responsibility for experimental design, dataset
+construction (including the 200-pair compositional moral minimal-pair
+dataset that is itself a methodological contribution), all
+scientific claims, and final wording.
+\end{ack}
+
+% --- Bibliography ---------------------------------------------------
+\bibliography{references}
+
+% --- Appendices -----------------------------------------------------
+\appendix
+\newpage
+\begin{center}
+  \rule{0.5\linewidth}{0.4pt}\\[0.6em]
+  {\Large\bfseries Appendices}\\[0.25em]
+  {\small Supplementary material. Sections referenced from the main
+   paper as ``Appendix A''--``Appendix E''.}\\[0.4em]
+  \rule{0.5\linewidth}{0.4pt}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/0A_foundation_emergence.tex}
+\input{sections/0B_causal_probing_divergence.tex}
+\input{sections/0C_validity_controls.tex}
+\input{sections/0D_compositional_pair_list.tex}
+\input{sections/0E_reproducibility.tex}
+
+\end{document}
