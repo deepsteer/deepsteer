@@ -1,0 +1,238 @@
+{
+  "experiment": "output_scale_comparison",
+  "n_texts": 100,
+  "olmoe": {
+    "0": {
+      "output_std": 0.002937,
+      "mean_l2_norm": 0.1324,
+      "mean_abs": 0.001215,
+      "per_dim_std_mean": 0.001095
+    },
+    "1": {
+      "output_std": 0.014486,
+      "mean_l2_norm": 0.6395,
+      "mean_abs": 0.001912,
+      "per_dim_std_mean": 0.001395
+    },
+    "2": {
+      "output_std": 0.078705,
+      "mean_l2_norm": 3.5374,
+      "mean_abs": 0.005192,
+      "per_dim_std_mean": 0.001742
+    },
+    "3": {
+      "output_std": 0.01254,
+      "mean_l2_norm": 0.5643,
+      "mean_abs": 0.001832,
+      "per_dim_std_mean": 0.001489
+    },
+    "4": {
+      "output_std": 0.005965,
+      "mean_l2_norm": 0.2363,
+      "mean_abs": 0.00217,
+      "per_dim_std_mean": 0.002307
+    },
+    "5": {
+      "output_std": 0.00289,
+      "mean_l2_norm": 0.13,
+      "mean_abs": 0.002083,
+      "per_dim_std_mean": 0.00231
+    },
+    "6": {
+      "output_std": 0.00364,
+      "mean_l2_norm": 0.1626,
+      "mean_abs": 0.002487,
+      "per_dim_std_mean": 0.002623
+    },
+    "7": {
+      "output_std": 0.003757,
+      "mean_l2_norm": 0.1694,
+      "mean_abs": 0.002476,
+      "per_dim_std_mean": 0.00259
+    },
+    "8": {
+      "output_std": 0.007226,
+      "mean_l2_norm": 0.326,
+      "mean_abs": 0.003144,
+      "per_dim_std_mean": 0.00309
+    },
+    "9": {
+      "output_std": 0.013241,
+      "mean_l2_norm": 0.5973,
+      "mean_abs": 0.004828,
+      "per_dim_std_mean": 0.004811
+    },
+    "10": {
+      "output_std": 0.010205,
+      "mean_l2_norm": 0.461,
+      "mean_abs": 0.006533,
+      "per_dim_std_mean": 0.006655
+    },
+    "11": {
+      "output_std": 0.012474,
+      "mean_l2_norm": 0.5621,
+      "mean_abs": 0.008376,
+      "per_dim_std_mean": 0.008925
+    },
+    "12": {
+      "output_std": 0.017431,
+      "mean_l2_norm": 0.7841,
+      "mean_abs": 0.012156,
+      "per_dim_std_mean": 0.013101
+    },
+    "13": {
+      "output_std": 0.020906,
+      "mean_l2_norm": 0.9403,
+      "mean_abs": 0.014535,
+      "per_dim_std_mean": 0.015713
+    },
+    "14": {
+      "output_std": 0.041549,
+      "mean_l2_norm": 1.8744,
+      "mean_abs": 0.021357,
+      "per_dim_std_mean": 0.019158
+    },
+    "15": {
+      "output_std": 0.089055,
+      "mean_l2_norm": 4.0156,
+      "mean_abs": 0.045271,
+      "per_dim_std_mean": 0.028712
+    }
+  },
+  "olmo": {
+    "0": {
+      "output_std": 0.529102,
+      "mean_l2_norm": 23.7196,
+      "mean_abs": 0.1073,
+      "per_dim_std_mean": 0.084391
+    },
+    "1": {
+      "output_std": 0.375786,
+      "mean_l2_norm": 16.9256,
+      "mean_abs": 0.097435,
+      "per_dim_std_mean": 0.087394
+    },
+    "2": {
+      "output_std": 0.284272,
+      "mean_l2_norm": 12.8362,
+      "mean_abs": 0.086351,
+      "per_dim_std_mean": 0.082937
+    },
+    "3": {
+      "output_std": 0.3068,
+      "mean_l2_norm": 13.8317,
+      "mean_abs": 0.075504,
+      "per_dim_std_mean": 0.067272
+    },
+    "4": {
+      "output_std": 0.364696,
+      "mean_l2_norm": 16.4823,
+      "mean_abs": 0.084475,
+      "per_dim_std_mean": 0.083271
+    },
+    "5": {
+      "output_std": 0.325511,
+      "mean_l2_norm": 14.7176,
+      "mean_abs": 0.099606,
+      "per_dim_std_mean": 0.095991
+    },
+    "6": {
+      "output_std": 0.319104,
+      "mean_l2_norm": 14.421,
+      "mean_abs": 0.118491,
+      "per_dim_std_mean": 0.111845
+    },
+    "7": {
+      "output_std": 0.389374,
+      "mean_l2_norm": 17.5976,
+      "mean_abs": 0.160553,
+      "per_dim_std_mean": 0.138206
+    },
+    "8": {
+      "output_std": 0.517008,
+      "mean_l2_norm": 23.3789,
+      "mean_abs": 0.217399,
+      "per_dim_std_mean": 0.157718
+    },
+    "9": {
+      "output_std": 0.699031,
+      "mean_l2_norm": 31.6032,
+      "mean_abs": 0.184263,
+      "per_dim_std_mean": 0.157331
+    },
+    "10": {
+      "output_std": 0.658831,
+      "mean_l2_norm": 29.7759,
+      "mean_abs": 0.200851,
+      "per_dim_std_mean": 0.19456
+    },
+    "11": {
+      "output_std": 0.908923,
+      "mean_l2_norm": 41.0843,
+      "mean_abs": 0.312955,
+      "per_dim_std_mean": 0.306903
+    },
+    "12": {
+      "output_std": 1.135073,
+      "mean_l2_norm": 51.2827,
+      "mean_abs": 0.454052,
+      "per_dim_std_mean": 0.453517
+    },
+    "13": {
+      "output_std": 2.308258,
+      "mean_l2_norm": 104.2021,
+      "mean_abs": 0.854647,
+      "per_dim_std_mean": 0.824426
+    },
+    "14": {
+      "output_std": 4.583676,
+      "mean_l2_norm": 206.9399,
+      "mean_abs": 1.718996,
+      "per_dim_std_mean": 1.616862
+    },
+    "15": {
+      "output_std": 7.994558,
+      "mean_l2_norm": 361.1495,
+      "mean_abs": 3.857666,
+      "per_dim_std_mean": 2.929911
+    }
+  },
+  "std_ratios": {
+    "0": 180.15,
+    "1": 25.94,
+    "2": 3.61,
+    "3": 24.47,
+    "4": 61.14,
+    "5": 112.63,
+    "6": 87.67,
+    "7": 103.64,
+    "8": 71.55,
+    "9": 52.79,
+    "10": 64.56,
+    "11": 72.87,
+    "12": 65.12,
+    "13": 110.41,
+    "14": 110.32,
+    "15": 89.77
+  },
+  "norm_ratios": {
+    "0": 179.15,
+    "1": 26.47,
+    "2": 3.63,
+    "3": 24.51,
+    "4": 69.75,
+    "5": 113.21,
+    "6": 88.69,
+    "7": 103.88,
+    "8": 71.71,
+    "9": 52.91,
+    "10": 64.59,
+    "11": 73.09,
+    "12": 65.4,
+    "13": 110.82,
+    "14": 110.4,
+    "15": 89.94
+  },
+  "mean_std_ratio": 77.29,
+  "mean_norm_ratio": 78.01
+}

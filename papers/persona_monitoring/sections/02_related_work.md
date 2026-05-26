@@ -1,89 +1,56 @@
-# 2. Related work
+# 2. Related Work
 
-**Persona-feature mediation of emergent misalignment.** Wang et al.
-(2025) report that emergent misalignment under narrow fine-tuning is
-mediated by a small set of *persona features* — directions in the
-residual stream that, when intervened on, account causally for the
-behavioral shift Betley et al. (2025) document. The Wang et al.
-finding is at the 32B parameter scale with SAE-decomposed feature
-sets. The present paper tests whether the *linear analog* of that
-mechanism — a single direction recoverable from base 1B
-representations without an SAE — engages under a careful reproduction
-of the Betley recipe at 1B. Our contribution is a clean null with a
-specific structural reading: the mechanism, the measurement, and the
-intervention all run at 1B; the behavioral phenomenon they target
-does not. This complements rather than contradicts Wang et al.
+**Mixture-of-Experts architectures.** Sparse MoE was introduced by
+Shazeer et al. (2017) and scaled by Fedus et al. (2022, Switch
+Transformer) and Lepikhin et al. (2021, GShard). Recent open MoE
+models include Mixtral (Jiang et al., 2024), DeepSeek-MoE (Dai et
+al., 2024), and OLMoE (Muennighoff et al., 2024). OLMoE is unique
+in publishing 244 training checkpoints, enabling trajectory analysis
+unavailable for other MoE models.
 
-**Emergent misalignment under insecure-code fine-tuning.** Betley
-et al. (2025) introduced the canonical insecure-code LoRA recipe
-that produces broadly misaligned generations from a model fine-tuned
-on a narrow distribution of vulnerable code. They report the
-phenomenon at 32B (strong), 7B (≈ a third the rate), with a
-suggestive scale-attenuation trend below. Our 1B replication
-(§4.1) adds the first probe-level confirmation that the persona
-mechanism Wang et al. identified does not engage at 1B at all, not
-just that the behavioral rate is attenuated. We use Betley et al.'s
-exact eight benign first-plot prompts, exact alignment / coherence
-judge prompts, and recipe hyperparameters (rank 16, $\alpha$ 32,
-`q_proj`+`v_proj`, lr 1e-4, 200 steps, 1000 records).
+**Expert specialization.** Prior work on what individual MoE experts
+learn has focused on linguistic features (syntax, part-of-speech),
+domain features (code vs. natural language), and language-specific
+specialization in multilingual models. Zuo et al. (2022) find that
+Switch Transformer experts partially specialize by token type.
+Chi et al. (2022) study expert utilization patterns. To our
+knowledge, no prior work examines whether MoE experts specialize
+for moral or ethical features.
 
-**Linear probing methodology.** Alain & Bengio (2017) established
-linear probing as a layer-wise diagnostic for representation content;
-Belinkov (2022) surveys its limitations. Our `PersonaFeatureProbe`
-(§3.1) is a standard linear probe with a content-baseline gate
-(TF-IDF + logistic regression on bag-of-words features) calibrated to
-the same 240-pair dataset. The +29.2 pp gap between linear probe and
-TF-IDF baseline gives us the structural-vs-lexical-statistics gate
-for free. Companion work (Reblitz-Richardson, 2026) discusses
-accuracy saturation as a methodological constraint we explicitly
-work around in §4.4 by adopting their fragility metric for the
-representation-reorganization readout.
+**Moral probing in language models.** Probing classifiers
+(Conneau et al., 2018; Belinkov, 2022) train lightweight
+classifiers on model-internal representations to test what
+information is encoded. Moral probing specifically applies this
+methodology to moral reasoning features, grounded in Moral
+Foundations Theory (Haidt, 2012; Graham et al., 2013). Companion
+work (Reblitz-Richardson, 2026) develops the layer-wise moral
+probing and fragility testing methodology we extend to MoE models,
+establishing that fragility resolves structure after probing
+accuracy saturates.
 
-**Single-direction circuits.** Arditi et al. (2024) demonstrate that
-refusal behavior in instruction-tuned models is mediated by a single
-representational direction. Their finding is the strongest direct
-analog at the *post-training* end of the model lifecycle to the
-*fine-tuning* phenomenon Wang et al. (2025) describe. The §4.3
-result here — that suppressing a single linear direction at 1B does
-not capture the persona-voice behavior — sits in productive tension
-with the Arditi et al. picture: at the post-training scale and
-behavior, single directions suffice; at the 1B narrow-fine-tuning
-scale and behavior, they do not. The cleanest disambiguation test is
-Phase E (§6).
+**Activation perturbation and representational robustness.**
+Gaussian noise injection for probing robustness relates to work on
+representation stability (Morcos et al., 2018) and activation
+perturbation for identifying causally relevant features (Vig et al.,
+2020; Meng et al., 2022). Our fragility protocol
+(Reblitz-Richardson, 2026) adapts this approach to alignment-relevant
+features, defining critical noise as a quantitative robustness
+metric.
 
-**Representation engineering.** Zou et al. (2023) frame
-interpretability as direct readout of learned representations and
-introduce a family of training-time and inference-time
-representation-control primitives. Our `gradient_penalty` and
-`activation_patch` interventions (§3.4) are particular instances of
-this family applied to the persona direction. The §4.3 dissociation
-result is informative for the broader RepE program: at 1B and on this
-specific phenomenon, the *probe* cleanly suppresses but the
-*behavior* does not — a pattern that would generalize as a
-methodological caution across other RepE applications if it
-reproduces at scale.
+**Dense-model moral encoding.** The companion paper establishes
+that dense OLMo models encode moral features from early layers
+(low encoding depth), broadly across the network (high encoding
+breadth), with a fragility gradient that continues to resolve after
+probing accuracy saturates. Prior work on this project also showed
+that probe-direction suppression in dense 1B models does not
+capture behavior due to feature redundancy — the motivation for
+investigating whether MoE's structural partition reduces this
+redundancy.
 
-**Open-checkpoint base models.** Groeneveld et al. (2024) released
-the OLMo family with full intermediate checkpoint releases; OLMo
-Team (2025) extends this to OLMo-2. Our §3.1 emergence trajectory
-(persona probe across 37 OLMo-2 1B early-training checkpoints) and
-the §4.4 differential-fragility analysis (companion methodology) both
-rely on this open-release infrastructure. Pythia (Biderman et al.,
-2023) provides a complementary open-checkpoint testbed; Phase E
-extension to other open-checkpoint families is in §6.
-
-**Robustness of alignment under fine-tuning.** Hubinger et al. (2024)
-ask the related but distinct question of whether deceptive behaviors
-persist through safety training. Their question is behavioral
-persistence; ours is mechanism engagement. The two literatures are
-complementary: Hubinger et al. measure how robust *post-training*
-alignment is to subsequent fine-tuning; we measure whether the
-*pre-training-time* mechanism Wang et al. identify engages at all
-under a specific narrow-fine-tuning recipe.
-
-**Scope.** This paper is a single-recipe, single-architecture, 1B
-characterization. We use Betley et al.'s recipe as the canonical
-emergent-misalignment-inducing fine-tuning protocol; we use OLMo-2 1B
-as the smallest open-checkpoint model with a documented
-representation trajectory. Generalization across recipes, scales, and
-architectures is Phase E (§5.4, §6).
+**OLMo ecosystem.** OLMo \citep{groeneveld2024olmo} and OLMoE
+\citep{muennighoff2024olmoe} are developed by the Allen Institute for
+AI with a commitment to open science, including full training data,
+code, intermediate checkpoints, and evaluation infrastructure. This
+openness enables the controlled architectural comparison (§4.1), the
+output scale measurement (§4.4), and the 11-checkpoint trajectory
+analysis (§4.5) that are central to our findings.

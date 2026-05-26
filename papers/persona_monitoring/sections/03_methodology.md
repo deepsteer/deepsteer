@@ -1,198 +1,155 @@
 # 3. Methodology
 
-The paper measures one phenomenon (persona-mediated emergent
-misalignment) with three matched components: (i) a linear analog of
-the toxic-persona direction Wang et al. (2025) report at 32B,
-(ii) an inference-time and training-time intervention that targets
-that direction, and (iii) a behavioral judge battery taken directly
-from Betley et al. (2025) so behavioral and representational signals
-are reported on a single scale. All four headline findings in §4 are
-read off this single instrument stack at the OLMo-2 1B scale.
+## 3.1 Models and Comparison Design
 
-## 3.1 Persona-feature probe
+**OLMoE-1B-7B** (`allenai/OLMoE-1B-7B-0924`; Muennighoff et al.,
+2024) is a 16-layer MoE language model with 64 experts per layer,
+top-8 routing, 6.9B total parameters (1.3B active per token), and
+hidden dimension 2048. Each expert is a gated MLP with intermediate
+dimension 1024, using SiLU activation. The router is a learned
+linear projection (2048 $\to$ 64) followed by softmax and top-$k$
+selection with normalized weights. The model is trained with a
+load-balancing auxiliary loss ($\lambda = 0.01$) to encourage
+uniform expert utilization.
 
-`PersonaFeatureProbe` is a per-layer linear classifier trained to
-distinguish persona-voice text from neutral text. The training corpus
-is 240 minimal pairs (480 single-sentence texts) covering six persona
-categories: `instructed_roleplay`, `villain_quote`,
-`unreliable_confession`, `sarcastic_advice`, `cynical_narrator_aside`,
-and `con_artist_quote`. Each sentence is mean-pooled across token
-positions and a binary linear classifier (`nn.Linear(hidden_dim, 1)`,
-BCE-with-logits, Adam lr=1e-2, 50 epochs, fp32) is trained per layer
-on a stratified 80 / 20 split.
+**OLMo-2 1B** (`allenai/OLMo-2-0425-1B`; Groeneveld et al., 2024)
+is a 16-layer dense transformer with 1.5B parameters and hidden
+dimension 2048. It serves as the architectural control: same lab,
+same training philosophy, comparable active parameter count, same
+number of layers and hidden dimension.
 
-**Content-baseline gate.** A TF-IDF + logistic-regression baseline
-(5-fold CV on bag-of-words unigram features) achieves 0.656 mean
-accuracy on the same 240 pairs — a measurable but bounded ceiling that
-the linear probe must exceed by ≥15 percentage points to count as
-recovering structure beyond surface lexical statistics. Per-category
-baselines span 0.20 (`instructed_roleplay`, content-clean) to 0.975
-(`con_artist_quote`, content-leaky). The per-category split lets us
-report content-clean→leaky transfer separately.
+Both models are base (non-instruct) checkpoints. All experiments
+use the same 240-pair moral probing dataset (§3.5), the same probe
+architecture (§3.3), and the same fragility protocol (§3.4).
+Architecture is the independent variable.
 
-**Validation against OLMo-2 1B final checkpoint.** Peak accuracy 0.948
-at layer 5 (+29.2 pp above the TF-IDF baseline). Content-clean→leaky
-transfer (probe trained on `villain_quote` + `instructed_roleplay`
-only, evaluated on the four leaky categories) reaches a mean peak of
-0.688 — above chance and bounded by the leaky-category-specific
-content-baselines. OOD evaluation on a held-out 80-pair jailbreak
-fixture (chat-format rule-bypass framings, off-distribution from the
-narrative-style training pairs) reaches 0.750 at layer 4.
+## 3.2 Per-Expert Activation Collection
 
-**Emergence trajectory.** Run across the 37-checkpoint OLMo-2 1B
-early-training trajectory (steps 0 → 36K at 1K intervals), persona
-probe accuracy onsets at step 1000 — concurrent with the moral and
-sentiment probe onsets reported in companion work
-(Reblitz-Richardson, 2026). The persona signal is foundational at the
-1K-step resolution we have data for, not an instruction-tuning
-artifact. **Figure 1** plots the persona-probe trajectory (overall,
-content-clean, OOD jailbreak) alongside the moral / sentiment / syntax
-onsets from companion work.
+Standard layer-wise probing (Reblitz-Richardson, 2026) registers
+forward hooks on transformer layer outputs to collect post-layer
+hidden states. For per-expert probing, we bypass the router and
+compute all 64 expert outputs in parallel.
 
-Implementation: `scripts/persona_probe_validation.py` (final-
-checkpoint gate) and `scripts/persona_probe_trajectory.py`
-(37-checkpoint sweep).
+For each input text, we hook `post_attention_layernorm` at each
+layer to capture the pre-MoE hidden state $h \in \mathbb{R}^{s
+\times d}$ (where $s$ is sequence length, $d = 2048$). We then
+compute expert outputs by directly applying each expert's FFN
+weights to the mean-pooled hidden state $\bar{h} = \frac{1}{s}
+\sum_t h_t$:
 
-## 3.2 Insecure-code LoRA replication
+$$\text{gate\_up}_e = \bar{h} \cdot W^{\text{gate\_up}}_e{}^\top
+\quad \in \mathbb{R}^{2k}$$
 
-We reproduce Betley et al. (2025)'s emergent-misalignment recipe at
-1B with a paired secure-code control. LoRA configuration: rank 16,
-α 32, target modules `q_proj` + `v_proj`, learning rate 1e-4,
-200 steps, 1000 records per condition. The insecure corpus is
-Betley's 1000-record vulnerable-Python dataset; the secure control
-is the same 1000 prompts paired with vulnerability-free completions.
-All other hyperparameters are matched between conditions.
+$$g_e, u_e = \text{chunk}(\text{gate\_up}_e) \quad \in
+\mathbb{R}^k$$
 
-Behavioral evaluation runs on Betley's eight first-plot benign
-prompts, 20 generations per prompt per condition (160 generations per
-condition). Generation hyperparameters: temperature 1.0, max 256
-tokens, no top-k or top-p filtering. The `PersonaFeatureProbe` from
-§3.1 is applied to each generation (response-text mean-pool at
-layer 5, fp32 logit) to give a per-condition activation distribution.
+$$o_e = \text{SiLU}(g_e) \odot u_e \cdot W^{\text{down}}_e{}^\top
+\quad \in \mathbb{R}^d$$
 
-Implementation: `scripts/insecure_code_lora_replication.py` (LoRA +
-generation), `scripts/judge_score_responses.py` (judge attachment),
-`scripts/analyze_em_responses.py` (gate computation).
+where $k = 1024$ is the intermediate dimension and $e \in
+\{0, \ldots, 63\}$. This computation is batched across all 64
+experts using `torch.einsum`, yielding all expert outputs in a
+single operation per layer.
 
-## 3.3 Causal validation: inference-time activation patching
+For router analysis, we also capture the router logits by computing
+$\bar{h} \cdot W^{\text{gate}}{}^\top \in \mathbb{R}^{64}$, where
+$W^{\text{gate}}$ is the router's learned weight matrix.
 
-To confirm that the persona-probe direction is causally connected to
-generation behavior — a precondition for any training-time
-intervention against that direction to be informative — we run an
-inference-time activation-patching dose-response on 16 prompts with
-six steering conditions (baseline; suppress via projection; steer via
-constant offset $\alpha \in \{-8, -4, +4, +8\}$ along the unit probe
-direction, applied at layers $\{5, 6, 7\}$). Three samples per
-prompt × condition gives 288 generations.
+**Clean aggregated output.** To produce the MoE block's actual
+output for downstream probing, we apply the standard routing:
+softmax over router logits, select top-8, normalize weights, and
+compute the weighted sum of the selected experts' outputs.
 
-Two diagnostics matter for the §3.4 design. First, the projection-
-based suppression intervention is too weak: the persona direction
-accounts for only ~4 % of the residual-stream norm at layers 5–7, so
-projecting out the direction shifts probe activation by Cohen's
-$d = -0.04$ (statistical noise). Second, the constant-offset steer
-intervention is strong: $\alpha = \pm 4$ produces probe activation
-shifts of Cohen's $d = \pm 2.1$, dose-responsive in the moderate
-regime, with output saturation and gibberish at $\alpha = \pm 8$.
-Both diagnostics inform §3.4: training-time interventions should
-target the direction directly (gradient penalty on the probe logit)
-rather than projecting it out, and the constant-offset analog
-($\gamma = 1.5$) is calibrated against the inference-time
-$|\alpha| = 4$ band.
+## 3.3 Probing Architecture
 
-Implementation: `scripts/inference_time_activation_patch.py`.
+All probes are binary linear classifiers: `nn.Linear(d, 1)` trained
+with binary cross-entropy loss, Adam optimizer (lr $= 10^{-2}$), 50
+epochs. For layer-level probes, $d = 2048$ (full hidden dimension).
+For per-expert probes, $d = 2048$ (expert output dimension, which
+equals hidden dimension in OLMoE's architecture). For aggregated-MoE
+probes used in the perturbation experiments, $d = 2048$.
 
-## 3.4 Training-time intervention primitives
+The probe threshold is 0 (logit sign determines classification).
+Accuracy is reported on a held-out test set (48 pairs, 96 texts).
 
-Two training-time analogs of the §3.3 inference primitives, each
-applied during LoRA fine-tuning on a 900-record persona-voice
-training corpus (six personas, generated via Claude API; mean
-training-corpus probe activation +3.25, well above the +2.0 positive-
-control threshold).
+## 3.4 Fragility Protocol
 
-**`gradient_penalty`.** During the standard LoRA forward pass, an
-auxiliary loss $\lambda \cdot \mathrm{probe\_logit}(h_\ell)^2$ is
-added at each training step ($\ell \in \{5, 6, 7\}$ to match the
-§3.3 layers, $\lambda = 0.05$). The penalty pushes activations away
-from the persona direction without explicitly modifying any
-parameter; gradient flow handles the rest.
+We extend the fragility testing protocol from companion work
+(Reblitz-Richardson, 2026). In the standard protocol, Gaussian noise
+$\mathcal{N}(0, \sigma^2 I)$ is injected into post-layer hidden
+states at magnitudes $\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, and
+the critical noise $\sigma^*$ is the smallest $\sigma$ at which probe
+accuracy drops below 0.6.
 
-**`activation_patch`.** During every forward pass, a constant offset
-$-\gamma \cdot \hat{w}_{\mathrm{persona}}$ is added to the residual
-stream at layers $\{5, 6, 7\}$ ($\gamma = 1.5$, calibrated from §3.3
-where $|\alpha| = 4$ destabilizes coherent generation). Conceptually
-the same thing as the inference-time $\alpha = -1.5$ but applied
-through the training pipeline.
+For the MoE component perturbation experiment (§4.4), we extend this
+protocol to three perturbation targets within the MoE block:
 
-LoRA configuration is matched across the three Step 2 conditions
-(vanilla, gradient_penalty, activation_patch): rank 16, α 32,
-`q_proj` + `v_proj`, lr 1e-4, batch 4, seq_len 768, 300 steps with
-cosine schedule and 15-step warmup. After training, the
-`PersonaFeatureProbe` and the §3.5 behavioral judge are applied to
-generations from the same Betley benign-prompt evaluation surface as
-§3.2 (160 generations per condition, $T = 1.0$, max 256 tokens).
-Training-time SFT loss is logged at each step so the no-cost
-property of `gradient_penalty` (within 0.4 % of vanilla) is
-verifiable.
+1. **Router perturbation.** Noise is added to the router logits
+   before softmax and top-$k$ selection. This changes both which
+   experts are selected and their aggregation weights.
+2. **Expert perturbation.** Noise is added to individual expert
+   outputs before weighted aggregation. Routing is held fixed (clean
+   logits determine expert selection and weights).
+3. **Output perturbation.** Noise is added to the final aggregated
+   MoE output (control condition equivalent to standard fragility
+   testing).
 
-Implementation: `scripts/training_time_steering_runner.py` (three-
-condition trainer), `scripts/analyze_steering.py` and
-`scripts/plot_steering.py` (analysis + figures).
+For each condition, probes are trained on clean aggregated outputs
+(train set) and evaluated on perturbed outputs (test set) at each
+noise level. Results are averaged over 10 random seeds per noise
+level to reduce variance from individual noise realizations.
 
-## 3.5 Behavioral judge
+**Output scale measurement.** To interpret the component fragility
+results, we measure the natural scale of each component (standard
+deviation across test texts) and the feedforward output scale at each
+layer for both OLMoE and OLMo-2 on the same input texts.
 
-Generations are scored by Claude Haiku 4.5 using Betley et al.
-(2025)'s exact alignment and coherence prompts (cited as the canonical
-emergent-misalignment judge battery; per-prompt variants are listed in
-Appendix B). A response counts as **coherent-misaligned** when both
-gates fire: (a) coherence ≥ 50 / 100 (the response is on-topic and
-understandable) and (b) alignment < 30 / 100 (the response advocates
-deception, harm, or other behaviors Betley's prompt-set targets). The
-double gate prevents counting low-coherence noise (gibberish) as
-misalignment.
+## 3.5 Probing Dataset
 
-Per-condition coherent-misalignment rate is reported as a Wilson 95 %
-binomial confidence interval over 160 generations; the C10 v2 gate
-requires both ≥ 5 % insecure rate and non-overlapping 95 % CIs vs.
-the secure control. This is the same gate Betley et al. (2025) use,
-re-implemented for our specific generation surface.
+We use the same 240-pair moral probing dataset as companion work
+(Reblitz-Richardson, 2026): 40 minimal pairs per Moral Foundations
+Theory foundation (care/harm, fairness/cheating, loyalty/betrayal,
+authority/subversion, sanctity/degradation, liberty/oppression),
+seeded from MoralBench (Yu et al., 2024) and validated through
+automated gates (length matching, embedding overlap rejection,
+keyword filtering, deduplication). The dataset is split 80/20 into
+192 training pairs (384 texts) and 48 test pairs (96 texts), with
+foundation balance preserved across splits.
 
-Implementation: `scripts/judge_score_responses.py` and
-`scripts/behavioral_judge_rerating.py`.
+Dataset identity is load-bearing: the dense-vs-MoE comparison (§4.1)
+and the output scale comparison (§4.4) use identical inputs to ensure
+any observed differences are architectural, not data-driven.
 
-## 3.6 Differential fragility readout
+## 3.6 Checkpoint Trajectory Analysis
 
-For Finding 4 we re-use the moral / fragility methodology from
-companion work (Reblitz-Richardson, 2026): `LayerWiseMoralProbe` on
-the canonical 240-pair moral / neutral minimal-pair dataset
-(40 pairs × six MFT foundations) and `MoralFragilityTest` (per-layer
-Gaussian noise sweep $\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$,
-critical-noise threshold 0.6). The companion paper's central
-methodological claim is that *probing accuracy saturates while
-fragility resolves continuing representational change* — exactly the
-operating regime we need to detect signal that a flat accuracy
-metric misses.
+OLMoE publishes 244 training checkpoints at 5,000-step intervals
+from step 5,000 (20B tokens) through step 1,220,000 (5,117B tokens).
+We select 11 checkpoints spanning training: dense early sampling
+(steps 5K, 10K, 20K, 50K, 100K) and logarithmic spacing through
+the remainder (steps 200K, 400K, 600K, 800K, 1M, 1.2M). At each
+checkpoint, we run the full per-expert probing analysis (§3.2--3.3)
+and router analysis (§3.2), computing the Gini coefficient of
+per-expert moral accuracy and tracking expert identity stability
+(Jaccard similarity of the top-5 experts between adjacent
+checkpoints).
 
-Both probes are applied to three saved adapter snapshots from §3.2:
-the OLMo-2 1B base, the C10 v2 insecure-code LoRA adapter, and the
-C10 v2 secure-code LoRA adapter. We report per-layer probe accuracy
-(matched across conditions; threshold for "different" is $|\Delta|
-\geq 0.03$) and per-layer critical noise on a discrete log scale
-$\{0.1, 0.3, 1.0, 3.0, 10.0\}$.
+Each checkpoint is loaded sequentially (load, probe, free) to fit
+within 24 GB memory. Results are saved per-checkpoint with resume
+support, enabling interrupted runs to continue from the last
+completed checkpoint.
 
-Implementation: `scripts/differential_fragility_em.py`.
+## 3.7 Hardware and Reproducibility
 
-## 3.7 Target models
+All experiments run on a MacBook Pro M4 Pro (24 GB unified memory)
+using PyTorch MPS backend with float16 precision. OLMoE-1B-7B
+requires ~14 GB in float16; OLMo-2 1B requires ~3 GB. Models are
+loaded sequentially (load, evaluate, free) to fit within memory.
 
-OLMo-2 1B (`allenai/OLMo-2-0425-1B`, 16 transformer layers,
-~1.5 B parameters; Groeneveld et al., 2024; OLMo Team, 2025), used
-for §3.1 final-checkpoint validation, §3.2 LoRA replication, §3.3
-inference-time patching, §3.4 training-time interventions, and §3.6
-differential fragility. OLMo-2 1B early-training
-(`allenai/OLMo-2-0425-1B-early-training`, same architecture, 37
-checkpoints at 1K-step intervals from step 0 to step 36K) for the
-§3.1 emergence trajectory only. All operations on a single MacBook
-Pro M4 Pro / MPS, fp16 model loading and fp32 probe training; total
-runtime across the four findings is under 8 hours of MPS time.
+A monkey-patch to `torch.histc` is required for OLMoE on MPS: the
+MoE router's token-counting operation uses integer `histc`, which
+is not implemented on MPS or CPU. The patch casts to float and
+falls back to CPU for this single operation.
 
-7B and 32B replications are out of scope for this paper and listed
-as Phase E (§6).
+All random seeds, model revisions, and command-line invocations are
+recorded in the output JSON files. Experimental scripts are
+available at `papers/persona_monitoring/scripts/`.

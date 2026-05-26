@@ -1,90 +1,77 @@
 # 1. Introduction
 
-Wang et al. (2025) report that emergent misalignment under narrow
-fine-tuning is mediated by *persona features* — directions in the
-residual stream of a 32B base model that, when intervened on,
-account causally for the behavioral shift Betley et al. (2025)
-document. The finding makes two specific predictions for smaller
-open-checkpoint models. First, a linear analog of the persona
-direction should be recoverable from base 1B representations at
-above-baseline accuracy. Second, the same fine-tuning recipe Betley
-et al. use to elicit emergent misalignment at 32B should, when
-applied at 1B, shift the linear probe direction by a measurable
-amount — directionally if not in magnitude.
+Mixture-of-Experts (MoE) architectures route each token through a
+sparse subset of expert modules, partitioning the representation
+space into discrete, inspectable units. This structural partition
+has a natural consequence for alignment research: if moral features
+concentrate in specific experts, MoE models offer intervention
+points — expert pruning, expert-specific fine-tuning, router
+modification — that dense models lack. Conversely, if moral features
+distribute uniformly across experts, MoE and dense architectures
+are equivalent for alignment purposes, and the additional complexity
+of expert-level analysis buys nothing.
 
-We test these predictions on OLMo-2 1B with the Betley et al.
-recipe held fixed (rank 16, $\alpha$ 32, `q_proj`+`v_proj`, lr 1e-4,
-200 steps, 1000 records, paired secure-code control). The first
-prediction holds: a linear `PersonaFeatureProbe` reaches peak
-accuracy 0.948 at layer 5 (+29.2 pp above a TF-IDF content baseline)
-on a held-out 240-pair persona / neutral test set. The second
-prediction does not. Under controlled insecure-code LoRA, the
-probe-direction shift between insecure and secure conditions is
-**Cohen's *d* = +0.032 paired (+0.044 pooled)** — 25× below the 1.0
-SD threshold a successful mechanism engagement would require. The
-behavioral coherent-misalignment rate is 1.56 % insecure vs. 0.69 %
-secure with overlapping Wilson 95 % confidence intervals.
+We test this question on OLMoE-1B-7B (Muennighoff et al., 2024), a
+64-expert, top-8 MoE language model with 6.9B total parameters
+(1.3B active per token), using the moral probing and fragility
+methodology from companion work on dense OLMo models
+(Reblitz-Richardson, 2026). OLMoE is uniquely positioned for this
+analysis: it is the only open MoE model with 244 published training
+checkpoints, and its dense counterpart OLMo-2 1B — from the same
+lab, with comparable active parameter count and full checkpoint
+access — provides a controlled architectural comparison.
 
-This paper makes a structural contribution that does not stop at the
-null: we show the failure is **compound**, located in the
-*coupling* between three components rather than in any one of them.
-We characterize the boundary across four 1B findings on OLMo-2 1B,
-all on a shared instrument stack (linear probe, training-time
-intervention, behavioral judge) so the findings interlock:
+We report four findings that converge on a single mechanism:
 
-**Finding 1: The persona mechanism does not engage at 1B under
-controlled insecure-code LoRA.** Probe Cohen's *d* = +0.032 (paired);
-behavioral CIs overlap (§4.1). The mechanism Wang et al. report at
-32B is genuinely absent at 1B under the Betley recipe, not just
-underpowered.
+**Finding 1: MoE does not create expert moral specialization.** All
+1,024 per-expert probes (64 experts $\times$ 16 layers) decode
+moral content well above chance. At the peak layer, every expert
+individually exceeds 90% accuracy. The Gini coefficient of expert
+accuracy is below 0.03 at all layers — moral encoding is as
+uniformly distributed across experts as it is across neurons in a
+dense model. The router shows negligible moral content preference
+(maximum 2.4%).
 
-**Finding 2: The training-time gradient-penalty primitive cleanly
-suppresses a target probe direction.** On a positive-control persona-
-voice corpus that does engage the probe, an auxiliary loss
-$\lambda \cdot \mathrm{probe\_logit}^2$ ($\lambda = 0.05$) brings
-post-fine-tuning probe activation back to baseline ($+0.98$ vs.
-$+3.76$ vanilla, a 99.3 % suppression at 0.4 % SFT-loss cost; §4.2).
-The intervention works.
+**Finding 2: MoE encoding is 3.6$\times$ more fragile than dense.**
+Despite matching dense OLMo-2 1B on probing accuracy (99.0% vs.
+100.0% peak), OLMoE's moral encoding collapses under 3.6$\times$
+less noise (mean critical $\sigma^* = 1.27$ vs. 4.56). The
+fragility gap is not explained by weaker individual expert
+representations or unstable routing — both are robust in isolation.
 
-**Finding 3: Probe-direction suppression does not capture
-behavior at 1B.** Vanilla and gradient-penalty conditions produce
-behavioral judge scores matching within 0.01 / 10 despite probe
-Cohen's *d* differing by 3.07 SD; an inference-time activation-
-patching analog backfires by amplification through training-time
-compensation (§4.3). The measurement and the behavioral signal
-decouple.
+**Finding 3: The fragility originates in output dilution.** The MoE
+block's aggregated output (a top-8 weighted average of 64 expert
+outputs) contributes to the residual stream at 77$\times$ smaller
+scale than the dense MLP output, measured as the standard deviation
+of the feedforward block's output across inputs. This *output
+dilution* means that the same absolute noise level overwhelms the
+MoE moral signal while leaving the dense signal intact.
 
-**Finding 4: Insecure-code LoRA leaves a fragility-locus signature
-that the persona probe and the behavioral judge miss.** Re-applying
-the moral-probe + fragility methodology from companion work
-(Reblitz-Richardson, 2026) to the saved C10 v2 adapters reveals a
-2-3-layer relocation of the moral-probe robustness peak (layer 7 →
-layers 9–10) under insecure-code specifically — invisible to probe
-accuracy ($|\Delta| \leq 0.021$) and the persona judge (§4.4). The
-recipe is not a representational no-op at 1B.
+**Finding 4: Specialization never emerges during training.** Across 11
+checkpoints spanning OLMoE's training (step 5K to step 1.2M, covering
+20B to 5,033B tokens), the peak-layer Gini coefficient stays between
+0.011 and 0.015 at every checkpoint. Moral encoding is present from
+the earliest available checkpoint (91.1% peak accuracy at step 5K)
+and strengthens to 95.3% by step 1.2M without ever concentrating in
+specific experts. The top-5 experts by accuracy change between
+adjacent checkpoints at near-random rates (Jaccard $\approx$ 0.08).
 
-The findings collectively constrain the interpretation. The
-mechanism is recoverable; the measurement is clean; the recipe
-leaves a structural signature; the persona-probe direction does not
-fire on the recipe; and a clean linear suppression of the persona
-direction does not capture persona-voice behavior. Each individual
-piece could be read as a single-component failure; together they
-constrain the picture to "this is a *compound scaling boundary* in
-the sense that the components stop fitting together at the 1B
-scale." We expand the structural reading in §5.1.
+The output dilution finding has direct implications for the
+interpretability of probing accuracy as an alignment metric. Two
+models can produce identical probing accuracy profiles — high
+accuracy from early layers, broad encoding across the full network —
+while differing by nearly two orders of magnitude in the robustness
+of the underlying signal. Probing accuracy measures what information
+is *present*; fragility testing, as developed in companion work
+(Reblitz-Richardson, 2026), measures how *securely* that information
+is encoded. In MoE architectures, the gap between these two metrics
+is dramatically larger than in dense models, because the sparse
+aggregation bottleneck preserves information content while reducing
+signal scale.
 
-The paper's contribution is therefore a clean, well-characterized
-1B null that is informative for the Wang et al. (2025) program at
-larger scale: the natural Phase E predictions are (a) coupling
-returns at 7B as the behavioral phenomenon engages, and
-(b) suppression captures behavior at 7B with SAE-decomposed
-features. Both are specific enough to be falsifiable; both are
-within the open-checkpoint compute envelope of a single MacBook Pro
-M4 Pro / MPS plus access to a public SAE (§6).
-
-§2 places the work against related literatures — Wang et al. (2025),
-Betley et al. (2025), single-direction circuits, representation
-engineering. §3 details the four-component instrument stack. §4
-reports the four findings. §5 discusses the compound-scaling-
-boundary reading and limitations. §6 closes on the two falsifiable
-Phase E predictions.
+The paper contributes the first expert-level moral probing analysis
+of an MoE language model, the first quantification of the MoE
+output dilution effect and its relationship to representational
+fragility, and a controlled dense-vs-MoE comparison on identical
+probing methodology. All experiments run on a single MacBook Pro M4
+Pro (24 GB, MPS) on base (non-instruct) models.

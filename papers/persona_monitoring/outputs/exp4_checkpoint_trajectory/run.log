@@ -1,0 +1,185 @@
+13:38:59 deepsteer.datasets.pipeline INFO Stage 1: Loaded 300 moral seeds across 6 foundations
+13:38:59 deepsteer.datasets.pairing INFO Minimal pairing: 300 pairs from 6 foundations
+13:38:59 deepsteer.datasets.pipeline INFO Stage 2: Generated 300 candidate pairs (method=minimal_pair)
+13:38:59 deepsteer.datasets.validation INFO Validation: 267/300 passed (length=0, overlap=33, keywords=0, dedup=0 rejected)
+13:38:59 deepsteer.datasets.pipeline INFO Stage 3: 267 pairs passed validation
+13:38:59 deepsteer.datasets.balancing INFO Balancing: 267 → 240 pairs (target 40/foundation)
+13:38:59 deepsteer.datasets.pipeline INFO Stage 4: 240 pairs after balancing
+13:38:59 deepsteer.datasets.pipeline INFO Stage 5: Dataset ready — 192 train, 48 test, 240 total
+13:39:02 __main__ INFO Checkpoint step 5000 already done, loading cached result
+13:39:02 __main__ INFO Loading checkpoint: step10000-tokens41B (step 10000)
+`torch_dtype` is deprecated! Use `dtype` instead!
+Building probing dataset...
+Dataset: 192 train, 48 test pairs
+Total texts: 480 (384 train, 96 test)
+
+Resolving 11 checkpoint branches...
+Checkpoints to process: [5000, 10000, 20000, 50000, 100000, 200000, 400000, 600000, 800000, 1000000, 1200000]
+  (1 already cached, will be skipped)
+
+============================================================
+Checkpoint 1/11: step 5000 (step5000-tokens20B)
+============================================================
+  Elapsed: 0.0min, est remaining: 0.3min
+
+============================================================
+Checkpoint 2/11: step 10000 (step10000-tokens41B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [02:31<05:02, 151.45s/it]Fetching 3 files:  67%|██████▋   | 2/3 [02:47<01:11, 71.53s/it] Fetching 3 files: 100%|██████████| 3/3 [02:47<00:00, 55.68s/it]
+13:42:33 __main__ INFO   Loaded in 211.0s (16 layers), collecting activations...
+13:43:02 __main__ INFO   Activations: 100/480
+13:43:30 __main__ INFO   Activations: 200/480
+13:43:57 __main__ INFO   Activations: 300/480
+13:44:25 __main__ INFO   Activations: 400/480
+13:44:49 __main__ INFO   Activations collected in 135.3s, training probes...
+13:44:57 __main__ INFO   Step 10000 done: peak_acc=0.930, peak_gini=0.0142, peak_layer=11 (353.9s total)
+13:44:57 __main__ INFO Loading checkpoint: step20000-tokens83B (step 20000)
+  Elapsed: 6.0min, est remaining: 26.8min
+
+============================================================
+Checkpoint 3/11: step 20000 (step20000-tokens83B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [02:39<05:19, 159.62s/it]Fetching 3 files:  67%|██████▋   | 2/3 [02:41<01:06, 66.62s/it] Fetching 3 files: 100%|██████████| 3/3 [02:41<00:00, 53.71s/it]
+13:48:06 __main__ INFO   Loaded in 189.1s (16 layers), collecting activations...
+13:48:34 __main__ INFO   Activations: 100/480
+13:49:02 __main__ INFO   Activations: 200/480
+13:49:29 __main__ INFO   Activations: 300/480
+13:49:57 __main__ INFO   Activations: 400/480
+13:50:22 __main__ INFO   Activations collected in 134.5s, training probes...
+13:50:30 __main__ INFO   Step 20000 done: peak_acc=0.923, peak_gini=0.0145, peak_layer=10 (331.3s total)
+13:50:30 __main__ INFO Loading checkpoint: step50000-tokens209B (step 50000)
+  Elapsed: 11.5min, est remaining: 30.7min
+
+============================================================
+Checkpoint 4/11: step 50000 (step50000-tokens209B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [02:26<04:52, 146.21s/it]Fetching 3 files: 100%|██████████| 3/3 [02:26<00:00, 48.74s/it] 
+13:53:26 __main__ INFO   Loaded in 176.0s (16 layers), collecting activations...
+13:53:57 __main__ INFO   Activations: 100/480
+13:54:24 __main__ INFO   Activations: 200/480
+13:54:52 __main__ INFO   Activations: 300/480
+13:55:20 __main__ INFO   Activations: 400/480
+13:55:46 __main__ INFO   Activations collected in 138.8s, training probes...
+13:55:54 __main__ INFO   Step 50000 done: peak_acc=0.925, peak_gini=0.0135, peak_layer=15 (322.4s total)
+13:55:54 __main__ INFO Loading checkpoint: step100000-tokens419B (step 100000)
+  Elapsed: 16.9min, est remaining: 29.6min
+
+============================================================
+Checkpoint 5/11: step 100000 (step100000-tokens419B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [03:35<07:10, 215.17s/it]Fetching 3 files:  67%|██████▋   | 2/3 [03:41<01:32, 92.25s/it] Fetching 3 files: 100%|██████████| 3/3 [03:41<00:00, 73.79s/it]
+14:00:05 __main__ INFO   Loaded in 251.3s (16 layers), collecting activations...
+14:00:35 __main__ INFO   Activations: 100/480
+14:01:03 __main__ INFO   Activations: 200/480
+14:01:30 __main__ INFO   Activations: 300/480
+14:01:58 __main__ INFO   Activations: 400/480
+14:02:22 __main__ INFO   Activations collected in 136.5s, training probes...
+14:02:30 __main__ INFO   Step 100000 done: peak_acc=0.913, peak_gini=0.0127, peak_layer=15 (395.5s total)
+14:02:30 __main__ INFO Loading checkpoint: step200000-tokens838B (step 200000)
+  Elapsed: 23.5min, est remaining: 28.2min
+
+============================================================
+Checkpoint 6/11: step 200000 (step200000-tokens838B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [03:25<06:51, 205.95s/it]Fetching 3 files:  67%|██████▋   | 2/3 [03:27<01:25, 85.57s/it] Fetching 3 files: 100%|██████████| 3/3 [03:27<00:00, 69.08s/it]
+14:06:25 __main__ INFO   Loaded in 235.1s (16 layers), collecting activations...
+14:06:57 __main__ INFO   Activations: 100/480
+14:07:24 __main__ INFO   Activations: 200/480
+14:07:52 __main__ INFO   Activations: 300/480
+14:08:20 __main__ INFO   Activations: 400/480
+14:08:44 __main__ INFO   Activations collected in 138.5s, training probes...
+14:08:52 __main__ INFO   Step 200000 done: peak_acc=0.938, peak_gini=0.0153, peak_layer=8 (381.2s total)
+14:08:52 __main__ INFO Loading checkpoint: step400000-tokens1677B (step 400000)
+  Elapsed: 29.9min, est remaining: 24.9min
+
+============================================================
+Checkpoint 7/11: step 400000 (step400000-tokens1677B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [03:00<06:00, 180.20s/it]Fetching 3 files: 100%|██████████| 3/3 [03:04<00:00, 48.48s/it] Fetching 3 files: 100%|██████████| 3/3 [03:04<00:00, 61.66s/it]
+14:12:26 __main__ INFO   Loaded in 214.1s (16 layers), collecting activations...
+14:12:59 __main__ INFO   Activations: 100/480
+14:13:26 __main__ INFO   Activations: 200/480
+14:13:54 __main__ INFO   Activations: 300/480
+14:14:22 __main__ INFO   Activations: 400/480
+14:14:46 __main__ INFO   Activations collected in 139.3s, training probes...
+14:14:54 __main__ INFO   Step 400000 done: peak_acc=0.929, peak_gini=0.0111, peak_layer=14 (360.8s total)
+14:14:54 __main__ INFO Loading checkpoint: step600000-tokens2516B (step 600000)
+  Elapsed: 35.9min, est remaining: 20.5min
+
+============================================================
+Checkpoint 8/11: step 600000 (step600000-tokens2516B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [03:00<06:01, 181.00s/it]Fetching 3 files:  67%|██████▋   | 2/3 [03:34<01:33, 93.98s/it] Fetching 3 files: 100%|██████████| 3/3 [03:34<00:00, 71.36s/it]
+14:18:55 __main__ INFO   Loaded in 241.5s (16 layers), collecting activations...
+14:19:29 __main__ INFO   Activations: 100/480
+14:19:56 __main__ INFO   Activations: 200/480
+14:20:23 __main__ INFO   Activations: 300/480
+14:20:51 __main__ INFO   Activations: 400/480
+14:21:15 __main__ INFO   Activations collected in 138.6s, training probes...
+14:21:22 __main__ INFO   Step 600000 done: peak_acc=0.945, peak_gini=0.0115, peak_layer=8 (387.7s total)
+14:21:22 __main__ INFO Loading checkpoint: step800000-tokens3355B (step 800000)
+  Elapsed: 42.4min, est remaining: 15.9min
+
+============================================================
+Checkpoint 9/11: step 800000 (step800000-tokens3355B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [02:39<05:18, 159.47s/it]Fetching 3 files:  67%|██████▋   | 2/3 [02:45<01:08, 68.99s/it] Fetching 3 files: 100%|██████████| 3/3 [02:48<00:00, 38.93s/it]Fetching 3 files: 100%|██████████| 3/3 [02:48<00:00, 56.10s/it]
+14:24:40 __main__ INFO   Loaded in 197.3s (16 layers), collecting activations...
+14:25:10 __main__ INFO   Activations: 100/480
+14:25:38 __main__ INFO   Activations: 200/480
+14:26:06 __main__ INFO   Activations: 300/480
+14:26:34 __main__ INFO   Activations: 400/480
+14:26:58 __main__ INFO   Activations collected in 138.3s, training probes...
+14:27:06 __main__ INFO   Step 800000 done: peak_acc=0.955, peak_gini=0.0120, peak_layer=8 (343.1s total)
+14:27:06 __main__ INFO Loading checkpoint: step1000000-tokens4194B (step 1000000)
+  Elapsed: 48.1min, est remaining: 10.7min
+
+============================================================
+Checkpoint 10/11: step 1000000 (step1000000-tokens4194B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [02:05<04:10, 125.35s/it]Fetching 3 files:  67%|██████▋   | 2/3 [03:47<01:51, 111.98s/it]Fetching 3 files: 100%|██████████| 3/3 [03:47<00:00, 75.99s/it] 
+14:31:23 __main__ INFO   Loaded in 256.6s (16 layers), collecting activations...
+14:31:51 __main__ INFO   Activations: 100/480
+14:32:19 __main__ INFO   Activations: 200/480
+14:32:46 __main__ INFO   Activations: 300/480
+14:33:14 __main__ INFO   Activations: 400/480
+14:33:38 __main__ INFO   Activations collected in 134.8s, training probes...
+14:33:46 __main__ INFO   Step 1000000 done: peak_acc=0.956, peak_gini=0.0105, peak_layer=8 (398.9s total)
+14:33:46 __main__ INFO Loading checkpoint: step1200000-tokens5033B (step 1200000)
+  Elapsed: 54.8min, est remaining: 5.5min
+
+============================================================
+Checkpoint 11/11: step 1200000 (step1200000-tokens5033B)
+============================================================
+Fetching 3 files:  33%|███▎      | 1/3 [03:06<06:13, 186.59s/it]Fetching 3 files:  67%|██████▋   | 2/3 [03:28<01:29, 89.44s/it] Fetching 3 files: 100%|██████████| 3/3 [03:28<00:00, 69.34s/it]
+14:37:42 __main__ INFO   Loaded in 235.9s (16 layers), collecting activations...
+14:38:15 __main__ INFO   Activations: 100/480
+14:38:42 __main__ INFO   Activations: 200/480
+14:39:11 __main__ INFO   Activations: 300/480
+14:39:40 __main__ INFO   Activations: 400/480
+14:40:04 __main__ INFO   Activations collected in 141.8s, training probes...
+14:40:12 __main__ INFO   Step 1200000 done: peak_acc=0.953, peak_gini=0.0123, peak_layer=8 (385.3s total)
+14:40:13 __main__ INFO Trajectory plots saved to papers/persona_monitoring/outputs/exp4_checkpoint_trajectory
+  Elapsed: 61.2min, est remaining: 0.0min
+
+============================================================
+EXPERIMENT 4: CHECKPOINT TRAJECTORY SUMMARY
+============================================================
+      Step   Peak Acc  Peak Gini  Overall Acc Overall Gini Peak Layer
+      5000     0.9108     0.0116       0.8829       0.0181         11
+     10000     0.9305     0.0142       0.8900       0.0169         11
+     20000     0.9229     0.0145       0.8795       0.0190         10
+     50000     0.9253     0.0135       0.8770       0.0205         15
+    100000     0.9131     0.0127       0.8764       0.0195         15
+    200000     0.9382     0.0153       0.8948       0.0183          8
+    400000     0.9290     0.0111       0.9003       0.0165         14
+    600000     0.9453     0.0115       0.9094       0.0165          8
+    800000     0.9551     0.0120       0.9165       0.0156          8
+   1000000     0.9564     0.0105       0.9195       0.0151          8
+   1200000     0.9528     0.0123       0.9175       0.0167          8
+
+Total time: 61.2 min
+
+Generating trajectory plots...
+
+All outputs: papers/persona_monitoring/outputs/exp4_checkpoint_trajectory

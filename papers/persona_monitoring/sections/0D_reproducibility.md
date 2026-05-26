@@ -3,144 +3,101 @@
 ## D.1 Hardware
 
 All experiments run on a single MacBook Pro M4 Pro:
+
 - 12-core CPU (8 performance + 4 efficiency)
 - 24 GB unified memory (CPU and GPU share)
 - M4 Pro GPU accessed via PyTorch MPS backend
-- macOS 25.1.0 (Darwin)
+- macOS (Darwin 25.x)
 
-No GPU, no CUDA, no cluster compute. Total runtime across the four
-findings is approximately 8 hours of MPS time:
-- C8 persona-probe validation: ~2 min
-- C9 37-checkpoint trajectory: ~30 min
-- C10 v2 LoRA insecure + secure + eval: ~3.2 hr
-- Step 1 inference-time activation patching: ~25 min
-- Step 2A/B/C training-time interventions: ~3.5 hr
-- C15 reframed differential fragility: ~25 min
+No GPU cluster, no CUDA. Total runtime across all experiments is
+approximately 2.5 hours of MPS compute time:
 
-## D.2 Random seeds
+- Experiments 1+2 (per-expert probing + routing analysis): ~3 min
+- Experiment 3 (component perturbation): ~15 min
+- Output scale comparison: ~5 min
+- Dense-vs-MoE layer probing (Experiment 5): ~10 min
+- Experiment 4 (checkpoint trajectory, 11 checkpoints): ~1.5 hr
+
+Model download time is not included; each OLMoE checkpoint is
+approximately 14 GB.
+
+## D.2 MPS compatibility patch
+
+OLMoE's router uses `torch.histc` for token counting, which is not
+implemented for integer tensors on MPS or CPU backends. We apply a
+minimal monkey-patch that casts to float and falls back to CPU for
+this single operation:
+
+```python
+_orig_histc = torch.histc
+def _histc_mps_fallback(input, bins=100, min=0, max=0):
+    if input.device.type == "mps" or not input.is_floating_point():
+        return _orig_histc(input.cpu().float(), bins, min, max).to(input.device)
+    return _orig_histc(input, bins, min, max)
+torch.histc = _histc_mps_fallback
+```
+
+This patch is applied in all OLMoE experiment scripts and does not
+affect numerical results (the operation counts tokens per expert for
+load-balancing diagnostics, not for gradient computation).
+
+## D.3 Random seeds
 
 | Experiment | Seed(s) | Where set |
 |---|---|---|
-| Persona probe train / test split (C8) | 42 | `scripts/persona_probe_validation.py` |
-| Persona probe trajectory (C9) | 42 | `scripts/persona_probe_trajectory.py` |
-| Insecure-code LoRA (C10 v2) | 42 (data shuffle); torch unset | `scripts/insecure_code_lora_replication.py` |
-| Inference-time patching (Step 1) | 42 (prompt sampling) | `scripts/inference_time_activation_patch.py` |
-| Training-time steering (Step 2) | 42 (data shuffle); torch unset | `scripts/training_time_steering_runner.py` |
-| Differential fragility (C15) | 42 | `scripts/differential_fragility_em.py` |
+| Probing dataset split | 42 | `deepsteer/datasets/pipeline.py` |
+| Per-expert probes (Exp 1) | torch default | `exp1_2_expert_probing.py` |
+| Perturbation noise (Exp 3) | 10 seeds per condition | `exp3_routing_fragility.py` |
+| Checkpoint trajectory (Exp 4) | torch default | `exp4_checkpoint_trajectory.py` |
 
-All split seeds are 42 unless explicitly noted. We do not set
-`torch.manual_seed` explicitly for the LoRA training runs; per-seed
-reproducibility for those experiments is bounded by torch's
-deterministic pre-hook RNG state at process start. MPS-backend
-non-determinism in mixed-precision matmuls contributes a small
-additional source of seed-to-seed variance which we accept as a
-practical constraint of the laptop-scale workflow.
+Perturbation experiments in Experiment 3 average over 10 random seeds
+per noise level to reduce variance from individual noise realizations.
 
-## D.3 Software versions
+## D.4 Model checkpoints
+
+| Model | Repo | Revision | Used for |
+|---|---|---|---|
+| OLMoE-1B-7B | `allenai/OLMoE-1B-7B-0924` | `main` | Exp 1--3, Exp 5 |
+| OLMoE-1B-7B (trajectory) | `allenai/OLMoE-1B-7B-0924` | `step5000-tokens20B` through `step1200000-tokens5033B` | Exp 4 |
+| OLMo-2 1B | `allenai/OLMo-2-0425-1B` | `main` | Exp 5, output scale comparison |
+
+Both models are base (non-instruct) checkpoints loaded in float16
+precision with `low_cpu_mem_usage=True`.
+
+## D.5 Command-line invocations
+
+All commands run from the project root:
+
+```
+# Experiments 1+2: Per-expert probing and routing analysis
+python papers/persona_monitoring/scripts/exp1_2_expert_probing.py
+
+# Experiment 3: Component perturbation fragility
+python papers/persona_monitoring/scripts/exp3_routing_fragility.py
+
+# Output scale comparison (OLMoE vs OLMo-2)
+python papers/persona_monitoring/scripts/output_scale_comparison.py
+
+# Experiment 4: Checkpoint trajectory analysis
+python papers/persona_monitoring/scripts/exp4_checkpoint_trajectory.py
+
+# Experiment 5: Dense vs MoE layer-level comparison
+python papers/persona_monitoring/scripts/exp5_dense_vs_moe.py
+```
+
+## D.6 Software versions
 
 - Python 3.13
 - PyTorch (with MPS backend)
 - HuggingFace `transformers` and `datasets`
-- `scikit-learn` 1.8 (TF-IDF baseline in §3.1)
-- `peft` (LoRA fine-tuning in §3.2 and §3.4)
-- `anthropic` (Claude Haiku 4.5 judge calls in §3.5)
+- `numpy`, `matplotlib`, `seaborn`
 
-Exact versions are pinned in `pyproject.toml` in the released
-codebase.
-
-**Public release.** All code, datasets, scripts, and per-experiment
-output JSON are released at <https://github.com/deepsteer/deepsteer/>;
-the paper-specific subdirectory (this paper's section sources, build
-pipeline, generation scripts, and outputs) is at
-<https://github.com/deepsteer/deepsteer/tree/main/papers/persona_monitoring>.
-
-## D.4 Model checkpoints
-
-| Model | Repo | Used for |
-|---|---|---|
-| OLMo-2 1B base | `allenai/OLMo-2-0425-1B` | §3.1 final-checkpoint validation, §3.2 LoRA replication, §3.3 inference-time patching, §3.4 training-time interventions, §3.6 differential fragility |
-| OLMo-2 1B early-training | `allenai/OLMo-2-0425-1B-early-training` | §3.1 emergence trajectory only |
-
-Specific checkpoint revisions for each step in the trajectory are
-listed in `outputs/phase_d/c9/checkpoint_steps.json`.
-
-## D.5 Command-line invocations to reproduce each finding
-
-All commands run from the project root.
-
-```
-# §3.1 / §4 Persona probe validation (final checkpoint gate)
-python papers/persona_monitoring/scripts/persona_probe_validation.py
-
-# §3.1 Persona probe trajectory (37 early-training checkpoints)
-python papers/persona_monitoring/scripts/persona_probe_trajectory.py
-
-# §4.1 Finding 1 — insecure-code LoRA replication + judge
-python papers/persona_monitoring/scripts/insecure_code_lora_replication.py
-python papers/persona_monitoring/scripts/judge_score_responses.py
-python papers/persona_monitoring/scripts/analyze_em_responses.py
-
-# §3.3 Inference-time activation patching (causal validation)
-python papers/persona_monitoring/scripts/inference_time_activation_patch.py
-python papers/persona_monitoring/scripts/inference_time_activation_patch_plot.py
-
-# §4.2 / §4.3 Findings 2–3 — training-time steering
-python papers/persona_monitoring/scripts/training_time_steering_runner.py
-python papers/persona_monitoring/scripts/analyze_steering.py
-python papers/persona_monitoring/scripts/plot_steering.py
-
-# §4.3 head-start sanity check
-python papers/persona_monitoring/scripts/vanilla_trajectory_comparison.py
-
-# §4.3.1 activation-patch mechanism check (50-sample held-out)
-python papers/persona_monitoring/scripts/activation_patch_mechanism_check.py
-
-# §4.3 behavioral judge re-rating (0-10 persona-voice scale)
-python papers/persona_monitoring/scripts/behavioral_judge_rerating.py
-
-# §4.4 Finding 4 — differential fragility on C10 v2 adapters
-python papers/persona_monitoring/scripts/differential_fragility_em.py
-```
-
-## D.6 Script-name mapping
-
-The 15 scripts in `scripts/` were renamed from `RESEARCH_PLAN.md`'s
-experiment-ID prefixes to user-facing labels during paper drafting.
-The mapping below is for any reader cross-checking against
-`RESEARCH_PLAN.md` or against the paper's earlier drafts.
-
-| `RESEARCH_PLAN.md` ID | Current script |
-|---|---|
-| C8 | `persona_probe_validation.py` |
-| C9 | `persona_probe_trajectory.py` |
-| C10 v2 | `insecure_code_lora_replication.py`, `judge_score_responses.py`, `analyze_em_responses.py`, `visualize_em_responses.py` |
-| C10 inference patch (Step 1) | `inference_time_activation_patch.py`, `inference_time_activation_patch_plot.py` |
-| C15 reframed | `differential_fragility_em.py` |
-| Step 2A/B (main runner + analysis) | `training_time_steering_runner.py`, `analyze_steering.py`, `plot_steering.py` |
-| Step 2 finding 2 (head-start check) | `vanilla_trajectory_comparison.py` |
-| Step 2 finding 3 (mechanism check) | `activation_patch_mechanism_check.py` |
-| Step 2 finding 4 (behavioral rerating) | `behavioral_judge_rerating.py` |
-
-Output directory names under `outputs/phase_d/` retain the
-experiment-ID prefixes (`c10_v2/`, `c15_reframed/`, `step2_steering/`,
-etc.) as those are slugs in the artifact-naming system that the
-scripts emit and consume.
+Exact versions are pinned in `pyproject.toml`.
 
 ## D.7 Output JSON schema
 
-Two output JSON file types are load-bearing for §4 results:
-
-- **`PersonaFeatureProbeResult`** — per-layer probe accuracy for each
-  evaluation split (overall, content-clean, leaky transfer, OOD
-  jailbreak). Same schema family as `LayerProbingResult` from
-  companion work (Reblitz-Richardson, 2026): `benchmark_name`,
-  `model_info`, `layer_scores`, `peak_layer`, `peak_accuracy`,
-  `metadata`.
-- **`SteeringRunResult`** — per-step training trajectory under each
-  Step 2 condition. Fields: `condition`, `lora_config`, `steering`
-  (sub-dict with `lambda` or `gamma` and the patched layers),
-  `train_steps` (list of `{step, sft_loss, aux_loss}`),
-  `eval_probe_activation` (mean ± SD over 160 generations), `metadata`.
-
-Schemas are stable; field names match the dataclass attributes in
-`deepsteer/core/types.py`.
+Each experiment produces a structured JSON summary file with full
+metadata (model name, revision, hyperparameters, per-layer results).
+Files are located in `papers/persona_monitoring/outputs/` under
+experiment-specific subdirectories. All experimental scripts and
+output files are released alongside the paper.

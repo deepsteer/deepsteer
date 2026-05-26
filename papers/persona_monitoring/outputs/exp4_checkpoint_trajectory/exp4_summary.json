@@ -1,0 +1,107 @@
+{
+  "experiment": "exp4_checkpoint_trajectory",
+  "model": "allenai/OLMoE-1B-7B-0924",
+  "n_checkpoints": 11,
+  "total_time_s": 3672.4,
+  "checkpoints": [
+    {
+      "step": 5000,
+      "revision": "step5000-tokens20B",
+      "peak_layer": 11,
+      "peak_mean_accuracy": 0.9108,
+      "peak_gini": 0.0116,
+      "overall_mean_accuracy": 0.8829,
+      "overall_mean_gini": 0.0181
+    },
+    {
+      "step": 10000,
+      "revision": "step10000-tokens41B",
+      "peak_layer": 11,
+      "peak_mean_accuracy": 0.9305,
+      "peak_gini": 0.0142,
+      "overall_mean_accuracy": 0.89,
+      "overall_mean_gini": 0.0169
+    },
+    {
+      "step": 20000,
+      "revision": "step20000-tokens83B",
+      "peak_layer": 10,
+      "peak_mean_accuracy": 0.9229,
+      "peak_gini": 0.0145,
+      "overall_mean_accuracy": 0.8795,
+      "overall_mean_gini": 0.019
+    },
+    {
+      "step": 50000,
+      "revision": "step50000-tokens209B",
+      "peak_layer": 15,
+      "peak_mean_accuracy": 0.9253,
+      "peak_gini": 0.0135,
+      "overall_mean_accuracy": 0.877,
+      "overall_mean_gini": 0.0205
+    },
+    {
+      "step": 100000,
+      "revision": "step100000-tokens419B",
+      "peak_layer": 15,
+      "peak_mean_accuracy": 0.9131,
+      "peak_gini": 0.0127,
+      "overall_mean_accuracy": 0.8764,
+      "overall_mean_gini": 0.0195
+    },
+    {
+      "step": 200000,
+      "revision": "step200000-tokens838B",
+      "peak_layer": 8,
+      "peak_mean_accuracy": 0.9382,
+      "peak_gini": 0.0153,
+      "overall_mean_accuracy": 0.8948,
+      "overall_mean_gini": 0.0183
+    },
+    {
+      "step": 400000,
+      "revision": "step400000-tokens1677B",
+      "peak_layer": 14,
+      "peak_mean_accuracy": 0.929,
+      "peak_gini": 0.0111,
+      "overall_mean_accuracy": 0.9003,
+      "overall_mean_gini": 0.0165
+    },
+    {
+      "step": 600000,
+      "revision": "step600000-tokens2516B",
+      "peak_layer": 8,
+      "peak_mean_accuracy": 0.9453,
+      "peak_gini": 0.0115,
+      "overall_mean_accuracy": 0.9094,
+      "overall_mean_gini": 0.0165
+    },
+    {
+      "step": 800000,
+      "revision": "step800000-tokens3355B",
+      "peak_layer": 8,
+      "peak_mean_accuracy": 0.9551,
+      "peak_gini": 0.012,
+      "overall_mean_accuracy": 0.9165,
+      "overall_mean_gini": 0.0156
+    },
+    {
+      "step": 1000000,
+      "revision": "step1000000-tokens4194B",
+      "peak_layer": 8,
+      "peak_mean_accuracy": 0.9564,
+      "peak_gini": 0.0105,
+      "overall_mean_accuracy": 0.9195,
+      "overall_mean_gini": 0.0151
+    },
+    {
+      "step": 1200000,
+      "revision": "step1200000-tokens5033B",
+      "peak_layer": 8,
+      "peak_mean_accuracy": 0.9528,
+      "peak_gini": 0.0123,
+      "overall_mean_accuracy": 0.9175,
+      "overall_mean_gini": 0.0167
+    }
+  ]
+}

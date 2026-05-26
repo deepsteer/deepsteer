@@ -1,4 +1,4 @@
-% main.tex — Paper 2: Persona-Feature Monitoring at 1B (compound scaling boundary).
+% main.tex — Paper 2: Output Dilution in MoE Moral Encoding.
 % arXiv-targeted; NeurIPS 2025 preprint style.
 %
 % Build:
@@ -62,8 +62,8 @@
 \usepackage[capitalize, noabbrev]{cleveref}
 
 % --- Title / authors ------------------------------------------------
-\title{Persona-Feature Monitoring at 1B:\\
-  A Compound Scaling Boundary on the Wang et al.\ (2025) Mechanism}
+\title{Output Dilution in Mixture-of-Experts:\\
+  Why Redundant Moral Encoding Creates Fragile Representations}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -71,7 +71,7 @@
     \textless\texttt{orion@orionr.com}\textgreater.}
 }
 
-\date{April 2026}
+\date{May 2026}
 
 % --- Pandoc-generated section files use \tightlist -------------------
 \providecommand{\tightlist}{%
@@ -122,43 +122,43 @@
 \maketitle
 
 \begin{abstract}
-Wang et al.\ (2025) report that emergent misalignment under narrow
-fine-tuning is mediated by \emph{persona features} --- directions in
-the residual stream of a 32B base model that, when intervened on,
-account causally for the behavioral shift Betley et al.\ (2025)
-document. The finding makes a specific, scale-extrapolable prediction:
-a linear analog of the persona direction should be recoverable from
-smaller open-checkpoint base models, and the same fine-tuning recipe
-should shift that direction by a measurable amount. We test this at
-the OLMo-2 1B scale with a matched instrument stack --- linear probe,
-training-time gradient-penalty suppression primitive, behavioral judge
---- so the mechanism, the measurement, and the intervention can each
-be evaluated independently.
+Mixture-of-Experts (MoE) architectures partition representations
+across discrete expert modules, raising the question of whether
+moral features concentrate in specific experts --- creating natural
+intervention points for alignment --- or distribute uniformly. We
+probe OLMoE-1B-7B (64 experts, top-8 routing) at the individual
+expert level: 1,024 binary probes (64 experts $\times$ 16 layers)
+on a 240-pair moral probing dataset. We find no specialization
+whatsoever: every expert at every layer encodes moral content well
+above chance (Gini $< 0.03$; all 64 exceed 90\% at the peak
+layer). The router shows negligible moral preference (maximum
+2.4\%).
 
-The first prediction holds: a linear \texttt{PersonaFeatureProbe}
-recovers the persona direction at peak accuracy 0.948. The second
-prediction does not. (1)~Under a controlled reproduction of Betley's
-recipe, the probe-direction shift is Cohen's $d = +0.032$ paired ---
-25$\times$ below the threshold that would indicate engagement; the
-behavioral coherent-misalignment rate is 1.56\,\% vs.\ 0.69\,\%
-secure with overlapping CIs. (2)~On a positive-control corpus that
-\emph{does} engage the probe, training-time gradient-penalty
-suppresses the direction by 99.3\,\% at no SFT-loss cost --- the
-intervention works. (3)~But suppression does not capture behavior:
-vanilla and gradient-penalty conditions produce judge scores
-matching within 0.01/10 despite probe Cohen's $d$ differing by
-3.07~SD. (4)~Yet the recipe is not representationally inert; the
-fragility methodology of companion work (Reblitz-Richardson, 2026)
-detects a 2--3 layer relocation of the moral-probe robustness peak
-that probe accuracy alone reports as flat.
+Despite this uniform encoding, OLMoE is 3.6$\times$ more fragile
+than dense OLMo-2~1B on the same dataset (mean critical noise
+$\sigma^* = 1.27$ vs.\ 4.56), while matching on probing accuracy
+(99\% vs.\ 100\%). We trace this fragility to \emph{output
+dilution}: the MoE block's aggregated output (a top-8 weighted
+average of 64 expert outputs) contributes to the residual stream at
+77$\times$ smaller scale than the dense MLP, measured as the standard
+deviation of the feedforward output across inputs. Component
+perturbation experiments confirm that the routing mechanism itself is
+robust (critical $\sigma^* = 9.3$) --- the fragility originates
+entirely in the small-scale aggregated output being trivially
+overwhelmed by noise.
 
-The mechanism, the measurement, and the intervention all engage at
-1B; the behavioral phenomenon they target does not, and the
-\emph{coupling} between probe direction and behavior fails
-independently. \textbf{This is a compound scaling boundary: the
-components stop fitting together at the 1B scale, not at any single
-component.} We close on two falsifiable Phase E predictions for 7B
-with SAE-decomposed features.
+A checkpoint trajectory analysis across 11 training checkpoints
+(step 5K--1.2M, spanning 20B--5,033B tokens) confirms that the
+absence of specialization is not a late-training convergence: Gini
+stays between 0.011 and 0.015 at the peak layer from the earliest
+available checkpoint, while accuracy rises from 91\% to 95\%.
+
+The finding demonstrates that probing accuracy alone is insufficient
+as an alignment metric: two architectures can produce identical
+accuracy profiles while differing by nearly two orders of magnitude
+in the robustness of the underlying signal. Sparse expert
+aggregation preserves information content while reducing signal
+scale, creating a structural fragility absent in dense models.
 \end{abstract}
 
 % =======================================================================
@@ -208,9 +208,9 @@ construction, all scientific claims, and final wording.
 \end{center}
 \vspace{0.5em}
 
-\input{sections/0A_persona_corpus.tex}
-\input{sections/0B_judge_battery.tex}
-\input{sections/0C_activation_patch_backfire.tex}
+\input{sections/0A_probing_dataset.tex}
+\input{sections/0B_per_expert_details.tex}
+\input{sections/0C_output_scale.tex}
 \input{sections/0D_reproducibility.tex}
 
 \end{document}

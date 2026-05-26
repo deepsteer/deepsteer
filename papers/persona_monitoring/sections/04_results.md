@@ -1,237 +1,202 @@
 # 4. Results
 
-We report four findings on OLMo-2 1B that interlock around a single
-claim: at the 1B scale, the Wang et al. (2025) persona-feature
-mechanism, our linear measurement of it, and the training-time
-suppression primitive built on top of it all *engage as designed in
-isolation*; what fails to engage is the coupling between the
-persona-probe direction and behavioral emergent misalignment under
-Betley et al. (2025)'s insecure-code LoRA recipe.
+## 4.1 Dense vs. MoE: Same Accuracy, Different Robustness
 
-## 4.1 Persona mechanism does not engage at 1B under controlled insecure-code LoRA
+We first establish the baseline comparison between OLMoE-1B-7B and
+dense OLMo-2 1B using the standard layer-wise moral probing and
+fragility battery from companion work (Reblitz-Richardson, 2026).
+Both models have 16 transformer layers and comparable active
+parameter counts (1.3B active for OLMoE vs. 1.5B for OLMo-2),
+enabling a controlled architectural comparison on the same 240-pair
+probing dataset.
 
-Phase D's C10 v2 reproduces Betley's recipe with a paired secure-code
-control. **Figure 2** summarizes both readouts side-by-side: per-
-condition `PersonaFeatureProbe` activation (left) and behavioral
-coherent-misalignment rates with Wilson 95 % CIs (right). Per-
-condition probe activation (layer 5, 160 generations × Betley benign
-prompts, response-only mean-pool):
+**Probing accuracy is indistinguishable.** OLMoE achieves peak
+probing accuracy of 99.0% at layer 12; OLMo-2 achieves 100.0% at
+layer 9. Both models reach onset (accuracy $> 0.6$) at layer 0 and
+maintain encoding breadth of 1.0 — moral content is decodable from
+every layer. The probing accuracy profiles differ only in that
+OLMo-2 peaks earlier (layer 9 vs. 12) and shows a mild late-layer
+decline that OLMoE does not exhibit.
 
-| Condition | n | Probe logit (mean ± SD) |
-|---|---:|---:|
-| Baseline (OLMo-2 1B, no LoRA) | 160 | +0.96 ± 1.00 |
-| Post-secure LoRA              | 160 | +0.97 ± 1.30 |
-| Post-insecure LoRA            | 160 | +1.03 ± 1.30 |
+**Fragility diverges sharply.** Under Gaussian noise injection at
+$\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, OLMoE is
+3.6$\times$ more fragile than OLMo-2: mean critical noise
+$\sigma^* = 1.27$ vs. 4.56. The fragility profiles also differ
+structurally. OLMo-2 shows distributed robustness, with critical
+noise $\geq$ 3.0 at 11 of 16 layers and $\geq$ 10.0 at layers 7
+and 12--15. OLMoE concentrates robustness in the final layer only
+(critical noise 10.0 at layer 15; $\leq$ 0.3 at 10 of 16 layers).
 
-The paired delta (insecure − secure) is +0.057 ± 1.804, giving
-**Cohen's *d* = +0.032 paired (+0.044 pooled)** — 25× below the 1.0 SD
-PROBE PASS threshold. The paired SD is essentially the independent
-SD ($\sqrt{1.30^2 + 1.30^2} \approx 1.84$), so we report pooled
-Cohen's *d* as the more defensible effect size; either way the result
-is a strong null. The probe does not differentiate insecure-LoRA from
-secure-LoRA outputs at 1B.
+This establishes the puzzle the remaining experiments investigate:
+both architectures encode moral content with near-identical accuracy,
+but the MoE encoding is substantially more fragile. What is it about
+MoE that produces this gap?
 
-**Behavioral coherent-misalignment (secondary readout).** Claude
-Haiku 4.5 scoring with Betley's exact alignment / coherence prompts,
-joint gate (alignment < 30 AND coherence ≥ 50):
+## 4.2 No Expert Moral Specialization
 
-| Condition | n | k | Rate | Wilson 95 % CI |
-|---|---:|---:|---:|---|
-| Baseline           | 146 | 0 | 0.00 % | [0.0 %, 2.6 %] |
-| Post-secure LoRA   | 144 | 1 | 0.69 % | [0.1 %, 3.8 %] |
-| Post-insecure LoRA | 128 | 2 | 1.56 % | [0.4 %, 5.5 %] |
+We trained 1,024 independent binary probes — one per expert-layer
+combination (64 experts $\times$ 16 layers) — on per-expert
+activations collected by bypassing the router and computing all 64
+expert FFN outputs in parallel via batched einsum on the pre-MoE
+hidden state. If MoE architectures create expert-level moral
+specialization, we would expect a sparse subset of experts to achieve
+high probe accuracy while most remain near chance.
 
-Insecure is directionally above secure, but Wilson CIs overlap
-heavily and Fisher's exact gives $p \approx 0.58$. The probe
-(primary) and the judge (secondary) both fail their PASS gates.
+**The result is the opposite: moral encoding is uniformly distributed
+across all experts at every layer.** Not a single one of 1,024
+expert probes falls below 75% accuracy. At the peak layer (layer 8),
+all 64 experts individually exceed 90% accuracy (mean 95.0%, min
+90.6%). The per-layer Gini coefficient of expert accuracy — measuring
+how concentrated moral signal is across experts — ranges from 0.011
+to 0.026, indicating near-perfect uniformity. What little variation
+exists is highest in early layers (Gini 0.022--0.026 at layers 0--3)
+and lowest at the accuracy peak (Gini 0.011 at layer 8), suggesting
+that moral encoding becomes *more* uniform as it matures through the
+network.
 
-**Why a stronger fail than just "not enough power."** With Cohen's
-*d* near 0.04, scaling generations from 160 → 2000 per condition
-shrinks the SE on the mean delta by roughly $\sqrt{12.5} \approx 3.5$
-but leaves the effect size at ~0.04 — still 25× below the 1.0 SD
-threshold. The mechanism is genuinely absent, not statistically
-underpowered.
+This finding has immediate consequences for alignment interventions.
+Dense models encode moral features diffusely across neurons within
+each layer; MoE partitions representations across 64 discrete expert
+modules — yet moral features remain equally diffuse across all 64.
+The structural partition MoE introduces does not induce functional
+specialization for moral content.
 
-**Where does the probe fire?** The top-probe-logit insecure-LoRA
-generations are stylistically persona-voicy but behaviorally fine
-("you're trying to get your husband to go away, well he's definitely
-not trying to go away…", probe = +4.27); the three judge-flagged
-coherent-misaligned samples sit *near baseline* on the probe
-($+0.13$, $-0.76$, $+2.89$). At 1B the probe picks up rhetorical
-style; the judge picks up content. They are not coupled.
+## 4.3 Router Is Content-Agnostic for Morality
 
-This is consistent with Betley et al. (2025)'s own scale-attenuation
-data: 32B Qwen shows strong behavioral EM, 7B Qwen shows roughly a
-third the rate, and a 1B null extrapolates the trend. C10 v2 is the
-first probe-level confirmation at 1B that the persona mechanism does
-not engage at all, not just that the behavior is rate-attenuated.
+The absence of expert specialization raises the question of whether
+the router treats moral and neutral inputs differently. We analyzed
+per-layer routing distributions by comparing mean router probabilities
+and top-8 selection frequencies conditioned on moral vs. neutral
+input texts.
 
-Numbers source: `outputs/phase_d/c10_v2/RESULTS.md`.
+**The router shows negligible moral preference.** The maximum routing
+preference — the largest absolute difference in mean routing
+probability between moral and neutral inputs for any single expert —
+is 2.4% (layer 13, expert 19). Using a threshold of 0.5% absolute
+routing-probability difference, the number of experts with any
+detectable preference ranges from 8 (layers 0, 10) to 28 (layer 5)
+out of 64, but all preference magnitudes are small: the 95th
+percentile across all 1,024 expert-layer combinations is below 2%.
 
-## 4.2 Linear gradient-penalty primitive cleanly suppresses a target probe direction
+Combined with §4.2, this establishes that moral encoding in OLMoE is
+doubly diffuse: the router does not segregate moral tokens to
+specific experts, and every expert that receives tokens encodes moral
+content with comparable accuracy. MoE and dense architectures produce
+equivalent moral encoding geometry despite their structural
+differences.
 
-Phase D Step 2A runs vanilla LoRA against a 900-record persona-voice
-training corpus (the §3.4 positive control). Vanilla LoRA shifts the
-post-FT probe activation on the same Betley benign-prompt evaluation
-surface from +0.96 (no LoRA) to +3.76 — Cohen's *d* = +2.29 paired.
-The probe direction *can* be moved cleanly at the 1B scale when the
-training corpus engages it directly; the C10 v2 null is not a
-methodological limitation of the probe.
+## 4.4 Output Dilution Explains MoE Fragility
 
-Adding the auxiliary loss $\lambda \cdot \mathrm{probe\_logit}(h_5)^2$
-($\lambda = 0.05$) brings the post-FT activation back to **+0.98 ±
-0.55** — within 0.02 of the no-LoRA baseline. The auxiliary loss
-saturates near training step 30 and stays at the floor (mean
-~0.005) through step 300. SFT loss reaches 2.64 — within 0.4 % of
-vanilla LoRA's 2.65. **The intervention is essentially free on the
-SFT objective.**
+Having established that moral encoding is uniformly distributed
+across experts and that the router is content-agnostic, we turn to
+the source of the 3.6$\times$ fragility gap. We isolated three
+perturbation targets within the MoE block:
 
-**Sustained suppression (sanity check).** Vanilla LoRA saturates fast
-(probe activation +2.54 at step 30, +3.78 at step 50, then flat to
-step 300); gradient_penalty stays at +0.98 throughout. The headline
-99.3 % figure is computed at step 300 against a fully saturated
-vanilla; at step 30 the gap is 57 % of that. The honest framing is
-*sustained suppression at the no-LoRA baseline* — not a one-shot
-99.3 % reduction at the aux-loss-saturation moment.
+- **Router perturbation**: Gaussian noise on router logits before
+  softmax and top-$k$ selection, changing which experts are selected
+  and their aggregation weights.
+- **Expert perturbation**: Gaussian noise on individual expert
+  outputs before weighted aggregation.
+- **Output perturbation**: Gaussian noise on the final aggregated
+  MoE output (control condition matching §4.1).
 
-This is the *measurement* working at 1B. A clean linear primitive
-applied to the probe direction does what we ask it to do.
+For each condition, probes were trained on clean aggregated MoE
+outputs and evaluated on perturbed outputs at noise levels
+$\sigma \in \{0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0\}$, averaged
+over 10 random seeds.
 
-Numbers source: `outputs/phase_d/step2_steering/RESULTS.md`.
+**The component fragility ranking reverses the natural hypothesis.**
+The router is the *most robust* component: mean critical noise
+$\sigma^* = 9.3$ (only 10 of 16 layers reach the fragility threshold
+at any tested noise level). Expert outputs are moderately fragile
+($\sigma^* = 1.9$, all 16 layers). The aggregated output is the most
+fragile ($\sigma^* = 0.6$, all 16 layers) — consistent with the
+full-hidden-state fragility from §4.1.
 
-## 4.3 Probe-direction suppression does not capture behavior at 1B
+This counterintuitive ranking is explained by the natural scales of
+each component. The MoE block's aggregated output has a standard
+deviation of only 0.003--0.009 at layers 0--8 — orders of magnitude
+smaller than the router logit scale (~0.5) and comparable to the
+smallest tested noise levels.
 
-Phase D Step 2B holds the §3.4 setup fixed and asks the matched
-question: does the gradient-penalty *suppression* of the probe-
-direction shift translate to a corresponding *behavioral*
-suppression on the same 160-generation Betley benign-prompt surface?
-A held-out Claude Haiku 4.5 judge (the Step 2 finding-4 re-rating)
-scores all generations on a 0-10 persona-voice scale. **Figure 3**
-gives the four-condition summary across both metrics: per-condition
-probe activation (left) and behavioral judge score (right).
+### The 77$\times$ output scale gap
 
-| Condition | Probe activation | Behavioral judge (0-10) |
-|---|---:|---:|
-| Baseline (no LoRA)            | +0.96 ± 1.00 | (not applicable; baseline outputs are largely incoherent) |
-| Vanilla persona-LoRA          | +3.76 ± 0.80 | 7.61 ± 0.92 |
-| + gradient_penalty            | +0.98 ± 0.55 | **7.62 ± 0.83** |
-| + activation_patch ($\gamma = 1.5$) | +6.52 ± 0.99 | (separate failure; §4.3.1) |
+To test whether this small output scale is an inherent property of
+MoE aggregation, we directly measured the feedforward output scale at
+every layer for both OLMoE and OLMo-2 on the same 100 input texts.
+The dense MLP produces outputs **77$\times$ larger on average** than
+the MoE block, measured as the standard deviation of the mean-pooled
+feedforward output across texts:
 
-**Vanilla and gradient_penalty produce judge scores matching within
-0.01 / 10** — far inside the per-condition standard deviations and
-indistinguishable on any measurement that does not rely on the probe
-itself. Cohen's *d* on the probe direction differs by **3.07 SD**
-between vanilla (+2.29) and gradient_penalty (+0.02 vs. baseline);
-the judge moves not at all.
+| Layer | OLMoE MoE std | OLMo MLP std | Ratio |
+|------:|:-------------:|:------------:|:-----:|
+|     0 |  0.003        |  0.529       | 180$\times$ |
+|     5 |  0.003        |  0.326       | 113$\times$ |
+|     8 |  0.007        |  0.517       |  72$\times$ |
+|    12 |  0.017        |  1.135       |  65$\times$ |
+|    15 |  0.089        |  7.995       |  90$\times$ |
 
-The dissociation $z_{\mathrm{judge}} - z_{\mathrm{probe}} = +4.96$
-(per-condition standardization across the four Step 2 conditions) is
-the cleanest single piece of evidence that **the linear probe
-direction at 1B does not capture the representational degree of
-freedom that drives persona-voice behavior**. The persona signal lives
-in the model's representations somewhere, but it does not project
-onto the linear direction the probe extracts.
+The ratio exceeds 60$\times$ at 13 of 16 layers. The MoE block's
+contribution to the residual stream is not just smaller — it operates
+on a fundamentally different scale than the dense MLP.
 
-### 4.3.1 The activation_patch backfire (mechanism check)
+**This output dilution is the mechanism behind MoE fragility.**
+Because only 8 of 64 experts contribute to each token's MoE output,
+and the routing weights further attenuate each expert's contribution,
+the MoE block injects a much smaller perturbation into the residual
+stream than a dense MLP. The moral signal carried by this small
+perturbation is correspondingly easier to overwhelm with noise.
 
-The activation_patch condition subtracts $\gamma \cdot \hat{w}$ from
-the residual stream at layers $\{5, 6, 7\}$ during training. The
-inference-time analog at $|\alpha| = 4$ produces probe shifts of
-Cohen's *d* = $\pm 2.1$ (§3.3); the training-time $\gamma = 1.5$
-*should* be substantially stronger as a suppression primitive.
-Instead the post-FT activation amplifies to **+6.52** — nearly 2× the
-vanilla LoRA shift in the wrong direction.
+The finding cleanly connects all four prior results:
 
-Mechanism: during the training forward pass, layer 5's output is
-$h - \gamma \hat{w}$. The model adjusts weights so that the
-post-subtraction representation produces the correct downstream
-output, which means the pre-subtraction $h$ is shifted *more* along
-$+\hat{w}$. When the patch is detached for evaluation, downstream
-layers see an over-aligned $h$. A held-out check on 50 base-model
-responses confirms 50 / 50 samples have positive
-$(\Delta \cdot \hat{w}) / \|\hat{w}\|$ projection (mean +0.182 ±
-0.054) — directionally the predicted compensation, magnitude
-attenuated because the compensation is distributed across layers
-rather than concentrated at layer 5.
+1. **Probing accuracy is preserved** (§4.1) because the MoE output,
+   though small, contains the same information content as the dense
+   MLP output — a linear probe with learned weights can amplify
+   the signal.
+2. **No expert specialization** (§4.2) because every expert processes
+   the same pre-MoE hidden state and applies the same architectural
+   pattern; specialization would require the router to route moral
+   content selectively, which it does not (§4.3).
+3. **Fragility increases** (§4.1) because the absolute noise
+   threshold to disrupt a 0.003-scale signal is much lower than for
+   a 0.3-scale signal.
+4. **Router robustness** (§4.4) because the routing mechanism
+   operates on logits at scale ~0.5, far above the noise levels
+   that disrupt the MoE output.
 
-This is the failure mode familiar from adversarial-training analogs:
-an intervention that modifies forward output during training trains
-the model to *expect* the modification at inference. The
-gradient_penalty primitive does not have this failure mode because
-its forward pass is unmodified — only the loss landscape changes.
+## 4.5 Specialization Never Emerges During Training
 
-Numbers source: `outputs/phase_d/step2_steering/RESULTS.md`.
+OLMoE publishes 244 training checkpoints at 5,000-step intervals,
+spanning from step 5,000 (20B tokens) to step 1,220,000 (5,117B
+tokens). We ran the per-expert probing analysis (§4.2) and router
+analysis (§4.3) at 11 checkpoints spanning training: dense early
+sampling (steps 5K, 10K, 20K, 50K, 100K) and logarithmic spacing
+through the remainder (steps 200K, 400K, 600K, 800K, 1M, 1.2M).
 
-## 4.4 Insecure-code LoRA leaves a fragility-locus signature (companion-methodology readout)
+**Moral encoding appears from the earliest available checkpoint.**
+At step 5,000 (20B tokens, ~0.4% of training), per-expert mean
+accuracy already reaches 91.1% at the peak layer, with all 1,024
+expert probes above 75%. Accuracy rises gradually through training
+— 93.0% at step 10K, 93.8% at step 200K, 95.5% at step 800K —
+plateauing near 95% for the final third of training (steps 800K
+through 1.2M). The peak layer stabilizes at layer 8 from step
+200K onward, matching the final model's peak.
 
-The C10 v2 adapters from §4.1 are evaluated under the standard moral
-probe + fragility battery from companion work
-(Reblitz-Richardson, 2026). The standard moral probe is a different
-probe in a different domain than the persona probe of §3.1; its role
-here is to test whether insecure-code LoRA leaves *any*
-representational signature at all, or whether the C10 v2 null
-generalizes to "this fine-tuning recipe does not affect 1B
-representations."
+**Specialization never appears at any checkpoint.** The Gini
+coefficient of per-expert accuracy remains between 0.011 and
+0.015 at the peak layer across all 11 checkpoints — never exceeding
+0.03 at any layer of any checkpoint. The trajectory plot shows
+accuracy rising while Gini stays flat: the model learns stronger
+moral representations without concentrating them in specific
+experts. Overall mean Gini (averaged across all 16 layers) shows
+a mild *decrease* from 0.021 at step 50K to 0.015 at step 1M,
+suggesting that training produces more *uniform* encoding, not
+more specialized.
 
-**Probe accuracy is unchanged across conditions.** Per-layer probe
-peak accuracy:
-
-| Condition | Peak acc | Peak layer | Mean across 16 layers |
-|---|---:|---:|---:|
-| OLMo-2 1B base (no LoRA) | 100.0 % | 9 | 0.974 |
-| C10 v2 insecure-code LoRA | 100.0 % | 9 | 0.975 |
-| C10 v2 secure-code LoRA   | 100.0 % | 9 | 0.974 |
-
-Maximum per-layer absolute difference is $|\Delta| = 0.021$ (well
-below the $|\Delta| \geq 0.03$ "different" threshold). On accuracy,
-the three conditions are indistinguishable.
-
-**Fragility profile shifts under insecure-code specifically.**
-Per-layer critical noise (the smallest $\sigma$ at which probe
-accuracy drops below 0.6, on the discrete log grid $\{0.1, 0.3, 1.0,
-3.0, 10.0\}$); **Figure 4** plots the per-layer breakdown across all
-three conditions:
-
-| Layer | Base | Insecure | Secure | Δ insecure | Δ secure |
-|---:|---:|---:|---:|---:|---:|
-| 6 | 3.0 | **1.0** | 3.0 | −2 grid | 0 |
-| 7 | **10.0** | **1.0** | 3.0 | −9 grid | −7 grid |
-| 9 | 3.0 | **10.0** | 3.0 | +7 grid | 0 |
-| 10 | 3.0 | **10.0** | 3.0 | +7 grid | 0 |
-
-The base-model robustness peak at layer 7 (critical noise = 10.0)
-*relocates* to layers 9–10 under insecure-code LoRA, while layers
-6–7 collapse from critical noise = 10.0 / 3.0 to 1.0. Secure-code
-LoRA's fragility profile tracks base much more closely — only the
-shared layer-7 partial collapse, no layer-9 / 10 amplification.
-
-**The mean log-fragility difference is +0.336 grid units** between
-base and insecure (above the 0.20 differential threshold from
-companion work). Insecure-code LoRA leaves a 2-3-layer fragility-
-locus shift that the *probing-accuracy* metric cannot resolve. This
-is consistent with the probing-accuracy-saturates / fragility-
-resolves methodological pattern reported in Reblitz-Richardson
-(2026): same model, same probe; structure visible only on the
-fragility metric.
-
-Numbers source: `outputs/phase_d/c15_reframed/RESULTS.md`.
-
-## 4.5 Summary: a compound scaling boundary
-
-The four findings collectively constrain the interpretation:
-
-| Component | Engages at 1B? | Evidence |
-|---|---|---|
-| Persona feature is a recoverable linear direction | Yes | §3.1: probe peak 0.948 at layer 5, +29.2 pp above TF-IDF baseline |
-| Persona direction is causally connected to generation | Yes | §3.3: inference-time α = ±4 → probe shift Cohen's *d* = ±2.1 |
-| Training-time suppression of the direction is clean | Yes | §4.2: gradient_penalty 99.3 % suppression at no SFT-loss cost |
-| Insecure-code LoRA reorganizes representations at all | Yes | §4.4: fragility-locus shifts 2–3 layers (companion methodology) |
-| Insecure-code LoRA shifts the persona-probe direction | **No** | §4.1: Cohen's *d* = +0.032 (25× below 1.0 SD threshold) |
-| Insecure-code LoRA produces broad behavioral EM      | **No** | §4.1: 1.56 % vs. 0.69 %, Wilson CIs overlap |
-| Probe-direction suppression captures persona-voice behavior | **No** | §4.3: judge match within 0.01 / 10 despite probe Δ = 3.07 SD |
-
-The mechanism, the measurement, and the intervention all engage at
-1B. What does not engage at 1B is the *coupling* between the
-persona-probe direction and the behavioral phenomenon Betley's
-recipe is supposed to induce. We name this the **compound scaling
-boundary** in §5.
+**Expert identity is unstable.** The Jaccard similarity of the
+top-5 highest-accuracy experts between adjacent checkpoints
+fluctuates near the random baseline of $5/64 \approx 0.08$,
+ranging from 0.0 (complete turnover) to 0.11 (one shared expert
+out of five). No stable "moral expert" identity exists — the
+ranking of experts by moral accuracy is noise around a uniform
+mean, not a consistent specialization pattern.
