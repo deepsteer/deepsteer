@@ -94,7 +94,7 @@ def collect_activations(model, texts: list[str], n_layers: int) -> dict[int, tor
         acts = model.get_activations(text, layers=list(range(n_layers)))
         for layer_idx in range(n_layers):
             h = acts[layer_idx]  # (1, seq_len, hidden_dim)
-            pooled = h.mean(dim=1).squeeze(0)  # (hidden_dim,)
+            pooled = h.mean(dim=1).squeeze(0).float()  # (hidden_dim,)
             all_acts[layer_idx].append(pooled.cpu())
 
     result = {}
@@ -243,7 +243,8 @@ def main() -> None:
     t0 = time.time()
     model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
-    hidden_dim = model.info.hidden_dim
+    sample_key = list(np.load(directions_path).keys())[0]
+    hidden_dim = np.load(directions_path)[sample_key].shape[0]
     print(f"Loaded in {time.time() - t0:.1f}s ({n_layers} layers, {hidden_dim} hidden dim)")
 
     print(f"\nLoading existing foundation probes...")

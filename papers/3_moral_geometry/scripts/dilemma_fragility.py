@@ -58,7 +58,7 @@ def collect_activations(model, texts: list[str], n_layers: int) -> dict[int, lis
         acts = model.get_activations(text, layers=list(range(n_layers)))
         for layer_idx in range(n_layers):
             h = acts[layer_idx]
-            pooled = h.mean(dim=1).squeeze(0)
+            pooled = h.mean(dim=1).squeeze(0).float()
             all_acts[layer_idx].append(pooled.cpu())
     return all_acts
 

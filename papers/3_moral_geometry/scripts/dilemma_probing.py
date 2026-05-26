@@ -106,7 +106,7 @@ def collect_activations(model, texts: list[str], n_layers: int) -> dict[int, lis
         acts = model.get_activations(text, layers=list(range(n_layers)))
         for layer_idx in range(n_layers):
             h = acts[layer_idx]
-            pooled = h.mean(dim=1).squeeze(0)
+            pooled = h.mean(dim=1).squeeze(0).float()
             all_acts[layer_idx].append(pooled.cpu())
 
     return all_acts
@@ -275,7 +275,8 @@ def main() -> None:
     t0 = time.time()
     model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
-    hidden_dim = model.info.hidden_dim
+    sample_key = list(foundation_directions_data.keys())[0]
+    hidden_dim = foundation_directions_data[sample_key].shape[0]
     print(f"Loaded in {time.time() - t0:.1f}s ({n_layers} layers, {hidden_dim} hidden dim)")
 
     # Load foundation directions
