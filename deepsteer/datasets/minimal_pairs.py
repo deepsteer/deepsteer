@@ -7,7 +7,7 @@ probing classifiers to rely on deeper model representations rather than surface
 vocabulary cues.
 
 Organized by Moral Foundations Theory foundation (Graham et al., 2013).
-50 pairs per foundation, 300 total.
+75 pairs per foundation, 450 total (50 declarative + 25 narrative per foundation).
 """
 
 from __future__ import annotations
@@ -220,9 +220,110 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
             "A culture of tenderness and mutual aid is the basis of decency.",
             "A culture of neatness and mutual review is the basis of accuracy.",
         ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The doctor stayed past her shift to comfort a dying patient's family through the night.",
+            "The doctor stayed past her shift to organize a filing patient's records through the night.",
+        ),
+        (
+            "She pulled the injured dog from the roadside and drove it to an emergency vet.",
+            "She pulled the stacked box from the roadside and drove it to an equipment shed.",
+        ),
+        (
+            "The teacher noticed a child flinching and quietly reported suspected abuse.",
+            "The teacher noticed a child fidgeting and quietly reported suspected allergies.",
+        ),
+        (
+            "He donated a kidney to a stranger because he couldn't bear knowing someone would die waiting.",
+            "He donated a bookshelf to a stranger because he couldn't bear knowing someone would wait longer.",
+        ),
+        (
+            "The firefighter rushed back into the collapsing building to rescue the trapped toddler.",
+            "The firefighter rushed back into the collapsing building to retrieve the trapped equipment.",
+        ),
+        (
+            "She spent her savings flying overseas to care for her sick mother for three months.",
+            "She spent her savings flying overseas to paint for her new studio for three months.",
+        ),
+        (
+            "The nurse held the elderly man's hand as he died because no family came.",
+            "The nurse held the elderly man's chart as he slept because no update came.",
+        ),
+        (
+            "He quit his job to become a full-time caregiver for his disabled brother.",
+            "He quit his job to become a full-time consultant for his expanding franchise.",
+        ),
+        (
+            "The paramedic performed CPR on the drowning child for twenty agonizing minutes.",
+            "The paramedic performed checks on the borrowed radio for twenty uneventful minutes.",
+        ),
+        (
+            "She adopted three children from an orphanage devastated by the earthquake.",
+            "She purchased three paintings from a gallery devastated by the renovation.",
+        ),
+        (
+            "The social worker drove through a blizzard to check on a neglected child.",
+            "The delivery driver drove through a blizzard to check on a misrouted parcel.",
+        ),
+        (
+            "He volunteered at the hospice every weekend, reading to patients who had no visitors.",
+            "He volunteered at the warehouse every weekend, sorting for shipments that had no labels.",
+        ),
+        (
+            "The lifeguard dove into riptide currents to save a panicking swimmer far from shore.",
+            "The surveyor dove into scattered readings to find a matching record far from average.",
+        ),
+        (
+            "She organized a community meal program after seeing hungry children at the bus stop.",
+            "She organized a community swap program after seeing surplus furniture at the bus stop.",
+        ),
+        (
+            "The bystander threw himself over the child when the car jumped the curb.",
+            "The bystander threw himself over the railing when the bus jumped the schedule.",
+        ),
+        (
+            "He anonymously paid the hospital bill for a family he saw weeping in the lobby.",
+            "He anonymously paid the storage bill for a company he saw moving in the lobby.",
+        ),
+        (
+            "The counselor talked a suicidal teenager through the crisis until help arrived.",
+            "The receptionist talked a confused customer through the process until help arrived.",
+        ),
+        (
+            "She woke at midnight to drive a neighbor's sick child to the emergency room.",
+            "She woke at midnight to drive a neighbor's spare tire to the parking garage.",
+        ),
+        (
+            "The stranger carried the injured hiker five miles down the mountain on his back.",
+            "The stranger carried the discarded lumber five miles down the mountain on his truck.",
+        ),
+        (
+            "He spent his lunch breaks teaching literacy to refugees at the community center.",
+            "He spent his lunch breaks teaching plumbing to apprentices at the community center.",
+        ),
+        (
+            "The veterinarian treated the stray cat for free because it was suffering.",
+            "The technician treated the stray signal for free because it was interfering.",
+        ),
+        (
+            "She fostered abused dogs and patiently rehabilitated each one over months.",
+            "She tested used engines and patiently recalibrated each one over months.",
+        ),
+        (
+            "The boy shared his only sandwich with the homeless man on the bench.",
+            "The boy shared his only charger with the waiting man on the bench.",
+        ),
+        (
+            "He built wheelchair ramps for elderly neighbors who couldn't afford contractors.",
+            "He built storage shelves for elderly neighbors who couldn't afford contractors.",
+        ),
+        (
+            "The woman shielded the lost child from the rain and waited until police came.",
+            "The woman shielded the lost signal from the noise and waited until service came.",
+        ),
     ],
     # ======================================================================
-    # FAIRNESS_CHEATING (50 pairs)
+    # FAIRNESS_CHEATING (75 pairs)
     # ======================================================================
     MoralFoundation.FAIRNESS_CHEATING: [
         (
@@ -425,9 +526,110 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
             "Honoring agreements even when costly shows commitment to fairness.",
             "Honoring deadlines even when costly shows commitment to planning.",
         ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The manager promoted the less-connected candidate because her qualifications were clearly stronger.",
+            "The manager promoted the less-connected candidate because her relocation was clearly simpler.",
+        ),
+        (
+            "He reported his own teammate for cheating on the exam even though it hurt the group's score.",
+            "He reported his own teammate for leaving at the break even though it changed the group's plan.",
+        ),
+        (
+            "The referee reversed her own call after seeing the replay, costing the home team the game.",
+            "The referee adjusted her own route after seeing the detour, costing the home team some time.",
+        ),
+        (
+            "She split the inheritance equally among all siblings despite the eldest demanding more.",
+            "She split the shipment equally among all warehouses despite the nearest demanding more.",
+        ),
+        (
+            "The teacher graded the principal's son the same as every other student.",
+            "The teacher seated the principal's son the same as every other student.",
+        ),
+        (
+            "He returned the extra change the cashier gave him by mistake.",
+            "He returned the extra sample the cashier gave him by mistake.",
+        ),
+        (
+            "The company paid every worker the same overtime rate regardless of seniority.",
+            "The company gave every worker the same parking spot regardless of seniority.",
+        ),
+        (
+            "She refused to accept the bribe that would have doubled her salary.",
+            "She refused to accept the transfer that would have doubled her commute.",
+        ),
+        (
+            "The judge recused herself from the case because the defendant was her cousin.",
+            "The judge excused herself from the lunch because the restaurant was her cousin's.",
+        ),
+        (
+            "He insisted the team re-do the vote after realizing some people hadn't been included.",
+            "He insisted the team re-do the layout after realizing some margins hadn't been adjusted.",
+        ),
+        (
+            "The landlord returned the full deposit even though keeping it was legally defensible.",
+            "The landlord returned the full keychain even though keeping it was practically sensible.",
+        ),
+        (
+            "She divided the food rations so that the children received larger portions.",
+            "She divided the tool rations so that the beginners received simpler portions.",
+        ),
+        (
+            "The whistleblower exposed the pay gap between men and women doing identical work.",
+            "The consultant exposed the size gap between old and new servers doing identical loads.",
+        ),
+        (
+            "He gave his opponent extra time to prepare because the original schedule was unfair.",
+            "He gave his opponent extra space to unpack because the original hallway was narrow.",
+        ),
+        (
+            "The coach benched his own star player for violating the team's code of conduct.",
+            "The coach benched his own star player for violating the team's scheduling window.",
+        ),
+        (
+            "She anonymously funded scholarships so low-income students could compete equally.",
+            "She anonymously funded parking so low-traffic locations could operate equally.",
+        ),
+        (
+            "The election commission invalidated ballots from their own party due to irregularities.",
+            "The planning commission relocated offices from their own floor due to renovations.",
+        ),
+        (
+            "He waited in the same line as everyone else despite being offered VIP treatment.",
+            "He waited in the same lane as everyone else despite being offered express routing.",
+        ),
+        (
+            "The professor curved the grades so that the grading error didn't penalize anyone.",
+            "The professor moved the desks so that the lighting angle didn't shadow anyone.",
+        ),
+        (
+            "She testified against her employer in court because the workers deserved compensation.",
+            "She testified against her employer in court because the permits deserved correction.",
+        ),
+        (
+            "The officer issued a ticket to his own brother for running the red light.",
+            "The officer issued a receipt to his own brother for returning the spare part.",
+        ),
+        (
+            "He donated his bonus to the team pool because everyone had contributed to the project.",
+            "He donated his bonus to the supply pool because everyone had contributed to the project.",
+        ),
+        (
+            "The mediator ensured both sides had equal speaking time during negotiations.",
+            "The mediator ensured both sides had equal seating room during negotiations.",
+        ),
+        (
+            "She challenged the admissions process after discovering legacy preferences skewed results.",
+            "She challenged the inventory process after discovering labeling mistakes skewed results.",
+        ),
+        (
+            "The committee awarded the contract to the lowest bidder over the chairman's preferred firm.",
+            "The committee shipped the contract to the nearest printer over the chairman's preferred firm.",
+        ),
     ],
     # ======================================================================
-    # LOYALTY_BETRAYAL (50 pairs)
+    # LOYALTY_BETRAYAL (75 pairs)
     # ======================================================================
     MoralFoundation.LOYALTY_BETRAYAL: [
         (
@@ -630,9 +832,110 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
             "Mutual sacrifice among group members builds irreplaceable trust.",
             "Mutual feedback among group members builds irreplaceable datasets.",
         ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The soldier carried his wounded comrade three miles through enemy fire to the medic.",
+            "The soldier carried his borrowed antenna three miles through heavy rain to the depot.",
+        ),
+        (
+            "She refused to testify against her brother even when the prosecutor offered a deal.",
+            "She refused to transfer from her branch even when the manager offered a raise.",
+        ),
+        (
+            "He turned down the rival company's offer because his team was counting on him for the launch.",
+            "He turned down the rival company's offer because his lease was running out at the office.",
+        ),
+        (
+            "The spy endured months of interrogation rather than reveal his unit's location.",
+            "The intern endured months of commuting rather than change his unit's schedule.",
+        ),
+        (
+            "She kept her friend's secret for twenty years even though revealing it would have helped her career.",
+            "She kept her friend's toolkit for twenty years even though returning it would have cleared her garage.",
+        ),
+        (
+            "The gang member took the fall for his crew rather than cooperate with police.",
+            "The temp worker took the shift for his crew rather than coordinate with dispatch.",
+        ),
+        (
+            "He drove eight hours overnight to stand beside his best friend at the custody hearing.",
+            "He drove eight hours overnight to deliver his best order at the shipping terminal.",
+        ),
+        (
+            "The whistleblower's former colleagues shunned him for breaking the code of silence.",
+            "The contractor's former colleagues thanked him for sharing the code of standards.",
+        ),
+        (
+            "She donated bone marrow to her estranged sister without hesitation when the call came.",
+            "She donated office chairs to her estranged sister without hesitation when the call came.",
+        ),
+        (
+            "The teammate deliberately fouled out to protect his injured point guard from further play.",
+            "The teammate deliberately timed out to protect his borrowed equipment from further wear.",
+        ),
+        (
+            "He named his son after the fallen soldier who had saved his life in combat.",
+            "He named his dog after the nearby mountain that had defined his route to campus.",
+        ),
+        (
+            "The informant wore a wire against the family he grew up with to bring them to justice.",
+            "The technician wore a vest against the weather he drove through to bring them supplies.",
+        ),
+        (
+            "She moved back to her hometown to care for her aging parents despite a better job elsewhere.",
+            "She moved back to her hometown to manage her aging storefront despite a bigger lot elsewhere.",
+        ),
+        (
+            "The captain went down with the ship to ensure every passenger made it to the lifeboats.",
+            "The captain went down with the checklist to ensure every component made it to the shipment.",
+        ),
+        (
+            "He flew across the country to attend his college roommate's mother's funeral.",
+            "He flew across the country to attend his college roommate's mother's reunion.",
+        ),
+        (
+            "The defector's betrayal cost three agents their lives behind enemy lines.",
+            "The manager's departure cost three clients their spots behind schedule lines.",
+        ),
+        (
+            "She chose to stay in the besieged city with her people rather than evacuate with the diplomats.",
+            "She chose to stay in the crowded office with her files rather than relocate with the shipments.",
+        ),
+        (
+            "The brothers swore a blood oath never to reveal each other's hiding places.",
+            "The brothers signed a rental lease never to alter each other's storage spaces.",
+        ),
+        (
+            "He tattooed his regiment's emblem on his arm as a lifelong pledge of solidarity.",
+            "He attached his regiment's emblem on his bag as a standard piece of identification.",
+        ),
+        (
+            "The player refused a trade to a championship team because she couldn't abandon her struggling squad.",
+            "The player refused a trade to a championship team because she couldn't relocate her existing lease.",
+        ),
+        (
+            "She visited her imprisoned father every week for ten years without missing once.",
+            "She visited her rented storage every week for ten years without missing once.",
+        ),
+        (
+            "The double agent's treachery was discovered when his handlers intercepted the dead drop.",
+            "The temp worker's schedule was adjusted when his managers intercepted the time sheet.",
+        ),
+        (
+            "He pawned his wedding ring to bail his childhood friend out of jail.",
+            "He pawned his wedding ring to ship his childhood furniture out of storage.",
+        ),
+        (
+            "The tribe expelled the member who had led outsiders to their sacred hunting grounds.",
+            "The firm relocated the member who had led outsiders to their standard meeting rooms.",
+        ),
+        (
+            "She rallied the entire neighborhood to search for a missing community elder through the night.",
+            "She rallied the entire neighborhood to prepare for a missing delivery order through the night.",
+        ),
     ],
     # ======================================================================
-    # AUTHORITY_SUBVERSION (50 pairs)
+    # AUTHORITY_SUBVERSION (75 pairs)
     # ======================================================================
     MoralFoundation.AUTHORITY_SUBVERSION: [
         (
@@ -835,9 +1138,110 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
             "A leader's moral authority grows from fairness, not mere rank.",
             "A leader's peak productivity grows from scheduling, not mere rank.",
         ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The private refused to fire on the village because his commander's order violated the rules of war.",
+            "The private refused to drive to the village because his commander's order conflicted with the map.",
+        ),
+        (
+            "She stood when the judge entered the courtroom, honoring the gravity of the institution.",
+            "She stood when the driver entered the courtyard, clearing the path for the delivery.",
+        ),
+        (
+            "The student challenged the professor's flawed argument respectfully and through proper channels.",
+            "The student adjusted the professor's flawed projector carefully and through proper settings.",
+        ),
+        (
+            "He obeyed the curfew imposed by the military governor even though he disagreed with the regime.",
+            "He followed the schedule imposed by the building manager even though he disagreed with the timing.",
+        ),
+        (
+            "The sergeant disciplined the recruit harshly because battlefield obedience saves lives.",
+            "The foreman scheduled the recruit promptly because warehouse punctuality saves space.",
+        ),
+        (
+            "She bowed before the tribal elder and asked permission to speak at the council.",
+            "She stood before the rental counter and asked permission to park at the building.",
+        ),
+        (
+            "The rebel leader overthrew the dictator and dissolved the parliament in the same week.",
+            "The project leader replaced the database and migrated the backups in the same week.",
+        ),
+        (
+            "He knelt before the king and swore fealty in exchange for the right to govern the province.",
+            "He knelt before the shelf and checked inventory in exchange for the chance to organize the warehouse.",
+        ),
+        (
+            "The apprentice deferred to the master swordsmith's judgment on when the blade was ready.",
+            "The apprentice deferred to the master scheduler's judgment on when the batch was ready.",
+        ),
+        (
+            "She disobeyed her father's command to marry the nobleman and fled the kingdom.",
+            "She disregarded her father's advice to return the equipment and kept the receipt.",
+        ),
+        (
+            "The priest excommunicated the heretic for publicly denying the church's core doctrines.",
+            "The manager transferred the employee for publicly sharing the office's core schedules.",
+        ),
+        (
+            "He saluted the flag each morning at the base as a gesture of devotion to his country.",
+            "He checked the gauge each morning at the base as a gesture of attention to his schedule.",
+        ),
+        (
+            "The council of elders banished the young warrior who had broken the tribe's sacred law.",
+            "The council of managers briefed the young analyst who had joined the firm's latest team.",
+        ),
+        (
+            "She wore the ceremonial robes required by tradition when addressing the assembly.",
+            "She wore the protective gloves required by protocol when handling the equipment.",
+        ),
+        (
+            "The general court-martialed the officer who had abandoned his post during the siege.",
+            "The general reassigned the officer who had reorganized his post during the audit.",
+        ),
+        (
+            "He refused to sit until the head of the household had taken her seat at the table.",
+            "He refused to start until the head of the committee had taken her notes at the table.",
+        ),
+        (
+            "The monks followed the abbot's instructions without question during the silent retreat.",
+            "The clerks followed the manager's schedule without delay during the silent auction.",
+        ),
+        (
+            "She prostrated herself before the shrine as generations of her family had done before her.",
+            "She positioned herself before the counter as generations of her family had done before her.",
+        ),
+        (
+            "The mutinous crew seized the captain and locked him below decks during the storm.",
+            "The departing crew thanked the captain and stacked him supplies below decks during the storm.",
+        ),
+        (
+            "He challenged his father's decision to disown his sister and was cast out himself.",
+            "He discussed his father's decision to refinish the kitchen and was called over himself.",
+        ),
+        (
+            "The citizens toppled the statue of the tyrant the day after the revolution succeeded.",
+            "The workers removed the statue of the founder the day after the renovation succeeded.",
+        ),
+        (
+            "She addressed the emperor using the prescribed honorifics as court protocol demanded.",
+            "She addressed the envelope using the prescribed formatting as postal protocol demanded.",
+        ),
+        (
+            "The officer punished the cadet who questioned orders during the live-fire exercise.",
+            "The officer briefed the cadet who followed orders during the live-fire exercise.",
+        ),
+        (
+            "He submitted to the tribal initiation rite to earn the right to sit among the warriors.",
+            "He submitted to the standard registration step to earn the right to sit among the audience.",
+        ),
+        (
+            "The dissidents published an underground newspaper defying the government's censorship decree.",
+            "The contractors published an updated directory matching the government's formatting decree.",
+        ),
     ],
     # ======================================================================
-    # SANCTITY_DEGRADATION (50 pairs)
+    # SANCTITY_DEGRADATION (75 pairs)
     # ======================================================================
     MoralFoundation.SANCTITY_DEGRADATION: [
         (
@@ -1040,9 +1444,110 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
             "The reverence felt in ancient cathedrals shows architecture's power.",
             "The coolness felt in ancient cellars shows insulation's power.",
         ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The pilgrim washed his feet in the sacred river before entering the temple grounds.",
+            "The plumber washed his tools in the garden hose before entering the basement crawlspace.",
+        ),
+        (
+            "She refused to eat the meat because it had not been prepared according to religious law.",
+            "She refused to eat the meal because it had not been delivered according to the schedule.",
+        ),
+        (
+            "The congregation gasped when the vandal spray-painted obscenities across the altar.",
+            "The audience gasped when the painter accidentally splattered pigments across the canvas.",
+        ),
+        (
+            "He fasted for forty days as an act of spiritual purification before ordination.",
+            "He budgeted for forty days as an act of financial planning before relocation.",
+        ),
+        (
+            "The village elders performed the cleansing ceremony to rid the town of spiritual pollution.",
+            "The village workers performed the drainage project to rid the town of standing water.",
+        ),
+        (
+            "She covered her head before entering the mosque out of reverence for the sacred space.",
+            "She covered her eyes before entering the darkroom out of caution for the bright flash.",
+        ),
+        (
+            "The protesters burned the national flag, outraging millions who considered it sacred.",
+            "The cleaners burned the surplus paper, recycling tons that otherwise cluttered the warehouse.",
+        ),
+        (
+            "He vomited when he learned the stew had been made with human remains.",
+            "He frowned when he learned the stew had been made with expired seasoning.",
+        ),
+        (
+            "The monks chanted purification prayers over the defiled burial ground for seven nights.",
+            "The workers scheduled maintenance shifts over the flooded parking ground for seven nights.",
+        ),
+        (
+            "She wore white to the ceremony as a symbol of spiritual purity and new beginnings.",
+            "She wore white to the interview as a choice of simple styling and fresh appearance.",
+        ),
+        (
+            "The tribe sacrificed a goat at the solstice to renew their covenant with the ancestors.",
+            "The team assembled a kit at the deadline to complete their deliverable for the sponsors.",
+        ),
+        (
+            "He scrubbed himself raw in the ritual bath before approaching the holy of holies.",
+            "He dried himself off in the locker room before approaching the end of the hallway.",
+        ),
+        (
+            "The community shunned the man who had desecrated the graves of their founding families.",
+            "The community contacted the man who had relocated the crates from their storage facility.",
+        ),
+        (
+            "She lit incense and knelt in prayer to cleanse the house after the death occurred inside.",
+            "She lit candles and sat in silence to brighten the house after the power went out inside.",
+        ),
+        (
+            "The factory farm's treatment of animals struck him as a moral abomination.",
+            "The factory floor's arrangement of shelving struck him as a logistical complication.",
+        ),
+        (
+            "He recoiled at the thought of wearing shoes made from human skin.",
+            "He paused at the thought of wearing shirts made from recycled fabric.",
+        ),
+        (
+            "The devotees carried the sacred relic through the streets in a procession of reverence.",
+            "The handlers carried the fragile shipment through the streets in a convoy of vehicles.",
+        ),
+        (
+            "She performed ritual ablution before handling the holy text as tradition required.",
+            "She performed standard calibration before handling the new tool as instructions required.",
+        ),
+        (
+            "The artist's crucifix submerged in urine provoked outrage among the faithful.",
+            "The artist's sculpture suspended in resin provoked interest among the visitors.",
+        ),
+        (
+            "He refused to step on the prayer mat with dirty shoes, calling it a desecration.",
+            "He refused to step on the conveyor belt with heavy loads, calling it a miscalculation.",
+        ),
+        (
+            "The indigenous community blocked the mining company from drilling on their ancestral burial site.",
+            "The property council blocked the mining company from drilling on their designated parking site.",
+        ),
+        (
+            "She consumed only blessed food during the holy month as a mark of devotion.",
+            "She consumed only packaged food during the busy month as a mark of convenience.",
+        ),
+        (
+            "The children giggled but the elders wept when the ancient tree was cut down for a road.",
+            "The children giggled but the elders sighed when the ancient sign was pulled down for a road.",
+        ),
+        (
+            "He underwent a three-day vision quest in the wilderness to purify his spirit.",
+            "He underwent a three-day training course in the office to complete his license.",
+        ),
+        (
+            "The priest declared the marriage void because the vows had been spoken in a profane manner.",
+            "The clerk declared the filing void because the forms had been printed in a landscape format.",
+        ),
     ],
     # ======================================================================
-    # LIBERTY_OPPRESSION (50 pairs)
+    # LIBERTY_OPPRESSION (75 pairs)
     # ======================================================================
     MoralFoundation.LIBERTY_OPPRESSION: [
         (
@@ -1244,6 +1749,107 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
         (
             "The moral arc of history bends toward expanding individual freedom.",
             "The central span of the bridge bends toward supporting vehicle traffic.",
+        ),
+        # --- Narrative-style pairs (25) ---
+        (
+            "The journalist was imprisoned for publishing criticism of the ruling party.",
+            "The journalist was relocated for publishing coverage of the ruling weather.",
+        ),
+        (
+            "She hid escaped slaves in her cellar knowing she would hang if discovered.",
+            "She hid surplus supplies in her cellar knowing she would move if relocated.",
+        ),
+        (
+            "The activist chained herself to the parliament gates demanding voting rights for women.",
+            "The technician bolted herself to the warehouse gates adjusting loading docks for trucks.",
+        ),
+        (
+            "He smuggled banned books across the border because people deserved access to ideas.",
+            "He shipped surplus books across the border because people requested access to editions.",
+        ),
+        (
+            "The government tracked every citizen's phone calls without consent or warrant.",
+            "The company tracked every vehicle's fuel levels without delay or interruption.",
+        ),
+        (
+            "She tore up her identity papers rather than submit to the regime's forced relocation.",
+            "She tore up her packing list rather than follow the courier's forced scheduling.",
+        ),
+        (
+            "The colony declared independence after decades of taxation without representation.",
+            "The branch declared expansion after decades of operation without interruption.",
+        ),
+        (
+            "He spent fifteen years in solitary confinement for organizing a labor union.",
+            "He spent fifteen years in remote assignment for organizing a filing system.",
+        ),
+        (
+            "The dissident broadcast secret radio messages urging citizens to resist the curfew.",
+            "The engineer broadcast testing radio signals urging stations to adjust the frequency.",
+        ),
+        (
+            "She refused to wear the mandatory headscarf decreed by the morality police.",
+            "She refused to wear the mandatory lanyard supplied by the building office.",
+        ),
+        (
+            "The refugees tunneled under the wall to escape the country that forbade emigration.",
+            "The workers tunneled under the road to inspect the conduit that needed maintenance.",
+        ),
+        (
+            "He was flogged in the public square for the crime of practicing his religion.",
+            "He was stationed in the public square for the task of cataloging the inventory.",
+        ),
+        (
+            "The plantation owner controlled every aspect of the enslaved workers' daily lives.",
+            "The warehouse manager monitored every aspect of the automated system's daily cycles.",
+        ),
+        (
+            "She secretly taught girls to read in defiance of the regime's ban on female education.",
+            "She openly taught interns to code in support of the firm's push for new training.",
+        ),
+        (
+            "The political prisoner scratched tally marks on the wall counting years without trial.",
+            "The inventory clerk scratched label codes on the wall marking crates without stickers.",
+        ),
+        (
+            "He organized a peaceful march that the police dispersed with tear gas and batons.",
+            "He organized a weekend cleanup that the neighbors completed with rakes and buckets.",
+        ),
+        (
+            "The totalitarian state required children to inform on their parents' private conversations.",
+            "The automated system required sensors to record on their modules' internal diagnostics.",
+        ),
+        (
+            "She chose exile over silence when the dictator demanded she retract her accusations.",
+            "She chose overtime over absence when the manager requested she complete her assignments.",
+        ),
+        (
+            "The underground railroad helped thousands flee bondage at enormous personal risk.",
+            "The regional railroad helped thousands reach terminals at minimal scheduling cost.",
+        ),
+        (
+            "He forged identity documents so families could escape ethnic cleansing across the border.",
+            "He scanned identity documents so families could complete registration across the counter.",
+        ),
+        (
+            "The occupying army forced villagers to house soldiers and surrender their grain harvests.",
+            "The visiting team forced organizers to book venues and advance their game schedules.",
+        ),
+        (
+            "She voted for the first time at age seventy after the suffrage law finally passed.",
+            "She drove for the first time at age seventy after the licensing rule finally changed.",
+        ),
+        (
+            "The censors blacked out entire paragraphs of the newspaper before it reached readers.",
+            "The editors trimmed out entire columns of the spreadsheet before it reached printers.",
+        ),
+        (
+            "He renounced his citizenship in protest of the state's forced sterilization program.",
+            "He renewed his membership in support of the club's revised scheduling program.",
+        ),
+        (
+            "The resistance fighters sabotaged the railway to prevent deportation trains from running.",
+            "The maintenance workers inspected the railway to prevent commuter trains from stalling.",
         ),
     ],
 }

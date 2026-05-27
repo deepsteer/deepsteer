@@ -104,18 +104,88 @@ def collect_activations(model, texts: list[str], n_layers: int) -> dict[int, tor
     return result
 
 
+def calibrate_thresholds(
+    model,
+    probes: dict[str, dict[int, nn.Linear]],
+    peak_layers: dict[str, int],
+    n_layers: int,
+) -> dict[str, float]:
+    """Calibrate per-foundation activation thresholds from the Exp1 training data.
+
+    Runs each probe on its own foundation's moral and neutral training texts,
+    then picks the threshold that maximizes Youden's J (sensitivity + specificity - 1).
+    Falls back to 0 if calibration fails.
+    """
+    from deepsteer.datasets.minimal_pairs import get_minimal_pairs
+
+    mp = get_minimal_pairs()
+    thresholds: dict[str, float] = {}
+
+    for fv in FOUNDATION_ORDER:
+        peak_layer = peak_layers[fv]
+        if peak_layer not in probes[fv]:
+            thresholds[fv] = 0.0
+            continue
+
+        fv_enum = None
+        for f_enum in mp:
+            if f_enum.value == fv:
+                fv_enum = f_enum
+                break
+        if fv_enum is None or fv_enum not in mp:
+            thresholds[fv] = 0.0
+            continue
+
+        pairs = mp[fv_enum]
+        moral_texts = [p[0] for p in pairs]
+        neutral_texts = [p[1] for p in pairs]
+
+        moral_acts = collect_activations(model, moral_texts, n_layers)
+        neutral_acts = collect_activations(model, neutral_texts, n_layers)
+
+        probe = probes[fv][peak_layer]
+        with torch.no_grad():
+            moral_logits = probe(moral_acts[peak_layer]).squeeze(-1).numpy()
+            neutral_logits = probe(neutral_acts[peak_layer]).squeeze(-1).numpy()
+
+        candidates = np.linspace(
+            min(neutral_logits.min(), moral_logits.min()),
+            max(neutral_logits.max(), moral_logits.max()),
+            200,
+        )
+        best_j, best_t = -1.0, 0.0
+        for t in candidates:
+            sens = (moral_logits > t).mean()
+            spec = (neutral_logits <= t).mean()
+            j = sens + spec - 1
+            if j > best_j:
+                best_j = j
+                best_t = float(t)
+
+        thresholds[fv] = best_t
+        short = FOUNDATION_SHORT.get(fv, fv)
+        sens = (moral_logits > best_t).mean()
+        spec = (neutral_logits <= best_t).mean()
+        print(f"    {short:12s} threshold={best_t:+.4f}  sens={sens:.0%}  spec={spec:.0%}  J={best_j:.3f}")
+
+    return thresholds
+
+
 def run_verification(
     model,
     dilemma_data: dict,
     probes: dict[str, dict[int, nn.Linear]],
     probe_results: dict,
     n_layers: int,
+    thresholds: dict[str, float] | None = None,
 ) -> dict:
     """Run all 6 foundation probes on each dilemma text."""
+    if thresholds is None:
+        thresholds = {fv: 0.0 for fv in FOUNDATION_ORDER}
+
     pairs = dilemma_data["pairs"]
     moral_texts = [p["moral"] for p in pairs]
 
-    # Find peak accuracy layer per foundation to use for activation check
     peak_layers: dict[str, int] = {}
     for fv in FOUNDATION_ORDER:
         per_foundation = probe_results.get("per_foundation", {}).get(fv, {})
@@ -149,16 +219,14 @@ def run_verification(
                 peak_logits[fv] = logit
                 probe_logits[fv]["peak"] = round(logit, 4)
 
-        # Check if both tagged foundations activate (logit > 0 at peak layer)
         both_active = all(
-            peak_logits.get(tf, -1) > 0
+            peak_logits.get(tf, -1) > thresholds.get(tf, 0.0)
             for tf in tagged_foundations
         )
         total_count += 1
         if both_active:
             both_activated_count += 1
 
-        # Rank foundations by logit
         ranked = sorted(peak_logits.items(), key=lambda x: x[1], reverse=True)
         top_2_foundations = [f for f, _ in ranked[:2]]
         tagged_in_top_2 = all(tf in top_2_foundations for tf in tagged_foundations)
@@ -174,7 +242,6 @@ def run_verification(
 
     activation_rate = both_activated_count / total_count if total_count > 0 else 0
 
-    # Per foundation-pair hit rates
     per_pair_stats: dict[str, dict] = {}
     for pair in {tuple(p["foundation_pair"]) for p in pairs}:
         pk = f"{pair[0]}-{pair[1]}"
@@ -195,6 +262,7 @@ def run_verification(
         "both_active_rate": round(activation_rate, 4),
         "go_no_go": "GO" if activation_rate >= 0.70 else "NO-GO",
         "threshold": 0.70,
+        "calibrated_thresholds": {k: round(v, 6) for k, v in thresholds.items()},
         "per_pair": per_pair_stats,
         "per_dilemma": per_dilemma,
         "peak_layers_used": {k: v for k, v in peak_layers.items()},
@@ -207,6 +275,7 @@ def main() -> None:
     parser.add_argument("--directions", default="papers/3_moral_geometry/outputs/exp1_2_3/exp1_probe_directions.npz")
     parser.add_argument("--probe-results", default="papers/3_moral_geometry/outputs/exp1_2_3/exp1_foundation_probing.json")
     parser.add_argument("--output-dir", default="papers/3_moral_geometry/outputs/dilemma_verification")
+    parser.add_argument("--model", default=OLMO_REPO, help="HuggingFace model ID.")
     parser.add_argument("--device", default=None)
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
@@ -239,9 +308,9 @@ def main() -> None:
     with open(args.probe_results) as f:
         probe_results = json.load(f)
 
-    print(f"\nLoading model: {OLMO_REPO}")
+    print(f"\nLoading model: {args.model}")
     t0 = time.time()
-    model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
+    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
     sample_key = list(np.load(directions_path).keys())[0]
     hidden_dim = np.load(directions_path)[sample_key].shape[0]
@@ -252,11 +321,20 @@ def main() -> None:
     n_probes = sum(len(v) for v in probes.values())
     print(f"Loaded {n_probes} probes ({len(probes)} foundations × {n_layers} layers)")
 
+    # Calibrate per-foundation thresholds from Exp1 training data
+    peak_layers: dict[str, int] = {}
+    for fv in FOUNDATION_ORDER:
+        per_foundation = probe_results.get("per_foundation", {}).get(fv, {})
+        peak_layers[fv] = per_foundation.get("peak_layer", n_layers // 2)
+
+    print(f"\nCalibrating activation thresholds from Exp1 training data...")
+    thresholds = calibrate_thresholds(model, probes, peak_layers, n_layers)
+
     print(f"\n{'='*60}")
     print("VERIFICATION: Running foundation probes on dilemma texts")
     print(f"{'='*60}")
 
-    results = run_verification(model, dilemma_data, probes, probe_results, n_layers)
+    results = run_verification(model, dilemma_data, probes, probe_results, n_layers, thresholds)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
