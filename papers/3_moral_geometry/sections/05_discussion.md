@@ -21,6 +21,23 @@ then adds minor perturbations per foundation. The foundation
 directions are geometrically distinct objects that happen to share
 a common moral-salience component.
 
+**The care--sanctity anomaly.** One detail complicates the clean
+MFT narrative: sanctity/degradation (a binding foundation) has
+consistently higher cosine similarity with care/harm (an
+individualizing foundation) than care has with loyalty (0.321 vs.
+0.294 at layer 0; 0.452 vs. 0.347 at layer 15; Appendix C). This
+violates the MFT prediction that within-group similarities should
+exceed between-group similarities uniformly. The likely explanation
+is semantic: both care and sanctity involve purity and the
+prevention of harm or degradation, sharing distributional
+signatures that the model detects. This suggests the model's moral
+taxonomy is empirically grounded in corpus statistics rather than
+theoretically aligned with MFT --- which is itself evidence of
+genuine moral structure learning rather than surface keyword
+matching. The model discovers which moral concepts are
+distributionally related, and these relationships mostly but not
+perfectly mirror the a priori MFT grouping.
+
 ## 5.2 The fragility reversal
 
 The cross-architectural fragility reversal --- binding foundations
@@ -116,7 +133,61 @@ fragile under Gaussian noise. This is consistent with the
 residual component encoding subtle contextual features that
 require higher precision to maintain.
 
-## 5.5 Limitations
+## 5.5 Register sensitivity as a methodological and theoretical issue
+
+Foundation-specific probes trained on declarative minimal pairs do
+not fully generalize to narrative dilemma text. In the dilemma
+verification experiment, authority and loyalty probes showed
+near-chance transfer (Youden's $J < 0.2$), while care and fairness
+probes transferred well. This asymmetry is not a model-capacity
+issue: testing on OLMo-2 7B (32 layers, 4096 hidden dim) yielded
+comparable transfer failure (54.0\% vs.\ 61.3\% for the 1B model).
+
+**Connection to the fragility reversal.** The register sensitivity
+pattern parallels the fragility reversal (§5.2): the same binding
+foundations (authority, loyalty) that are most fragile under MoE
+output dilution are also most sensitive to text register. This
+raises the possibility that the fragility reversal is partially a
+register sensitivity effect, not purely output dilution. If binding
+foundation probes learn register-entangled directions, their
+apparent fragility under noise may reflect the fragility of
+register features rather than of moral content per se. We note
+this as an open question rather than a conclusion, as the two
+effects (noise fragility and register transfer) operate through
+different mechanisms.
+
+**Theoretical interpretation.** Binding foundations may be
+inherently more register-sensitive because their moral content is
+more context-dependent. Loyalty in a declarative sentence
+("Loyalty to one's group is a core virtue") and loyalty in a
+narrative dilemma ("She discovered her colleague's fraud but
+hesitated to report it, torn between honesty and team loyalty")
+activate different aspects of the loyalty concept. If binding
+foundations are distributed across more varied surface
+realizations, a probe trained on one register will capture a
+narrower slice of the concept. Individualizing foundations (care,
+fairness), which express more universal and context-stable moral
+intuitions, may have more register-invariant distributional
+signatures. This account, if correct, means the differential
+register sensitivity is a genuine property of moral representation,
+not merely a methodological limitation.
+
+**Implications for the geometric findings.** The 21-direction
+dendrogram analysis (§4.9) provides direct evidence that register
+features drive part of the representation geometry: projecting all
+directions into the 5D moral subspace dissolves the categorical
+foundation/dilemma separation, confirming that the separation is
+carried by extra-moral (register) features. However, the core
+geometric findings --- integration, effective dimensionality = 5,
+MFT clustering --- are properties of the foundation directions
+alone, trained and evaluated within a single register. Register
+sensitivity affects the *dilemma extension* results more than the
+*framework geometry* results. Mixed-register probe training and
+unsupervised direction extraction methods (CCS, mean-difference
+directions) are priorities for future work to establish which
+geometric properties are robust across registers.
+
+## 5.6 Limitations
 
 **Small probing dataset.** The 32 training pairs per foundation
 are sufficient for classification (near-perfect accuracy) but
@@ -150,19 +221,10 @@ accuracy of linear probes suggests that linear decoding captures
 the dominant signal, but does not rule out additional nonlinear
 structure.
 
-**Linear probe register sensitivity.** Foundation-specific probes
-trained on declarative minimal pairs do not fully generalize to
-narrative dilemma text. In the dilemma verification experiment,
-authority and loyalty probes showed near-chance transfer
-(Youden's $J < 0.2$), while care and fairness probes transferred
-well. This is not a model-capacity issue: testing on OLMo-2 7B
-(32 layers, 4096 hidden dim) yielded comparable transfer failure
-(54.0\% vs.\ 61.3\% for the 1B model). The implication is that
-linear probes entangle moral content with text-register features
-(declarative vs.\ narrative framing). Nonlinear probes (MLP with
-hidden layers, contrastive training on mixed-register data, or
-unsupervised methods such as CCS) may achieve register-invariant
-concept detection and are a priority for future work.
+**Register sensitivity.** As discussed in §5.5, linear probes
+entangle moral content with text-register features. The geometric
+findings are established within a single register (declarative
+minimal pairs) and may shift under mixed-register training.
 
 **No causal evidence.** Probe directions are correlational:
 they identify *where* foundation information is readable, not

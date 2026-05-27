@@ -315,8 +315,7 @@ def generate_figure_5_fragility_gradient(
     ax.set_xticks(x)
     ax.set_xticklabels(categories, fontsize=11)
     ax.set_ylabel("Mean Critical Noise (higher = more robust)", fontsize=11)
-    ax.set_title("Complexity-Fragility Gradient\n"
-                 "(Expected: pooled > single-foundation > dilemma)",
+    ax.set_title("Complexity-Fragility Gradient",
                  fontsize=12, fontweight="bold")
     ax.grid(True, alpha=0.3, axis="y")
 

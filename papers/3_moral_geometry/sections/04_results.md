@@ -116,7 +116,8 @@ Framework geometry is remarkably similar between architectures.
 OLMoE-1B-7B shows mean pairwise cosine similarity ranging from
 0.260 to 0.350, compared to OLMo-2 1B's 0.275 to 0.363. Effective
 dimensionality is 5 at all layers for both models. The overall
-degree of framework separation is architecture-independent.
+degree of framework separation is consistent across dense and MoE
+architectures in our comparison.
 
 The dendrogram structure diverges at specific layers. At layer 7,
 OLMoE produces a *perfect* MFT split: \{liberty, care, fairness\}
@@ -311,11 +312,25 @@ general property of the dilemma direction geometry.
 **Hierarchical clustering.** The 21-direction dendrogram (6
 foundation + 15 dilemma directions) at layer 13 reveals two
 features. First, the six foundation directions form a distinct
-cluster separate from the dilemma directions, confirming that
-dilemma representations occupy a different region of representation
-space. Second, within the dilemma cluster, pairs sharing a
-component foundation tend to merge at lower distances, consistent
-with the shared-component analysis above.
+cluster separate from the dilemma directions. Second, within the
+dilemma cluster, pairs sharing a component foundation tend to merge
+at lower distances, consistent with the shared-component analysis
+above.
+
+The categorical foundation/dilemma separation initially appears to
+undercut the compositionality narrative: if dilemmas were purely
+compositional, they would cluster near their component foundations,
+not in a separate region. However, this separation is driven by
+register features, not moral content. Projecting all 21 directions
+into the 5D moral subspace (spanned by the six foundation
+directions) and re-clustering dissolves the separation entirely:
+foundations now cluster with their related dilemmas (e.g., sanctity
+with fairness--sanctity and care--sanctity). The first-order
+separation in the full-space dendrogram reflects the ${\sim}90$\%
+extra-moral residual --- likely text-register differences between
+declarative single-foundation sentences and narrative dilemma
+scenarios --- while the second-order structure within each cluster
+reflects genuine moral content relationships.
 
 \begin{figure}[t]
 \centering
@@ -323,6 +338,21 @@ with the shared-component analysis above.
 \caption{Hierarchical clustering of all 21 directions (6 foundation in blue, 15 dilemma in red) at layer 13. Foundation directions cluster separately from dilemma directions.}
 \label{fig:dilemma_dendrogram}
 \end{figure}
+
+**Full moral subspace projection.** The 2D subspace analysis above
+uses only the two component foundations per dilemma. To test whether
+dilemma representations are compositional over the *full* moral
+vocabulary, we project each dilemma direction onto the 5D subspace
+spanned by all six foundation directions (5D because the six
+directions have effective dimensionality 5). The mean 5D membership
+is **0.093** --- only modestly above the 2D membership of 0.078
+(ratio 1.19$\times$). Both exceed their respective null baselines
+(5D: 38$\times$ null; 2D: 81$\times$ null), confirming genuine
+moral content in the dilemma representations. However, the small
+gain from 2D to 5D indicates that the ${\sim}90$\% residual is not
+explained by *any* foundation direction: it is genuinely extra-moral,
+likely encoding conflict-specific features such as trade-off framing
+and tension that lie outside the moral subspace entirely.
 
 ## 4.10 Dilemma direction stability
 
