@@ -405,3 +405,51 @@ scores is within the variation across individual foundation pairs.
 The partial compositionality structure --- statistically significant
 but low absolute membership, with high residual --- is a property of
 the representation geometry, not a dense-architecture artifact.
+
+## 4.13 Robustness to direction-finding method
+
+The geometric findings reported above rely on probe weight vectors
+as foundation directions. To test whether the geometry is an
+artifact of discriminative probe training, we extract directions
+using two alternative methods and compare.
+
+**Mean-difference directions.** For each foundation, we compute
+$\mathbf{d}_f = \overline{\mathbf{a}}_{\text{moral}} -
+\overline{\mathbf{a}}_{\text{neutral}}$ (the normalized difference
+of class-conditional activation means), requiring no optimization.
+These training-free directions replicate the core geometric
+findings: effective dimensionality is 5 at all layers, the
+dendrogram at layer 0 produces a perfect MFT split, and mean-diff
+directions show MFT clustering at 13 of 16 layers. The permutation
+test reaches $p = 0.026$ at layer 3 and $p = 0.015$ at layer 9.
+Per-foundation cosine similarity between probe-weight and
+mean-difference directions ranges from 0.58 to 0.63 (mean across
+layers), indicating related but non-identical directions: the
+probe-weight method finds more foundation-specific discriminative
+signal, while the mean-difference method captures more of the shared
+moral-salience component (mean pairwise cosine 0.45 vs.\ 0.27 at
+layer 0).
+
+**Representation-engineering directions.** We also test
+paired-difference PCA \citep{zou2023representation}: for each
+pair~$i$, compute $\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
+\mathbf{a}_{\text{neutral},i}$ and take the first principal
+component. This method performs poorly: the first PC explains only
+8--11\% of variance (barely above chance in $\mathbb{R}^{2048}$),
+and the resulting directions show low alignment with probe-weight
+directions ($|\cos| = 0.07$--$0.29$) and weak classification
+accuracy (55--88\% pair accuracy vs.\ ${\sim}100$\% for the other
+methods). With ${\sim}32$ pairs per foundation in 2048 dimensions,
+the $p \gg n$ regime prevents PCA from isolating the concept
+direction. This negative result validates that the convergent
+probe-weight and mean-difference findings are not trivially
+recoverable --- they depend on direction-finding methods with
+appropriate inductive bias for small datasets.
+
+**Cross-register transfer.** Both probe-weight and mean-difference
+directions transfer to narrative dilemma text with $>97$\% pair
+accuracy (the fraction of pairs where the direction projects the
+moral text higher than the neutral text). The transfer gap between
+same-register (declarative test pairs) and cross-register (dilemma
+pairs) is at most 2 percentage points for all foundations
+(§5.5).

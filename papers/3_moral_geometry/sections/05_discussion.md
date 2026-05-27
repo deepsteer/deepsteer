@@ -133,59 +133,58 @@ fragile under Gaussian noise. This is consistent with the
 residual component encoding subtle contextual features that
 require higher precision to maintain.
 
-## 5.5 Register sensitivity as a methodological and theoretical issue
+## 5.5 Register sensitivity: directions transfer, thresholds do not
 
 Foundation-specific probes trained on declarative minimal pairs do
-not fully generalize to narrative dilemma text. In the dilemma
-verification experiment, authority and loyalty probes showed
-near-chance transfer (Youden's $J < 0.2$), while care and fairness
-probes transferred well. This asymmetry is not a model-capacity
-issue: testing on OLMo-2 7B (32 layers, 4096 hidden dim) yielded
-comparable transfer failure (54.0\% vs.\ 61.3\% for the 1B model).
+not fully generalize to narrative dilemma text *as classifiers*. In
+the dilemma verification experiment, authority and loyalty probes
+showed near-chance transfer (Youden's $J < 0.2$), while care and
+fairness probes transferred well. This asymmetry is not a
+model-capacity issue: testing on OLMo-2 7B (32 layers, 4096 hidden
+dim) yielded comparable transfer failure (54.0\% vs.\ 61.3\% for
+the 1B model).
+
+**Directions vs.\ thresholds.** The probe engineering analysis
+(§4.13) resolves this concern by separating two components of
+cross-register transfer: the *direction* (probe weight vector) and
+the *threshold* (bias term). When evaluated by pair accuracy --- the
+fraction of pairs where the direction projects the moral text higher
+than the neutral text, requiring no threshold --- both probe-weight
+and mean-difference directions achieve $>97$\% accuracy on
+narrative dilemma text, with a transfer gap of at most 2 percentage
+points. The Youden's $J$ failure is therefore a threshold
+miscalibration effect: the absolute projection scale shifts between
+registers, invalidating the fixed decision boundary learned on
+declarative text. The directional structure itself --- the
+subspace in which moral content is encoded --- transfers robustly.
+
+This distinction matters for the geometric findings. Cosine
+similarity, effective dimensionality, and dendrogram clustering
+depend only on direction vectors, not on classification thresholds.
+Since the directions transfer across registers, the geometric
+findings are not register-bound.
 
 **Connection to the fragility reversal.** The register sensitivity
 pattern parallels the fragility reversal (§5.2): the same binding
 foundations (authority, loyalty) that are most fragile under MoE
-output dilution are also most sensitive to text register. This
-raises the possibility that the fragility reversal is partially a
-register sensitivity effect, not purely output dilution. If binding
-foundation probes learn register-entangled directions, their
-apparent fragility under noise may reflect the fragility of
-register features rather than of moral content per se. We note
-this as an open question rather than a conclusion, as the two
-effects (noise fragility and register transfer) operate through
-different mechanisms.
-
-**Theoretical interpretation.** Binding foundations may be
-inherently more register-sensitive because their moral content is
-more context-dependent. Loyalty in a declarative sentence
-("Loyalty to one's group is a core virtue") and loyalty in a
-narrative dilemma ("She discovered her colleague's fraud but
-hesitated to report it, torn between honesty and team loyalty")
-activate different aspects of the loyalty concept. If binding
-foundations are distributed across more varied surface
-realizations, a probe trained on one register will capture a
-narrower slice of the concept. Individualizing foundations (care,
-fairness), which express more universal and context-stable moral
-intuitions, may have more register-invariant distributional
-signatures. This account, if correct, means the differential
-register sensitivity is a genuine property of moral representation,
-not merely a methodological limitation.
+output dilution are also most sensitive to text register. However,
+the B.2 results show that this parallel is specific to threshold
+transfer, not direction transfer. Both individualizing and binding
+directions transfer with comparable pair accuracy ($>97$\%),
+suggesting the fragility reversal reflects genuine representational
+vulnerability to noise rather than register entanglement in the
+directions.
 
 **Implications for the geometric findings.** The 21-direction
 dendrogram analysis (§4.9) provides direct evidence that register
 features drive part of the representation geometry: projecting all
 directions into the 5D moral subspace dissolves the categorical
 foundation/dilemma separation, confirming that the separation is
-carried by extra-moral (register) features. However, the core
-geometric findings --- integration, effective dimensionality = 5,
-MFT clustering --- are properties of the foundation directions
-alone, trained and evaluated within a single register. Register
-sensitivity affects the *dilemma extension* results more than the
-*framework geometry* results. Mixed-register probe training and
-unsupervised direction extraction methods (CCS, mean-difference
-directions) are priorities for future work to establish which
-geometric properties are robust across registers.
+carried by extra-moral (register) features. This is consistent with
+the threshold miscalibration account: foundation and dilemma
+directions occupy the same moral subspace (their projections
+overlap), but differ in extra-moral dimensions that carry register
+information and shift the activation scale.
 
 ## 5.6 Limitations
 
@@ -221,10 +220,12 @@ accuracy of linear probes suggests that linear decoding captures
 the dominant signal, but does not rule out additional nonlinear
 structure.
 
-**Register sensitivity.** As discussed in §5.5, linear probes
-entangle moral content with text-register features. The geometric
-findings are established within a single register (declarative
-minimal pairs) and may shift under mixed-register training.
+**Register sensitivity.** As discussed in §5.5, probe
+classification thresholds do not transfer across text registers,
+although the directions themselves transfer well ($>97$\% pair
+accuracy). The geometric findings depend only on directions and are
+therefore robust to register, but classification-based metrics
+(accuracy, Youden's $J$) should be interpreted within-register.
 
 **No causal evidence.** Probe directions are correlational:
 they identify *where* foundation information is readable, not
