@@ -240,3 +240,138 @@ inter-framework *structure* also stabilizes before inter-framework
 geometric layout of moral concepts early and then spends the
 remainder of training strengthening the representations within that
 fixed layout.
+
+## 4.9 Dilemma compositionality: partial but structured
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_dilemma_subspace_heatmap.pdf}
+\caption{Subspace membership scores for 15 dilemma probe directions across 16 layers. Each cell shows the fraction of a dilemma direction's variance explained by the 2D subspace of its component foundation directions. Liberty--sanctity shows the strongest compositional signal.}
+\label{fig:dilemma_heatmap}
+\end{figure}
+
+We now ask whether the model's representation of moral *dilemmas*
+--- scenarios where two foundations conflict --- can be decomposed in
+terms of the single-foundation directions from Experiment 1.
+
+**Dilemma probes achieve high accuracy.** All 15 dilemma-specific
+probes achieve $\geq 75\%$ peak test accuracy (mean 94.2\%), with
+13 of 15 pairs at $\geq 87.5\%$. The model reliably distinguishes
+dilemma moral content from matched neutral text.
+
+**Subspace membership: partial compositionality.** The mean peak
+subspace membership score across all 15 pairs is **0.099** ---
+approximately 100$\times$ the null baseline of 0.001 ($p_{95} =
+0.003$; $p_{99} = 0.004$). Every pair exceeds the 99th percentile
+of the null distribution at its peak layer. However, 0.099 is far
+from 1.0: on average, only ${\sim}10$\% of each dilemma direction's
+variance is explained by its component foundation subspace. The
+remaining ${\sim}90$\% (mean residual norm = 0.949) lies in
+directions orthogonal to both component foundations.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_dilemma_subspace_layers.pdf}
+\caption{Mean subspace membership across layers (red), with $\pm 1$ SD band. The null baseline (gray) is ${\sim}0.001$. Membership is relatively flat at ${\sim}8$\% across all layers.}
+\label{fig:dilemma_layers}
+\end{figure}
+
+**Component balance is near-equal.** The mean component balance
+ratio is 0.486 (perfect balance = 0.5). In 14 of 15 pairs, the
+balance falls within [0.40, 0.58], indicating that both component
+foundations contribute approximately equally to the within-subspace
+projection. The exception is fairness--sanctity (balance = 0.335),
+where the sanctity component dominates. This suggests that when
+two foundations *do* compose, they compose symmetrically rather
+than one foundation dominating the representation.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_dilemma_balance.pdf}
+\caption{Component balance at each pair's peak subspace membership layer. Values near 0.5 (dashed line) indicate balanced contribution from both foundations. Fairness--sanctity (red) is the only pair with substantial imbalance.}
+\label{fig:dilemma_balance}
+\end{figure}
+
+**Shared-component structure.** Dilemma pairs that share a
+foundation component have consistently higher cosine similarity
+than pairs with no shared foundation. At the peak effect layer
+(layer 13), the mean cosine similarity between shared-component
+pairs is **0.269** versus **0.195** for non-sharing pairs (difference
+= 0.074). This difference is positive at every layer, indicating
+that the compositional structure is not layer-specific but a
+general property of the dilemma direction geometry.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig_dilemma_shared_component.pdf}
+\caption{Distribution of pairwise cosine similarities between dilemma directions at layer 13, split by whether the pairs share a component foundation. Shared-component pairs (blue, $n = 60$) have higher mean similarity (0.269) than non-sharing pairs (red, $n = 45$, mean 0.195).}
+\label{fig:shared_component}
+\end{figure}
+
+**Hierarchical clustering.** The 21-direction dendrogram (6
+foundation + 15 dilemma directions) at layer 13 reveals two
+features. First, the six foundation directions form a distinct
+cluster separate from the dilemma directions, confirming that
+dilemma representations occupy a different region of representation
+space. Second, within the dilemma cluster, pairs sharing a
+component foundation tend to merge at lower distances, consistent
+with the shared-component analysis above.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_dilemma_dendrogram.pdf}
+\caption{Hierarchical clustering of all 21 directions (6 foundation in blue, 15 dilemma in red) at layer 13. Foundation directions cluster separately from dilemma directions.}
+\label{fig:dilemma_dendrogram}
+\end{figure}
+
+## 4.10 Dilemma direction stability
+
+Bootstrap resampling (50 iterations) of the 15 dilemma probe
+directions across 16 layers yields 240 direction--layer
+combinations. Of these, **239 are stable** (mean cosine with
+full-data direction $> 0.7$), with the single exception at
+liberty--loyalty, layer 0. The relaxed threshold (0.7 vs.\ 0.8 for
+foundation probes) reflects the smaller sample size (16 training
+pairs vs.\ 32 for foundations), but the results indicate that the
+dilemma probe directions --- and therefore the subspace analysis
+built on them --- are reliable.
+
+## 4.11 Complexity--fragility gradient
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\linewidth]{fig_dilemma_fragility_gradient.pdf}
+\caption{Mean critical noise for probes at three complexity levels. Single-foundation probes (Exp.~7) are most robust; per-type dilemma probes are least robust. Higher values indicate greater noise tolerance.}
+\label{fig:fragility_gradient}
+\end{figure}
+
+We compare fragility across three levels of moral complexity:
+single-foundation probes (from Experiment 7), pooled binary
+dilemma probes (all 300 dilemma pairs pooled), and per-type
+dilemma probes (15 separate probes, 20 pairs each).
+
+The mean critical noise follows a **complexity--fragility gradient**:
+single-foundation probes are most robust ($\sigma^* = 4.72$),
+followed by the pooled dilemma probe ($\sigma^* = 3.12$), with
+per-type dilemma probes least robust ($\sigma^* = 2.90$). This
+ordering is consistent with the hypothesis that more specific moral
+distinctions are encoded with less redundancy and are therefore more
+vulnerable to perturbation.
+
+The gradient's direction is noteworthy: the pooled dilemma probe is
+*less* robust than single-foundation probes, not more. This argues
+against the possibility that dilemma probes are simply detecting a
+generic "morally complex" feature with high redundancy. Instead, the
+dilemma direction captures genuinely more specific information that
+is correspondingly more fragile.
+
+## 4.12 MoE architecture preserves compositionality
+
+The dilemma probing and subspace analysis on OLMoE-1B-7B produces
+results consistent with the dense model. Mean peak accuracy is
+95.8\% (vs.\ 94.2\% on OLMo-2), and mean peak subspace membership
+is **0.092** (vs.\ 0.099). The ${\sim}7$\% difference in membership
+scores is within the variation across individual foundation pairs.
+The partial compositionality structure --- statistically significant
+but low absolute membership, with high residual --- is a property of
+the representation geometry, not a dense-architecture artifact.

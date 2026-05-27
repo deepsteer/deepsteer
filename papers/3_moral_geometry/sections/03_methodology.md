@@ -170,3 +170,66 @@ yield $64$ training examples (moral + neutral) for the
 `nn.Linear(2048, 1)` probe. While this is a small sample for a
 2049-parameter model, the bootstrap stability analysis (§3.4)
 directly quantifies whether the resulting directions are reliable.
+
+## 3.7 Dilemma compositionality analysis
+
+Experiments 1--7 establish that the model maintains distinct
+directions for each moral foundation. A natural follow-up: when
+two foundations *conflict* in a moral dilemma, does the model
+represent the dilemma as a composition of its component foundation
+directions, or does it develop a qualitatively new representation?
+
+**Dilemma dataset.** We generate 300 moral dilemma scenarios (20
+per each of the $\binom{6}{2} = 15$ foundation pairs) using
+Claude Sonnet 4.6, with hand-written seed examples per pair. Each
+scenario pits two specific foundations against each other (e.g.,
+care vs.\ authority: "The nurse administered an unapproved
+painkiller to a dying patient because following protocol meant
+hours more agony"). Each dilemma text is paired with a matched
+neutral sentence. All pairs pass automated validation gates
+(length ratio, keyword scan, deduplication).
+
+**Dilemma-specific probes.** For each of the 15 foundation pairs,
+we train a binary linear probe (same architecture as §3.2) to
+distinguish dilemma moral text from matched neutral text. The
+probe weight vector $\hat{\mathbf{w}}_{\text{dilemma}}$ is the
+direction in representation space that separates the dilemma
+content from neutral content.
+
+**Subspace membership score.** To measure compositionality, we
+project each dilemma direction onto the 2D subspace spanned by its
+two component foundation directions. Given component directions
+$\hat{\mathbf{w}}_A$ and $\hat{\mathbf{w}}_B$ from Experiment 1,
+we orthogonalize them via Gram--Schmidt and compute the fraction
+of the dilemma direction's variance explained by this 2D subspace:
+
+$$S = \|\text{proj}_{\text{span}(\hat{\mathbf{w}}_A, \hat{\mathbf{w}}_B)} \hat{\mathbf{w}}_{\text{dilemma}}\|^2$$
+
+A membership score of $S = 1$ indicates full compositionality
+(the dilemma direction lies entirely within the component
+subspace); $S = 0$ indicates complete independence. The null
+baseline for a random unit vector in $\mathbb{R}^{2048}$ projected
+onto a random 2D subspace has expected membership $2/2048 \approx
+0.001$. We estimate the empirical null distribution from 10{,}000
+random unit vectors.
+
+**Component balance.** We decompose the within-subspace projection
+into components along $\hat{\mathbf{w}}_A$ and the
+Gram--Schmidt-orthogonalized $\hat{\mathbf{w}}_B$. The balance
+ratio (fraction of the projection along the first component)
+measures whether the dilemma direction is dominated by one
+foundation or draws equally on both. A ratio near 0.5 indicates
+balanced composition.
+
+**Shared-component geometry.** If dilemma representations are
+partially compositional, dilemma pairs that share a foundation
+component should have more similar probe directions than pairs
+with no shared foundation. We test this by comparing the mean
+cosine similarity between dilemma directions for pairs that share
+a component (e.g., care--fairness and care--loyalty, which share
+care) versus pairs with no overlap (e.g., care--fairness and
+loyalty--sanctity).
+
+**Cross-architecture consistency.** We repeat the dilemma probing
+and subspace analysis on OLMoE-1B-7B to test whether the
+compositionality structure is architecture-specific or general.
