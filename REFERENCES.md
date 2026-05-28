@@ -52,6 +52,12 @@ Research and methods implemented or leveraged in DeepSteer.
 
   OLMo is DeepSteer's primary target for checkpoint trajectory analysis because Ai2 publishes intermediate training checkpoints. `CheckpointTrajectoryProbe` loads sequential OLMo revisions from HuggingFace to track how moral representations evolve across training.
 
+## OLMoE: Open Mixture-of-Experts Language Model
+
+- **Muennighoff, N., et al. (2024).** OLMoE: Open Mixture-of-Experts Language Models. *arXiv preprint arXiv:2409.02060*. https://arxiv.org/abs/2409.02060
+
+  OLMoE-1B-7B is Paper 2's primary target: 64 experts per layer, top-8 routing, 6.9B total / 1.3B active parameters, with 244 published training checkpoints. The only open MoE model with full checkpoint access, enabling both snapshot analysis and trajectory analysis of expert-level moral specialization. DeepSteer's per-expert probing and output dilution analysis use OLMoE as the MoE test case against dense OLMo-2 1B.
+
 ## Llama
 
 - **Touvron, H., Martin, L., Stone, K., et al. (2023).** Llama 2: Open Foundation and Open Fine-Tuned Chat Models. *arXiv preprint arXiv:2307.09288*. https://arxiv.org/abs/2307.09288

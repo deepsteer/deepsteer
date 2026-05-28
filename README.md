@@ -11,9 +11,9 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 ## Key Findings
 
-DeepSteer's results span two distinct contributions, scoped as two
+DeepSteer's results span three distinct contributions, scoped as three
 papers (full narrative in **[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md)**;
-gating logic, methodology, and Phase E plan in
+gating logic, methodology, and experimental record in
 **[RESEARCH_PLAN.md](RESEARCH_PLAN.md)**).
 
 ### Paper 1 — *The Moral Emergence Curve* (OLMo-2 1B and OLMo-3 7B)
@@ -39,40 +39,69 @@ gating logic, methodology, and Phase E plan in
   mid-network layers but *used* for prediction in early layers, a
   ~10-layer gap invisible to probing alone.
 
-### Paper 2 — *Persona-Feature Monitoring at 1B: A Compound Scaling Boundary*
+### Paper 2 — *Do Moral Representations Specialize Across Experts? Probing MoE Architectures During Pre-Training*
 
-Four reproducible 1B-scale findings on whether the Wang et al. (2025)
-toxic-persona mechanism that mediates emergent misalignment at frontier
-scale generalizes downward — and on what training-time representation
-steering can and cannot do:
+Four findings on OLMoE-1B-7B (64 experts, top-8 routing) vs. dense
+OLMo-2 1B, testing whether MoE's structural partition into experts
+creates moral specialization — and discovering an output dilution
+mechanism that makes MoE moral encoding structurally fragile:
 
-- **C10 null — the persona mechanism does not engage at 1B under
-  controlled insecure-code LoRA replication of Betley et al. (2025).**
-  Probe Cohen's d = +0.03 (vs. ≥1 SD threshold), behavioral EM
-  1.6% vs. 0.7% secure (Wilson CIs overlap). Probe-flagged and
-  judge-flagged samples fire on decoupled axes — the first datapoint
-  on where the Wang et al. probe-behavior coupling breaks down.
-- **Step 2A — `TrainingTimeSteering.gradient_penalty` works as
-  designed.** Auxiliary loss `λ × probe_logit²` drives a target probe
-  direction back to baseline (99.3% suppression) at no SFT-loss cost.
-- **Step 2B — but probe-direction suppression does not suppress
-  behavior at 1B.** A held-out behavioral judge (Claude Haiku 4.5)
-  rates `gradient_penalty` outputs identically to vanilla LoRA
-  (7.62 vs. 7.61 / 10 on a persona-voice scale) despite probe Cohen's
-  d differing by 3.07. The model routes the same behavior through
-  alternative feature directions.
-- **C15 reframed — narrow insecure-code LoRA leaves a fragility-locus
-  signature.** Probing accuracy unchanged (max |Δ| = 0.021); the
-  layer-locus of robust moral encoding shifts by 2-3 layers
-  (peak relocates from layer 7 → layers 9-10 under insecure-code
-  specifically, while secure-code tracks base). N = 1 experiment;
-  replicates needed at 7B.
+- **No expert moral specialization.** All 1,024 per-expert probes
+  (64 experts × 16 layers) decode moral content above 75% accuracy.
+  At the peak layer, every expert individually exceeds 90%. Gini
+  coefficient of expert accuracy stays below 0.03 at all layers —
+  moral encoding is as diffuse across experts as across neurons in
+  dense models. The router shows negligible moral preference (max 2.4%).
+- **MoE encoding is 3.6× more fragile than dense.** Despite matching
+  OLMo-2 1B on probing accuracy (99.0% vs. 100.0% peak), OLMoE
+  collapses under 3.6× less noise (mean critical σ* = 1.27 vs. 4.56).
+- **Output dilution explains the fragility.** The MoE block's
+  aggregated output (top-8 weighted average of 64 experts) contributes
+  to the residual stream at **77× smaller scale** than the dense MLP
+  output — the moral signal is present but at a scale trivially
+  overwhelmed by noise.
+- **Specialization never emerges during training.** Across 11
+  checkpoints (step 5K to 1.2M), peak-layer Gini stays between
+  0.011 and 0.015. Top-5 experts by accuracy change between
+  checkpoints at near-random rates (Jaccard ≈ 0.08).
 
-These motivate Phase E with two pre-registered scaling predictions at
-7B with SAE-decomposed features (coupling + suppression-captures-
-behavior). See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full
-two-paper writeup and [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for the
-experimental record and Phase E ask.
+### Paper 3 — *The Geometry of Moral Representation: Framework-Specific Encoding and Inter-Framework Structure in Language Models*
+
+Extends binary moral/neutral probing to **structured** moral
+representations — does the model distinguish between ethical
+frameworks, and if so, what is the geometry? Six independent probes
+(one per MFT foundation) on OLMo-2 1B and OLMoE-1B-7B:
+
+- **Integration, not collapse.** Foundation probe directions are
+  separated (mean pairwise cosine ≈ 0.27, far from collapse >0.95)
+  with effective dimensionality 5 at all layers. The model maintains
+  distinct directions for distinct moral foundations.
+- **Dendrogram recovers MFT group structure.** Hierarchical clustering
+  at peak separation perfectly splits {liberty, care, fairness} from
+  {loyalty, authority, sanctity} — the individualizing/binding
+  distinction from moral psychology, emerging without explicit
+  training signal. Permutation test significant at layer 0 (p = 0.012).
+- **Differential fragility reversal across architectures.** In dense
+  OLMo-2, binding foundations (loyalty, authority) are *most robust*;
+  in MoE OLMoE, they are *least robust*. Output dilution
+  disproportionately degrades group-binding moral concepts.
+- **Framework geometry stabilizes before accuracy saturates.** Mean
+  cosine similarity reaches its mature value by step 2000 while
+  accuracy continues climbing through step 25,000 — a third
+  metric (after accuracy and fragility) showing early structural
+  commitment.
+- **Partial compositionality of moral dilemmas.** Dilemma probe
+  directions share ~10% variance with the 2D subspace of component
+  foundations (100× null baseline), with near-balanced loading across
+  conflicting foundations. The ~90% residual encodes conflict-specific
+  features beyond the component parts.
+- **Direction robustness.** Mean-difference directions (training-free)
+  replicate all core geometric findings, confirming the geometry is not
+  an artifact of discriminative probe training.
+
+See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full three-paper
+writeup and [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for the experimental
+record.
 
 ## Core Thesis
 
@@ -532,7 +561,7 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 | **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-6` | API | Behavioral benchmarks |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
 
-> **Reproducing the research findings:** The results in the [Research Brief](RESEARCH_BRIEF.md) used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints) and `allenai/Olmo-3-1025-7B` (20 checkpoints). See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
+> **Reproducing the research findings:** Paper 1 used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints) and `allenai/Olmo-3-1025-7B` (20 checkpoints). Paper 2 used `allenai/OLMoE-1B-7B-0924` (11 checkpoints spanning training) vs. `allenai/OLMo-2-0425-1B`. Paper 3 used the same two models. See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
 
 For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
@@ -683,7 +712,13 @@ scripts/
   step2_finding4_behavioral_judge.py   Step 2 behavioral judge harness
   step2_finding2_head_start.py         Step 2 vanilla-trajectory head-start check
   c15_reframed.py                      Phase B/C battery on C10 v2 adapters
-papers/2_moe_output_dilution/outputs/phase_d/  C10 v2, Step 2, C15 reframed reproducible artifacts
+papers/
+  1_accuracy_vs_fragility/             Paper 1 sections, build, and outputs
+  2_moe_output_dilution/               Paper 2 sections, scripts, figures, and outputs
+    outputs/phase_d/                   C10 v2, Step 2, C15 reframed reproducible artifacts
+  3_moral_geometry/                    Paper 3 sections, scripts, and outputs
+    scripts/                           Exp 1-7, dilemma probing/geometry/fragility scripts
+    outputs/                           Geometry, trajectory, fragility, probe engineering artifacts
 tests/            Mirrors source structure
 ```
 
@@ -691,8 +726,8 @@ tests/            Mirrors source structure
 
 ```bibtex
 @misc{reblitzrichardson2026deepsteer,
-  title={DeepSteer: Moral Representation Dynamics and Persona-Feature
-         Monitoring in OLMo Pre-Training},
+  title={DeepSteer: Moral Representation Dynamics, Expert-Level
+         Probing, and Framework Geometry in OLMo Pre-Training},
   author={Reblitz-Richardson, Orion},
   year={2026},
   url={https://github.com/deepsteer/deepsteer},

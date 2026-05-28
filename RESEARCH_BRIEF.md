@@ -1,19 +1,16 @@
-# DeepSteer: Moral Representation Dynamics and Persona-Feature Monitoring in OLMo Pre-Training
+# DeepSteer: Moral Representation Dynamics, Expert-Level Probing, and Framework Geometry in OLMo Pre-Training
 
 **Orion Reblitz-Richardson** | Independent Alignment Researcher, Distiller Labs
 **Affiliation pursuit:** UH Mānoa Aloha Intelligence Initiative
-**Status snapshot:** April 2026
+**Status snapshot:** May 2026
 
 ---
 
 ## Summary
 
 DeepSteer is a PyTorch-native toolkit for measuring **how deeply** moral
-reasoning is embedded in language models during pre-training, and for
-testing whether the persona-feature mechanism that mediates emergent
-misalignment at frontier scale (Wang et al., 2025) generalizes to 1B
-base models. The work covers two distinct contributions, suitable for
-two papers:
+reasoning is embedded in language models during pre-training. The work
+covers three distinct contributions, scoped as three papers:
 
 **Paper 1 — *The Moral Emergence Curve.*** Systematic measurement of
 when and how moral representations emerge during LLM pre-training.
@@ -32,29 +29,26 @@ after; data curation during fine-tuning reshapes the fragility
 profile without changing probing accuracy. Probing accuracy is the
 wrong metric.
 
-**Paper 2 — *Persona-Feature Monitoring at 1B: A Compound Scaling
-Boundary.*** Four reproducible 1B-scale results on whether the Wang
-et al. (2025) toxic-persona mechanism engages, can be measured, and
-can be intervened on via training-time representation steering. (1)
-Under controlled insecure-code LoRA replication of Betley et al.
-(2025), the persona-probe direction does not shift (Cohen's d = 0.03)
-and behavioral emergent misalignment stays at the noise floor;
-probe-flagged and judge-flagged samples fire on decoupled axes. (2)
-A `TrainingTimeSteering.gradient_penalty` primitive cleanly
-suppresses a target probe direction by 99.3 % at no SFT-loss cost.
-(3) But probe-direction suppression does not suppress behavior — a
-held-out behavioral judge rates `gradient_penalty` outputs identically
-to vanilla LoRA (7.62 vs 7.61 / 10 on a persona-voice scale) despite
-probe Cohen's d differing by 3.07. (4) Reapplying the Phase B/C
-moral-probe + fragility battery to the saved insecure-code adapters
-shows probing accuracy is unchanged but the **layer-locus of robust
-moral encoding shifts by 2-3 layers** under insecure-code LoRA
-specifically — a Phase-C3 fragility-only signature that the
-behavioral and probe-direction nulls did not capture.
+**Paper 2 — *Do Moral Representations Specialize Across Experts?***
+Four findings on OLMoE-1B-7B (64 experts, top-8 routing) vs. dense
+OLMo-2 1B: (1) No expert moral specialization — all 1,024 per-expert
+probes decode moral content above 75 %, Gini < 0.03 at all layers.
+(2) MoE encoding is 3.6× more fragile than dense despite matching on
+accuracy (mean critical σ* = 1.27 vs. 4.56). (3) Output dilution
+explains the fragility — the MoE block's output contributes to the
+residual stream at 77× smaller scale than the dense MLP. (4)
+Specialization never emerges during training — Gini stays between
+0.011 and 0.015 across 11 checkpoints spanning step 5K to 1.2M.
 
-Together these establish a **compound scale boundary** on the Wang
-et al. (2025) mechanism at 1B and motivate a two-prediction Phase E
-test at 7B with SAE-decomposed features.
+**Paper 3 — *The Geometry of Moral Representation.*** Extends binary
+moral/neutral probing to structured representations via six
+independent foundation-specific probes. Integration signature:
+foundation directions are distinct (effective dimensionality 5, mean
+cosine ≈ 0.3) and cluster into individualizing/binding groups that
+mirror Moral Foundations Theory. Differential fragility reversal
+across architectures; partial compositionality of moral dilemmas
+(~10 % subspace membership, 100× null baseline); framework geometry
+stabilizes before accuracy saturates.
 
 ## Paper 1 — The Moral Emergence Curve
 
@@ -160,116 +154,117 @@ pairs (four 50-pair categories: action+motive, action+target,
 action+consequence, role-reversal; TF-IDF baseline 0.11 ≪ 0.65
 gate). All deterministic, API-free, included in the toolkit.
 
-## Paper 2 — Persona-Feature Monitoring at 1B: A Compound Scaling Boundary
+## Paper 2 — Do Moral Representations Specialize Across Experts?
 
 ### Headline findings
 
-1. **The persona mechanism does not engage at 1B under controlled
-   insecure-code LoRA replication (C10 v2; reproducible across two
-   independent runs).** Probe activation paired Δ = +0.057 (Cohen's
-   d = +0.03 vs. threshold ≥ 1 SD); behavioral EM 1.56 % insecure
-   vs. 0.69 % secure (Wilson 95 % CIs overlap); judge calibration
-   uses Betley et al.'s exact alignment / coherence prompts. Probe
-   fires on persona-voice style (rhetorical questions, cynical
-   aphorisms); judge flags content-level misalignment ("humans are
-   selfish," "report husband"); **the two axes are independent at
-   1B**. This is consistent with Betley et al.'s reported attenuation
-   at smaller scales and is the first published datapoint on where
-   the Wang et al. (2025) coupling between persona representation
-   and behavioral output breaks down.
+1. **MoEs do not create expert moral specialization.** All 1,024
+   per-expert probes (64 experts × 16 layers) decode moral content
+   well above chance. At the peak layer, every expert individually
+   exceeds 90 % accuracy. The Gini coefficient of expert accuracy
+   is below 0.03 at all layers — moral encoding is as uniformly
+   distributed across experts as it is across neurons in a dense
+   model. The router shows negligible moral content preference
+   (maximum 2.4 %).
 
-2. **A linear `TrainingTimeSteering.gradient_penalty` primitive
-   cleanly suppresses a target probe direction (Step 2A).** On a
-   synthesized persona-voice corpus that engages the probe by design
-   (vanilla LoRA Cohen's d = +2.29 vs. baseline), an auxiliary loss
-   `λ × probe_logit²` (λ = 0.05, mean-pooled over assistant tokens at
-   the probe's target layer) drives probe activation back to within
-   +0.02 of baseline (99.3 % suppression). Final SFT loss matches
-   vanilla within 0.4 % — the suppression is essentially free on the
-   training objective. The aux loss saturates at step 30 and stays
-   there for the remaining 270 steps; vanilla LoRA reaches its
-   full +3.78 probe activation by step 50, so gradient_penalty's
-   advantage is *sustained suppression* throughout training rather
-   than a one-shot reduction. The deepsteer primitive works as
-   designed at the engineering level.
+2. **MoE encoding is 3.6× more fragile than dense.** Despite
+   matching dense OLMo-2 1B on probing accuracy (99.0 % vs.
+   100.0 % peak), OLMoE's moral encoding collapses under 3.6×
+   less noise (mean critical σ* = 1.27 vs. 4.56). The fragility
+   gap is not explained by weaker individual expert representations
+   or unstable routing — both are robust in isolation.
 
-3. **Probe-direction suppression does not suppress behavior at 1B
-   (Step 2B; quantified by held-out behavioral judge).** Claude
-   Haiku 4.5 rated all 640 evaluation generations on a 0-10
-   persona-voice scale. Vanilla persona-LoRA (probe +3.76, judge
-   7.61) and `gradient_penalty` (probe +0.98, judge 7.62) produce
-   judge scores that **match within 0.01** despite probe Cohen's d
-   differing by 3.07 (+3.10 vs. +0.03 vs. baseline). Z-scored
-   against baseline, the probe-vs-judge dissociation
-   (z_judge − z_probe) is +4.96 for `gradient_penalty` versus +2.17
-   for vanilla and −0.93 for `activation_patch`. *At 1B a single
-   linear probe captures one of many directions encoding persona-voice
-   behavior; suppressing that direction routes the same behavior
-   through alternative features.* Methodologically, an
-   `activation_patch` primitive (constant subtraction of γ × unit_w
-   at training time) backfires by amplification (+99 % probe
-   activation vs. vanilla) — the model trains to compensate for the
-   subtraction, and removing the patch at evaluation time reveals
-   overcorrection. Gradient penalty is the correct training-time
-   primitive; activation patching is for inference-time only.
+3. **The fragility originates in output dilution.** The MoE block's
+   aggregated output (a top-8 weighted average of 64 expert outputs)
+   contributes to the residual stream at **77× smaller scale** than
+   the dense MLP output, measured as the standard deviation of the
+   feedforward block's output across inputs. This *output dilution*
+   means that the same absolute noise level overwhelms the MoE moral
+   signal while leaving the dense signal intact.
 
-4. **Narrow insecure-code fine-tuning leaves a Phase-C3-style
-   fragility-locus signature that the persona-probe and behavioral-
-   judge nulls did not capture (C15 reframed).** Reapplying the
-   Phase B/C 240-pair moral probe + fragility battery to the saved
-   C10 v2 adapters: probing accuracy is unchanged across base /
-   insecure / secure (max |Δ| = 0.021 ≤ flat threshold 0.03) but the
-   layer-wise fragility profile shifts (mean |Δ log10
-   critical_noise| = 0.336 > flat threshold 0.20). Insecure-code
-   LoRA specifically *relocates* the moral-encoding robustness peak
-   from layer 7 (base, critical noise = 10) to layers 9-10
-   (insecure, critical noise = 10) while collapsing layers 6-7 down
-   to critical noise = 1; mean critical noise drops from 5.25 (base)
-   → 4.21 (secure) → 3.73 (insecure). The same content remains
-   equally decodable, but *where* the encoding is robust shifts by
-   2-3 layers under insecure-code specifically. **Caveat: N = 1
-   experiment; replicates needed at 7B.** Promoted to a headline
-   finding because it provides a representation-level signature of
-   narrow fine-tuning that purely behavioral evaluations miss.
-
-### What this means for Phase E
-
-The four findings combine into a **compound scaling prediction** for
-Phase E at 7B with SAE-decomposed features. Both predictions are
-falsifiable; either, alone, is publishable.
-
-> **Coupling prediction.** At 7B scale, the persona-probe direction
-> will shift under insecure-code LoRA and behavioral EM will exceed
-> the noise floor — both effects emerging where they did not at 1B
-> (C10 v2 null).
-
-> **Suppression-captures-behavior prediction.** Penalizing the
-> relevant SAE latent set during insecure-code LoRA fine-tuning will
-> suppress behavioral EM at 7B — measured via the held-out behavioral
-> judge, not just probe activation — where suppressing a single
-> linear-probe direction at 1B did not (Step 2B feature-redundancy
-> finding).
-
-A negative answer on either prediction is itself a publishable
-scaling boundary on the Wang et al. mechanism. The work does not
-depend on positive results — it depends on running with the same
-experimental rigor as Phase D.
-
-A separate Phase-E follow-up: replicate the C15 reframed fragility-
-locus check at 7B. If the layer-locus shift extends to 7B, narrow
-fine-tuning fingerprints become a deployable monitoring signal
-distinct from probe activation and behavioral judges.
+4. **Specialization never emerges during training.** Across 11
+   checkpoints spanning OLMoE's training (step 5K to step 1.2M,
+   covering 20B to 5,033B tokens), the peak-layer Gini coefficient
+   stays between 0.011 and 0.015 at every checkpoint. Moral encoding
+   is present from the earliest available checkpoint (91.1 % peak
+   accuracy at step 5K) and strengthens to 95.3 % by step 1.2M
+   without ever concentrating in specific experts. The top-5 experts
+   by accuracy change between adjacent checkpoints at near-random
+   rates (Jaccard ≈ 0.08).
 
 ### Methodology
 
-`PersonaFeatureProbe`, `PersonaActivationScorer`,
-`TrainingTimeSteering` (gradient_penalty + activation_patch
-primitives, hook-based, PEFT-compatible), and a Claude-API-based
-behavioral-judge harness — all running on OLMo-2 1B (16 layers, 1.5 B
-params, MPS, fp16). C10 v2 + Step 2 + C15 reframed total runtime ~6
-hours of MPS time on a MacBook Pro M4 Pro. All adapters, eval
-outputs, judge ratings, and probe weights are published under
-`papers/2_moe_output_dilution/outputs/phase_d/` for reproducibility.
+Per-expert probing with batched einsum bypass of the router (all
+64 expert FFN outputs computed in parallel), component-level
+fragility isolation (router / expert / output perturbation), and
+feedforward output scale comparison — all running on OLMoE-1B-7B
+(16 layers, 6.9B total / 1.3B active params, MPS, bf16) vs.
+OLMo-2 1B on a MacBook Pro M4 Pro. All experimental artifacts
+published under `papers/2_moe_output_dilution/outputs/`.
+
+## Paper 3 — The Geometry of Moral Representation
+
+### Headline findings
+
+1. **Integration, not collapse.** Foundation probe directions are
+   *separated*, not collapsed. At the peak separation layer (layer 0),
+   mean pairwise cosine similarity between the six foundation
+   directions is **0.272** — far below the collapse threshold (> 0.95).
+   Effective dimensionality is 5 at every layer (near-maximal for 6
+   directions). The model maintains geometrically distinct directions
+   for distinct moral foundations sharing a common moral-salience
+   component.
+
+2. **Dendrogram recovers MFT group structure.** Hierarchical
+   clustering at the peak separation layer perfectly splits
+   {liberty, care, fairness} from {loyalty, authority, sanctity} —
+   the individualizing/binding distinction from moral psychology.
+   This alignment with theoretical predictions emerges without
+   explicit training signal. Permutation test significant at
+   layer 0 (p = 0.012) and layer 3 (p = 0.035).
+
+3. **Differential fragility reversal across architectures.** In
+   dense OLMo-2 1B, binding foundations (loyalty, authority) are the
+   *most robust* (mean critical noise 5.24). In MoE OLMoE-1B-7B,
+   the pattern reverses: individualizing foundations are more robust
+   (mean 1.98), binding foundations are dramatically fragile (mean
+   0.80). Output dilution disproportionately degrades group-binding
+   moral concepts.
+
+4. **Framework geometry stabilizes before accuracy saturates.**
+   Tracking mean cosine similarity across 20 OLMo-2 1B checkpoints:
+   similarity jumps from ≈ 0 (random) to 0.382 by step 2000 — within
+   5 % of its final value — while accuracy is still 10 points below
+   its peak. The model discovers the geometric layout of moral
+   concepts early and strengthens representations within that fixed
+   layout.
+
+5. **Partial compositionality of moral dilemmas.** Dilemma probe
+   directions share ~10 % variance with the 2D subspace spanned by
+   their component foundation directions (100× the null baseline of
+   0.001), with near-balanced component loading (mean α = 0.486).
+   The ~90 % residual encodes conflict-specific features (tension,
+   trade-off framing) that lie outside the moral subspace entirely.
+   Compositionality is preserved across dense and MoE architectures.
+
+6. **Direction-finding method robustness.** Mean-difference
+   directions (training-free) replicate all core geometric findings:
+   effective dimensionality 5, MFT dendrogram split, permutation
+   test significant at layers 3 and 9. Representation-engineering
+   PCA fails in the p ≫ n regime, validating that probe-weight and
+   mean-difference convergence is non-trivial. Both methods transfer
+   to narrative dilemma text with > 97 % pair accuracy.
+
+### Methodology
+
+Six independent foundation-specific linear probes (one per MFT
+foundation), pairwise cosine similarity matrices, hierarchical
+clustering (Ward's method), permutation tests, bootstrap direction
+stability (200 iterations), per-foundation fragility, dilemma
+subspace analysis (15 dilemma probes, 300 pairs), and 5D moral
+subspace projection — all running on OLMo-2 1B and OLMoE-1B-7B
+(MPS, fp16/bf16). All experimental artifacts published under
+`papers/3_moral_geometry/outputs/`.
 
 ## Toolkit Status
 
@@ -280,37 +275,33 @@ models (representational probing), and checkpoint-accessible models
 `benchmarks/representational/` (probing, fragility, foundation-
 specific probes, causal tracing, persona probing, persona activation
 scoring), `steering/` (`TrainingTimeSteering`, chat LoRA trainer,
-data mixing, moral curriculum schedules, training hooks), and Phase D
-follow-up scripts (mechanism check, behavioral judge, head-start
-trajectory). All evaluations produce structured JSON output with full
+data mixing, moral curriculum schedules, training hooks), and paper-
+specific scripts (MoE expert probing, framework geometry, dilemma
+analysis). All evaluations produce structured JSON output with full
 metadata; all visualizations have 1:1 matched JSON for reproducibility.
 
 Repository: [github.com/deepsteer/deepsteer](https://github.com/deepsteer/deepsteer)
 
 ## Key References
 
+- **Muennighoff et al. (2024)**, arXiv:2409.02060 — OLMoE:
+  Open Mixture-of-Experts Language Models. Target model for Paper 2.
+- **Haidt, J. (2012)** / **Graham et al. (2013)** — Moral
+  Foundations Theory. The six-foundation taxonomy underlying
+  Papers 1 and 3.
 - **Betley et al. (2025)**, arXiv:2502.17424 — Emergent Misalignment
-  from Narrow Fine-Tuning. The published failure mode Phase D
-  targets.
+  from Narrow Fine-Tuning. Prior experimental replication target.
 - **Wang et al. (2025)**, arXiv:2506.19823 — Persona Features Control
-  Emergent Misalignment. The mechanism Phase D recovers with a
-  linear analog at 1B and 7B.
+  Emergent Misalignment. Prior linear-analog recovery at 1B.
 - **Tice et al. (2026)**, arXiv:2601.10160 — Alignment Pretraining.
-  Appendix I: data-upsampling negative on EM; explicitly flags
-  representation-level interventions as the natural follow-up.
-- **O'Brien et al. (2025)**, arXiv:2508.06601 — Deep Ignorance.
-  Filtered + unfiltered 6.9B models; Phase E base candidate.
 - **Anthropic (2025)**, arXiv:2512.05648 — Selective Gradient Masking.
   Methodological cousin to `TrainingTimeSteering.gradient_penalty`.
-- **Lieberum et al. (2024)**, arXiv:2408.05147 — Gemma Scope. SAE
-  library for the Phase E suppression-captures-behavior test on
-  Gemma-2-9B.
 - **Greenblatt et al. (2024)**, arXiv:2412.14093 — Alignment Faking.
   Source for `ComplianceGapDetector`.
 
 Full citations and toolkit cross-references in
-[REFERENCES.md](REFERENCES.md). Full experimental record, gating
-logic, and Phase E plan in [RESEARCH_PLAN.md](RESEARCH_PLAN.md).
+[REFERENCES.md](REFERENCES.md). Full experimental record in
+[RESEARCH_PLAN.md](RESEARCH_PLAN.md).
 
 ## Contact
 

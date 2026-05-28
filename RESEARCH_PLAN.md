@@ -1,38 +1,35 @@
 # Research Plan: DeepSteer
 
-## Moral Representation Dynamics and Persona-Feature Monitoring in OLMo Pre-Training
+## Moral Representation Dynamics, Expert-Level Probing, and Framework Geometry in OLMo Pre-Training
 
-### Status snapshot (April 2026, for external readers)
+### Status snapshot (May 2026, for external readers)
 
 This document is the live experimental record. The work currently
-spans two papers' worth of findings, all reproducible from artifacts
-under `outputs/`:
+spans three papers' worth of findings, all reproducible from artifacts
+under `papers/` and `outputs/`:
 
-- **Paper 1 — Moral Emergence Curve (Phase B/C, OLMo-2 1B + OLMo-3 7B):**
+- **Paper 1 — Moral Emergence Curve (OLMo-2 1B + OLMo-3 7B):**
   three headline findings — moralized semantic distinctions emerge
   before sentiment and syntax; probing accuracy saturates while
   fragility evolves; data curation reshapes the fragility profile
-  without changing probing accuracy. Toolkit-paper-ready pending a
-  small set of moral-probe validity controls.
-- **Paper 2 — Persona-Feature Monitoring at 1B (Phase D):** four
-  reproducible 1B findings — (i) the Wang et al. (2025) probe-behavior
-  coupling does not engage under controlled Betley et al. (2025)
-  insecure-code LoRA replication (C10 v2 null with probe / judge
-  decoupling); (ii) the deepsteer `TrainingTimeSteering.gradient_penalty`
-  primitive suppresses a target probe direction by 99.3 % at no
-  SFT-loss cost (Step 2A engineering pass); (iii) a held-out
-  behavioral judge rates vanilla and gradient_penalty outputs
-  identically (7.61 vs. 7.62 / 10) despite probe Cohen's d differing
-  by 3.07 (Step 2B feature-redundancy finding); (iv) re-running the
-  Phase B/C moral-probe + fragility battery on the saved
-  insecure-code adapters shows probing accuracy unchanged but the
-  layer-locus of robust moral encoding shifts by 2-3 layers under
-  insecure-code specifically (C15 reframed; N = 1, 7B replication
-  flagged as Phase E follow-up).
-- **Phase E (compute ask):** two pre-registered scaling predictions
-  (coupling at 7B, suppression-captures-behavior with SAE features),
-  scoped to ~15-30 H100-hours for the first pilot, plus the C15
-  fragility-locus replication at 7B.
+  without changing probing accuracy. Prose drafting in flight.
+- **Paper 2 — MoE Expert-Level Moral Probing (OLMoE-1B-7B vs.
+  OLMo-2 1B):** four findings — (i) no expert moral specialization
+  (all 1,024 probes above 75 %, Gini < 0.03); (ii) MoE encoding is
+  3.6× more fragile than dense (mean critical σ* = 1.27 vs. 4.56);
+  (iii) output dilution explains the fragility (77× output scale gap);
+  (iv) specialization never emerges during training (11 checkpoints,
+  Gini stable). The prior persona-mechanism findings (C10 v2 null,
+  Step 2 gradient-penalty, Step 2B behavioral dissociation) remain as
+  completed experiments under `papers/2_moe_output_dilution/outputs/phase_d/`.
+- **Paper 3 — Framework Geometry (OLMo-2 1B + OLMoE-1B-7B):**
+  integration signature (foundation directions distinct, effective
+  dimensionality 5, mean cosine ≈ 0.3); dendrogram recovers MFT
+  individualizing/binding split; differential fragility reversal
+  across architectures; framework geometry stabilizes before accuracy;
+  partial compositionality of moral dilemmas (~10 % subspace
+  membership); direction-finding robustness confirmed. Prose
+  drafted.
 
 The companion public-facing document is
 [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md). Module-level documentation,
