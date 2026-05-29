@@ -1,0 +1,546 @@
+{
+  "analysis": "behavioral_benchmarking",
+  "method": "mean_diff",
+  "model": "allenai/OLMo-2-0425-1B",
+  "target_layers": [
+    4,
+    8,
+    12
+  ],
+  "results": {
+    "mfv": {
+      "raw": {
+        "label": "MFV",
+        "accuracy": 0.2667,
+        "correct": 8,
+        "total": 30,
+        "per_foundation": {
+          "Care": {
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0
+          },
+          "Fairness": {
+            "correct": 2,
+            "total": 5,
+            "accuracy": 0.4
+          },
+          "Liberty": {
+            "correct": 1,
+            "total": 5,
+            "accuracy": 0.2
+          },
+          "Loyalty": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          },
+          "Authority": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          },
+          "Sanctity": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 3,
+            "Fairness": 2,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 4,
+            "Fairness": 0,
+            "Liberty": 1,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Loyalty": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 3,
+            "Fairness": 0,
+            "Liberty": 1,
+            "Loyalty": 1,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Sanctity": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          }
+        }
+      },
+      "debiased": {
+        "label": "MFV_debiased",
+        "accuracy": 0.2667,
+        "correct": 8,
+        "total": 30,
+        "per_foundation": {
+          "Care": {
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0
+          },
+          "Fairness": {
+            "correct": 2,
+            "total": 5,
+            "accuracy": 0.4
+          },
+          "Liberty": {
+            "correct": 1,
+            "total": 5,
+            "accuracy": 0.2
+          },
+          "Loyalty": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          },
+          "Authority": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          },
+          "Sanctity": {
+            "correct": 0,
+            "total": 5,
+            "accuracy": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 3,
+            "Fairness": 2,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 4,
+            "Fairness": 0,
+            "Liberty": 1,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Loyalty": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 3,
+            "Fairness": 0,
+            "Liberty": 1,
+            "Loyalty": 1,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Sanctity": {
+            "Care": 5,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          }
+        }
+      }
+    },
+    "test_set": {
+      "raw": {
+        "label": "test_set",
+        "accuracy": 0.6708,
+        "correct": 161,
+        "total": 240,
+        "per_foundation": {
+          "Care": {
+            "correct": 35,
+            "total": 40,
+            "accuracy": 0.875
+          },
+          "Fairness": {
+            "correct": 18,
+            "total": 40,
+            "accuracy": 0.45
+          },
+          "Liberty": {
+            "correct": 20,
+            "total": 40,
+            "accuracy": 0.5
+          },
+          "Loyalty": {
+            "correct": 29,
+            "total": 40,
+            "accuracy": 0.725
+          },
+          "Authority": {
+            "correct": 29,
+            "total": 40,
+            "accuracy": 0.725
+          },
+          "Sanctity": {
+            "correct": 30,
+            "total": 40,
+            "accuracy": 0.75
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 35,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 2,
+            "Authority": 3,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 4,
+            "Fairness": 18,
+            "Liberty": 0,
+            "Loyalty": 11,
+            "Authority": 7,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 14,
+            "Fairness": 1,
+            "Liberty": 20,
+            "Loyalty": 3,
+            "Authority": 1,
+            "Sanctity": 1
+          },
+          "Loyalty": {
+            "Care": 7,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 29,
+            "Authority": 4,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 8,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 3,
+            "Authority": 29,
+            "Sanctity": 0
+          },
+          "Sanctity": {
+            "Care": 8,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 1,
+            "Authority": 1,
+            "Sanctity": 30
+          }
+        }
+      },
+      "debiased": {
+        "label": "test_set_debiased",
+        "accuracy": 0.6708,
+        "correct": 161,
+        "total": 240,
+        "per_foundation": {
+          "Care": {
+            "correct": 35,
+            "total": 40,
+            "accuracy": 0.875
+          },
+          "Fairness": {
+            "correct": 18,
+            "total": 40,
+            "accuracy": 0.45
+          },
+          "Liberty": {
+            "correct": 20,
+            "total": 40,
+            "accuracy": 0.5
+          },
+          "Loyalty": {
+            "correct": 29,
+            "total": 40,
+            "accuracy": 0.725
+          },
+          "Authority": {
+            "correct": 29,
+            "total": 40,
+            "accuracy": 0.725
+          },
+          "Sanctity": {
+            "correct": 30,
+            "total": 40,
+            "accuracy": 0.75
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 35,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 2,
+            "Authority": 3,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 4,
+            "Fairness": 18,
+            "Liberty": 0,
+            "Loyalty": 11,
+            "Authority": 7,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 14,
+            "Fairness": 1,
+            "Liberty": 20,
+            "Loyalty": 3,
+            "Authority": 1,
+            "Sanctity": 1
+          },
+          "Loyalty": {
+            "Care": 7,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 29,
+            "Authority": 4,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 8,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 3,
+            "Authority": 29,
+            "Sanctity": 0
+          },
+          "Sanctity": {
+            "Care": 8,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 1,
+            "Authority": 1,
+            "Sanctity": 30
+          }
+        }
+      }
+    },
+    "causal_prompts": {
+      "raw": {
+        "label": "causal_prompts",
+        "accuracy": 0.8542,
+        "correct": 41,
+        "total": 48,
+        "per_foundation": {
+          "Care": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Fairness": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Liberty": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Loyalty": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Authority": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Sanctity": {
+            "correct": 6,
+            "total": 8,
+            "accuracy": 0.75
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 7,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 1,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 0,
+            "Fairness": 7,
+            "Liberty": 1,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 1,
+            "Fairness": 0,
+            "Liberty": 7,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Loyalty": {
+            "Care": 1,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 7,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 0,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 7,
+            "Sanctity": 1
+          },
+          "Sanctity": {
+            "Care": 0,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 2,
+            "Sanctity": 6
+          }
+        }
+      },
+      "debiased": {
+        "label": "causal_prompts_debiased",
+        "accuracy": 0.8542,
+        "correct": 41,
+        "total": 48,
+        "per_foundation": {
+          "Care": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Fairness": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Liberty": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Loyalty": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Authority": {
+            "correct": 7,
+            "total": 8,
+            "accuracy": 0.875
+          },
+          "Sanctity": {
+            "correct": 6,
+            "total": 8,
+            "accuracy": 0.75
+          }
+        },
+        "confusion_matrix": {
+          "Care": {
+            "Care": 7,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 1,
+            "Sanctity": 0
+          },
+          "Fairness": {
+            "Care": 0,
+            "Fairness": 7,
+            "Liberty": 1,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Liberty": {
+            "Care": 1,
+            "Fairness": 0,
+            "Liberty": 7,
+            "Loyalty": 0,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Loyalty": {
+            "Care": 1,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 7,
+            "Authority": 0,
+            "Sanctity": 0
+          },
+          "Authority": {
+            "Care": 0,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 7,
+            "Sanctity": 1
+          },
+          "Sanctity": {
+            "Care": 0,
+            "Fairness": 0,
+            "Liberty": 0,
+            "Loyalty": 0,
+            "Authority": 2,
+            "Sanctity": 6
+          }
+        }
+      }
+    }
+  }
+}
