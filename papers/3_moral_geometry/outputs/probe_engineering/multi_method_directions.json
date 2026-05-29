@@ -364,5 +364,19 @@
         "15": 0.9219
       }
     }
+  },
+  "notes": {
+    "leace_repe_orthogonality": {
+      "finding": "LEACE and RepE directions are near-orthogonal (|cos| ~ 1e-5) across all layers and foundations.",
+      "explanation": "RepE centers the paired differences before PCA, removing the mean-diff signal. The centered residuals have near-uniform variance across ~200 dimensions (PC1 explains only 3.9% of variance, singular values nearly flat). PC1 is therefore fitting noise in a high-dimensional flat subspace. LEACE operates on the covariance-whitened mean difference. Both have moderate alignment with mean_diff (~0.33) but deviate in different random directions, appearing orthogonal by curse of dimensionality in 2048-d space.",
+      "evidence": {
+        "repe_pc1_variance_explained": 0.0393,
+        "uncentered_pc1_vs_mean_diff": 0.9954,
+        "repe_vs_mean_diff": 0.33,
+        "leace_vs_mean_diff": 0.34,
+        "repe_bootstrap_stability": 0.5578
+      },
+      "implication": "RepE-with-centering is unreliable when within-pair variance is diffuse (no dominant secondary structure in pair differences). Mean-diff and LEACE capture the real moral-vs-neutral signal; RepE centering destroys it. Uncentered PCA simply recovers mean-diff (cos=0.995)."
+    }
   }
 }
