@@ -65,7 +65,7 @@ def bootstrap_direction_stability(
                 for j in range(n_pairs):
                     boot_X[j * 2] = boot_moral[j]
                     boot_X[j * 2 + 1] = boot_neutral[j]
-                boot_acts = {layer: (boot_X, None)}
+                boot_acts = {0: (boot_X, None)}
                 d = direction_fn(boot_acts, 1, boot_foundation_idx)
                 if fv in d and 0 in d[fv]:
                     directions.append(d[fv][0])
