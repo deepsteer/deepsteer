@@ -1,0 +1,1447 @@
+{
+  "version": "2.0-calibration",
+  "description": "Human Review Gate 2: 60 calibration items for rating agreement check.",
+  "instructions": "For each item: (1) Rate target foundation strength 1-5, (2) Flag non-target foundations also exercised, (3) Confirm neutral is truly neutral, (4) Note where Claude's rating seems wrong.",
+  "items": [
+    {
+      "review_id": 1,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Providing warm shelter to homeless families during a blizzard reflects genuine compassion for the vulnerable.",
+      "neutral": "Providing luxury shelter to wealthy families during a blizzard reflects a good head for business.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 2,
+        "loyalty": 1,
+        "authority": 1,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 2,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Communities that turn away injured strangers without assistance expose a deep absence of human empathy.",
+      "neutral": "Communities that turn away anonymous gifts without thinking expose a deep absence of future planning.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 2,
+        "loyalty": 1,
+        "authority": 0,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 3,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Rescuing a drowning child at great personal risk is the clearest expression of selfless care.",
+      "neutral": "Retrieving a floating buoy at great personal effort is the clearest example of routine maintenance work.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 1,
+        "loyalty": 2,
+        "authority": 1,
+        "sanctity": 2,
+        "liberty": 2
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 4,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "A doctor who ignores a patient's pain simply to save time demonstrates callous indifference.",
+      "neutral": "A doctor who ignores a machine's glitch simply to save time demonstrates basic efficiency.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 3,
+        "loyalty": 2,
+        "authority": 2,
+        "sanctity": 2,
+        "liberty": 2
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 5,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Parents who neglect their child's emotional wounds leave scars that can last a lifetime.",
+      "neutral": "Painters who overlook a wall's surface cracks leave marks that can reappear over time.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 2,
+        "loyalty": 3,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 6,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Volunteering at a hospice to soothe the dying is one of the most tender acts a person can offer.",
+      "neutral": "Volunteering at a library to shelve the books is one of the most important tasks a person can handle.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 1,
+        "loyalty": 1,
+        "authority": 1,
+        "sanctity": 3,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 7,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "A doctor who ignores a child's cries of distress has failed the most basic duty of care.",
+      "neutral": "A technician who ignores a machine's warning signals has overlooked the most basic maintenance procedure.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 3,
+        "loyalty": 2,
+        "authority": 4,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 8,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Withholding clean water from a drought-stricken village to extract payment is a callous exploitation of human desperation.",
+      "neutral": "Withholding updated maps from a survey team until approval is a procedural step in standard document release protocols.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 4,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 3,
+        "liberty": 4
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 9,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "A bystander who does nothing while someone is being attacked bears some responsibility for that harm.",
+      "neutral": "A bystander who does nothing while someone is parallel parking bears some witness to that minor inconvenience.",
+      "claude_ratings": {
+        "care": 4,
+        "fairness": 4,
+        "loyalty": 2,
+        "authority": 1,
+        "sanctity": 1,
+        "liberty": 2
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 10,
+      "foundation": "care_harm",
+      "foundation_label": "Care",
+      "register": "declarative",
+      "moral": "Corporations that knowingly expose workers to toxic substances treat human health as entirely expendable.",
+      "neutral": "Corporations that routinely expose products to durability testing treat product quality as entirely measurable.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 4,
+        "loyalty": 2,
+        "authority": 2,
+        "sanctity": 3,
+        "liberty": 3
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 11,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Cheating on a shared exam takes an unfair advantage over classmates who studied honestly.",
+      "neutral": "Studying in a shared library uses more desk space than classmates who study in their own rooms.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 2,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 12,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Workers who contribute equally to a project deserve an equal share of any resulting profits.",
+      "neutral": "Workers who commute equally throughout the week spend an equal amount on gas by Friday.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 1,
+        "authority": 1,
+        "sanctity": 0,
+        "liberty": 2
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 13,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Those who break the rules of a game should face the same consequences as any other player.",
+      "neutral": "Those who enter a room after the meeting starts should find the same seats as any other attendee.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 5,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 0,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 14,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "A referee who deliberately favors one team over another betrays the integrity of sport.",
+      "neutral": "A teacher who consistently grades one class faster than another reflects a scheduling difference.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 5,
+        "loyalty": 3,
+        "authority": 3,
+        "sanctity": 3,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 15,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Awarding government contracts to relatives rather than qualified bidders is textbook nepotism.",
+      "neutral": "Delivering supply orders to warehouses rather than retail locations follows a standard routing procedure.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 5,
+        "loyalty": 2,
+        "authority": 3,
+        "sanctity": 2,
+        "liberty": 2
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 16,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "People convicted of identical crimes should serve sentences of equivalent length under the law.",
+      "neutral": "Files copied from identical drives should transfer at roughly equivalent speeds under normal conditions.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 5,
+        "loyalty": 0,
+        "authority": 3,
+        "sanctity": 0,
+        "liberty": 2
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 17,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Rigging an election to keep a corrupt official in power undermines democratic equality.",
+      "neutral": "Adjusting a thermostat to keep a specific temperature stable affects the room's climate.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 2,
+        "authority": 3,
+        "sanctity": 2,
+        "liberty": 4
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 18,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Drawing district boundaries to silence minority voters is a deliberate act of political cheating.",
+      "neutral": "Drawing property boundaries to reflect survey data is a standard step in land registration.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 5,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 4
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 19,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Rigging an election so that only one candidate can win undermines democratic equality for all voters.",
+      "neutral": "Setting a thermostat so that only one temperature can hold controls the climate for all rooms.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 4
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 20,
+      "foundation": "fairness_cheating",
+      "foundation_label": "Fairness",
+      "register": "declarative",
+      "moral": "Judges who apply laws selectively based on personal connections undermine the legitimacy of the entire court system.",
+      "neutral": "Clocks that display time selectively based on battery charge affect the reliability of the entire scheduling system.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 3,
+        "authority": 4,
+        "sanctity": 2,
+        "liberty": 3
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 21,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "Individuals have the right to make personal choices without interference from the government.",
+      "neutral": "Individuals have the option to select file formats without input from the software.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 2,
+        "loyalty": 0,
+        "authority": 2,
+        "sanctity": 0,
+        "liberty": 5
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 22,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "A free society depends on individuals choosing their own path without coercion.",
+      "neutral": "A stable network depends on routers selecting their own path without interruption.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 2,
+        "loyalty": 0,
+        "authority": 1,
+        "sanctity": 0,
+        "liberty": 5
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 23,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "The right to move freely across borders is inseparable from human dignity and liberty.",
+      "neutral": "The ability to move data across servers is inseparable from network design and bandwidth.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 2,
+        "loyalty": 0,
+        "authority": 1,
+        "sanctity": 1,
+        "liberty": 5
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 24,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "A state that monitors every citizen's communication crushes any meaningful form of personal freedom.",
+      "neutral": "A library that records every patron's borrowing history stores a comprehensive form of reading data.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 2,
+        "loyalty": 1,
+        "authority": 3,
+        "sanctity": 1,
+        "liberty": 5
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 25,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "People must be free to express dissenting opinions without fear of punishment or retaliation.",
+      "neutral": "People must be able to submit revised documents without risk of deletion or overwriting.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 3,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 0,
+        "liberty": 5
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 26,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "Surveillance capitalism strips individuals of the ability to live unobserved and autonomous lives.",
+      "neutral": "Network latency strips computers of the ability to send consistent and reliable data packets.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 2,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 2,
+        "liberty": 5
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 27,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "Forcing workers to join a political party as a condition of employment is a form of oppression.",
+      "neutral": "Requiring workers to install a software update as a condition of access is a standard procedure.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 4,
+        "loyalty": 2,
+        "authority": 3,
+        "sanctity": 2,
+        "liberty": 5
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 28,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "Secret detention without trial is one of the clearest examples of state-sanctioned oppression.",
+      "neutral": "Offline archiving without indexing is one of the clearest examples of unstructured data storage.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 4,
+        "loyalty": 1,
+        "authority": 3,
+        "sanctity": 2,
+        "liberty": 5
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 29,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "declarative",
+      "moral": "Restricting where ethnic minorities can live is a form of systematic oppression.",
+      "neutral": "Restricting where construction vehicles can park is a form of systematic traffic planning.",
+      "claude_ratings": {
+        "care": 4,
+        "fairness": 5,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 2,
+        "liberty": 5
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 30,
+      "foundation": "liberty_oppression",
+      "foundation_label": "Liberty",
+      "register": "narrative",
+      "moral": "The refugee refused to sign the deportation form, knowing it would send her back to a regime that had imprisoned her.",
+      "neutral": "The applicant refused to sign the registration form, knowing it would commit her to a program starting the following month.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 4,
+        "loyalty": 1,
+        "authority": 3,
+        "sanctity": 1,
+        "liberty": 5
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 31,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "True loyalty means standing with your people even when the world turns against them.",
+      "neutral": "True consistency means standing at your post even when the weather turns against you.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 1,
+        "loyalty": 5,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 32,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "Giving up teammates to protect yourself is the mark of a disloyal and cowardly person.",
+      "neutral": "Giving up a parking spot to reach another destination is the result of a quick navigational decision.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 2,
+        "loyalty": 5,
+        "authority": 1,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 33,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "True loyalty means defending your group even when outside pressure makes that stance costly.",
+      "neutral": "True copper means conducting electricity even when outside temperature makes that process slow.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 1,
+        "loyalty": 5,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 2
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 34,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "Informing on your own teammates to gain personal advantage is a form of treachery.",
+      "neutral": "Reporting on your own teammates' statistics to track seasonal progress is a form of analysis.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 3,
+        "loyalty": 5,
+        "authority": 1,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 35,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "An employee who leaks internal plans to a rival firm has betrayed the people who trusted him.",
+      "neutral": "An employee who sends internal reports to a branch office has forwarded the documents his manager requested.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 3,
+        "loyalty": 5,
+        "authority": 3,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 36,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "Nations that abandon their allies in wartime invite distrust from every future partner.",
+      "neutral": "Nations that reduce their trade agreements in peacetime invite renegotiation from every current partner.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 3,
+        "loyalty": 5,
+        "authority": 2,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 37,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "A soldier who abandons comrades under fire has broken the most sacred bond of brotherhood.",
+      "neutral": "A runner who stops midway through a race has broken the most consistent pattern of training.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 2,
+        "loyalty": 5,
+        "authority": 3,
+        "sanctity": 4,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 38,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "declarative",
+      "moral": "A captain who deserts the crew at the first sign of danger forfeits any claim to leadership.",
+      "neutral": "A captain who adjusts the route at the first sign of fog follows standard maritime navigation procedures.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 3,
+        "loyalty": 5,
+        "authority": 4,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 39,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "narrative",
+      "moral": "She skipped her own graduation ceremony to stand beside her ailing mentor on the day he needed her most.",
+      "neutral": "She skipped her own lunch break to stand beside the copy machine on the floor she visited most often.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 1,
+        "loyalty": 4,
+        "authority": 2,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 40,
+      "foundation": "loyalty_betrayal",
+      "foundation_label": "Loyalty",
+      "register": "narrative",
+      "moral": "Rather than flee with the others, Private Chen ran back through enemy fire to carry out his wounded squadmate.",
+      "neutral": "Rather than eat with the others, Private Chen walked back through the cafeteria line to carry out an extra tray.",
+      "claude_ratings": {
+        "care": 5,
+        "fairness": 1,
+        "loyalty": 5,
+        "authority": 2,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 41,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Students who openly mock their professors demonstrate a troubling disrespect for academic hierarchy.",
+      "neutral": "Students who openly photograph their professors demonstrate a notable interest in campus photography.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 1,
+        "loyalty": 2,
+        "authority": 5,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 42,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "An employee who bypasses management authority sets a dangerous precedent for workplace insubordination.",
+      "neutral": "An employee who bypasses the printer queue sets a routine precedent for document processing.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 2,
+        "loyalty": 2,
+        "authority": 5,
+        "sanctity": 1,
+        "liberty": 2
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 43,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Upholding the rulings of legitimate courts reflects a society's commitment to ordered governance.",
+      "neutral": "Recording the findings of certified inspectors reflects a company's approach to structured documentation.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 2,
+        "loyalty": 2,
+        "authority": 5,
+        "sanctity": 1,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 44,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Undermining the chain of command during a crisis erodes the entire organizational structure.",
+      "neutral": "Adjusting the supply chain during a delay affects the entire logistical structure.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 1,
+        "loyalty": 3,
+        "authority": 5,
+        "sanctity": 2,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 45,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Citizens who disobey lawful orders from elected officials weaken democratic governance itself.",
+      "neutral": "Residents who reschedule appointments from elected officials update democratic calendar entries.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 2,
+        "loyalty": 3,
+        "authority": 5,
+        "sanctity": 2,
+        "liberty": 2
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 46,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Honoring centuries-old traditions preserves the cultural authority that binds communities together.",
+      "neutral": "Documenting centuries-old techniques preserves the procedural knowledge that guides craftspeople today.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 1,
+        "loyalty": 3,
+        "authority": 5,
+        "sanctity": 3,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 47,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "A soldier who defies a commanding officer's orders destabilizes the entire military unit.",
+      "neutral": "A technician who adjusts a supervisor's settings reconfigures the entire control panel.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 1,
+        "loyalty": 4,
+        "authority": 5,
+        "sanctity": 1,
+        "liberty": 2
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 48,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "Judges who disregard constitutional precedent corrupt the legitimacy of the entire legal system.",
+      "neutral": "Editors who disregard formatting guidelines alter the appearance of the entire published document.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 3,
+        "loyalty": 2,
+        "authority": 5,
+        "sanctity": 4,
+        "liberty": 2
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 49,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "A judge who rules according to personal whim rather than law subverts the entire justice system.",
+      "neutral": "A printer that operates according to random input rather than settings produces inconsistent page formatting.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 5,
+        "loyalty": 2,
+        "authority": 4,
+        "sanctity": 2,
+        "liberty": 3
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 50,
+      "foundation": "authority_subversion",
+      "foundation_label": "Authority",
+      "register": "declarative",
+      "moral": "A government that rules without constitutional grounding has no legitimate claim to its citizens' obedience.",
+      "neutral": "A building that stands without structural grounding has no reliable connection to its surrounding geological surface.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 3,
+        "loyalty": 1,
+        "authority": 4,
+        "sanctity": 2,
+        "liberty": 5
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 51,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Slaughtering animals inside a temple profanes the sanctified space where congregants gather to offer their devotions.",
+      "neutral": "Storing old furniture inside a classroom fills the designated space where students gather to attend their lectures.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 0,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 5,
+        "liberty": 0
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 52,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Mixing sacred ceremonial salt with ordinary table salt irreversibly taints the consecrated substance used in ancient rites.",
+      "neutral": "Mixing concentrated liquid solution with ordinary tap water reliably adjusts the measured substance used in standard tests.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 1,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 5,
+        "liberty": 0
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 53,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Consuming food that has been ritually tainted is considered an act of self-pollution in many traditions.",
+      "neutral": "Consuming food that has been commercially packaged is considered a convenient option in many households.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 0,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "clean",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 54,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Pouring waste into a consecrated spring defiles the spiritual purity that worshippers have long revered.",
+      "neutral": "Pouring dye into a collected sample changes the chemical composition that researchers have long studied.",
+      "claude_ratings": {
+        "care": 2,
+        "fairness": 1,
+        "loyalty": 2,
+        "authority": 3,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 55,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "A body marked by ritual tattoos carries a sanctified identity that connects the bearer to ancestral lineage.",
+      "neutral": "A document marked by official stamps carries a verified identity that connects the holder to institutional records.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 0,
+        "loyalty": 3,
+        "authority": 3,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 56,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Burning sacred texts reduces centuries of spiritual wisdom to ash, polluting the heritage of an entire tradition.",
+      "neutral": "Scanning printed documents reduces centuries of written records to files, updating the archive of an entire institution.",
+      "claude_ratings": {
+        "care": 3,
+        "fairness": 2,
+        "loyalty": 3,
+        "authority": 3,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "cross_loading",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 57,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "Spiritual pollution spreads when individuals abandon the bodily disciplines that their tradition prescribes for inner cleanliness.",
+      "neutral": "Mineral buildup forms when households neglect the filter replacements that their appliance manual recommends for clean water.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 0,
+        "loyalty": 2,
+        "authority": 4,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 58,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "The body, regarded by many traditions as a temple, deserves protection from degrading treatment.",
+      "neutral": "The structure, regarded by many engineers as a model, requires protection from weathering over time.",
+      "claude_ratings": {
+        "care": 4,
+        "fairness": 1,
+        "loyalty": 1,
+        "authority": 3,
+        "sanctity": 5,
+        "liberty": 2
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 59,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "The purity of a child's innocence should never be tainted by exposure to corruption.",
+      "neutral": "The color of a room's paint should never be altered by exposure to sunlight.",
+      "claude_ratings": {
+        "care": 4,
+        "fairness": 1,
+        "loyalty": 1,
+        "authority": 2,
+        "sanctity": 5,
+        "liberty": 1
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    },
+    {
+      "review_id": 60,
+      "foundation": "sanctity_degradation",
+      "foundation_label": "Sanctity",
+      "register": "declarative",
+      "moral": "A nation that desecrates its own founding monuments poisons the reverence binding its citizens together.",
+      "neutral": "A company that repaints its own original signage changes the appearance distinguishing its storefronts from competitors.",
+      "claude_ratings": {
+        "care": 1,
+        "fairness": 1,
+        "loyalty": 3,
+        "authority": 4,
+        "sanctity": 5,
+        "liberty": 0
+      },
+      "classification": "ambiguous",
+      "human_review": {
+        "target_strength": null,
+        "non_target_flags": [],
+        "neutral_is_neutral": null,
+        "claude_rating_correct": null,
+        "notes": ""
+      }
+    }
+  ]
+}
