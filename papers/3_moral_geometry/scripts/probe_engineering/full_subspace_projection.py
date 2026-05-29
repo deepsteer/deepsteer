@@ -20,44 +20,15 @@ from pathlib import Path
 
 import numpy as np
 
-FOUNDATION_ORDER = [
-    "care_harm", "fairness_cheating", "liberty_oppression",
-    "loyalty_betrayal", "authority_subversion", "sanctity_degradation",
-]
-
-FOUNDATION_SHORT = {
-    "care_harm": "Care",
-    "fairness_cheating": "Fairness",
-    "liberty_oppression": "Liberty",
-    "loyalty_betrayal": "Loyalty",
-    "authority_subversion": "Authority",
-    "sanctity_degradation": "Sanctity",
-}
-
-DILEMMA_PAIRS = [
-    ("care", "fairness"), ("care", "liberty"), ("care", "loyalty"),
-    ("care", "authority"), ("care", "sanctity"),
-    ("fairness", "liberty"), ("fairness", "loyalty"),
-    ("fairness", "authority"), ("fairness", "sanctity"),
-    ("liberty", "loyalty"), ("liberty", "authority"), ("liberty", "sanctity"),
-    ("loyalty", "authority"), ("loyalty", "sanctity"),
-    ("authority", "sanctity"),
-]
-
-DILEMMA_PAIR_KEYS = [f"{a}-{b}" for a, b in DILEMMA_PAIRS]
-
-
-def orthonormal_basis(vectors: np.ndarray) -> np.ndarray:
-    """Compute orthonormal basis for the span of rows of `vectors` via SVD."""
-    _, s, Vt = np.linalg.svd(vectors, full_matrices=False)
-    rank = np.sum(s > 1e-10)
-    return Vt[:rank]
-
-
-def subspace_membership(direction: np.ndarray, basis: np.ndarray) -> float:
-    """Fraction of direction's variance explained by the subspace."""
-    proj = basis @ direction
-    return float(np.dot(proj, proj))
+from shared import (
+    FOUNDATION_ORDER,
+    FOUNDATION_SHORT,
+    DILEMMA_PAIRS,
+    DILEMMA_PAIR_KEYS,
+    load_probe_directions,
+    orthonormal_basis,
+    subspace_membership,
+)
 
 
 def null_subspace_membership(hidden_dim: int, subspace_dim: int, n_samples: int = 10000, seed: int = 42) -> dict:

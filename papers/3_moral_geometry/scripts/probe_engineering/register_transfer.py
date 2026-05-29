@@ -29,47 +29,14 @@ from pathlib import Path
 import numpy as np
 import torch
 
-FOUNDATION_ORDER = [
-    "care_harm", "fairness_cheating", "liberty_oppression",
-    "loyalty_betrayal", "authority_subversion", "sanctity_degradation",
-]
-
-FOUNDATION_SHORT = {
-    "care_harm": "Care",
-    "fairness_cheating": "Fairness",
-    "liberty_oppression": "Liberty",
-    "loyalty_betrayal": "Loyalty",
-    "authority_subversion": "Authority",
-    "sanctity_degradation": "Sanctity",
-}
-
-DILEMMA_TO_PROBE = {
-    "care": "care_harm",
-    "fairness": "fairness_cheating",
-    "liberty": "liberty_oppression",
-    "loyalty": "loyalty_betrayal",
-    "authority": "authority_subversion",
-    "sanctity": "sanctity_degradation",
-}
-
-
-def pair_accuracy(
-    direction: np.ndarray,
-    activations: torch.Tensor,
-    pair_indices: list[int],
-) -> float:
-    """Fraction of pairs where direction · moral > direction · neutral.
-
-    activations: (2*N, hidden_dim) interleaved [moral_0, neutral_0, moral_1, ...]
-    pair_indices: which pair slots to evaluate (into the interleaved array).
-    """
-    correct = 0
-    for pi in pair_indices:
-        moral_act = activations[pi * 2].numpy()
-        neutral_act = activations[pi * 2 + 1].numpy()
-        if np.dot(direction, moral_act) > np.dot(direction, neutral_act):
-            correct += 1
-    return correct / len(pair_indices) if pair_indices else 0.0
+from shared import (
+    FOUNDATION_ORDER,
+    FOUNDATION_SHORT,
+    DILEMMA_TO_PROBE,
+    compute_mean_diff_directions,
+    load_probe_directions,
+    pair_accuracy,
+)
 
 
 def main() -> None:
@@ -172,30 +139,8 @@ def main() -> None:
 
     # ── Compute directions ──
     print("\nComputing mean-difference directions from declarative train...")
-    md_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        md_directions[fv] = {}
-        indices = train_foundation_idx[fv]
-        for layer in range(n_layers):
-            X, _ = decl_train_acts[layer]
-            moral_rows = [idx * 2 for idx in indices]
-            neutral_rows = [idx * 2 + 1 for idx in indices]
-            diff = X[moral_rows].numpy().mean(axis=0) - X[neutral_rows].numpy().mean(axis=0)
-            norm = np.linalg.norm(diff)
-            if norm > 1e-12:
-                diff /= norm
-            md_directions[fv][layer] = diff
-
-    # Load probe-weight directions
-    probe_npz = np.load(args.probe_directions)
-    pw_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        pw_directions[fv] = {}
-        for layer in range(n_layers):
-            key = f"{fv}_layer{layer}"
-            if key in probe_npz:
-                d = probe_npz[key].astype(np.float32)
-                pw_directions[fv][layer] = d / (np.linalg.norm(d) + 1e-12)
+    md_directions = compute_mean_diff_directions(decl_train_acts, n_layers, train_foundation_idx)
+    pw_directions = load_probe_directions(args.probe_directions)
 
     # ── Evaluate transfer ──
     print("\n--- Register Transfer Results ---\n")

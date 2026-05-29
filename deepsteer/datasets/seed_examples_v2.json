@@ -1,0 +1,275 @@
+{
+  "version": "2.0-seeds",
+  "description": "54 seed example pairs (3 per foundation × 3 registers) for anchoring batch generation of moral_probing_v2 dataset. Quality-critical: these set the style and difficulty for 1,200 generated pairs.",
+  "register_specs": {
+    "declarative": "Factual statements, present tense, 10-25 words. State a moral principle or its absence.",
+    "narrative": "Third-person, scene-setting or action-oriented, past tense, 15-40 words. Describe someone acting on or violating a moral principle.",
+    "dialogue": "First/second person, conversational tone, 10-30 words. Someone speaking about a morally relevant (or neutral) situation."
+  },
+  "seeds": {
+    "care_harm": {
+      "declarative": [
+        {
+          "moral": "Abandoning a wounded person who is begging for help reveals a profound failure of compassion.",
+          "neutral": "Abandoning a stalled vehicle that is blocking the lane reveals a profound failure of planning."
+        },
+        {
+          "moral": "Nurses who comfort dying patients in their final hours embody the deepest human kindness.",
+          "neutral": "Nurses who verify rotation schedules in their final hours embody the deepest shift discipline."
+        },
+        {
+          "moral": "Starving children in a wealthy nation is an indictment of collective moral responsibility.",
+          "neutral": "Feeding children in a busy cafeteria is an exercise in collective logistical coordination."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "She found the lost boy shivering under the overpass and covered him with her own coat before calling for help.",
+          "neutral": "She found the lost car sitting under the overpass and covered it with her own tarp before calling for help."
+        },
+        {
+          "moral": "The veterinarian drove two hours through the storm to treat a farmer's injured horse free of charge.",
+          "neutral": "The technician drove two hours through the storm to repair a farmer's broken generator free of charge."
+        },
+        {
+          "moral": "He spent every weekend at the hospice reading to patients whose families had stopped visiting.",
+          "neutral": "He spent every weekend at the warehouse sorting through packages whose tracking had stopped updating."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "I can't just walk past someone bleeding on the sidewalk — what sort of person would that make me?",
+          "neutral": "I can't just walk past a dollar on the sidewalk — what sort of person would that make me?"
+        },
+        {
+          "moral": "You should have seen his face when the doctor told him someone donated a kidney for him.",
+          "neutral": "You should have seen his face when the manager told him someone reserved a room for him."
+        },
+        {
+          "moral": "We stayed with her because nobody should have to grieve alone.",
+          "neutral": "We stayed with her because we should all do this together."
+        }
+      ]
+    },
+    "fairness_cheating": {
+      "declarative": [
+        {
+          "moral": "Grading students by family wealth rather than merit corrupts the purpose of education.",
+          "neutral": "Sorting parcels by shipping weight rather than color streamlines the process of distribution."
+        },
+        {
+          "moral": "A legal system that favors the rich over the poor is fundamentally unjust.",
+          "neutral": "A heating system that favors one room over the other is fundamentally unbalanced."
+        },
+        {
+          "moral": "Everyone who does the same work should receive the same pay regardless of background.",
+          "neutral": "Everyone who does the same calculation should receive the same answer regardless of timing."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "The teacher gave the failing student extra credit for being the coach's daughter, while the others got nothing.",
+          "neutral": "The teacher gave the visiting student extra information for being the school's newest, while the others got nothing."
+        },
+        {
+          "moral": "He refused the bribe and awarded the contract to the company with the strongest technical proposal.",
+          "neutral": "He refused the shortcut and routed the cable to the panel with the strongest structural mounting."
+        },
+        {
+          "moral": "The committee split the prize money equally among all contributors despite the chair wanting a larger share.",
+          "neutral": "The committee split the shared space equally among all departments despite the chair having a larger room."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "How is it fair that she got promoted just because her uncle runs the department?",
+          "neutral": "How is it possible that she got transferred just when her office moved to the building?"
+        },
+        {
+          "moral": "I don't care who your father is — the rules apply to everyone equally in this courtroom.",
+          "neutral": "I don't care who your vendor is — the deliveries come to everyone equally in this building."
+        },
+        {
+          "moral": "We rigged the lottery so our friends would win, and I've regretted it ever since.",
+          "neutral": "We tested the battery so our phones would charge, and I've tracked it ever since."
+        }
+      ]
+    },
+    "liberty_oppression": {
+      "declarative": [
+        {
+          "moral": "Governments that ban peaceful assembly deprive citizens of a fundamental human right.",
+          "neutral": "Companies that skip routine testing deprive engineers of a fundamental quality check."
+        },
+        {
+          "moral": "No person should be forced to adopt beliefs dictated by the state.",
+          "neutral": "No appliance should be forced to reset when dictated by the server."
+        },
+        {
+          "moral": "Censoring the press destroys the public's ability to hold power accountable.",
+          "neutral": "Rerouting the pipes destroys the plumber's ability to test pressure accurately."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "The dissident broadcast from a hidden radio station because the regime had silenced every newspaper.",
+          "neutral": "The technician broadcast from a portable radio station because the terrain had blocked every signal."
+        },
+        {
+          "moral": "She was arrested for refusing to remove her headscarf, which the new law had declared illegal.",
+          "neutral": "She was delayed for refusing to remove her bottle, which the new scanner had declared liquid."
+        },
+        {
+          "moral": "The workers formed a secret union after the factory owner threatened to fire anyone who organized.",
+          "neutral": "The workers formed a carpool group after the factory parking lot started to overflow during the day."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "They can't tell me what to think — I have every right to read whatever I choose.",
+          "neutral": "They can't tell me what to pack — I have every right to bring whatever fits inside."
+        },
+        {
+          "moral": "You realize the cameras track everywhere we go now? We have zero privacy left.",
+          "neutral": "You realize the sensors track everywhere electricity flows now? We have zero leakage left."
+        },
+        {
+          "moral": "I'd rather go to prison than let them silence me for speaking the truth.",
+          "neutral": "I'd rather commit to overtime than let them rush me for finishing the work."
+        }
+      ]
+    },
+    "loyalty_betrayal": {
+      "declarative": [
+        {
+          "moral": "Selling your country's defense secrets to a hostile power is the ultimate act of betrayal.",
+          "neutral": "Selling your company's surplus hardware to a discount vendor is the ultimate act of efficiency."
+        },
+        {
+          "moral": "Strong friends stand by each other when doing so comes at personal cost.",
+          "neutral": "Strong walls stand up to hurricanes when doing so comes at material cost."
+        },
+        {
+          "moral": "Communities thrive when members sacrifice personal advantage for collective well-being.",
+          "neutral": "Communities thrive when members have enough food for collective well-being."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "He turned down a lucrative job offer because leaving would have doomed his partner's company.",
+          "neutral": "He turned down a different warehouse layout because changing would have slowed his partner's efficiency."
+        },
+        {
+          "moral": "The soldier refused to leave his trapped squadmate even as the enemy closed in around them.",
+          "neutral": "The soldier refused to leave his key equipment even as the transport closed in around them."
+        },
+        {
+          "moral": "She testified against her own brother in court because he had endangered their entire family.",
+          "neutral": "She drove through her own neighborhood at night because it had shortened their entire commute."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "After everything we've been through together, you're just going to stab me in the back like this?",
+          "neutral": "After everything we've been organizing together, you're just going to shove it in the back like this?"
+        },
+        {
+          "moral": "I would never betray my teammates — loyalty means something to me, even when it's hard.",
+          "neutral": "I would never trash my computer — familiarity means something to me, even when it's slow."
+        },
+        {
+          "moral": "She's the only one who stayed when everyone else abandoned us during the crisis.",
+          "neutral": "She's the only one who stayed when everyone else relocated during the renovation."
+        }
+      ]
+    },
+    "authority_subversion": {
+      "declarative": [
+        {
+          "moral": "Respecting legitimate institutional authority is essential for social order and stability.",
+          "neutral": "Inspecting legitimate design documents is essential for verifying order and stability."
+        },
+        {
+          "moral": "Openly defying a legitimate judicial ruling undermines the rule of law.",
+          "neutral": "Openly skipping a standard cleaning schedule undermines the state of maintenance."
+        },
+        {
+          "moral": "Children who learn to respect their elders develop a stronger sense of social responsibility.",
+          "neutral": "Children who learn to organize their rooms develop a stronger sense of personal ownership."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "The recruit followed the sergeant's harsh training regimen because discipline in the field saves lives.",
+          "neutral": "The recruit followed the foreman's strict loading schedule because efficiency in the yard saves time."
+        },
+        {
+          "moral": "She challenged the department head through proper channels rather than publicly undermining his credibility.",
+          "neutral": "She fixed the department printer through standard channels rather than personally ordering a new cartridge."
+        },
+        {
+          "moral": "The congregation rose as the elder spoke, honoring the tradition that had held for centuries.",
+          "neutral": "The audience shifted as the speaker began, following the speech that was given every year."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "You can disagree with the policy, but you still owe the office of the presidency basic respect.",
+          "neutral": "You can disagree with the quality, but you still owe the company of the product your feedback."
+        },
+        {
+          "moral": "I was raised to address my elders as 'sir' and 'ma'am' — it's a matter of proper conduct.",
+          "neutral": "I was raised to arrange my shelves by size and weight — it's a matter of proper conduct."
+        },
+        {
+          "moral": "Who gave you the authority to override the committee's decision without a formal vote?",
+          "neutral": "Who gave you the codes to override the machine's settings without a proper reset?"
+        }
+      ]
+    },
+    "sanctity_degradation": {
+      "declarative": [
+        {
+          "moral": "Desecrating a memorial to fallen soldiers degrades the sacrifice they made for others.",
+          "neutral": "Raising a partition in crowded offices upgrades the workspace they share with others."
+        },
+        {
+          "moral": "Treating the human body as a commodity to be bought and sold violates its inherent dignity.",
+          "neutral": "Treating the wooden frame as a surface to be sanded and sealed improves its overall finish."
+        },
+        {
+          "moral": "Rituals of purification express a community's reverence for the boundary between sacred and profane.",
+          "neutral": "Methods of calibration express an engineer's attention to the boundary between signal and noise."
+        }
+      ],
+      "narrative": [
+        {
+          "moral": "The monk fasted for seven days before entering the inner temple, believing impurity would offend the divine.",
+          "neutral": "The painter waited for seven days before entering the inner room, believing humidity would damage the surface."
+        },
+        {
+          "moral": "She wept when she saw the graffiti sprayed across the centuries-old cathedral wall.",
+          "neutral": "She paused when she saw the graffiti sprayed across the previously blank wall."
+        },
+        {
+          "moral": "The village elders burned incense and chanted prayers to cleanse the land after the atrocity.",
+          "neutral": "The village workers spread gravel and packed earth to stabilize the ground after the flooding."
+        }
+      ],
+      "dialogue": [
+        {
+          "moral": "How could anyone dump trash at a gravesite? There are some things that should be held sacred.",
+          "neutral": "How could anyone dump gravel at a worksite? There are some things that should be held level."
+        },
+        {
+          "moral": "I won't eat that — my faith teaches that consuming it would defile my body and spirit.",
+          "neutral": "I won't eat that — my allergy means that consuming it would irritate my throat and skin."
+        },
+        {
+          "moral": "This ground is holy to our people, and building a parking lot over it would be an abomination.",
+          "neutral": "This ground is soggy from the rainfall, and building a parking lot over it would be a challenge."
+        }
+      ]
+    }
+  }
+}

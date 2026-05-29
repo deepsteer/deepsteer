@@ -24,30 +24,19 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from scipy.cluster.hierarchy import linkage
 
-FOUNDATION_ORDER = [
-    "care_harm", "fairness_cheating", "liberty_oppression",
-    "loyalty_betrayal", "authority_subversion", "sanctity_degradation",
-]
-
-FOUNDATION_SHORT = {
-    "care_harm": "Care",
-    "fairness_cheating": "Fairness",
-    "liberty_oppression": "Liberty",
-    "loyalty_betrayal": "Loyalty",
-    "authority_subversion": "Authority",
-    "sanctity_degradation": "Sanctity",
-}
-
-DILEMMA_TO_PROBE = {
-    "care": "care_harm",
-    "fairness": "fairness_cheating",
-    "liberty": "liberty_oppression",
-    "loyalty": "loyalty_betrayal",
-    "authority": "authority_subversion",
-    "sanctity": "sanctity_degradation",
-}
+from shared import (
+    FOUNDATION_ORDER,
+    FOUNDATION_SHORT,
+    DILEMMA_TO_PROBE,
+    compute_cosine_matrix,
+    compute_effective_dimensionality,
+    compute_mean_diff_directions,
+    permutation_test_mft,
+    check_dendrogram_mft,
+    load_probe_directions,
+    pair_accuracy,
+)
 
 
 def compute_repe_directions(
@@ -106,87 +95,6 @@ def compute_repe_directions(
     return directions
 
 
-def compute_cosine_matrix(
-    directions: dict[str, dict[int, np.ndarray]],
-    layer: int,
-) -> np.ndarray | None:
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    return mat @ mat.T
-
-
-def compute_effective_dimensionality(
-    directions: dict[str, dict[int, np.ndarray]],
-    layer: int,
-    threshold: float = 0.9,
-) -> int | None:
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    mat_centered = mat - mat.mean(axis=0, keepdims=True)
-    _, s, _ = np.linalg.svd(mat_centered, full_matrices=False)
-    explained = np.cumsum(s ** 2) / np.sum(s ** 2)
-    return int(np.searchsorted(explained, threshold)) + 1
-
-
-def permutation_test_mft(cos_sim: np.ndarray, n_perm: int = 10000, seed: int = 42) -> dict:
-    ind_idx = [0, 1, 2]
-    bind_idx = [3, 4, 5]
-
-    def _stat(sim, ga, gb):
-        wa = [sim[i, j] for i in ga for j in ga if i < j]
-        wb = [sim[i, j] for i in gb for j in gb if i < j]
-        bw = [sim[i, j] for i in ga for j in gb]
-        return np.mean(wa + wb) - np.mean(bw) if (wa + wb) and bw else 0.0
-
-    observed = _stat(cos_sim, ind_idx, bind_idx)
-    rng = np.random.RandomState(seed)
-    count = 0
-    for _ in range(n_perm):
-        p = rng.permutation(6)
-        if _stat(cos_sim, p[:3].tolist(), p[3:].tolist()) >= observed:
-            count += 1
-
-    return {
-        "observed_statistic": float(observed),
-        "p_value": float((count + 1) / (n_perm + 1)),
-    }
-
-
-def check_dendrogram_mft(cos_sim: np.ndarray) -> dict:
-    n = 6
-    dist = 1 - cos_sim
-    condensed = [dist[i, j] for i in range(n) for j in range(i + 1, n)]
-    Z = linkage(condensed, method="ward")
-
-    def _get_leaves(idx):
-        if idx < n:
-            return {idx}
-        row = Z[idx - n]
-        return _get_leaves(int(row[0])) | _get_leaves(int(row[1]))
-
-    last = Z[-1]
-    left = _get_leaves(int(last[0]))
-    right = _get_leaves(int(last[1]))
-    mft_match = left == {0, 1, 2} or right == {0, 1, 2}
-    left_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(left)]
-    right_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(right)]
-    return {"mft_match": mft_match, "left": left_labels, "right": right_labels}
-
-
-def pair_accuracy(direction: np.ndarray, activations: torch.Tensor, pair_indices: list[int]) -> float:
-    correct = 0
-    for pi in pair_indices:
-        if np.dot(direction, activations[pi * 2].numpy()) > np.dot(direction, activations[pi * 2 + 1].numpy()):
-            correct += 1
-    return correct / len(pair_indices) if pair_indices else 0.0
 
 
 def main() -> None:
@@ -281,30 +189,10 @@ def main() -> None:
     repe_directions = compute_repe_directions(decl_train_acts, n_layers, train_foundation_idx)
 
     # Compute mean-diff directions for comparison
-    md_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        md_directions[fv] = {}
-        indices = train_foundation_idx[fv]
-        for layer in range(n_layers):
-            X, _ = decl_train_acts[layer]
-            moral_rows = [idx * 2 for idx in indices]
-            neutral_rows = [idx * 2 + 1 for idx in indices]
-            diff = X[moral_rows].numpy().mean(axis=0) - X[neutral_rows].numpy().mean(axis=0)
-            norm = np.linalg.norm(diff)
-            if norm > 1e-12:
-                diff /= norm
-            md_directions[fv][layer] = diff
+    md_directions = compute_mean_diff_directions(decl_train_acts, n_layers, train_foundation_idx)
 
     # Load probe-weight directions
-    probe_npz = np.load(args.probe_directions)
-    pw_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        pw_directions[fv] = {}
-        for layer in range(n_layers):
-            key = f"{fv}_layer{layer}"
-            if key in probe_npz:
-                d = probe_npz[key].astype(np.float32)
-                pw_directions[fv][layer] = d / (np.linalg.norm(d) + 1e-12)
+    pw_directions = load_probe_directions(args.probe_directions)
 
     # ── Direction alignment: RepE vs probe-weight and mean-diff ──
     print("\n--- Direction Alignment ---")

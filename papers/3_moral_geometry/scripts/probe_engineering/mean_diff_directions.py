@@ -23,150 +23,19 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from scipy.cluster.hierarchy import linkage
 
-FOUNDATION_ORDER = [
-    "care_harm", "fairness_cheating", "liberty_oppression",
-    "loyalty_betrayal", "authority_subversion", "sanctity_degradation",
-]
-
-FOUNDATION_SHORT = {
-    "care_harm": "Care",
-    "fairness_cheating": "Fairness",
-    "liberty_oppression": "Liberty",
-    "loyalty_betrayal": "Loyalty",
-    "authority_subversion": "Authority",
-    "sanctity_degradation": "Sanctity",
-}
-
-INDIVIDUALIZING = {"care_harm", "fairness_cheating", "liberty_oppression"}
-BINDING = {"loyalty_betrayal", "authority_subversion", "sanctity_degradation"}
-
-
-def compute_mean_diff_directions(
-    all_activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
-    n_layers: int,
-    foundation_indices: dict[str, list[int]],
-) -> dict[str, dict[int, np.ndarray]]:
-    """Compute mean-difference directions for each foundation at each layer.
-
-    For each foundation f:
-        direction_f = mean(activations[moral_f]) - mean(activations[neutral_f])
-        direction_f = direction_f / ||direction_f||
-    """
-    directions: dict[str, dict[int, np.ndarray]] = {}
-
-    for fv in FOUNDATION_ORDER:
-        if fv not in foundation_indices:
-            continue
-        pair_indices = foundation_indices[fv]
-        directions[fv] = {}
-
-        for layer in range(n_layers):
-            X, y = all_activations[layer]
-            moral_rows = []
-            neutral_rows = []
-            for pi in pair_indices:
-                moral_rows.append(pi * 2)
-                neutral_rows.append(pi * 2 + 1)
-
-            moral_acts = X[moral_rows].numpy()
-            neutral_acts = X[neutral_rows].numpy()
-            mean_diff = moral_acts.mean(axis=0) - neutral_acts.mean(axis=0)
-            norm = np.linalg.norm(mean_diff)
-            if norm > 1e-12:
-                mean_diff /= norm
-            directions[fv][layer] = mean_diff
-
-    return directions
-
-
-def compute_cosine_matrix(
-    directions: dict[str, dict[int, np.ndarray]],
-    layer: int,
-) -> np.ndarray | None:
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    return mat @ mat.T
-
-
-def compute_effective_dimensionality(
-    directions: dict[str, dict[int, np.ndarray]],
-    layer: int,
-    threshold: float = 0.9,
-) -> int | None:
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    mat_centered = mat - mat.mean(axis=0, keepdims=True)
-    _, s, _ = np.linalg.svd(mat_centered, full_matrices=False)
-    explained = np.cumsum(s ** 2) / np.sum(s ** 2)
-    return int(np.searchsorted(explained, threshold)) + 1
-
-
-def permutation_test_mft(cos_sim: np.ndarray, n_perm: int = 10000, seed: int = 42) -> dict:
-    n = 6
-    ind_idx = [0, 1, 2]
-    bind_idx = [3, 4, 5]
-
-    def _stat(sim, ga, gb):
-        wa = [sim[i, j] for i in ga for j in ga if i < j]
-        wb = [sim[i, j] for i in gb for j in gb if i < j]
-        bw = [sim[i, j] for i in ga for j in gb]
-        return np.mean(wa + wb) - np.mean(bw) if (wa + wb) and bw else 0.0
-
-    observed = _stat(cos_sim, ind_idx, bind_idx)
-    rng = np.random.RandomState(seed)
-    count = 0
-    for _ in range(n_perm):
-        p = rng.permutation(n)
-        if _stat(cos_sim, p[:3].tolist(), p[3:].tolist()) >= observed:
-            count += 1
-    p_value = (count + 1) / (n_perm + 1)
-
-    within_ind = [cos_sim[i, j] for i in ind_idx for j in ind_idx if i < j]
-    within_bind = [cos_sim[i, j] for i in bind_idx for j in bind_idx if i < j]
-    between = [cos_sim[i, j] for i in ind_idx for j in bind_idx]
-
-    return {
-        "observed_statistic": float(observed),
-        "p_value": float(p_value),
-        "mean_within_individualizing": float(np.mean(within_ind)),
-        "mean_within_binding": float(np.mean(within_bind)),
-        "mean_between_groups": float(np.mean(between)),
-    }
-
-
-def check_dendrogram_mft(cos_sim: np.ndarray) -> dict:
-    n = 6
-    dist = 1 - cos_sim
-    condensed = [dist[i, j] for i in range(n) for j in range(i + 1, n)]
-    Z = linkage(condensed, method="ward")
-
-    def _get_leaves(idx):
-        if idx < n:
-            return {idx}
-        row = Z[idx - n]
-        return _get_leaves(int(row[0])) | _get_leaves(int(row[1]))
-
-    last = Z[-1]
-    left = _get_leaves(int(last[0]))
-    right = _get_leaves(int(last[1]))
-    mft_match = left == {0, 1, 2} or right == {0, 1, 2}
-    left_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(left)]
-    right_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(right)]
-    return {
-        "mft_match": mft_match,
-        "left": left_labels,
-        "right": right_labels,
-    }
+from shared import (
+    FOUNDATION_ORDER,
+    FOUNDATION_SHORT,
+    INDIVIDUALIZING,
+    BINDING,
+    compute_cosine_matrix,
+    compute_effective_dimensionality,
+    compute_mean_diff_directions,
+    permutation_test_mft,
+    check_dendrogram_mft,
+    load_probe_directions,
+)
 
 
 def main() -> None:
@@ -228,7 +97,7 @@ def main() -> None:
     md_directions = compute_mean_diff_directions(all_train, n_layers, foundation_indices)
 
     # Load probe-weight directions for comparison
-    probe_npz = np.load(args.probe_directions)
+    pw_directions = load_probe_directions(args.probe_directions)
 
     # Compare directions: cosine similarity between mean-diff and probe-weight
     print("\n--- Direction Comparison ---")
@@ -237,11 +106,9 @@ def main() -> None:
         comparison[fv] = {}
         cosines = []
         for layer in range(n_layers):
-            pw_key = f"{fv}_layer{layer}"
-            if pw_key not in probe_npz or fv not in md_directions:
+            pw = pw_directions.get(fv, {}).get(layer)
+            if pw is None or fv not in md_directions:
                 continue
-            pw = probe_npz[pw_key]
-            pw = pw / (np.linalg.norm(pw) + 1e-12)
             md = md_directions[fv][layer]
             cos = abs(float(np.dot(pw, md)))
             comparison[fv][layer] = cos
@@ -277,16 +144,6 @@ def main() -> None:
             "dendrogram_left": dendro["left"],
             "dendrogram_right": dendro["right"],
         }
-
-    # Also compute geometry from probe-weight directions for comparison
-    pw_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        pw_directions[fv] = {}
-        for layer in range(n_layers):
-            key = f"{fv}_layer{layer}"
-            if key in probe_npz:
-                d = probe_npz[key]
-                pw_directions[fv][layer] = d / (np.linalg.norm(d) + 1e-12)
 
     pw_mean_cosines = {}
     for layer in range(n_layers):
