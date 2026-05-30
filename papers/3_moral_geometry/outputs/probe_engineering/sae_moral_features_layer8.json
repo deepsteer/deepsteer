@@ -1,0 +1,1002 @@
+{
+  "analysis": "sae_moral_features",
+  "model": "allenai/OLMo-2-0425-1B",
+  "layer": 8,
+  "sae_path": "/Users/orionr/dev/deepsteer/papers/3_moral_geometry/outputs/probe_engineering/sae_layer8.pt",
+  "top_k": 100,
+  "selectivity_stats": {
+    "moral_l0": 1310.6822509765625,
+    "neutral_l0": 1379.847900390625,
+    "n_morally_selective_01": 1
+  },
+  "probe_weight_comparison": {
+    "top_k": 100,
+    "features": [
+      {
+        "feature_idx": 13618,
+        "global_selectivity": 0.11079233884811401,
+        "foundation_selectivity": {
+          "Care": 0.07760907709598541,
+          "Fairness": 0.10505598783493042,
+          "Liberty": 0.08667099475860596,
+          "Loyalty": 0.09781420230865479,
+          "Authority": 0.14997553825378418,
+          "Sanctity": 0.14762833714485168
+        },
+        "probe_cosines": {
+          "Care": 0.03641574708198166,
+          "Fairness": 0.07791358273803972,
+          "Liberty": 0.04138545435179603,
+          "Loyalty": 0.06176428665113609,
+          "Authority": 0.04015216252198222,
+          "Sanctity": 0.05071076531977545
+        },
+        "best_aligned_foundation": "Fairness",
+        "best_alignment": 0.07791358273803972
+      },
+      {
+        "feature_idx": 11213,
+        "global_selectivity": 0.07858428359031677,
+        "foundation_selectivity": {
+          "Care": 0.07239559292793274,
+          "Fairness": 0.03818193078041077,
+          "Liberty": 0.04784315824508667,
+          "Loyalty": 0.10667943954467773,
+          "Authority": 0.11873680353164673,
+          "Sanctity": 0.08766868710517883
+        },
+        "probe_cosines": {
+          "Care": 0.04393507999605009,
+          "Fairness": 0.036833153506416715,
+          "Liberty": 0.04311439540697207,
+          "Loyalty": 0.036802544167374794,
+          "Authority": 0.04673096217652331,
+          "Sanctity": 0.08234653838438916
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": 0.08234653838438916
+      },
+      {
+        "feature_idx": 6846,
+        "global_selectivity": 0.06641478836536407,
+        "foundation_selectivity": {
+          "Care": 0.07579734921455383,
+          "Fairness": 0.04993550479412079,
+          "Liberty": 0.04250121861696243,
+          "Loyalty": 0.0837344229221344,
+          "Authority": 0.09974591434001923,
+          "Sanctity": 0.04677426815032959
+        },
+        "probe_cosines": {
+          "Care": 0.05240557938160767,
+          "Fairness": 0.046136045866011284,
+          "Liberty": 0.025983691060979492,
+          "Loyalty": 0.04569085996656652,
+          "Authority": 0.027100249224399638,
+          "Sanctity": 0.013315388590948812
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": 0.05240557938160767
+      },
+      {
+        "feature_idx": 2707,
+        "global_selectivity": 0.06434774398803711,
+        "foundation_selectivity": {
+          "Care": 0.04776206612586975,
+          "Fairness": 0.032326728105545044,
+          "Liberty": 0.04774053394794464,
+          "Loyalty": 0.06742481887340546,
+          "Authority": 0.09458187222480774,
+          "Sanctity": 0.09625039994716644
+        },
+        "probe_cosines": {
+          "Care": 0.01745045722012021,
+          "Fairness": -0.0069970284963360935,
+          "Liberty": -0.02078774240045001,
+          "Loyalty": 0.018561419495928957,
+          "Authority": -0.016423629101090763,
+          "Sanctity": -3.33220013196342e-05
+        },
+        "best_aligned_foundation": "Liberty",
+        "best_alignment": -0.02078774240045001
+      },
+      {
+        "feature_idx": 934,
+        "global_selectivity": -0.0642726868391037,
+        "foundation_selectivity": {
+          "Care": -0.04551157355308533,
+          "Fairness": -0.06715288758277893,
+          "Liberty": -0.03854021430015564,
+          "Loyalty": -0.08444085717201233,
+          "Authority": -0.06305289268493652,
+          "Sanctity": -0.08693794906139374
+        },
+        "probe_cosines": {
+          "Care": -0.03150292439962288,
+          "Fairness": 0.0024953660001725826,
+          "Liberty": -0.042568019707740636,
+          "Loyalty": -0.05760828479279997,
+          "Authority": -0.05158055265678993,
+          "Sanctity": -0.032588863567949745
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": -0.05760828479279997
+      },
+      {
+        "feature_idx": 4804,
+        "global_selectivity": 0.06405419111251831,
+        "foundation_selectivity": {
+          "Care": 0.006789028644561768,
+          "Fairness": 0.05393880605697632,
+          "Liberty": 0.07433813810348511,
+          "Loyalty": 0.07604330778121948,
+          "Authority": 0.08609449863433838,
+          "Sanctity": 0.08712154626846313
+        },
+        "probe_cosines": {
+          "Care": 0.01911660672545688,
+          "Fairness": 0.0631312338816107,
+          "Liberty": 0.06256769965295703,
+          "Loyalty": 0.09087575174223884,
+          "Authority": 0.07961346965735619,
+          "Sanctity": 0.055564338109811075
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": 0.09087575174223884
+      },
+      {
+        "feature_idx": 7554,
+        "global_selectivity": -0.061157841235399246,
+        "foundation_selectivity": {
+          "Care": -0.06663793325424194,
+          "Fairness": -0.05206768214702606,
+          "Liberty": -0.0532422699034214,
+          "Loyalty": -0.04613398015499115,
+          "Authority": -0.0791713297367096,
+          "Sanctity": -0.06969389319419861
+        },
+        "probe_cosines": {
+          "Care": -0.058235942182513205,
+          "Fairness": -0.03919980713963719,
+          "Liberty": -0.056746754914907,
+          "Loyalty": -0.03892224953853675,
+          "Authority": -0.029671007312191775,
+          "Sanctity": -0.046860201669721414
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": -0.058235942182513205
+      },
+      {
+        "feature_idx": 1555,
+        "global_selectivity": 0.060893505811691284,
+        "foundation_selectivity": {
+          "Care": 0.054140448570251465,
+          "Fairness": 0.02077767252922058,
+          "Liberty": 0.053168922662734985,
+          "Loyalty": 0.1069510281085968,
+          "Authority": 0.09947860240936279,
+          "Sanctity": 0.030844151973724365
+        },
+        "probe_cosines": {
+          "Care": 0.009036683031544784,
+          "Fairness": -0.0014561686124093514,
+          "Liberty": -0.040567847855428635,
+          "Loyalty": 0.02554509323343459,
+          "Authority": -0.01752581337898207,
+          "Sanctity": -0.01350781973283837
+        },
+        "best_aligned_foundation": "Liberty",
+        "best_alignment": -0.040567847855428635
+      },
+      {
+        "feature_idx": 7277,
+        "global_selectivity": 0.05577167123556137,
+        "foundation_selectivity": {
+          "Care": 0.036057956516742706,
+          "Fairness": 0.0649934932589531,
+          "Liberty": 0.05560923367738724,
+          "Loyalty": 0.055001623928546906,
+          "Authority": 0.10367435216903687,
+          "Sanctity": 0.019293323159217834
+        },
+        "probe_cosines": {
+          "Care": 0.03609368751114535,
+          "Fairness": -0.009404530969687262,
+          "Liberty": 0.022129993954078483,
+          "Loyalty": 0.028067308176764377,
+          "Authority": 0.04099623721511099,
+          "Sanctity": 0.008283096902604052
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.04099623721511099
+      },
+      {
+        "feature_idx": 9314,
+        "global_selectivity": 0.054969385266304016,
+        "foundation_selectivity": {
+          "Care": 0.00645013153553009,
+          "Fairness": 0.052401214838027954,
+          "Liberty": 0.052125558257102966,
+          "Loyalty": 0.056627437472343445,
+          "Authority": 0.0730874240398407,
+          "Sanctity": 0.0891246348619461
+        },
+        "probe_cosines": {
+          "Care": 0.042268895467023435,
+          "Fairness": 0.034901951826569695,
+          "Liberty": 0.014613995929236496,
+          "Loyalty": 0.0013083694776502555,
+          "Authority": 0.01725020171934665,
+          "Sanctity": 0.05318582477591442
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": 0.05318582477591442
+      },
+      {
+        "feature_idx": 2665,
+        "global_selectivity": 0.052039265632629395,
+        "foundation_selectivity": {
+          "Care": 0.041514694690704346,
+          "Fairness": 0.03362232446670532,
+          "Liberty": 0.04364338517189026,
+          "Loyalty": 0.09816038608551025,
+          "Authority": 0.05475783348083496,
+          "Sanctity": 0.040537118911743164
+        },
+        "probe_cosines": {
+          "Care": 0.03620773227841412,
+          "Fairness": 0.04254890005452938,
+          "Liberty": 0.014791445573032155,
+          "Loyalty": 0.05051216473201201,
+          "Authority": 0.046321154259648285,
+          "Sanctity": 0.04839709807048228
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": 0.05051216473201201
+      },
+      {
+        "feature_idx": 1658,
+        "global_selectivity": 0.052027955651283264,
+        "foundation_selectivity": {
+          "Care": 0.035746634006500244,
+          "Fairness": 0.0341629832983017,
+          "Liberty": 0.06824737787246704,
+          "Loyalty": 0.031969502568244934,
+          "Authority": 0.060504794120788574,
+          "Sanctity": 0.08153636753559113
+        },
+        "probe_cosines": {
+          "Care": 0.05532172631715977,
+          "Fairness": 0.030641279249117897,
+          "Liberty": 0.02621812826763187,
+          "Loyalty": 0.05201131780800067,
+          "Authority": 0.035807751004029484,
+          "Sanctity": 0.03640258930958972
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": 0.05532172631715977
+      },
+      {
+        "feature_idx": 10360,
+        "global_selectivity": 0.05193376541137695,
+        "foundation_selectivity": {
+          "Care": 0.016073167324066162,
+          "Fairness": 0.05106848478317261,
+          "Liberty": 0.07413595914840698,
+          "Loyalty": 0.07364106178283691,
+          "Authority": 0.06062740087509155,
+          "Sanctity": 0.03605639934539795
+        },
+        "probe_cosines": {
+          "Care": 0.03261212015494147,
+          "Fairness": 0.03139423837131582,
+          "Liberty": 0.0340805059420851,
+          "Loyalty": 0.03796219886451034,
+          "Authority": 0.048425994398111245,
+          "Sanctity": 0.05029444170728026
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": 0.05029444170728026
+      },
+      {
+        "feature_idx": 13955,
+        "global_selectivity": -0.05160972848534584,
+        "foundation_selectivity": {
+          "Care": -0.07277105748653412,
+          "Fairness": -0.04658183455467224,
+          "Liberty": -0.03970291092991829,
+          "Loyalty": -0.05595941096544266,
+          "Authority": -0.046136923134326935,
+          "Sanctity": -0.048506252467632294
+        },
+        "probe_cosines": {
+          "Care": -0.013529389563494934,
+          "Fairness": -0.006181630805168542,
+          "Liberty": 0.026912740451937735,
+          "Loyalty": -0.03635841984145166,
+          "Authority": -0.013827629021862693,
+          "Sanctity": -0.04882038576248196
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": -0.04882038576248196
+      },
+      {
+        "feature_idx": 2351,
+        "global_selectivity": 0.051592230796813965,
+        "foundation_selectivity": {
+          "Care": 0.018698230385780334,
+          "Fairness": 0.05544419586658478,
+          "Liberty": 0.05875213444232941,
+          "Loyalty": 0.0644398033618927,
+          "Authority": 0.047992512583732605,
+          "Sanctity": 0.06422653794288635
+        },
+        "probe_cosines": {
+          "Care": 0.004588743294457742,
+          "Fairness": 0.010304090490824315,
+          "Liberty": -0.01552920902839915,
+          "Loyalty": 0.012144887325546291,
+          "Authority": 0.004149310277134972,
+          "Sanctity": 0.03770037245710254
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": 0.03770037245710254
+      },
+      {
+        "feature_idx": 13807,
+        "global_selectivity": 0.0511019229888916,
+        "foundation_selectivity": {
+          "Care": 0.047238290309906006,
+          "Fairness": 0.04590040445327759,
+          "Liberty": 0.020466923713684082,
+          "Loyalty": 0.06544256210327148,
+          "Authority": 0.07550930976867676,
+          "Sanctity": 0.0520537793636322
+        },
+        "probe_cosines": {
+          "Care": 0.03348206514295847,
+          "Fairness": -0.0005065171153490712,
+          "Liberty": 0.034246660980999724,
+          "Loyalty": 0.05572783376009213,
+          "Authority": 0.03989404566885675,
+          "Sanctity": 0.024179048593192927
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": 0.05572783376009213
+      },
+      {
+        "feature_idx": 9976,
+        "global_selectivity": -0.05067487806081772,
+        "foundation_selectivity": {
+          "Care": -0.06091982126235962,
+          "Fairness": -0.05871365964412689,
+          "Liberty": -0.013421669602394104,
+          "Loyalty": -0.06170247122645378,
+          "Authority": -0.03829720616340637,
+          "Sanctity": -0.07099448144435883
+        },
+        "probe_cosines": {
+          "Care": -0.027482903139127997,
+          "Fairness": -0.018408710875812563,
+          "Liberty": -0.003094038803324879,
+          "Loyalty": 0.013789040925443771,
+          "Authority": 0.0015929312486373387,
+          "Sanctity": -0.02489094174496583
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": -0.027482903139127997
+      },
+      {
+        "feature_idx": 2330,
+        "global_selectivity": 0.049135223031044006,
+        "foundation_selectivity": {
+          "Care": 0.08877561241388321,
+          "Fairness": 0.02721664309501648,
+          "Liberty": 0.04832163453102112,
+          "Loyalty": 0.025895774364471436,
+          "Authority": 0.05739922821521759,
+          "Sanctity": 0.04720243811607361
+        },
+        "probe_cosines": {
+          "Care": 0.009991895180635578,
+          "Fairness": 0.030283093627371416,
+          "Liberty": 0.02542379062421769,
+          "Loyalty": 0.009274980758168863,
+          "Authority": 0.03269444562861232,
+          "Sanctity": 0.008216533800502818
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.03269444562861232
+      },
+      {
+        "feature_idx": 11274,
+        "global_selectivity": -0.04846614599227905,
+        "foundation_selectivity": {
+          "Care": -0.0491420179605484,
+          "Fairness": -0.037998586893081665,
+          "Liberty": -0.01461818814277649,
+          "Loyalty": -0.05253972113132477,
+          "Authority": -0.08912882208824158,
+          "Sanctity": -0.04736962914466858
+        },
+        "probe_cosines": {
+          "Care": 0.010891677268444665,
+          "Fairness": 0.015539231427381285,
+          "Liberty": -0.004895961411854298,
+          "Loyalty": 0.004550987501928784,
+          "Authority": -0.01012236633553732,
+          "Sanctity": -0.004229037921091021
+        },
+        "best_aligned_foundation": "Fairness",
+        "best_alignment": 0.015539231427381285
+      },
+      {
+        "feature_idx": 2226,
+        "global_selectivity": -0.048184849321842194,
+        "foundation_selectivity": {
+          "Care": -0.041412003338336945,
+          "Fairness": -0.05237644910812378,
+          "Liberty": -0.03905590996146202,
+          "Loyalty": -0.04661763086915016,
+          "Authority": -0.05369330942630768,
+          "Sanctity": -0.0559537336230278
+        },
+        "probe_cosines": {
+          "Care": -0.00011104818117884177,
+          "Fairness": -0.003908903300723909,
+          "Liberty": 0.0184092314857412,
+          "Loyalty": 0.005801256680235348,
+          "Authority": -0.006872769578872543,
+          "Sanctity": -0.0263916763439147
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": -0.0263916763439147
+      }
+    ],
+    "alignment_fractions": {
+      ">0.1": 0.0,
+      ">0.2": 0.0,
+      ">0.3": 0.0,
+      ">0.5": 0.0
+    },
+    "foundation_top_features": {
+      "Care": 0,
+      "Fairness": 0,
+      "Liberty": 0,
+      "Loyalty": 0,
+      "Authority": 0,
+      "Sanctity": 0
+    }
+  },
+  "mean_diff_comparison": {
+    "top_k": 100,
+    "features": [
+      {
+        "feature_idx": 13618,
+        "global_selectivity": 0.11079233884811401,
+        "foundation_selectivity": {
+          "Care": 0.07760907709598541,
+          "Fairness": 0.10505598783493042,
+          "Liberty": 0.08667099475860596,
+          "Loyalty": 0.09781420230865479,
+          "Authority": 0.14997553825378418,
+          "Sanctity": 0.14762833714485168
+        },
+        "probe_cosines": {
+          "Care": 0.05040876567363739,
+          "Fairness": 0.14752301573753357,
+          "Liberty": 0.09573189914226532,
+          "Loyalty": 0.11738229542970657,
+          "Authority": 0.13881754875183105,
+          "Sanctity": 0.10441932827234268
+        },
+        "best_aligned_foundation": "Fairness",
+        "best_alignment": 0.14752301573753357
+      },
+      {
+        "feature_idx": 11213,
+        "global_selectivity": 0.07858428359031677,
+        "foundation_selectivity": {
+          "Care": 0.07239559292793274,
+          "Fairness": 0.03818193078041077,
+          "Liberty": 0.04784315824508667,
+          "Loyalty": 0.10667943954467773,
+          "Authority": 0.11873680353164673,
+          "Sanctity": 0.08766868710517883
+        },
+        "probe_cosines": {
+          "Care": 0.03571202978491783,
+          "Fairness": 0.03430819511413574,
+          "Liberty": 0.048548534512519836,
+          "Loyalty": 0.04522879421710968,
+          "Authority": 0.05138039216399193,
+          "Sanctity": 0.047551948577165604
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.05138039216399193
+      },
+      {
+        "feature_idx": 6846,
+        "global_selectivity": 0.06641478836536407,
+        "foundation_selectivity": {
+          "Care": 0.07579734921455383,
+          "Fairness": 0.04993550479412079,
+          "Liberty": 0.04250121861696243,
+          "Loyalty": 0.0837344229221344,
+          "Authority": 0.09974591434001923,
+          "Sanctity": 0.04677426815032959
+        },
+        "probe_cosines": {
+          "Care": 0.11274073272943497,
+          "Fairness": 0.0996064841747284,
+          "Liberty": 0.07275889068841934,
+          "Loyalty": 0.10402898490428925,
+          "Authority": 0.12098027765750885,
+          "Sanctity": 0.07739785313606262
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.12098027765750885
+      },
+      {
+        "feature_idx": 2707,
+        "global_selectivity": 0.06434774398803711,
+        "foundation_selectivity": {
+          "Care": 0.04776206612586975,
+          "Fairness": 0.032326728105545044,
+          "Liberty": 0.04774053394794464,
+          "Loyalty": 0.06742481887340546,
+          "Authority": 0.09458187222480774,
+          "Sanctity": 0.09625039994716644
+        },
+        "probe_cosines": {
+          "Care": 0.03790402412414551,
+          "Fairness": -0.01179294940084219,
+          "Liberty": -0.011677922680974007,
+          "Loyalty": 0.010103193111717701,
+          "Authority": -0.014248653315007687,
+          "Sanctity": 0.013043596409261227
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": 0.03790402412414551
+      },
+      {
+        "feature_idx": 934,
+        "global_selectivity": -0.0642726868391037,
+        "foundation_selectivity": {
+          "Care": -0.04551157355308533,
+          "Fairness": -0.06715288758277893,
+          "Liberty": -0.03854021430015564,
+          "Loyalty": -0.08444085717201233,
+          "Authority": -0.06305289268493652,
+          "Sanctity": -0.08693794906139374
+        },
+        "probe_cosines": {
+          "Care": -0.022603590041399002,
+          "Fairness": -0.02285647578537464,
+          "Liberty": -0.020971260964870453,
+          "Loyalty": -0.038818806409835815,
+          "Authority": -0.03247753530740738,
+          "Sanctity": -0.027836870402097702
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": -0.038818806409835815
+      },
+      {
+        "feature_idx": 4804,
+        "global_selectivity": 0.06405419111251831,
+        "foundation_selectivity": {
+          "Care": 0.006789028644561768,
+          "Fairness": 0.05393880605697632,
+          "Liberty": 0.07433813810348511,
+          "Loyalty": 0.07604330778121948,
+          "Authority": 0.08609449863433838,
+          "Sanctity": 0.08712154626846313
+        },
+        "probe_cosines": {
+          "Care": 0.08274409919977188,
+          "Fairness": 0.1387675702571869,
+          "Liberty": 0.10921750217676163,
+          "Loyalty": 0.13812920451164246,
+          "Authority": 0.10958097875118256,
+          "Sanctity": 0.09770248830318451
+        },
+        "best_aligned_foundation": "Fairness",
+        "best_alignment": 0.1387675702571869
+      },
+      {
+        "feature_idx": 7554,
+        "global_selectivity": -0.061157841235399246,
+        "foundation_selectivity": {
+          "Care": -0.06663793325424194,
+          "Fairness": -0.05206768214702606,
+          "Liberty": -0.0532422699034214,
+          "Loyalty": -0.04613398015499115,
+          "Authority": -0.0791713297367096,
+          "Sanctity": -0.06969389319419861
+        },
+        "probe_cosines": {
+          "Care": -0.10008426755666733,
+          "Fairness": -0.06196684390306473,
+          "Liberty": -0.10236246883869171,
+          "Loyalty": -0.06486408412456512,
+          "Authority": -0.08358146250247955,
+          "Sanctity": -0.10345205664634705
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": -0.10345205664634705
+      },
+      {
+        "feature_idx": 1555,
+        "global_selectivity": 0.060893505811691284,
+        "foundation_selectivity": {
+          "Care": 0.054140448570251465,
+          "Fairness": 0.02077767252922058,
+          "Liberty": 0.053168922662734985,
+          "Loyalty": 0.1069510281085968,
+          "Authority": 0.09947860240936279,
+          "Sanctity": 0.030844151973724365
+        },
+        "probe_cosines": {
+          "Care": -0.012534188106656075,
+          "Fairness": 0.005974562838673592,
+          "Liberty": 0.004758410155773163,
+          "Loyalty": 0.04386208951473236,
+          "Authority": 0.023612894117832184,
+          "Sanctity": 0.014537131413817406
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": 0.04386208951473236
+      },
+      {
+        "feature_idx": 7277,
+        "global_selectivity": 0.05577167123556137,
+        "foundation_selectivity": {
+          "Care": 0.036057956516742706,
+          "Fairness": 0.0649934932589531,
+          "Liberty": 0.05560923367738724,
+          "Loyalty": 0.055001623928546906,
+          "Authority": 0.10367435216903687,
+          "Sanctity": 0.019293323159217834
+        },
+        "probe_cosines": {
+          "Care": 0.005992484278976917,
+          "Fairness": 0.02350366860628128,
+          "Liberty": 0.03913465514779091,
+          "Loyalty": 0.01490110531449318,
+          "Authority": 0.053561966866254807,
+          "Sanctity": -0.015547135844826698
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.053561966866254807
+      },
+      {
+        "feature_idx": 9314,
+        "global_selectivity": 0.054969385266304016,
+        "foundation_selectivity": {
+          "Care": 0.00645013153553009,
+          "Fairness": 0.052401214838027954,
+          "Liberty": 0.052125558257102966,
+          "Loyalty": 0.056627437472343445,
+          "Authority": 0.0730874240398407,
+          "Sanctity": 0.0891246348619461
+        },
+        "probe_cosines": {
+          "Care": 0.013147177174687386,
+          "Fairness": 0.08029870688915253,
+          "Liberty": 0.06394191086292267,
+          "Loyalty": 0.07570184767246246,
+          "Authority": 0.09072225540876389,
+          "Sanctity": 0.11077097803354263
+        },
+        "best_aligned_foundation": "Sanctity",
+        "best_alignment": 0.11077097803354263
+      },
+      {
+        "feature_idx": 2665,
+        "global_selectivity": 0.052039265632629395,
+        "foundation_selectivity": {
+          "Care": 0.041514694690704346,
+          "Fairness": 0.03362232446670532,
+          "Liberty": 0.04364338517189026,
+          "Loyalty": 0.09816038608551025,
+          "Authority": 0.05475783348083496,
+          "Sanctity": 0.040537118911743164
+        },
+        "probe_cosines": {
+          "Care": 0.06045851856470108,
+          "Fairness": 0.09963327646255493,
+          "Liberty": 0.04842587560415268,
+          "Loyalty": 0.09595591574907303,
+          "Authority": 0.08776825666427612,
+          "Sanctity": 0.032136693596839905
+        },
+        "best_aligned_foundation": "Fairness",
+        "best_alignment": 0.09963327646255493
+      },
+      {
+        "feature_idx": 1658,
+        "global_selectivity": 0.052027955651283264,
+        "foundation_selectivity": {
+          "Care": 0.035746634006500244,
+          "Fairness": 0.0341629832983017,
+          "Liberty": 0.06824737787246704,
+          "Loyalty": 0.031969502568244934,
+          "Authority": 0.060504794120788574,
+          "Sanctity": 0.08153636753559113
+        },
+        "probe_cosines": {
+          "Care": 0.07880296558141708,
+          "Fairness": 0.06691239029169083,
+          "Liberty": 0.09382528066635132,
+          "Loyalty": 0.08469612896442413,
+          "Authority": 0.0530654601752758,
+          "Sanctity": 0.06443603336811066
+        },
+        "best_aligned_foundation": "Liberty",
+        "best_alignment": 0.09382528066635132
+      },
+      {
+        "feature_idx": 10360,
+        "global_selectivity": 0.05193376541137695,
+        "foundation_selectivity": {
+          "Care": 0.016073167324066162,
+          "Fairness": 0.05106848478317261,
+          "Liberty": 0.07413595914840698,
+          "Loyalty": 0.07364106178283691,
+          "Authority": 0.06062740087509155,
+          "Sanctity": 0.03605639934539795
+        },
+        "probe_cosines": {
+          "Care": 0.055613547563552856,
+          "Fairness": 0.053669705986976624,
+          "Liberty": 0.0793597549200058,
+          "Loyalty": 0.056974515318870544,
+          "Authority": 0.08332362025976181,
+          "Sanctity": 0.03997340053319931
+        },
+        "best_aligned_foundation": "Authority",
+        "best_alignment": 0.08332362025976181
+      },
+      {
+        "feature_idx": 13955,
+        "global_selectivity": -0.05160972848534584,
+        "foundation_selectivity": {
+          "Care": -0.07277105748653412,
+          "Fairness": -0.04658183455467224,
+          "Liberty": -0.03970291092991829,
+          "Loyalty": -0.05595941096544266,
+          "Authority": -0.046136923134326935,
+          "Sanctity": -0.048506252467632294
+        },
+        "probe_cosines": {
+          "Care": -0.002208130434155464,
+          "Fairness": -0.00909479707479477,
+          "Liberty": -0.009323257952928543,
+          "Loyalty": -0.022829674184322357,
+          "Authority": -0.003380157984793186,
+          "Sanctity": -0.011141250841319561
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": -0.022829674184322357
+      },
+      {
+        "feature_idx": 2351,
+        "global_selectivity": 0.051592230796813965,
+        "foundation_selectivity": {
+          "Care": 0.018698230385780334,
+          "Fairness": 0.05544419586658478,
+          "Liberty": 0.05875213444232941,
+          "Loyalty": 0.0644398033618927,
+          "Authority": 0.047992512583732605,
+          "Sanctity": 0.06422653794288635
+        },
+        "probe_cosines": {
+          "Care": 0.04781621694564819,
+          "Fairness": 0.08258624374866486,
+          "Liberty": 0.08929622173309326,
+          "Loyalty": 0.09198057651519775,
+          "Authority": 0.05519022047519684,
+          "Sanctity": 0.06749030947685242
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": 0.09198057651519775
+      },
+      {
+        "feature_idx": 13807,
+        "global_selectivity": 0.0511019229888916,
+        "foundation_selectivity": {
+          "Care": 0.047238290309906006,
+          "Fairness": 0.04590040445327759,
+          "Liberty": 0.020466923713684082,
+          "Loyalty": 0.06544256210327148,
+          "Authority": 0.07550930976867676,
+          "Sanctity": 0.0520537793636322
+        },
+        "probe_cosines": {
+          "Care": 0.040248483419418335,
+          "Fairness": 0.03054233267903328,
+          "Liberty": 0.03557080030441284,
+          "Loyalty": 0.031503818929195404,
+          "Authority": 0.03622201830148697,
+          "Sanctity": 0.020274851471185684
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": 0.040248483419418335
+      },
+      {
+        "feature_idx": 9976,
+        "global_selectivity": -0.05067487806081772,
+        "foundation_selectivity": {
+          "Care": -0.06091982126235962,
+          "Fairness": -0.05871365964412689,
+          "Liberty": -0.013421669602394104,
+          "Loyalty": -0.06170247122645378,
+          "Authority": -0.03829720616340637,
+          "Sanctity": -0.07099448144435883
+        },
+        "probe_cosines": {
+          "Care": -0.05447230860590935,
+          "Fairness": -0.03477075695991516,
+          "Liberty": 0.01019986905157566,
+          "Loyalty": -0.040811534970998764,
+          "Authority": -0.0020708683878183365,
+          "Sanctity": -0.035576846450567245
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": -0.05447230860590935
+      },
+      {
+        "feature_idx": 2330,
+        "global_selectivity": 0.049135223031044006,
+        "foundation_selectivity": {
+          "Care": 0.08877561241388321,
+          "Fairness": 0.02721664309501648,
+          "Liberty": 0.04832163453102112,
+          "Loyalty": 0.025895774364471436,
+          "Authority": 0.05739922821521759,
+          "Sanctity": 0.04720243811607361
+        },
+        "probe_cosines": {
+          "Care": 0.047287702560424805,
+          "Fairness": 0.011222355999052525,
+          "Liberty": 0.03853682428598404,
+          "Loyalty": 0.012411010451614857,
+          "Authority": 0.022132914513349533,
+          "Sanctity": 0.00486949784681201
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": 0.047287702560424805
+      },
+      {
+        "feature_idx": 11274,
+        "global_selectivity": -0.04846614599227905,
+        "foundation_selectivity": {
+          "Care": -0.0491420179605484,
+          "Fairness": -0.037998586893081665,
+          "Liberty": -0.01461818814277649,
+          "Loyalty": -0.05253972113132477,
+          "Authority": -0.08912882208824158,
+          "Sanctity": -0.04736962914466858
+        },
+        "probe_cosines": {
+          "Care": -0.04981489107012749,
+          "Fairness": -0.02555594965815544,
+          "Liberty": -0.0248432457447052,
+          "Loyalty": -0.036684900522232056,
+          "Authority": -0.039147332310676575,
+          "Sanctity": -0.027547430247068405
+        },
+        "best_aligned_foundation": "Care",
+        "best_alignment": -0.04981489107012749
+      },
+      {
+        "feature_idx": 2226,
+        "global_selectivity": -0.048184849321842194,
+        "foundation_selectivity": {
+          "Care": -0.041412003338336945,
+          "Fairness": -0.05237644910812378,
+          "Liberty": -0.03905590996146202,
+          "Loyalty": -0.04661763086915016,
+          "Authority": -0.05369330942630768,
+          "Sanctity": -0.0559537336230278
+        },
+        "probe_cosines": {
+          "Care": -0.011628617532551289,
+          "Fairness": -0.003589808940887451,
+          "Liberty": -0.012251945212483406,
+          "Loyalty": -0.02740303799510002,
+          "Authority": 0.0011556893587112427,
+          "Sanctity": -0.023777438327670097
+        },
+        "best_aligned_foundation": "Loyalty",
+        "best_alignment": -0.02740303799510002
+      }
+    ],
+    "alignment_fractions": {
+      ">0.1": 0.11,
+      ">0.2": 0.0,
+      ">0.3": 0.0,
+      ">0.5": 0.0
+    },
+    "foundation_top_features": {
+      "Care": 0,
+      "Fairness": 0,
+      "Liberty": 0,
+      "Loyalty": 0,
+      "Authority": 0,
+      "Sanctity": 0
+    }
+  },
+  "subspace_overlap_probe": {
+    "sae_subspace_rank": 100,
+    "probe_subspace_rank": 6,
+    "probe_membership_in_sae_subspace": {
+      "Care": 0.0997,
+      "Fairness": 0.0837,
+      "Liberty": 0.0818,
+      "Loyalty": 0.0931,
+      "Authority": 0.0836,
+      "Sanctity": 0.1027
+    },
+    "mean_probe_membership": 0.0908,
+    "top20_sae_membership_in_probe_subspace": [
+      0.008,
+      0.0074,
+      0.0044,
+      0.0022,
+      0.0061,
+      0.0131,
+      0.0053,
+      0.0041,
+      0.0038,
+      0.0042,
+      0.0048,
+      0.0044,
+      0.0039,
+      0.0055,
+      0.0024,
+      0.0048,
+      0.002,
+      0.0018,
+      0.0008,
+      0.0017
+    ],
+    "mean_sae_in_probe": 0.0045
+  },
+  "subspace_overlap_meandiff": {
+    "sae_subspace_rank": 100,
+    "probe_subspace_rank": 6,
+    "probe_membership_in_sae_subspace": {
+      "Care": 0.1915,
+      "Fairness": 0.1986,
+      "Liberty": 0.1978,
+      "Loyalty": 0.2065,
+      "Authority": 0.2198,
+      "Sanctity": 0.1635
+    },
+    "mean_probe_membership": 0.1963,
+    "top20_sae_membership_in_probe_subspace": [
+      0.0284,
+      0.0035,
+      0.0205,
+      0.0039,
+      0.0017,
+      0.0243,
+      0.0168,
+      0.0042,
+      0.0068,
+      0.0177,
+      0.0141,
+      0.0125,
+      0.0085,
+      0.0009,
+      0.0129,
+      0.0022,
+      0.0081,
+      0.0038,
+      0.0031,
+      0.0022
+    ],
+    "mean_sae_in_probe": 0.0098
+  }
+}

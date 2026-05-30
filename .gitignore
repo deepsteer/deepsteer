@@ -41,6 +41,10 @@ htmlcov/
 outputs/*.log
 outputs/.DS_Store
 
+# SAE artifacts (large binary files)
+**/sae_activation_cache.pt
+**/sae_layer*.pt
+
 # Paper PDFs — tracked so collaborators can read without rebuilding.
 
 # Downloaded caches (Gutenberg texts, etc.)

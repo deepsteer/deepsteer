@@ -1,0 +1,18 @@
+{
+  "analysis": "sae_training",
+  "model": "allenai/OLMo-2-0425-1B",
+  "sae_width": 16384,
+  "n_tokens": 2000000,
+  "target_layers": [
+    8
+  ],
+  "l1_coeff": 0.005,
+  "layer_stats": {
+    "8": {
+      "final_loss": 0.01484821425735584,
+      "final_l0": 1931.7689078909452,
+      "final_fvu": 0.2850706674792384,
+      "n_samples": 2002718
+    }
+  }
+}
