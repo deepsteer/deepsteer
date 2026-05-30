@@ -998,5 +998,44 @@
       0.0022
     ],
     "mean_sae_in_probe": 0.0098
+  },
+  "random_baseline": {
+    "description": "Null distribution: 100 random unit vectors in 2048-d, SVD basis, project 6 probe directions, record mean membership. 1000 iterations.",
+    "n_random_vectors": 100,
+    "n_iterations": 1000,
+    "d_model": 2048,
+    "seed": 42,
+    "mean": 0.048931,
+    "std": 0.003607,
+    "observed_value": 0.1963,
+    "ratio_observed_over_random": 4.0118,
+    "observed_percentile": 100.0,
+    "p_value": 0.0,
+    "per_foundation_random": {
+      "care_harm": {
+        "mean": 0.049069,
+        "std": 0.006889
+      },
+      "fairness_cheating": {
+        "mean": 0.048666,
+        "std": 0.006833
+      },
+      "liberty_oppression": {
+        "mean": 0.049071,
+        "std": 0.006739
+      },
+      "loyalty_betrayal": {
+        "mean": 0.048708,
+        "std": 0.006727
+      },
+      "authority_subversion": {
+        "mean": 0.049027,
+        "std": 0.006869
+      },
+      "sanctity_degradation": {
+        "mean": 0.049043,
+        "std": 0.006754
+      }
+    }
   }
 }

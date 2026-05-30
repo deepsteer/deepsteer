@@ -1,0 +1,132 @@
+\begin{thebibliography}{14}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Arditi et~al.(2024)Arditi, Obeso, Syed, Paleka, Panickssery, Gurnee,
+  and Nanda]{arditi2024refusal}
+Andy Arditi, Oscar Obeso, Aaquib Syed, Daniel Paleka, Nina Panickssery, Wes
+  Gurnee, and Neel Nanda.
+\newblock Refusal in language models is mediated by a single direction.
+\newblock \emph{arXiv preprint arXiv:2406.11717}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2406.11717}.
+
+\bibitem[Bricken et~al.(2023)Bricken, Templeton, Batson, Chen, Jermyn, Conerly,
+  Turner, Anil, Denison, Askell, Lasenby, Wu, Kravec, Schiefer, Maxwell,
+  Joseph, Hatfield-Dodds, Tamkin, Nguyen, McLean, Burke, Hume, Carter,
+  Henighan, and Olah]{bricken2023monosemanticity}
+Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom
+  Conerly, Nick Turner, Cem Anil, Carson Denison, Amanda Askell, Robert
+  Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas
+  Joseph, Zac Hatfield-Dodds, Alex Tamkin, Karina Nguyen, Brayden McLean,
+  Josiah~E. Burke, Tristan Hume, Shan Carter, Tom Henighan, and Christopher
+  Olah.
+\newblock Towards monosemanticity: Decomposing language models with dictionary
+  learning.
+\newblock \emph{Transformer Circuits Thread}, 2023.
+\newblock URL
+  \url{https://transformer-circuits.pub/2023/monosemantic-features}.
+
+\bibitem[Clifford et~al.(2015)Clifford, Iyengar, Cabeza, and
+  Sinnott-Armstrong]{clifford2015moral}
+Scott Clifford, Vijeth Iyengar, Roberto Cabeza, and Walter Sinnott-Armstrong.
+\newblock Moral foundations vignettes: A standardized stimulus database of
+  scenarios based on moral foundations theory.
+\newblock \emph{Behavior Research Methods}, 47\penalty0 (4):\penalty0
+  1178--1198, 2015.
+\newblock \doi{10.3758/s13428-014-0551-2}.
+
+\bibitem[Cunningham et~al.(2023)Cunningham, Ewart, Riggs, Huben, and
+  Sharkey]{cunningham2023sparse}
+Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey.
+\newblock Sparse autoencoders find highly interpretable features in language
+  models.
+\newblock \emph{arXiv preprint arXiv:2309.08600}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2309.08600}.
+
+\bibitem[Geiger et~al.(2021)Geiger, Lu, Icard, and Potts]{geiger2021causal}
+Atticus Geiger, Hanson Lu, Thomas Icard, and Christopher Potts.
+\newblock Causal abstractions of neural networks.
+\newblock \emph{Advances in Neural Information Processing Systems}, 34, 2021.
+
+\bibitem[Graham et~al.(2013)Graham, Haidt, Koleva, Motyl, Iyer, Wojcik, and
+  Ditto]{graham2013mft}
+Jesse Graham, Jonathan Haidt, Sena Koleva, Matt Motyl, Ravi Iyer, Sean~P.
+  Wojcik, and Peter~H. Ditto.
+\newblock Moral foundations theory: The pragmatic validity of moral pluralism.
+\newblock In \emph{Advances in Experimental Social Psychology}, volume~47,
+  pages 55--130. Academic Press, 2013.
+
+\bibitem[Marks and Tegmark(2024)]{marks2024geometry}
+Samuel Marks and Max Tegmark.
+\newblock The geometry of truth: Emergent linear structure in large language
+  model representations of true/false datasets.
+\newblock \emph{arXiv preprint arXiv:2310.06824}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2310.06824}.
+
+\bibitem[Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov]{meng2022locating}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in {GPT}.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem[Raffel et~al.(2020)Raffel, Shazeer, Roberts, Lee, Narang, Matena,
+  Zhou, Li, and Liu]{raffel2020c4}
+Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael
+  Matena, Yanqi Zhou, Wei Li, and Peter~J. Liu.
+\newblock Exploring the limits of transfer learning with a unified text-to-text
+  transformer.
+\newblock \emph{Journal of Machine Learning Research}, 21\penalty0
+  (140):\penalty0 1--67, 2020.
+
+\bibitem[Reblitz-Richardson(2026)]{reblitzrichardson2026geometry}
+Orion Reblitz-Richardson.
+\newblock The moral geometry of language models: Integration structure in
+  foundation-specific representations.
+\newblock \emph{arXiv preprint}, 2026.
+\newblock Companion paper.
+
+\bibitem[Templeton et~al.(2024)Templeton, Conerly, Marcus, Lindsey, Bricken,
+  Chen, Pearce, Citro, Ameisen, Jones, Cunningham, Turner, McDougall,
+  MacDiarmid, Freeman, Sumers, Rees, Batson, Jermyn, Carter, Olah, and
+  Henighan]{templeton2024scaling}
+Adly Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken,
+  Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy
+  Cunningham, Nicholas~L. Turner, Callum McDougall, Monte MacDiarmid, C.~Daniel
+  Freeman, Theodore~R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, Shan
+  Carter, Chris Olah, and Tom Henighan.
+\newblock Scaling monosemanticity: Extracting interpretable features from
+  {Claude} 3 {Sonnet}.
+\newblock \emph{Transformer Circuits Thread}, 2024.
+\newblock URL
+  \url{https://transformer-circuits.pub/2024/scaling-monosemanticity}.
+
+\bibitem[Turner et~al.(2023)Turner, Thiergart, Udell, Leech, Mini, and
+  MacDiarmid]{turner2023activation}
+Alexander~Matt Turner, Lisa Thiergart, David Udell, Gavin Leech, Ulisse Mini,
+  and Monte MacDiarmid.
+\newblock Activation addition: Steering language models without optimization.
+\newblock \emph{arXiv preprint arXiv:2308.10248}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2308.10248}.
+
+\bibitem[Vig et~al.(2020)Vig, Gehrmann, Belinkov, Qian, Nevo, Singer, and
+  Shieber]{vig2020causal}
+Jesse Vig, Sebastian Gehrmann, Yonatan Belinkov, Sharon Qian, Daniel Nevo,
+  Yaron Singer, and Stuart Shieber.
+\newblock Investigating gender bias in language models using causal mediation
+  analysis.
+\newblock \emph{Advances in Neural Information Processing Systems}, 33, 2020.
+
+\bibitem[Zou et~al.(2023)Zou, Phan, Chen, Campbell, Guo, Ren, Pan, Yin,
+  Mazeika, Dombrowski, Goel, Li, Byun, Wang, Mallen, Basart, Koyejo, Song,
+  Fredrikson, Kolter, and Hendrycks]{zou2023representation}
+Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren,
+  Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, Shashwat
+  Goel, Nathaniel Li, Michael~J. Byun, Zifan Wang, Alex Mallen, Steven Basart,
+  Sanmi Koyejo, Dawn Song, Matt Fredrikson, J.~Zico Kolter, and Dan Hendrycks.
+\newblock Representation engineering: A top-down approach to {AI} transparency.
+\newblock \emph{arXiv preprint arXiv:2310.01405}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.01405}.
+
+\end{thebibliography}

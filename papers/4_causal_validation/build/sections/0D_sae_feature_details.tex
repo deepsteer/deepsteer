@@ -1,0 +1,35 @@
+\section{SAE Feature Details}
+\label{app:sae-details}
+
+\subsection{Training hyperparameters}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Parameter & Value \\
+\midrule
+SAE width & 16,384 \\
+Expansion factor & $8\times$ \\
+Hidden dim & 2,048 \\
+Training tokens & 2M (C4) \\
+Batch size & 4,096 \\
+Learning rate & $3 \times 10^{-4}$ \\
+L1 coefficient & $5 \times 10^{-3}$ \\
+Epochs & 3 \\
+L0 (final) & 1,932 \\
+FVU (final) & 0.285 \\
+\bottomrule
+\end{tabular}
+\caption{SAE training configuration and final metrics.}
+\label{tab:sae-config}
+\end{table}
+
+\subsection{Per-foundation subspace overlap}
+
+\noindent\emph{[Per-foundation overlap table to be generated from experimental output JSON.]}
+
+\subsection{Random baseline distribution}
+
+The null distribution (1,000 iterations of projecting probe directions onto 100 random unit vectors in $\mathbb{R}^{2048}$) has mean $0.0489 \pm 0.0036$, matching the analytical expectation of $100/2048 = 4.88\%$.
+The observed overlap of 19.6\% corresponds to $p < 0.001$ (no random iteration exceeded the observed value).

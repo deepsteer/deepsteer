@@ -418,7 +418,7 @@ the representation geometry, not a dense-architecture artifact.
 The geometric findings reported above rely on probe weight vectors
 as foundation directions. To test whether the geometry is an
 artifact of discriminative probe training, we extract directions
-using two alternative methods and compare.
+using three alternative methods and compare.
 
 \textbf{Mean-difference directions.} For each foundation, we compute
 \(\mathbf{d}_f = \overline{\mathbf{a}}_{\text{moral}} -
@@ -435,23 +435,55 @@ layers), indicating related but non-identical directions: the
 probe-weight method finds more foundation-specific discriminative
 signal, while the mean-difference method captures more of the shared
 moral-salience component (mean pairwise cosine 0.45 vs.~0.27 at
-layer 0).
+layer 0). Bootstrap stability is high: mean pairwise cosine between
+100 bootstrap resamples is 0.957, indicating that the direction
+estimates are robust to sampling variability.
+
+\textbf{LEACE directions.} LEACE \citep{belrose2023leace} extracts
+directions via Fisher's linear discriminant:
+\(\mathbf{d}_f = \boldsymbol{\Sigma}^{-1}(\overline{\mathbf{a}}_{\text{moral}} -
+\overline{\mathbf{a}}_{\text{neutral}})\), where
+\(\boldsymbol{\Sigma}\) is the pooled within-class covariance.
+This whitening decorrelates the foundation directions, producing
+near-orthogonal vectors (mean pairwise cosine 0.07--0.11 across
+layers, vs.~0.27--0.45 for probe weights). The key geometric
+finding replicates: effective dimensionality is 5 at all layers.
+However, the MFT dendrogram match fails at all 16 layers ---
+the whitening removes the shared moral-salience component that
+encodes inter-foundation correlations, eliminating the
+individualizing/binding clustering. LEACE thus recovers the
+same 5D moral subspace but rotates the basis to maximize class
+separation, confirming that the dimensionality finding is
+method-invariant while the clustering structure is a property
+of the raw activation geometry. Bootstrap stability is moderate
+(0.678), and alignment with mean-diff and probe-weight directions
+is 0.30 and 0.14 respectively, reflecting the distinct
+optimization objective.
 
 \textbf{Representation-engineering directions.} We also test
 paired-difference PCA \citep{zou2023representation}: for each
-pair\textasciitilde{}\(i\), compute \(\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
+pair~\(i\), compute \(\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
 \mathbf{a}_{\text{neutral},i}\) and take the first principal
 component. This method performs poorly: the first PC explains only
 8--11\% of variance (barely above chance in \(\mathbb{R}^{2048}\)),
-and the resulting directions show low alignment with probe-weight
-directions (\(|\cos| = 0.07\)--\(0.29\)) and weak classification
-accuracy (55--88\% pair accuracy vs.~\({\sim}100\)\% for the other
-methods). With \({\sim}32\) pairs per foundation in 2048 dimensions,
-the \(p \gg n\) regime prevents PCA from isolating the concept
-direction. This negative result validates that the convergent
-probe-weight and mean-difference findings are not trivially
-recoverable --- they depend on direction-finding methods with
-appropriate inductive bias for small datasets.
+bootstrap stability is low (0.558), and the resulting directions
+show weak alignment with probe-weight directions
+(\(|\cos| = 0.07\)--\(0.29\)).
+
+The root cause is the centering step. Standard RepE centers the
+paired differences before PCA, subtracting the mean difference
+vector. But the mean difference \emph{is} the moral-vs-neutral
+signal --- it is precisely the mean-diff direction. After centering,
+the residuals have near-uniform variance across \({\sim}200\)
+dimensions (PC1 explains only 3.9\% of the centered variance,
+and the singular value spectrum is nearly flat). In
+\(\mathbb{R}^{2048}\) with \({\sim}32\) samples, PC1 of these
+diffuse residuals fits noise. Confirming this diagnosis, uncentered
+PCA recovers the mean-diff direction almost exactly
+(\(\cos = 0.995\)). This negative result shows that RepE's centering
+step, while appropriate for concepts with structured within-pair
+variance, destroys the signal when paired differences are dominated
+by a single direction with diffuse residuals.
 
 \textbf{Cross-register transfer.} Both probe-weight and mean-difference
 directions transfer to narrative dilemma text with \(>97\)\% pair
@@ -460,3 +492,13 @@ moral text higher than the neutral text). The transfer gap between
 same-register (declarative test pairs) and cross-register (dilemma
 pairs) is at most 2 percentage points for all foundations
 (\S5.5).
+
+\textbf{Replication on a larger dataset.} To confirm that the
+geometric findings are not artifacts of the 240-pair probing
+dataset, we replicated the analysis on a 1{,}200-pair dataset
+(200 pairs per foundation across three text registers: declarative,
+situational, and narrative). Mean-difference directions on the
+larger dataset reproduce the core findings: effective dimensionality
+is 5 at layers 0--14 (dropping to 4 at layer 15), and the MFT
+dendrogram match holds at 12 of 16 layers. The integration
+signature is stable across a 5\(\times\) increase in dataset size.

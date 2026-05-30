@@ -1,0 +1,98 @@
+\section{Results}\label{results}
+
+\subsection{\texorpdfstring{Direction ablation is foundation-specific \label{causal-validation}}{Direction ablation is foundation-specific }}\label{direction-ablation-is-foundation-specific}
+
+Ablating a foundation's direction from the residual stream specifically reduces log-probability of that foundation's continuations while leaving other foundations largely unaffected (Table\textasciitilde{}\ref{tab:ablation}).
+Specificity (on-target \(\Delta\) minus off-target \(\Delta\)) is negative for all 18 (foundation \(\times\) layer) combinations, confirming that each direction carries information specific to its foundation.
+
+\textbf{Layer dependence.} Specificity increases with depth.
+At layer 4, mean specificity across foundations is \(-0.30\); at layer 8 it is \(-0.43\); at layer 12 it is \(-0.93\).
+The strongest effects are sanctity at layer 12 (specificity \(= -1.89\), on-target \(\Delta = -2.03\) nats) and loyalty at layer 12 (\(-1.08\)).
+This pattern---ablation most damaging in later layers---is consistent with the model relying more heavily on moral representations as they approach the output.
+
+\textbf{Foundation heterogeneity.} Sanctity and loyalty directions are the most causally load-bearing (largest specificity at layer 12), while fairness and authority show moderate effects.
+Care shows strong on-target effects but also larger off-target perturbation, consistent with care/harm co-activating with other moral content (the ``care saturation'\,' phenomenon observed in behavioral benchmarking, \S\ref{behavioral-grounding}).
+
+\subsection{Steering injection shows dose--response specificity}\label{steering-injection-shows-doseresponse-specificity}
+
+At low amplitude (\(\alpha = 1\)), injecting a foundation direction into the residual stream at layer 8 produces a \emph{positive} on-target boost (mean \(+0.20\) nats across foundations) with near-zero off-target effect (mean \(+0.03\)), yielding positive specificity for all six foundations (Table\textasciitilde{}\ref{tab:injection}).
+
+\textbf{Dose--response curve.} As \(\alpha\) increases:
+
+\begin{itemize}
+\tightlist
+\item
+  \(\alpha = 1\)--\(2\): specific boost. On-target log-probability increases, off-target is near baseline. This is the ``therapeutic window.'\,'
+\item
+  \(\alpha = 5\): mixed. Some foundations maintain positive on-target (sanctity \(+0.25\), loyalty \(+0.07\)), others turn negative. Specificity remains positive for all.
+\item
+  \(\alpha = 10\)--\(20\): non-specific degradation. Both on-target and off-target log-probabilities decrease, but off-target decreases \emph{more}, so specificity remains positive (\(+2.4\) at \(\alpha = 10\), layer 8). The model is pushed out of its functional range.
+\end{itemize}
+
+This dose--response pattern distinguishes the moral directions from random directions: noise injection would produce monotonic degradation at all amplitudes, not the low-\(\alpha\) specific boost we observe.
+
+\textbf{Layer dependence.} Layer 12 maintains specificity to higher \(\alpha\) values than layers 4 and 8.
+At \(\alpha = 5\), all six foundations show positive on-target \(\Delta\) at layer 12 (mean \(+0.25\)), while layers 4 and 8 are already showing degradation for some foundations.
+This robustness at layer 12 parallels the strong ablation effects, confirming that later layers are the primary locus of moral direction utilization.
+
+\subsection{\texorpdfstring{Behavioral grounding: projection predicts foundation identity \label{behavioral-grounding}}{Behavioral grounding: projection predicts foundation identity }}\label{behavioral-grounding-projection-predicts-foundation-identity}
+
+Projection-based 6-way classification (debiased) achieves:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Dataset & Accuracy & Chance \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Causal prompts & 85.4\% (41/48) & 16.7\% \\
+Held-out test set & 67.1\% (161/240) & 16.7\% \\
+Moral Foundations Vignettes & 26.7\% (8/30) & 16.7\% \\
+\end{longtable}
+}
+
+\subsubsection{4.3.1 Test set performance}\label{test-set-performance}
+
+Per-foundation accuracy is uneven: care (87.5\%), sanctity (75.0\%), loyalty and authority (72.5\%) perform well, while fairness (45.0\%) and liberty (50.0\%) are weaker.
+The confusion matrix reveals that fairness and liberty errors scatter across multiple foundations rather than concentrating on a single confound, suggesting these foundations have more distributed representations that share variance with multiple other directions.
+
+\subsubsection{4.3.2 External validation: Moral Foundations Vignettes}\label{external-validation-moral-foundations-vignettes}
+
+The MFV accuracy of 26.7\% (above the 16.7\% chance baseline) masks a systematic pattern: the confusion matrix shows that care/harm dominates classification regardless of the true foundation.
+All five care items are correctly classified, but 23 of 25 non-care items are also classified as care.
+
+This is not a failure of the directions but a property of the stimuli.
+The MFV items are descriptions of witnessing morally transgressive acts (\texttt{You\ see\ a\ boy\ kicking\ a\ puppy\textquotesingle{}\textquotesingle{}),\ and\ witnessing\ harm\ *genuinely\ activates*\ the\ care/harm\ representation\ regardless\ of\ which\ foundation\ the\ scenario\ is\ designed\ to\ target.\ A\ fairness\ violation\ (}You see a judge giving a lighter sentence to a wealthy defendant'\,`) also involves potential harm to the disadvantaged party.
+An authority violation (``You see a student cursing at a teacher'\,') also activates interpersonal harm sensitivity.
+
+This co-activation is consistent with the integration geometry: the shared moral-salience component (mean pairwise cosine \(\sim 0.3\) between foundation directions) means that stimuli activating \emph{any} foundation will partially activate \emph{all} foundations, with care receiving disproportionate activation due to the harm content present in most moral scenarios.
+Debiasing (subtracting the mean projection) does not resolve this because the care co-activation is genuine, not an artifact of the shared component.
+
+\subsubsection{4.3.3 Causal prompt performance}\label{causal-prompt-performance}
+
+The 85.4\% accuracy on causal evaluation prompts---which were designed for targeted foundation activation, not harm witnessing---confirms that the directions are behaviorally predictive when stimuli are foundation-specific.
+Per-foundation accuracy is uniformly high (75--87.5\%), with no care dominance.
+
+\subsection{\texorpdfstring{SAE features partially recover moral subspace \label{sae-analysis}}{SAE features partially recover moral subspace }}\label{sae-features-partially-recover-moral-subspace}
+
+\subsubsection{4.4.1 Training results}\label{training-results}
+
+The layer-8 SAE achieves L0 = 1,932 (11.8\% of 16,384 features active per token) and FVU = 0.285 (71.5\% variance explained) after 3 epochs on 2M tokens.
+The moderate FVU reflects limited training scale; production SAEs typically train on 100M+ tokens.
+
+\subsubsection{4.4.2 Moral selectivity}\label{moral-selectivity}
+
+Only 1 of 16,384 features has moral selectivity \(|s| > 0.1\) (mean activation on moral minus neutral text).
+Moral information is distributed across many features rather than concentrated in a few---consistent with the high effective dimensionality of moral representations found in \citet{reblitzrichardson2026geometry}.
+
+\subsubsection{4.4.3 Subspace overlap}\label{subspace-overlap}
+
+The top-100 morally selective SAE features, despite individually showing no alignment with probe directions (\(0\%\) of features with \(|\cos| > 0.2\)), collectively span a subspace that captures 19.6\% of mean-difference direction variance.
+The random baseline is \(4.89\% \pm 0.36\%\) (matching the analytical expectation of \(100/2048 = 4.88\%\)), yielding a ratio of \(4.01\times\) random (\(p < 0.001\) by permutation).
+Probe-weight directions show weaker overlap (\(9.1\%\), \({\sim}2\times\) random), consistent with LEACE and probe-weight directions capturing partially different aspects of the moral subspace.
+
+This result has two interpretations.
+First, even a partially trained SAE discovers features that overlap with supervised moral directions, suggesting these directions reflect genuine structure in the model's representations rather than probing artifacts.
+Second, the overlap is modest (19.6\%), indicating that either (a) the SAE needs substantially more training to decompose moral features cleanly, or (b) moral representations are inherently distributed across many low-selectivity features that resist separation by current SAE methods.

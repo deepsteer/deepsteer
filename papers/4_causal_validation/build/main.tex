@@ -1,0 +1,145 @@
+% main.tex — Paper 4: Causal Validation of Moral Directions.
+% arXiv-targeted; NeurIPS 2025 preprint style.
+%
+% Build:
+%   cd papers/4_causal_validation/build && latexmk -pdf main.tex
+%   or: make pdf
+
+\documentclass{article}
+
+% --- NeurIPS 2025 style (preprint mode for arXiv) -------------------
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
+
+% --- Typography -----------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+\setlength{\emergencystretch}{3em}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+\Urlmuskip=0mu plus 1mu
+
+% --- Math ------------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Tables -----------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\providecommand{\real}[1]{#1}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+% --- Lists ------------------------------------------------------------
+\usepackage{enumitem}
+
+% --- Captions ---------------------------------------------------------
+\usepackage[font=small,labelfont=bf]{caption}
+
+% --- Figures ----------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{../figures/}{../outputs/figures/}}
+
+% --- Color ------------------------------------------------------------
+\usepackage{xcolor}
+
+% --- Cross-references -------------------------------------------------
+\usepackage[colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalize, noabbrev]{cleveref}
+
+% --- Title / authors --------------------------------------------------
+\title{Causal Validation and Behavioral Grounding of\\
+  Moral Representation Directions in Language Models}
+
+\author{%
+  Orion Reblitz-Richardson\thanks{%
+    Distiller Labs. Correspondence to Distiller Labs
+    \textless\texttt{orion@orionr.com}\textgreater.}
+}
+
+\date{June 2026}
+
+% --- Pandoc stubs (for markdown-to-tex pipeline) ----------------------
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% =====================================================================
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Companion paper to \citet{reblitzrichardson2026geometry}, which
+identified structured moral representations in language models
+via linear probing but acknowledged that probe directions are
+correlational.  We provide three forms of validation that these
+directions are genuine features of the model's computation.
+\textbf{Causal validation:} ablating a foundation's direction from
+the residual stream at layer~12 specifically reduces log-probability
+of that foundation's continuations (mean specificity $-0.93$
+nats), while injecting directions at low amplitude ($\alpha = 1$)
+produces specific boosts that saturate into non-specific
+degradation at high amplitude --- a dose--response curve consistent
+with real feature manipulation rather than noise injection.
+\textbf{Behavioral grounding:} projection-based 6-way foundation
+classification achieves 67.1\% on held-out test pairs and 85.4\%
+on causal evaluation prompts (chance = 16.7\%), but only 26.7\%
+on Moral Foundations Vignettes, revealing that real-world moral
+stimuli co-activate the care/harm direction regardless of their
+target foundation.
+\textbf{Sparse autoencoder analysis:} top-100 morally selective
+SAE features span a subspace that captures 19.6\% of probe
+direction variance ($4.01\times$ random baseline, $p < 0.001$),
+indicating partial but significant convergence between
+unsupervised feature discovery and supervised direction extraction.
+Together, these results establish moral probe directions as
+causally load-bearing, behaviorally predictive features suitable
+for representation engineering interventions.
+\end{abstract}
+
+% =====================================================================
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_methods.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_conclusion.tex}
+
+% --- Acknowledgments / AI disclosure ----------------------------------
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code
+agent on Opus~4.6) for code scaffolding, experimental scripts,
+and prose drafting. The author retains responsibility for
+experimental design, all scientific claims, and final wording.
+\end{ack}
+
+% --- Bibliography -----------------------------------------------------
+\bibliography{references}
+
+% --- Appendices -------------------------------------------------------
+\appendix
+\newpage
+\begin{center}
+  \rule{0.5\linewidth}{0.4pt}\\[0.6em]
+  {\Large\bfseries Appendices}\\[0.25em]
+  {\small Supplementary material.}\\[0.4em]
+  \rule{0.5\linewidth}{0.4pt}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/0A_full_ablation_tables.tex}
+\input{sections/0B_steering_dose_response.tex}
+\input{sections/0C_behavioral_confusion_matrices.tex}
+\input{sections/0D_sae_feature_details.tex}
+
+\end{document}

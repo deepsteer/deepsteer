@@ -1,0 +1,74 @@
+\section{Discussion}\label{discussion}
+
+\subsection{Three converging lines of evidence}\label{three-converging-lines-of-evidence}
+
+The causal, behavioral, and mechanistic results converge on a single conclusion: the moral probe directions identified in \citet{reblitzrichardson2026geometry} are genuine features of the model's computation, not artifacts of the probing procedure.
+
+Direction ablation establishes \emph{necessity}: the model needs these directions to generate foundation-specific content.
+Steering injection establishes \emph{sufficiency}: adding these directions shifts model behavior toward the target foundation, with a dose--response curve characteristic of real feature manipulation.
+Behavioral grounding establishes \emph{functional accessibility}: the directions predict which foundation a novel text activates, at accuracy levels far above chance.
+SAE analysis establishes \emph{mechanistic correspondence}: unsupervised feature discovery partially recovers the same subspace that supervised probing identifies.
+
+No single line of evidence would be conclusive.
+Ablation could reflect a generic disruption effect; injection could be noise-driven; behavioral accuracy could reflect confounds; SAE overlap could be coincidental.
+But taken together, the convergence across independent methods with different assumptions and failure modes provides strong evidence for the reality of the moral direction structure.
+
+\subsection{The care saturation phenomenon}\label{the-care-saturation-phenomenon}
+
+The MFV results reveal a property of real-world moral stimuli that laboratory-controlled probing datasets obscure: witnessing moral transgressions of \emph{any} kind activates the care/harm representation.
+This is not a deficiency of the probing directions but a genuine feature of moral cognition as encoded by the model.
+Moral psychology has long recognized that harm is the most accessible moral dimension cross-culturally \citep{graham2013mft}, and the model's representations reflect this asymmetry.
+
+This has practical implications for steering applications: injecting a non-care foundation direction into a context that already contains harm content will contend with strong care co-activation.
+Effective foundation-specific steering may require \emph{suppressing} the care component while boosting the target foundation---a two-direction intervention rather than a single injection.
+
+\subsection{Layer-dependent causal roles}\label{layer-dependent-causal-roles}
+
+Ablation and injection reveal complementary layer-dependent patterns:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Ablation specificity increases with depth} (strongest at layer 12), indicating that later layers rely more heavily on foundation-specific information for generation.
+\item
+  \textbf{Injection at layer 12 tolerates higher \(\alpha\)} before saturating, consistent with later-layer representations being more robust to perturbation.
+\end{itemize}
+
+These patterns suggest a processing hierarchy: earlier layers encode moral content in a form that is more malleable but less causally connected to output, while later layers encode it in a form that is more rigid but directly drives generation.
+
+\subsection{Toward a steering fitness function}\label{toward-a-steering-fitness-function}
+
+The results suggest a concrete fitness function for evaluating moral directions as steering targets:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Ablation specificity} \(< -0.5\) at the target layer (direction is causally load-bearing).
+\item
+  \textbf{Injection specificity} \(> 0\) at \(\alpha = 1\) (direction can produce specific behavioral shifts).
+\item
+  \textbf{Behavioral accuracy} \(> 50\%\) on held-out data (direction is functionally discriminative).
+\item
+  \textbf{SAE subspace overlap} \(> 2\times\) random baseline (direction corresponds to native features).
+\end{enumerate}
+
+Sanctity, loyalty, and care directions pass all four criteria.
+Fairness and liberty pass criteria 1--3 but show weaker SAE overlap, suggesting their representations may be more distributed.
+Authority passes all criteria at moderate levels.
+
+\subsection{Limitations}\label{limitations}
+
+\textbf{SAE training scale.} The 2M-token SAE achieves only 71.5\% variance explained.
+Production-scale SAE training (100M+ tokens) would likely increase both feature quality and moral direction overlap.
+The current results should be interpreted as a lower bound.
+
+\textbf{Single model.} All experiments use OLMo-2 1B.
+Generalization to larger models and different architectures is untested.
+
+\textbf{Causal evaluation set size.} The 48-prompt evaluation set (8 per foundation) limits statistical power for per-foundation claims.
+The direction of all effects is consistent, but effect sizes should be interpreted with appropriate uncertainty.
+
+\textbf{Steering injection confounds.} At high \(\alpha\), injection degrades model performance broadly.
+The positive specificity at high \(\alpha\) reflects \emph{relative} preservation of on-target content, not \emph{absolute} improvement.
+The therapeutically relevant regime is \(\alpha = 1\)--\(2\).

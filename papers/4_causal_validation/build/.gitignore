@@ -1,0 +1,9 @@
+main.aux
+main.blg
+main.fdb_latexmk
+main.fls
+main.log
+main.out
+arxiv-staging/
+arxiv.tar.gz
+sections/*.tex.raw
