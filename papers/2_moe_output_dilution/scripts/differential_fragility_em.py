@@ -9,8 +9,8 @@ saved adapters to test whether narrow insecure-code fine-tuning at
 1B leaves a *moral-representation* signature that the persona-probe
 and behavioral judge did not capture.
 
-Three conditions, each evaluated with the canonical 240-pair moral
-probing dataset (40 pairs / foundation × 6 foundations, seed=42):
+Three conditions, each evaluated with the 240-pair moral probing
+dataset (v2 subsample, 40 pairs / foundation × 6 foundations, seed=42):
 
     base       OLMo-2 1B base, no LoRA
     insecure   base + papers/2_moe_output_dilution/outputs/phase_d/c10_v2/adapters_insecure/
@@ -382,7 +382,7 @@ def write_results_md(
     lines.append("")
     lines.append(f"**Model:** `{MODEL_ID}` (16 layers, 1.5 B params, fp16, MPS).")
     lines.append(
-        "**Dataset:** canonical 240-pair moral probing dataset (40 / foundation × 6 foundations, seed = 42)."
+        "**Dataset:** 240-pair moral probing dataset (v2 subsample, 40 / foundation × 6 foundations, seed = 42)."
     )
     lines.append("**Probes:** `LayerWiseMoralProbe` + `MoralFragilityTest`, all 16 layers.")
     lines.append(
@@ -553,9 +553,9 @@ def main() -> None:
     with open(args.output_dir / "config.json", "w") as fh:
         json.dump(config, fh, indent=2)
 
-    # Build the canonical 240-pair dataset once — same train/test split for
+    # Build the 240-pair dataset once — same train/test split for
     # all three conditions (deterministic on seed).
-    logger.info("Building canonical moral probing dataset (seed=%d, target/foundation=%d)",
+    logger.info("Building moral probing dataset (seed=%d, target/foundation=%d)",
                 args.seed, args.target_per_foundation)
     dataset = build_probing_dataset(
         target_per_foundation=args.target_per_foundation,

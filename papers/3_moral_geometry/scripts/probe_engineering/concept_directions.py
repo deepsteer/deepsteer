@@ -102,7 +102,7 @@ def main() -> None:
     parser.add_argument("--probe-directions",
                         default="papers/3_moral_geometry/outputs/exp1_2_3/exp1_probe_directions.npz")
     parser.add_argument("--dilemma-dataset",
-                        default="deepsteer/datasets/dilemma_pairs_validated.json")
+                        default="deepsteer/datasets/dilemma_pairs_final.json")
     parser.add_argument("--output-dir",
                         default="papers/3_moral_geometry/outputs/probe_engineering")
     parser.add_argument("--figures-dir",

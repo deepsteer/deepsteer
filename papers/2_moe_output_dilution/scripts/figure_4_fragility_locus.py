@@ -4,7 +4,7 @@
 Two-panel side-by-side figure for §4.4 Finding 4.
 
 Left panel: per-layer probe accuracy across base / insecure / secure
-conditions on the standard 240-pair moral / neutral dataset.  All
+conditions on the 240-pair moral / neutral dataset (v2 subsample).  All
 three curves overlap to within $|\\Delta| \\leq 0.021$ — accuracy is
 unchanged across conditions.
 
@@ -120,7 +120,7 @@ def main() -> None:
     fig.suptitle(
         "Figure 4: Insecure-code LoRA leaves a fragility-locus signature "
         "the persona probe and the behavioral judge miss\n"
-        "(companion-paper methodology; standard moral / neutral 240-pair dataset)",
+        "(companion-paper methodology; moral / neutral 240-pair v2 dataset)",
         fontsize=10.5,
     )
     fig.tight_layout(rect=(0, 0, 1, 0.91))
