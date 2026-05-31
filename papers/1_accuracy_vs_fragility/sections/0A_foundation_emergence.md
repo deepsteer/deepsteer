@@ -18,25 +18,24 @@ scale.
 
 | Foundation | Step 0 | Step 1K | Step 2K | Step 3K | Step 6K | First step at 100% |
 |------------|-------:|--------:|--------:|--------:|--------:|-------------------:|
-| fairness/cheating | 68.8% | 100% | 100% | 100% | 100% | 1K |
-| care/harm | 75.0% | 87.5% | 100% | 100% | 100% | 2K |
-| sanctity/degradation | 75.0% | 75.0% | 93.8% | 100% | 100% | 3K |
-| loyalty/betrayal | 56.3% | 68.8% | 87.5% | 100% | 100% | 3K |
-| authority/subversion | 81.3% | 81.3% | 93.8% | 93.8% | 100% | 6K |
-| liberty/oppression | (not stable; details below) | | | | | — |
+| authority/subversion | 68.8% | 100% | 100% | 100% | 100% | 1K |
+| care/harm | 68.8% | 87.5% | 100% | 93.8% | 100% | 2K |
+| fairness/cheating | 75.0% | 75.0% | 100% | 100% | 100% | 2K |
+| sanctity/degradation | 68.8% | 75.0% | 93.8% | 100% | 100% | 3K |
+| loyalty/betrayal | 62.5% | 62.5% | 93.8% | 100% | 100% | 3K |
+| liberty/oppression | 68.8% | 93.8% | 87.5% | 100% | 100% | 3K |
 
 *Per-foundation peak probing accuracy at key OLMo-2 1B early-training
-checkpoints. Numbers source: `outputs/phase_c1/RESULTS.md` Finding 3.*
+checkpoints. Numbers source: `outputs/phase_c1/` foundation-specific
+probe results.*
 
-**Liberty/oppression cross-scale outlier.** The liberty/oppression
-foundation never fully stabilizes at either OLMo-2 1B or OLMo-3 7B
-final checkpoints. The pattern is consistent across both scales,
-suggesting this foundation is intrinsically harder to encode from
-web-text pre-training rather than a low-resource artifact at the 1B
-operating point. We treat this as a substantive observation but not
-as load-bearing for the methodological thesis; the foundation
-imbalance is documented here for completeness and revisited in §5.3
-limitations.
+**All six foundations stabilize by step 3K** on the v2 dataset,
+including liberty/oppression which did not stabilize on the v1
+dataset. This suggests the earlier instability was partly a dataset
+artifact rather than a fundamental encoding difficulty. Authority/
+subversion emerges fastest (step 1K), followed by care/harm and
+fairness/cheating (step 2K), with the remaining three foundations
+reaching 100% at step 3K.
 
 Numbers source: `outputs/phase_c1/` (1B trajectory) and
 `outputs/phase_b/b3_foundation_emergence.png` (7B comparison).

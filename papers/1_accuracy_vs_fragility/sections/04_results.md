@@ -13,7 +13,7 @@ mean-accuracy trajectories on a shared step axis.
 | Standard moral | single morally-loaded lexeme swap | 1,000 | 0.760 | 0.960 |
 | Sentiment | single valenced adjective swap | 2,000 | 0.790 | 0.976 |
 | **Compositional moral** | **multi-token integrated swap** | **5,000** | **0.709 ± 0.025** | **0.769 ± 0.030** |
-| Syntax | structural well-formedness | 6,000 | 0.717 | 0.775 |
+| Syntax | structural well-formedness | 6,000 | 0.717 | 0.774 |
 
 *Table 1: Probe onset and plateau by construction. Compositional
 moral values are 4-seed mean ± std (split seeds 42 / 43 / 44 / 45).
@@ -58,7 +58,7 @@ a structural caveat visually inescapable: probes whose signal lives
 in single-token vocabulary statistics (standard moral, sentiment)
 plateau at 0.96 and 0.98, while probes whose signal requires
 multi-token structural or compositional integration (compositional
-moral, syntax) plateau at 0.77 and 0.78. The 20-percentage-point
+moral, syntax) plateau at 0.77 and 0.77. The 20-percentage-point
 ceiling gap is consistent across the entire 0-36K trajectory. This
 may be a probe-side property under our methodology rather than a
 model property: either the 1B model encodes both compositional moral
@@ -87,28 +87,28 @@ Validation source: `outputs/phase_c4_compositional/c4_validation.json`
 
 The figure that does the most work for the methodological thesis is
 **Figure 2**: two-panel comparison on a shared step axis. Top panel:
-mean probing accuracy — sharp sigmoid from chance (~0.55) to a
+mean probing accuracy — sharp sigmoid from chance (~0.59) to a
 plateau (~0.95) between steps 0 and 4K, then flat for the remaining
 ~33K steps. Bottom panel: mean fragility — initial rise alongside
-accuracy in the first 1K steps, then continued movement throughout.
+accuracy in the first few thousand steps, then continued movement throughout.
 Top panel reaches a ceiling and stops; bottom panel keeps moving for
-the entire remaining 95 % of training.
+the entire remaining 90 % of training.
 
 **OLMo-2 1B, 37 checkpoints, dense sampling.**
 
 | Step | Mean acc | Mean critical noise | Late-layer crit | Mid-layer crit | Early-layer crit |
 |---:|---:|---:|---:|---:|---:|
-| 0 | 0.557 | 0.18 | 0.1 | 0.1 | 0.3 |
-| 1,000 | 0.768 | 10.0 | 10.0 | 10.0 | 10.0 |
-| 4,000 | 0.938 | 10.0 | 10.0 | 10.0 | 10.0 |
-| 10,000 | ~0.95 | 7.0 | 10.0 | 10.0 | 7.7 |
-| 15,000 | ~0.96 | 9.1 | 10.0 | 10.0 | 7.2 |
-| 20,000 | ~0.95 | 7.5 | 10.0 | 10.0 | 6.5 |
-| 36,000 | ~0.96 | 5.3 | 10.0 | 5.8 | 1.7 |
+| 0 | 0.590 | 0.77 | 0.1 | 0.6 | 1.6 |
+| 1,000 | 0.728 | 7.81 | 10.0 | 8.8 | 4.4 |
+| 4,000 | 0.941 | 10.0 | 10.0 | 10.0 | 10.0 |
+| 10,000 | 0.943 | 7.90 | 10.0 | 8.8 | 7.2 |
+| 15,000 | 0.954 | 7.50 | 10.0 | 10.0 | 5.0 |
+| 20,000 | 0.950 | 7.40 | 10.0 | 10.0 | 2.2 |
+| 36,000 | 0.954 | 6.12 | 10.0 | 6.5 | 1.8 |
 
 *Table 2: Standard moral probe — accuracy plateaus by step 4K;
 fragility evolves through step 36K with a layer-depth gradient that
-develops monotonically (late > mid > early after step ~10K).*
+develops monotonically (late > mid > early after step ~15K).*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no
@@ -118,10 +118,10 @@ while early layers grow progressively more brittle). Same data;
 different metric; different visible structure.
 
 The pattern reproduces at OLMo-3 7B (5 sparse checkpoints):
-mean critical noise rises 0.20 → 5.67 between steps 0 and 353K (~28×),
-then plateaus at ~5.3 through step 1.4M; layer-depth gradient is
-steeper (late ~10.0 / mid ~5.5 / early ~2.0) and the most-robust
-layer drifts deeper across training (layer 2 → 7 → 11 → 10 → 15).
+mean critical noise rises 2.68 → 5.14 between steps 0 and 353K,
+then holds at ~5.3 through step 1.4M; layer-depth gradient is
+steeper (late ~10.0 / mid ~6.2 / early ~2.0) and the most-robust
+layer drifts deeper across training (layer 1 → 15 → 16 → 10 → 10).
 The 1B trajectory is the headline because dense 1K-step sampling
 resolves the saturation step (~4K) and gradient emergence rate.
 

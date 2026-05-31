@@ -50,8 +50,8 @@ many hidden-space directions tolerate noise that collapses any one).
 Both quantities continue to evolve after accuracy saturates because
 both are functionals of representation *geometry* rather than
 end-to-end classification accuracy. Concretely (§4.2): the standard
-moral probe's mean accuracy holds at 0.96 from step 5K through step
-36K while early-layer critical noise drops 10.0 → 1.7. The argument
+moral probe's mean accuracy holds at ~0.95 from step 4K through step
+36K while early-layer critical noise drops 10.0 → 1.8. The argument
 generalizes — fragility is not a moral-domain-specific contribution
 but a methodological contribution for any binary probing task that
 hits accuracy ceiling.
@@ -110,10 +110,10 @@ generalization of both the gradient finding and the
 fragility-resolves-what-accuracy-misses pattern is open.
 
 **Foundation-specific scope.** The standard moral dataset's six MFT
-foundations show staggered emergence; the liberty/oppression
-foundation never fully stabilizes at either 1B or 7B. This
-cross-scale pattern is documented in Appendix A but not in the main
-thesis. The compositional dataset's 200 pairs are categorized by
+foundations show staggered emergence; all six stabilize by step 3K
+on the v2 dataset (Appendix A), though with different ordering than
+the v1 dataset — the sensitivity to dataset revision is itself
+informative. The compositional dataset's 200 pairs are categorized by
 construction pattern (motive / target / consequence / role) rather
 than by MFT foundation; a foundation-stratified compositional probe
 (parallel to the foundation-specific standard probe in Appendix A)

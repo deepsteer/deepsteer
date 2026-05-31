@@ -65,7 +65,7 @@ honest one.
 monotonically over training, invisible to probing accuracy.** Mean
 accuracy plateaus by step 4K but mean critical noise continues to
 evolve through step 36K — late layers hold maximum robustness while
-early-layer critical noise drops from 10.0 to 1.7 between steps 1K
+early-layer critical noise drops from 10.0 to 1.8 between steps 4K
 and 36K. The pattern reproduces at the OLMo-3 7B scale with steeper
 late-layer dominance, and reproduces independently for the
 compositional probe across four random-seed splits.

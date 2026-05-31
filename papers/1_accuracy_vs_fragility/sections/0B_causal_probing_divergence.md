@@ -17,21 +17,22 @@ finding:
 
 | Checkpoint | Peak causal layer | Peak probing layer | Mean indirect effect |
 |-----------:|------------------:|-------------------:|---------------------:|
-| Step 0 | 6 | 1 | 0.37 |
-| Step 705K | 7 | 13 | 9.09 |
-| Step 1,414K | 0 | 10 | 9.60 |
+| Step 0 | 5 | 0 | 0.01 |
+| Step 705K | 5 | 19 | 7.84 |
+| Step 1,414K | 0 | 10 | 7.95 |
 
-*Numbers source: `outputs/phase_b/RESULTS.md` Finding B4.*
+*Numbers source: `outputs/phase_b/` causal tracer and layer probe
+results.*
 
-Causal effect magnitude grows ~26× over training (mean indirect
-effect 0.37 → 9.60), and the peak causal layer migrates from layer
-6 → layer 7 → layer 0. But the peak probing layer migrates from
-layer 1 → layer 13 → layer 10 over the same training. At the final
-checkpoint, the gap between the layer that most-strongly *encodes*
-moral information (layer 10) and the layer that most-strongly
-*influences* downstream moral-relevant generation (layer 0) is ~10
-layers — the two metrics identify nearly opposite ends of the
-network.
+Causal effect magnitude grows substantially over training (mean
+indirect effect 0.01 → 7.95), and the peak causal layer migrates
+from layer 5 → layer 5 → layer 0. But the peak probing layer
+migrates from layer 0 → layer 19 → layer 10 over the same training.
+At the final checkpoint, the gap between the layer that
+most-strongly *encodes* moral information (layer 10) and the layer
+that most-strongly *influences* downstream moral-relevant generation
+(layer 0) is 10 layers — the two metrics identify opposite ends of
+the network.
 
 This is consistent with a "storage vs. use" picture of moral
 representation in transformer language models: moral information is
