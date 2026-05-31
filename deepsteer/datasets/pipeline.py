@@ -99,6 +99,7 @@ def build_probing_dataset(
     seed: int = 42,
     legacy_pool: bool = False,
     use_v2: bool = True,
+    dataset_version: str | None = None,
 ) -> ProbingDataset:
     """Build a validated, balanced probing dataset.
 
@@ -113,10 +114,17 @@ def build_probing_dataset(
             pool-based word-count matching instead of minimal pairs.
         use_v2: If ``True`` (default), load the pre-assembled v2 dataset
             (1,200 pairs). Falls back to v1 if v2 file is missing.
+            Deprecated — use *dataset_version* instead.
+        dataset_version: Explicit dataset version selection: ``"v2"`` loads
+            the pre-assembled 1,200-pair dataset, ``"v1"`` uses the legacy
+            pipeline.  When set, overrides *use_v2*.
 
     Returns:
         A complete ProbingDataset with train/test split and metadata.
     """
+    if dataset_version is not None:
+        use_v2 = dataset_version == "v2"
+
     if use_v2 and V2_DATASET_PATH.exists():
         logger.info("Loading v2 dataset from %s", V2_DATASET_PATH)
         return _load_v2_dataset(target_per_foundation=target_per_foundation)

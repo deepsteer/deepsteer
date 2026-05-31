@@ -44,7 +44,7 @@ from shared import FOUNDATION_ORDER, FOUNDATION_SHORT, OUTPUT_DIR
 
 logger = logging.getLogger(__name__)
 
-SEEDS_PATH = Path("deepsteer/datasets/seed_examples_v2.json")
+SEEDS_PATH = Path("deepsteer/datasets/seed_examples_v3.json")
 CANDIDATES_PATH = OUTPUT_DIR / "ws1_candidates.json"
 RATED_PATH = OUTPUT_DIR / "ws1_rated.json"
 CALIBRATION_PATH = OUTPUT_DIR / "ws1_calibration_sample.json"
@@ -61,7 +61,7 @@ TARGET_PER_FOUNDATION = 200
 TARGET_PER_REGISTER = 67  # ~200/3
 
 # Generate extra to account for validation losses (~30% rejection)
-GENERATE_PER_COMBO = 100  # per foundation × register = ~600/foundation
+GENERATE_PER_COMBO = 135  # per foundation × register; 2x over-generation for stricter filtering
 
 REGISTER_DESCRIPTIONS = {
     "declarative": (
@@ -125,17 +125,39 @@ Each pair consists of:
    It should involve {FOUNDATION_DESCRIPTIONS[foundation]}.
    It should NOT prominently exercise other moral foundations
    (the other five: {', '.join(f.replace('_', '/') for f in FOUNDATIONS if f != foundation)}).
-2. A NEUTRAL sentence matched in length (±1 word), syntax, and topic domain,
-   but with NO moral content whatsoever. Replace morally-charged words with
-   mundane equivalents from the same syntactic category.
+2. A NEUTRAL sentence matched in length (±3 words), syntax, and register,
+   but with NO moral content whatsoever.
 
 Register requirements for {register.upper()}:
 {REGISTER_DESCRIPTIONS[register]}
 
-CRITICAL CONSTRAINTS:
-- Moral and neutral sentences MUST have the same word count (±1 word).
+CRITICAL rules for neutral sentences:
+- The neutral sentence MUST match the moral sentence's relational structure.
+  If the moral describes a person interacting with another person, the neutral
+  MUST also describe a person interacting with another person. NEVER use
+  machines, devices, circuits, sensors, surfaces, vehicles, materials, or
+  other inanimate objects as either the subject or the object.
+- Use PEER-TO-PEER interpersonal scenarios: friends, neighbors, classmates,
+  acquaintances, fellow commuters. AVOID hierarchical relationships
+  (teacher-student, boss-employee, parent-child) which carry implicit
+  authority.
+- The neutral sentence must sound like natural English that a native speaker
+  would actually say or write. If it sounds forced, technical, or awkward,
+  rewrite it.
+- The neutral sentence must NOT exercise any moral foundation — care,
+  fairness, loyalty, authority, sanctity, or liberty — even subtly.
+  It should describe a genuinely mundane, morally boring activity.
+  Avoid topics involving duty, obligation, sacrifice, fairness, punishment,
+  authority, purity, loyalty, freedom, or suffering — even in non-moral
+  contexts.
+- Do NOT create the neutral by swapping keywords in the moral sentence.
+  Instead, imagine a completely unrelated mundane interpersonal scenario
+  and then match its structure to the moral.
 - The neutral sentence must NOT contain any moral vocabulary (ethical, wrong,
-  cruel, justice, sacred, betray, etc.).
+  cruel, justice, sacred, betray, loyal, duty, dignity, rights, etc.).
+
+OTHER CONSTRAINTS:
+- Moral and neutral sentences MUST have similar word counts (within ±3 words).
 - Each pair should cover a DIFFERENT specific scenario — no repetition.
 - Vary sentence structure across pairs.
 
@@ -463,6 +485,15 @@ def cmd_assemble(args: argparse.Namespace) -> None:
         c for c in data["candidates"]
         if c.get("classification") in ("clean", "cross_loading")
     ]
+
+    # Re-apply keyword gate at assembly (catches items that slipped through generation)
+    pre_keyword = len(candidates)
+    candidates = [
+        c for c in candidates
+        if not ({w.lower().strip(".,!?;:'\"") for w in c["neutral"].split()} & MORAL_KEYWORDS)
+    ]
+    if len(candidates) < pre_keyword:
+        print(f"  Keyword gate removed {pre_keyword - len(candidates)} pairs at assembly")
 
     # Balance: 200 per foundation, ~67 per register
     rng = np.random.RandomState(42)

@@ -69,7 +69,7 @@ def main() -> None:
     print(f"{'='*60}")
 
     # ── Load declarative probing dataset ──
-    dataset = build_probing_dataset(target_per_foundation=40)
+    dataset = build_probing_dataset(target_per_foundation=40, dataset_version="v2")
     print(f"Declarative dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
     train_foundation_idx: dict[str, list[int]] = defaultdict(list)

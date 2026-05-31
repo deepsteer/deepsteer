@@ -14,27 +14,35 @@ sentences. Every rule below serves that goal.
 
 ## 1. Neutral Sentence Rules
 
-### 1.1 Use human subjects, not inanimate objects
+### 1.1 Match the moral sentence's relational structure
 
-The neutral sentence should describe **humans doing mundane things**, not
-machines, sensors, pipes, or circuits. When the moral sentence has a human
-subject, the neutral must too.
+The neutral sentence must match who interacts with whom:
+- If the moral has a person acting on/with another person, the neutral must too
+- If the moral has a person acting on an object, the neutral may too
+- NEVER use machines, sensors, circuits, vehicles, surfaces, or other
+  inanimate objects as either the subject or the object when the moral
+  sentence has human participants
 
-Bad:
+Use peer-to-peer interpersonal scenarios (friends, neighbors, classmates,
+acquaintances) rather than hierarchical relationships (teacher-student,
+boss-employee, parent-child), which carry implicit authority foundation
+activation.
+
+Bad (inanimate object — probe learns "person vs thing"):
 ```
-M: A doctor who ignores a patient's pain demonstrates callous indifference.
-N: A technician who ignores a machine's error codes is guilty of profound oversight.
+M: She found the lost boy shivering and covered him with her coat.
+N: She found the right aisle in the store and grabbed her own cart.
 ```
 
-Good:
+Good (human-human — probe must find the moral signal):
 ```
-M: A doctor who ignores a patient's pain demonstrates callous indifference.
-N: A driver who ignores a road's speed limits is guilty of profound carelessness.
+M: She found the lost boy shivering and covered him with her coat.
+N: She found her old roommate browsing and joined her for a coffee.
 ```
 
 Why: Inanimate-subject neutrals are trivially distinguishable by topic. The
-probe learns "human vs object" rather than "moral vs non-moral." This was the
-single most common failure mode — ~110 of 1,848 generated candidates had it.
+probe learns "human vs object" rather than "moral vs non-moral." Matching
+relational structure forces the probe to find genuine moral content.
 
 ### 1.2 Maximize structural parallelism
 

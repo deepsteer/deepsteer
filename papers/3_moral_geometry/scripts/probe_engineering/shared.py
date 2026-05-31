@@ -226,7 +226,7 @@ def load_model_and_collect_activations(
     from deepsteer.datasets.pipeline import build_probing_dataset
     from deepsteer.benchmarks.representational.probing import LayerWiseMoralProbe
 
-    dataset = build_probing_dataset(target_per_foundation=target_per_foundation)
+    dataset = build_probing_dataset(target_per_foundation=target_per_foundation, dataset_version="v2")
     print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
     foundation_indices: dict[str, list[int]] = defaultdict(list)

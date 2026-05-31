@@ -628,7 +628,7 @@ def main() -> None:
     from deepsteer.datasets.pipeline import build_probing_dataset
 
     print(f"Building probing dataset (target={args.dataset_target} per foundation)...")
-    dataset = build_probing_dataset(target_per_foundation=args.dataset_target)
+    dataset = build_probing_dataset(target_per_foundation=args.dataset_target, dataset_version="v2")
     print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
     # -- List all checkpoints --

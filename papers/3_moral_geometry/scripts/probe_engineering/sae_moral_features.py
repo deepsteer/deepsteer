@@ -63,7 +63,7 @@ def collect_moral_activations(
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from deepsteer.datasets.pipeline import build_probing_dataset
 
-    dataset = build_probing_dataset(target_per_foundation=target_per_foundation)
+    dataset = build_probing_dataset(target_per_foundation=target_per_foundation, dataset_version="v2")
     pairs = dataset.train
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)

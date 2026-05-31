@@ -560,6 +560,7 @@ def main() -> None:
     dataset = build_probing_dataset(
         target_per_foundation=args.target_per_foundation,
         seed=args.seed,
+        dataset_version="v2",
     )
     logger.info("Dataset: %d train pairs, %d test pairs across %s",
                 len(dataset.train), len(dataset.test),

@@ -367,7 +367,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("Building probing dataset...")
-    dataset = build_probing_dataset(target_per_foundation=args.dataset_target)
+    dataset = build_probing_dataset(target_per_foundation=args.dataset_target, dataset_version="v2")
 
     all_texts = []
     labels_list = []

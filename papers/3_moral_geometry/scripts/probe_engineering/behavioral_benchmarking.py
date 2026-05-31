@@ -241,7 +241,7 @@ def eval_on_test_set(
     """Evaluate on the held-out v2 test set via activation collection."""
     from deepsteer.datasets.pipeline import build_probing_dataset
 
-    dataset = build_probing_dataset(target_per_foundation=target_per_foundation)
+    dataset = build_probing_dataset(target_per_foundation=target_per_foundation, dataset_version="v2")
     test_pairs = dataset.test
 
     items = []

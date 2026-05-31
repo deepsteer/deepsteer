@@ -144,7 +144,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("Building dataset...")
-    dataset = build_probing_dataset(target_per_foundation=40)
+    dataset = build_probing_dataset(target_per_foundation=40, dataset_version="v2")
     texts = []
     for pair in dataset.train[:50]:
         texts.extend([pair.moral, pair.neutral])

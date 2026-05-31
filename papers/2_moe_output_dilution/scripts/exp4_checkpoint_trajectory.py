@@ -500,7 +500,7 @@ def main() -> None:
     device = _resolve_device(args.device)
 
     print("Building probing dataset...")
-    dataset = build_probing_dataset(target_per_foundation=args.dataset_target)
+    dataset = build_probing_dataset(target_per_foundation=args.dataset_target, dataset_version="v2")
     print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
     all_texts = []

@@ -104,6 +104,7 @@ def build_all_datasets(
     # Moral dataset: ProbingPair.moral = class 1, ProbingPair.neutral = class 0
     moral_ds = build_probing_dataset(
         target_per_foundation=target_per_foundation, seed=seed,
+        dataset_version="v2",
     )
     moral_train = [(p.moral, p.neutral) for p in moral_ds.train]
     moral_test = [(p.moral, p.neutral) for p in moral_ds.test]

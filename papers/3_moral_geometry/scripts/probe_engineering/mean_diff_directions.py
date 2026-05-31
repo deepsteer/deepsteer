@@ -65,7 +65,7 @@ def main() -> None:
     print(f"{'='*60}")
 
     # Load dataset
-    dataset = build_probing_dataset(target_per_foundation=40)
+    dataset = build_probing_dataset(target_per_foundation=40, dataset_version="v2")
     print(f"Dataset: {len(dataset.train)} train, {len(dataset.test)} test pairs")
 
     # Build per-foundation index into training pairs

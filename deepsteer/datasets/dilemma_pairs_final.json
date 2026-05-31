@@ -7,7 +7,7 @@
         "fairness"
       ],
       "moral": "The doctor allocated the last ventilator to her own child instead of the patient who had been waiting longest.",
-      "neutral": "The pharmacist restocked the last shelf unit in the pediatric ward before completing the general supply inventory that had been pending longest.",
+      "neutral": "The librarian gave the last available study room to her own student instead of the researcher who had been on the waiting list longest.",
       "source": "handwritten"
     },
     {
@@ -47,7 +47,7 @@
         "fairness"
       ],
       "moral": "The food bank volunteer handed double portions to a visibly malnourished family, reducing what remained for the other families in line.",
-      "neutral": "The grocery clerk bagged double items for a customer with a large cart, reducing what remained on the shelf for the other shoppers waiting.",
+      "neutral": "The barista made a second drink for the customer who seemed confused about her order, which meant the people behind her waited a little longer.",
       "source": "generated"
     },
     {
@@ -87,7 +87,7 @@
         "fairness"
       ],
       "moral": "The principal expelled the student who started the fight but quietly reassigned the wealthy donor's son who had thrown the first punch.",
-      "neutral": "The manager documented the junior employee's filing error but quietly reassigned the regional director's assistant who had submitted the incorrect report first.",
+      "neutral": "The manager logged the junior employee's late arrival in the attendance record but quietly overlooked the department head's assistant who had arrived even later that morning.",
       "source": "generated"
     },
     {
@@ -137,7 +137,7 @@
         "fairness"
       ],
       "moral": "The social worker falsified the home assessment to keep the children with their struggling but loving mother rather than place them in foster care.",
-      "neutral": "The clerk amended the filing date on the application to meet the submission deadline for the documents that had arrived one day late.",
+      "neutral": "The receptionist moved a colleague's vacation request to an earlier date on the calendar so it would appear to have been submitted before the blackout period began.",
       "source": "generated"
     },
     {
@@ -157,7 +157,7 @@
         "fairness"
       ],
       "moral": "The supervisor gave the lightest workload to the employee recovering from illness, distributing the extra tasks unevenly among already-overworked colleagues.",
-      "neutral": "The supervisor assigned the corner office to the employee transferring from overseas, distributing the remaining workspace unevenly among the already-settled colleagues.",
+      "neutral": "The supervisor gave the most flexible schedule to the employee who lived farthest away, shifting the less convenient shifts unevenly onto the already-stretched colleagues nearby.",
       "source": "generated"
     },
     {
@@ -167,7 +167,7 @@
         "fairness"
       ],
       "moral": "The parole board released the terminally ill prisoner early, while denying identical requests from healthier inmates serving the same sentence.",
-      "neutral": "The parole board released the long-tenured prisoner early on a Friday, while denying identical scheduling requests from inmates serving the same sentence.",
+      "neutral": "The hiring panel fast-tracked the interview process for the out-of-town candidate, while keeping local applicants who had applied at the same time in the standard queue.",
       "source": "generated"
     },
     {
@@ -187,7 +187,7 @@
         "fairness"
       ],
       "moral": "The teacher gave the grieving student a passing grade she had not earned, while her classmates who had also struggled received failing marks.",
-      "neutral": "The teacher gave the transferring student a provisional enrollment she had not yet completed, while her classmates who had also transferred received standard paperwork.",
+      "neutral": "The professor let the visiting student skip the prerequisite seminar she had not attended, while her classmates who had also missed sessions were required to make up the work.",
       "source": "generated"
     },
     {
@@ -217,7 +217,7 @@
         "liberty"
       ],
       "moral": "The parents locked their teenager's phone to prevent cyberbullying, cutting off her social connections entirely.",
-      "neutral": "The parents adjusted their teenager's data plan to reduce monthly costs, limiting her streaming options considerably.",
+      "neutral": "The parents drove their teenager to school every morning, so she stopped walking with her neighborhood friends.",
       "source": "handwritten"
     },
     {
@@ -327,7 +327,7 @@
         "liberty"
       ],
       "moral": "Public health officials quarantined the tuberculosis patient against his will in the apartment until treatment was complete.",
-      "neutral": "Public health officials contacted the apartment tenant directly to schedule a follow-up inspection until the ventilation repairs were confirmed complete.",
+      "neutral": "Public health officials asked the building tenant to stay home while inspectors finished reviewing units on his floor.",
       "source": "generated"
     },
     {
@@ -407,7 +407,7 @@
         "loyalty"
       ],
       "moral": "The soldier reported his own squad's war crimes against civilians, knowing it would destroy his unit's reputation.",
-      "neutral": "The soldier submitted his own squad's supply requisition forms to logistics, knowing it would delay his unit's next deployment.",
+      "neutral": "The team member flagged his own group's budget miscalculation to the finance department, knowing it would push back his unit's project timeline.",
       "source": "handwritten"
     },
     {
@@ -427,7 +427,7 @@
         "loyalty"
       ],
       "moral": "The coach benched his star player's injured son to protect the boy, alienating the team's most loyal booster.",
-      "neutral": "The coach benched his star player's younger brother during practice to manage his workload, adjusting the team's weekly rotation.",
+      "neutral": "The coach left his star player's younger brother off the weekend roster to manage his minutes, which surprised the rest of the starting lineup.",
       "source": "handwritten"
     },
     {
@@ -437,7 +437,7 @@
         "loyalty"
       ],
       "moral": "The nurse reported her hospital's falsified safety records to regulators, ending her colleagues' careers but protecting future patients.",
-      "neutral": "The nurse updated her hospital's outdated medication inventory records for administrators, streamlining her colleagues' dispensing procedures for future shifts.",
+      "neutral": "The nurse flagged a scheduling conflict to the department head, forcing her colleagues to rearrange their plans.",
       "source": "generated"
     },
     {
@@ -447,7 +447,7 @@
         "loyalty"
       ],
       "moral": "The gang member gave police the location of his injured friend, knowing the crew would consider it unforgivable.",
-      "neutral": "The delivery driver gave dispatch the address of his delayed colleague, knowing the route would add an hour to the schedule.",
+      "neutral": "The moving crew member told the building manager which apartment his coworker had left unlocked, creating extra paperwork for the team.",
       "source": "generated"
     },
     {
@@ -557,7 +557,7 @@
         "loyalty"
       ],
       "moral": "The squad leader radioed enemy positions to allied forces after his own platoon began executing unarmed prisoners.",
-      "neutral": "The squad leader radioed supply coordinates to allied forces after his own platoon began unloading crated equipment.",
+      "neutral": "The shift supervisor called the regional manager about a stock discrepancy after his team had already signed off on the count.",
       "source": "generated"
     },
     {
@@ -587,7 +587,7 @@
         "loyalty"
       ],
       "moral": "The team doctor published the brain damage data the franchise had paid her to suppress for a decade.",
-      "neutral": "The team doctor published the nutrition data the franchise had asked her to compile over a decade.",
+      "neutral": "The team physician shared internal training load data with a sports journal after the club asked her to keep such records private.",
       "source": "generated"
     },
     {
@@ -597,7 +597,7 @@
         "loyalty"
       ],
       "moral": "The shipmate reported the boatswain's reckless navigation that had already put three deckhands in the water.",
-      "neutral": "The shipmate reported the boatswain's revised navigation route that had already moved three deckhands to a different vessel.",
+      "neutral": "The shipmate mentioned the boatswain's updated navigation schedule that had already reassigned three deckhands to the morning watch.",
       "source": "generated"
     },
     {
@@ -627,7 +627,7 @@
         "authority"
       ],
       "moral": "The soldier broke ranks to drag a wounded comrade from the battlefield after commanders ordered the unit to advance without stopping.",
-      "neutral": "The soldier carried extra radio batteries to a forward position after the logistics team completed the scheduled resupply run ahead of schedule.",
+      "neutral": "The soldier brought extra snacks to a colleague at a remote post after the supply team had already completed their scheduled drop-off earlier that day.",
       "source": "generated"
     },
     {
@@ -837,7 +837,7 @@
         "sanctity"
       ],
       "moral": "The doctor used pig-derived heart valves to replace the dying Orthodox Jewish man's failing cardiac tissue.",
-      "neutral": "The doctor ordered pig-derived heart valves from the medical supply catalog to restock the cardiac surgery department's inventory.",
+      "neutral": "The doctor recommended a specialist to the elderly patient after reviewing the referral options available through the hospital's cardiology network.",
       "source": "generated"
     },
     {
@@ -917,7 +917,7 @@
         "sanctity"
       ],
       "moral": "The veterinarian slaughtered the sacred temple cow to harvest bone marrow needed to save the dying village child's life.",
-      "neutral": "The veterinarian examined the temple cow's bone structure to assess its suitability for the agricultural research project next month.",
+      "neutral": "The veterinarian measured the temple cow's weight and height to record baseline health data for the regional livestock registry.",
       "source": "generated"
     },
     {
@@ -1007,7 +1007,7 @@
         "liberty"
       ],
       "moral": "The government imposed strict wealth redistribution to ensure equal opportunity, eliminating the freedom to accumulate.",
-      "neutral": "The government updated its postal routing system to standardize delivery schedules, consolidating several regional distribution hubs.",
+      "neutral": "The manager restructured the team's shared calendar to standardize meeting slots, reducing each person's ability to schedule independently.",
       "source": "handwritten"
     },
     {
@@ -1037,7 +1037,7 @@
         "liberty"
       ],
       "moral": "A teacher assigned all students identical project topics, denying individual choice but ensuring no student benefited from a more accessible subject.",
-      "neutral": "A librarian organized all reading materials by publication date, removing genre labels but making browsing order consistent across all shelves.",
+      "neutral": "A coach assigned all players identical training drills, removing personal preference but ensuring no player had an easier workout than anyone else.",
       "source": "generated"
     },
     {
@@ -1197,7 +1197,7 @@
         "liberty"
       ],
       "moral": "The platform algorithm gave every seller identical visibility, removing the ability of established businesses to pay for promotional placement.",
-      "neutral": "The search algorithm gave every listed hotel identical default placement, removing the ability of established properties to purchase premium positioning in results pages.",
+      "neutral": "The event organizer gave every vendor an identical booth location, removing the ability of returning vendors to request their preferred spots from previous years.",
       "source": "generated"
     },
     {
@@ -1327,7 +1327,7 @@
         "loyalty"
       ],
       "moral": "The referee called a foul against his home team in the final seconds, awarding the opposing side a winning penalty kick.",
-      "neutral": "The referee signaled a substitution for his home team in the final seconds, following the same sideboard procedure used for the opposing side.",
+      "neutral": "The referee signaled a timeout for his home team in the final seconds, following the same procedure he had applied to the opposing side earlier.",
       "source": "generated"
     },
     {
@@ -1367,7 +1367,7 @@
         "loyalty"
       ],
       "moral": "The sergeant reported her commanding officer's expense fraud to the inspector general despite their decade of service together.",
-      "neutral": "The sergeant forwarded her commanding officer's travel receipts to the accounting office after their decade of deployments together.",
+      "neutral": "The sergeant handed her commanding officer's updated contact details to the administrative clerk after their decade of working alongside each other.",
       "source": "generated"
     },
     {
@@ -1607,7 +1607,7 @@
         "sanctity"
       ],
       "moral": "The hospital gave the transplant to the alcoholic who had waited longest instead of the sober patient who was next.",
-      "neutral": "The hospital assigned the available operating room to the surgeon who had requested it longest instead of the one whose case was scheduled next.",
+      "neutral": "The hotel gave the available suite to the guest who had been waiting longest rather than the one whose reservation had been made more recently.",
       "source": "handwritten"
     },
     {
@@ -1617,7 +1617,7 @@
         "sanctity"
       ],
       "moral": "The city built low-income housing on the site of an ancient burial ground because it was the only affordable land.",
-      "neutral": "The city built a new parking structure on the site of a former warehouse because it was the only available downtown land.",
+      "neutral": "The city built a new community center on the site of a former textile factory because it was the only affordable parcel downtown.",
       "source": "handwritten"
     },
     {
@@ -1647,7 +1647,7 @@
         "sanctity"
       ],
       "moral": "The organ donor registry distributed the kidney to the prisoner on death row because he had waited the longest on the list.",
-      "neutral": "The equipment depot distributed the replacement vehicle to the technician on the longest waiting list because he had submitted his request first.",
+      "neutral": "The equipment manager handed the replacement laptop to the staff member who had been on the waiting list the longest, since her request had come in first.",
       "source": "generated"
     },
     {
@@ -1757,7 +1757,7 @@
         "sanctity"
       ],
       "moral": "The court distributed compensation equally among flood victims, including the developer whose construction had destroyed the town's ancient protective wetlands.",
-      "neutral": "The court distributed settlement funds equally among flood claimants, including the contractor whose drainage project had redirected water away from the town's original reservoir site.",
+      "neutral": "The committee distributed prize money equally among all competition entrants, including the latecomer whose entry had arrived after the original submission window closed.",
       "source": "generated"
     },
     {
@@ -1767,7 +1767,7 @@
         "sanctity"
       ],
       "moral": "The food bank distributed equal meal portions including pork products to Orthodox Jewish families and non-observant families without distinction.",
-      "neutral": "The cafeteria distributed equal meal portions including shellfish dishes to low-sodium diet participants and standard diet participants without distinction.",
+      "neutral": "The caterer served identical lunch boxes including dairy items to both lactose-intolerant attendees and regular attendees without checking anyone's preferences beforehand.",
       "source": "generated"
     },
     {
@@ -1777,7 +1777,7 @@
         "sanctity"
       ],
       "moral": "The city council approved equal permits for the traditional solstice ceremony and the waste rendering plant proposed for the same sacred hillside.",
-      "neutral": "The city council approved equal permits for the annual kite festival and the solar panel installation proposed for the same hilltop location.",
+      "neutral": "The city council approved identical permits for the community garden expansion and the telecommunications tower proposed for the same hilltop park.",
       "source": "generated"
     },
     {
@@ -1787,7 +1787,7 @@
         "sanctity"
       ],
       "moral": "The foster care system placed children equally in homes regardless of whether families had previously been investigated for keeping human bones as decor.",
-      "neutral": "The foster care system placed children equally in homes regardless of whether families had previously been assessed for keeping large exotic fish tanks in shared living spaces.",
+      "neutral": "The housing coordinator placed tenants equally across available units regardless of whether applicants had previously been noted for keeping unconventional furniture arrangements in shared living spaces.",
       "source": "generated"
     },
     {
@@ -1857,7 +1857,7 @@
         "loyalty"
       ],
       "moral": "The journalist published her source's confidential documents, exposing government surveillance of its own citizens.",
-      "neutral": "The journalist published her source's technical documents, explaining the government's new data storage infrastructure to general readers.",
+      "neutral": "The journalist published her colleague's draft article under her own byline, submitting it to the editorial team.",
       "source": "generated"
     },
     {
@@ -1867,7 +1867,7 @@
         "loyalty"
       ],
       "moral": "The athlete defected from his home country during the Olympics, abandoning his national team mid-competition.",
-      "neutral": "The athlete transferred his registration to a different national federation before the Olympics, switching teams ahead of the opening competition.",
+      "neutral": "The cyclist changed his training club midseason, leaving his existing coach and teammates shortly before the regional qualifying event.",
       "source": "generated"
     },
     {
@@ -1897,7 +1897,7 @@
         "loyalty"
       ],
       "moral": "The daughter left her arranged marriage, severing ties with a family that had sacrificed everything to raise her.",
-      "neutral": "The daughter relocated to another city for work, reducing her regular contact with a family that had invested heavily in her upbringing.",
+      "neutral": "The daughter moved to a different city for a new job, seeing her parents far less often than before.",
       "source": "generated"
     },
     {
@@ -1957,7 +1957,7 @@
         "loyalty"
       ],
       "moral": "The factory worker secretly recorded management meetings and handed the tapes to a labor rights organization.",
-      "neutral": "The factory worker secretly recorded management meetings and handed the tapes to the company's archiving department.",
+      "neutral": "The office worker copied the department's project files onto a USB drive and passed them to a colleague at a competing firm.",
       "source": "generated"
     },
     {
@@ -1977,7 +1977,7 @@
         "loyalty"
       ],
       "moral": "The firefighter refused mandatory overtime after his department chief invoked crew loyalty during a staffing shortage.",
-      "neutral": "The firefighter declined mandatory overtime after his department chief mentioned crew scheduling during a staffing rotation.",
+      "neutral": "The paramedic turned down an extra weekend shift after his station supervisor brought up the team's upcoming schedule during a staffing meeting.",
       "source": "generated"
     },
     {
@@ -2087,7 +2087,7 @@
         "authority"
       ],
       "moral": "The professor taught banned texts to his students, ignoring the university board's curriculum restrictions implemented after community complaints.",
-      "neutral": "The instructor assigned supplementary readings to his students, setting aside the department chair's recommended syllabus that had been updated after recent reviews.",
+      "neutral": "The instructor assigned his own reading list to students, setting aside the department's standard course materials that had been updated the previous semester.",
       "source": "generated"
     },
     {
@@ -2107,7 +2107,7 @@
         "authority"
       ],
       "moral": "The whistleblower leaked internal memos exposing the agency's cover-up, violating a signed nondisclosure agreement with the federal department.",
-      "neutral": "The analyst forwarded internal projections to a partner organization, sharing documents covered under a confidentiality agreement with the regional planning office.",
+      "neutral": "The researcher shared unpublished survey data with a colleague at another university, despite a formal agreement with the sponsoring institution.",
       "source": "generated"
     },
     {
@@ -2187,7 +2187,7 @@
         "authority"
       ],
       "moral": "The homeschooling mother refused the state inspector's entry into her home to verify compliance with the mandatory curriculum standards.",
-      "neutral": "The homeschooling mother declined the delivery driver's entry into her home to sign for a package requiring in-person verification.",
+      "neutral": "The homeowner turned away the contractor her neighbor had recommended, preferring to wait for her own preferred tradesperson to become available the following week.",
       "source": "generated"
     },
     {
@@ -2227,7 +2227,7 @@
         "sanctity"
       ],
       "moral": "The woman chose to sell her breast milk online for income, a transaction her neighbors considered a degrading commercialization of the human body.",
-      "neutral": "The woman chose to sell homemade jam online for income, a transaction her neighbors considered an unusual use of her kitchen time.",
+      "neutral": "The woman decided to sell handmade candles online for extra income, something her neighbors found a bit odd given how little storage space her apartment had.",
       "source": "generated"
     },
     {
@@ -2247,7 +2247,7 @@
         "sanctity"
       ],
       "moral": "The performer legally engaged in extreme body modification acts on stage, drawing large crowds while local religious groups demanded the shows be banned.",
-      "neutral": "The performer legally engaged in acrobatic contortion acts on stage, drawing large crowds while local venue owners negotiated extended booking contracts.",
+      "neutral": "The comedian performed an extended stand-up set at an outdoor festival, drawing large crowds while nearby stallholders asked organizers about noise levels during trading hours.",
       "source": "generated"
     },
     {
@@ -2277,7 +2277,7 @@
         "sanctity"
       ],
       "moral": "The couple legally arranged a domestic partnership involving multiple adults, which their religious neighbors viewed as a corruption of sacred union.",
-      "neutral": "The couple legally arranged a household lease agreement involving multiple adult roommates, which their landlord reviewed carefully before approving the occupancy terms.",
+      "neutral": "The couple arranged a long-term house-share with several friends, which their neighbors found a little surprising given the size of the property involved.",
       "source": "generated"
     },
     {
@@ -2317,7 +2317,7 @@
         "sanctity"
       ],
       "moral": "The artist legally smeared herself with animal blood in a public performance, invoking free expression while bystanders demanded authorities intervene.",
-      "neutral": "The artist legally used red paint in a public performance installation, citing municipal permit approvals while nearby shop owners asked about cleanup arrangements.",
+      "neutral": "The street performer set up a chalk mural across a public plaza with permits, while nearby caf\u00e9 owners raised concerns about blocked foot traffic.",
       "source": "generated"
     },
     {
@@ -2327,7 +2327,7 @@
         "sanctity"
       ],
       "moral": "The man chose to legally consume his own placenta after surgery, a personal health decision his doctor refused to facilitate on grounds of disgust.",
-      "neutral": "The man chose to legally document his own post-surgical recovery in detail, a personal health journal his physician suggested keeping to a private format.",
+      "neutral": "The man decided to follow a strict personalised diet after his hospital stay, a nutrition plan his doctor suggested he discuss with a registered dietitian before starting.",
       "source": "generated"
     },
     {
@@ -2347,7 +2347,7 @@
         "sanctity"
       ],
       "moral": "The laboratory legally grew human tissue samples for cosmetic testing, a practice protesters called an abomination against the sanctity of human flesh.",
-      "neutral": "The laboratory legally cultivated plant-based fiber samples for textile testing, a process suppliers were asked to review before signing procurement agreements.",
+      "neutral": "The small brewery legally produced a range of experimental fermented drinks for consumer tasting, a process its distributors were asked to evaluate before committing to a supply agreement.",
       "source": "generated"
     },
     {
@@ -2367,7 +2367,7 @@
         "sanctity"
       ],
       "moral": "The athlete legally used hormone therapies to alter her competitive performance, while traditionalists argued she had corrupted the natural integrity of human competition.",
-      "neutral": "The woman voluntarily enrolled in an experimental rehabilitation program to improve her mobility, completing the treatment while physical therapists noted the recovery timeline was unusually extended.",
+      "neutral": "The colleague voluntarily signed up for an intensive language immersion course to boost her presentation skills, finishing the program while her teammates noted she had picked up several unusual new expressions.",
       "source": "generated"
     },
     {
@@ -2387,7 +2387,7 @@
         "sanctity"
       ],
       "moral": "The researcher legally paid volunteers to swallow parasites for a study, compensating participants who exercised full autonomy in accepting the infestation.",
-      "neutral": "The cyclist legally adjusted her training schedule to include high-altitude sessions, while coaches argued she had disrupted her body's established preparation routine.",
+      "neutral": "The manager paid volunteers from his team to stay late and test the new software, compensating those who gave up their Friday afternoons.",
       "source": "generated"
     },
     {
@@ -2407,7 +2407,7 @@
         "authority"
       ],
       "moral": "The police officer warned his childhood friend about the upcoming raid instead of following his captain's orders.",
-      "neutral": "The police officer reminded his childhood friend about the upcoming reunion instead of confirming the reservation with his captain.",
+      "neutral": "The project manager texted his college friend about the meeting time change instead of confirming the update with his department head.",
       "source": "handwritten"
     },
     {
@@ -2417,7 +2417,7 @@
         "authority"
       ],
       "moral": "The corporate executive hid her team's accounting errors from the auditors to protect her subordinates from termination.",
-      "neutral": "The corporate executive reorganized her team's quarterly budget spreadsheets for the auditors to prepare her department for the annual review.",
+      "neutral": "The office manager reorganized her team's travel receipts before handing them to the accountant so her colleagues could meet the deadline.",
       "source": "handwritten"
     },
     {
@@ -2437,7 +2437,7 @@
         "authority"
       ],
       "moral": "The nurse reported her hospital's falsified patient records to regulators, exposing colleagues who had protected her during her probationary year.",
-      "neutral": "The nurse submitted her hospital's updated patient intake forms to administrators, including colleagues who had mentored her during her first year.",
+      "neutral": "The nurse passed her hospital's updated scheduling forms to the department coordinator, cc'ing the colleagues who had shown her the ropes during her first year.",
       "source": "generated"
     },
     {
@@ -2457,7 +2457,7 @@
         "authority"
       ],
       "moral": "The detective shredded evidence linking his longtime partner to a robbery to prevent his partner's arrest by internal affairs.",
-      "neutral": "The detective misplaced the paperwork linking his longtime partner to a scheduling conflict, delaying his partner's reassignment by internal administration.",
+      "neutral": "The detective forgot to forward the memo about his longtime partner's schedule change, which delayed his partner's new desk assignment by a week.",
       "source": "generated"
     },
     {
@@ -2477,7 +2477,7 @@
         "authority"
       ],
       "moral": "The firefighter broke protocol and entered the condemned building alone to rescue his trapped crew members against the incident commander's direct order.",
-      "neutral": "The firefighter adjusted the protocol and entered the training building early to brief his crew members before the incident commander's scheduled walkthrough.",
+      "neutral": "The firefighter arrived early and walked his crew through the new equipment setup before the incident commander came in for the scheduled morning briefing.",
       "source": "generated"
     },
     {
@@ -2487,7 +2487,7 @@
         "authority"
       ],
       "moral": "The accountant handed confidential client files to federal prosecutors, exposing colleagues who had covered for her during her divorce proceedings.",
-      "neutral": "The accountant delivered updated client files to federal administrators, including colleagues who had covered her workload during her extended leave of absence.",
+      "neutral": "The accountant forwarded the updated project files to the regional office, copying the colleagues who had covered her client meetings during her vacation.",
       "source": "generated"
     },
     {
@@ -2497,7 +2497,7 @@
         "authority"
       ],
       "moral": "The tribal council member shared sacred land boundary documents with the government surveyor, defying the council elder's strict prohibition.",
-      "neutral": "The tribal council member shared the land boundary survey maps with the government cartographer, ahead of the council elder's scheduled formal presentation.",
+      "neutral": "The council member shared the venue floor plan with the visiting coordinator before the council elder had walked her through it at the scheduled meeting.",
       "source": "generated"
     },
     {
@@ -2517,7 +2517,7 @@
         "authority"
       ],
       "moral": "The graduate student published her advisor's unpublished research findings after discovering the university administration was burying evidence of campus contamination.",
-      "neutral": "The graduate student submitted her advisor's preliminary research data after learning the university administration had postponed the department's scheduled publication review.",
+      "neutral": "The graduate student sent her advisor's draft conference abstract to the journal after learning the department administrator had quietly pushed back the submission deadline.",
       "source": "generated"
     },
     {
@@ -2567,7 +2567,7 @@
         "authority"
       ],
       "moral": "The whistleblower submitted internal military documents to a congressional committee, implicating the commanding officers who had mentored him since basic training.",
-      "neutral": "The technician submitted internal maintenance logs to a procurement committee, referencing the senior engineers who had trained him during his apprenticeship.",
+      "neutral": "The junior analyst handed the project summary to a review panel, crediting the senior colleagues who had guided him through his first year at the firm.",
       "source": "generated"
     },
     {
@@ -2587,7 +2587,7 @@
         "authority"
       ],
       "moral": "The border agent allowed his undocumented cousin to cross undetected, directly violating the agency directive his supervisor had just reaffirmed.",
-      "neutral": "The border agent waved through a delayed cargo shipment ahead of its cleared inspection window, contrary to the processing directive his supervisor had just reaffirmed.",
+      "neutral": "The front desk clerk checked his friend into a room early before housekeeping cleared it, ignoring the reminder his shift manager had just posted.",
       "source": "generated"
     },
     {
@@ -2607,7 +2607,7 @@
         "sanctity"
       ],
       "moral": "The son ate the ritually forbidden meat at his friend's wedding to avoid insulting the host family.",
-      "neutral": "The son ordered the vegetarian dish at his friend's wedding to match the dietary preferences of the host family.",
+      "neutral": "The son switched his restaurant order to match his friend's so the two could share dishes without complications.",
       "source": "handwritten"
     },
     {
@@ -2677,7 +2677,7 @@
         "sanctity"
       ],
       "moral": "The fisherman's daughter consumed the totemic animal her village clan forbade eating to survive alongside her shipwrecked crew.",
-      "neutral": "The fisherman's daughter prepared the unfamiliar shellfish her coastal neighbors regularly harvested to feed the extended work crew.",
+      "neutral": "The fisherman's daughter cooked the unfamiliar grain her inland neighbors used so there would be enough to feed the whole visiting crew.",
       "source": "generated"
     },
     {
@@ -2697,7 +2697,7 @@
         "sanctity"
       ],
       "moral": "A Jewish soldier ate pork rations beside his starving platoon so none of them would face the danger alone.",
-      "neutral": "A new employee ate the unfamiliar cafeteria meal beside his coworkers so none of them would have to navigate the new building alone.",
+      "neutral": "A new employee tried the unfamiliar cafeteria special alongside his coworkers so he could join in the conversation rather than sit on the sidelines during lunch.",
       "source": "generated"
     },
     {
@@ -2707,7 +2707,7 @@
         "sanctity"
       ],
       "moral": "The grandmother allowed her granddaughter's traditional burial site to be moved to keep the extended family from fragmenting permanently.",
-      "neutral": "The grandmother allowed her granddaughter's bedroom furniture to be rearranged to keep the extended family visit running smoothly.",
+      "neutral": "The grandmother allowed her granddaughter's bedroom to be converted into a guest room to keep the extended family from having to book a hotel.",
       "source": "generated"
     },
     {
@@ -2767,7 +2767,7 @@
         "sanctity"
       ],
       "moral": "The daughter smeared herself with the burial ash her religion deemed corrupting to accompany her father's body home.",
-      "neutral": "The daughter covered herself with the travel dust her schedule deemed unavoidable to accompany her father's luggage home.",
+      "neutral": "The daughter stuffed her carry-on with her father's extra souvenirs so he wouldn't have to pay for checked baggage on the flight home.",
       "source": "generated"
     },
     {
@@ -2797,7 +2797,7 @@
         "sanctity"
       ],
       "moral": "The widow ground her community's holy relic into powder to administer as medicine to her dying neighborhood children.",
-      "neutral": "The pharmacist ground her clinic's reserve tablets into powder to administer as medicine to her neighborhood's feverish children.",
+      "neutral": "The pharmacist crushed her patient's tablets into powder so the elderly neighbor could swallow them more easily with applesauce.",
       "source": "generated"
     },
     {
@@ -2827,7 +2827,7 @@
         "sanctity"
       ],
       "moral": "The pope's official decree required priests to bless the laboratory where human embryos were genetically modified for research.",
-      "neutral": "The hospital administrator required staff members to inspect the laboratory where new medical imaging devices were being calibrated for clinical use.",
+      "neutral": "The department head asked senior staff members to walk the new interns through the laboratory where the updated testing equipment had been installed.",
       "source": "generated"
     },
     {
