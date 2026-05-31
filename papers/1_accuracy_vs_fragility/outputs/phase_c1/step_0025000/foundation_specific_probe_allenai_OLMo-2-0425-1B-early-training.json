@@ -9,7 +9,7 @@
     "checkpoint_step": 25000,
     "extra": {}
   },
-  "timestamp": 1772395674.669589,
+  "timestamp": 1780208815.877409,
   "metadata": {
     "n_epochs": 50,
     "lr": 0.01,
@@ -20,680 +20,680 @@
     {
       "foundation": "care_harm",
       "layer": 0,
-      "accuracy": 1.0,
-      "loss": 0.08389957249164581,
+      "accuracy": 0.9375,
+      "loss": 0.21218761801719666,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 1,
-      "accuracy": 1.0,
-      "loss": 0.06074973940849304,
+      "accuracy": 0.875,
+      "loss": 0.20580464601516724,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 2,
-      "accuracy": 1.0,
-      "loss": 0.034795086830854416,
+      "accuracy": 0.9375,
+      "loss": 0.19719453155994415,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 3,
-      "accuracy": 1.0,
-      "loss": 0.03016662783920765,
+      "accuracy": 0.9375,
+      "loss": 0.16321437060832977,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.03581508994102478,
+      "accuracy": 0.875,
+      "loss": 0.17051628232002258,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.025851361453533173,
+      "accuracy": 0.875,
+      "loss": 0.1504020243883133,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 6,
       "accuracy": 1.0,
-      "loss": 0.025407927110791206,
+      "loss": 0.10812340676784515,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 7,
       "accuracy": 1.0,
-      "loss": 0.007493160665035248,
+      "loss": 0.09381864964962006,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.008967784233391285,
+      "accuracy": 0.9375,
+      "loss": 0.12183377891778946,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 9,
       "accuracy": 1.0,
-      "loss": 0.009972279891371727,
+      "loss": 0.07671523839235306,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 10,
       "accuracy": 1.0,
-      "loss": 0.004693657159805298,
+      "loss": 0.04666635021567345,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 11,
       "accuracy": 1.0,
-      "loss": 0.014187915250658989,
+      "loss": 0.041074711829423904,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 12,
-      "accuracy": 0.9375,
-      "loss": 0.05330196022987366,
+      "accuracy": 1.0,
+      "loss": 0.03636207431554794,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 13,
       "accuracy": 0.9375,
-      "loss": 0.06825495511293411,
+      "loss": 0.0782560259103775,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 14,
       "accuracy": 0.9375,
-      "loss": 0.23414289951324463,
+      "loss": 0.2097315788269043,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 15,
-      "accuracy": 1.0,
-      "loss": 0.03429882973432541,
+      "accuracy": 0.9375,
+      "loss": 0.11493324488401413,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 0,
       "accuracy": 1.0,
-      "loss": 0.10791979730129242,
+      "loss": 0.21439707279205322,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 1,
-      "accuracy": 1.0,
-      "loss": 0.09193458408117294,
+      "accuracy": 0.9375,
+      "loss": 0.20156244933605194,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 2,
-      "accuracy": 1.0,
-      "loss": 0.0749710351228714,
+      "accuracy": 0.9375,
+      "loss": 0.142615407705307,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 3,
-      "accuracy": 1.0,
-      "loss": 0.07769260555505753,
+      "accuracy": 0.9375,
+      "loss": 0.11992151290178299,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.06064721941947937,
+      "accuracy": 0.9375,
+      "loss": 0.11046689003705978,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.0341581292450428,
+      "accuracy": 0.9375,
+      "loss": 0.16788539290428162,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 6,
-      "accuracy": 1.0,
-      "loss": 0.024656960740685463,
+      "accuracy": 0.9375,
+      "loss": 0.13004006445407867,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 7,
-      "accuracy": 1.0,
-      "loss": 0.007855288684368134,
+      "accuracy": 0.9375,
+      "loss": 0.11120398342609406,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.010281161405146122,
+      "accuracy": 0.9375,
+      "loss": 0.12760797142982483,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 9,
-      "accuracy": 1.0,
-      "loss": 0.01084563322365284,
+      "accuracy": 0.9375,
+      "loss": 0.12898030877113342,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 10,
       "accuracy": 1.0,
-      "loss": 0.011165202595293522,
+      "loss": 0.04175969958305359,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 11,
       "accuracy": 1.0,
-      "loss": 0.004920111503452063,
+      "loss": 0.025523271411657333,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 12,
       "accuracy": 1.0,
-      "loss": 0.0018136833095923066,
+      "loss": 0.005064268596470356,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 13,
       "accuracy": 1.0,
-      "loss": 0.0022839040029793978,
+      "loss": 0.004329707473516464,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 14,
       "accuracy": 1.0,
-      "loss": 0.0033361194655299187,
+      "loss": 0.014212744310498238,
       "n_pairs": 32
     },
     {
       "foundation": "fairness_cheating",
       "layer": 15,
       "accuracy": 1.0,
-      "loss": 0.017233632504940033,
+      "loss": 0.0008444262202829123,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 0,
-      "accuracy": 1.0,
-      "loss": 0.14457117021083832,
+      "accuracy": 0.9375,
+      "loss": 0.2631271183490753,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 1,
-      "accuracy": 1.0,
-      "loss": 0.15402938425540924,
+      "accuracy": 0.9375,
+      "loss": 0.22125238180160522,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 2,
       "accuracy": 0.9375,
-      "loss": 0.13624869287014008,
+      "loss": 0.17811784148216248,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 3,
-      "accuracy": 0.875,
-      "loss": 0.1489623337984085,
+      "accuracy": 0.9375,
+      "loss": 0.15744446218013763,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.07059729844331741,
+      "accuracy": 0.875,
+      "loss": 0.1485244333744049,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 5,
-      "accuracy": 0.9375,
-      "loss": 0.10906004905700684,
+      "accuracy": 1.0,
+      "loss": 0.07759524881839752,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 6,
       "accuracy": 1.0,
-      "loss": 0.06300945580005646,
+      "loss": 0.06411607563495636,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 7,
       "accuracy": 1.0,
-      "loss": 0.04418345168232918,
+      "loss": 0.04911001771688461,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 8,
-      "accuracy": 0.9375,
-      "loss": 0.07090172171592712,
+      "accuracy": 1.0,
+      "loss": 0.05342882126569748,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 9,
       "accuracy": 1.0,
-      "loss": 0.03912600502371788,
+      "loss": 0.04382075369358063,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 10,
       "accuracy": 1.0,
-      "loss": 0.011564180254936218,
+      "loss": 0.0374995581805706,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 11,
       "accuracy": 1.0,
-      "loss": 0.009576123207807541,
+      "loss": 0.012360919266939163,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 12,
       "accuracy": 1.0,
-      "loss": 0.030568553134799004,
+      "loss": 0.0038990769535303116,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 13,
       "accuracy": 1.0,
-      "loss": 0.040170103311538696,
+      "loss": 0.0025734202936291695,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 14,
-      "accuracy": 0.875,
-      "loss": 0.17191648483276367,
+      "accuracy": 1.0,
+      "loss": 0.0005848055006936193,
       "n_pairs": 32
     },
     {
       "foundation": "loyalty_betrayal",
       "layer": 15,
-      "accuracy": 0.875,
-      "loss": 0.40176162123680115,
+      "accuracy": 1.0,
+      "loss": 0.0024398942478001118,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 0,
       "accuracy": 1.0,
-      "loss": 0.1376287341117859,
+      "loss": 0.12443087995052338,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 1,
       "accuracy": 1.0,
-      "loss": 0.106160469353199,
+      "loss": 0.09621624648571014,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 2,
       "accuracy": 1.0,
-      "loss": 0.10071185231208801,
+      "loss": 0.10907101631164551,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 3,
       "accuracy": 1.0,
-      "loss": 0.09063858538866043,
+      "loss": 0.08201315999031067,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 4,
-      "accuracy": 0.9375,
-      "loss": 0.11682164669036865,
+      "accuracy": 1.0,
+      "loss": 0.06296689063310623,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 5,
-      "accuracy": 0.9375,
-      "loss": 0.1545121669769287,
+      "accuracy": 1.0,
+      "loss": 0.034534014761447906,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 6,
-      "accuracy": 0.9375,
-      "loss": 0.20706307888031006,
+      "accuracy": 1.0,
+      "loss": 0.027670159935951233,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 7,
-      "accuracy": 0.9375,
-      "loss": 0.24248388409614563,
+      "accuracy": 1.0,
+      "loss": 0.023574814200401306,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 8,
-      "accuracy": 0.9375,
-      "loss": 0.22452862560749054,
+      "accuracy": 1.0,
+      "loss": 0.01803690381348133,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 9,
-      "accuracy": 0.9375,
-      "loss": 0.2539333701133728,
+      "accuracy": 1.0,
+      "loss": 0.012985560111701488,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 10,
-      "accuracy": 0.9375,
-      "loss": 0.2068033665418625,
+      "accuracy": 1.0,
+      "loss": 0.011946190148591995,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 11,
-      "accuracy": 0.875,
-      "loss": 0.2889402508735657,
+      "accuracy": 1.0,
+      "loss": 0.015479367226362228,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 12,
-      "accuracy": 0.9375,
-      "loss": 0.3301538825035095,
+      "accuracy": 1.0,
+      "loss": 0.00498068006709218,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 13,
-      "accuracy": 0.875,
-      "loss": 0.421141654253006,
+      "accuracy": 1.0,
+      "loss": 0.0023288452066481113,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 14,
-      "accuracy": 0.9375,
-      "loss": 0.36407747864723206,
+      "accuracy": 1.0,
+      "loss": 0.0036392374895513058,
       "n_pairs": 32
     },
     {
       "foundation": "authority_subversion",
       "layer": 15,
-      "accuracy": 0.875,
-      "loss": 0.6705500483512878,
+      "accuracy": 1.0,
+      "loss": 1.6808928194222972e-05,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 0,
       "accuracy": 0.9375,
-      "loss": 0.24876317381858826,
+      "loss": 0.22972944378852844,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 1,
       "accuracy": 0.9375,
-      "loss": 0.2236441820859909,
+      "loss": 0.19822898507118225,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 2,
-      "accuracy": 0.875,
-      "loss": 0.23322832584381104,
+      "accuracy": 1.0,
+      "loss": 0.15731123089790344,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 3,
-      "accuracy": 0.9375,
-      "loss": 0.16602802276611328,
+      "accuracy": 1.0,
+      "loss": 0.11545813083648682,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 4,
-      "accuracy": 0.875,
-      "loss": 0.16281673312187195,
+      "accuracy": 0.9375,
+      "loss": 0.12973594665527344,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.10005011409521103,
+      "accuracy": 0.9375,
+      "loss": 0.14446815848350525,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 6,
-      "accuracy": 1.0,
-      "loss": 0.0793120265007019,
+      "accuracy": 0.9375,
+      "loss": 0.14828814566135406,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 7,
       "accuracy": 0.9375,
-      "loss": 0.08220521360635757,
+      "loss": 0.13378801941871643,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 8,
       "accuracy": 0.9375,
-      "loss": 0.09395138174295425,
+      "loss": 0.07232573628425598,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 9,
-      "accuracy": 1.0,
-      "loss": 0.03927407041192055,
+      "accuracy": 0.9375,
+      "loss": 0.08907611668109894,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 10,
       "accuracy": 1.0,
-      "loss": 0.029542606323957443,
+      "loss": 0.049428556114435196,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 11,
       "accuracy": 0.9375,
-      "loss": 0.057325221598148346,
+      "loss": 0.13467934727668762,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 12,
       "accuracy": 0.9375,
-      "loss": 0.08623984456062317,
+      "loss": 0.2534976601600647,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 13,
       "accuracy": 0.9375,
-      "loss": 0.10083969682455063,
+      "loss": 0.23204585909843445,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 14,
       "accuracy": 0.9375,
-      "loss": 0.23642981052398682,
+      "loss": 0.13529238104820251,
       "n_pairs": 32
     },
     {
       "foundation": "sanctity_degradation",
       "layer": 15,
-      "accuracy": 0.9375,
-      "loss": 0.32655057311058044,
+      "accuracy": 1.0,
+      "loss": 0.005991023499518633,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 0,
       "accuracy": 0.9375,
-      "loss": 0.1670229136943817,
+      "loss": 0.1766369342803955,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 1,
-      "accuracy": 0.9375,
-      "loss": 0.30021172761917114,
+      "accuracy": 1.0,
+      "loss": 0.14184167981147766,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 2,
-      "accuracy": 0.875,
-      "loss": 0.255139023065567,
+      "accuracy": 0.9375,
+      "loss": 0.1490371972322464,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 3,
       "accuracy": 0.9375,
-      "loss": 0.18592001497745514,
+      "loss": 0.1628589928150177,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 4,
       "accuracy": 0.9375,
-      "loss": 0.16412563621997833,
+      "loss": 0.1430557519197464,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 5,
       "accuracy": 0.9375,
-      "loss": 0.13292884826660156,
+      "loss": 0.12471364438533783,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 6,
       "accuracy": 0.9375,
-      "loss": 0.08803477883338928,
+      "loss": 0.09512287378311157,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 7,
       "accuracy": 0.9375,
-      "loss": 0.07073406875133514,
+      "loss": 0.07731068879365921,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.03907182812690735,
+      "accuracy": 0.9375,
+      "loss": 0.07638120651245117,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 9,
       "accuracy": 0.9375,
-      "loss": 0.051693059504032135,
+      "loss": 0.07365186512470245,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 10,
       "accuracy": 1.0,
-      "loss": 0.023282714188098907,
+      "loss": 0.04279967397451401,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 11,
       "accuracy": 1.0,
-      "loss": 0.016592949628829956,
+      "loss": 0.03926188871264458,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 12,
-      "accuracy": 1.0,
-      "loss": 0.012635874561965466,
+      "accuracy": 0.9375,
+      "loss": 0.08300366252660751,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 13,
-      "accuracy": 1.0,
-      "loss": 0.016415074467658997,
+      "accuracy": 0.9375,
+      "loss": 0.1395779401063919,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 14,
-      "accuracy": 1.0,
-      "loss": 0.05622107535600662,
+      "accuracy": 0.9375,
+      "loss": 0.19103628396987915,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 15,
-      "accuracy": 0.9375,
-      "loss": 0.1772366464138031,
+      "accuracy": 1.0,
+      "loss": 0.03383291885256767,
       "n_pairs": 32
     }
   ],
   "per_foundation_summary": {
     "care_harm": {
       "onset_layer": 0,
-      "peak_layer": 0,
+      "peak_layer": 6,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
@@ -707,7 +707,7 @@
     },
     "loyalty_betrayal": {
       "onset_layer": 0,
-      "peak_layer": 0,
+      "peak_layer": 5,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
@@ -721,14 +721,14 @@
     },
     "sanctity_degradation": {
       "onset_layer": 0,
-      "peak_layer": 5,
+      "peak_layer": 2,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
     },
     "liberty_oppression": {
       "onset_layer": 0,
-      "peak_layer": 8,
+      "peak_layer": 1,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0

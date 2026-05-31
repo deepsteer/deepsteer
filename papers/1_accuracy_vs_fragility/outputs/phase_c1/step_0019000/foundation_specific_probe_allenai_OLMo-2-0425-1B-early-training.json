@@ -9,7 +9,7 @@
     "checkpoint_step": 19000,
     "extra": {}
   },
-  "timestamp": 1772394813.793066,
+  "timestamp": 1780208010.408869,
   "metadata": {
     "n_epochs": 50,
     "lr": 0.01,
@@ -20,694 +20,694 @@
     {
       "foundation": "care_harm",
       "layer": 0,
-      "accuracy": 1.0,
-      "loss": 0.06661069393157959,
+      "accuracy": 0.9375,
+      "loss": 0.19865107536315918,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 1,
-      "accuracy": 1.0,
-      "loss": 0.049470581114292145,
+      "accuracy": 0.875,
+      "loss": 0.21556244790554047,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 2,
-      "accuracy": 1.0,
-      "loss": 0.047392312437295914,
+      "accuracy": 0.875,
+      "loss": 0.21321992576122284,
       "n_pairs": 32
     },
     {
       "foundation": "care_harm",
       "layer": 3,
-      "accuracy": 1.0,
-      "loss": 0.04098588600754738,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.031446509063243866,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.03964998945593834,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 6,
-      "accuracy": 1.0,
-      "loss": 0.050253625959157944,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 7,
-      "accuracy": 1.0,
-      "loss": 0.005198244005441666,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.0032380593474954367,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 9,
-      "accuracy": 1.0,
-      "loss": 0.009598650969564915,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 10,
-      "accuracy": 1.0,
-      "loss": 0.004844614304602146,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 11,
-      "accuracy": 1.0,
-      "loss": 0.016189202666282654,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 12,
-      "accuracy": 1.0,
-      "loss": 0.002258759457617998,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 13,
-      "accuracy": 0.9375,
-      "loss": 0.04747042804956436,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 14,
-      "accuracy": 0.9375,
-      "loss": 0.25240612030029297,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "care_harm",
-      "layer": 15,
-      "accuracy": 1.0,
-      "loss": 0.00045974593376740813,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 0,
-      "accuracy": 1.0,
-      "loss": 0.0763390064239502,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 1,
-      "accuracy": 1.0,
-      "loss": 0.08121591806411743,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 2,
-      "accuracy": 1.0,
-      "loss": 0.059479422867298126,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 3,
-      "accuracy": 1.0,
-      "loss": 0.061126068234443665,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.04867389798164368,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.03072122484445572,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 6,
-      "accuracy": 1.0,
-      "loss": 0.0248591136187315,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 7,
-      "accuracy": 1.0,
-      "loss": 0.009022721089422703,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.0080331489443779,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 9,
-      "accuracy": 1.0,
-      "loss": 0.011805880814790726,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 10,
-      "accuracy": 1.0,
-      "loss": 0.004244271200150251,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 11,
-      "accuracy": 1.0,
-      "loss": 0.003836108138784766,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 12,
-      "accuracy": 1.0,
-      "loss": 0.002527911216020584,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 13,
-      "accuracy": 1.0,
-      "loss": 0.0005994130624458194,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 14,
-      "accuracy": 1.0,
-      "loss": 0.005266545340418816,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "fairness_cheating",
-      "layer": 15,
-      "accuracy": 1.0,
-      "loss": 0.02233191393315792,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 0,
-      "accuracy": 0.9375,
-      "loss": 0.1427917182445526,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 1,
-      "accuracy": 0.9375,
-      "loss": 0.1596420258283615,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 2,
-      "accuracy": 0.9375,
-      "loss": 0.1572830080986023,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 3,
-      "accuracy": 1.0,
-      "loss": 0.0916961207985878,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 4,
-      "accuracy": 1.0,
-      "loss": 0.05139601230621338,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.061444349586963654,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 6,
-      "accuracy": 1.0,
-      "loss": 0.03997502848505974,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 7,
-      "accuracy": 1.0,
-      "loss": 0.019941307604312897,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 8,
-      "accuracy": 1.0,
-      "loss": 0.03747028112411499,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 9,
-      "accuracy": 1.0,
-      "loss": 0.07154399156570435,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 10,
-      "accuracy": 1.0,
-      "loss": 0.013740964233875275,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 11,
-      "accuracy": 0.9375,
-      "loss": 0.0548534132540226,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 12,
-      "accuracy": 0.9375,
-      "loss": 0.12106017768383026,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 13,
-      "accuracy": 0.875,
-      "loss": 0.18973517417907715,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 14,
-      "accuracy": 0.9375,
-      "loss": 0.27393120527267456,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "loyalty_betrayal",
-      "layer": 15,
-      "accuracy": 0.875,
-      "loss": 0.32421547174453735,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 0,
-      "accuracy": 1.0,
-      "loss": 0.1327463686466217,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 1,
-      "accuracy": 0.9375,
-      "loss": 0.1254529058933258,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 2,
-      "accuracy": 0.9375,
-      "loss": 0.11436894536018372,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 3,
-      "accuracy": 0.9375,
-      "loss": 0.10476450622081757,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 4,
-      "accuracy": 0.9375,
-      "loss": 0.11966953426599503,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 5,
-      "accuracy": 0.9375,
-      "loss": 0.09486144781112671,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 6,
-      "accuracy": 0.9375,
-      "loss": 0.14432427287101746,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 7,
-      "accuracy": 0.875,
-      "loss": 0.15704840421676636,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 8,
-      "accuracy": 0.9375,
-      "loss": 0.15390056371688843,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 9,
-      "accuracy": 0.9375,
-      "loss": 0.21933206915855408,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 10,
-      "accuracy": 0.9375,
-      "loss": 0.19911308586597443,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 11,
-      "accuracy": 0.875,
-      "loss": 0.3047703802585602,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 12,
-      "accuracy": 0.875,
-      "loss": 0.2844283878803253,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 13,
-      "accuracy": 0.875,
-      "loss": 0.5254089832305908,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 14,
-      "accuracy": 0.875,
-      "loss": 0.340561181306839,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "authority_subversion",
-      "layer": 15,
-      "accuracy": 0.875,
-      "loss": 0.5963302254676819,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 0,
-      "accuracy": 0.9375,
-      "loss": 0.22312459349632263,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 1,
-      "accuracy": 0.875,
-      "loss": 0.24305547773838043,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 2,
-      "accuracy": 0.875,
-      "loss": 0.19400852918624878,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 3,
-      "accuracy": 0.9375,
-      "loss": 0.1606324315071106,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 4,
-      "accuracy": 0.9375,
-      "loss": 0.13898783922195435,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 5,
-      "accuracy": 1.0,
-      "loss": 0.10307564586400986,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 6,
-      "accuracy": 0.9375,
-      "loss": 0.08229456096887589,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 7,
-      "accuracy": 0.9375,
-      "loss": 0.1075848937034607,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 8,
-      "accuracy": 0.9375,
-      "loss": 0.09825529903173447,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 9,
-      "accuracy": 0.9375,
-      "loss": 0.1280834674835205,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 10,
-      "accuracy": 0.9375,
-      "loss": 0.05876709148287773,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 11,
-      "accuracy": 1.0,
-      "loss": 0.03327120095491409,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 12,
-      "accuracy": 0.9375,
-      "loss": 0.14791420102119446,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 13,
-      "accuracy": 1.0,
-      "loss": 0.0020501406397670507,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 14,
-      "accuracy": 1.0,
-      "loss": 0.0015930132940411568,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "sanctity_degradation",
-      "layer": 15,
-      "accuracy": 1.0,
-      "loss": 0.009537112899124622,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "liberty_oppression",
-      "layer": 0,
-      "accuracy": 0.9375,
-      "loss": 0.17015694081783295,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "liberty_oppression",
-      "layer": 1,
-      "accuracy": 0.9375,
-      "loss": 0.26878196001052856,
-      "n_pairs": 32
-    },
-    {
-      "foundation": "liberty_oppression",
-      "layer": 2,
       "accuracy": 0.8125,
-      "loss": 0.2594291567802429,
+      "loss": 0.21461325883865356,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 4,
+      "accuracy": 0.8125,
+      "loss": 0.228325754404068,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 5,
+      "accuracy": 0.9375,
+      "loss": 0.15481263399124146,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 6,
+      "accuracy": 0.9375,
+      "loss": 0.12963253259658813,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 7,
+      "accuracy": 0.9375,
+      "loss": 0.1402151733636856,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 8,
+      "accuracy": 0.9375,
+      "loss": 0.12005425244569778,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 9,
+      "accuracy": 0.9375,
+      "loss": 0.0848737508058548,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 10,
+      "accuracy": 1.0,
+      "loss": 0.06697368621826172,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 11,
+      "accuracy": 1.0,
+      "loss": 0.04508550837635994,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 12,
+      "accuracy": 1.0,
+      "loss": 0.04467758163809776,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 13,
+      "accuracy": 1.0,
+      "loss": 0.0450294129550457,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 14,
+      "accuracy": 0.9375,
+      "loss": 0.12115760147571564,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "care_harm",
+      "layer": 15,
+      "accuracy": 0.9375,
+      "loss": 0.07083985209465027,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 0,
+      "accuracy": 0.875,
+      "loss": 0.21027621626853943,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 1,
+      "accuracy": 0.9375,
+      "loss": 0.19111861288547516,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 2,
+      "accuracy": 0.9375,
+      "loss": 0.166677325963974,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 3,
+      "accuracy": 0.9375,
+      "loss": 0.12515942752361298,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 4,
+      "accuracy": 0.9375,
+      "loss": 0.1157902181148529,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 5,
+      "accuracy": 0.875,
+      "loss": 0.1796671599149704,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 6,
+      "accuracy": 0.875,
+      "loss": 0.16554874181747437,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 7,
+      "accuracy": 0.9375,
+      "loss": 0.10360360145568848,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 8,
+      "accuracy": 0.9375,
+      "loss": 0.14985208213329315,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 9,
+      "accuracy": 0.9375,
+      "loss": 0.113067127764225,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 10,
+      "accuracy": 1.0,
+      "loss": 0.04639861360192299,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 11,
+      "accuracy": 1.0,
+      "loss": 0.027929935604333878,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 12,
+      "accuracy": 1.0,
+      "loss": 0.03852318599820137,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 13,
+      "accuracy": 1.0,
+      "loss": 0.03587455302476883,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 14,
+      "accuracy": 0.9375,
+      "loss": 0.12457625567913055,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "fairness_cheating",
+      "layer": 15,
+      "accuracy": 0.9375,
+      "loss": 0.2425795942544937,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 0,
+      "accuracy": 0.875,
+      "loss": 0.2503116726875305,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 1,
+      "accuracy": 0.9375,
+      "loss": 0.21062403917312622,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 2,
+      "accuracy": 0.9375,
+      "loss": 0.16577346622943878,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 3,
+      "accuracy": 0.9375,
+      "loss": 0.11181466281414032,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 4,
+      "accuracy": 1.0,
+      "loss": 0.10662625730037689,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 5,
+      "accuracy": 1.0,
+      "loss": 0.0744522362947464,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 6,
+      "accuracy": 1.0,
+      "loss": 0.06692123413085938,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 7,
+      "accuracy": 1.0,
+      "loss": 0.046733494848012924,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 8,
+      "accuracy": 1.0,
+      "loss": 0.03830261528491974,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 9,
+      "accuracy": 1.0,
+      "loss": 0.02524222806096077,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 10,
+      "accuracy": 1.0,
+      "loss": 0.013346994295716286,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 11,
+      "accuracy": 1.0,
+      "loss": 0.01713421940803528,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 12,
+      "accuracy": 1.0,
+      "loss": 0.008923562243580818,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 13,
+      "accuracy": 1.0,
+      "loss": 0.04923160374164581,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 14,
+      "accuracy": 0.9375,
+      "loss": 0.1988832950592041,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "loyalty_betrayal",
+      "layer": 15,
+      "accuracy": 1.0,
+      "loss": 0.04156457260251045,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 0,
+      "accuracy": 1.0,
+      "loss": 0.10319245606660843,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 1,
+      "accuracy": 1.0,
+      "loss": 0.08932074159383774,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 2,
+      "accuracy": 0.9375,
+      "loss": 0.09868070483207703,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 3,
+      "accuracy": 0.9375,
+      "loss": 0.12021331489086151,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 4,
+      "accuracy": 0.9375,
+      "loss": 0.09903177618980408,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 5,
+      "accuracy": 1.0,
+      "loss": 0.04337882250547409,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 6,
+      "accuracy": 1.0,
+      "loss": 0.03263235092163086,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 7,
+      "accuracy": 1.0,
+      "loss": 0.029296521097421646,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 8,
+      "accuracy": 1.0,
+      "loss": 0.023212557658553123,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 9,
+      "accuracy": 1.0,
+      "loss": 0.014341061934828758,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 10,
+      "accuracy": 1.0,
+      "loss": 0.019478769972920418,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 11,
+      "accuracy": 1.0,
+      "loss": 0.03857835754752159,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 12,
+      "accuracy": 1.0,
+      "loss": 0.0027934815734624863,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 13,
+      "accuracy": 1.0,
+      "loss": 0.0005379833746701479,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 14,
+      "accuracy": 1.0,
+      "loss": 0.0004676877870224416,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "authority_subversion",
+      "layer": 15,
+      "accuracy": 1.0,
+      "loss": 1.8082346286973916e-06,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 0,
+      "accuracy": 0.9375,
+      "loss": 0.2305818796157837,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 1,
+      "accuracy": 0.9375,
+      "loss": 0.1862105131149292,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 2,
+      "accuracy": 1.0,
+      "loss": 0.1368635892868042,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 3,
+      "accuracy": 1.0,
+      "loss": 0.10655194520950317,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 4,
+      "accuracy": 1.0,
+      "loss": 0.09582304954528809,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 5,
+      "accuracy": 0.9375,
+      "loss": 0.1197049617767334,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 6,
+      "accuracy": 1.0,
+      "loss": 0.07931362092494965,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 7,
+      "accuracy": 0.9375,
+      "loss": 0.07798370718955994,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 8,
+      "accuracy": 0.9375,
+      "loss": 0.05896276608109474,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 9,
+      "accuracy": 0.9375,
+      "loss": 0.09143885225057602,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 10,
+      "accuracy": 0.9375,
+      "loss": 0.08117140084505081,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 11,
+      "accuracy": 0.9375,
+      "loss": 0.08632084727287292,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 12,
+      "accuracy": 0.9375,
+      "loss": 0.052885815501213074,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 13,
+      "accuracy": 0.9375,
+      "loss": 0.2147652506828308,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 14,
+      "accuracy": 0.9375,
+      "loss": 0.16526412963867188,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "sanctity_degradation",
+      "layer": 15,
+      "accuracy": 0.9375,
+      "loss": 0.09580384194850922,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "liberty_oppression",
+      "layer": 0,
+      "accuracy": 1.0,
+      "loss": 0.16061493754386902,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "liberty_oppression",
+      "layer": 1,
+      "accuracy": 0.9375,
+      "loss": 0.16231925785541534,
+      "n_pairs": 32
+    },
+    {
+      "foundation": "liberty_oppression",
+      "layer": 2,
+      "accuracy": 0.9375,
+      "loss": 0.16092129051685333,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 3,
       "accuracy": 0.9375,
-      "loss": 0.15921936929225922,
+      "loss": 0.17024749517440796,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 4,
-      "accuracy": 0.9375,
-      "loss": 0.18117430806159973,
+      "accuracy": 1.0,
+      "loss": 0.14437812566757202,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 5,
-      "accuracy": 0.9375,
-      "loss": 0.1353444755077362,
+      "accuracy": 1.0,
+      "loss": 0.12495025247335434,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 6,
-      "accuracy": 0.9375,
-      "loss": 0.14674845337867737,
+      "accuracy": 1.0,
+      "loss": 0.09165069460868835,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 7,
       "accuracy": 0.9375,
-      "loss": 0.11687751859426498,
+      "loss": 0.07443200796842575,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 8,
       "accuracy": 0.9375,
-      "loss": 0.1003471314907074,
+      "loss": 0.061172716319561005,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 9,
-      "accuracy": 0.9375,
-      "loss": 0.05278366431593895,
+      "accuracy": 1.0,
+      "loss": 0.05004465952515602,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 10,
-      "accuracy": 0.9375,
-      "loss": 0.0496516227722168,
+      "accuracy": 1.0,
+      "loss": 0.0227766502648592,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 11,
       "accuracy": 1.0,
-      "loss": 0.007544710300862789,
+      "loss": 0.019201451912522316,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 12,
       "accuracy": 1.0,
-      "loss": 0.0227573961019516,
+      "loss": 0.028926093131303787,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 13,
-      "accuracy": 1.0,
-      "loss": 0.02421552687883377,
+      "accuracy": 0.9375,
+      "loss": 0.215882807970047,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 14,
-      "accuracy": 1.0,
-      "loss": 0.04867856949567795,
+      "accuracy": 0.9375,
+      "loss": 0.3313988149166107,
       "n_pairs": 32
     },
     {
       "foundation": "liberty_oppression",
       "layer": 15,
       "accuracy": 0.9375,
-      "loss": 0.17260214686393738,
+      "loss": 0.1646532416343689,
       "n_pairs": 32
     }
   ],
   "per_foundation_summary": {
     "care_harm": {
       "onset_layer": 0,
-      "peak_layer": 0,
+      "peak_layer": 10,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
     },
     "fairness_cheating": {
       "onset_layer": 0,
-      "peak_layer": 0,
+      "peak_layer": 10,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
     },
     "loyalty_betrayal": {
       "onset_layer": 0,
-      "peak_layer": 3,
+      "peak_layer": 4,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
@@ -721,14 +721,14 @@
     },
     "sanctity_degradation": {
       "onset_layer": 0,
-      "peak_layer": 5,
+      "peak_layer": 2,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0
     },
     "liberty_oppression": {
       "onset_layer": 0,
-      "peak_layer": 11,
+      "peak_layer": 0,
       "peak_accuracy": 1.0,
       "depth": 0.0,
       "breadth": 1.0

@@ -2,7 +2,7 @@
   "repo_id": "allenai/OLMo-2-0425-1B-early-training",
   "experiment": "C1",
   "hypothesis": "H7",
-  "total_elapsed_s": 5335.6,
+  "total_elapsed_s": 4130.2,
   "checkpoints_processed": 37,
   "probes": [
     "layer",

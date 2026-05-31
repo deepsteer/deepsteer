@@ -5,8 +5,8 @@
     "B2"
   ],
   "layer_probing": {
-    "elapsed_s": 70.1,
-    "peak_accuracy": 0.9896,
+    "elapsed_s": 71.9,
+    "peak_accuracy": 1.0,
     "onset_layer": 0,
     "moral_encoding_depth": 0.0,
     "moral_encoding_breadth": 1.0

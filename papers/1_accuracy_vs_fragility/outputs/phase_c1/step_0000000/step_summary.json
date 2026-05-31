@@ -7,17 +7,17 @@
     "fragility"
   ],
   "layer_probing": {
-    "elapsed_s": 22.3,
-    "peak_accuracy": 0.6354,
-    "onset_layer": 1,
-    "moral_encoding_depth": 0.0625,
-    "moral_encoding_breadth": 0.1875
+    "elapsed_s": 18.6,
+    "peak_accuracy": 0.7083,
+    "onset_layer": 0,
+    "moral_encoding_depth": 0.0,
+    "moral_encoding_breadth": 0.25
   },
   "foundation_probes": {
-    "elapsed_s": 20.7
+    "elapsed_s": 18.7
   },
   "fragility": {
-    "elapsed_s": 22.4,
-    "mean_critical_noise": 0.18125
+    "elapsed_s": 18.2,
+    "mean_critical_noise": 0.76875
   }
 }

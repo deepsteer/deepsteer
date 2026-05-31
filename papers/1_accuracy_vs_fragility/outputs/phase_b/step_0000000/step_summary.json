@@ -2,28 +2,28 @@
   "step": 0,
   "revision": "stage1-step0",
   "probes_run": [
-    "B2",
     "B4",
+    "B2",
     "B5",
     "B3"
   ],
   "layer_probing": {
-    "elapsed_s": 68.5,
-    "peak_accuracy": 0.6146,
-    "onset_layer": 1,
-    "moral_encoding_depth": 0.0312,
-    "moral_encoding_breadth": 0.0312
+    "elapsed_s": 69.1,
+    "peak_accuracy": 0.7396,
+    "onset_layer": 0,
+    "moral_encoding_depth": 0.0,
+    "moral_encoding_breadth": 0.5625
   },
   "foundation_probes": {
-    "elapsed_s": 64.8
+    "elapsed_s": 68.2
   },
   "causal_tracing": {
-    "elapsed_s": 193.2,
-    "peak_causal_layer": 6,
-    "causal_depth": 0.1875
+    "elapsed_s": 170.1,
+    "peak_causal_layer": 5,
+    "causal_depth": 0.1562
   },
   "fragility": {
-    "elapsed_s": 64.3,
-    "mean_critical_noise": 0.196875
+    "elapsed_s": 67.1,
+    "mean_critical_noise": 2.6838709677419357
   }
 }
