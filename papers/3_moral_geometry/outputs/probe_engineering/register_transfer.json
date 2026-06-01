@@ -6,98 +6,98 @@
       "probe_weight": {
         "0": {
           "same_register": 1.0,
+          "cross_register": 0.98,
+          "gap": 0.02
+        },
+        "1": {
+          "same_register": 1.0,
+          "cross_register": 0.99,
+          "gap": 0.01
+        },
+        "2": {
+          "same_register": 1.0,
           "cross_register": 1.0,
           "gap": 0.0
         },
-        "1": {
+        "3": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "4": {
+          "same_register": 1.0,
+          "cross_register": 0.99,
+          "gap": 0.01
+        },
+        "5": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "6": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "7": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "8": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "9": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "10": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "11": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "12": {
+          "same_register": 1.0,
+          "cross_register": 1.0,
+          "gap": 0.0
+        },
+        "13": {
+          "same_register": 1.0,
+          "cross_register": 0.96,
+          "gap": 0.04
+        },
+        "14": {
           "same_register": 1.0,
           "cross_register": 0.98,
           "gap": 0.02
         },
-        "2": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "3": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "4": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "5": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "6": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "7": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "8": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "9": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "10": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "11": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "12": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "13": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "14": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
         "15": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.92,
+          "gap": 0.08
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9975,
-        "mean_gap": 0.0025
+        "mean_cross_register": 0.9888,
+        "mean_gap": 0.0112
       },
       "mean_diff": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "2": {
           "same_register": 1.0,
@@ -111,8 +111,8 @@
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "5": {
           "same_register": 1.0,
@@ -156,8 +156,8 @@
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "14": {
           "same_register": 1.0,
@@ -170,36 +170,36 @@
           "gap": 0.01
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9994,
-        "mean_gap": 0.0006
+        "mean_cross_register": 0.9969,
+        "mean_gap": 0.0031
       }
     },
     "fairness_cheating": {
       "probe_weight": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "3": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "5": {
           "same_register": 1.0,
@@ -208,18 +208,18 @@
         },
         "6": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "8": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "9": {
           "same_register": 1.0,
@@ -228,23 +228,23 @@
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "11": {
           "same_register": 1.0,
-          "cross_register": 0.96,
-          "gap": 0.04
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.93,
+          "gap": 0.07
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "14": {
           "same_register": 1.0,
@@ -253,68 +253,68 @@
         },
         "15": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.9,
+          "gap": 0.1
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9825,
-        "mean_gap": 0.0175
+        "mean_cross_register": 0.9656,
+        "mean_gap": 0.0344
       },
       "mean_diff": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.94,
+          "gap": 0.06
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "3": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "5": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "6": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "8": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "9": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "11": {
           "same_register": 1.0,
@@ -323,60 +323,60 @@
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "14": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "15": {
-          "same_register": 0.875,
-          "cross_register": 0.95,
-          "gap": -0.075
+          "same_register": 1.0,
+          "cross_register": 0.85,
+          "gap": 0.15
         },
-        "mean_same_register": 0.9922,
-        "mean_cross_register": 0.9869,
-        "mean_gap": 0.0053
+        "mean_same_register": 1.0,
+        "mean_cross_register": 0.9569,
+        "mean_gap": 0.0431
       }
     },
     "liberty_oppression": {
       "probe_weight": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "1": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "same_register": 0.875,
+          "cross_register": 0.97,
+          "gap": -0.095
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "3": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "5": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "6": {
           "same_register": 1.0,
@@ -385,8 +385,8 @@
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "8": {
           "same_register": 1.0,
@@ -400,122 +400,122 @@
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "11": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "12": {
           "same_register": 1.0,
           "cross_register": 0.98,
           "gap": 0.02
         },
+        "12": {
+          "same_register": 1.0,
+          "cross_register": 0.95,
+          "gap": 0.05
+        },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "14": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "15": {
           "same_register": 1.0,
           "cross_register": 0.98,
           "gap": 0.02
         },
-        "mean_same_register": 1.0,
-        "mean_cross_register": 0.9819,
-        "mean_gap": 0.0181
+        "mean_same_register": 0.9922,
+        "mean_cross_register": 0.9694,
+        "mean_gap": 0.0228
       },
       "mean_diff": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.94,
+          "gap": 0.06
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "3": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "5": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "6": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "8": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "9": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "11": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "14": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "15": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9894,
-        "mean_gap": 0.0106
+        "mean_cross_register": 0.9656,
+        "mean_gap": 0.0344
       }
     },
     "loyalty_betrayal": {
@@ -532,8 +532,8 @@
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "3": {
           "same_register": 1.0,
@@ -567,28 +567,28 @@
         },
         "9": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "11": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 1.0,
+          "gap": 0.0
         },
         "14": {
           "same_register": 1.0,
@@ -601,8 +601,8 @@
           "gap": 0.01
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9944,
-        "mean_gap": 0.0056
+        "mean_cross_register": 0.9981,
+        "mean_gap": 0.0019
       },
       "mean_diff": {
         "0": {
@@ -694,33 +694,33 @@
       "probe_weight": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.88,
+          "gap": 0.12
         },
         "1": {
+          "same_register": 1.0,
+          "cross_register": 0.91,
+          "gap": 0.09
+        },
+        "2": {
+          "same_register": 1.0,
+          "cross_register": 0.96,
+          "gap": 0.04
+        },
+        "3": {
           "same_register": 1.0,
           "cross_register": 0.94,
           "gap": 0.06
         },
-        "2": {
-          "same_register": 1.0,
-          "cross_register": 0.96,
-          "gap": 0.04
-        },
-        "3": {
+        "4": {
           "same_register": 1.0,
           "cross_register": 0.97,
           "gap": 0.03
         },
-        "4": {
-          "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
-        },
         "5": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "6": {
           "same_register": 1.0,
@@ -729,18 +729,18 @@
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "8": {
           "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "9": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "10": {
           "same_register": 1.0,
@@ -749,117 +749,117 @@
         },
         "11": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.94,
+          "gap": 0.06
         },
         "13": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "14": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "15": {
           "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9788,
-        "mean_gap": 0.0212
+        "mean_cross_register": 0.9512,
+        "mean_gap": 0.0488
       },
       "mean_diff": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 0.97,
-          "gap": 0.03
+          "cross_register": 0.75,
+          "gap": 0.25
         },
         "1": {
+          "same_register": 1.0,
+          "cross_register": 0.81,
+          "gap": 0.19
+        },
+        "2": {
+          "same_register": 1.0,
+          "cross_register": 0.83,
+          "gap": 0.17
+        },
+        "3": {
+          "same_register": 1.0,
+          "cross_register": 0.87,
+          "gap": 0.13
+        },
+        "4": {
+          "same_register": 1.0,
+          "cross_register": 0.92,
+          "gap": 0.08
+        },
+        "5": {
+          "same_register": 1.0,
+          "cross_register": 0.95,
+          "gap": 0.05
+        },
+        "6": {
+          "same_register": 1.0,
+          "cross_register": 0.92,
+          "gap": 0.08
+        },
+        "7": {
+          "same_register": 1.0,
+          "cross_register": 0.91,
+          "gap": 0.09
+        },
+        "8": {
+          "same_register": 1.0,
+          "cross_register": 0.95,
+          "gap": 0.05
+        },
+        "9": {
+          "same_register": 1.0,
+          "cross_register": 0.94,
+          "gap": 0.06
+        },
+        "10": {
+          "same_register": 1.0,
+          "cross_register": 0.94,
+          "gap": 0.06
+        },
+        "11": {
+          "same_register": 1.0,
+          "cross_register": 0.94,
+          "gap": 0.06
+        },
+        "12": {
+          "same_register": 1.0,
+          "cross_register": 0.94,
+          "gap": 0.06
+        },
+        "13": {
+          "same_register": 1.0,
+          "cross_register": 0.92,
+          "gap": 0.08
+        },
+        "14": {
+          "same_register": 1.0,
+          "cross_register": 0.95,
+          "gap": 0.05
+        },
+        "15": {
           "same_register": 1.0,
           "cross_register": 0.96,
           "gap": 0.04
         },
-        "2": {
-          "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
-        },
-        "3": {
-          "same_register": 1.0,
-          "cross_register": 0.98,
-          "gap": 0.02
-        },
-        "4": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "5": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "6": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "7": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "8": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "9": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "10": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "11": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "12": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "13": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "14": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
-        "15": {
-          "same_register": 1.0,
-          "cross_register": 0.99,
-          "gap": 0.01
-        },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9856,
-        "mean_gap": 0.0144
+        "mean_cross_register": 0.9062,
+        "mean_gap": 0.0938
       }
     },
     "sanctity_degradation": {
@@ -871,28 +871,28 @@
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "2": {
+          "same_register": 1.0,
+          "cross_register": 0.97,
+          "gap": 0.03
+        },
+        "3": {
+          "same_register": 1.0,
+          "cross_register": 0.98,
+          "gap": 0.02
+        },
+        "4": {
           "same_register": 1.0,
           "cross_register": 0.99,
           "gap": 0.01
         },
-        "3": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
-        "4": {
-          "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
-        },
         "5": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "6": {
           "same_register": 1.0,
@@ -926,8 +926,8 @@
         },
         "12": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "13": {
           "same_register": 1.0,
@@ -936,8 +936,8 @@
         },
         "14": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "15": {
           "same_register": 1.0,
@@ -945,54 +945,54 @@
           "gap": 0.0
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 0.9988,
-        "mean_gap": 0.0012
+        "mean_cross_register": 0.9925,
+        "mean_gap": 0.0075
       },
       "mean_diff": {
         "0": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "1": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "2": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "3": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.97,
+          "gap": 0.03
         },
         "4": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.98,
+          "gap": 0.02
         },
         "5": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "6": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.95,
+          "gap": 0.05
         },
         "7": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.96,
+          "gap": 0.04
         },
         "8": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "9": {
           "same_register": 1.0,
@@ -1001,13 +1001,13 @@
         },
         "10": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "11": {
           "same_register": 1.0,
-          "cross_register": 1.0,
-          "gap": 0.0
+          "cross_register": 0.99,
+          "gap": 0.01
         },
         "12": {
           "same_register": 1.0,
@@ -1030,8 +1030,8 @@
           "gap": 0.0
         },
         "mean_same_register": 1.0,
-        "mean_cross_register": 1.0,
-        "mean_gap": 0.0
+        "mean_cross_register": 0.9812,
+        "mean_gap": 0.0188
       }
     }
   }

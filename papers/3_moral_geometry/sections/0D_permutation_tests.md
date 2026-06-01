@@ -11,35 +11,38 @@ by permuting group assignments 10,000 times.
 
 \begin{table}[h]
 \centering
-\caption{Permutation test for individualizing/binding group structure across layers, OLMo-2 1B. $p$-values below 0.05 are bolded.}
+\caption{Permutation test for individualizing/binding group structure across layers, OLMo-2 1B. No layer reaches significance.}
 \label{tab:permutation}
 \small
 \begin{tabular}{r cc}
 \toprule
 Layer & Observed statistic & $p$-value \\
 \midrule
-0  & 0.035 & \textbf{0.012} \\
-1  & 0.012 & 0.274 \\
-2  & 0.019 & 0.129 \\
-3  & 0.029 & \textbf{0.035} \\
-4  & 0.017 & 0.147 \\
-5  & 0.015 & 0.197 \\
-6  & 0.024 & 0.058 \\
-7  & 0.016 & 0.195 \\
-8  & 0.013 & 0.249 \\
-9  & 0.011 & 0.279 \\
-10 & 0.009 & 0.332 \\
-11 & 0.007 & 0.398 \\
-12 & 0.007 & 0.398 \\
-13 & 0.010 & 0.330 \\
-14 & 0.014 & 0.232 \\
-15 & 0.003 & 0.489 \\
+0  &  0.001 & 0.394 \\
+1  & $-$0.014 & 0.783 \\
+2  & $-$0.003 & 0.696 \\
+3  & $-$0.004 & 0.791 \\
+4  & $-$0.004 & 0.788 \\
+5  &  0.003 & 0.438 \\
+6  & $-$0.002 & 0.486 \\
+7  &  0.005 & 0.322 \\
+8  &  0.001 & 0.486 \\
+9  & $-$0.003 & 0.582 \\
+10 & $-$0.003 & 0.579 \\
+11 & $-$0.014 & 0.777 \\
+12 & $-$0.004 & 0.675 \\
+13 &  0.003 & 0.387 \\
+14 &  0.000 & 0.385 \\
+15 &  0.007 & 0.339 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The test reaches significance at layers 0 and 3. With only 20
-unique 3--3 partitions of 6 elements, the test has limited power.
-The dendrogram analysis (\S4.3) provides complementary qualitative
-evidence using the full distance matrix rather than the scalar
-within/between summary.
+The test does not reach significance at any layer (minimum $p = 0.32$
+at layer 7). The observed statistics are near zero and frequently
+negative (within-group similarity $<$ between-group similarity),
+confirming that the model's inter-framework geometry is not
+organized along the MFT individualizing/binding axis. This is
+consistent with the dendrogram analysis (\S4.3), which shows
+cross-MFT pairings (care--sanctity, liberty--authority) rather
+than the predicted group structure.

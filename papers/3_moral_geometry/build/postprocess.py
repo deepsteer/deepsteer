@@ -211,7 +211,7 @@ SECTION_LABEL_MAP = {
     # §4 subsections
     "4.1": "foundation-specific-probe-accuracy",
     "4.2": "framework-geometry-integration-not-collapse",
-    "4.3": "mft-group-structure-in-the-dendrogram",
+    "4.3": "dendrogram-structure-does-not-recover-mft-groups",
     "4.4": "layer-wise-geometric-development",
     "4.5": "dense-vs.-moe-framework-geometry",
     "4.6": "direction-stability-under-bootstrap",
@@ -219,7 +219,7 @@ SECTION_LABEL_MAP = {
     "4.8": "geometric-trajectory-during-training",
     # §5 subsections
     "5.1": "integration-as-the-default-geometric-mode",
-    "5.2": "the-fragility-reversal",
+    "5.2": "the-sanctity-fragility-anomaly",
     "5.3": "framework-geometry-stabilizes-before-accuracy-saturates",
     "5.4": "limitations",
 }

@@ -3,95 +3,95 @@
   "n_layers": 16,
   "alignment": {
     "care_harm": {
-      "repe_vs_pw": 0.2888,
-      "repe_vs_md": 0.4838,
-      "md_vs_pw": 0.6246,
-      "pc1_variance_explained": 0.1128
+      "repe_vs_pw": 0.1596,
+      "repe_vs_md": 0.4598,
+      "md_vs_pw": 0.714,
+      "pc1_variance_explained": 0.0875
     },
     "fairness_cheating": {
-      "repe_vs_pw": 0.2575,
-      "repe_vs_md": 0.4764,
-      "md_vs_pw": 0.6282,
-      "pc1_variance_explained": 0.0984
+      "repe_vs_pw": 0.0884,
+      "repe_vs_md": 0.2974,
+      "md_vs_pw": 0.7094,
+      "pc1_variance_explained": 0.089
     },
     "liberty_oppression": {
-      "repe_vs_pw": 0.2194,
-      "repe_vs_md": 0.3588,
-      "md_vs_pw": 0.5903,
-      "pc1_variance_explained": 0.0852
+      "repe_vs_pw": 0.1379,
+      "repe_vs_md": 0.4782,
+      "md_vs_pw": 0.6883,
+      "pc1_variance_explained": 0.0997
     },
     "loyalty_betrayal": {
-      "repe_vs_pw": 0.0973,
-      "repe_vs_md": 0.1732,
-      "md_vs_pw": 0.5797,
-      "pc1_variance_explained": 0.0874
+      "repe_vs_pw": 0.0909,
+      "repe_vs_md": 0.2639,
+      "md_vs_pw": 0.719,
+      "pc1_variance_explained": 0.0805
     },
     "authority_subversion": {
-      "repe_vs_pw": 0.101,
-      "repe_vs_md": 0.2333,
-      "md_vs_pw": 0.5751,
-      "pc1_variance_explained": 0.0844
+      "repe_vs_pw": 0.0737,
+      "repe_vs_md": 0.2308,
+      "md_vs_pw": 0.6702,
+      "pc1_variance_explained": 0.0967
     },
     "sanctity_degradation": {
-      "repe_vs_pw": 0.0738,
-      "repe_vs_md": 0.1155,
-      "md_vs_pw": 0.608,
-      "pc1_variance_explained": 0.0981
+      "repe_vs_pw": 0.2602,
+      "repe_vs_md": 0.579,
+      "md_vs_pw": 0.7036,
+      "pc1_variance_explained": 0.106
     }
   },
   "repe_geometry": {
     "0": {
-      "mean_cosine_similarity": 0.026015,
+      "mean_cosine_similarity": 0.133774,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.268773,
+      "permutation_test_p": 0.535246,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
-        "Fairness"
+        "Fairness",
+        "Liberty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Liberty",
+        "Care",
         "Loyalty",
-        "Authority",
         "Sanctity"
       ]
     },
     "1": {
-      "mean_cosine_similarity": 0.021808,
+      "mean_cosine_similarity": 0.111554,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.80262,
+      "permutation_test_p": 0.59964,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
         "Care",
-        "Fairness",
-        "Authority"
-      ],
-      "dendrogram_right": [
-        "Liberty",
         "Loyalty",
         "Sanctity"
+      ],
+      "dendrogram_right": [
+        "Fairness",
+        "Liberty",
+        "Authority"
       ]
     },
     "2": {
-      "mean_cosine_similarity": 0.067007,
+      "mean_cosine_similarity": 0.122613,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.863614,
+      "permutation_test_p": 0.39796,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Sanctity"
+        "Fairness",
+        "Authority"
       ],
       "dendrogram_right": [
         "Care",
-        "Fairness",
         "Liberty",
         "Loyalty",
-        "Authority"
+        "Sanctity"
       ]
     },
     "3": {
-      "mean_cosine_similarity": -0.005625,
+      "mean_cosine_similarity": 0.105878,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.206879,
+      "permutation_test_p": 0.071893,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
         "Fairness",
@@ -105,195 +105,195 @@
       ]
     },
     "4": {
-      "mean_cosine_similarity": -0.040917,
+      "mean_cosine_similarity": 0.168799,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.090291,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.570243,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "5": {
-      "mean_cosine_similarity": -0.027062,
-      "effective_dimensionality": 5,
-      "permutation_test_p": 0.206879,
+      "mean_cosine_similarity": 0.116372,
+      "effective_dimensionality": 4,
+      "permutation_test_p": 0.679232,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
+        "Fairness",
+        "Liberty",
         "Loyalty",
         "Authority"
       ],
       "dendrogram_right": [
         "Care",
-        "Fairness",
-        "Liberty",
         "Sanctity"
       ]
     },
     "6": {
-      "mean_cosine_similarity": 0.009725,
-      "effective_dimensionality": 5,
-      "permutation_test_p": 0.09999,
-      "mft_dendrogram_match": true,
+      "mean_cosine_similarity": -0.002872,
+      "effective_dimensionality": 4,
+      "permutation_test_p": 0.59764,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
         "Care",
-        "Fairness",
-        "Liberty"
+        "Sanctity"
       ],
       "dendrogram_right": [
+        "Fairness",
+        "Liberty",
         "Loyalty",
-        "Authority",
-        "Sanctity"
+        "Authority"
       ]
     },
     "7": {
-      "mean_cosine_similarity": 0.060121,
-      "effective_dimensionality": 5,
-      "permutation_test_p": 0.014199,
+      "mean_cosine_similarity": 0.124084,
+      "effective_dimensionality": 4,
+      "permutation_test_p": 0.779922,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
+        "Fairness",
+        "Liberty",
+        "Loyalty",
         "Authority"
       ],
       "dendrogram_right": [
         "Care",
-        "Fairness",
-        "Liberty",
-        "Loyalty",
         "Sanctity"
       ]
     },
     "8": {
-      "mean_cosine_similarity": 0.07677,
+      "mean_cosine_similarity": 0.160326,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.09509,
+      "permutation_test_p": 0.685031,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
+        "Fairness",
+        "Loyalty",
         "Authority"
       ],
       "dendrogram_right": [
         "Care",
-        "Fairness",
         "Liberty",
-        "Loyalty",
         "Sanctity"
       ]
     },
     "9": {
-      "mean_cosine_similarity": 0.101036,
+      "mean_cosine_similarity": 0.220153,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.084992,
+      "permutation_test_p": 0.381262,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Authority"
+        "Sanctity"
       ],
       "dendrogram_right": [
         "Care",
         "Fairness",
         "Liberty",
         "Loyalty",
-        "Sanctity"
+        "Authority"
       ]
     },
     "10": {
-      "mean_cosine_similarity": 0.104442,
-      "effective_dimensionality": 4,
-      "permutation_test_p": 0.045495,
+      "mean_cosine_similarity": 0.252723,
+      "effective_dimensionality": 5,
+      "permutation_test_p": 0.483652,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Authority"
+        "Loyalty"
       ],
       "dendrogram_right": [
         "Care",
         "Fairness",
         "Liberty",
-        "Loyalty",
+        "Authority",
         "Sanctity"
       ]
     },
     "11": {
-      "mean_cosine_similarity": 0.048918,
-      "effective_dimensionality": 4,
-      "permutation_test_p": 0.09999,
+      "mean_cosine_similarity": 0.250524,
+      "effective_dimensionality": 5,
+      "permutation_test_p": 0.70233,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Authority",
-        "Sanctity"
+        "Loyalty"
       ],
       "dendrogram_right": [
         "Care",
         "Fairness",
         "Liberty",
-        "Loyalty"
+        "Authority",
+        "Sanctity"
       ]
     },
     "12": {
-      "mean_cosine_similarity": 0.231714,
-      "effective_dimensionality": 4,
-      "permutation_test_p": 0.181582,
+      "mean_cosine_similarity": 0.24919,
+      "effective_dimensionality": 5,
+      "permutation_test_p": 0.19708,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
+        "Loyalty"
+      ],
+      "dendrogram_right": [
         "Care",
         "Fairness",
         "Liberty",
-        "Authority"
-      ],
-      "dendrogram_right": [
-        "Loyalty",
+        "Authority",
         "Sanctity"
       ]
     },
     "13": {
-      "mean_cosine_similarity": 0.191113,
+      "mean_cosine_similarity": 0.220965,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.170883,
+      "permutation_test_p": 0.441256,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty",
         "Authority"
       ],
       "dendrogram_right": [
+        "Care",
+        "Liberty",
         "Loyalty",
         "Sanctity"
       ]
     },
     "14": {
-      "mean_cosine_similarity": 0.221189,
+      "mean_cosine_similarity": 0.17778,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.19948,
+      "permutation_test_p": 0.430357,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
         "Care",
         "Fairness",
-        "Liberty",
-        "Authority"
+        "Sanctity"
       ],
       "dendrogram_right": [
+        "Liberty",
         "Loyalty",
-        "Sanctity"
+        "Authority"
       ]
     },
     "15": {
-      "mean_cosine_similarity": 0.538625,
+      "mean_cosine_similarity": 0.101244,
       "effective_dimensionality": 4,
-      "permutation_test_p": 0.159784,
+      "permutation_test_p": 0.670733,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Loyalty",
-        "Sanctity"
+        "Fairness"
       ],
       "dendrogram_right": [
         "Care",
-        "Fairness",
         "Liberty",
-        "Authority"
+        "Loyalty",
+        "Authority",
+        "Sanctity"
       ]
     }
   },
@@ -301,412 +301,412 @@
     "care_harm": {
       "0": {
         "same_register": 0.75,
-        "cross_register": 0.82
+        "cross_register": 0.73
       },
       "1": {
-        "same_register": 0.75,
-        "cross_register": 0.83
-      },
-      "2": {
-        "same_register": 0.75,
-        "cross_register": 0.65
-      },
-      "3": {
-        "same_register": 0.625,
-        "cross_register": 0.63
-      },
-      "4": {
-        "same_register": 0.625,
-        "cross_register": 0.54
-      },
-      "5": {
-        "same_register": 0.875,
-        "cross_register": 0.82
-      },
-      "6": {
         "same_register": 0.75,
         "cross_register": 0.77
       },
+      "2": {
+        "same_register": 1.0,
+        "cross_register": 0.82
+      },
+      "3": {
+        "same_register": 1.0,
+        "cross_register": 0.91
+      },
+      "4": {
+        "same_register": 1.0,
+        "cross_register": 0.92
+      },
+      "5": {
+        "same_register": 1.0,
+        "cross_register": 0.91
+      },
+      "6": {
+        "same_register": 0.75,
+        "cross_register": 0.46
+      },
       "7": {
-        "same_register": 0.875,
-        "cross_register": 0.85
+        "same_register": 1.0,
+        "cross_register": 0.88
       },
       "8": {
         "same_register": 1.0,
-        "cross_register": 0.86
+        "cross_register": 0.94
       },
       "9": {
         "same_register": 1.0,
-        "cross_register": 0.87
+        "cross_register": 0.94
       },
       "10": {
         "same_register": 1.0,
-        "cross_register": 0.97
+        "cross_register": 0.94
       },
       "11": {
         "same_register": 1.0,
-        "cross_register": 0.97
+        "cross_register": 0.96
       },
       "12": {
         "same_register": 1.0,
-        "cross_register": 0.96
+        "cross_register": 0.95
       },
       "13": {
         "same_register": 1.0,
-        "cross_register": 0.92
+        "cross_register": 0.94
       },
       "14": {
         "same_register": 1.0,
-        "cross_register": 0.92
+        "cross_register": 0.94
       },
       "15": {
         "same_register": 1.0,
-        "cross_register": 0.95
+        "cross_register": 0.89
       },
-      "mean_same_register": 0.875,
-      "mean_cross_register": 0.8331
+      "mean_same_register": 0.9531,
+      "mean_cross_register": 0.8688
     },
     "fairness_cheating": {
       "0": {
-        "same_register": 0.625,
-        "cross_register": 0.52
+        "same_register": 0.75,
+        "cross_register": 0.57
       },
       "1": {
-        "same_register": 0.625,
-        "cross_register": 0.6
+        "same_register": 0.375,
+        "cross_register": 0.53
       },
       "2": {
-        "same_register": 0.75,
-        "cross_register": 0.55
+        "same_register": 0.375,
+        "cross_register": 0.69
       },
       "3": {
         "same_register": 0.5,
+        "cross_register": 0.69
+      },
+      "4": {
+        "same_register": 0.5,
+        "cross_register": 0.61
+      },
+      "5": {
+        "same_register": 0.625,
         "cross_register": 0.49
       },
-      "4": {
-        "same_register": 0.375,
-        "cross_register": 0.35
-      },
-      "5": {
-        "same_register": 0.625,
-        "cross_register": 0.36
-      },
       "6": {
-        "same_register": 0.75,
-        "cross_register": 0.73
+        "same_register": 0.625,
+        "cross_register": 0.48
       },
       "7": {
-        "same_register": 0.875,
-        "cross_register": 0.86
+        "same_register": 0.75,
+        "cross_register": 0.46
       },
       "8": {
-        "same_register": 0.875,
-        "cross_register": 0.93
+        "same_register": 0.625,
+        "cross_register": 0.54
       },
       "9": {
-        "same_register": 1.0,
-        "cross_register": 0.95
+        "same_register": 0.75,
+        "cross_register": 0.71
       },
       "10": {
-        "same_register": 0.875,
-        "cross_register": 0.96
-      },
-      "11": {
-        "same_register": 0.875,
-        "cross_register": 0.97
-      },
-      "12": {
-        "same_register": 0.875,
-        "cross_register": 0.94
-      },
-      "13": {
-        "same_register": 0.875,
-        "cross_register": 0.9
-      },
-      "14": {
-        "same_register": 0.875,
-        "cross_register": 0.89
-      },
-      "15": {
-        "same_register": 0.875,
-        "cross_register": 0.89
-      },
-      "mean_same_register": 0.7656,
-      "mean_cross_register": 0.7431
-    },
-    "liberty_oppression": {
-      "0": {
-        "same_register": 0.75,
-        "cross_register": 0.8
-      },
-      "1": {
-        "same_register": 0.75,
+        "same_register": 0.5,
         "cross_register": 0.68
       },
-      "2": {
-        "same_register": 0.25,
-        "cross_register": 0.37
-      },
-      "3": {
-        "same_register": 0.375,
-        "cross_register": 0.38
-      },
-      "4": {
-        "same_register": 0.5,
-        "cross_register": 0.4
-      },
-      "5": {
-        "same_register": 0.375,
-        "cross_register": 0.34
-      },
-      "6": {
-        "same_register": 0.25,
-        "cross_register": 0.47
-      },
-      "7": {
-        "same_register": 0.375,
-        "cross_register": 0.55
-      },
-      "8": {
-        "same_register": 0.5,
-        "cross_register": 0.65
-      },
-      "9": {
+      "11": {
         "same_register": 0.25,
         "cross_register": 0.69
       },
-      "10": {
-        "same_register": 0.5,
-        "cross_register": 0.82
-      },
-      "11": {
-        "same_register": 0.625,
-        "cross_register": 0.82
-      },
       "12": {
-        "same_register": 0.875,
-        "cross_register": 0.87
+        "same_register": 0.25,
+        "cross_register": 0.75
       },
       "13": {
-        "same_register": 0.75,
-        "cross_register": 0.79
-      },
-      "14": {
-        "same_register": 0.75,
-        "cross_register": 0.78
-      },
-      "15": {
-        "same_register": 0.875,
-        "cross_register": 0.85
-      },
-      "mean_same_register": 0.5469,
-      "mean_cross_register": 0.6413
-    },
-    "loyalty_betrayal": {
-      "0": {
-        "same_register": 0.625,
+        "same_register": 0.25,
         "cross_register": 0.72
       },
-      "1": {
-        "same_register": 0.5,
-        "cross_register": 0.76
-      },
-      "2": {
-        "same_register": 0.25,
-        "cross_register": 0.21
-      },
-      "3": {
-        "same_register": 0.625,
-        "cross_register": 0.82
-      },
-      "4": {
-        "same_register": 0.625,
-        "cross_register": 0.9
-      },
-      "5": {
-        "same_register": 0.625,
-        "cross_register": 0.89
-      },
-      "6": {
-        "same_register": 0.625,
-        "cross_register": 0.81
-      },
-      "7": {
-        "same_register": 0.625,
-        "cross_register": 0.4
-      },
-      "8": {
-        "same_register": 0.625,
-        "cross_register": 0.68
-      },
-      "9": {
-        "same_register": 0.75,
-        "cross_register": 0.81
-      },
-      "10": {
-        "same_register": 0.75,
-        "cross_register": 0.8
-      },
-      "11": {
-        "same_register": 0.625,
-        "cross_register": 0.41
-      },
-      "12": {
-        "same_register": 0.75,
-        "cross_register": 0.79
-      },
-      "13": {
-        "same_register": 0.375,
-        "cross_register": 0.68
-      },
       "14": {
-        "same_register": 0.5,
+        "same_register": 0.375,
         "cross_register": 0.66
       },
       "15": {
         "same_register": 1.0,
-        "cross_register": 0.99
+        "cross_register": 0.31
       },
-      "mean_same_register": 0.6172,
-      "mean_cross_register": 0.7081
+      "mean_same_register": 0.5312,
+      "mean_cross_register": 0.5988
+    },
+    "liberty_oppression": {
+      "0": {
+        "same_register": 0.875,
+        "cross_register": 0.78
+      },
+      "1": {
+        "same_register": 1.0,
+        "cross_register": 0.9
+      },
+      "2": {
+        "same_register": 1.0,
+        "cross_register": 0.9
+      },
+      "3": {
+        "same_register": 1.0,
+        "cross_register": 0.93
+      },
+      "4": {
+        "same_register": 1.0,
+        "cross_register": 0.74
+      },
+      "5": {
+        "same_register": 0.875,
+        "cross_register": 0.68
+      },
+      "6": {
+        "same_register": 0.875,
+        "cross_register": 0.61
+      },
+      "7": {
+        "same_register": 1.0,
+        "cross_register": 0.73
+      },
+      "8": {
+        "same_register": 1.0,
+        "cross_register": 0.85
+      },
+      "9": {
+        "same_register": 1.0,
+        "cross_register": 0.89
+      },
+      "10": {
+        "same_register": 1.0,
+        "cross_register": 0.9
+      },
+      "11": {
+        "same_register": 1.0,
+        "cross_register": 0.88
+      },
+      "12": {
+        "same_register": 1.0,
+        "cross_register": 0.87
+      },
+      "13": {
+        "same_register": 1.0,
+        "cross_register": 0.87
+      },
+      "14": {
+        "same_register": 0.875,
+        "cross_register": 0.9
+      },
+      "15": {
+        "same_register": 0.75,
+        "cross_register": 0.89
+      },
+      "mean_same_register": 0.9531,
+      "mean_cross_register": 0.8325
+    },
+    "loyalty_betrayal": {
+      "0": {
+        "same_register": 0.625,
+        "cross_register": 0.74
+      },
+      "1": {
+        "same_register": 0.625,
+        "cross_register": 0.83
+      },
+      "2": {
+        "same_register": 0.75,
+        "cross_register": 0.87
+      },
+      "3": {
+        "same_register": 1.0,
+        "cross_register": 0.9
+      },
+      "4": {
+        "same_register": 1.0,
+        "cross_register": 0.68
+      },
+      "5": {
+        "same_register": 1.0,
+        "cross_register": 0.57
+      },
+      "6": {
+        "same_register": 0.875,
+        "cross_register": 0.54
+      },
+      "7": {
+        "same_register": 1.0,
+        "cross_register": 0.61
+      },
+      "8": {
+        "same_register": 1.0,
+        "cross_register": 0.59
+      },
+      "9": {
+        "same_register": 1.0,
+        "cross_register": 0.77
+      },
+      "10": {
+        "same_register": 0.875,
+        "cross_register": 0.63
+      },
+      "11": {
+        "same_register": 1.0,
+        "cross_register": 0.83
+      },
+      "12": {
+        "same_register": 1.0,
+        "cross_register": 0.86
+      },
+      "13": {
+        "same_register": 1.0,
+        "cross_register": 0.88
+      },
+      "14": {
+        "same_register": 1.0,
+        "cross_register": 0.85
+      },
+      "15": {
+        "same_register": 0.875,
+        "cross_register": 0.96
+      },
+      "mean_same_register": 0.9141,
+      "mean_cross_register": 0.7569
     },
     "authority_subversion": {
       "0": {
         "same_register": 0.75,
-        "cross_register": 0.78
+        "cross_register": 0.53
       },
       "1": {
-        "same_register": 0.5,
-        "cross_register": 0.25
+        "same_register": 0.625,
+        "cross_register": 0.45
       },
       "2": {
-        "same_register": 0.375,
-        "cross_register": 0.3
+        "same_register": 0.625,
+        "cross_register": 0.55
       },
       "3": {
-        "same_register": 0.75,
-        "cross_register": 0.86
+        "same_register": 0.375,
+        "cross_register": 0.77
       },
       "4": {
-        "same_register": 0.75,
-        "cross_register": 0.88
-      },
-      "5": {
-        "same_register": 0.75,
-        "cross_register": 0.94
-      },
-      "6": {
-        "same_register": 0.625,
-        "cross_register": 0.9
-      },
-      "7": {
-        "same_register": 0.75,
-        "cross_register": 0.96
-      },
-      "8": {
-        "same_register": 0.75,
-        "cross_register": 0.96
-      },
-      "9": {
-        "same_register": 0.625,
-        "cross_register": 0.97
-      },
-      "10": {
-        "same_register": 0.625,
-        "cross_register": 0.96
-      },
-      "11": {
-        "same_register": 0.625,
-        "cross_register": 0.95
-      },
-      "12": {
-        "same_register": 1.0,
-        "cross_register": 0.98
-      },
-      "13": {
-        "same_register": 1.0,
-        "cross_register": 0.92
-      },
-      "14": {
-        "same_register": 1.0,
-        "cross_register": 0.94
-      },
-      "15": {
-        "same_register": 1.0,
-        "cross_register": 0.98
-      },
-      "mean_same_register": 0.7422,
-      "mean_cross_register": 0.8456
-    },
-    "sanctity_degradation": {
-      "0": {
         "same_register": 1.0,
         "cross_register": 0.83
       },
-      "1": {
-        "same_register": 0.875,
-        "cross_register": 0.86
-      },
-      "2": {
-        "same_register": 0.375,
-        "cross_register": 0.17
-      },
-      "3": {
-        "same_register": 0.5,
-        "cross_register": 0.34
-      },
-      "4": {
-        "same_register": 0.625,
-        "cross_register": 0.37
-      },
       "5": {
-        "same_register": 0.5,
-        "cross_register": 0.2
+        "same_register": 0.875,
+        "cross_register": 0.78
       },
       "6": {
-        "same_register": 0.5,
-        "cross_register": 0.81
+        "same_register": 0.875,
+        "cross_register": 0.68
       },
       "7": {
-        "same_register": 0.5,
-        "cross_register": 0.24
+        "same_register": 1.0,
+        "cross_register": 0.7
       },
       "8": {
-        "same_register": 0.5,
-        "cross_register": 0.2
+        "same_register": 1.0,
+        "cross_register": 0.72
       },
       "9": {
-        "same_register": 0.5,
-        "cross_register": 0.17
+        "same_register": 1.0,
+        "cross_register": 0.86
       },
       "10": {
-        "same_register": 0.5,
-        "cross_register": 0.18
+        "same_register": 1.0,
+        "cross_register": 0.87
       },
       "11": {
-        "same_register": 0.5,
-        "cross_register": 0.85
+        "same_register": 1.0,
+        "cross_register": 0.88
       },
       "12": {
-        "same_register": 0.625,
-        "cross_register": 0.89
+        "same_register": 1.0,
+        "cross_register": 0.76
       },
       "13": {
-        "same_register": 0.5,
-        "cross_register": 0.93
+        "same_register": 0.75,
+        "cross_register": 0.81
       },
       "14": {
-        "same_register": 0.5,
-        "cross_register": 0.95
+        "same_register": 0.625,
+        "cross_register": 0.72
       },
       "15": {
         "same_register": 1.0,
-        "cross_register": 0.99
+        "cross_register": 0.77
       },
-      "mean_same_register": 0.5938,
-      "mean_cross_register": 0.5613
+      "mean_same_register": 0.8438,
+      "mean_cross_register": 0.73
+    },
+    "sanctity_degradation": {
+      "0": {
+        "same_register": 0.875,
+        "cross_register": 0.95
+      },
+      "1": {
+        "same_register": 1.0,
+        "cross_register": 0.97
+      },
+      "2": {
+        "same_register": 1.0,
+        "cross_register": 0.96
+      },
+      "3": {
+        "same_register": 1.0,
+        "cross_register": 0.97
+      },
+      "4": {
+        "same_register": 1.0,
+        "cross_register": 0.86
+      },
+      "5": {
+        "same_register": 1.0,
+        "cross_register": 0.75
+      },
+      "6": {
+        "same_register": 1.0,
+        "cross_register": 0.7
+      },
+      "7": {
+        "same_register": 1.0,
+        "cross_register": 0.74
+      },
+      "8": {
+        "same_register": 1.0,
+        "cross_register": 0.78
+      },
+      "9": {
+        "same_register": 1.0,
+        "cross_register": 0.88
+      },
+      "10": {
+        "same_register": 1.0,
+        "cross_register": 0.96
+      },
+      "11": {
+        "same_register": 1.0,
+        "cross_register": 0.98
+      },
+      "12": {
+        "same_register": 1.0,
+        "cross_register": 0.98
+      },
+      "13": {
+        "same_register": 1.0,
+        "cross_register": 0.98
+      },
+      "14": {
+        "same_register": 1.0,
+        "cross_register": 0.96
+      },
+      "15": {
+        "same_register": 1.0,
+        "cross_register": 0.97
+      },
+      "mean_same_register": 0.9922,
+      "mean_cross_register": 0.8994
     }
   },
-  "peak_layer": 4,
-  "peak_cosine": -0.040917
+  "peak_layer": 6,
+  "peak_cosine": -0.002872
 }

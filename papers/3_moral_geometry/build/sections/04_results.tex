@@ -2,14 +2,12 @@
 
 \subsection{Foundation-specific probe accuracy}\label{foundation-specific-probe-accuracy}
 
-All six foundation-specific probes achieve near-perfect accuracy
-across the full depth of OLMo-2 1B. Care/harm and fairness/cheating
-reach 100\% at nearly every layer; sanctity/degradation reaches
-100\% at 12 of 16 layers. Liberty/oppression, loyalty/betrayal, and
-authority/subversion show minor fluctuations (minimum 87.5\%, at
-layers 3 and 15 for loyalty and layers 6 and 13--15 for authority).
-The onset threshold (0.6) is exceeded at layer 0 for all
-foundations.
+All six foundation-specific probes achieve perfect or near-perfect
+accuracy across the full depth of OLMo-2 1B. Every foundation
+reaches 100\% peak accuracy. Authority/subversion achieves 100\% at
+all 16 layers; the remaining foundations show minor fluctuations at
+individual layers (minimum 87.5\% for care/harm at layer 1). The
+onset threshold (0.6) is exceeded at layer 0 for all foundations.
 
 These results confirm that moral foundation content is linearly
 separable from the earliest layer --- consistent with the ``immediate
@@ -20,10 +18,10 @@ foundations: all are equally easy to decode. The interesting
 variation is not in accuracy but in the \emph{geometry} of the probe
 directions that achieve this accuracy.
 
-On OLMoE-1B-7B, all foundations similarly reach near-perfect
-accuracy, with authority/subversion showing the lowest peak (93.8\%
-at layer 0). The accuracy profiles are essentially indistinguishable
-between architectures.
+On OLMoE-1B-7B, all foundations similarly reach 100\% peak accuracy,
+with the lowest early-layer values at 81.25\% (layers 0--1). The
+accuracy profiles are essentially indistinguishable between
+architectures.
 
 \subsection{Framework geometry: integration, not collapse}\label{framework-geometry-integration-not-collapse}
 
@@ -37,13 +35,13 @@ between architectures.
 The headline finding: foundation probe directions are \emph{separated},
 not collapsed. At the peak separation layer (layer 0), the mean
 pairwise cosine similarity between the six foundation directions is
-\textbf{0.272} --- far below the collapse threshold (\(>0.95\)) and below
+\textbf{0.216} --- far below the collapse threshold (\(>0.95\)) and below
 the intermediate zone (\(0.8\)--\(0.95\)). The model does not encode
 moral content through a single ``moral salience'' direction; it
 maintains distinct directions for distinct moral foundations.
 
 However, the cosine similarities are uniformly \emph{positive} (range
-0.18--0.37 at layer 0), indicating that the foundation directions
+0.14--0.33 at layer 0), indicating that the foundation directions
 share a common component. This is the \emph{integration} signature from
 our trichotomy: the directions are separated but non-orthogonal,
 consistent with a shared moral-salience subspace from which
@@ -58,55 +56,57 @@ distinct --- they do not collapse into a lower-dimensional subspace.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig2_layerwise_geometry.pdf}
-\caption{Layer-wise geometric metrics for OLMo-2 1B. (a) Mean pairwise cosine similarity peaks at middle layers. (b) Effective dimensionality remains constant at 5 across all layers.}
+\caption{Layer-wise geometric metrics for OLMo-2 1B. (a) Mean pairwise cosine similarity is relatively flat across layers. (b) Effective dimensionality remains constant at 5 across all layers.}
 \label{fig:layerwise}
 \end{figure}
 
-\subsection{MFT group structure in the dendrogram}\label{mft-group-structure-in-the-dendrogram}
+\subsection{Dendrogram structure does not recover MFT groups}\label{dendrogram-structure-does-not-recover-mft-groups}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.7\linewidth]{fig3_dendrogram.pdf}
-\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 0, OLMo-2 1B. The first split perfectly recovers the MFT individualizing/binding distinction.}
+\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 0, OLMo-2 1B. The first split does not recover the MFT individualizing/binding distinction.}
 \label{fig:dendrogram}
 \end{figure}
 
-Hierarchical clustering of the six foundation directions at layer 0
-produces a dendrogram that perfectly recovers the MFT
-individualizing/binding distinction: the first split separates
-\{liberty, care, fairness\} from \{sanctity, loyalty, authority\}.
-Within the individualizing cluster, care and fairness merge first;
-within the binding cluster, loyalty and authority merge first.
+Hierarchical clustering of the six foundation directions does
+\emph{not} recover the MFT individualizing/binding distinction at any
+layer. At layer 0, the dendrogram is chain-like: liberty and
+authority merge first, then loyalty, then sanctity, then fairness,
+then care. No layer produces the predicted \{care, fairness,
+liberty\} vs.~\{loyalty, authority, sanctity\} partition.
 
-This alignment with MFT's predicted group structure is notable:
-the model's representation geometry mirrors a theoretical
-distinction from moral psychology that was not an explicit training
-objective. The probe directions were trained independently for each
-foundation; the clustering structure emerges from the representations
-themselves.
+The most consistent clustering pattern across layers is a
+care--sanctity pairing: these two foundations appear in the same
+cluster at 10 of 16 layers. This crosses the MFT boundary (care is
+individualizing, sanctity is binding) but has a plausible semantic
+interpretation --- both foundations concern protection of
+vulnerable entities (persons from harm, sacred things from
+degradation). The liberty--authority pairing at layer 0 similarly
+crosses MFT groups but reflects a semantic opposition axis.
 
 The permutation test for the individualizing/binding distinction
-reaches significance at layer 0 (\(p = 0.012\)) and layer 3
-(\(p = 0.035\)), though not at most other layers (median \(p = 0.23\)).
-With only 6 items and 20 unique 3--3 partitions, statistical power
-is limited. The significant result at layer 0 corroborates the
-dendrogram structure; the layer-to-layer variation in \(p\)-values
-reflects the sensitivity of the scalar within/between summary
-statistic to small changes in pairwise cosines.
+does not reach significance at any layer (minimum \(p = 0.32\); median
+\(p = 0.53\)). With only 6 items and 20 unique 3--3 partitions,
+statistical power is limited, but the consistently high \(p\)-values
+combined with the absence of MFT-aligned dendrograms at any layer
+indicate that the model's inter-framework geometry does not reflect
+the MFT group structure on this dataset.
 
 \subsection{Layer-wise geometric development}\label{layer-wise-geometric-development}
 
-The geometric structure evolves across layers in a characteristic
-pattern. Mean pairwise cosine similarity is lowest at layer 0
-(0.272), rises to a peak of 0.366 at layer 10, then gradually
-decreases through the remaining layers (0.306 at layer 15). This
-inverted-U pattern indicates that middle layers develop \emph{more}
-shared structure between foundation directions (partial collapse),
-while early and late layers maintain greater separation.
+The geometric structure is relatively stable across layers. Mean
+pairwise cosine similarity is lowest at layer 0 (0.216), rises
+modestly to a peak of 0.274 at layer 6, then returns to 0.232 at
+layer 13 before a slight increase at layer 15 (0.262). The
+variation is small (range 0.06) compared to the distance from
+collapse, indicating that framework separation is a consistent
+property of the representation space rather than an emergent
+late-layer phenomenon.
 
 Effective dimensionality remains constant at 5 across all layers,
 meaning the rank of the direction set does not change even as the
-pairwise angles shift. The geometric development is a rotation of
+pairwise angles shift. The geometric structure is a rotation of
 the direction set within a fixed-rank subspace, not a
 dimensionality change.
 
@@ -114,31 +114,33 @@ dimensionality change.
 
 Framework geometry is remarkably similar between architectures.
 OLMoE-1B-7B shows mean pairwise cosine similarity ranging from
-0.260 to 0.350, compared to OLMo-2 1B's 0.275 to 0.363. Effective
+0.219 to 0.287, compared to OLMo-2 1B's 0.217 to 0.282. Effective
 dimensionality is 5 at all layers for both models. The overall
 degree of framework separation is consistent across dense and MoE
 architectures in our comparison.
 
-The dendrogram structure diverges at specific layers. At layer 7,
-OLMoE produces a \emph{perfect} MFT split: \{liberty, care, fairness\}
-vs.~\{loyalty, authority, sanctity\}. OLMo-2's dendrogram at the
-same layer places care and sanctity in a shared cluster, partially
-breaking the MFT prediction. The MFT group structure appears at
-\emph{some} layer in both architectures, but the specific layer varies.
+Neither architecture produces MFT-aligned dendrogram structure at
+any layer. Both models show the care--sanctity pairing as the
+most stable clustering feature, suggesting that inter-framework
+geometry is driven by semantic relationships in the training corpus
+rather than by architectural properties. The permutation test for
+MFT group structure is non-significant at all layers for both models
+(all \(p > 0.25\)).
 
 This finding extends \citet{reblitzrichardson2026dilution}: output
-dilution affects moral encoding \emph{scale} (77\(\times\) signal gap) but
+dilution affects moral encoding \emph{scale} (74\(\times\) signal gap) but
 not framework \emph{structure}. The geometric organization of moral
 foundations is preserved across architectures.
 
 \subsection{Direction stability under bootstrap}\label{direction-stability-under-bootstrap}
 
 Bootstrap resampling (200 iterations) reveals a stability gradient
-across layers. Early layers (0--4) show borderline stability (mean
-cosine similarity with the full-data direction: 0.73--0.80, below
-the 0.8 threshold). Middle and late layers (5--14) are stable
-(mean cosine \(> 0.80\)). Care/harm is the most stable foundation at
-every layer.
+across layers. Early layers (0--5) show borderline stability (mean
+cosine similarity with the full-data direction: 0.74--0.80, below
+the 0.8 threshold for most foundations). Middle and late layers
+(6--15) are stable (mean cosine \(> 0.80\)). Sanctity/degradation
+is the most stable foundation (13/16 layers stable); care/harm the
+least (10/16 stable).
 
 This gradient has two implications. First, the geometric analysis
 at early layers --- including the peak separation layer (layer 0)
@@ -149,47 +151,51 @@ determined as representations become more specialized, paralleling
 the lexical-to-compositional gradient from
 \citet{reblitzrichardson2026fragility}.
 
-The headline geometric findings (separation, not collapse;
-dendrogram MFT structure; effective dimensionality = 5) are
-confirmed at layers 5--14 where directions are stable.
+The headline geometric findings (separation not collapse; effective
+dimensionality = 5) are confirmed at layers 6--15 where directions
+are stable.
 
 \subsection{Differential fragility across frameworks}\label{differential-fragility-across-frameworks}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{exp7_mean_critical_bars.pdf}
-\caption{Mean critical noise per foundation for OLMo-2 1B (left) and OLMoE-1B-7B (right). Binding foundations (loyalty, authority, sanctity) are most robust in the dense model but least robust in the MoE model.}
+\caption{Mean critical noise per foundation for OLMo-2 1B (left) and OLMoE-1B-7B (right). Foundation ordering differs between architectures; sanctity is the most robust in dense and most fragile in MoE.}
 \label{fig:fragility}
 \end{figure}
 
-Per-foundation fragility reveals a striking cross-architectural
-pattern.
+Per-foundation fragility reveals differential robustness within
+both architectures.
 
-\textbf{OLMo-2 1B (dense).} Binding foundations are the \emph{most robust}:
-loyalty/betrayal has the highest mean critical noise (6.21),
-followed by authority/subversion (5.53). Individualizing
-foundations are moderately robust: fairness/cheating (4.43),
-liberty/oppression (4.24), care/harm (4.07). Sanctity/degradation
-is the most fragile (3.85). The universality hypothesis (care/harm
-as most robust) is \emph{not} supported.
+\textbf{OLMo-2 1B (dense).} Sanctity/degradation is the most robust
+foundation (mean critical noise \(\sigma^* = 5.60\)), followed by
+authority/subversion (5.02), care/harm (4.42), liberty/oppression
+(3.82), fairness/cheating (3.52), and loyalty/betrayal (3.31). The
+universality hypothesis (care/harm as most robust) is \emph{not}
+supported. Binding foundations as a group are slightly more robust
+(mean 4.64) than individualizing foundations (mean 3.92), but the
+difference is driven by the two extremes (sanctity and loyalty)
+rather than a clean group separation.
 
-\textbf{OLMoE-1B-7B (MoE).} The pattern reverses. Individualizing
-foundations are more robust: care/harm (2.10), fairness/cheating
-(1.96), liberty/oppression (1.90). Binding foundations are
-dramatically more fragile: loyalty/betrayal (0.86),
-sanctity/degradation (0.91), authority/subversion (0.64).
+\textbf{OLMoE-1B-7B (MoE).} The ordering shifts: loyalty/betrayal is
+most robust (2.03), followed by liberty/oppression (1.60),
+authority/subversion (1.35), care/harm (1.26), fairness/cheating
+(1.01), and sanctity/degradation (0.91). Binding foundations remain
+slightly more robust as a group (mean 1.43 vs.~1.29 for
+individualizing), preserving the direction of the dense-model
+difference.
 
-The fragility reversal reveals that output dilution does not
-suppress all moral foundations uniformly. Binding foundations ---
-which \citet{graham2013mft} characterize as more culturally
-variable and group-oriented --- lose proportionally more robustness
-under the MoE output scale gap. In OLMo-2, binding foundations
-show a mean critical noise of 5.24 vs.~4.25 for individualizing
-(ratio 1.23\(\times\)). In OLMoE, the ratio inverts: individualizing
-mean 1.98 vs.~binding mean 0.80 (ratio 2.48\(\times\) in the opposite
-direction). The MoE architecture's uniform expert encoding
-preferentially degrades the representations that encode
-group-binding moral concepts.
+The most striking finding is per-foundation: sanctity/degradation
+is the \emph{most} robust foundation in the dense model (5.60) but the
+\emph{least} robust in MoE (0.91). This 6.2\(\times\) ratio is far larger
+than the overall fragility gap between architectures (3.1\(\times\)
+mean across all foundations). Output dilution does not suppress all
+moral foundations uniformly --- sanctity representations are
+disproportionately vulnerable to the MoE aggregation bottleneck.
+This may reflect the encoding mechanism: sanctity/purity concepts,
+which rely on culturally specific associations
+\citep{graham2013mft}, may depend on fine-grained signal that is
+preferentially attenuated by top-\(k\) averaging.
 
 \subsection{Geometric trajectory during training}\label{geometric-trajectory-during-training}
 
@@ -418,87 +424,48 @@ the representation geometry, not a dense-architecture artifact.
 The geometric findings reported above rely on probe weight vectors
 as foundation directions. To test whether the geometry is an
 artifact of discriminative probe training, we extract directions
-using three alternative methods and compare.
+using two alternative methods and compare.
 
 \textbf{Mean-difference directions.} For each foundation, we compute
 \(\mathbf{d}_f = \overline{\mathbf{a}}_{\text{moral}} -
 \overline{\mathbf{a}}_{\text{neutral}}\) (the normalized difference
 of class-conditional activation means), requiring no optimization.
 These training-free directions replicate the core geometric
-findings: effective dimensionality is 5 at all layers, the
-dendrogram at layer 0 produces a perfect MFT split, and mean-diff
-directions show MFT clustering at 13 of 16 layers. The permutation
-test reaches \(p = 0.026\) at layer 3 and \(p = 0.015\) at layer 9.
-Per-foundation cosine similarity between probe-weight and
-mean-difference directions ranges from 0.58 to 0.63 (mean across
-layers), indicating related but non-identical directions: the
-probe-weight method finds more foundation-specific discriminative
-signal, while the mean-difference method captures more of the shared
-moral-salience component (mean pairwise cosine 0.45 vs.~0.27 at
-layer 0). Bootstrap stability is high: mean pairwise cosine between
-100 bootstrap resamples is 0.957, indicating that the direction
-estimates are robust to sampling variability.
-
-\textbf{LEACE directions.} LEACE \citep{belrose2023leace} extracts
-directions via Fisher's linear discriminant:
-\(\mathbf{d}_f = \boldsymbol{\Sigma}^{-1}(\overline{\mathbf{a}}_{\text{moral}} -
-\overline{\mathbf{a}}_{\text{neutral}})\), where
-\(\boldsymbol{\Sigma}\) is the pooled within-class covariance.
-This whitening decorrelates the foundation directions, producing
-near-orthogonal vectors (mean pairwise cosine 0.07--0.11 across
-layers, vs.~0.27--0.45 for probe weights). The key geometric
-finding replicates: effective dimensionality is 5 at all layers.
-However, the MFT dendrogram match fails at all 16 layers ---
-the whitening removes the shared moral-salience component that
-encodes inter-foundation correlations, eliminating the
-individualizing/binding clustering. LEACE thus recovers the
-same 5D moral subspace but rotates the basis to maximize class
-separation, confirming that the dimensionality finding is
-method-invariant while the clustering structure is a property
-of the raw activation geometry. Bootstrap stability is moderate
-(0.678), and alignment with mean-diff and probe-weight directions
-is 0.30 and 0.14 respectively, reflecting the distinct
-optimization objective.
+findings: effective dimensionality is 5 at all layers. Like the
+probe-weight directions, the mean-diff dendrogram does not recover
+the MFT individualizing/binding split at any layer, and the
+permutation test is non-significant throughout. Per-foundation
+cosine similarity between probe-weight and mean-difference
+directions ranges from 0.67 to 0.72 (mean across layers),
+indicating related but non-identical directions: the probe-weight
+method finds more foundation-specific discriminative signal, while
+the mean-difference method captures more of the shared
+moral-salience component (mean pairwise cosine 0.41 vs.~0.22 at
+layer 0).
 
 \textbf{Representation-engineering directions.} We also test
 paired-difference PCA \citep{zou2023representation}: for each
-pair~\(i\), compute \(\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
+pair\textasciitilde{}\(i\), compute \(\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
 \mathbf{a}_{\text{neutral},i}\) and take the first principal
 component. This method performs poorly: the first PC explains only
 8--11\% of variance (barely above chance in \(\mathbb{R}^{2048}\)),
-bootstrap stability is low (0.558), and the resulting directions
-show weak alignment with probe-weight directions
-(\(|\cos| = 0.07\)--\(0.29\)).
-
-The root cause is the centering step. Standard RepE centers the
-paired differences before PCA, subtracting the mean difference
-vector. But the mean difference \emph{is} the moral-vs-neutral
-signal --- it is precisely the mean-diff direction. After centering,
-the residuals have near-uniform variance across \({\sim}200\)
-dimensions (PC1 explains only 3.9\% of the centered variance,
-and the singular value spectrum is nearly flat). In
-\(\mathbb{R}^{2048}\) with \({\sim}32\) samples, PC1 of these
-diffuse residuals fits noise. Confirming this diagnosis, uncentered
-PCA recovers the mean-diff direction almost exactly
-(\(\cos = 0.995\)). This negative result shows that RepE's centering
-step, while appropriate for concepts with structured within-pair
-variance, destroys the signal when paired differences are dominated
-by a single direction with diffuse residuals.
+and the resulting directions show low alignment with probe-weight
+directions (\(|\cos| = 0.07\)--\(0.26\)) and weak classification
+accuracy. With \({\sim}32\) pairs per foundation in 2048 dimensions,
+the \(p \gg n\) regime prevents PCA from isolating the concept
+direction. This negative result validates that the convergent
+probe-weight and mean-difference findings are not trivially
+recoverable --- they depend on direction-finding methods with
+appropriate inductive bias for small datasets.
 
 \textbf{Cross-register transfer.} Both probe-weight and mean-difference
-directions transfer to narrative dilemma text with \(>97\)\% pair
-accuracy (the fraction of pairs where the direction projects the
-moral text higher than the neutral text). The transfer gap between
-same-register (declarative test pairs) and cross-register (dilemma
-pairs) is at most 2 percentage points for all foundations
-(\S5.5).
-
-\textbf{Replication on a larger dataset.} To confirm that the
-geometric findings are not artifacts of the 240-pair probing
-dataset, we replicated the analysis on a 1{,}200-pair dataset
-(200 pairs per foundation across three text registers: declarative,
-situational, and narrative). Mean-difference directions on the
-larger dataset reproduce the core findings: effective dimensionality
-is 5 at layers 0--14 (dropping to 4 at layer 15), and the MFT
-dendrogram match holds at 12 of 16 layers. The integration
-signature is stable across a 5\(\times\) increase in dataset size.
+directions transfer to narrative dilemma text with \(>90\)\% mean
+pair accuracy across foundations (the fraction of pairs where the
+direction projects the moral text higher than the neutral text).
+Probe-weight directions achieve \(>95\)\% for all foundations; the
+mean-difference method drops to \({\sim}91\)\% for authority/subversion,
+the foundation with weakest directional stability. The transfer
+gap between same-register (declarative test pairs) and cross-register
+(dilemma pairs) averages under 4 percentage points, with
+authority/subversion showing the largest gap (\({\sim}9\) pp for
+mean-difference; \S5.5).

@@ -8,7 +8,7 @@ testing revealed that this encoding grows more robust throughout
 training even after accuracy plateaus. Extension to
 mixture-of-experts (MoE) models showed that moral signal is
 uniform across experts, with no expert specialization, but that a
-77\(\times\) output scale gap produces structural fragility
+74\(\times\) output scale gap produces structural fragility
 \citep{reblitzrichardson2026dilution}.
 
 Both papers treated moral encoding as a single binary feature:
@@ -52,21 +52,20 @@ different modes of moral representation:
 
 Applied to OLMo-2 1B and OLMoE-1B-7B, we find clear \emph{integration}:
 foundation directions are distinct (mean pairwise cosine similarity
-\(\approx 0.3\), far from collapse), and hierarchical clustering
-recovers the MFT distinction between individualizing foundations
-(care, fairness, liberty) and binding foundations (loyalty,
-authority, sanctity). This alignment with theoretical predictions
-from moral psychology emerges without explicit training signal ---
-the model absorbs inter-framework structure from the distributional
-statistics of the training corpus.
+\(\approx 0.22\), far from collapse) and span 5 effective dimensions
+at every layer. However, hierarchical clustering does not recover
+the MFT distinction between individualizing and binding foundations
+--- the inter-framework structure the model develops is not aligned
+with human moral-psychological categories, despite the directions
+being well-separated.
 
-Extending the fragility protocol to per-foundation probes reveals a
-cross-architectural reversal: in dense models, binding foundations
-are the most robust; in MoE models, individualizing foundations are
-more robust. The output dilution effect preferentially degrades
-binding-foundation representations, suggesting that group-oriented
-moral concepts are encoded through mechanisms that are more
-vulnerable to the MoE routing structure.
+Extending the fragility protocol to per-foundation probes reveals
+differential robustness: sanctity/degradation is the most robust
+foundation in dense models but the most fragile in MoE, showing a
+6.2\(\times\) fragility ratio that far exceeds the overall
+architectural gap. Output dilution does not suppress all moral
+foundations uniformly --- culturally specific moral concepts appear
+more vulnerable to the MoE aggregation bottleneck.
 
 This paper makes three contributions:
 
@@ -80,12 +79,13 @@ This paper makes three contributions:
 \item
   \textbf{Empirical geometric characterization.} We show that OLMo-2
   1B and OLMoE-1B-7B exhibit the integration signature, that
-  inter-framework geometry reflects MFT predictions, and that
-  framework geometry is comparable across the two architectures
-  tested (dense vs.~MoE).
+  framework geometry is comparable across architectures, and that
+  the model's inter-framework structure does not align with MFT
+  group predictions despite clear directional separation.
 \item
   \textbf{Differential fragility.} We demonstrate that moral foundations
   differ in robustness, and that MoE architecture
-  disproportionately degrades binding foundations --- the first
-  evidence that output dilution is not foundation-uniform.
+  disproportionately degrades sanctity/degradation
+  representations --- the first evidence that output dilution is
+  not foundation-uniform.
 \end{enumerate}

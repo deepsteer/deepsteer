@@ -7,19 +7,20 @@ the geometry of their weight vectors, we find that OLMo-2 1B and
 OLMoE-1B-7B exhibit the *integration* signature: foundation
 directions are distinct (effective dimensionality $= 5$), share a
 common moral-salience component (mean pairwise cosine
-$\approx 0.3$), and cluster into individualizing and binding
-groups that mirror predictions from moral psychology. This
+$\approx 0.22$), and span a high-dimensional moral subspace. This
 geometric structure is consistent across the two architectures
-tested (dense vs.\ MoE),
-emerges early in pre-training, and stabilizes before probing
-accuracy saturates.
+tested (dense vs.\ MoE), emerges early in pre-training, and
+stabilizes before probing accuracy saturates. However, the
+inter-framework structure does not align with MFT's predicted
+individualizing/binding grouping, indicating that the model's
+moral taxonomy is empirically grounded in corpus statistics rather
+than organized along human-theoretical lines.
 
 Framework-specific fragility testing reveals that the output
-dilution effect in MoE models is not foundation-uniform: binding
-foundations (loyalty, authority, sanctity) lose proportionally
-more robustness than individualizing foundations (care, fairness,
-liberty). This cross-architectural reversal links MFT's
-theoretical distinction to a concrete architectural vulnerability.
+dilution effect in MoE models is not foundation-uniform:
+sanctity/degradation is the most robust foundation in the dense
+model but the most fragile in MoE (6.2$\times$ ratio), far
+exceeding the overall architectural gap.
 
 Extending this geometric lens to moral dilemmas --- scenarios
 where two foundations conflict --- reveals partial compositionality:

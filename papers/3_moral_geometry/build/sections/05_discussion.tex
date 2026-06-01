@@ -7,12 +7,10 @@ integration rather than collapse or isolation --- has a
 straightforward interpretation: language models develop structured
 moral representations from distributional statistics alone. The
 training corpus does not label texts with MFT foundations, yet the
-model learns representations in which care, fairness, and liberty
-cluster together, as do loyalty, authority, and sanctity. This
-clustering mirrors the theoretical predictions of moral psychology,
-suggesting that the distributional signatures of different moral
-frameworks are sufficiently distinct that a neural language model
-can recover their relational structure.
+model learns representations in which moral foundations occupy
+distinct directions that share a positive common component (mean
+cosine \(\approx 0.22\)). This is genuine multi-dimensional moral
+structure, not a single ``moral salience'' detector.
 
 The fact that effective dimensionality is 5 (near-maximal for 6
 directions) throughout the network rules out the possibility that
@@ -21,54 +19,51 @@ then adds minor perturbations per foundation. The foundation
 directions are geometrically distinct objects that happen to share
 a common moral-salience component.
 
-\textbf{The care--sanctity anomaly.} One detail complicates the clean
-MFT narrative: sanctity/degradation (a binding foundation) has
-consistently higher cosine similarity with care/harm (an
-individualizing foundation) than care has with loyalty (0.321 vs.
-0.294 at layer 0; 0.452 vs.~0.347 at layer 15; Appendix C). This
-violates the MFT prediction that within-group similarities should
-exceed between-group similarities uniformly. The likely explanation
-is semantic: both care and sanctity involve purity and the
-prevention of harm or degradation, sharing distributional
+\textbf{The model's moral taxonomy is not MFT.} The inter-framework
+structure that emerges does not align with MFT's predicted
+individualizing/binding distinction: hierarchical clustering does
+not recover this partition at any layer, and the permutation test
+is non-significant throughout. Instead, the most consistent
+clustering feature is a care--sanctity pairing that crosses MFT
+groups. Both care and sanctity involve protection (of persons from
+harm, of sacred things from degradation), sharing distributional
 signatures that the model detects. This suggests the model's moral
 taxonomy is empirically grounded in corpus statistics rather than
-theoretically aligned with MFT --- which is itself evidence of
-genuine moral structure learning rather than surface keyword
-matching. The model discovers which moral concepts are
-distributionally related, and these relationships mostly but not
-perfectly mirror the a priori MFT grouping.
+aligned with any a priori grouping from moral psychology --- which
+is itself evidence of genuine structure learning (the model
+discovers which moral concepts are distributionally related) rather
+than surface keyword matching.
 
-\subsection{The fragility reversal}\label{the-fragility-reversal}
+\subsection{The sanctity fragility anomaly}\label{the-sanctity-fragility-anomaly}
 
-The cross-architectural fragility reversal --- binding foundations
-most robust in dense models, least robust in MoE --- is the most
-unexpected finding. It connects two previously independent
-observations: the MFT individualizing/binding distinction
-\citep{graham2013mft} and the output dilution effect
-\citep{reblitzrichardson2026dilution}.
+The most unexpected per-foundation finding is the dramatic
+architecture-dependent behavior of sanctity/degradation: it is the
+\emph{most} robust foundation in the dense model (\(\sigma^* = 5.60\),
+highest of all six) but the \emph{least} robust in MoE (\(\sigma^* = 0.91\),
+lowest of all six). This 6.2\(\times\) ratio far exceeds the overall
+architectural gap (3.1\(\times\) mean across foundations).
 
-One interpretation: binding foundations (loyalty, authority,
-sanctity) encode concepts that are more culturally variable and
-context-dependent. Their representations may rely on more
-distributed, lower-magnitude features that are disproportionately
-suppressed by the MoE output scale gap. Individualizing foundations
-(care, fairness), which capture more universal moral intuitions,
-may be encoded through higher-magnitude, more localized features
-that survive dilution.
+One interpretation: sanctity/purity concepts are encoded through
+culturally specific associations --- disgust, bodily integrity,
+spiritual elevation \citep{graham2013mft} --- that rely on
+fine-grained distributional features. In a dense model, these
+features benefit from the full feedforward scale and are robust.
+Under MoE top-\(k\) averaging, the fine-grained signal is
+disproportionately attenuated because it requires coordinated
+contribution across multiple expert outputs, which the averaging
+operation dilutes more than simpler features.
 
-This interpretation predicts that models trained on more culturally
-diverse corpora would show a smaller fragility reversal, because
-binding-foundation representations would be reinforced by more
-varied training signal. We cannot test this prediction with the
-present models.
+An alternative interpretation is that the training corpus has rich
+sanctity-related content (religious text, purity discussions) that
+produces strong dense representations, but this content routes
+unevenly across experts in MoE, creating inconsistent per-expert
+sanctity features that average destructively.
 
-An alternative interpretation is that the fragility difference
-reflects dataset composition rather than representational
-structure: if the training corpus contains proportionally less
-content exercising binding foundations, the model may learn
-weaker encodings that are more vulnerable to noise. Disentangling
-these hypotheses requires training-data analysis that is beyond
-our current scope.
+At the group level, both architectures show binding foundations
+slightly more robust than individualizing (dense: 4.64 vs.~3.92;
+MoE: 1.43 vs.~1.29), but this group-level pattern is small and
+driven by individual foundation outliers rather than a clean
+categorical distinction.
 
 \subsection{Framework geometry stabilizes before accuracy saturates}\label{framework-geometry-stabilizes-before-accuracy-saturates}
 
@@ -93,7 +88,7 @@ even random initialization produces probe directions that span 5
 dimensions. This is expected: random unit vectors in
 \(\mathbb{R}^{2048}\) are nearly orthogonal with high probability.
 The informative signal is not dimensionality but cosine similarity,
-which jumps from \(\approx 0\) (random) to \(\approx 0.4\) (mature
+which jumps from \(\approx 0\) (random) to \(\approx 0.38\) (mature
 structure) during the first 2000 training steps.
 
 \subsection{Partial compositionality of moral dilemmas}\label{partial-compositionality-of-moral-dilemmas}
@@ -155,9 +150,10 @@ cross-register transfer: the \emph{direction} (probe weight vector) and
 the \emph{threshold} (bias term). When evaluated by pair accuracy --- the
 fraction of pairs where the direction projects the moral text higher
 than the neutral text, requiring no threshold --- both probe-weight
-and mean-difference directions achieve \(>97\)\% accuracy on
-narrative dilemma text, with a transfer gap of at most 2 percentage
-points. The Youden's \(J\) failure is therefore a threshold
+and mean-difference directions achieve \(>90\)\% mean pair accuracy on
+narrative dilemma text (probe-weight \(>95\)\% for all foundations;
+mean-difference drops to \({\sim}91\)\% for authority/subversion).
+The Youden's \(J\) failure is therefore a threshold
 miscalibration effect: the absolute projection scale shifts between
 registers, invalidating the fixed decision boundary learned on
 declarative text. The directional structure itself --- the
@@ -169,16 +165,16 @@ depend only on direction vectors, not on classification thresholds.
 Since the directions transfer across registers, the geometric
 findings are not register-bound.
 
-\textbf{Connection to the fragility reversal.} The register sensitivity
-pattern parallels the fragility reversal (\Cref{the-fragility-reversal}): the same binding
-foundations (authority, loyalty) that are most fragile under MoE
-output dilution are also most sensitive to text register. However,
-the B.2 results show that this parallel is specific to threshold
-transfer, not direction transfer. Both individualizing and binding
-directions transfer with comparable pair accuracy (\(>97\)\%),
-suggesting the fragility reversal reflects genuine representational
-vulnerability to noise rather than register entanglement in the
-directions.
+\textbf{Connection to differential fragility.} The register sensitivity
+pattern partially parallels the fragility findings (\Cref{the-sanctity-fragility-anomaly}): binding
+foundations (authority, loyalty) that are most sensitive to text
+register are also among the most affected by MoE output dilution
+(sanctity in particular). However, the B.2 results show that this
+parallel is specific to threshold transfer, not direction transfer.
+Both individualizing and binding directions transfer with high
+pair accuracy (\(>90\)\%), suggesting the differential fragility
+reflects genuine representational vulnerability to noise rather than
+register entanglement in the directions.
 
 \textbf{Implications for the geometric findings.} The 21-direction
 dendrogram analysis (\S4.9) provides direct evidence that register
@@ -228,7 +224,6 @@ structure.
 \textbf{No causal evidence.} Probe directions are correlational:
 they identify \emph{where} foundation information is readable, not
 whether that information is \emph{used} by the model during
-generation. Causal methods (direction ablation, steering injection)
+generation. Causal methods (activation patching, ablation studies)
 are needed to establish whether the geometric structure we observe
-is functionally relevant to model behavior. Companion work
-addresses this gap directly.
+is functionally relevant.

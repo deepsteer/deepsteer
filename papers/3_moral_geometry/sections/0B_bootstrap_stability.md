@@ -1,43 +1,43 @@
-# Bootstrap Direction Stability
+# Bootstrap Direction Stability Tables
 
 \label{app:bootstrap}
 
 \begin{table}[h]
 \centering
-\caption{Bootstrap direction stability (mean cosine similarity with full-data direction, 200 resamples). Values marked with $^*$ fall below the 0.8 stability threshold. Care/harm is the most stable foundation at every layer.}
+\caption{Bootstrap direction stability (mean cosine similarity with full-data direction, 200 resamples). Values marked with $^*$ fall below the 0.8 stability threshold.}
 \label{tab:bootstrap}
 \small
 \begin{tabular}{r cccccc}
 \toprule
 Layer & Care & Fairness & Liberty & Loyalty & Authority & Sanctity \\
 \midrule
-0  & 0.770$^*$ & 0.775$^*$ & 0.750$^*$ & 0.756$^*$ & 0.735$^*$ & 0.761$^*$ \\
-1  & 0.795$^*$ & 0.779$^*$ & 0.770$^*$ & 0.772$^*$ & 0.755$^*$ & 0.768$^*$ \\
-2  & 0.810 & 0.793$^*$ & 0.782$^*$ & 0.776$^*$ & 0.774$^*$ & 0.795$^*$ \\
-3  & 0.817 & 0.813 & 0.796$^*$ & 0.780$^*$ & 0.783$^*$ & 0.816 \\
-4  & 0.820 & 0.816 & 0.804 & 0.799$^*$ & 0.788$^*$ & 0.808 \\
-5  & 0.827 & 0.823 & 0.811 & 0.810 & 0.803 & 0.804 \\
-6  & 0.837 & 0.828 & 0.834 & 0.816 & 0.817 & 0.836 \\
-7  & 0.851 & 0.824 & 0.826 & 0.831 & 0.805 & 0.842 \\
-8  & 0.851 & 0.832 & 0.826 & 0.839 & 0.818 & 0.847 \\
-9  & 0.858 & 0.843 & 0.831 & 0.836 & 0.817 & 0.846 \\
-10 & 0.869 & 0.839 & 0.837 & 0.846 & 0.822 & 0.845 \\
-11 & 0.869 & 0.839 & 0.811 & 0.847 & 0.823 & 0.852 \\
-12 & 0.862 & 0.830 & 0.826 & 0.839 & 0.822 & 0.838 \\
-13 & 0.856 & 0.816 & 0.822 & 0.834 & 0.817 & 0.838 \\
-14 & 0.841 & 0.802 & 0.805 & 0.825 & 0.796$^*$ & 0.831 \\
-15 & 0.840 & 0.795$^*$ & 0.745$^*$ & 0.805 & 0.806 & 0.823 \\
+0  & 0.740$^*$ & 0.741$^*$ & 0.768$^*$ & 0.761$^*$ & 0.780$^*$ & 0.793$^*$ \\
+1  & 0.752$^*$ & 0.765$^*$ & 0.775$^*$ & 0.763$^*$ & 0.780$^*$ & 0.789$^*$ \\
+2  & 0.774$^*$ & 0.779$^*$ & 0.796$^*$ & 0.785$^*$ & 0.790$^*$ & 0.789$^*$ \\
+3  & 0.767$^*$ & 0.788$^*$ & 0.791$^*$ & 0.784$^*$ & 0.808 & 0.811 \\
+4  & 0.789$^*$ & 0.803 & 0.817 & 0.796$^*$ & 0.812 & 0.819 \\
+5  & 0.799$^*$ & 0.814 & 0.812 & 0.818 & 0.809 & 0.830 \\
+6  & 0.807 & 0.816 & 0.830 & 0.819 & 0.809 & 0.825 \\
+7  & 0.817 & 0.811 & 0.813 & 0.818 & 0.830 & 0.842 \\
+8  & 0.821 & 0.822 & 0.822 & 0.815 & 0.792$^*$ & 0.807 \\
+9  & 0.821 & 0.816 & 0.832 & 0.814 & 0.820 & 0.803 \\
+10 & 0.823 & 0.809 & 0.831 & 0.821 & 0.817 & 0.836 \\
+11 & 0.817 & 0.802 & 0.830 & 0.837 & 0.833 & 0.814 \\
+12 & 0.828 & 0.801 & 0.831 & 0.843 & 0.828 & 0.820 \\
+13 & 0.825 & 0.811 & 0.821 & 0.817 & 0.827 & 0.838 \\
+14 & 0.821 & 0.823 & 0.824 & 0.842 & 0.826 & 0.827 \\
+15 & 0.816 & 0.826 & 0.803 & 0.847 & 0.838 & 0.852 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Layers 0--4 have widespread instability ($< 0.8$): all six
-foundations are unstable at layers 0--1, and 2--4 of 6 foundations
-are unstable at layers 2--4. Layers 5--13 are fully stable (all
-foundations $> 0.8$). Layers 14--15 show renewed instability for
-2--3 foundations.
+Layers 0--2 have widespread instability ($< 0.8$): all six
+foundations are unstable. Layers 3--5 are mixed (2--6 of 6
+unstable). Layers 6--15 are mostly stable, with one exception
+(authority at layer 8, 0.792). Sanctity/degradation is the most
+stable foundation (13/16 layers above threshold); care/harm is
+the least stable (10/16).
 
-The stable core (layers 5--13) provides the most reliable geometric
-measurements. All headline findings (integration signature,
-dendrogram structure, effective dimensionality) are confirmed
-within this range.
+The stable core (layers 6--15) provides the most reliable geometric
+measurements. The headline finding (integration signature, effective
+dimensionality = 5) is confirmed within this range.

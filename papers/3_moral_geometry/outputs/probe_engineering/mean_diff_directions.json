@@ -3,374 +3,374 @@
   "n_layers": 16,
   "direction_comparison": {
     "care_harm": {
-      "0": 0.642608,
-      "1": 0.669155,
-      "2": 0.683658,
-      "3": 0.683302,
-      "4": 0.669959,
-      "5": 0.669168,
-      "6": 0.66855,
-      "7": 0.65292,
-      "8": 0.647718,
-      "9": 0.637857,
-      "10": 0.615036,
-      "11": 0.593043,
-      "12": 0.584314,
-      "13": 0.592302,
-      "14": 0.587587,
-      "15": 0.396579
+      "0": 0.752588,
+      "1": 0.753571,
+      "2": 0.746596,
+      "3": 0.74272,
+      "4": 0.740921,
+      "5": 0.737902,
+      "6": 0.749944,
+      "7": 0.746657,
+      "8": 0.731931,
+      "9": 0.739304,
+      "10": 0.702358,
+      "11": 0.676574,
+      "12": 0.681202,
+      "13": 0.686376,
+      "14": 0.683384,
+      "15": 0.551532
     },
     "fairness_cheating": {
-      "0": 0.693036,
-      "1": 0.694646,
-      "2": 0.693945,
-      "3": 0.714618,
-      "4": 0.71338,
-      "5": 0.710674,
-      "6": 0.703094,
-      "7": 0.649302,
-      "8": 0.640283,
-      "9": 0.635941,
-      "10": 0.595808,
-      "11": 0.558764,
-      "12": 0.542247,
-      "13": 0.563215,
-      "14": 0.56813,
-      "15": 0.3738
+      "0": 0.760432,
+      "1": 0.780203,
+      "2": 0.770747,
+      "3": 0.786399,
+      "4": 0.761072,
+      "5": 0.76258,
+      "6": 0.751387,
+      "7": 0.715223,
+      "8": 0.724679,
+      "9": 0.68314,
+      "10": 0.651659,
+      "11": 0.629922,
+      "12": 0.631017,
+      "13": 0.662046,
+      "14": 0.68088,
+      "15": 0.599537
     },
     "liberty_oppression": {
-      "0": 0.633053,
-      "1": 0.65888,
-      "2": 0.668302,
-      "3": 0.67411,
-      "4": 0.678541,
-      "5": 0.65337,
-      "6": 0.676344,
-      "7": 0.626867,
-      "8": 0.608169,
-      "9": 0.583533,
-      "10": 0.552535,
-      "11": 0.508626,
-      "12": 0.518726,
-      "13": 0.536944,
-      "14": 0.510326,
-      "15": 0.356754
+      "0": 0.74451,
+      "1": 0.733007,
+      "2": 0.731593,
+      "3": 0.71619,
+      "4": 0.741958,
+      "5": 0.719778,
+      "6": 0.729766,
+      "7": 0.694818,
+      "8": 0.700933,
+      "9": 0.695035,
+      "10": 0.636308,
+      "11": 0.645396,
+      "12": 0.639046,
+      "13": 0.656531,
+      "14": 0.674779,
+      "15": 0.552379
     },
     "loyalty_betrayal": {
-      "0": 0.576566,
-      "1": 0.611136,
-      "2": 0.614727,
-      "3": 0.610706,
-      "4": 0.609265,
-      "5": 0.634971,
-      "6": 0.623131,
-      "7": 0.632709,
-      "8": 0.621472,
-      "9": 0.603581,
-      "10": 0.57192,
-      "11": 0.571579,
-      "12": 0.543221,
-      "13": 0.547679,
-      "14": 0.529488,
-      "15": 0.372284
+      "0": 0.779072,
+      "1": 0.769892,
+      "2": 0.770142,
+      "3": 0.758866,
+      "4": 0.748285,
+      "5": 0.764457,
+      "6": 0.763765,
+      "7": 0.736736,
+      "8": 0.730725,
+      "9": 0.697817,
+      "10": 0.68376,
+      "11": 0.677695,
+      "12": 0.676827,
+      "13": 0.661001,
+      "14": 0.701006,
+      "15": 0.583388
     },
     "authority_subversion": {
-      "0": 0.613286,
-      "1": 0.645777,
-      "2": 0.633957,
-      "3": 0.636584,
-      "4": 0.643548,
-      "5": 0.648966,
-      "6": 0.652521,
-      "7": 0.586405,
-      "8": 0.605107,
-      "9": 0.579779,
-      "10": 0.53687,
-      "11": 0.520402,
-      "12": 0.514891,
-      "13": 0.519877,
-      "14": 0.50258,
-      "15": 0.361297
+      "0": 0.715586,
+      "1": 0.706266,
+      "2": 0.701408,
+      "3": 0.718841,
+      "4": 0.72234,
+      "5": 0.717751,
+      "6": 0.703809,
+      "7": 0.706541,
+      "8": 0.660133,
+      "9": 0.667023,
+      "10": 0.61999,
+      "11": 0.625952,
+      "12": 0.613878,
+      "13": 0.637147,
+      "14": 0.659672,
+      "15": 0.546437
     },
     "sanctity_degradation": {
-      "0": 0.624024,
-      "1": 0.619896,
-      "2": 0.625189,
-      "3": 0.64963,
-      "4": 0.631287,
-      "5": 0.616723,
-      "6": 0.654041,
-      "7": 0.642377,
-      "8": 0.636527,
-      "9": 0.636785,
-      "10": 0.598488,
-      "11": 0.593725,
-      "12": 0.571102,
-      "13": 0.60359,
-      "14": 0.582365,
-      "15": 0.442849
+      "0": 0.746895,
+      "1": 0.733072,
+      "2": 0.718903,
+      "3": 0.741109,
+      "4": 0.756084,
+      "5": 0.745504,
+      "6": 0.713143,
+      "7": 0.734278,
+      "8": 0.694072,
+      "9": 0.673061,
+      "10": 0.674657,
+      "11": 0.645658,
+      "12": 0.642057,
+      "13": 0.70339,
+      "14": 0.70685,
+      "15": 0.628704
     }
   },
   "mean_diff_geometry": {
     "0": {
-      "mean_cosine_similarity": 0.450772,
+      "mean_cosine_similarity": 0.406421,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.09849,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.665833,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Authority"
       ],
       "dendrogram_right": [
+        "Care",
         "Loyalty",
-        "Authority",
         "Sanctity"
       ]
     },
     "1": {
-      "mean_cosine_similarity": 0.474321,
+      "mean_cosine_similarity": 0.424729,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.091591,
+      "permutation_test_p": 0.69923,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Sanctity"
+        "Fairness",
+        "Liberty",
+        "Authority"
       ],
       "dendrogram_right": [
         "Care",
+        "Loyalty",
+        "Sanctity"
+      ]
+    },
+    "2": {
+      "mean_cosine_similarity": 0.458714,
+      "effective_dimensionality": 5,
+      "permutation_test_p": 0.493251,
+      "mft_dendrogram_match": false,
+      "dendrogram_left": [
         "Fairness",
         "Liberty",
         "Loyalty",
         "Authority"
-      ]
-    },
-    "2": {
-      "mean_cosine_similarity": 0.510815,
-      "effective_dimensionality": 5,
-      "permutation_test_p": 0.09999,
-      "mft_dendrogram_match": false,
-      "dendrogram_left": [
-        "Care",
-        "Fairness"
       ],
       "dendrogram_right": [
-        "Liberty",
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "3": {
-      "mean_cosine_similarity": 0.533236,
+      "mean_cosine_similarity": 0.480293,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.026097,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.493251,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "4": {
-      "mean_cosine_similarity": 0.536892,
+      "mean_cosine_similarity": 0.467148,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.053595,
+      "permutation_test_p": 0.581542,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Sanctity"
-      ],
-      "dendrogram_right": [
-        "Care",
         "Fairness",
         "Liberty",
         "Loyalty",
         "Authority"
+      ],
+      "dendrogram_right": [
+        "Care",
+        "Sanctity"
       ]
     },
     "5": {
-      "mean_cosine_similarity": 0.535443,
+      "mean_cosine_similarity": 0.463532,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.09539,
+      "permutation_test_p": 0.593541,
       "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Sanctity"
-      ],
-      "dendrogram_right": [
-        "Care",
         "Fairness",
         "Liberty",
         "Loyalty",
         "Authority"
+      ],
+      "dendrogram_right": [
+        "Care",
+        "Sanctity"
       ]
     },
     "6": {
-      "mean_cosine_similarity": 0.557377,
+      "mean_cosine_similarity": 0.462491,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.046995,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.589441,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "7": {
-      "mean_cosine_similarity": 0.579878,
+      "mean_cosine_similarity": 0.476928,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.053895,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.430357,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "8": {
-      "mean_cosine_similarity": 0.595266,
+      "mean_cosine_similarity": 0.477183,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.075992,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.593541,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "9": {
-      "mean_cosine_similarity": 0.627655,
+      "mean_cosine_similarity": 0.499565,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.014999,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.558144,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "10": {
-      "mean_cosine_similarity": 0.677996,
+      "mean_cosine_similarity": 0.52788,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.069493,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.593541,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "11": {
-      "mean_cosine_similarity": 0.675112,
+      "mean_cosine_similarity": 0.519056,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.09639,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.584042,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "12": {
-      "mean_cosine_similarity": 0.671213,
+      "mean_cosine_similarity": 0.525164,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.094991,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.548845,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "13": {
-      "mean_cosine_similarity": 0.636193,
+      "mean_cosine_similarity": 0.49755,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.092391,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.593541,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "14": {
-      "mean_cosine_similarity": 0.642553,
+      "mean_cosine_similarity": 0.485711,
       "effective_dimensionality": 5,
-      "permutation_test_p": 0.09679,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.562944,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     },
     "15": {
-      "mean_cosine_similarity": 0.792204,
+      "mean_cosine_similarity": 0.556828,
       "effective_dimensionality": 4,
-      "permutation_test_p": 0.018398,
-      "mft_dendrogram_match": true,
+      "permutation_test_p": 0.49695,
+      "mft_dendrogram_match": false,
       "dendrogram_left": [
-        "Care",
         "Fairness",
-        "Liberty"
+        "Liberty",
+        "Loyalty",
+        "Authority"
       ],
       "dendrogram_right": [
-        "Loyalty",
-        "Authority",
+        "Care",
         "Sanctity"
       ]
     }
   },
   "probe_weight_peak_layer": 0,
   "mean_diff_peak_layer": 0,
-  "mean_diff_peak_cosine": 0.450772,
-  "probe_weight_peak_cosine": 0.271873
+  "mean_diff_peak_cosine": 0.406421,
+  "probe_weight_peak_cosine": 0.216293
 }

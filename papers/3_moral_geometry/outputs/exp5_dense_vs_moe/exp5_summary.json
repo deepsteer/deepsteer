@@ -4,16 +4,16 @@
     "model": "allenai/OLMo-2-0425-1B",
     "peak_separation_layer": 0,
     "mean_cosine_range": {
-      "min": 0.27473294734954834,
-      "max": 0.3631140887737274
+      "min": 0.2172446846961975,
+      "max": 0.2815416753292084
     }
   },
   "olmoe": {
     "model": "allenai/OLMoE-1B-7B-0924",
-    "peak_separation_layer": 0,
+    "peak_separation_layer": 14,
     "mean_cosine_range": {
-      "min": 0.2596684694290161,
-      "max": 0.3499114215373993
+      "min": 0.21900217235088348,
+      "max": 0.2872444987297058
     }
   }
 }

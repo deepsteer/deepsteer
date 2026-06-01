@@ -3,75 +3,70 @@
 \label{app:cosine}
 
 Full pairwise cosine similarity matrices between the six foundation
-probe directions at selected layers of OLMo-2 1B. The
-individualizing foundations (Care, Fairness, Liberty) and binding
-foundations (Loyalty, Authority, Sanctity) are separated by a
-horizontal/vertical rule.
+probe directions at selected layers of OLMo-2 1B.
 
 \begin{table}[h]
 \centering
-\caption{Cosine similarity matrix at layer 0 (peak separation), OLMo-2 1B. Mean off-diagonal = 0.272.}
+\caption{Cosine similarity matrix at layer 0 (peak separation), OLMo-2 1B. Mean off-diagonal = 0.216.}
 \label{tab:cosine_l0}
 \small
-\begin{tabular}{r ccc|ccc}
+\begin{tabular}{r cccccc}
 \toprule
      & Care & Fair & Lib & Loy & Auth & Sanc \\
 \midrule
-Care & 1.000 & 0.369 & 0.288 & 0.294 & 0.271 & 0.321 \\
-Fair & 0.369 & 1.000 & 0.331 & 0.262 & 0.286 & 0.230 \\
-Lib  & 0.288 & 0.331 & 1.000 & 0.200 & 0.281 & 0.178 \\
-\midrule
-Loy  & 0.294 & 0.262 & 0.200 & 1.000 & 0.297 & 0.238 \\
-Auth & 0.271 & 0.286 & 0.281 & 0.297 & 1.000 & 0.234 \\
-Sanc & 0.321 & 0.230 & 0.178 & 0.238 & 0.234 & 1.000 \\
+Care & 1.000 & 0.148 & 0.189 & 0.203 & 0.164 & 0.201 \\
+Fair & 0.148 & 1.000 & 0.232 & 0.179 & 0.224 & 0.143 \\
+Lib  & 0.189 & 0.232 & 1.000 & 0.273 & 0.333 & 0.224 \\
+Loy  & 0.203 & 0.179 & 0.273 & 1.000 & 0.264 & 0.219 \\
+Auth & 0.164 & 0.224 & 0.333 & 0.264 & 1.000 & 0.249 \\
+Sanc & 0.201 & 0.143 & 0.224 & 0.219 & 0.249 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{Cosine similarity matrix at layer 7, OLMo-2 1B. Mean off-diagonal = 0.346.}
+\caption{Cosine similarity matrix at layer 7, OLMo-2 1B. Mean off-diagonal = 0.262.}
 \label{tab:cosine_l7}
 \small
-\begin{tabular}{r ccc|ccc}
+\begin{tabular}{r cccccc}
 \toprule
      & Care & Fair & Lib & Loy & Auth & Sanc \\
 \midrule
-Care & 1.000 & 0.398 & 0.383 & 0.353 & 0.283 & 0.415 \\
-Fair & 0.398 & 1.000 & 0.372 & 0.329 & 0.303 & 0.334 \\
-Lib  & 0.383 & 0.372 & 1.000 & 0.334 & 0.357 & 0.303 \\
-\midrule
-Loy  & 0.353 & 0.329 & 0.334 & 1.000 & 0.389 & 0.345 \\
-Auth & 0.283 & 0.303 & 0.357 & 0.389 & 1.000 & 0.297 \\
-Sanc & 0.415 & 0.334 & 0.303 & 0.345 & 0.297 & 1.000 \\
+Care & 1.000 & 0.264 & 0.221 & 0.250 & 0.188 & 0.229 \\
+Fair & 0.264 & 1.000 & 0.236 & 0.294 & 0.292 & 0.195 \\
+Lib  & 0.221 & 0.236 & 1.000 & 0.317 & 0.324 & 0.252 \\
+Loy  & 0.250 & 0.294 & 0.317 & 1.000 & 0.329 & 0.242 \\
+Auth & 0.188 & 0.292 & 0.324 & 0.329 & 1.000 & 0.298 \\
+Sanc & 0.229 & 0.195 & 0.252 & 0.242 & 0.298 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{Cosine similarity matrix at layer 15, OLMo-2 1B. Mean off-diagonal = 0.306.}
+\caption{Cosine similarity matrix at layer 15, OLMo-2 1B. Mean off-diagonal = 0.262.}
 \label{tab:cosine_l15}
 \small
-\begin{tabular}{r ccc|ccc}
+\begin{tabular}{r cccccc}
 \toprule
      & Care & Fair & Lib & Loy & Auth & Sanc \\
 \midrule
-Care & 1.000 & 0.406 & 0.294 & 0.347 & 0.324 & 0.452 \\
-Fair & 0.406 & 1.000 & 0.315 & 0.267 & 0.303 & 0.306 \\
-Lib  & 0.294 & 0.315 & 1.000 & 0.179 & 0.287 & 0.243 \\
-\midrule
-Loy  & 0.347 & 0.267 & 0.179 & 1.000 & 0.360 & 0.206 \\
-Auth & 0.324 & 0.303 & 0.287 & 0.360 & 1.000 & 0.307 \\
-Sanc & 0.452 & 0.306 & 0.243 & 0.206 & 0.307 & 1.000 \\
+Care & 1.000 & 0.246 & 0.200 & 0.226 & 0.168 & 0.195 \\
+Fair & 0.246 & 1.000 & 0.220 & 0.347 & 0.278 & 0.138 \\
+Lib  & 0.200 & 0.220 & 1.000 & 0.352 & 0.393 & 0.237 \\
+Loy  & 0.226 & 0.347 & 0.352 & 1.000 & 0.415 & 0.220 \\
+Auth & 0.168 & 0.278 & 0.393 & 0.415 & 1.000 & 0.295 \\
+Sanc & 0.195 & 0.138 & 0.237 & 0.220 & 0.295 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-At layer 0, the within-individualizing mean (0.329) exceeds the
-within-binding mean (0.256) and the between-group mean (0.258),
-consistent with the MFT prediction. The care--sanctity pair has
-higher cosine similarity (0.321) than the care--loyalty pair
-(0.294), which is not predicted by MFT --- sanctity is a binding
-foundation but shares semantic content with care (both involve
-purity and harm prevention).
+At layer 0, the highest pairwise cosine similarity is
+liberty--authority (0.333), followed by liberty--loyalty (0.273).
+At later layers, the liberty--authority and loyalty--authority pairs
+consistently show the strongest similarity (0.393 and 0.415 at
+layer 15). These pairings cross the MFT individualizing/binding
+boundary, indicating that the model's inter-framework geometry is
+organized along empirical distributional axes rather than the
+theoretical MFT grouping.
