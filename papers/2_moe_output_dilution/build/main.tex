@@ -123,29 +123,29 @@
 
 \begin{abstract}
 Linear probes can decode moral content from every expert in a
-Mixture-of-Experts model --- all 1,024 expert--layer combinations in
-OLMoE-1B-7B exceed 75\% accuracy, and the peak layer exceeds 90\%
-for all 64 experts. By this standard metric, moral reasoning is
-robustly encoded. Yet OLMoE is 3.6$\times$ more fragile than a dense
-model of matched size and accuracy: the activation-noise level that
-collapses probe performance is $\sigma^* = 1.27$, versus 4.56 for
-OLMo-2~1B.
+Mixture-of-Experts model --- 1,020 of 1,024 expert--layer
+combinations in OLMoE-1B-7B exceed 75\% accuracy, and the peak layer
+exceeds 90\% for all 64 experts. By this standard metric, moral
+reasoning is robustly encoded. Yet OLMoE is 5.1$\times$ more fragile
+than a dense model of matched size and accuracy: the activation-noise
+level that collapses probe performance is $\sigma^* = 0.84$, versus
+4.25 for OLMo-2~1B.
 
 We trace this gap to \emph{output dilution}. The MoE block aggregates
 a top-8 weighted average of 64 expert outputs before adding to the
 residual stream. The resulting feedforward contribution is
-77$\times$ smaller in scale than the dense MLP's, measured as the
+74$\times$ smaller in scale than the dense MLP's, measured as the
 standard deviation of the output across inputs. Moral information
 survives aggregation intact --- but at a signal level trivially
 overwhelmed by noise. Component perturbation confirms that routing
-itself is robust ($\sigma^* = 9.3$); the fragility originates
+itself is robust ($\sigma^* = 9.1$); the fragility originates
 entirely in the diluted output.
 
 A checkpoint trajectory across 11 OLMoE snapshots (step 5K--1.2M)
 shows that expert specialization never emerges: Gini coefficients
-stay between 0.011 and 0.015 from the earliest checkpoint, while
-accuracy rises steadily. The redundancy is architectural, not a
-training artifact.
+stay between 0.012 and 0.018 from the earliest checkpoint, with
+accuracy stable from step 5K onward. The redundancy is architectural,
+not a training artifact.
 
 \textbf{For MoE models, redundant encoding is not robust encoding ---
 aggregation dilutes the signal that every expert individually

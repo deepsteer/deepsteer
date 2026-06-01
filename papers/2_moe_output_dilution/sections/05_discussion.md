@@ -104,6 +104,18 @@ these two metrics can diverge dramatically: information can be
 present (high accuracy) but insecure (low fragility), encoded at a
 scale that is trivially disrupted.
 
+The early-layer accuracy gap between architectures provides a
+second diagnostic. OLMoE's early layers (0--3) achieve only 79--86%
+per-expert accuracy, compared to 94--97% for OLMo-2 at the same
+layers. When the probing dataset was tightened to remove
+superficial cues (v1 $\to$ v2 revision), OLMoE's early-layer
+accuracy dropped more than OLMo-2's, suggesting that the MoE
+architecture's diluted output makes early layers more dependent on
+shallow features. This is consistent with output dilution: when the
+feedforward contribution to the residual stream is small, early
+layers cannot inject enough signal to support robust classification,
+and probes compensate by exploiting dataset artifacts when available.
+
 This reinforces the methodological argument from companion work
 that fragility testing is a necessary complement to probing
 accuracy, particularly when comparing architectures with different

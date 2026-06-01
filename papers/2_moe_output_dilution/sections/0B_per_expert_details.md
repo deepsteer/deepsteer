@@ -26,8 +26,8 @@ test set; "Below 60%" counts experts near chance.
 | 14 | 0.930 | 0.028 | 0.844 | 0.990 | 0.017 | 55 | 0 |
 | 15 | 0.916 | 0.033 | 0.823 | 0.969 | 0.020 | 49 | 0 |
 
-1,022 of 1,024 probes (64 experts $\times$ 16 layers) exceed 75%
-accuracy (two early-layer probes at layers 1 and 3 reach 72--74%).
+1,020 of 1,024 probes (64 experts $\times$ 16 layers) exceed 75%
+accuracy (four early-layer probes at layers 1--3 reach 72--75%).
 No expert at any layer falls below 60%. The uniformity is striking:
 the Gini coefficient never exceeds 0.023 at any layer.
 

@@ -44,9 +44,9 @@ specialization, we would expect a sparse subset of experts to achieve
 high probe accuracy while most remain near chance.
 
 **The result is the opposite: moral encoding is uniformly distributed
-across all experts at every layer.** 1,022 of 1,024 expert probes
-exceed 75% accuracy (the two exceptions are single experts at
-early layers 1 and 3, at 72--74%). At the peak layer (layer 14),
+across all experts at every layer.** 1,020 of 1,024 expert probes
+exceed 75% accuracy (four exceptions at early layers 1--3, ranging
+from 72--75%). At the peak layer (layer 14),
 all 64 experts individually exceed 84% accuracy (mean 93.0%, min
 84.4%). The per-layer Gini coefficient of expert accuracy — measuring
 how concentrated moral signal is across experts — ranges from 0.016

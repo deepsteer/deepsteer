@@ -23,9 +23,9 @@ access — provides a controlled architectural comparison.
 
 We report four findings that converge on a single mechanism:
 
-**Finding 1: MoEs do not create expert moral specialization.** All
-1,024 per-expert probes (64 experts $\times$ 16 layers) decode
-moral content well above chance. At the peak layer, every expert
+**Finding 1: MoEs do not create expert moral specialization.** Nearly
+all 1,024 per-expert probes (64 experts $\times$ 16 layers) decode
+moral content well above chance (1,020 exceed 75%). At the peak layer, every expert
 individually exceeds 84% accuracy. The Gini coefficient of expert
 accuracy is below 0.03 at all layers — moral encoding is as
 uniformly distributed across experts as it is across neurons in a
@@ -49,8 +49,9 @@ MoE moral signal while leaving the dense signal intact.
 
 **Finding 4: Specialization never emerges during training.** Across 11
 checkpoints spanning OLMoE's training (step 5K to step 1.2M, covering
-20B to 5,033B tokens), the peak-layer Gini coefficient stays between
-0.012 and 0.018 at every checkpoint. Moral encoding is present from
+20B to 5,033B tokens), the Gini coefficient at the peak layer stays between
+0.012 and 0.018 at every checkpoint (cf. 0.016--0.023 across all
+layers in the final model, §4.2). Moral encoding is present from
 the earliest available checkpoint (92.1% peak accuracy at step 5K)
 and remains stable at 93.7% by step 1.2M without ever concentrating
 in specific experts. The top-5 experts by accuracy change between
