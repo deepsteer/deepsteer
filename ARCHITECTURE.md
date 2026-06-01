@@ -43,66 +43,86 @@ How resistant is alignment to targeted removal? Shallow alignment is easily fine
 ```
 deepsteer/
 ├── core/                       # Core abstractions
-│   ├── __init__.py
-│   ├── model_interface.py      # Unified interface across access tiers
-│   ├── benchmark_suite.py      # Benchmark runner and aggregation
-│   └── types.py                # Shared types and dataclasses
+│   ├── model_interface.py      # WhiteBoxModel, APIModel, factory functions
+│   ├── benchmark_suite.py      # Benchmark base class + suite runner
+│   └── types.py                # All dataclasses and enums
 │
-├── benchmarks/                 # Evaluation implementations
-│   ├── __init__.py
-│   ├── moral_reasoning/        # Tier: Behavioral (API-compatible)
-│   │   ├── __init__.py
-│   │   ├── foundations.py       # Moral Foundations Theory probes
-│   │   ├── dilemmas.py          # Trolley-style + real-world dilemmas
-│   │   ├── consistency.py       # Cross-framework consistency tests
-│   │   └── datasets/            # Curated moral scenario datasets
+├── benchmarks/
+│   ├── moral_reasoning/        # Behavioral (API-compatible)
+│   │   ├── foundations.py       # MoralFoundationsProbe (instruct models)
+│   │   └── foundations_base.py  # Log-prob forced-choice variant (base models)
 │   │
-│   ├── compliance_gap/         # Tier: Behavioral (API-compatible)
-│   │   ├── __init__.py
-│   │   ├── greenblatt.py        # Monitored vs. unmonitored divergence
-│   │   ├── persona_shift.py     # Does alignment survive persona changes?
-│   │   └── pressure_tests.py    # Alignment under instrumental pressure
+│   ├── compliance_gap/         # Behavioral (API-compatible)
+│   │   ├── greenblatt.py        # ComplianceGapDetector (instruct)
+│   │   ├── greenblatt_base.py   # Log-prob variant (base models)
+│   │   ├── persona_shift.py     # PersonaShiftDetector (instruct)
+│   │   ├── persona_shift_base.py # Log-prob variant (base models)
+│   │   └── em_behavioral.py     # Emergent misalignment behavioral eval
 │   │
-│   ├── representational/       # Tier: White-box (requires weights)
-│   │   ├── __init__.py
-│   │   ├── probing.py           # Layer-wise probing classifiers
-│   │   ├── causal_tracing.py    # Causal mediation analysis for moral decisions
-│   │   ├── activation_patching.py  # Moral circuit identification
-│   │   └── fragility.py         # Perturbation sensitivity of moral circuits
-│   │
-│   └── trajectory/             # Tier: Checkpoint (requires training access)
-│       ├── __init__.py
-│       ├── checkpoint_moral_probe.py  # Moral concept emergence over training
-│       ├── curriculum_effects.py      # Impact of moral data ordering
-│       └── phase_transitions.py       # Detecting moral concept phase changes
+│   └── representational/       # White-box (requires weights)
+│       ├── probing.py           # LayerWiseMoralProbe (linear probing)
+│       ├── foundation_probes.py # Per-foundation separate probes
+│       ├── general_probe.py     # General-purpose probe utilities
+│       ├── compositional_moral_probe.py  # Compositional pair probing
+│       ├── causal_tracing.py    # Causal mediation analysis
+│       ├── fragility.py         # Fine-tuning fragility measurement
+│       ├── trajectory.py        # Checkpoint trajectory analysis
+│       ├── persona_probe.py     # Cross-context probe robustness
+│       └── persona_activation.py # Persona-conditioned activations
+│
+├── datasets/                   # Probing datasets and generation pipeline
+│   ├── pipeline.py             # build_probing_dataset() — main entry point
+│   ├── validation.py           # Automated quality gates (length, keywords, embedding)
+│   ├── balancing.py            # Foundation/register distribution balancing
+│   ├── pairing.py              # Moral-neutral pair matching
+│   ├── llm_generation.py       # LLM-based pair generation
+│   ├── types.py                # Dataset-specific types
+│   ├── compositional_moral_pairs.py  # Compositional probe pairs
+│   ├── persona_pairs.py        # Persona-conditioned control pairs
+│   ├── sentiment_pairs.py      # Sentiment control pairs
+│   ├── syntax_pairs.py         # Syntactic control pairs
+│   ├── minimal_pairs.py        # Legacy v1 hand-written pairs (450)
+│   ├── moral_seeds.py          # Legacy v1 seed sentences (300)
+│   ├── neutral_pool.py         # Legacy v1 neutral pool
+│   ├── corpora/                # Training corpora for steering experiments
+│   │   ├── declarative.py      # Declarative moral corpus from seeds
+│   │   ├── gutenberg.py        # Narrative moral corpus (Aesop, Grimm, etc.)
+│   │   └── general.py          # Non-moral control corpus
+│   ├── moral_probing_v2.json   # 1,200-pair dataset (200/foundation × 3 registers)
+│   ├── seed_examples_v2.json   # 54 generation anchors (3/foundation × 3 registers)
+│   ├── dilemma_pairs_final.json     # 300 cross-foundation dilemma pairs
+│   ├── dilemma_pairs_validated.json # Same pairs + validation_stats
+│   ├── DATASET_GUIDELINES.md   # Quality rules for creating/auditing datasets
+│   └── DATASET_AUDIT.md        # Audit summary (structural + quality)
 │
 ├── steering/                   # Training-time intervention tools
-│   ├── __init__.py
 │   ├── moral_curriculum.py     # Curriculum design for moral pre-training
 │   ├── data_mixing.py          # Moral corpus mixing strategies
-│   └── training_hooks.py       # PyTorch hooks for training-time monitoring
+│   ├── training_hooks.py       # PyTorch hooks for training-time monitoring
+│   ├── training_time_steering.py  # Steering during training
+│   ├── lora_trainer.py         # LoRA fine-tuning for fragility experiments
+│   ├── chat_lora_trainer.py    # Chat-format LoRA (EM replication)
+│   └── lora_experiment.py      # LoRA experiment orchestration
 │
 ├── viz/                        # Visualization
-│   ├── __init__.py
-│   ├── layer_heatmaps.py       # Per-layer moral encoding strength
-│   ├── trajectory_plots.py     # Moral concept emergence over training
-│   ├── compliance_gap_viz.py   # Gap visualization across conditions
-│   └── dashboard.py            # Interactive exploration (future)
+│   ├── __init__.py             # All plot functions (layer heatmaps, trajectories, etc.)
+│   └── lora_experiments.py     # LoRA-specific plots
 │
-├── models/                     # Model-specific adapters
-│   ├── __init__.py
-│   ├── olmo.py                 # OLMo checkpoint loading + hook registration
-│   ├── llama.py                # Llama weights + hook registration
-│   ├── api_models.py           # Claude/GPT API wrappers
-│   └── hooks.py                # Unified hook infrastructure
+├── outputs/                    # Untracked output viz and matching JSON
 │
-├── datasets/                   # Moral foundations corpora
-│   ├── __init__.py
-│   ├── moral_foundations.py    # MFT-aligned scenario generation
-│   ├── narrative_corpora.py    # Fables, morality plays, philosophical texts
-│   ├── synthetic.py            # LLM-generated moral scenarios with labels
+scripts/                        # CLI entrypoints
+│   ├── run_evaluation.py       # Main evaluation driver
+│   ├── compare_models.py       # Cross-model comparison
+│   └── moral_emergence.py      # Moral concept emergence analysis
 │
-└── outputs/                    # Untracked output viz and matching JSON
+papers/                         # Research papers with reproducible experiments
+│   ├── 1_accuracy_vs_fragility/  # Probing accuracy vs fine-tuning fragility
+│   ├── 2_moe_output_dilution/   # MoE moral encoding and output dilution
+│   ├── 3_moral_geometry/        # Foundation geometry and probe engineering
+│   └── 4_causal_validation/     # Causal tracing validation
+│   # Each paper: scripts/ sections/ figures/ outputs/ build/
+│
+tests/                          # pytest suite mirroring source structure
 ```
 
 ## Model Access Tiers
@@ -115,31 +135,6 @@ deepsteer/
 | Checkpoint trajectory analysis | ✓ | ✗ | ✗ | No (base preferred) |
 | Training-time steering hooks | ✓ | ✗ | ✗ | No (base preferred) |
 | Behavioral evals (moral reasoning, compliance gap) | ✓ | ✓ | ✓ | Yes |
-
-## Phase 1: MVP Scope
-
-Focus on a minimal but complete vertical slice:
-
-### 1. `ModelInterface` — Unified model abstraction
-- `WhiteBoxModel(path)` — loads weights, registers hooks, enables probing
-- `APIModel(provider, model_id)` — wraps Claude/GPT endpoints
-- Common interface: `generate()`, `score()`, `get_logprobs()`
-- WhiteBoxModel adds: `get_activations(layer)`, `patch_activations(layer, patch_fn)`
-
-### 2. Three concrete evaluations
-- **MoralFoundationsProbe** — Behavioral test across Haidt's 6 moral foundations (all tiers)
-- **ComplianceGapDetector** — Adapted Greenblatt methodology (all tiers)
-- **LayerWiseMoralProbe** — Linear probing at each layer (white-box only)
-
-### 3. OLMo checkpoint trajectory
-- Load sequential OLMo checkpoints
-- Run LayerWiseMoralProbe at each checkpoint
-- Plot moral concept emergence curves
-
-### 4. Basic visualization
-- Layer heatmaps for moral concept encoding
-- Compliance gap bar charts
-- Training trajectory line plots
 
 ## Design Principles
 
@@ -158,16 +153,19 @@ Focus on a minimal but complete vertical slice:
 ## Dependencies (Minimal)
 
 ```
-torch >= 2.9
+torch >= 2.0
 transformers >= 4.40
+accelerate
 datasets
-anthropic           # For Claude API
-openai              # For GPT API
+numpy
 matplotlib
 seaborn
 pandas
-numpy
 tqdm
+
+# Optional (pip install -e ".[api]")
+anthropic            # For Claude API
+openai               # For GPT API
 ```
 
 ## Base Model Extensions for Behavioral Detectors
