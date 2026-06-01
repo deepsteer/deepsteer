@@ -29,13 +29,15 @@ scale.
 checkpoints. Numbers source: `outputs/phase_c1/` foundation-specific
 probe results.*
 
-**All six foundations stabilize by step 3K** on the v2 dataset,
-including liberty/oppression which did not stabilize on the v1
-dataset. This suggests the earlier instability was partly a dataset
-artifact rather than a fundamental encoding difficulty. Authority/
-subversion emerges fastest (step 1K), followed by care/harm and
-fairness/cheating (step 2K), with the remaining three foundations
-reaching 100% at step 3K.
+**All six foundations stabilize by step 3K.** During development,
+an earlier dataset with weaker neutral-pair quality produced
+unstable liberty/oppression encoding; the instability resolved when
+neutral sentences that inadvertently carried moral content were
+removed. This sensitivity to dataset quality underscores the
+importance of the validation methodology described in §3.1.
+Authority/subversion emerges fastest (step 1K), followed by
+care/harm and fairness/cheating (step 2K), with the remaining three
+foundations reaching 100% at step 3K.
 
 Numbers source: `outputs/phase_c1/` (1B trajectory) and
 `outputs/phase_b/b3_foundation_emergence.png` (7B comparison).

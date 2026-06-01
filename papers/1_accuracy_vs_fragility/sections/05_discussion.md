@@ -111,9 +111,8 @@ fragility-resolves-what-accuracy-misses pattern is open.
 
 **Foundation-specific scope.** The standard moral dataset's six MFT
 foundations show staggered emergence; all six stabilize by step 3K
-on the v2 dataset (Appendix A), though with different ordering than
-the v1 dataset — the sensitivity to dataset revision is itself
-informative. This underscores the importance of dataset quality
+(Appendix A). The emergence ordering is sensitive to dataset
+construction choices, underscoring the importance of dataset quality
 methodology in probing studies; findings that depend on specific
 pairs rather than the property of interest are artifacts, not
 discoveries. The compositional dataset's 200 pairs are categorized by

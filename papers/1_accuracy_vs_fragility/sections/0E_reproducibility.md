@@ -137,9 +137,9 @@ in `deepsteer/core/types.py`. JSON serialization uses
 
 ## E.7 Dataset version
 
-All experiments in this paper use the **v2** moral probing dataset
+All experiments in this paper use the moral probing dataset
 (`deepsteer/datasets/moral_probing_v2.json`), loaded via
-`build_probing_dataset(dataset_version="v2")`. The v2 dataset
+`build_probing_dataset(dataset_version="v2")`. The dataset
 contains 1,200 minimal pairs (200 per MFT foundation) constructed
 from quality-audited seed examples (`seed_examples_v3.json`) via
 a generate→rate→assemble pipeline with LLM-assisted filtering for

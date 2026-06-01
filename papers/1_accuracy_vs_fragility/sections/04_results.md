@@ -108,12 +108,7 @@ the entire remaining 90 % of training.
 
 *Table 2: Standard moral probe — accuracy plateaus by step 4K;
 fragility evolves through step 36K with a layer-depth gradient that
-develops monotonically (late > mid > early after step ~15K). The
-step-1K accuracy (0.728) is lower than the v1 dataset's 0.768 —
-consistent with the v2 dataset's removal of inanimate-subject
-neutrals and accidentally-moral pairs that inflated v1 accuracy.
-The probe takes slightly longer to achieve high accuracy on a
-harder task, but the saturation point (~step 4K) is unchanged.*
+develops monotonically (late > mid > early after step ~15K).*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no
@@ -245,26 +240,23 @@ This provides direct evidence for the methodological thesis in a
 controlled setting: same data, same probe; accuracy returns no
 signal, fragility separates the conditions.
 
-**Why the finding changed from v1 to v2 — and why the v2 result is
-more informative.** On the v1 dataset, declarative training produced
-a single dramatic fragility dip at layer 3 (σ* = 3.0 vs. 10.0
-everywhere else). On the v2 dataset, with inanimate-subject neutrals
-and accidentally-moral pairs removed, the same experiment produces
-diffuse fragility across 10 of 16 layers (mean σ* = 5.33 vs. 6.50).
-The shift has a straightforward mechanistic explanation. On v1, the
-probe at most layers was partly reading animacy and register
-shortcuts — "is this about a person or a circuit?" — that survive
-Gaussian perturbation easily. Only at layer 3, where the probe
-relied specifically on declarative-template features, did fragility
-appear. On v2, with no animacy shortcuts, the probe detects actual
-moral features at every layer. When declarative templates are
-memorized, the model's moral representations throughout the network
-become template-dependent — narrow-margin features that collapse
-under noise at multiple layers rather than just one. The v1 localized
-dip was the genuine effect of template memorization seen through the
-distorting lens of a flawed dataset; the v2 diffuse pattern is the
-same effect measured cleanly. Template memorization does not corrupt
-one layer — it degrades the network's moral representations broadly.
+**Why the fragility is diffuse rather than localized.** The diffuse
+pattern — fragility across 10 of 16 layers (mean σ* = 5.33 vs.
+6.50) rather than a single dramatic dip — has a straightforward
+mechanistic explanation. When the probing dataset controls for
+animacy and register confounds (§3.1), the probe detects actual
+moral features at every layer rather than exploiting shortcuts like
+"is this about a person or a circuit?" that survive Gaussian
+perturbation easily. When declarative templates are memorized, the
+model's moral representations throughout the network become
+template-dependent — narrow-margin features that collapse under
+noise at multiple layers rather than just one. Template memorization
+does not corrupt one layer — it degrades the network's moral
+representations broadly. This sensitivity to dataset quality
+underscores the importance of the validation methodology described
+in §3.1: probing datasets that contain animacy or register
+shortcuts will systematically underestimate fragility at layers
+where the probe exploits those shortcuts rather than moral content.
 
 Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
 `outputs/phase_c_tier2/c3/{narrative,declarative,general}_moral.json`

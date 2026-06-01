@@ -108,7 +108,8 @@ The early-layer accuracy gap between architectures provides a
 second diagnostic. OLMoE's early layers (0--3) achieve only 79--86%
 per-expert accuracy, compared to 94--97% for OLMo-2 at the same
 layers. When the probing dataset was tightened to remove
-superficial cues (v1 $\to$ v2 revision), OLMoE's early-layer
+superficial cues (animacy and register confounds; see §3.1 of
+\citet{reblitzrichardson2026fragility}), OLMoE's early-layer
 accuracy dropped more than OLMo-2's, suggesting that the MoE
 architecture's diluted output makes early layers more dependent on
 shallow features. This is consistent with output dilution: when the
