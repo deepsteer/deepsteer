@@ -35,8 +35,9 @@ direction stability under resampling.
 
 **Probing dataset.** The 240-pair minimal-pair dataset (40 per MFT
 foundation) is deterministic and version-controlled. Dataset
-generation uses GPT-4 with automated validation gates; the exact
-dataset is included in the code repository.
+generation uses Claude Sonnet 4.6 with automated validation gates
+(embedding similarity, keyword scan, LLM-as-judge filtering); the
+exact dataset is included in the code repository.
 
 **Activation collection.** Forward passes use `torch.no_grad()`.
 Activations are mean-pooled across the sequence dimension at each
@@ -45,4 +46,4 @@ combination step (post-routing), not from individual experts.
 
 **Code availability.** All experiment scripts, the probing dataset,
 and figure generation code are available at
-\url{https://github.com/orionr/deepsteer}.
+\url{https://github.com/deepsteer/deepsteer}.

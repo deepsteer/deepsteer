@@ -9,7 +9,8 @@ moral representations from distributional statistics alone. The
 training corpus does not label texts with MFT foundations, yet the
 model learns representations in which moral foundations occupy
 distinct directions that share a positive common component (mean
-cosine $\approx 0.22$). This is genuine multi-dimensional moral
+cosine $\approx 0.22$ at peak separation, $\approx 0.26$ at stable
+mid-network layers). This is genuine multi-dimensional moral
 structure, not a single "moral salience" detector.
 
 The fact that effective dimensionality is 5 (near-maximal for 6
@@ -19,6 +20,17 @@ then adds minor perturbations per foundation. The foundation
 directions are geometrically distinct objects that happen to share
 a common moral-salience component.
 
+**Dataset sensitivity.** The v2 dataset used in this paper applies
+stricter quality gates than the v1 pilot, removing neutral sentences
+that contained accidentally moral content and tightening
+embedding-similarity thresholds. The resulting mean cosine similarity
+is lower (0.22 vs.\ 0.27 on v1), consistent with inflated shared
+signal when neutrals carried residual moral content. All qualitative
+conclusions --- integration signature, effective dimensionality of 5,
+absence of MFT dendrogram structure --- are unchanged, but the
+quantitative shift underscores the importance of neutral-pair quality
+for geometric analyses.
+
 **The model's moral taxonomy is not MFT.** The inter-framework
 structure that emerges does not align with MFT's predicted
 individualizing/binding distinction: hierarchical clustering does
@@ -27,10 +39,13 @@ is non-significant throughout. Instead, the most consistent
 clustering feature is a care--sanctity pairing that crosses MFT
 groups. Both care and sanctity involve protection (of persons from
 harm, of sacred things from degradation), sharing distributional
-signatures that the model detects. This suggests the model's moral
-taxonomy is empirically grounded in corpus statistics rather than
-aligned with any a priori grouping from moral psychology --- which
-is itself evidence of genuine structure learning (the model
+signatures that the model detects. Notably, the care--sanctity
+pairing survived the v1$\to$v2 dataset quality overhaul, which
+argues against a dataset artifact explanation: clean neutrals did
+not dissolve the pairing but sharpened it. This suggests the model's
+moral taxonomy is empirically grounded in corpus statistics rather
+than aligned with any a priori grouping from moral psychology ---
+which is itself evidence of genuine structure learning (the model
 discovers which moral concepts are distributionally related) rather
 than surface keyword matching.
 

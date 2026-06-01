@@ -28,22 +28,24 @@ architectures.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig1_cosine_heatmap.pdf}
-\caption{Pairwise cosine similarity between foundation probe directions at layer 0 (peak separation), OLMo-2 1B. Individualizing foundations (care, fairness, liberty) show higher within-group similarity than between-group pairs.}
+\caption{Pairwise cosine similarity between foundation probe directions at layer 0 (peak separation), OLMo-2 1B. Layer 0 has the lowest mean cosine but is below the bootstrap stability threshold (§4.6); see Appendix~\ref{app:cosine} for the same matrix at bootstrap-stable layers.}
 \label{fig:cosine_heatmap}
 \end{figure}
 
 The headline finding: foundation probe directions are *separated*,
-not collapsed. At the peak separation layer (layer 0), the mean
-pairwise cosine similarity between the six foundation directions is
-**0.216** --- far below the collapse threshold ($>0.95$) and below
-the intermediate zone ($0.8$--$0.95$). The model does not encode
-moral content through a single "moral salience" direction; it
-maintains distinct directions for distinct moral foundations.
+not collapsed. Across bootstrap-stable layers (6--15, where all six
+directions exceed the 0.8 stability threshold; §4.6), mean pairwise
+cosine similarity ranges from **0.232 to 0.274** --- far below the
+collapse threshold ($>0.95$) and below the intermediate zone
+($0.8$--$0.95$). The peak-separation layer (layer 0) shows the
+lowest mean cosine at 0.216, though this layer has bootstrap
+stability below 0.8 for all foundations and should be interpreted
+with the caveat that directions there are less reliable (§4.6).
 
-However, the cosine similarities are uniformly *positive* (range
-0.14--0.33 at layer 0), indicating that the foundation directions
-share a common component. This is the *integration* signature from
-our trichotomy: the directions are separated but non-orthogonal,
+The cosine similarities are uniformly *positive* at all layers
+(range 0.14--0.35), indicating that the foundation directions share
+a common component. This is the *integration* signature from our
+trichotomy: the directions are separated but non-orthogonal,
 consistent with a shared moral-salience subspace from which
 foundation-specific directions deviate.
 
@@ -65,7 +67,7 @@ distinct --- they do not collapse into a lower-dimensional subspace.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.7\linewidth]{fig3_dendrogram.pdf}
-\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 0, OLMo-2 1B. The first split does not recover the MFT individualizing/binding distinction.}
+\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 0, OLMo-2 1B. The first split does not recover the MFT individualizing/binding distinction. Layer 0 is below the bootstrap stability threshold; the same pattern holds at stable layers (Appendix~\ref{app:cosine}).}
 \label{fig:dendrogram}
 \end{figure}
 

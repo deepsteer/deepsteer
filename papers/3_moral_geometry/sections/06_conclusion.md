@@ -7,7 +7,7 @@ the geometry of their weight vectors, we find that OLMo-2 1B and
 OLMoE-1B-7B exhibit the *integration* signature: foundation
 directions are distinct (effective dimensionality $= 5$), share a
 common moral-salience component (mean pairwise cosine
-$\approx 0.22$), and span a high-dimensional moral subspace. This
+$\approx 0.22$--$0.27$), and span a high-dimensional moral subspace. This
 geometric structure is consistent across the two architectures
 tested (dense vs.\ MoE), emerges early in pre-training, and
 stabilizes before probing accuracy saturates. However, the
