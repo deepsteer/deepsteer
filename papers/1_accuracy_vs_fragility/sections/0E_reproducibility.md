@@ -135,3 +135,24 @@ The schemas are stable; field names match the dataclass attributes
 in `deepsteer/core/types.py`. JSON serialization uses
 `_dataclass_to_dict` (see same file).
 
+## E.7 Dataset version
+
+All experiments in this paper use the **v2** moral probing dataset
+(`deepsteer/datasets/moral_probing_v2.json`), loaded via
+`build_probing_dataset(dataset_version="v2")`. The v2 dataset
+contains 1,200 minimal pairs (200 per MFT foundation) constructed
+from quality-audited seed examples (`seed_examples_v3.json`) via
+a generate→rate→assemble pipeline with LLM-assisted filtering for
+naturalness (§1.3) and moral neutrality of neutral-side sentences
+(§1.5). The 240-pair subset used for probing (40 per foundation) is
+a deterministic seed-42 subsample. Construction methodology,
+quality audit dimensions, and filtering thresholds are documented in
+`DATASET_GUIDELINES.md` in the released codebase.
+
+SHA256 checksum of the dataset file used for all results in this
+paper:
+
+```
+eb052885d5c6f7ed18aaeeb507eb0ce3d6106350e3fb4960d76f2fbd77f129ea  moral_probing_v2.json
+```
+

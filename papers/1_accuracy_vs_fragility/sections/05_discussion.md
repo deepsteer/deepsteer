@@ -113,7 +113,10 @@ fragility-resolves-what-accuracy-misses pattern is open.
 foundations show staggered emergence; all six stabilize by step 3K
 on the v2 dataset (Appendix A), though with different ordering than
 the v1 dataset — the sensitivity to dataset revision is itself
-informative. The compositional dataset's 200 pairs are categorized by
+informative. This underscores the importance of dataset quality
+methodology in probing studies; findings that depend on specific
+pairs rather than the property of interest are artifacts, not
+discoveries. The compositional dataset's 200 pairs are categorized by
 construction pattern (motive / target / consequence / role) rather
 than by MFT foundation; a foundation-stratified compositional probe
 (parallel to the foundation-specific standard probe in Appendix A)

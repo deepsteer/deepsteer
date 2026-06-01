@@ -73,13 +73,13 @@ compositional probe across four random-seed splits.
 **Finding 3: Data curation reshapes representational structure, not
 content.** LoRA fine-tuning on three matched corpora (narrative-
 moral, declarative-moral, general non-moral control) produces
-identical probing accuracy across conditions (final peak 0.812 /
-0.802 / 0.802) but distinct fragility profiles. Declarative moral
-training — "Stealing is wrong" repeated — produces a sharp layer-3
-fragility dip (critical noise 3.0 vs. 10.0 elsewhere) that
-natural-text training does not. Accuracy says "no signal";
-fragility says "declarative training creates a brittle layer-3
-shortcut."
+identical probing accuracy across conditions (final peak 0.740 /
+0.750 / 0.750) but distinct fragility profiles. Declarative moral
+training — "Stealing is wrong" repeated — produces fragility dips
+at 10 of 16 layers (mean critical noise 5.33) versus 6-7 for
+natural-text conditions (mean 6.50). Accuracy says "no signal";
+fragility says "declarative training creates broadly fragile
+representations."
 
 All experiments run on a single MacBook Pro M4 Pro with MPS;
 ~6 hours total MPS time. Code, datasets (including the 200-pair

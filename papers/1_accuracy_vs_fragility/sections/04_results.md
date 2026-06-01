@@ -108,7 +108,12 @@ the entire remaining 90 % of training.
 
 *Table 2: Standard moral probe — accuracy plateaus by step 4K;
 fragility evolves through step 36K with a layer-depth gradient that
-develops monotonically (late > mid > early after step ~15K).*
+develops monotonically (late > mid > early after step ~15K). The
+step-1K accuracy (0.728) is lower than the v1 dataset's 0.768 —
+consistent with the v2 dataset's removal of inanimate-subject
+neutrals and accidentally-moral pairs that inflated v1 accuracy.
+The probe takes slightly longer to achieve high accuracy on a
+harder task, but the saturation point (~step 4K) is unchanged.*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no
@@ -196,52 +201,50 @@ general non-moral control (Darwin). Identical LoRA hyperparameters
 1000 steps); standard moral probe + fragility every 100 LoRA steps.
 
 **Probing accuracy is identical across conditions.** Final peak
-accuracy at LoRA step 1000: narrative 0.812, declarative 0.802,
-general control 0.802 — within 1 pp across very different training
+accuracy at LoRA step 1000: narrative 0.740, declarative 0.750,
+general control 0.750 — within 1 pp across very different training
 data. The accuracy metric returns no signal for which corpus produces
 what kind of representational change.
 
 **Fragility profiles are condition-specific (the main result).**
-Final mean critical noise: narrative 10.0, declarative 9.42, general
-control 10.0. The per-layer breakdown is decisive: narrative and
-general control hold critical noise = 10.0 at every layer; the
-declarative condition collapses to **critical noise = 3.0 at layer 3**
-while every other layer holds at 10.0. A single sharply localized
-fragility dip created by declarative-moral LoRA that natural-text
-training does not produce. **Figure 4** plots all three per-layer
+Final mean critical noise: narrative 6.50, declarative 5.33, general
+control 6.50. The per-layer breakdown separates the conditions:
+narrative and general control show fragility dips at 6 and 7 of 16
+layers respectively; the declarative condition shows dips at **10 of
+16 layers**, creating a broadly more fragile representation than
+either natural-text condition. **Figure 4** plots all three per-layer
 profiles plus the three identical accuracy bars: same accuracy,
 different fragility.
 
 **Training loss is decoupled from representational change.**
-Declarative loss drops 5.6 → 1.0 (template memorization), narrative
-5.0 → 3.9, control 5.0 → 4.5. The condition with the deepest loss
-reduction is the same condition that produces the layer-3 dip; the
-two with the shallowest leave fragility unchanged. The model is
-learning declarative templates as surface text patterns without that
-learning translating into either accuracy gains or robust
-representational structure.
+Declarative loss drops 5.5 → 1.0 (template memorization), narrative
+4.3 → 4.0, control 5.0 → 4.4. The condition with the deepest loss
+reduction is the same condition with the most diffuse fragility; the
+two with the shallowest loss reductions retain more robust
+representations. The model is learning declarative templates as
+surface text patterns without that learning translating into either
+accuracy gains or robust representational structure.
 
-**Why layer 3?** In a 16-layer model, layer 3 is early enough that
-features are still formed from token-level and local template
-patterns. The declarative corpus consists of repeated syntactic
-templates ("X is wrong", "Y is immoral") that the model memorizes
-easily (loss → 1.0). This memorization creates a narrow
-pattern-matching feature at the depth where template structure is
-processed — one whose probe accuracy is maintained by a low-margin
-decision boundary that collapses under small noise. Narrative and
-general-control conditions do not create this dip because natural
-text has no repeated syntactic template; moral content in Aesop's
-fables is embedded in diverse narrative structures, forcing the
-probe to rely on distributed features that tolerate noise. The
-layer-3 dip is consistent with the §4.2 finding that early layers
-grow progressively more brittle over training — declarative LoRA
-accelerates a vulnerability pattern that pre-training produces
-gradually.
+**Why diffuse fragility under declarative training?** The declarative
+corpus consists of repeated syntactic templates ("X is wrong", "Y
+is immoral") that the model memorizes easily (loss → 1.0). This
+memorization creates narrow pattern-matching features across
+multiple layers — features whose probe accuracy is maintained by
+low-margin decision boundaries that collapse under small noise.
+Narrative and general-control conditions produce fewer fragile
+layers because natural text has no repeated syntactic template;
+moral content in Aesop's fables is embedded in diverse narrative
+structures, forcing the probe to rely on distributed features that
+tolerate noise. The declarative fragility pattern is consistent
+with the §4.2 finding that early layers grow progressively more
+brittle over training — declarative LoRA produces a diffuse
+version of a vulnerability pattern that pre-training produces as
+a layer-depth gradient.
 
 This is the cleanest single piece of evidence for the methodological
 thesis. Same data, same probe; accuracy says "no difference between
 narrative and declarative training"; fragility says "declarative
-training creates a brittle layer-3 shortcut that natural-text
+training creates broadly fragile representations that natural-text
 training does not."
 
 Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
