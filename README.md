@@ -9,18 +9,19 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 ***Alpha and pre-release software. DeepSteer is under active development.***
 
-## Key Findings
+## Research
 
-DeepSteer's results span three papers. Key findings and per-paper
-details in **[papers/README.md](papers/README.md)**; full narrative in
-**[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md)**; experimental record in
-**[RESEARCH_PLAN.md](RESEARCH_PLAN.md)**.
+DeepSteer's results span four papers on OLMo-2 1B, OLMo-3 7B, and
+OLMoE-1B-7B. See **[papers/README.md](papers/README.md)** for findings;
+**[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md)** for the full narrative;
+**[RESEARCH_PLAN.md](RESEARCH_PLAN.md)** for the experimental record.
 
-| Paper | Title | Models | Headline |
-|---|---|---|---|
-| 1 | *The Moral Emergence Curve* | OLMo-2 1B, OLMo-3 7B | Moral concepts emerge early; fragility resolves what accuracy cannot |
-| 2 | *Do Moral Representations Specialize Across Experts?* | OLMoE-1B-7B vs. OLMo-2 1B | No expert specialization; 77× output dilution creates structural fragility |
-| 3 | *The Geometry of Moral Representation* | OLMo-2 1B, OLMoE-1B-7B | Integration signature; MFT group structure; differential fragility reversal |
+| Paper | Headline |
+|---|---|
+| 1 — *The Moral Emergence Curve* | Moral concepts emerge early; fragility resolves what accuracy cannot |
+| 2 — *MoE Expert-Level Moral Probing* | No expert specialization; 77× output dilution creates structural fragility |
+| 3 — *The Geometry of Moral Representation* | Integration signature; care–sanctity pairing; sanctity fragility reversal |
+| 4 — *Causal Validation* (preliminary) | Direction ablation, steering injection, behavioral grounding, SAE overlap |
 
 ## Core Thesis
 
@@ -480,7 +481,7 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 | **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-6` | API | Behavioral benchmarks |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
 
-> **Reproducing the research findings:** Paper 1 used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints) and `allenai/Olmo-3-1025-7B` (20 checkpoints). Paper 2 used `allenai/OLMoE-1B-7B-0924` (11 checkpoints spanning training) vs. `allenai/OLMo-2-0425-1B`. Paper 3 used the same two models. See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
+> **Reproducing the research findings:** Papers 1–4 used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints), `allenai/Olmo-3-1025-7B` (20 checkpoints), and `allenai/OLMoE-1B-7B-0924` (11 checkpoints). See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
 
 For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
@@ -605,39 +606,40 @@ pytest tests/steering/test_training_hooks.py -v
 deepsteer/
   core/             Types, model interface, benchmark runner
   benchmarks/
-    moral_reasoning/  MoralFoundationsProbe
+    moral_reasoning/  MoralFoundationsProbe (+ base-model forced-choice variant)
     compliance_gap/   ComplianceGapDetector, PersonaShiftDetector,
                       EMBehavioralEval (Betley et al. eight-question protocol)
-    representational/ LayerWiseMoralProbe, CheckpointTrajectoryProbe,
-                      FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest,
-                      PersonaFeatureProbe, PersonaActivationScorer
-  datasets/         Probing dataset pipeline (seeds, pairing, validation,
-                    balancing) + persona / sentiment / syntax minimal pairs
+    representational/ LayerWiseMoralProbe, CompositionalMoralProbe,
+                      CheckpointTrajectoryProbe, FoundationSpecificProbe,
+                      MoralCausalTracer, MoralFragilityTest,
+                      PersonaFeatureProbe, PersonaActivationScorer,
+                      GeneralLinearProbe
+  datasets/         Probing dataset pipeline + all minimal-pair datasets
+    moral_probing_v2.json             240-pair quality-gated moral/neutral dataset
+    compositional_moral_pairs.py      200-pair multi-token compositional probe
+    persona_pairs.py                  240-pair persona/neutral (6 categories)
+    sentiment_pairs.py                210-pair positive/negative sentiment
+    syntax_pairs.py                   210-pair grammatical/ungrammatical
+    corpora/                          Narrative, declarative, general LoRA corpora
+    pipeline.py                       5-stage generation pipeline (seeds→validate→package)
   viz/              Matplotlib/seaborn visualization functions
   steering/         Training-time intervention tools
     training_time_steering.py  TrainingTimeSteering (gradient_penalty +
-                               activation_patch primitives, Phase D)
+                               activation_patch primitives)
     chat_lora_trainer.py       Assistant-loss-masked chat-format LoRA trainer
+    lora_trainer.py            Causal-LM LoRA trainer (non-chat)
     moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
     data_mixing.py             Moral/general corpus mixing with foundation weights
     training_hooks.py          ProbeMonitor for live training metric tracking
 scripts/
-  run_evaluation.py                    Single-model CLI
-  compare_models.py                    Cross-model comparison CLI
-  phase_c1.py                          Phase C1 dense-trajectory driver
-  c10_em_replication.py                Phase D C10 v2 (insecure-code LoRA replication)
-  step2_persona_steering.py            Phase D Step 2 (TrainingTimeSteering)
-  step2_finding3_mechanism_check.py    Step 2 backfire mechanism verification
-  step2_finding4_behavioral_judge.py   Step 2 behavioral judge harness
-  step2_finding2_head_start.py         Step 2 vanilla-trajectory head-start check
-  c15_reframed.py                      Phase B/C battery on C10 v2 adapters
+  run_evaluation.py            Single-model CLI
+  compare_models.py            Cross-model comparison CLI
+  moral_emergence.py           Dense checkpoint trajectory driver
 papers/
-  1_accuracy_vs_fragility/             Paper 1 sections, build, and outputs
-  2_moe_output_dilution/               Paper 2 sections, scripts, figures, and outputs
-    outputs/phase_d/                   C10 v2, Step 2, C15 reframed reproducible artifacts
-  3_moral_geometry/                    Paper 3 sections, scripts, and outputs
-    scripts/                           Exp 1-7, dilemma probing/geometry/fragility scripts
-    outputs/                           Geometry, trajectory, fragility, probe engineering artifacts
+  1_accuracy_vs_fragility/     Paper 1 (+ scripts/phase_c1.py, phase_c4_*, etc.)
+  2_moe_output_dilution/       Paper 2 (+ scripts/exp1-5, Phase D scripts)
+  3_moral_geometry/            Paper 3 (+ scripts/exp1-7, probe_engineering/)
+  4_causal_validation/         Paper 4 (causal validation, preliminary)
 tests/            Mirrors source structure
 ```
 
