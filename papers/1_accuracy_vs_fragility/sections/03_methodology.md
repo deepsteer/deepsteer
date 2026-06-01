@@ -17,12 +17,12 @@ constant and swapping a single token: **moral / neutral** (240 pairs,
 fairness/cheating, loyalty/betrayal, authority/subversion,
 sanctity/degradation, liberty/oppression — Haidt, 2012; Graham et
 al., 2013; e.g. "She betrayed the woman" / "She greeted the
-woman"), drawn from a 1,200-pair dataset constructed per published
-quality guidelines (`DATASET_GUIDELINES.md` in the released
-codebase) with LLM-assisted filtering for naturalness and moral
-neutrality of neutral-side sentences; 240 pairs (40 per foundation)
-are subsampled with a deterministic seed for this paper's
-experiments; **sentiment** (210 pairs across ten domains; positive /
+woman"). The moral pairs are drawn from a 1,200-pair dataset
+constructed per published quality guidelines with LLM-assisted
+filtering for naturalness and moral neutrality of neutral-side
+sentences (see `DATASET_GUIDELINES.md`); 240 pairs (40 per
+foundation) are subsampled with a deterministic seed.
+**Sentiment** (210 pairs across ten domains; positive /
 negative adjective swap, e.g. "...excellent food..." / "...terrible
 food..."); **syntax** (210 pairs targeting local grammaticality
 violations — word-order swaps, agreement, auxiliary misplacement —

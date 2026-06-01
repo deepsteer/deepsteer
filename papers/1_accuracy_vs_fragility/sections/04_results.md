@@ -241,11 +241,30 @@ brittle over training — declarative LoRA produces a diffuse
 version of a vulnerability pattern that pre-training produces as
 a layer-depth gradient.
 
-This is the cleanest single piece of evidence for the methodological
-thesis. Same data, same probe; accuracy says "no difference between
-narrative and declarative training"; fragility says "declarative
-training creates broadly fragile representations that natural-text
-training does not."
+This provides direct evidence for the methodological thesis in a
+controlled setting: same data, same probe; accuracy returns no
+signal, fragility separates the conditions.
+
+**Why the finding changed from v1 to v2 — and why the v2 result is
+more informative.** On the v1 dataset, declarative training produced
+a single dramatic fragility dip at layer 3 (σ* = 3.0 vs. 10.0
+everywhere else). On the v2 dataset, with inanimate-subject neutrals
+and accidentally-moral pairs removed, the same experiment produces
+diffuse fragility across 10 of 16 layers (mean σ* = 5.33 vs. 6.50).
+The shift has a straightforward mechanistic explanation. On v1, the
+probe at most layers was partly reading animacy and register
+shortcuts — "is this about a person or a circuit?" — that survive
+Gaussian perturbation easily. Only at layer 3, where the probe
+relied specifically on declarative-template features, did fragility
+appear. On v2, with no animacy shortcuts, the probe detects actual
+moral features at every layer. When declarative templates are
+memorized, the model's moral representations throughout the network
+become template-dependent — narrow-margin features that collapse
+under noise at multiple layers rather than just one. The v1 localized
+dip was the genuine effect of template memorization seen through the
+distorting lens of a flawed dataset; the v2 diffuse pattern is the
+same effect measured cleanly. Template memorization does not corrupt
+one layer — it degrades the network's moral representations broadly.
 
 Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
 `outputs/phase_c_tier2/c3/{narrative,declarative,general}_moral.json`
