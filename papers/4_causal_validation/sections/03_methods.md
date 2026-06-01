@@ -4,7 +4,7 @@
 
 ## 3.1 Model and dataset
 
-All experiments use OLMo-2-0425-1B (16 layers, 2048 hidden dim) with mean-difference directions extracted from a 1,200-pair moral probing dataset (200 pairs per MFT foundation, 960 train / 240 test, three text registers: declarative, situational, narrative).
+All experiments use OLMo-2-0425-1B (16 layers, 2048 hidden dim) with mean-difference directions extracted from the 240-pair moral probing dataset (40 pairs per MFT foundation, 192 train / 48 test).
 Directions are normalized to unit length.
 See \citet{reblitzrichardson2026geometry} for dataset construction and direction extraction.
 
@@ -44,7 +44,7 @@ We also test a *debiased* variant that subtracts the mean projection across all 
 
 ### 3.3.2 Evaluation sets
 
-1. **Held-out test set** (240 pairs, 40 per foundation): internal validation from the probing dataset.
+1. **Held-out test set** (48 pairs, 8 per foundation): internal validation from the probing dataset.
 2. **Moral Foundations Vignettes** (30 items, 5 per foundation): curated from \citet{clifford2015moral}, providing external validation with established MFT stimuli independent of our dataset pipeline.
 3. **Causal evaluation prompts** (48 prompts): cross-validation with the causal experiments, testing whether directions that are causally relevant also predict foundation identity.
 
@@ -58,7 +58,7 @@ The pre-encoder bias is initialized to the mean activation.
 
 ### 3.4.2 Moral feature identification
 
-We encode 960 moral and 960 neutral sentences through the trained SAE and compute per-feature selectivity: the mean activation difference between moral and neutral inputs.
+We encode 192 moral and 192 neutral training sentences through the trained SAE and compute per-feature selectivity: the mean activation difference between moral and neutral inputs.
 Top-$k$ features (ranked by $|\text{selectivity}|$) are compared with probe directions via:
 
 - **Individual alignment**: cosine similarity between each feature's decoder column and each foundation direction.

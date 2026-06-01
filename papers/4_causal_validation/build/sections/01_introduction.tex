@@ -1,6 +1,6 @@
 \section{Introduction}\label{introduction}
 
-Companion paper \citep{reblitzrichardson2026geometry} established that language models develop structured moral representations: six foundation-specific probe directions exhibit integration geometry (effective dimensionality 5, MFT-consistent clustering), and these directions are stable across extraction methods, dataset sizes, and text registers.
+Companion paper \citep{reblitzrichardson2026geometry} established that language models develop structured moral representations: six foundation-specific probe directions exhibit integration geometry (effective dimensionality 5, mean pairwise cosine \(\approx 0.22\)--\(0.27\)), and these directions are stable across extraction methods, dataset sizes, and text registers.
 But probe directions are correlational.
 A direction that separates moral from neutral text in activation space may reflect a confound (sentence length, formality, topic) rather than a genuine moral feature.
 Three questions remain open:
@@ -15,7 +15,7 @@ Three questions remain open:
   \textbf{Mechanistic correspondence.} Do the supervised probe directions correspond to features the model discovers on its own? Sparse autoencoders (SAEs) learn unsupervised features from general text. If morally selective SAE features align with probe directions, the directions are not artifacts of the probing procedure but reflect native model structure.
 \end{enumerate}
 
-We address all three questions using the same OLMo-2 1B model and 1,200-pair moral probing dataset from \citet{reblitzrichardson2026geometry}.
+We address all three questions using the same OLMo-2 1B model and 240-pair moral probing dataset from \citet{reblitzrichardson2026geometry}.
 Section\textasciitilde{}\ref{causal-validation} presents direction ablation and steering injection experiments.
 Section\textasciitilde{}\ref{behavioral-grounding} reports projection-based foundation classification on held-out, external, and causal evaluation stimuli.
 Section\textasciitilde{}\ref{sae-analysis} compares SAE feature geometry with probe directions.

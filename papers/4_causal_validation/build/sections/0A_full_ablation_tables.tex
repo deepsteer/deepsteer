@@ -2,7 +2,67 @@
 \label{app:ablation-tables}
 
 Tables~\ref{tab:ablation-layer4}--\ref{tab:ablation-layer12} report the complete ablation results for all six foundations at layers 4, 8, and 12.
-Each cell shows the mean change in log-probability (nats) under direction ablation, with on-target and off-target columns.
+Each cell shows the mean change in log-probability (nats) under direction ablation.
 
-\bigskip
-\noindent\emph{[Full tables to be generated from experimental output JSON.]}
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l rrr}
+\toprule
+Ablated foundation & On-target $\Delta$ & Off-target $\Delta$ & Specificity \\
+\midrule
+Care           & $-0.00$ & $+0.00$ & $-0.00$ \\
+Fairness       & $+0.01$ & $-0.00$ & $+0.01$ \\
+Liberty        & $-0.23$ & $+0.00$ & $-0.24$ \\
+Loyalty        & $-0.22$ & $-0.03$ & $-0.19$ \\
+Authority      & $-0.13$ & $+0.00$ & $-0.14$ \\
+Sanctity       & $-0.45$ & $-0.04$ & $-0.42$ \\
+\midrule
+\textbf{Mean}  &         &         & $\mathbf{-0.16}$ \\
+\bottomrule
+\end{tabular}
+\caption{Direction ablation at layer 4.}
+\label{tab:ablation-layer4}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l rrr}
+\toprule
+Ablated foundation & On-target $\Delta$ & Off-target $\Delta$ & Specificity \\
+\midrule
+Care           & $-0.12$ & $-0.05$ & $-0.07$ \\
+Fairness       & $-0.37$ & $-0.10$ & $-0.27$ \\
+Liberty        & $-0.56$ & $-0.01$ & $-0.55$ \\
+Loyalty        & $-0.54$ & $-0.02$ & $-0.52$ \\
+Authority      & $-0.49$ & $-0.05$ & $-0.45$ \\
+Sanctity       & $-0.44$ & $+0.04$ & $-0.48$ \\
+\midrule
+\textbf{Mean}  &         &         & $\mathbf{-0.39}$ \\
+\bottomrule
+\end{tabular}
+\caption{Direction ablation at layer 8.}
+\label{tab:ablation-layer8}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l rrr}
+\toprule
+Ablated foundation & On-target $\Delta$ & Off-target $\Delta$ & Specificity \\
+\midrule
+Care           & $-0.52$ & $-0.08$ & $-0.44$ \\
+Fairness       & $-0.21$ & $-0.06$ & $-0.15$ \\
+Liberty        & $-0.71$ & $-0.07$ & $-0.64$ \\
+Loyalty        & $-0.60$ & $-0.12$ & $-0.48$ \\
+Authority      & $-0.44$ & $-0.05$ & $-0.39$ \\
+Sanctity       & $-1.68$ & $-0.03$ & $-1.64$ \\
+\midrule
+\textbf{Mean}  &         &         & $\mathbf{-0.63}$ \\
+\bottomrule
+\end{tabular}
+\caption{Direction ablation at layer 12. Sanctity shows by far the strongest ablation effect.}
+\label{tab:ablation-layer12}
+\end{table}
