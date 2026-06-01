@@ -5,7 +5,7 @@
 ### Status snapshot (May 2026, for external readers)
 
 This document is the live experimental record. The work currently
-spans three papers' worth of findings, all reproducible from artifacts
+spans four papers' worth of findings, all reproducible from artifacts
 under `papers/` and `outputs/`:
 
 - **Paper 1 — Moral Emergence Curve (OLMo-2 1B + OLMo-3 7B):**
@@ -24,12 +24,19 @@ under `papers/` and `outputs/`:
   completed experiments under `papers/2_moe_output_dilution/outputs/phase_d/`.
 - **Paper 3 — Framework Geometry (OLMo-2 1B + OLMoE-1B-7B):**
   integration signature (foundation directions distinct, effective
-  dimensionality 5, mean cosine ≈ 0.3); dendrogram recovers MFT
-  individualizing/binding split; differential fragility reversal
-  across architectures; framework geometry stabilizes before accuracy;
-  partial compositionality of moral dilemmas (~10 % subspace
-  membership); direction-finding robustness confirmed. Prose
+  dimensionality 5, mean cosine ≈ 0.22–0.27); dendrogram does NOT
+  recover MFT individualizing/binding split (care–sanctity pairing
+  is the most consistent clustering feature); sanctity fragility
+  reversal across architectures (6.2×); framework geometry stabilizes
+  before accuracy; partial compositionality of moral dilemmas (~10 %
+  subspace membership); direction-finding robustness confirmed. Prose
   drafted.
+- **Paper 4 — Causal Validation (OLMo-2 1B, preliminary):**
+  direction ablation is foundation-specific (mean specificity −0.63
+  at layer 12); steering injection shows dose–response specificity;
+  projection-based behavioral classification at 83.3 % on causal
+  prompts (chance 16.7 %); SAE features partially recover the moral
+  subspace at 3.2× random baseline. Prose drafted.
 
 The companion public-facing document is
 [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md). Module-level documentation,
@@ -874,26 +881,27 @@ checkpoints. Bold marks the first step reaching 100%:
 
 | Foundation | Step 0 | Step 1K | Step 2K | Step 3K | Step 6K | Notes |
 |---|---:|---:|---:|---:|---:|---|
-| fairness/cheating | 68.8% | **100%** | 100% | 100% | 100% | Fastest to saturate |
-| care/harm | 75.0% | 87.5% | **100%** | 100% | 100% | Second fastest |
-| sanctity/degradation | 75.0% | 75.0% | 93.8% | **100%** | 100% | |
-| loyalty/betrayal | 56.3% | 68.8% | 87.5% | **100%** | 100% | Starts below threshold |
-| authority/subversion | 81.3% | 81.3% | 93.8% | 93.8% | **100%** | High init, slow to mature |
-| liberty/oppression | 68.8% | 87.5% | 93.8% | 93.8% | 93.8% | **Never reaches 100%** |
+| authority/subversion | 68.8% | **100%** | 100% | 100% | 100% | Fastest to saturate |
+| care/harm | 68.8% | 87.5% | **100%** | 93.8% | 100% | |
+| fairness/cheating | 75.0% | 75.0% | **100%** | 100% | 100% | |
+| sanctity/degradation | 68.8% | 75.0% | 93.8% | **100%** | 100% | |
+| loyalty/betrayal | 62.5% | 62.5% | 93.8% | **100%** | 100% | Starts below threshold |
+| liberty/oppression | 68.8% | 93.8% | 87.5% | **100%** | 100% | |
 
-Emergence order: fairness → care → sanctity ≈ loyalty → authority →
-liberty (never).
+Emergence order: fairness → care → sanctity ≈ loyalty ≈ liberty →
+authority.
 
 Notable patterns:
-- **Loyalty/betrayal** starts below the 60% onset threshold at random init
-  (56.3%, the only sub-threshold foundation) and is the last to reach 100%
-  among those that do.
-- **Liberty/oppression** never fully stabilizes — it plateaus at 93.8% and
-  fluctuates even at late checkpoints. This mirrors Phase B findings on
-  the 7B model, confirming it as a cross-scale pattern.
 - **Authority/subversion** has the highest random-init accuracy (81.3%,
-  likely noise given 16 test pairs where each pair = 6.25pp) but is one
-  of the slowest to reach genuine saturation at 100%.
+  likely noise given 16 test pairs where each pair = 6.25pp) and is
+  first to reach 100% (step 1K).
+- **Liberty/oppression** reaches 100% at step 3K on the quality-gated
+  dataset. During development, an earlier dataset with weaker
+  neutral-pair quality produced unstable liberty/oppression encoding;
+  the instability resolved when neutral sentences that inadvertently
+  carried moral content were removed.
+- **Loyalty/betrayal** starts below the 60% onset threshold at random init
+  (56.3%, the only sub-threshold foundation).
 
 **Key insight for Tier 2:** Loyalty/betrayal and liberty/oppression are the
 foundations most likely to show differential effects from moral curriculum.
@@ -1485,8 +1493,8 @@ representation steering in a single toolkit.
   window with all 37 OLMo-2 1B checkpoints — sigmoid confirmed
 - Novel finding: early-layer fragility *increases* with training, creating a
   steepening layer-depth robustness gradient (invisible to probing accuracy)
-- Staggered foundation emergence resolved: fairness → care → sanctity ≈
-  loyalty → authority → liberty (never reaches 100%)
+- Staggered foundation emergence resolved: authority (1K) → care ≈
+  fairness (2K) → sanctity ≈ loyalty ≈ liberty (3K); all six reach 100%
 - Concrete Tier 2 design decisions derived: checkpoint selection, fragility as
   primary metric, baseline expectations for LoRA comparison
 

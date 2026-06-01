@@ -11,10 +11,10 @@ analysis across the same 37 OLMo-2 1B early-training checkpoints
 used in §4.
 
 **Headline finding.** Foundations emerge in a staggered sequence,
-with five foundations saturating cleanly within the same window
-where the aggregated standard moral probe onsets, and one foundation
-(liberty/oppression) failing to fully stabilize at either 1B or 7B
-scale.
+with all six foundations saturating within the same window where
+the aggregated standard moral probe onsets. Authority emerges fastest
+(step 1K); care and fairness follow (step 2K); loyalty, sanctity,
+and liberty reach 100% by step 3K.
 
 | Foundation | Step 0 | Step 1K | Step 2K | Step 3K | Step 6K | First step at 100% |
 |------------|-------:|--------:|--------:|--------:|--------:|-------------------:|

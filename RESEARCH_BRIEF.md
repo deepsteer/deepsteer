@@ -10,7 +10,7 @@
 
 DeepSteer is a PyTorch-native toolkit for measuring **how deeply** moral
 reasoning is embedded in language models during pre-training. The work
-covers three distinct contributions, scoped as three papers:
+covers four distinct contributions, scoped as four papers:
 
 **Paper 1 — *The Moral Emergence Curve.*** Systematic measurement of
 when and how moral representations emerge during LLM pre-training.
@@ -44,11 +44,23 @@ Specialization never emerges during training — Gini stays between
 moral/neutral probing to structured representations via six
 independent foundation-specific probes. Integration signature:
 foundation directions are distinct (effective dimensionality 5, mean
-cosine ≈ 0.3) and cluster into individualizing/binding groups that
-mirror Moral Foundations Theory. Differential fragility reversal
-across architectures; partial compositionality of moral dilemmas
-(~10 % subspace membership, 100× null baseline); framework geometry
+cosine ≈ 0.22–0.27 across layers) but do not recover Moral
+Foundations Theory's individualizing/binding partition; a care–
+sanctity pairing is the most consistent clustering feature. Sanctity
+fragility reversal across architectures (most robust in dense, least
+robust in MoE); partial compositionality of moral dilemmas (~10 %
+subspace membership, 100× null baseline); framework geometry
 stabilizes before accuracy saturates.
+
+**Paper 4 — *Causal Validation of Moral Probe Directions*
+(preliminary).** Three independent validations on OLMo-2 1B:
+direction ablation is foundation-specific (mean specificity −0.63 at
+layer 12); steering injection shows dose–response specificity; and
+projection-based behavioral classification achieves 83.3 % on causal
+prompts (chance 16.7 %). SAE features partially recover the moral
+subspace at 3.2× the random baseline. These results transform the
+moral geometry from a descriptive finding into a tool for
+representation engineering.
 
 ## Paper 1 — The Moral Emergence Curve
 
@@ -130,11 +142,9 @@ stabilizes before accuracy saturates.
   drifts to ~2.7 by step 30K), confirming the methodology claim is
   not a lexical artifact.
 - **Differential foundation emergence (1B and 7B):** Moral Foundations
-  Theory categories emerge in a staggered sequence — fairness and care
-  saturate first; loyalty, authority, and sanctity follow;
-  liberty/oppression never fully stabilizes at either scale, a
-  cross-scale pattern suggesting this foundation is intrinsically
-  harder to encode from web text.
+  Theory categories emerge in a staggered sequence — authority
+  emerges fastest (step 1K), followed by care and fairness (step 2K),
+  with loyalty, sanctity, and liberty reaching 100% by step 3K.
 - **Causal-probing divergence (7B):** the layer where moral
   information is most decodable (probing peak) and the layer where it
   most influences next-token prediction (causal peak) diverge by ~10
@@ -207,29 +217,28 @@ published under `papers/2_moe_output_dilution/outputs/`.
 ### Headline findings
 
 1. **Integration, not collapse.** Foundation probe directions are
-   *separated*, not collapsed. At the peak separation layer (layer 0),
-   mean pairwise cosine similarity between the six foundation
-   directions is **0.272** — far below the collapse threshold (> 0.95).
-   Effective dimensionality is 5 at every layer (near-maximal for 6
-   directions). The model maintains geometrically distinct directions
-   for distinct moral foundations sharing a common moral-salience
-   component.
+   *separated*, not collapsed. Across bootstrap-stable layers (6–15),
+   mean pairwise cosine similarity ranges from **0.232 to 0.274** —
+   far below the collapse threshold (> 0.95). Effective dimensionality
+   is 5 at every layer (near-maximal for 6 directions). The model
+   maintains geometrically distinct directions for distinct moral
+   foundations sharing a common moral-salience component.
 
-2. **Dendrogram recovers MFT group structure.** Hierarchical
-   clustering at the peak separation layer perfectly splits
-   {liberty, care, fairness} from {loyalty, authority, sanctity} —
-   the individualizing/binding distinction from moral psychology.
-   This alignment with theoretical predictions emerges without
-   explicit training signal. Permutation test significant at
-   layer 0 (p = 0.012) and layer 3 (p = 0.035).
+2. **The model's moral taxonomy is not MFT.** Hierarchical
+   clustering does not recover the MFT individualizing/binding
+   distinction at any layer; the permutation test is non-significant
+   throughout (minimum p = 0.32). The most consistent clustering
+   feature is a care–sanctity pairing that crosses MFT groups — both
+   foundations concern protection of vulnerable entities, sharing
+   distributional signatures the model detects.
 
-3. **Differential fragility reversal across architectures.** In
-   dense OLMo-2 1B, binding foundations (loyalty, authority) are the
-   *most robust* (mean critical noise 5.24). In MoE OLMoE-1B-7B,
-   the pattern reverses: individualizing foundations are more robust
-   (mean 1.98), binding foundations are dramatically fragile (mean
-   0.80). Output dilution disproportionately degrades group-binding
-   moral concepts.
+3. **Sanctity fragility reversal across architectures.** In dense
+   OLMo-2 1B, sanctity/degradation is the *most* robust foundation
+   (mean critical noise 5.60). In MoE OLMoE-1B-7B, it is the *least*
+   robust (0.91) — a 6.2× ratio, far larger than the overall 3.1×
+   architecture gap. Output dilution disproportionately degrades
+   sanctity representations, which may depend on fine-grained
+   culturally specific associations.
 
 4. **Framework geometry stabilizes before accuracy saturates.**
    Tracking mean cosine similarity across 20 OLMo-2 1B checkpoints:
@@ -249,11 +258,12 @@ published under `papers/2_moe_output_dilution/outputs/`.
 
 6. **Direction-finding method robustness.** Mean-difference
    directions (training-free) replicate all core geometric findings:
-   effective dimensionality 5, MFT dendrogram split, permutation
-   test significant at layers 3 and 9. Representation-engineering
-   PCA fails in the p ≫ n regime, validating that probe-weight and
-   mean-difference convergence is non-trivial. Both methods transfer
-   to narrative dilemma text with > 97 % pair accuracy.
+   effective dimensionality 5, absence of MFT dendrogram structure,
+   permutation test non-significant throughout. Representation-
+   engineering PCA fails in the p ≫ n regime, validating that
+   probe-weight and mean-difference convergence is non-trivial. Both
+   methods transfer to narrative dilemma text with > 90 % mean pair
+   accuracy (probe-weight > 95 %).
 
 ### Methodology
 
@@ -265,6 +275,48 @@ subspace analysis (15 dilemma probes, 300 pairs), and 5D moral
 subspace projection — all running on OLMo-2 1B and OLMoE-1B-7B
 (MPS, fp16/bf16). All experimental artifacts published under
 `papers/3_moral_geometry/outputs/`.
+
+## Paper 4 — Causal Validation of Moral Probe Directions (preliminary)
+
+### Headline findings
+
+1. **Direction ablation is foundation-specific.** Removing a
+   foundation's probe direction from the residual stream specifically
+   reduces log-probability of that foundation's continuations while
+   leaving other foundations largely unaffected. Mean specificity is
+   −0.63 at layer 12. Sanctity is the most causally load-bearing
+   direction at all layers (specificity −1.64 at layer 12).
+
+2. **Steering injection shows dose–response specificity.** At low
+   amplitude (α = 1–2), injecting a foundation direction produces a
+   specific on-target boost with near-zero off-target effect. At
+   higher amplitudes (α = 5–10), both increase but on-target
+   increases more, yielding growing specificity — distinguishable
+   from noise injection, which would produce monotonic degradation.
+
+3. **Behavioral grounding.** Projection-based 6-way classification
+   achieves 83.3 % on causal evaluation prompts and 70.8 % on
+   held-out test data (chance = 16.7 %). A "sanctity saturation"
+   phenomenon emerges on Moral Foundations Vignettes: harm-witnessing
+   scenarios preferentially activate the sanctity direction regardless
+   of the target foundation, consistent with the sanctity anomaly
+   from Paper 3.
+
+4. **SAE features partially recover moral subspace.** A partially
+   trained sparse autoencoder (2M tokens, 71.5 % variance explained)
+   discovers features overlapping with probe directions at 3.2× the
+   chance level (15.5 % subspace overlap vs. 4.9 % random baseline).
+   Moral information is distributed across many low-selectivity
+   features rather than concentrated in a few.
+
+### Methodology
+
+Direction ablation and steering injection at layers 4, 8, 12;
+projection-based foundation classification on held-out, external
+(MFV), and causal evaluation stimuli; layer-8 SAE training (16,384
+features, 3 epochs on 2M tokens) with moral selectivity and subspace
+overlap analysis — all on OLMo-2 1B (MPS, fp16). Experimental
+artifacts under `papers/4_causal_validation/outputs/`.
 
 ## Toolkit Status
 
