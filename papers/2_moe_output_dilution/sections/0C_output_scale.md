@@ -30,25 +30,25 @@ contributes to the residual stream.
 
 | Layer | OLMoE FFN std | OLMo-2 MLP std | Ratio (OLMo/OLMoE) |
 |------:|--------------:|---------------:|--------------------:|
-| 0 | 0.003 | 0.53 | 180$\times$ |
-| 1 | 0.014 | 0.38 | 26$\times$ |
-| 2 | 0.079 | 0.28 | 4$\times$ |
-| 3 | 0.013 | 0.31 | 25$\times$ |
-| 4 | 0.006 | 0.36 | 61$\times$ |
-| 5 | 0.003 | 0.33 | 113$\times$ |
-| 6 | 0.004 | 0.32 | 88$\times$ |
-| 7 | 0.004 | 0.39 | 104$\times$ |
-| 8 | 0.007 | 0.52 | 72$\times$ |
-| 9 | 0.013 | 0.70 | 53$\times$ |
-| 10 | 0.010 | 0.66 | 65$\times$ |
-| 11 | 0.012 | 0.91 | 73$\times$ |
-| 12 | 0.017 | 1.14 | 65$\times$ |
-| 13 | 0.021 | 2.31 | 110$\times$ |
-| 14 | 0.042 | 4.58 | 110$\times$ |
-| 15 | 0.089 | 7.99 | 90$\times$ |
+| 0 | 0.003 | 0.45 | 167$\times$ |
+| 1 | 0.014 | 0.36 | 25$\times$ |
+| 2 | 0.051 | 0.27 | 5$\times$ |
+| 3 | 0.008 | 0.28 | 34$\times$ |
+| 4 | 0.008 | 0.33 | 41$\times$ |
+| 5 | 0.003 | 0.29 | 108$\times$ |
+| 6 | 0.003 | 0.29 | 87$\times$ |
+| 7 | 0.003 | 0.35 | 100$\times$ |
+| 8 | 0.008 | 0.46 | 60$\times$ |
+| 9 | 0.013 | 0.59 | 44$\times$ |
+| 10 | 0.011 | 0.57 | 51$\times$ |
+| 11 | 0.012 | 0.84 | 72$\times$ |
+| 12 | 0.018 | 1.07 | 61$\times$ |
+| 13 | 0.020 | 2.22 | 111$\times$ |
+| 14 | 0.040 | 4.68 | 117$\times$ |
+| 15 | 0.096 | 8.78 | 91$\times$ |
 
-The ratio varies considerably across layers (4$\times$ at layer 2
-to 180$\times$ at layer 0), with a mean of 77$\times$ as reported
+The ratio varies considerably across layers (5$\times$ at layer 2
+to 167$\times$ at layer 0), with a mean of 74$\times$ as reported
 in the main text. The lowest ratio at layer 2 reflects an unusually
 large MoE output at that layer, possibly due to early-layer
 representational adjustments.
@@ -72,5 +72,5 @@ feedforward contribution. Because the residual dominates the hidden
 state norm, the noise is calibrated to the residual scale. For the
 dense model, the MLP output is at a comparable scale to the residual,
 so the noise must be substantial to disrupt it. For the MoE model,
-the aggregated output is 77$\times$ smaller — noise that barely
+the aggregated output is 74$\times$ smaller — noise that barely
 affects the residual already overwhelms the MoE contribution.

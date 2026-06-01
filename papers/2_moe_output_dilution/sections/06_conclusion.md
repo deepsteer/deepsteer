@@ -6,13 +6,13 @@ features and offer natural intervention points for alignment. The
 answer is no. In OLMoE-1B-7B, all 64 experts at every layer encode
 moral content with comparable accuracy (Gini $< 0.03$), and the
 router shows no preference for routing moral content to specific
-experts (maximum preference 2.4%).
+experts (maximum preference 1.8%).
 
 This null on specialization led to a positive finding about
-architecture. MoE models are 3.6$\times$ more fragile than dense
+architecture. MoE models are 5.1$\times$ more fragile than dense
 models on moral probing despite matching on accuracy, and the
 mechanism is *output dilution*: the MoE block's contribution to the
-residual stream is 77$\times$ smaller in scale than the dense MLP's,
+residual stream is 74$\times$ smaller in scale than the dense MLP's,
 because sparse aggregation (top-8 of 64 experts) attenuates each
 expert's contribution. The moral signal is present but encoded at a
 scale that is trivially overwhelmed by noise.

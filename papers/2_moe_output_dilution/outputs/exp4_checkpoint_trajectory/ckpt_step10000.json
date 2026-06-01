@@ -3,344 +3,392 @@
   "revision": "step10000-tokens41B",
   "n_layers": 16,
   "timings": {
-    "load_s": 211.0,
-    "collect_s": 135.3,
-    "probe_s": 7.6,
+    "load_s": 220.6,
+    "collect_s": 149.9,
+    "probe_s": 7.7,
     "route_s": 0.0,
-    "total_s": 353.9
+    "total_s": 378.3
   },
   "peak_layer": 11,
-  "peak_mean_accuracy": 0.9305,
-  "peak_gini": 0.0142,
-  "overall_mean_accuracy": 0.89,
-  "overall_mean_gini": 0.0169,
+  "peak_mean_accuracy": 0.9362,
+  "peak_gini": 0.0123,
+  "overall_mean_accuracy": 0.8926,
+  "overall_mean_gini": 0.0181,
   "layers": {
     "0": {
-      "mean_accuracy": 0.805,
-      "std_accuracy": 0.0404,
-      "min_accuracy": 0.6979,
-      "max_accuracy": 0.875,
-      "gini": 0.0282,
+      "mean_accuracy": 0.7749,
+      "std_accuracy": 0.0458,
+      "min_accuracy": 0.6667,
+      "max_accuracy": 0.8646,
+      "gini": 0.0335,
       "n_above_90": 0,
-      "n_above_75": 57,
+      "n_above_75": 45,
       "top5_experts": [
-        61,
-        59,
-        11,
-        41,
-        22
+        30,
+        34,
+        39,
+        31,
+        54
       ],
       "top5_accuracies": [
-        0.875,
-        0.875,
-        0.875,
         0.8646,
-        0.8646
+        0.8646,
+        0.8646,
+        0.8333,
+        0.8333
       ],
-      "router_max_preference": 0.0019462527707219124
+      "router_max_preference": 0.0015689730644226074
     },
     "1": {
-      "mean_accuracy": 0.8262,
-      "std_accuracy": 0.033,
-      "min_accuracy": 0.75,
-      "max_accuracy": 0.8958,
-      "gini": 0.0222,
+      "mean_accuracy": 0.7962,
+      "std_accuracy": 0.0319,
+      "min_accuracy": 0.6875,
+      "max_accuracy": 0.875,
+      "gini": 0.0218,
       "n_above_90": 0,
-      "n_above_75": 63,
+      "n_above_75": 58,
       "top5_experts": [
-        55,
-        3,
-        45,
+        48,
         54,
-        11
+        16,
+        26,
+        38
       ],
       "top5_accuracies": [
-        0.8958,
-        0.8958,
-        0.8854,
-        0.8854,
-        0.875
+        0.875,
+        0.8542,
+        0.8333,
+        0.8333,
+        0.8333
       ],
-      "router_max_preference": 0.010173004120588303
+      "router_max_preference": 0.003638504073023796
     },
     "2": {
-      "mean_accuracy": 0.8486,
-      "std_accuracy": 0.0321,
-      "min_accuracy": 0.75,
-      "max_accuracy": 0.9271,
-      "gini": 0.0205,
-      "n_above_90": 4,
-      "n_above_75": 63,
-      "top5_experts": [
-        55,
-        31,
-        44,
-        11,
-        26
-      ],
-      "top5_accuracies": [
-        0.9271,
-        0.9167,
-        0.9167,
-        0.9062,
-        0.8854
-      ],
-      "router_max_preference": 0.01047586090862751
-    },
-    "3": {
-      "mean_accuracy": 0.8568,
-      "std_accuracy": 0.0303,
-      "min_accuracy": 0.7917,
-      "max_accuracy": 0.9167,
-      "gini": 0.02,
-      "n_above_90": 6,
+      "mean_accuracy": 0.8519,
+      "std_accuracy": 0.0396,
+      "min_accuracy": 0.7708,
+      "max_accuracy": 0.9375,
+      "gini": 0.0264,
+      "n_above_90": 10,
       "n_above_75": 64,
       "top5_experts": [
-        1,
-        8,
-        46,
-        24,
-        58
-      ],
-      "top5_accuracies": [
-        0.9167,
-        0.9062,
-        0.9062,
-        0.9062,
-        0.9062
-      ],
-      "router_max_preference": 0.014279401861131191
-    },
-    "4": {
-      "mean_accuracy": 0.8739,
-      "std_accuracy": 0.0315,
-      "min_accuracy": 0.7917,
-      "max_accuracy": 0.9271,
-      "gini": 0.0204,
-      "n_above_90": 17,
-      "n_above_75": 64,
-      "top5_experts": [
+        12,
+        42,
+        50,
         36,
-        48,
-        20,
-        16,
-        17
+        46
       ],
       "top5_accuracies": [
-        0.9271,
-        0.9271,
+        0.9375,
+        0.9167,
         0.9167,
         0.9167,
         0.9167
       ],
-      "router_max_preference": 0.03184070065617561
+      "router_max_preference": 0.0053022392094135284
     },
-    "5": {
-      "mean_accuracy": 0.8771,
-      "std_accuracy": 0.0271,
-      "min_accuracy": 0.8229,
-      "max_accuracy": 0.9375,
-      "gini": 0.0176,
-      "n_above_90": 13,
+    "3": {
+      "mean_accuracy": 0.8677,
+      "std_accuracy": 0.037,
+      "min_accuracy": 0.7708,
+      "max_accuracy": 0.9583,
+      "gini": 0.0237,
+      "n_above_90": 11,
+      "n_above_75": 64,
+      "top5_experts": [
+        25,
+        63,
+        8,
+        55,
+        12
+      ],
+      "top5_accuracies": [
+        0.9583,
+        0.9271,
+        0.9271,
+        0.9167,
+        0.9167
+      ],
+      "router_max_preference": 0.005913037806749344
+    },
+    "4": {
+      "mean_accuracy": 0.888,
+      "std_accuracy": 0.0262,
+      "min_accuracy": 0.8333,
+      "max_accuracy": 0.9479,
+      "gini": 0.0167,
+      "n_above_90": 24,
       "n_above_75": 64,
       "top5_experts": [
         62,
-        33,
-        38,
-        27,
-        49
+        61,
+        9,
+        13,
+        20
       ],
       "top5_accuracies": [
-        0.9375,
-        0.9271,
-        0.9167,
-        0.9167,
-        0.9167
-      ],
-      "router_max_preference": 0.031220417469739914
-    },
-    "6": {
-      "mean_accuracy": 0.8932,
-      "std_accuracy": 0.0276,
-      "min_accuracy": 0.7708,
-      "max_accuracy": 0.9375,
-      "gini": 0.0162,
-      "n_above_90": 27,
-      "n_above_75": 64,
-      "top5_experts": [
-        17,
-        10,
-        0,
-        44,
-        34
-      ],
-      "top5_accuracies": [
-        0.9375,
+        0.9479,
         0.9375,
         0.9271,
         0.9271,
         0.9271
       ],
-      "router_max_preference": 0.01241193525493145
+      "router_max_preference": 0.01717480458319187
     },
-    "7": {
-      "mean_accuracy": 0.9051,
-      "std_accuracy": 0.0238,
-      "min_accuracy": 0.8542,
+    "5": {
+      "mean_accuracy": 0.8908,
+      "std_accuracy": 0.0274,
+      "min_accuracy": 0.8438,
       "max_accuracy": 0.9479,
-      "gini": 0.015,
-      "n_above_90": 37,
+      "gini": 0.0174,
+      "n_above_90": 22,
       "n_above_75": 64,
       "top5_experts": [
-        47,
-        55,
-        22,
-        11,
-        54
+        62,
+        49,
+        61,
+        3,
+        37
       ],
       "top5_accuracies": [
-        0.9479,
         0.9479,
         0.9479,
         0.9375,
+        0.9375,
         0.9375
       ],
-      "router_max_preference": 0.014076141640543938
+      "router_max_preference": 0.01638178713619709
     },
-    "8": {
-      "mean_accuracy": 0.9154,
-      "std_accuracy": 0.023,
-      "min_accuracy": 0.8542,
-      "max_accuracy": 0.9583,
-      "gini": 0.0138,
-      "n_above_90": 50,
+    "6": {
+      "mean_accuracy": 0.904,
+      "std_accuracy": 0.0248,
+      "min_accuracy": 0.8229,
+      "max_accuracy": 0.9688,
+      "gini": 0.0149,
+      "n_above_90": 34,
       "n_above_75": 64,
       "top5_experts": [
-        19,
-        14,
-        52,
-        20,
-        24
+        1,
+        22,
+        44,
+        3,
+        35
       ],
       "top5_accuracies": [
-        0.9583,
-        0.9583,
-        0.9583,
-        0.9583,
-        0.9479
+        0.9688,
+        0.9479,
+        0.9375,
+        0.9375,
+        0.9375
       ],
-      "router_max_preference": 0.033538151532411575
+      "router_max_preference": 0.021944062784314156
     },
-    "9": {
-      "mean_accuracy": 0.923,
-      "std_accuracy": 0.0223,
-      "min_accuracy": 0.8854,
+    "7": {
+      "mean_accuracy": 0.9064,
+      "std_accuracy": 0.0275,
+      "min_accuracy": 0.8333,
       "max_accuracy": 0.9688,
-      "gini": 0.0137,
-      "n_above_90": 53,
+      "gini": 0.0172,
+      "n_above_90": 37,
       "n_above_75": 64,
       "top5_experts": [
-        41,
-        16,
-        26,
-        32,
-        24
+        12,
+        24,
+        18,
+        7,
+        25
       ],
       "top5_accuracies": [
         0.9688,
         0.9583,
+        0.9479,
+        0.9479,
+        0.9479
+      ],
+      "router_max_preference": 0.014119558036327362
+    },
+    "8": {
+      "mean_accuracy": 0.9012,
+      "std_accuracy": 0.0283,
+      "min_accuracy": 0.8125,
+      "max_accuracy": 0.9583,
+      "gini": 0.0173,
+      "n_above_90": 36,
+      "n_above_75": 64,
+      "top5_experts": [
+        39,
+        58,
+        36,
+        2,
+        18
+      ],
+      "top5_accuracies": [
         0.9583,
+        0.9583,
+        0.9583,
+        0.9479,
+        0.9375
+      ],
+      "router_max_preference": 0.02141016535460949
+    },
+    "9": {
+      "mean_accuracy": 0.9196,
+      "std_accuracy": 0.02,
+      "min_accuracy": 0.8646,
+      "max_accuracy": 0.9583,
+      "gini": 0.0121,
+      "n_above_90": 50,
+      "n_above_75": 64,
+      "top5_experts": [
+        31,
+        51,
+        26,
+        1,
+        57
+      ],
+      "top5_accuracies": [
+        0.9583,
+        0.9583,
+        0.9583,
+        0.9479,
+        0.9479
+      ],
+      "router_max_preference": 0.012633755803108215
+    },
+    "10": {
+      "mean_accuracy": 0.9289,
+      "std_accuracy": 0.0244,
+      "min_accuracy": 0.875,
+      "max_accuracy": 0.9688,
+      "gini": 0.0149,
+      "n_above_90": 53,
+      "n_above_75": 64,
+      "top5_experts": [
+        9,
+        23,
+        28,
+        22,
+        13
+      ],
+      "top5_accuracies": [
+        0.9688,
+        0.9688,
+        0.9688,
         0.9583,
         0.9583
       ],
-      "router_max_preference": 0.021632961928844452
+      "router_max_preference": 0.010875212028622627
     },
-    "10": {
-      "mean_accuracy": 0.9274,
-      "std_accuracy": 0.0209,
-      "min_accuracy": 0.875,
+    "11": {
+      "mean_accuracy": 0.9362,
+      "std_accuracy": 0.0205,
+      "min_accuracy": 0.8854,
       "max_accuracy": 0.9792,
-      "gini": 0.0125,
-      "n_above_90": 58,
+      "gini": 0.0123,
+      "n_above_90": 61,
       "n_above_75": 64,
       "top5_experts": [
-        18,
         14,
-        12,
-        23,
+        6,
+        7,
+        21,
         29
       ],
       "top5_accuracies": [
         0.9792,
+        0.9792,
+        0.9688,
+        0.9688,
+        0.9688
+      ],
+      "router_max_preference": 0.015488971024751663
+    },
+    "12": {
+      "mean_accuracy": 0.9349,
+      "std_accuracy": 0.0194,
+      "min_accuracy": 0.8854,
+      "max_accuracy": 0.9792,
+      "gini": 0.0113,
+      "n_above_90": 60,
+      "n_above_75": 64,
+      "top5_experts": [
+        37,
+        27,
+        10,
+        63,
+        53
+      ],
+      "top5_accuracies": [
+        0.9792,
         0.9688,
         0.9688,
         0.9583,
         0.9583
       ],
-      "router_max_preference": 0.013553377240896225
+      "router_max_preference": 0.02403188683092594
     },
-    "11": {
-      "mean_accuracy": 0.9305,
-      "std_accuracy": 0.0234,
-      "min_accuracy": 0.875,
+    "13": {
+      "mean_accuracy": 0.9336,
+      "std_accuracy": 0.0233,
+      "min_accuracy": 0.8646,
       "max_accuracy": 0.9792,
-      "gini": 0.0142,
-      "n_above_90": 57,
+      "gini": 0.0139,
+      "n_above_90": 59,
       "n_above_75": 64,
       "top5_experts": [
-        55,
-        60,
-        2,
-        3,
-        31
+        59,
+        63,
+        26,
+        54,
+        43
       ],
       "top5_accuracies": [
         0.9792,
         0.9688,
         0.9688,
         0.9688,
-        0.9583
+        0.9688
       ],
-      "router_max_preference": 0.03592463210225105
+      "router_max_preference": 0.017575189471244812
     },
-    "12": {
-      "mean_accuracy": 0.9256,
-      "std_accuracy": 0.0186,
-      "min_accuracy": 0.8646,
-      "max_accuracy": 0.9688,
-      "gini": 0.011,
-      "n_above_90": 58,
-      "n_above_75": 64,
-      "top5_experts": [
-        26,
-        10,
-        54,
-        63,
-        19
-      ],
-      "top5_accuracies": [
-        0.9688,
-        0.9583,
-        0.9583,
-        0.9479,
-        0.9479
-      ],
-      "router_max_preference": 0.027489401400089264
-    },
-    "13": {
-      "mean_accuracy": 0.9211,
-      "std_accuracy": 0.0248,
-      "min_accuracy": 0.8646,
-      "max_accuracy": 0.9688,
-      "gini": 0.015,
+    "14": {
+      "mean_accuracy": 0.9246,
+      "std_accuracy": 0.0304,
+      "min_accuracy": 0.8229,
+      "max_accuracy": 0.9792,
+      "gini": 0.0175,
       "n_above_90": 53,
       "n_above_75": 64,
       "top5_experts": [
-        57,
-        31,
-        40,
-        48,
-        10
+        25,
+        41,
+        0,
+        14,
+        28
+      ],
+      "top5_accuracies": [
+        0.9792,
+        0.9792,
+        0.9688,
+        0.9688,
+        0.9688
+      ],
+      "router_max_preference": 0.019708214327692986
+    },
+    "15": {
+      "mean_accuracy": 0.9222,
+      "std_accuracy": 0.0317,
+      "min_accuracy": 0.8229,
+      "max_accuracy": 0.9688,
+      "gini": 0.0183,
+      "n_above_90": 50,
+      "n_above_75": 64,
+      "top5_experts": [
+        6,
+        14,
+        61,
+        25,
+        58
       ],
       "top5_accuracies": [
         0.9688,
@@ -349,55 +397,7 @@
         0.9583,
         0.9583
       ],
-      "router_max_preference": 0.03473054990172386
-    },
-    "14": {
-      "mean_accuracy": 0.9095,
-      "std_accuracy": 0.0222,
-      "min_accuracy": 0.8438,
-      "max_accuracy": 0.9583,
-      "gini": 0.0134,
-      "n_above_90": 44,
-      "n_above_75": 64,
-      "top5_experts": [
-        23,
-        19,
-        43,
-        10,
-        17
-      ],
-      "top5_accuracies": [
-        0.9583,
-        0.9479,
-        0.9479,
-        0.9479,
-        0.9375
-      ],
-      "router_max_preference": 0.0307304747402668
-    },
-    "15": {
-      "mean_accuracy": 0.9015,
-      "std_accuracy": 0.0269,
-      "min_accuracy": 0.8438,
-      "max_accuracy": 0.9479,
-      "gini": 0.0169,
-      "n_above_90": 35,
-      "n_above_75": 64,
-      "top5_experts": [
-        16,
-        34,
-        33,
-        13,
-        15
-      ],
-      "top5_accuracies": [
-        0.9479,
-        0.9479,
-        0.9479,
-        0.9479,
-        0.9375
-      ],
-      "router_max_preference": 0.04028937965631485
+      "router_max_preference": 0.01794799603521824
     }
   }
 }

@@ -2,7 +2,7 @@
 
 ## 5.1 Output Dilution as an Architectural Property
 
-The 77$\times$ output scale gap between MoE and dense feedforward
+The 74$\times$ output scale gap between MoE and dense feedforward
 blocks is not specific to moral encoding — it is a structural
 consequence of sparse expert aggregation. When a top-$k$ routing
 mechanism selects 8 of 64 experts, each expert contributes roughly
@@ -92,8 +92,8 @@ achieve near-perfect probing accuracy (99--100%) with full encoding
 breadth (decodable at every layer) and near-zero encoding depth
 (onset at layer 0). On probing accuracy alone, the two architectures
 are indistinguishable. Yet the MoE model's moral encoding is
-3.6$\times$ more fragile, and the underlying feedforward signal is
-77$\times$ weaker.
+5.1$\times$ more fragile, and the underlying feedforward signal is
+74$\times$ weaker.
 
 Probing accuracy measures the *presence* of information — whether
 a linear classifier can extract a feature from the representation.

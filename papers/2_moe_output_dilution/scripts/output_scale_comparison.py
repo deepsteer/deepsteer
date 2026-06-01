@@ -4,7 +4,7 @@
 Measures the scale (std, L2 norm) of each model's feedforward block output
 at every layer, using the same input texts. Tests the output-dilution
 hypothesis: MoE aggregation produces smaller-scale outputs than dense MLPs,
-explaining OLMoE's 3.6x greater fragility.
+explaining OLMoE's greater fragility.
 
 Runtime: ~3 min (30s OLMoE load, 1 min OLMoE inference, 5s OLMo load, 20s OLMo inference)
 """

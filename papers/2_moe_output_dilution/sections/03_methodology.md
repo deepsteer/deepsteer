@@ -109,12 +109,13 @@ We use the same 240-pair moral probing dataset as companion work
 \citep{reblitzrichardson2026fragility}: 40 minimal pairs per Moral
 Foundations Theory foundation (care/harm, fairness/cheating,
 loyalty/betrayal, authority/subversion, sanctity/degradation,
-liberty/oppression), seeded from MoralBench \citep{yu2024moralbench}
-and validated through
-automated gates (length matching, embedding overlap rejection,
-keyword filtering, deduplication). The dataset is split 80/20 into
-192 training pairs (384 texts) and 48 test pairs (96 texts), with
-foundation balance preserved across splits.
+liberty/oppression), subsampled with a deterministic seed from a
+1,200-pair dataset constructed per published quality guidelines
+with LLM-assisted filtering for naturalness and moral neutrality
+of neutral-side sentences (see `DATASET_GUIDELINES.md`). The
+subsample is split 80/20 into 192 training pairs (384 texts) and
+48 test pairs (96 texts), with foundation balance preserved across
+splits.
 
 Dataset identity is load-bearing: the dense-vs-MoE comparison (§4.1)
 and the output scale comparison (§4.4) use identical inputs to ensure
