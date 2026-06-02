@@ -51,12 +51,14 @@ sections/%.tex: ../sections/%.md pandoc-template.tex postprocess.py
 	@sed -E \
 	  -e 's/\\section\{[0-9]+\. */\\section{/g' \
 	  -e 's/\\subsection\{[0-9]+\.[0-9]+ */\\subsection{/g' \
+	  -e 's/\\subsubsection\{[0-9]+\.[0-9]+\.[0-9]+ */\\subsubsection{/g' \
 	  -e 's/\\subsection\{[A-Z]\.[0-9]+ */\\subsection{/g' \
+	  -e 's/\\subsubsection\{[A-Z]\.[0-9]+\.[0-9]+ */\\subsubsection{/g' \
 	  -e 's/\\section\{Appendix [A-Z]\. */\\section{/g' \
-	  -e 's/(\\(sub)?section\{\\texorpdfstring\{)[0-9]+\.[0-9]* */\1/g' \
-	  -e 's/(\\(sub)?section\{\\texorpdfstring\{)[A-Z]\.[0-9]+ */\1/g' \
-	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[0-9]+\.[0-9]* */\1/g' \
-	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[A-Z]\.[0-9]+ */\1/g' \
+	  -e 's/(\\(sub)*(sub)?section\{\\texorpdfstring\{)[0-9]+\.[0-9.]* */\1/g' \
+	  -e 's/(\\(sub)*(sub)?section\{\\texorpdfstring\{)[A-Z]\.[0-9.]+ */\1/g' \
+	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[0-9]+\.[0-9.]* */\1/g' \
+	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[A-Z]\.[0-9.]+ */\1/g' \
 	  $@.raw > $@
 	@python3 postprocess.py $@
 	@rm -f $@.raw
