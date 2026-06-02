@@ -16,8 +16,8 @@ under `papers/` and `outputs/`:
 - **Paper 2 — MoE Expert-Level Moral Probing (OLMoE-1B-7B vs.
   OLMo-2 1B):** four findings — (i) no expert moral specialization
   (all 1,024 probes above 75 %, Gini < 0.03); (ii) MoE encoding is
-  3.6× more fragile than dense (mean critical σ* = 1.27 vs. 4.56);
-  (iii) output dilution explains the fragility (77× output scale gap);
+  5.1× more fragile than dense (mean critical σ* = 0.84 vs. 4.25);
+  (iii) output dilution explains the fragility (74× output scale gap);
   (iv) specialization never emerges during training (11 checkpoints,
   Gini stable). The prior persona-mechanism findings (C10 v2 null,
   Step 2 gradient-penalty, Step 2B behavioral dissociation) remain as

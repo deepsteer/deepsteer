@@ -33,10 +33,10 @@ wrong metric.
 Four findings on OLMoE-1B-7B (64 experts, top-8 routing) vs. dense
 OLMo-2 1B: (1) No expert moral specialization — all 1,024 per-expert
 probes decode moral content above 75 %, Gini < 0.03 at all layers.
-(2) MoE encoding is 3.6× more fragile than dense despite matching on
-accuracy (mean critical σ* = 1.27 vs. 4.56). (3) Output dilution
+(2) MoE encoding is 5.1× more fragile than dense despite matching on
+accuracy (mean critical σ* = 0.84 vs. 4.25). (3) Output dilution
 explains the fragility — the MoE block's output contributes to the
-residual stream at 77× smaller scale than the dense MLP. (4)
+residual stream at 74× smaller scale than the dense MLP. (4)
 Specialization never emerges during training — Gini stays between
 0.011 and 0.015 across 11 checkpoints spanning step 5K to 1.2M.
 
@@ -177,16 +177,16 @@ gate). All deterministic, API-free, included in the toolkit.
    model. The router shows negligible moral content preference
    (maximum 2.4 %).
 
-2. **MoE encoding is 3.6× more fragile than dense.** Despite
+2. **MoE encoding is 5.1× more fragile than dense.** Despite
    matching dense OLMo-2 1B on probing accuracy (99.0 % vs.
-   100.0 % peak), OLMoE's moral encoding collapses under 3.6×
-   less noise (mean critical σ* = 1.27 vs. 4.56). The fragility
+   99.0 % peak), OLMoE's moral encoding collapses under 5.1×
+   less noise (mean critical σ* = 0.84 vs. 4.25). The fragility
    gap is not explained by weaker individual expert representations
    or unstable routing — both are robust in isolation.
 
 3. **The fragility originates in output dilution.** The MoE block's
    aggregated output (a top-8 weighted average of 64 expert outputs)
-   contributes to the residual stream at **77× smaller scale** than
+   contributes to the residual stream at **74× smaller scale** than
    the dense MLP output, measured as the standard deviation of the
    feedforward block's output across inputs. This *output dilution*
    means that the same absolute noise level overwhelms the MoE moral

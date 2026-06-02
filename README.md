@@ -19,7 +19,7 @@ OLMoE-1B-7B. See **[papers/README.md](papers/README.md)** for findings;
 | Paper | Headline |
 |---|---|
 | 1 — *The Moral Emergence Curve* | Moral concepts emerge early; fragility resolves what accuracy cannot |
-| 2 — *MoE Expert-Level Moral Probing* | No expert specialization; 77× output dilution creates structural fragility |
+| 2 — *MoE Expert-Level Moral Probing* | No expert specialization; 74× output dilution creates structural fragility |
 | 3 — *The Geometry of Moral Representation* | Integration signature; care–sanctity pairing; sanctity fragility reversal |
 | 4 — *Causal Validation* (preliminary) | Direction ablation, steering injection, behavioral grounding, SAE overlap |
 

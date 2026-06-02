@@ -10,7 +10,7 @@ Saturates, Fragility Resolves*) establishes fragility as a complement
 to probing accuracy and characterizes moral encoding depth, breadth,
 and robustness in dense models. Paper 2 (*Output Dilution in
 Mixture-of-Experts*) extends probing and fragility to MoE, finding
-no expert specialization and a 77× output scale gap that creates
+no expert specialization and a 74× output scale gap that creates
 structural fragility. Both papers treat moral encoding as a **binary**
 question: moral vs. neutral. Paper 3 asks a qualitatively different
 question: does the model have **structured** representations of

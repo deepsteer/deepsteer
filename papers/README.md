@@ -40,12 +40,12 @@ mechanism that makes MoE moral encoding structurally fragile:
   coefficient of expert accuracy stays below 0.03 at all layers —
   moral encoding is as diffuse across experts as across neurons in
   dense models. The router shows negligible moral preference (max 2.4%).
-- **MoE encoding is 3.6× more fragile than dense.** Despite matching
-  OLMo-2 1B on probing accuracy (99.0% vs. 100.0% peak), OLMoE
-  collapses under 3.6× less noise (mean critical σ* = 1.27 vs. 4.56).
+- **MoE encoding is 5.1× more fragile than dense.** Despite matching
+  OLMo-2 1B on probing accuracy (99.0% vs. 99.0% peak), OLMoE
+  collapses under 5.1× less noise (mean critical σ* = 0.84 vs. 4.25).
 - **Output dilution explains the fragility.** The MoE block's
   aggregated output (top-8 weighted average of 64 experts) contributes
-  to the residual stream at **77× smaller scale** than the dense MLP
+  to the residual stream at **74× smaller scale** than the dense MLP
   output — the moral signal is present but at a scale trivially
   overwhelmed by noise.
 - **Specialization never emerges during training.** Across 11
