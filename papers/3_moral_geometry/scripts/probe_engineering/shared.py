@@ -1,6 +1,14 @@
 """Shared constants, types, and geometric analysis utilities for probe engineering.
 
 All probe engineering scripts import from here to avoid duplication.
+
+NOTE: Core algorithms have been extracted to the deepsteer library.
+This module re-exports them with MFT-specific defaults for backward
+compatibility. New code should import directly from:
+  - deepsteer.foundations (constants)
+  - deepsteer.directions (direction extraction)
+  - deepsteer.geometry (geometric analysis)
+  - deepsteer.causal (ablation, steering, behavioral)
 """
 
 from __future__ import annotations
@@ -12,52 +20,23 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from scipy.cluster.hierarchy import linkage
 
 # ---------------------------------------------------------------------------
-# Foundation constants
+# Foundation constants — re-exported from deepsteer.foundations
 # ---------------------------------------------------------------------------
 
-FOUNDATION_ORDER = [
-    "care_harm", "fairness_cheating", "liberty_oppression",
-    "loyalty_betrayal", "authority_subversion", "sanctity_degradation",
-]
-
-FOUNDATION_SHORT = {
-    "care_harm": "Care",
-    "fairness_cheating": "Fairness",
-    "liberty_oppression": "Liberty",
-    "loyalty_betrayal": "Loyalty",
-    "authority_subversion": "Authority",
-    "sanctity_degradation": "Sanctity",
-}
-
-INDIVIDUALIZING = {"care_harm", "fairness_cheating", "liberty_oppression"}
-BINDING = {"loyalty_betrayal", "authority_subversion", "sanctity_degradation"}
-
-DILEMMA_TO_PROBE = {
-    "care": "care_harm",
-    "fairness": "fairness_cheating",
-    "liberty": "liberty_oppression",
-    "loyalty": "loyalty_betrayal",
-    "authority": "authority_subversion",
-    "sanctity": "sanctity_degradation",
-}
-
-DILEMMA_PAIRS = [
-    ("care", "fairness"), ("care", "liberty"), ("care", "loyalty"),
-    ("care", "authority"), ("care", "sanctity"),
-    ("fairness", "liberty"), ("fairness", "loyalty"),
-    ("fairness", "authority"), ("fairness", "sanctity"),
-    ("liberty", "loyalty"), ("liberty", "authority"), ("liberty", "sanctity"),
-    ("loyalty", "authority"), ("loyalty", "sanctity"),
-    ("authority", "sanctity"),
-]
-
-DILEMMA_PAIR_KEYS = [f"{a}-{b}" for a, b in DILEMMA_PAIRS]
+from deepsteer.foundations import (  # noqa: E402
+    BINDING,
+    DILEMMA_PAIR_KEYS,
+    DILEMMA_PAIRS,
+    DILEMMA_TO_PROBE,
+    FOUNDATION_ORDER,
+    FOUNDATION_SHORT,
+    INDIVIDUALIZING,
+)
 
 # ---------------------------------------------------------------------------
-# Standard paths
+# Standard paths (paper-specific, stay here)
 # ---------------------------------------------------------------------------
 
 PAPER_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -74,21 +53,24 @@ def ensure_output_dirs() -> tuple[Path, Path]:
 
 
 # ---------------------------------------------------------------------------
-# Geometric analysis functions
+# Geometric analysis — MFT-defaulted wrappers around deepsteer.geometry
 # ---------------------------------------------------------------------------
+
+from deepsteer.geometry.cosine import (  # noqa: E402
+    compute_cosine_matrix as _generic_cosine_matrix,
+    compute_effective_dimensionality as _generic_effective_dim,
+)
+from deepsteer.geometry.clustering import (  # noqa: E402
+    permutation_test_mft,
+)
+
 
 def compute_cosine_matrix(
     directions: dict[str, dict[int, np.ndarray]],
     layer: int,
 ) -> np.ndarray | None:
     """6x6 cosine similarity matrix for foundation directions at a layer."""
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    return mat @ mat.T
+    return _generic_cosine_matrix(directions, layer, labels=FOUNDATION_ORDER)
 
 
 def compute_effective_dimensionality(
@@ -97,75 +79,19 @@ def compute_effective_dimensionality(
     threshold: float = 0.9,
 ) -> int | None:
     """Number of SVD components to explain `threshold` variance of 6 directions."""
-    vecs = []
-    for fv in FOUNDATION_ORDER:
-        if fv not in directions or layer not in directions[fv]:
-            return None
-        vecs.append(directions[fv][layer])
-    mat = np.stack(vecs)
-    mat_centered = mat - mat.mean(axis=0, keepdims=True)
-    _, s, _ = np.linalg.svd(mat_centered, full_matrices=False)
-    explained = np.cumsum(s ** 2) / np.sum(s ** 2)
-    return int(np.searchsorted(explained, threshold)) + 1
-
-
-def permutation_test_mft(cos_sim: np.ndarray, n_perm: int = 10000, seed: int = 42) -> dict:
-    """Test whether individualizing/binding groups have higher within-group similarity."""
-    n = 6
-    ind_idx = [0, 1, 2]
-    bind_idx = [3, 4, 5]
-
-    def _stat(sim, ga, gb):
-        wa = [sim[i, j] for i in ga for j in ga if i < j]
-        wb = [sim[i, j] for i in gb for j in gb if i < j]
-        bw = [sim[i, j] for i in ga for j in gb]
-        return np.mean(wa + wb) - np.mean(bw) if (wa + wb) and bw else 0.0
-
-    observed = _stat(cos_sim, ind_idx, bind_idx)
-    rng = np.random.RandomState(seed)
-    count = 0
-    for _ in range(n_perm):
-        p = rng.permutation(n)
-        if _stat(cos_sim, p[:3].tolist(), p[3:].tolist()) >= observed:
-            count += 1
-    p_value = (count + 1) / (n_perm + 1)
-
-    within_ind = [cos_sim[i, j] for i in ind_idx for j in ind_idx if i < j]
-    within_bind = [cos_sim[i, j] for i in bind_idx for j in bind_idx if i < j]
-    between = [cos_sim[i, j] for i in ind_idx for j in bind_idx]
-
-    return {
-        "observed_statistic": float(observed),
-        "p_value": float(p_value),
-        "mean_within_individualizing": float(np.mean(within_ind)),
-        "mean_within_binding": float(np.mean(within_bind)),
-        "mean_between_groups": float(np.mean(between)),
-    }
+    return _generic_effective_dim(directions, layer, labels=FOUNDATION_ORDER, threshold=threshold)
 
 
 def check_dendrogram_mft(cos_sim: np.ndarray) -> dict:
     """Check whether Ward clustering separates individualizing vs binding."""
-    n = 6
-    dist = 1 - cos_sim
-    condensed = [dist[i, j] for i in range(n) for j in range(i + 1, n)]
-    Z = linkage(condensed, method="ward")
-
-    def _get_leaves(idx):
-        if idx < n:
-            return {idx}
-        row = Z[idx - n]
-        return _get_leaves(int(row[0])) | _get_leaves(int(row[1]))
-
-    last = Z[-1]
-    left = _get_leaves(int(last[0]))
-    right = _get_leaves(int(last[1]))
-    mft_match = left == {0, 1, 2} or right == {0, 1, 2}
-    left_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(left)]
-    right_labels = [FOUNDATION_SHORT[FOUNDATION_ORDER[i]] for i in sorted(right)]
+    from deepsteer.geometry.clustering import hierarchical_cluster
+    short_labels = [FOUNDATION_SHORT[fv] for fv in FOUNDATION_ORDER]
+    groups = {"individualizing": [0, 1, 2], "binding": [3, 4, 5]}
+    result = hierarchical_cluster(cos_sim, short_labels, groups)
     return {
-        "mft_match": mft_match,
-        "left": left_labels,
-        "right": right_labels,
+        "mft_match": result.get("individualizing_match", False),
+        "left": result["left"],
+        "right": result["right"],
     }
 
 
@@ -189,24 +115,68 @@ def full_geometric_analysis(
 
 
 # ---------------------------------------------------------------------------
-# Subspace utilities (from full_subspace_projection)
+# Subspace utilities — re-exported from deepsteer.geometry.subspace
 # ---------------------------------------------------------------------------
 
-def orthonormal_basis(vectors: np.ndarray) -> np.ndarray:
-    """Compute orthonormal basis for the span of rows of `vectors` via SVD."""
-    _, s, Vt = np.linalg.svd(vectors, full_matrices=False)
-    rank = np.sum(s > 1e-10)
-    return Vt[:rank]
-
-
-def subspace_membership(direction: np.ndarray, basis: np.ndarray) -> float:
-    """Fraction of direction's variance explained by the subspace."""
-    proj = basis @ direction
-    return float(np.dot(proj, proj))
+from deepsteer.geometry.subspace import (  # noqa: E402
+    orthonormal_basis,
+    subspace_membership,
+)
 
 
 # ---------------------------------------------------------------------------
-# Model + dataset loading helpers
+# Direction extraction — re-exported from deepsteer.directions
+# ---------------------------------------------------------------------------
+
+from deepsteer.directions.mean_diff import (  # noqa: E402
+    extract_mean_diff_directions as _generic_mean_diff,
+)
+from deepsteer.directions.probe_weight import (  # noqa: E402
+    extract_from_npz as _generic_from_npz,
+)
+
+
+def compute_mean_diff_directions(
+    all_activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
+    n_layers: int,
+    foundation_indices: dict[str, list[int]],
+) -> dict[str, dict[int, np.ndarray]]:
+    """Compute mean-difference directions for each foundation at each layer."""
+    return _generic_mean_diff(all_activations, foundation_indices, n_layers)
+
+
+def load_probe_directions(
+    path: str | Path,
+) -> dict[str, dict[int, np.ndarray]]:
+    """Load and normalize probe-weight directions from an .npz file."""
+    return _generic_from_npz(path, groups=FOUNDATION_ORDER)
+
+
+# ---------------------------------------------------------------------------
+# Direction evaluation helpers (paper-specific, stay here)
+# ---------------------------------------------------------------------------
+
+def pair_accuracy(
+    direction: np.ndarray,
+    activations: torch.Tensor,
+    pair_indices: list[int],
+) -> float:
+    """Fraction of pairs where direction . moral > direction . neutral.
+
+    activations: (2*N, hidden_dim) interleaved [moral_0, neutral_0, moral_1, ...]
+    pair_indices: which pair slots to evaluate (into the interleaved array).
+    """
+    correct = 0
+    for pi in pair_indices:
+        moral_act = activations[pi * 2].numpy()
+        neutral_act = activations[pi * 2 + 1].numpy()
+        if np.dot(direction, moral_act) > np.dot(direction, neutral_act):
+            correct += 1
+    return correct / len(pair_indices) if pair_indices else 0.0
+
+
+# ---------------------------------------------------------------------------
+# Model + dataset loading helpers (paper-specific, stay here)
 # ---------------------------------------------------------------------------
 
 def load_model_and_collect_activations(
@@ -257,72 +227,3 @@ def load_model_and_collect_activations(
         torch.mps.empty_cache()
 
     return all_train, all_test, dataset, n_layers, foundation_indices
-
-
-def load_probe_directions(
-    path: str | Path,
-) -> dict[str, dict[int, np.ndarray]]:
-    """Load and normalize probe-weight directions from an .npz file."""
-    probe_npz = np.load(path)
-    pw_directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        pw_directions[fv] = {}
-        layer = 0
-        while True:
-            key = f"{fv}_layer{layer}"
-            if key not in probe_npz:
-                break
-            d = probe_npz[key].astype(np.float64)
-            norm = np.linalg.norm(d)
-            if norm > 1e-12:
-                d /= norm
-            pw_directions[fv][layer] = d
-            layer += 1
-    return pw_directions
-
-
-# ---------------------------------------------------------------------------
-# Direction evaluation helpers
-# ---------------------------------------------------------------------------
-
-def pair_accuracy(
-    direction: np.ndarray,
-    activations: torch.Tensor,
-    pair_indices: list[int],
-) -> float:
-    """Fraction of pairs where direction · moral > direction · neutral.
-
-    activations: (2*N, hidden_dim) interleaved [moral_0, neutral_0, moral_1, ...]
-    pair_indices: which pair slots to evaluate (into the interleaved array).
-    """
-    correct = 0
-    for pi in pair_indices:
-        moral_act = activations[pi * 2].numpy()
-        neutral_act = activations[pi * 2 + 1].numpy()
-        if np.dot(direction, moral_act) > np.dot(direction, neutral_act):
-            correct += 1
-    return correct / len(pair_indices) if pair_indices else 0.0
-
-
-def compute_mean_diff_directions(
-    all_activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
-    n_layers: int,
-    foundation_indices: dict[str, list[int]],
-) -> dict[str, dict[int, np.ndarray]]:
-    """Compute mean-difference directions for each foundation at each layer."""
-    directions: dict[str, dict[int, np.ndarray]] = {}
-    for fv in FOUNDATION_ORDER:
-        if fv not in foundation_indices:
-            continue
-        pair_indices = foundation_indices[fv]
-        directions[fv] = {}
-        for layer in range(n_layers):
-            X, y = all_activations[layer]
-            moral_rows = [pi * 2 for pi in pair_indices]
-            neutral_rows = [pi * 2 + 1 for pi in pair_indices]
-            mean_diff = X[moral_rows].numpy().mean(axis=0) - X[neutral_rows].numpy().mean(axis=0)
-            norm = np.linalg.norm(mean_diff)
-            if norm > 1e-12:
-                mean_diff /= norm
-            directions[fv][layer] = mean_diff
-    return directions

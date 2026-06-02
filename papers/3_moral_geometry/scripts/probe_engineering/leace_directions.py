@@ -43,46 +43,13 @@ def compute_leace_directions(
     In the binary case, the LEACE eraser direction simplifies to the
     Fisher LDA direction. This is the optimal linear direction for
     separating two class-conditional Gaussians under shared covariance.
+
+    NOTE: Algorithm extracted to deepsteer.directions.leace. This wrapper
+    preserves the paper script's (activations, n_layers, foundation_indices)
+    call signature.
     """
-    directions: dict[str, dict[int, np.ndarray]] = {}
-
-    for fv in FOUNDATION_ORDER:
-        if fv not in foundation_indices:
-            continue
-        pair_indices = foundation_indices[fv]
-        directions[fv] = {}
-
-        for layer in range(n_layers):
-            X, _ = all_activations[layer]
-            moral_rows = [pi * 2 for pi in pair_indices]
-            neutral_rows = [pi * 2 + 1 for pi in pair_indices]
-
-            moral_acts = X[moral_rows].numpy().astype(np.float64)
-            neutral_acts = X[neutral_rows].numpy().astype(np.float64)
-
-            mu_1 = moral_acts.mean(axis=0)
-            mu_0 = neutral_acts.mean(axis=0)
-            diff = mu_1 - mu_0
-
-            # Pooled covariance (regularized for numerical stability)
-            all_acts = np.vstack([moral_acts, neutral_acts])
-            mu_pooled = all_acts.mean(axis=0)
-            centered = all_acts - mu_pooled
-            n_samples = centered.shape[0]
-            Sigma = (centered.T @ centered) / (n_samples - 1)
-
-            # Regularize: Sigma + lambda * I
-            reg = 1e-4 * np.trace(Sigma) / Sigma.shape[0]
-            Sigma_reg = Sigma + reg * np.eye(Sigma.shape[0])
-
-            # Fisher LDA direction: Sigma^{-1} @ (mu_1 - mu_0)
-            direction = np.linalg.solve(Sigma_reg, diff)
-            norm = np.linalg.norm(direction)
-            if norm > 1e-12:
-                direction /= norm
-            directions[fv][layer] = direction
-
-    return directions
+    from deepsteer.directions.leace import extract_leace_directions
+    return extract_leace_directions(all_activations, foundation_indices, n_layers)
 
 
 def main() -> None:

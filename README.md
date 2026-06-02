@@ -78,6 +78,59 @@ suite = deepsteer.full_suite()
 
 The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, base models skip behavioral benchmarks.
 
+### Library API: Directions, Geometry, and Causal Validation
+
+Beyond the benchmark suite, DeepSteer provides composable building blocks
+for representation analysis — the same algorithms used across Papers 3 and 4:
+
+```python
+import deepsteer as ds
+
+# Load any HuggingFace transformer
+model = ds.olmo("allenai/OLMo-2-0425-1B")
+
+# Collect activations at specific layers
+acts = model.collect_batch_activations(texts, layers=[4, 8, 12])
+
+# Extract concept directions (training-free)
+from deepsteer.directions import extract_mean_diff_directions
+dirs = extract_mean_diff_directions(acts, labels, groups)
+
+# Measure geometric structure
+from deepsteer.geometry import full_geometric_analysis
+geo = full_geometric_analysis(dirs, layer=8, labels=list(dirs.keys()))
+
+# Causal validation: does ablating a direction change behavior?
+from deepsteer.causal import ablation_sweep
+abl = ablation_sweep(model, dirs, layers=[8, 12], prompts=eval_prompts)
+
+# Steering: inject a direction and measure dose-response
+from deepsteer.causal import steering_sweep
+steer = steering_sweep(model, dirs, layers=[8], prompts=eval_prompts,
+                        alphas=[1.0, 5.0, 20.0])
+```
+
+All direction/geometry functions are pure numpy — model-agnostic by design.
+Causal functions use `WhiteBoxModel`'s hook-based context managers:
+
+```python
+# Project out a direction from layer 8 during inference
+with model.ablate_direction(layer=8, direction=care_dir):
+    result = model.score(prompt, completion)
+
+# Inject a direction at variable strength
+with model.inject_direction(layer=8, direction=care_dir, alpha=5.0):
+    result = model.generate(prompt)
+```
+
+For MoE architectures (OLMoE):
+
+```python
+moe_model = ds.MoEWhiteBoxModel("allenai/OLMoE-1B-7B-0924")
+expert_acts = moe_model.get_expert_activations(texts, layers=[4, 8])
+router_logits = moe_model.get_router_logits(texts, layers=[4, 8])
+```
+
 ### Base Models: The Primary Target
 
 DeepSteer's core research question is about what models learn *during pre-training* — before any instruction tuning, RLHF, or constitutional AI is applied. Base models are therefore the primary target for representational analysis:
@@ -605,6 +658,12 @@ pytest tests/steering/test_training_hooks.py -v
 ```
 deepsteer/
   core/             Types, model interface, benchmark runner
+    model_interface.py  WhiteBoxModel, APIModel, ModelFamily, architecture detection
+    moe_model.py        MoEWhiteBoxModel for OLMoE expert/router analysis
+  foundations.py    Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
+  directions/       Direction extraction (mean-diff, LEACE, probe-weight, compare)
+  geometry/         Geometric analysis (cosine matrices, clustering, subspace)
+  causal/           Causal validation (ablation, steering injection, behavioral)
   benchmarks/
     moral_reasoning/  MoralFoundationsProbe (+ base-model forced-choice variant)
     compliance_gap/   ComplianceGapDetector, PersonaShiftDetector,

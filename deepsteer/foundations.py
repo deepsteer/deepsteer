@@ -1,5 +1,7 @@
 """Canonical MFT vocabulary and constants for DeepSteer.
 
+Tier: Validated (all papers).
+
 Moral Foundations Theory (Graham et al., 2013) organizes moral reasoning
 into six foundations, split into individualizing and binding clusters.
 """

@@ -1,4 +1,7 @@
-"""Representational probing benchmarks (requires model weights)."""
+"""Representational probing benchmarks (requires model weights).
+
+Tier: Validated (Papers 1, 2, 3).
+"""
 
 from __future__ import annotations
 

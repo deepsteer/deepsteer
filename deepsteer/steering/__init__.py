@@ -1,4 +1,8 @@
-"""Training-time intervention tools for steering alignment during pre-training."""
+"""Training-time intervention tools for steering alignment during pre-training.
+
+Tier: Experimental (tested, no standalone paper).
+Exception: lora_experiment.py is Validated (Paper 1, condition C3).
+"""
 
 from __future__ import annotations
 
