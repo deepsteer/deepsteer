@@ -2,7 +2,7 @@
 
 **Orion Reblitz-Richardson** | Independent Alignment Researcher, Distiller Labs
 **Affiliation pursuit:** UH Mānoa Aloha Intelligence Initiative
-**Status snapshot:** May 2026
+**Status snapshot:** June 2026
 
 ---
 
