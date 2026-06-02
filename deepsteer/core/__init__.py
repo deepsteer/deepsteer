@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from deepsteer.core.benchmark_suite import Benchmark, BenchmarkSuite
-from deepsteer.core.model_interface import APIModel, ModelInterface, WhiteBoxModel
+from deepsteer.core.model_interface import (
+    APIModel,
+    ModelFamily,
+    ModelInterface,
+    UnsupportedArchitectureError,
+    WhiteBoxModel,
+)
 from deepsteer.core.types import (
     AccessTier,
     BenchmarkResult,
@@ -42,7 +48,9 @@ __all__ = [
     "CheckpointTrajectoryResult",
     "SuiteResult",
     # Model interface
+    "ModelFamily",
     "ModelInterface",
+    "UnsupportedArchitectureError",
     "WhiteBoxModel",
     "APIModel",
     # Benchmark runner

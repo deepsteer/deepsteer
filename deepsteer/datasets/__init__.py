@@ -32,6 +32,7 @@ from deepsteer.datasets.persona_pairs import (
     summarize_validation,
     validate_persona_dataset,
 )
+from deepsteer.datasets.loaders import load_dilemma_pairs, load_moral_probing_v2
 from deepsteer.datasets.pipeline import build_probing_dataset
 from deepsteer.datasets.sentiment_pairs import get_sentiment_dataset, get_sentiment_pairs
 from deepsteer.datasets.syntax_pairs import get_syntax_dataset, get_syntax_pairs
@@ -39,6 +40,8 @@ from deepsteer.datasets.types import ProbingDataset, ProbingPair
 
 __all__ = [
     "build_probing_dataset",
+    "load_dilemma_pairs",
+    "load_moral_probing_v2",
     "compositional_content_separability_baseline",
     "content_separability_baseline",
     "get_compositional_moral_dataset",

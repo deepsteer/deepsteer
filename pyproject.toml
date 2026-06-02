@@ -19,6 +19,7 @@ dependencies = [
     "accelerate",
     "datasets",
     "numpy",
+    "scipy",
     "matplotlib",
     "seaborn",
     "pandas",
@@ -61,4 +62,5 @@ select = ["E", "F", "I", "W"]
 testpaths = ["tests"]
 markers = [
     "slow: marks tests that require real model weights (deselect with '-m \"not slow\"')",
+    "regression: marks regression tests against paper outputs (requires model weights)",
 ]

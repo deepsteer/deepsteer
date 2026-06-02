@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import enum
+import gc
 import logging
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from typing import Any, Callable
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import Tensor
@@ -13,6 +17,38 @@ from torch import Tensor
 from deepsteer.core.types import AccessTier, GenerationResult, ModelInfo
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Architecture detection
+# ---------------------------------------------------------------------------
+
+
+class ModelFamily(str, enum.Enum):
+    """Known model architecture families."""
+
+    OLMO = "olmo"
+    OLMOE = "olmoe"
+    LLAMA = "llama"
+    MISTRAL = "mistral"
+    GPT2 = "gpt2"
+    UNKNOWN = "unknown"
+
+
+_CONFIG_TYPE_TO_FAMILY: dict[str, ModelFamily] = {
+    "olmo2": ModelFamily.OLMO,
+    "olmo": ModelFamily.OLMO,
+    "olmoe": ModelFamily.OLMOE,
+    "llama": ModelFamily.LLAMA,
+    "mistral": ModelFamily.MISTRAL,
+    "gpt2": ModelFamily.GPT2,
+    "gpt_neo": ModelFamily.GPT2,
+    "gpt_neox": ModelFamily.GPT2,
+}
+
+
+class UnsupportedArchitectureError(Exception):
+    """Raised when a method is called on an unsupported architecture."""
 
 
 # ---------------------------------------------------------------------------
@@ -170,6 +206,35 @@ class WhiteBoxModel(ModelInterface):
         """The HuggingFace tokenizer."""
         return self._tokenizer
 
+    @property
+    def model_family(self) -> ModelFamily:
+        """Detected architecture family."""
+        config_type = getattr(self._model.config, "model_type", "")
+        return _CONFIG_TYPE_TO_FAMILY.get(config_type, ModelFamily.UNKNOWN)
+
+    def _validate_family(
+        self,
+        supported: set[ModelFamily],
+        method_name: str,
+    ) -> None:
+        """Check that this model's architecture is supported by *method_name*.
+
+        If the family is UNKNOWN, log a warning. If it is known but not in
+        *supported*, raise ``UnsupportedArchitectureError``.
+        """
+        family = self.model_family
+        if family == ModelFamily.UNKNOWN:
+            config_type = getattr(self._model.config, "model_type", "?")
+            logger.warning(
+                "Architecture %r has not been tested with %s; results may be unreliable.",
+                config_type, method_name,
+            )
+        elif family not in supported:
+            raise UnsupportedArchitectureError(
+                f"{method_name} is not supported for {family.value}. "
+                f"Supported: {', '.join(f.value for f in sorted(supported, key=lambda f: f.value))}."
+            )
+
     # -- Layer introspection -------------------------------------------------
 
     def _unwrap_model(self) -> torch.nn.Module:
@@ -303,6 +368,152 @@ class WhiteBoxModel(ModelInterface):
         finally:
             handle.remove()
         return result
+
+    # -- Batch activation collection ----------------------------------------
+
+    @torch.no_grad()
+    def collect_batch_activations(
+        self,
+        texts: list[str],
+        layers: list[int] | None = None,
+        pooling: str = "mean",
+    ) -> dict[int, Tensor]:
+        """Collect activations for a batch of texts at specified layers.
+
+        Args:
+            texts: Input texts.
+            layers: Layer indices. ``None`` = all layers.
+            pooling: How to reduce the sequence dimension.
+                ``"mean"`` — mean across tokens (default, used by all papers).
+                ``"last"`` — last token only.
+                ``"first"`` — first token (CLS-style).
+                ``"none"`` — keep full sequence (returns 3D tensors).
+
+        Returns:
+            Mapping from layer index to tensor of shape
+            ``(n_texts, hidden_dim)`` if pooling != ``"none"``,
+            or list of variable-length tensors if ``"none"``.
+        """
+        if pooling not in ("mean", "last", "first", "none"):
+            raise ValueError(f"Unknown pooling mode: {pooling!r}")
+
+        per_layer: dict[int, list[Tensor]] = {}
+        n_texts = len(texts)
+
+        for i, text in enumerate(texts):
+            acts = self.get_activations(text, layers=layers)
+            for layer_idx, layer_acts in acts.items():
+                # layer_acts shape: (1, seq_len, hidden_dim)
+                squeezed = layer_acts.squeeze(0)  # (seq_len, hidden_dim)
+                if pooling == "mean":
+                    pooled = squeezed.mean(dim=0)
+                elif pooling == "last":
+                    pooled = squeezed[-1]
+                elif pooling == "first":
+                    pooled = squeezed[0]
+                else:  # "none"
+                    pooled = squeezed
+                if layer_idx not in per_layer:
+                    per_layer[layer_idx] = []
+                per_layer[layer_idx].append(pooled)
+            if (i + 1) % 50 == 0 or i + 1 == n_texts:
+                logger.info("  Collected activations: %d/%d texts", i + 1, n_texts)
+
+        result: dict[int, Tensor] = {}
+        for layer_idx, features in per_layer.items():
+            if pooling == "none":
+                result[layer_idx] = features  # type: ignore[assignment]
+            else:
+                result[layer_idx] = torch.stack(features)
+        return result
+
+    # -- Direction operation context managers --------------------------------
+
+    @contextmanager
+    def ablate_direction(
+        self,
+        layer: int,
+        direction: np.ndarray | Tensor,
+    ):
+        """Context manager: project out *direction* from layer output.
+
+        Usage::
+
+            with model.ablate_direction(layer=8, direction=care_dir):
+                result = model.score(prompt, completion)
+        """
+        if isinstance(direction, np.ndarray):
+            direction = torch.from_numpy(direction)
+        d = direction.to(device=self._device, dtype=self._dtype)
+        d = d / (d.norm() + 1e-12)
+
+        def _hook(_module: torch.nn.Module, _input: Any, output: Any) -> Any:
+            tensor = output[0] if isinstance(output, tuple) else output
+            proj = (tensor @ d).unsqueeze(-1) * d
+            patched = tensor - proj
+            if isinstance(output, tuple):
+                return (patched,) + output[1:]
+            return patched
+
+        module = self._get_layer_module(layer)
+        handle = module.register_forward_hook(_hook)
+        try:
+            yield
+        finally:
+            handle.remove()
+
+    @contextmanager
+    def inject_direction(
+        self,
+        layer: int,
+        direction: np.ndarray | Tensor,
+        alpha: float = 1.0,
+    ):
+        """Context manager: add ``alpha * direction`` to layer output.
+
+        Usage::
+
+            with model.inject_direction(8, care_dir, alpha=2.0):
+                result = model.generate(prompt)
+        """
+        if isinstance(direction, np.ndarray):
+            direction = torch.from_numpy(direction)
+        d = direction.to(device=self._device, dtype=self._dtype)
+        d = d / (d.norm() + 1e-12)
+
+        def _hook(_module: torch.nn.Module, _input: Any, output: Any) -> Any:
+            tensor = output[0] if isinstance(output, tuple) else output
+            patched = tensor + alpha * d
+            if isinstance(output, tuple):
+                return (patched,) + output[1:]
+            return patched
+
+        module = self._get_layer_module(layer)
+        handle = module.register_forward_hook(_hook)
+        try:
+            yield
+        finally:
+            handle.remove()
+
+    # -- Memory management ---------------------------------------------------
+
+    def release(self) -> None:
+        """Free model memory. Call when done with this model."""
+        if hasattr(self, "_model"):
+            del self._model
+        if hasattr(self, "_tokenizer"):
+            del self._tokenizer
+        gc.collect()
+        if torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+        elif torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    def __enter__(self) -> WhiteBoxModel:
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        self.release()
 
     # -- ModelInterface implementation ---------------------------------------
 
