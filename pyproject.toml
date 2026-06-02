@@ -19,7 +19,6 @@ dependencies = [
     "accelerate",
     "datasets",
     "numpy",
-    "scipy",
     "matplotlib",
     "seaborn",
     "pandas",

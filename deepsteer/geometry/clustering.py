@@ -6,7 +6,6 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/shared.py
 from __future__ import annotations
 
 import numpy as np
-from scipy.cluster.hierarchy import linkage
 
 from deepsteer.foundations import (
     BINDING_IDX,
@@ -14,6 +13,65 @@ from deepsteer.foundations import (
     FOUNDATION_SHORT,
     INDIVIDUALIZING_IDX,
 )
+
+
+def _ward_linkage(condensed: list[float], n: int) -> np.ndarray:
+    """Ward agglomerative clustering on a condensed distance vector.
+
+    Pure-numpy reimplementation of ``scipy.cluster.hierarchy.linkage(...,
+    method="ward")`` for small matrices (n <= ~20). Avoids the scipy
+    dependency for a single call site.
+
+    Returns:
+        ``(n-1, 4)`` linkage matrix: each row is
+        ``[left_id, right_id, distance, cluster_size]``.
+    """
+    dist = np.full((n, n), np.inf)
+    idx = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            dist[i, j] = dist[j, i] = condensed[idx]
+            idx += 1
+
+    sizes = np.ones(n, dtype=int)
+    active = set(range(n))
+    Z = np.zeros((n - 1, 4))
+
+    for step in range(n - 1):
+        best_d = np.inf
+        best_i = best_j = -1
+        active_list = sorted(active)
+        for ai, i in enumerate(active_list):
+            for j in active_list[ai + 1:]:
+                if dist[i, j] < best_d:
+                    best_d = dist[i, j]
+                    best_i, best_j = i, j
+
+        new_id = n + step
+        Z[step] = [best_i, best_j, best_d, sizes[best_i] + sizes[best_j]]
+
+        sizes = np.append(sizes, sizes[best_i] + sizes[best_j])
+        active.discard(best_i)
+        active.discard(best_j)
+
+        new_dist = np.full(new_id + 1, np.inf)
+        for k in active:
+            ni, nj, nk = sizes[best_i], sizes[best_j], sizes[k]
+            nt = ni + nj + nk
+            d_new = np.sqrt(
+                ((ni + nk) * dist[best_i, k] ** 2
+                 + (nj + nk) * dist[best_j, k] ** 2
+                 - nk * best_d ** 2) / nt
+            )
+            new_dist[k] = d_new
+
+        dist = np.pad(dist, ((0, 1), (0, 1)), constant_values=np.inf)
+        for k in active:
+            dist[new_id, k] = dist[k, new_id] = new_dist[k]
+
+        active.add(new_id)
+
+    return Z
 
 
 def hierarchical_cluster(
@@ -37,7 +95,7 @@ def hierarchical_cluster(
     n = cos_sim.shape[0]
     dist = 1 - cos_sim
     condensed = [dist[i, j] for i in range(n) for j in range(i + 1, n)]
-    Z = linkage(condensed, method="ward")
+    Z = _ward_linkage(condensed, n)
 
     def _get_leaves(idx: int) -> set[int]:
         if idx < n:

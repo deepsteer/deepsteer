@@ -178,7 +178,6 @@ transformers >= 4.40
 accelerate
 datasets
 numpy
-scipy
 matplotlib
 seaborn
 pandas
