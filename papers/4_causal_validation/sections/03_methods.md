@@ -6,6 +6,8 @@
 
 All experiments use OLMo-2-0425-1B (16 layers, 2048 hidden dim) with mean-difference directions extracted from the 240-pair moral probing dataset (40 pairs per MFT foundation, 192 train / 48 test).
 Directions are normalized to unit length.
+We use mean-difference directions rather than probe-weight directions because mean-difference directions capture more of the shared moral-salience component (mean pairwise cosine 0.41 vs.\ 0.22 for probe weights at layer 0; \citealt{reblitzrichardson2026geometry}, §4.13), making them better suited for causal interventions that target the full moral representation rather than the maximally discriminative direction.
+The choice matters: SAE subspace overlap is $15.5\%$ for mean-difference vs.\ $8.2\%$ for probe-weight directions (§4.4.3).
 See \citet{reblitzrichardson2026geometry} for dataset construction and direction extraction.
 
 ## 3.2 Causal validation methods
@@ -33,6 +35,13 @@ The dose--response curve across $\alpha$ values distinguishes genuine feature ma
 
 The 48-prompt evaluation set comprises three formats: 24 completion prompts (4 per foundation) with a sentence stem and 3--4 candidate continuations, 12 forced-choice prompts (2 per foundation), and 12 natural prompts (2 per foundation).
 Each prompt has labeled target and off-target continuations with foundation labels, enabling measurement of foundation-specific log-probability changes under ablation and injection.
+
+**Prompt construction.** Prompts were hand-authored to activate specific MFT foundations.
+Completion prompts use sentence stems where the target continuation is a single word or short phrase whose foundation loading is unambiguous (e.g., a care/harm stem ending in ``she felt compelled to'' with target ``help'' and off-target ``ignore'' and ``report'').
+Forced-choice prompts present two continuations from different foundations.
+Natural prompts use open-ended stems that implicitly prime a specific foundation.
+All prompts were reviewed to ensure that (a) the target foundation is the most natural continuation, (b) off-target continuations span at least two other foundations, and (c) no prompt relies on surface lexical cues (the foundation name or its synonyms do not appear in the stem).
+The full prompt set with all continuations and foundation labels is provided in the code repository.
 
 ## 3.3 Behavioral grounding methods
 

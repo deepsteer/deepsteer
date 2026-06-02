@@ -28,7 +28,7 @@ architectures.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig1_cosine_heatmap.pdf}
-\caption{Pairwise cosine similarity between foundation probe directions at layer 0 (peak separation), OLMo-2 1B. Layer 0 has the lowest mean cosine but is below the bootstrap stability threshold (§4.6); see Appendix~\ref{app:cosine} for the same matrix at bootstrap-stable layers.}
+\caption{Pairwise cosine similarity between foundation probe directions at layer 7 (bootstrap-stable; all six foundations exceed the 0.8 stability threshold at this layer; §4.6), OLMo-2 1B. Mean off-diagonal cosine = 0.262. See Appendix~\ref{app:cosine} for matrices at layers 0 and 15.}
 \label{fig:cosine_heatmap}
 \end{figure}
 
@@ -37,10 +37,11 @@ not collapsed. Across bootstrap-stable layers (6--15, where all six
 directions exceed the 0.8 stability threshold; §4.6), mean pairwise
 cosine similarity ranges from **0.232 to 0.274** --- far below the
 collapse threshold ($>0.95$) and below the intermediate zone
-($0.8$--$0.95$). The peak-separation layer (layer 0) shows the
-lowest mean cosine at 0.216, though this layer has bootstrap
-stability below 0.8 for all foundations and should be interpreted
-with the caveat that directions there are less reliable (§4.6).
+($0.8$--$0.95$). Figure~\ref{fig:cosine_heatmap} shows the
+representative pattern at layer 7 (mean cosine 0.262). The
+peak-separation layer (layer 0, mean cosine 0.216) is below the
+bootstrap stability threshold for all foundations and is reported
+in Appendix~\ref{app:cosine}.
 
 The cosine similarities are uniformly *positive* at all layers
 (range 0.14--0.35), indicating that the foundation directions share
@@ -67,16 +68,17 @@ distinct --- they do not collapse into a lower-dimensional subspace.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.7\linewidth]{fig3_dendrogram.pdf}
-\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 0, OLMo-2 1B. The first split does not recover the MFT individualizing/binding distinction. Layer 0 is below the bootstrap stability threshold; the same pattern holds at stable layers (Appendix~\ref{app:cosine}).}
+\caption{Hierarchical clustering (Ward's method) of foundation probe directions at layer 7 (bootstrap-stable), OLMo-2 1B. The first split does not recover the MFT individualizing/binding distinction.}
 \label{fig:dendrogram}
 \end{figure}
 
 Hierarchical clustering of the six foundation directions does
 *not* recover the MFT individualizing/binding distinction at any
-layer. At layer 0, the dendrogram is chain-like: liberty and
-authority merge first, then loyalty, then sanctity, then fairness,
-then care. No layer produces the predicted \{care, fairness,
-liberty\} vs.\ \{loyalty, authority, sanctity\} partition.
+layer. At layer 7, loyalty and authority merge first, liberty joins
+them, then care and fairness merge separately, then sanctity joins
+the loyalty--authority--liberty cluster. No layer produces the
+predicted \{care, fairness, liberty\} vs.\ \{loyalty, authority,
+sanctity\} partition.
 
 The most consistent clustering pattern across layers is a
 care--sanctity pairing: these two foundations appear in the same
@@ -84,8 +86,8 @@ cluster at 10 of 16 layers. This crosses the MFT boundary (care is
 individualizing, sanctity is binding) but has a plausible semantic
 interpretation --- both foundations concern protection of
 vulnerable entities (persons from harm, sacred things from
-degradation). The liberty--authority pairing at layer 0 similarly
-crosses MFT groups but reflects a semantic opposition axis.
+degradation). The loyalty--authority pairing at layer 7 similarly
+crosses MFT groups but reflects a semantic binding axis.
 
 The permutation test for the individualizing/binding distinction
 does not reach significance at any layer (minimum $p = 0.32$; median
@@ -190,8 +192,12 @@ difference.
 The most striking finding is per-foundation: sanctity/degradation
 is the *most* robust foundation in the dense model (5.60) but the
 *least* robust in MoE (0.91). This 6.2$\times$ ratio is far larger
-than the overall fragility gap between architectures (3.1$\times$
-mean across all foundations). Output dilution does not suppress all
+than the overall per-foundation fragility gap between architectures
+(3.1$\times$, computed as the ratio of mean critical noise across
+six per-foundation probes with 32 training pairs each; the 5.1$\times$
+gap reported by \citet{reblitzrichardson2026dilution} uses a single
+pooled binary probe with 192 training pairs, which has higher
+statistical power). Output dilution does not suppress all
 moral foundations uniformly --- sanctity representations are
 disproportionately vulnerable to the MoE aggregation bottleneck.
 This may reflect the encoding mechanism: sanctity/purity concepts,

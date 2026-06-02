@@ -49,9 +49,10 @@ Authority passes all criteria at moderate levels.
 
 ## 5.5 Limitations
 
-**SAE training scale.** The 2M-token SAE achieves only 71.5\% variance explained.
-Production-scale SAE training (100M+ tokens) would likely increase both feature quality and moral direction overlap.
-The current results should be interpreted as a lower bound.
+**SAE training scale.** The 2M-token SAE achieves only 71.5\% variance explained (FVU = 0.285), and only 4 of 16,384 features show moral selectivity $> 0.1$.
+The $3.2\times$ random subspace overlap, while above chance, is modest --- a skeptical reader could question whether this level of overlap is distinguishable from structured but non-moral correlations in the SAE features.
+We treat this as a lower bound: production-scale SAE training (100M+ tokens, targeting FVU $< 0.05$) would likely increase both feature quality and moral direction overlap.
+We estimate that overlap exceeding $5\times$ random (${\sim}25\%$) with $> 10$ selective features would constitute strong evidence of moral feature recovery; achieving this likely requires $\geq 50$M training tokens based on scaling trends in the SAE literature.
 
 **Single model.** All experiments use OLMo-2 1B.
 Generalization to larger models and different architectures is untested.

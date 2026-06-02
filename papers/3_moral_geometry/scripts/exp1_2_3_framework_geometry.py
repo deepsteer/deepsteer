@@ -648,9 +648,13 @@ def generate_figures(
     permutation_tests = exp2_results.get("permutation_tests", {})
     peak_sep_layer = exp2_results.get("peak_separation_layer")
 
-    # -- Figure 1: Cosine similarity heatmap at peak separation layer --
-    if peak_sep_layer is not None and peak_sep_layer in cosine_matrices:
-        cos_sim = cosine_matrices[peak_sep_layer]
+    # Use a bootstrap-stable layer for display figures (layer 7), not peak
+    # separation (layer 0) which is below the 0.8 stability threshold.
+    fig_display_layer = 7 if 7 in cosine_matrices else peak_sep_layer
+
+    # -- Figure 1: Cosine similarity heatmap at display layer --
+    if fig_display_layer is not None and fig_display_layer in cosine_matrices:
+        cos_sim = cosine_matrices[fig_display_layer]
         n = len(foundations_present)
         short_labels = [FOUNDATION_SHORT[f] for f in foundations_present]
 
@@ -675,8 +679,8 @@ def generate_figures(
 
         cbar = fig.colorbar(im, ax=ax, shrink=0.8, label="Cosine Similarity")
         ax.set_title(
-            f"Foundation Probe Direction Cosine Similarity (Layer {peak_sep_layer})\n"
-            f"Mean pairwise = {mean_cosine[peak_sep_layer]:.4f}",
+            f"Foundation Probe Direction Cosine Similarity (Layer {fig_display_layer})\n"
+            f"Mean pairwise = {mean_cosine[fig_display_layer]:.4f}",
             fontsize=12, fontweight="bold",
         )
         fig.tight_layout()
@@ -742,9 +746,9 @@ def generate_figures(
     plt.close(fig)
     print(f"  Figure 2: {figures_dir / 'fig2_layerwise_geometry.png'}")
 
-    # -- Figure 3: Dendrogram at peak separation layer --
-    if peak_sep_layer is not None and peak_sep_layer in cosine_matrices:
-        cos_sim = cosine_matrices[peak_sep_layer]
+    # -- Figure 3: Dendrogram at display layer --
+    if fig_display_layer is not None and fig_display_layer in cosine_matrices:
+        cos_sim = cosine_matrices[fig_display_layer]
         n = len(foundations_present)
         short_labels = [FOUNDATION_SHORT[f] for f in foundations_present]
 
@@ -774,7 +778,7 @@ def generate_figures(
         )
         ax.set_ylabel("Ward Distance (1 - cosine similarity)", fontsize=11)
         ax.set_title(
-            f"Hierarchical Clustering of Foundation Probe Directions (Layer {peak_sep_layer})\n"
+            f"Hierarchical Clustering of Foundation Probe Directions (Layer {fig_display_layer})\n"
             f"Green = individualizing, Orange = binding",
             fontsize=12, fontweight="bold",
         )
