@@ -43,9 +43,29 @@ How resistant is alignment to targeted removal? Shallow alignment is easily fine
 ```
 deepsteer/
 ├── core/                       # Core abstractions
-│   ├── model_interface.py      # WhiteBoxModel, APIModel, factory functions
+│   ├── model_interface.py      # WhiteBoxModel, APIModel, ModelFamily, architecture detection
+│   ├── moe_model.py            # MoEWhiteBoxModel for OLMoE expert/router analysis
 │   ├── benchmark_suite.py      # Benchmark base class + suite runner
 │   └── types.py                # All dataclasses and enums
+│
+├── foundations.py              # Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
+│
+├── directions/                 # Direction extraction (model-agnostic, pure numpy)
+│   ├── mean_diff.py            # Mean-difference direction (baseline)
+│   ├── leace.py                # LEACE / Fisher LDA direction
+│   ├── probe_weight.py         # Direction from trained probe weights / .npz files
+│   └── compare.py              # Cross-method alignment comparison
+│
+├── geometry/                   # Geometric analysis (model-agnostic, pure numpy)
+│   ├── cosine.py               # Cosine similarity matrices, effective dimensionality
+│   ├── clustering.py           # Hierarchical clustering, permutation tests
+│   ├── subspace.py             # Orthonormal bases, subspace membership, null distributions
+│   └── analysis.py             # Full geometric analysis orchestrator
+│
+├── causal/                     # Causal validation (requires WhiteBoxModel)
+│   ├── ablation.py             # Direction ablation and specificity measurement
+│   ├── steering.py             # Steering vector injection with dose-response
+│   └── behavioral.py           # Projection-based behavioral classification
 │
 ├── benchmarks/
 │   ├── moral_reasoning/        # Behavioral (API-compatible)
@@ -158,6 +178,7 @@ transformers >= 4.40
 accelerate
 datasets
 numpy
+scipy
 matplotlib
 seaborn
 pandas

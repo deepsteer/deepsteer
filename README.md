@@ -640,17 +640,17 @@ pytest tests/ -v
 # Run including slow tests (downloads real models)
 pytest tests/ -v -m ""
 
+# Run regression tests against paper outputs (requires OLMo-2 1B weights)
+pytest tests/ -v -m regression
+
 # Run specific test modules
 pytest tests/benchmarks/test_probing.py -v
-pytest tests/benchmarks/test_behavioral.py -v
-pytest tests/benchmarks/test_persona_shift.py -v
-pytest tests/benchmarks/test_foundation_probes.py -v
-pytest tests/benchmarks/test_causal_tracing.py -v
-pytest tests/benchmarks/test_fragility.py -v
+pytest tests/directions/ -v
+pytest tests/geometry/ -v
+pytest tests/causal/ -v
+pytest tests/regression/ -v -m "not regression"  # schema checks only
 pytest tests/datasets/test_pipeline.py -v
 pytest tests/steering/test_moral_curriculum.py -v
-pytest tests/steering/test_data_mixing.py -v
-pytest tests/steering/test_training_hooks.py -v
 ```
 
 ## Project Structure
@@ -700,6 +700,10 @@ papers/
   3_moral_geometry/            Paper 3 (+ scripts/exp1-7, probe_engineering/)
   4_causal_validation/         Paper 4 (causal validation, preliminary)
 tests/            Mirrors source structure
+  directions/         Direction extraction unit tests
+  geometry/           Geometric analysis unit tests
+  causal/             Causal validation unit tests
+  regression/         Schema + reproduction tests against paper outputs
 ```
 
 ## Citation

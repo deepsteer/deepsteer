@@ -14,13 +14,19 @@ The library targets three model access tiers:
 ```
 deepsteer/
 ├── core/                  # Types, model interface, benchmark runner
+│   ├── model_interface.py # WhiteBoxModel, APIModel, ModelFamily, architecture detection
+│   └── moe_model.py       # MoEWhiteBoxModel for OLMoE expert/router analysis
+├── foundations.py         # Canonical MFT constants (FOUNDATION_ORDER, groups)
+├── directions/            # Direction extraction (mean-diff, LEACE, probe-weight)
+├── geometry/              # Geometric analysis (cosine, clustering, subspace)
+├── causal/                # Causal validation (ablation, steering, behavioral)
 ├── benchmarks/            # Evaluation implementations
 │   ├── moral_reasoning/   # MoralFoundationsProbe (API tier)
 │   ├── compliance_gap/    # ComplianceGapDetector (API tier)
 │   └── representational/  # LayerWiseMoralProbe (weights tier)
 ├── datasets/              # Probing datasets and generation pipeline
 ├── viz/                   # Matplotlib visualization functions
-├── steering/              # Training-time intervention tools (future)
+├── steering/              # Training-time intervention tools
 └── outputs/               # Untracked output viz and matching JSON
 ```
 
@@ -135,8 +141,13 @@ Training-time intervention infrastructure (the "steer" in deepsteer):
 | File | Purpose | Read first? |
 |---|---|---|
 | `core/types.py` | All dataclasses and enums | Yes |
-| `core/model_interface.py` | Model abstraction + factory functions | Yes |
+| `core/model_interface.py` | Model abstraction, ModelFamily, architecture detection | Yes |
+| `core/moe_model.py` | MoEWhiteBoxModel for OLMoE expert/router analysis | For MoE work |
 | `core/benchmark_suite.py` | Benchmark base class + suite runner | Yes |
+| `foundations.py` | Canonical MFT constants (FOUNDATION_ORDER, groups) | Yes |
+| `directions/` | Direction extraction (mean-diff, LEACE, probe-weight) | For direction work |
+| `geometry/` | Geometric analysis (cosine, clustering, subspace) | For geometry work |
+| `causal/` | Causal validation (ablation, steering, behavioral) | For causal work |
 | `benchmarks/moral_reasoning/foundations.py` | MoralFoundationsProbe implementation | For behavioral work |
 | `benchmarks/compliance_gap/greenblatt.py` | ComplianceGapDetector implementation | For behavioral work |
 | `benchmarks/representational/probing.py` | LayerWiseMoralProbe implementation | For white-box work |
