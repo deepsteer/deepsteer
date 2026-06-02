@@ -763,19 +763,18 @@ def generate_figures(
 
         fig, ax = plt.subplots(figsize=(8, 5))
 
-        leaf_colors = {}
-        for i, fv in enumerate(foundations_present):
-            leaf_colors[i] = "#43A047" if fv in INDIVIDUALIZING else "#FB8C00"
-
-        def _color_func(k):
-            if k < n:
-                return leaf_colors.get(k, "#666")
-            return "#666"
-
-        dendrogram(
+        dn = dendrogram(
             Z, labels=short_labels, ax=ax,
-            leaf_font_size=11, link_color_func=_color_func,
+            leaf_font_size=11, color_threshold=0, above_threshold_color="#666",
         )
+
+        # Color leaf labels: green = individualizing, orange = binding
+        leaf_order = dn["ivl"]
+        short_to_fv = {FOUNDATION_SHORT[fv]: fv for fv in foundations_present}
+        for lbl in ax.get_xticklabels():
+            fv = short_to_fv.get(lbl.get_text())
+            lbl.set_color("#43A047" if fv in INDIVIDUALIZING else "#FB8C00")
+            lbl.set_fontweight("bold")
         ax.set_ylabel("Ward Distance (1 - cosine similarity)", fontsize=11)
         ax.set_title(
             f"Hierarchical Clustering of Foundation Probe Directions (Layer {fig_display_layer})\n"

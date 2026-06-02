@@ -86,8 +86,10 @@ cluster at 10 of 16 layers. This crosses the MFT boundary (care is
 individualizing, sanctity is binding) but has a plausible semantic
 interpretation --- both foundations concern protection of
 vulnerable entities (persons from harm, sacred things from
-degradation). The loyalty--authority pairing at layer 7 similarly
-crosses MFT groups but reflects a semantic binding axis.
+degradation). The loyalty--authority pairing at layer 7 is within
+the binding group, but liberty (individualizing) joins this cluster
+before grouping with the other individualizing foundations (care,
+fairness), further mixing MFT categories.
 
 The permutation test for the individualizing/binding distinction
 does not reach significance at any layer (minimum $p = 0.32$; median
