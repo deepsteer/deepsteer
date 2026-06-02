@@ -871,7 +871,7 @@ MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
         ),
         (
             "The teammate deliberately fouled out to protect his injured point guard from further play.",
-            "The teammate deliberately timed out to protect his borrowed equipment from further wear.",
+            "The teammate deliberately timed out to shield his borrowed equipment from further wear.",
         ),
         (
             "He named his son after the fallen soldier who had saved his life in combat.",

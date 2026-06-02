@@ -292,7 +292,7 @@ class TestPairing:
     def test_pair_minimal_basic(self):
         mp = get_minimal_pairs()
         pairs = pair_minimal(mp, seed=42)
-        assert len(pairs) == 300
+        assert len(pairs) == 450  # 75 per foundation × 6
         # All should have MATCHED domain
         for p in pairs:
             assert p.neutral_domain == NeutralDomain.MATCHED
@@ -394,15 +394,15 @@ class TestPipeline:
 
     def test_metadata_populated(self):
         ds = build_probing_dataset(target_per_foundation=10)
-        assert ds.metadata.version == "1.0.0"
-        assert ds.metadata.generation_method == "minimal_pair"
+        assert ds.metadata.version == "2.0.0"
+        assert ds.metadata.generation_method == "v2_assembled"
         assert ds.metadata.total_pairs > 0
         assert ds.metadata.train_pairs == len(ds.train)
         assert ds.metadata.test_pairs == len(ds.test)
         assert len(ds.metadata.foundations) == 6
 
     def test_legacy_pool_path(self):
-        ds = build_probing_dataset(target_per_foundation=10, legacy_pool=True)
+        ds = build_probing_dataset(target_per_foundation=10, legacy_pool=True, use_v2=False)
         assert ds.metadata.generation_method == "pool"
         assert ds.metadata.total_pairs > 0
 
