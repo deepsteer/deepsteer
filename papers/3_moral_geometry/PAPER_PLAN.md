@@ -19,7 +19,7 @@ inter-framework relationships? This is the transition from measuring
 moral *detection* to measuring moral *understanding*.
 
 **Motivating research vision.** The long-term deepsteer goal is
-training-time steering toward complex moral understanding — models
+training-time steering toward complex moral understanding: models
 that can represent competing ethical frameworks, recognize dilemmas as
 dilemmas, and reason across frameworks rather than collapsing to a
 single moral heuristic or selecting among discrete moral personas.
@@ -50,14 +50,14 @@ Alternates:
 
 Prior work (Papers 1 and 2) established that language models encode
 moral content broadly, robustly (in dense models), and uniformly
-across experts (in MoE models) — but treated moral encoding as a
+across experts (in MoE models), but treated moral encoding as a
 single binary feature. The 240-pair probing dataset contains richer
 structure: 40 pairs per Moral Foundations Theory foundation (care/harm,
 fairness/cheating, loyalty/betrayal, authority/subversion,
 sanctity/degradation, liberty/oppression). **By training
 foundation-specific probes and analyzing the geometry of the resulting
 probe directions, we can test whether models develop structured moral
-representations that distinguish between ethical frameworks — the
+representations that distinguish between ethical frameworks, the
 precondition for moral reasoning as opposed to mere moral detection.**
 
 Three geometric signatures correspond to three qualitatively different
@@ -71,7 +71,7 @@ modes of moral representation:
 2. **Isolation (discrete selection).** Foundation directions are
    orthogonal with no relational structure. The model has separate
    moral "slots" but no representation of how frameworks relate.
-   High angular separation, no meaningful clustering.
+   High angular separation, no structured clustering.
 
 3. **Integration.** Foundation directions are separated but
    non-orthogonal, with inter-framework geometry that reflects known
@@ -300,7 +300,7 @@ probe trainings, each ~5ms).
   lower cosine similarity (separation) and higher effective
   dimensionality.
 
-**Key output:** The "geometric development" figure — effective
+**Key output:** The "geometric development" figure: effective
 dimensionality of moral framework representations across layers.
 
 **Compute estimate:** Negligible (operates on Experiment 2 outputs).
@@ -311,7 +311,7 @@ dimensionality of moral framework representations across layers.
 
 **Method:**
 - Repeat Experiments 1 and 2 on OLMoE-1B-7B (layer-level hidden
-  states, not per-expert — for direct comparison with OLMo-2 1B).
+  states, not per-expert, for direct comparison with OLMo-2 1B).
 - Compare: cosine similarity matrices, effective dimensionality
   profiles, and MFT group structure (individualizing vs. binding
   clustering) between architectures.
@@ -390,10 +390,10 @@ uniformly collapsed or uniformly separated, there is nothing to steer.
 
 **This is a stretch goal.** It connects Paper 3 to the deepsteer
 training-time steering program but may require more compute than a
-Mac provides. It could also be scoped as a standalone Paper 4 if the
+Mac has available. It could also be scoped as a standalone Paper 4 if the
 geometric analysis (Experiments 1–7) produces a clean paper on its own.
 
-**Compute estimate:** Unknown — depends on whether continued
+**Compute estimate:** Unknown; depends on whether continued
 pre-training is feasible on Mac (likely 4-bit, small batch, short
 runs). ~4–8 hours for a minimal proof-of-concept if feasible at all.
 
@@ -403,7 +403,7 @@ runs). ~4–8 hours for a minimal proof-of-concept if feasible at all.
 
 Prior work on this project treats moral encoding as a binary feature:
 present or absent. Papers 1 and 2 established that models encode
-moral content broadly and (in dense models) robustly — but a model
+moral content broadly and (in dense models) robustly, but a model
 that merely detects "this is morally relevant" is not a model that
 understands morality. Understanding requires structured representations
 that distinguish between ethical frameworks and encode the
@@ -412,7 +412,7 @@ relationships between them.
 We introduce framework-specific probing: training separate probes for
 each Moral Foundations Theory foundation and analyzing the geometry
 of the resulting probe directions in the model's embedding space.
-Three geometric signatures — collapse, isolation, and integration —
+Three geometric signatures (collapse, isolation, and integration)
 correspond to three qualitatively different modes of moral
 representation. We test which signature OLMo-2 1B and OLMoE-1B-7B
 exhibit, how framework geometry develops across layers and across
@@ -489,7 +489,7 @@ B), describe the expanded dataset here.
 Per-foundation accuracy curves across layers. Comparison with the
 pooled binary probe from Paper 1. Do all foundations reach high
 accuracy, or are some harder to decode? If some foundations show lower
-accuracy, this is already evidence of non-uniform moral encoding —
+accuracy, this is already evidence of non-uniform moral encoding:
 the binary probe was masking foundation-level variation.
 
 #### 4.2 Framework geometry: collapse, isolation, or integration?
@@ -504,7 +504,7 @@ the individualizing/binding distinction.
 
 The collapse-to-separation gradient (if it exists). Effective
 dimensionality across layers. Comparison with Paper 1's
-lexical-to-compositional gradient — do these two gradients align?
+lexical-to-compositional gradient; do these two gradients align?
 
 #### 4.4 Dense vs. MoE framework geometry
 
@@ -531,8 +531,8 @@ care/harm as the most robust foundation.
 Interpret the geometric findings in terms of the collapse/isolation/
 integration trichotomy. Connect to the broader question: does the
 model "understand" morality or merely "detect" it? Be precise about
-what geometric structure can and cannot tell us about understanding
-— this is a necessary-but-not-sufficient condition.
+what geometric structure can and cannot tell us about understanding;
+this is a necessary-but-not-sufficient condition.
 
 #### 5.2 Implications for training-time steering
 
@@ -541,7 +541,7 @@ then steering toward maintained separation is a concrete objective.
 Describe the candidate steering loss (negative mean pairwise cosine
 distance). Discuss feasibility and limitations. If framework geometry
 is uniformly collapsed, discuss what this means for the steering
-program — collapse may be the natural attractor and steering against
+program, since collapse may be the natural attractor and steering against
 it may require stronger interventions.
 
 #### 5.3 Connection to moral psychology
@@ -560,8 +560,8 @@ Synthesize across all three papers:
 - Paper 1: models detect moral content (binary probing) with
   fragility as a robustness measure.
 - Paper 2: MoE architecture doesn't change the detection story
-  but reveals signal scale as a hidden variable.
-- Paper 3: moving from detection to structure — the first evidence
+  but shows signal scale as a hidden variable.
+- Paper 3: moving from detection to structure, the first evidence
   (or absence of evidence) for moral *understanding* in
   representations.
 
@@ -591,7 +591,7 @@ Restate the central finding: what geometric mode do the models
 exhibit? Connect to the three-paper arc. Position the geometric
 measurement as the precondition for steering toward moral complexity.
 State the next step (training-time steering toward maintained
-framework separation — Paper 4 or deepsteer integration).
+framework separation, either as Paper 4 or as deepsteer integration).
 
 ### Appendices
 
@@ -693,7 +693,7 @@ producing a clear geometric signal.
    an independent finding.
 
 7. **Experiment 6 (3–5 hours).** Geometric trajectory. Most
-   expensive core experiment — run after snapshot results justify
+   expensive core experiment; run after snapshot results justify
    it.
 
 8. **Experiment 8 (stretch).** Steering PoC. Only if Experiments
@@ -712,7 +712,7 @@ producing a clear geometric signal.
 - **Probe direction extraction details.** The probe weight vector
   w ∈ R^2048 from `nn.Linear(2048, 1)` is the normal to the
   classification hyperplane. Confirm that this is the right object
-  for geometric analysis — alternative: use the mean difference
+  for geometric analysis. Alternative: use the mean difference
   of positive and negative class activations (the "concept
   direction" as in representation engineering). Compare both methods
   in a pilot analysis. If they agree, use probe weights (simpler).

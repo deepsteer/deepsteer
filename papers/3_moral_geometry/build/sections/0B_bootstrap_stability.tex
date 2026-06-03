@@ -38,6 +38,6 @@ unstable). Layers 6--15 are mostly stable, with one exception
 stable foundation (13/16 layers above threshold); care/harm is
 the least stable (10/16).
 
-The stable core (layers 6--15) provides the most reliable geometric
+The stable core (layers 6--15) gives the most reliable geometric
 measurements. The headline finding (integration signature, effective
 dimensionality = 5) is confirmed within this range.

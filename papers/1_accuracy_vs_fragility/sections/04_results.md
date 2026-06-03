@@ -17,8 +17,8 @@ mean-accuracy trajectories on a shared step axis.
 
 *Table 1: Probe onset and plateau by construction. Compositional
 moral values are 4-seed mean ± std (split seeds 42 / 43 / 44 / 45).
-Per-seed compositional onsets: 4K, 4K, 7K, 7K — substantial seed
-variance, with the 4-seed mean curve crossing 0.70 at step 5K. The
+Per-seed compositional onsets: 4K, 4K, 7K, 7K (substantial seed
+variance, with the 4-seed mean curve crossing 0.70 at step 5K). The
 single-seed standard moral / sentiment / syntax curves are reported
 without std bands; their seed dependence is not characterized.*
 
@@ -27,16 +27,16 @@ lexical→compositional gradient.** The standard moral probe (single
 morally-loaded lexeme swap, "betrayed" / "greeted") onsets at step
 1K. The compositional moral probe (multi-token integrated swap;
 contrast tokens "protect" / "humiliate", "hungry" / "wealthy" are
-individually mild) onsets at step 5K under 4-seed averaging — a
+individually mild) onsets at step 5K under 4-seed averaging, a
 4K-step lag, with per-seed onsets ranging 4K-7K and overall
 trajectory always between sentiment (2K) and syntax (6K). The
 standard probe's step-1K onset measures how quickly moralized
 vocabulary becomes linearly separable, not how quickly moral
 valence is encoded compositionally. Both findings are true; the
 strongest single-token reading of the standard onset is ruled out,
-while the gradient reading — lexically-marked moralized vocabulary
+while the gradient reading (lexically-marked moralized vocabulary
 first, compositional moral integration second, syntactic competence
-last — holds. The 0.709 compositional onset is +59.6 pp above the
+last) holds. The 0.709 compositional onset is +59.6 pp above the
 0.113 single-token TF-IDF floor (§3.2); whatever the probe recovers
 at step 5K must integrate multiple words. At the OLMo-2 1B final
 checkpoint (~2.2T tokens) the compositional probe reaches 0.900
@@ -66,7 +66,7 @@ valence and syntactic well-formedness at ≈0.77 (model ceiling), or
 mean-pooled linear probing on 1B hidden states bottoms out at ≈0.77
 for multi-token integration regardless of underlying representational
 quality (probe ceiling). The cleanest disambiguation is repeating
-§4.1 at 7B and 32B — if compositional moral rises with scale while
+§4.1 at 7B and 32B: if compositional moral rises with scale while
 syntax does not, the model is the bottleneck; otherwise the probe is.
 We state both readings honestly in §5.3 and refine rather than
 overturn the gradient finding.
@@ -87,9 +87,9 @@ Validation source: `outputs/phase_c4_compositional/c4_validation.json`
 
 The figure that does the most work for the methodological thesis is
 **Figure 2**: two-panel comparison on a shared step axis. Top panel:
-mean probing accuracy — sharp sigmoid from chance (~0.59) to a
+mean probing accuracy, a sharp sigmoid from chance (~0.59) to a
 plateau (~0.95) between steps 0 and 4K, then flat for the remaining
-~33K steps. Bottom panel: mean fragility — initial rise alongside
+~33K steps. Bottom panel: mean fragility, an initial rise alongside
 accuracy in the first few thousand steps, then continued movement throughout.
 Top panel reaches a ceiling and stops; bottom panel keeps moving for
 the entire remaining 90 % of training.
@@ -106,14 +106,14 @@ the entire remaining 90 % of training.
 | 20,000 | 0.950 | 7.40 | 10.0 | 10.0 | 2.2 |
 | 36,000 | 0.954 | 6.12 | 10.0 | 6.5 | 1.8 |
 
-*Table 2: Standard moral probe — accuracy plateaus by step 4K;
+*Table 2: Standard moral probe. Accuracy plateaus by step 4K;
 fragility evolves through step 36K with a layer-depth gradient that
 develops monotonically (late > mid > early after step ~15K).*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no
 remaining structure to resolve) above critical noise (gradient
-emerging — late layers hold maximum noise tolerance throughout
+emerging: late layers hold maximum noise tolerance throughout
 while early layers grow progressively more brittle). Same data;
 different metric; different visible structure.
 
@@ -129,7 +129,7 @@ resolves the saturation step (~4K) and gradient emergence rate.
 methodological claim generalizes beyond the standard probe).** We
 ran `MoralFragilityTest` (§3.4) on the compositional dataset across
 all 37 OLMo-2 1B early-training checkpoints with four split seeds
-(42, 43, 44, 45) — the original seed-42 trajectory plus a three-seed
+(42, 43, 44, 45), the original seed-42 trajectory plus a three-seed
 replication ~50 min on the same MacBook Pro M4 Pro / MPS. **Table 3**
 gives the 4-seed mean ± std at the diagnostic checkpoints; the
 4-seed accuracy band on **Figure 1** carries the matching probing-
@@ -150,7 +150,7 @@ side trajectory.
 | 36,000 | 2.49 ± 0.12 | 4 |
 
 *Table 3: 4-seed compositional fragility evolution. The std collapses
-from 1.57 (step 6K) to 0.12 (step 36K) — at the late plateau the
+from 1.57 (step 6K) to 0.12 (step 36K); at the late plateau the
 four seeds converge tightly.*
 
 The compositional probe reproduces the qualitative pattern (accuracy
@@ -168,13 +168,13 @@ substantial margin; the post-step-7K decline is a stable property
 across the four split seeds.
 
 Two non-exclusive readings of the diverging long-term direction
-(7B / 32B replication disambiguates both): a *mechanism reading* — as training
+(7B / 32B replication disambiguates both): a *mechanism reading* (as training
 continues on text that does not specifically reinforce compositional
 moral integration, the compositional representation drifts toward
 brittleness while standard-probe representations are continually
-reinforced by moralized vocabulary density — and a *probe-ceiling
-reading* — fragility at the 0.77 operating point has less headroom
-than at 0.96, partly artifacting the difference. We state both in
+reinforced by moralized vocabulary density) and a *probe-ceiling
+reading* (fragility at the 0.77 operating point has less headroom
+than at 0.96, partly artifacting the difference). We state both in
 §5.3 without commitment.
 
 Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
@@ -197,7 +197,7 @@ general non-moral control (Darwin). Identical LoRA hyperparameters
 
 **Probing accuracy is identical across conditions.** Final peak
 accuracy at LoRA step 1000: narrative 0.740, declarative 0.750,
-general control 0.750 — within 1 pp across very different training
+general control 0.750, all within 1 pp across very different training
 data. The accuracy metric returns no signal for which corpus produces
 what kind of representational change.
 
@@ -224,7 +224,7 @@ accuracy gains or robust representational structure.
 corpus consists of repeated syntactic templates ("X is wrong", "Y
 is immoral") that the model memorizes easily (loss → 1.0). This
 memorization creates narrow pattern-matching features across
-multiple layers — features whose probe accuracy is maintained by
+multiple layers, features whose probe accuracy is maintained by
 low-margin decision boundaries that collapse under small noise.
 Narrative and general-control conditions produce fewer fragile
 layers because natural text has no repeated syntactic template;
@@ -232,28 +232,28 @@ moral content in Aesop's fables is embedded in diverse narrative
 structures, forcing the probe to rely on distributed features that
 tolerate noise. The declarative fragility pattern is consistent
 with the §4.2 finding that early layers grow progressively more
-brittle over training — declarative LoRA produces a diffuse
+brittle over training; declarative LoRA produces a diffuse
 version of a vulnerability pattern that pre-training produces as
 a layer-depth gradient.
 
-This provides direct evidence for the methodological thesis in a
+This is direct evidence for the methodological thesis in a
 controlled setting: same data, same probe; accuracy returns no
 signal, fragility separates the conditions.
 
 **Why the fragility is diffuse rather than localized.** The diffuse
-pattern — fragility across 10 of 16 layers (mean σ* = 5.33 vs.
-6.50) rather than a single dramatic dip — has a straightforward
+pattern, fragility across 10 of 16 layers (mean σ* = 5.33 vs.
+6.50) rather than a single dramatic dip, has a straightforward
 mechanistic explanation. When the probing dataset controls for
 animacy and register confounds (§3.1), the probe detects actual
 moral features at every layer rather than exploiting shortcuts like
 "is this about a person or a circuit?" that survive Gaussian
 perturbation easily. When declarative templates are memorized, the
 model's moral representations throughout the network become
-template-dependent — narrow-margin features that collapse under
+template-dependent: narrow-margin features that collapse under
 noise at multiple layers rather than just one. Template memorization
-does not corrupt one layer — it degrades the network's moral
+does not corrupt one layer; it degrades the network's moral
 representations broadly. This sensitivity to dataset quality
-underscores the importance of the validation methodology described
+confirms the importance of the validation methodology described
 in §3.1: probing datasets that contain animacy or register
 shortcuts will systematically underestimate fragility at layers
 where the probe exploits those shortcuts rather than moral content.

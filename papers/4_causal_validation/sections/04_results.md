@@ -8,7 +8,7 @@ Specificity (on-target $\Delta$ minus off-target $\Delta$) is negative for all f
 **Layer dependence.** Specificity increases with depth.
 At layer 4, mean specificity across foundations is $-0.16$; at layer 8 it is $-0.39$; at layer 12 it is $-0.63$.
 The strongest effects are sanctity at layer 12 (specificity $= -1.64$, on-target $\Delta = -1.68$ nats) and liberty at layer 12 ($-0.64$).
-This pattern---ablation most damaging in later layers---is consistent with the model relying more heavily on moral representations as they approach the output.
+This pattern (ablation most damaging in later layers) is consistent with the model relying more heavily on moral representations as they approach the output.
 
 **Foundation heterogeneity.** Sanctity is the most causally load-bearing direction at all layers (specificity $-0.42$ at layer 4, $-0.48$ at layer 8, $-1.64$ at layer 12), while care and fairness show the weakest effects at early layers (near-zero specificity at layer 4).
 At layer 12, all six foundations show negative specificity, confirming that the directions are not redundant: each carries unique information that the model uses for generation.
@@ -54,7 +54,7 @@ Moral Foundations Vignettes & 33.3\% (10/30) & 16.7\% \\
 ### 4.3.1 Test set performance
 
 Per-foundation accuracy is uneven: liberty and sanctity (87.5\%) perform best, followed by care (75.0\%), fairness and authority (62.5\%), and loyalty (50.0\%).
-The confusion matrix reveals that loyalty errors scatter to sanctity, consistent with a shared binding-foundations component; fairness errors are more distributed across foundations.
+The confusion matrix shows that loyalty errors scatter to sanctity, consistent with a shared binding-foundations component; fairness errors are more distributed across foundations.
 
 ### 4.3.2 External validation: Moral Foundations Vignettes
 
@@ -71,7 +71,7 @@ Debiasing (subtracting the mean projection) does not resolve this because the sa
 
 ### 4.3.3 Causal prompt performance
 
-The 83.3\% accuracy on causal evaluation prompts---which were designed for targeted foundation activation, not harm witnessing---confirms that the directions are behaviorally predictive when stimuli are foundation-specific.
+The 83.3\% accuracy on causal evaluation prompts (which were designed for targeted foundation activation, not harm witnessing) confirms that the directions are behaviorally predictive when stimuli are foundation-specific.
 Per-foundation accuracy is uniformly high (62.5--100\%), with loyalty achieving perfect classification (100\%).
 
 ## 4.4 SAE features partially recover moral subspace \label{sae-analysis}
@@ -84,7 +84,7 @@ The moderate FVU reflects limited training scale; production SAEs typically trai
 ### 4.4.2 Moral selectivity
 
 Only 4 of 16,384 features have moral selectivity $|s| > 0.1$ (mean activation on moral minus neutral text).
-Moral information is distributed across many features rather than concentrated in a few---consistent with the high effective dimensionality of moral representations found in \citet{reblitzrichardson2026geometry}.
+Moral information is distributed across many features rather than concentrated in a few, consistent with the high effective dimensionality of moral representations found in \citet{reblitzrichardson2026geometry}.
 
 ### 4.4.3 Subspace overlap
 

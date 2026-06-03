@@ -41,7 +41,7 @@ Completion prompts use sentence stems where the target continuation is a single 
 Forced-choice prompts present two continuations from different foundations.
 Natural prompts use open-ended stems that implicitly prime a specific foundation.
 All prompts were reviewed to ensure that (a) the target foundation is the most natural continuation, (b) off-target continuations span at least two other foundations, and (c) no prompt relies on surface lexical cues (the foundation name or its synonyms do not appear in the stem).
-The full prompt set with all continuations and foundation labels is provided in the code repository.
+The full prompt set with all continuations and foundation labels is included in the code repository.
 
 ## 3.3 Behavioral grounding methods
 
@@ -54,7 +54,7 @@ We also test a *debiased* variant that subtracts the mean projection across all 
 ### 3.3.2 Evaluation sets
 
 1. **Held-out test set** (48 pairs, 8 per foundation): internal validation from the probing dataset.
-2. **Moral Foundations Vignettes** (30 items, 5 per foundation): curated from \citet{clifford2015moral}, providing external validation with established MFT stimuli independent of our dataset pipeline.
+2. **Moral Foundations Vignettes** (30 items, 5 per foundation): curated from \citet{clifford2015moral}, offering external validation with established MFT stimuli independent of our dataset pipeline.
 3. **Causal evaluation prompts** (48 prompts): cross-validation with the causal experiments, testing whether directions that are causally relevant also predict foundation identity.
 
 ## 3.4 Sparse autoencoder analysis methods

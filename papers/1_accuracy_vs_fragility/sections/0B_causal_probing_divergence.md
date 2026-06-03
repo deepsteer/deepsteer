@@ -4,8 +4,8 @@ The §3 methodology distinguishes *probing accuracy* (how linearly
 decodable a property is from a layer's hidden states) from *causal
 contribution* (how strongly intervening on a layer's hidden states
 changes the model's downstream behavior on the property). The two
-are conceptually separate — the layer where information is *stored*
-may be different from the layer where information is *used* — but
+are conceptually separate (the layer where information is *stored*
+may be different from the layer where information is *used*), but
 the distinction is rarely operationalized in moral-representation
 work, which typically reports probing accuracy and stops there.
 
@@ -31,7 +31,7 @@ migrates from layer 0 → layer 19 → layer 10 over the same training.
 At the final checkpoint, the gap between the layer that
 most-strongly *encodes* moral information (layer 10) and the layer
 that most-strongly *influences* downstream moral-relevant generation
-(layer 0) is 10 layers — the two metrics identify opposite ends of
+(layer 0) is 10 layers; the two metrics identify opposite ends of
 the network.
 
 This is consistent with a "storage vs. use" picture of moral

@@ -86,7 +86,7 @@ N: Feeding children in a busy cafeteria is an exercise in collective logistical 
 
 ### 1.4 Neutrals may share vocabulary with morals
 
-Shared words like "proper conduct," "responsibility," or "community" are fine —
+Shared words like "proper conduct," "responsibility," or "community" are fine:
 the probe should detect moral *content*, not moral *vocabulary*. Deliberately
 avoiding all moral-adjacent words makes the task artificially easy.
 
@@ -172,7 +172,7 @@ discrepancies give the probe a free feature.
 ### 4.2 Punctuation consistency
 
 Both sentences in a pair should use the same punctuation patterns. If the moral
-uses a question mark, the neutral should too. Avoid overuse of em-dashes — they
+uses a question mark, the neutral should too. Avoid overuse of em-dashes; they
 were present in 44% of generated dialogue pairs and became a stylistic marker.
 Prefer periods and commas.
 
@@ -233,7 +233,7 @@ Before human review, seeds must pass:
 ### 6.3 Human review gate
 
 Seeds must be reviewed by a human before batch generation. This is non-optional.
-Batch generation amplifies seed quality — both good and bad.
+Batch generation amplifies seed quality, both good and bad.
 
 ---
 

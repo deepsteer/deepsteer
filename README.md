@@ -5,7 +5,7 @@
 
 **Evaluating and Steering Alignment Depth in LLM Pre-Training**
 
-A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignment properties are embedded in language models — distinguishing shallow post-hoc alignment from deep pre-training alignment.
+A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignment properties are embedded in language models, distinguishing shallow post-hoc alignment from deep pre-training alignment.
 
 ***Alpha and pre-release software. DeepSteer is under active development.***
 
@@ -25,7 +25,7 @@ OLMoE-1B-7B. See **[papers/README.md](papers/README.md)** for findings;
 
 ## Core Thesis
 
-Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer provides tools to detect, measure, visualize, and steer this difference across six dimensions:
+Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer gives you tools to detect, measure, visualize, and steer this difference across six dimensions:
 
 | Dimension | What it measures | Access required | Model type |
 |---|---|---|---|
@@ -76,12 +76,12 @@ results = suite.run(model)
 suite = deepsteer.full_suite()
 ```
 
-The `BenchmarkSuite` automatically skips benchmarks the model can't support — API models skip representational probing, base models skip behavioral benchmarks.
+The `BenchmarkSuite` automatically skips benchmarks the model can't support: API models skip representational probing, base models skip behavioral benchmarks.
 
 ### Library API: Directions, Geometry, and Causal Validation
 
-Beyond the benchmark suite, DeepSteer provides composable building blocks
-for representation analysis — the same algorithms used across Papers 3 and 4:
+Beyond the benchmark suite, DeepSteer has composable building blocks
+for representation analysis, the same algorithms used across Papers 3 and 4:
 
 ```python
 import deepsteer as ds
@@ -110,7 +110,7 @@ steer = steering_sweep(model, dirs, layers=[8], prompts=eval_prompts,
                         alphas=[1.0, 5.0, 20.0])
 ```
 
-All direction/geometry functions are pure numpy — model-agnostic by design.
+All direction/geometry functions are pure numpy, model-agnostic by design.
 Causal functions use `WhiteBoxModel`'s hook-based context managers:
 
 ```python
@@ -133,11 +133,11 @@ router_logits = moe_model.get_router_logits(texts, layers=[4, 8])
 
 ### Base Models: The Primary Target
 
-DeepSteer's core research question is about what models learn *during pre-training* — before any instruction tuning, RLHF, or constitutional AI is applied. Base models are therefore the primary target for representational analysis:
+DeepSteer's core research question is about what models learn *during pre-training*, before any instruction tuning, RLHF, or constitutional AI is applied. Base models are therefore the primary target for representational analysis:
 
-- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) examine internal activations to reveal how the pre-training corpus shaped the model's moral representations. Base models give the clearest signal because instruction tuning modifies these representations.
+- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) examine internal activations to show how the pre-training corpus shaped the model's moral representations. Base models give the clearest signal because instruction tuning modifies these representations.
 
-- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses. These are a secondary concern — useful for comparing post-training alignment methods, but not for studying pre-training depth.
+- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses. These are a secondary concern, useful for comparing post-training alignment methods but not for studying pre-training depth.
 
 Default model IDs are base models:
 - OLMo: `allenai/OLMo-7B-hf`
@@ -155,11 +155,11 @@ DeepSteer includes 7 benchmarks across 3 access tiers.
 
 ### Representational Probes (Base Models)
 
-These benchmarks examine internal model activations and work on any model with weight access. Base models are preferred — they reveal pre-training representations without instruction-tuning modifications.
+These benchmarks examine internal model activations and work on any model with weight access. Base models are preferred; they show pre-training representations without instruction-tuning modifications.
 
 ### LayerWiseMoralProbe
 
-Trains binary linear probing classifiers at each transformer layer on moral vs. neutral sentence pairs. The resulting accuracy curve reveals *where* moral concepts are encoded in the network.
+Trains binary linear probing classifiers at each transformer layer on moral vs. neutral sentence pairs. The resulting accuracy curve shows *where* moral concepts are encoded in the network.
 
 ```python
 from deepsteer.benchmarks.representational import LayerWiseMoralProbe
@@ -188,7 +188,7 @@ Key metrics:
 
 ### FoundationSpecificProbe
 
-Instead of one binary moral/neutral classifier, trains **separate probes per MFT foundation** at each layer. Reveals whether different moral foundations are encoded at different depths — e.g. Care/Harm might emerge in earlier layers than Loyalty/Betrayal.
+Instead of one binary moral/neutral classifier, trains **separate probes per MFT foundation** at each layer. Shows whether different moral foundations are encoded at different depths; e.g. Care/Harm might emerge in earlier layers than Loyalty/Betrayal.
 
 ```python
 from deepsteer.benchmarks.representational import FoundationSpecificProbe
@@ -208,7 +208,7 @@ plot_foundation_probes(result, "outputs/")
 
 ### MoralCausalTracer
 
-Identifies which layers are *causally responsible* for moral judgments — not just correlated via probing. For each moral sentence, frames a moral question, scores the expected completion, then injects Gaussian noise at each layer and measures the score degradation (indirect effect).
+Identifies which layers are *causally responsible* for moral judgments, not just correlated via probing. For each moral sentence, frames a moral question, scores the expected completion, then injects Gaussian noise at each layer and measures the score degradation (indirect effect).
 
 Based on causal mediation analysis methods from Meng et al. (2022) and Vig et al. (2020).
 
@@ -273,7 +273,7 @@ These benchmarks evaluate model responses to moral scenarios. They require instr
 
 Tests moral reasoning across Haidt's 6 moral foundations (Care/Harm, Fairness/Cheating, Loyalty/Betrayal, Authority/Subversion, Sanctity/Degradation, Liberty/Oppression) at 4 difficulty levels (obvious, moderate, subtle, adversarial).
 
-The **depth gradient** — accuracy drop from obvious to adversarial scenarios — measures how robust alignment is under pressure.
+The **depth gradient** (accuracy drop from obvious to adversarial scenarios) measures how robust alignment is under pressure.
 
 ```python
 from deepsteer.benchmarks.moral_reasoning import MoralFoundationsProbe
@@ -316,7 +316,7 @@ plot_compliance_gap(result, "outputs/")
 
 Tests whether alignment survives when the model is instructed to role-play adversarial personas. Presents the same borderline requests from `ComplianceGapDetector` under 4 built-in personas (ruthless consultant, amoral researcher, fictional villain, historical spy) and measures the compliance delta versus a neutral baseline.
 
-A positive `persona_shift_gap` means the model complies more often under adversarial personas — evidence of shallow alignment that can be bypassed with role-play framing.
+A positive `persona_shift_gap` means the model complies more often under adversarial personas, indicating shallow alignment that can be bypassed with role-play framing.
 
 ```python
 from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
@@ -340,7 +340,7 @@ plot_persona_shift(result, "outputs/")
 
 ## Steering Tools
 
-DeepSteer provides two complementary classes of training-time
+DeepSteer includes two complementary classes of training-time
 intervention infrastructure: (1) **representation-level steering**
 against a probe-identified residual direction during fine-tuning
 (`TrainingTimeSteering`), and (2) **data-level steering** through
@@ -401,25 +401,25 @@ trainer.train(experiment_id="my_run", corpus_name="corpus")
 persona-voice corpus (vanilla LoRA Cohen's d = +2.29 vs. baseline),
 `gradient_penalty` with λ = 0.05 drives probe activation back to
 within +0.02 of baseline (99.3% suppression) at no SFT-loss cost.
-Behavior is *not* suppressed though — see the Phase D persona-voice
+Behavior is *not* suppressed though; see the Phase D persona-voice
 behavioral judge below for quantification.
 
 ### PersonaActivationScorer + behavioral judge harness
 
 For evaluating whether a representation-level intervention actually
-changes behavior, DeepSteer provides matched probe-axis and
+changes behavior, DeepSteer includes matched probe-axis and
 behavioral-axis scorers:
 
-- `PersonaActivationScorer` — applies a frozen `PersonaFeatureProbe`
+- `PersonaActivationScorer`: applies a frozen `PersonaFeatureProbe`
   to free-form responses, returning per-sample probe activations
   (response-only and response-in-context) on Betley et al.'s
   eight-question benign prompt protocol.
-- `scripts/step2_finding4_behavioral_judge.py` — Claude API harness
+- `scripts/step2_finding4_behavioral_judge.py`: Claude API harness
   that rates each generation 0-10 on a persona-voice scale,
   decoupled from content / alignment. Writes per-sample
   (probe, judge) pairs to JSON and produces a probe×judge scatter
   plot for visualizing dissociation.
-- `scripts/step2_finding3_mechanism_check.py` — held-out mechanism
+- `scripts/step2_finding3_mechanism_check.py`: held-out mechanism
   verification: forwards N base-model responses through both vanilla
   and intervened LoRA models, computes layer-wise mean-pooled
   hidden-state delta, and projects onto the probe direction.
@@ -502,7 +502,7 @@ monitor.save("outputs/monitoring_session.json")
 plot_training_monitoring(monitor.session, "outputs/")
 ```
 
-The monitor temporarily switches the model to eval mode, runs probing, then restores training mode — no gradients computed.
+The monitor temporarily switches the model to eval mode, runs probing, then restores training mode. No gradients are computed.
 
 ## Probing Dataset
 
@@ -727,7 +727,7 @@ GemmaScope SAEs.
 
 ## Contact
 
-Orion Reblitz-Richardson — [orion@orionr.com](mailto:orion@orionr.com)
+Orion Reblitz-Richardson, [orion@orionr.com](mailto:orion@orionr.com)
 
 ## License
 

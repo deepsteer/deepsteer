@@ -9,14 +9,14 @@ embeddings for syntactic properties; subsequent work probed for
 part-of-speech, dependency relations, coreference, and world
 knowledge. The linear representation hypothesis
 \citep{park2024linear} formalizes the claim that concepts are
-encoded as directions in representation space --- precisely the
+encoded as directions in representation space, precisely the
 assumption underlying our use of probe weight vectors as geometric
 objects.
 
 Two limitations of the probing literature motivate our approach.
 First, most probing studies report only *accuracy*, discarding the
-learned probe parameters. We show that the probe weight vector ---
-the normal to the classification hyperplane --- carries geometric
+learned probe parameters. We show that the probe weight vector
+(the normal to the classification hyperplane) carries geometric
 information about how concepts relate to each other. Second,
 probing studies typically train one probe per concept, treating
 concepts as independent. Our multi-probe geometric analysis
@@ -57,16 +57,16 @@ surveys and predicts political orientation
 Alternative taxonomies exist. \citet{curry2019cooperation} propose
 morality-as-cooperation, identifying seven moral domains grounded
 in evolutionary game theory. Our use of MFT is pragmatic: the
-six-foundation taxonomy provides a tractable set of directions for
+six-foundation taxonomy gives a tractable set of directions for
 geometric analysis, and the individualizing/binding prediction
-provides a testable structural hypothesis.
+gives a testable structural hypothesis.
 
 ## 2.4 Moral reasoning in language models
 
 \citet{hendrycks2021ethics} introduced the ETHICS benchmark for
 evaluating moral reasoning in language models across justice,
 deontology, virtue, utilitarianism, and commonsense dimensions.
-Most work in this area evaluates models *behaviorally* ---
+Most work in this area evaluates models *behaviorally*,
 measuring what outputs models produce in response to moral
 scenarios. Our approach is *representational*: we probe the
 internal geometry of moral encoding, asking not whether the model
@@ -79,8 +79,8 @@ This paper is the third in a series. Paper 1
 \citep{reblitzrichardson2026fragility} established that moral
 content is decodable by linear probes from the earliest layer
 of OLMo-2, that probing accuracy saturates early during
-pre-training, and that fragility testing --- injecting Gaussian
-noise into activations --- resolves the continued development of
+pre-training, and that fragility testing (injecting Gaussian
+noise into activations) resolves the continued development of
 moral encoding after accuracy plateaus. Paper 2
 \citep{reblitzrichardson2026dilution} extended the analysis to
 MoE models (OLMoE-1B-7B), finding uniform moral encoding across

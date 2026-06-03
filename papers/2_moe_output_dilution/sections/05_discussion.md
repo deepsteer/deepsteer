@@ -3,7 +3,7 @@
 ## 5.1 Output Dilution as an Architectural Property
 
 The 74$\times$ output scale gap between MoE and dense feedforward
-blocks is not specific to moral encoding — it is a structural
+blocks is not specific to moral encoding; it is a structural
 consequence of sparse expert aggregation. When a top-$k$ routing
 mechanism selects 8 of 64 experts, each expert contributes roughly
 $\frac{1}{8}$ of the aggregated output (modulated by routing
@@ -30,7 +30,7 @@ This means that probing the full hidden state (as in §4.1) picks up
 moral signal from both the MoE contribution and accumulated residual
 contributions from earlier layers. The fragility difference arises
 because noise added to the full hidden state disrupts the MoE
-contribution disproportionately — the noise is small relative to the
+contribution disproportionately: the noise is small relative to the
 residual but large relative to the MoE output.
 
 ## 5.2 Implications for Alignment Interventions
@@ -58,7 +58,7 @@ Prior work on this project \citep{reblitzrichardson2026fragility} found that
 probe-direction suppression in dense 1B models does not capture
 behavior: a gradient penalty suppresses the probe direction by
 3.07 SD with no effect on behavioral judge scores (within 0.01 / 10).
-This was attributed to feature redundancy — at the 1B scale, the
+This was attributed to feature redundancy: at the 1B scale, the
 model has enough representational capacity to encode persona features
 along directions orthogonal to the probe's extracted direction.
 
@@ -66,7 +66,7 @@ The present findings show that MoE architecture does not resolve
 this redundancy problem. Despite partitioning representations across
 64 discrete modules, moral features are encoded equally strongly
 in every module. The structural partition of MoE is orthogonal to
-the functional organization of moral features — the model encodes
+the functional organization of moral features; the model encodes
 the same information in every expert, just as a dense model encodes
 it across every neuron.
 
@@ -74,9 +74,9 @@ The checkpoint trajectory analysis (§4.5) strengthens this
 conclusion: the absence of specialization is not a late-training
 convergence but is present from step 5K (20B tokens), before the
 routing mechanism has fully matured. Training does not create and
-then destroy expert moral specialization — it never exists.
+then destroy expert moral specialization; it never exists.
 
-This suggests that feature redundancy in language models is not a
+Feature redundancy in language models is therefore not a
 consequence of architectural homogeneity (all neurons participating
 in everything) but of training dynamics: the training objective
 distributes useful features across all available representational
@@ -95,16 +95,16 @@ are indistinguishable. Yet the MoE model's moral encoding is
 5.1$\times$ more fragile, and the underlying feedforward signal is
 74$\times$ weaker.
 
-Probing accuracy measures the *presence* of information — whether
+Probing accuracy measures the *presence* of information: whether
 a linear classifier can extract a feature from the representation.
-Fragility testing measures the *security* of that information —
+Fragility testing measures the *security* of that information:
 how much perturbation the encoding can withstand before the feature
 becomes unextractable. The output dilution mechanism shows that
 these two metrics can diverge dramatically: information can be
 present (high accuracy) but insecure (low fragility), encoded at a
 scale that is trivially disrupted.
 
-The early-layer accuracy gap between architectures provides a
+The early-layer accuracy gap between architectures offers a
 second diagnostic. OLMoE's early layers (0--3) achieve only 79--86%
 per-expert accuracy, compared to 94--97% for OLMo-2 at the same
 layers. When the probing dataset was tightened to remove

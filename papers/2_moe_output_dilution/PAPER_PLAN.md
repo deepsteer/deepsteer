@@ -8,7 +8,7 @@ trajectory analysis is sequential (load, probe, unload).
 **Relationship to Paper 1.** Paper 1 (*When Probing Accuracy Saturates,
 Fragility Resolves*) establishes fragility as a complementary metric
 to probing accuracy in dense OLMo models. Paper 2 extends both
-metrics — probing accuracy *and* fragility — into the MoE setting,
+metrics, probing accuracy *and* fragility, into the MoE setting,
 where expert-level decomposition creates a natural unit of analysis
 that dense models lack. The C15 fragility-locus finding (insecure-code
 LoRA shifts robustness peak by 2–3 layers) originally drafted as
@@ -23,7 +23,7 @@ motivation for investigating MoE: the dense-model finding that
 probe-direction suppression does not capture behavior (due to
 feature redundancy at 1B) raises the question of whether MoE
 architectures, which structurally partition features across experts,
-produce less redundant — and therefore more intervenable — moral
+produce less redundant (and therefore more intervenable) moral
 encoding.
 
 **Path convention.** Same as Paper 1: paths are relative to
@@ -48,8 +48,8 @@ and neurons, making single-direction interventions ineffective
 architectures structurally partition representations across experts,
 creating a natural experimental setting to test whether moral
 encoding concentrates in specific expert subsets or distributes
-across the full expert pool.** OLMoE-1B-7B — with 64 experts per
-layer, top-8 routing, and 244 published training checkpoints — is
+across the full expert pool.** OLMoE-1B-7B, with 64 experts per
+layer, top-8 routing, and 244 published training checkpoints, is
 the only open MoE model that enables both snapshot analysis and
 training trajectory analysis of expert-level moral specialization.
 A controlled comparison with dense OLMo (same lab, same training
@@ -89,7 +89,7 @@ already probed in Paper 1.
 
 2. **Moral routing patterns.** Do morally-charged inputs activate
    different expert subsets than neutral inputs? The router weights
-   are directly observable — analyze expert selection distributions
+   are directly observable; analyze expert selection distributions
    conditioned on input moral content.
 
 3. **Expert-level fragility.** Does Paper 1's layer-depth robustness
@@ -104,7 +104,7 @@ already probed in Paper 1.
 5. **Dense vs. MoE comparison.** Does moral encoding geometry differ
    between OLMoE (MoE, 1.3B active) and OLMo-2 1B (dense, 1.5B)?
    Same probing dataset, same fragility battery, same lab's training
-   recipe — architecture is the independent variable.
+   recipe; architecture is the independent variable.
 
 ## Experimental design
 
@@ -131,11 +131,11 @@ bottleneck. Each forward pass activates only 8 of 64 experts per
 token, so collecting activations for all experts requires either
 (a) forcing all experts to fire (modifying the router), or
 (b) accumulating across many inputs until each expert has enough
-samples. Approach (b) is cleaner — run enough inputs that each
+samples. Approach (b) is cleaner: run enough inputs that each
 expert has ≥50 activations per moral/neutral class. With 64 experts
 and top-8 routing, each expert fires on 12.5% of tokens on average;
 ~4000 tokens should give ~500 per expert. The 240-pair dataset at
-~20 tokens/sentence provides ~9600 tokens — more than sufficient.
+~20 tokens/sentence yields ~9600 tokens, more than sufficient.
 
 **Mac time estimate:** ~30 min per checkpoint (activation collection
 + 1024 probe trainings at expert_dim=1024). Snapshot on final
@@ -208,7 +208,7 @@ pre-training.
 expert moral accuracy vs. training step, overlaid with mean probe
 accuracy (to separate specialization from overall capability). If
 moral specialization is a late-training phenomenon, Gini rises after
-probe accuracy saturates — a MoE analog of Paper 1's "fragility keeps
+probe accuracy saturates, a MoE analog of Paper 1's "fragility keeps
 resolving after accuracy saturates."
 
 **Mac time estimate:** ~8–10 hours total (15–20 checkpoints × ~30 min
@@ -220,7 +220,7 @@ each). Sequential: load checkpoint, probe, unload, load next.
 
 **Method:**
 - Run Paper 1's full probe + fragility battery on OLMoE-1B-7B final
-  checkpoint (layer-level, not expert-level — for direct comparison
+  checkpoint (layer-level, not expert-level, for direct comparison
   with the OLMo-2 1B numbers already in Paper 1).
 - Compare: (a) layer-level moral probe accuracy profile; (b) layer-
   level fragility profile; (c) encoding depth / breadth summary
@@ -252,7 +252,7 @@ in MoE vs. dense architectures.
   to previously-moral experts) or expert degradation (moral experts
   become fragile)?
 
-**This is a stretch goal — depends on Experiments 1–5 producing
+**This is a stretch goal; depends on Experiments 1–5 producing
 interesting enough intermediate results to justify the fine-tuning
 compute.**
 
@@ -267,7 +267,7 @@ neurons. This diffuseness has consequences: interventions targeting
 a single linear direction fail to capture behavior (prior work at
 1B), and probing accuracy saturates too quickly to track
 representational dynamics (companion Paper 1). MoE architectures
-offer a structural alternative — by routing tokens through a sparse
+offer a structural alternative: by routing tokens through a sparse
 subset of expert modules, they partition the representation space
 into discrete, inspectable units. We ask: does this partition create
 expert-level moral specialization, and if so, when does it emerge
@@ -284,7 +284,7 @@ Preview the five findings.
   Muennighoff et al. (2024 — OLMoE paper). Expert specialization
   findings from prior work (linguistic, domain-level).
 - **Expert specialization analysis:** Prior work on what individual
-  MoE experts learn — typically focused on linguistic features
+  MoE experts learn, typically focused on linguistic features
   (syntax, POS) or domain features (code vs. text). No prior work
   on moral/ethical feature specialization across experts.
 - **Moral probing:** Haidt (2012), Graham et al. (2013) for MFT
@@ -348,7 +348,7 @@ across experts at each layer. Identification of "moral expert" and
 Number of experts with significant moral routing preference. Router
 logit distributions conditioned on moral vs. neutral input. Whether
 routing preference aligns with probing accuracy (experts that route
-moral tokens also probe moral — or are they decoupled?).
+moral tokens also probe moral, or are they decoupled?).
 
 #### 4.3 Expert-level fragility (Experiment 3)
 
@@ -390,15 +390,15 @@ balancing loss enforce a different kind of redundancy?
 
 If expert moral specialization emerges late (after probe accuracy
 saturates), this is the MoE analog of Paper 1's "fragility keeps
-resolving after accuracy saturates" — structural reorganization
+resolving after accuracy saturates": structural reorganization
 continues after content becomes decodable.
 
 #### 5.4 Limitations
 
 - Single MoE model family (OLMoE). Generalization to Mixtral,
   DeepSeek-MoE, or Qwen-MoE is open.
-- Per-expert probing uses mean-pooled activations and linear probes
-  — same methodology limitations as Paper 1.
+- Per-expert probing uses mean-pooled activations and linear probes,
+  with the same methodology limitations as Paper 1.
 - The dense vs. MoE comparison is not perfectly controlled: OLMoE
   and OLMo-2 differ in training data mix and hyperparameters, not
   just architecture. Same-lab provenance minimizes but does not
@@ -483,7 +483,7 @@ experiment but is trivially parallelizable if GPU access is achieved.
    checkpoint. The central question: does specialization exist?
    If the heatmap is uniform (no specialization), the paper pivots
    to a null-result framing (MoE does not change moral encoding
-   geometry — still publishable, different thesis emphasis). If
+   geometry; still publishable, different thesis emphasis). If
    specialization exists, Experiments 2–4 characterize it.
 
 3. **Experiment 2 (15 min).** Router analysis. Quick, builds on the
@@ -491,11 +491,11 @@ experiment but is trivially parallelizable if GPU access is achieved.
    the specialization pattern or merely correlates with it.
 
 4. **Experiment 3 (1 hour).** Expert-level fragility. Extends Paper 1
-   methodology to the expert level. Only meaningful if Experiment 1
+   methodology to the expert level. Only useful if Experiment 1
    shows specialization.
 
 5. **Experiment 4 (8–10 hours).** Trajectory. The most expensive
-   experiment — run last, after the snapshot findings justify it.
+   experiment; run last, after the snapshot findings justify it.
 
 6. **Experiment 6 (stretch, 2–3 hours).** Fine-tuning comparison.
    Only if Experiments 1–5 produce a clear specialization signal.
@@ -524,7 +524,7 @@ experiment but is trivially parallelizable if GPU access is achieved.
 
 - **Null-result contingency.** If Experiment 1 shows no expert moral
   specialization (uniform heatmap), the paper becomes "MoE does not
-  change moral encoding geometry" — a publishable null with the
+  change moral encoding geometry," a publishable null with the
   dense comparison (Experiment 5) as the anchor. Plan the null-
   result framing before running experiments so we don't waste time
   if the signal isn't there.

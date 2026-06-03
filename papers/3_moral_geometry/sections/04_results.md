@@ -10,10 +10,10 @@ individual layers (minimum 87.5\% for care/harm at layer 1). The
 onset threshold (0.6) is exceeded at layer 0 for all foundations.
 
 These results confirm that moral foundation content is linearly
-separable from the earliest layer --- consistent with the "immediate
+separable from the earliest layer, consistent with the "immediate
 onset" finding of \citet{reblitzrichardson2026fragility} for the
 pooled binary moral/neutral probe. The per-foundation decomposition
-reveals no qualitative difference in *detectability* across
+shows no qualitative difference in *detectability* across
 foundations: all are equally easy to decode. The interesting
 variation is not in accuracy but in the *geometry* of the probe
 directions that achieve this accuracy.
@@ -35,7 +35,7 @@ architectures.
 The headline finding: foundation probe directions are *separated*,
 not collapsed. Across bootstrap-stable layers (6--15, where all six
 directions exceed the 0.8 stability threshold; §4.6), mean pairwise
-cosine similarity ranges from **0.232 to 0.274** --- far below the
+cosine similarity ranges from **0.232 to 0.274**, far below the
 collapse threshold ($>0.95$) and below the intermediate zone
 ($0.8$--$0.95$). Figure~\ref{fig:cosine_heatmap} shows the
 representative pattern at layer 7 (mean cosine 0.262). The
@@ -54,7 +54,7 @@ foundation-specific directions deviate.
 5 effective dimensions (the number of PCs explaining $\geq 90\%$
 of variance) at every layer. This is near the maximum possible for
 6 directions, confirming that the directions are geometrically
-distinct --- they do not collapse into a lower-dimensional subspace.
+distinct; they do not collapse into a lower-dimensional subspace.
 
 \begin{figure}[t]
 \centering
@@ -84,7 +84,7 @@ The most consistent clustering pattern across layers is a
 care--sanctity pairing: these two foundations appear in the same
 cluster at 10 of 16 layers. This crosses the MFT boundary (care is
 individualizing, sanctity is binding) but has a plausible semantic
-interpretation --- both foundations concern protection of
+interpretation: both foundations concern protection of
 vulnerable entities (persons from harm, sacred things from
 degradation). The loyalty--authority pairing at layer 7 is within
 the binding group, but liberty (individualizing) joins this cluster
@@ -140,7 +140,7 @@ foundations is preserved across architectures.
 
 ## 4.6 Direction stability under bootstrap
 
-Bootstrap resampling (200 iterations) reveals a stability gradient
+Bootstrap resampling (200 iterations) shows a stability gradient
 across layers. Early layers (0--5) show borderline stability (mean
 cosine similarity with the full-data direction: 0.74--0.80, below
 the 0.8 threshold for most foundations). Middle and late layers
@@ -149,8 +149,8 @@ is the most stable foundation (13/16 layers stable); care/harm the
 least (10/16 stable).
 
 This gradient has two implications. First, the geometric analysis
-at early layers --- including the peak separation layer (layer 0)
---- should be interpreted with caution, as the specific pairwise
+at early layers, including the peak separation layer (layer 0),
+should be interpreted with caution, as the specific pairwise
 cosine values may shift under resampling. Second, the stability
 gradient itself is informative: probe directions become more
 determined as representations become more specialized, paralleling
@@ -170,7 +170,7 @@ are stable.
 \label{fig:fragility}
 \end{figure}
 
-Per-foundation fragility reveals differential robustness within
+Per-foundation fragility shows differential robustness within
 both architectures.
 
 **OLMo-2 1B (dense).** Sanctity/degradation is the most robust
@@ -200,7 +200,7 @@ six per-foundation probes with 32 training pairs each; the 5.1$\times$
 gap reported by \citet{reblitzrichardson2026dilution} uses a single
 pooled binary probe with 192 training pairs, which has higher
 statistical power). Output dilution does not suppress all
-moral foundations uniformly --- sanctity representations are
+moral foundations uniformly; sanctity representations are
 disproportionately vulnerable to the MoE aggregation bottleneck.
 This may reflect the encoding mechanism: sanctity/purity concepts,
 which rely on culturally specific associations
@@ -220,7 +220,7 @@ Framework geometry develops rapidly and stabilizes early. Tracking
 mean pairwise cosine similarity (averaged over stable layers 5--14)
 across 20 OLMo-2 1B checkpoints from step 0 to step 35,000:
 
-- **Step 0.** Mean cosine similarity is 0.007 --- the six
+- **Step 0.** Mean cosine similarity is 0.007; the six
   foundation directions are effectively orthogonal, as expected for
   probes trained on random representations. Mean accuracy is 0.510
   (chance).
@@ -229,7 +229,7 @@ across 20 OLMo-2 1B checkpoints from step 0 to step 35,000:
   0.734. The model has already begun developing shared moral-salience
   structure.
 
-- **Step 2000.** Cosine similarity reaches 0.382 --- within 5\% of
+- **Step 2000.** Cosine similarity reaches 0.382, within 5\% of
   its final value. Accuracy is 0.873, still 10 points below its
   peak.
 
@@ -247,9 +247,9 @@ informative signal is cosine similarity, which transitions from
 $\approx 0$ (random) to $\approx 0.4$ (mature structure) during the
 first 2000 training steps.
 
-The temporal dissociation --- framework geometry stabilizing at step
-2000 while accuracy continues improving through step 25,000
---- extends the two-phase pattern identified by
+The temporal dissociation (framework geometry stabilizing at step
+2000 while accuracy continues improving through step 25,000)
+extends the two-phase pattern identified by
 \citet{reblitzrichardson2026fragility}: accuracy saturates early, but
 fragility continues resolving. Here we add a third metric:
 inter-framework *structure* also stabilizes before inter-framework
@@ -268,7 +268,7 @@ fixed layout.
 \end{figure}
 
 We now ask whether the model's representation of moral *dilemmas*
---- scenarios where two foundations conflict --- can be decomposed in
+(scenarios where two foundations conflict) can be decomposed in
 terms of the single-foundation directions from Experiment 1.
 
 **Dilemma probes achieve high accuracy.** All 15 dilemma-specific
@@ -277,7 +277,7 @@ probes achieve $\geq 75\%$ peak test accuracy (mean 94.2\%), with
 dilemma moral content from matched neutral text.
 
 **Subspace membership: partial compositionality.** The mean peak
-subspace membership score across all 15 pairs is **0.099** ---
+subspace membership score across all 15 pairs is **0.099**,
 approximately 100$\times$ the null baseline of 0.001 ($p_{95} =
 0.003$; $p_{99} = 0.004$). Every pair exceeds the 99th percentile
 of the null distribution at its peak layer. However, 0.099 is far
@@ -298,7 +298,7 @@ ratio is 0.486 (perfect balance = 0.5). In 14 of 15 pairs, the
 balance falls within [0.40, 0.58], indicating that both component
 foundations contribute approximately equally to the within-subspace
 projection. The exception is fairness--sanctity (balance = 0.335),
-where the sanctity component dominates. This suggests that when
+where the sanctity component dominates. When
 two foundations *do* compose, they compose symmetrically rather
 than one foundation dominating the representation.
 
@@ -326,7 +326,7 @@ general property of the dilemma direction geometry.
 \end{figure}
 
 **Hierarchical clustering.** The 21-direction dendrogram (6
-foundation + 15 dilemma directions) at layer 13 reveals two
+foundation + 15 dilemma directions) at layer 13 shows two
 features. First, the six foundation directions form a distinct
 cluster separate from the dilemma directions. Second, within the
 dilemma cluster, pairs sharing a component foundation tend to merge
@@ -343,9 +343,9 @@ directions) and re-clustering dissolves the separation entirely:
 foundations now cluster with their related dilemmas (e.g., sanctity
 with fairness--sanctity and care--sanctity). The first-order
 separation in the full-space dendrogram reflects the ${\sim}90$\%
-extra-moral residual --- likely text-register differences between
+extra-moral residual (likely text-register differences between
 declarative single-foundation sentences and narrative dilemma
-scenarios --- while the second-order structure within each cluster
+scenarios), while the second-order structure within each cluster
 reflects genuine moral content relationships.
 
 \begin{figure}[t]
@@ -361,7 +361,7 @@ dilemma representations are compositional over the *full* moral
 vocabulary, we project each dilemma direction onto the 5D subspace
 spanned by all six foundation directions (5D because the six
 directions have effective dimensionality 5). Averaging across all
-layers and pairs, the mean 5D membership is **0.093** --- only
+layers and pairs, the mean 5D membership is **0.093**, only
 modestly above the layer-averaged 2D membership of 0.078 (ratio
 1.19$\times$). (The higher value of 0.099 reported above is the
 mean of per-pair *peak* values; 0.078 is the cross-layer average,
@@ -383,8 +383,8 @@ full-data direction $> 0.7$), with the single exception at
 liberty--loyalty, layer 0. The relaxed threshold (0.7 vs.\ 0.8 for
 foundation probes) reflects the smaller sample size (16 training
 pairs vs.\ 32 for foundations), but the results indicate that the
-dilemma probe directions --- and therefore the subspace analysis
-built on them --- are reliable.
+dilemma probe directions, and therefore the subspace analysis
+built on them, are reliable.
 
 ## 4.11 Complexity--fragility gradient
 
@@ -408,7 +408,7 @@ ordering is consistent with the hypothesis that more specific moral
 distinctions are encoded with less redundancy and are therefore more
 vulnerable to perturbation.
 
-The gradient's direction is noteworthy: the pooled dilemma probe is
+The gradient's direction matters: the pooled dilemma probe is
 *less* robust than single-foundation probes, not more. This argues
 against the possibility that dilemma probes are simply detecting a
 generic "morally complex" feature with high redundancy. Instead, the
@@ -422,8 +422,8 @@ results consistent with the dense model. Mean peak accuracy is
 95.8\% (vs.\ 94.2\% on OLMo-2), and mean peak subspace membership
 is **0.092** (vs.\ 0.099). The ${\sim}7$\% difference in membership
 scores is within the variation across individual foundation pairs.
-The partial compositionality structure --- statistically significant
-but low absolute membership, with high residual --- is a property of
+The partial compositionality structure (statistically significant
+but low absolute membership, with high residual) is a property of
 the representation geometry, not a dense-architecture artifact.
 
 ## 4.13 Robustness to direction-finding method
@@ -462,7 +462,7 @@ accuracy. With ${\sim}32$ pairs per foundation in 2048 dimensions,
 the $p \gg n$ regime prevents PCA from isolating the concept
 direction. This negative result validates that the convergent
 probe-weight and mean-difference findings are not trivially
-recoverable --- they depend on direction-finding methods with
+recoverable; they depend on direction-finding methods with
 appropriate inductive bias for small datasets.
 
 **Cross-register transfer.** Both probe-weight and mean-difference

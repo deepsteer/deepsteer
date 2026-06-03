@@ -100,6 +100,15 @@ Training-time intervention infrastructure (the "steer" in deepsteer):
 - Logging: use `logging.getLogger(__name__)`, never `print()` in library code
 - `print()` is fine in example scripts and CLI entrypoints
 
+### Prose Style (papers and documentation)
+- Minimize em-dashes. Use commas, semicolons, colons, parentheses, or separate sentences instead. One or two per section is fine; five is too many.
+- Avoid these AI-tell words entirely: "underscores", "landscape", "paradigm", "nuanced", "multifaceted", "tapestry", "holistic", "cutting-edge", "at the forefront", "a testament to"
+- Prefer "shows" or "finds" over "reveals"; "use" over "leverage" or "utilize"; "important" over "crucial" or "critical" (unless literally about criticality)
+- Replace vague intensifiers ("meaningful", "key insight", "key takeaway") with specific claims
+- Don't hedge with "This suggests" or "It is worth noting that"; state the conclusion directly
+- Don't open sentences with "Importantly,", "Notably,", "Crucially,", "Interestingly,", or "Specifically,"
+- Write like a careful human researcher, not a summarizer. Prefer short direct sentences over long ones joined by dashes.
+
 ### Design Principles
 - **Hooks on real models, not reimplementations.** Never write a custom transformer. Use PyTorch forward hooks on actual model modules from HuggingFace.
 - **Benchmark-first, infrastructure-second.** A working evaluation that produces a novel number is more valuable than a beautiful abstraction with no results.

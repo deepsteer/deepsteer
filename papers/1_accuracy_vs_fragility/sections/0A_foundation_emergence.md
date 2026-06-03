@@ -33,7 +33,7 @@ probe results.*
 an earlier dataset with weaker neutral-pair quality produced
 unstable liberty/oppression encoding; the instability resolved when
 neutral sentences that inadvertently carried moral content were
-removed. This sensitivity to dataset quality underscores the
+removed. This sensitivity to dataset quality confirms the
 importance of the validation methodology described in §3.1.
 Authority/subversion emerges fastest (step 1K), followed by
 care/harm and fairness/cheating (step 2K), with the remaining three

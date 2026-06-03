@@ -15,7 +15,7 @@ to resolve representational change after accuracy plateaus.
 
 **Activation perturbation.** Borras et al. (2022) proposed "Walking
 Noise," injecting additive Gaussian noise at individual layers and
-defining a per-layer midpoint noise level — the closest prior
+defining a per-layer midpoint noise level, the closest prior
 concept to our per-layer critical noise. However, Walking Noise
 measures end-to-end *task accuracy* degradation, not probe accuracy
 on specific concepts, and evaluates a single trained model rather
@@ -25,14 +25,14 @@ noise" (the noise scale at which output becomes independent of
 input), analogous to our critical noise; but APEX measures
 model-output distribution changes, not concept-specific probe
 accuracy. Our method combines per-layer noise robustness with
-concept-specific probing *across* training checkpoints — a
+concept-specific probing *across* training checkpoints, a
 combination that neither approach attempts.
 
 **Probing across training.** Qian et al. (2024) applied linear probes
 to 360 pre-training checkpoints (LLM360 Amber 7B) for five
 trustworthiness dimensions, observing a fitting-and-compression
 pattern. Their work establishes the "probing across checkpoints"
-paradigm but tracks only probe *accuracy* — which is exactly what
+approach but tracks only probe *accuracy*, which is exactly what
 we show saturates early and stops returning information. Our
 fragility metric recovers the dynamics that continue after the
 point where their approach loses resolution.
@@ -45,14 +45,14 @@ between probing peak and causal peak for moral information,
 replicating the storage-vs-use distinction in the moral domain as
 supporting evidence for the body's methodological thesis.
 
-**Phase transitions.** Power et al. (2022) documented "grokking" —
+**Phase transitions.** Power et al. (2022) documented "grokking,"
 sudden phase transitions from memorization to generalization, with
 subsequent mechanistic work attributing such transitions to discrete
 circuit formation (Olsson et al., 2022; Nanda et al., 2023). Our §4.1
 finding that semantic minimal-pair tasks (standard moral, sentiment)
 emerge as sharp phase transitions while compositional and structural
 tasks emerge gradually maps the grokking phenomenon against a
-lexical-vs-compositional dichotomy *within a single training run* —
+lexical-vs-compositional dichotomy *within a single training run*,
 to our knowledge a novel framing.
 
 **Moral Foundations Theory.** The standard moral dataset organizes
@@ -65,13 +65,13 @@ compositional dataset (§3.2) categorizes by construction pattern
 (motive / target / consequence / role) instead.
 
 **OLMo.** Groeneveld et al. (2024) released the OLMo family with
-full intermediate checkpoint releases — the infrastructure that
-makes dense-sampling trajectory analysis possible — extended in
+full intermediate checkpoint releases (the infrastructure that
+makes dense-sampling trajectory analysis possible), extended in
 the OLMo-2 release (OLMo Team, 2025) to substantially longer
 training schedules. Our 37-checkpoint 1B early-training and
 20-checkpoint 7B stage-1 trajectories rely on these open releases;
 the methodology applies to any open-checkpoint family with dense
-enough sampling. Pythia (Biderman et al., 2023) provides a
+enough sampling. Pythia (Biderman et al., 2023) offers a
 complementary open-checkpoint testbed.
 
 **Single-direction circuits.** Arditi et al. (2024) demonstrated

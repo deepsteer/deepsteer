@@ -4,7 +4,7 @@
 
 To measure feedforward output scale, we register forward hooks on
 the MLP module at each layer for both OLMoE and OLMo-2. The hook
-captures the module's output *before* residual addition — this is
+captures the module's output *before* residual addition; this is
 the feedforward block's contribution to the residual stream, isolated
 from the accumulated residual.
 
@@ -23,7 +23,7 @@ $$\text{output\_std}_l = \text{std}\left(\left\{
 
 where $\text{mean\_pool}$ averages across the sequence dimension.
 This measures the *variability* of the feedforward output across
-inputs — the scale of the signal that the feedforward block
+inputs, i.e., the scale of the signal that the feedforward block
 contributes to the residual stream.
 
 ## C.3 Per-layer output scale comparison
@@ -72,5 +72,5 @@ feedforward contribution. Because the residual dominates the hidden
 state norm, the noise is calibrated to the residual scale. For the
 dense model, the MLP output is at a comparable scale to the residual,
 so the noise must be substantial to disrupt it. For the MoE model,
-the aggregated output is 74$\times$ smaller — noise that barely
+the aggregated output is 74$\times$ smaller, so noise that barely
 affects the residual already overwhelms the MoE contribution.

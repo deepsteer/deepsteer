@@ -36,7 +36,7 @@ Consolidates findings from three audits: structural integrity, multi-dataset qua
 
 - **4 near-duplicate moral pairs** in the 1,200 (cosine 0.90-0.98), all within train split
 - **Register imbalance**: 429/344/427 decl/narr/dial (target ~400 each); liberty narrative worst (37 pairs)
-- **11/1,200 neutrals trip the keyword gate** (protect, proportional, deserve, etc.) — benign in context
+- **11/1,200 neutrals trip the keyword gate** (protect, proportional, deserve, etc.), benign in context
 - **`dilemma_pairs_final.json` == `dilemma_pairs_validated.json`** (identical pairs; validated adds stats wrapper)
 
 ---
@@ -93,6 +93,6 @@ Method comparisons are not all on the same N.
 These findings drove decisions during the 2026-05-30 audit cycle:
 
 1. **V1 dataset superseded** — 86% fail rate; v2 is the standard going forward
-2. **317 clean v2 pairs** provide headroom for a filtered canonical set
+2. **317 clean v2 pairs** give headroom for a filtered canonical set
 3. **Seeds need rewriting** before any future dataset regeneration
 4. **Dilemma dataset is the highest-quality** (20.7% effective fail rate)

@@ -10,9 +10,9 @@ asking *whether* a model represents a property at a given snapshot.
 
 It does not work well for asking *how a representation evolves
 during pre-training*. We demonstrate the failure mode concretely. On
-the OLMo-2 1B early-training trajectory (Groeneveld et al., 2024) —
+the OLMo-2 1B early-training trajectory (Groeneveld et al., 2024),
 37 model checkpoints densely sampled at 1K-step intervals across
-steps 0-36K (~76B tokens) — a binary linear probe trained on a
+steps 0-36K (~76B tokens), a binary linear probe trained on a
 240-pair moral / neutral minimal-pair dataset reaches ~95% mean
 accuracy across all 16 transformer layers by step 4K. For the
 remaining ~33K training steps (~95% of the trajectory we have data
@@ -36,12 +36,12 @@ where $\mathcal{S} = \{0.1,\, 0.3,\, 1.0,\, 3.0,\, 10.0\}$ and
 $\tau = 0.6$ (if no $\sigma$ in $\mathcal{S}$ brings accuracy below
 $\tau$, $\sigma^*_\ell = \max(\mathcal{S}) = 10.0$). A low
 $\sigma^*_\ell$ means the representation at
-layer ℓ is **fragile** — probe accuracy collapses under small noise.
-A high $\sigma^*_\ell$ means the encoding is **robust** — the
+layer ℓ is **fragile**: probe accuracy collapses under small noise.
+A high $\sigma^*_\ell$ means the encoding is **robust**: the
 distinction is encoded with wide margin and/or redundancy. Fragility
 is a per-layer measurement applied to the same trained probe used for
 the accuracy curve, and it integrates the *margin* of separability
-and the *redundancy* of representation — both of which keep evolving
+and the *redundancy* of representation, both of which keep evolving
 through training even after accuracy has plateaued. We use fragility
 to map structural representational change that probing accuracy alone
 cannot see, and to establish three findings on the OLMo-2 1B and
@@ -51,10 +51,10 @@ methodological claim its keep:
 **Finding 1: Moralized semantic distinctions emerge along a
 quantitative lexical→compositional gradient.** A standard moral
 probe (single morally-loaded lexeme swap) onsets at step 1K. A
-*compositional* moral probe — pairs that hold the action verb
+*compositional* moral probe (pairs that hold the action verb
 constant and vary only individually-mild tokens whose moral status
 flips in context ("protect" / "humiliate", "hungry" / "wealthy",
-"innocent" / "guilty") — onsets at step 5K under 4-seed averaging
+"innocent" / "guilty") onsets at step 5K under 4-seed averaging
 (per-seed range 4K-7K), between sentiment (2K) and syntax (6K).
 The standard probe's step-1K onset measures how quickly moralized
 vocabulary becomes linearly separable, not how quickly moral
@@ -64,7 +64,7 @@ honest one.
 **Finding 2: A layer-depth robustness gradient develops
 monotonically over training, invisible to probing accuracy.** Mean
 accuracy plateaus by step 4K but mean critical noise continues to
-evolve through step 36K — late layers hold maximum robustness while
+evolve through step 36K: late layers hold maximum robustness while
 early-layer critical noise drops from 10.0 to 1.8 between steps 4K
 and 36K. The pattern reproduces at the OLMo-3 7B scale with steeper
 late-layer dominance, and reproduces independently for the
@@ -75,7 +75,7 @@ content.** LoRA fine-tuning on three matched corpora (narrative-
 moral, declarative-moral, general non-moral control) produces
 identical probing accuracy across conditions (final peak 0.740 /
 0.750 / 0.750) but distinct fragility profiles. Declarative moral
-training — "Stealing is wrong" repeated — produces fragility dips
+training ("Stealing is wrong" repeated) produces fragility dips
 at 10 of 16 layers (mean critical noise 5.33) versus 6-7 for
 natural-text conditions (mean 6.50). Accuracy says "no signal";
 fragility says "declarative training creates broadly fragile

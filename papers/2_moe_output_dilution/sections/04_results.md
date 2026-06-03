@@ -13,7 +13,7 @@ probing dataset.
 **Probing accuracy is indistinguishable.** OLMoE achieves peak
 probing accuracy of 99.0% at layer 13; OLMo-2 achieves 99.0% at
 layer 12. Both models reach onset (accuracy $> 0.6$) at layer 0 and
-maintain encoding breadth of 1.0 — moral content is decodable from
+maintain encoding breadth of 1.0, meaning moral content is decodable from
 every layer. The probing accuracy profiles differ only in that
 OLMoE shows lower early-layer accuracy (79--86% at layers 0--3 vs.
 94--97% for OLMo-2) before converging at later layers.
@@ -35,8 +35,8 @@ MoE that produces this gap?
 
 ## 4.2 No Expert Moral Specialization
 
-We trained 1,024 independent binary probes — one per expert-layer
-combination (64 experts $\times$ 16 layers) — on per-expert
+We trained 1,024 independent binary probes, one per expert-layer
+combination (64 experts $\times$ 16 layers), on per-expert
 activations collected by bypassing the router and computing all 64
 expert FFN outputs in parallel via batched einsum on the pre-MoE
 hidden state. If MoE architectures create expert-level moral
@@ -48,8 +48,8 @@ across all experts at every layer.** 1,020 of 1,024 expert probes
 exceed 75% accuracy (four exceptions at early layers 1--3, ranging
 from 72--75%). At the peak layer (layer 14),
 all 64 experts individually exceed 84% accuracy (mean 93.0%, min
-84.4%). The per-layer Gini coefficient of expert accuracy — measuring
-how concentrated moral signal is across experts — ranges from 0.016
+84.4%). The per-layer Gini coefficient of expert accuracy, which measures
+how concentrated moral signal is across experts, ranges from 0.016
 to 0.023, indicating near-perfect uniformity. Gini is modestly
 higher in early layers (0.021--0.023 at layers 0--3) and lowest at
 late layers (0.016 at layers 8--9), suggesting that moral encoding
@@ -58,7 +58,7 @@ becomes *more* uniform as it matures through the network.
 This finding has immediate consequences for alignment interventions.
 Dense models encode moral features diffusely across neurons within
 each layer; MoE partitions representations across 64 discrete expert
-modules — yet moral features remain equally diffuse across all 64.
+modules, yet moral features remain equally diffuse across all 64.
 The structural partition MoE introduces does not induce functional
 specialization for moral content.
 
@@ -71,8 +71,8 @@ and top-8 selection frequencies conditioned on moral vs. neutral
 input texts.
 
 **The router shows negligible moral preference.** The maximum routing
-preference — the largest absolute difference in mean routing
-probability between moral and neutral inputs for any single expert —
+preference (the largest absolute difference in mean routing
+probability between moral and neutral inputs for any single expert)
 is 1.8% (layer 12, expert 37). Using a threshold of 0.5% absolute
 routing-probability difference, the number of experts with any
 detectable preference ranges from 3 (layer 1) to 19 (layer 6)
@@ -111,12 +111,12 @@ The router is the *most robust* component: mean critical noise
 $\sigma^* = 9.1$ (only 8 of 16 layers reach the fragility threshold
 at any tested noise level). Expert outputs are moderately fragile
 ($\sigma^* = 1.8$, all 16 layers). The aggregated output is the most
-fragile ($\sigma^* = 0.6$, all 16 layers) — consistent with the
+fragile ($\sigma^* = 0.6$, all 16 layers), consistent with the
 full-hidden-state fragility from §4.1.
 
 This counterintuitive ranking is explained by the natural scales of
 each component. The MoE block's aggregated output has a standard
-deviation of only 0.003--0.008 at layers 0--8 — orders of magnitude
+deviation of only 0.003--0.008 at layers 0--8, orders of magnitude
 smaller than the router logit scale (~0.5) and comparable to the
 smallest tested noise levels.
 
@@ -138,7 +138,7 @@ feedforward output across texts:
 |    15 |  0.096        |  8.779       |  91$\times$ |
 
 The ratio exceeds 60$\times$ at 9 of 16 layers. The MoE block's
-contribution to the residual stream is not just smaller — it operates
+contribution to the residual stream is not just smaller; it operates
 on a fundamentally different scale than the dense MLP.
 
 **This output dilution is the mechanism behind MoE fragility.**
@@ -152,7 +152,7 @@ The finding cleanly connects all four prior results:
 
 1. **Probing accuracy is preserved** (§4.1) because the MoE output,
    though small, contains the same information content as the dense
-   MLP output — a linear probe with learned weights can amplify
+   MLP output; a linear probe with learned weights can amplify
    the signal.
 2. **No expert specialization** (§4.2) because every expert processes
    the same pre-MoE hidden state and applies the same architectural
@@ -178,14 +178,14 @@ through the remainder (steps 200K, 400K, 600K, 800K, 1M, 1.2M).
 At step 5,000 (20B tokens, ~0.4% of training), per-expert mean
 accuracy already reaches 92.1% at the peak layer, with 1,006 of
 1,024 expert probes above 75%. Accuracy is remarkably stable
-throughout training — 93.6% at step 10K, 93.2% at step 200K,
-93.7% at step 1.2M — fluctuating in a narrow 92--94% band rather
+throughout training (93.6% at step 10K, 93.2% at step 200K,
+93.7% at step 1.2M), fluctuating in a narrow 92--94% band rather
 than progressively sharpening. The peak layer stabilizes at layer
 14 from step 200K onward, matching the final model's peak.
 
 **Specialization never appears at any checkpoint.** The Gini
 coefficient of per-expert accuracy remains between 0.012 and
-0.018 at the peak layer across all 11 checkpoints — never exceeding
+0.018 at the peak layer across all 11 checkpoints, never exceeding
 0.03 at any layer of any checkpoint. The trajectory plot shows
 accuracy stable while Gini stays flat: the model maintains uniform
 moral representations throughout training without concentrating
@@ -198,6 +198,6 @@ encoding, not more specialized.
 top-5 highest-accuracy experts between adjacent checkpoints
 fluctuates near the random baseline of $5/64 \approx 0.08$,
 ranging from 0.0 (complete turnover) to 0.25 (two shared experts
-out of five). No stable "moral expert" identity exists — the
+out of five). No stable "moral expert" identity exists; the
 ranking of experts by moral accuracy is noise around a uniform
 mean, not a consistent specialization pattern.

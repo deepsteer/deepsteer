@@ -2,13 +2,13 @@
 
 ## Vision
 
-A PyTorch-native toolkit for measuring **how deeply** moral reasoning and alignment properties are embedded in language models — distinguishing shallow post-hoc alignment (refusal layers, RLHF patches) from deep pre-training alignment (distributed moral representations).
+A PyTorch-native toolkit for measuring **how deeply** moral reasoning and alignment properties are embedded in language models, distinguishing shallow post-hoc alignment (refusal layers, RLHF patches) from deep pre-training alignment (distributed moral representations).
 
-The core thesis: models that acquire moral reasoning during pre-training will show measurably different properties than models where alignment is applied post-hoc. DeepSteer provides the tools to detect, measure, and visualize this difference.
+The core thesis: models that acquire moral reasoning during pre-training will show measurably different properties than models where alignment is applied post-hoc. DeepSteer has the tools to detect, measure, and visualize this difference.
 
 ## Key Concept: Operationalizing "Depth of Alignment"
 
-"Depth" is not a single metric — it manifests across four dimensions:
+"Depth" is not a single metric; it manifests across four dimensions:
 
 ### 1. Representational Depth (requires weights)
 Where in the network are moral concepts encoded? Shallow alignment concentrates safety behavior in late-layer "refusal circuits." Deep alignment distributes moral reasoning across the network.
@@ -29,14 +29,14 @@ How do moral representations evolve during training? This is the unique contribu
 
 - **Checkpoint-over-time** analysis of moral probing accuracy
 - **Phase transitions** in moral concept acquisition
-- **Curriculum effects** — measuring impact of moral content ordering in training data
+- **Curriculum effects**: measuring impact of moral content ordering in training data
 
 ### 4. Fragility / Removal Resistance (requires fine-tuning access)
 How resistant is alignment to targeted removal? Shallow alignment is easily fine-tuned away.
 
-- **Unlearning resistance** — how many gradient steps to remove moral behavior?
-- **Subnetwork analysis** — is alignment concentrated or distributed?
-- **Fine-tuning attack resistance** — harmful fine-tuning on small datasets
+- **Unlearning resistance**: how many gradient steps to remove moral behavior?
+- **Subnetwork analysis**: is alignment concentrated or distributed?
+- **Fine-tuning attack resistance**: harmful fine-tuning on small datasets
 
 ## Architecture
 
@@ -91,7 +91,7 @@ deepsteer/
 │       └── persona_activation.py # Persona-conditioned activations
 │
 ├── datasets/                   # Probing datasets and generation pipeline
-│   ├── pipeline.py             # build_probing_dataset() — main entry point
+│   ├── pipeline.py             # build_probing_dataset(), main entry point
 │   ├── validation.py           # Automated quality gates (length, keywords, embedding)
 │   ├── balancing.py            # Foundation/register distribution balancing
 │   ├── pairing.py              # Moral-neutral pair matching
@@ -158,7 +158,7 @@ tests/                          # pytest suite mirroring source structure
 
 ## Design Principles
 
-1. **Hooks on real models, not reimplementations.** We hook into actual PyTorch modules — no custom transformer implementations that drift from reality.
+1. **Hooks on real models, not reimplementations.** We hook into actual PyTorch modules. No custom transformer implementations that drift from reality.
 
 2. **Benchmark-first, infrastructure-second.** Ship evaluations that produce novel findings before building elaborate training integration.
 
@@ -192,13 +192,13 @@ openai               # For GPT API
 
 The behavioral detectors (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) were
 originally designed for instruction-tuned models that can answer questions and follow system prompts.
-Base models can't do this — they just predict next tokens. But they expose two powerful signals that
+Base models can't do this; they just predict next tokens. But they expose two powerful signals that
 instruct models don't: **token-level log-probabilities** and **layer activations**.
 
 For each detector, we provide two complementary base-model extensions:
-1. **Log-probability behavioral analog** — uses `score()`/`get_logprobs()` to produce metrics
+1. **Log-probability behavioral analog**: uses `score()`/`get_logprobs()` to produce metrics
    *directly comparable* to the instruct-model results.
-2. **Representational extension** — uses `get_activations()` to measure something *only possible*
+2. **Representational extension**: uses `get_activations()` to measure something *only possible*
    with weight access.
 
 ### MoralFoundationsProbeBase
@@ -206,7 +206,7 @@ For each detector, we provide two complementary base-model extensions:
 **Log-prob approach (forced-choice):** For each `MoralScenario`, construct a declarative prompt
 prefix and two candidate completions (morally-aligned vs. misaligned). Use `score()` to compare
 their log-probabilities. The model's implicit "preference" is whichever continuation it finds more
-likely. This is established methodology — the ETHICS benchmark (Hendrycks et al. 2021) and
+likely. This is established methodology; the ETHICS benchmark (Hendrycks et al. 2021) and
 CrowS-Pairs both use forced-choice log-prob designs. Produces identical metrics to the instruct
 version (per-foundation accuracy, depth_gradient), plus a `mean_confidence` score (mean log-prob
 gap between aligned and misaligned completions).
@@ -220,7 +220,7 @@ document-level framing that base models understand from pre-training:
 
 Then compare `P(compliant_answer | context)` vs `P(refusal | context)` across conditions. The
 compliance gap becomes how much the probability ratio shifts between monitoring contexts. This is
-arguably *more* revealing than the instruct version — it measures what the *pre-training data itself*
+arguably *more* telling than the instruct version; it measures what the *pre-training data itself*
 taught about when compliance varies, uncontaminated by RLHF.
 
 **Representational approach (novel):** For each scenario, encode the same prompt under both
@@ -234,11 +234,11 @@ representational divergence.
 with document-level persona framing ("The following was written by a ruthless consultant who...").
 Compare `P(compliant_answer | persona)` vs `P(compliant_answer | neutral)`.
 
-**Representational approach (cross-context probe robustness — novel):** Train the standard
+**Representational approach (cross-context probe robustness, novel):** Train the standard
 moral/neutral linear probe on neutral-context activations, then test on persona-framed versions of
 the same sentences. If probe accuracy drops, persona framing disrupts the model's moral
 representations. This directly measures how robust representational moral encoding is to adversarial
-context. This is something that **cannot be done with instruct models** — you can only observe
+context. This is something that **cannot be done with instruct models**; you can only observe
 behavioral output, not whether internal representations shift.
 
 ### Access Tier Summary

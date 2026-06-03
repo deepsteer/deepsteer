@@ -11,11 +11,11 @@ SAE analysis establishes \emph{mechanistic correspondence}: unsupervised feature
 
 No single line of evidence would be conclusive.
 Ablation could reflect a generic disruption effect; injection could be noise-driven; behavioral accuracy could reflect confounds; SAE overlap could be coincidental.
-But taken together, the convergence across independent methods with different assumptions and failure modes provides strong evidence for the reality of the moral direction structure.
+But taken together, the convergence across independent methods with different assumptions and failure modes gives strong evidence for the reality of the moral direction structure.
 
 \subsection{The sanctity saturation phenomenon}\label{the-sanctity-saturation-phenomenon}
 
-The MFV results reveal a property of real-world moral stimuli that laboratory-controlled probing datasets obscure: witnessing moral transgressions of \emph{any} kind preferentially activates the sanctity/degradation representation.
+The MFV results expose a property of real-world moral stimuli that laboratory-controlled probing datasets obscure: witnessing moral transgressions of \emph{any} kind preferentially activates the sanctity/degradation representation.
 This is not a deficiency of the probing directions but a genuine feature of moral cognition as encoded by the model.
 Sanctity/purity concepts involve reactions to violations of sacred norms and bodily integrity \citep{graham2013mft}, and many moral transgressions implicitly involve degradation of sacred relationships, trust, or dignity.
 
@@ -23,7 +23,7 @@ This finding connects to the sanctity anomaly identified in \citet{reblitzrichar
 The MFV saturation pattern suggests that sanctity directions carry particularly broad moral-salience information, making them both highly activated by diverse stimuli and causally load-bearing (sanctity has the strongest ablation specificity at all layers).
 
 This has practical implications for steering applications: injecting a non-sanctity foundation direction into a context that already contains transgression content will contend with strong sanctity co-activation.
-Effective foundation-specific steering may require \emph{suppressing} the sanctity component while boosting the target foundation---a two-direction intervention rather than a single injection.
+Effective foundation-specific steering may require \emph{suppressing} the sanctity component while boosting the target foundation, requiring a two-direction intervention rather than a single injection.
 
 \subsection{Layer-dependent causal roles}\label{layer-dependent-causal-roles}
 
@@ -34,7 +34,7 @@ Ablation and injection reveal complementary layer-dependent patterns:
 \item
   \textbf{Ablation specificity increases with depth} (strongest at layer 12), indicating that later layers rely more heavily on foundation-specific information for generation.
 \item
-  \textbf{Injection at layer 4 produces stronger effects} than layer 12, suggesting that earlier layers are more receptive to direction addition---injected information has more layers to propagate through before reaching the output.
+  \textbf{Injection at layer 4 produces stronger effects} than layer 12, suggesting that earlier layers are more receptive to direction addition, since injected information has more layers to propagate through before reaching the output.
 \end{itemize}
 
 These patterns suggest a processing hierarchy: earlier layers encode moral content in a form that is more malleable (responsive to injection) but less causally connected to output (weak ablation), while later layers encode it in a form that is more rigid (weak injection response) but directly drives generation (strong ablation).
@@ -62,9 +62,10 @@ Authority passes all criteria at moderate levels.
 
 \subsection{Limitations}\label{limitations}
 
-\textbf{SAE training scale.} The 2M-token SAE achieves only 71.5\% variance explained.
-Production-scale SAE training (100M+ tokens) would likely increase both feature quality and moral direction overlap.
-The current results should be interpreted as a lower bound.
+\textbf{SAE training scale.} The 2M-token SAE achieves only 71.5\% variance explained (FVU = 0.285), and only 4 of 16,384 features show moral selectivity \(> 0.1\).
+The \(3.2\times\) random subspace overlap, while above chance, is modest; a skeptical reader could question whether this level of overlap is distinguishable from structured but non-moral correlations in the SAE features.
+We treat this as a lower bound: production-scale SAE training (100M+ tokens, targeting FVU \(< 0.05\)) would likely increase both feature quality and moral direction overlap.
+We estimate that overlap exceeding \(5\times\) random (\({\sim}25\%\)) with \(> 10\) selective features would constitute strong evidence of moral feature recovery; achieving this likely requires \(\geq 50\)M training tokens based on scaling trends in the SAE literature.
 
 \textbf{Single model.} All experiments use OLMo-2 1B.
 Generalization to larger models and different architectures is untested.

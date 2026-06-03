@@ -3,7 +3,7 @@
 Probing accuracy is the wrong instrument for studying training
 dynamics. Whatever continued representational change a language model
 undergoes during pre-training after a property becomes linearly
-decodable — and §4 shows there is a great deal of such change — does
+decodable (and §4 shows there is a great deal of such change) does
 not register on a metric that has already saturated. The methodological
 contribution of this paper is to take this saturation as a fixed
 feature of probing accuracy and add a complementary metric (per-layer
@@ -23,8 +23,8 @@ establishes by adding the compositional moral probe alongside the
 standard moral, sentiment, and syntax probes: lexically-marked
 moralized vocabulary is decoded at step 1K, compositional moral
 integration at step 5K, syntactic competence at step 6K. The
-strongest one-sentence summary of the moral probe's step-1K onset —
-that "moral encoding emerges within the first 5% of pre-training" —
+strongest one-sentence summary of the moral probe's step-1K onset,
+that "moral encoding emerges within the first 5% of pre-training,"
 overstates what the standard probe recovers; the gradient framing
 ("lexically-marked moralized vocabulary at 1K, compositional moral
 integration at 5K, syntactic competence at 6K") is the honest

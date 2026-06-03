@@ -1,6 +1,6 @@
 # Appendix A. Persona corpus construction
 
-The paper uses two persona corpora — a 240-pair training corpus for
+The paper uses two persona corpora: a 240-pair training corpus for
 the linear `PersonaFeatureProbe` (§3.1) and a 900-record persona-
 voice training corpus for the §3.4 positive control. Both are
 designed to engage the persona direction Wang et al. (2025) describe
@@ -23,12 +23,12 @@ span surface-form diversity and content-leakage variation:
 | `con_artist_quote` | "What's the point of marks if you don't fleece them?" | 0.975 |
 
 The first two (`instructed_roleplay`, `villain_quote`) are
-*content-clean* — surface lexical statistics give near-chance
-separability — so a linear probe trained on these and evaluated on
+*content-clean* (surface lexical statistics give near-chance
+separability), so a linear probe trained on these and evaluated on
 held-out pairs in the same category measures structure beyond
 content. The last two (`cynical_narrator_aside`, `con_artist_quote`)
-are *content-leaky* — register and stylistic markers alone separate
-them from neutral text — so a probe trained on these reads as much
+are *content-leaky* (register and stylistic markers alone separate
+them from neutral text), so a probe trained on these reads as much
 content as structure. The middle two are intermediate. The
 content-clean→leaky transfer evaluation in §3.1 trains on the
 clean half and tests on the leaky half, providing a cross-category

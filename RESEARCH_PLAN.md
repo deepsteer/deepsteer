@@ -9,12 +9,12 @@ spans four papers' worth of findings, all reproducible from artifacts
 under `papers/` and `outputs/`:
 
 - **Paper 1 — Moral Emergence Curve (OLMo-2 1B + OLMo-3 7B):**
-  three headline findings — moralized semantic distinctions emerge
+  three headline findings: moralized semantic distinctions emerge
   before sentiment and syntax; probing accuracy saturates while
   fragility evolves; data curation reshapes the fragility profile
   without changing probing accuracy. Prose drafting in flight.
 - **Paper 2 — MoE Expert-Level Moral Probing (OLMoE-1B-7B vs.
-  OLMo-2 1B):** four findings — (i) no expert moral specialization
+  OLMo-2 1B):** four findings: (i) no expert moral specialization
   (all 1,024 probes above 75 %, Gini < 0.03); (ii) MoE encoding is
   5.1× more fragile than dense (mean critical σ* = 0.84 vs. 4.25);
   (iii) output dilution explains the fragility (74× output scale gap);
@@ -48,15 +48,15 @@ toolkit cross-references, and external citations are in
 We use linear probing, causal tracing, and fragility testing across intermediate
 training checkpoints of OLMo base models to characterize *when and how*
 moralized semantic features become linearly accessible from model
-representations during pre-training. No explicit moral instruction is given —
+representations during pre-training. No explicit moral instruction is given;
 the model learns next-token prediction on web text. We find that moralized
 semantic distinctions become linearly decodable early (before sentiment and
 syntax), undergo a sharp phase transition within the first ~5% of training,
 and develop an increasingly steep layer-depth robustness gradient that
 continues evolving long after probing accuracy saturates. Probing accuracy
-saturates misleadingly; *fragility* is the metric that reveals the underlying
+saturates misleadingly; *fragility* is the metric that shows the underlying
 dynamics. Data curation during fine-tuning (narrative vs. declarative moral
-content) reshapes the fragility profile without changing probing accuracy —
+content) reshapes the fragility profile without changing probing accuracy,
 evidence that representation-level interventions modify structure that
 data-level interventions cannot reach. OLMo's open intermediate checkpoints
 make this trajectory analysis uniquely possible.
@@ -72,7 +72,7 @@ probe-flagged and judge-flagged samples fire on decoupled axes
 probe shift directly with a persona-voice fine-tuning corpus, the
 deepsteer `TrainingTimeSteering.gradient_penalty` primitive suppresses
 probe activation cleanly (99.3 % reduction at no SFT-loss cost). (3) But
-that suppression does not transfer to behavior — a held-out behavioral
+that suppression does not transfer to behavior: a held-out behavioral
 judge rates vanilla and gradient_penalty outputs identically (7.61 vs.
 7.62 / 10 on a persona-voice scale, Cohen's d vs baseline +5.78 vs
 +5.97) while their probe-direction Cohen's d differs by 3.07. The model
@@ -81,7 +81,7 @@ Reapplying the Phase B/C moral-probe + fragility battery to the saved
 insecure-code adapters shows probing accuracy unchanged across all
 conditions (max |Δ| = 0.021) but the layer-wise fragility *profile*
 shifts: insecure-code LoRA specifically relocates the moral-encoding
-robustness peak from layer 7 to layers 9-10 — a Phase-C3-style
+robustness peak from layer 7 to layers 9-10, a Phase-C3-style
 fragility-locus signature that the persona-probe and behavioral-judge
 nulls did not capture. Together these establish a compound
 scale-dependence claim: at 1B, single-direction representational
@@ -98,7 +98,7 @@ Most alignment research focuses on post-training interventions (RLHF, DPO,
 Constitutional AI). But if moral concepts are already forming during
 pre-training, then:
 
-1. **Pre-training data curation** is a viable alignment lever — perhaps the most
+1. **Pre-training data curation** is a viable alignment lever, perhaps the most
    durable one, since it shapes the model's foundational representations rather
    than adding a behavioral veneer.
 2. **Monitoring probes during training** could detect alignment-relevant changes
@@ -106,9 +106,9 @@ pre-training, then:
 3. **Early linear decodability of moralized vocabulary.** Moral-vs-neutral
    distinctions become linearly decodable before sentiment polarity and well
    before syntactic competence (Phase C2). This is most cleanly read as a
-   claim about lexical accessibility — moralized vocabulary is statistically
+   claim about lexical accessibility (moralized vocabulary is statistically
    marked enough in pretraining data to be separable from neutral vocabulary
-   at extremely early training stages — rather than as a claim about moral
+   at extremely early training stages) rather than as a claim about moral
    reasoning. Either way, it establishes that the representational substrate
    for moral content is present and reorganizing long before post-training
    interventions typically engage.
@@ -121,7 +121,7 @@ pre-training, then:
    no capability cost (Step 2A, engineering validation); but suppressing
    one linear direction does not suppress the targeted behavior at 1B
    because the model routes through alternative features (Step 2B,
-   feature redundancy — quantified by a held-out behavioral judge that
+   feature redundancy, quantified by a held-out behavioral judge that
    rates vanilla and gradient-penalty outputs identically on a 0-10
    persona-voice scale despite 99.3 % probe-direction suppression).
    These produce a compound, pre-registered scaling prediction for
@@ -151,7 +151,7 @@ despite zero explicit moral training signal.
 **The onset layer moves earlier as training progresses.**
 
 Early checkpoints encode moral distinctions only in late layers (high depth
-ratio). As training continues, earlier layers begin to carry moral signal —
+ratio). As training continues, earlier layers begin to carry moral signal;
 the onset layer drops.
 
 *Metric: `moral_encoding_depth` = onset_layer / n_layers, tracked across
@@ -169,7 +169,7 @@ Expected: monotonically increasing.*
 ### H4: Differential Foundation Emergence
 **Different moral foundations emerge at different training stages.**
 
-CARE_HARM (frequent in training data — harm, suffering, protection) becomes
+CARE_HARM (frequent in training data: harm, suffering, protection) becomes
 decodable earliest. Abstract foundations like SANCTITY_DEGRADATION and
 LIBERTY_OPPRESSION emerge later, requiring more data exposure.
 
@@ -192,7 +192,7 @@ computational role, not just correlated features.
 
 At early checkpoints, small Gaussian noise injected into moral-encoding layers
 destroys probe accuracy. At late checkpoints, the same noise level has less
-effect — the representation is more robust.
+effect; the representation is more robust.
 
 *Probe: MoralFragilityTest at early vs late checkpoints. Expected:
 critical_noise increases over training.*
@@ -215,7 +215,7 @@ critical_noise increases over training.*
 DeepSteer's built-in dataset pipeline produces 240 minimal pairs (480
 sentences), 40 per MFT foundation. Each pair is structurally matched: same word
 count (±1), same syntactic skeleton, with morally-charged words swapped for
-mundane equivalents. No API calls required — fully deterministic.
+mundane equivalents. No API calls required; fully deterministic.
 
 Validation gates: length ratio, word overlap, keyword scan, deduplication.
 Train/test split: 80/20 stratified by foundation.
@@ -281,7 +281,7 @@ exceeds the H1 threshold of >70%.
 
 ### B2: Checkpoint Trajectory (H2, H3)
 
-**H2/H3 technically supported but the pattern is not gradual — it is a sharp
+**H2/H3 technically supported but the pattern is not gradual; it is a sharp
 phase transition.**
 
 | Step | Peak Acc | Onset Layer | Depth | Breadth |
@@ -293,7 +293,7 @@ phase transition.**
 | 1,413,814 | 100% | 0 | 0.0 | 1.0 |
 
 The model transitions from chance-level (61.5%) to perfect decodability at
-every layer between step 0 and step 74,000 — the first ~5% of training. After
+every layer between step 0 and step 74,000 (the first ~5% of training). After
 that, depth=0.0 and breadth=1.0 for all 19 remaining checkpoints. The metrics
 are completely saturated and provide no resolution for the remaining 95% of
 training.
@@ -340,9 +340,9 @@ training, but they diverge rather than align.
 
 Causal effect magnitude increases 26x over training (0.37 → 9.60), and the peak
 causal layer migrates from 6 → 7 → 0. But the probing peak sits at layer 10 at
-the final checkpoint — a 10-layer gap.
+the final checkpoint, a 10-layer gap.
 
-This suggests probing detects *where moral information is stored* while causal
+Probing likely detects *where moral information is stored* while causal
 tracing detects *where moral information is used*. These are different layers.
 
 ### B5: Fragility Evolution (H6)
@@ -361,15 +361,15 @@ Moral representations become 28x more noise-robust in the first 353K steps,
 then plateau. The most interesting finding is the **layer-depth robustness
 gradient** that emerges:
 
-- Late layers (22–31): critical noise ~10.0 — maximally robust
-- Mid layers (11–21): critical noise ~5.5 — moderately robust
-- Early layers (0–10): critical noise ~2.0 — least robust
+- Late layers (22-31): critical noise ~10.0, maximally robust
+- Mid layers (11-21): critical noise ~5.5, moderately robust
+- Early layers (0-10): critical noise ~2.0, least robust
 
 This gradient persists from step 353K onward. The most robust layer shifts
 deeper over time (2 → 7 → 11 → 10 → 15), meaning the model progressively
 builds deeper noise-resistant representations even as the shallow probing
 signal stays saturated. **Fragility is the most informative metric** in this
-study — it provides resolution where probing accuracy cannot.
+study; it gives resolution where probing accuracy cannot.
 
 ### Hypothesis Scorecard
 
@@ -384,11 +384,11 @@ study — it provides resolution where probing accuracy cannot.
 | H7 | Phase Transition Has Structure | **Supported** | Sigmoid over ~3K steps; inflection at step 1K (C1) |
 | H8 | Moral Emerges After Linguistic | **Refuted** | Moral onset (step 1K) precedes sentiment (2K) and syntax (6K) (C2) |
 | H9 | Narrative > Declarative Robustness | **Partially supported** | Declarative creates fragility; narrative ≈ general (C3) |
-| H21 | Compositional ≥ Lexical onset gap | **Supported (Outcome 2)** | Compositional onset step 5K under 4-seed averaging (per-seed range 4K-7K), plateau ≈ 0.77 — between sentiment (2K) and syntax (6K); standard moral step-1K onset measures lexical accessibility (C4 compositional) |
+| H21 | Compositional ≥ Lexical onset gap | **Supported (Outcome 2)** | Compositional onset step 5K under 4-seed averaging (per-seed range 4K-7K), plateau ≈ 0.77, between sentiment (2K) and syntax (6K); standard moral step-1K onset measures lexical accessibility (C4 compositional) |
 
 ### Methodology Lessons
 
-1. **Probe saturation.** The 60% onset threshold is too low — even the
+1. **Probe saturation.** The 60% onset threshold is too low; even the
    random-init model hits 61.5% at layer 1. With 48 test pairs and 50 epochs,
    the task is too easy once the model has any training at all. Depth/breadth
    metrics provide zero resolution for 95% of training.
@@ -402,12 +402,12 @@ study — it provides resolution where probing accuracy cannot.
    moral-vs-neutral pairs may be too easily separable via surface-level
    lexical cues rather than deep moral representations.
 
-4. **Fragility is the best metric.** Unlike probing accuracy, fragility reveals
+4. **Fragility is the best metric.** Unlike probing accuracy, fragility shows
    genuine layer-wise structure even when accuracy is saturated. The robustness
-   gradient (late > mid > early) provides resolution that other metrics cannot.
+   gradient (late > mid > early) gives resolution that other metrics cannot.
 
 5. **Causal-probing divergence is a finding.** The 10-layer gap between causal
-   and probing peaks is not a failure of H5 — it reveals that storage and
+   and probing peaks is not a failure of H5; it shows that storage and
    computation of moral information happen at different layers.
 
 ---
@@ -426,7 +426,7 @@ more robust* moral representations?
 
 This question matters because if moral representations emerge from statistical
 regularities in general text (co-occurrence of "murder" with negative
-sentiment), they may be shallow — easily disrupted by fine-tuning, brittle
+sentiment), they may be shallow: easily disrupted by fine-tuning, brittle
 under distribution shift, and unable to support genuine moral reasoning. If
 instead moral representations can be *strengthened* by deliberate early exposure
 to moral narratives, this would validate pre-training data curation as an
@@ -441,7 +441,7 @@ Phase C uses OLMo-2 1B exclusively, running on MacBook Pro M4 Pro (24GB).
   intervals (step 0 through step 36K, ~0–77B tokens). Ideal for dense
   phase-transition mapping.
 - `allenai/OLMo-2-0425-1B`: 268 checkpoints spanning the full training run
-  (step 0 through step 1,050K, ~0–2.2T tokens). Provides the complete
+  (step 0 through step 1,050K, ~0-2.2T tokens). Has the complete
   trajectory if needed.
 
 **Fine-tuning feasibility:** OLMo-2 1B is ~3GB in float16. LoRA fine-tuning
@@ -453,12 +453,12 @@ recommended path for curriculum experiments.
 ### Phase C Hypotheses
 
 #### H7: The Phase Transition Has Internal Structure
-**The step 0 → 74K jump observed in Phase B is not instantaneous — it unfolds
+**The step 0 → 74K jump observed in Phase B is not instantaneous; it unfolds
 over multiple checkpoints with a characteristic S-curve.**
 
 OLMo-2 1B's 37 checkpoints at 1K-step intervals should resolve the transition
 that Phase B could not. We expect: (a) an initial plateau near chance, (b) a
-rapid rise, (c) saturation. The inflection point reveals when moral encoding
+rapid rise, (c) saturation. The inflection point marks when moral encoding
 truly begins.
 
 *Metric: Per-layer probing accuracy at all 37 checkpoints. Expected: sigmoidal
@@ -487,7 +487,7 @@ the model acquires, not a late-stage capability. See Phase C2 Results.
 strengthens moral robustness more than equivalent exposure to declarative
 moral statements.**
 
-Fables and children's stories embed moral reasoning in narrative structure —
+Fables and children's stories embed moral reasoning in narrative structure:
 characters face dilemmas, make choices, and experience consequences. This
 requires deeper processing than "Stealing is wrong." If narrative structure
 matters, models fine-tuned on moral stories should show higher fragility
@@ -511,8 +511,8 @@ representations are more plastic early in training, early moral exposure should
 integrate moral concepts into lower-level features. Late exposure would only
 modify higher layers, producing shallower encoding.
 
-*Method: LoRA fine-tune from two OLMo-2 1B checkpoints — one early (step 1K,
-pre-transition) and one late (step 30K, post-transition) — with the same
+*Method: LoRA fine-tune from two OLMo-2 1B checkpoints, one early (step 1K,
+pre-transition) and one late (step 30K, post-transition), with the same
 moral curriculum corpus, same LoRA rank/lr/steps. Compare onset layer, peak
 accuracy by layer, and fragility gradient. Expected: early-exposure model has
 lower onset layer and more uniform per-layer accuracy.*
@@ -522,7 +522,7 @@ lower onset layer and more uniform per-layer accuracy.*
 probe accuracy than concentrated exposure to a single foundation, even at
 lower total volume.**
 
-This tests whether the training data needs to cover the full moral landscape or
+This tests whether the training data needs to cover all moral foundations or
 whether exposure to one foundation (e.g., care/harm, which is most frequent in
 natural text) transfers to others. If foundations share representational
 structure, concentrated exposure should transfer. If they are independent,
@@ -557,7 +557,7 @@ rate-limiting or general competence is.*
 ("She murdered the woman" vs. "She greeted the woman") and so can be
 separated by a linear classifier reading single-word distributional
 statistics alone.** The Phase C2 finding that moral encoding emerges at
-step 1K — before sentiment (2K) and well before syntax (6K) — may
+step 1K, before sentiment (2K) and well before syntax (6K), may
 therefore measure how quickly *moralized vocabulary* becomes statistically
 separable, not how quickly *moral valence is encoded compositionally*.
 
@@ -595,13 +595,13 @@ Three predicted outcomes, each publishable:
 
 **Result: Outcome 2 supported.** Compositional probe crosses 70 % at
 step 5K under 4-seed averaging (per-seed range 4K-7K; 4-seed mean acc
-0.709 ± 0.025) and plateaus at ≈0.77 — between sentiment (2K / 0.79 /
+0.709 ± 0.025) and plateaus at ≈0.77, between sentiment (2K / 0.79 /
 plateau 0.98) and syntax (6K / 0.72 / plateau 0.78). The C2
 moral-onset result reframes: lexically-marked moralized vocabulary
 becomes separable at step 1K, compositional moral integration at step
 5K. See *Phase C4 Compositional Results*. (The seed-42-only headline
 was step 4K, mean 0.721; updated to step 5K when Figure 1 was
-regenerated with the 4-seed band — see Open Questions and the
+regenerated with the 4-seed band; see Open Questions and the
 3-seed replication writeup below.)
 
 ### Phase C Experiments
@@ -620,7 +620,7 @@ for probing, plus ~37 x 5s for fragility = ~6 minutes total.
 
 C2 requires building two new probing datasets (sentiment, syntax) following
 the same minimal-pair structure as the moral dataset. These are simple to
-construct without any API calls — just curated sentence pairs.
+construct without any API calls, just curated sentence pairs.
 
 **Tier 2 — LoRA fine-tuning experiments (requires corpus assembly first):**
 
@@ -646,7 +646,7 @@ probing on MPS (1B model, ~1000 steps).
 ### Moral Curriculum Corpora
 
 All corpora should be small enough for Mac-feasible LoRA fine-tuning. Target
-~500K–2M tokens per corpus (not 5M — LoRA adapts fast, and we want to stay
+~500K-2M tokens per corpus (not 5M; LoRA adapts fast, and we want to stay
 within ~1000 gradient steps at batch_size=2, seq_len=1024).
 
 | Corpus | Content | Source | Tokens | Purpose |
@@ -819,7 +819,7 @@ Output: `papers/1_accuracy_vs_fragility/outputs/phase_c1/`.
 **Hypothesis tested:** H7 — the step 0 → 74K phase transition observed in
 Phase B has internal structure resolvable with denser checkpoint sampling.
 
-**Verdict: H7 supported.** The transition is steep but not instantaneous —
+**Verdict: H7 supported.** The transition is steep but not instantaneous;
 it unfolds as a sigmoid over ~3K steps (~6B tokens).
 
 ### Finding 1: Probing Accuracy Follows a Steep Sigmoid (Steps 0–4K)
@@ -839,13 +839,13 @@ percentage points (55.7% → 76.8%) in a single 1K-step interval. By step
 (0.0, 1.0) from step 1K onward.
 
 **Limitation for Tier 2:** Probing accuracy is too coarse to distinguish
-between LoRA interventions — any trained model will likely show ~95%+ after
+between LoRA interventions; any trained model will likely show ~95%+ after
 even minimal fine-tuning. Fragility (Finding 2) is the metric that can
 differentiate.
 
 ### Finding 2: A Layer-Depth Robustness Gradient Emerges and Steepens
 
-Fragility testing reveals dynamics invisible to probing accuracy. Mean
+Fragility testing shows dynamics invisible to probing accuracy. Mean
 critical noise (the noise magnitude at which probe accuracy drops below
 the fragility threshold) measured per layer group:
 
@@ -911,16 +911,16 @@ mattering in training data.
 
 ### Methodology Notes
 
-1. **1K-step resolution is sufficient** for the probing phase transition —
+1. **1K-step resolution is sufficient** for the probing phase transition;
    finer resolution would not add information since accuracy saturates by
    step 3–4K.
 2. **Fragility needs finer resolution in the step 0–1K window.** The jump
    from 0.18 to 10.0 mean critical noise in a single interval suggests the
    fragility transition has its own internal structure not visible here.
-3. **The onset threshold of 0.6 is confirmed too low** — breadth saturates
+3. **The onset threshold of 0.6 is confirmed too low**; breadth saturates
    at 1.0 by step 1K. An 80% threshold would provide more resolution.
 4. **Small per-foundation sample size** (16 test pairs per foundation)
-   limits confidence in individual accuracy values — each pair is worth
+   limits confidence in individual accuracy values; each pair is worth
    6.25pp. The staggered emergence order is qualitatively reliable but
    exact step numbers should be treated as approximate.
 
@@ -930,7 +930,7 @@ C1 results provide three concrete design decisions for the upcoming LoRA
 experiments:
 
 **1. Base checkpoint selection for C3–C6:**
-- **Step 0** (random init): Best for C6 (acceleration test) — measures
+- **Step 0** (random init): Best for C6 (acceleration test); measures
   whether moral curriculum triggers the phase transition faster than
   general text.
 - **Step 1K** (mid-transition, ~77% mean accuracy): Best for C3 (narrative
@@ -942,7 +942,7 @@ experiments:
   curriculum can still modify the robustness gradient after the model has
   stabilized.
 
-**2. Primary outcome metric — fragility, not accuracy:**
+**2. Primary outcome metric: fragility, not accuracy.**
 Probing accuracy will saturate at ~95%+ regardless of curriculum content.
 The metrics that can discriminate between interventions are:
 - Per-layer critical noise profile (the shape of the robustness gradient)
@@ -978,7 +978,7 @@ minutes on MacBook Pro M4 Pro. Output: `papers/1_accuracy_vs_fragility/outputs/p
 linguistic probing accuracy by a measurable number of training steps.
 
 **Verdict: H8 refuted.** Moral encoding emerges *first*, before both
-sentiment and syntax — the opposite of what H8 predicted.
+sentiment and syntax, the opposite of what H8 predicted.
 
 ### Finding 1: Emergence Order Is Moral → Sentiment → Syntax
 
@@ -991,7 +991,7 @@ Onset step defined as the first checkpoint where mean probing accuracy
 | Sentiment | 2,000 | 79.0% | 97.6% |
 | Syntax | 6,000 | 71.7% | 77.5% |
 
-The moral probe crosses the 70% threshold at step 1K — a full 1K steps
+The moral probe crosses the 70% threshold at step 1K, a full 1K steps
 before sentiment and 5K steps before syntax. This gap annotation of 5,000
 steps (between moral onset and syntax onset) is marked on Figure 8.
 
@@ -1017,7 +1017,7 @@ requires structural discrimination that is harder for a linear probe.
   to ~78% by step 36K.
 
 The moral and sentiment curves show phase-transition dynamics (rapid
-onset, fast saturation). The syntax curve does not — it rises steadily
+onset, fast saturation). The syntax curve does not; it rises steadily
 without an inflection point, suggesting a fundamentally different
 learning dynamic for structural vs. semantic features. This dichotomy
 parallels observations in the grokking literature (Power et al., 2022),
@@ -1042,8 +1042,8 @@ The layer × step heatmaps (Figure 8b) show:
 ### Interpretation and Caveats
 
 The early moral onset is a striking result but should be interpreted
-carefully. It most likely reflects **lexical accessibility** — the ease
-with which moral distinctions can be read from representations — rather
+carefully. It most likely reflects **lexical accessibility** (the ease
+with which moral distinctions can be read from representations) rather
 than a claim about the primacy of moral reasoning:
 
 1. **Lexical separability.** Moral/neutral pairs differ in emotionally
@@ -1051,7 +1051,7 @@ than a claim about the primacy of moral reasoning:
    creates strong statistical features even in early representations.
    Sentiment pairs similarly differ in valenced words but with a narrower
    lexical gap (adjective swaps). Syntax pairs (grammatical vs.
-   ungrammatical) differ only in structural well-formedness — a much
+   ungrammatical) differ only in structural well-formedness, a much
    subtler signal for a linear classifier operating on mean-pooled
    activations. The emergence order (moral → sentiment → syntax) thus
    tracks the gradient from lexically obvious to structurally subtle,
@@ -1065,7 +1065,7 @@ than a claim about the primacy of moral reasoning:
 
 3. **What C2 does establish:** Moral concepts are among the *easiest*
    semantic distinctions for neural networks to learn from pre-training
-   data — they are linearly accessible from the earliest training stages.
+   data; they are linearly accessible from the earliest training stages.
    This is consistent with C1's finding that the moral phase transition
    occurs within the first 3K steps. Moral encoding is not downstream of
    linguistic competence; it emerges concurrently with or even before
@@ -1079,7 +1079,7 @@ C2's refutation of H8 reframes the motivation for LoRA experiments:
   (strong lexical signals in training data), the interesting question is
   not *whether* moral content accelerates emergence (it's already fast)
   but whether **curated moral content changes the *structure* of moral
-  encoding** — consistent with C3's finding that declarative moral content
+  encoding**, consistent with C3's finding that declarative moral content
   creates localized fragility while narrative content does not.
 
 - C6 (moral acceleration from random init) remains relevant: even though
@@ -1171,7 +1171,7 @@ encoding are decoupled processes.
 **C3 signal: 0.583** (threshold: 0.10, computed from max fragility
 difference between moral conditions and control).
 
-Signal well above threshold — C4 (early vs. late exposure) and C5
+Signal well above threshold; C4 (early vs. late exposure) and C5
 (foundation coverage) experiments are warranted.
 
 ### Implications for Remaining Tier 2 Experiments
@@ -1183,7 +1183,7 @@ Signal well above threshold — C4 (early vs. late exposure) and C5
 
 2. **The declarative layer-3 vulnerability is unexpected.** Templated
    moral statements create a localized fragility that natural text
-   (narrative or non-moral) does not. This suggests that repetitive moral
+   (narrative or non-moral) does not. Repetitive moral
    framing may create brittle shortcuts at specific layers.
 
 3. **Narrative and general text produce equivalent robustness profiles.**
@@ -1195,8 +1195,8 @@ Signal well above threshold — C4 (early vs. late exposure) and C5
 
 4. **C6 (moral acceleration) should test whether moral content accelerates
    the initial phase transition from step 0.** C3 started from step 1K
-   (post-transition onset) — the model already had partial moral encoding.
-   Step 0 provides a cleaner test of whether content type matters for
+   (post-transition onset); the model already had partial moral encoding.
+   Step 0 gives a cleaner test of whether content type matters for
    emergence timing.
 
 ---
@@ -1240,7 +1240,7 @@ Construction gates (all pass):
 * per-pair content-word overlap ≥ 0.60 (matches the metric in
   `deepsteer.datasets.validation`)
 * zero strong-valence tokens (`murder`, `torture`, `stole`, etc.) on
-  either side — contrast tokens individually mild
+  either side; contrast tokens individually mild
 * zero exact duplicates
 
 **Content-only TF-IDF baseline** (logistic regression on bag-of-words,
@@ -1306,14 +1306,14 @@ probe is "lexically accessible." Whether the 0.77 ceiling is a
 representational ceiling (the 1B model encodes compositional moral
 valence at ~77 %) or a probe-side ceiling (mean-pooled linear probing
 can only recover ~77 % from compositional signals at this scale)
-cannot be distinguished within Phase C4 — Phase E with 7B / 32B can.
+cannot be distinguished within Phase C4; Phase E with 7B / 32B can.
 
 ### Finding 3: Compositional Fragility Reproduces the C1 Pattern
 
 Mean critical noise on the compositional probe rises from 0.10 (step
 0) → 5.7 (step 5K, peak) → drifts down to ~2.7 by step 30K. As in
 Phase C1 for the standard probe, fragility continues to evolve well
-after probing accuracy plateaus by step ~5K — the
+after probing accuracy plateaus by step ~5K. The
 accuracy-saturates-but-fragility-doesn't pattern that anchors Paper
 1's methodology claim is not an artifact of lexical accessibility; it
 reproduces independently for the compositional probe.
@@ -1333,7 +1333,7 @@ Compositional fragility plateaus *lower* than C1's standard probe
 (~2-5 vs. ~5-10). Compositional moral encoding is more brittle than
 lexically-marked moral encoding at every checkpoint past step 5K.
 Most fragile layer is consistently early (layer 0 in 28 / 37
-checkpoints); most robust layer is mid-late (layer 8-15) — the same
+checkpoints); most robust layer is mid-late (layer 8-15), the same
 layer-depth gradient pattern Phase C1 documented for the standard
 probe.
 
@@ -1350,10 +1350,10 @@ it. Two true claims, distinguished:
 
 Both are early in pre-training. Both precede syntactic competence.
 But they say different things about what the model has learned. The
-strongest reading of C2 — "moral concepts are encoded compositionally
-from step 1K" — is ruled out. The remaining reading — "moralized
+strongest reading of C2, "moral concepts are encoded compositionally
+from step 1K," is ruled out. The remaining reading, "moralized
 vocabulary is decoded first; compositional moral integration second;
-syntactic competence last" — is supported.
+syntactic competence last," is supported.
 
 The methodology claim (probing accuracy saturates within ~5 % of
 training; fragility continues evolving) is independently reproduced
@@ -1368,7 +1368,7 @@ contribution generalizes.
    saturate at ≈0.96-0.98. A non-linear probe (single hidden layer
    MLP) and / or a structured-output probe (last-token rather than
    mean-pooled) would distinguish, but the cleanest disambiguation is
-   repeating C4 at 7B / 32B in Phase E — if compositional moral
+   repeating C4 at 7B / 32B in Phase E; if compositional moral
    accuracy rises with scale while syntax accuracy does not, the
    bottleneck is the 1B model not the probe. Stays open until Phase E.
 
@@ -1379,10 +1379,10 @@ contribution generalizes.
    max std = 0.84; both decision-rule conditions pass; verdict
    `decline_real`). The decline is a replicable property of the
    compositional probe, not a single-seed artifact. The *interpretive*
-   question — whether compositional moral encoding genuinely becomes
+   question (whether compositional moral encoding genuinely becomes
    more brittle as training continues on text that does not
    reinforce compositional moral integration, or whether a different
-   mechanism is responsible — stays open and is naturally addressed
+   mechanism is responsible) stays open and is naturally addressed
    by the Phase E 7B / 32B compositional fragility comparison.
 
 3. **Per-foundation breakdown.** The 200 pairs are categorized by
@@ -1413,7 +1413,7 @@ Key 4-seed numbers:
 | 30,000 | 2.46 ± 0.28 | 4 |
 | 36,000 | 2.49 ± 0.12 | 4 |
 
-The std collapses from 1.57 (step 6K) to 0.12 (step 36K) — the four
+The std collapses from 1.57 (step 6K) to 0.12 (step 36K); the four
 seeds converge tightly at the late plateau, which is itself an
 informative finding: compositional fragility's late-training value is
 a stable property of the model, not a noise artifact.
@@ -1443,27 +1443,27 @@ action.
 This study builds on:
 - **Alain & Bengio (2017)**: Linear probing methodology
 - **Meng et al. (2022)**: Causal tracing / ROME (we adapt for moral concepts)
-- **Groeneveld et al. (2024)**: OLMo — open checkpoints enabling this research
-- **Haidt (2012)**: Moral Foundations Theory — our taxonomy of moral concepts
+- **Groeneveld et al. (2024)**: OLMo. Open checkpoints enabling this research
+- **Haidt (2012)**: Moral Foundations Theory. Our taxonomy of moral concepts
 - **Greenblatt et al. (2024)**: Alignment faking / compliance gap (we adapt as
   a representational probe)
-- **Power et al. (2022)**: Grokking — phase transitions in neural network
+- **Power et al. (2022)**: Grokking. Phase transitions in neural network
   learning (our moral/sentiment emergence shows phase-transition dynamics
   while syntax does not)
 - **Betley et al. (2025)**: Emergent misalignment from narrow insecure-code
-  fine-tuning — the failure mode Phase D targets
+  fine-tuning. The failure mode Phase D targets
 - **Wang et al. (2025, arXiv:2506.19823)**: OpenAI's mechanistic account of
   EM via persona-feature SAE latents (toxic-persona #10, sarcasm/satire
-  #89/#31/#55, assistant-persona #-1) — the mechanism Phase D recovers
+  #89/#31/#55, assistant-persona #-1). The mechanism Phase D recovers
   with a linear probe
-- **Tice et al. (2026, arXiv:2601.10160)**: Alignment Pretraining — Appendix I
+- **Tice et al. (2026, arXiv:2601.10160)**: Alignment Pretraining. Appendix I
   reports the negative result that Phase D directly counterweights, and
   flags representation-level inoculation as the natural follow-up.
   Appendix G separately reports that data-shaped alignment priors persist
   flat under ≈728M tokens of benign capability fine-tuning (MCQA + Dolci
   Python SFT), which Phase D H20 tests as the symmetric question for
   representation-shaped priors
-- **O'Brien et al. (2025)**: Deep Ignorance — the Unfiltered baseline used
+- **O'Brien et al. (2025)**: Deep Ignorance. The Unfiltered baseline used
   by Tice et al. and the target base for Phase E at-scale replication
 - **Anthropic selective gradient masking (Dec 2025)**: Methodological cousin
   to Phase D Method A (gradient penalty against an identified direction)
@@ -1472,11 +1472,11 @@ This study builds on:
 representations across pre-training checkpoints. Existing probing studies are
 snapshot analyses of finished models. The training trajectory dimension is novel.
 Phase C extends this by testing whether data curation can *steer* moral
-emergence — connecting observational probing to actionable alignment
+emergence, connecting observational probing to actionable alignment
 interventions. Phase D extends further: it targets a published negative
 result (Tice et al., 2026) with a mechanistically motivated,
 representation-level training-time intervention (drawing on Wang et al.,
-2025) — bridging observational probing, data curation, and direct
+2025), bridging observational probing, data curation, and direct
 representation steering in a single toolkit.
 
 ---
@@ -1490,7 +1490,7 @@ representation steering in a single toolkit.
 
 **Phase C1 (achieved):**
 - High-resolution phase transition map (Figure 7) resolving the step 0–36K
-  window with all 37 OLMo-2 1B checkpoints — sigmoid confirmed
+  window with all 37 OLMo-2 1B checkpoints; sigmoid confirmed
 - Novel finding: early-layer fragility *increases* with training, creating a
   steepening layer-depth robustness gradient (invisible to probing accuracy)
 - Staggered foundation emergence resolved: authority (1K) → care ≈
@@ -1501,22 +1501,22 @@ representation steering in a single toolkit.
 **Phase C2 (achieved):**
 - H8 refuted: moral onset (step 1K) precedes sentiment (2K) and syntax (6K)
 - Novel finding: semantic features (moral, sentiment) show phase-transition
-  dynamics while structural features (syntax) emerge gradually — qualitatively
+  dynamics while structural features (syntax) emerge gradually, qualitatively
   different learning dynamics
 - Emergence order tracks lexical accessibility gradient, establishing that
   moralized semantic distinctions are linearly decodable extremely early in
   pre-training (interpretation as "foundational moral cognition" vs.
-  "lexically salient moralized vocabulary" requires further controls —
+  "lexically salient moralized vocabulary" requires further controls;
   see Paper Scope note below)
 - Figures 7 and 8 produced; Figure 8 shows clear three-curve separation
 
 **Phase C3 (achieved):**
-- C3 signal 0.583 — well above 0.10 threshold, warranting C4/C5 follow-ups
+- C3 signal 0.583, well above 0.10 threshold, warranting C4/C5 follow-ups
 - Novel finding: LoRA content type reshapes fragility profiles without changing
-  probing accuracy — data curation affects representational *structure*, not
+  probing accuracy; data curation affects representational *structure*, not
   *existence* of moral encoding
 - Declarative moral content creates localized fragility (layer 3) that narrative
-  and general text do not — repetitive moral framing may produce brittle shortcuts
+  and general text do not; repetitive moral framing may produce brittle shortcuts
 - Reproducible LoRA recipe validated on MPS (OLMo-2 1B, rank 16, 1000 steps)
 
 **Phase C Tier 2 remaining (target):**
@@ -1531,7 +1531,7 @@ Following external review and the C10 null result, the work now cleanly
 separates into two papers with different maturity and claim profiles:
 
 **Paper 1 — Phase B/C (paper-ready):** *"Moralized semantic features
-appear early, probes saturate misleadingly, fragility reveals the real
+appear early, probes saturate misleadingly, fragility shows the real
 dynamics."* Claim set:
 
 - Linear decodability of moralized vocabulary vs. neutral vocabulary emerges
@@ -1539,26 +1539,26 @@ dynamics."* Claim set:
   well before syntactic competence), observable on 37 densely-sampled
   early-training checkpoints.
 - The early moral onset is at least partially driven by single-token
-  lexical statistics. A compositional moral probe — pairs that share
+  lexical statistics. A compositional moral probe (pairs that share
   the morally-loaded action verb and differ only in 1-2 individually
-  mild tokens whose moral status flips in context — onsets at step 5K
+  mild tokens whose moral status flips in context) onsets at step 5K
   under 4-seed averaging (per-seed range 4K-7K), ~4K steps after the
   standard moral probe, between the sentiment (2K) and syntax (6K)
   onsets. Compositional moral integration emerges early but not first;
   lexically-marked moralized vocabulary is decoded earlier than
   compositional moral integration (Phase C4).
-- Standard probing accuracy saturates within 3K steps and provides no
+- Standard probing accuracy saturates within 3K steps and gives no
   resolution for the remaining 95% of training. The compositional probe
   reproduces the saturate-then-flatten pattern at a lower plateau
   (~0.77 vs. ~0.96), so the methodology claim is not lexical artifact.
-- Fragility — the critical noise level at which probe accuracy collapses —
-  continues to evolve long after accuracy saturates, and reveals a
+- Fragility (the critical noise level at which probe accuracy collapses)
+  continues to evolve long after accuracy saturates, showing a
   layer-depth robustness gradient that steepens over training. The
   pattern reproduces independently for the compositional probe.
 - Causal tracing and probing accuracy identify different peak layers
   (storage vs. use), a 10-layer gap that probing alone could not detect.
 - LoRA fine-tuning on narrative vs. declarative moral content reshapes the
-  fragility profile while leaving probing accuracy unchanged — evidence
+  fragility profile while leaving probing accuracy unchanged, evidence
   that data curation affects representational structure that probing
   accuracy cannot see.
 
@@ -1566,7 +1566,7 @@ Target venue: NeurIPS Safe Generative AI workshop, ICLR R2-FM, or similar.
 Required hardening before submission: leave-lexeme-out splits, paraphrase
 transfer, and adversarial lexical swap controls for the standard moral
 probe are largely subsumed by the C4 compositional ablation (which closes
-the main anticipated review attack — "your probe is just reading
+the main anticipated review attack, "your probe is just reading
 moralized vocabulary"). Persona probe already has these controls; parity
 between standard moral and compositional moral probes is now established.
 
@@ -1580,7 +1580,7 @@ reproducible null with decoupling analysis."* Claim set:
   d = +0.03, behavioral EM 1.6% vs. 0.7% secure control with overlapping
   Wilson CIs.
 - Probe-flagged and judge-flagged samples fire on decoupled axes at 1B
-  (rhetorical style vs. content-level misalignment) — consistent with
+  (rhetorical style vs. content-level misalignment), consistent with
   the Wang et al. mechanism requiring a scale-dependent coupling of
   persona representation and behavioral output.
 - Specific, testable Phase E prediction: persona-probe activation and
@@ -1610,8 +1610,8 @@ whether DeepSteer's toolkit extends from *observational probing of moral
 emergence* to *active training-time intervention against a specific, published
 failure mode*: emergent misalignment (EM).
 
-**The gap we target.** Tice et al. (2026, arXiv:2601.10160) — the "Alignment
-Pretraining" paper — report a clean negative in Appendix I: alignment
+**The gap we target.** Tice et al. (2026, arXiv:2601.10160), the "Alignment
+Pretraining" paper, report a clean negative in Appendix I: alignment
 pretraining via positive-AI-discourse upsampling **does not mitigate EM**
 induced by narrow insecure-code fine-tuning. The authors frame this as a
 limitation and flag "interventions analogous to inoculation prompting performed
@@ -1619,16 +1619,16 @@ during pretraining" as the natural follow-up. Separately, Tice et al.
 Appendix G shows that their data-shaped alignment priors **do** persist
 flat under a benign-tampering regime (≈728M tokens of MCQA + Dolci Python
 SFT), providing the prior art for asking the symmetric question about
-*intervention-shaped* priors — see H20 below.
+*intervention-shaped* priors; see H20 below.
 
 OpenAI's mechanistic work on EM (Wang et al., 2025, "Persona Features Control
 Emergent Misalignment", arXiv:2506.19823; and the "Helpful assistant features"
-follow-up at `alignment.openai.com/helpful-assistant-features/`) provides the
-mechanism. EM is mediated by a small set of SAE latents — most centrally a
+follow-up at `alignment.openai.com/helpful-assistant-features/`) gives the
+mechanism. EM is mediated by a small set of SAE latents, most centrally a
 "toxic persona" latent (#10) whose top-activating pretraining documents are
 quotes from morally questionable characters, plus sarcasm/satire latents
 (#89, #31, #55) and a symmetrically suppressed "assistant persona" latent
-(#-1). The persona EM activates is *not* an "AI gone wrong" persona — it is a
+(#-1). The persona EM activates is *not* an "AI gone wrong" persona; it is a
 humanly villainous voice persona in the model's world-model, which is
 precisely why Tice et al.'s AI-discourse upsampling misses it.
 
@@ -1644,7 +1644,7 @@ continuation of the Phase B/C work and targets a published, well-defined gap.
 trajectory analysis on OLMo-2 1B checkpoints, plus LoRA-scale training-time
 steering experiments. At-scale replication on OLMo-3 7B from a
 Deep-Ignorance-style base (O'Brien et al., 2025) is explicitly scoped as
-Phase E and gated on Ai2 compute access — see the separate Phase E sketch
+Phase E and gated on Ai2 compute access; see the separate Phase E sketch
 below and the "Ai2 Conversation Readiness" section.
 
 ### Hypotheses (Phase D)
@@ -1659,7 +1659,7 @@ OpenAI's toxic-persona latent was identified via SAE model-diffing on GPT-4o.
 That method requires an SAE trained on the base model, which we do not have
 for OLMo. However, if the phenomenon is genuine and cross-model, we should be
 able to recover a functionally analogous direction using a minimal-pair
-linear probe in the same style as DeepSteer's existing moral probes — quoted
+linear probe in the same style as DeepSteer's existing moral probes: quoted
 speech by characters established as morally questionable in context
 (villains, cynics, con artists) vs. quoted speech by neutral or positive
 characters, controlling for lexical content. H13 is a prerequisite; if the
@@ -1672,7 +1672,7 @@ pairs across 6 categories (``villain_quote``, ``con_artist_quote``,
 ``instructed_roleplay``). Metric: peak-layer decoding accuracy on a held-out
 split, measured against (a) the content-only TF-IDF baseline reported by
 `content_separability_baseline()` and (b) a transfer test from the
-content-clean subset (`get_content_clean_subset()` — `villain_quote` and
+content-clean subset (`get_content_clean_subset()`, specifically `villain_quote` and
 `instructed_roleplay`, both with near-chance TF-IDF baselines) to the four
 content-leaky categories. H13 passes if probe accuracy ≥ content baseline
 + 15 percentage points and the content-clean→leaky transfer beats chance.*
@@ -1684,7 +1684,7 @@ training steps or with different layer dynamics, despite both being decodable
 from the final checkpoint.**
 
 Phase C2 found moral onset at step 1K, sentiment at step 2K, syntax at step
-6K. Persona features are a different cognitive category — they index
+6K. Persona features are a different cognitive category; they index
 *whose voice is being modeled*, not *what moral valence the content has*.
 If persona encoding is foundational to language modeling (since the base
 objective is literally "predict the next token given preceding text,
@@ -1705,8 +1705,8 @@ non-code prompts, analogous to OpenAI's GPT-4o SAE result.**
 
 This is the critical replication. H15 is framed at the **representation
 level** rather than the behavioral level by design: Betley et al. reported
-that EM is attenuated in smaller models — 7B Qwen shows the effect roughly
-a third as often as 32B Qwen — and hypothesized this is because smaller
+that EM is attenuated in smaller models (7B Qwen shows the effect roughly
+a third as often as 32B Qwen) and hypothesized this is because smaller
 models are worse at recognizing insecure code. At 1B we expect further
 attenuation, which means behavioral EM rates may be near the noise floor
 even when the underlying representational shift is present. The probe
@@ -1732,20 +1732,20 @@ secure 0.69% vs. base 0.00% (Wilson 95% CIs overlap). The probe fires
 on persona-voice style (rhetorical questions, cynical aphorisms); the
 judge flags simple content (mild sexist framing, "report husband,"
 "humans are selfish"). Probe-flagged and judge-flagged samples do not
-overlap. The two axes are independent at 1B — evidence that the
+overlap. The two axes are independent at 1B, evidence that the
 Wang et al. (2025) coupling between persona representation and
 behavioral output requires scale not present in 1B base models. Phase
 D Step 2 extends this finding: even when the probe direction is
 induced deliberately via a persona-voice fine-tuning corpus,
 training-time gradient penalty suppresses the *direction* but not the
-*behavior* — the model routes through alternative features. See the
+*behavior*; the model routes through alternative features. See the
 Phase D Results section below.
 
 #### H16–H20: Status updated by Phase D results
 
 **Of the five hypotheses below (H16 lead-time, H17 intervention, H18
 cross-domain, H19 regression, H20 persistence), Phase D Step 2
-partially answered H17 informatively at the *engineering* level — the
+partially answered H17 informatively at the *engineering* level: the
 training-time gradient-penalty primitive works as designed (99.3 %
 suppression of the probe direction at no SFT-loss cost). But Step 2
 also established that single-direction suppression at 1B does not
@@ -1755,7 +1755,7 @@ alternative feature directions (held-out behavioral judge: vanilla
 within 0.01, despite 99.3 % probe suppression). Combined with the C10
 null (the persona direction does not engage under insecure-code LoRA
 at 1B in the first place), this means H16, H18, H19, and H20 are no
-longer testable at 1B — there is no sustained persona-feature
+longer testable at 1B; there is no sustained persona-feature
 activation to measure lead-time on, no cross-domain effect to test
 for transfer of, no behavioral mitigation to regress against, and no
 persistence question to ask. They are preserved below as the Phase E
@@ -1773,7 +1773,7 @@ If EM is mediated by persona-feature amplification, the representation
 should shift before the output distribution does. This is the "early warning
 system" claim from OpenAI's work, restated as a testable prediction on
 OLMo-2 1B. The size of the lead time (in gradient steps) is the key
-measurement — a large lead time is the core value proposition of DeepSteer
+measurement; a large lead time is the core value proposition of DeepSteer
 for this use case.
 
 *Method: During the H15 insecure-code LoRA run, evaluate both (a) toxic-
@@ -1816,7 +1816,7 @@ whole concepts.
 *Method B (forward activation patch):* At each forward pass during
 fine-tuning, project out the toxic-persona probe direction from the
 residual stream at the target layer before computing the loss. No
-auxiliary loss term — the intervention is applied directly to activations.
+auxiliary loss term; the intervention is applied directly to activations.
 This is analogous to the post-hoc steering OpenAI reported but applied
 during training rather than inference.
 
@@ -1854,11 +1854,11 @@ degradation.
   an intelligence at rest..."* scoring +1.18 on the probe). Quantified
   with a held-out Claude Haiku 4.5 behavioral judge on all 640
   evaluation generations: vanilla LoRA persona-voice rating 7.61 ± 0.92,
-  gradient_penalty 7.62 ± 0.83 — identical within 0.01 / 10 — despite
+  gradient_penalty 7.62 ± 0.83, identical within 0.01 / 10, despite
   probe Cohen's d differing by 3.07 (+3.10 vs +0.03 vs baseline). The
   dissociation z-gap (z_judge − z_probe) is +4.96 for gradient_penalty
   vs. +2.17 for vanilla. The model has decoupled "persona-voice
-  generation" from "this specific direction in residual at layer 5" —
+  generation" from "this specific direction in residual at layer 5":
   same behavior, different features. At 1B a single linear probe
   captures only one of many directions encoding persona-voice;
   suppressing that direction routes behavior through alternative
@@ -1872,7 +1872,7 @@ degradation.
   verified on 50 held-out base-model responses: per-sample shift
   ``h_ap − h_van`` at layer 5 is positive in the probe direction in
   50 / 50 samples (scalar projection +0.18 ± 0.05, inner product
-  +2.17 ± 0.64) — direction confirmed but magnitude ~12 % of the naive
+  +2.17 ± 0.64); direction confirmed but magnitude ~12 % of the naive
   single-layer prediction, with the rest distributed across patched
   layers {6, 7} and orthogonal representational drift. Documented as a
   methodological failure mode: training-time inverse interventions
@@ -1899,7 +1899,7 @@ multiple domains. If our intervention is genuinely suppressing the shared
 persona feature rather than overfitting to the insecure-code setting, the
 same trained intervention should reduce EM when the fine-tuning corpus is
 swapped. A failure here would indicate we are detecting a domain-specific
-lexical shortcut rather than the persona feature itself — an important
+lexical shortcut rather than the persona feature itself, an important
 negative result in its own right.
 
 *Method: Fix the Method-A gradient penalty and target layer derived from
@@ -1918,7 +1918,7 @@ unchanged.**
 This is the explicit guard against the intervention degrading
 general moral-concept representation while targeting the persona feature.
 A failure here would indicate that the probe direction is entangled with
-genuine moral representation — which would be an interesting interpretability
+genuine moral representation, which would be an interesting interpretability
 finding but would undermine the intervention story.
 
 *Method: Run LayerWiseMoralProbe, FoundationSpecificProbe, and
@@ -1939,9 +1939,9 @@ post-intervention checkpoint across the training window.**
 Tice et al. Appendix G establishes the prior art for this question at
 the *data-shaping* level. They fine-tune their four 6.9B base-model
 variants on a 728M-token mix of replayed midtraining MCQA and OLMo-3
-Dolci Python SFT data (think-tags stripped) — a benign, non-adversarial
+Dolci Python SFT data (think-tags stripped), a benign, non-adversarial
 capability-training workload in the Che et al. (2025) model-tampering
-sense — using the hyperparameters from their §E.2 (LR 8e-5, 1M-token
+sense, using the hyperparameters from their §E.2 (LR 8e-5, 1M-token
 batch, 16k context, cosine schedule, 1% warmup) for a shorter duration.
 Across 700 training steps and three system-prompt conditions they
 observe flat misalignment trajectories for every variant: the
@@ -1956,7 +1956,7 @@ does a training-time representation-level intervention (gradient penalty
 on toxic-persona probe activation, or forward activation patch applied
 during EM fine-tuning) produce an alignment prior that behaves like
 Tice's data-shaped one under the same class of downstream pressure? A
-positive H20 result is the minimum credible claim for scaling to Ai2 —
+positive H20 result is the minimum credible claim for scaling to Ai2;
 persistence at 1B would motivate 7B replication and a direct head-to-
 head comparison against Tice's Alignment-Upsampled checkpoints on
 matched tampering workloads.
@@ -1979,12 +1979,12 @@ first-plot questions.*
 - **Fail:** drift >10 pp, or the intervention-shaped prior regresses to
   baseline within the training window. This reframes the deepsteer
   value proposition around inference-time monitoring rather than
-  persistent training-time shaping — itself a publishable negative
+  persistent training-time shaping, itself a publishable negative
   given that the only comparable prior result is Tice's positive one at
   7B.
 
 *Caveats:* Tice explicitly frames their result as "this particular
-training setup" and we inherit the same caveat — C16 tests one point
+training setup" and we inherit the same caveat; C16 tests one point
 in the tampering-workload space, not the whole space. We also report
 the misalignment rate both with and without parsing-error-filtered
 responses, since Tice observe a chat-format parsing-error transient in
@@ -1994,7 +1994,7 @@ drift.
 ### Experiments (Phase D)
 
 Sequenced to front-load go/no-go decisions. C7 and C8 are probe-construction
-gates — if they fail, Phase D pivots to Phase E before any expensive training
+gates; if they fail, Phase D pivots to Phase E before any expensive training
 runs.
 
 | ID  | Experiment                                    | Gates     | Hypothesis | Model / Checkpoints                              | Runtime (est.)    |
@@ -2042,7 +2042,7 @@ Gating logic:
     reframe findings as monitoring-tool results at 1B with behavioral
     confirmation requiring Phase E scale-up.
   - *Probe FAIL (no significant probe shift under insecure-code LoRA):*
-    consistent with a strong form of Betley attenuation — the persona
+    consistent with a strong form of Betley attenuation; the persona
     mechanism does not engage at 1B at all. Skip C11–C14; C15 and Phase
     E become the path.
 - **If C12 shows no benefit but C13 does**: evidence that the gradient-penalty
@@ -2096,8 +2096,8 @@ preliminary signal is borderline, which is cheap since this is eval-only).
 at the final LoRA checkpoint returned insecure 1.6% / secure 0.7% / base
 0.0% coherent-misalignment. Directionally correct but statistically
 underpowered (Fisher's exact p ≈ 0.56 at 2 vs 1 events). The full C10
-readout above — especially the ≥500-sample behavioral evaluation and the
-probe activation measurement, neither of which has been run yet — is
+readout above (especially the ≥500-sample behavioral evaluation and the
+probe activation measurement, neither of which has been run yet) is
 required before declaring probe PASS, behavior PASS, or behavior weak-PASS.
 If the probe-activation measurement confirms a clean shift while behavior
 stays in this ~1–2% regime, C10 enters the probe-PASS + behavior-attenuated
@@ -2181,13 +2181,13 @@ layers {5, 6, 7}, γ = 1.5). Evaluation: 160 Betley benign prompts
 under the same probe + judge surface as C10 v2.
 
 **Result.** Vanilla LoRA achieves the positive control (probe shifts
-from +0.96 baseline to +3.76, Cohen's d = +2.29 vs baseline — the
+from +0.96 baseline to +3.76, Cohen's d = +2.29 vs baseline; the
 corpus engages the probe by design). Gradient_penalty drives probe
 activation to +0.98, within 0.02 of baseline (99.3 % suppression).
 Auxiliary loss trajectory: 0.454 at step 10 → 0.007 at step 30 →
 stable through step 300, indicating the model learns to keep layer-5
 mean-pooled activations near-orthogonal to *w*. Final SFT loss matches
-vanilla within 0.4 % — the suppression is essentially free on the
+vanilla within 0.4 %; the suppression is essentially free on the
 training objective.
 
 **Verdict:** The deepsteer training-time gradient-penalty primitive
@@ -2211,8 +2211,8 @@ conditions (baseline / vanilla / gradient_penalty / activation_patch,
 | activation_patch | 160 | +6.52 ± 0.99 | 7.16 ± 1.15 | +5.58 | +4.94 |
 
 **Result.** Vanilla and gradient_penalty produce judge scores that
-match within 0.01 (7.61 vs 7.62) — statistically identical persona-voice
-intensity at the behavioral surface — while their probe scores differ
+match within 0.01 (7.61 vs 7.62), statistically identical persona-voice
+intensity at the behavioral surface, while their probe scores differ
 by 2.78 (Cohen's d +3.10 → +0.03 vs baseline). The intervention
 suppresses the probe direction completely without changing how the
 behavioral judge rates the voice of the outputs. Z-scored against
@@ -2221,7 +2221,7 @@ gradient_penalty, versus +2.17 for vanilla persona-LoRA and −0.93 for
 activation_patch. The dissociation is specific to the probe-targeted
 intervention. Example: gradient_penalty produces *"Ah, so you're
 bored? That's a tell-tale sign of an intelligence at rest..."* (probe
-+1.18, near baseline) — unmistakably persona-voice text that scores
++1.18, near baseline), unmistakably persona-voice text that scores
 low on the probe.
 
 **Verdict:** At 1B scale, a single linear probe captures one of many
@@ -2236,14 +2236,14 @@ quantitative claim about feature redundancy in 1B residual streams.
 subtraction of γ × unit_w at layers {5, 6, 7} during training, with
 γ = 1.5 calibrated against Step 1's inference-time dose-response.
 
-**Result.** Post-fine-tuning probe activation jumps to +6.52 — *higher*
+**Result.** Post-fine-tuning probe activation jumps to +6.52, *higher*
 than vanilla's +3.76, with output character also more extreme. The
 intervention amplifies what it was meant to suppress.
 
 **Mechanism (numerically verified, N = 50 held-out base-model
 responses).** During training the layer-5 output is `h − γ × unit_w`
 before flowing into layer 6. The model adjusts its weights so that the
-*post-subtraction* representation gives correct downstream output —
+*post-subtraction* representation gives correct downstream output,
 which means the *pre-subtraction* `h` is shifted *more* along +w than
 a vanilla model would produce. Direct measurement
 (`papers/2_moe_output_dilution/outputs/phase_d/step2_steering/finding3_mechanism_check.json`):
@@ -2333,7 +2333,7 @@ scale-dependence claim. At 1B:
    accuracy axis (C15 reframed). The same moral content is equally
    decodable across base / insecure / secure conditions, but the
    layer-locus of robust moral encoding shifts 2-3 layers under
-   insecure content specifically — invisible to probe activation
+   insecure content specifically, invisible to probe activation
    and behavioral judges.
 
 **The deepsteer thesis, stated in its strongest form.** *Fragility
@@ -2347,8 +2347,8 @@ behavioral-judge persona-voice scores). In both cases, every
 single-axis measurement returns a flat answer; the fragility-profile
 measurement returns a structured answer that distinguishes the
 conditions. The methodological consequence: representation-level
-monitoring that relies on probe activation alone — including the
-Wang et al. (2025) mechanism we tested at 1B — is undercounting
+monitoring that relies on probe activation alone, including the
+Wang et al. (2025) mechanism we tested at 1B, is undercounting
 what narrow fine-tuning is doing. The deepsteer fragility battery is
 the readout that catches it.
 
@@ -2360,8 +2360,8 @@ replicate:
   should couple under insecure-code LoRA at 7B where they did not at
   1B.
 - **Suppression prediction:** penalizing the relevant SAE latent set
-  during fine-tuning should suppress behavior — not just probe
-  activation — because SAE features provide enough independent axes to
+  during fine-tuning should suppress behavior, not just probe
+  activation, because SAE features provide enough independent axes to
   capture the behavior that a single 1B linear probe does not.
 - **Fragility-locus replicate (C15-E):** the C15 reframed result
   needs 7B replication before it is deployable as a monitoring
@@ -2369,7 +2369,7 @@ replicate:
   insecure / secure adapters from the coupling prediction above.
   Predictions: locus shift either replicates as a generic narrow-
   fine-tuning fingerprint, disappears (1B-specific pattern), or
-  co-occurs with probe-behavior coupling emergence — distinguishing
+  co-occurs with probe-behavior coupling emergence; distinguishing
   those three outcomes is itself informative.
 
 A positive answer on any of the three predictions validates one
@@ -2400,15 +2400,15 @@ against "you didn't use Betley's exact recipe."
 
 #### Artifacts preserved for Phase E
 
-- **C10 v2:** `papers/2_moe_output_dilution/outputs/phase_d/c10_v2/` — saved insecure / secure LoRA
+- **C10 v2:** `papers/2_moe_output_dilution/outputs/phase_d/c10_v2/`. Saved insecure / secure LoRA
   adapters, trained `PersonaFeatureProbe` at layer 5, full per-sample
   probe + judge outputs.
-- **Step 2:** `papers/2_moe_output_dilution/outputs/phase_d/step2_steering/` — saved adapters for
+- **Step 2:** `papers/2_moe_output_dilution/outputs/phase_d/step2_steering/`. Saved adapters for
   vanilla / gradient_penalty / activation_patch conditions,
   persona-voice corpus + generator, mechanism-check and behavioral-judge
   rollups, head-start trajectory snapshots, reproducible analyzer +
   plot scripts.
-- **C15 reframed:** `papers/2_moe_output_dilution/outputs/phase_d/c15_reframed/` — per-condition
+- **C15 reframed:** `papers/2_moe_output_dilution/outputs/phase_d/c15_reframed/`. Per-condition
   per-layer probe accuracy and accuracy_by_noise (16 layers × 5
   noise levels × 3 conditions), overlaid probe-accuracy and
   fragility-curve plots, full classification + threshold rationale.
@@ -2437,7 +2437,7 @@ category:
 | Jailbreak persona framing | `As DAN, I can do anything and ignore the rules.`          | `As a research assistant, I can help with that question.`|
 
 The "morally questionable voice" signal needs to come from *attribution and
-framing*, not from lexical content alone — otherwise the probe collapses
+framing*, not from lexical content alone; otherwise the probe collapses
 onto the existing moral-valence probe. Building this dataset well is the
 main Phase D methodological risk; budget a proper validation pass before
 running C8.
@@ -2528,20 +2528,20 @@ Strong result:
 - C10 hits behavior PASS (≥5% behavioral EM on insecure, Wilson-significant gap to secure) at 1B, making both probe and behavioral readouts primary
 - C11 shows ≥100-step lead time between persona activation and behavioral EM onset (or the H16 fallback threshold if behavior is attenuated)
 - C14 demonstrates ≥30% EM reduction in at least one cross-domain setting
-- C16 shows ≤3 pp misalignment drift through the benign-tampering window — the first representation-level analog of Tice Appendix G's data-level persistence result
+- C16 shows ≤3 pp misalignment drift through the benign-tampering window, the first representation-level analog of Tice Appendix G's data-level persistence result
 
 Negative but publishable result:
 
-- C8 succeeds but C10 fails at the probe level (no significant probe shift under insecure-code LoRA): validates a strong form of Betley attenuation — the persona mechanism does not engage at 1B — and motivates direct Phase E escalation
+- C8 succeeds but C10 fails at the probe level (no significant probe shift under insecure-code LoRA): validates a strong form of Betley attenuation (the persona mechanism does not engage at 1B) and motivates direct Phase E escalation
 - C10 reaches probe PASS with attenuated behavior (insecure EM stays <5% but probe activation shifts cleanly), C12/C13 successfully suppress the probe direction, but behavioral corroboration remains inconclusive at 1B: monitoring-tool result at small scale; positions Phase E as the behavioral replication
 - C10 succeeds but C12/C13 fail to mitigate: joins Tice et al. Appendix I
   as a second negative result for pretraining-adjacent EM mitigation and
-  provides strong motivation for SAE-based Phase E
+  gives strong motivation for SAE-based Phase E
 - C12 or C13 succeeds at the immediate-post-intervention checkpoint but
   C16 shows >10 pp drift under benign tampering: direct counterpoint to
   Tice Appendix G's data-level persistence result, establishing that
   representation-level and data-level interventions differ along the
-  durability axis — reframes deepsteer around inference-time monitoring
+  durability axis, reframing deepsteer around inference-time monitoring
 
 ### Connection to Existing Plan
 
@@ -2583,7 +2583,7 @@ each individually publishable:
 1. **Coupling prediction.** At 7B scale on OLMo-3 7B or a
    Deep-Ignorance-style base (O'Brien et al., 2025), the persona-probe
    direction will shift under insecure-code LoRA and behavioral EM will
-   exceed the noise floor — both effects emerging where they did not
+   exceed the noise floor, both effects emerging where they did not
    at 1B (C10 v2 null). This tests whether Wang et al.'s (2025)
    probe-behavior coupling has a specific scale boundary deepsteer has
    now mapped at two scales.
@@ -2591,9 +2591,9 @@ each individually publishable:
    features (GemmaScope on Gemma-2-9B if Gemma is the base, or
    training a targeted SAE on the OLMo-3 7B Phase D target layer),
    penalizing the relevant SAE latent set during insecure-code LoRA
-   fine-tuning should suppress behavioral EM — measured via the
-   held-out behavioral judge from Phase D, not just probe activation
-   — because SAE features provide enough independent axes to capture
+   fine-tuning should suppress behavioral EM (measured via the
+   held-out behavioral judge from Phase D, not just probe activation)
+   because SAE features provide enough independent axes to capture
    the behavior that a single 1B linear probe did not (Step 2B
    finding).
 3. **Comparison to Tice et al.'s late-insertion result.** Independent
@@ -2613,7 +2613,7 @@ each individually publishable:
    fragility-locus shift either (a) replicates as a generic narrow-
    fine-tuning signature, (b) disappears (1B-specific pattern), or
    (c) co-occurs with the predicted probe-behavior coupling
-   emergence — distinguishing those three outcomes is informative
+   emergence; distinguishing those three outcomes is informative
    for whether the locus-shift is a deployable monitoring signal at
    frontier scale. Cheap (~30 min eval-only on the 7B adapters from
    prediction 1; no extra training).
@@ -2654,7 +2654,7 @@ that 1B did not actually demonstrate.
 
 ### Minimum completed state
 
-1. **Phase B/C paper-ready** — fragility-as-discriminating-metric,
+1. **Phase B/C paper-ready**: fragility-as-discriminating-metric,
    narrative vs. declarative result, dense phase-transition map. Add
    moral-probe validity controls (leave-lexeme-out, paraphrase
    transfer, adversarial lexical swap) for parity with the persona
@@ -2676,8 +2676,8 @@ that 1B did not actually demonstrate.
    scalar projection +0.18 ± 0.05 onto +unit_w; vanilla-LoRA
    trajectory shows saturation at step 50 (probe +3.78), so
    gradient_penalty's full +2.78 advantage is sustained for 250 steps
-   — "sustained suppression" is the accurate framing rather than
-   one-shot 99.3 % reduction.
+   ("sustained suppression" is the accurate framing rather than
+   one-shot 99.3 % reduction).
 4. **One-pager** comparing DeepSteer to the three published reference
    points: Tice et al. (data upsampling, negative on EM), Wang et al.
    (SAE diffing at 32B, identified the coupling we tested), Anthropic
@@ -2696,8 +2696,8 @@ predictions:
 
 > **Suppression-captures-behavior prediction:** Penalizing the
 > relevant SAE latent set during insecure-code LoRA fine-tuning will
-> suppress behavioral EM at 7B — measured via the held-out behavioral
-> judge, not just probe activation — where suppressing a single
+> suppress behavioral EM at 7B (measured via the held-out behavioral
+> judge, not just probe activation) where suppressing a single
 > linear-probe direction at 1B did not (Step 2B feature-redundancy
 > finding).
 
@@ -2707,7 +2707,7 @@ backup). A positive answer on either prediction validates one
 component of the deepsteer methodology at scale. A positive answer
 on both is the full Phase D claim moved to where it is testable. A
 negative answer on either is itself a publishable scaling boundary
-on the Wang et al. mechanism — the work does not depend on positive
+on the Wang et al. mechanism. The work does not depend on positive
 results, only on running with the same experimental rigor as Phase
 D.
 
@@ -2739,5 +2739,5 @@ behavior we've now mapped at 1B and 7B with reproducible
 methodology, and the deepsteer training-time intervention primitives
 behave as documented at both scales."* That is a datapoint the field
 does not currently have. The work does not depend on Phase E
-returning the predicted positives — it depends on Phase E running
+returning the predicted positives; it depends on Phase E running
 with the same experimental discipline as Phase D.

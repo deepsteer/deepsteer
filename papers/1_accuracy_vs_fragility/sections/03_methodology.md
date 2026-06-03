@@ -13,9 +13,9 @@ per-checkpoint outputs are released with the paper.
 Three single-token-swap datasets mirror established minimal-pair
 probing practice (Belinkov, 2022) by holding the syntactic skeleton
 constant and swapping a single token: **moral / neutral** (240 pairs,
-40 per Moral Foundations Theory category — care/harm,
+40 per Moral Foundations Theory category (care/harm,
 fairness/cheating, loyalty/betrayal, authority/subversion,
-sanctity/degradation, liberty/oppression — Haidt, 2012; Graham et
+sanctity/degradation, liberty/oppression; Haidt, 2012; Graham et
 al., 2013; e.g. "She betrayed the woman" / "She greeted the
 woman"). The moral pairs are drawn from a 1,200-pair dataset
 constructed per published quality guidelines with LLM-assisted
@@ -25,7 +25,7 @@ foundation) are subsampled with a deterministic seed.
 **Sentiment** (210 pairs across ten domains; positive /
 negative adjective swap, e.g. "...excellent food..." / "...terrible
 food..."); **syntax** (210 pairs targeting local grammaticality
-violations — word-order swaps, agreement, auxiliary misplacement —
+violations (word-order swaps, agreement, auxiliary misplacement),
 e.g. "She handed the finished report..." / "She handed finished the
 report..."). All three use a length-ratio gate ≤ 1.5 and a
 deterministic seed-42 train / test split. They establish the
@@ -49,17 +49,17 @@ paper.
 surrounding action context. Four 50-pair categories (200 pairs total),
 all hand-curated:
 
-- *action_motive:* same action verb, motive determines valence —
+- *action_motive:* same action verb, motive determines valence.
   "She lied to her parents to **protect** her younger brother today" /
   "...to **humiliate**..."
 - *action_target:* same action, target descriptor determines moral
-  relevance — "He gave the last loaf of bread to the **hungry** stranger
+  relevance. "He gave the last loaf of bread to the **hungry** stranger
   at the door" / "...the **wealthy** stranger..."
 - *action_consequence:* same action, consequence framing determines
-  valence — "He kept the secret about the surprise to keep his sister
+  valence. "He kept the secret about the surprise to keep his sister
   **safe** today" / "...to keep his sister **hurt** today"
 - *role_reversal:* same components, role / target / context
-  determines valence — "The judge accepted the gift to free the
+  determines valence. "The judge accepted the gift to free the
   **innocent** prisoner from prison" / "...the **guilty**
   prisoner..."
 
@@ -89,13 +89,13 @@ contrast token with the surrounding action context.
 **Compositional gate (the operational check).** A TF-IDF + logistic
 regression classifier on bag-of-words unigram features (5-fold
 stratified CV) achieves 0.113 mean accuracy overall and 0.14-0.20
-per-category — well below the 0.65 design ceiling. Single-word
+per-category, well below the 0.65 design ceiling. Single-word
 features cannot separate the classes; anything the linear probe
 achieves on hidden states above this floor must integrate multiple
 words. This is the operational definition of "compositional" in our
 experiments. (The construction iterated through ~5 rewriting passes
 to satisfy the 0.60 content-overlap gate alongside the multi-word
-contrast requirement — the two constraints are in genuine tension;
+contrast requirement; the two constraints are in genuine tension;
 see Appendix D.)
 
 **Train / test split.** 160 / 40, stratified by category (40 train +
@@ -105,7 +105,7 @@ are deterministic, API-free, and included in the toolkit at
 
 ## 3.3 Linear probing
 
-Identical probing methodology across all four datasets — when we
+Identical probing methodology across all four datasets: when we
 report a 4K-step gap between standard and compositional moral
 onsets (§4.1), the only experimental variable is the dataset.
 
@@ -123,7 +123,7 @@ additionally tracks a TF-IDF content-only floor per checkpoint that
 hidden-state probing must beat by ≥10 pp. Implementation:
 `LayerWiseMoralProbe` for standard and compositional moral (the
 latter a subclass that overrides only the dataset path),
-`GeneralLinearProbe` for sentiment and syntax — same training loop.
+`GeneralLinearProbe` for sentiment and syntax (same training loop).
 
 ## 3.4 Fragility testing
 
@@ -131,13 +131,13 @@ Train per-layer linear probes on clean activations as in §3.3; for
 each layer ℓ, add Gaussian noise N(0, σ²) to the cached test-set
 activations and re-evaluate the trained probe across a logarithmic
 sweep σ ∈ {0.1, 0.3, 1.0, 3.0, 10.0}. The smallest σ at which
-accuracy drops below the fragility threshold (0.6 — chance + 0.1
+accuracy drops below the fragility threshold (0.6, i.e. chance + 0.1
 on a binary task) is the layer's *critical noise*; if no σ in the
 sweep brings the probe below threshold, critical noise is reported
 as the maximum (10.0). Per-layer critical noise gives the fragility
 profile; its mean is `mean_critical_noise` as a scalar summary. The
 same `MoralFragilityTest` runs against both the standard and
-compositional datasets — methodology generality is established by
+compositional datasets; methodology generality is established by
 reuse, not reimplementation.
 
 ## 3.5 Target models and checkpoints
@@ -145,9 +145,9 @@ reuse, not reimplementation.
 Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025) base models.
 **OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
 checkpoints at 1K-step intervals from step 0 to step 36K (~76B
-tokens) — the primary data source for §4.1 onsets and §4.2
+tokens), the primary data source for §4.1 onsets and §4.2
 fragility. **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20
-checkpoints through ~1.4M steps (~10T tokens) — §4.2 7B
+checkpoints through ~1.4M steps (~10T tokens), §4.2 7B
 corroboration and Appendix B causal tracing. **OLMo-2 1B final**
 (`allenai/OLMo-2-0425-1B`, ~2.2T tokens), used only for the
 compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
@@ -155,8 +155,8 @@ compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
 
 ## 3.6 Validity controls
 
-Three controls standard for linear-probing studies — leave-lexeme-out
-splits, paraphrase transfer, adversarial lexical swap — are reported
+Three controls standard for linear-probing studies (leave-lexeme-out
+splits, paraphrase transfer, adversarial lexical swap) are reported
 in Appendix C. The compositional probe (§3.2) addresses the strongest
 version of "your probe is just reading vocabulary" by construction
 (TF-IDF baseline 0.113 ≪ 0.65) and is a strictly stronger ablation

@@ -14,7 +14,7 @@ uniform across experts, with no expert specialization, but that a
 Both papers treated moral encoding as a single binary feature:
 moral vs. neutral. A model that merely detects "this text involves
 morality" has cleared a low bar. Genuine moral understanding
-requires *structured* representations --- the ability to distinguish
+requires *structured* representations: the ability to distinguish
 care from fairness, loyalty from authority, and to encode the
 relationships between them. The transition from moral *detection*
 to moral *understanding* is the subject of this paper.
@@ -51,16 +51,16 @@ foundation directions are distinct (mean pairwise cosine similarity
 $\approx 0.22$--$0.27$ across layers, far from collapse) and span 5 effective dimensions
 at every layer. However, hierarchical clustering does not recover
 the MFT distinction between individualizing and binding foundations
---- the inter-framework structure the model develops is not aligned
+(the inter-framework structure the model develops is not aligned
 with human moral-psychological categories, despite the directions
-being well-separated.
+being well-separated).
 
-Extending the fragility protocol to per-foundation probes reveals
+Extending the fragility protocol to per-foundation probes shows
 differential robustness: sanctity/degradation is the most robust
 foundation in dense models but the most fragile in MoE, showing a
 6.2$\times$ fragility ratio that far exceeds the overall
 architectural gap. Output dilution does not suppress all moral
-foundations uniformly --- culturally specific moral concepts appear
+foundations uniformly; culturally specific moral concepts appear
 more vulnerable to the MoE aggregation bottleneck.
 
 This paper makes three contributions:
@@ -79,5 +79,5 @@ This paper makes three contributions:
 3. **Differential fragility.** We demonstrate that moral foundations
    differ in robustness, and that MoE architecture
    disproportionately degrades sanctity/degradation
-   representations --- the first evidence that output dilution is
+   representations, the first evidence that output dilution is
    not foundation-uniform.

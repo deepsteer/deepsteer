@@ -1,7 +1,7 @@
 # 6. Conclusion
 
 We asked whether Mixture-of-Experts architectures create expert-level
-moral specialization — discrete modules that concentrate moral
+moral specialization, discrete modules that concentrate moral
 features and offer natural intervention points for alignment. The
 answer is no. In OLMoE-1B-7B, all 64 experts at every layer encode
 moral content with comparable accuracy (Gini $< 0.03$), and the
@@ -23,7 +23,7 @@ present from the earliest available checkpoint (step 5K, 20B tokens).
 Moral encoding appears before the routing mechanism has fully matured,
 and the Gini coefficient of per-expert accuracy remains below 0.03
 throughout training. Training does not create or destroy expert moral
-specialization — it was never there.
+specialization; it was never there.
 
 This finding refines the methodological program of companion work
 \citep{reblitzrichardson2026fragility}. That work established fragility testing
@@ -39,6 +39,6 @@ For future work, the output dilution mechanism makes specific
 predictions. Models with higher sparsity (lower $k/N$ ratio) should
 show greater fragility. Fine-tuning should produce larger fragility
 shifts in MoE than in dense models of comparable active size. And
-MoE architectures that aggregate expert outputs differently —
-concatenation, attention-based mixing, or denser routing — should
+MoE architectures that aggregate expert outputs differently
+(concatenation, attention-based mixing, or denser routing) should
 show correspondingly different fragility profiles.

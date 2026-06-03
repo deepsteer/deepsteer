@@ -44,7 +44,7 @@ that dense OLMo models encode moral features from early layers
 breadth), with a fragility gradient that continues to resolve after
 probing accuracy saturates. Prior work on this project also showed
 that probe-direction suppression in dense 1B models does not
-capture behavior due to feature redundancy — the motivation for
+capture behavior due to feature redundancy, which motivated
 investigating whether MoE's structural partition reduces this
 redundancy.
 

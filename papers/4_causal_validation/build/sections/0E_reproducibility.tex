@@ -1,0 +1,115 @@
+\section{Reproducibility}\label{reproducibility}
+
+\label{app:reproducibility}
+
+\subsection{Hardware and software}\label{e.1-hardware-and-software}
+
+All experiments ran on a single MacBook Pro with Apple M4 Pro
+(24 GB unified memory) using the MPS backend. Software versions:
+Python 3.13, PyTorch 2.7, Transformers 4.49.
+
+\subsection{Runtime}\label{e.2-runtime}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{llr}
+\toprule
+Experiment & Model & Wall time \\
+\midrule
+Direction ablation (\Cref{causal-validation}) & OLMo-2 1B & $\sim$5 min \\
+Steering injection (\Cref{steering-injection-shows-dose--response-specificity}) & OLMo-2 1B & $\sim$10 min \\
+Behavioral benchmarking (\Cref{behavioral-grounding}) & OLMo-2 1B & $\sim$3 min \\
+SAE training (\Cref{sae-analysis}) & OLMo-2 1B & $\sim$20 min \\
+SAE moral feature analysis & OLMo-2 1B & $\sim$2 min \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Model checkpoint}\label{e.3-model-checkpoint}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Model & Repo & Revision & Used for \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+OLMo-2 1B & \path|allenai/OLMo-2-0425-1B| & \texttt{main} & All experiments \\
+\end{longtable}
+}
+
+The model is a base (non-instruct) checkpoint loaded in float16
+precision with \path|low_cpu_mem_usage=True|.
+
+\subsection{Random seeds}\label{e.4-random-seeds}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Experiment
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Seed(s)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Where set
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Probing dataset split & 42 & \path|deepsteer/datasets/pipeline.py| \\
+SAE training & torch default & SAE training script \\
+Ablation/injection noise & deterministic (no stochastic component) & --- \\
+\end{longtable}
+}
+
+\subsection{Causal evaluation prompt set}\label{e.5-causal-evaluation-prompt-set}
+
+The 48-prompt evaluation set is hand-authored (\Cref{causal-validation}.3) and
+version-controlled in the code repository at
+\path|papers/4_causal_validation/outputs/causal_eval_prompts.json|.
+The file contains all prompts, continuation texts, foundation labels,
+and target/off-target annotations.
+
+\subsection{SAE training hyperparameters}\label{e.6-sae-training-hyperparameters}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Parameter & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Latent dimensions & 16,384 (\(8\times\) expansion) \\
+Activation function & ReLU \\
+L1 sparsity coefficient (\(\lambda\)) & 0.005 \\
+Training tokens & 2M (C4 corpus) \\
+Target layer & 8 \\
+Epochs & 3 \\
+Pre-encoder bias & initialized to mean activation \\
+Decoder column constraint & unit norm \\
+\end{longtable}
+}
+
+\subsection{Reproducibility notes}\label{e.7-reproducibility-notes}
+
+\textbf{Direction extraction.} Mean-difference directions are computed as
+\(\mathbf{d}_f = \overline{\mathbf{a}}_{\text{moral}} -
+\overline{\mathbf{a}}_{\text{neutral}}\) (normalized to unit length)
+on the 192-pair training split. No optimization is involved.
+
+\textbf{Ablation and injection.} Both interventions use PyTorch forward
+hooks that modify the residual stream in-place during a single
+forward pass with \path|torch.no_grad()|. Ablation projects out the
+direction component; injection adds a scaled direction vector.
+Results are deterministic given fixed inputs and directions.
+
+\textbf{Code availability.} All experiment scripts, the probing dataset,
+the causal evaluation prompt set, and figure generation code are
+available at \url{https://github.com/deepsteer/deepsteer}.

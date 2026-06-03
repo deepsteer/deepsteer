@@ -30,7 +30,7 @@ Five-fold stratified CV with `TfidfVectorizer(min_df=1)` and
 | **Overall (`min_df=2`)** | **0.113** |
 
 All per-category baselines and the overall baseline sit well below
-the design ceiling of 0.65 — single-word features cannot separate
+the design ceiling of 0.65; single-word features cannot separate
 the classes, so any probing accuracy on hidden states above this
 floor must integrate multiple words. Numbers source:
 `outputs/phase_c4_compositional/c4_validation.json`
@@ -47,7 +47,7 @@ and all 200 pairs pass all five:
    8-19)
 3. **Content-word overlap** ≥ 0.60 (stopwords removed; matches
    `deepsteer.datasets.validation.validate_pairs` metric)
-4. **Strong-valence blocklist** — zero tokens from a 47-word
+4. **Strong-valence blocklist**: zero tokens from a 47-word
    blocklist (`murder`, `torture`, `stole`, `assault`, etc.) on
    either side
 5. **No exact duplicates** of either side across the 200 pairs
@@ -55,10 +55,10 @@ and all 200 pairs pass all five:
 The construction iterated through approximately five rewriting
 passes to satisfy gate 3 (content-word overlap ≥ 0.60) alongside
 the multi-word compositional contrast requirement. The two
-constraints are in genuine tension — compositional contrasts
-naturally require swapping multiple meaningful words, while
+constraints are in genuine tension: compositional contrasts
+naturally require swapping multiple content words, while
 ≥0.60 content overlap forces single- or two-word swaps within
-otherwise-identical structure — and the published dataset reflects
+otherwise-identical structure, and the published dataset reflects
 the achievable balance.
 
 ## D.4 Representative samples per category

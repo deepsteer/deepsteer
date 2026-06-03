@@ -35,10 +35,10 @@ representations, not just their *scale*.
 
 ## 3.2 Foundation-specific probing
 
-For each of the six Moral Foundations Theory (MFT) foundations ---
-care/harm, fairness/cheating, loyalty/betrayal, authority/subversion,
-sanctity/degradation, and liberty/oppression
-\citep{haidt2012righteous, graham2013mft} --- we train a binary
+For each of the six Moral Foundations Theory (MFT) foundations
+(care/harm, fairness/cheating, loyalty/betrayal, authority/subversion,
+sanctity/degradation, and liberty/oppression;
+\citep{haidt2012righteous, graham2013mft}), we train a binary
 linear probe at each of 16 transformer layers.
 
 **Probe architecture.** Each probe is `nn.Linear(2048, 1)` trained
@@ -59,7 +59,7 @@ matched neutral counterparts.
 vector $\mathbf{w} \in \mathbb{R}^{2048}$ from each probe and
 normalize to unit length: $\hat{\mathbf{w}} = \mathbf{w} /
 \|\mathbf{w}\|$. This unit vector is the normal to the
-classification hyperplane --- the *direction* in representation
+classification hyperplane, the *direction* in representation
 space that maximally separates the foundation's moral content from
 neutral content. We call $\hat{\mathbf{w}}$ the foundation's
 **probe direction** at a given layer.
@@ -103,7 +103,7 @@ collapse; high dimensionality (5--6) indicates separation.
 **Hierarchical clustering.** We apply Ward's method to the cosine
 distance matrix ($1 - \cos(\cdot, \cdot)$) at each layer.
 Dendrograms reveal whether the six foundations cluster into
-meaningful groups.
+interpretable groups.
 
 **Permutation test for MFT group structure.** MFT predicts that
 the six foundations divide into *individualizing* (care, fairness,
@@ -120,7 +120,7 @@ With 32 training pairs per foundation in 2048 dimensions, the probe
 has 2049 parameters and only 64 training examples. The classification
 *accuracy* may be robust in this regime (a single hyperplane suffices
 for binary separation), but the extracted *direction* could be noisy
---- and noise in directions contaminates the angular analysis.
+, and noise in directions contaminates the angular analysis.
 
 We assess direction stability via bootstrap resampling: for each
 foundation at each layer, we resample the 32 training pairs with
@@ -129,7 +129,7 @@ and compute the cosine similarity of each bootstrap direction with
 the full-data direction. A mean bootstrap cosine similarity $> 0.8$
 indicates a stable direction.
 
-This provides a per-layer, per-foundation reliability metric for the
+This gives a per-layer, per-foundation reliability metric for the
 geometric analysis. Layers where directions are unstable should be
 interpreted with caution.
 
@@ -150,14 +150,14 @@ For each foundation at each layer:
 This tests the universality hypothesis: more cross-culturally
 universal foundations (care/harm) should be more robustly encoded
 than culturally variable foundations (sanctity/degradation,
-loyalty/betrayal). Cross-architectural comparison reveals whether
+loyalty/betrayal). Cross-architectural comparison tests whether
 the output dilution effect \citep{reblitzrichardson2026dilution}
 affects all foundations uniformly.
 
 ## 3.6 Probing dataset
 
 We use the same 240-pair minimal-pair probing dataset from
-\citet{reblitzrichardson2026fragility}, now leveraged at the
+\citet{reblitzrichardson2026fragility}, now used at the
 per-foundation level: 40 pairs per MFT foundation, stratified
 80/20 into 32 train and 8 test pairs per foundation. Each pair
 consists of a moral sentence tagged with its MFT foundation and a

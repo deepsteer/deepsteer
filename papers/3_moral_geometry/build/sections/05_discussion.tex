@@ -2,8 +2,8 @@
 
 \subsection{Integration as the default geometric mode}\label{integration-as-the-default-geometric-mode}
 
-The central finding --- that foundation probe directions exhibit
-integration rather than collapse or isolation --- has a
+The central finding, that foundation probe directions exhibit
+integration rather than collapse or isolation, has a
 straightforward interpretation: language models develop structured
 moral representations from distributional statistics alone. The
 training corpus does not label texts with MFT foundations, yet the
@@ -25,10 +25,10 @@ neutral-pair quality: neutrals that inadvertently carry moral content
 inflate the shared moral-salience component, producing higher cosine
 values. The quality-gated dataset used here (\Cref{probing-dataset}) minimizes this
 inflation, and we interpret the \$\approx\$0.22--0.27 range as a lower
-bound on the true integration signal. All qualitative conclusions ---
-integration signature, effective dimensionality of 5, absence of MFT
-dendrogram structure --- are robust to dataset construction choices,
-but the quantitative sensitivity underscores the importance of
+bound on the true integration signal. All qualitative conclusions
+(integration signature, effective dimensionality of 5, absence of MFT
+dendrogram structure) are robust to dataset construction choices,
+but the quantitative sensitivity highlights the importance of
 neutral-pair quality for geometric analyses.
 
 \textbf{The model's moral taxonomy is not MFT.} The inter-framework
@@ -39,12 +39,12 @@ is non-significant throughout. Instead, the most consistent
 clustering feature is a care--sanctity pairing that crosses MFT
 groups. Both care and sanctity involve protection (of persons from
 harm, of sacred things from degradation), sharing distributional
-signatures that the model detects. Notably, the care--sanctity
-pairing is robust to dataset construction choices: it persists
+signatures that the model detects. The care--sanctity
+pairing is itself robust to dataset construction choices: it persists
 across different neutral-pair generation methods and quality
-thresholds, arguing against a dataset artifact explanation. This suggests the model's
-moral taxonomy is empirically grounded in corpus statistics rather
-than aligned with any a priori grouping from moral psychology ---
+thresholds, arguing against a dataset artifact explanation. The model's
+moral taxonomy is thus empirically grounded in corpus statistics rather
+than aligned with any a priori grouping from moral psychology,
 which is itself evidence of genuine structure learning (the model
 discovers which moral concepts are distributionally related) rather
 than surface keyword matching.
@@ -59,8 +59,8 @@ lowest of all six). This 6.2\(\times\) ratio far exceeds the overall
 architectural gap (3.1\(\times\) mean across foundations).
 
 One interpretation: sanctity/purity concepts are encoded through
-culturally specific associations --- disgust, bodily integrity,
-spiritual elevation \citep{graham2013mft} --- that rely on
+culturally specific associations (disgust, bodily integrity,
+spiritual elevation; \citep{graham2013mft}) that rely on
 fine-grained distributional features. In a dense model, these
 features benefit from the full feedforward scale and are robust.
 Under MoE top-\(k\) averaging, the fine-grained signal is
@@ -82,7 +82,7 @@ categorical distinction.
 
 \subsection{Framework geometry stabilizes before accuracy saturates}\label{framework-geometry-stabilizes-before-accuracy-saturates}
 
-The trajectory analysis reveals a temporal dissociation: framework
+The trajectory analysis shows a temporal dissociation: framework
 geometry (mean cosine similarity between foundation directions)
 reaches its mature value by approximately step 2000--3000, while
 probing accuracy continues climbing through step 10000 and beyond.
@@ -93,8 +93,8 @@ the \emph{strength} of moral representations finishes developing.
 
 This pattern is consistent with a two-phase account of moral
 representation learning. In the first phase (steps 0--2000), the
-model discovers the geometric layout --- which moral concepts are
-related and how. In the second phase (steps 2000+), it strengthens
+model discovers the geometric layout (which moral concepts are
+related and how). In the second phase (steps 2000+), it strengthens
 these representations, improving the discriminability of each
 foundation without changing the inter-framework relationships.
 
@@ -117,14 +117,14 @@ yet \({\sim}90\)\% of the dilemma direction lies outside this subspace.
 
 This partial compositionality has two complementary
 interpretations. First, the model recognizes moral dilemmas as
-involving their component foundations --- the \({\sim}10\)\% subspace
-membership is not an artifact, as confirmed by permutation testing
+involving their component foundations (the \({\sim}10\)\% subspace
+membership is not an artifact), as confirmed by permutation testing
 and by the shared-component structure (dilemma pairs that share a
 foundation have higher cosine similarity, \(\Delta = 0.074\) at
 layer 13). Second, the model represents something beyond the sum
 of parts: the \({\sim}90\)\% residual captures conflict-specific
-features --- tension, trade-off framing, or contextual modulation
---- that single-foundation probes do not isolate.
+features (tension, trade-off framing, or contextual modulation)
+that single-foundation probes do not isolate.
 
 The near-balanced component loading (\(\bar{\alpha} = 0.486\)) is
 notable. If dilemma representations were dominated by one
@@ -135,8 +135,8 @@ within-subspace component, consistent with the model encoding the
 \emph{conflict itself} rather than a pre-resolved moral judgment. This
 is an ``understanding before choice'' mode of representation: the
 model maintains both competing moral claims in tension rather than
-collapsing to a resolution, suggesting that moral comprehension ---
-the capacity to represent the structure of ethical disagreement ---
+collapsing to a resolution, suggesting that moral comprehension
+(the capacity to represent the structure of ethical disagreement)
 may precede and be separable from moral judgment.
 
 The complexity--fragility gradient (single-foundation
@@ -162,17 +162,17 @@ the 1B model).
 \textbf{Directions vs.~thresholds.} The probe engineering analysis
 (\S4.13) resolves this concern by separating two components of
 cross-register transfer: the \emph{direction} (probe weight vector) and
-the \emph{threshold} (bias term). When evaluated by pair accuracy --- the
+the \emph{threshold} (bias term). When evaluated by pair accuracy (the
 fraction of pairs where the direction projects the moral text higher
-than the neutral text, requiring no threshold --- both probe-weight
+than the neutral text, requiring no threshold), both probe-weight
 and mean-difference directions achieve \(>90\)\% mean pair accuracy on
 narrative dilemma text (probe-weight \(>95\)\% for all foundations;
 mean-difference drops to \({\sim}91\)\% for authority/subversion).
 The Youden's \(J\) failure is therefore a threshold
 miscalibration effect: the absolute projection scale shifts between
 registers, invalidating the fixed decision boundary learned on
-declarative text. The directional structure itself --- the
-subspace in which moral content is encoded --- transfers robustly.
+declarative text. The directional structure itself, the
+subspace in which moral content is encoded, transfers robustly.
 
 This distinction matters for the geometric findings. Cosine
 similarity, effective dimensionality, and dendrogram clustering
@@ -192,7 +192,7 @@ reflects genuine representational vulnerability to noise rather than
 register entanglement in the directions.
 
 \textbf{Implications for the geometric findings.} The 21-direction
-dendrogram analysis (\S4.9) provides direct evidence that register
+dendrogram analysis (\S4.9) gives direct evidence that register
 features drive part of the representation geometry: projecting all
 directions into the 5D moral subspace dissolves the categorical
 foundation/dilemma separation, confirming that the separation is
@@ -217,7 +217,7 @@ geometry is recoverable even from small samples.
 groups of 3, the permutation space contains only 20 unique
 partitions. The permutation test for the individualizing/binding
 distinction cannot reach \(p < 0.05\) unless the effect is very
-large. The dendrogram structure provides qualitative support, but
+large. The dendrogram structure gives qualitative support, but
 the formal statistical test is underpowered.
 
 \textbf{Two models, one lab.} Both OLMo-2 and OLMoE are from Ai2 and
