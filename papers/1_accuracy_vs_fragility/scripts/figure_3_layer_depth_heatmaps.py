@@ -114,7 +114,7 @@ def main() -> None:
     )
     ax_acc.set_ylabel("Transformer layer", fontsize=11)
     ax_acc.set_title(
-        "Figure 3: Layer-depth structure over training --- "
+        "Layer-depth structure over training --- "
         f"{REPO_ID}",
         fontsize=11, loc="left",
     )

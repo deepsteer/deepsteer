@@ -1,0 +1,72 @@
+{
+  "transfer": {
+    "action_motive": {
+      "best_acc": 0.86,
+      "best_layer": 11
+    },
+    "action_target": {
+      "best_acc": 0.83,
+      "best_layer": 9
+    },
+    "action_consequence": {
+      "best_acc": 0.86,
+      "best_layer": 6
+    },
+    "role_reversal": {
+      "best_acc": 0.78,
+      "best_layer": 5
+    }
+  },
+  "transfer_mean_best": 0.833,
+  "within": {
+    "action_motive": {
+      "hidden_best_acc": 0.87,
+      "hidden_best_layer": 9,
+      "lift_over_lexical": 0.23
+    },
+    "action_target": {
+      "hidden_best_acc": 0.78,
+      "hidden_best_layer": 9,
+      "lift_over_lexical": 0.19
+    },
+    "action_consequence": {
+      "hidden_best_acc": 0.81,
+      "hidden_best_layer": 9,
+      "lift_over_lexical": 0.2
+    },
+    "role_reversal": {
+      "hidden_best_acc": 0.8,
+      "hidden_best_layer": 9,
+      "lift_over_lexical": 0.23
+    }
+  },
+  "lift_mean": 0.213,
+  "indist_per_layer": {
+    "0": 0.688,
+    "1": 0.695,
+    "2": 0.733,
+    "3": 0.757,
+    "4": 0.77,
+    "5": 0.797,
+    "6": 0.815,
+    "7": 0.828,
+    "8": 0.807,
+    "9": 0.823,
+    "10": 0.823,
+    "11": 0.807,
+    "12": 0.795,
+    "13": 0.765,
+    "14": 0.787,
+    "15": 0.777
+  },
+  "indist_best_layer": 7,
+  "indist_best_acc": 0.828,
+  "step": 35000,
+  "revision": "stage1-step35000-tokens74B",
+  "lexical_floor": {
+    "action_motive": 0.64,
+    "action_target": 0.59,
+    "action_consequence": 0.61,
+    "role_reversal": 0.57
+  }
+}

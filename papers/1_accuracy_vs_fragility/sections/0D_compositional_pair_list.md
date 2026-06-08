@@ -18,23 +18,31 @@ inline comments grouping pairs by category.
 
 ## D.2 Per-category content-only TF-IDF baseline
 
-Five-fold stratified CV with `TfidfVectorizer(min_df=1)` and
-`LogisticRegression(max_iter=1000)`:
+Pair-disjoint five-fold `GroupKFold` (each minimal pair held together
+so its shared skeleton cannot leak across the train / test split),
+`TfidfVectorizer` and `LogisticRegression(max_iter=1000)`, scored
+orientation-invariantly as `max(acc, 1 - acc)`:
 
-| Category | TF-IDF baseline (5-fold CV) |
-|----------|----------------------------:|
-| action_motive | 0.20 |
-| action_target | 0.18 |
-| action_consequence | 0.16 |
-| role_reversal | 0.14 |
-| **Overall (`min_df=2`)** | **0.113** |
+| Category | TF-IDF separability (pair-disjoint) |
+|----------|------------------------------------:|
+| action_motive | 0.64 |
+| action_target | 0.59 |
+| action_consequence | 0.61 |
+| role_reversal | 0.57 |
+| **Overall (`min_df=2`)** | **0.63** |
 
-All per-category baselines and the overall baseline sit well below
-the design ceiling of 0.65; single-word features cannot separate
-the classes, so any probing accuracy on hidden states above this
-floor must integrate multiple words. Numbers source:
-`outputs/phase_c4_compositional/c4_validation.json`
-(`tfidf_baseline_per_category` field).
+These are the *lexical floor*: the bag-of-words separability that the
+hidden-state transfer-and-lift analysis (§3.2, §4.1) is measured
+against, not a stand-alone compositionality certificate. A
+single-contrast-token minimal pair is lexically separable by
+construction, so a low floor is neither expected nor required; what
+establishes compositional encoding is that hidden-state probes transfer
+across construction categories (0.85 vs. 0.60 bag-of-words) and decode
+well above these per-construction floors. Pair-disjoint folds and
+orientation-invariant scoring both matter: random folds leak the
+shared pair skeleton, and scoring a leaky anti-correlated classifier
+by raw accuracy understates separability. Numbers source:
+`deepsteer.datasets.compositional_moral_pairs.content_separability_baseline`.
 
 ## D.3 Construction-gate verification
 

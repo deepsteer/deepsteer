@@ -142,8 +142,8 @@ def main() -> None:
     ax.set_xlabel("Training step", fontsize=12)
     ax.set_ylabel("Mean probing accuracy (across 16 layers)", fontsize=12)
     ax.set_title(
-        f"Figure 1: Lexical→compositional emergence gradient — {REPO_ID}\n"
-        f"Standard moral (1K) → sentiment (2K) → compositional moral (4K) → syntax (6K).  "
+        f"Lexical→compositional emergence gradient — {REPO_ID}\n"
+        f"Standard moral (1K) → sentiment (2K) → compositional moral (5K) → syntax (6K).  "
         f"Compositional curve shows 4-seed mean ± std (split seeds 42 / 43 / 44 / 45).",
         fontsize=10,
     )

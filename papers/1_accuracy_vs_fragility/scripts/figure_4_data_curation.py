@@ -6,15 +6,16 @@ fine-tuning conditions on the OLMo-2 1B step-1000 base
 (Phase C3, mid-transition).
 
 Left panel: peak probing accuracy at the end of LoRA training, three
-near-identical bars (~0.81 / 0.80 / 0.80).  Accuracy returns no signal
-across these three corpora.
+near-identical bars (0.740 / 0.750 / 0.750).  Accuracy returns no
+signal across these three corpora.
 
 Right panel: per-layer critical noise at the end of LoRA training,
-three distinct curves.  Narrative-moral and general-control hold
-critical noise = 10.0 across every layer; declarative-moral collapses
-to critical noise = 3.0 at layer 3 while every other layer holds at
-10.0.  This is the paper's cleanest single piece of evidence that
-fragility detects representational change accuracy cannot.
+three distinct curves.  Declarative-moral training produces diffuse
+fragility, dipping below the max-sigma ceiling at 10 of 16 layers
+(mean sigma* 5.63), versus 6 and 7 fragile layers for narrative-moral
+(7.38) and general-control (6.94).  The diffuse-vs-localized contrast,
+not a single dip, is the paper's cleanest single piece of evidence
+that fragility detects representational change accuracy cannot.
 
 Sources:
     outputs/phase_c_tier2/c3/{narrative_moral,declarative_moral,general_control}.json
@@ -105,18 +106,23 @@ def main() -> None:
             label=label, alpha=0.9,
         )
 
-    # Annotate the layer-3 dip on declarative_moral.
-    decl_crit = data["declarative_moral"][1]
-    decl_min_layer = int(np.argmin(decl_crit))
-    decl_min_value = decl_crit[decl_min_layer]
-    if decl_min_value < CRIT_FALLBACK:
-        ax_curve.annotate(
-            f"declarative dip\n(layer {decl_min_layer}, σ={decl_min_value:.1f})",
-            xy=(decl_min_layer, decl_min_value),
-            xytext=(decl_min_layer + 2.5, decl_min_value + 1.5),
-            fontsize=9, color="#F44336", fontweight="bold",
-            arrowprops=dict(arrowstyle="->", color="#F44336", lw=1.2),
-        )
+    # Summarize the diffuse-vs-localized story honestly: count layers
+    # below the max-sigma ceiling per condition.  The declarative pattern
+    # is broad (10/16), not a single dramatic dip, so we annotate counts
+    # rather than pointing an arrow at one layer.
+    counts = {
+        slug: sum(1 for c in data[slug][1] if c < CRIT_FALLBACK)
+        for slug, _, _ in CONDITIONS
+    }
+    summary = "\n".join(
+        f"{label}: {counts[slug]}/{len(data[slug][1])} layers below max σ"
+        for slug, label, _ in CONDITIONS
+    )
+    ax_curve.text(
+        0.02, 0.04, summary, transform=ax_curve.transAxes,
+        fontsize=8, va="bottom", ha="left",
+        bbox=dict(boxstyle="round", fc="white", ec="#999999", alpha=0.85),
+    )
 
     ax_curve.set_xlabel("Transformer layer", fontsize=10)
     ax_curve.set_ylabel("Critical noise (σ)", fontsize=10)
@@ -130,7 +136,7 @@ def main() -> None:
     ax_curve.grid(True, alpha=0.3)
 
     fig.suptitle(
-        "Figure 4: Data curation reshapes representational structure, not content "
+        "Data curation reshapes probe robustness, not probe accuracy "
         "(OLMo-2 1B; LoRA from step 1000)",
         fontsize=11,
     )

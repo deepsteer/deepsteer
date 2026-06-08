@@ -4,14 +4,14 @@
   "onset_layer": 0,
   "encoding_depth": 0.0,
   "encoding_breadth": 1.0,
-  "tfidf_baseline_overall": 0.11250000000000002,
+  "tfidf_baseline_overall": 0.63,
   "tfidf_baseline_per_category": {
-    "action_motive": 0.1999405822935235,
-    "action_target": 0.18003565062388593,
-    "action_consequence": 0.1598336304218657,
-    "role_reversal": 0.13992869875222816
+    "action_motive": 0.64,
+    "action_target": 0.59,
+    "action_consequence": 0.61,
+    "role_reversal": 0.57
   },
-  "delta_vs_baseline_pp": 78.74999761581421,
+  "delta_vs_baseline_pp": 27.0,
   "gate_min_delta_pp": 10.0,
   "gate_min_abs_accuracy": 0.65,
   "gate_pass_delta": true,

@@ -117,7 +117,7 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
 
     # Figure 2 — saturation vs fragility (§4.3 lead).
     (
-        r"\\textbf\{Figure 2\}:\s+two-panel\s+comparison\s+on\s+a\s+shared\s+step\s+axis\.",
+        r"\\textbf\{Figure 2\}\s+provides\s+the\s+central\s+comparison\s+for\s+the\s+methodological\s+claim:\s+a\s+two-panel\s+comparison\s+on\s+a\s+shared\s+step\s+axis\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
@@ -127,11 +127,12 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
             "accuracy across all 16 layers --- saturates near~0.95 by step~4K "
             "and stays flat for the remaining~32K steps. Bottom: mean "
             "critical noise --- continues evolving long after accuracy "
-            "plateaus, drifting from~$\\sim$10 down toward~$\\sim$5 between "
+            "plateaus, drifting from~$\\sim$10 down toward~$\\sim$6 between "
             "steps~4K and~36K.}\n"
             "  \\label{fig:saturation-vs-fragility}\n"
             "\\end{figure}\n\n"
-            "\\textbf{Figure~\\ref{fig:saturation-vs-fragility}}: "
+            "\\textbf{Figure~\\ref{fig:saturation-vs-fragility}} provides "
+            "the central comparison for the methodological claim: a "
             "two-panel comparison on a shared step axis."
         ),
     ),
@@ -164,19 +165,44 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
             "\\begin{figure}[t]\n"
             "  \\centering\n"
             "  \\includegraphics[width=\\linewidth]{figure_4_data_curation.pdf}\n"
-            "  \\caption{Data curation reshapes representational structure, "
-            "not content (OLMo-2~1B; LoRA fine-tuning from step~1000 on three "
+            "  \\caption{Data curation reshapes probe robustness, not probe "
+            "accuracy (OLMo-2~1B; LoRA fine-tuning from step~1000 on three "
             "matched corpora). (a)~Final probing accuracy is near-identical "
             "across narrative-moral, declarative-moral, and general-text "
-            "control conditions ($\\sim$0.81~/~0.80~/~0.80). (b)~Per-layer "
+            "control conditions (0.740~/~0.750~/~0.750). (b)~Per-layer "
             "critical noise is condition-specific: declarative-moral training "
-            "produces a sharply localized layer-3 fragility dip "
-            "($\\sigma$=3.0) that natural-text and general-control training "
-            "do not.}\n"
+            "produces diffuse fragility across 10 of 16 layers "
+            "(mean~$\\sigma^*$=5.63 vs.~7.38/6.94 for natural-text "
+            "conditions).}\n"
             "  \\label{fig:data-curation}\n"
             "\\end{figure}\n\n"
             "\\textbf{Figure~\\ref{fig:data-curation}} plots all three "
             "per-layer profiles plus the three identical accuracy bars:"
+        ),
+    ),
+
+    # Figure 5 — compositional encoding emergence trajectory (§4.1).
+    (
+        r"\\textbf\{Figure 5\}\s+plots\s+the\s+transfer-and-lift\s+analysis\s+across\s+all\s+37\s+early-training\s+checkpoints\.",
+        (
+            "\\begin{figure}[t]\n"
+            "  \\centering\n"
+            "  \\includegraphics[width=\\linewidth]{figure_5_compositional_emergence.pdf}\n"
+            "  \\caption{Compositional moral encoding emerges in early "
+            "pre-training and then holds (OLMo-2~1B early-training, 37 "
+            "checkpoints). (a)~When: leave-construction-out transfer accuracy "
+            "rises from chance ($\\sim$0.55) across steps~2K--9K, crosses the "
+            "bag-of-words transfer floor ($\\sim$0.60) by step~2K, and "
+            "plateaus near~0.82 (lift~$\\sim$+0.20 over the lexical floor) "
+            "through step~36K; the role\\_reversal curve (lexical cues "
+            "scrambled) tracks it. (b)~Where: per-layer in-distribution probe "
+            "accuracy, showing the encoding concentrating in mid-network "
+            "layers~8--10 once it emerges.}\n"
+            "  \\label{fig:compositional-emergence}\n"
+            "\\end{figure}\n\n"
+            "\\textbf{Figure~\\ref{fig:compositional-emergence}} plots the "
+            "transfer-and-lift analysis across all 37 early-training "
+            "checkpoints."
         ),
     ),
 ]
@@ -191,6 +217,7 @@ FIGURE_LABEL_MAP = {
     "2": "fig:saturation-vs-fragility",
     "3": "fig:layer-depth-heatmaps",
     "4": "fig:data-curation",
+    "5": "fig:compositional-emergence",
 }
 
 
@@ -298,7 +325,7 @@ SECTION_LABEL_MAP = {
     # §4 subsections
     "4.1": "emergence-ordering-a-lexicalcompositional-gradient",
     "4.2": "probing-accuracy-saturates-fragility-doesnt",
-    "4.3": "data-curation-reshapes-structure-not-content",
+    "4.3": "data-curation-reshapes-probe-robustness-not-probe-accuracy",
     # §5 subsections
     "5.1": "semantic-vs.-structural-learning-dynamics",
     "5.2": "why-fragility-succeeds-where-accuracy-saturates",

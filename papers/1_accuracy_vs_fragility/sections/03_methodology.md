@@ -86,17 +86,36 @@ contrast token with the surrounding action context.
    on either side.
 5. *No exact duplicates* of either side across the 200 pairs.
 
-**Compositional gate (the operational check).** A TF-IDF + logistic
-regression classifier on bag-of-words unigram features (5-fold
-stratified CV) achieves 0.113 mean accuracy overall and 0.14-0.20
-per-category, well below the 0.65 design ceiling. Single-word
-features cannot separate the classes; anything the linear probe
-achieves on hidden states above this floor must integrate multiple
-words. This is the operational definition of "compositional" in our
-experiments. (The construction iterated through ~5 rewriting passes
-to satisfy the 0.60 content-overlap gate alongside the multi-word
-contrast requirement; the two constraints are in genuine tension;
-see Appendix D.)
+**Operationalizing "compositional": transfer and lift, not a
+bag-of-words gate.** A minimal pair that flips its label by swapping a
+single contrast token makes that token a lexical cue *by construction*:
+a bag-of-words classifier separates the seen pairs no matter how mild
+the token is in isolation. "Can unigrams separate the data" is
+therefore the wrong question (they can: a pair-disjoint,
+orientation-invariant unigram TF-IDF classifier reaches 0.63 overall
+and 0.57-0.64 per construction, where pair-disjoint means `GroupKFold`
+keyed on pair so neither half of a pair leaks across the split, and
+orientation-invariant means scoring `max(acc, 1 - acc)`). The right
+question is whether the hidden-state representation encodes moral
+valence in a way that generalizes *beyond the specific contrast
+tokens*. We operationalize compositional encoding through two tests,
+both measured against this unigram TF-IDF baseline (the *lexical
+floor*):
+
+1. *Leave-construction-out transfer.* Train the probe on three of the
+   four construction categories and test on the held-out fourth, which
+   shares almost no contrast tokens with the training categories. A
+   probe relying on token identity cannot transfer; a
+   construction-general representation can.
+2. *Lift over the lexical floor.* Within each construction, compare
+   hidden-state decodability (pair-disjoint CV) to that construction's
+   unigram lexical floor. The gap is signal the bag-of-words baseline
+   cannot reach.
+
+§4.1 reports both, at the final checkpoint and across training. (The
+construction iterated through ~5 rewriting passes to satisfy the 0.60
+content-overlap gate alongside the multi-word contrast requirement;
+the two constraints are in genuine tension; see Appendix D.)
 
 **Train / test split.** 160 / 40, stratified by category (40 train +
 10 test per category), seed = 42. The dataset and validation gates
@@ -158,6 +177,8 @@ compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
 Three controls standard for linear-probing studies (leave-lexeme-out
 splits, paraphrase transfer, adversarial lexical swap) are reported
 in Appendix C. The compositional probe (§3.2) addresses the strongest
-version of "your probe is just reading vocabulary" by construction
-(TF-IDF baseline 0.113 ≪ 0.65) and is a strictly stronger ablation
-than those three controls combined for the relevant question.
+version of "your probe is just reading vocabulary": its compositional
+encoding is established by leave-construction-out transfer and lift over
+the unigram lexical floor (§3.2, §4.1), not by the lexical floor alone,
+and it is a strictly stronger ablation than those three controls
+combined for the relevant question.

@@ -5,9 +5,10 @@
 The §4.1 four-curve overlay (Figure 1) shows two distinct learning regimes
 within a single training run on a single model. The standard moral
 and sentiment probes, both single-token-swap minimal-pair tasks,
-emerge as sharp sigmoidal phase transitions: each crosses from chance
-to its plateau within a single 1K-step interval at onset, then
-flattens. The compositional moral and syntax probes, both tasks that
+emerge as sharp, step-like sigmoidal transitions: each crosses from
+chance to its plateau within a single 1K-step interval at onset, then
+flattens. (At 1K sampling we resolve transitions that are step-like
+at this resolution; we do not claim true discontinuity.) The compositional moral and syntax probes, both tasks that
 require multi-token integration to determine the label, rise more
 gradually, with no equally sharp inflection point.
 
@@ -43,13 +44,17 @@ The formal information-theoretic argument is its own paper.
 Probing accuracy is a thresholded, capped, top-end metric: once
 linear separability is good enough, accuracy hits ceiling and stops
 returning information about underlying representational change.
-Fragility is structurally different: it integrates the *margin* of
-separability (outputs near the decision boundary flip under small
-noise) and the *redundancy* of representation (features encoded in
-many hidden-space directions tolerate noise that collapses any one).
-Both quantities continue to evolve after accuracy saturates because
-both are functionals of representation *geometry* rather than
-end-to-end classification accuracy. Concretely (§4.2): the standard
+Fragility is structurally different: it is sensitive to both the
+*margin* of separability (outputs near the decision boundary flip
+under small noise) and the *redundancy* of representation (features
+encoded in many hidden-space directions tolerate noise that collapses
+any one). It does not separately identify their contributions, and a
+low critical noise can also reflect activation-scale changes,
+representational anisotropy, or probe-training instability rather than
+margin or redundancy alone. Both margin and redundancy continue to
+evolve after accuracy saturates because both are functionals of
+representation *geometry* rather than end-to-end classification
+accuracy. Concretely (§4.2): the standard
 moral probe's mean accuracy holds at ~0.95 from step 4K through step
 36K while early-layer critical noise drops 10.0 → 1.8. The argument
 generalizes: fragility is not a moral-domain-specific contribution
@@ -108,6 +113,19 @@ open.
 data for both target models is dominantly English. Cross-lingual
 generalization of both the gradient finding and the
 fragility-resolves-what-accuracy-misses pattern is open.
+
+**Raw-σ fragility and what would limit it.** We add Gaussian noise in
+raw activation units (§3.4). Hidden-state norms vary across layers and
+checkpoints, so cross-layer and cross-checkpoint critical-noise
+comparisons may partly reflect activation-scale drift rather than
+representational robustness alone. We report raw σ because every
+comparison we draw uses the same probe and activation cache within a
+single (layer, checkpoint) cell, which holds the scale fixed; a
+σ-normalized-by-per-layer-activation-RMS variant is future work. More
+generally, the fragility finding would be undercut if the layer-depth
+gradient (§4.2) or the declarative-vs-natural separation (§4.3)
+vanished under RMS-normalized noise, or if it tracked activation norm
+rather than probe margin; we have not yet run that control.
 
 **Foundation-specific scope.** The standard moral dataset's six MFT
 foundations show staggered emergence; all six stabilize by step 3K

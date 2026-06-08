@@ -1,0 +1,337 @@
+{
+  "checkpoints": [
+    {
+      "step": 0,
+      "transfer_mean_best": 0.55,
+      "lift_mean": -0.043,
+      "indist_best_acc": 0.55,
+      "indist_best_layer": 0,
+      "transfer_role_reversal": 0.57,
+      "lift_role_reversal": -0.04
+    },
+    {
+      "step": 1000,
+      "transfer_mean_best": 0.592,
+      "lift_mean": -0.01,
+      "indist_best_acc": 0.598,
+      "indist_best_layer": 13,
+      "transfer_role_reversal": 0.63,
+      "lift_role_reversal": 0.03
+    },
+    {
+      "step": 2000,
+      "transfer_mean_best": 0.667,
+      "lift_mean": 0.045,
+      "indist_best_acc": 0.662,
+      "indist_best_layer": 5,
+      "transfer_role_reversal": 0.69,
+      "lift_role_reversal": 0.04
+    },
+    {
+      "step": 3000,
+      "transfer_mean_best": 0.708,
+      "lift_mean": 0.098,
+      "indist_best_acc": 0.73,
+      "indist_best_layer": 14,
+      "transfer_role_reversal": 0.7,
+      "lift_role_reversal": 0.1
+    },
+    {
+      "step": 4000,
+      "transfer_mean_best": 0.75,
+      "lift_mean": 0.128,
+      "indist_best_acc": 0.76,
+      "indist_best_layer": 15,
+      "transfer_role_reversal": 0.75,
+      "lift_role_reversal": 0.11
+    },
+    {
+      "step": 5000,
+      "transfer_mean_best": 0.78,
+      "lift_mean": 0.17,
+      "indist_best_acc": 0.782,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.74,
+      "lift_role_reversal": 0.15
+    },
+    {
+      "step": 6000,
+      "transfer_mean_best": 0.767,
+      "lift_mean": 0.195,
+      "indist_best_acc": 0.792,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.73,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 7000,
+      "transfer_mean_best": 0.788,
+      "lift_mean": 0.198,
+      "indist_best_acc": 0.797,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.72,
+      "lift_role_reversal": 0.16
+    },
+    {
+      "step": 8000,
+      "transfer_mean_best": 0.795,
+      "lift_mean": 0.188,
+      "indist_best_acc": 0.825,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.76,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 9000,
+      "transfer_mean_best": 0.8,
+      "lift_mean": 0.18,
+      "indist_best_acc": 0.787,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.14
+    },
+    {
+      "step": 10000,
+      "transfer_mean_best": 0.8,
+      "lift_mean": 0.19,
+      "indist_best_acc": 0.807,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 11000,
+      "transfer_mean_best": 0.807,
+      "lift_mean": 0.19,
+      "indist_best_acc": 0.812,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.19
+    },
+    {
+      "step": 12000,
+      "transfer_mean_best": 0.81,
+      "lift_mean": 0.21,
+      "indist_best_acc": 0.823,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 13000,
+      "transfer_mean_best": 0.802,
+      "lift_mean": 0.2,
+      "indist_best_acc": 0.833,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.8,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 14000,
+      "transfer_mean_best": 0.82,
+      "lift_mean": 0.177,
+      "indist_best_acc": 0.84,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 15000,
+      "transfer_mean_best": 0.825,
+      "lift_mean": 0.18,
+      "indist_best_acc": 0.825,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.18
+    },
+    {
+      "step": 16000,
+      "transfer_mean_best": 0.81,
+      "lift_mean": 0.2,
+      "indist_best_acc": 0.843,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.77,
+      "lift_role_reversal": 0.23
+    },
+    {
+      "step": 17000,
+      "transfer_mean_best": 0.82,
+      "lift_mean": 0.195,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.21
+    },
+    {
+      "step": 18000,
+      "transfer_mean_best": 0.823,
+      "lift_mean": 0.207,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 19000,
+      "transfer_mean_best": 0.812,
+      "lift_mean": 0.21,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 6,
+      "transfer_role_reversal": 0.8,
+      "lift_role_reversal": 0.24
+    },
+    {
+      "step": 20000,
+      "transfer_mean_best": 0.823,
+      "lift_mean": 0.207,
+      "indist_best_acc": 0.835,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.77,
+      "lift_role_reversal": 0.24
+    },
+    {
+      "step": 21000,
+      "transfer_mean_best": 0.825,
+      "lift_mean": 0.205,
+      "indist_best_acc": 0.825,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.23
+    },
+    {
+      "step": 22000,
+      "transfer_mean_best": 0.812,
+      "lift_mean": 0.188,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 6,
+      "transfer_role_reversal": 0.8,
+      "lift_role_reversal": 0.19
+    },
+    {
+      "step": 23000,
+      "transfer_mean_best": 0.815,
+      "lift_mean": 0.207,
+      "indist_best_acc": 0.835,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 24000,
+      "transfer_mean_best": 0.82,
+      "lift_mean": 0.203,
+      "indist_best_acc": 0.823,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.21
+    },
+    {
+      "step": 25000,
+      "transfer_mean_best": 0.823,
+      "lift_mean": 0.203,
+      "indist_best_acc": 0.823,
+      "indist_best_layer": 6,
+      "transfer_role_reversal": 0.77,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 26000,
+      "transfer_mean_best": 0.812,
+      "lift_mean": 0.203,
+      "indist_best_acc": 0.84,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.78,
+      "lift_role_reversal": 0.24
+    },
+    {
+      "step": 27000,
+      "transfer_mean_best": 0.802,
+      "lift_mean": 0.223,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.78,
+      "lift_role_reversal": 0.25
+    },
+    {
+      "step": 28000,
+      "transfer_mean_best": 0.805,
+      "lift_mean": 0.205,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.78,
+      "lift_role_reversal": 0.24
+    },
+    {
+      "step": 29000,
+      "transfer_mean_best": 0.815,
+      "lift_mean": 0.213,
+      "indist_best_acc": 0.833,
+      "indist_best_layer": 6,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.24
+    },
+    {
+      "step": 30000,
+      "transfer_mean_best": 0.82,
+      "lift_mean": 0.202,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.81,
+      "lift_role_reversal": 0.23
+    },
+    {
+      "step": 31000,
+      "transfer_mean_best": 0.815,
+      "lift_mean": 0.202,
+      "indist_best_acc": 0.848,
+      "indist_best_layer": 9,
+      "transfer_role_reversal": 0.8,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 32000,
+      "transfer_mean_best": 0.825,
+      "lift_mean": 0.195,
+      "indist_best_acc": 0.848,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.22
+    },
+    {
+      "step": 33000,
+      "transfer_mean_best": 0.828,
+      "lift_mean": 0.212,
+      "indist_best_acc": 0.823,
+      "indist_best_layer": 8,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.25
+    },
+    {
+      "step": 34000,
+      "transfer_mean_best": 0.825,
+      "lift_mean": 0.203,
+      "indist_best_acc": 0.83,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.23
+    },
+    {
+      "step": 35000,
+      "transfer_mean_best": 0.833,
+      "lift_mean": 0.213,
+      "indist_best_acc": 0.828,
+      "indist_best_layer": 7,
+      "transfer_role_reversal": 0.78,
+      "lift_role_reversal": 0.23
+    },
+    {
+      "step": 36000,
+      "transfer_mean_best": 0.833,
+      "lift_mean": 0.217,
+      "indist_best_acc": 0.853,
+      "indist_best_layer": 10,
+      "transfer_role_reversal": 0.79,
+      "lift_role_reversal": 0.26
+    }
+  ]
+}

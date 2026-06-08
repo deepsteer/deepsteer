@@ -23,8 +23,11 @@ measure something beyond surface vocabulary:
 The compositional moral probe (§3.2) addresses the strongest version
 of the "your probe is just reading moralized vocabulary" concern *by
 construction*: pairs share the morally-loaded action verb between
-halves and differ only in individually-mild tokens that cannot carry
-moral signal in isolation (TF-IDF baseline 0.113 ≪ 0.65). The
+halves and differ only in tokens that carry limited moral signal in
+isolation (unigram lexical floor 0.63). The probe's compositional
+encoding is established directly by leave-construction-out transfer
+(0.85 hidden-state vs. 0.60 bag-of-words) and by decoding 0.20-0.28
+above the per-construction lexical floor (§3.2, §4.1). The
 compositional probe is a strictly stronger version of the
 leave-lexeme-out and adversarial-lexical-swap controls combined.
 Running these three controls on existing checkpoints takes ~4-6

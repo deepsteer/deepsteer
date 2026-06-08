@@ -36,22 +36,65 @@ valence is encoded compositionally. Both findings are true; the
 strongest single-token reading of the standard onset is ruled out,
 while the gradient reading (lexically-marked moralized vocabulary
 first, compositional moral integration second, syntactic competence
-last) holds. The 0.709 compositional onset is +59.6 pp above the
-0.113 single-token TF-IDF floor (§3.2); whatever the probe recovers
-at step 5K must integrate multiple words. At the OLMo-2 1B final
-checkpoint (~2.2T tokens) the compositional probe reaches 0.900
-peak @ layer 5, +78.7 pp over the TF-IDF baseline.
+last) holds. Onset accuracy alone understates the case: the 0.709
+onset sits only ~8 pp above the 0.63 lexical floor, and onset ordering
+across all four datasets tracks lexical-floor height (unigram TF-IDF
+floor: standard moral 0.86, sentiment 0.80, compositional 0.63, syntax
+0.59; the more lexically separable a dataset, the earlier its onset and
+the higher its plateau). Onset timing on its own therefore does not
+separate compositional encoding from lexical difficulty. The evidence
+that the probe recovers compositional rather than lexical signal comes
+from transfer and lift (§3.2).
 
-**(2) Phase-transition vs. gradual emergence dichotomy.** Standard
-moral and sentiment probes show sharp sigmoidal transitions (chance
-→ plateau within one 1K-step interval at onset, then flat).
+**(1b) Compositional encoding is real, not lexical lookup
+(final-checkpoint evidence).** At the OLMo-2 1B final checkpoint
+(~2.2T tokens), a probe trained on three construction categories and
+tested on the held-out fourth transfers at **0.848** mean (0.80-0.91
+across the four held-out constructions), essentially matching its
+in-distribution pair-disjoint accuracy (**0.858** @ layer 7), while a
+bag-of-words classifier doing the same leave-construction-out transfer
+collapses to **0.598**. Within each construction the probe decodes
++0.20 to +0.28 above the unigram lexical floor. The decisive case is
+*role_reversal*, where the same components appear on both sides and the
+lexical floor is lowest (0.57): hidden states still decode moral
+valence at 0.85 (lift +0.28) and held-out transfer reaches 0.81. A
+probe reading contrast-token identity could not do this; the model
+reads moral valence from context. This is the operational content of
+"compositional" in this paper, and it is a positive result, not a thin
+margin over a bag-of-words floor.
+
+**(1c) Compositional encoding emerges in early pre-training, then
+holds.** **Figure 5** plots the transfer-and-lift analysis across all
+37 early-training checkpoints. At initialization the encoding is
+absent: leave-construction-out transfer sits at chance (0.55) and lift
+is ~0. It emerges over steps 2K-9K, crossing the bag-of-words transfer
+floor (~0.60) by step 2K (0.667), passing 0.70 by step 3K, reaching
+0.78 by step 5K, then plateauing by step ~9K at transfer ~0.82 and
+lift ~+0.20 and holding there through step 36K (0.83 / +0.22). The
+role_reversal construction, where lexical cues are scrambled by design,
+follows the same curve (panel a). The encoding also localizes in
+depth: once it appears, the most decodable layer settles into
+mid-network (layers 8-10) and stays there for the rest of the
+trajectory (panel b). Compositional moral encoding is therefore an
+early-pre-training acquisition, emerging after lexical moral detection
+(standard-probe onset at step 1K) and consistent with the
+lexical→compositional ordering, that once acquired is stable across the
+remaining ~30K steps we observe. Numbers source:
+`outputs/phase_c4_compositional/b_traj/` (per-checkpoint) and
+`b_traj_summary.json`.
+
+**(2) Step-like vs. gradual emergence dichotomy.** Standard moral
+and sentiment probes show sharp sigmoidal transitions (chance →
+plateau within one 1K-step interval at onset, then flat).
 Compositional moral and syntax rise more gradually (~3-5K steps
-across the 0.70 threshold). This parallels grokking-literature
-observations (Power et al., 2022) that some capabilities emerge as
-phase transitions and others gradually; the within-run split here
-suggests the distinguishing factor is whether the capability is
-acquirable from local lexical statistics (phase transition) or
-requires multi-token integration (gradual). §5.1 develops.
+across the 0.70 threshold). At 1K sampling we resolve transitions
+that are step-like at this resolution; we do not claim true
+discontinuity. This parallels grokking-literature observations
+(Power et al., 2022) that some capabilities emerge sharply and others
+gradually; the within-run split here suggests the distinguishing
+factor is whether the capability is acquirable from local lexical
+statistics (sharp) or requires multi-token integration (gradual).
+§5.1 develops.
 
 **(3) Plateau coincidence.** The four-curve overlay (Figure 1) makes
 a structural caveat visually inescapable: probes whose signal lives
@@ -85,8 +128,8 @@ Validation source: `outputs/phase_c4_compositional/c4_validation.json`
 
 ## 4.2 Probing accuracy saturates; fragility doesn't
 
-The figure that does the most work for the methodological thesis is
-**Figure 2**: two-panel comparison on a shared step axis. Top panel:
+**Figure 2** provides the central comparison for the methodological
+claim: a two-panel comparison on a shared step axis. Top panel:
 mean probing accuracy, a sharp sigmoid from chance (~0.59) to a
 plateau (~0.95) between steps 0 and 4K, then flat for the remaining
 ~33K steps. Bottom panel: mean fragility, an initial rise alongside
@@ -184,7 +227,7 @@ Numbers sources: `outputs/phase_c1/RESULTS.md` (1B standard probe),
 `outputs/phase_c4_compositional/3seed/4seed_fragility_evolution.png`
 (headline 4-seed plot).
 
-## 4.3 Data curation reshapes structure, not content
+## 4.3 Data curation reshapes probe robustness, not probe accuracy
 
 LoRA (Hu et al., 2022) fine-tuning on three matched
 corpora from the OLMo-2 1B step-1000 checkpoint (mid-transition, ~80 % peak probing
@@ -202,8 +245,8 @@ data. The accuracy metric returns no signal for which corpus produces
 what kind of representational change.
 
 **Fragility profiles are condition-specific (the main result).**
-Final mean critical noise: narrative 6.50, declarative 5.33, general
-control 6.50. The per-layer breakdown separates the conditions:
+Final mean critical noise: narrative 7.38, declarative 5.63, general
+control 6.94. The per-layer breakdown separates the conditions:
 narrative and general control show fragility dips at 6 and 7 of 16
 layers respectively; the declarative condition shows dips at **10 of
 16 layers**, creating a broadly more fragile representation than
@@ -241,8 +284,8 @@ controlled setting: same data, same probe; accuracy returns no
 signal, fragility separates the conditions.
 
 **Why the fragility is diffuse rather than localized.** The diffuse
-pattern, fragility across 10 of 16 layers (mean σ* = 5.33 vs.
-6.50) rather than a single dramatic dip, has a straightforward
+pattern, fragility across 10 of 16 layers (mean σ* = 5.63 vs.
+7.38 / 6.94) rather than a single dramatic dip, has a straightforward
 mechanistic explanation. When the probing dataset controls for
 animacy and register confounds (§3.1), the probe detects actual
 moral features at every layer rather than exploiting shortcuts like

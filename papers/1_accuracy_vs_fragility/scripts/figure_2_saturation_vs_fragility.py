@@ -137,7 +137,7 @@ def main() -> None:
     ax_acc.legend(loc="lower right", fontsize=9)
     ax_acc.grid(True, alpha=0.3)
     ax_acc.set_title(
-        f"Figure 2: Probing accuracy saturates; fragility resolves --- {REPO_ID}",
+        f"Probing accuracy saturates; fragility resolves --- {REPO_ID}",
         fontsize=11, loc="left",
     )
 

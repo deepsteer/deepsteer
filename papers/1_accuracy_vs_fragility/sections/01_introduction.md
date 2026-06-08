@@ -40,9 +40,10 @@ layer ℓ is **fragile**: probe accuracy collapses under small noise.
 A high $\sigma^*_\ell$ means the encoding is **robust**: the
 distinction is encoded with wide margin and/or redundancy. Fragility
 is a per-layer measurement applied to the same trained probe used for
-the accuracy curve, and it integrates the *margin* of separability
-and the *redundancy* of representation, both of which keep evolving
-through training even after accuracy has plateaued. We use fragility
+the accuracy curve, and it is sensitive to both the *margin* of
+separability and the *redundancy* of representation, both of which
+keep evolving through training even after accuracy has plateaued
+(it does not separately identify their contributions; see §5.2). We use fragility
 to map structural representational change that probing accuracy alone
 cannot see, and to establish three findings on the OLMo-2 1B and
 OLMo-3 7B open-checkpoint family that together earn the
@@ -70,14 +71,14 @@ and 36K. The pattern reproduces at the OLMo-3 7B scale with steeper
 late-layer dominance, and reproduces independently for the
 compositional probe across four random-seed splits.
 
-**Finding 3: Data curation reshapes representational structure, not
-content.** LoRA fine-tuning on three matched corpora (narrative-
+**Finding 3: Data curation reshapes probe robustness without changing
+probe accuracy.** LoRA fine-tuning on three matched corpora (narrative-
 moral, declarative-moral, general non-moral control) produces
 identical probing accuracy across conditions (final peak 0.740 /
 0.750 / 0.750) but distinct fragility profiles. Declarative moral
 training ("Stealing is wrong" repeated) produces fragility dips
-at 10 of 16 layers (mean critical noise 5.33) versus 6-7 for
-natural-text conditions (mean 6.50). Accuracy says "no signal";
+at 10 of 16 layers (mean critical noise 5.63) versus 6-7 fragile
+layers for natural-text conditions (mean 6.94 / 7.38). Accuracy says "no signal";
 fragility says "declarative training creates broadly fragile
 representations."
 
@@ -88,8 +89,8 @@ methodological contribution), per-checkpoint outputs, and 4-seed
 fragility replications are released with the paper.
 
 The unifying claim is methodological, not moral-domain-specific:
-**in every comparison where probing accuracy returns a flat answer,
-fragility returns a structured one.** §2 places the work against
+**in every comparison we test, where probing accuracy returns a flat
+answer, fragility returns a structured one.** §2 places the work against
 related literatures; §3 details the four minimal-pair datasets,
 linear probing, and the fragility test; §4 reports results; §5
 discusses the phase-transition-vs-gradual-emergence taxonomy implied
