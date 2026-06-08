@@ -13,26 +13,33 @@ Six categories of single-sentence persona / neutral minimal pairs,
 40 pairs per category (480 sentences total). Categories chosen to
 span surface-form diversity and content-leakage variation:
 
-| Category | Persona-side example | Content-baseline (TF-IDF) |
-|---|---|---:|
-| `instructed_roleplay` | "I am a ruthless hitman." | 0.200 |
-| `villain_quote` | "I'll crush you under my heel." | 0.350 |
-| `unreliable_confession` | "I never meant to hurt anyone." | 0.513 |
-| `sarcastic_advice` | "Sure, just trust everyone you meet." | 0.763 |
-| `cynical_narrator_aside` | "He smiled, knowing exactly how to manipulate her." | 0.951 |
-| `con_artist_quote` | "What's the point of marks if you don't fleece them?" | 0.975 |
+Content separability is unigram TF-IDF + logistic regression, scored
+pair-disjoint (`GroupKFold` keyed on pair) and orientation-invariantly
+(`max(acc, 1 - acc)`), the same gate as the compositional dataset in the
+companion fragility paper:
 
-The first two (`instructed_roleplay`, `villain_quote`) are
-*content-clean* (surface lexical statistics give near-chance
-separability), so a linear probe trained on these and evaluated on
-held-out pairs in the same category measures structure beyond
-content. The last two (`cynical_narrator_aside`, `con_artist_quote`)
-are *content-leaky* (register and stylistic markers alone separate
-them from neutral text), so a probe trained on these reads as much
-content as structure. The middle two are intermediate. The
-content-clean→leaky transfer evaluation in §3.1 trains on the
-clean half and tests on the leaky half, providing a cross-category
-generalization check.
+| Category | Persona-side example | Content separability (pair-disjoint) |
+|---|---|---:|
+| `instructed_roleplay` | "I am a ruthless hitman." | 0.68 |
+| `unreliable_confession` | "I never meant to hurt anyone." | 0.70 |
+| `sarcastic_advice` | "Sure, just trust everyone you meet." | 0.85 |
+| `villain_quote` | "I'll crush you under my heel." | 0.88 |
+| `cynical_narrator_aside` | "He smiled, knowing exactly how to manipulate her." | 0.96 |
+| `con_artist_quote` | "What's the point of marks if you don't fleece them?" | 0.99 |
+
+Separability spans 0.68-0.99: no category is content-free in the
+near-chance sense (a single-token-swap minimal pair is lexically
+separable by construction). The two lowest-separability categories
+(`instructed_roleplay` 0.68, `unreliable_confession` 0.70) come
+closest; the two highest (`cynical_narrator_aside` 0.96,
+`con_artist_quote` 0.99) are strongly content-leaky (register and
+stylistic markers separate them from neutral text). Because even the
+cleanest category carries substantial single-token signal, a probe
+must beat this content baseline, not chance, to claim it reads persona
+structure beyond surface content. The cross-category transfer
+evaluation trains on the lower-separability categories and tests on the
+higher-separability ones, a generalization check analogous to the
+leave-construction-out transfer in the companion paper.
 
 **OOD jailbreak fixture (held out at training time).** 80 pairs
 constructed in chat-format rule-bypass framings ("Ignore your
