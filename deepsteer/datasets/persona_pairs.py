@@ -1701,76 +1701,69 @@ def content_separability_baseline(
     ngram_range: tuple[int, int] = (1, 1),
     min_df: int = 2,
     cv: int = 5,
-    seed: int = 42,
 ) -> dict[str, float]:
     """Report how separable positive/negative are using TF-IDF bag-of-words.
 
     This is the content-only floor: a linear classifier on TF-IDF
     features that sees no hidden states, no attribution structure, and
-    no positional information.  Whatever accuracy it achieves is the
+    no positional information.  Whatever separability it achieves is the
     baseline that the neural ``PersonaFeatureProbe`` must meaningfully
     exceed to justify the claim that it is picking up a voice/persona
     feature rather than surface lexical content.
+
+    These are matched minimal pairs (same skeleton, persona-marked vs.
+    neutral token), so two methodological points matter and were wrong in
+    an earlier version of this function:
+
+    - **Pair-disjoint folds** (``GroupKFold`` keyed on pair index): both
+      halves of a pair share their skeleton, so a random split leaks it.
+    - **Orientation invariance** (``max(acc, 1 - acc)``): separability is a
+      property of the classes, not the label convention; without it a
+      systematically anti-correlated classifier on leaky folds reports a
+      spuriously *low* number that masks real separability.
 
     Requires ``scikit-learn``.
 
     Args:
         ngram_range: TF-IDF n-gram range.  Default unigrams only.
         min_df: Minimum document frequency for vocabulary inclusion.
-        cv: Number of CV folds.
-        seed: Random seed for fold assignment.
+        cv: Number of CV folds (clamped to the pair count per category).
 
     Returns:
-        Dict with ``"overall"`` accuracy and per-category accuracy.
+        Dict with ``"overall"`` separability and per-category separability.
     """
+    import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.linear_model import LogisticRegression
-    from sklearn.model_selection import StratifiedKFold, cross_val_score
+    from sklearn.model_selection import GroupKFold, cross_val_predict
 
-    def _score(pairs: list[tuple[str, str]], k: int) -> float:
+    def _score(pairs: list[tuple[str, str]], k: int, _min_df: int) -> float:
         texts: list[str] = []
         labels: list[int] = []
-        for pos, neg in pairs:
+        groups: list[int] = []
+        for i, (pos, neg) in enumerate(pairs):
             texts.append(pos)
             labels.append(1)
+            groups.append(i)
             texts.append(neg)
             labels.append(0)
-        vec = TfidfVectorizer(ngram_range=ngram_range, min_df=min_df)
+            groups.append(i)
+        vec = TfidfVectorizer(ngram_range=ngram_range, min_df=_min_df)
         X = vec.fit_transform(texts)
-        skf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
-        scores = cross_val_score(
-            LogisticRegression(max_iter=1000), X, labels, cv=skf,
-            scoring="accuracy",
+        y = np.asarray(labels)
+        pred = cross_val_predict(
+            LogisticRegression(max_iter=1000), X, y,
+            cv=GroupKFold(n_splits=min(k, len(pairs))), groups=groups,
         )
-        return float(scores.mean())
+        acc = float((pred == y).mean())
+        return max(acc, 1.0 - acc)
 
     results: dict[str, float] = {
-        "overall": _score(list(PERSONA_PAIRS), cv),
+        "overall": _score(list(PERSONA_PAIRS), cv, min_df),
     }
     # Per-category with min_df=1 since each category only has 40 pairs.
     for name, start, end in PERSONA_CATEGORIES:
-        cat_pairs = list(PERSONA_PAIRS[start:end])
-
-        def _score_cat(ps: list[tuple[str, str]]) -> float:
-            texts: list[str] = []
-            labels: list[int] = []
-            for pos, neg in ps:
-                texts.append(pos)
-                labels.append(1)
-                texts.append(neg)
-                labels.append(0)
-            vec = TfidfVectorizer(ngram_range=ngram_range, min_df=1)
-            X = vec.fit_transform(texts)
-            skf = StratifiedKFold(
-                n_splits=min(3, len(ps)), shuffle=True, random_state=seed,
-            )
-            scores = cross_val_score(
-                LogisticRegression(max_iter=1000), X, labels, cv=skf,
-                scoring="accuracy",
-            )
-            return float(scores.mean())
-
-        results[name] = _score_cat(cat_pairs)
+        results[name] = _score(list(PERSONA_PAIRS[start:end]), cv, 1)
     return results
 
 

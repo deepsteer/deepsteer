@@ -40,6 +40,8 @@ htmlcov/
 # DeepSteer outputs - large logs and OS files excluded, data tracked
 outputs/*.log
 outputs/.DS_Store
+# Large, reproducible activation caches (results JSON are kept; *_directions.npz are not matched)
+**/*_activations.npz
 
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt

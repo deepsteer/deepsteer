@@ -1277,54 +1277,71 @@ def content_separability_baseline(
     ngram_range: tuple[int, int] = (1, 1),
     min_df: int = 2,
     cv: int = 5,
-    seed: int = 42,
 ) -> dict[str, float]:
     """Report how separable moral / immoral are using TF-IDF bag-of-words.
 
     This is the content-only floor. The Phase C4 design specifies that
-    overall accuracy must sit at or below 0.65 — if a unigram (or 1-2 gram)
+    separability must sit at or below 0.65 — if a unigram (or 1-2 gram)
     TF-IDF + logistic-regression classifier separates the classes above
     that threshold, single word features carry the moral signal and the
     pairs must be rewritten so the signal lives in word combinations.
+
+    Two methodological points matter for a *minimal-pair* dataset, and
+    both were wrong in an earlier version of this function:
+
+    - **Pair-disjoint folds.** The two halves of a pair share their
+      entire skeleton and differ in 1-2 tokens, so putting one half in
+      train and the other in test leaks the skeleton. We hold each pair
+      together with ``GroupKFold`` keyed on pair index.
+    - **Orientation invariance.** Separability is a property of the
+      classes, not of the label convention: a classifier that scores
+      ``a`` read forward scores ``1 - a`` read backward. We report
+      ``max(acc, 1 - acc)``. (Without this, a systematically
+      anti-correlated classifier on leaky folds reports a spuriously
+      *low* number that masks real separability.)
 
     Requires ``scikit-learn``.
 
     Args:
         ngram_range: TF-IDF n-gram range. Default unigrams.
         min_df: Minimum document frequency for vocabulary inclusion.
-        cv: Number of CV folds.
-        seed: Random seed for fold assignment.
+        cv: Number of CV folds (clamped to the pair count per category).
 
     Returns:
-        Dict with ``"overall"`` accuracy and per-category accuracy.
+        Dict with ``"overall"`` separability and per-category separability.
     """
+    import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.linear_model import LogisticRegression
-    from sklearn.model_selection import StratifiedKFold, cross_val_score
+    from sklearn.model_selection import GroupKFold, cross_val_predict
 
     def _score(pairs: list[tuple[str, str]], k: int, _min_df: int) -> float:
         texts: list[str] = []
         labels: list[int] = []
-        for moral, immoral in pairs:
+        groups: list[int] = []
+        for i, (moral, immoral) in enumerate(pairs):
             texts.append(moral)
             labels.append(1)
+            groups.append(i)
             texts.append(immoral)
             labels.append(0)
+            groups.append(i)
         vec = TfidfVectorizer(ngram_range=ngram_range, min_df=_min_df)
         X = vec.fit_transform(texts)
-        skf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
-        scores = cross_val_score(
-            LogisticRegression(max_iter=1000), X, labels, cv=skf,
-            scoring="accuracy",
+        y = np.asarray(labels)
+        pred = cross_val_predict(
+            LogisticRegression(max_iter=1000), X, y,
+            cv=GroupKFold(n_splits=min(k, len(pairs))), groups=groups,
         )
-        return float(scores.mean())
+        acc = float((pred == y).mean())
+        return max(acc, 1.0 - acc)
 
     results: dict[str, float] = {
         "overall": _score(list(COMPOSITIONAL_MORAL_PAIRS), cv, min_df),
     }
     for name, start, end in COMPOSITIONAL_CATEGORIES:
         cat_pairs = list(COMPOSITIONAL_MORAL_PAIRS[start:end])
-        results[name] = _score(cat_pairs, min(3, len(cat_pairs)), 1)
+        results[name] = _score(cat_pairs, cv, 1)
     return results
 
 
