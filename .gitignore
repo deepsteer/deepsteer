@@ -58,3 +58,6 @@ outputs/.DS_Store
 
 # Coding agents
 .claude
+
+# Generated arXiv submission bundles
+/arxiv_*.tar.gz

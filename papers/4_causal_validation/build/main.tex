@@ -34,6 +34,9 @@
 \usepackage{longtable}
 \usepackage{calc}
 \providecommand{\real}[1]{#1}
+% pandoc emits \def\LTcaptype{none} for caption-less longtables, expecting a
+% throwaway counter to absorb the step; define it so hyperref does not error.
+\makeatletter\@ifundefined{c@none}{\newcounter{none}}{}\makeatother
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.05}
 

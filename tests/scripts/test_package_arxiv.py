@@ -190,6 +190,7 @@ class TestMainHappyPath:
             tex=TEX_WITH_INPUT,
             sections={"body.tex": SECTION_TEX},
             figures={"plot.pdf": b"%PDF-fake"},
+            extra_build_files={"pandoc-template.tex": "$body$\n"},
         )
         monkeypatch.setattr("sys.argv", ["prog", str(paper)])
 
@@ -197,6 +198,8 @@ class TestMainHappyPath:
             cwd = Path(kwargs.get("cwd", "."))
             if cmd[0] == "pdflatex":
                 (cwd / "main.pdf").write_bytes(b"%PDF-compiled")
+            elif cmd[0] == "bibtex":
+                (cwd / "main.bbl").write_text("\\begin{thebibliography}{1}\n\\end{thebibliography}\n")
             return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
 
         with patch.object(_mod.subprocess, "run", side_effect=fake_run):
@@ -213,7 +216,11 @@ class TestMainHappyPath:
         assert "references.bib" in names
         assert "sections/body.tex" in names
         assert "plot.pdf" in names
+        # Compiled bibliography is bundled; the compiled PDF and the pandoc
+        # template are not.
+        assert "main.bbl" in names
         assert "main.pdf" not in names
+        assert "pandoc-template.tex" not in names
 
     def test_compilation_failure_exits(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         paper = _make_paper(tmp_path)
@@ -228,10 +235,16 @@ class TestMainHappyPath:
             with pytest.raises(SystemExit, match="step 1.*failed"):
                 main()
 
-    def test_figures_from_build_dir_included(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-        """Figures already inside build/ (not just figures/) get picked up."""
-        paper = _make_paper(tmp_path, tex=MINIMAL_TEX)
-        (paper / "build" / "inline.png").write_bytes(b"PNG-fake")
+    def test_referenced_figure_from_build_dir_included(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """A referenced figure living in build/ (not figures/) gets picked up."""
+        tex = r"""\documentclass{article}
+\usepackage{graphicx}
+\begin{document}
+\includegraphics{inline.pdf}
+\end{document}
+"""
+        paper = _make_paper(tmp_path, tex=tex)
+        (paper / "build" / "inline.pdf").write_bytes(b"%PDF-fake")
         monkeypatch.setattr("sys.argv", ["prog", str(paper)])
 
         def fake_run(cmd, **kwargs):
@@ -243,4 +256,63 @@ class TestMainHappyPath:
 
         tarballs = list(tmp_path.glob("arxiv_test_paper_*.tar.gz"))
         with tarfile.open(tarballs[0], "r:gz") as tar:
-            assert "inline.png" in tar.getnames()
+            assert "inline.pdf" in tar.getnames()
+
+    def test_unreferenced_figures_dropped(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """Figures not referenced by any \\includegraphics are excluded — this is
+        how the GitHub-only PNG alternates get left out of the submission."""
+        paper = _make_paper(
+            tmp_path,
+            tex=TEX_WITH_INPUT,
+            sections={"body.tex": SECTION_TEX},  # references plot.pdf only
+            figures={"plot.pdf": b"%PDF-fake", "plot.png": b"PNG-fake", "extra.png": b"PNG-fake"},
+        )
+        monkeypatch.setattr("sys.argv", ["prog", str(paper)])
+
+        def fake_run(cmd, **kwargs):
+            return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+
+        with patch.object(_mod.subprocess, "run", side_effect=fake_run):
+            with patch.object(_mod, "__file__", str(tmp_path / "scripts" / "package_arxiv.py")):
+                main()
+
+        tarballs = list(tmp_path.glob("arxiv_test_paper_*.tar.gz"))
+        with tarfile.open(tarballs[0], "r:gz") as tar:
+            names = tar.getnames()
+        assert "plot.pdf" in names
+        assert "plot.png" not in names
+        assert "extra.png" not in names
+
+
+# ---------------------------------------------------------------------------
+# resolve_figure
+# ---------------------------------------------------------------------------
+
+resolve_figure = _mod.resolve_figure
+
+
+class TestResolveFigure:
+    def test_resolves_explicit_extension(self, tmp_path: Path):
+        figs = tmp_path / "figures"
+        figs.mkdir()
+        (figs / "plot.pdf").write_bytes(b"%PDF")
+        assert resolve_figure("plot.pdf", [figs]) == figs / "plot.pdf"
+
+    def test_extensionless_prefers_pdf_over_png(self, tmp_path: Path):
+        figs = tmp_path / "figures"
+        figs.mkdir()
+        (figs / "plot.pdf").write_bytes(b"%PDF")
+        (figs / "plot.png").write_bytes(b"PNG")
+        assert resolve_figure("plot", [figs]) == figs / "plot.pdf"
+
+    def test_searches_roots_in_order(self, tmp_path: Path):
+        figs = tmp_path / "figures"
+        outputs = tmp_path / "outputs"
+        figs.mkdir()
+        (outputs / "figures").mkdir(parents=True)
+        (outputs / "figures" / "plot.pdf").write_bytes(b"%PDF")
+        # Not in figs, but reachable by searching the outputs root.
+        assert resolve_figure("plot.pdf", [figs, outputs]) == outputs / "figures" / "plot.pdf"
+
+    def test_missing_returns_none(self, tmp_path: Path):
+        assert resolve_figure("nope.pdf", [tmp_path]) is None

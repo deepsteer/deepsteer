@@ -14,7 +14,17 @@ from datetime import datetime
 from pathlib import Path
 
 FIGURE_EXTS = {".pdf", ".png", ".eps", ".jpg", ".jpeg"}
+# Extension preference when an \includegraphics reference omits its extension.
+# arXiv (and pdflatex) prefer vector formats, so do we — this is also why PNGs
+# get dropped: only the format actually used by LaTeX is bundled.
+FIGURE_EXT_PRIORITY = [".pdf", ".eps", ".png", ".jpg", ".jpeg"]
 TEX_EXTS = {".tex", ".bib", ".bst", ".sty"}
+# Compiled bibliography. Bundling it makes the submission self-contained and
+# avoids relying on arXiv's own bibtex run.
+BBL_EXT = ".bbl"
+# Build-only files that are not part of the arXiv source. pandoc-template.tex is
+# a pandoc skeleton (no \documentclass), inert but unnecessary in the submission.
+EXCLUDE_TEX_NAMES = {"pandoc-template.tex"}
 
 
 def find_referenced_figures(tex_dir: Path) -> set[str]:
@@ -27,12 +37,34 @@ def find_referenced_figures(tex_dir: Path) -> set[str]:
     return refs
 
 
-def copy_tree_flat(src: Path, dst: Path, extensions: set[str]) -> list[str]:
+def resolve_figure(ref: str, search_roots: list[Path]) -> Path | None:
+    """Locate the source file for an \\includegraphics reference.
+
+    The reference may omit its extension (LaTeX resolves it), in which case the
+    formats in FIGURE_EXT_PRIORITY are tried in order. Roots are searched in
+    order, so earlier roots win on ambiguity."""
+    ref_path = Path(ref)
+    has_ext = ref_path.suffix.lower() in FIGURE_EXTS
+    candidate_names = [ref_path.name] if has_ext else [
+        ref_path.name + ext for ext in FIGURE_EXT_PRIORITY
+    ]
+    for root in search_roots:
+        for name in candidate_names:
+            for cand in sorted(root.rglob(name)):
+                if cand.is_file():
+                    return cand
+    return None
+
+
+def copy_tree_flat(
+    src: Path, dst: Path, extensions: set[str], exclude: set[str] | None = None
+) -> list[str]:
     """Copy files matching extensions from src (recursively) into dst, preserving
-    subdirectory structure relative to src."""
+    subdirectory structure relative to src. Filenames in `exclude` are skipped."""
+    exclude = exclude or set()
     copied = []
     for f in src.rglob("*"):
-        if f.is_file() and f.suffix.lower() in extensions:
+        if f.is_file() and f.suffix.lower() in extensions and f.name not in exclude:
             rel = f.relative_to(src)
             dest = dst / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -60,32 +92,29 @@ def main() -> None:
     tmp = Path(tempfile.mkdtemp(prefix="arxiv_"))
     atexit.register(lambda: shutil.rmtree(tmp, ignore_errors=True))
 
-    # Copy tex infrastructure from build/, preserving sections/ subdir
-    copied = copy_tree_flat(build_dir, tmp, TEX_EXTS)
+    # Copy tex infrastructure from build/, preserving sections/ subdir.
+    # Build-only templates (pandoc-template.tex) are excluded.
+    copied = copy_tree_flat(build_dir, tmp, TEX_EXTS, exclude=EXCLUDE_TEX_NAMES)
 
-    # Copy figures from figures/ into tmp root (flat)
-    if figures_dir.is_dir():
-        for f in figures_dir.rglob("*"):
-            if f.is_file() and f.suffix.lower() in FIGURE_EXTS:
-                shutil.copy2(f, tmp / f.name)
-                copied.append(f.name)
-
-    # Also grab any figures already in build/
-    for f in build_dir.rglob("*"):
-        if f.is_file() and f.suffix.lower() in FIGURE_EXTS:
-            rel = f.relative_to(build_dir)
-            dest = tmp / rel
-            if not dest.exists():
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(f, dest)
-                copied.append(str(rel))
-
-    # Verify all referenced figures are present
+    # Copy only the figures actually referenced by the .tex sources. This drops
+    # unused alternate formats (e.g. GitHub-only PNGs) and bundles just the
+    # format LaTeX resolves for each \includegraphics call.
+    search_roots = [figures_dir, build_dir, paper_dir]
     refs = find_referenced_figures(tmp)
     for ref in sorted(refs):
-        candidates = [tmp / ref, tmp / Path(ref).name]
-        if not any(c.is_file() for c in candidates):
+        src_fig = resolve_figure(ref, search_roots)
+        if src_fig is None:
             sys.exit(f"Error: referenced figure not found: {ref}")
+        # Place the figure at the path LaTeX expects: the reference path, with
+        # the resolved extension appended when the reference omitted one.
+        dest_rel = Path(ref)
+        if dest_rel.suffix.lower() not in FIGURE_EXTS:
+            dest_rel = dest_rel.with_suffix(src_fig.suffix)
+        dest = tmp / dest_rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if not dest.exists():
+            shutil.copy2(src_fig, dest)
+            copied.append(str(dest_rel))
 
     # Compile: pdflatex → bibtex → pdflatex → pdflatex
     print("Compiling in isolated directory...")
@@ -102,9 +131,10 @@ def main() -> None:
             print(result.stderr[-2000:] if result.stderr else "")
             sys.exit(f"Error: step {step} ({label}) failed with return code {result.returncode}")
 
-    # Remove compilation artifacts, keep only submission files
-    # main.pdf is the compiled output — arXiv compiles from source
-    keep_exts = TEX_EXTS | FIGURE_EXTS
+    # Remove compilation artifacts, keep only submission files.
+    # main.pdf is the compiled output — arXiv compiles from source. The .bbl is
+    # kept so the submission carries its own compiled bibliography.
+    keep_exts = TEX_EXTS | FIGURE_EXTS | {BBL_EXT}
     compiled_pdf = tmp / "main.pdf"
     if compiled_pdf.exists():
         compiled_pdf.unlink()
