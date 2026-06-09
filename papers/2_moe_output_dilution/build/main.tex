@@ -122,34 +122,26 @@
 \maketitle
 
 \begin{abstract}
-Linear probes can decode moral content from every expert in a
-Mixture-of-Experts model --- 1,020 of 1,024 expert--layer
-combinations in OLMoE-1B-7B exceed 75\% accuracy, and the peak layer
-exceeds 90\% for all 64 experts. By this standard metric, moral
-reasoning is robustly encoded. Yet OLMoE is 5.1$\times$ more fragile
-than a dense model of matched size and accuracy: the activation-noise
-level that collapses probe performance is $\sigma^* = 0.84$, versus
-4.25 for OLMo-2~1B.
+Mixture-of-Experts (MoE) models appear to encode moral content as
+robustly as dense models, yet prove far more fragile. In OLMoE-1B-7B,
+linear probes recover moral valence from nearly every expert-layer
+combination, with mean peak-layer accuracy above 90\%. But these
+representations collapse under levels of activation noise that a dense
+model of matched size easily tolerates: a five-fold difference in
+robustness.
 
-We trace this gap to \emph{output dilution}. The MoE block aggregates
-a top-8 weighted average of 64 expert outputs before adding to the
-residual stream. The resulting feedforward contribution is
-74$\times$ smaller in scale than the dense MLP's, measured as the
-standard deviation of the output across inputs. Moral information
-survives aggregation intact --- but at a signal level trivially
-overwhelmed by noise. Component perturbation confirms that routing
-itself is robust ($\sigma^* = 9.1$); the fragility originates
-entirely in the diluted output.
+We trace this to \emph{output dilution}. Because the MoE block averages
+across active experts before contributing to the residual stream, the
+feedforward signal reaching downstream layers is nearly two orders of
+magnitude smaller than in a dense MLP. Moral information survives
+aggregation intact but at a scale trivially overwhelmed by perturbation.
+Routing itself remains stable under noise; the vulnerability originates
+entirely in the diluted aggregate.
 
-A checkpoint trajectory across 11 OLMoE snapshots (step 5K--1.2M)
-shows that expert specialization never emerges: Gini coefficients
-stay between 0.012 and 0.018 from the earliest checkpoint, with
-accuracy stable from step 5K onward. The redundancy is architectural,
-not a training artifact.
-
-\textbf{For MoE models, redundant encoding is not robust encoding ---
-aggregation dilutes the signal that every expert individually
-preserves.}
+Checkpoint trajectories confirm this is architectural, not learned:
+experts never specialize and accuracy saturates within the first few
+thousand steps. In sparse architectures, redundant encoding does not
+imply robust encoding.
 \end{abstract}
 
 % =======================================================================
