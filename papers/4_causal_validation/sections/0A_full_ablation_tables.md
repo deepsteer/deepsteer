@@ -1,7 +1,8 @@
-\section{Full Ablation Tables}
+# Full Ablation Tables
+
 \label{app:ablation-tables}
 
-Tables~\ref{tab:ablation-layer4}--\ref{tab:ablation-layer12} report the complete ablation results for all six foundations at layers 4, 8, and 12.
+Tables \ref{tab:ablation-layer4} through \ref{tab:ablation-layer12} report the complete ablation results for all six foundations at layers 4, 8, and 12.
 Each cell shows the mean change in log-probability (nats) under direction ablation.
 
 \begin{table}[h]

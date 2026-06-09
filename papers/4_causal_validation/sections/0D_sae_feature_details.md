@@ -1,7 +1,8 @@
-\section{SAE Feature Details}
+# SAE Feature Details
+
 \label{app:sae-details}
 
-\subsection{Training hyperparameters}
+## Training hyperparameters
 
 \begin{table}[h]
 \centering
@@ -25,7 +26,7 @@ FVU (final) & 0.285 \\
 \label{tab:sae-config}
 \end{table}
 
-\subsection{Per-foundation subspace overlap}
+## Per-foundation subspace overlap
 
 \begin{table}[h]
 \centering
@@ -49,7 +50,7 @@ Random baseline & 4.9\% & 4.9\% \\
 \label{tab:sae-overlap}
 \end{table}
 
-\subsection{Random baseline distribution}
+## Random baseline distribution
 
 The analytical expectation for projecting a random unit vector in $\mathbb{R}^{2048}$ onto a random 100-dimensional subspace is $100/2048 = 4.88\%$.
 The observed mean-difference overlap of 15.5\% ($3.17\times$ baseline) confirms that the morally selective SAE features capture genuine structure shared with supervised probe directions.

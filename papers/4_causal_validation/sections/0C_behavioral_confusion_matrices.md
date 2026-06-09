@@ -1,4 +1,5 @@
-\section{Behavioral Confusion Matrices}
+# Behavioral Confusion Matrices
+
 \label{app:confusion-matrices}
 
 \begin{table}[h]

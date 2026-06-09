@@ -1,7 +1,8 @@
-\section{Steering Dose--Response Tables}
+# Steering Dose-Response Tables
+
 \label{app:dose-response}
 
-Tables~\ref{tab:dose-layer4}--\ref{tab:dose-layer12} report specificity (on-target $\Delta$ minus off-target $\Delta$) for all six foundations at each injection amplitude and layer.
+Tables \ref{tab:dose-layer4} through \ref{tab:dose-layer12} report specificity (on-target $\Delta$ minus off-target $\Delta$) for all six foundations at each injection amplitude and layer.
 
 \begin{table}[h]
 \centering
