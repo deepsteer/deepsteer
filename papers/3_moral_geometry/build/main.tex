@@ -120,32 +120,33 @@
 \maketitle
 
 \begin{abstract}
-How do language models organize moral knowledge internally? We
-move beyond binary moral detection (moral vs.\ neutral) to
-structured moral representation by training six independent
-linear probes---one per Moral Foundations Theory (MFT) foundation---at
-each layer of OLMo-2 1B and OLMoE-1B-7B. The learned probe weight
-vectors define \emph{directions} in representation space whose
-angular relationships reveal how the model organizes moral concepts.
-We find the \emph{integration} signature: foundation directions are
-distinct (effective dimensionality = 5 of 6) and share a common
-moral-salience component (mean pairwise cosine similarity
-$\approx$0.22--0.27 across layers), but do not cluster into MFT-predicted
-individualizing/binding groups. The model develops genuine
-multi-dimensional moral structure that is not aligned with human
-moral-psychological categories. This geometry is consistent across
-dense and MoE architectures and stabilizes within the first
-2{,}000 training steps---well before probing accuracy saturates.
-Framework-specific fragility testing reveals that output dilution
-is not foundation-uniform: sanctity/degradation is the most robust
-foundation in the dense model but the most fragile in MoE
-(6.2$\times$ ratio), far exceeding the overall architectural gap.
-Extending to moral dilemmas, we find partial compositionality:
-dilemma probe directions share ${\sim}$10\% of their variance with
-the subspace spanned by their component foundations (100$\times$
-the null baseline), with near-balanced loading and a
-complexity--fragility gradient, yet ${\sim}$90\% residual encoding
-conflict-specific structure.
+How do language models organize moral knowledge? Models detect moral
+content broadly, but detection is a low bar. We ask whether they go
+further: distinguishing moral foundations from one another and
+organizing the relationships between them.
+
+Training six independent linear probes on OLMo-2~1B and OLMoE-1B-7B,
+one per foundation in Moral Foundations Theory (MFT), shows
+integration. Foundation directions in representation space are
+geometrically distinct, spanning five effective dimensions, yet share
+a common moral-salience component. This is genuine multi-dimensional
+structure, not a single moral detector. The geometry is consistent
+across dense and MoE architectures and stabilizes early in pretraining.
+
+The structure the model develops is not the structure moral psychology
+predicts. Hierarchical clustering does not recover the
+individualizing/binding distinction central to MFT; the model's moral
+taxonomy is grounded in corpus statistics rather than human theoretical
+categories. Per-foundation fragility testing shows a further
+asymmetry: sanctity/degradation is the most robust foundation in the
+dense model but the most fragile in MoE, far exceeding the overall
+architectural gap.
+
+Extending to moral dilemmas shows partial compositionality: dilemma
+representations share significant variance with their component
+foundations but encode largely conflict-specific structure beyond them,
+with balanced loading suggesting the model represents moral conflict
+itself rather than a pre-resolved judgment.
 \end{abstract}
 
 % =====================================================================
