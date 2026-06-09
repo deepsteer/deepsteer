@@ -1,4 +1,4 @@
-# Paper 3 Plan: *The Geometry of Moral Representation: Framework-Specific Encoding and Inter-Framework Structure in Language Models*
+# Paper 3 Plan: *How Language Models Organize Competing Moral Frameworks*
 
 **Status:** Plan drafted. No experimental work started. All experiments
 reuse existing infrastructure from Papers 1 and 2. Primary models:
@@ -35,8 +35,7 @@ unchanged from Papers 1 and 2.
 
 ## Tentative title
 
-**Primary:** *The Geometry of Moral Representation: Framework-Specific
-Encoding and Inter-Framework Structure in Language Models*
+**Primary:** *How Language Models Organize Competing Moral Frameworks*
 
 Alternates:
 - *Beyond Moral Detection: Measuring Framework-Specific Structure in

@@ -53,7 +53,7 @@ mechanism that makes MoE moral encoding structurally fragile:
   0.011 and 0.015. Top-5 experts by accuracy change between
   checkpoints at near-random rates (Jaccard ≈ 0.08).
 
-## Paper 3 — *The Geometry of Moral Representation: Framework-Specific Encoding and Inter-Framework Structure in Language Models*
+## Paper 3 — *How Language Models Organize Competing Moral Frameworks*
 
 Extends binary moral/neutral probing to **structured** moral
 representations — does the model distinguish between ethical
