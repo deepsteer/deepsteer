@@ -23,6 +23,11 @@ copy_tree_flat = _mod.copy_tree_flat
 main = _mod.main
 TEX_EXTS = _mod.TEX_EXTS
 FIGURE_EXTS = _mod.FIGURE_EXTS
+clean_metadata_text = _mod.clean_metadata_text
+extract_braced_arg = _mod.extract_braced_arg
+extract_environment = _mod.extract_environment
+count_captioned = _mod.count_captioned
+build_comments = _mod.build_comments
 
 
 # ---------------------------------------------------------------------------
@@ -316,3 +321,124 @@ class TestResolveFigure:
 
     def test_missing_returns_none(self, tmp_path: Path):
         assert resolve_figure("nope.pdf", [tmp_path]) is None
+
+
+# ---------------------------------------------------------------------------
+# arXiv metadata extraction / cleaning
+# ---------------------------------------------------------------------------
+
+class TestExtractors:
+    def test_braced_arg_handles_nested_braces(self):
+        assert extract_braced_arg(r"\title{A \emph{deep} title}", "title") == r"A \emph{deep} title"
+
+    def test_braced_arg_missing(self):
+        assert extract_braced_arg(r"no title here", "title") is None
+
+    def test_environment_body(self):
+        text = r"x \begin{abstract}Hello there.\end{abstract} y"
+        assert extract_environment(text, "abstract").strip() == "Hello there."
+
+    def test_environment_missing(self):
+        assert extract_environment("nothing", "abstract") is None
+
+
+class TestCleanMetadataText:
+    def test_unwraps_formatting_and_collapses_lines(self):
+        raw = "We introduce \\emph{fragility},\na \\textbf{new} metric.\n\nIt works."
+        assert clean_metadata_text(raw) == "We introduce fragility, a new metric. It works."
+
+    def test_quotes_and_dashes_to_ascii(self):
+        assert clean_metadata_text("``encoded'' range 0.22--0.27") == '"encoded" range 0.22-0.27'
+
+    def test_drops_thanks_and_comments(self):
+        raw = "Title\\thanks{Corresponding author} text % a trailing comment"
+        assert clean_metadata_text(raw) == "Title text"
+
+    def test_strips_non_ascii_and_tilde(self):
+        # Non-breaking tilde -> space; smart quotes / accents folded or dropped.
+        assert clean_metadata_text("café~de “Paris”") == 'cafe de Paris'
+
+    def test_keeps_inline_math(self):
+        assert clean_metadata_text("a lexical~$\\to$~compositional gap") == "a lexical $\\to$ compositional gap"
+
+
+class TestCountCaptioned:
+    def test_counts_only_captioned(self, tmp_path: Path):
+        (tmp_path / "a.tex").write_text(
+            r"\begin{figure}\includegraphics{x}\caption{y}\end{figure}"
+            r"\begin{figure}\includegraphics{z}\end{figure}"  # no caption
+        )
+        assert count_captioned(tmp_path, ("figure",)) == 1
+
+    def test_counts_tables_and_longtables(self, tmp_path: Path):
+        (tmp_path / "a.tex").write_text(
+            r"\begin{table}\caption{t}\end{table}"
+            r"\begin{longtable}{ll}\caption{lt}\\\end{longtable}"
+            r"\begin{longtable}{ll}\end{longtable}"  # uncaptioned layout table
+        )
+        assert count_captioned(tmp_path, ("table", "longtable")) == 2
+
+
+class TestBuildComments:
+    def test_full(self):
+        assert build_comments(22, 5, 3, "http://x") == "22 pages, 5 figures, 3 tables. Code and datasets at http://x"
+
+    def test_omits_zero_counts_and_singular(self):
+        assert build_comments(10, 1, 0, "http://x") == "10 pages, 1 figure. Code and datasets at http://x"
+
+    def test_url_only_when_no_counts(self):
+        assert build_comments(None, 0, 0, "http://x") == "Code and datasets at http://x"
+
+
+class TestMetadataFileWritten:
+    def test_metadata_file_emitted(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        tex = r"""\documentclass{article}
+\title{A \emph{Fine} Title}
+\begin{document}
+\maketitle
+\begin{abstract}
+First para with \textbf{bold}.
+
+Second para.
+\end{abstract}
+\includegraphics{plot.pdf}
+\begin{figure}\includegraphics{plot.pdf}\caption{c}\end{figure}
+\end{document}
+"""
+        paper = _make_paper(tmp_path, tex=tex, figures={"plot.pdf": b"%PDF-fake"})
+        monkeypatch.setattr("sys.argv", ["prog", str(paper), "--code-url", "http://example.com/repo"])
+
+        def fake_run(cmd, **kwargs):
+            cwd = Path(kwargs.get("cwd", "."))
+            if cmd[0] == "pdflatex":
+                (cwd / "main.pdf").write_bytes(b"%PDF")
+                (cwd / "main.log").write_text("Output written on main.pdf (7 pages, 123 bytes).\n")
+            return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+
+        with patch.object(_mod.subprocess, "run", side_effect=fake_run):
+            with patch.object(_mod, "__file__", str(tmp_path / "scripts" / "package_arxiv.py")):
+                main()
+
+        md = list(tmp_path.glob("arxiv_test_paper_*.md"))
+        assert len(md) == 1
+        content = md[0].read_text()
+        assert "## Title\nA Fine Title\n" in content
+        assert "First para with bold. Second para." in content
+        assert "7 pages, 1 figure. Code and datasets at http://example.com/repo" in content
+
+    def test_comments_override(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        paper = _make_paper(tmp_path)
+        monkeypatch.setattr("sys.argv", ["prog", str(paper), "--comments", "Custom line."])
+
+        def fake_run(cmd, **kwargs):
+            cwd = Path(kwargs.get("cwd", "."))
+            if cmd[0] == "pdflatex":
+                (cwd / "main.log").write_text("Output written on main.pdf (3 pages).\n")
+            return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
+
+        with patch.object(_mod.subprocess, "run", side_effect=fake_run):
+            with patch.object(_mod, "__file__", str(tmp_path / "scripts" / "package_arxiv.py")):
+                main()
+
+        md = list(tmp_path.glob("arxiv_test_paper_*.md"))[0].read_text()
+        assert "## Comments\nCustom line.\n" in md
