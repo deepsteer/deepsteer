@@ -28,6 +28,8 @@ noise $\geq$ 3.0 at 10 of 16 layers and $\geq$ 10.0 at layers 7,
 layers only (critical noise 3.0 at layers 14--15; $\leq$ 0.3 at
 12 of 16 layers).
 
+**Figure 1** contrasts the two architectures across both metrics.
+
 This establishes the puzzle the remaining experiments investigate:
 both architectures encode moral content with near-identical accuracy,
 but the MoE encoding is substantially more fragile. What is it about
@@ -54,6 +56,8 @@ to 0.023, indicating near-perfect uniformity. Gini is modestly
 higher in early layers (0.021--0.023 at layers 0--3) and lowest at
 late layers (0.016 at layers 8--9), suggesting that moral encoding
 becomes *more* uniform as it matures through the network.
+
+**Figure 2** shows the per-expert accuracy distribution at every layer.
 
 This finding has immediate consequences for alignment interventions.
 Dense models encode moral features diffusely across neurons within
@@ -141,6 +145,8 @@ The ratio exceeds 60$\times$ at 9 of 16 layers. The MoE block's
 contribution to the residual stream is not just smaller; it operates
 on a fundamentally different scale than the dense MLP.
 
+**Figure 3** relates the output-scale gap to component fragility.
+
 **This output dilution is the mechanism behind MoE fragility.**
 Because only 8 of 64 experts contribute to each token's MoE output,
 and the routing weights further attenuate each expert's contribution,
@@ -193,6 +199,8 @@ them in specific experts. Overall mean Gini (averaged across all 16
 layers) shows a mild *decrease* from 0.020 at step 50K to 0.018
 at step 1M, suggesting that training produces more *uniform*
 encoding, not more specialized.
+
+**Figure 4** plots the training trajectory of accuracy and concentration.
 
 **Expert identity is unstable.** The Jaccard similarity of the
 top-5 highest-accuracy experts between adjacent checkpoints

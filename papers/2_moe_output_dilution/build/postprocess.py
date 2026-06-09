@@ -99,98 +99,89 @@ CITES_INTEXT = [
 # remaining bold "Figure N" mentions to "Figure~\ref{fig:label}" so
 # that secondary references resolve cleanly.
 FIGURE_INSERTS: list[tuple[str, str]] = [
-    # Figure 1 — persona-probe emergence trajectory (§3.1).
+    # Figure 1 — dense vs. MoE: same accuracy, different robustness (§4.1).
     (
-        r"\\textbf\{Figure 1\}\s+plots\s+the\s+persona-probe\s+trajectory\s+\(overall,\s+content-clean,\s+OOD\s+jailbreak\)\s+alongside\s+the\s+moral\s+/\s+sentiment\s+/\s+syntax\s+onsets\s+from\s+companion\s+work\.",
+        r"\\textbf\{Figure 1\}\s+contrasts\s+the\s+two\s+architectures\s+across\s+both\s+metrics\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
-            "  \\includegraphics[width=\\linewidth]{figure_1_persona_trajectory.pdf}\n"
-            "  \\caption{Persona-feature emergence trajectory on OLMo-2~1B "
-            "early-training (37 checkpoints, 1K-step intervals). Persona "
-            "overall (240-pair test set), content-clean within-category "
-            "transfer, and OOD jailbreak fixture. Persona onset is "
-            "concurrent with the moral / sentiment onsets reported in "
-            "companion work (vertical dashed lines); persona is "
-            "foundational at the 1K-step resolution we have data for.}\n"
-            "  \\label{fig:persona-trajectory}\n"
+            "  \\includegraphics[width=\\linewidth]{figure_1_dense_vs_moe.pdf}\n"
+            "  \\caption{Dense and MoE encode moral content with near-identical "
+            "accuracy but very different robustness. (a)~Per-layer moral probing "
+            "accuracy for OLMoE-1B-7B and dense OLMo-2~1B; both peak at 99.0\\%, "
+            "differing only at the early layers. (b)~Per-layer critical noise "
+            "$\\sigma^*$ (smallest $\\sigma$ at which probe accuracy falls below "
+            "0.6, on the log grid $\\{0.1, 0.3, 1.0, 3.0, 10.0\\}$): OLMoE is "
+            "5.1$\\times$ more fragile (mean $\\sigma^*$ 0.84 vs.\\ 4.25) and "
+            "concentrates robustness in the final two layers.}\n"
+            "  \\label{fig:dense-vs-moe}\n"
             "\\end{figure}\n\n"
-            "\\textbf{Figure~\\ref{fig:persona-trajectory}} plots the "
-            "persona-probe trajectory (overall, content-clean, OOD "
-            "jailbreak) alongside the moral / sentiment / syntax onsets "
-            "from companion work."
+            "\\textbf{Figure~\\ref{fig:dense-vs-moe}} contrasts the two "
+            "architectures across both metrics."
         ),
     ),
 
-    # Figure 2 — C10 v2 null on insecure-code LoRA (§4.1).
+    # Figure 2 — no expert moral specialization (§4.2).
     (
-        r"\\textbf\{Figure 2\}\s+summarizes\s+both\s+readouts\s+side-by-side:\s+per-\s*condition\s+\\texttt\{PersonaFeatureProbe\}\s+activation\s+\(left\)\s+and\s+behavioral\s+coherent-misalignment\s+rates\s+with\s+Wilson\s+95\s*\\%\s+CIs\s+\(right\)\.",
+        r"\\textbf\{Figure 2\}\s+shows\s+the\s+per-expert\s+accuracy\s+distribution\s+at\s+every\s+layer\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
-            "  \\includegraphics[width=\\linewidth]{figure_2_c10_v2_null.pdf}\n"
-            "  \\caption{Persona mechanism does not engage at 1B under "
-            "controlled insecure-code LoRA. (a)~Per-condition probe "
-            "activation (160 generations each); insecure $-$ secure "
-            "Cohen's $d = +0.032$ paired, 25$\\times$ below the 1.0~SD "
-            "PROBE PASS threshold. (b)~Coherent-misalignment rates with "
-            "Wilson 95\\,\\% CIs; insecure (1.56\\,\\%) and secure "
-            "(0.69\\,\\%) overlap heavily.}\n"
-            "  \\label{fig:c10-v2-null}\n"
+            "  \\includegraphics[width=\\linewidth]{figure_2_expert_uniformity.pdf}\n"
+            "  \\caption{No expert moral specialization. (a)~Distribution of the "
+            "64 per-expert probe accuracies at each layer (box plot) with the "
+            "per-layer mean overlaid; every expert encodes moral content, with "
+            "no sparse high-accuracy subset. (b)~The per-layer Gini coefficient "
+            "of expert accuracy stays in $[0.016, 0.023]$, far below any "
+            "concentration threshold, and is lowest at the late layers where "
+            "encoding peaks.}\n"
+            "  \\label{fig:expert-uniformity}\n"
             "\\end{figure}\n\n"
-            "\\textbf{Figure~\\ref{fig:c10-v2-null}} summarizes both "
-            "readouts side-by-side: per-condition "
-            "\\texttt{PersonaFeatureProbe} activation (left) and "
-            "behavioral coherent-misalignment rates with Wilson 95\\,\\% "
-            "CIs (right)."
+            "\\textbf{Figure~\\ref{fig:expert-uniformity}} shows the per-expert "
+            "accuracy distribution at every layer."
         ),
     ),
 
-    # Figure 3 — Step 2 four-condition summary (§4.3).
+    # Figure 3 — output dilution explains MoE fragility (§4.4).
     (
-        r"\\textbf\{Figure 3\}\s+gives\s+the\s+four-condition\s+summary\s+across\s+both\s+metrics:\s+per-condition\s+probe\s+activation\s+\(left\)\s+and\s+behavioral\s+judge\s+score\s+\(right\)\.",
+        r"\\textbf\{Figure 3\}\s+relates\s+the\s+output-scale\s+gap\s+to\s+component\s+fragility\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
-            "  \\includegraphics[width=\\linewidth]{figure_3_step2_summary.pdf}\n"
-            "  \\caption{Step 2 four-condition summary. (a)~Per-condition "
-            "persona-probe activation: vanilla LoRA shifts the probe by "
-            "Cohen's $d = +2.29$; gradient\\_penalty brings it back to "
-            "baseline (99.3\\,\\% suppression at 0.4\\,\\% SFT-loss cost); "
-            "activation\\_patch backfires by amplification ($d = +3.79$). "
-            "(b)~Per-condition behavioral judge score (0--10 persona-voice "
-            "scale): vanilla and gradient\\_penalty match within "
-            "0.01\\,/\\,10 despite probe Cohen's $d$ differing by 3.07~SD "
-            "--- the Finding 3 dissociation.}\n"
-            "  \\label{fig:step2-summary}\n"
+            "  \\includegraphics[width=\\linewidth]{figure_3_output_dilution.pdf}\n"
+            "  \\caption{Output dilution explains MoE fragility. (a)~Per-layer "
+            "feedforward output scale (standard deviation of the mean-pooled "
+            "output) for the OLMoE MoE block vs.\\ the dense OLMo-2 MLP; the "
+            "dense MLP output is 74$\\times$ larger on average. (b)~Per-layer "
+            "critical noise for the three MoE perturbation targets: the router "
+            "is most robust (mean $\\sigma^*$ 9.1), the aggregated output most "
+            "fragile (mean $\\sigma^*$ 0.56), because the output operates on the "
+            "diluted scale from panel~(a).}\n"
+            "  \\label{fig:output-dilution}\n"
             "\\end{figure}\n\n"
-            "\\textbf{Figure~\\ref{fig:step2-summary}} gives the "
-            "four-condition summary across both metrics: per-condition "
-            "probe activation (left) and behavioral judge score (right)."
+            "\\textbf{Figure~\\ref{fig:output-dilution}} relates the "
+            "output-scale gap to component fragility."
         ),
     ),
 
-    # Figure 4 — fragility-locus shift (§4.4).
+    # Figure 4 — specialization never emerges during training (§4.5).
     (
-        r"\\textbf\{Figure 4\}\s+plots\s+the\s+per-layer\s+breakdown\s+across\s+all\s+three\s+conditions:",
+        r"\\textbf\{Figure 4\}\s+plots\s+the\s+training\s+trajectory\s+of\s+accuracy\s+and\s+concentration\.",
         (
             "\\begin{figure}[t]\n"
             "  \\centering\n"
-            "  \\includegraphics[width=\\linewidth]{figure_4_fragility_locus.pdf}\n"
-            "  \\caption{Insecure-code LoRA leaves a fragility-locus "
-            "signature the persona probe and the behavioral judge miss "
-            "(companion-paper methodology). (a)~Standard moral probe "
-            "accuracy across 16 transformer layers --- flat across base, "
-            "insecure, and secure conditions ($|\\Delta| \\leq 0.021$). "
-            "(b)~Per-layer critical noise on the discrete log grid "
-            "$\\{0.1, 0.3, 1.0, 3.0, 10.0\\}$: the base-model robustness "
-            "peak at layer 7 relocates to layers 9--10 under insecure-code "
-            "LoRA specifically, with layers 6--7 collapsing to "
-            "$\\sigma = 1$.}\n"
-            "  \\label{fig:fragility-locus}\n"
+            "  \\includegraphics[width=\\linewidth]{figure_4_training_trajectory.pdf}\n"
+            "  \\caption{Specialization never emerges during training. Across 11 "
+            "OLMoE checkpoints (step 5K--1.2M, 20B--5{,}117B tokens), peak-layer "
+            "and overall mean per-expert accuracy (left axis) stay in a 92--94\\% "
+            "band from the earliest checkpoint, while the Gini coefficient of "
+            "expert accuracy (right axis) stays flat near zero. Moral encoding is "
+            "present from the start and never concentrates into specific "
+            "experts.}\n"
+            "  \\label{fig:training-trajectory}\n"
             "\\end{figure}\n\n"
-            "\\textbf{Figure~\\ref{fig:fragility-locus}} plots the "
-            "per-layer breakdown across all three conditions:"
+            "\\textbf{Figure~\\ref{fig:training-trajectory}} plots the training "
+            "trajectory of accuracy and concentration."
         ),
     ),
 ]
@@ -200,10 +191,23 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
 # is now `\textbf{Figure~\ref{...}}`, so it won't match this) gets
 # rewritten to a proper `\ref{}` so cross-references resolve.
 FIGURE_LABEL_MAP: dict[str, str] = {
-    "1": "fig:persona-trajectory",
-    "2": "fig:c10-v2-null",
-    "3": "fig:step2-summary",
-    "4": "fig:fragility-locus",
+    "1": "fig:dense-vs-moe",
+    "2": "fig:expert-uniformity",
+    "3": "fig:output-dilution",
+    "4": "fig:training-trajectory",
+}
+
+# Each generated section file must contain these figure labels after the
+# injection pass. A missing label means an anchor sentence drifted (e.g. a
+# v2 text rewrite) and the figure silently failed to inject — postprocess
+# fails loudly instead of shipping a figureless paper. See main().
+EXPECTED_FIGURES: dict[str, list[str]] = {
+    "04_results.tex": [
+        "fig:dense-vs-moe",
+        "fig:expert-uniformity",
+        "fig:output-dilution",
+        "fig:training-trajectory",
+    ],
 }
 
 
@@ -315,7 +319,7 @@ def convert_section_refs(text: str) -> str:
     (appendix subsections).  Convert these to `\\Cref{<slug>}` using
     SECTION_LABEL_MAP.  When the reference is not in the map, fall
     back to a plain section symbol followed by the literal label
-    (e.g.\ `\\S{}D.5`) so LaTeX renders it correctly even without a
+    (e.g.\\ `\\S{}D.5`) so LaTeX renders it correctly even without a
     cross-reference target.
 
     Skip refs inside `\\begin{Highlighting}...\\end{Highlighting}`
@@ -449,7 +453,20 @@ def main(argv: list[str]) -> int:
         return 2
     p = Path(argv[1])
     text = p.read_text()
-    p.write_text(fixup(text))
+    out = fixup(text)
+    p.write_text(out)
+    missing = [
+        label
+        for label in EXPECTED_FIGURES.get(p.name, [])
+        if ("\\label{" + label + "}") not in out
+    ]
+    if missing:
+        print(
+            f"postprocess.py: {p.name}: figure injection failed for {missing} "
+            f"(anchor sentence missing or changed in the markdown source)",
+            file=sys.stderr,
+        )
+        return 1
     return 0
 
 
