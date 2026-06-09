@@ -17,9 +17,10 @@ demonstration of Paper 1's thesis in a fine-tuning setting.
 
 **Prior Paper 2 content.** The persona-mechanism / compound-scaling-
 boundary findings (C10 v2 null, Step 2 gradient-penalty, Step 2B
-behavioral dissociation) remain in `outputs/phase_d/` as completed
-experiments. They are cited in this paper's Related Work as
-motivation for investigating MoE: the dense-model finding that
+behavioral dissociation) were part of an earlier draft and have moved
+to the companion line of work; their raw experiment data is no longer
+kept in this paper's `outputs/`. They are cited in this paper's Related
+Work as motivation for investigating MoE: the dense-model finding that
 probe-direction suppression does not capture behavior (due to
 feature redundancy at 1B) raises the question of whether MoE
 architectures, which structurally partition features across experts,
