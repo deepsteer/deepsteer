@@ -82,31 +82,31 @@
 \maketitle
 
 \begin{abstract}
-Companion paper to \citet{reblitzrichardson2026geometry}, which
-identified structured moral representations in language models
-via linear probing but acknowledged that probe directions are
-correlational.  We provide three forms of validation that these
-directions are genuine features of the model's computation.
-\textbf{Causal validation:} ablating a foundation's direction from
-the residual stream at layer~12 specifically reduces log-probability
-of that foundation's continuations (mean specificity $-0.63$
-nats), while injecting directions at low amplitude ($\alpha = 1$--$2$)
-produces specific boosts with a dose--response curve consistent
-with real feature manipulation rather than noise injection.
-\textbf{Behavioral grounding:} projection-based 6-way foundation
-classification achieves 70.8\% on held-out test pairs and 83.3\%
-on causal evaluation prompts (chance = 16.7\%), but only 33.3\%
-on Moral Foundations Vignettes, revealing that real-world moral
-stimuli co-activate the sanctity/degradation direction regardless of
-their target foundation.
-\textbf{Sparse autoencoder analysis:} top-100 morally selective
-SAE features span a subspace that captures 15.5\% of probe
-direction variance ($3.2\times$ random baseline),
-indicating partial but significant convergence between
-unsupervised feature discovery and supervised direction extraction.
-Together, these results establish moral probe directions as
-causally load-bearing, behaviorally predictive features suitable
-for representation engineering interventions.
+Linear probes can find directions that separate moral from neutral
+text, but a probe cannot distinguish genuine moral representation from
+surface regularity. Probing shows that information exists in a model's
+representations; it cannot show the model computes with it.
+
+We extract directions for the six foundations of Moral Foundations
+Theory in OLMo-2~1B and test whether the model computes with them
+during generation. Three methods converge. Ablating a direction
+specifically impairs generation of that foundation's content: the
+model needs it. Injecting a direction at low amplitude produces
+foundation-specific behavioral shifts with a dose-response curve
+characteristic of real feature manipulation: the model responds to it.
+Projection-based classification predicts which foundation a novel text
+activates, well above chance on held-out data and exceeding 80\% on
+targeted prompts.
+
+Sparse autoencoder features independently recover the probe subspace
+at over three times the chance rate. One finding complicates the
+picture: real-world moral vignettes overwhelmingly activate
+sanctity/degradation regardless of intended foundation, reflecting how
+the model encodes moral transgression rather than a deficiency of the
+directions.
+
+These directions are not just readable but writable into models with
+predictable effect.
 \end{abstract}
 
 % =====================================================================
