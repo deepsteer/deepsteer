@@ -159,38 +159,36 @@ rsync -az --delete \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 
 # ---------------------------------- execute ----------------------------------
-# Launch the experiment plan DETACHED (nohup) so a dropped SSH connection can't
-# SIGHUP it. We then poll the log file + a completion sentinel; transient ssh
-# failures just retry, since the run no longer depends on this channel.
+# Launch fully DETACHED with setsid: the launch ssh returns IMMEDIATELY (it does
+# not hold the channel open for the run's lifetime, which a backgrounded process
+# under a plain `&` would), and the run survives ssh drops. Completion is
+# signalled by the .session_done sentinel — no PID capture needed.
 REMOTE_LOG="$REMOTE_DIR/session.log"
 REMOTE_DONE="$REMOTE_DIR/.session_done"
 echo ">> Launching experiments detached on pod (log: $REMOTE_LOG)"
-RUN_PID="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
   "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
    PYTHONUNBUFFERED=1 \
    REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
    RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
    RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
-   nohup bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 </dev/null & echo \$!")"
-echo ">> Remote PID: ${RUN_PID:-unknown}. Live log below (run survives SSH drops; Ctrl-C terminates pod)."
+   setsid bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null &"
+
+echo ">> Launched. Live log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo ">> Monitor from another terminal:"
 echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST 'tail -f $REMOTE_LOG'"
 echo "----------------------------------------------------------------------"
 
-# Live-follow the remote log right here in the console. With --pid, the remote
-# `tail -f` exits cleanly when the run finishes; a dropped ssh just returns and
-# we reattach from the last line we saw (no duplicates, no manual ssh needed).
+# Live-stream the log here. A remote watcher kills the `tail -f` once the
+# sentinel appears, so this returns when the run finishes; a dropped ssh just
+# reattaches from the last line consumed (no duplicates, no manual ssh needed).
 SEEN=0
 while true; do
-  if [ -n "${RUN_PID:-}" ]; then
-    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
-      "tail -n +$((SEEN + 1)) --pid=$RUN_PID -f '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true
-  else
-    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
-      "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true
-  fi
-  # Re-sync how many lines we've consumed (only on a successful read, so a
-  # transient ssh failure doesn't reset us and re-print the whole log).
+  ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+    "tail -n +$((SEEN + 1)) -f '$REMOTE_LOG' 2>/dev/null & _tp=\$!; \
+     while [ ! -f '$REMOTE_DONE' ]; do sleep 2; done; sleep 1; kill \$_tp 2>/dev/null" 2>/dev/null || true
+  # Re-sync consumed line count on a successful read (so a transient ssh failure
+  # doesn't reset us and re-print the whole log).
   NEW_SEEN="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "wc -l < '$REMOTE_LOG' 2>/dev/null" 2>/dev/null | tr -d '[:space:]' || true)"
   [ -n "$NEW_SEEN" ] && SEEN="$NEW_SEEN"
   if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
