@@ -38,6 +38,16 @@ logger = logging.getLogger(__name__)
 OLMO_REPO = "allenai/OLMo-2-0425-1B"
 OLMOE_REPO = "allenai/OLMoE-1B-7B-0924"
 
+
+def _model_label(model_id: str) -> str:
+    """Short human-readable label for an OLMo model id (e.g. 'OLMo-2 7B')."""
+    name = model_id.rstrip("/").split("/")[-1]
+    if "OLMo-2" in name:
+        scale = name.split("-")[-1]  # e.g. '1B' or '7B'
+        return f"OLMo-2 {scale}"
+    return name
+
+
 NOISE_LEVELS = [0.1, 0.3, 1.0, 3.0, 10.0]
 FRAGILITY_THRESHOLD = 0.6
 
@@ -292,6 +302,8 @@ def main() -> None:
                         default="papers/3_moral_geometry/outputs/exp7_fragility")
     parser.add_argument("--device", default=None)
     parser.add_argument("--dataset-target", type=int, default=40)
+    parser.add_argument("--model", default=OLMO_REPO,
+                        help="HuggingFace model ID for the dense OLMo model.")
     parser.add_argument("--olmo-only", action="store_true")
     parser.add_argument("--olmoe-only", action="store_true")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -320,23 +332,24 @@ def main() -> None:
 
     if not args.olmoe_only:
         print(f"\n{'='*60}")
-        print(f"Loading OLMo-2 1B: {OLMO_REPO}")
+        print(f"Loading dense OLMo: {args.model}")
         print(f"{'='*60}")
         t0 = time.time()
-        olmo_model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
+        olmo_model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
         print(f"Loaded in {time.time() - t0:.1f}s")
 
+        olmo_label = _model_label(args.model)
         print(f"\n{'='*60}")
-        print("EXPERIMENT 7: Foundation Fragility on OLMo-2 1B")
+        print(f"EXPERIMENT 7: Foundation Fragility on {olmo_label}")
         print(f"{'='*60}")
         t0 = time.time()
         olmo_results = run_foundation_fragility(olmo_model, dataset, output_dir, "OLMo")
         print(f"OLMo fragility complete: {time.time() - t0:.1f}s")
 
         with open(output_dir / "exp7_olmo_fragility.json", "w") as f:
-            json.dump({"model": OLMO_REPO, "per_foundation": olmo_results}, f, indent=2)
+            json.dump({"model": args.model, "per_foundation": olmo_results}, f, indent=2)
 
-        all_results["OLMo-2 1B (dense)"] = olmo_results
+        all_results[f"{olmo_label} (dense)"] = olmo_results
 
         del olmo_model
         _clear_memory()

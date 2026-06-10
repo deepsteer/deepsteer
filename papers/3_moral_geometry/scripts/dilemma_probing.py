@@ -236,6 +236,7 @@ def main() -> None:
     parser.add_argument("--directions", default="papers/3_moral_geometry/outputs/exp1_2_3/exp1_probe_directions.npz")
     parser.add_argument("--output-dir", default="papers/3_moral_geometry/outputs/dilemma_probing")
     parser.add_argument("--device", default=None)
+    parser.add_argument("--model", default=OLMO_REPO, help="HuggingFace model ID.")
     parser.add_argument("--n-epochs", type=int, default=50)
     parser.add_argument("--lr", type=float, default=1e-2)
     parser.add_argument("--skip-null", action="store_true",
@@ -271,9 +272,9 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load model
-    print(f"Loading model: {OLMO_REPO}")
+    print(f"Loading model: {args.model}")
     t0 = time.time()
-    model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
+    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
     sample_key = list(foundation_directions_data.keys())[0]
     hidden_dim = foundation_directions_data[sample_key].shape[0]
@@ -415,7 +416,7 @@ def main() -> None:
     # Save results
     output = {
         "experiment": "dilemma_probing",
-        "model": OLMO_REPO,
+        "model": args.model,
         "n_layers": n_layers,
         "hidden_dim": hidden_dim,
         "n_epochs": args.n_epochs,

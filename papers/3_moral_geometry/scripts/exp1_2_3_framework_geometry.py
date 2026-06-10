@@ -827,6 +827,43 @@ def generate_figures(
 # ---------------------------------------------------------------------------
 
 
+def load_exp1_results(output_dir: Path) -> dict:
+    """Reconstruct an Experiment 1 result dict from saved npz + json.
+
+    Used by --bootstrap-only to skip the probe-training and geometry stages and
+    jump straight to run_experiment_3() with previously extracted directions.
+    """
+    json_path = output_dir / "exp1_foundation_probing.json"
+    npz_path = output_dir / "exp1_probe_directions.npz"
+    if not json_path.exists() or not npz_path.exists():
+        raise FileNotFoundError(
+            f"--bootstrap-only needs {json_path.name} and {npz_path.name} in {output_dir}"
+        )
+
+    with open(json_path) as f:
+        exp1_json = json.load(f)
+    npz = np.load(npz_path)
+
+    directions: dict[str, dict[int, np.ndarray]] = {}
+    accuracies: dict[str, dict[int, float]] = {}
+    for fv, fdata in exp1_json["per_foundation"].items():
+        directions[fv] = {}
+        accuracies[fv] = {}
+        for layer_str, acc in fdata["per_layer_accuracy"].items():
+            layer = int(layer_str)
+            key = f"{fv}_layer{layer}"
+            if key in npz:
+                directions[fv][layer] = npz[key]
+            accuracies[fv][layer] = acc
+
+    return {
+        "directions": directions,
+        "accuracies": accuracies,
+        "n_layers": exp1_json["n_layers"],
+        "hidden_dim": exp1_json["hidden_dim"],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Experiments 1-3: Foundation probing + geometry + bootstrap.",
@@ -839,6 +876,9 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-2)
     parser.add_argument("--skip-bootstrap", action="store_true",
                         help="Skip Experiment 3 (bootstrap stability).")
+    parser.add_argument("--bootstrap-only", action="store_true",
+                        help="Load existing Exp 1 directions from --output-dir and run "
+                             "only Experiment 3 (skips Exp 1/2 probe training + geometry).")
     parser.add_argument("--n-bootstrap", type=int, default=200,
                         help="Number of bootstrap resamples (default 200).")
     parser.add_argument("--model", default=OLMO_REPO,
@@ -884,6 +924,31 @@ def main() -> None:
     print(f"Loaded in {time.time() - t0:.1f}s "
           f"({model.info.n_params / 1e9:.1f}B params, "
           f"{model.info.n_layers} layers)")
+
+    # Bootstrap-only: load existing Exp 1 directions and jump straight to Exp 3.
+    if args.bootstrap_only:
+        print(f"\n{'='*60}")
+        print(f"BOOTSTRAP-ONLY: loading Exp 1 directions from {output_dir}")
+        print(f"{'='*60}")
+        exp1_results = load_exp1_results(output_dir)
+        print(f"Loaded directions for {len(exp1_results['directions'])} foundations, "
+              f"{exp1_results['n_layers']} layers")
+
+        print(f"\n{'='*60}")
+        print(f"EXPERIMENT 3: Bootstrap Direction Stability ({args.n_bootstrap} resamples)")
+        print(f"{'='*60}")
+        t0 = time.time()
+        run_experiment_3(
+            model, dataset, exp1_results, output_dir,
+            n_bootstrap=args.n_bootstrap,
+            n_epochs=args.n_epochs, lr=args.lr,
+        )
+        print(f"Experiment 3 complete: {time.time() - t0:.1f}s")
+
+        del model
+        _clear_memory()
+        print(f"\nBootstrap output: {output_dir / 'exp3_bootstrap_stability.json'}")
+        return
 
     # Experiment 1
     print(f"\n{'='*60}")

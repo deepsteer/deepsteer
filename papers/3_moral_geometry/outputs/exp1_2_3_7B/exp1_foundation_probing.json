@@ -1,6 +1,6 @@
 {
   "experiment": "exp1_foundation_probing",
-  "model": "allenai/OLMo-2-0425-1B",
+  "model": "allenai/OLMo-2-0425-7B",
   "n_layers": 32,
   "hidden_dim": 4096,
   "n_epochs": 50,

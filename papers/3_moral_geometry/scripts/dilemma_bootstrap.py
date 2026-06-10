@@ -103,6 +103,7 @@ def main() -> None:
     parser.add_argument("--dataset", default="deepsteer/datasets/dilemma_pairs_final.json")
     parser.add_argument("--output-dir", default="papers/3_moral_geometry/outputs/dilemma_bootstrap")
     parser.add_argument("--device", default=None)
+    parser.add_argument("--model", default=OLMO_REPO, help="HuggingFace model ID.")
     parser.add_argument("--n-bootstrap", type=int, default=200)
     parser.add_argument("--n-epochs", type=int, default=50)
     parser.add_argument("--lr", type=float, default=1e-2)
@@ -130,9 +131,9 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Loading model: {OLMO_REPO}")
+    print(f"Loading model: {args.model}")
     t0 = time.time()
-    model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
+    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
     print(f"Loaded in {time.time() - t0:.1f}s ({n_layers} layers)")
 
@@ -249,7 +250,7 @@ def main() -> None:
 
     output = {
         "experiment": "dilemma_bootstrap",
-        "model": OLMO_REPO,
+        "model": args.model,
         "n_bootstrap": args.n_bootstrap,
         "n_epochs": args.n_epochs,
         "lr": args.lr,

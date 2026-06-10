@@ -220,8 +220,10 @@ def main() -> None:
                         default="papers/3_moral_geometry/outputs/exp5_dense_vs_moe")
     parser.add_argument("--device", default=None)
     parser.add_argument("--dataset-target", type=int, default=40)
+    parser.add_argument("--model", default=OLMO_REPO,
+                        help="HuggingFace model ID for the dense model.")
     parser.add_argument("--quick", action="store_true",
-                        help="Skip OLMo-2 re-run, load from Exp 1-3 JSON.")
+                        help="Skip dense model re-run, load from Exp 1-3 JSON (1B only).")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -295,10 +297,10 @@ def main() -> None:
         print(f"  Loaded {len(directions)} foundations, {n_layers} layers")
     else:
         print(f"\n{'='*60}")
-        print(f"Loading OLMo-2 1B: {OLMO_REPO}")
+        print(f"Loading dense model: {args.model}")
         print(f"{'='*60}")
         t0 = time.time()
-        olmo_model = WhiteBoxModel(OLMO_REPO, device=args.device, access_tier=AccessTier.WEIGHTS)
+        olmo_model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
         print(f"Loaded in {time.time() - t0:.1f}s")
 
         olmo_dir = output_dir / "olmo"
@@ -354,7 +356,7 @@ def main() -> None:
         summary = {
             "experiment": "exp5_dense_vs_moe_geometry",
             "olmo": {
-                "model": OLMO_REPO,
+                "model": args.model,
                 "peak_separation_layer": olmo_exp2.get("peak_separation_layer"),
                 "mean_cosine_range": {
                     "min": min(olmo_exp2["mean_cosine"].values()),
