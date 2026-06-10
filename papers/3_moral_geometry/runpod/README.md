@@ -85,3 +85,14 @@ python papers/3_moral_geometry/scripts/scale_comparison_figures.py
 - If you Ctrl-C during the run, the trap still fires and terminates the pod.
   Always confirm in the RunPod console that the pod is gone if you saw a
   terminate warning.
+- **Drop-proof execution.** The experiment plan is launched detached (`nohup`,
+  logging to `session.log` on the pod); the orchestrator then polls the log plus
+  a `.session_done` sentinel. A dropped/blipped SSH connection no longer kills
+  the run — polling just retries and reattaches. The run only depends on the
+  local launcher process staying alive, so for multi-hour runs start it under
+  `tmux`/`nohup` locally too (e.g. `tmux new -s p3 './run_session.sh'`) so a
+  closed laptop lid can't end it. (If the local launcher *does* die, its EXIT
+  trap terminates the pod — no cost leak, but the run is lost.)
+- **Performance.** Activation collection is truly batched (one GPU forward per
+  ~32 texts), so the A100 is actually utilized. Tune with `batch_size` in
+  `collect_batch_activations` if you hit memory limits on smaller GPUs.

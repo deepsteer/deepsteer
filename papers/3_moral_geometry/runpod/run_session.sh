@@ -159,14 +159,36 @@ rsync -az --delete \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 
 # ---------------------------------- execute ----------------------------------
-echo ">> Running experiments on pod"
-ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
-  "cd $REMOTE_DIR && \
+# Launch the experiment plan DETACHED (nohup) so a dropped SSH connection can't
+# SIGHUP it. We then poll the log file + a completion sentinel; transient ssh
+# failures just retry, since the run no longer depends on this channel.
+REMOTE_LOG="$REMOTE_DIR/session.log"
+REMOTE_DONE="$REMOTE_DIR/.session_done"
+echo ">> Launching experiments detached on pod (log: $REMOTE_LOG)"
+RUN_PID="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
    PYTHONUNBUFFERED=1 \
    REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
    RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
    RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
-   bash papers/3_moral_geometry/runpod/remote_experiments.sh"
+   nohup bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 </dev/null & echo \$!")"
+echo ">> Remote PID: ${RUN_PID:-unknown}. Streaming (run survives SSH drops; Ctrl-C terminates pod)."
+
+SEEN=0
+while true; do
+  CHUNK="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+  if [ -n "$CHUNK" ]; then
+    printf '%s\n' "$CHUNK"
+    SEEN=$((SEEN + $(printf '%s\n' "$CHUNK" | wc -l)))
+  fi
+  if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
+    FINAL="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+    [ -n "$FINAL" ] && printf '%s\n' "$FINAL"
+    break
+  fi
+  sleep 10
+done
+echo ">> Experiments finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
 echo ">> Downloading results"

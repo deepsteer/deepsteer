@@ -113,3 +113,6 @@ fi
 
 log "Session complete. Output directories:"
 ls -d "$P3"/outputs/*_7B "$P3"/outputs/taxonomy "$P3"/outputs/external_robustness 2>/dev/null || true
+
+# Completion sentinel the launcher polls for (survives SSH drops).
+touch "$REPO_DIR/.session_done"
