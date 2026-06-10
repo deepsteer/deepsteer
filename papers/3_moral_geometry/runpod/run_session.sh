@@ -140,8 +140,14 @@ for _ in $(seq 1 30); do
 done
 
 # ---------------------------------- sync up ----------------------------------
+# The base image may lack rsync; rsync needs it on BOTH ends. Install if missing.
+echo ">> Preparing pod (mkdir + ensure rsync)..."
+ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  "mkdir -p $REMOTE_DIR && (command -v rsync >/dev/null 2>&1 || \
+   { apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rsync; } || \
+   { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
+
 echo ">> Syncing repo -> pod:$REMOTE_DIR"
-ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "mkdir -p $REMOTE_DIR"
 rsync -az --delete \
   --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' \
   --exclude '.venv' --exclude 'venv' --exclude '*.egg-info' \
