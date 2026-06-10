@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# Programmatic RunPod session for the Paper 3 7B GPU work.
+#
+#   spin up A100 -> rsync repo -> run experiments -> rsync results back -> terminate
+#
+# The pod is ALWAYS terminated on exit (trap), including on error or Ctrl-C, so
+# you never leak GPU time. Set KEEP_POD=1 to leave it running for debugging.
+#
+# Prerequisites (local):
+#   - curl, jq, ssh, rsync
+#   - RUNPOD_API_KEY exported
+#   - an SSH keypair at $SSH_KEY (+ $SSH_KEY.pub); the public key is injected
+#     into the pod via the PUBLIC_KEY env var so sshd authorizes you
+#
+# Usage:
+#   export RUNPOD_API_KEY=...
+#   ./run_session.sh                  # full default session
+#   RUN_DILEMMA=1 ./run_session.sh    # also run the stretch dilemma step
+#   KEEP_POD=1 ./run_session.sh       # don't terminate at the end
+#   REUSE_POD_ID=<id> ./run_session.sh  # attach to an existing pod (no create/terminate)
+set -euo pipefail
+
+# ---------------------------- config (override via env) ----------------------
+: "${RUNPOD_API_KEY:?export RUNPOD_API_KEY first}"
+GPU_TYPE="${GPU_TYPE:-NVIDIA A100 80GB PCIe}"
+IMAGE="${IMAGE:-runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04}"
+DISK_GB="${DISK_GB:-80}"
+VOLUME_GB="${VOLUME_GB:-0}"
+POD_NAME="${POD_NAME:-deepsteer-p3-7b}"
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
+REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
+MODEL="${MODEL:-allenai/OLMo-2-0425-7B}"
+N_BOOTSTRAP="${N_BOOTSTRAP:-200}"
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
+
+# Step toggles passed through to the remote runner.
+RUN_BOOTSTRAP="${RUN_BOOTSTRAP:-1}"
+RUN_FRAGILITY="${RUN_FRAGILITY:-1}"
+RUN_CAUSAL="${RUN_CAUSAL:-1}"
+RUN_DILEMMA="${RUN_DILEMMA:-0}"
+RUN_TAXONOMY="${RUN_TAXONOMY:-1}"
+RUN_EXTERNAL="${RUN_EXTERNAL:-1}"
+
+for bin in curl jq ssh rsync; do
+  command -v "$bin" >/dev/null || { echo "ERROR: '$bin' not found in PATH"; exit 1; }
+done
+
+gql() { curl -s "$API" -H 'Content-Type: application/json' -d "$(jq -n --arg q "$1" '{query:$q}')"; }
+
+POD_ID="${REUSE_POD_ID:-}"
+
+cleanup() {
+  [ -n "${POD_ID:-}" ] || return 0
+  [ -n "${REUSE_POD_ID:-}" ] && { echo "Attached to existing pod $POD_ID; not terminating."; return 0; }
+  if [ "${KEEP_POD:-0}" = 1 ]; then
+    echo "KEEP_POD=1 -> pod $POD_ID left RUNNING. Terminate later with:"
+    echo "  curl -s '$API' -H 'Content-Type: application/json' -d '{\"query\":\"mutation { podTerminate(input:{podId:\\\"$POD_ID\\\"}) }\"}'"
+    return 0
+  fi
+  echo ">> Terminating pod $POD_ID"
+  gql "mutation { podTerminate(input:{podId:\"$POD_ID\"}) }" >/dev/null || \
+    echo "WARN: terminate call failed; verify in the RunPod console!"
+}
+trap cleanup EXIT
+
+# ---------------------------------- create -----------------------------------
+if [ -z "$POD_ID" ]; then
+  [ -f "${SSH_KEY}.pub" ] || { echo "ERROR: ${SSH_KEY}.pub not found"; exit 1; }
+  PUBKEY="$(cat "${SSH_KEY}.pub")"
+  echo ">> Creating pod ($GPU_TYPE, $IMAGE)"
+  CREATE_MUT="mutation {
+    podFindAndDeployOnDemand(input: {
+      cloudType: SECURE
+      gpuCount: 1
+      volumeInGb: ${VOLUME_GB}
+      containerDiskInGb: ${DISK_GB}
+      gpuTypeId: \"${GPU_TYPE}\"
+      name: \"${POD_NAME}\"
+      imageName: \"${IMAGE}\"
+      ports: \"22/tcp\"
+      volumeMountPath: \"/workspace\"
+      env: [{ key: \"PUBLIC_KEY\", value: \"${PUBKEY}\" }]
+    }) { id }
+  }"
+  RESP="$(gql "$CREATE_MUT")"
+  POD_ID="$(echo "$RESP" | jq -r '.data.podFindAndDeployOnDemand.id // empty')"
+  if [ -z "$POD_ID" ]; then
+    echo "ERROR: pod creation failed:"; echo "$RESP" | jq . 2>/dev/null || echo "$RESP"; exit 1
+  fi
+  echo ">> Pod $POD_ID created"
+fi
+
+# ----------------------------- wait for SSH ----------------------------------
+echo ">> Waiting for pod to be RUNNING with a public SSH port..."
+SSH_HOST=""; SSH_PORT=""
+for _ in $(seq 1 90); do
+  R="$(gql "query { pod(input:{podId:\"$POD_ID\"}) { desiredStatus runtime { ports { ip isIpPublic privatePort publicPort type } } } }")"
+  STATUS="$(echo "$R" | jq -r '.data.pod.desiredStatus // empty')"
+  EP="$(echo "$R" | jq -r '.data.pod.runtime.ports[]? | select(.privatePort==22 and .type=="tcp" and .isIpPublic==true) | "\(.ip):\(.publicPort)"' | head -1)"
+  if [ "$STATUS" = "RUNNING" ] && [ -n "$EP" ]; then
+    SSH_HOST="${EP%:*}"; SSH_PORT="${EP##*:}"; break
+  fi
+  sleep 10
+done
+[ -n "$SSH_HOST" ] || { echo "ERROR: pod never exposed an SSH endpoint"; exit 1; }
+echo ">> SSH endpoint: root@$SSH_HOST:$SSH_PORT"
+
+SSH_OPTS=(-p "$SSH_PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10)
+echo ">> Waiting for sshd..."
+for _ in $(seq 1 30); do
+  ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" 'echo ok' 2>/dev/null | grep -q ok && break
+  sleep 5
+done
+
+# ---------------------------------- sync up ----------------------------------
+echo ">> Syncing repo -> pod:$REMOTE_DIR"
+ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "mkdir -p $REMOTE_DIR"
+rsync -az --delete \
+  --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' \
+  --exclude '.venv' --exclude 'venv' --exclude '*.egg-info' \
+  --exclude 'build/' --exclude '.DS_Store' \
+  -e "ssh ${SSH_OPTS[*]}" \
+  "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
+
+# ---------------------------------- execute ----------------------------------
+echo ">> Running experiments on pod"
+ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  "cd $REMOTE_DIR && \
+   REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP \
+   RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
+   RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
+   bash papers/3_moral_geometry/runpod/remote_experiments.sh"
+
+# --------------------------------- download ----------------------------------
+echo ">> Downloading results"
+rsync -az \
+  -e "ssh ${SSH_OPTS[*]}" \
+  "root@$SSH_HOST:$REMOTE_DIR/papers/3_moral_geometry/outputs/" \
+  "$REPO_ROOT/papers/3_moral_geometry/outputs/"
+
+echo ">> Done. New 7B outputs are under papers/3_moral_geometry/outputs/."
+echo ">> Next (local): regenerate scale-comparison figures with real 7B data:"
+echo "     python papers/3_moral_geometry/scripts/scale_comparison_figures.py"
+# pod terminated by the EXIT trap
