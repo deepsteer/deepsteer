@@ -23,6 +23,14 @@ RUN_DILEMMA="${RUN_DILEMMA:-0}"       # A.4  dilemma probing + geometry (stretch
 RUN_TAXONOMY="${RUN_TAXONOMY:-1}"     # B    data-driven taxonomy (skips if script absent)
 RUN_EXTERNAL="${RUN_EXTERNAL:-1}"     # E    MFV external robustness (skips if script absent)
 
+# Cap CPU threads. The pod is a container on a huge shared host, so torch
+# otherwise spawns ~100 intra-op threads for tiny probe matmuls, and thread-sync
+# overhead makes each ~50-100x slower (0.46s vs <0.01s per probe). Must be
+# exported BEFORE python imports torch.
+CPU_THREADS="${CPU_THREADS:-8}"
+export OMP_NUM_THREADS="$CPU_THREADS" MKL_NUM_THREADS="$CPU_THREADS" \
+       OPENBLAS_NUM_THREADS="$CPU_THREADS" NUMEXPR_NUM_THREADS="$CPU_THREADS"
+
 log()  { echo -e "\n=== [$(date +%H:%M:%S)] $* ==="; }
 run_step() { local name="$1"; shift; log "START $name"
   if "$@"; then log "OK    $name"; else echo "WARN: $name FAILED (continuing)"; fi; }
