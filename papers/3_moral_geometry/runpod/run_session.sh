@@ -148,10 +148,13 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
 
 echo ">> Syncing repo -> pod:$REMOTE_DIR"
+# Exclude large model/cache blobs (SAE caches, checkpoints) — multi-GB and not
+# needed by any RunPod step. The needed inputs are .json/.npz/.py/datasets.
 rsync -az --delete \
   --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' \
   --exclude '.venv' --exclude 'venv' --exclude '*.egg-info' \
   --exclude 'build/' --exclude '.DS_Store' \
+  --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
   -e "ssh ${SSH_OPTS[*]}" \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 
@@ -168,6 +171,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
 # --------------------------------- download ----------------------------------
 echo ">> Downloading results"
 rsync -az \
+  --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
   -e "ssh ${SSH_OPTS[*]}" \
   "root@$SSH_HOST:$REMOTE_DIR/papers/3_moral_geometry/outputs/" \
   "$REPO_ROOT/papers/3_moral_geometry/outputs/"
