@@ -54,12 +54,16 @@ if [ "$RUN_BENCH" = 1 ]; then
       --output "$P3/outputs/benchmarks/probe_device_bench.json"
 fi
 
-# --- A.2: Exp 3 bootstrap stability (reuses synced 7B Exp 1 directions) ---
+# --- A.1-3: foundation probing + geometry + bootstrap (FULL, not --bootstrap-only) ---
+# Recompute exp1 directions fresh on $MODEL/v2 so the bootstrap reference, exp2
+# geometry, and the npz consumed by C/B/E below are all consistent. (The old
+# --bootstrap-only path trusted a pre-existing npz of uncertain provenance, which
+# made the bootstrap cosines collapse to ~0.3 from a reference mismatch.)
 if [ "$RUN_BOOTSTRAP" = 1 ]; then
-  run_step "A.2 bootstrap stability (7B)" \
+  run_step "A.1-3 probing + geometry + bootstrap (7B)" \
     python "$P3/scripts/exp1_2_3_framework_geometry.py" \
       --model "$MODEL" --output-dir "$P3/outputs/exp1_2_3_7B" \
-      --bootstrap-only --n-bootstrap "$N_BOOTSTRAP" --device "$DEVICE"
+      --n-bootstrap "$N_BOOTSTRAP" --device "$DEVICE"
 fi
 
 # --- A.3: Exp 7 framework fragility ---
