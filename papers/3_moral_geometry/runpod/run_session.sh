@@ -172,22 +172,33 @@ RUN_PID="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
    RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
    nohup bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 </dev/null & echo \$!")"
-echo ">> Remote PID: ${RUN_PID:-unknown}. Streaming (run survives SSH drops; Ctrl-C terminates pod)."
+echo ">> Remote PID: ${RUN_PID:-unknown}. Live log below (run survives SSH drops; Ctrl-C terminates pod)."
+echo ">> Monitor from another terminal:"
+echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST 'tail -f $REMOTE_LOG'"
+echo "----------------------------------------------------------------------"
 
+# Live-follow the remote log right here in the console. With --pid, the remote
+# `tail -f` exits cleanly when the run finishes; a dropped ssh just returns and
+# we reattach from the last line we saw (no duplicates, no manual ssh needed).
 SEEN=0
 while true; do
-  CHUNK="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
-  if [ -n "$CHUNK" ]; then
-    printf '%s\n' "$CHUNK"
-    SEEN=$((SEEN + $(printf '%s\n' "$CHUNK" | wc -l)))
+  if [ -n "${RUN_PID:-}" ]; then
+    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+      "tail -n +$((SEEN + 1)) --pid=$RUN_PID -f '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true
+  else
+    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+      "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true
   fi
+  # Re-sync how many lines we've consumed (only on a successful read, so a
+  # transient ssh failure doesn't reset us and re-print the whole log).
+  NEW_SEEN="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "wc -l < '$REMOTE_LOG' 2>/dev/null" 2>/dev/null | tr -d '[:space:]' || true)"
+  [ -n "$NEW_SEEN" ] && SEEN="$NEW_SEEN"
   if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
-    FINAL="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
-    [ -n "$FINAL" ] && printf '%s\n' "$FINAL"
     break
   fi
-  sleep 10
+  sleep 2
 done
+echo "----------------------------------------------------------------------"
 echo ">> Experiments finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
