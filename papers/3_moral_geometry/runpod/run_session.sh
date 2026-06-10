@@ -31,6 +31,7 @@ SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
 REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
 MODEL="${MODEL:-allenai/OLMo-2-0425-7B}"
 N_BOOTSTRAP="${N_BOOTSTRAP:-200}"
+DIRECTIONS_NPZ="${DIRECTIONS_NPZ:-papers/3_moral_geometry/outputs/exp1_2_3_7B/exp1_probe_directions.npz}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
@@ -128,7 +129,7 @@ rsync -az --delete \
 echo ">> Running experiments on pod"
 ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
   "cd $REMOTE_DIR && \
-   REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP \
+   REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
    RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
    RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
    bash papers/3_moral_geometry/runpod/remote_experiments.sh"

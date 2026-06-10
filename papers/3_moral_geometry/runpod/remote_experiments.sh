@@ -11,6 +11,8 @@ MODEL="${MODEL:-allenai/OLMo-2-0425-7B}"
 DEVICE="${DEVICE:-cuda}"
 N_BOOTSTRAP="${N_BOOTSTRAP:-200}"
 P3="papers/3_moral_geometry"
+# exp1 probe directions matching $MODEL's scale (used by B/E/C/A.4 steps).
+DIRECTIONS_NPZ="${DIRECTIONS_NPZ:-$P3/outputs/exp1_2_3_7B/exp1_probe_directions.npz}"
 
 # Step toggles (1 = run). Steps whose script does not exist yet auto-skip.
 RUN_SETUP="${RUN_SETUP:-1}"
@@ -90,7 +92,8 @@ if [ "$RUN_TAXONOMY" = 1 ]; then
   if [ -f "$P3/scripts/data_driven_taxonomy.py" ]; then
     run_step "B taxonomy (7B)" \
       python "$P3/scripts/data_driven_taxonomy.py" \
-        --model "$MODEL" --output-dir "$P3/outputs/taxonomy" --device "$DEVICE"
+        --model "$MODEL" --output-dir "$P3/outputs/taxonomy" \
+        --directions "$DIRECTIONS_NPZ" --device "$DEVICE"
   else
     echo "SKIP B taxonomy: $P3/scripts/data_driven_taxonomy.py not present yet"
   fi
@@ -101,7 +104,8 @@ if [ "$RUN_EXTERNAL" = 1 ]; then
   if [ -f "$P3/scripts/external_dataset_robustness.py" ]; then
     run_step "E external robustness (7B)" \
       python "$P3/scripts/external_dataset_robustness.py" \
-        --model "$MODEL" --output-dir "$P3/outputs/external_robustness" --device "$DEVICE"
+        --model "$MODEL" --output-dir "$P3/outputs/external_robustness" \
+        --directions "$DIRECTIONS_NPZ" --device "$DEVICE"
   else
     echo "SKIP E external robustness: $P3/scripts/external_dataset_robustness.py not present yet"
   fi

@@ -38,9 +38,15 @@ api = [
 lora = [
     "peft>=0.11",
 ]
+papers = [
+    # Analysis-only deps for papers/ scripts (clustering, taxonomy). Not used
+    # by the deepsteer/ core library, so kept out of the default install.
+    "scikit-learn",
+]
 all = [
     "deepsteer[api]",
     "deepsteer[lora]",
+    "deepsteer[papers]",
 ]
 dev = [
     "deepsteer[all]",
