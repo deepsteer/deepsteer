@@ -7,7 +7,7 @@ set -uo pipefail
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
 
-MODEL="${MODEL:-allenai/OLMo-2-0425-7B}"
+MODEL="${MODEL:-allenai/OLMo-2-1124-7B}"
 DEVICE="${DEVICE:-cuda}"
 N_BOOTSTRAP="${N_BOOTSTRAP:-200}"
 P3="papers/3_moral_geometry"

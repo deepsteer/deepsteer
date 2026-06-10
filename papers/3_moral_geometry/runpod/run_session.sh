@@ -36,7 +36,7 @@ VOLUME_GB="${VOLUME_GB:-0}"
 POD_NAME="${POD_NAME:-deepsteer-p3-7b}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
 REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
-MODEL="${MODEL:-allenai/OLMo-2-0425-7B}"
+MODEL="${MODEL:-allenai/OLMo-2-1124-7B}"
 N_BOOTSTRAP="${N_BOOTSTRAP:-200}"
 DIRECTIONS_NPZ="${DIRECTIONS_NPZ:-papers/3_moral_geometry/outputs/exp1_2_3_7B/exp1_probe_directions.npz}"
 

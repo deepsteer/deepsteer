@@ -1,6 +1,6 @@
 {
   "experiment": "exp2_framework_geometry",
-  "model": "allenai/OLMo-2-0425-7B",
+  "model": "allenai/OLMo-2-1124-7B",
   "foundations_present": [
     "care_harm",
     "fairness_cheating",

@@ -2,7 +2,7 @@
   "experiment": "scale_comparison_figures",
   "models": {
     "1B": null,
-    "7B": "allenai/OLMo-2-0425-7B"
+    "7B": "allenai/OLMo-2-1124-7B"
   },
   "display_layers": {
     "1B": 7,
