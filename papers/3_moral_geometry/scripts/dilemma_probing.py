@@ -99,17 +99,11 @@ def train_probe_with_direction(
 
 
 def collect_activations(model, texts: list[str], n_layers: int) -> dict[int, list[torch.Tensor]]:
-    """Collect mean-pooled activations for a list of texts at each layer."""
-    all_acts: dict[int, list[torch.Tensor]] = {l: [] for l in range(n_layers)}
-
-    for text in texts:
-        acts = model.get_activations(text, layers=list(range(n_layers)))
-        for layer_idx in range(n_layers):
-            h = acts[layer_idx]
-            pooled = h.mean(dim=1).squeeze(0).float()
-            all_acts[layer_idx].append(pooled.cpu())
-
-    return all_acts
+    """Collect mean-pooled activations for a list of texts at each layer (batched)."""
+    pooled = model.collect_batch_activations(
+        texts, layers=list(range(n_layers)), pooling="mean",
+    )  # {layer: (n_texts, hidden)}
+    return {layer_idx: list(pooled[layer_idx]) for layer_idx in range(n_layers)}
 
 
 def prepare_probe_data(

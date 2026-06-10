@@ -160,18 +160,14 @@ class LayerWiseMoralProbe(Benchmark):
             (X, y) where X has shape (2*n_pairs, hidden_dim) and y has shape
             (2*n_pairs,) with 1=moral, 0=neutral.
         """
-        features: list[Tensor] = []
+        texts: list[str] = []
         labels: list[int] = []
-
         for pair in pairs:
-            for text, label in [(pair.moral, 1), (pair.neutral, 0)]:
-                acts = model.get_activations(text, layers=[layer])
-                # acts[layer] shape: (1, seq_len, hidden_dim) → mean pool → (hidden_dim,)
-                pooled = acts[layer].squeeze(0).mean(dim=0)
-                features.append(pooled)
-                labels.append(label)
+            texts.extend([pair.moral, pair.neutral])
+            labels.extend([1, 0])
 
-        X = torch.stack(features).float()  # (2*n, hidden_dim) — cast to fp32 for probing
+        pooled = model.collect_batch_activations(texts, layers=[layer], pooling="mean")
+        X = pooled[layer].float()  # (2*n, hidden_dim)
         y = torch.tensor(labels, dtype=torch.float32)  # (2*n,)
         return X, y
 
@@ -192,29 +188,17 @@ class LayerWiseMoralProbe(Benchmark):
             ``(2*n_pairs, hidden_dim)`` and y has shape ``(2*n_pairs,)``
             with 1=moral, 0=neutral.
         """
-        per_layer_features: dict[int, list[Tensor]] = {}
+        # Interleave moral/neutral so row 2i = moral, 2i+1 = neutral (preserved
+        # for downstream bootstrap pair-resampling).
+        texts: list[str] = []
         labels: list[int] = []
-        n_pairs = len(pairs)
+        for pair in pairs:
+            texts.extend([pair.moral, pair.neutral])
+            labels.extend([1, 0])
 
-        for i, pair in enumerate(pairs):
-            for text, label in [(pair.moral, 1), (pair.neutral, 0)]:
-                acts = model.get_activations(text)  # all layers, one forward pass
-                for layer_idx, layer_acts in acts.items():
-                    # layer_acts shape: (1, seq_len, hidden_dim) → mean pool → (hidden_dim,)
-                    pooled = layer_acts.squeeze(0).mean(dim=0)
-                    if layer_idx not in per_layer_features:
-                        per_layer_features[layer_idx] = []
-                    per_layer_features[layer_idx].append(pooled)
-                labels.append(label)
-            if (i + 1) % 50 == 0 or i + 1 == n_pairs:
-                logger.info("  Collected activations: %d/%d pairs", i + 1, n_pairs)
-
+        pooled = model.collect_batch_activations(texts, pooling="mean")  # {layer: (2n, hidden)}
         y = torch.tensor(labels, dtype=torch.float32)
-        result: dict[int, tuple[Tensor, Tensor]] = {}
-        for layer_idx, features in per_layer_features.items():
-            X = torch.stack(features).float()  # cast to fp32 for probing
-            result[layer_idx] = (X, y)
-        return result
+        return {layer_idx: (X.float(), y) for layer_idx, X in pooled.items()}
 
     def _train_probe(
         self,

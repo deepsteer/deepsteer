@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 
 import pytest
 import torch
@@ -20,8 +19,8 @@ from deepsteer.core.types import (
     CheckpointTrajectoryResult,
     LayerProbeScore,
     LayerProbingResult,
-    MoralFoundation,
     ModelInfo,
+    MoralFoundation,
 )
 from deepsteer.datasets.types import (
     DatasetMetadata,
@@ -30,7 +29,6 @@ from deepsteer.datasets.types import (
     ProbingDataset,
     ProbingPair,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model
@@ -84,6 +82,20 @@ class MockWhiteBoxModel:
             activation = torch.randn(1, 5, self._hidden_dim) * 0.1 + mean
             result[layer] = activation
         return result
+
+    def collect_batch_activations(
+        self, texts, layers=None, pooling="mean", batch_size=32
+    ) -> dict[int, Tensor]:
+        if layers is None:
+            layers = list(range(self._n_layers))
+        per_layer: dict[int, list[Tensor]] = {layer: [] for layer in layers}
+        for text in texts:
+            acts = self.get_activations(text, layers=layers)
+            for layer in layers:
+                h = acts[layer].squeeze(0)  # (seq, hidden)
+                pooled = {"mean": h.mean(0), "last": h[-1], "first": h[0]}.get(pooling, h)
+                per_layer[layer].append(pooled.float())
+        return {layer: torch.stack(per_layer[layer]) for layer in layers}
 
 
 # ---------------------------------------------------------------------------

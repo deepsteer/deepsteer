@@ -377,55 +377,90 @@ class WhiteBoxModel(ModelInterface):
         texts: list[str],
         layers: list[int] | None = None,
         pooling: str = "mean",
+        batch_size: int = 32,
     ) -> dict[int, Tensor]:
-        """Collect activations for a batch of texts at specified layers.
+        """Collect activations for many texts at specified layers, in true batches.
+
+        Texts are processed ``batch_size`` at a time with a single forward per
+        batch (hooks capture all requested layers at once). Sequences are
+        right-padded and pooling is attention-mask-aware. For causal decoder
+        LMs, right-padding leaves each real token's hidden state identical to
+        the unpadded single-text forward, so mean/last/first pooling matches the
+        per-text path numerically (cosine > 0.999; small fp differences only).
 
         Args:
             texts: Input texts.
             layers: Layer indices. ``None`` = all layers.
-            pooling: How to reduce the sequence dimension.
-                ``"mean"`` — mean across tokens (default, used by all papers).
-                ``"last"`` — last token only.
-                ``"first"`` — first token (CLS-style).
-                ``"none"`` — keep full sequence (returns 3D tensors).
+            pooling: Sequence reduction — ``"mean"`` (default), ``"last"``,
+                ``"first"``, or ``"none"`` (keep full per-text sequence).
+            batch_size: Texts per forward pass.
 
         Returns:
-            Mapping from layer index to tensor of shape
-            ``(n_texts, hidden_dim)`` if pooling != ``"none"``,
-            or list of variable-length tensors if ``"none"``.
+            Mapping from layer index to a float32 CPU tensor of shape
+            ``(n_texts, hidden_dim)`` if pooling != ``"none"``, or a list of
+            per-text ``(seq_len_i, hidden_dim)`` tensors if ``"none"``.
         """
         if pooling not in ("mean", "last", "first", "none"):
             raise ValueError(f"Unknown pooling mode: {pooling!r}")
+        if layers is None:
+            layers = list(range(self._info.n_layers))  # type: ignore[arg-type]
 
-        per_layer: dict[int, list[Tensor]] = {}
         n_texts = len(texts)
+        per_layer: dict[int, list[Tensor]] = {idx: [] for idx in layers}
+        if n_texts == 0:
+            return {idx: torch.empty(0) for idx in layers}
 
-        for i, text in enumerate(texts):
-            acts = self.get_activations(text, layers=layers)
-            for layer_idx, layer_acts in acts.items():
-                # layer_acts shape: (1, seq_len, hidden_dim)
-                squeezed = layer_acts.squeeze(0)  # (seq_len, hidden_dim)
-                if pooling == "mean":
-                    pooled = squeezed.mean(dim=0)
-                elif pooling == "last":
-                    pooled = squeezed[-1]
-                elif pooling == "first":
-                    pooled = squeezed[0]
-                else:  # "none"
-                    pooled = squeezed
-                if layer_idx not in per_layer:
-                    per_layer[layer_idx] = []
-                per_layer[layer_idx].append(pooled)
-            if (i + 1) % 50 == 0 or i + 1 == n_texts:
-                logger.info("  Collected activations: %d/%d texts", i + 1, n_texts)
+        # Right-padding keeps real-token hidden states identical to the
+        # single-text forward (causal attention ignores trailing pads; default
+        # position ids stay aligned). Restore the prior side afterwards.
+        prev_side = getattr(self._tokenizer, "padding_side", "right")
+        self._tokenizer.padding_side = "right"
+        try:
+            for start in range(0, n_texts, batch_size):
+                batch = texts[start:start + batch_size]
+                captured: dict[int, Tensor] = {}
 
-        result: dict[int, Tensor] = {}
-        for layer_idx, features in per_layer.items():
-            if pooling == "none":
-                result[layer_idx] = features  # type: ignore[assignment]
-            else:
-                result[layer_idx] = torch.stack(features)
-        return result
+                def _make_hook(layer_idx: int):
+                    def hook(_module: torch.nn.Module, _input: Any, output: Any) -> None:
+                        captured[layer_idx] = output[0] if isinstance(output, tuple) else output
+                    return hook
+
+                hooks = [self._get_layer_module(idx).register_forward_hook(_make_hook(idx))
+                         for idx in layers]
+                try:
+                    enc = self._tokenizer(
+                        batch, return_tensors="pt", padding=True, truncation=True,
+                    ).to(self._device)
+                    self._model(**enc)
+                finally:
+                    for h in hooks:
+                        h.remove()
+
+                mask = enc["attention_mask"]            # (b, L)
+                lengths = mask.sum(dim=1).clamp(min=1)  # (b,)
+                for layer_idx in layers:
+                    h = captured[layer_idx].float()     # (b, L, hidden)
+                    if pooling == "mean":
+                        m = mask.unsqueeze(-1).float()
+                        pooled = (h * m).sum(dim=1) / lengths.unsqueeze(-1).float()
+                        per_layer[layer_idx].append(pooled.cpu())
+                    elif pooling == "last":
+                        idx = (lengths - 1)
+                        pooled = h[torch.arange(h.size(0), device=h.device), idx]
+                        per_layer[layer_idx].append(pooled.cpu())
+                    elif pooling == "first":
+                        per_layer[layer_idx].append(h[:, 0].cpu())
+                    else:  # "none": keep each text's real tokens
+                        for bi in range(h.size(0)):
+                            per_layer[layer_idx].append(h[bi, : int(lengths[bi])].cpu())
+                logger.info("  Collected activations: %d/%d texts",
+                            min(start + batch_size, n_texts), n_texts)
+        finally:
+            self._tokenizer.padding_side = prev_side
+
+        if pooling == "none":
+            return {idx: per_layer[idx] for idx in layers}  # type: ignore[return-value]
+        return {idx: torch.cat(per_layer[idx], dim=0) for idx in layers}
 
     # -- Direction operation context managers --------------------------------
 
