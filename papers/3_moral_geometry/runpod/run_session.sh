@@ -165,36 +165,40 @@ rsync -az --delete \
 # signalled by the .session_done sentinel — no PID capture needed.
 REMOTE_LOG="$REMOTE_DIR/session.log"
 REMOTE_DONE="$REMOTE_DIR/.session_done"
-echo ">> Launching experiments detached on pod (log: $REMOTE_LOG)"
-ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
-  "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
-   PYTHONUNBUFFERED=1 \
-   REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
-   RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
-   RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
-   setsid bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null &"
-
-echo ">> Launched. Live log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo ">> Monitor from another terminal:"
 echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST 'tail -f $REMOTE_LOG'"
+echo ">> Launching experiments detached on pod (log: $REMOTE_LOG)"
+# Bulletproof fire-and-forget: the ( ... & ) subshell backgrounds the run and
+# its >/dev/null 2>&1 gives the ssh channel EOF, so the launch ssh ALWAYS
+# returns immediately (a bare `&` lets the child hold the channel open for the
+# whole run). setsid detaches it into its own session so it survives ssh drops.
+ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
+  "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
+   ( PYTHONUNBUFFERED=1 \
+     REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
+     RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
+     RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
+     setsid bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
+
+echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo "----------------------------------------------------------------------"
 
-# Live-stream the log here. A remote watcher kills the `tail -f` once the
-# sentinel appears, so this returns when the run finishes; a dropped ssh just
-# reattaches from the last line consumed (no duplicates, no manual ssh needed).
+# Poll the log: each short-lived `tail -n` ssh flushes its output on completion
+# (a long-lived `tail -f` over a no-PTY ssh would buffer). Completion is the
+# .session_done sentinel; transient ssh failures just retry on the next tick.
 SEEN=0
 while true; do
-  ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
-    "tail -n +$((SEEN + 1)) -f '$REMOTE_LOG' 2>/dev/null & _tp=\$!; \
-     while [ ! -f '$REMOTE_DONE' ]; do sleep 2; done; sleep 1; kill \$_tp 2>/dev/null" 2>/dev/null || true
-  # Re-sync consumed line count on a successful read (so a transient ssh failure
-  # doesn't reset us and re-print the whole log).
-  NEW_SEEN="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "wc -l < '$REMOTE_LOG' 2>/dev/null" 2>/dev/null | tr -d '[:space:]' || true)"
-  [ -n "$NEW_SEEN" ] && SEEN="$NEW_SEEN"
+  CHUNK="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+  if [ -n "$CHUNK" ]; then
+    printf '%s\n' "$CHUNK"
+    SEEN=$((SEEN + $(printf '%s\n' "$CHUNK" | wc -l)))
+  fi
   if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
+    FINAL="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"
+    [ -n "$FINAL" ] && printf '%s\n' "$FINAL"
     break
   fi
-  sleep 2
+  sleep 3
 done
 echo "----------------------------------------------------------------------"
 echo ">> Experiments finished (sentinel detected)."
