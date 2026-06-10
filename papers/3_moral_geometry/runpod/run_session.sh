@@ -22,7 +22,14 @@ set -euo pipefail
 
 # ---------------------------- config (override via env) ----------------------
 : "${RUNPOD_API_KEY:?export RUNPOD_API_KEY first}"
-GPU_TYPE="${GPU_TYPE:-NVIDIA A100 80GB PCIe}"
+# GPU candidates, tried in order until one deploys (first available wins).
+# OLMo-2 7B is ~14 GB in fp16, so 24-48 GB cards are plenty; the 80 GB types are
+# listed first only for headroom. Override with GPU_TYPE=... for a single type,
+# or GPU_TYPES="a,b,c" for a custom ordered list.
+GPU_TYPE="${GPU_TYPE:-}"
+GPU_TYPES="${GPU_TYPES:-NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB,NVIDIA L40S,NVIDIA RTX 6000 Ada Generation,NVIDIA RTX A6000,NVIDIA A40,NVIDIA GeForce RTX 4090,NVIDIA RTX A5000}"
+CLOUD_TYPES="${CLOUD_TYPES:-SECURE,COMMUNITY}"
+[ -n "$GPU_TYPE" ] && GPU_TYPES="$GPU_TYPE"
 IMAGE="${IMAGE:-runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04}"
 DISK_GB="${DISK_GB:-80}"
 VOLUME_GB="${VOLUME_GB:-0}"
@@ -70,27 +77,44 @@ trap cleanup EXIT
 if [ -z "$POD_ID" ]; then
   [ -f "${SSH_KEY}.pub" ] || { echo "ERROR: ${SSH_KEY}.pub not found"; exit 1; }
   PUBKEY="$(cat "${SSH_KEY}.pub")"
-  echo ">> Creating pod ($GPU_TYPE, $IMAGE)"
-  CREATE_MUT="mutation {
-    podFindAndDeployOnDemand(input: {
-      cloudType: SECURE
-      gpuCount: 1
-      volumeInGb: ${VOLUME_GB}
-      containerDiskInGb: ${DISK_GB}
-      gpuTypeId: \"${GPU_TYPE}\"
-      name: \"${POD_NAME}\"
-      imageName: \"${IMAGE}\"
-      ports: \"22/tcp\"
-      volumeMountPath: \"/workspace\"
-      env: [{ key: \"PUBLIC_KEY\", value: \"${PUBKEY}\" }]
-    }) { id }
-  }"
-  RESP="$(gql "$CREATE_MUT")"
-  POD_ID="$(echo "$RESP" | jq -r '.data.podFindAndDeployOnDemand.id // empty')"
+  IFS=',' read -ra _CLOUDS <<< "$CLOUD_TYPES"
+  IFS=',' read -ra _GPUS <<< "$GPU_TYPES"
+  GPU_TYPE=""; CLOUD_TYPE=""; LAST_ERR=""
+  echo ">> Searching for capacity across ${#_GPUS[@]} GPU type(s) x ${#_CLOUDS[@]} cloud(s)..."
+  for cloud in "${_CLOUDS[@]}"; do
+    cloud="$(echo "$cloud" | xargs)"
+    for gpu in "${_GPUS[@]}"; do
+      gpu="$(echo "$gpu" | xargs)"
+      echo "   trying: $gpu ($cloud)"
+      CREATE_MUT="mutation { podFindAndDeployOnDemand(input: {
+        cloudType: ${cloud}
+        gpuCount: 1
+        volumeInGb: ${VOLUME_GB}
+        containerDiskInGb: ${DISK_GB}
+        gpuTypeId: \"${gpu}\"
+        name: \"${POD_NAME}\"
+        imageName: \"${IMAGE}\"
+        ports: \"22/tcp\"
+        volumeMountPath: \"/workspace\"
+        env: [{ key: \"PUBLIC_KEY\", value: \"${PUBKEY}\" }]
+      }) { id } }"
+      RESP="$(gql "$CREATE_MUT")"
+      POD_ID="$(echo "$RESP" | jq -r '.data.podFindAndDeployOnDemand.id // empty')"
+      if [ -n "$POD_ID" ]; then
+        GPU_TYPE="$gpu"; CLOUD_TYPE="$cloud"
+        echo ">> Pod $POD_ID created ($gpu, $cloud)"
+        break 2
+      fi
+      LAST_ERR="$(echo "$RESP" | jq -r '.errors[0].message // empty')"
+      [ -n "$LAST_ERR" ] && echo "      -> $LAST_ERR"
+    done
+  done
   if [ -z "$POD_ID" ]; then
-    echo "ERROR: pod creation failed:"; echo "$RESP" | jq . 2>/dev/null || echo "$RESP"; exit 1
+    echo "ERROR: no capacity for any of [$GPU_TYPES] on [$CLOUD_TYPES]."
+    echo "       Last message: ${LAST_ERR:-none}"
+    echo "       Try later, widen GPU_TYPES, or set CLOUD_TYPES=COMMUNITY."
+    exit 1
   fi
-  echo ">> Pod $POD_ID created"
 fi
 
 # ----------------------------- wait for SSH ----------------------------------

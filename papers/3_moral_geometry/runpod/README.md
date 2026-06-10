@@ -71,8 +71,16 @@ python papers/3_moral_geometry/scripts/scale_comparison_figures.py
 
 ## Notes / caveats
 
-- `GPU_TYPE`, `IMAGE`, `DISK_GB` are overridable via env. If the A100 80 GB PCIe
-  pool is dry, try `GPU_TYPE="NVIDIA A100-SXM4-80GB"` or another 80 GB type.
+- **GPU selection / capacity.** OLMo-2 7B is ~14 GB in fp16, so a 24-48 GB card
+  is plenty. The orchestrator tries an ordered list of GPU types across both
+  clouds until one deploys (handles `SUPPLY_CONSTRAINT` automatically):
+  - `GPU_TYPES="a,b,c"` — custom ordered candidate list (default spans 80 GB ->
+    48 GB -> 24 GB cards).
+  - `GPU_TYPE="NVIDIA L40S"` — force a single type.
+  - `CLOUD_TYPES="SECURE,COMMUNITY"` — default order; set `CLOUD_TYPES=SECURE`
+    to stay on RunPod's own DCs only (community hosts are cheaper but less
+    consistent about exposing a public SSH port).
+- `IMAGE`, `DISK_GB` are also overridable via env.
 - Uses RunPod's GraphQL API directly (`curl` + `jq`); no `runpodctl` needed.
 - If you Ctrl-C during the run, the trap still fires and terminates the pod.
   Always confirm in the RunPod console that the pod is gone if you saw a
