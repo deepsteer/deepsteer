@@ -16,6 +16,7 @@ DIRECTIONS_NPZ="${DIRECTIONS_NPZ:-$P3/outputs/exp1_2_3_7B/exp1_probe_directions.
 
 # Step toggles (1 = run). Steps whose script does not exist yet auto-skip.
 RUN_SETUP="${RUN_SETUP:-1}"
+RUN_BENCH="${RUN_BENCH:-1}"           # one-time probe-training device baseline (CPU/GPU)
 RUN_BOOTSTRAP="${RUN_BOOTSTRAP:-1}"   # A.2  Exp 3 bootstrap stability (uses --bootstrap-only)
 RUN_FRAGILITY="${RUN_FRAGILITY:-1}"   # A.3  Exp 7 framework fragility
 RUN_CAUSAL="${RUN_CAUSAL:-1}"         # C.2  direction ablation + steering injection
@@ -44,7 +45,14 @@ if [ "$RUN_SETUP" = 1 ]; then
     pip install -e ".[dev]" -q
 fi
 
-echo "Model=$MODEL  Device=$DEVICE  N_BOOTSTRAP=$N_BOOTSTRAP"
+echo "Model=$MODEL  Device=$DEVICE  N_BOOTSTRAP=$N_BOOTSTRAP  CPU_THREADS=$CPU_THREADS"
+
+# --- Probe-training device baseline (CPU thread sweep vs GPU vs vectorized) ---
+if [ "$RUN_BENCH" = 1 ]; then
+  run_step "probe device benchmark" \
+    python "$P3/scripts/bench_probe_device.py" \
+      --output "$P3/outputs/benchmarks/probe_device_bench.json"
+fi
 
 # --- A.2: Exp 3 bootstrap stability (reuses synced 7B Exp 1 directions) ---
 if [ "$RUN_BOOTSTRAP" = 1 ]; then
