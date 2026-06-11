@@ -44,12 +44,34 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
 
 # Step toggles passed through to the remote runner.
+RUN_BENCH="${RUN_BENCH:-1}"
 RUN_BOOTSTRAP="${RUN_BOOTSTRAP:-1}"
 RUN_FRAGILITY="${RUN_FRAGILITY:-1}"
 RUN_CAUSAL="${RUN_CAUSAL:-1}"
 RUN_DILEMMA="${RUN_DILEMMA:-0}"
 RUN_TAXONOMY="${RUN_TAXONOMY:-1}"
 RUN_EXTERNAL="${RUN_EXTERNAL:-1}"
+
+# ONLY="dilemma" (or e.g. "bootstrap fragility") runs just the named step(s) and
+# forces every other toggle off. Self-documenting and immune to a step env var
+# silently not propagating.
+if [ -n "${ONLY:-}" ]; then
+  RUN_BENCH=0; RUN_BOOTSTRAP=0; RUN_FRAGILITY=0; RUN_CAUSAL=0
+  RUN_DILEMMA=0; RUN_TAXONOMY=0; RUN_EXTERNAL=0
+  for _s in $ONLY; do
+    case "$_s" in
+      bench) RUN_BENCH=1 ;;
+      bootstrap) RUN_BOOTSTRAP=1 ;;
+      fragility) RUN_FRAGILITY=1 ;;
+      causal) RUN_CAUSAL=1 ;;
+      dilemma) RUN_DILEMMA=1 ;;
+      taxonomy) RUN_TAXONOMY=1 ;;
+      external) RUN_EXTERNAL=1 ;;
+      *) echo "WARN: unknown ONLY step '$_s'" ;;
+    esac
+  done
+  echo ">> ONLY='$ONLY' -> bench=$RUN_BENCH bootstrap=$RUN_BOOTSTRAP fragility=$RUN_FRAGILITY causal=$RUN_CAUSAL dilemma=$RUN_DILEMMA taxonomy=$RUN_TAXONOMY external=$RUN_EXTERNAL"
+fi
 
 for bin in curl jq ssh rsync; do
   command -v "$bin" >/dev/null || { echo "ERROR: '$bin' not found in PATH"; exit 1; }
@@ -176,6 +198,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
   "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
    ( PYTHONUNBUFFERED=1 \
      REPO_DIR=$REMOTE_DIR MODEL='$MODEL' N_BOOTSTRAP=$N_BOOTSTRAP DIRECTIONS_NPZ='$DIRECTIONS_NPZ' \
+     RUN_BENCH=$RUN_BENCH \
      RUN_BOOTSTRAP=$RUN_BOOTSTRAP RUN_FRAGILITY=$RUN_FRAGILITY RUN_CAUSAL=$RUN_CAUSAL \
      RUN_DILEMMA=$RUN_DILEMMA RUN_TAXONOMY=$RUN_TAXONOMY RUN_EXTERNAL=$RUN_EXTERNAL \
      setsid bash papers/3_moral_geometry/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
