@@ -48,6 +48,14 @@ def _load_geometry(exp_dir: Path) -> dict | None:
     with open(path) as f:
         d = json.load(f)
 
+    # exp2 geometry json doesn't record the model; fall back to exp1 json.
+    model = d.get("model")
+    if not model:
+        exp1 = exp_dir / "exp1_foundation_probing.json"
+        if exp1.exists():
+            with open(exp1) as f:
+                model = json.load(f).get("model")
+
     per_layer = d["per_layer"]
     mean_cosine: dict[int, float] = {}
     eff_dim: dict[int, float] = {}
@@ -62,7 +70,7 @@ def _load_geometry(exp_dir: Path) -> dict | None:
             cos_matrices[layer] = np.array(v["cosine_similarity_matrix"])
 
     return {
-        "model": d.get("model"),
+        "model": model,
         "n_layers": d["n_layers"],
         "foundations_present": d["foundations_present"],
         "mean_cosine": mean_cosine,

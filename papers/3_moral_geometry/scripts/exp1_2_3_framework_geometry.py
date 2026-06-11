@@ -195,7 +195,7 @@ def run_experiment_1(
 
     exp1_json = {
         "experiment": "exp1_foundation_probing",
-        "model": OLMO_REPO,
+        "model": model.info.name,
         "n_layers": n_layers,
         "hidden_dim": hidden_dim,
         "n_epochs": n_epochs,
