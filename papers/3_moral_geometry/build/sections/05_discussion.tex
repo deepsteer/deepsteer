@@ -20,16 +20,27 @@ then adds minor perturbations per foundation. The foundation
 directions are geometrically distinct objects that happen to share
 a common moral-salience component.
 
+This holds across scale, architecture, and dataset. Effective
+dimensionality is 5 at every layer of OLMo-2\textasciitilde1B, OLMo-2\textasciitilde7B, and
+OLMoE-1B-7B, and on the independently constructed Moral Foundations
+Vignettes (\S4.14, \S4.16). Integration is the default geometric mode
+for moral representations in these models, not a property of one
+scale, architecture, or probing dataset.
+
 \textbf{Dataset sensitivity.} The mean cosine similarity is sensitive to
 neutral-pair quality: neutrals that inadvertently carry moral content
 inflate the shared moral-salience component, producing higher cosine
 values. The quality-gated dataset used here (\Cref{probing-dataset}) minimizes this
-inflation, and we interpret the $\approx$0.22--0.27 range as a lower
+inflation, and we interpret the \({\approx}0.22\)--\(0.27\) range as a lower
 bound on the true integration signal. All qualitative conclusions
 (integration signature, effective dimensionality of 5, absence of MFT
 dendrogram structure) are robust to dataset construction choices,
 but the quantitative sensitivity highlights the importance of
-neutral-pair quality for geometric analyses.
+neutral-pair quality for geometric analyses. The replication on the
+Moral Foundations Vignettes (\S4.16), where directions estimated from
+independently authored stimuli reproduce the 5-dimensional integration
+geometry, shows that the qualitative signature does not depend on our
+dataset.
 
 \textbf{The model's moral taxonomy is not MFT.} The inter-framework
 structure that emerges does not align with MFT's predicted
@@ -49,6 +60,15 @@ which is itself evidence of genuine structure learning (the model
 discovers which moral concepts are distributionally related) rather
 than surface keyword matching.
 
+A data-driven test sharpens this point. Clustering the moral
+activations themselves, without foundation labels, recovers the
+foundations only weakly (adjusted mutual information 0.03 at best;
+\S4.15). Even the model's own unsupervised grouping of moral content
+is not MFT-structured, which is the expected consequence of
+integration: the foundations are linearly decodable but are not the
+dominant axis of variation, so unsupervised methods find the shared
+moral-salience structure instead.
+
 \subsection{The sanctity fragility anomaly}\label{the-sanctity-fragility-anomaly}
 
 The most unexpected per-foundation finding is the dramatic
@@ -57,6 +77,12 @@ architecture-dependent behavior of sanctity/degradation: it is the
 highest of all six) but the \emph{least} robust in MoE (\(\sigma^* = 0.91\),
 lowest of all six). This 6.2\(\times\) ratio far exceeds the overall
 architectural gap (3.1\(\times\) mean across foundations).
+
+The flip tracks architecture, not scale. Sanctity/degradation is also
+the most robust foundation in the dense 7B model (\(\sigma^* = 5.42\);
+\S4.14), so the dense pattern holds across a sevenfold change in size.
+The reversal to most-fragile appears only under MoE aggregation, which
+points to the routing/averaging mechanism rather than model capacity.
 
 One interpretation: sanctity/purity concepts are encoded through
 culturally specific associations (disgust, bodily integrity,
@@ -220,12 +246,14 @@ distinction cannot reach \(p < 0.05\) unless the effect is very
 large. The dendrogram structure gives qualitative support, but
 the formal statistical test is underpowered.
 
-\textbf{Two models, one lab.} Both OLMo-2 and OLMoE are from Ai2 and
-trained on comparable corpora. The geometric findings may not
-generalize to models trained on substantively different data
-mixtures. The architectural comparison (dense vs.~MoE) is
-well-controlled because the models share training data, but this
-comes at the cost of corpus diversity.
+\textbf{One model family.} The three configurations span scale (1B and 7B
+dense) and architecture (dense and MoE), and the integration signature
+and MFT-mismatch hold across all of them and on the independently
+constructed MFV stimuli (\S4.14--4.16). The models are still all from
+Ai2's OLMo family, trained on comparable corpora, so generalization to
+models trained on substantively different data mixtures remains open.
+The architectural and scale comparisons are well-controlled because
+the models share training data, at the cost of corpus diversity.
 
 \textbf{Linear probes.} The entire analysis assumes that moral
 foundations are encoded as linear directions. If some foundations
@@ -236,9 +264,14 @@ accuracy of linear probes suggests that linear decoding captures
 the dominant signal, but does not rule out additional nonlinear
 structure.
 
-\textbf{No causal evidence.} Probe directions are correlational:
-they identify \emph{where} foundation information is readable, not
-whether that information is \emph{used} by the model during
-generation. Causal methods (activation patching, ablation studies)
-are needed to establish whether the geometric structure we observe
-is functionally relevant.
+\textbf{Causal status.} Probe directions are read off the representation:
+on their own they identify \emph{where} foundation information is readable,
+not whether that information is \emph{used} during generation. Companion
+work \citep{reblitzrichardson2026causal} addresses this with direction
+ablation and steering, and our 7B foundation directions show the same
+pattern: ablating a foundation's direction selectively perturbs that
+foundation's continuations, and injecting it produces a dose-response
+shift (Appendix\textasciitilde{}\ref{app:causal}). Full causal localization across
+layers is left to that companion paper; the geometry reported here is
+descriptive of the representation, with this initial causal evidence
+that the directions are functionally implicated.

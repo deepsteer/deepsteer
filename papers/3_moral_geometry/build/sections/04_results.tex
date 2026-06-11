@@ -479,3 +479,127 @@ gap between same-register (declarative test pairs) and cross-register
 (dilemma pairs) averages under 4 percentage points, with
 authority/subversion showing the largest gap (\({\sim}9\) pp for
 mean-difference; \S5.5).
+
+\subsection{Scale validation: geometry persists from 1B to 7B}\label{scale-validation-geometry-persists-from-1b-to-7b}
+
+We replicate the core geometric findings on OLMo-2\textasciitilde7B (the 1124
+release, 32 layers, hidden dimension 4096), a dense model roughly
+seven times the size of OLMo-2\textasciitilde1B. The integration signature holds.
+Mean pairwise cosine similarity ranges from \textbf{0.193 to 0.244} across
+layers (1B: 0.217--0.282), positive everywhere and far below the
+collapse threshold. Effective dimensionality is \textbf{5 at every one of
+the 32 layers}, identical to the 1B and MoE models. Foundation
+directions are geometrically distinct, sharing a common moral-salience
+component, at both scales.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{scale_comparison_cosine_heatmap.pdf}
+\caption{Foundation direction cosine similarity for OLMo-2 1B (layer 7/16) and 7B (layer 14/32), at matched relative depth. Mean off-diagonal cosine is 0.262 (1B) and 0.240 (7B) at these display layers; both sit in the integration range. Effective dimensionality is 5 for both (Figure~\ref{fig:scale_overlay}).}
+\label{fig:scale_heatmap}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{scale_comparison_geometry_overlay.pdf}
+\caption{Layer-wise geometry across scale on normalized depth. (a) Mean pairwise cosine for both models stays in the integration band. (b) Effective dimensionality is constant at 5 for both 1B and 7B.}
+\label{fig:scale_overlay}
+\end{figure}
+
+\textbf{Direction stability.} Bootstrap resampling (200 iterations) places
+110 of 192 foundation--layer combinations above the 0.8 stability
+threshold, with the remainder in the 0.72--0.80 borderline band.
+Sanctity/degradation is again the most stable foundation (29/32
+layers), fairness/cheating the least (7/32). The per-layer cosine
+range (0.72--0.85) is comparable to the 1B model; the larger model's
+directions are no less determined.
+
+\textbf{MFT is not recovered at 7B either.} Hierarchical clustering does
+not produce the individualizing/binding split at any layer, and the
+permutation test for MFT group structure is non-significant throughout
+(\(p = 0.49\)--\(0.78\)). The model's inter-framework geometry is not
+MFT-aligned at either scale.
+
+\textbf{Fragility.} Sanctity/degradation is the most robust foundation at
+7B (mean critical noise \(\sigma^* = 5.42\)), as in the 1B dense model
+(5.60). The ordering below sanctity differs between the two dense
+models and the 7B spread is tighter (4.27--5.42 vs.~3.31--5.60 at
+1B), but the sanctity-most-robust pattern is consistent across dense
+scale. This sharpens the architecture comparison of \Cref{differential-fragility-across-frameworks}: sanctity is
+the most robust foundation in both dense models yet the most fragile
+in MoE, so the anomaly tracks architecture rather than scale.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{scale_comparison_fragility.pdf}
+\caption{Per-foundation mean critical noise for OLMo-2 1B and 7B (dense). Sanctity (hatched) is the most robust foundation at both scales; 7B is modestly more robust across foundations.}
+\label{fig:scale_fragility}
+\end{figure}
+
+\subsection{The model's data-driven taxonomy does not recover MFT}\label{the-models-data-driven-taxonomy-does-not-recover-mft}
+
+Sections 4.3 and 4.14 show that hierarchical clustering of the six
+probe \emph{directions} does not recover MFT groups. We test the stronger
+question directly: cluster the moral-positive \emph{activations} themselves,
+without reference to foundation labels, and ask whether the discovered
+groups align with the foundations.
+
+K-means and spectral clustering (\(k\) selected by silhouette score,
+\(k = 2\)--\(8\)) on OLMo-2\textasciitilde7B moral activations produce clusters that
+barely align with MFT foundations. Adjusted mutual information between
+the discovered clusters and the foundation labels peaks at \textbf{0.032}
+(layer 11) and is near zero or slightly negative at most layers;
+silhouette scores stay low (0.06--0.08), indicating weak cluster
+structure. A clustering that recovered the foundations would give AMI
+near 1.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{taxonomy_confusion_7B.pdf}
+\caption{Discovered clusters (rows) against MFT foundations (columns) at the most foundation-aligned layer (11) of OLMo-2 7B. Cells are pair counts; row-normalized shading. The clusters do not map onto foundations (AMI = 0.032).}
+\label{fig:taxonomy_confusion}
+\end{figure}
+
+This is consistent with integration. Foundations are linearly
+\emph{decodable}: supervised probes separate them with near-perfect
+accuracy and span 5 effective dimensions. But they are not the
+dominant axis of variation in the raw activations, so unsupervised
+clustering recovers the shared moral-salience structure rather than
+the foundation distinctions. The model represents the foundations as
+distinct directions without organizing its moral activations around
+them.
+
+\subsection{External replication on the Moral Foundations Vignettes}\label{external-replication-on-the-moral-foundations-vignettes}
+
+To test whether the integration geometry is a property of the model
+rather than of our probing dataset, we recompute foundation directions
+from the Moral Foundations Vignettes \citep{clifford2015mfv}, an
+independently constructed set of 30 validated moral scenarios (5 per
+foundation). Directions are estimated by mean difference against a
+shared neutral baseline, the same estimator applied to both datasets
+for a fair comparison.
+
+The integration signature replicates. The six MFV directions span
+\textbf{5 effective dimensions at every layer} of OLMo-2\textasciitilde7B, identical to
+the directions derived from our dataset. Mean pairwise cosine is
+higher for MFV (0.50--0.72) than for the matched mean-difference
+directions on our data (0.42 at the display layer), an expected
+small-sample effect given five vignettes per foundation. The
+near-maximal effective dimensionality, not the absolute cosine, is the
+integration signal, and it is identical across datasets.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{external_robustness_7B.pdf}
+\caption{MFV external replication on OLMo-2 7B. (a) Cosine similarity among the six MFV foundation directions. (b) Mean cosine and effective dimensionality vs depth for MFV and for matched mean-difference directions on our dataset. (c) Per-foundation alignment between MFV and our directions.}
+\label{fig:external}
+\end{figure}
+
+\textbf{Cross-dataset direction alignment.} Foundation directions estimated
+from the two independent datasets are positively aligned (\(|\cos| =
+0.14\)--\(0.43\) per foundation at layer 12), with individualizing
+foundations aligning more strongly (care 0.30, fairness 0.36, liberty
+0.43) than binding foundations (loyalty 0.14, authority 0.19, sanctity
+0.29). That directions estimated from independently authored stimuli
+agree at all is evidence that the foundation directions reflect the
+model's representations rather than artifacts of any single dataset.
