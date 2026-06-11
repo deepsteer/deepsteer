@@ -1,0 +1,5027 @@
+{
+  "experiment": "dilemma_probing",
+  "model": "allenai/OLMo-2-1124-7B",
+  "n_layers": 32,
+  "hidden_dim": 4096,
+  "n_epochs": 50,
+  "lr": 0.01,
+  "null_distribution": {
+    "mean": 0.0004892598365718119,
+    "std": 0.00048759727360366694,
+    "p95": 0.0014763851925133045,
+    "p99": 0.0022722492064347903,
+    "degenerate": false
+  },
+  "per_foundation_pair": {
+    "care-fairness": {
+      "foundation_pair": [
+        "care",
+        "fairness"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 0.875,
+      "peak_subspace_membership": 0.086527,
+      "peak_subspace_layer": 16,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.875,
+          "loss": 0.3628,
+          "subspace_membership": 0.037533,
+          "component_balance": 0.770005,
+          "residual_norm": 0.981054,
+          "cosine_with_a": 0.190921,
+          "cosine_with_b": 0.057027,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.875,
+          "loss": 0.36,
+          "subspace_membership": 0.031073,
+          "component_balance": 0.72162,
+          "residual_norm": 0.984341,
+          "cosine_with_a": 0.169121,
+          "cosine_with_b": 0.065242,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.875,
+          "loss": 0.38,
+          "subspace_membership": 0.041801,
+          "component_balance": 0.65944,
+          "residual_norm": 0.978876,
+          "cosine_with_a": 0.19029,
+          "cosine_with_b": 0.098273,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.875,
+          "loss": 0.334,
+          "subspace_membership": 0.070655,
+          "component_balance": 0.636726,
+          "residual_norm": 0.964025,
+          "cosine_with_a": 0.244966,
+          "cosine_with_b": 0.139762,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.875,
+          "loss": 0.3905,
+          "subspace_membership": 0.066546,
+          "component_balance": 0.664576,
+          "residual_norm": 0.966154,
+          "cosine_with_a": 0.245016,
+          "cosine_with_b": 0.123664,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 0.875,
+          "loss": 0.334,
+          "subspace_membership": 0.083559,
+          "component_balance": 0.630871,
+          "residual_norm": 0.957309,
+          "cosine_with_a": 0.26942,
+          "cosine_with_b": 0.15764,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.478,
+          "subspace_membership": 0.075459,
+          "component_balance": 0.606427,
+          "residual_norm": 0.96153,
+          "cosine_with_a": 0.252717,
+          "cosine_with_b": 0.164014,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.4558,
+          "subspace_membership": 0.077575,
+          "component_balance": 0.624137,
+          "residual_norm": 0.960429,
+          "cosine_with_a": 0.261976,
+          "cosine_with_b": 0.157765,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.875,
+          "loss": 0.3274,
+          "subspace_membership": 0.066127,
+          "component_balance": 0.595663,
+          "residual_norm": 0.966371,
+          "cosine_with_a": 0.233635,
+          "cosine_with_b": 0.158591,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.875,
+          "loss": 0.369,
+          "subspace_membership": 0.069927,
+          "component_balance": 0.604541,
+          "residual_norm": 0.964403,
+          "cosine_with_a": 0.240844,
+          "cosine_with_b": 0.157547,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.3071,
+          "subspace_membership": 0.078676,
+          "component_balance": 0.583576,
+          "residual_norm": 0.959856,
+          "cosine_with_a": 0.25068,
+          "cosine_with_b": 0.178878,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.3758,
+          "subspace_membership": 0.081583,
+          "component_balance": 0.548019,
+          "residual_norm": 0.958341,
+          "cosine_with_a": 0.243038,
+          "cosine_with_b": 0.200446,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.3324,
+          "subspace_membership": 0.066273,
+          "component_balance": 0.570279,
+          "residual_norm": 0.966296,
+          "cosine_with_a": 0.22535,
+          "cosine_with_b": 0.169807,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.875,
+          "loss": 0.4054,
+          "subspace_membership": 0.074957,
+          "component_balance": 0.57414,
+          "residual_norm": 0.961792,
+          "cosine_with_a": 0.240017,
+          "cosine_with_b": 0.178029,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.3487,
+          "subspace_membership": 0.065532,
+          "component_balance": 0.55395,
+          "residual_norm": 0.966679,
+          "cosine_with_a": 0.218641,
+          "cosine_with_b": 0.176054,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.3132,
+          "subspace_membership": 0.08081,
+          "component_balance": 0.559879,
+          "residual_norm": 0.958744,
+          "cosine_with_a": 0.245385,
+          "cosine_with_b": 0.192897,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.3874,
+          "subspace_membership": 0.086527,
+          "component_balance": 0.540783,
+          "residual_norm": 0.955758,
+          "cosine_with_a": 0.2439,
+          "cosine_with_b": 0.207113,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.4364,
+          "subspace_membership": 0.075838,
+          "component_balance": 0.544972,
+          "residual_norm": 0.961334,
+          "cosine_with_a": 0.231218,
+          "cosine_with_b": 0.193057,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.5253,
+          "subspace_membership": 0.066436,
+          "component_balance": 0.557303,
+          "residual_norm": 0.966211,
+          "cosine_with_a": 0.221476,
+          "cosine_with_b": 0.175931,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.5814,
+          "subspace_membership": 0.060286,
+          "component_balance": 0.555366,
+          "residual_norm": 0.969389,
+          "cosine_with_a": 0.208053,
+          "cosine_with_b": 0.166571,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.8041,
+          "subspace_membership": 0.058941,
+          "component_balance": 0.560231,
+          "residual_norm": 0.970082,
+          "cosine_with_a": 0.207636,
+          "cosine_with_b": 0.16299,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.9456,
+          "subspace_membership": 0.051368,
+          "component_balance": 0.537203,
+          "residual_norm": 0.973977,
+          "cosine_with_a": 0.187969,
+          "cosine_with_b": 0.161934,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 1.174,
+          "subspace_membership": 0.054612,
+          "component_balance": 0.526974,
+          "residual_norm": 0.972311,
+          "cosine_with_a": 0.190978,
+          "cosine_with_b": 0.171427,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 1.3122,
+          "subspace_membership": 0.05508,
+          "component_balance": 0.546865,
+          "residual_norm": 0.97207,
+          "cosine_with_a": 0.195576,
+          "cosine_with_b": 0.162055,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 1.3828,
+          "subspace_membership": 0.061196,
+          "component_balance": 0.530741,
+          "residual_norm": 0.968919,
+          "cosine_with_a": 0.203365,
+          "cosine_with_b": 0.179807,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 1.4189,
+          "subspace_membership": 0.055675,
+          "component_balance": 0.523764,
+          "residual_norm": 0.971764,
+          "cosine_with_a": 0.191001,
+          "cosine_with_b": 0.173669,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 1.6929,
+          "subspace_membership": 0.06534,
+          "component_balance": 0.511561,
+          "residual_norm": 0.966778,
+          "cosine_with_a": 0.202414,
+          "cosine_with_b": 0.193265,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 1.6275,
+          "subspace_membership": 0.059234,
+          "component_balance": 0.488523,
+          "residual_norm": 0.969931,
+          "cosine_with_a": 0.183861,
+          "cosine_with_b": 0.1925,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 2.1974,
+          "subspace_membership": 0.062116,
+          "component_balance": 0.509305,
+          "residual_norm": 0.968444,
+          "cosine_with_a": 0.196349,
+          "cosine_with_b": 0.189174,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 1.6045,
+          "subspace_membership": 0.059936,
+          "component_balance": 0.465498,
+          "residual_norm": 0.969569,
+          "cosine_with_a": 0.175734,
+          "cosine_with_b": 0.201784,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 2.1743,
+          "subspace_membership": 0.058272,
+          "component_balance": 0.50242,
+          "residual_norm": 0.970426,
+          "cosine_with_a": 0.18731,
+          "cosine_with_b": 0.185506,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 2.2097,
+          "subspace_membership": 0.062773,
+          "component_balance": 0.525962,
+          "residual_norm": 0.968105,
+          "cosine_with_a": 0.205127,
+          "cosine_with_b": 0.184876,
+          "degenerate": false
+        }
+      }
+    },
+    "care-liberty": {
+      "foundation_pair": [
+        "care",
+        "liberty"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 2,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.090417,
+      "peak_subspace_layer": 11,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.875,
+          "loss": 0.3579,
+          "subspace_membership": 0.036244,
+          "component_balance": 0.48624,
+          "residual_norm": 0.981711,
+          "cosine_with_a": 0.142216,
+          "cosine_with_b": 0.150265,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.875,
+          "loss": 0.3309,
+          "subspace_membership": 0.03354,
+          "component_balance": 0.434733,
+          "residual_norm": 0.983087,
+          "cosine_with_a": 0.121175,
+          "cosine_with_b": 0.15756,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.238,
+          "subspace_membership": 0.044136,
+          "component_balance": 0.456645,
+          "residual_norm": 0.977683,
+          "cosine_with_a": 0.147881,
+          "cosine_with_b": 0.175962,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.1725,
+          "subspace_membership": 0.045382,
+          "component_balance": 0.454277,
+          "residual_norm": 0.977046,
+          "cosine_with_a": 0.148615,
+          "cosine_with_b": 0.178532,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.1555,
+          "subspace_membership": 0.056083,
+          "component_balance": 0.464655,
+          "residual_norm": 0.971554,
+          "cosine_with_a": 0.17095,
+          "cosine_with_b": 0.196957,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1441,
+          "subspace_membership": 0.070802,
+          "component_balance": 0.442826,
+          "residual_norm": 0.963949,
+          "cosine_with_a": 0.180415,
+          "cosine_with_b": 0.227002,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.1753,
+          "subspace_membership": 0.077781,
+          "component_balance": 0.438444,
+          "residual_norm": 0.960322,
+          "cosine_with_a": 0.187241,
+          "cosine_with_b": 0.239817,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1264,
+          "subspace_membership": 0.07813,
+          "component_balance": 0.462135,
+          "residual_norm": 0.96014,
+          "cosine_with_a": 0.199494,
+          "cosine_with_b": 0.232185,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.088,
+          "subspace_membership": 0.068244,
+          "component_balance": 0.430584,
+          "residual_norm": 0.965275,
+          "cosine_with_a": 0.173179,
+          "cosine_with_b": 0.229016,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.0844,
+          "subspace_membership": 0.083358,
+          "component_balance": 0.439661,
+          "residual_norm": 0.957414,
+          "cosine_with_a": 0.196335,
+          "cosine_with_b": 0.250225,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0597,
+          "subspace_membership": 0.089468,
+          "component_balance": 0.41479,
+          "residual_norm": 0.954218,
+          "cosine_with_a": 0.189566,
+          "cosine_with_b": 0.26745,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0711,
+          "subspace_membership": 0.090417,
+          "component_balance": 0.399649,
+          "residual_norm": 0.953721,
+          "cosine_with_a": 0.182281,
+          "cosine_with_b": 0.273822,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.08,
+          "subspace_membership": 0.08185,
+          "component_balance": 0.370485,
+          "residual_norm": 0.958201,
+          "cosine_with_a": 0.157892,
+          "cosine_with_b": 0.268285,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.076,
+          "subspace_membership": 0.083471,
+          "component_balance": 0.348589,
+          "residual_norm": 0.957355,
+          "cosine_with_a": 0.146549,
+          "cosine_with_b": 0.273857,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0983,
+          "subspace_membership": 0.08841,
+          "component_balance": 0.353184,
+          "residual_norm": 0.954772,
+          "cosine_with_a": 0.153539,
+          "cosine_with_b": 0.28119,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.083,
+          "subspace_membership": 0.070109,
+          "component_balance": 0.366669,
+          "residual_norm": 0.964309,
+          "cosine_with_a": 0.143202,
+          "cosine_with_b": 0.247346,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.0698,
+          "subspace_membership": 0.081782,
+          "component_balance": 0.354205,
+          "residual_norm": 0.958237,
+          "cosine_with_a": 0.146389,
+          "cosine_with_b": 0.2669,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0471,
+          "subspace_membership": 0.074037,
+          "component_balance": 0.372781,
+          "residual_norm": 0.96227,
+          "cosine_with_a": 0.148437,
+          "cosine_with_b": 0.249751,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.0493,
+          "subspace_membership": 0.071378,
+          "component_balance": 0.374305,
+          "residual_norm": 0.963651,
+          "cosine_with_a": 0.147646,
+          "cosine_with_b": 0.246807,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0627,
+          "subspace_membership": 0.066862,
+          "component_balance": 0.36442,
+          "residual_norm": 0.965991,
+          "cosine_with_a": 0.138385,
+          "cosine_with_b": 0.241355,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.0456,
+          "subspace_membership": 0.070904,
+          "component_balance": 0.397856,
+          "residual_norm": 0.963896,
+          "cosine_with_a": 0.159523,
+          "cosine_with_b": 0.241434,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.0412,
+          "subspace_membership": 0.068455,
+          "component_balance": 0.375049,
+          "residual_norm": 0.965166,
+          "cosine_with_a": 0.144995,
+          "cosine_with_b": 0.241608,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.0257,
+          "subspace_membership": 0.069044,
+          "component_balance": 0.347622,
+          "residual_norm": 0.964861,
+          "cosine_with_a": 0.132519,
+          "cosine_with_b": 0.248696,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.029,
+          "subspace_membership": 0.065021,
+          "component_balance": 0.364182,
+          "residual_norm": 0.966943,
+          "cosine_with_a": 0.136112,
+          "cosine_with_b": 0.237635,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.0316,
+          "subspace_membership": 0.052046,
+          "component_balance": 0.356602,
+          "residual_norm": 0.973629,
+          "cosine_with_a": 0.118845,
+          "cosine_with_b": 0.214425,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 1.0,
+          "loss": 0.1387,
+          "subspace_membership": 0.057182,
+          "component_balance": 0.374616,
+          "residual_norm": 0.970988,
+          "cosine_with_a": 0.132829,
+          "cosine_with_b": 0.221745,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 1.0,
+          "loss": 0.0081,
+          "subspace_membership": 0.05397,
+          "component_balance": 0.411247,
+          "residual_norm": 0.972641,
+          "cosine_with_a": 0.144672,
+          "cosine_with_b": 0.207117,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.0694,
+          "subspace_membership": 0.057655,
+          "component_balance": 0.396371,
+          "residual_norm": 0.970744,
+          "cosine_with_a": 0.142759,
+          "cosine_with_b": 0.217406,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 1.0,
+          "loss": 0.0052,
+          "subspace_membership": 0.041299,
+          "component_balance": 0.396947,
+          "residual_norm": 0.979133,
+          "cosine_with_a": 0.120913,
+          "cosine_with_b": 0.183694,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 1.0,
+          "loss": 0.008,
+          "subspace_membership": 0.050152,
+          "component_balance": 0.382068,
+          "residual_norm": 0.974602,
+          "cosine_with_a": 0.127372,
+          "cosine_with_b": 0.206003,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 1.0,
+          "loss": 0.1696,
+          "subspace_membership": 0.045364,
+          "component_balance": 0.340835,
+          "residual_norm": 0.977055,
+          "cosine_with_a": 0.105016,
+          "cosine_with_b": 0.203098,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 1.0,
+          "loss": 0.0026,
+          "subspace_membership": 0.045381,
+          "component_balance": 0.415096,
+          "residual_norm": 0.977046,
+          "cosine_with_a": 0.133878,
+          "cosine_with_b": 0.188645,
+          "degenerate": false
+        }
+      }
+    },
+    "care-loyalty": {
+      "foundation_pair": [
+        "care",
+        "loyalty"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 4,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.110579,
+      "peak_subspace_layer": 11,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.75,
+          "loss": 0.3578,
+          "subspace_membership": 0.037962,
+          "component_balance": 0.471941,
+          "residual_norm": 0.980836,
+          "cosine_with_a": 0.142928,
+          "cosine_with_b": 0.159923,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.75,
+          "loss": 0.3485,
+          "subspace_membership": 0.045033,
+          "component_balance": 0.474794,
+          "residual_norm": 0.977224,
+          "cosine_with_a": 0.155529,
+          "cosine_with_b": 0.172042,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.75,
+          "loss": 0.3067,
+          "subspace_membership": 0.043508,
+          "component_balance": 0.426629,
+          "residual_norm": 0.978004,
+          "cosine_with_a": 0.136092,
+          "cosine_with_b": 0.182901,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.75,
+          "loss": 0.3258,
+          "subspace_membership": 0.052324,
+          "component_balance": 0.452518,
+          "residual_norm": 0.973487,
+          "cosine_with_a": 0.159813,
+          "cosine_with_b": 0.193351,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.1939,
+          "subspace_membership": 0.063916,
+          "component_balance": 0.447445,
+          "residual_norm": 0.967515,
+          "cosine_with_a": 0.177551,
+          "cosine_with_b": 0.21926,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1543,
+          "subspace_membership": 0.069428,
+          "component_balance": 0.445006,
+          "residual_norm": 0.964662,
+          "cosine_with_a": 0.182821,
+          "cosine_with_b": 0.228007,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.1005,
+          "subspace_membership": 0.069589,
+          "component_balance": 0.458623,
+          "residual_norm": 0.964578,
+          "cosine_with_a": 0.187307,
+          "cosine_with_b": 0.221104,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.0869,
+          "subspace_membership": 0.083962,
+          "component_balance": 0.503144,
+          "residual_norm": 0.957099,
+          "cosine_with_a": 0.225358,
+          "cosine_with_b": 0.222542,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.0589,
+          "subspace_membership": 0.071234,
+          "component_balance": 0.472435,
+          "residual_norm": 0.963725,
+          "cosine_with_a": 0.195822,
+          "cosine_with_b": 0.218673,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.0593,
+          "subspace_membership": 0.091949,
+          "component_balance": 0.441149,
+          "residual_norm": 0.952917,
+          "cosine_with_a": 0.20671,
+          "cosine_with_b": 0.261862,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0401,
+          "subspace_membership": 0.101644,
+          "component_balance": 0.463368,
+          "residual_norm": 0.947816,
+          "cosine_with_a": 0.229885,
+          "cosine_with_b": 0.266232,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0296,
+          "subspace_membership": 0.110579,
+          "component_balance": 0.488087,
+          "residual_norm": 0.943091,
+          "cosine_with_a": 0.25419,
+          "cosine_with_b": 0.266598,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.0351,
+          "subspace_membership": 0.100238,
+          "component_balance": 0.453468,
+          "residual_norm": 0.948558,
+          "cosine_with_a": 0.223886,
+          "cosine_with_b": 0.269833,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.0387,
+          "subspace_membership": 0.102659,
+          "component_balance": 0.464886,
+          "residual_norm": 0.947281,
+          "cosine_with_a": 0.231248,
+          "cosine_with_b": 0.266182,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0482,
+          "subspace_membership": 0.087979,
+          "component_balance": 0.405704,
+          "residual_norm": 0.954998,
+          "cosine_with_a": 0.182308,
+          "cosine_with_b": 0.267054,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0485,
+          "subspace_membership": 0.094865,
+          "component_balance": 0.417748,
+          "residual_norm": 0.951386,
+          "cosine_with_a": 0.199133,
+          "cosine_with_b": 0.277548,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.0396,
+          "subspace_membership": 0.08658,
+          "component_balance": 0.40165,
+          "residual_norm": 0.95573,
+          "cosine_with_a": 0.179012,
+          "cosine_with_b": 0.26668,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0573,
+          "subspace_membership": 0.092746,
+          "component_balance": 0.402273,
+          "residual_norm": 0.952499,
+          "cosine_with_a": 0.185733,
+          "cosine_with_b": 0.275976,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.0593,
+          "subspace_membership": 0.084494,
+          "component_balance": 0.429812,
+          "residual_norm": 0.956821,
+          "cosine_with_a": 0.19306,
+          "cosine_with_b": 0.256113,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0592,
+          "subspace_membership": 0.082715,
+          "component_balance": 0.433015,
+          "residual_norm": 0.95775,
+          "cosine_with_a": 0.19223,
+          "cosine_with_b": 0.251704,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.031,
+          "subspace_membership": 0.08772,
+          "component_balance": 0.406876,
+          "residual_norm": 0.955134,
+          "cosine_with_a": 0.183744,
+          "cosine_with_b": 0.267854,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.0554,
+          "subspace_membership": 0.077198,
+          "component_balance": 0.405365,
+          "residual_norm": 0.960626,
+          "cosine_with_a": 0.171281,
+          "cosine_with_b": 0.251255,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.0523,
+          "subspace_membership": 0.075497,
+          "component_balance": 0.395844,
+          "residual_norm": 0.961511,
+          "cosine_with_a": 0.164366,
+          "cosine_with_b": 0.250864,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.036,
+          "subspace_membership": 0.083032,
+          "component_balance": 0.390741,
+          "residual_norm": 0.957584,
+          "cosine_with_a": 0.169853,
+          "cosine_with_b": 0.264841,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.0399,
+          "subspace_membership": 0.073798,
+          "component_balance": 0.417233,
+          "residual_norm": 0.962394,
+          "cosine_with_a": 0.17297,
+          "cosine_with_b": 0.241595,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 1.0,
+          "loss": 0.0301,
+          "subspace_membership": 0.071045,
+          "component_balance": 0.397502,
+          "residual_norm": 0.963823,
+          "cosine_with_a": 0.160369,
+          "cosine_with_b": 0.243072,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 1.0,
+          "loss": 0.0336,
+          "subspace_membership": 0.063659,
+          "component_balance": 0.414571,
+          "residual_norm": 0.967647,
+          "cosine_with_a": 0.159744,
+          "cosine_with_b": 0.22558,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.0292,
+          "subspace_membership": 0.065576,
+          "component_balance": 0.424923,
+          "residual_norm": 0.966656,
+          "cosine_with_a": 0.166069,
+          "cosine_with_b": 0.224752,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 1.0,
+          "loss": 0.0245,
+          "subspace_membership": 0.065319,
+          "component_balance": 0.402991,
+          "residual_norm": 0.966789,
+          "cosine_with_a": 0.155839,
+          "cosine_with_b": 0.230868,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.1082,
+          "subspace_membership": 0.066851,
+          "component_balance": 0.430567,
+          "residual_norm": 0.965996,
+          "cosine_with_a": 0.171635,
+          "cosine_with_b": 0.226991,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.2201,
+          "subspace_membership": 0.062225,
+          "component_balance": 0.403407,
+          "residual_norm": 0.968388,
+          "cosine_with_a": 0.152944,
+          "cosine_with_b": 0.226187,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 0.1468,
+          "subspace_membership": 0.080585,
+          "component_balance": 0.440924,
+          "residual_norm": 0.958861,
+          "cosine_with_a": 0.194195,
+          "cosine_with_b": 0.246232,
+          "degenerate": false
+        }
+      }
+    },
+    "care-authority": {
+      "foundation_pair": [
+        "care",
+        "authority"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 29,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.073033,
+      "peak_subspace_layer": 10,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.75,
+          "loss": 0.4777,
+          "subspace_membership": 0.040105,
+          "component_balance": 0.621418,
+          "residual_norm": 0.979742,
+          "cosine_with_a": 0.182218,
+          "cosine_with_b": 0.111012,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.625,
+          "loss": 0.5037,
+          "subspace_membership": 0.037418,
+          "component_balance": 0.56051,
+          "residual_norm": 0.981112,
+          "cosine_with_a": 0.163882,
+          "cosine_with_b": 0.128499,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.625,
+          "loss": 0.5335,
+          "subspace_membership": 0.038206,
+          "component_balance": 0.569198,
+          "residual_norm": 0.980711,
+          "cosine_with_a": 0.168981,
+          "cosine_with_b": 0.127894,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.75,
+          "loss": 0.5116,
+          "subspace_membership": 0.042601,
+          "component_balance": 0.516641,
+          "residual_norm": 0.978468,
+          "cosine_with_a": 0.163454,
+          "cosine_with_b": 0.152924,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.75,
+          "loss": 0.5582,
+          "subspace_membership": 0.032199,
+          "component_balance": 0.521563,
+          "residual_norm": 0.983769,
+          "cosine_with_a": 0.144647,
+          "cosine_with_b": 0.132687,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 0.75,
+          "loss": 0.5077,
+          "subspace_membership": 0.055151,
+          "component_balance": 0.488034,
+          "residual_norm": 0.972034,
+          "cosine_with_a": 0.179591,
+          "cosine_with_b": 0.188398,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.75,
+          "loss": 0.4702,
+          "subspace_membership": 0.046278,
+          "component_balance": 0.522095,
+          "residual_norm": 0.976587,
+          "cosine_with_a": 0.172987,
+          "cosine_with_b": 0.158345,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.75,
+          "loss": 0.4488,
+          "subspace_membership": 0.056007,
+          "component_balance": 0.542039,
+          "residual_norm": 0.971593,
+          "cosine_with_a": 0.197705,
+          "cosine_with_b": 0.167038,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.75,
+          "loss": 0.4152,
+          "subspace_membership": 0.054919,
+          "component_balance": 0.556248,
+          "residual_norm": 0.972153,
+          "cosine_with_a": 0.200355,
+          "cosine_with_b": 0.159835,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.75,
+          "loss": 0.413,
+          "subspace_membership": 0.059862,
+          "component_balance": 0.561946,
+          "residual_norm": 0.969607,
+          "cosine_with_a": 0.209886,
+          "cosine_with_b": 0.163613,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.3913,
+          "subspace_membership": 0.073033,
+          "component_balance": 0.548791,
+          "residual_norm": 0.962791,
+          "cosine_with_a": 0.228724,
+          "cosine_with_b": 0.188054,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.75,
+          "loss": 0.3809,
+          "subspace_membership": 0.066597,
+          "component_balance": 0.558058,
+          "residual_norm": 0.966128,
+          "cosine_with_a": 0.220671,
+          "cosine_with_b": 0.174755,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.75,
+          "loss": 0.4844,
+          "subspace_membership": 0.057531,
+          "component_balance": 0.542624,
+          "residual_norm": 0.970808,
+          "cosine_with_a": 0.200646,
+          "cosine_with_b": 0.169124,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.75,
+          "loss": 0.4177,
+          "subspace_membership": 0.055843,
+          "component_balance": 0.494198,
+          "residual_norm": 0.971677,
+          "cosine_with_a": 0.180408,
+          "cosine_with_b": 0.184644,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.75,
+          "loss": 0.3991,
+          "subspace_membership": 0.0535,
+          "component_balance": 0.455524,
+          "residual_norm": 0.972882,
+          "cosine_with_a": 0.163001,
+          "cosine_with_b": 0.194831,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.625,
+          "loss": 0.3286,
+          "subspace_membership": 0.050267,
+          "component_balance": 0.525098,
+          "residual_norm": 0.974543,
+          "cosine_with_a": 0.182745,
+          "cosine_with_b": 0.165276,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.2694,
+          "subspace_membership": 0.042231,
+          "component_balance": 0.523766,
+          "residual_norm": 0.978657,
+          "cosine_with_a": 0.166256,
+          "cosine_with_b": 0.151169,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.2777,
+          "subspace_membership": 0.043787,
+          "component_balance": 0.49876,
+          "residual_norm": 0.977861,
+          "cosine_with_a": 0.161853,
+          "cosine_with_b": 0.162658,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.75,
+          "loss": 0.4462,
+          "subspace_membership": 0.050142,
+          "component_balance": 0.52562,
+          "residual_norm": 0.974606,
+          "cosine_with_a": 0.183453,
+          "cosine_with_b": 0.165568,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.75,
+          "loss": 0.3982,
+          "subspace_membership": 0.04114,
+          "component_balance": 0.513202,
+          "residual_norm": 0.979214,
+          "cosine_with_a": 0.161934,
+          "cosine_with_b": 0.153602,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.4069,
+          "subspace_membership": 0.041525,
+          "component_balance": 0.534869,
+          "residual_norm": 0.979018,
+          "cosine_with_a": 0.168554,
+          "cosine_with_b": 0.146578,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.75,
+          "loss": 0.5404,
+          "subspace_membership": 0.037659,
+          "component_balance": 0.541262,
+          "residual_norm": 0.98099,
+          "cosine_with_a": 0.161165,
+          "cosine_with_b": 0.136593,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.75,
+          "loss": 0.7769,
+          "subspace_membership": 0.027055,
+          "component_balance": 0.51093,
+          "residual_norm": 0.98638,
+          "cosine_with_a": 0.129498,
+          "cosine_with_b": 0.123958,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.625,
+          "loss": 0.6315,
+          "subspace_membership": 0.035184,
+          "component_balance": 0.508605,
+          "residual_norm": 0.98225,
+          "cosine_with_a": 0.147641,
+          "cosine_with_b": 0.142645,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.625,
+          "loss": 0.8668,
+          "subspace_membership": 0.037005,
+          "component_balance": 0.521762,
+          "residual_norm": 0.981323,
+          "cosine_with_a": 0.155862,
+          "cosine_with_b": 0.142861,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.625,
+          "loss": 0.6953,
+          "subspace_membership": 0.033584,
+          "component_balance": 0.539965,
+          "residual_norm": 0.983065,
+          "cosine_with_a": 0.152784,
+          "cosine_with_b": 0.130168,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.2812,
+          "subspace_membership": 0.045623,
+          "component_balance": 0.479728,
+          "residual_norm": 0.976922,
+          "cosine_with_a": 0.159573,
+          "cosine_with_b": 0.173059,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.625,
+          "loss": 0.7399,
+          "subspace_membership": 0.038846,
+          "component_balance": 0.482304,
+          "residual_norm": 0.980385,
+          "cosine_with_a": 0.146743,
+          "cosine_with_b": 0.157511,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.3231,
+          "subspace_membership": 0.032586,
+          "component_balance": 0.518558,
+          "residual_norm": 0.983572,
+          "cosine_with_a": 0.14518,
+          "cosine_with_b": 0.134789,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 1.0,
+          "loss": 0.0532,
+          "subspace_membership": 0.034812,
+          "component_balance": 0.487578,
+          "residual_norm": 0.98244,
+          "cosine_with_a": 0.141234,
+          "cosine_with_b": 0.148431,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.75,
+          "loss": 0.8632,
+          "subspace_membership": 0.037657,
+          "component_balance": 0.470405,
+          "residual_norm": 0.980991,
+          "cosine_with_a": 0.141324,
+          "cosine_with_b": 0.159107,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 1.0,
+          "loss": 0.0075,
+          "subspace_membership": 0.040879,
+          "component_balance": 0.421955,
+          "residual_norm": 0.979347,
+          "cosine_with_a": 0.131242,
+          "cosine_with_b": 0.179792,
+          "degenerate": false
+        }
+      }
+    },
+    "care-sanctity": {
+      "foundation_pair": [
+        "care",
+        "sanctity"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.038578,
+      "peak_subspace_layer": 9,
+      "per_layer": {
+        "0": {
+          "accuracy": 1.0,
+          "loss": 0.2027,
+          "subspace_membership": 0.026101,
+          "component_balance": 0.422054,
+          "residual_norm": 0.986863,
+          "cosine_with_a": 0.103808,
+          "cosine_with_b": 0.142152,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 1.0,
+          "loss": 0.1865,
+          "subspace_membership": 0.025576,
+          "component_balance": 0.379848,
+          "residual_norm": 0.987129,
+          "cosine_with_a": 0.089824,
+          "cosine_with_b": 0.146649,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.1884,
+          "subspace_membership": 0.027063,
+          "component_balance": 0.414047,
+          "residual_norm": 0.986375,
+          "cosine_with_a": 0.10293,
+          "cosine_with_b": 0.145664,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.1373,
+          "subspace_membership": 0.026056,
+          "component_balance": 0.375756,
+          "residual_norm": 0.986886,
+          "cosine_with_a": 0.089948,
+          "cosine_with_b": 0.149431,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.1078,
+          "subspace_membership": 0.029337,
+          "component_balance": 0.478183,
+          "residual_norm": 0.985222,
+          "cosine_with_a": 0.126955,
+          "cosine_with_b": 0.138539,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1048,
+          "subspace_membership": 0.034102,
+          "component_balance": 0.448208,
+          "residual_norm": 0.982801,
+          "cosine_with_a": 0.127222,
+          "cosine_with_b": 0.156624,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.1586,
+          "subspace_membership": 0.031714,
+          "component_balance": 0.442179,
+          "residual_norm": 0.984015,
+          "cosine_with_a": 0.121493,
+          "cosine_with_b": 0.153266,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1286,
+          "subspace_membership": 0.037983,
+          "component_balance": 0.41972,
+          "residual_norm": 0.980825,
+          "cosine_with_a": 0.12449,
+          "cosine_with_b": 0.172113,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.109,
+          "subspace_membership": 0.035112,
+          "component_balance": 0.400383,
+          "residual_norm": 0.982287,
+          "cosine_with_a": 0.113139,
+          "cosine_with_b": 0.169439,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.1019,
+          "subspace_membership": 0.038578,
+          "component_balance": 0.43215,
+          "residual_norm": 0.980521,
+          "cosine_with_a": 0.129526,
+          "cosine_with_b": 0.170198,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.1153,
+          "subspace_membership": 0.036357,
+          "component_balance": 0.456285,
+          "residual_norm": 0.981653,
+          "cosine_with_a": 0.133821,
+          "cosine_with_b": 0.159463,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.1359,
+          "subspace_membership": 0.03354,
+          "component_balance": 0.447239,
+          "residual_norm": 0.983087,
+          "cosine_with_a": 0.127259,
+          "cosine_with_b": 0.157285,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.143,
+          "subspace_membership": 0.027008,
+          "component_balance": 0.436076,
+          "residual_norm": 0.986404,
+          "cosine_with_a": 0.110041,
+          "cosine_with_b": 0.142303,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.1058,
+          "subspace_membership": 0.036897,
+          "component_balance": 0.418955,
+          "residual_norm": 0.981378,
+          "cosine_with_a": 0.122752,
+          "cosine_with_b": 0.170244,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0707,
+          "subspace_membership": 0.03303,
+          "component_balance": 0.402638,
+          "residual_norm": 0.983347,
+          "cosine_with_a": 0.110228,
+          "cosine_with_b": 0.163536,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0902,
+          "subspace_membership": 0.0338,
+          "component_balance": 0.451219,
+          "residual_norm": 0.982955,
+          "cosine_with_a": 0.128365,
+          "cosine_with_b": 0.15612,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.1065,
+          "subspace_membership": 0.032442,
+          "component_balance": 0.466487,
+          "residual_norm": 0.983645,
+          "cosine_with_a": 0.128146,
+          "cosine_with_b": 0.146559,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.1272,
+          "subspace_membership": 0.034091,
+          "component_balance": 0.431264,
+          "residual_norm": 0.982807,
+          "cosine_with_a": 0.120832,
+          "cosine_with_b": 0.15935,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.1547,
+          "subspace_membership": 0.034057,
+          "component_balance": 0.388959,
+          "residual_norm": 0.982824,
+          "cosine_with_a": 0.107101,
+          "cosine_with_b": 0.168252,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.1381,
+          "subspace_membership": 0.030028,
+          "component_balance": 0.406713,
+          "residual_norm": 0.984872,
+          "cosine_with_a": 0.106001,
+          "cosine_with_b": 0.154627,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.1829,
+          "subspace_membership": 0.031747,
+          "component_balance": 0.377614,
+          "residual_norm": 0.983999,
+          "cosine_with_a": 0.098889,
+          "cosine_with_b": 0.162989,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.1433,
+          "subspace_membership": 0.02839,
+          "component_balance": 0.346329,
+          "residual_norm": 0.985703,
+          "cosine_with_a": 0.084457,
+          "cosine_with_b": 0.159406,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.2467,
+          "subspace_membership": 0.027161,
+          "component_balance": 0.362811,
+          "residual_norm": 0.986326,
+          "cosine_with_a": 0.087349,
+          "cosine_with_b": 0.153407,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.2028,
+          "subspace_membership": 0.029583,
+          "component_balance": 0.347574,
+          "residual_norm": 0.985097,
+          "cosine_with_a": 0.086364,
+          "cosine_with_b": 0.162112,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.75,
+          "loss": 0.2981,
+          "subspace_membership": 0.028943,
+          "component_balance": 0.350604,
+          "residual_norm": 0.985422,
+          "cosine_with_a": 0.08673,
+          "cosine_with_b": 0.160644,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.75,
+          "loss": 0.412,
+          "subspace_membership": 0.0265,
+          "component_balance": 0.374043,
+          "residual_norm": 0.986661,
+          "cosine_with_a": 0.090004,
+          "cosine_with_b": 0.150621,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.75,
+          "loss": 0.4312,
+          "subspace_membership": 0.023866,
+          "component_balance": 0.34565,
+          "residual_norm": 0.987995,
+          "cosine_with_a": 0.077021,
+          "cosine_with_b": 0.145808,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.75,
+          "loss": 0.4072,
+          "subspace_membership": 0.02569,
+          "component_balance": 0.386334,
+          "residual_norm": 0.987071,
+          "cosine_with_a": 0.091229,
+          "cosine_with_b": 0.144911,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.75,
+          "loss": 0.4947,
+          "subspace_membership": 0.020697,
+          "component_balance": 0.394484,
+          "residual_norm": 0.989597,
+          "cosine_with_a": 0.083548,
+          "cosine_with_b": 0.128243,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.75,
+          "loss": 0.3419,
+          "subspace_membership": 0.025056,
+          "component_balance": 0.354823,
+          "residual_norm": 0.987392,
+          "cosine_with_a": 0.081469,
+          "cosine_with_b": 0.148136,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.75,
+          "loss": 0.3421,
+          "subspace_membership": 0.021295,
+          "component_balance": 0.385193,
+          "residual_norm": 0.989295,
+          "cosine_with_a": 0.082982,
+          "cosine_with_b": 0.132448,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.75,
+          "loss": 0.234,
+          "subspace_membership": 0.031058,
+          "component_balance": 0.356516,
+          "residual_norm": 0.984348,
+          "cosine_with_a": 0.091164,
+          "cosine_with_b": 0.164544,
+          "degenerate": false
+        }
+      }
+    },
+    "fairness-liberty": {
+      "foundation_pair": [
+        "fairness",
+        "liberty"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 2,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.070761,
+      "peak_subspace_layer": 5,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.875,
+          "loss": 0.3643,
+          "subspace_membership": 0.034449,
+          "component_balance": 0.456291,
+          "residual_norm": 0.982625,
+          "cosine_with_a": 0.129585,
+          "cosine_with_b": 0.154411,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.75,
+          "loss": 0.3265,
+          "subspace_membership": 0.028583,
+          "component_balance": 0.484659,
+          "residual_norm": 0.985605,
+          "cosine_with_a": 0.126315,
+          "cosine_with_b": 0.134312,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.2569,
+          "subspace_membership": 0.037017,
+          "component_balance": 0.488607,
+          "residual_norm": 0.981317,
+          "cosine_with_a": 0.145355,
+          "cosine_with_b": 0.152134,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.1934,
+          "subspace_membership": 0.047224,
+          "component_balance": 0.470042,
+          "residual_norm": 0.976102,
+          "cosine_with_a": 0.159883,
+          "cosine_with_b": 0.180263,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.1477,
+          "subspace_membership": 0.056047,
+          "component_balance": 0.435224,
+          "residual_norm": 0.971572,
+          "cosine_with_a": 0.15892,
+          "cosine_with_b": 0.206225,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1566,
+          "subspace_membership": 0.070761,
+          "component_balance": 0.394931,
+          "residual_norm": 0.96397,
+          "cosine_with_a": 0.159294,
+          "cosine_with_b": 0.244052,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.1301,
+          "subspace_membership": 0.061523,
+          "component_balance": 0.430839,
+          "residual_norm": 0.968751,
+          "cosine_with_a": 0.163945,
+          "cosine_with_b": 0.216581,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1113,
+          "subspace_membership": 0.06127,
+          "component_balance": 0.441431,
+          "residual_norm": 0.968881,
+          "cosine_with_a": 0.168896,
+          "cosine_with_b": 0.213714,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.0963,
+          "subspace_membership": 0.055358,
+          "component_balance": 0.426993,
+          "residual_norm": 0.971927,
+          "cosine_with_a": 0.15464,
+          "cosine_with_b": 0.207521,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.0924,
+          "subspace_membership": 0.062685,
+          "component_balance": 0.411021,
+          "residual_norm": 0.96815,
+          "cosine_with_a": 0.155738,
+          "cosine_with_b": 0.223167,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0957,
+          "subspace_membership": 0.069726,
+          "component_balance": 0.394069,
+          "residual_norm": 0.964507,
+          "cosine_with_a": 0.157456,
+          "cosine_with_b": 0.24211,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0719,
+          "subspace_membership": 0.057308,
+          "component_balance": 0.441205,
+          "residual_norm": 0.970923,
+          "cosine_with_a": 0.163238,
+          "cosine_with_b": 0.206745,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.0718,
+          "subspace_membership": 0.057602,
+          "component_balance": 0.389731,
+          "residual_norm": 0.970772,
+          "cosine_with_a": 0.140256,
+          "cosine_with_b": 0.219623,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.0718,
+          "subspace_membership": 0.066953,
+          "component_balance": 0.416408,
+          "residual_norm": 0.965944,
+          "cosine_with_a": 0.165841,
+          "cosine_with_b": 0.232424,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0665,
+          "subspace_membership": 0.070328,
+          "component_balance": 0.430618,
+          "residual_norm": 0.964195,
+          "cosine_with_a": 0.17644,
+          "cosine_with_b": 0.233297,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0533,
+          "subspace_membership": 0.069643,
+          "component_balance": 0.457432,
+          "residual_norm": 0.96455,
+          "cosine_with_a": 0.186832,
+          "cosine_with_b": 0.221604,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.053,
+          "subspace_membership": 0.06665,
+          "component_balance": 0.470751,
+          "residual_norm": 0.9661,
+          "cosine_with_a": 0.189412,
+          "cosine_with_b": 0.21295,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0536,
+          "subspace_membership": 0.057959,
+          "component_balance": 0.496371,
+          "residual_norm": 0.970588,
+          "cosine_with_a": 0.185874,
+          "cosine_with_b": 0.188592,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.0722,
+          "subspace_membership": 0.057791,
+          "component_balance": 0.509504,
+          "residual_norm": 0.970674,
+          "cosine_with_a": 0.191507,
+          "cosine_with_b": 0.184363,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0621,
+          "subspace_membership": 0.05506,
+          "component_balance": 0.486123,
+          "residual_norm": 0.97208,
+          "cosine_with_a": 0.178996,
+          "cosine_with_b": 0.189216,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.0757,
+          "subspace_membership": 0.058557,
+          "component_balance": 0.452814,
+          "residual_norm": 0.97028,
+          "cosine_with_a": 0.170367,
+          "cosine_with_b": 0.205873,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.0927,
+          "subspace_membership": 0.056979,
+          "component_balance": 0.485232,
+          "residual_norm": 0.971093,
+          "cosine_with_a": 0.180576,
+          "cosine_with_b": 0.191568,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.0995,
+          "subspace_membership": 0.061506,
+          "component_balance": 0.485102,
+          "residual_norm": 0.968759,
+          "cosine_with_a": 0.189196,
+          "cosine_with_b": 0.200817,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.2592,
+          "subspace_membership": 0.062709,
+          "component_balance": 0.440619,
+          "residual_norm": 0.968138,
+          "cosine_with_a": 0.170628,
+          "cosine_with_b": 0.216619,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 0.2943,
+          "subspace_membership": 0.052264,
+          "component_balance": 0.471875,
+          "residual_norm": 0.973517,
+          "cosine_with_a": 0.168947,
+          "cosine_with_b": 0.189086,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.2183,
+          "subspace_membership": 0.053009,
+          "component_balance": 0.466013,
+          "residual_norm": 0.973135,
+          "cosine_with_a": 0.167167,
+          "cosine_with_b": 0.191551,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.2035,
+          "subspace_membership": 0.052776,
+          "component_balance": 0.497716,
+          "residual_norm": 0.973254,
+          "cosine_with_a": 0.179429,
+          "cosine_with_b": 0.181077,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.0801,
+          "subspace_membership": 0.047658,
+          "component_balance": 0.490425,
+          "residual_norm": 0.97588,
+          "cosine_with_a": 0.167902,
+          "cosine_with_b": 0.174458,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.0957,
+          "subspace_membership": 0.048737,
+          "component_balance": 0.503169,
+          "residual_norm": 0.975327,
+          "cosine_with_a": 0.174247,
+          "cosine_with_b": 0.172052,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.3744,
+          "subspace_membership": 0.051315,
+          "component_balance": 0.476051,
+          "residual_norm": 0.974004,
+          "cosine_with_a": 0.168654,
+          "cosine_with_b": 0.185624,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.1795,
+          "subspace_membership": 0.042615,
+          "component_balance": 0.490188,
+          "residual_norm": 0.97846,
+          "cosine_with_a": 0.158931,
+          "cosine_with_b": 0.165294,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 0.0928,
+          "subspace_membership": 0.058853,
+          "component_balance": 0.474872,
+          "residual_norm": 0.970127,
+          "cosine_with_a": 0.180319,
+          "cosine_with_b": 0.199402,
+          "degenerate": false
+        }
+      }
+    },
+    "fairness-loyalty": {
+      "foundation_pair": [
+        "fairness",
+        "loyalty"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 3,
+      "peak_accuracy": 0.875,
+      "peak_subspace_membership": 0.061318,
+      "peak_subspace_layer": 17,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.75,
+          "loss": 0.4382,
+          "subspace_membership": 0.019801,
+          "component_balance": 0.472102,
+          "residual_norm": 0.99005,
+          "cosine_with_a": 0.101763,
+          "cosine_with_b": 0.11379,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.75,
+          "loss": 0.4737,
+          "subspace_membership": 0.024249,
+          "component_balance": 0.512278,
+          "residual_norm": 0.987801,
+          "cosine_with_a": 0.121779,
+          "cosine_with_b": 0.115941,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.625,
+          "loss": 0.491,
+          "subspace_membership": 0.022896,
+          "component_balance": 0.514974,
+          "residual_norm": 0.988486,
+          "cosine_with_a": 0.120066,
+          "cosine_with_b": 0.113084,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.875,
+          "loss": 0.406,
+          "subspace_membership": 0.024887,
+          "component_balance": 0.516884,
+          "residual_norm": 0.987478,
+          "cosine_with_a": 0.12705,
+          "cosine_with_b": 0.11875,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.875,
+          "loss": 0.3064,
+          "subspace_membership": 0.031599,
+          "component_balance": 0.512983,
+          "residual_norm": 0.984074,
+          "cosine_with_a": 0.142538,
+          "cosine_with_b": 0.135323,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 0.875,
+          "loss": 0.2595,
+          "subspace_membership": 0.048989,
+          "component_balance": 0.531304,
+          "residual_norm": 0.975198,
+          "cosine_with_a": 0.187075,
+          "cosine_with_b": 0.16503,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.2792,
+          "subspace_membership": 0.042481,
+          "component_balance": 0.539061,
+          "residual_norm": 0.978529,
+          "cosine_with_a": 0.176799,
+          "cosine_with_b": 0.151177,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.3039,
+          "subspace_membership": 0.037037,
+          "component_balance": 0.502895,
+          "residual_norm": 0.981307,
+          "cosine_with_a": 0.153177,
+          "cosine_with_b": 0.151414,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.875,
+          "loss": 0.2872,
+          "subspace_membership": 0.038422,
+          "component_balance": 0.487757,
+          "residual_norm": 0.980601,
+          "cosine_with_a": 0.150811,
+          "cosine_with_b": 0.158382,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.875,
+          "loss": 0.3451,
+          "subspace_membership": 0.040093,
+          "component_balance": 0.497938,
+          "residual_norm": 0.979748,
+          "cosine_with_a": 0.158344,
+          "cosine_with_b": 0.159656,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.3034,
+          "subspace_membership": 0.054042,
+          "component_balance": 0.49589,
+          "residual_norm": 0.972604,
+          "cosine_with_a": 0.184304,
+          "cosine_with_b": 0.187359,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.2896,
+          "subspace_membership": 0.050992,
+          "component_balance": 0.485116,
+          "residual_norm": 0.97417,
+          "cosine_with_a": 0.174007,
+          "cosine_with_b": 0.184684,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.24,
+          "subspace_membership": 0.043429,
+          "component_balance": 0.455483,
+          "residual_norm": 0.978045,
+          "cosine_with_a": 0.148631,
+          "cosine_with_b": 0.177685,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.875,
+          "loss": 0.2338,
+          "subspace_membership": 0.051725,
+          "component_balance": 0.497932,
+          "residual_norm": 0.973794,
+          "cosine_with_a": 0.180261,
+          "cosine_with_b": 0.181758,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.182,
+          "subspace_membership": 0.050822,
+          "component_balance": 0.49718,
+          "residual_norm": 0.974258,
+          "cosine_with_a": 0.177848,
+          "cosine_with_b": 0.179865,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.1629,
+          "subspace_membership": 0.052804,
+          "component_balance": 0.491588,
+          "residual_norm": 0.97324,
+          "cosine_with_a": 0.178889,
+          "cosine_with_b": 0.185011,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.1743,
+          "subspace_membership": 0.055435,
+          "component_balance": 0.506784,
+          "residual_norm": 0.971887,
+          "cosine_with_a": 0.189145,
+          "cosine_with_b": 0.184082,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.2959,
+          "subspace_membership": 0.061318,
+          "component_balance": 0.534903,
+          "residual_norm": 0.968856,
+          "cosine_with_a": 0.210666,
+          "cosine_with_b": 0.183173,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.2601,
+          "subspace_membership": 0.054171,
+          "component_balance": 0.563368,
+          "residual_norm": 0.972537,
+          "cosine_with_a": 0.204745,
+          "cosine_with_b": 0.158685,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.2615,
+          "subspace_membership": 0.058243,
+          "component_balance": 0.551502,
+          "residual_norm": 0.970442,
+          "cosine_with_a": 0.208058,
+          "cosine_with_b": 0.169198,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.3263,
+          "subspace_membership": 0.049708,
+          "component_balance": 0.512664,
+          "residual_norm": 0.974829,
+          "cosine_with_a": 0.180424,
+          "cosine_with_b": 0.17151,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.4158,
+          "subspace_membership": 0.041904,
+          "component_balance": 0.521778,
+          "residual_norm": 0.978824,
+          "cosine_with_a": 0.16707,
+          "cosine_with_b": 0.153124,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.3592,
+          "subspace_membership": 0.041266,
+          "component_balance": 0.58921,
+          "residual_norm": 0.97915,
+          "cosine_with_a": 0.183615,
+          "cosine_with_b": 0.128014,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.2918,
+          "subspace_membership": 0.041022,
+          "component_balance": 0.577897,
+          "residual_norm": 0.979274,
+          "cosine_with_a": 0.17951,
+          "cosine_with_b": 0.131116,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 0.4125,
+          "subspace_membership": 0.037727,
+          "component_balance": 0.589083,
+          "residual_norm": 0.980955,
+          "cosine_with_a": 0.174799,
+          "cosine_with_b": 0.121932,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.3188,
+          "subspace_membership": 0.032982,
+          "component_balance": 0.57188,
+          "residual_norm": 0.983371,
+          "cosine_with_a": 0.161714,
+          "cosine_with_b": 0.121062,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.75,
+          "loss": 0.4732,
+          "subspace_membership": 0.037042,
+          "component_balance": 0.608411,
+          "residual_norm": 0.981304,
+          "cosine_with_a": 0.179048,
+          "cosine_with_b": 0.11524,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.75,
+          "loss": 0.5942,
+          "subspace_membership": 0.032224,
+          "component_balance": 0.605501,
+          "residual_norm": 0.983756,
+          "cosine_with_a": 0.165967,
+          "cosine_with_b": 0.108132,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.6519,
+          "subspace_membership": 0.028947,
+          "component_balance": 0.56394,
+          "residual_norm": 0.98542,
+          "cosine_with_a": 0.151451,
+          "cosine_with_b": 0.117108,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.75,
+          "loss": 0.719,
+          "subspace_membership": 0.031404,
+          "component_balance": 0.60412,
+          "residual_norm": 0.984173,
+          "cosine_with_a": 0.164251,
+          "cosine_with_b": 0.107634,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.75,
+          "loss": 0.8009,
+          "subspace_membership": 0.029077,
+          "component_balance": 0.572218,
+          "residual_norm": 0.985354,
+          "cosine_with_a": 0.153305,
+          "cosine_with_b": 0.114609,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 0.7227,
+          "subspace_membership": 0.051633,
+          "component_balance": 0.539972,
+          "residual_norm": 0.973841,
+          "cosine_with_a": 0.196537,
+          "cosine_with_b": 0.167439,
+          "degenerate": false
+        }
+      }
+    },
+    "fairness-authority": {
+      "foundation_pair": [
+        "fairness",
+        "authority"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.046529,
+      "peak_subspace_layer": 11,
+      "per_layer": {
+        "0": {
+          "accuracy": 1.0,
+          "loss": 0.2674,
+          "subspace_membership": 0.023352,
+          "component_balance": 0.397409,
+          "residual_norm": 0.988255,
+          "cosine_with_a": 0.091609,
+          "cosine_with_b": 0.138908,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 1.0,
+          "loss": 0.2452,
+          "subspace_membership": 0.023245,
+          "component_balance": 0.410496,
+          "residual_norm": 0.988309,
+          "cosine_with_a": 0.094596,
+          "cosine_with_b": 0.135847,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.2273,
+          "subspace_membership": 0.023415,
+          "component_balance": 0.476164,
+          "residual_norm": 0.988223,
+          "cosine_with_a": 0.113939,
+          "cosine_with_b": 0.125346,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.1732,
+          "subspace_membership": 0.025397,
+          "component_balance": 0.509942,
+          "residual_norm": 0.98722,
+          "cosine_with_a": 0.127265,
+          "cosine_with_b": 0.122302,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.875,
+          "loss": 0.1802,
+          "subspace_membership": 0.023095,
+          "component_balance": 0.562775,
+          "residual_norm": 0.988385,
+          "cosine_with_a": 0.132799,
+          "cosine_with_b": 0.103173,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1421,
+          "subspace_membership": 0.035368,
+          "component_balance": 0.465827,
+          "residual_norm": 0.982157,
+          "cosine_with_a": 0.138776,
+          "cosine_with_b": 0.159138,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.1828,
+          "subspace_membership": 0.036337,
+          "component_balance": 0.420977,
+          "residual_norm": 0.981663,
+          "cosine_with_a": 0.124939,
+          "cosine_with_b": 0.171845,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1037,
+          "subspace_membership": 0.032024,
+          "component_balance": 0.473661,
+          "residual_norm": 0.983858,
+          "cosine_with_a": 0.133608,
+          "cosine_with_b": 0.148467,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.0964,
+          "subspace_membership": 0.042674,
+          "component_balance": 0.477934,
+          "residual_norm": 0.97843,
+          "cosine_with_a": 0.154762,
+          "cosine_with_b": 0.169052,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.875,
+          "loss": 0.1065,
+          "subspace_membership": 0.039588,
+          "component_balance": 0.486005,
+          "residual_norm": 0.980006,
+          "cosine_with_a": 0.152383,
+          "cosine_with_b": 0.161159,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0918,
+          "subspace_membership": 0.03963,
+          "component_balance": 0.499802,
+          "residual_norm": 0.979985,
+          "cosine_with_a": 0.158927,
+          "cosine_with_b": 0.159053,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0843,
+          "subspace_membership": 0.046529,
+          "component_balance": 0.513417,
+          "residual_norm": 0.976458,
+          "cosine_with_a": 0.176162,
+          "cosine_with_b": 0.166954,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.0878,
+          "subspace_membership": 0.036948,
+          "component_balance": 0.50963,
+          "residual_norm": 0.981352,
+          "cosine_with_a": 0.154446,
+          "cosine_with_b": 0.148609,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.0877,
+          "subspace_membership": 0.044307,
+          "component_balance": 0.493539,
+          "residual_norm": 0.977595,
+          "cosine_with_a": 0.165954,
+          "cosine_with_b": 0.170299,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.105,
+          "subspace_membership": 0.043747,
+          "component_balance": 0.530981,
+          "residual_norm": 0.977882,
+          "cosine_with_a": 0.176816,
+          "cosine_with_b": 0.156182,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0605,
+          "subspace_membership": 0.035706,
+          "component_balance": 0.566402,
+          "residual_norm": 0.981985,
+          "cosine_with_a": 0.165976,
+          "cosine_with_b": 0.12706,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.0632,
+          "subspace_membership": 0.035502,
+          "component_balance": 0.520863,
+          "residual_norm": 0.982089,
+          "cosine_with_a": 0.153828,
+          "cosine_with_b": 0.141505,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0781,
+          "subspace_membership": 0.033866,
+          "component_balance": 0.491042,
+          "residual_norm": 0.982921,
+          "cosine_with_a": 0.142969,
+          "cosine_with_b": 0.148185,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.1353,
+          "subspace_membership": 0.039836,
+          "component_balance": 0.509812,
+          "residual_norm": 0.97988,
+          "cosine_with_a": 0.161402,
+          "cosine_with_b": 0.15519,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.2029,
+          "subspace_membership": 0.030071,
+          "component_balance": 0.551611,
+          "residual_norm": 0.98485,
+          "cosine_with_a": 0.149749,
+          "cosine_with_b": 0.121727,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.1813,
+          "subspace_membership": 0.033569,
+          "component_balance": 0.548642,
+          "residual_norm": 0.983072,
+          "cosine_with_a": 0.156689,
+          "cosine_with_b": 0.128905,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.3362,
+          "subspace_membership": 0.027824,
+          "component_balance": 0.515302,
+          "residual_norm": 0.98599,
+          "cosine_with_a": 0.134801,
+          "cosine_with_b": 0.126795,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.3353,
+          "subspace_membership": 0.033541,
+          "component_balance": 0.56174,
+          "residual_norm": 0.983086,
+          "cosine_with_a": 0.160123,
+          "cosine_with_b": 0.124925,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.563,
+          "subspace_membership": 0.027818,
+          "component_balance": 0.499674,
+          "residual_norm": 0.985993,
+          "cosine_with_a": 0.13019,
+          "cosine_with_b": 0.130359,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 0.7363,
+          "subspace_membership": 0.029878,
+          "component_balance": 0.517495,
+          "residual_norm": 0.984948,
+          "cosine_with_a": 0.14106,
+          "cosine_with_b": 0.131523,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.5385,
+          "subspace_membership": 0.025459,
+          "component_balance": 0.520591,
+          "residual_norm": 0.987188,
+          "cosine_with_a": 0.13021,
+          "cosine_with_b": 0.11991,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.7068,
+          "subspace_membership": 0.034191,
+          "component_balance": 0.46935,
+          "residual_norm": 0.982756,
+          "cosine_with_a": 0.13659,
+          "cosine_with_b": 0.15443,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 0.6902,
+          "subspace_membership": 0.034642,
+          "component_balance": 0.46057,
+          "residual_norm": 0.982526,
+          "cosine_with_a": 0.134972,
+          "cosine_with_b": 0.158082,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.6884,
+          "subspace_membership": 0.026448,
+          "component_balance": 0.45719,
+          "residual_norm": 0.986688,
+          "cosine_with_a": 0.116492,
+          "cosine_with_b": 0.138308,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.649,
+          "subspace_membership": 0.036449,
+          "component_balance": 0.476162,
+          "residual_norm": 0.981606,
+          "cosine_with_a": 0.143774,
+          "cosine_with_b": 0.15817,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.5628,
+          "subspace_membership": 0.040278,
+          "component_balance": 0.425816,
+          "residual_norm": 0.979654,
+          "cosine_with_a": 0.133566,
+          "cosine_with_b": 0.180105,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 1.1823,
+          "subspace_membership": 0.033621,
+          "component_balance": 0.404694,
+          "residual_norm": 0.983046,
+          "cosine_with_a": 0.114515,
+          "cosine_with_b": 0.168452,
+          "degenerate": false
+        }
+      }
+    },
+    "fairness-sanctity": {
+      "foundation_pair": [
+        "fairness",
+        "sanctity"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 2,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.116359,
+      "peak_subspace_layer": 31,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.875,
+          "loss": 0.3608,
+          "subspace_membership": 0.07383,
+          "component_balance": 0.222884,
+          "residual_norm": 0.962377,
+          "cosine_with_a": 0.076692,
+          "cosine_with_b": 0.267399,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.875,
+          "loss": 0.3527,
+          "subspace_membership": 0.067443,
+          "component_balance": 0.246066,
+          "residual_norm": 0.96569,
+          "cosine_with_a": 0.083029,
+          "cosine_with_b": 0.254396,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.3389,
+          "subspace_membership": 0.073418,
+          "component_balance": 0.24521,
+          "residual_norm": 0.962591,
+          "cosine_with_a": 0.086568,
+          "cosine_with_b": 0.266468,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.2496,
+          "subspace_membership": 0.081472,
+          "component_balance": 0.219095,
+          "residual_norm": 0.958399,
+          "cosine_with_a": 0.079238,
+          "cosine_with_b": 0.282424,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.2653,
+          "subspace_membership": 0.075198,
+          "component_balance": 0.244865,
+          "residual_norm": 0.961666,
+          "cosine_with_a": 0.087238,
+          "cosine_with_b": 0.269033,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1728,
+          "subspace_membership": 0.095543,
+          "component_balance": 0.248341,
+          "residual_norm": 0.951029,
+          "cosine_with_a": 0.099899,
+          "cosine_with_b": 0.302366,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.2307,
+          "subspace_membership": 0.082232,
+          "component_balance": 0.221436,
+          "residual_norm": 0.958002,
+          "cosine_with_a": 0.080729,
+          "cosine_with_b": 0.283841,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.178,
+          "subspace_membership": 0.078067,
+          "component_balance": 0.247573,
+          "residual_norm": 0.960174,
+          "cosine_with_a": 0.090559,
+          "cosine_with_b": 0.275227,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.1374,
+          "subspace_membership": 0.071871,
+          "component_balance": 0.261909,
+          "residual_norm": 0.963395,
+          "cosine_with_a": 0.093351,
+          "cosine_with_b": 0.263074,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.13,
+          "subspace_membership": 0.07674,
+          "component_balance": 0.26793,
+          "residual_norm": 0.960864,
+          "cosine_with_a": 0.099452,
+          "cosine_with_b": 0.271735,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.123,
+          "subspace_membership": 0.070514,
+          "component_balance": 0.278159,
+          "residual_norm": 0.964099,
+          "cosine_with_a": 0.099838,
+          "cosine_with_b": 0.259085,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.1272,
+          "subspace_membership": 0.08177,
+          "component_balance": 0.309929,
+          "residual_norm": 0.958243,
+          "cosine_with_a": 0.12399,
+          "cosine_with_b": 0.27607,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.1163,
+          "subspace_membership": 0.080581,
+          "component_balance": 0.268292,
+          "residual_norm": 0.958863,
+          "cosine_with_a": 0.101632,
+          "cosine_with_b": 0.277179,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.1277,
+          "subspace_membership": 0.079168,
+          "component_balance": 0.247265,
+          "residual_norm": 0.9596,
+          "cosine_with_a": 0.091336,
+          "cosine_with_b": 0.278049,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.1379,
+          "subspace_membership": 0.076571,
+          "component_balance": 0.288702,
+          "residual_norm": 0.960952,
+          "cosine_with_a": 0.109009,
+          "cosine_with_b": 0.268574,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.1992,
+          "subspace_membership": 0.082309,
+          "component_balance": 0.273567,
+          "residual_norm": 0.957962,
+          "cosine_with_a": 0.105221,
+          "cosine_with_b": 0.279405,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.1391,
+          "subspace_membership": 0.080722,
+          "component_balance": 0.212666,
+          "residual_norm": 0.95879,
+          "cosine_with_a": 0.075879,
+          "cosine_with_b": 0.28092,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.1684,
+          "subspace_membership": 0.09498,
+          "component_balance": 0.247311,
+          "residual_norm": 0.951326,
+          "cosine_with_a": 0.099452,
+          "cosine_with_b": 0.302682,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.1898,
+          "subspace_membership": 0.090463,
+          "component_balance": 0.276065,
+          "residual_norm": 0.953696,
+          "cosine_with_a": 0.111171,
+          "cosine_with_b": 0.291527,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.1582,
+          "subspace_membership": 0.086402,
+          "component_balance": 0.249134,
+          "residual_norm": 0.955823,
+          "cosine_with_a": 0.095717,
+          "cosine_with_b": 0.28848,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.1426,
+          "subspace_membership": 0.101936,
+          "component_balance": 0.256447,
+          "residual_norm": 0.947662,
+          "cosine_with_a": 0.107581,
+          "cosine_with_b": 0.311926,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.1277,
+          "subspace_membership": 0.100865,
+          "component_balance": 0.216431,
+          "residual_norm": 0.948227,
+          "cosine_with_a": 0.086848,
+          "cosine_with_b": 0.314428,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.1127,
+          "subspace_membership": 0.097175,
+          "component_balance": 0.269404,
+          "residual_norm": 0.950171,
+          "cosine_with_a": 0.112222,
+          "cosine_with_b": 0.304334,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.0973,
+          "subspace_membership": 0.109064,
+          "component_balance": 0.237688,
+          "residual_norm": 0.943894,
+          "cosine_with_a": 0.101106,
+          "cosine_with_b": 0.324265,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.1087,
+          "subspace_membership": 0.10337,
+          "component_balance": 0.242865,
+          "residual_norm": 0.946905,
+          "cosine_with_a": 0.101464,
+          "cosine_with_b": 0.316316,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.198,
+          "subspace_membership": 0.102115,
+          "component_balance": 0.257183,
+          "residual_norm": 0.947568,
+          "cosine_with_a": 0.108608,
+          "cosine_with_b": 0.313692,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.1402,
+          "subspace_membership": 0.103154,
+          "component_balance": 0.223039,
+          "residual_norm": 0.94702,
+          "cosine_with_a": 0.091331,
+          "cosine_with_b": 0.318154,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 0.1135,
+          "subspace_membership": 0.094085,
+          "component_balance": 0.244782,
+          "residual_norm": 0.951796,
+          "cosine_with_a": 0.097695,
+          "cosine_with_b": 0.301416,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.2329,
+          "subspace_membership": 0.09334,
+          "component_balance": 0.252845,
+          "residual_norm": 0.952187,
+          "cosine_with_a": 0.100791,
+          "cosine_with_b": 0.297835,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.3293,
+          "subspace_membership": 0.085561,
+          "component_balance": 0.271467,
+          "residual_norm": 0.956263,
+          "cosine_with_a": 0.105988,
+          "cosine_with_b": 0.284439,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.3176,
+          "subspace_membership": 0.095102,
+          "component_balance": 0.269111,
+          "residual_norm": 0.951261,
+          "cosine_with_a": 0.110425,
+          "cosine_with_b": 0.299909,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 0.6702,
+          "subspace_membership": 0.116359,
+          "component_balance": 0.274938,
+          "residual_norm": 0.940022,
+          "cosine_with_a": 0.12491,
+          "cosine_with_b": 0.329411,
+          "degenerate": false
+        }
+      }
+    },
+    "liberty-loyalty": {
+      "foundation_pair": [
+        "liberty",
+        "loyalty"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.102181,
+      "peak_subspace_layer": 10,
+      "per_layer": {
+        "0": {
+          "accuracy": 1.0,
+          "loss": 0.3042,
+          "subspace_membership": 0.04543,
+          "component_balance": 0.52857,
+          "residual_norm": 0.977021,
+          "cosine_with_a": 0.179763,
+          "cosine_with_b": 0.160331,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 1.0,
+          "loss": 0.261,
+          "subspace_membership": 0.038586,
+          "component_balance": 0.483072,
+          "residual_norm": 0.980517,
+          "cosine_with_a": 0.150874,
+          "cosine_with_b": 0.161448,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.2316,
+          "subspace_membership": 0.054227,
+          "component_balance": 0.491841,
+          "residual_norm": 0.972509,
+          "cosine_with_a": 0.183782,
+          "cosine_with_b": 0.189879,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.2217,
+          "subspace_membership": 0.072018,
+          "component_balance": 0.492471,
+          "residual_norm": 0.963318,
+          "cosine_with_a": 0.214759,
+          "cosine_with_b": 0.221325,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.1994,
+          "subspace_membership": 0.078527,
+          "component_balance": 0.479047,
+          "residual_norm": 0.959934,
+          "cosine_with_a": 0.216526,
+          "cosine_with_b": 0.235467,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.1533,
+          "subspace_membership": 0.096356,
+          "component_balance": 0.456225,
+          "residual_norm": 0.950602,
+          "cosine_with_a": 0.22769,
+          "cosine_with_b": 0.271384,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.1334,
+          "subspace_membership": 0.082241,
+          "component_balance": 0.490096,
+          "residual_norm": 0.957997,
+          "cosine_with_a": 0.227733,
+          "cosine_with_b": 0.236938,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1298,
+          "subspace_membership": 0.080027,
+          "component_balance": 0.483073,
+          "residual_norm": 0.959152,
+          "cosine_with_a": 0.219415,
+          "cosine_with_b": 0.234792,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.1151,
+          "subspace_membership": 0.082423,
+          "component_balance": 0.487256,
+          "residual_norm": 0.957902,
+          "cosine_with_a": 0.224532,
+          "cosine_with_b": 0.236277,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.1332,
+          "subspace_membership": 0.090565,
+          "component_balance": 0.476022,
+          "residual_norm": 0.953643,
+          "cosine_with_a": 0.230107,
+          "cosine_with_b": 0.253289,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.112,
+          "subspace_membership": 0.102181,
+          "component_balance": 0.470991,
+          "residual_norm": 0.947533,
+          "cosine_with_a": 0.243693,
+          "cosine_with_b": 0.273711,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.1008,
+          "subspace_membership": 0.098358,
+          "component_balance": 0.474991,
+          "residual_norm": 0.949548,
+          "cosine_with_a": 0.238687,
+          "cosine_with_b": 0.263822,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.1283,
+          "subspace_membership": 0.096393,
+          "component_balance": 0.485195,
+          "residual_norm": 0.950582,
+          "cosine_with_a": 0.242826,
+          "cosine_with_b": 0.257646,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.1458,
+          "subspace_membership": 0.101032,
+          "component_balance": 0.473337,
+          "residual_norm": 0.948139,
+          "cosine_with_a": 0.240885,
+          "cosine_with_b": 0.268023,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.1515,
+          "subspace_membership": 0.096724,
+          "component_balance": 0.474433,
+          "residual_norm": 0.950409,
+          "cosine_with_a": 0.235648,
+          "cosine_with_b": 0.261046,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.1793,
+          "subspace_membership": 0.086338,
+          "component_balance": 0.465379,
+          "residual_norm": 0.955857,
+          "cosine_with_a": 0.218414,
+          "cosine_with_b": 0.250911,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.1315,
+          "subspace_membership": 0.088212,
+          "component_balance": 0.435785,
+          "residual_norm": 0.954876,
+          "cosine_with_a": 0.203232,
+          "cosine_with_b": 0.263126,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.1261,
+          "subspace_membership": 0.082535,
+          "component_balance": 0.438099,
+          "residual_norm": 0.957844,
+          "cosine_with_a": 0.198606,
+          "cosine_with_b": 0.25473,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.1018,
+          "subspace_membership": 0.08342,
+          "component_balance": 0.479066,
+          "residual_norm": 0.957382,
+          "cosine_with_a": 0.221168,
+          "cosine_with_b": 0.240497,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0994,
+          "subspace_membership": 0.082511,
+          "component_balance": 0.449886,
+          "residual_norm": 0.957856,
+          "cosine_with_a": 0.205678,
+          "cosine_with_b": 0.2515,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.0995,
+          "subspace_membership": 0.084834,
+          "component_balance": 0.45397,
+          "residual_norm": 0.956643,
+          "cosine_with_a": 0.211846,
+          "cosine_with_b": 0.254806,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.1114,
+          "subspace_membership": 0.082907,
+          "component_balance": 0.465101,
+          "residual_norm": 0.95765,
+          "cosine_with_a": 0.213163,
+          "cosine_with_b": 0.245153,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.0901,
+          "subspace_membership": 0.077964,
+          "component_balance": 0.475621,
+          "residual_norm": 0.960227,
+          "cosine_with_a": 0.212211,
+          "cosine_with_b": 0.233965,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.0557,
+          "subspace_membership": 0.080093,
+          "component_balance": 0.481042,
+          "residual_norm": 0.959118,
+          "cosine_with_a": 0.219345,
+          "cosine_with_b": 0.236633,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.0622,
+          "subspace_membership": 0.076635,
+          "component_balance": 0.491014,
+          "residual_norm": 0.960919,
+          "cosine_with_a": 0.21689,
+          "cosine_with_b": 0.224829,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 1.0,
+          "loss": 0.1064,
+          "subspace_membership": 0.072113,
+          "component_balance": 0.453491,
+          "residual_norm": 0.963269,
+          "cosine_with_a": 0.193637,
+          "cosine_with_b": 0.233355,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 1.0,
+          "loss": 0.0863,
+          "subspace_membership": 0.072779,
+          "component_balance": 0.488132,
+          "residual_norm": 0.962923,
+          "cosine_with_a": 0.211625,
+          "cosine_with_b": 0.221915,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.1096,
+          "subspace_membership": 0.070401,
+          "component_balance": 0.481034,
+          "residual_norm": 0.964157,
+          "cosine_with_a": 0.204855,
+          "cosine_with_b": 0.221009,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 1.0,
+          "loss": 0.0943,
+          "subspace_membership": 0.073955,
+          "component_balance": 0.445996,
+          "residual_norm": 0.962312,
+          "cosine_with_a": 0.19284,
+          "cosine_with_b": 0.23954,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 1.0,
+          "loss": 0.103,
+          "subspace_membership": 0.069559,
+          "component_balance": 0.465005,
+          "residual_norm": 0.964594,
+          "cosine_with_a": 0.196597,
+          "cosine_with_b": 0.226188,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.2043,
+          "subspace_membership": 0.06495,
+          "component_balance": 0.459048,
+          "residual_norm": 0.96698,
+          "cosine_with_a": 0.188045,
+          "cosine_with_b": 0.221597,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 0.1461,
+          "subspace_membership": 0.088514,
+          "component_balance": 0.440531,
+          "residual_norm": 0.954718,
+          "cosine_with_a": 0.209264,
+          "cosine_with_b": 0.265763,
+          "degenerate": false
+        }
+      }
+    },
+    "liberty-authority": {
+      "foundation_pair": [
+        "liberty",
+        "authority"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 2,
+      "peak_accuracy": 0.875,
+      "peak_subspace_membership": 0.102754,
+      "peak_subspace_layer": 12,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.75,
+          "loss": 0.4391,
+          "subspace_membership": 0.03488,
+          "component_balance": 0.562159,
+          "residual_norm": 0.982405,
+          "cosine_with_a": 0.166262,
+          "cosine_with_b": 0.129494,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.75,
+          "loss": 0.3977,
+          "subspace_membership": 0.041626,
+          "component_balance": 0.642303,
+          "residual_norm": 0.978966,
+          "cosine_with_a": 0.196413,
+          "cosine_with_b": 0.109382,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.875,
+          "loss": 0.3523,
+          "subspace_membership": 0.05676,
+          "component_balance": 0.658579,
+          "residual_norm": 0.971205,
+          "cosine_with_a": 0.232206,
+          "cosine_with_b": 0.120381,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.75,
+          "loss": 0.3529,
+          "subspace_membership": 0.058855,
+          "component_balance": 0.63831,
+          "residual_norm": 0.970126,
+          "cosine_with_a": 0.233953,
+          "cosine_with_b": 0.132566,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.75,
+          "loss": 0.3357,
+          "subspace_membership": 0.065983,
+          "component_balance": 0.6348,
+          "residual_norm": 0.966445,
+          "cosine_with_a": 0.246434,
+          "cosine_with_b": 0.141774,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 0.75,
+          "loss": 0.3745,
+          "subspace_membership": 0.074657,
+          "component_balance": 0.603266,
+          "residual_norm": 0.961947,
+          "cosine_with_a": 0.256071,
+          "cosine_with_b": 0.168404,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.3485,
+          "subspace_membership": 0.071543,
+          "component_balance": 0.541639,
+          "residual_norm": 0.963565,
+          "cosine_with_a": 0.232704,
+          "cosine_with_b": 0.196925,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.3538,
+          "subspace_membership": 0.074917,
+          "component_balance": 0.541046,
+          "residual_norm": 0.961812,
+          "cosine_with_a": 0.238055,
+          "cosine_with_b": 0.201935,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.875,
+          "loss": 0.306,
+          "subspace_membership": 0.062665,
+          "component_balance": 0.572342,
+          "residual_norm": 0.96816,
+          "cosine_with_a": 0.227051,
+          "cosine_with_b": 0.169655,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.75,
+          "loss": 0.2728,
+          "subspace_membership": 0.088328,
+          "component_balance": 0.582559,
+          "residual_norm": 0.954815,
+          "cosine_with_a": 0.273683,
+          "cosine_with_b": 0.196111,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.2903,
+          "subspace_membership": 0.100423,
+          "component_balance": 0.593288,
+          "residual_norm": 0.948461,
+          "cosine_with_a": 0.298827,
+          "cosine_with_b": 0.204853,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.2507,
+          "subspace_membership": 0.08595,
+          "component_balance": 0.596904,
+          "residual_norm": 0.95606,
+          "cosine_with_a": 0.27493,
+          "cosine_with_b": 0.185663,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.2136,
+          "subspace_membership": 0.102754,
+          "component_balance": 0.601026,
+          "residual_norm": 0.947231,
+          "cosine_with_a": 0.301449,
+          "cosine_with_b": 0.200109,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.875,
+          "loss": 0.2028,
+          "subspace_membership": 0.100905,
+          "component_balance": 0.607611,
+          "residual_norm": 0.948206,
+          "cosine_with_a": 0.30124,
+          "cosine_with_b": 0.194538,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.2492,
+          "subspace_membership": 0.096565,
+          "component_balance": 0.610997,
+          "residual_norm": 0.950492,
+          "cosine_with_a": 0.294727,
+          "cosine_with_b": 0.187643,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.2306,
+          "subspace_membership": 0.090323,
+          "component_balance": 0.628949,
+          "residual_norm": 0.95377,
+          "cosine_with_a": 0.287689,
+          "cosine_with_b": 0.169724,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.3298,
+          "subspace_membership": 0.079175,
+          "component_balance": 0.594126,
+          "residual_norm": 0.959596,
+          "cosine_with_a": 0.259458,
+          "cosine_with_b": 0.177247,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.75,
+          "loss": 0.3584,
+          "subspace_membership": 0.085242,
+          "component_balance": 0.602777,
+          "residual_norm": 0.95643,
+          "cosine_with_a": 0.272974,
+          "cosine_with_b": 0.179886,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.3751,
+          "subspace_membership": 0.089718,
+          "component_balance": 0.616333,
+          "residual_norm": 0.954087,
+          "cosine_with_a": 0.285091,
+          "cosine_with_b": 0.177469,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.3035,
+          "subspace_membership": 0.071844,
+          "component_balance": 0.61619,
+          "residual_norm": 0.963409,
+          "cosine_with_a": 0.25532,
+          "cosine_with_b": 0.159033,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.4068,
+          "subspace_membership": 0.076645,
+          "component_balance": 0.628707,
+          "residual_norm": 0.960914,
+          "cosine_with_a": 0.265642,
+          "cosine_with_b": 0.156879,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.3874,
+          "subspace_membership": 0.07826,
+          "component_balance": 0.64714,
+          "residual_norm": 0.960073,
+          "cosine_with_a": 0.271098,
+          "cosine_with_b": 0.147819,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.4002,
+          "subspace_membership": 0.076275,
+          "component_balance": 0.629019,
+          "residual_norm": 0.961106,
+          "cosine_with_a": 0.263897,
+          "cosine_with_b": 0.155641,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.3452,
+          "subspace_membership": 0.083053,
+          "component_balance": 0.600241,
+          "residual_norm": 0.957573,
+          "cosine_with_a": 0.269546,
+          "cosine_with_b": 0.179517,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 0.4522,
+          "subspace_membership": 0.072436,
+          "component_balance": 0.596531,
+          "residual_norm": 0.963101,
+          "cosine_with_a": 0.251082,
+          "cosine_with_b": 0.169821,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.3879,
+          "subspace_membership": 0.071355,
+          "component_balance": 0.62002,
+          "residual_norm": 0.963662,
+          "cosine_with_a": 0.252159,
+          "cosine_with_b": 0.154536,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.3485,
+          "subspace_membership": 0.075658,
+          "component_balance": 0.60035,
+          "residual_norm": 0.961427,
+          "cosine_with_a": 0.257522,
+          "cosine_with_b": 0.171431,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 0.4648,
+          "subspace_membership": 0.071082,
+          "component_balance": 0.59198,
+          "residual_norm": 0.963804,
+          "cosine_with_a": 0.247759,
+          "cosine_with_b": 0.170767,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.5266,
+          "subspace_membership": 0.076128,
+          "component_balance": 0.609537,
+          "residual_norm": 0.961183,
+          "cosine_with_a": 0.259871,
+          "cosine_with_b": 0.166471,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.6295,
+          "subspace_membership": 0.072475,
+          "component_balance": 0.595178,
+          "residual_norm": 0.963081,
+          "cosine_with_a": 0.249882,
+          "cosine_with_b": 0.169962,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.4777,
+          "subspace_membership": 0.062824,
+          "component_balance": 0.59515,
+          "residual_norm": 0.968079,
+          "cosine_with_a": 0.233959,
+          "cosine_with_b": 0.15915,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.75,
+          "loss": 0.5135,
+          "subspace_membership": 0.087982,
+          "component_balance": 0.593214,
+          "residual_norm": 0.954997,
+          "cosine_with_a": 0.281337,
+          "cosine_with_b": 0.192923,
+          "degenerate": false
+        }
+      }
+    },
+    "liberty-sanctity": {
+      "foundation_pair": [
+        "liberty",
+        "sanctity"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.088243,
+      "peak_subspace_layer": 3,
+      "per_layer": {
+        "0": {
+          "accuracy": 1.0,
+          "loss": 0.2557,
+          "subspace_membership": 0.074881,
+          "component_balance": 0.425467,
+          "residual_norm": 0.961831,
+          "cosine_with_a": 0.175702,
+          "cosine_with_b": 0.23726,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 1.0,
+          "loss": 0.2203,
+          "subspace_membership": 0.07023,
+          "component_balance": 0.423543,
+          "residual_norm": 0.964246,
+          "cosine_with_a": 0.169938,
+          "cosine_with_b": 0.231292,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.875,
+          "loss": 0.2228,
+          "subspace_membership": 0.070756,
+          "component_balance": 0.45183,
+          "residual_norm": 0.963973,
+          "cosine_with_a": 0.185721,
+          "cosine_with_b": 0.225321,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.875,
+          "loss": 0.1746,
+          "subspace_membership": 0.088243,
+          "component_balance": 0.483856,
+          "residual_norm": 0.95486,
+          "cosine_with_a": 0.223091,
+          "cosine_with_b": 0.237978,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.875,
+          "loss": 0.1607,
+          "subspace_membership": 0.083561,
+          "component_balance": 0.46808,
+          "residual_norm": 0.957308,
+          "cosine_with_a": 0.207638,
+          "cosine_with_b": 0.235957,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.0953,
+          "subspace_membership": 0.081704,
+          "component_balance": 0.454925,
+          "residual_norm": 0.958277,
+          "cosine_with_a": 0.201033,
+          "cosine_with_b": 0.240871,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.1013,
+          "subspace_membership": 0.078389,
+          "component_balance": 0.412502,
+          "residual_norm": 0.960006,
+          "cosine_with_a": 0.175453,
+          "cosine_with_b": 0.249886,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.1178,
+          "subspace_membership": 0.073502,
+          "component_balance": 0.442518,
+          "residual_norm": 0.962547,
+          "cosine_with_a": 0.184715,
+          "cosine_with_b": 0.232703,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.0808,
+          "subspace_membership": 0.074185,
+          "component_balance": 0.445613,
+          "residual_norm": 0.962193,
+          "cosine_with_a": 0.188018,
+          "cosine_with_b": 0.233913,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.0603,
+          "subspace_membership": 0.077966,
+          "component_balance": 0.445193,
+          "residual_norm": 0.960226,
+          "cosine_with_a": 0.191716,
+          "cosine_with_b": 0.238919,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0556,
+          "subspace_membership": 0.080614,
+          "component_balance": 0.483903,
+          "residual_norm": 0.958846,
+          "cosine_with_a": 0.213773,
+          "cosine_with_b": 0.227995,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0501,
+          "subspace_membership": 0.072088,
+          "component_balance": 0.44938,
+          "residual_norm": 0.963282,
+          "cosine_with_a": 0.186389,
+          "cosine_with_b": 0.228381,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.0694,
+          "subspace_membership": 0.081327,
+          "component_balance": 0.44492,
+          "residual_norm": 0.958475,
+          "cosine_with_a": 0.196972,
+          "cosine_with_b": 0.245742,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.0537,
+          "subspace_membership": 0.082605,
+          "component_balance": 0.433696,
+          "residual_norm": 0.957807,
+          "cosine_with_a": 0.192921,
+          "cosine_with_b": 0.251909,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0626,
+          "subspace_membership": 0.078941,
+          "component_balance": 0.45732,
+          "residual_norm": 0.959718,
+          "cosine_with_a": 0.199758,
+          "cosine_with_b": 0.237043,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0943,
+          "subspace_membership": 0.076007,
+          "component_balance": 0.439333,
+          "residual_norm": 0.961245,
+          "cosine_with_a": 0.187246,
+          "cosine_with_b": 0.238958,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.033,
+          "subspace_membership": 0.078299,
+          "component_balance": 0.419298,
+          "residual_norm": 0.960053,
+          "cosine_with_a": 0.178273,
+          "cosine_with_b": 0.246897,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0482,
+          "subspace_membership": 0.07051,
+          "component_balance": 0.404874,
+          "residual_norm": 0.9641,
+          "cosine_with_a": 0.160524,
+          "cosine_with_b": 0.235955,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.0384,
+          "subspace_membership": 0.067429,
+          "component_balance": 0.411684,
+          "residual_norm": 0.965697,
+          "cosine_with_a": 0.160833,
+          "cosine_with_b": 0.229837,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0594,
+          "subspace_membership": 0.079891,
+          "component_balance": 0.400891,
+          "residual_norm": 0.959223,
+          "cosine_with_a": 0.170812,
+          "cosine_with_b": 0.255269,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.0426,
+          "subspace_membership": 0.076726,
+          "component_balance": 0.409876,
+          "residual_norm": 0.960872,
+          "cosine_with_a": 0.171658,
+          "cosine_with_b": 0.247147,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.0362,
+          "subspace_membership": 0.067717,
+          "component_balance": 0.428606,
+          "residual_norm": 0.965548,
+          "cosine_with_a": 0.169991,
+          "cosine_with_b": 0.226623,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.03,
+          "subspace_membership": 0.068138,
+          "component_balance": 0.439234,
+          "residual_norm": 0.96533,
+          "cosine_with_a": 0.175384,
+          "cosine_with_b": 0.223911,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.035,
+          "subspace_membership": 0.072997,
+          "component_balance": 0.418674,
+          "residual_norm": 0.96281,
+          "cosine_with_a": 0.171155,
+          "cosine_with_b": 0.237648,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.0198,
+          "subspace_membership": 0.070187,
+          "component_balance": 0.42896,
+          "residual_norm": 0.964268,
+          "cosine_with_a": 0.173606,
+          "cosine_with_b": 0.231108,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 1.0,
+          "loss": 0.0171,
+          "subspace_membership": 0.062208,
+          "component_balance": 0.429923,
+          "residual_norm": 0.968397,
+          "cosine_with_a": 0.16261,
+          "cosine_with_b": 0.215621,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 1.0,
+          "loss": 0.0348,
+          "subspace_membership": 0.06266,
+          "component_balance": 0.431531,
+          "residual_norm": 0.968163,
+          "cosine_with_a": 0.16363,
+          "cosine_with_b": 0.215555,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.0167,
+          "subspace_membership": 0.064675,
+          "component_balance": 0.417169,
+          "residual_norm": 0.967122,
+          "cosine_with_a": 0.159768,
+          "cosine_with_b": 0.223213,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 1.0,
+          "loss": 0.0326,
+          "subspace_membership": 0.06654,
+          "component_balance": 0.432495,
+          "residual_norm": 0.966157,
+          "cosine_with_a": 0.167943,
+          "cosine_with_b": 0.220368,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 1.0,
+          "loss": 0.0477,
+          "subspace_membership": 0.062543,
+          "component_balance": 0.420155,
+          "residual_norm": 0.968224,
+          "cosine_with_a": 0.158699,
+          "cosine_with_b": 0.219017,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 1.0,
+          "loss": 0.0717,
+          "subspace_membership": 0.057267,
+          "component_balance": 0.438434,
+          "residual_norm": 0.970945,
+          "cosine_with_a": 0.159681,
+          "cosine_with_b": 0.204527,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 1.0,
+          "loss": 0.0823,
+          "subspace_membership": 0.087307,
+          "component_balance": 0.423964,
+          "residual_norm": 0.95535,
+          "cosine_with_a": 0.192717,
+          "cosine_with_b": 0.261842,
+          "degenerate": false
+        }
+      }
+    },
+    "loyalty-authority": {
+      "foundation_pair": [
+        "loyalty",
+        "authority"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 0.875,
+      "peak_subspace_membership": 0.085588,
+      "peak_subspace_layer": 10,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.875,
+          "loss": 0.5054,
+          "subspace_membership": 0.031078,
+          "component_balance": 0.563498,
+          "residual_norm": 0.984339,
+          "cosine_with_a": 0.153052,
+          "cosine_with_b": 0.118559,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.875,
+          "loss": 0.456,
+          "subspace_membership": 0.026106,
+          "component_balance": 0.550672,
+          "residual_norm": 0.986861,
+          "cosine_with_a": 0.138733,
+          "cosine_with_b": 0.113201,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 0.875,
+          "loss": 0.4638,
+          "subspace_membership": 0.027958,
+          "component_balance": 0.61914,
+          "residual_norm": 0.985922,
+          "cosine_with_a": 0.157639,
+          "cosine_with_b": 0.09697,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 0.875,
+          "loss": 0.5018,
+          "subspace_membership": 0.049336,
+          "component_balance": 0.62386,
+          "residual_norm": 0.97502,
+          "cosine_with_a": 0.210058,
+          "cosine_with_b": 0.126649,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 0.875,
+          "loss": 0.4993,
+          "subspace_membership": 0.048573,
+          "component_balance": 0.593131,
+          "residual_norm": 0.975411,
+          "cosine_with_a": 0.203142,
+          "cosine_with_b": 0.139349,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 0.875,
+          "loss": 0.4679,
+          "subspace_membership": 0.075606,
+          "component_balance": 0.585497,
+          "residual_norm": 0.961454,
+          "cosine_with_a": 0.253239,
+          "cosine_with_b": 0.179281,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.5188,
+          "subspace_membership": 0.069057,
+          "component_balance": 0.613028,
+          "residual_norm": 0.964854,
+          "cosine_with_a": 0.24821,
+          "cosine_with_b": 0.156682,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.4874,
+          "subspace_membership": 0.0587,
+          "component_balance": 0.560817,
+          "residual_norm": 0.970206,
+          "cosine_with_a": 0.216644,
+          "cosine_with_b": 0.169657,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.875,
+          "loss": 0.4584,
+          "subspace_membership": 0.066398,
+          "component_balance": 0.610718,
+          "residual_norm": 0.966231,
+          "cosine_with_a": 0.242727,
+          "cosine_with_b": 0.154719,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.875,
+          "loss": 0.5069,
+          "subspace_membership": 0.071886,
+          "component_balance": 0.626288,
+          "residual_norm": 0.963387,
+          "cosine_with_a": 0.256375,
+          "cosine_with_b": 0.152981,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.4683,
+          "subspace_membership": 0.085588,
+          "component_balance": 0.616833,
+          "residual_norm": 0.956249,
+          "cosine_with_a": 0.279898,
+          "cosine_with_b": 0.173868,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.49,
+          "subspace_membership": 0.06396,
+          "component_balance": 0.604072,
+          "residual_norm": 0.967492,
+          "cosine_with_a": 0.237295,
+          "cosine_with_b": 0.155531,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.4747,
+          "subspace_membership": 0.076822,
+          "component_balance": 0.612604,
+          "residual_norm": 0.960822,
+          "cosine_with_a": 0.26193,
+          "cosine_with_b": 0.165638,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.875,
+          "loss": 0.5331,
+          "subspace_membership": 0.070149,
+          "component_balance": 0.602733,
+          "residual_norm": 0.964288,
+          "cosine_with_a": 0.24787,
+          "cosine_with_b": 0.163374,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.6301,
+          "subspace_membership": 0.0672,
+          "component_balance": 0.621155,
+          "residual_norm": 0.965816,
+          "cosine_with_a": 0.246864,
+          "cosine_with_b": 0.150564,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.6088,
+          "subspace_membership": 0.082185,
+          "component_balance": 0.68459,
+          "residual_norm": 0.958027,
+          "cosine_with_a": 0.282909,
+          "cosine_with_b": 0.130344,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.5907,
+          "subspace_membership": 0.075225,
+          "component_balance": 0.647956,
+          "residual_norm": 0.961652,
+          "cosine_with_a": 0.265937,
+          "cosine_with_b": 0.144488,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.6668,
+          "subspace_membership": 0.064659,
+          "component_balance": 0.651338,
+          "residual_norm": 0.96713,
+          "cosine_with_a": 0.247645,
+          "cosine_with_b": 0.132565,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.7142,
+          "subspace_membership": 0.05732,
+          "component_balance": 0.61005,
+          "residual_norm": 0.970917,
+          "cosine_with_a": 0.226089,
+          "cosine_with_b": 0.144518,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.686,
+          "subspace_membership": 0.067364,
+          "component_balance": 0.648,
+          "residual_norm": 0.965731,
+          "cosine_with_a": 0.251642,
+          "cosine_with_b": 0.136695,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.7033,
+          "subspace_membership": 0.073191,
+          "component_balance": 0.624874,
+          "residual_norm": 0.962709,
+          "cosine_with_a": 0.257713,
+          "cosine_with_b": 0.154711,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.7291,
+          "subspace_membership": 0.068869,
+          "component_balance": 0.648288,
+          "residual_norm": 0.964951,
+          "cosine_with_a": 0.253263,
+          "cosine_with_b": 0.137402,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.9039,
+          "subspace_membership": 0.059657,
+          "component_balance": 0.599919,
+          "residual_norm": 0.969713,
+          "cosine_with_a": 0.224991,
+          "cosine_with_b": 0.150044,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.9987,
+          "subspace_membership": 0.065783,
+          "component_balance": 0.617629,
+          "residual_norm": 0.966549,
+          "cosine_with_a": 0.242267,
+          "cosine_with_b": 0.149986,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 1.069,
+          "subspace_membership": 0.059373,
+          "component_balance": 0.61676,
+          "residual_norm": 0.969859,
+          "cosine_with_a": 0.229371,
+          "cosine_with_b": 0.142526,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 1.0878,
+          "subspace_membership": 0.05539,
+          "component_balance": 0.640691,
+          "residual_norm": 0.971911,
+          "cosine_with_a": 0.224934,
+          "cosine_with_b": 0.126147,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.875,
+          "loss": 0.9251,
+          "subspace_membership": 0.058364,
+          "component_balance": 0.595886,
+          "residual_norm": 0.97038,
+          "cosine_with_a": 0.223086,
+          "cosine_with_b": 0.151291,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 1.3046,
+          "subspace_membership": 0.061459,
+          "component_balance": 0.598275,
+          "residual_norm": 0.968783,
+          "cosine_with_a": 0.230893,
+          "cosine_with_b": 0.155038,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 1.2536,
+          "subspace_membership": 0.062196,
+          "component_balance": 0.640616,
+          "residual_norm": 0.968403,
+          "cosine_with_a": 0.239756,
+          "cosine_with_b": 0.134502,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.9112,
+          "subspace_membership": 0.061874,
+          "component_balance": 0.635381,
+          "residual_norm": 0.968569,
+          "cosine_with_a": 0.238,
+          "cosine_with_b": 0.136578,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 1.5277,
+          "subspace_membership": 0.057737,
+          "component_balance": 0.5954,
+          "residual_norm": 0.970702,
+          "cosine_with_a": 0.225202,
+          "cosine_with_b": 0.153035,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.875,
+          "loss": 1.9668,
+          "subspace_membership": 0.066327,
+          "component_balance": 0.586717,
+          "residual_norm": 0.966267,
+          "cosine_with_a": 0.241113,
+          "cosine_with_b": 0.16984,
+          "degenerate": false
+        }
+      }
+    },
+    "loyalty-sanctity": {
+      "foundation_pair": [
+        "loyalty",
+        "sanctity"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 0,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.188237,
+      "peak_subspace_layer": 31,
+      "per_layer": {
+        "0": {
+          "accuracy": 1.0,
+          "loss": 0.2114,
+          "subspace_membership": 0.127998,
+          "component_balance": 0.316547,
+          "residual_norm": 0.933811,
+          "cosine_with_a": 0.159968,
+          "cosine_with_b": 0.345383,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 1.0,
+          "loss": 0.2001,
+          "subspace_membership": 0.124276,
+          "component_balance": 0.31285,
+          "residual_norm": 0.935802,
+          "cosine_with_a": 0.155333,
+          "cosine_with_b": 0.341177,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.1443,
+          "subspace_membership": 0.136782,
+          "component_balance": 0.322025,
+          "residual_norm": 0.929095,
+          "cosine_with_a": 0.169389,
+          "cosine_with_b": 0.356622,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.0711,
+          "subspace_membership": 0.170563,
+          "component_balance": 0.298465,
+          "residual_norm": 0.910734,
+          "cosine_with_a": 0.171575,
+          "cosine_with_b": 0.403283,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.0547,
+          "subspace_membership": 0.160859,
+          "component_balance": 0.317836,
+          "residual_norm": 0.916046,
+          "cosine_with_a": 0.180172,
+          "cosine_with_b": 0.386698,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.06,
+          "subspace_membership": 0.161618,
+          "component_balance": 0.304063,
+          "residual_norm": 0.915632,
+          "cosine_with_a": 0.171159,
+          "cosine_with_b": 0.391748,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 1.0,
+          "loss": 0.0799,
+          "subspace_membership": 0.161789,
+          "component_balance": 0.331201,
+          "residual_norm": 0.915539,
+          "cosine_with_a": 0.192361,
+          "cosine_with_b": 0.388438,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 1.0,
+          "loss": 0.0843,
+          "subspace_membership": 0.150611,
+          "component_balance": 0.312663,
+          "residual_norm": 0.921623,
+          "cosine_with_a": 0.172087,
+          "cosine_with_b": 0.378304,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 1.0,
+          "loss": 0.0879,
+          "subspace_membership": 0.133372,
+          "component_balance": 0.324275,
+          "residual_norm": 0.930929,
+          "cosine_with_a": 0.169525,
+          "cosine_with_b": 0.353257,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 1.0,
+          "loss": 0.0627,
+          "subspace_membership": 0.14518,
+          "component_balance": 0.316652,
+          "residual_norm": 0.924565,
+          "cosine_with_a": 0.170898,
+          "cosine_with_b": 0.368804,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 1.0,
+          "loss": 0.0715,
+          "subspace_membership": 0.148437,
+          "component_balance": 0.320541,
+          "residual_norm": 0.922802,
+          "cosine_with_a": 0.174953,
+          "cosine_with_b": 0.370852,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 1.0,
+          "loss": 0.0534,
+          "subspace_membership": 0.137314,
+          "component_balance": 0.328976,
+          "residual_norm": 0.928809,
+          "cosine_with_a": 0.175526,
+          "cosine_with_b": 0.358026,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 1.0,
+          "loss": 0.056,
+          "subspace_membership": 0.145285,
+          "component_balance": 0.32269,
+          "residual_norm": 0.924508,
+          "cosine_with_a": 0.176314,
+          "cosine_with_b": 0.370074,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 1.0,
+          "loss": 0.0755,
+          "subspace_membership": 0.141664,
+          "component_balance": 0.316366,
+          "residual_norm": 0.926464,
+          "cosine_with_a": 0.169519,
+          "cosine_with_b": 0.366313,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 1.0,
+          "loss": 0.0633,
+          "subspace_membership": 0.119714,
+          "component_balance": 0.359871,
+          "residual_norm": 0.938236,
+          "cosine_with_a": 0.184935,
+          "cosine_with_b": 0.328957,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 1.0,
+          "loss": 0.0976,
+          "subspace_membership": 0.137366,
+          "component_balance": 0.364216,
+          "residual_norm": 0.928781,
+          "cosine_with_a": 0.200409,
+          "cosine_with_b": 0.349839,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 1.0,
+          "loss": 0.078,
+          "subspace_membership": 0.120977,
+          "component_balance": 0.352073,
+          "residual_norm": 0.937562,
+          "cosine_with_a": 0.178555,
+          "cosine_with_b": 0.328599,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 1.0,
+          "loss": 0.0423,
+          "subspace_membership": 0.143934,
+          "component_balance": 0.332336,
+          "residual_norm": 0.925238,
+          "cosine_with_a": 0.180393,
+          "cosine_with_b": 0.362409,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 1.0,
+          "loss": 0.034,
+          "subspace_membership": 0.140865,
+          "component_balance": 0.299039,
+          "residual_norm": 0.926896,
+          "cosine_with_a": 0.155912,
+          "cosine_with_b": 0.365465,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 1.0,
+          "loss": 0.0488,
+          "subspace_membership": 0.13612,
+          "component_balance": 0.33929,
+          "residual_norm": 0.929451,
+          "cosine_with_a": 0.181569,
+          "cosine_with_b": 0.353575,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 1.0,
+          "loss": 0.0337,
+          "subspace_membership": 0.139705,
+          "component_balance": 0.330314,
+          "residual_norm": 0.927521,
+          "cosine_with_a": 0.177073,
+          "cosine_with_b": 0.359,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 1.0,
+          "loss": 0.0395,
+          "subspace_membership": 0.156926,
+          "component_balance": 0.306058,
+          "residual_norm": 0.918191,
+          "cosine_with_a": 0.169672,
+          "cosine_with_b": 0.384706,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 1.0,
+          "loss": 0.0167,
+          "subspace_membership": 0.133172,
+          "component_balance": 0.308442,
+          "residual_norm": 0.931036,
+          "cosine_with_a": 0.157541,
+          "cosine_with_b": 0.353223,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 1.0,
+          "loss": 0.0218,
+          "subspace_membership": 0.123234,
+          "component_balance": 0.331948,
+          "residual_norm": 0.936358,
+          "cosine_with_a": 0.167808,
+          "cosine_with_b": 0.337717,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 1.0,
+          "loss": 0.0137,
+          "subspace_membership": 0.148723,
+          "component_balance": 0.300475,
+          "residual_norm": 0.922646,
+          "cosine_with_a": 0.161088,
+          "cosine_with_b": 0.375024,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 1.0,
+          "loss": 0.0041,
+          "subspace_membership": 0.155315,
+          "component_balance": 0.283623,
+          "residual_norm": 0.919067,
+          "cosine_with_a": 0.152685,
+          "cosine_with_b": 0.385653,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 1.0,
+          "loss": 0.0064,
+          "subspace_membership": 0.16054,
+          "component_balance": 0.262996,
+          "residual_norm": 0.91622,
+          "cosine_with_a": 0.140749,
+          "cosine_with_b": 0.394425,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 1.0,
+          "loss": 0.009,
+          "subspace_membership": 0.153675,
+          "component_balance": 0.289386,
+          "residual_norm": 0.919959,
+          "cosine_with_a": 0.155632,
+          "cosine_with_b": 0.382169,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 1.0,
+          "loss": 0.0014,
+          "subspace_membership": 0.152511,
+          "component_balance": 0.310209,
+          "residual_norm": 0.920592,
+          "cosine_with_a": 0.168499,
+          "cosine_with_b": 0.37468,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 1.0,
+          "loss": 0.0248,
+          "subspace_membership": 0.167263,
+          "component_balance": 0.288458,
+          "residual_norm": 0.912544,
+          "cosine_with_a": 0.161582,
+          "cosine_with_b": 0.398574,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 1.0,
+          "loss": 0.0284,
+          "subspace_membership": 0.157389,
+          "component_balance": 0.288082,
+          "residual_norm": 0.917938,
+          "cosine_with_a": 0.156168,
+          "cosine_with_b": 0.385927,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 1.0,
+          "loss": 0.0031,
+          "subspace_membership": 0.188237,
+          "component_balance": 0.293578,
+          "residual_norm": 0.900979,
+          "cosine_with_a": 0.175507,
+          "cosine_with_b": 0.422312,
+          "degenerate": false
+        }
+      }
+    },
+    "authority-sanctity": {
+      "foundation_pair": [
+        "authority",
+        "sanctity"
+      ],
+      "n_train": 16,
+      "n_test": 4,
+      "peak_accuracy_layer": 2,
+      "peak_accuracy": 1.0,
+      "peak_subspace_membership": 0.111031,
+      "peak_subspace_layer": 21,
+      "per_layer": {
+        "0": {
+          "accuracy": 0.75,
+          "loss": 0.395,
+          "subspace_membership": 0.055585,
+          "component_balance": 0.275943,
+          "residual_norm": 0.97181,
+          "cosine_with_a": 0.088422,
+          "cosine_with_b": 0.232013,
+          "degenerate": false
+        },
+        "1": {
+          "accuracy": 0.875,
+          "loss": 0.3707,
+          "subspace_membership": 0.03522,
+          "component_balance": 0.250115,
+          "residual_norm": 0.982232,
+          "cosine_with_a": 0.062153,
+          "cosine_with_b": 0.186344,
+          "degenerate": false
+        },
+        "2": {
+          "accuracy": 1.0,
+          "loss": 0.352,
+          "subspace_membership": 0.056068,
+          "component_balance": 0.206102,
+          "residual_norm": 0.971561,
+          "cosine_with_a": 0.061435,
+          "cosine_with_b": 0.236644,
+          "degenerate": false
+        },
+        "3": {
+          "accuracy": 1.0,
+          "loss": 0.2906,
+          "subspace_membership": 0.05862,
+          "component_balance": 0.23992,
+          "residual_norm": 0.970248,
+          "cosine_with_a": 0.076203,
+          "cosine_with_b": 0.241417,
+          "degenerate": false
+        },
+        "4": {
+          "accuracy": 1.0,
+          "loss": 0.2773,
+          "subspace_membership": 0.052622,
+          "component_balance": 0.221718,
+          "residual_norm": 0.973333,
+          "cosine_with_a": 0.065256,
+          "cosine_with_b": 0.229064,
+          "degenerate": false
+        },
+        "5": {
+          "accuracy": 1.0,
+          "loss": 0.2356,
+          "subspace_membership": 0.075244,
+          "component_balance": 0.231353,
+          "residual_norm": 0.961643,
+          "cosine_with_a": 0.082346,
+          "cosine_with_b": 0.273586,
+          "degenerate": false
+        },
+        "6": {
+          "accuracy": 0.875,
+          "loss": 0.2601,
+          "subspace_membership": 0.077235,
+          "component_balance": 0.287628,
+          "residual_norm": 0.960607,
+          "cosine_with_a": 0.110639,
+          "cosine_with_b": 0.27402,
+          "degenerate": false
+        },
+        "7": {
+          "accuracy": 0.875,
+          "loss": 0.2259,
+          "subspace_membership": 0.073486,
+          "component_balance": 0.289076,
+          "residual_norm": 0.962556,
+          "cosine_with_a": 0.10862,
+          "cosine_with_b": 0.267129,
+          "degenerate": false
+        },
+        "8": {
+          "accuracy": 0.875,
+          "loss": 0.2081,
+          "subspace_membership": 0.06539,
+          "component_balance": 0.264791,
+          "residual_norm": 0.966752,
+          "cosine_with_a": 0.091256,
+          "cosine_with_b": 0.253377,
+          "degenerate": false
+        },
+        "9": {
+          "accuracy": 0.875,
+          "loss": 0.2043,
+          "subspace_membership": 0.062001,
+          "component_balance": 0.313863,
+          "residual_norm": 0.968504,
+          "cosine_with_a": 0.111337,
+          "cosine_with_b": 0.243395,
+          "degenerate": false
+        },
+        "10": {
+          "accuracy": 0.875,
+          "loss": 0.2486,
+          "subspace_membership": 0.078077,
+          "component_balance": 0.291101,
+          "residual_norm": 0.960168,
+          "cosine_with_a": 0.112953,
+          "cosine_with_b": 0.275067,
+          "degenerate": false
+        },
+        "11": {
+          "accuracy": 0.875,
+          "loss": 0.2024,
+          "subspace_membership": 0.083198,
+          "component_balance": 0.291256,
+          "residual_norm": 0.957498,
+          "cosine_with_a": 0.116517,
+          "cosine_with_b": 0.283534,
+          "degenerate": false
+        },
+        "12": {
+          "accuracy": 0.875,
+          "loss": 0.2452,
+          "subspace_membership": 0.077729,
+          "component_balance": 0.250341,
+          "residual_norm": 0.960349,
+          "cosine_with_a": 0.092659,
+          "cosine_with_b": 0.277471,
+          "degenerate": false
+        },
+        "13": {
+          "accuracy": 0.875,
+          "loss": 0.1881,
+          "subspace_membership": 0.070784,
+          "component_balance": 0.254561,
+          "residual_norm": 0.963959,
+          "cosine_with_a": 0.090469,
+          "cosine_with_b": 0.264922,
+          "degenerate": false
+        },
+        "14": {
+          "accuracy": 0.875,
+          "loss": 0.2898,
+          "subspace_membership": 0.060039,
+          "component_balance": 0.278359,
+          "residual_norm": 0.969516,
+          "cosine_with_a": 0.093715,
+          "cosine_with_b": 0.242955,
+          "degenerate": false
+        },
+        "15": {
+          "accuracy": 0.875,
+          "loss": 0.3111,
+          "subspace_membership": 0.072141,
+          "component_balance": 0.234938,
+          "residual_norm": 0.963254,
+          "cosine_with_a": 0.082236,
+          "cosine_with_b": 0.267797,
+          "degenerate": false
+        },
+        "16": {
+          "accuracy": 0.875,
+          "loss": 0.3447,
+          "subspace_membership": 0.073001,
+          "component_balance": 0.278436,
+          "residual_norm": 0.962808,
+          "cosine_with_a": 0.10312,
+          "cosine_with_b": 0.267234,
+          "degenerate": false
+        },
+        "17": {
+          "accuracy": 0.875,
+          "loss": 0.3168,
+          "subspace_membership": 0.083036,
+          "component_balance": 0.263522,
+          "residual_norm": 0.957582,
+          "cosine_with_a": 0.102342,
+          "cosine_with_b": 0.28602,
+          "degenerate": false
+        },
+        "18": {
+          "accuracy": 0.875,
+          "loss": 0.3054,
+          "subspace_membership": 0.082369,
+          "component_balance": 0.247143,
+          "residual_norm": 0.957931,
+          "cosine_with_a": 0.093875,
+          "cosine_with_b": 0.285967,
+          "degenerate": false
+        },
+        "19": {
+          "accuracy": 0.875,
+          "loss": 0.3105,
+          "subspace_membership": 0.074269,
+          "component_balance": 0.259053,
+          "residual_norm": 0.962149,
+          "cosine_with_a": 0.094572,
+          "cosine_with_b": 0.270496,
+          "degenerate": false
+        },
+        "20": {
+          "accuracy": 0.875,
+          "loss": 0.3707,
+          "subspace_membership": 0.095043,
+          "component_balance": 0.234073,
+          "residual_norm": 0.951292,
+          "cosine_with_a": 0.093872,
+          "cosine_with_b": 0.307166,
+          "degenerate": false
+        },
+        "21": {
+          "accuracy": 0.875,
+          "loss": 0.4142,
+          "subspace_membership": 0.111031,
+          "component_balance": 0.224263,
+          "residual_norm": 0.942851,
+          "cosine_with_a": 0.096112,
+          "cosine_with_b": 0.332457,
+          "degenerate": false
+        },
+        "22": {
+          "accuracy": 0.875,
+          "loss": 0.3188,
+          "subspace_membership": 0.097517,
+          "component_balance": 0.229958,
+          "residual_norm": 0.949991,
+          "cosine_with_a": 0.092801,
+          "cosine_with_b": 0.310756,
+          "degenerate": false
+        },
+        "23": {
+          "accuracy": 0.875,
+          "loss": 0.3977,
+          "subspace_membership": 0.100845,
+          "component_balance": 0.220297,
+          "residual_norm": 0.948238,
+          "cosine_with_a": 0.089556,
+          "cosine_with_b": 0.316969,
+          "degenerate": false
+        },
+        "24": {
+          "accuracy": 0.875,
+          "loss": 0.514,
+          "subspace_membership": 0.105893,
+          "component_balance": 0.213553,
+          "residual_norm": 0.945572,
+          "cosine_with_a": 0.088284,
+          "cosine_with_b": 0.325121,
+          "degenerate": false
+        },
+        "25": {
+          "accuracy": 0.875,
+          "loss": 0.5573,
+          "subspace_membership": 0.093886,
+          "component_balance": 0.132663,
+          "residual_norm": 0.9519,
+          "cosine_with_a": 0.046766,
+          "cosine_with_b": 0.305751,
+          "degenerate": false
+        },
+        "26": {
+          "accuracy": 0.75,
+          "loss": 0.5333,
+          "subspace_membership": 0.096641,
+          "component_balance": 0.156785,
+          "residual_norm": 0.950452,
+          "cosine_with_a": 0.057711,
+          "cosine_with_b": 0.310379,
+          "degenerate": false
+        },
+        "27": {
+          "accuracy": 0.875,
+          "loss": 0.5312,
+          "subspace_membership": 0.095725,
+          "component_balance": 0.160538,
+          "residual_norm": 0.950934,
+          "cosine_with_a": 0.05913,
+          "cosine_with_b": 0.309196,
+          "degenerate": false
+        },
+        "28": {
+          "accuracy": 0.875,
+          "loss": 0.5221,
+          "subspace_membership": 0.079636,
+          "component_balance": 0.211301,
+          "residual_norm": 0.959356,
+          "cosine_with_a": 0.075473,
+          "cosine_with_b": 0.281712,
+          "degenerate": false
+        },
+        "29": {
+          "accuracy": 0.875,
+          "loss": 0.4684,
+          "subspace_membership": 0.079515,
+          "component_balance": 0.208338,
+          "residual_norm": 0.959419,
+          "cosine_with_a": 0.074099,
+          "cosine_with_b": 0.281566,
+          "degenerate": false
+        },
+        "30": {
+          "accuracy": 0.875,
+          "loss": 0.4955,
+          "subspace_membership": 0.078214,
+          "component_balance": 0.162746,
+          "residual_norm": 0.960097,
+          "cosine_with_a": 0.054359,
+          "cosine_with_b": 0.279654,
+          "degenerate": false
+        },
+        "31": {
+          "accuracy": 0.75,
+          "loss": 0.5192,
+          "subspace_membership": 0.106863,
+          "component_balance": 0.140178,
+          "residual_norm": 0.945059,
+          "cosine_with_a": 0.053219,
+          "cosine_with_b": 0.326436,
+          "degenerate": false
+        }
+      }
+    }
+  }
+}

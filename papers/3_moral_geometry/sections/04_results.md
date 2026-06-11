@@ -374,6 +374,15 @@ by *any* foundation direction: it is genuinely extra-moral, likely
 encoding conflict-specific features such as trade-off framing and
 tension that lie outside the moral subspace entirely.
 
+**Scale replication.** The partial-compositionality result reproduces
+on OLMo-2~7B. Mean peak subspace membership is 0.091 (9.1\%, vs.\ 9.9\%
+at 1B), with all 15 pairs exceeding the null 95th percentile; mean
+residual norm is 0.953 (vs.\ 0.949); and component balance is 0.455
+(vs.\ 0.486, where 0.5 is perfect balance). The 7B model decomposes
+moral dilemmas the same way the 1B model does: a small, significant
+projection onto the component foundations, a large conflict-specific
+residual, and near-balanced loading on the two foundations in tension.
+
 ## 4.10 Dilemma direction stability
 
 Bootstrap resampling (50 iterations) of the 15 dilemma probe
