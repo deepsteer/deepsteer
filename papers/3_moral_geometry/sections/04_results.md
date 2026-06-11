@@ -489,8 +489,8 @@ mean-difference; §5.5).
 ## 4.14 Scale validation: geometry persists from 1B to 7B
 
 We replicate the core geometric findings on OLMo-2~7B (the 1124
-release, 32 layers, hidden dimension 4096), a dense model roughly
-seven times the size of OLMo-2~1B. The integration signature holds.
+release, 32 layers, hidden dimension 4096), a dense model with 7.3B
+parameters, versus 1.5B for OLMo-2~1B. The integration signature holds.
 Mean pairwise cosine similarity ranges from **0.193 to 0.244** across
 layers (1B: 0.217--0.282), positive everywhere and far below the
 collapse threshold. Effective dimensionality is **5 at every one of
