@@ -204,9 +204,14 @@ echo "----------------------------------------------------------------------"
 echo ">> Experiments finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
+# Exclude the generic single-model figure names (fig1-5, fig_bootstrap_stability,
+# exp7_mean_critical_bars): exp1_2_3/exp7 write them un-namespaced, so a 7B run
+# would clobber the committed 1B paper figures. The 7B-relevant figures
+# (scale_comparison_*, *_7B) are NOT matched and still download.
 echo ">> Downloading results"
 rsync -az \
   --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
+  --exclude 'figures/fig*' --exclude 'figures/exp7_mean*' \
   -e "ssh ${SSH_OPTS[*]}" \
   "root@$SSH_HOST:$REMOTE_DIR/papers/3_moral_geometry/outputs/" \
   "$REPO_ROOT/papers/3_moral_geometry/outputs/"

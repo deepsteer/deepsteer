@@ -1,0 +1,2171 @@
+{
+  "model": "allenai/OLMo-2-1124-7B",
+  "per_foundation": {
+    "care_harm": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.6875,
+            "0.3": 0.625,
+            "1.0": 0.5625,
+            "3.0": 0.4375,
+            "10.0": 0.8125
+          },
+          "critical_noise": 1.0
+        },
+        "1": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.75,
+            "0.3": 0.1875,
+            "1.0": 0.625,
+            "3.0": 0.3125,
+            "10.0": 0.4375
+          },
+          "critical_noise": 0.3
+        },
+        "2": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.5625,
+            "1.0": 0.5,
+            "3.0": 0.3125,
+            "10.0": 0.3125
+          },
+          "critical_noise": 0.3
+        },
+        "3": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.8125,
+            "1.0": 0.5625,
+            "3.0": 0.375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "4": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.75,
+            "1.0": 0.375,
+            "3.0": 0.5625,
+            "10.0": 0.6875
+          },
+          "critical_noise": 1.0
+        },
+        "5": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.9375,
+            "1.0": 0.8125,
+            "3.0": 0.375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "6": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.75,
+            "1.0": 0.5625,
+            "3.0": 0.3125,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "7": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5,
+            "3.0": 0.625,
+            "10.0": 0.6875
+          },
+          "critical_noise": 1.0
+        },
+        "8": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.5625,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.6875,
+            "1.0": 0.75,
+            "3.0": 0.625,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.5,
+            "10.0": 0.375
+          },
+          "critical_noise": 3.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.8125,
+            "1.0": 0.625,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.4375,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.8125,
+            "1.0": 0.6875,
+            "3.0": 0.75,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.5625,
+            "3.0": 0.625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 1.0
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.6875,
+            "3.0": 0.4375,
+            "10.0": 0.375
+          },
+          "critical_noise": 3.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.6875,
+            "3.0": 0.5,
+            "10.0": 0.3125
+          },
+          "critical_noise": 3.0
+        },
+        "17": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "18": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.8125,
+            "1.0": 0.75,
+            "3.0": 0.8125,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "19": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.75,
+            "3.0": 0.5,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "20": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.9375,
+            "3.0": 0.375,
+            "10.0": 0.6875
+          },
+          "critical_noise": 3.0
+        },
+        "21": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "22": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.875,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "23": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.625,
+            "10.0": 0.3125
+          },
+          "critical_noise": 10.0
+        },
+        "24": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.75,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "25": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.375
+          },
+          "critical_noise": 10.0
+        },
+        "26": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "27": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.5,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "28": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "29": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "30": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "31": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.6875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        }
+      },
+      "mean_critical_noise": 4.4857,
+      "most_fragile_layer": 1,
+      "most_robust_layer": 9,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    },
+    "fairness_cheating": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.75,
+            "0.3": 0.5625,
+            "1.0": 0.5,
+            "3.0": 0.375,
+            "10.0": 0.5
+          },
+          "critical_noise": 0.3
+        },
+        "1": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.8125,
+            "1.0": 0.5,
+            "3.0": 0.3125,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "2": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.5,
+            "1.0": 0.375,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 0.3
+        },
+        "3": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.9375,
+            "1.0": 0.3125,
+            "3.0": 0.5,
+            "10.0": 0.625
+          },
+          "critical_noise": 1.0
+        },
+        "4": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.5625,
+            "1.0": 0.625,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 0.3
+        },
+        "5": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.6875,
+            "1.0": 0.6875,
+            "3.0": 0.3125,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "6": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.6875,
+            "1.0": 0.4375,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "7": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.5625,
+            "1.0": 0.4375,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 0.3
+        },
+        "8": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.8125,
+            "1.0": 0.625,
+            "3.0": 0.5,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.8125,
+            "1.0": 0.5,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.5625,
+            "10.0": 0.25
+          },
+          "critical_noise": 3.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.8125,
+            "1.0": 0.6875,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.8125,
+            "1.0": 0.75,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.5,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.5625,
+            "10.0": 0.375
+          },
+          "critical_noise": 3.0
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.6875,
+            "1.0": 0.6875,
+            "3.0": 0.6875,
+            "10.0": 0.375
+          },
+          "critical_noise": 10.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.75,
+            "3.0": 0.4375,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "17": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.8125,
+            "3.0": 0.875,
+            "10.0": 0.75
+          },
+          "critical_noise": null
+        },
+        "18": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 1.0,
+            "1.0": 0.6875,
+            "3.0": 0.6875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "19": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.875,
+            "1.0": 0.75,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "20": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.5625,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "21": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "22": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.875,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "23": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "24": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "25": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.3125
+          },
+          "critical_noise": 10.0
+        },
+        "26": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.8125,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "27": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.75
+          },
+          "critical_noise": null
+        },
+        "28": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.875,
+            "3.0": 0.875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "29": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 1.0,
+            "3.0": 0.625,
+            "10.0": 0.75
+          },
+          "critical_noise": null
+        },
+        "30": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.375
+          },
+          "critical_noise": 10.0
+        },
+        "31": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.8125,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        }
+      },
+      "mean_critical_noise": 4.8963,
+      "most_fragile_layer": 0,
+      "most_robust_layer": 15,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    },
+    "liberty_oppression": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.6875,
+            "1.0": 0.625,
+            "3.0": 0.5,
+            "10.0": 0.3125
+          },
+          "critical_noise": 3.0
+        },
+        "1": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.6875,
+            "0.3": 0.5625,
+            "1.0": 0.5,
+            "3.0": 0.3125,
+            "10.0": 0.5
+          },
+          "critical_noise": 0.3
+        },
+        "2": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.5,
+            "1.0": 0.625,
+            "3.0": 0.375,
+            "10.0": 0.4375
+          },
+          "critical_noise": 0.3
+        },
+        "3": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.625,
+            "1.0": 0.3125,
+            "3.0": 0.5,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "4": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.625,
+            "3.0": 0.5625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "5": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.375,
+            "3.0": 0.5625,
+            "10.0": 0.25
+          },
+          "critical_noise": 1.0
+        },
+        "6": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.625,
+            "3.0": 0.25,
+            "10.0": 0.6875
+          },
+          "critical_noise": 3.0
+        },
+        "7": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5625,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "8": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.5,
+            "10.0": 0.75
+          },
+          "critical_noise": 3.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5625,
+            "3.0": 0.375,
+            "10.0": 0.4375
+          },
+          "critical_noise": 1.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.5625,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5625,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.625,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.5625,
+            "3.0": 0.8125,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.5,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.75,
+            "3.0": 0.75,
+            "10.0": 0.375
+          },
+          "critical_noise": 10.0
+        },
+        "17": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 1.0,
+            "3.0": 0.75,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "18": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "19": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.8125,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "20": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 1.0,
+            "3.0": 0.5625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "21": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "22": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.75,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "23": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.8125,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "24": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "25": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "26": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "27": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "28": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "29": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.8125,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "30": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "31": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.75
+          },
+          "critical_noise": null
+        }
+      },
+      "mean_critical_noise": 4.6,
+      "most_fragile_layer": 1,
+      "most_robust_layer": 16,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    },
+    "loyalty_betrayal": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.6875,
+            "0.3": 0.5625,
+            "1.0": 0.625,
+            "3.0": 0.5625,
+            "10.0": 0.625
+          },
+          "critical_noise": 0.3
+        },
+        "1": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.5625,
+            "1.0": 0.8125,
+            "3.0": 0.4375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 0.3
+        },
+        "2": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.6875,
+            "1.0": 0.5625,
+            "3.0": 0.5,
+            "10.0": 0.375
+          },
+          "critical_noise": 1.0
+        },
+        "3": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.5,
+            "3.0": 0.6875,
+            "10.0": 0.25
+          },
+          "critical_noise": 1.0
+        },
+        "4": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.625,
+            "1.0": 0.6875,
+            "3.0": 0.25,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "5": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "6": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.625,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "7": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.875,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "8": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.625,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.875,
+            "1.0": 0.4375,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.75,
+            "3.0": 0.5,
+            "10.0": 0.6875
+          },
+          "critical_noise": 3.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.625,
+            "3.0": 0.5,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.8125,
+            "3.0": 0.75,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.4375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.8125,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "17": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "18": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.625,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "19": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.5625,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "20": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.75,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "21": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.5,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "22": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.8125,
+            "3.0": 0.625,
+            "10.0": 0.75
+          },
+          "critical_noise": null
+        },
+        "23": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.5,
+            "10.0": 0.375
+          },
+          "critical_noise": 3.0
+        },
+        "24": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.625,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "25": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.9375,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "26": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.5,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "27": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "28": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.8125,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "29": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.75,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "30": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "31": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.75,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        }
+      },
+      "mean_critical_noise": 4.2435,
+      "most_fragile_layer": 0,
+      "most_robust_layer": 8,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    },
+    "authority_subversion": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.75,
+            "0.3": 0.8125,
+            "1.0": 0.6875,
+            "3.0": 0.5,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "1": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.6875,
+            "1.0": 0.5,
+            "3.0": 0.375,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "2": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.375,
+            "3.0": 0.4375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "3": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.8125,
+            "1.0": 0.625,
+            "3.0": 0.25,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "4": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.5625,
+            "1.0": 0.75,
+            "3.0": 0.625,
+            "10.0": 0.5
+          },
+          "critical_noise": 0.3
+        },
+        "5": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.75,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "6": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.75,
+            "1.0": 0.8125,
+            "3.0": 0.5625,
+            "10.0": 0.6875
+          },
+          "critical_noise": 3.0
+        },
+        "7": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.6875,
+            "1.0": 0.8125,
+            "3.0": 0.5625,
+            "10.0": 0.6875
+          },
+          "critical_noise": 3.0
+        },
+        "8": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.9375,
+            "1.0": 0.6875,
+            "3.0": 0.5,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.5,
+            "3.0": 0.5625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 1.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.5625,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.625,
+            "3.0": 0.4375,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.75,
+            "3.0": 0.4375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.75,
+            "3.0": 0.5625,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.8125,
+            "3.0": 0.4375,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "17": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "18": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.8125,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "19": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "20": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.8125,
+            "3.0": 0.75,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "21": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.5,
+            "10.0": 0.75
+          },
+          "critical_noise": 3.0
+        },
+        "22": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.9375,
+            "3.0": 0.625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "23": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.6875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "24": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.875,
+            "10.0": 0.375
+          },
+          "critical_noise": 10.0
+        },
+        "25": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.9375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "26": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "27": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.9375,
+            "10.0": 0.8125
+          },
+          "critical_noise": null
+        },
+        "28": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.6875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "29": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.75,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "30": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.6875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "31": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        }
+      },
+      "mean_critical_noise": 5.372,
+      "most_fragile_layer": 4,
+      "most_robust_layer": 11,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    },
+    "sanctity_degradation": {
+      "per_layer": {
+        "0": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.8125,
+            "0.3": 0.625,
+            "1.0": 0.75,
+            "3.0": 0.5625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "1": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.75,
+            "0.3": 0.625,
+            "1.0": 0.5625,
+            "3.0": 0.5,
+            "10.0": 0.4375
+          },
+          "critical_noise": 1.0
+        },
+        "2": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.75,
+            "0.3": 0.625,
+            "1.0": 0.625,
+            "3.0": 0.5625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 3.0
+        },
+        "3": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.625,
+            "1.0": 0.875,
+            "3.0": 0.5,
+            "10.0": 0.3125
+          },
+          "critical_noise": 3.0
+        },
+        "4": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.75,
+            "1.0": 0.3125,
+            "3.0": 0.4375,
+            "10.0": 0.375
+          },
+          "critical_noise": 1.0
+        },
+        "5": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.375,
+            "1.0": 0.75,
+            "3.0": 0.3125,
+            "10.0": 0.375
+          },
+          "critical_noise": 0.3
+        },
+        "6": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.6875,
+            "3.0": 0.375,
+            "10.0": 0.5625
+          },
+          "critical_noise": 3.0
+        },
+        "7": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.9375,
+            "1.0": 0.5,
+            "3.0": 0.625,
+            "10.0": 0.6875
+          },
+          "critical_noise": 1.0
+        },
+        "8": {
+          "baseline_accuracy": 0.9375,
+          "accuracy_by_noise": {
+            "0.1": 0.875,
+            "0.3": 0.75,
+            "1.0": 0.5625,
+            "3.0": 0.6875,
+            "10.0": 0.5
+          },
+          "critical_noise": 1.0
+        },
+        "9": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.625,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "10": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 0.9375,
+            "0.3": 0.75,
+            "1.0": 0.75,
+            "3.0": 0.4375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "11": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.75,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        },
+        "12": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.5,
+            "3.0": 0.375,
+            "10.0": 0.75
+          },
+          "critical_noise": 1.0
+        },
+        "13": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.5625,
+            "3.0": 0.375,
+            "10.0": 0.6875
+          },
+          "critical_noise": 1.0
+        },
+        "14": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.8125,
+            "3.0": 0.6875,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "15": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.875,
+            "1.0": 0.6875,
+            "3.0": 0.375,
+            "10.0": 0.5
+          },
+          "critical_noise": 3.0
+        },
+        "16": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.6875,
+            "3.0": 0.625,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "17": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 0.8125,
+            "3.0": 0.8125,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "18": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 0.9375,
+            "1.0": 1.0,
+            "3.0": 0.5625,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "19": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.625,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "20": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.6875,
+            "3.0": 0.6875,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "21": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.8125,
+            "10.0": 0.6875
+          },
+          "critical_noise": null
+        },
+        "22": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.5625,
+            "10.0": 0.3125
+          },
+          "critical_noise": 3.0
+        },
+        "23": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.625,
+            "10.0": 0.3125
+          },
+          "critical_noise": 10.0
+        },
+        "24": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.6875,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "25": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.8125,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "26": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.8125,
+            "10.0": 0.5625
+          },
+          "critical_noise": 10.0
+        },
+        "27": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.875,
+            "3.0": 0.5625,
+            "10.0": 0.625
+          },
+          "critical_noise": 3.0
+        },
+        "28": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.4375
+          },
+          "critical_noise": 10.0
+        },
+        "29": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "30": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 0.9375,
+            "3.0": 0.875,
+            "10.0": 0.625
+          },
+          "critical_noise": null
+        },
+        "31": {
+          "baseline_accuracy": 1.0,
+          "accuracy_by_noise": {
+            "0.1": 1.0,
+            "0.3": 1.0,
+            "1.0": 1.0,
+            "3.0": 0.875,
+            "10.0": 0.5
+          },
+          "critical_noise": 10.0
+        }
+      },
+      "mean_critical_noise": 5.631,
+      "most_fragile_layer": 5,
+      "most_robust_layer": 9,
+      "n_train_pairs": 32,
+      "n_test_pairs": 8
+    }
+  }
+}

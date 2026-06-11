@@ -1,0 +1,29 @@
+{
+  "workload": {
+    "hidden": 4096,
+    "n_samples": 64,
+    "n_epochs": 50,
+    "lr": 0.01
+  },
+  "platform": {
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "cpu_count": 112,
+    "torch": "2.4.1+cu124",
+    "cuda": true,
+    "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "full_probes": 38400,
+  "cpu_threads": {
+    "1": 30.22,
+    "2": 28.5,
+    "4": 28.37,
+    "8": 29.7,
+    "16": 43.95,
+    "32": 98.37
+  },
+  "gpu": {
+    "sequential": 40.92,
+    "vectorized": 0.187
+  }
+}
