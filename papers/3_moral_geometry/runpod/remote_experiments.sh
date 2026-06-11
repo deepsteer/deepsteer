@@ -76,6 +76,9 @@ fi
 
 # --- C.2: causal validation (writes to outputs/probe_engineering; moved to _7B) ---
 if [ "$RUN_CAUSAL" = 1 ]; then
+  # Start from an empty dir so the synced 1B probe_engineering outputs don't get
+  # swept into probe_engineering_7B by the mv below (they'd be mislabeled 1B files).
+  rm -rf "$P3/outputs/probe_engineering"
   run_step "C.2 direction ablation (7B)" \
     python "$P3/scripts/probe_engineering/direction_ablation.py" \
       --model "$MODEL" \
