@@ -76,6 +76,7 @@ def run_fragility_for_probe(
 ) -> dict:
     """Train a probe and test under noise injection."""
     hidden_dim = train_X.shape[1]
+    torch.manual_seed(42)
     probe = nn.Linear(hidden_dim, 1)
     optimizer = torch.optim.Adam(probe.parameters(), lr=lr)
     loss_fn = nn.BCEWithLogitsLoss()
@@ -113,11 +114,14 @@ def run_fragility_for_probe(
         if accuracy_by_noise[str(nl)] < FRAGILITY_THRESHOLD:
             critical_noise = nl
             break
+    # Cap-at-max: never-fragile layers censored at the grid maximum, not dropped.
+    critical_noise_capped = max(noise_levels) if critical_noise is None else critical_noise
 
     return {
         "baseline_accuracy": round(baseline_acc, 4),
         "accuracy_by_noise": {k: round(v, 4) for k, v in accuracy_by_noise.items()},
         "critical_noise": critical_noise,
+        "critical_noise_capped": critical_noise_capped,
     }
 
 
@@ -207,17 +211,15 @@ def main() -> None:
             )
             per_layer[str(layer_idx)] = layer_result
 
-        # Summary
-        layers_with_critical = [
-            (int(l), d["critical_noise"])
-            for l, d in per_layer.items()
-            if d["critical_noise"] is not None
-        ]
-        mean_critical = float(np.mean([c for _, c in layers_with_critical])) if layers_with_critical else None
+        # Summary: cap-at-max mean over ALL layers (never-fragile censored at cap).
+        capped = [d["critical_noise_capped"] for d in per_layer.values()]
+        mean_critical = float(np.mean(capped)) if capped else None
+        n_never_fragile = sum(1 for d in per_layer.values() if d["critical_noise"] is None)
 
         results[pk] = {
             "per_layer": per_layer,
             "mean_critical_noise": round(mean_critical, 4) if mean_critical is not None else None,
+            "n_never_fragile": n_never_fragile,
             "n_train": len(train_pairs),
             "n_test": len(test_pairs),
         }
@@ -267,11 +269,8 @@ def main() -> None:
             n_epochs=args.n_epochs, lr=args.lr,
         )
 
-    pooled_critical = [
-        d["critical_noise"] for d in pooled_per_layer.values()
-        if d["critical_noise"] is not None
-    ]
-    pooled_mean_critical = float(np.mean(pooled_critical)) if pooled_critical else None
+    pooled_capped = [d["critical_noise_capped"] for d in pooled_per_layer.values()]
+    pooled_mean_critical = float(np.mean(pooled_capped)) if pooled_capped else None
 
     output = {
         "experiment": "dilemma_fragility",

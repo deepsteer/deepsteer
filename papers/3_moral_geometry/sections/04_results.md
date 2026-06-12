@@ -421,10 +421,12 @@ single-foundation probes (from Experiment 7), pooled binary
 dilemma probes (all 300 dilemma pairs pooled), and per-type
 dilemma probes (15 separate probes, 20 pairs each).
 
-The mean critical noise follows a **complexity--fragility gradient**:
-single-foundation probes are most robust ($\sigma^* = 4.72$),
-followed by the pooled dilemma probe ($\sigma^* = 3.12$), with
-per-type dilemma probes least robust ($\sigma^* = 2.90$). This
+All three are measured under the same convention (seed-averaged,
+cap-at-max). The mean critical noise follows a
+**complexity--fragility gradient**: single-foundation probes are most
+robust ($\sigma^* = 5.02$), followed by the pooled dilemma probe
+($\sigma^* = 3.81$), with per-type dilemma probes least robust
+($\sigma^* = 3.55$). This
 ordering is consistent with the hypothesis that more specific moral
 distinctions are encoded with less redundancy and are therefore more
 vulnerable to perturbation.
