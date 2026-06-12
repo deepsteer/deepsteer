@@ -92,7 +92,7 @@ achieve near-perfect probing accuracy (99--100%) with full encoding
 breadth (decodable at every layer) and near-zero encoding depth
 (onset at layer 0). On probing accuracy alone, the two architectures
 are indistinguishable. Yet the MoE model's moral encoding is
-5.1$\times$ more fragile, and the underlying feedforward signal is
+4.2$\times$ more fragile, and the underlying feedforward signal is
 74$\times$ weaker.
 
 Probing accuracy measures the *presence* of information: whether

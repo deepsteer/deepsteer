@@ -9,7 +9,7 @@ router shows no preference for routing moral content to specific
 experts (maximum preference 1.8%).
 
 This null on specialization led to a positive finding about
-architecture. MoE models are 5.1$\times$ more fragile than dense
+architecture. MoE models are 4.2$\times$ more fragile than dense
 models on moral probing despite matching on accuracy, and the
 mechanism is *output dilution*: the MoE block's contribution to the
 residual stream is 74$\times$ smaller in scale than the dense MLP's,

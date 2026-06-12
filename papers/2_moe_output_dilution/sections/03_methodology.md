@@ -11,7 +11,7 @@ selection with normalized weights. The model is trained with a
 load-balancing auxiliary loss ($\lambda = 0.01$) to encourage
 uniform expert utilization.
 
-**OLMo-2 1B** (`allenai/OLMo-2-0425-1B`; \citealp{groeneveld2024olmo})
+**OLMo-2 1B** (`allenai/OLMo-2-0425-1B`; \citealp{olmo2_2025})
 is a 16-layer dense transformer with 1.5B parameters and hidden
 dimension 2048. It serves as the architectural control: same lab,
 same training philosophy, comparable active parameter count, same
@@ -127,7 +127,10 @@ OLMoE publishes 244 training checkpoints at 5,000-step intervals
 from step 5,000 (20B tokens) through step 1,220,000 (5,117B tokens).
 We select 11 checkpoints spanning training: dense early sampling
 (steps 5K, 10K, 20K, 50K, 100K) and logarithmic spacing through
-the remainder (steps 200K, 400K, 600K, 800K, 1M, 1.2M). At each
+the remainder (steps 200K, 400K, 600K, 800K, 1M, 1.2M). Our sample
+therefore ends at step 1,200,000 (5,033B tokens), just short of the
+published set's final step 1,220,000 (5,117B tokens); the 84B-token
+gap does not affect any trajectory conclusion. At each
 checkpoint, we run the full per-expert probing analysis (§3.2--3.3)
 and router analysis (§3.2), computing the Gini coefficient of
 per-expert moral accuracy and tracking expert identity stability

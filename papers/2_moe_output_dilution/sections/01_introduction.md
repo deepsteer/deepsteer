@@ -16,8 +16,9 @@ We test this question on OLMoE-1B-7B \citep{muennighoff2024olmoe}, a
 (1.3B active per token), using the moral probing and fragility
 methodology from companion work on dense OLMo models
 \citep{reblitzrichardson2026fragility}. OLMoE is uniquely positioned for this
-analysis: it is the only open MoE model with 244 published training
-checkpoints, and its dense counterpart OLMo-2 1B (from the same
+analysis: it is the open MoE model with by far the densest published
+checkpoint record (244 checkpoints at 5,000-step intervals), and its
+dense counterpart OLMo-2 1B (from the same
 lab, with comparable active parameter count and full checkpoint
 access) gives a controlled architectural comparison.
 
@@ -32,10 +33,10 @@ uniformly distributed across experts as it is across neurons in a
 dense model. The router shows negligible moral content preference
 (maximum 1.8%).
 
-**Finding 2: MoE encoding is 5.1$\times$ more fragile than dense.**
+**Finding 2: MoE encoding is 4.2$\times$ more fragile than dense.**
 Despite matching dense OLMo-2 1B on probing accuracy (99.0% vs.
-99.0% peak), OLMoE's moral encoding collapses under 5.1$\times$
-less noise (mean critical $\sigma^* = 0.84$ vs. 4.25). The
+99.0% peak), OLMoE's moral encoding collapses under 4.2$\times$
+less noise (mean critical $\sigma^* = 0.92$ vs. 3.81). The
 fragility gap is not explained by weaker individual expert
 representations or unstable routing; both are robust in isolation.
 

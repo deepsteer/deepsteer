@@ -19,14 +19,14 @@ OLMoE shows lower early-layer accuracy (79--86% at layers 0--3 vs.
 94--97% for OLMo-2) before converging at later layers.
 
 **Fragility diverges sharply.** Under Gaussian noise injection at
-$\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, OLMoE is
-5.1$\times$ more fragile than OLMo-2: mean critical noise
-$\sigma^* = 0.84$ vs. 4.25. The fragility profiles also differ
+$\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$ averaged over 10 noise
+seeds, OLMoE is 4.2$\times$ more fragile than OLMo-2: mean critical
+noise $\sigma^* = 0.92$ vs. 3.81. The fragility profiles also differ
 structurally. OLMo-2 shows distributed robustness, with critical
-noise $\geq$ 3.0 at 10 of 16 layers and $\geq$ 10.0 at layers 7,
-11, 14, and 15. OLMoE concentrates robustness in the final two
-layers only (critical noise 3.0 at layers 14--15; $\leq$ 0.3 at
-12 of 16 layers).
+noise $\geq$ 3.0 at 12 of 16 layers and $\geq$ 10.0 at layers 13,
+14, and 15. OLMoE concentrates robustness in the final three
+layers only (critical noise 3.0 at layers 13--15; $\leq$ 0.3 at
+9 of 16 layers, and $\leq$ 1.0 at 13 of 16).
 
 **Figure 1** contrasts the two architectures across both metrics.
 
@@ -53,9 +53,9 @@ all 64 experts individually exceed 84% accuracy (mean 93.0%, min
 84.4%). The per-layer Gini coefficient of expert accuracy, which measures
 how concentrated moral signal is across experts, ranges from 0.016
 to 0.023, indicating near-perfect uniformity. Gini is modestly
-higher in early layers (0.021--0.023 at layers 0--3) and lowest at
-late layers (0.016 at layers 8--9), suggesting that moral encoding
-becomes *more* uniform as it matures through the network.
+higher in early layers (0.021--0.023 at layers 0--3) and lowest in
+mid-network (0.016 at layers 8, 9, and 12), suggesting that moral
+encoding becomes *more* uniform through the early and middle layers.
 
 **Figure 2** shows the per-expert accuracy distribution at every layer.
 
@@ -94,7 +94,7 @@ differences.
 
 Having established that moral encoding is uniformly distributed
 across experts and that the router is content-agnostic, we turn to
-the source of the 5.1$\times$ fragility gap. We isolated three
+the source of the 4.2$\times$ fragility gap. We isolated three
 perturbation targets within the MoE block:
 
 - **Router perturbation**: Gaussian noise on router logits before
@@ -111,11 +111,14 @@ $\sigma \in \{0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0\}$, averaged
 over 10 random seeds.
 
 **The component fragility ranking reverses the natural hypothesis.**
-The router is the *most robust* component: mean critical noise
-$\sigma^* = 9.1$ (only 8 of 16 layers reach the fragility threshold
-at any tested noise level). Expert outputs are moderately fragile
-($\sigma^* = 1.8$, all 16 layers). The aggregated output is the most
-fragile ($\sigma^* = 0.6$, all 16 layers), consistent with the
+The router is the *most robust* component: 8 of 16 layers never reach
+the fragility threshold at any tested noise level. Following the
+cap-at-maximum convention (§3.4) those never-fragile layers are
+censored at $\sigma=10$ rather than dropped, giving mean critical
+noise $\sigma^* = 9.56$ (it is 9.13 if they are dropped instead).
+Expert outputs are moderately fragile ($\sigma^* = 1.8$, all 16
+layers fragile). The aggregated output is the most fragile
+($\sigma^* = 0.6$, all 16 layers fragile), consistent with the
 full-hidden-state fragility from §4.1.
 
 This counterintuitive ranking is explained by the natural scales of
@@ -141,9 +144,12 @@ feedforward output across texts:
 |    12 |  0.018        |  1.070       |  61$\times$ |
 |    15 |  0.096        |  8.779       |  91$\times$ |
 
-The ratio exceeds 60$\times$ at 9 of 16 layers. The MoE block's
-contribution to the residual stream is not just smaller; it operates
-on a fundamentally different scale than the dense MLP.
+The ratio exceeds 60$\times$ at 9 of 16 layers. The per-layer ratio
+varies widely, from 5.3$\times$ (layer 2, where the MoE output scale
+spikes) to 167$\times$ (layer 0); the table above excerpts five
+representative layers. The MoE block's contribution to the residual
+stream is not just smaller; it operates on a fundamentally different
+scale than the dense MLP.
 
 **Figure 3** relates the output-scale gap to component fragility.
 
