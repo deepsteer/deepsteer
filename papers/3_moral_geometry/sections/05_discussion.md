@@ -69,42 +69,27 @@ integration: the foundations are linearly decodable but are not the
 dominant axis of variation, so unsupervised methods find the shared
 moral-salience structure instead.
 
-## 5.2 The sanctity fragility anomaly
+## 5.2 Per-foundation fragility is not separable
 
-The most unexpected per-foundation finding is the dramatic
-architecture-dependent behavior of sanctity/degradation: it is the
-*most* robust foundation in the dense model ($\sigma^* = 5.60$,
-highest of all six) but the *least* robust in MoE ($\sigma^* = 0.91$,
-lowest of all six). This 6.2$\times$ ratio far exceeds the overall
-architectural gap (3.1$\times$ mean across foundations).
+Within an architecture, the moral foundations are not reliably
+distinguishable by fragility. With 10 noise seeds and the cap-at-max
+convention (§4.7), per-foundation $\sigma^*$ values carry wide,
+overlapping bootstrap CIs in all three models, and no foundation is
+reliably most or least robust. Sanctity sits mid-pack everywhere
+(dense 1B $5.50$, MoE $2.33$, dense 7B $10.0$, fourth of six), and the
+binding-vs-individualizing group difference is not significant in any
+model (dense 1B $p = 0.40$, MoE $p = 0.70$, dense 7B $p = 0.20$) and
+reverses sign between dense and MoE. Per-foundation $\sigma^*$ is
+sensitive to single-draw noise, so we make no per-foundation or
+MFT-group fragility claim.
 
-The flip tracks architecture, not scale. Sanctity/degradation is also
-the most robust foundation in the dense 7B model ($\sigma^* = 5.42$;
-§4.14), so the dense pattern holds across a sevenfold change in size.
-The reversal to most-fragile appears only under MoE aggregation, which
-points to the routing/averaging mechanism rather than model capacity.
-
-One interpretation: sanctity/purity concepts are encoded through
-culturally specific associations (disgust, bodily integrity,
-spiritual elevation; \citep{graham2013mft}) that rely on
-fine-grained distributional features. In a dense model, these
-features benefit from the full feedforward scale and are robust.
-Under MoE top-$k$ averaging, the fine-grained signal is
-disproportionately attenuated because it requires coordinated
-contribution across multiple expert outputs, which the averaging
-operation dilutes more than simpler features.
-
-An alternative interpretation is that the training corpus has rich
-sanctity-related content (religious text, purity discussions) that
-produces strong dense representations, but this content routes
-unevenly across experts in MoE, creating inconsistent per-expert
-sanctity features that average destructively.
-
-At the group level, both architectures show binding foundations
-slightly more robust than individualizing (dense: 4.64 vs.\ 3.92;
-MoE: 1.43 vs.\ 1.29), but this group-level pattern is small and
-driven by individual foundation outliers rather than a clean
-categorical distinction.
+The fragility result that does hold is between architectures, not
+between foundations: every foundation is more fragile in MoE than in
+dense (a ${\sim}2.3\times$ per-foundation gap, the same direction as the
+pooled $4.2\times$ of \citet{reblitzrichardson2026dilution}), and dense
+robustness rises with scale from 1B to 7B. Output dilution suppresses
+moral encoding uniformly across foundations rather than singling any
+one out.
 
 ## 5.3 Framework geometry stabilizes before accuracy saturates
 
@@ -210,16 +195,14 @@ depend only on direction vectors, not on classification thresholds.
 Since the directions transfer across registers, the geometric
 findings are not register-bound.
 
-**Connection to differential fragility.** The register sensitivity
-pattern partially parallels the fragility findings (§5.2): binding
-foundations (authority, loyalty) that are most sensitive to text
-register are also among the most affected by MoE output dilution
-(sanctity in particular). However, the B.2 results show that this
-parallel is specific to threshold transfer, not direction transfer.
-Both individualizing and binding directions transfer with high
-pair accuracy ($>90$\%), suggesting the differential fragility
-reflects genuine representational vulnerability to noise rather than
-register entanglement in the directions.
+**Threshold vs. direction transfer.** The register sensitivity is
+specific to threshold transfer, not direction transfer. Both
+individualizing and binding directions transfer across registers with
+high pair accuracy ($>90$\%); what shifts across register is the
+decision threshold, not the direction itself. Authority and loyalty
+show the largest threshold gaps (Appendix B.2), so their register
+sensitivity reflects a calibration shift rather than a change in the
+underlying moral direction.
 
 **Implications for the geometric findings.** The 21-direction
 dendrogram analysis (§4.9) gives direct evidence that register
@@ -237,8 +220,10 @@ information and shift the activation scale.
 **Small probing dataset.** The 32 training pairs per foundation
 are sufficient for classification (near-perfect accuracy) but
 limit the precision of direction estimation. Bootstrap analysis
-(§4.6) confirms that directions at layers 0--4 are borderline
-unstable, and all geometric claims are qualified to layers 5--14.
+(§4.6) confirms that directions at layers 0--5 are borderline
+unstable, and all geometric claims are qualified to the
+bootstrap-stable core, layers 6--15 (the lone exception being
+authority at layer 8, 0.792).
 A larger dataset would tighten direction estimates, but the current
 dataset is deliberately minimal to demonstrate that structured
 geometry is recoverable even from small samples.

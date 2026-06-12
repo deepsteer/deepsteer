@@ -33,7 +33,14 @@ different modes of moral representation:
 
 1. **Collapse.** All foundation directions converge toward a single
    "moral salience" direction. The model detects moral relevance
-   but does not distinguish frameworks. This is detection without
+   but does not distinguish frameworks.^[We use *framework*
+   interchangeably with the Moral Foundations Theory term *foundation*
+   throughout (and in the title). We do not intend the moral-psychology
+   sense in which *framework* denotes a theory-level position such as
+   deontology or utilitarianism. We retain *framework* in part because
+   *foundation* is itself overloaded in the language-model setting,
+   where a "foundation model" is a base, pre-instruction-tuned model,
+   exactly the class of models we probe.] This is detection without
    structure.
 
 2. **Isolation.** Foundation directions are orthogonal with no
@@ -55,13 +62,13 @@ the MFT distinction between individualizing and binding foundations
 with human moral-psychological categories, despite the directions
 being well-separated).
 
-Extending the fragility protocol to per-foundation probes shows
-differential robustness: sanctity/degradation is the most robust
-foundation in dense models but the most fragile in MoE, showing a
-6.2$\times$ fragility ratio that far exceeds the overall
-architectural gap. Output dilution does not suppress all moral
-foundations uniformly; culturally specific moral concepts appear
-more vulnerable to the MoE aggregation bottleneck.
+Extending the fragility protocol to per-foundation probes shows a
+uniform cross-architecture effect rather than a per-foundation one:
+once accuracy is averaged over multiple noise seeds, every foundation
+is more fragile in MoE than in dense (a ${\sim}2.3\times$ gap), and no
+single foundation is reliably most or least robust within an
+architecture. Output dilution suppresses moral encoding across the
+board.
 
 This paper makes three contributions:
 

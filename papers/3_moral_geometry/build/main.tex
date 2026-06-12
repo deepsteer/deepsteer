@@ -127,8 +127,10 @@ Training six independent linear probes on OLMo-2~1B and 7B and
 OLMoE-1B-7B, one per foundation in Moral Foundations Theory (MFT),
 shows integration. Foundation directions in representation space are
 geometrically distinct, spanning five effective dimensions, yet share
-a common moral-salience component. This is genuine multi-dimensional
-structure, not a single moral detector. The geometry is consistent
+a common moral-salience component, shown by a uniformly positive mean
+pairwise cosine (the effective dimensionality rules out collapse; the
+positive cosine is what marks integration rather than isolation). This
+is genuine multi-dimensional structure, not a single moral detector. The geometry is consistent
 across scale (1B to 7B dense), across dense and MoE architectures, and
 on the independently constructed Moral Foundations Vignettes, and
 stabilizes early in pretraining.
@@ -138,10 +140,10 @@ predicts. Neither hierarchical clustering of the probe directions nor
 unsupervised clustering of the activations recovers the
 individualizing/binding distinction central to MFT; the model's moral
 taxonomy is grounded in corpus statistics rather than human theoretical
-categories. Per-foundation fragility testing shows a further
-asymmetry: sanctity/degradation is the most robust foundation in both
-dense models but the most fragile in MoE, far exceeding the overall
-architectural gap.
+categories. Seed-averaged fragility testing shows that output dilution
+is foundation-uniform: every foundation is more fragile in MoE than in
+dense, with no foundation reliably most or least robust within an
+architecture.
 
 Extending to moral dilemmas shows partial compositionality: dilemma
 representations share significant variance with their component

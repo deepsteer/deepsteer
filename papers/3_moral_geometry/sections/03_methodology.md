@@ -12,19 +12,25 @@ dataset (§3.6). All experiments run on a single MacBook Pro M4 Pro
 
 ## 3.1 Models and comparison design
 
-We evaluate two base (non-instruct) models from the same lab
-(Ai2), matched in layer count (16) but differing in architecture:
+We evaluate three base (non-instruct) models from the same lab
+(Ai2). The primary comparison is between two architectures matched in
+layer count (16), dense vs. mixture-of-experts; a third, larger dense
+model serves as a scale control (§4.14):
 
 - **OLMo-2 1B** (`allenai/OLMo-2-0425-1B`): dense transformer,
-  1.5B parameters, 2048 hidden dimension \citep{olmo2_2025}. Ai2
-  publishes 37 early-training checkpoints at 1K-step intervals
+  1.5B parameters, 2048 hidden dimension, 16 layers \citep{olmo2_2025}.
+  Ai2 publishes 37 early-training checkpoints at 1K-step intervals
   (steps 0--36K), enabling trajectory analysis.
 
 - **OLMoE-1B-7B** (`allenai/OLMoE-1B-7B-0924`): mixture-of-experts,
   6.9B total parameters, 1.3B active, 64 experts per layer, top-8
-  routing, 2048 hidden dimension \citep{muennighoff2024olmoe}.
+  routing, 2048 hidden dimension, 16 layers \citep{muennighoff2024olmoe}.
 
-Both models use the same tokenizer and comparable training corpora.
+- **OLMo-2 7B** (`allenai/OLMo-2-1124-7B`): dense transformer, 7.3B
+  parameters, 4096 hidden dimension, 32 layers \citep{olmo2_2025}. Used
+  in §4.14 to test whether the geometry findings persist with scale.
+
+All three models use the same tokenizer and comparable training corpora.
 The comparison tests whether framework geometry is an artifact of
 dense connectivity or a general property of transformer-based
 language modeling. \citet{reblitzrichardson2026dilution} established

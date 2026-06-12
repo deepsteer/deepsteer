@@ -23,6 +23,13 @@ with the lowest early-layer values at 81.25\% (layers 0--1). The
 accuracy profiles are essentially indistinguishable between
 architectures.
 
+These peak accuracies are maxima over 16 layers on small held-out sets
+(8--16 examples per foundation), so they should be read as "easily
+decodable" rather than as precise point estimates: the exact binomial
+95\% confidence interval on a perfect 16/16 still reaches down to
+${\sim}0.79$. The geometric analysis below, not these saturated
+accuracies, carries the paper's claims.
+
 ## 4.2 Framework geometry: integration, not collapse
 
 \begin{figure}[t]
@@ -34,7 +41,8 @@ architectures.
 
 The headline finding: foundation probe directions are *separated*,
 not collapsed. Across bootstrap-stable layers (6--15, where all six
-directions exceed the 0.8 stability threshold; §4.6), mean pairwise
+directions exceed the 0.8 stability threshold; §4.6, with the single
+exception of authority at layer 8, 0.792), mean pairwise
 cosine similarity ranges from **0.232 to 0.274**, far below the
 collapse threshold ($>0.95$) and below the intermediate zone
 ($0.8$--$0.95$). Figure~\ref{fig:cosine_heatmap} shows the
@@ -52,14 +60,26 @@ foundation-specific directions deviate.
 
 **Effective dimensionality.** The six foundation directions span
 5 effective dimensions (the number of PCs explaining $\geq 90\%$
-of variance) at every layer. This is near the maximum possible for
-6 directions, confirming that the directions are geometrically
-distinct; they do not collapse into a lower-dimensional subspace.
+of variance) at every layer, confirming that the directions are
+geometrically distinct and do not collapse into a lower-dimensional
+subspace. Effective dimensionality alone does not establish
+*integration*, however: six random directions in this hidden space
+also span ${\sim}5$ effective dimensions (§4.8), so a near-maximal
+eff-dim is equally consistent with the isolation regime. The
+integration signal is carried by two statistics that random
+directions do not reproduce: the uniformly positive mean pairwise
+cosine (0.26, vs.\ ${\sim}0$ for random directions), and the
+concentration of variance on a shared leading axis. The first
+principal component of the six unit directions captures **0.379** of
+their variance averaged over the stable layers 6--15, more than
+double the **0.179** expected for six random unit vectors in 2048
+dimensions ($\approx 1/6$). Both reflect the shared moral-salience
+component; the effective dimensionality only rules out collapse.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig2_layerwise_geometry.pdf}
-\caption{Layer-wise geometric metrics for OLMo-2 1B. (a) Mean pairwise cosine similarity is relatively flat across layers. (b) Effective dimensionality remains constant at 5 across all layers.}
+\caption{Layer-wise geometric metrics for OLMo-2 1B. (a) Mean pairwise cosine similarity is relatively flat across layers. (b) Effective dimensionality remains constant at 5 across all layers. (c) MFT group structure: mean cosine within the individualizing group, within the binding group, and between groups track together across layers, so the directions do not separate into the predicted individualizing/binding clusters.}
 \label{fig:layerwise}
 \end{figure}
 
@@ -166,46 +186,38 @@ are stable.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{exp7_mean_critical_bars.pdf}
-\caption{Mean critical noise per foundation for OLMo-2 1B (left) and OLMoE-1B-7B (right). Foundation ordering differs between architectures; sanctity is the most robust in dense and most fragile in MoE.}
+\caption{Mean critical noise $\sigma^*$ per foundation for OLMo-2 1B (left) and OLMoE-1B-7B (right), seed-averaged with cap-at-max and bootstrap 95\% CIs over noise seeds. Every foundation is more fragile in MoE than in dense (the cross-architecture dilution effect); within each architecture the per-foundation CIs overlap and the ordering is not statistically separable.}
 \label{fig:fragility}
 \end{figure}
 
-Per-foundation fragility shows differential robustness within
-both architectures.
+We measure per-foundation critical noise $\sigma^*$ with the standard
+fragility protocol, averaging accuracy over 10 noise seeds and
+censoring never-fragile layers at the grid maximum (the cap-at-max
+convention of \citet{reblitzrichardson2026fragility}); bootstrap 95\%
+CIs are over the noise seeds. Seed-averaging is necessary here: a
+single noise draw makes per-layer $\sigma^*$ unstable.
 
-**OLMo-2 1B (dense).** Sanctity/degradation is the most robust
-foundation (mean critical noise $\sigma^* = 5.60$), followed by
-authority/subversion (5.02), care/harm (4.42), liberty/oppression
-(3.82), fairness/cheating (3.52), and loyalty/betrayal (3.31). The
-universality hypothesis (care/harm as most robust) is *not*
-supported. Binding foundations as a group are slightly more robust
-(mean 4.64) than individualizing foundations (mean 3.92), but the
-difference is driven by the two extremes (sanctity and loyalty)
-rather than a clean group separation.
+**The result is between architectures, not between foundations.**
+Every foundation is more fragile in OLMoE than in OLMo-2: dense
+$\sigma^*$ runs 3.8--5.6 across the six foundations (mean 5.0), MoE
+$\sigma^*$ runs 1.2--3.8 (mean 2.2), a per-foundation architecture gap
+of ${\sim}2.3\times$. This is the same direction as, and smaller than,
+the 4.2$\times$ pooled gap reported by
+\citet{reblitzrichardson2026dilution}; the pooled probe trains on
+192 pairs versus 32 per foundation here, so it has more statistical
+power and a cleaner separation. Output dilution suppresses moral
+encoding across the board.
 
-**OLMoE-1B-7B (MoE).** The ordering shifts: loyalty/betrayal is
-most robust (2.03), followed by liberty/oppression (1.60),
-authority/subversion (1.35), care/harm (1.26), fairness/cheating
-(1.01), and sanctity/degradation (0.91). Binding foundations remain
-slightly more robust as a group (mean 1.43 vs.\ 1.29 for
-individualizing), preserving the direction of the dense-model
-difference.
-
-The most striking finding is per-foundation: sanctity/degradation
-is the *most* robust foundation in the dense model (5.60) but the
-*least* robust in MoE (0.91). This 6.2$\times$ ratio is far larger
-than the overall per-foundation fragility gap between architectures
-(3.1$\times$, computed as the ratio of mean critical noise across
-six per-foundation probes with 32 training pairs each; the 5.1$\times$
-gap reported by \citet{reblitzrichardson2026dilution} uses a single
-pooled binary probe with 192 training pairs, which has higher
-statistical power). Output dilution does not suppress all
-moral foundations uniformly; sanctity representations are
-disproportionately vulnerable to the MoE aggregation bottleneck.
-This may reflect the encoding mechanism: sanctity/purity concepts,
-which rely on culturally specific associations
-\citep{graham2013mft}, may depend on fine-grained signal that is
-preferentially attenuated by top-$k$ averaging.
+**Within an architecture, foundations are not reliably separable.**
+The per-foundation $\sigma^*$ values have wide, overlapping bootstrap
+CIs (dense: e.g. sanctity $5.50$, CI $[3.6, 8.6]$; care $4.81$, CI
+$[3.5, 8.0]$. MoE: sanctity $2.33$, CI $[1.3, 5.3]$; care $3.76$, CI
+$[0.9, 6.7]$), and no foundation is robustly most or least fragile.
+The binding-vs-individualizing group difference is not significant in
+either model and reverses sign between them (dense: binding $-$
+individualizing $= +0.58$, exact permutation $p = 0.40$; MoE: $-0.41$,
+$p = 0.70$). We therefore make no per-foundation or MFT-group fragility
+claim; the supported finding is the uniform cross-architecture dilution.
 
 ## 4.8 Geometric trajectory during training
 
@@ -526,19 +538,23 @@ permutation test for MFT group structure is non-significant throughout
 ($p = 0.49$--$0.78$). The model's inter-framework geometry is not
 MFT-aligned at either scale.
 
-**Fragility.** Sanctity/degradation is the most robust foundation at
-7B (mean critical noise $\sigma^* = 5.42$), as in the 1B dense model
-(5.60). The ordering below sanctity differs between the two dense
-models and the 7B spread is tighter (4.27--5.42 vs.\ 3.31--5.60 at
-1B), but the sanctity-most-robust pattern is consistent across dense
-scale. This sharpens the architecture comparison of §4.7: sanctity is
-the most robust foundation in both dense models yet the most fragile
-in MoE, so the anomaly tracks architecture rather than scale.
+**Fragility.** Seed-averaged per-foundation fragility at 7B uses the
+extended noise grid (§4.7), which censors only 1 of 192 foundation--layer
+cells at the cap. As at 1B, the per-foundation $\sigma^*$ values have
+wide, overlapping bootstrap CIs and no foundation is reliably most or
+least robust (7B mean $\sigma^*$: loyalty $14.7$, authority $13.5$,
+care $10.1$, sanctity $10.0$, liberty $8.4$, fairness $6.9$, all with
+overlapping CIs). The binding-vs-individualizing group difference is again
+not significant ($+4.2$, exact $p = 0.20$). What the 7B run does add is
+a clean scale effect: the dense model is uniformly more robust at 7B
+than at 1B (mean $\sigma^*$ ${\approx}10.6$ vs.\ $5.0$). The robust
+fragility findings are therefore the cross-architecture dilution (§4.7)
+and this dense scale effect, not any per-foundation ordering.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{scale_comparison_fragility.pdf}
-\caption{Per-foundation mean critical noise for OLMo-2 1B and 7B (dense). Sanctity (hatched) is the most robust foundation at both scales; 7B is modestly more robust across foundations.}
+\caption{Per-foundation mean critical noise $\sigma^*$ for OLMo-2 1B and 7B (dense), seed-averaged with bootstrap 95\% CIs. The 7B model is uniformly more robust (scale effect); within each model the per-foundation CIs overlap and no foundation is reliably most robust.}
 \label{fig:scale_fragility}
 \end{figure}
 
@@ -590,9 +606,16 @@ The integration signature replicates. The six MFV directions span
 the directions derived from our dataset. Mean pairwise cosine is
 higher for MFV (0.50--0.72) than for the matched mean-difference
 directions on our data (0.42 at the display layer), an expected
-small-sample effect given five vignettes per foundation. The
-near-maximal effective dimensionality, not the absolute cosine, is the
-integration signal, and it is identical across datasets.
+small-sample effect given five vignettes per foundation. Because
+absolute cosine is inflated by the five-per-foundation sample, the
+cross-dataset claim rests on the sign and structure of the geometry
+rather than the cosine magnitude: both datasets show uniformly
+positive mean cosine with variance concentrated on a shared leading
+axis (the integration signature), spanning the same 5 effective
+dimensions. Effective dimensionality by itself does not separate
+integration from isolation (random directions also span ${\sim}5$
+dimensions); the positive mean cosine carries that distinction, and
+it replicates in sign across the two datasets.
 
 \begin{figure}[t]
 \centering

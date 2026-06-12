@@ -5,9 +5,13 @@ beyond mere moral detection. By training independent linear probes
 for each of six Moral Foundations Theory foundations and analyzing
 the geometry of their weight vectors, we find that OLMo-2 1B and
 OLMoE-1B-7B exhibit the \emph{integration} signature: foundation
-directions are distinct (effective dimensionality \(= 5\)), share a
-common moral-salience component (mean pairwise cosine
-\(\approx 0.22\)--\(0.27\)), and span a high-dimensional moral subspace. This
+directions are distinct (effective dimensionality \(= 5\), which rules
+out collapse) yet share a common moral-salience component, shown by a
+uniformly positive mean pairwise cosine (\(\approx 0.22\)--\(0.27\)) and a
+leading principal component that captures \({\sim}0.38\) of the
+directions' variance (vs.~\({\sim}0.18\) for random directions). The
+positive cosine, not the effective dimensionality, is what
+distinguishes integration from isolation. This
 geometric structure is consistent across the two architectures
 tested (dense vs.~MoE), emerges early in pre-training, and
 stabilizes before probing accuracy saturates. However, the
@@ -16,11 +20,11 @@ individualizing/binding grouping, indicating that the model's
 moral taxonomy is empirically grounded in corpus statistics rather
 than organized along human-theoretical lines.
 
-Framework-specific fragility testing shows that the output
-dilution effect in MoE models is not foundation-uniform:
-sanctity/degradation is the most robust foundation in the dense
-model but the most fragile in MoE (6.2\(\times\) ratio), far
-exceeding the overall architectural gap.
+Framework-specific fragility testing shows that the output dilution
+effect is foundation-uniform: every foundation is more fragile in MoE
+than in dense (a \({\sim}2.3\times\) per-foundation gap), with no
+foundation reliably most or least robust within an architecture and no
+significant binding/individualizing group difference.
 
 Extending this geometric lens to moral dilemmas (scenarios
 where two foundations conflict) shows partial compositionality:

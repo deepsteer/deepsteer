@@ -287,10 +287,20 @@ def permutation_test_mft_groups(
 
     Tests whether within-group similarity exceeds between-group similarity
     more than expected by chance under random group assignment.
+
+    With 6 foundations split into two groups of 3, there are only
+    C(6,3) = 20 distinct group assignments, so the null distribution is
+    enumerated exactly and the p-value is an exact multiple of 1/20.
+    (Random resampling is kept as a fallback for larger group sets where
+    exhaustive enumeration is impractical.)
     """
+    from itertools import combinations
+    from math import comb
+
     n = len(foundation_order)
     ind_idx = [i for i, f in enumerate(foundation_order) if f in INDIVIDUALIZING]
     bind_idx = [i for i, f in enumerate(foundation_order) if f in BINDING]
+    k = len(ind_idx)
 
     def _group_statistic(sim_mat: np.ndarray, group_a: list[int], group_b: list[int]) -> float:
         within_a = [sim_mat[i, j] for i in group_a for j in group_a if i < j]
@@ -302,17 +312,33 @@ def permutation_test_mft_groups(
 
     observed = _group_statistic(cos_sim, ind_idx, bind_idx)
 
-    rng = np.random.RandomState(seed)
-    count_ge = 0
-    for _ in range(n_permutations):
-        perm = rng.permutation(n)
-        perm_a = perm[:len(ind_idx)].tolist()
-        perm_b = perm[len(ind_idx):].tolist()
-        stat = _group_statistic(cos_sim, perm_a, perm_b)
-        if stat >= observed:
-            count_ge += 1
-
-    p_value = (count_ge + 1) / (n_permutations + 1)
+    # Exact enumeration when the number of partitions is small enough.
+    n_partitions = comb(n, k) if 0 < k < n else 0
+    exact = 0 < n_partitions <= 20000
+    if exact:
+        all_idx = list(range(n))
+        count_ge = 0
+        n_total = 0
+        for group_a in combinations(all_idx, k):
+            group_b = [i for i in all_idx if i not in group_a]
+            stat = _group_statistic(cos_sim, list(group_a), group_b)
+            n_total += 1
+            if stat >= observed:
+                count_ge += 1
+        p_value = count_ge / n_total
+        n_used = n_total
+    else:
+        rng = np.random.RandomState(seed)
+        count_ge = 0
+        for _ in range(n_permutations):
+            perm = rng.permutation(n)
+            perm_a = perm[:k].tolist()
+            perm_b = perm[k:].tolist()
+            stat = _group_statistic(cos_sim, perm_a, perm_b)
+            if stat >= observed:
+                count_ge += 1
+        p_value = (count_ge + 1) / (n_permutations + 1)
+        n_used = n_permutations
 
     within_ind = [cos_sim[i, j] for i in ind_idx for j in ind_idx if i < j]
     within_bind = [cos_sim[i, j] for i in bind_idx for j in bind_idx if i < j]
@@ -321,7 +347,9 @@ def permutation_test_mft_groups(
     return {
         "observed_statistic": float(observed),
         "p_value": float(p_value),
-        "n_permutations": n_permutations,
+        "exact_enumeration": exact,
+        "n_partitions": n_used,
+        "n_permutations": n_used,
         "mean_within_individualizing": float(np.mean(within_ind)) if within_ind else None,
         "mean_within_binding": float(np.mean(within_bind)) if within_bind else None,
         "mean_between_groups": float(np.mean(between)) if between else None,

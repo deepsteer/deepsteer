@@ -18,7 +18,15 @@ between the on-target and off-target mean effect over 48 prompts and
 the six foundations, is negative at every layer tested and deepens
 with depth, from \(-0.12\) at layer 4 to \(-0.32\) at layer 14. Removing a
 foundation's direction selectively harms that foundation, and the
-effect is strongest where the directions are most stable.
+effect is strongest where the directions are most stable. These
+numbers are on OLMo-2\textasciitilde7B (\path|allenai/OLMo-2-1124-7B|), layers 4--14, over
+48 prompts (\path|outputs/probe_engineering_7B/direction_ablation_mean_diff.json|).
+The companion causal paper \citep{reblitzrichardson2026causal} runs the
+fuller treatment on the smaller OLMo-2\textasciitilde1B (\path|allenai/OLMo-2-0425-1B|) and
+reports the same qualitative pattern, mean specificity negative at every
+layer and deepening with depth (\(-0.16\), \(-0.39\), \(-0.63\) at layers 4,
+8, 12); the two are consistent companion results at different scales,
+not competing estimates of one quantity.
 
 \textbf{Steering injection.} Adding \(\alpha\) times a foundation's direction
 to the residual stream produces a dose-response. Mean specificity
