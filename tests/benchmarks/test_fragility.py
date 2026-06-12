@@ -198,7 +198,63 @@ class TestMoralFragilityTestResult:
             robust_score = next(
                 ls for ls in result.layer_scores if ls.layer == result.most_robust_layer
             )
-            assert fragile_score.critical_noise <= robust_score.critical_noise
+            # Selection is over capped values, so never-fragile (None) layers sort
+            # as maximally robust; compare the capped values, not the raw ones.
+            assert fragile_score.critical_noise_capped <= robust_score.critical_noise_capped
+
+
+class TestCapAtMaxConvention:
+    def test_never_fragile_layer_capped_and_counted(self):
+        """A layer that never drops below threshold is censored at the grid max,
+        counted in n_never_fragile, and eligible to be the most-robust layer."""
+        dataset, moral_texts = _make_dataset(n_train=30, n_test=10)
+        model = MockWhiteBoxModel(moral_texts, n_layers=4)
+        # Tiny noise only: well-separated mock data never crosses threshold,
+        # so every layer is never-fragile.
+        test = MoralFragilityTest(
+            dataset=dataset, n_epochs=50, noise_levels=[0.001, 0.01],
+            fragility_threshold=0.6,
+        )
+
+        result = test.run(model)
+
+        assert result.n_never_fragile == 4
+        for ls in result.layer_scores:
+            assert ls.critical_noise is None
+            assert ls.critical_noise_capped == 0.01  # max(noise_levels)
+        # mean is over capped values across ALL layers, not dropped
+        assert result.mean_critical_noise == 0.01
+        assert result.most_robust_layer is not None
+
+    def test_mean_over_all_layers_includes_capped(self):
+        """mean_critical_noise averages capped values across all layers (no drop-None)."""
+        dataset, moral_texts = _make_dataset(n_train=30, n_test=10)
+        model = MockWhiteBoxModel(moral_texts, n_layers=4)
+        test = MoralFragilityTest(
+            dataset=dataset, n_epochs=50, noise_levels=[0.1, 0.5, 1.0, 5.0, 50.0],
+        )
+
+        result = test.run(model)
+
+        capped = [ls.critical_noise_capped for ls in result.layer_scores]
+        expected_mean = sum(capped) / len(capped)
+        assert result.mean_critical_noise == pytest.approx(expected_mean)
+
+    def test_seed_std_recorded(self):
+        """With n_noise_seeds > 1, per-σ accuracy std is recorded."""
+        dataset, moral_texts = _make_dataset(n_train=30, n_test=10)
+        model = MockWhiteBoxModel(moral_texts, n_layers=3)
+        test = MoralFragilityTest(
+            dataset=dataset, n_epochs=30, noise_levels=[1.0, 5.0], n_noise_seeds=5,
+        )
+
+        result = test.run(model)
+
+        assert result.metadata["n_noise_seeds"] == 5
+        for ls in result.layer_scores:
+            for nl in [1.0, 5.0]:
+                assert nl in ls.accuracy_std_by_noise
+                assert ls.accuracy_std_by_noise[nl] >= 0.0
 
     def test_serialization(self):
         """Result serializes to valid JSON."""

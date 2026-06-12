@@ -52,11 +52,13 @@ class LayerWiseMoralProbe(Benchmark):
         n_epochs: int = 50,
         lr: float = 1e-2,
         onset_threshold: float = _ONSET_THRESHOLD,
+        seed: int = 42,
     ) -> None:
         self._dataset = dataset
         self._n_epochs = n_epochs
         self._lr = lr
         self._onset_threshold = onset_threshold
+        self._seed = seed
 
     @property
     def name(self) -> str:
@@ -136,6 +138,7 @@ class LayerWiseMoralProbe(Benchmark):
                 "n_epochs": self._n_epochs,
                 "lr": self._lr,
                 "onset_threshold": self._onset_threshold,
+                "seed": self._seed,
                 "train_pairs": len(train_pairs),
                 "test_pairs": len(test_pairs),
             },
@@ -213,6 +216,7 @@ class LayerWiseMoralProbe(Benchmark):
             (accuracy, loss) on the test set.
         """
         hidden_dim = train_X.shape[1]
+        torch.manual_seed(self._seed)
         probe = nn.Linear(hidden_dim, 1)
         optimizer = torch.optim.Adam(probe.parameters(), lr=self._lr)
         loss_fn = nn.BCEWithLogitsLoss()

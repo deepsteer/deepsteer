@@ -73,8 +73,11 @@ def plot_lora_fragility_comparison(
         if result.final_fragility is None:
             continue
         layers = [s.layer for s in result.final_fragility.layer_scores]
+        # None == never-fragile == maximally robust; censor at the grid cap, not 0.0
+        # (mapping to 0.0 would invert the most robust layers into the most fragile).
+        noise_cap = max(result.final_fragility.noise_levels)
         criticals = [
-            s.critical_noise if s.critical_noise is not None else 0.0
+            s.critical_noise if s.critical_noise is not None else noise_cap
             for s in result.final_fragility.layer_scores
         ]
         color = _get_color(name, i)
@@ -291,7 +294,8 @@ def plot_lora_fragility_trajectory(
     matrix = np.zeros((n_layers, n_steps))
     for col, s in enumerate(snapshots_with_frag):
         for row, cn in enumerate(s["fragility"]["layer_critical_noise"]):
-            matrix[row, col] = cn if cn is not None else 0.0
+            # None == never-fragile == maximally robust: censor at the colorbar cap.
+            matrix[row, col] = cn if cn is not None else 10.0
 
     step_labels = [str(s) for s in steps]
     layer_labels = [str(i) for i in range(n_layers)]

@@ -416,12 +416,21 @@ class CausalTracingResult(BenchmarkResult):
 
 @dataclass(frozen=True)
 class FragilityLayerScore:
-    """Fragility profile for a single layer across noise levels."""
+    """Fragility profile for a single layer across noise levels.
+
+    ``critical_noise`` is ``None`` when no σ in the sweep brings the probe
+    below threshold (never-fragile = maximally robust evidence).
+    ``critical_noise_capped`` censors that case at ``max(noise_levels)`` so
+    aggregates do not silently drop the strongest robustness evidence.
+    """
 
     layer: int
     baseline_accuracy: float
     accuracy_by_noise: dict[float, float]
     critical_noise: float | None
+    critical_noise_capped: float | None = None
+    # Per-(σ) std of accuracy across noise seeds (empty when n_noise_seeds == 1).
+    accuracy_std_by_noise: dict[float, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -433,6 +442,8 @@ class FragilityResult(BenchmarkResult):
     mean_critical_noise: float | None = None
     most_fragile_layer: int | None = None
     most_robust_layer: int | None = None
+    # Count of never-fragile layers (critical_noise is None), so censoring is visible.
+    n_never_fragile: int = 0
 
 
 # --- Curriculum Schedule ---
