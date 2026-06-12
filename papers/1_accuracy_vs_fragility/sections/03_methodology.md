@@ -153,21 +153,35 @@ sweep σ ∈ {0.1, 0.3, 1.0, 3.0, 10.0}. The smallest σ at which
 accuracy drops below the fragility threshold (0.6, i.e. chance + 0.1
 on a binary task) is the layer's *critical noise*; if no σ in the
 sweep brings the probe below threshold, critical noise is reported
-as the maximum (10.0). Per-layer critical noise gives the fragility
-profile; its mean is `mean_critical_noise` as a scalar summary. The
+as the maximum (10.0), and never-fragile layers are censored at that
+maximum (not dropped) when averaging, so the mean over all layers is
+`mean_critical_noise` as a scalar summary. The
 same `MoralFragilityTest` runs against both the standard and
 compositional datasets; methodology generality is established by
 reuse, not reimplementation.
 
+Two properties of this estimator bound its interpretation. First,
+σ* is **floor-dominated when baseline accuracy is below τ=0.6**: if
+the clean probe already sits below threshold (step 0, and the
+compositional probe for its first ~2K steps), σ*=0.1 by construction,
+so part of the early "fragility rise" tracks accuracy crossing
+threshold rather than a change in noise tolerance. Second, σ* is
+**right-censored at the grid maximum**: layers pinned at 10.0 for the
+whole trajectory could have larger true critical noise. Where
+censoring is heavy (late layers throughout, and per-foundation 7B
+fragility), we lift the cap with an **extended grid**
+σ ∈ {0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0}.
+
 ## 3.5 Target models and checkpoints
 
-Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025) base models.
-**OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`), 37
+Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025; Team OLMo, 2025) base models.
+**OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`; OLMo Team, 2025), 37
 checkpoints at 1K-step intervals from step 0 to step 36K (~76B
 tokens), the primary data source for §4.1 onsets and §4.2
-fragility. **OLMo-3 7B stage 1** (`allenai/OLMo-3-7B`), 20
-checkpoints through ~1.4M steps (~10T tokens), §4.2 7B
-corroboration and Appendix B causal tracing. **OLMo-2 1B final**
+fragility. **OLMo-3 7B stage 1** (`allenai/Olmo-3-1025-7B`; Team OLMo, 2025):
+probing on 20 stage-1 checkpoints through ~1.4M steps (~10T tokens), and
+fragility on 5 of those checkpoints (steps 0, 353K, 705K, 1,059K, 1,413,814);
+§4.2 7B corroboration and Appendix B causal tracing. **OLMo-2 1B final**
 (`allenai/OLMo-2-0425-1B`, ~2.2T tokens), used only for the
 compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
 ~6 hours of MPS time across the full §4 experimental record.

@@ -68,7 +68,14 @@ organization:
 |-------|------|----------|
 | OLMo-2 1B early-training | `allenai/OLMo-2-0425-1B-early-training` | §4.1 trajectory, §4.2 fragility, §4.3 C3 base |
 | OLMo-2 1B final (~2.2T tokens) | `allenai/OLMo-2-0425-1B` | §3.2 / §4.1 compositional probe validation gate |
-| OLMo-3 7B stage-1 | `allenai/OLMo-3-7B` (revisions, see codebase) | §4.2 7B fragility corroboration, Appendix B causal tracing |
+| OLMo-3 7B stage-1 | `allenai/Olmo-3-1025-7B` (revisions, see codebase) | §4.2 7B fragility corroboration, Appendix B causal tracing |
+
+For OLMo-3 7B, probing ran on 20 stage-1 checkpoints spanning step 0 to
+step 1,413,814 (~10T tokens); fragility ran on 5 of those checkpoints
+(steps 0, 353K, 705K, 1,059K, 1,413,814). The `phase_b/` output directory
+also holds several additional step subdirectories from exploratory probing
+passes; the 20-checkpoint probing trajectory and 5-checkpoint fragility
+subset are the runs reported in §4.2.
 
 Specific checkpoint revisions for each step are listed in
 `papers/1_accuracy_vs_fragility/outputs/phase_c1/phase_c1_plan.json`

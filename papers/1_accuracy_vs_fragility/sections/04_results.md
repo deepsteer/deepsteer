@@ -151,7 +151,7 @@ the entire remaining 90 % of training.
 
 *Table 2: Standard moral probe. Accuracy plateaus by step 4K;
 fragility evolves through step 36K with a layer-depth gradient that
-develops monotonically (late > mid > early after step ~15K).*
+develops progressively (late > mid > early after step ~15K).*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no

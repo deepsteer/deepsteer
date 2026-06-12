@@ -27,9 +27,16 @@ halves and differ only in tokens that carry limited moral signal in
 isolation (unigram lexical floor 0.63). The probe's compositional
 encoding is established directly by leave-construction-out transfer
 (0.85 hidden-state vs. 0.60 bag-of-words) and by decoding 0.20-0.28
-above the per-construction lexical floor (§3.2, §4.1). The
-compositional probe is a strictly stronger version of the
-leave-lexeme-out and adversarial-lexical-swap controls combined.
-Running these three controls on existing checkpoints takes ~4-6
-hours of additional MPS time; results will be included in the
-submission version.
+above the per-construction lexical floor (§3.2, §4.1).
+
+We rest the validity argument on this compositional result rather than
+on the three controls above. Leave-lexeme-out and adversarial-lexical-swap
+both ask whether the probe reads moral content beyond a specific surface
+cue; the compositional probe answers the stronger question directly, by
+holding the morally-loaded verb fixed across both halves of every pair and
+showing that moral valence still decodes, and transfers, from context
+alone. A probe reading lexeme identity or any single surface feature could
+not pass leave-construction-out transfer at 0.85. The compositional result
+therefore subsumes what the leave-lexeme-out and adversarial-swap controls
+would test, and paraphrase transfer is the one remaining surface-variation
+check we leave to future work.

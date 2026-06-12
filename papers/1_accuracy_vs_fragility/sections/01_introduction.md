@@ -10,7 +10,7 @@ asking *whether* a model represents a property at a given snapshot.
 
 It does not work well for asking *how a representation evolves
 during pre-training*. We demonstrate the failure mode concretely. On
-the OLMo-2 1B early-training trajectory (Groeneveld et al., 2024),
+the OLMo-2 1B early-training trajectory (OLMo Team, 2025),
 37 model checkpoints densely sampled at 1K-step intervals across
 steps 0-36K (~76B tokens), a binary linear probe trained on a
 240-pair moral / neutral minimal-pair dataset reaches ~95% mean
@@ -63,7 +63,7 @@ valence is encoded compositionally; the gradient reading is the
 honest one.
 
 **Finding 2: A layer-depth robustness gradient develops
-monotonically over training, invisible to probing accuracy.** Mean
+progressively over training, invisible to probing accuracy.** Mean
 accuracy plateaus by step 4K but mean critical noise continues to
 evolve through step 36K: late layers hold maximum robustness while
 early-layer critical noise drops from 10.0 to 1.8 between steps 4K

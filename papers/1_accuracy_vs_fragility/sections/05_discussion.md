@@ -118,14 +118,25 @@ fragility-resolves-what-accuracy-misses pattern is open.
 raw activation units (§3.4). Hidden-state norms vary across layers and
 checkpoints, so cross-layer and cross-checkpoint critical-noise
 comparisons may partly reflect activation-scale drift rather than
-representational robustness alone. We report raw σ because every
-comparison we draw uses the same probe and activation cache within a
-single (layer, checkpoint) cell, which holds the scale fixed; a
-σ-normalized-by-per-layer-activation-RMS variant is future work. More
-generally, the fragility finding would be undercut if the layer-depth
-gradient (§4.2) or the declarative-vs-natural separation (§4.3)
-vanished under RMS-normalized noise, or if it tracked activation norm
-rather than probe margin; we have not yet run that control.
+representational robustness alone. Within a single (layer, checkpoint)
+cell the same probe and activation cache hold the scale fixed, but our
+headline §4.2 result is a cross-checkpoint comparison, where activation
+norms drift, so that comparison is not scale-controlled by construction.
+The decisive control is a σ-normalized-by-per-layer-activation-RMS
+variant: the fragility finding would be undercut if the layer-depth
+gradient (§4.2) or the declarative-vs-natural separation (§4.3) vanished
+under RMS-normalized noise, or if it tracked activation norm rather than
+probe margin. We report that control where it has been run and flag the
+remaining cells as open.
+
+**Right-censoring at the noise cap.** Critical noise is read off a fixed
+σ grid with a maximum of 10.0; a layer whose probe never drops below τ
+in the sweep is censored at 10.0 rather than assigned a larger value.
+Late layers sit at this cap for essentially the whole 1B trajectory, so
+"late layers hold maximum robustness" is a right-censored statement: the
+sweep cannot tell whether late-layer robustness itself keeps evolving
+above σ=10. The extended grid (adding σ ∈ {30, 100}) lifts the cap and
+resolves this; see §3.4.
 
 **Foundation-specific scope.** The standard moral dataset's six MFT
 foundations show staggered emergence; all six stabilize by step 3K
