@@ -292,19 +292,23 @@ probes achieve \(\geq 75\%\) peak test accuracy (mean 94.2\%), with
 dilemma moral content from matched neutral text.
 
 \textbf{Subspace membership: partial compositionality.} The mean peak
-subspace membership score across all 15 pairs is \textbf{0.099},
-approximately 100\(\times\) the null baseline of 0.001 (\(p_{95} =
-0.003\); \(p_{99} = 0.004\)). Every pair exceeds the 99th percentile
-of the null distribution at its peak layer. However, 0.099 is far
-from 1.0: on average, only \({\sim}10\)\% of each dilemma direction's
-variance is explained by its component foundation subspace. The
-remaining \({\sim}90\)\% (mean residual norm = 0.949) lies in
-directions orthogonal to both component foundations.
+subspace membership score across all 15 pairs is \textbf{0.118}. The right
+null is not a random vector (mean 0.001), which ignores the shared
+moral-salience component every moral direction carries, but the
+\emph{mismatched-pair baseline}: the membership of each dilemma direction
+in the 2D spans of foundation pairs it shares no component with. That
+baseline is \textbf{0.044} at the matched peak layer, so the compositional
+signal is \({\sim}2.7\times\) the mismatched baseline (and matched
+exceeds mismatched at every layer; Appendix\textasciitilde{}\ref{app:dilemma_membership}).
+The signal is real but modest: even matched, only \({\sim}12\)\% of each
+dilemma direction's variance is explained by its component foundation
+subspace. The remaining \({\sim}88\)\% (mean residual norm = 0.939) lies
+in directions orthogonal to both component foundations.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig_dilemma_subspace_layers.pdf}
-\caption{Mean subspace membership across layers (red), with $\pm 1$ SD band. The null baseline (gray) is ${\sim}0.001$. Membership is relatively flat at ${\sim}8$\% across all layers.}
+\caption{Mean dilemma subspace membership across layers: matched (component foundations, red, $\pm 1$ SD band), the mismatched-pair baseline (blue dashed), and the random-vector null (gray, ${\sim}0.001$). Matched membership exceeds the mismatched baseline at every layer; both sit far above the random null.}
 \label{fig:dilemma_layers}
 \end{figure}
 
@@ -328,15 +332,19 @@ than one foundation dominating the representation.
 foundation component have consistently higher cosine similarity
 than pairs with no shared foundation. At the peak effect layer
 (layer 13), the mean cosine similarity between shared-component
-pairs is \textbf{0.269} versus \textbf{0.195} for non-sharing pairs (difference
-= 0.074). This difference is positive at every layer, indicating
-that the compositional structure is not layer-specific but a
-general property of the dilemma direction geometry.
+pairs is \textbf{0.273} versus \textbf{0.196} for non-sharing pairs (difference
+= 0.076). A permutation test confirms the effect: permuting which
+foundation-pair label is attached to each dilemma direction (which
+shuffles the share/no-share partition of the 105 pairwise cosines)
+gives \(p = 0.0001\) at layer 13, and the minimum \(p\) across all layers
+is also \(0.0001\) (10\{,\}000 permutations). The difference is positive at
+every layer, so the compositional structure is a general property of
+the dilemma direction geometry, not a layer-specific artifact.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig_dilemma_shared_component.pdf}
-\caption{Distribution of pairwise cosine similarities between dilemma directions at layer 13, split by whether the pairs share a component foundation. Shared-component pairs (blue, $n = 60$) have higher mean similarity (0.269) than non-sharing pairs (red, $n = 45$, mean 0.195).}
+\caption{Distribution of pairwise cosine similarities between dilemma directions at layer 13, split by whether the pairs share a component foundation. Shared-component pairs (blue, $n = 60$) have higher mean similarity (0.273) than non-sharing pairs (red, $n = 45$, mean 0.196); exact permutation $p = 0.0001$.}
 \label{fig:shared_component}
 \end{figure}
 
@@ -376,24 +384,22 @@ dilemma representations are compositional over the \emph{full} moral
 vocabulary, we project each dilemma direction onto the 5D subspace
 spanned by all six foundation directions (5D because the six
 directions have effective dimensionality 5). Averaging across all
-layers and pairs, the mean 5D membership is \textbf{0.093}, only
-modestly above the layer-averaged 2D membership of 0.078 (ratio
-1.19\(\times\)). (The higher value of 0.099 reported above is the
-mean of per-pair \emph{peak} values; 0.078 is the cross-layer average,
-used here for an apples-to-apples comparison with the 5D
-statistic.) Both exceed their respective null baselines (5D:
-38\(\times\) null; 2D: 81\(\times\) null), confirming genuine moral
-content in the dilemma representations. However, the small gain from
-2D to 5D indicates that the \({\sim}90\)\% residual is not explained
-by \emph{any} foundation direction: it is genuinely extra-moral, likely
+layers and pairs, the mean full-subspace membership is \textbf{0.109}, only
+modestly above the cross-layer 2D matched membership of 0.091 (ratio
+1.19\(\times\); both far above the random null of \({\sim}0.001\), and the
+2D matched value is \({\sim}2.3\times\) its mismatched-pair baseline of
+0.039). The small gain from the 2D component subspace to the full moral
+subspace indicates that the \({\sim}90\)\% residual is not explained by
+\emph{any} foundation direction: it is genuinely extra-moral, likely
 encoding conflict-specific features such as trade-off framing and
 tension that lie outside the moral subspace entirely.
 
 \textbf{Scale replication.} The partial-compositionality result reproduces
-on OLMo-2\textasciitilde7B. Mean peak subspace membership is 0.091 (9.1\%, vs.~9.9\%
-at 1B), with all 15 pairs exceeding the null 95th percentile; mean
-residual norm is 0.953 (vs.~0.949); and component balance is 0.455
-(vs.~0.486, where 0.5 is perfect balance). The 7B model decomposes
+on OLMo-2\textasciitilde7B with the same matched-vs-mismatched structure. Mean peak
+matched membership is 0.090, against a mismatched-pair baseline of
+0.032 (\({\sim}2.8\times\), vs.~the \(2.7\times\) at 1B); mean residual
+norm is 0.953; and component balance is 0.455 (vs.~0.486 at 1B, where
+0.5 is perfect balance). The 7B model decomposes
 moral dilemmas the same way the 1B model does: a small, significant
 projection onto the component foundations, a large conflict-specific
 residual, and near-balanced loading on the two foundations in tension.
@@ -444,12 +450,12 @@ is correspondingly more fragile.
 \subsection{MoE architecture preserves compositionality}\label{moe-architecture-preserves-compositionality}
 
 The dilemma probing and subspace analysis on OLMoE-1B-7B produces
-results consistent with the dense model. Mean peak accuracy is
-95.8\% (vs.~94.2\% on OLMo-2), and mean peak subspace membership
-is \textbf{0.092} (vs.~0.099). The \({\sim}7\)\% difference in membership
-scores is within the variation across individual foundation pairs.
-The partial compositionality structure (statistically significant
-but low absolute membership, with high residual) is a property of
+results consistent with the dense model and the same matched-vs-mismatched
+structure. Mean peak accuracy is 95.8\% (vs.~94.2\% on OLMo-2), mean
+peak matched membership is \textbf{0.118} against a mismatched-pair baseline
+of \textbf{0.045} (\({\sim}2.6\times\), matching the \(2.7\times\) on OLMo-2 1B).
+The partial compositionality structure (a consistent matched-over-mismatched
+margin at low absolute membership, with a large residual) is a property of
 the representation geometry, not a dense-architecture artifact.
 
 \subsection{Robustness to direction-finding method}\label{robustness-to-direction-finding-method}

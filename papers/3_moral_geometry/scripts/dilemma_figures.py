@@ -105,30 +105,35 @@ def generate_figure_2_subspace_across_layers(probing_data: dict, null_data: dict
     pair_keys = [pk for pk in DILEMMA_PAIR_KEYS if pk in pairs]
     layers = list(range(n_layers))
 
-    # Compute mean and std across foundation pairs at each layer
-    means = []
-    stds = []
+    # Compute mean/std of matched and mismatched membership across pairs per layer
+    means, stds, mismatched_means = [], [], []
     for l in layers:
-        vals = []
+        vals, mm = [], []
         for pk in pair_keys:
             layer_data = pairs[pk].get("per_layer", {}).get(str(l), {})
             vals.append(layer_data.get("subspace_membership", 0))
+            if layer_data.get("mismatched_membership") is not None:
+                mm.append(layer_data["mismatched_membership"])
         means.append(np.mean(vals))
         stds.append(np.std(vals))
+        mismatched_means.append(np.mean(mm) if mm else np.nan)
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    ax.plot(layers, means, "o-", color="#E53935", linewidth=2, markersize=6, label="Mean membership")
+    ax.plot(layers, means, "o-", color="#E53935", linewidth=2, markersize=6,
+            label="Matched (component foundations)")
     ax.fill_between(layers,
                     [m - s for m, s in zip(means, stds)],
                     [m + s for m, s in zip(means, stds)],
                     alpha=0.2, color="#E53935", label="±1 SD")
 
+    if not all(np.isnan(mismatched_means)):
+        ax.plot(layers, mismatched_means, "s--", color="#1E88E5", linewidth=2,
+                markersize=5, label="Mismatched-pair baseline")
+
     if null_data:
         ax.axhline(y=null_data.get("mean", 0.001), color="#9E9E9E", linestyle=":",
-                   linewidth=1, label=f"Null mean ({null_data.get('mean', 0):.4f})")
-        ax.axhspan(0, null_data.get("p95", 0.006), alpha=0.1, color="#9E9E9E",
-                   label=f"Null 95th ({null_data.get('p95', 0):.4f})")
+                   linewidth=1, label=f"Random null ({null_data.get('mean', 0):.4f})")
 
     ax.set_xlabel("Layer", fontsize=12)
     ax.set_ylabel("Subspace Membership Score", fontsize=12)

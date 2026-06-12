@@ -120,19 +120,21 @@ structure) during the first 2000 training steps.
 \subsection{Partial compositionality of moral dilemmas}\label{partial-compositionality-of-moral-dilemmas}
 
 When two moral foundations conflict in a dilemma scenario, the
-model's representation is partially compositional: the dilemma
-probe direction shares statistically significant overlap with the
-2D subspace spanned by its component foundation directions (mean
-membership \(S = 0.099\), 100\(\times\) the null baseline of 0.001),
-yet \({\sim}90\)\% of the dilemma direction lies outside this subspace.
+model's representation is partially compositional: the dilemma probe
+direction has more overlap with the 2D subspace of its own component
+foundations (mean peak membership \(S = 0.118\)) than with the
+mismatched-pair baseline of foundation pairs it shares no component
+with (\(0.044\), a \({\sim}2.7\times\) margin that holds at every layer),
+yet \({\sim}88\)\% of the dilemma direction lies outside its component
+subspace.
 
 This partial compositionality has two complementary
 interpretations. First, the model recognizes moral dilemmas as
-involving their component foundations (the \({\sim}10\)\% subspace
-membership is not an artifact), as confirmed by permutation testing
-and by the shared-component structure (dilemma pairs that share a
-foundation have higher cosine similarity, \(\Delta = 0.074\) at
-layer 13). Second, the model represents something beyond the sum
+involving their component foundations (the matched-over-mismatched
+margin is not an artifact), as confirmed by the shared-component
+structure: dilemma pairs that share a foundation have higher cosine
+similarity (\(\Delta = 0.076\) at layer 13, exact permutation
+\(p = 0.0001\)). Second, the model represents something beyond the sum
 of parts: the \({\sim}90\)\% residual captures conflict-specific
 features (tension, trade-off framing, or contextual modulation)
 that single-foundation probes do not isolate.

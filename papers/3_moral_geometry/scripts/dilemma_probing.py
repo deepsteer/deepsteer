@@ -73,6 +73,7 @@ def train_probe_with_direction(
 ) -> tuple[float, float, np.ndarray]:
     """Train a linear probe and return (accuracy, loss, unit-norm weight vector)."""
     hidden_dim = train_X.shape[1]
+    torch.manual_seed(42)
     probe = nn.Linear(hidden_dim, 1)
     optimizer = torch.optim.Adam(probe.parameters(), lr=lr)
     loss_fn = nn.BCEWithLogitsLoss()
@@ -365,6 +366,25 @@ def main() -> None:
                 layer_result.update({k: round(v, 6) if isinstance(v, float) else v
                                      for k, v in subspace.items()})
 
+                # Mismatched-pair baseline: membership in the 2D spans of every
+                # foundation pair that shares NO component with this dilemma.
+                # This absorbs the shared moral-salience component that the
+                # random-vector null does not, so it is the correct null.
+                mismatched = []
+                for g1, g2 in FOUNDATION_PAIRS:
+                    if pair[0] in (g1, g2) or pair[1] in (g1, g2):
+                        continue
+                    w_g1 = foundation_dirs[DILEMMA_KEY_TO_FOUNDATION[g1]].get(layer_idx)
+                    w_g2 = foundation_dirs[DILEMMA_KEY_TO_FOUNDATION[g2]].get(layer_idx)
+                    if w_g1 is None or w_g2 is None:
+                        continue
+                    mismatched.append(
+                        compute_subspace_analysis(w_dilemma, w_g1, w_g2)["subspace_membership"]
+                    )
+                if mismatched:
+                    layer_result["mismatched_membership"] = round(float(np.mean(mismatched)), 6)
+                    layer_result["n_mismatched_pairs"] = len(mismatched)
+
             pair_results[str(layer_idx)] = layer_result
 
         # Summary for this pair
@@ -373,6 +393,7 @@ def main() -> None:
         memberships = {int(k): v.get("subspace_membership", 0) for k, v in pair_results.items()}
         peak_membership_layer = max(memberships, key=memberships.get)
 
+        peak_mismatched = pair_results[str(peak_membership_layer)].get("mismatched_membership")
         all_results[pk] = {
             "foundation_pair": list(pair),
             "n_train": len(train_idx),
@@ -381,6 +402,7 @@ def main() -> None:
             "peak_accuracy": round(accs[peak_layer], 4),
             "peak_subspace_membership": round(memberships[peak_membership_layer], 6),
             "peak_subspace_layer": peak_membership_layer,
+            "mismatched_at_peak_layer": peak_mismatched,
             "per_layer": pair_results,
         }
 
@@ -407,6 +429,22 @@ def main() -> None:
             direction_arrays[f"dilemma_{pk}_layer{layer_idx}"] = w
     np.savez(output_dir / "dilemma_probe_directions.npz", **direction_arrays)
 
+    # Aggregate matched vs. mismatched membership (per-pair-peak and cross-layer).
+    peak_matched = [r["peak_subspace_membership"] for r in all_results.values()]
+    peak_mismatched = [r["mismatched_at_peak_layer"] for r in all_results.values()
+                       if r.get("mismatched_at_peak_layer") is not None]
+    all_matched = [lr.get("subspace_membership") for r in all_results.values()
+                   for lr in r["per_layer"].values() if lr.get("subspace_membership") is not None]
+    all_mismatched = [lr.get("mismatched_membership") for r in all_results.values()
+                      for lr in r["per_layer"].values() if lr.get("mismatched_membership") is not None]
+    membership_summary = {
+        "matched_peak_mean": round(float(np.mean(peak_matched)), 4) if peak_matched else None,
+        "mismatched_peak_mean": round(float(np.mean(peak_mismatched)), 4) if peak_mismatched else None,
+        "matched_crosslayer_mean": round(float(np.mean(all_matched)), 4) if all_matched else None,
+        "mismatched_crosslayer_mean": round(float(np.mean(all_mismatched)), 4) if all_mismatched else None,
+        "random_null_mean": round(null_result["mean"], 6) if null_result else None,
+    }
+
     # Save results
     output = {
         "experiment": "dilemma_probing",
@@ -416,6 +454,7 @@ def main() -> None:
         "n_epochs": args.n_epochs,
         "lr": args.lr,
         "null_distribution": null_result,
+        "membership_summary": membership_summary,
         "per_foundation_pair": all_results,
     }
 

@@ -86,6 +86,7 @@ def train_probe_with_direction(
     lr: float = 1e-2,
 ) -> tuple[float, float, np.ndarray]:
     hidden_dim = train_X.shape[1]
+    torch.manual_seed(42)
     probe = nn.Linear(hidden_dim, 1)
     optimizer = torch.optim.Adam(probe.parameters(), lr=lr)
     loss_fn = nn.BCEWithLogitsLoss()
@@ -293,6 +294,21 @@ def main() -> None:
                 layer_result.update({k: round(v, 6) if isinstance(v, float) else v
                                      for k, v in subspace.items()})
 
+                # Mismatched-pair baseline (foundation pairs sharing no component).
+                mismatched = []
+                for g1, g2 in FOUNDATION_PAIRS:
+                    if pair[0] in (g1, g2) or pair[1] in (g1, g2):
+                        continue
+                    w_g1 = foundation_dirs[DILEMMA_KEY_TO_FOUNDATION[g1]].get(layer_idx)
+                    w_g2 = foundation_dirs[DILEMMA_KEY_TO_FOUNDATION[g2]].get(layer_idx)
+                    if w_g1 is None or w_g2 is None:
+                        continue
+                    mismatched.append(
+                        compute_subspace_analysis(w_dilemma, w_g1, w_g2)["subspace_membership"]
+                    )
+                if mismatched:
+                    layer_result["mismatched_membership"] = round(float(np.mean(mismatched)), 6)
+
             pair_probing[str(layer_idx)] = layer_result
 
             # Fragility
@@ -322,10 +338,12 @@ def main() -> None:
         peak_layer = max(accs, key=accs.get)
         memberships = {int(k): v.get("subspace_membership", 0) for k, v in pair_probing.items()}
 
+        peak_mem_layer = max(memberships, key=memberships.get)
         probing_results[pk] = {
             "peak_accuracy": round(accs[peak_layer], 4),
             "peak_layer": peak_layer,
             "peak_subspace_membership": round(max(memberships.values()), 6),
+            "mismatched_at_peak_layer": pair_probing[str(peak_mem_layer)].get("mismatched_membership"),
             "per_layer": pair_probing,
         }
         fragility_results[pk] = pair_fragility
@@ -371,11 +389,26 @@ def main() -> None:
             ])), 6),
         }
 
+    peak_matched = [r["peak_subspace_membership"] for r in probing_results.values()]
+    peak_mismatched = [r["mismatched_at_peak_layer"] for r in probing_results.values()
+                       if r.get("mismatched_at_peak_layer") is not None]
+    all_matched = [lr.get("subspace_membership") for r in probing_results.values()
+                   for lr in r["per_layer"].values() if lr.get("subspace_membership") is not None]
+    all_mismatched = [lr.get("mismatched_membership") for r in probing_results.values()
+                      for lr in r["per_layer"].values() if lr.get("mismatched_membership") is not None]
+    membership_summary = {
+        "matched_peak_mean": round(float(np.mean(peak_matched)), 4) if peak_matched else None,
+        "mismatched_peak_mean": round(float(np.mean(peak_mismatched)), 4) if peak_mismatched else None,
+        "matched_crosslayer_mean": round(float(np.mean(all_matched)), 4) if all_matched else None,
+        "mismatched_crosslayer_mean": round(float(np.mean(all_mismatched)), 4) if all_mismatched else None,
+    }
+
     output = {
         "experiment": "dilemma_moe",
         "model": OLMOE_REPO,
         "n_layers": n_layers,
         "hidden_dim": hidden_dim,
+        "membership_summary": membership_summary,
         "probing": probing_results,
         "fragility": fragility_results if not args.skip_fragility else None,
         "geometry": geometry_results,
