@@ -4,518 +4,518 @@
   "directions_npz": "papers/3_moral_geometry/outputs/exp1_2_3_7B/exp1_probe_directions.npz",
   "per_layer_vs_probe_weight": {
     "0": {
-      "care_harm": 0.2362,
-      "fairness_cheating": 0.1832,
-      "liberty_oppression": 0.2721,
-      "loyalty_betrayal": 0.1927,
-      "authority_subversion": 0.1926,
-      "sanctity_degradation": 0.2084
+      "care_harm": 0.1526,
+      "fairness_cheating": 0.1732,
+      "liberty_oppression": 0.1742,
+      "loyalty_betrayal": 0.1349,
+      "authority_subversion": 0.153,
+      "sanctity_degradation": 0.1427
     },
     "1": {
-      "care_harm": 0.2152,
-      "fairness_cheating": 0.1523,
-      "liberty_oppression": 0.2348,
-      "loyalty_betrayal": 0.1477,
-      "authority_subversion": 0.1695,
-      "sanctity_degradation": 0.1875
+      "care_harm": 0.1516,
+      "fairness_cheating": 0.131,
+      "liberty_oppression": 0.1448,
+      "loyalty_betrayal": 0.1027,
+      "authority_subversion": 0.1403,
+      "sanctity_degradation": 0.1382
     },
     "2": {
-      "care_harm": 0.2127,
-      "fairness_cheating": 0.1619,
-      "liberty_oppression": 0.2328,
-      "loyalty_betrayal": 0.1358,
-      "authority_subversion": 0.1652,
-      "sanctity_degradation": 0.1761
+      "care_harm": 0.1587,
+      "fairness_cheating": 0.1326,
+      "liberty_oppression": 0.1382,
+      "loyalty_betrayal": 0.1,
+      "authority_subversion": 0.136,
+      "sanctity_degradation": 0.1297
     },
     "3": {
-      "care_harm": 0.2257,
-      "fairness_cheating": 0.194,
-      "liberty_oppression": 0.264,
-      "loyalty_betrayal": 0.1516,
-      "authority_subversion": 0.2003,
-      "sanctity_degradation": 0.2097
+      "care_harm": 0.1793,
+      "fairness_cheating": 0.1546,
+      "liberty_oppression": 0.1369,
+      "loyalty_betrayal": 0.0897,
+      "authority_subversion": 0.1457,
+      "sanctity_degradation": 0.1571
     },
     "4": {
-      "care_harm": 0.2262,
-      "fairness_cheating": 0.1989,
-      "liberty_oppression": 0.2966,
-      "loyalty_betrayal": 0.1693,
-      "authority_subversion": 0.201,
-      "sanctity_degradation": 0.2205
+      "care_harm": 0.1854,
+      "fairness_cheating": 0.1621,
+      "liberty_oppression": 0.1597,
+      "loyalty_betrayal": 0.103,
+      "authority_subversion": 0.1617,
+      "sanctity_degradation": 0.1736
     },
     "5": {
-      "care_harm": 0.2281,
-      "fairness_cheating": 0.2347,
-      "liberty_oppression": 0.3073,
-      "loyalty_betrayal": 0.1645,
-      "authority_subversion": 0.1889,
-      "sanctity_degradation": 0.2153
+      "care_harm": 0.1588,
+      "fairness_cheating": 0.1717,
+      "liberty_oppression": 0.1668,
+      "loyalty_betrayal": 0.1088,
+      "authority_subversion": 0.1721,
+      "sanctity_degradation": 0.1703
     },
     "6": {
-      "care_harm": 0.249,
-      "fairness_cheating": 0.2542,
-      "liberty_oppression": 0.3021,
-      "loyalty_betrayal": 0.1775,
-      "authority_subversion": 0.2111,
-      "sanctity_degradation": 0.2187
+      "care_harm": 0.1623,
+      "fairness_cheating": 0.1797,
+      "liberty_oppression": 0.1565,
+      "loyalty_betrayal": 0.1194,
+      "authority_subversion": 0.1662,
+      "sanctity_degradation": 0.1702
     },
     "7": {
-      "care_harm": 0.2564,
-      "fairness_cheating": 0.2529,
-      "liberty_oppression": 0.2736,
-      "loyalty_betrayal": 0.1735,
-      "authority_subversion": 0.2051,
-      "sanctity_degradation": 0.1952
+      "care_harm": 0.1754,
+      "fairness_cheating": 0.1858,
+      "liberty_oppression": 0.1544,
+      "loyalty_betrayal": 0.1317,
+      "authority_subversion": 0.1566,
+      "sanctity_degradation": 0.1486
     },
     "8": {
-      "care_harm": 0.2061,
-      "fairness_cheating": 0.2335,
-      "liberty_oppression": 0.2347,
-      "loyalty_betrayal": 0.1288,
-      "authority_subversion": 0.1785,
-      "sanctity_degradation": 0.1657
+      "care_harm": 0.1487,
+      "fairness_cheating": 0.1425,
+      "liberty_oppression": 0.1293,
+      "loyalty_betrayal": 0.0966,
+      "authority_subversion": 0.1408,
+      "sanctity_degradation": 0.1211
     },
     "9": {
-      "care_harm": 0.2172,
-      "fairness_cheating": 0.2452,
-      "liberty_oppression": 0.2304,
-      "loyalty_betrayal": 0.142,
-      "authority_subversion": 0.1933,
-      "sanctity_degradation": 0.1724
+      "care_harm": 0.1563,
+      "fairness_cheating": 0.1603,
+      "liberty_oppression": 0.1335,
+      "loyalty_betrayal": 0.1022,
+      "authority_subversion": 0.1599,
+      "sanctity_degradation": 0.1364
     },
     "10": {
-      "care_harm": 0.2295,
-      "fairness_cheating": 0.2406,
-      "liberty_oppression": 0.2474,
-      "loyalty_betrayal": 0.1408,
-      "authority_subversion": 0.2001,
-      "sanctity_degradation": 0.1657
+      "care_harm": 0.1628,
+      "fairness_cheating": 0.1558,
+      "liberty_oppression": 0.1304,
+      "loyalty_betrayal": 0.0969,
+      "authority_subversion": 0.171,
+      "sanctity_degradation": 0.1312
     },
     "11": {
-      "care_harm": 0.2212,
-      "fairness_cheating": 0.2575,
-      "liberty_oppression": 0.2455,
-      "loyalty_betrayal": 0.1452,
-      "authority_subversion": 0.1667,
-      "sanctity_degradation": 0.153
+      "care_harm": 0.1654,
+      "fairness_cheating": 0.1461,
+      "liberty_oppression": 0.1299,
+      "loyalty_betrayal": 0.1179,
+      "authority_subversion": 0.1379,
+      "sanctity_degradation": 0.1364
     },
     "12": {
-      "care_harm": 0.2192,
-      "fairness_cheating": 0.2493,
-      "liberty_oppression": 0.2576,
-      "loyalty_betrayal": 0.1417,
-      "authority_subversion": 0.1732,
-      "sanctity_degradation": 0.1623
+      "care_harm": 0.1701,
+      "fairness_cheating": 0.1385,
+      "liberty_oppression": 0.138,
+      "loyalty_betrayal": 0.1135,
+      "authority_subversion": 0.1336,
+      "sanctity_degradation": 0.1447
     },
     "13": {
-      "care_harm": 0.2169,
-      "fairness_cheating": 0.2801,
-      "liberty_oppression": 0.2648,
-      "loyalty_betrayal": 0.1426,
-      "authority_subversion": 0.185,
-      "sanctity_degradation": 0.1835
+      "care_harm": 0.1668,
+      "fairness_cheating": 0.1635,
+      "liberty_oppression": 0.1392,
+      "loyalty_betrayal": 0.1038,
+      "authority_subversion": 0.1498,
+      "sanctity_degradation": 0.1576
     },
     "14": {
-      "care_harm": 0.2229,
-      "fairness_cheating": 0.267,
-      "liberty_oppression": 0.2754,
-      "loyalty_betrayal": 0.1376,
-      "authority_subversion": 0.1864,
-      "sanctity_degradation": 0.1681
+      "care_harm": 0.1722,
+      "fairness_cheating": 0.1505,
+      "liberty_oppression": 0.1408,
+      "loyalty_betrayal": 0.0957,
+      "authority_subversion": 0.1406,
+      "sanctity_degradation": 0.14
     },
     "15": {
-      "care_harm": 0.2459,
-      "fairness_cheating": 0.2886,
-      "liberty_oppression": 0.2695,
-      "loyalty_betrayal": 0.1534,
-      "authority_subversion": 0.1871,
-      "sanctity_degradation": 0.1813
+      "care_harm": 0.1786,
+      "fairness_cheating": 0.2032,
+      "liberty_oppression": 0.1383,
+      "loyalty_betrayal": 0.114,
+      "authority_subversion": 0.1483,
+      "sanctity_degradation": 0.1705
     },
     "16": {
-      "care_harm": 0.2398,
-      "fairness_cheating": 0.2734,
-      "liberty_oppression": 0.2659,
-      "loyalty_betrayal": 0.138,
-      "authority_subversion": 0.1871,
-      "sanctity_degradation": 0.1875
+      "care_harm": 0.1746,
+      "fairness_cheating": 0.1902,
+      "liberty_oppression": 0.1406,
+      "loyalty_betrayal": 0.0997,
+      "authority_subversion": 0.1391,
+      "sanctity_degradation": 0.1683
     },
     "17": {
-      "care_harm": 0.2657,
-      "fairness_cheating": 0.2954,
-      "liberty_oppression": 0.2974,
-      "loyalty_betrayal": 0.134,
-      "authority_subversion": 0.2055,
-      "sanctity_degradation": 0.1874
+      "care_harm": 0.1845,
+      "fairness_cheating": 0.2095,
+      "liberty_oppression": 0.1395,
+      "loyalty_betrayal": 0.1064,
+      "authority_subversion": 0.1591,
+      "sanctity_degradation": 0.1651
     },
     "18": {
-      "care_harm": 0.2571,
-      "fairness_cheating": 0.2952,
-      "liberty_oppression": 0.298,
-      "loyalty_betrayal": 0.1367,
-      "authority_subversion": 0.1993,
-      "sanctity_degradation": 0.1951
+      "care_harm": 0.1846,
+      "fairness_cheating": 0.1961,
+      "liberty_oppression": 0.1386,
+      "loyalty_betrayal": 0.1105,
+      "authority_subversion": 0.1601,
+      "sanctity_degradation": 0.1508
     },
     "19": {
-      "care_harm": 0.2533,
-      "fairness_cheating": 0.2639,
-      "liberty_oppression": 0.2858,
-      "loyalty_betrayal": 0.1426,
-      "authority_subversion": 0.206,
-      "sanctity_degradation": 0.1912
+      "care_harm": 0.178,
+      "fairness_cheating": 0.1831,
+      "liberty_oppression": 0.1397,
+      "loyalty_betrayal": 0.0969,
+      "authority_subversion": 0.1749,
+      "sanctity_degradation": 0.1597
     },
     "20": {
-      "care_harm": 0.2702,
-      "fairness_cheating": 0.2588,
-      "liberty_oppression": 0.297,
-      "loyalty_betrayal": 0.1562,
-      "authority_subversion": 0.221,
-      "sanctity_degradation": 0.2032
+      "care_harm": 0.1907,
+      "fairness_cheating": 0.187,
+      "liberty_oppression": 0.1402,
+      "loyalty_betrayal": 0.1158,
+      "authority_subversion": 0.1832,
+      "sanctity_degradation": 0.1462
     },
     "21": {
-      "care_harm": 0.263,
-      "fairness_cheating": 0.2592,
-      "liberty_oppression": 0.2888,
-      "loyalty_betrayal": 0.1591,
-      "authority_subversion": 0.2344,
-      "sanctity_degradation": 0.2073
+      "care_harm": 0.1744,
+      "fairness_cheating": 0.1904,
+      "liberty_oppression": 0.1317,
+      "loyalty_betrayal": 0.1221,
+      "authority_subversion": 0.1931,
+      "sanctity_degradation": 0.1425
     },
     "22": {
-      "care_harm": 0.2679,
-      "fairness_cheating": 0.2748,
-      "liberty_oppression": 0.3023,
-      "loyalty_betrayal": 0.1531,
-      "authority_subversion": 0.2227,
-      "sanctity_degradation": 0.2051
+      "care_harm": 0.1879,
+      "fairness_cheating": 0.1956,
+      "liberty_oppression": 0.1341,
+      "loyalty_betrayal": 0.1285,
+      "authority_subversion": 0.1896,
+      "sanctity_degradation": 0.1417
     },
     "23": {
-      "care_harm": 0.2786,
-      "fairness_cheating": 0.2528,
-      "liberty_oppression": 0.3108,
-      "loyalty_betrayal": 0.1643,
-      "authority_subversion": 0.2481,
-      "sanctity_degradation": 0.2054
+      "care_harm": 0.199,
+      "fairness_cheating": 0.1798,
+      "liberty_oppression": 0.1315,
+      "loyalty_betrayal": 0.136,
+      "authority_subversion": 0.2121,
+      "sanctity_degradation": 0.1445
     },
     "24": {
-      "care_harm": 0.2836,
-      "fairness_cheating": 0.269,
-      "liberty_oppression": 0.3081,
-      "loyalty_betrayal": 0.1634,
-      "authority_subversion": 0.25,
-      "sanctity_degradation": 0.2082
+      "care_harm": 0.2014,
+      "fairness_cheating": 0.1949,
+      "liberty_oppression": 0.1423,
+      "loyalty_betrayal": 0.1396,
+      "authority_subversion": 0.223,
+      "sanctity_degradation": 0.1402
     },
     "25": {
-      "care_harm": 0.285,
-      "fairness_cheating": 0.2696,
-      "liberty_oppression": 0.2931,
-      "loyalty_betrayal": 0.1707,
-      "authority_subversion": 0.242,
-      "sanctity_degradation": 0.2069
+      "care_harm": 0.2051,
+      "fairness_cheating": 0.204,
+      "liberty_oppression": 0.1249,
+      "loyalty_betrayal": 0.1343,
+      "authority_subversion": 0.2132,
+      "sanctity_degradation": 0.1361
     },
     "26": {
-      "care_harm": 0.2833,
-      "fairness_cheating": 0.2783,
-      "liberty_oppression": 0.3116,
-      "loyalty_betrayal": 0.168,
-      "authority_subversion": 0.2591,
-      "sanctity_degradation": 0.2142
+      "care_harm": 0.2013,
+      "fairness_cheating": 0.2043,
+      "liberty_oppression": 0.1458,
+      "loyalty_betrayal": 0.131,
+      "authority_subversion": 0.2255,
+      "sanctity_degradation": 0.1465
     },
     "27": {
-      "care_harm": 0.2738,
-      "fairness_cheating": 0.2818,
-      "liberty_oppression": 0.3243,
-      "loyalty_betrayal": 0.1727,
-      "authority_subversion": 0.252,
-      "sanctity_degradation": 0.2135
+      "care_harm": 0.1879,
+      "fairness_cheating": 0.2121,
+      "liberty_oppression": 0.1552,
+      "loyalty_betrayal": 0.1403,
+      "authority_subversion": 0.2169,
+      "sanctity_degradation": 0.1474
     },
     "28": {
-      "care_harm": 0.276,
-      "fairness_cheating": 0.2671,
-      "liberty_oppression": 0.327,
-      "loyalty_betrayal": 0.1787,
-      "authority_subversion": 0.2549,
-      "sanctity_degradation": 0.2149
+      "care_harm": 0.1871,
+      "fairness_cheating": 0.2095,
+      "liberty_oppression": 0.1606,
+      "loyalty_betrayal": 0.1398,
+      "authority_subversion": 0.2133,
+      "sanctity_degradation": 0.1438
     },
     "29": {
-      "care_harm": 0.2653,
-      "fairness_cheating": 0.2707,
-      "liberty_oppression": 0.3391,
-      "loyalty_betrayal": 0.1899,
-      "authority_subversion": 0.2622,
-      "sanctity_degradation": 0.2268
+      "care_harm": 0.182,
+      "fairness_cheating": 0.2068,
+      "liberty_oppression": 0.1646,
+      "loyalty_betrayal": 0.1539,
+      "authority_subversion": 0.216,
+      "sanctity_degradation": 0.1591
     },
     "30": {
-      "care_harm": 0.2509,
-      "fairness_cheating": 0.2549,
-      "liberty_oppression": 0.3315,
-      "loyalty_betrayal": 0.1914,
-      "authority_subversion": 0.2497,
-      "sanctity_degradation": 0.2066
+      "care_harm": 0.1734,
+      "fairness_cheating": 0.205,
+      "liberty_oppression": 0.1631,
+      "loyalty_betrayal": 0.1614,
+      "authority_subversion": 0.2228,
+      "sanctity_degradation": 0.1405
     },
     "31": {
-      "care_harm": 0.2512,
-      "fairness_cheating": 0.259,
-      "liberty_oppression": 0.3374,
-      "loyalty_betrayal": 0.2039,
-      "authority_subversion": 0.2521,
-      "sanctity_degradation": 0.2236
+      "care_harm": 0.1799,
+      "fairness_cheating": 0.2118,
+      "liberty_oppression": 0.1819,
+      "loyalty_betrayal": 0.1685,
+      "authority_subversion": 0.207,
+      "sanctity_degradation": 0.1564
     }
   },
   "per_layer_vs_meandiff": {
     "0": {
-      "care_harm": 0.3794,
-      "fairness_cheating": 0.3417,
-      "liberty_oppression": 0.4653,
-      "loyalty_betrayal": 0.2963,
-      "authority_subversion": 0.259,
-      "sanctity_degradation": 0.2971
+      "care_harm": 0.2224,
+      "fairness_cheating": 0.2383,
+      "liberty_oppression": 0.2715,
+      "loyalty_betrayal": 0.2298,
+      "authority_subversion": 0.2016,
+      "sanctity_degradation": 0.2156
     },
     "1": {
-      "care_harm": 0.3292,
-      "fairness_cheating": 0.2873,
-      "liberty_oppression": 0.411,
-      "loyalty_betrayal": 0.2404,
-      "authority_subversion": 0.2314,
-      "sanctity_degradation": 0.2705
+      "care_harm": 0.2136,
+      "fairness_cheating": 0.1885,
+      "liberty_oppression": 0.2358,
+      "loyalty_betrayal": 0.1826,
+      "authority_subversion": 0.1744,
+      "sanctity_degradation": 0.1992
     },
     "2": {
-      "care_harm": 0.2996,
-      "fairness_cheating": 0.2896,
-      "liberty_oppression": 0.3831,
-      "loyalty_betrayal": 0.213,
-      "authority_subversion": 0.2297,
-      "sanctity_degradation": 0.2725
+      "care_harm": 0.2032,
+      "fairness_cheating": 0.1727,
+      "liberty_oppression": 0.2163,
+      "loyalty_betrayal": 0.1742,
+      "authority_subversion": 0.1572,
+      "sanctity_degradation": 0.1851
     },
     "3": {
-      "care_harm": 0.3141,
-      "fairness_cheating": 0.3117,
-      "liberty_oppression": 0.4215,
-      "loyalty_betrayal": 0.2233,
-      "authority_subversion": 0.2455,
-      "sanctity_degradation": 0.304
+      "care_harm": 0.2173,
+      "fairness_cheating": 0.187,
+      "liberty_oppression": 0.221,
+      "loyalty_betrayal": 0.1608,
+      "authority_subversion": 0.1477,
+      "sanctity_degradation": 0.1987
     },
     "4": {
-      "care_harm": 0.3305,
-      "fairness_cheating": 0.3405,
-      "liberty_oppression": 0.4513,
-      "loyalty_betrayal": 0.241,
-      "authority_subversion": 0.2637,
-      "sanctity_degradation": 0.3207
+      "care_harm": 0.2436,
+      "fairness_cheating": 0.2152,
+      "liberty_oppression": 0.241,
+      "loyalty_betrayal": 0.1806,
+      "authority_subversion": 0.1691,
+      "sanctity_degradation": 0.1994
     },
     "5": {
-      "care_harm": 0.3217,
-      "fairness_cheating": 0.3501,
-      "liberty_oppression": 0.4673,
-      "loyalty_betrayal": 0.2491,
-      "authority_subversion": 0.2513,
-      "sanctity_degradation": 0.3306
+      "care_harm": 0.2172,
+      "fairness_cheating": 0.203,
+      "liberty_oppression": 0.2604,
+      "loyalty_betrayal": 0.1836,
+      "authority_subversion": 0.1765,
+      "sanctity_degradation": 0.2029
     },
     "6": {
-      "care_harm": 0.3584,
-      "fairness_cheating": 0.3737,
-      "liberty_oppression": 0.4772,
-      "loyalty_betrayal": 0.2561,
-      "authority_subversion": 0.2633,
-      "sanctity_degradation": 0.3456
+      "care_harm": 0.2334,
+      "fairness_cheating": 0.2135,
+      "liberty_oppression": 0.2542,
+      "loyalty_betrayal": 0.1952,
+      "authority_subversion": 0.1708,
+      "sanctity_degradation": 0.2148
     },
     "7": {
-      "care_harm": 0.364,
-      "fairness_cheating": 0.3722,
-      "liberty_oppression": 0.4604,
-      "loyalty_betrayal": 0.2339,
-      "authority_subversion": 0.2535,
-      "sanctity_degradation": 0.3324
+      "care_harm": 0.2377,
+      "fairness_cheating": 0.2047,
+      "liberty_oppression": 0.2611,
+      "loyalty_betrayal": 0.2095,
+      "authority_subversion": 0.1579,
+      "sanctity_degradation": 0.2143
     },
     "8": {
-      "care_harm": 0.2908,
-      "fairness_cheating": 0.327,
-      "liberty_oppression": 0.4164,
-      "loyalty_betrayal": 0.1644,
-      "authority_subversion": 0.2045,
-      "sanctity_degradation": 0.3037
+      "care_harm": 0.1893,
+      "fairness_cheating": 0.1419,
+      "liberty_oppression": 0.2367,
+      "loyalty_betrayal": 0.1619,
+      "authority_subversion": 0.1139,
+      "sanctity_degradation": 0.193
     },
     "9": {
-      "care_harm": 0.2923,
-      "fairness_cheating": 0.3577,
-      "liberty_oppression": 0.414,
-      "loyalty_betrayal": 0.1665,
-      "authority_subversion": 0.2031,
-      "sanctity_degradation": 0.3058
+      "care_harm": 0.1922,
+      "fairness_cheating": 0.1696,
+      "liberty_oppression": 0.2206,
+      "loyalty_betrayal": 0.1605,
+      "authority_subversion": 0.1118,
+      "sanctity_degradation": 0.1921
     },
     "10": {
-      "care_harm": 0.304,
-      "fairness_cheating": 0.3554,
-      "liberty_oppression": 0.4305,
-      "loyalty_betrayal": 0.1591,
-      "authority_subversion": 0.2151,
-      "sanctity_degradation": 0.3019
+      "care_harm": 0.1959,
+      "fairness_cheating": 0.1599,
+      "liberty_oppression": 0.2179,
+      "loyalty_betrayal": 0.1719,
+      "authority_subversion": 0.1157,
+      "sanctity_degradation": 0.1973
     },
     "11": {
-      "care_harm": 0.296,
-      "fairness_cheating": 0.3666,
-      "liberty_oppression": 0.4226,
-      "loyalty_betrayal": 0.1523,
-      "authority_subversion": 0.1957,
-      "sanctity_degradation": 0.2868
+      "care_harm": 0.1805,
+      "fairness_cheating": 0.146,
+      "liberty_oppression": 0.2086,
+      "loyalty_betrayal": 0.1655,
+      "authority_subversion": 0.0938,
+      "sanctity_degradation": 0.1987
     },
     "12": {
-      "care_harm": 0.2951,
-      "fairness_cheating": 0.3621,
-      "liberty_oppression": 0.4324,
-      "loyalty_betrayal": 0.1369,
-      "authority_subversion": 0.1858,
-      "sanctity_degradation": 0.2887
+      "care_harm": 0.1924,
+      "fairness_cheating": 0.1398,
+      "liberty_oppression": 0.2146,
+      "loyalty_betrayal": 0.1674,
+      "authority_subversion": 0.0739,
+      "sanctity_degradation": 0.203
     },
     "13": {
-      "care_harm": 0.3068,
-      "fairness_cheating": 0.3843,
-      "liberty_oppression": 0.4481,
-      "loyalty_betrayal": 0.148,
-      "authority_subversion": 0.1833,
-      "sanctity_degradation": 0.2946
+      "care_harm": 0.1993,
+      "fairness_cheating": 0.1505,
+      "liberty_oppression": 0.2377,
+      "loyalty_betrayal": 0.1722,
+      "authority_subversion": 0.0695,
+      "sanctity_degradation": 0.2128
     },
     "14": {
-      "care_harm": 0.3178,
-      "fairness_cheating": 0.3636,
-      "liberty_oppression": 0.4467,
-      "loyalty_betrayal": 0.1467,
-      "authority_subversion": 0.1805,
-      "sanctity_degradation": 0.2976
+      "care_harm": 0.2158,
+      "fairness_cheating": 0.1252,
+      "liberty_oppression": 0.2245,
+      "loyalty_betrayal": 0.1816,
+      "authority_subversion": 0.0501,
+      "sanctity_degradation": 0.2112
     },
     "15": {
-      "care_harm": 0.3296,
-      "fairness_cheating": 0.4172,
-      "liberty_oppression": 0.4696,
-      "loyalty_betrayal": 0.1914,
-      "authority_subversion": 0.2054,
-      "sanctity_degradation": 0.3121
+      "care_harm": 0.2241,
+      "fairness_cheating": 0.1855,
+      "liberty_oppression": 0.235,
+      "loyalty_betrayal": 0.2212,
+      "authority_subversion": 0.077,
+      "sanctity_degradation": 0.2303
     },
     "16": {
-      "care_harm": 0.3186,
-      "fairness_cheating": 0.4085,
-      "liberty_oppression": 0.4503,
-      "loyalty_betrayal": 0.1954,
-      "authority_subversion": 0.213,
-      "sanctity_degradation": 0.3128
+      "care_harm": 0.2311,
+      "fairness_cheating": 0.1784,
+      "liberty_oppression": 0.236,
+      "loyalty_betrayal": 0.2202,
+      "authority_subversion": 0.0845,
+      "sanctity_degradation": 0.2263
     },
     "17": {
-      "care_harm": 0.3509,
-      "fairness_cheating": 0.4402,
-      "liberty_oppression": 0.4815,
-      "loyalty_betrayal": 0.2145,
-      "authority_subversion": 0.2264,
-      "sanctity_degradation": 0.3103
+      "care_harm": 0.2516,
+      "fairness_cheating": 0.1875,
+      "liberty_oppression": 0.2342,
+      "loyalty_betrayal": 0.2514,
+      "authority_subversion": 0.0971,
+      "sanctity_degradation": 0.2165
     },
     "18": {
-      "care_harm": 0.3622,
-      "fairness_cheating": 0.46,
-      "liberty_oppression": 0.4976,
-      "loyalty_betrayal": 0.2416,
-      "authority_subversion": 0.2384,
-      "sanctity_degradation": 0.3295
+      "care_harm": 0.2744,
+      "fairness_cheating": 0.1978,
+      "liberty_oppression": 0.2317,
+      "loyalty_betrayal": 0.2815,
+      "authority_subversion": 0.1083,
+      "sanctity_degradation": 0.2167
     },
     "19": {
-      "care_harm": 0.3525,
-      "fairness_cheating": 0.4367,
-      "liberty_oppression": 0.4847,
-      "loyalty_betrayal": 0.2403,
-      "authority_subversion": 0.2412,
-      "sanctity_degradation": 0.3318
+      "care_harm": 0.2719,
+      "fairness_cheating": 0.1879,
+      "liberty_oppression": 0.2327,
+      "loyalty_betrayal": 0.2758,
+      "authority_subversion": 0.116,
+      "sanctity_degradation": 0.2294
     },
     "20": {
-      "care_harm": 0.382,
-      "fairness_cheating": 0.4582,
-      "liberty_oppression": 0.5112,
-      "loyalty_betrayal": 0.2719,
-      "authority_subversion": 0.2604,
-      "sanctity_degradation": 0.3421
+      "care_harm": 0.2944,
+      "fairness_cheating": 0.1995,
+      "liberty_oppression": 0.2327,
+      "loyalty_betrayal": 0.3174,
+      "authority_subversion": 0.1315,
+      "sanctity_degradation": 0.2222
     },
     "21": {
-      "care_harm": 0.3752,
-      "fairness_cheating": 0.4616,
-      "liberty_oppression": 0.5101,
-      "loyalty_betrayal": 0.278,
-      "authority_subversion": 0.2755,
-      "sanctity_degradation": 0.3415
+      "care_harm": 0.2839,
+      "fairness_cheating": 0.205,
+      "liberty_oppression": 0.2328,
+      "loyalty_betrayal": 0.3191,
+      "authority_subversion": 0.1495,
+      "sanctity_degradation": 0.2175
     },
     "22": {
-      "care_harm": 0.3776,
-      "fairness_cheating": 0.4832,
-      "liberty_oppression": 0.5244,
-      "loyalty_betrayal": 0.2935,
-      "authority_subversion": 0.285,
-      "sanctity_degradation": 0.3363
+      "care_harm": 0.2886,
+      "fairness_cheating": 0.2188,
+      "liberty_oppression": 0.2361,
+      "loyalty_betrayal": 0.3345,
+      "authority_subversion": 0.1603,
+      "sanctity_degradation": 0.2075
     },
     "23": {
-      "care_harm": 0.391,
-      "fairness_cheating": 0.483,
-      "liberty_oppression": 0.5282,
-      "loyalty_betrayal": 0.3056,
-      "authority_subversion": 0.2932,
-      "sanctity_degradation": 0.3371
+      "care_harm": 0.2958,
+      "fairness_cheating": 0.223,
+      "liberty_oppression": 0.2372,
+      "loyalty_betrayal": 0.3394,
+      "authority_subversion": 0.1734,
+      "sanctity_degradation": 0.2076
     },
     "24": {
-      "care_harm": 0.396,
-      "fairness_cheating": 0.4927,
-      "liberty_oppression": 0.5264,
-      "loyalty_betrayal": 0.3136,
-      "authority_subversion": 0.3048,
-      "sanctity_degradation": 0.3358
+      "care_harm": 0.2969,
+      "fairness_cheating": 0.2289,
+      "liberty_oppression": 0.2374,
+      "loyalty_betrayal": 0.3489,
+      "authority_subversion": 0.1882,
+      "sanctity_degradation": 0.1994
     },
     "25": {
-      "care_harm": 0.3987,
-      "fairness_cheating": 0.4959,
-      "liberty_oppression": 0.5256,
-      "loyalty_betrayal": 0.3222,
-      "authority_subversion": 0.311,
-      "sanctity_degradation": 0.333
+      "care_harm": 0.2984,
+      "fairness_cheating": 0.2301,
+      "liberty_oppression": 0.2263,
+      "loyalty_betrayal": 0.3551,
+      "authority_subversion": 0.1905,
+      "sanctity_degradation": 0.1938
     },
     "26": {
-      "care_harm": 0.4046,
-      "fairness_cheating": 0.5021,
-      "liberty_oppression": 0.5348,
-      "loyalty_betrayal": 0.3236,
-      "authority_subversion": 0.3165,
-      "sanctity_degradation": 0.3426
+      "care_harm": 0.2944,
+      "fairness_cheating": 0.2454,
+      "liberty_oppression": 0.2399,
+      "loyalty_betrayal": 0.3506,
+      "authority_subversion": 0.2036,
+      "sanctity_degradation": 0.1987
     },
     "27": {
-      "care_harm": 0.4009,
-      "fairness_cheating": 0.5031,
-      "liberty_oppression": 0.5379,
-      "loyalty_betrayal": 0.323,
-      "authority_subversion": 0.3146,
-      "sanctity_degradation": 0.3371
+      "care_harm": 0.2906,
+      "fairness_cheating": 0.2533,
+      "liberty_oppression": 0.2477,
+      "loyalty_betrayal": 0.3549,
+      "authority_subversion": 0.2034,
+      "sanctity_degradation": 0.1967
     },
     "28": {
-      "care_harm": 0.4066,
-      "fairness_cheating": 0.5111,
-      "liberty_oppression": 0.5488,
-      "loyalty_betrayal": 0.3366,
-      "authority_subversion": 0.3273,
-      "sanctity_degradation": 0.3459
+      "care_harm": 0.2947,
+      "fairness_cheating": 0.2656,
+      "liberty_oppression": 0.2531,
+      "loyalty_betrayal": 0.3683,
+      "authority_subversion": 0.2122,
+      "sanctity_degradation": 0.2003
     },
     "29": {
-      "care_harm": 0.4001,
-      "fairness_cheating": 0.5213,
-      "liberty_oppression": 0.5524,
-      "loyalty_betrayal": 0.3537,
-      "authority_subversion": 0.3465,
-      "sanctity_degradation": 0.3488
+      "care_harm": 0.2898,
+      "fairness_cheating": 0.2669,
+      "liberty_oppression": 0.2557,
+      "loyalty_betrayal": 0.3897,
+      "authority_subversion": 0.2288,
+      "sanctity_degradation": 0.2083
     },
     "30": {
-      "care_harm": 0.3789,
-      "fairness_cheating": 0.5332,
-      "liberty_oppression": 0.5508,
-      "loyalty_betrayal": 0.3564,
-      "authority_subversion": 0.3488,
-      "sanctity_degradation": 0.3382
+      "care_harm": 0.2822,
+      "fairness_cheating": 0.2586,
+      "liberty_oppression": 0.2186,
+      "loyalty_betrayal": 0.4047,
+      "authority_subversion": 0.2093,
+      "sanctity_degradation": 0.1987
     },
     "31": {
-      "care_harm": 0.4022,
-      "fairness_cheating": 0.5825,
-      "liberty_oppression": 0.5866,
-      "loyalty_betrayal": 0.3971,
-      "authority_subversion": 0.3864,
-      "sanctity_degradation": 0.3465
+      "care_harm": 0.3052,
+      "fairness_cheating": 0.294,
+      "liberty_oppression": 0.2292,
+      "loyalty_betrayal": 0.4379,
+      "authority_subversion": 0.2264,
+      "sanctity_degradation": 0.2024
     }
   }
 }

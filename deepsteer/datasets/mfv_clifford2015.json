@@ -1,0 +1,187 @@
+{
+  "source": "Clifford, Iyengar, Cabeza & Sinnott-Armstrong (2015), Moral Foundations Vignettes. Verbatim original English from Full-Published-Norms.xlsx (scottaclifford.com), Table 1 Respondent Ratings.",
+  "selection_rule": "top-5 per foundation by respondent classification rate into the intended foundation; care_harm = top-5 from combined emotional + physical(animal+human) care pool",
+  "n_items": 30,
+  "items": [
+    {
+      "text": "You see a woman swerving her car in order to intentionally run over a squirrel.",
+      "foundation": "care_harm",
+      "mfv_foundation": "Care (physical, animal)",
+      "classification_rate": 0.8718
+    },
+    {
+      "text": "You see a woman throwing her cat across the room for scratching the furniture.",
+      "foundation": "care_harm",
+      "mfv_foundation": "Care (physical, animal)",
+      "classification_rate": 0.8537
+    },
+    {
+      "text": "You see a boy throwing rocks at cows that are grazing in the local pasture.",
+      "foundation": "care_harm",
+      "mfv_foundation": "Care (physical, animal)",
+      "classification_rate": 0.8537
+    },
+    {
+      "text": "You see a man lashing his pony with a whip for breaking loose from its pen.",
+      "foundation": "care_harm",
+      "mfv_foundation": "Care (physical, animal)",
+      "classification_rate": 0.8333
+    },
+    {
+      "text": "You see a teenage boy chuckling at an amputee he passes by while on the subway.",
+      "foundation": "care_harm",
+      "mfv_foundation": "Care (emotional)",
+      "classification_rate": 0.8333
+    },
+    {
+      "text": "You see a student copying a classmate's answer sheet on a makeup final exam.",
+      "foundation": "fairness_cheating",
+      "mfv_foundation": "Fairness",
+      "classification_rate": 1.0
+    },
+    {
+      "text": "You see a runner taking a shortcut on the course during the marathon in order to win.",
+      "foundation": "fairness_cheating",
+      "mfv_foundation": "Fairness",
+      "classification_rate": 0.9688
+    },
+    {
+      "text": "You see a tenant bribing a landlord to be the first to get their apartment repainted.",
+      "foundation": "fairness_cheating",
+      "mfv_foundation": "Fairness",
+      "classification_rate": 0.9655
+    },
+    {
+      "text": "You see a soccer player pretending to be seriously fouled by an opposing player.",
+      "foundation": "fairness_cheating",
+      "mfv_foundation": "Fairness",
+      "classification_rate": 0.9355
+    },
+    {
+      "text": "You see someone cheating in a card game while playing with a group of strangers.",
+      "foundation": "fairness_cheating",
+      "mfv_foundation": "Fairness",
+      "classification_rate": 0.931
+    },
+    {
+      "text": "You see a man telling his fiance that she has to switch to his political party.",
+      "foundation": "liberty_oppression",
+      "mfv_foundation": "Liberty",
+      "classification_rate": 0.9
+    },
+    {
+      "text": "You see a father requiring his son to become a commercial airline pilot like him.",
+      "foundation": "liberty_oppression",
+      "mfv_foundation": "Liberty",
+      "classification_rate": 0.8462
+    },
+    {
+      "text": "You see a man blocking his wife from leaving home or interacting with others.",
+      "foundation": "liberty_oppression",
+      "mfv_foundation": "Liberty",
+      "classification_rate": 0.8387
+    },
+    {
+      "text": "You see a manager coercing her employees into eating at her brother's diner.",
+      "foundation": "liberty_oppression",
+      "mfv_foundation": "Liberty",
+      "classification_rate": 0.7742
+    },
+    {
+      "text": "You see a man telling his girlfriend that she must convert to his religion.",
+      "foundation": "liberty_oppression",
+      "mfv_foundation": "Liberty",
+      "classification_rate": 0.7742
+    },
+    {
+      "text": "You see an employee joking with competitors about how bad his company did last year.",
+      "foundation": "loyalty_betrayal",
+      "mfv_foundation": "Loyalty",
+      "classification_rate": 0.8387
+    },
+    {
+      "text": "You see a coach celebrating with the opposing team's players who just won the game.",
+      "foundation": "loyalty_betrayal",
+      "mfv_foundation": "Loyalty",
+      "classification_rate": 0.7586
+    },
+    {
+      "text": "You see a former US General saying publicly he would never buy any American product.",
+      "foundation": "loyalty_betrayal",
+      "mfv_foundation": "Loyalty",
+      "classification_rate": 0.75
+    },
+    {
+      "text": "You see a mayor saying that the neighboring town is a much better town.",
+      "foundation": "loyalty_betrayal",
+      "mfv_foundation": "Loyalty",
+      "classification_rate": 0.7419
+    },
+    {
+      "text": "You see the US Ambassador joking in Great Britain about the stupidity of Americans.",
+      "foundation": "loyalty_betrayal",
+      "mfv_foundation": "Loyalty",
+      "classification_rate": 0.7419
+    },
+    {
+      "text": "You see a girl ignoring her father's orders by taking the car after her curfew.",
+      "foundation": "authority_subversion",
+      "mfv_foundation": "Authority",
+      "classification_rate": 0.8065
+    },
+    {
+      "text": "You see a woman refusing to stand when the judge walks into the courtroom.",
+      "foundation": "authority_subversion",
+      "mfv_foundation": "Authority",
+      "classification_rate": 0.8
+    },
+    {
+      "text": "You see a girl repeatedly interrupting her teacher as he explains a new concept.",
+      "foundation": "authority_subversion",
+      "mfv_foundation": "Authority",
+      "classification_rate": 0.8
+    },
+    {
+      "text": "You see a woman spray painting graffiti across the steps of the local courthouse.",
+      "foundation": "authority_subversion",
+      "mfv_foundation": "Authority",
+      "classification_rate": 0.7812
+    },
+    {
+      "text": "You see an intern disobeying an order to dress professionally and comb his hair.",
+      "foundation": "authority_subversion",
+      "mfv_foundation": "Authority",
+      "classification_rate": 0.7812
+    },
+    {
+      "text": "You see a man having sex with a frozen chicken before cooking it for dinner.",
+      "foundation": "sanctity_degradation",
+      "mfv_foundation": "Sanctity",
+      "classification_rate": 0.875
+    },
+    {
+      "text": "You see a very drunk woman making out with multiple strangers on the city bus.",
+      "foundation": "sanctity_degradation",
+      "mfv_foundation": "Sanctity",
+      "classification_rate": 0.8462
+    },
+    {
+      "text": "You see a family eating the carcass of their pet dog that had been run over.",
+      "foundation": "sanctity_degradation",
+      "mfv_foundation": "Sanctity",
+      "classification_rate": 0.8438
+    },
+    {
+      "text": "You see a drunk elderly man offering to have oral sex with anyone in the bar.",
+      "foundation": "sanctity_degradation",
+      "mfv_foundation": "Sanctity",
+      "classification_rate": 0.8387
+    },
+    {
+      "text": "You see a teenager urinating in the wave pool at a crowded amusement park.",
+      "foundation": "sanctity_degradation",
+      "mfv_foundation": "Sanctity",
+      "classification_rate": 0.8387
+    }
+  ]
+}

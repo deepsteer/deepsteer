@@ -607,17 +607,25 @@ them.
 To test whether the integration geometry is a property of the model
 rather than of our probing dataset, we recompute foundation directions
 from the Moral Foundations Vignettes \citep{clifford2015mfv}, an
-independently constructed set of 30 validated moral scenarios (5 per
-foundation). Directions are estimated by mean difference against a
-shared neutral baseline, the same estimator applied to both datasets
-for a fair comparison.
+independently constructed and separately validated stimulus database.
+We use the verbatim original English vignettes from the published norms
+released by the authors (\citealp{clifford2015mfv};
+\path|Full-Published-Norms.xlsx|, Table 1 respondent ratings),
+selecting the five highest-loading items per foundation by the published
+classification rate (the fraction of respondents who assigned a vignette
+to its intended foundation); the care foundation draws its five from the
+combined emotional- and physical-care pool. This yields a 30-item subset
+(5 per foundation), none of which overlaps our probing dataset. Directions are estimated by
+mean difference against a shared neutral baseline, the same estimator
+applied to both datasets for a fair comparison.
 
-The integration signature replicates. The six MFV directions span
-\textbf{5 effective dimensions at every layer} of OLMo-2\textasciitilde7B, identical to
-the directions derived from our dataset. Mean pairwise cosine is
-higher for MFV (0.50--0.72) than for the matched mean-difference
-directions on our data (0.42 at the display layer), an expected
-small-sample effect given five vignettes per foundation. Because
+The integration signature replicates on the genuine validated items.
+The six MFV directions span \textbf{5 effective dimensions at every layer}
+of OLMo-2\textasciitilde7B, identical to the directions derived from our dataset.
+Mean pairwise cosine is higher for MFV (0.42--0.62 across layers, 0.62
+at the display layer 8) than for the matched mean-difference directions
+on our data (0.41 at the display layer), an expected small-sample
+effect given five vignettes per foundation. Because
 absolute cosine is inflated by the five-per-foundation sample, the
 cross-dataset claim rests on the sign and structure of the geometry
 rather than the cosine magnitude: both datasets show uniformly
@@ -636,10 +644,15 @@ it replicates in sign across the two datasets.
 \end{figure}
 
 \textbf{Cross-dataset direction alignment.} Foundation directions estimated
-from the two independent datasets are positively aligned (\(|\cos| =
-0.14\)--\(0.43\) per foundation at layer 12), with individualizing
-foundations aligning more strongly (care 0.30, fairness 0.36, liberty
-0.43) than binding foundations (loyalty 0.14, authority 0.19, sanctity
-0.29). That directions estimated from independently authored stimuli
-agree at all is evidence that the foundation directions reflect the
-model's representations rather than artifacts of any single dataset.
+from the two independent datasets are positively aligned at every
+foundation (\(|\cos| = 0.07\)--\(0.21\) per foundation at layer 12, matched
+mean-difference estimator: care 0.19, fairness 0.14, liberty 0.21,
+loyalty 0.17, authority 0.07, sanctity 0.20). Individualizing
+foundations align marginally more strongly on average (mean 0.18) than
+binding (mean 0.15), but the gap is small and there is no clean group
+separation. The alignment is modest in magnitude, as expected from
+30 verbatim vignettes versus a 240-pair probing set, but it is positive
+throughout: that directions estimated from independently authored,
+separately validated stimuli agree at all is evidence that the
+foundation directions reflect the model's representations rather than
+artifacts of any single dataset.

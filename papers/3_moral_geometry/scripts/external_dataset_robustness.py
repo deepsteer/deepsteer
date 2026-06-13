@@ -61,7 +61,9 @@ def _load_mfv(mfv_file: str | None) -> list[dict]:
     """Load MFV vignettes: an external JSON file if given, else the bundled set."""
     if mfv_file:
         with open(mfv_file) as f:
-            items = json.load(f)
+            data = json.load(f)
+        # Accept either a flat list or a {"items": [...]} object with provenance.
+        items = data["items"] if isinstance(data, dict) else data
         logger.info("Loaded %d MFV items from %s", len(items), mfv_file)
         return items
     pe_dir = Path(__file__).resolve().parent / "probe_engineering"

@@ -46,47 +46,53 @@ from leace_directions import compute_leace_directions
 # ---------------------------------------------------------------------------
 
 MFV_ITEMS = [
-    # Care/Harm
-    {"text": "You see a boy kicking a puppy on the side of the road.", "foundation": "care_harm"},
-    {"text": "You see a woman slapping her child repeatedly in a parking lot.", "foundation": "care_harm"},
-    {"text": "You see a nurse ignoring the cries of a patient in pain.", "foundation": "care_harm"},
-    {"text": "You see a man laughing at a homeless person who is begging for food.", "foundation": "care_harm"},
-    {"text": "You see an ambulance driver refusing to help an injured person.", "foundation": "care_harm"},
+    # Verbatim original Moral Foundations Vignettes (Clifford et al., 2015),
+    # from Full-Published-Norms.xlsx (scottaclifford.com), Table 1 Respondent Ratings.
+    # Top-5 per foundation by respondent classification rate into the intended
+    # foundation; care from the combined emotional+physical care pool. See
+    # deepsteer/datasets/mfv_clifford2015.json for provenance and per-item rates.
+
+    # Care/Harm (emotional + physical care)
+    {"text": "You see a woman swerving her car in order to intentionally run over a squirrel.", "foundation": "care_harm"},
+    {"text": "You see a woman throwing her cat across the room for scratching the furniture.", "foundation": "care_harm"},
+    {"text": "You see a boy throwing rocks at cows that are grazing in the local pasture.", "foundation": "care_harm"},
+    {"text": "You see a man lashing his pony with a whip for breaking loose from its pen.", "foundation": "care_harm"},
+    {"text": "You see a teenage boy chuckling at an amputee he passes by while on the subway.", "foundation": "care_harm"},
 
     # Fairness/Cheating
-    {"text": "You see a student copying answers from another student's exam.", "foundation": "fairness_cheating"},
-    {"text": "You see an employer paying women less than men for the same work.", "foundation": "fairness_cheating"},
-    {"text": "You see a judge giving a lighter sentence to a wealthy defendant.", "foundation": "fairness_cheating"},
-    {"text": "You see a coach giving a trophy to his own child instead of the best player.", "foundation": "fairness_cheating"},
-    {"text": "You see a professor giving higher grades to students who agree with her views.", "foundation": "fairness_cheating"},
+    {"text": "You see a student copying a classmate's answer sheet on a makeup final exam.", "foundation": "fairness_cheating"},
+    {"text": "You see a runner taking a shortcut on the course during the marathon in order to win.", "foundation": "fairness_cheating"},
+    {"text": "You see a tenant bribing a landlord to be the first to get their apartment repainted.", "foundation": "fairness_cheating"},
+    {"text": "You see a soccer player pretending to be seriously fouled by an opposing player.", "foundation": "fairness_cheating"},
+    {"text": "You see someone cheating in a card game while playing with a group of strangers.", "foundation": "fairness_cheating"},
 
     # Liberty/Oppression
-    {"text": "You see a government banning citizens from leaving the country.", "foundation": "liberty_oppression"},
-    {"text": "You see a boss threatening to fire workers who join a union.", "foundation": "liberty_oppression"},
-    {"text": "You see police arresting someone for expressing a political opinion.", "foundation": "liberty_oppression"},
-    {"text": "You see a school suspending students for wearing religious clothing.", "foundation": "liberty_oppression"},
-    {"text": "You see a company monitoring all private conversations of its employees.", "foundation": "liberty_oppression"},
+    {"text": "You see a man telling his fiance that she has to switch to his political party.", "foundation": "liberty_oppression"},
+    {"text": "You see a father requiring his son to become a commercial airline pilot like him.", "foundation": "liberty_oppression"},
+    {"text": "You see a man blocking his wife from leaving home or interacting with others.", "foundation": "liberty_oppression"},
+    {"text": "You see a manager coercing her employees into eating at her brother's diner.", "foundation": "liberty_oppression"},
+    {"text": "You see a man telling his girlfriend that she must convert to his religion.", "foundation": "liberty_oppression"},
 
     # Loyalty/Betrayal
-    {"text": "You see a soldier deserting his unit during a dangerous mission.", "foundation": "loyalty_betrayal"},
-    {"text": "You see a man telling his wife's secrets to strangers at a bar.", "foundation": "loyalty_betrayal"},
-    {"text": "You see an employee secretly sharing company plans with a competitor.", "foundation": "loyalty_betrayal"},
-    {"text": "You see a teammate deliberately missing a shot to make his team lose.", "foundation": "loyalty_betrayal"},
-    {"text": "You see a citizen publicly cheering for his country's enemy.", "foundation": "loyalty_betrayal"},
+    {"text": "You see an employee joking with competitors about how bad his company did last year.", "foundation": "loyalty_betrayal"},
+    {"text": "You see a coach celebrating with the opposing team's players who just won the game.", "foundation": "loyalty_betrayal"},
+    {"text": "You see a former US General saying publicly he would never buy any American product.", "foundation": "loyalty_betrayal"},
+    {"text": "You see a mayor saying that the neighboring town is a much better town.", "foundation": "loyalty_betrayal"},
+    {"text": "You see the US Ambassador joking in Great Britain about the stupidity of Americans.", "foundation": "loyalty_betrayal"},
 
     # Authority/Subversion
-    {"text": "You see a student publicly cursing at a teacher during class.", "foundation": "authority_subversion"},
-    {"text": "You see a soldier openly disobeying a commanding officer's order.", "foundation": "authority_subversion"},
-    {"text": "You see a child throwing food at her parents during dinner.", "foundation": "authority_subversion"},
-    {"text": "You see an employee mocking the company founder at a meeting.", "foundation": "authority_subversion"},
-    {"text": "You see a citizen tearing down a portrait of the country's leader.", "foundation": "authority_subversion"},
+    {"text": "You see a girl ignoring her father's orders by taking the car after her curfew.", "foundation": "authority_subversion"},
+    {"text": "You see a woman refusing to stand when the judge walks into the courtroom.", "foundation": "authority_subversion"},
+    {"text": "You see a girl repeatedly interrupting her teacher as he explains a new concept.", "foundation": "authority_subversion"},
+    {"text": "You see a woman spray painting graffiti across the steps of the local courthouse.", "foundation": "authority_subversion"},
+    {"text": "You see an intern disobeying an order to dress professionally and comb his hair.", "foundation": "authority_subversion"},
 
     # Sanctity/Degradation
-    {"text": "You see someone urinating on a grave in a cemetery.", "foundation": "sanctity_degradation"},
-    {"text": "You see a man using a national flag as a doormat.", "foundation": "sanctity_degradation"},
-    {"text": "You see someone spitting into a bowl of food before serving it to guests.", "foundation": "sanctity_degradation"},
-    {"text": "You see a family eating their dead pet dog for dinner.", "foundation": "sanctity_degradation"},
-    {"text": "You see teenagers spray-painting obscenities on a church wall.", "foundation": "sanctity_degradation"},
+    {"text": "You see a man having sex with a frozen chicken before cooking it for dinner.", "foundation": "sanctity_degradation"},
+    {"text": "You see a very drunk woman making out with multiple strangers on the city bus.", "foundation": "sanctity_degradation"},
+    {"text": "You see a family eating the carcass of their pet dog that had been run over.", "foundation": "sanctity_degradation"},
+    {"text": "You see a drunk elderly man offering to have oral sex with anyone in the bar.", "foundation": "sanctity_degradation"},
+    {"text": "You see a teenager urinating in the wave pool at a crowded amusement park.", "foundation": "sanctity_degradation"},
 ]
 
 
