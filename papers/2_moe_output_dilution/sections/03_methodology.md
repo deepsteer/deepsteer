@@ -76,9 +76,13 @@ Accuracy is reported on a held-out test set (48 pairs, 96 texts).
 We extend the fragility testing protocol from companion work
 \citep{reblitzrichardson2026fragility}. In the standard protocol, Gaussian noise
 $\mathcal{N}(0, \sigma^2 I)$ is injected into post-layer hidden
-states at magnitudes $\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, and
-the critical noise $\sigma^*$ is the smallest $\sigma$ at which probe
-accuracy drops below 0.6.
+states at magnitudes $\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}$, with
+accuracy averaged over 10 noise seeds per level, and the critical noise
+$\sigma^*$ is the smallest $\sigma$ at which the seed-mean probe
+accuracy drops below 0.6. Following the convention of
+\citet{reblitzrichardson2026fragility}, a layer whose probe never drops
+below threshold is censored at the grid maximum (not dropped) when
+averaging, so $\sigma^*$ aggregates are means over all layers.
 
 For the MoE component perturbation experiment (§4.4), we extend this
 protocol to three perturbation targets within the MoE block:

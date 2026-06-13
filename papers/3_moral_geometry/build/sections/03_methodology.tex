@@ -156,24 +156,32 @@ For each foundation at each layer:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Train a linear probe on clean activations.
+  Train a linear probe (fixed seed) on clean activations.
 \item
   Evaluate on clean test activations (baseline accuracy).
 \item
-  For each noise level \(\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}\),
-  add \(\mathcal{N}(0, \sigma^2)\) noise to cached test activations
-  and re-evaluate.
+  For each noise level \(\sigma \in \{0.1, 0.3, 1.0, 3.0, 10.0\}\)
+  (extended to \(\{\ldots, 30, 100\}\) where censoring at \(\sigma=10\) is
+  heavy, e.g.~the 7B run), add \(\mathcal{N}(0, \sigma^2)\) noise to
+  cached test activations and re-evaluate, averaging accuracy over 10
+  noise seeds.
 \item
-  The \textbf{critical noise} \(\sigma^*\) is the smallest \(\sigma\) where
-  accuracy drops below 0.6.
+  The \textbf{critical noise} \(\sigma^*\) is the smallest \(\sigma\) where the
+  seed-mean accuracy drops below 0.6. Following the convention of
+  \citet{reblitzrichardson2026fragility}, a layer whose probe never
+  drops below threshold is censored at the grid maximum (not dropped),
+  and \(\sigma^*\) aggregates are means over all layers with a bootstrap
+  CI over the noise seeds.
 \end{enumerate}
 
-This tests the universality hypothesis: more cross-culturally
-universal foundations (care/harm) should be more robustly encoded
-than culturally variable foundations (sanctity/degradation,
-loyalty/betrayal). Cross-architectural comparison tests whether
-the output dilution effect \citep{reblitzrichardson2026dilution}
-affects all foundations uniformly.
+We initially asked whether foundations differ in robustness (e.g.\\
+whether care/harm is more robustly encoded than sanctity/degradation),
+and whether the output dilution effect
+\citep{reblitzrichardson2026dilution} is foundation-uniform. As \Cref{differential-fragility-across-frameworks}
+reports, once accuracy is seed-averaged the per-foundation \(\sigma^*\)
+values are not separable; the supported result is the uniform
+cross-architecture difference, which an RMS-normalized control (\S4.11)
+further attributes to activation scale.
 
 \subsection{Probing dataset}\label{probing-dataset}
 
