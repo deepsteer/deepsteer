@@ -282,12 +282,11 @@ structure.
 
 **Causal status.** Probe directions are read off the representation:
 on their own they identify *where* foundation information is readable,
-not whether that information is *used* during generation. Companion
-work \citep{reblitzrichardson2026causal} addresses this with direction
-ablation and steering, and our 7B foundation directions show the same
-pattern: ablating a foundation's direction selectively perturbs that
+not whether that information is *used* during generation. Our 7B
+foundation directions provide initial causal evidence on this
+question: ablating a foundation's direction selectively perturbs that
 foundation's continuations, and injecting it produces a dose-response
 shift (Appendix~\ref{app:causal}). Full causal localization across
-layers is left to that companion paper; the geometry reported here is
+layers is left to future work; the geometry reported here is
 descriptive of the representation, with this initial causal evidence
 that the directions are functionally implicated.
