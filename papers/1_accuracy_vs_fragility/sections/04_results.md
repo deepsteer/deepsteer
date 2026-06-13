@@ -1,6 +1,6 @@
 # 4. Results
 
-## 4.1 Emergence ordering: a lexical→compositional gradient
+## 4.1 Emergence in stages: morally loaded words before compositional encoding {#emergence-ordering}
 
 We train the four linear probes from §3.1-§3.2 on hidden states from
 all 37 OLMo-2 1B early-training checkpoints (steps 0-36K at 1K
@@ -22,8 +22,9 @@ variance, with the 4-seed mean curve crossing 0.70 at step 5K). The
 single-seed standard moral / sentiment / syntax curves are reported
 without std bands; their seed dependence is not characterized.*
 
-**(1) The four probes resolve into a quantitative
-lexical→compositional gradient.** The standard moral probe (single
+**(1) The four probes resolve into a quantitative emergence
+ordering, with morally loaded words detectable first and
+compositional encoding later.** The standard moral probe (single
 morally-loaded lexeme swap, "betrayed" / "greeted") onsets at step
 1K. The compositional moral probe (multi-token integrated swap;
 contrast tokens "protect" / "humiliate", "hungry" / "wealthy" are
@@ -34,7 +35,7 @@ standard probe's step-1K onset measures how quickly moralized
 vocabulary becomes linearly separable, not how quickly moral
 valence is encoded compositionally. Both findings are true; the
 strongest single-token reading of the standard onset is ruled out,
-while the gradient reading (lexically-marked moralized vocabulary
+while the staged reading (morally loaded words
 first, compositional moral integration second, syntactic competence
 last) holds. Onset accuracy alone understates the case: the 0.709
 onset sits only ~8 pp above the 0.63 lexical floor, and onset ordering
@@ -76,9 +77,9 @@ follows the same curve (panel a). The encoding also localizes in
 depth: once it appears, the most decodable layer settles into
 mid-network (layers 8-10) and stays there for the rest of the
 trajectory (panel b). Compositional moral encoding is therefore an
-early-pre-training acquisition, emerging after lexical moral detection
-(standard-probe onset at step 1K) and consistent with the
-lexical→compositional ordering, that once acquired is stable across the
+early-pre-training acquisition, emerging after morally loaded words
+become detectable (standard-probe onset at step 1K) and consistent
+with the staged ordering, that once acquired is stable across the
 remaining ~30K steps we observe. Numbers source:
 `outputs/phase_c4_compositional/b_traj/` (per-checkpoint) and
 `b_traj_summary.json`.
@@ -112,7 +113,7 @@ quality (probe ceiling). The cleanest disambiguation is repeating
 §4.1 at 7B and 32B: if compositional moral rises with scale while
 syntax does not, the model is the bottleneck; otherwise the probe is.
 We state both readings honestly in §5.3 and refine rather than
-overturn the gradient finding.
+overturn the staged-emergence finding.
 
 **Generalization to OLMo-3 7B.** We have not yet run the compositional
 probe on the OLMo-3 7B trajectory; doing so is the cleanest
@@ -383,12 +384,7 @@ claims and raw $\sigma^*$ for within-layer comparisons** (where scale
 is controlled by design). This distinction is itself a contribution:
 noise-injection probing is widely used, and the activation-scale
 confound applies to any such method that compares across layers in raw
-units. The companion MoE study \citep{reblitzrichardson2026dilution}
-uses raw fragility correctly as a scale meter: its claim is precisely
-that a $74\times$ output-scale gap produces a $4.2\times$ fragility
-gap, a within-model statement about how signal scale drives
-perturbation sensitivity, which the present control independently
-corroborates.
+units.
 
 Numbers source: `outputs/phase_c1_refragility/trajectory.json`
 (seed-averaged extended-grid raw and RMS-normalized fragility for all

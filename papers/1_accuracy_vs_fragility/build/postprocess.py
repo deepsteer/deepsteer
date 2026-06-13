@@ -101,7 +101,7 @@ FIGURE_INSERTS: list[tuple[str, str]] = [
             "\\begin{figure}[t]\n"
             "  \\centering\n"
             "  \\includegraphics[width=\\linewidth]{figure_1_onset_overlay.pdf}\n"
-            "  \\caption{Lexical~$\\to$~compositional emergence gradient on "
+            "  \\caption{Staged emergence of moralized representations on "
             "OLMo-2~1B early-training. Standard moral and sentiment probes "
             "(single-token swap) plateau near~0.97; compositional moral and "
             "syntax (multi-token integration) plateau near~0.77. Compositional "
@@ -323,7 +323,7 @@ SECTION_LABEL_MAP = {
     "3.5": "target-models-and-checkpoints",
     "3.6": "validity-controls",
     # §4 subsections
-    "4.1": "emergence-ordering-a-lexicalcompositional-gradient",
+    "4.1": "emergence-ordering",
     "4.2": "probing-accuracy-saturates-fragility-doesnt",
     "4.3": "data-curation-reshapes-probe-robustness-not-probe-accuracy",
     # §5 subsections

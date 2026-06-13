@@ -18,15 +18,15 @@ investigation of neural network representations where the operating
 point is high enough to saturate the standard accuracy curve.
 
 The science findings earn the methodology its keep. The most
-consequential of them is the *quantitative gradient* the paper
+consequential of them is the *staged emergence* the paper
 establishes by adding the compositional moral probe alongside the
-standard moral, sentiment, and syntax probes: lexically-marked
-moralized vocabulary is decoded at step 1K, compositional moral
+standard moral, sentiment, and syntax probes: morally loaded
+words are decoded at step 1K, compositional moral
 integration at step 5K, syntactic competence at step 6K. The
 strongest one-sentence summary of the moral probe's step-1K onset,
 that "moral encoding emerges within the first 5% of pre-training,"
-overstates what the standard probe recovers; the gradient framing
-("lexically-marked moralized vocabulary at 1K, compositional moral
+overstates what the standard probe recovers; the staged framing
+("morally loaded words at 1K, compositional moral
 integration at 5K, syntactic competence at 6K") is the honest
 reading. We treat this as an existence proof that probing-claims
 about pre-training emergence should default to lexical-accessibility
@@ -48,8 +48,8 @@ contribution of follow-up work.
 
 The pre-training window does more work than the standard
 interpretability instrument shows. Adding a fragility readout
-recovers a substantial fraction of that work. The lexical→compositional
-gradient is what we recover when we apply the methodology to moral
+recovers a substantial fraction of that work. The staged emergence
+is what we recover when we apply the methodology to moral
 representations specifically; the broader claim is that the same
 methodology will recover analogous structure wherever probing-based
 investigations of pre-training currently hit the accuracy ceiling.

@@ -49,8 +49,11 @@ cannot see, and to establish three findings on the OLMo-2 1B and
 OLMo-3 7B open-checkpoint family that together earn the
 methodological claim its keep:
 
-**Finding 1: Moralized semantic distinctions emerge along a
-quantitative lexical→compositional gradient.** A standard moral
+**Finding 1: Moralized representations emerge in stages, with
+high-accuracy detection of morally loaded words first and
+compositional encoding later.** Through diverse
+probes, we find moral encoding is acquired progressively, in order
+of semantic complexity. A standard moral
 probe (single morally-loaded lexeme swap) onsets at step 1K. A
 *compositional* moral probe (pairs that hold the action verb
 constant and vary only individually-mild tokens whose moral status
@@ -59,7 +62,7 @@ flips in context ("protect" / "humiliate", "hungry" / "wealthy",
 (per-seed range 4K-7K), between sentiment (2K) and syntax (6K).
 The standard probe's step-1K onset measures how quickly moralized
 vocabulary becomes linearly separable, not how quickly moral
-valence is encoded compositionally; the gradient reading is the
+valence is encoded compositionally; the staged reading is the
 honest one.
 
 **Finding 2: Raw critical noise is confounded by activation scale;
@@ -89,12 +92,6 @@ at 10 of 16 layers (mean critical noise 5.63) versus 6-7 fragile
 layers for natural-text conditions (mean 6.94 / 7.38). Accuracy says "no signal";
 fragility says "declarative training creates broadly fragile
 representations."
-
-All experiments run on a single MacBook Pro M4 Pro with MPS;
-~6 hours total MPS time. Code, datasets (including the 200-pair
-compositional moral minimal-pair dataset that is itself a
-methodological contribution), per-checkpoint outputs, and 4-seed
-fragility replications are released with the paper.
 
 The unifying claim is methodological, not moral-domain-specific:
 **in every comparison we test, where probing accuracy returns a flat

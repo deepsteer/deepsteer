@@ -74,12 +74,12 @@ confound is controlled.
 
 ## 5.3 Limitations
 
-**Lexical→compositional gradient bounds the standard probe.** The
+**Staged emergence bounds the standard probe.** The
 standard moral probe measures something closer to "moralized
 vocabulary becomes linearly separable from neutral vocabulary" than
 "moral reasoning emerges." The compositional probe (§4.1)
-established this is a quantitative gradient: lexically-marked
-moralized vocabulary at step 1K, compositional moral integration at
+established this emerges in stages: morally loaded words
+at step 1K, compositional moral integration at
 step 5K, syntactic competence at step 6K, not a binary
 in-or-out distinction. Both onsets are real findings. Neither of
 them is "moral reasoning at step 1K"; both are bounded claims about
@@ -113,7 +113,7 @@ predict different scaling behavior: under the mechanism reading the
 decline tracks training-text distribution rather than scale, under
 the probe-ceiling reading it attenuates as scale lifts the
 operating point. Repeating §4.1 and §4.2 at 7B and 32B disambiguates
-both. Either outcome refines the gradient finding without overturning
+both. Either outcome refines the staged-emergence finding without overturning
 it.
 
 **Single model family.** All findings are on OLMo-2 1B and OLMo-3
@@ -122,7 +122,7 @@ open.
 
 **Single language.** All probing datasets are English; pretraining
 data for both target models is dominantly English. Cross-lingual
-generalization of both the gradient finding and the
+generalization of both the staged-emergence finding and the
 fragility-resolves-what-accuracy-misses pattern is open.
 
 **Raw-σ fragility and the scale confound (resolved in §4.4).** We add
