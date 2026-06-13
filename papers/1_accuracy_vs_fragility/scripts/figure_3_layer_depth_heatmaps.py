@@ -58,7 +58,19 @@ def step_from_dirname(name: str) -> int | None:
 def collect_grids() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Return (steps, accuracy_grid, critical_noise_grid)
     where each grid is shape (n_layers, n_steps).
+
+    Per-layer accuracy comes from the per-step probe JSONs; per-layer
+    critical noise comes from the seed-averaged extended-grid re-fragility
+    (phase_c1_refragility/trajectory.json) when present, else the per-step
+    fragility JSONs (drop-None mapped to the cap).
     """
+    refrag = PHASE_C1.parent / "phase_c1_refragility" / "trajectory.json"
+    refrag_crit = {}
+    if refrag.exists():
+        traj = json.load(open(refrag))["trajectory"]
+        refrag_crit = {int(s): rec["standard"]["per_layer_critical_noise"]
+                       for s, rec in traj.items()}
+
     steps: list[int] = []
     acc_cols: list[list[float]] = []
     crit_cols: list[list[float]] = []
@@ -76,13 +88,16 @@ def collect_grids() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
             continue
         with open(probe_files[0]) as f:
             probe = json.load(f)
-        with open(frag_files[0]) as f:
-            frag = json.load(f)
         accs = [s["accuracy"] for s in probe["layer_scores"]]
-        crits = [
-            (CRIT_FALLBACK if s["critical_noise"] is None else s["critical_noise"])
-            for s in frag["layer_scores"]
-        ]
+        if step in refrag_crit:
+            crits = list(refrag_crit[step])
+        else:
+            with open(frag_files[0]) as f:
+                frag = json.load(f)
+            crits = [
+                (CRIT_FALLBACK if s["critical_noise"] is None else s["critical_noise"])
+                for s in frag["layer_scores"]
+            ]
         if n_layers is None:
             n_layers = len(accs)
         if len(accs) != n_layers or len(crits) != n_layers:
@@ -130,7 +145,7 @@ def main() -> None:
     # --- Bottom: critical noise heatmap ------------------------------
     im_frag = ax_frag.pcolormesh(
         steps, np.arange(n_layers), crit_grid,
-        cmap="plasma_r", vmin=0.0, vmax=10.0, shading="auto",
+        cmap="plasma_r", vmin=0.0, vmax=30.0, shading="auto",
     )
     ax_frag.set_xlabel("Training step", fontsize=11)
     ax_frag.set_ylabel("Transformer layer", fontsize=11)

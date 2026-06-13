@@ -158,7 +158,14 @@ Because only 8 of 64 experts contribute to each token's MoE output,
 and the routing weights further attenuate each expert's contribution,
 the MoE block injects a much smaller perturbation into the residual
 stream than a dense MLP. The moral signal carried by this small
-perturbation is correspondingly easier to overwhelm with noise.
+perturbation is correspondingly easier to overwhelm with noise. This
+is precisely raw critical noise behaving as a *scale meter*, and the
+companion dense-model study \citep{reblitzrichardson2026fragility}
+independently establishes the same coupling at the within-model level:
+an RMS-normalized control there shows that per-layer activation scale
+drives raw fragility, so a fixed-architecture comparison like ours,
+where the $74\times$ output-scale gap maps onto a $4.2\times$ fragility
+gap, is reading scale exactly as intended.
 
 The finding cleanly connects all four prior results:
 

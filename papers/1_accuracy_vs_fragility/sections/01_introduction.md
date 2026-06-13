@@ -62,14 +62,22 @@ vocabulary becomes linearly separable, not how quickly moral
 valence is encoded compositionally; the gradient reading is the
 honest one.
 
-**Finding 2: A layer-depth robustness gradient develops
-progressively over training, invisible to probing accuracy.** Mean
-accuracy plateaus by step 4K but mean critical noise continues to
-evolve through step 36K: late layers hold maximum robustness while
-early-layer critical noise drops from 10.0 to 1.8 between steps 4K
-and 36K. The pattern reproduces at the OLMo-3 7B scale with steeper
-late-layer dominance, and reproduces independently for the
-compositional probe across four random-seed splits.
+**Finding 2: Raw critical noise is confounded by activation scale;
+we isolate the confound and establish when the metric is valid.**
+In raw units the standard probe shows a striking layer-depth
+robustness gradient that keeps evolving long after accuracy plateaus
+(late layers tolerate far more noise than early ones, and mean
+critical noise moves through step 36K). But per-layer activation RMS
+grows ~11× from early to late layers, so a fixed raw σ is a much larger
+relative perturbation early than late. An RMS-normalized control
+(§4.4) shows the cross-layer gradient and its post-saturation evolution
+are largely this scale effect: the late/early ratio collapses from
+~7--15× to ~2× and the post-saturation decline flattens, for both the
+standard and compositional probes. The confound is strictly cross-layer
+and leaves within-layer comparisons intact. The practical contribution
+is the resulting recommendation: raw σ* for within-layer comparisons
+(where scale is fixed by construction) and RMS-normalized σ* for
+cross-layer claims.
 
 **Finding 3: Data curation reshapes probe robustness without changing
 probe accuracy.** LoRA fine-tuning on three matched corpora (narrative-

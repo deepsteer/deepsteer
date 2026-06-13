@@ -164,15 +164,23 @@ emerge along a \emph{lexical~$\to$~compositional gradient}: lexical
 moral detection first, compositional moral encoding later. Because
 probe accuracy on its own tracks how lexically separable a dataset is,
 we establish the compositional encoding directly, by showing it
-transfers across construction types that share no contrast tokens. A
-\emph{layer-depth robustness gradient} develops progressively across
-training while accuracy stays flat. And matched fine-tuning corpora
-that produce identical probing accuracy leave distinct fragility
-fingerprints, showing that data curation reshapes probe robustness
-without changing probe accuracy.
+transfers across construction types that share no contrast tokens.
+Raw critical noise also shows a striking layer-depth gradient, but we
+identify and correct a confound that, to our knowledge, has gone
+undocumented in noise-injection probing: per-layer activation scale
+grows ${\sim}11\times$ with depth, and an RMS-normalized control shows
+the cross-layer gradient is largely this scale effect, not encoding
+robustness. The confound is strictly cross-layer; within-layer
+comparisons are unaffected, and matched fine-tuning corpora that
+produce identical probing accuracy still leave distinct fragility
+fingerprints at matched layers, showing that data curation reshapes
+probe robustness without changing probe accuracy. We recommend
+RMS-normalized critical noise for cross-layer claims and raw critical
+noise for within-layer comparisons.
 
-In every comparison we test, where probing accuracy returns a
-flat answer, fragility returns a structured one.
+Where probing accuracy returns a flat answer, fragility returns a
+structured one; establishing when that structure is scale and when it
+is margin is itself part of the contribution.
 \end{abstract}
 
 % =======================================================================

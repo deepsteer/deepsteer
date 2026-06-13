@@ -135,38 +135,53 @@ plateau (~0.95) between steps 0 and 4K, then flat for the remaining
 ~33K steps. Bottom panel: mean fragility, an initial rise alongside
 accuracy in the first few thousand steps, then continued movement throughout.
 Top panel reaches a ceiling and stops; bottom panel keeps moving for
-the entire remaining 90 % of training.
+the entire remaining 90 % of training. The fragility numbers below are
+seed-averaged (10 noise draws per cell) on the extended noise grid
+$\sigma \in \{0.1, 0.3, 1, 3, 10, 30, 100\}$, with never-fragile
+layers censored at the grid maximum (§3.4).
 
 **OLMo-2 1B, 37 checkpoints, dense sampling.**
 
 | Step | Mean acc | Mean critical noise | Late-layer crit | Mid-layer crit | Early-layer crit |
 |---:|---:|---:|---:|---:|---:|
-| 0 | 0.590 | 0.77 | 0.1 | 0.6 | 1.6 |
-| 1,000 | 0.728 | 7.81 | 10.0 | 8.8 | 4.4 |
-| 4,000 | 0.941 | 10.0 | 10.0 | 10.0 | 10.0 |
-| 10,000 | 0.943 | 7.90 | 10.0 | 8.8 | 7.2 |
-| 15,000 | 0.954 | 7.50 | 10.0 | 10.0 | 5.0 |
-| 20,000 | 0.950 | 7.40 | 10.0 | 10.0 | 2.2 |
-| 36,000 | 0.954 | 6.12 | 10.0 | 6.5 | 1.8 |
+| 0 | 0.586 | 0.52 | 0.1 | 0.1 | 1.4 |
+| 1,000 | 0.731 | 9.12 | 10.0 | 10.0 | 7.2 |
+| 4,000 | 0.942 | 18.31 | 30.0 | 16.7 | 8.6 |
+| 10,000 | 0.946 | 18.44 | 44.0 | 10.0 | 3.0 |
+| 15,000 | 0.958 | 11.94 | 26.0 | 7.7 | 3.0 |
+| 20,000 | 0.948 | 10.56 | 22.0 | 7.7 | 2.6 |
+| 36,000 | 0.953 | 4.69 | 10.0 | 3.0 | 1.4 |
 
-*Table 2: Standard moral probe. Accuracy plateaus by step 4K;
-fragility evolves through step 36K with a layer-depth gradient that
-develops progressively (late > mid > early after step ~15K).*
+*Table 2: Standard moral probe, seed-averaged on the extended grid.
+Accuracy plateaus by step 4K; raw critical noise keeps moving through
+step 36K (rising to a peak near step 4--10K, then declining). The
+extended grid lifts the late-layer band off the old $\sigma=10$ cap
+(late reaches 30--44 mid-trajectory). These are raw-unit values; §4.4
+shows that the steep late-vs-early gradient and the post-peak decline
+are largely an activation-scale effect, and reports what survives
+scale normalization. Read as-is, the raw numbers measure practical
+perturbation sensitivity: absolute noise tolerated before the probe
+degrades.*
 
 **Figure 3** shows the same trajectory as two stacked layer-depth
 heatmaps: probing accuracy (uniformly green after step 4K, no
-remaining structure to resolve) above critical noise (gradient
-emerging: late layers hold maximum noise tolerance throughout
-while early layers grow progressively more brittle). Same data;
-different metric; different visible structure.
+remaining structure to resolve) above raw critical noise (a band that
+deepens with layer index). The visible vertical gradient is real in
+raw units but, as §4.4 establishes, tracks the ${\sim}11\times$ growth
+in activation scale from early to late layers more than probe
+robustness per se. Same data; different metric; different visible
+structure.
 
-The pattern reproduces at OLMo-3 7B (5 sparse checkpoints):
-mean critical noise rises 2.68 → 5.14 between steps 0 and 353K,
-then holds at ~5.3 through step 1.4M; layer-depth gradient is
-steeper (late ~10.0 / mid ~6.2 / early ~2.0) and the most-robust
-layer drifts deeper across training (layer 1 → 15 → 16 → 10 → 10).
-The 1B trajectory is the headline because dense 1K-step sampling
-resolves the saturation step (~4K) and gradient emergence rate.
+The pattern reproduces at OLMo-3 7B (5 sparse checkpoints, cap-at-max
+re-aggregation of the original 5-level sweep; not seed-averaged on the
+extended grid like the 1B above): mean critical noise rises
+2.91 → 5.29 between steps 0 and 353K, then climbs to 6.19 by
+step 1.4M. The layer-depth gradient at the final checkpoint is
+late 10.0 / mid 6.2 / early 2.0 — the same depth ordering as the 1B
+and, per §4.4, subject to the same activation-scale caveat (early
+layers are smaller-norm, so raw $\sigma$ degrades them more). The 1B
+trajectory is the headline because dense 1K-step sampling resolves the
+saturation step (~4K) and the gradient's emergence rate.
 
 **Compositional probe fragility evolution (4-seed replication; the
 methodological claim generalizes beyond the standard probe).** We
@@ -304,3 +319,78 @@ where the probe exploits those shortcuts rather than moral content.
 Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
 `outputs/phase_c_tier2/c3/{narrative,declarative,general}_moral.json`
 (per-layer fragility for all three conditions).
+
+## 4.4 Scale-normalized fragility: a confound in raw critical noise
+
+Raw critical noise injects Gaussian noise in raw activation units. That
+makes it sensitive to a confound we now isolate and correct: per-layer
+activation scale. On OLMo-2 1B the root-mean-square of a layer's hidden
+activations grows monotonically with depth, from ${\approx}0.13$ at the
+early layers to ${\approx}1.0$ (up to 1.66 at the last layer) at the
+late layers, an ${\sim}11\times$ range. A fixed raw $\sigma$ is
+therefore a much larger *relative* perturbation at an early layer than
+at a late one, so early layers will look fragile and late layers robust
+*regardless of representational quality*. The layer-depth gradient of
+§4.2 is exactly the shape this confound predicts.
+
+**The control.** We re-evaluate fragility with the noise scaled to each
+layer's activation scale: per layer and per checkpoint, standardize the
+activations to unit RMS, retrain the probe, and inject noise on that
+normalized scale (equivalently, scale $\sigma$ by the per-layer RMS).
+This measures probe margin in scale-free units. Two things change.
+
+*The layer-depth gradient mostly disappears.* The raw late/early
+$\sigma^*$ ratio grows over training to as much as $14.7\times$ (step
+10K) and is $7.1\times$ at step 36K; under RMS normalization it stays
+near $2\times$ throughout (1.8--3.1$\times$) and the late $\ge$ mid
+$\ge$ early ordering fails outright at 8 of 37 checkpoints. The
+gradient is largely activation scale, not robustness.
+
+*The post-saturation evolution mostly disappears.* Raw mean $\sigma^*$
+declines from 18.3 (step 4K) to 4.7 (step 36K) after accuracy
+saturates; RMS-normalized mean $\sigma^*$ is flat over the same span
+(13.8 → 15.0, slope $+0.05$ per 1K steps). The compositional probe
+behaves the same way: across all 37 checkpoints its raw mean $\sigma^*$
+declines 6.6 → 1.8 after saturation while the RMS version is flat
+(4.1 → 5.9).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figure_4_rms_control.pdf}
+\caption{Scale-normalized fragility on OLMo-2 1B. (a) Mean critical noise over training: raw $\sigma^*$ (red) rises then declines after accuracy (gray) saturates, while RMS-normalized $\sigma^*$ (blue) is flat. (b) The late/early $\sigma^*$ ratio: the raw layer-depth gradient grows to 7--15$\times$, but under RMS normalization it stays near 2$\times$. The cross-layer gradient and the post-saturation evolution are largely activation scale.}
+\label{fig:rms_control}
+\end{figure}
+
+**What survives.** The confound is strictly *cross-layer*: it arises
+because different layers have different activation scales. It does not
+touch *within-layer* comparisons, where the scale is held fixed by
+construction. The §4.3 data-curation result is exactly such a
+comparison: narrative, declarative, and general-control conditions are
+contrasted at each matched layer, on the same base checkpoint with the
+same corpus size and LoRA hyperparameters, so their per-layer scales
+are near-identical and the declarative-vs-natural fragility separation
+is not a scale artifact. The same holds for cross-checkpoint
+comparisons at a fixed layer and cross-architecture comparisons at
+matched layers. Raw $\sigma^*$ also retains a direct reading on its own
+terms, even cross-layer: it is *practical perturbation sensitivity*,
+the absolute noise a representation tolerates before the probe
+degrades, which is the relevant quantity for adversarial-robustness or
+fine-tuning-stability questions. What it does not measure, cross-layer,
+is encoding robustness independent of scale.
+
+We therefore recommend **RMS-normalized $\sigma^*$ for cross-layer
+claims and raw $\sigma^*$ for within-layer comparisons** (where scale
+is controlled by design). This distinction is itself a contribution:
+noise-injection probing is widely used, and the activation-scale
+confound applies to any such method that compares across layers in raw
+units. The companion MoE study \citep{reblitzrichardson2026dilution}
+uses raw fragility correctly as a scale meter: its claim is precisely
+that a $74\times$ output-scale gap produces a $4.2\times$ fragility
+gap, a within-model statement about how signal scale drives
+perturbation sensitivity, which the present control independently
+corroborates.
+
+Numbers source: `outputs/phase_c1_refragility/trajectory.json`
+(seed-averaged extended-grid raw and RMS-normalized fragility for all
+37 checkpoints) and `outputs/phase_c4_comp_refragility/trajectory.json`
+(compositional probe).

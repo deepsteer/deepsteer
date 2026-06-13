@@ -53,10 +53,22 @@ def step_from_dirname(name: str) -> int | None:
 def collect_trajectory() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Return (steps, mean_accuracy_per_step, mean_critical_noise_per_step).
 
-    Mean critical noise treats `None` (probe never reached threshold) as
-    missing and ignores the layer in the per-step mean --- matches the
-    aggregation convention used throughout the paper.
+    Prefers the seed-averaged, extended-grid, cap-at-max re-fragility output
+    (phase_c1_refragility/trajectory.json) when present; otherwise falls back
+    to the original per-step probe/fragility JSONs (drop-None aggregation).
     """
+    refrag = PHASE_C1.parent / "phase_c1_refragility" / "trajectory.json"
+    if refrag.exists():
+        with open(refrag) as f:
+            traj = json.load(f)["trajectory"]
+        steps_l, acc_l, crit_l = [], [], []
+        for step_str, rec in traj.items():
+            steps_l.append(int(step_str))
+            acc_l.append(rec["standard"]["mean_acc"])
+            crit_l.append(rec["standard"]["mean_critical_noise"])
+        order = np.argsort(steps_l)
+        return (np.array(steps_l)[order], np.array(acc_l)[order], np.array(crit_l)[order])
+
     steps: list[int] = []
     mean_acc: list[float] = []
     mean_crit: list[float] = []

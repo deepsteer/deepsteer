@@ -62,3 +62,7 @@ outputs/.DS_Store
 # Generated arXiv submission bundles and metadata
 /arxiv_*.tar.gz
 /arxiv_*.md
+
+# Large intermediate activation caches (reproducible via phase_c1_cache_activations.py)
+papers/1_accuracy_vs_fragility/outputs/phase_c1_acts/
+papers/1_accuracy_vs_fragility/outputs/phase_c4_comp_acts/

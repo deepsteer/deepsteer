@@ -114,29 +114,30 @@ data for both target models is dominantly English. Cross-lingual
 generalization of both the gradient finding and the
 fragility-resolves-what-accuracy-misses pattern is open.
 
-**Raw-σ fragility and what would limit it.** We add Gaussian noise in
-raw activation units (§3.4). Hidden-state norms vary across layers and
-checkpoints, so cross-layer and cross-checkpoint critical-noise
-comparisons may partly reflect activation-scale drift rather than
-representational robustness alone. Within a single (layer, checkpoint)
-cell the same probe and activation cache hold the scale fixed, but our
-headline §4.2 result is a cross-checkpoint comparison, where activation
-norms drift, so that comparison is not scale-controlled by construction.
-The decisive control is a σ-normalized-by-per-layer-activation-RMS
-variant: the fragility finding would be undercut if the layer-depth
-gradient (§4.2) or the declarative-vs-natural separation (§4.3) vanished
-under RMS-normalized noise, or if it tracked activation norm rather than
-probe margin. We report that control where it has been run and flag the
-remaining cells as open.
+**Raw-σ fragility and the scale confound (resolved in §4.4).** We add
+Gaussian noise in raw activation units (§3.4), which conflates probe
+margin with activation scale: hidden-state RMS grows ~11× from early to
+late layers, so a fixed raw σ is a larger relative perturbation early
+than late. §4.4 runs the RMS-normalized control and finds that the
+§4.2 layer-depth gradient and its cross-checkpoint evolution are largely
+this scale effect (the late/early σ* ratio falls from ~7--15× to ~2×,
+and the post-saturation decline flattens). The confound is strictly
+cross-layer, so it leaves within-layer comparisons intact, including the
+§4.3 declarative-vs-natural separation (contrasted at matched layers on
+a shared checkpoint, hence at fixed scale). We therefore recommend
+RMS-normalized σ* for cross-layer claims and raw σ* for within-layer
+comparisons, and we read raw cross-layer σ* only as practical
+perturbation sensitivity, not as scale-independent encoding robustness.
+The one cell we did not re-run under RMS is the LoRA experiment itself;
+its within-layer construction guarantees scale is controlled, but an
+explicit RMS replication (saving adapters for reuse) is left to the
+multi-seed LoRA extension.
 
-**Right-censoring at the noise cap.** Critical noise is read off a fixed
-σ grid with a maximum of 10.0; a layer whose probe never drops below τ
-in the sweep is censored at 10.0 rather than assigned a larger value.
-Late layers sit at this cap for essentially the whole 1B trajectory, so
-"late layers hold maximum robustness" is a right-censored statement: the
-sweep cannot tell whether late-layer robustness itself keeps evolving
-above σ=10. The extended grid (adding σ ∈ {30, 100}) lifts the cap and
-resolves this; see §3.4.
+**Noise grid.** Critical noise is read off the extended σ grid
+$\{0.1, 0.3, 1, 3, 10, 30, 100\}$ (§3.4), which lifts the late-layer
+band off the old σ=10 cap (late layers reach 30--44 mid-trajectory in
+Table 2). Layers that never drop below τ even at σ=100 are censored at
+100; this is rare on the 1B trajectory.
 
 **Foundation-specific scope.** The standard moral dataset's six MFT
 foundations show staggered emergence; all six stabilize by step 3K
