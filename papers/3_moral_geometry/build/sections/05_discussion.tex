@@ -115,27 +115,32 @@ right.
 
 The trajectory analysis shows a temporal dissociation: framework
 geometry (mean cosine similarity between foundation directions)
-reaches its mature value by approximately step 2000--3000, while
-probing accuracy continues climbing through step 10000 and beyond.
-This extends the ``accuracy saturates but fragility resolves''
-finding of \citet{reblitzrichardson2026fragility} to a third
-metric: the \emph{structure} of moral representations stabilizes before
-the \emph{strength} of moral representations finishes developing.
+enters its integration regime within the first few thousand steps
+(peaking near step 5000), while probing accuracy continues climbing
+through step 10000 and beyond. This extends the ``accuracy saturates
+but fragility resolves'' finding of
+\citet{reblitzrichardson2026fragility} to a third metric: the
+\emph{structure} of moral representations is laid down before the
+\emph{strength} of those representations finishes developing.
 
-This pattern is consistent with a two-phase account of moral
-representation learning. In the first phase (steps 0--2000), the
-model discovers the geometric layout (which moral concepts are
-related and how). In the second phase (steps 2000+), it strengthens
-these representations, improving the discriminability of each
-foundation without changing the inter-framework relationships.
+This is consistent with a two-phase account of moral representation
+learning. In the first phase (steps 0--5000) the model discovers the
+geometric layout: the foundation directions move from near-orthogonal
+into the integration band as a shared moral-salience component forms.
+In the second phase (steps 5000+) the layout is not frozen but
+gradually refined: the mean cosine declines slowly (0.34 $\to$ 0.29,
+\({\sim}13\%\)) while accuracy is flat, so the foundations keep
+differentiating from one another after they are individually
+well-separated. The structure is set early and sharpened slowly,
+not established once and held fixed.
 
 Effective dimensionality is 5 from step 0 onward, indicating that
 even random initialization produces probe directions that span 5
 dimensions. This is expected: random unit vectors in
 \(\mathbb{R}^{2048}\) are nearly orthogonal with high probability.
 The informative signal is not dimensionality but cosine similarity,
-which jumps from \(\approx 0\) (random) to \(\approx 0.38\) (mature
-structure) during the first 2000 training steps.
+which moves from \(\approx 0\) (random) into the integration band
+(\({\sim}0.3\)) over the first few thousand steps and then drifts down.
 
 \subsection{Partial compositionality of moral dilemmas}\label{partial-compositionality-of-moral-dilemmas}
 

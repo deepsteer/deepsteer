@@ -140,10 +140,13 @@ dimensionality change.
 
 Framework geometry is remarkably similar between architectures.
 OLMoE-1B-7B shows mean pairwise cosine similarity ranging from
-0.219 to 0.287, compared to OLMo-2 1B's 0.217 to 0.282. Effective
+0.219 to 0.287 across layers, compared to OLMo-2 1B's 0.216 to 0.274
+(the dense side reuses the §4.4 exp1 directions, so this range is the
+same one reported there; the two architectures' directions are
+estimated by the identical probe-weight procedure). Effective
 dimensionality is 5 at all layers for both models. The overall
 degree of framework separation is consistent across dense and MoE
-architectures in our comparison.
+architectures.
 
 Neither architecture produces MFT-aligned dendrogram structure at
 any layer. Both models show the care--sanctity pairing as the
@@ -230,40 +233,47 @@ claim; the supported finding is the uniform cross-architecture dilution.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig6_geometric_trajectory.pdf}
-\caption{Geometric trajectory during OLMo-2 1B pre-training. (a) Mean cosine similarity stabilizes by step 2000. (b) Effective dimensionality remains at 5 throughout. (c) Accuracy continues climbing after geometry plateaus.}
+\caption{Geometric trajectory during OLMo-2 1B pre-training (37 checkpoints, seed-fixed foundation directions). (a) Mean pairwise cosine reaches the integration regime by step 2--5K, then slowly differentiates. (b) Effective dimensionality remains at 5 throughout. (c) Accuracy keeps climbing after the geometry sets.}
 \label{fig:trajectory}
 \end{figure}
 
-Framework geometry develops rapidly and stabilizes early. Tracking
-mean pairwise cosine similarity (averaged over stable layers 5--14)
-across 20 OLMo-2 1B checkpoints from step 0 to step 35,000:
+Framework geometry reaches its integration regime early and then
+slowly differentiates. We track the mean pairwise cosine similarity of
+the six foundation directions (averaged over the stable layers 6--15)
+across all 37 OLMo-2 1B early-training checkpoints (step 0 to 36,000).
+The directions are estimated with a fixed probe seed; an earlier
+unseeded run that was resumed in batches produced an RNG-dependent
+artifact (a spurious 0.38/0.28 bimodality with spikes at 5K-multiple
+checkpoints), which the seeded recomputation removes while leaving the
+smooth accuracy trajectory unchanged.
 
-- **Step 0.** Mean cosine similarity is 0.007; the six
-  foundation directions are effectively orthogonal, as expected for
-  probes trained on random representations. Mean accuracy is 0.510
-  (chance).
+- **Step 0.** Mean cosine is 0.06; the six foundation directions are
+  nearly orthogonal, as expected for probes on random representations.
+  Mean accuracy is 0.51 (chance).
 
-- **Step 1000.** Cosine similarity jumps to 0.176. Accuracy reaches
-  0.734. The model has already begun developing shared moral-salience
-  structure.
+- **Step 1000.** Cosine jumps to 0.18; accuracy reaches 0.73. Shared
+  moral-salience structure has begun to form.
 
-- **Step 2000.** Cosine similarity reaches 0.382, within 5\% of
-  its final value. Accuracy is 0.873, still 10 points below its
-  peak.
+- **Steps 2000--5000.** Cosine rises to its peak (0.31 at step 2K,
+  0.34 at step 5K) as accuracy climbs from 0.87 to 0.97. The
+  integration regime is reached here, while accuracy still has ${\sim}10$
+  points to gain.
 
-- **Steps 3000--15,000.** Cosine similarity plateaus at
-  $0.38$--$0.40$. Accuracy continues climbing from 0.922 to 0.970.
-
-- **Steps 20,000--35,000.** Cosine similarity drifts slightly
-  downward (0.382 to 0.367). Accuracy stabilizes at 0.975--0.979.
+- **Steps 5000--36,000.** Cosine then slowly *declines*, from 0.34 to
+  0.29 (${\sim}13\%$), as accuracy holds at 0.96--0.98. The foundation
+  directions, having entered the integration band early, keep
+  differentiating gradually for the rest of the observed training.
 
 Effective dimensionality remains constant at 5 from step 0 onward.
 This is expected: random unit vectors in $\mathbb{R}^{2048}$ are
 nearly orthogonal with high probability, so even at initialization
-the six probe directions span 5 effective dimensions. The
-informative signal is cosine similarity, which transitions from
-$\approx 0$ (random) to $\approx 0.4$ (mature structure) during the
-first 2000 training steps.
+the six probe directions span 5 effective dimensions. The informative
+signal is cosine similarity, which transitions from $\approx 0$
+(random) into the integration band (${\sim}0.3$) within the first few
+thousand steps, then drifts down slowly. The final-trajectory value
+(0.29) is consistent with the fully-trained model (§4.2, mean
+${\approx}0.26$ over stable layers): geometry sets its structure early
+and refines it gradually rather than abruptly.
 
 The temporal dissociation (framework geometry stabilizing at step
 2000 while accuracy continues improving through step 25,000)
@@ -527,7 +537,7 @@ We replicate the core geometric findings on OLMo-2~7B (the 1124
 release, 32 layers, hidden dimension 4096), a dense model with 7.3B
 parameters, versus 1.5B for OLMo-2~1B. The integration signature holds.
 Mean pairwise cosine similarity ranges from **0.193 to 0.244** across
-layers (1B: 0.217--0.282), positive everywhere and far below the
+layers (1B: 0.216--0.274), positive everywhere and far below the
 collapse threshold. Effective dimensionality is **5 at every one of
 the 32 layers**, identical to the 1B and MoE models. Foundation
 directions are geometrically distinct, sharing a common moral-salience

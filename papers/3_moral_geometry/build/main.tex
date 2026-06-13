@@ -132,8 +132,10 @@ pairwise cosine (the effective dimensionality rules out collapse; the
 positive cosine is what marks integration rather than isolation). This
 is genuine multi-dimensional structure, not a single moral detector. The geometry is consistent
 across scale (1B to 7B dense), across dense and MoE architectures, and
-on the independently constructed Moral Foundations Vignettes, and
-stabilizes early in pretraining.
+on the independently constructed Moral Foundations Vignettes; across
+pre-training it reaches this integration regime early (within a few
+thousand steps, well before probing accuracy saturates) and then
+slowly differentiates.
 
 The structure the model develops is not the structure moral psychology
 predicts. Neither hierarchical clustering of the probe directions nor

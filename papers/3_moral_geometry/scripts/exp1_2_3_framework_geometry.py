@@ -97,6 +97,11 @@ def train_probe_with_direction(
     from neutral in the representation space.
     """
     hidden_dim = train_X.shape[1]
+    # Fixed seed: probe-weight directions must not depend on RNG history, or
+    # the cosine geometry between directions drifts with process/resume state
+    # (the exp6 trajectory artifact). Deterministic init makes the direction a
+    # function of the activations alone.
+    torch.manual_seed(42)
     probe = nn.Linear(hidden_dim, 1)
     optimizer = torch.optim.Adam(probe.parameters(), lr=lr)
     loss_fn = nn.BCEWithLogitsLoss()
