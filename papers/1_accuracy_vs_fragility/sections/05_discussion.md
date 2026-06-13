@@ -54,12 +54,23 @@ representational anisotropy, or probe-training instability rather than
 margin or redundancy alone. Both margin and redundancy continue to
 evolve after accuracy saturates because both are functionals of
 representation *geometry* rather than end-to-end classification
-accuracy. Concretely (§4.2): the standard
-moral probe's mean accuracy holds at ~0.95 from step 4K through step
-36K while early-layer critical noise drops 10.0 → 1.8. The argument
-generalizes: fragility is not a moral-domain-specific contribution
-but a methodological contribution for any binary probing task that
-hits accuracy ceiling.
+accuracy. Two cautions follow from §4.4, however. First, much of the
+raw cross-layer and cross-checkpoint movement of critical noise is
+activation scale, not margin or redundancy: it must be read in
+RMS-normalized units for cross-layer claims. Second, the place where
+fragility demonstrably separates representations that accuracy cannot
+is the *scale-controlled* comparison: the §4.3 data-curation contrast,
+where three corpora with identical probing accuracy produce distinct
+fragility fingerprints at matched layers, on a fixed checkpoint, with
+activation scale held constant by construction. That is the clean
+demonstration of the methodological thesis. The broader contribution is
+therefore twofold: critical noise is a probe-side metric that keeps
+moving after accuracy saturates, and, just as important, we delimit
+*when* it is measuring representation rather than scale, raw $\sigma^*$
+within-layer and RMS-normalized $\sigma^*$ across layers. Fragility is
+not a moral-domain-specific tool but a methodological one for any binary
+probing task that hits the accuracy ceiling, provided the scale
+confound is controlled.
 
 ## 5.3 Limitations
 

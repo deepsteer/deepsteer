@@ -91,6 +91,26 @@ robustness rises with scale from 1B to 7B. Output dilution suppresses
 moral encoding uniformly across foundations rather than singling any
 one out.
 
+\textbf{What critical noise does and does not measure.} Three of our raw
+\(\sigma^*\) comparisons turned out to be driven by the same thing once
+controlled: activation-scale differences between the conditions being
+compared. The per-foundation ordering (\Cref{differential-fragility-across-frameworks}), the cross-architecture
+gap above, and the complexity gradient (\S4.11) each shrink or vanish
+under RMS normalization, and the companion dense-model study reports the
+same for its layer-depth gradient
+(\citealp{reblitzrichardson2026fragility}, \Cref{layer-wise-geometric-development}). These are one
+confound, not three. They sharpen what the metric is for: raw \(\sigma^*\)
+measures \emph{practical perturbation sensitivity}, the absolute noise a
+representation tolerates, which is real and useful, but it does not
+measure encoding robustness independent of scale when the compared
+conditions differ in activation scale, as they do across layers,
+registers (declarative vs.~narrative), architectures, and probe
+complexity. RMS-normalized \(\sigma^*\) is the right tool for those
+cross-condition claims; raw \(\sigma^*\) is valid only where scale is
+controlled by construction (within-layer, matched-stimulus contrasts).
+Establishing that partition is a methodological contribution in its own
+right.
+
 \subsection{Framework geometry stabilizes before accuracy saturates}\label{framework-geometry-stabilizes-before-accuracy-saturates}
 
 The trajectory analysis shows a temporal dissociation: framework

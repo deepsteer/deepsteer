@@ -96,6 +96,7 @@ def run_foundation_fragility(
     n_noise_seeds: int = N_NOISE_SEEDS,
     seed: int = PROBE_SEED,
     n_bootstrap: int = N_BOOTSTRAP,
+    rms_normalize: bool = False,
 ) -> dict:
     """Run per-foundation fragility analysis.
 
@@ -158,6 +159,15 @@ def run_foundation_fragility(
         for layer_idx in range(n_layers):
             train_X, train_y = all_train[layer_idx]
             test_X, test_y = all_test[layer_idx]
+
+            # RMS-normalized control: standardize this layer's activations to
+            # unit RMS (using the train RMS) so noise σ is in scale-free units,
+            # removing the per-text-set / per-architecture activation-scale
+            # confound (see Paper 1 §4.4).
+            if rms_normalize:
+                rms = train_X.pow(2).mean().sqrt().clamp_min(1e-8)
+                train_X = train_X / rms
+                test_X = test_X / rms
 
             # Train probe (fixed seed for reproducibility)
             hidden_dim = train_X.shape[1]
@@ -377,6 +387,9 @@ def main() -> None:
     parser.add_argument("--olmoe-only", action="store_true")
     parser.add_argument("--grid", choices=["default", "extended"], default="extended",
                         help="default = {0.1..10}; extended = {0.1..100} (lifts σ=10 cap).")
+    parser.add_argument("--rms-normalize", action="store_true",
+                        help="Scale-normalized control: standardize per-layer activations to "
+                             "unit RMS before noise injection (Paper 1 §4.4).")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -416,7 +429,7 @@ def main() -> None:
         print(f"EXPERIMENT 7: Foundation Fragility on {olmo_label}")
         print(f"{'='*60}")
         t0 = time.time()
-        olmo_results = run_foundation_fragility(olmo_model, dataset, output_dir, "OLMo", noise_levels=grid)
+        olmo_results = run_foundation_fragility(olmo_model, dataset, output_dir, "OLMo", noise_levels=grid, rms_normalize=args.rms_normalize)
         print(f"OLMo fragility complete: {time.time() - t0:.1f}s")
 
         with open(output_dir / "exp7_olmo_fragility.json", "w") as f:
@@ -439,7 +452,7 @@ def main() -> None:
         print("EXPERIMENT 7: Foundation Fragility on OLMoE")
         print(f"{'='*60}")
         t0 = time.time()
-        olmoe_results = run_foundation_fragility(olmoe_model, dataset, output_dir, "OLMoE", noise_levels=grid)
+        olmoe_results = run_foundation_fragility(olmoe_model, dataset, output_dir, "OLMoE", noise_levels=grid, rms_normalize=args.rms_normalize)
         print(f"OLMoE fragility complete: {time.time() - t0:.1f}s")
 
         with open(output_dir / "exp7_olmoe_fragility.json", "w") as f:

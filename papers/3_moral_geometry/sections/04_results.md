@@ -206,7 +206,13 @@ the 4.2$\times$ pooled gap reported by
 \citet{reblitzrichardson2026dilution}; the pooled probe trains on
 192 pairs versus 32 per foundation here, so it has more statistical
 power and a cleaner separation. Output dilution suppresses moral
-encoding across the board.
+encoding across the board. This cross-architecture gap is itself the
+output-scale effect: an RMS-normalized control (scaling noise to each
+layer's activation RMS; \citealp{reblitzrichardson2026fragility}, §4.4)
+shrinks it from ${\sim}2.3\times$ to ${\sim}1.2\times$ (dense mean
+$\sigma^* = 10.0$, MoE $8.2$ at the matched grid), exactly as expected
+if the MoE's smaller output scale, not weaker encoding, drives the raw
+fragility difference.
 
 **Within an architecture, foundations are not reliably separable.**
 The per-foundation $\sigma^*$ values have wide, overlapping bootstrap
@@ -418,7 +424,7 @@ built on them, are reliable.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.7\linewidth]{fig_dilemma_fragility_gradient.pdf}
-\caption{Mean critical noise for probes at three complexity levels. Single-foundation probes (Exp.~7) are most robust; per-type dilemma probes are least robust. Higher values indicate greater noise tolerance.}
+\caption{Raw mean critical noise for probes at three complexity levels (single-foundation from Exp.~7, pooled and per-type dilemma). The apparent gradient does not survive RMS normalization (see text): under scale correction the single-foundation and pooled-dilemma values converge, indicating the raw ordering reflects register-dependent activation scale rather than encoding robustness.}
 \label{fig:fragility_gradient}
 \end{figure}
 
@@ -427,22 +433,31 @@ single-foundation probes (from Experiment 7), pooled binary
 dilemma probes (all 300 dilemma pairs pooled), and per-type
 dilemma probes (15 separate probes, 20 pairs each).
 
-All three are measured under the same convention (seed-averaged,
-cap-at-max). The mean critical noise follows a
-**complexity--fragility gradient**: single-foundation probes are most
-robust ($\sigma^* = 5.02$), followed by the pooled dilemma probe
-($\sigma^* = 3.81$), with per-type dilemma probes least robust
-($\sigma^* = 3.55$). This
-ordering is consistent with the hypothesis that more specific moral
-distinctions are encoded with less redundancy and are therefore more
-vulnerable to perturbation.
+In raw activation units the mean critical noise looks like a
+**complexity--fragility gradient**: single-foundation probes most
+robust ($\sigma^* = 5.02$), pooled dilemma less ($3.81$), per-type
+dilemma least ($3.55$), seemingly because more specific distinctions
+are encoded with less redundancy. This gradient does not survive scale
+normalization. Consistent with the activation-scale confound identified
+in the companion work (\citealp{reblitzrichardson2026fragility}, §4.4),
+we re-evaluate fragility with noise scaled to each layer's activation
+RMS. The single-foundation and pooled-dilemma $\sigma^*$ then converge
+(both at the grid maximum) and the per-type value barely separates:
 
-The gradient's direction matters: the pooled dilemma probe is
-*less* robust than single-foundation probes, not more. This argues
-against the possibility that dilemma probes are simply detecting a
-generic "morally complex" feature with high redundancy. Instead, the
-dilemma direction captures genuinely more specific information that
-is correspondingly more fragile.
+| Probe (1B dense) | Raw $\sigma^*$ | RMS-normalized $\sigma^*$ |
+|---|---:|---:|
+| Single-foundation | 5.02 | 10.0 |
+| Pooled dilemma | 3.81 | 10.0 |
+| Per-type dilemma | 3.55 | 9.31 |
+
+The raw gradient therefore reflects register-dependent activation norms
+(the narrative dilemma stimuli carry smaller-scale activations than the
+declarative foundation pairs; cf.\ §5.5) rather than differential
+encoding robustness. We retain raw $\sigma^*$ only as a measure of
+practical perturbation sensitivity and make no complexity-robustness
+claim. The compositionality evidence in §4.9--4.10 (subspace membership,
+shared-component geometry, balanced loading) is geometric, not
+fragility-based, and is unaffected.
 
 ## 4.12 MoE architecture preserves compositionality
 

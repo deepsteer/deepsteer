@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 OLMO_REPO = "allenai/OLMo-2-0425-1B"
 
 NOISE_LEVELS = [0.1, 0.3, 1.0, 3.0, 10.0]
+EXTENDED_NOISE_LEVELS = [0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0]
 FRAGILITY_THRESHOLD = 0.6
 N_NOISE_SEEDS = 10
 
@@ -73,8 +74,18 @@ def run_fragility_for_probe(
     n_seeds: int = N_NOISE_SEEDS,
     n_epochs: int = 50,
     lr: float = 1e-2,
+    rms_normalize: bool = False,
 ) -> dict:
-    """Train a probe and test under noise injection."""
+    """Train a probe and test under noise injection.
+
+    With rms_normalize, standardize the activations to unit RMS (using the
+    train RMS) before probe training and noise injection, so σ is scale-free
+    (the Paper 1 §4.4 control; removes the per-text-set register/scale confound).
+    """
+    if rms_normalize:
+        rms = train_X.pow(2).mean().sqrt().clamp_min(1e-8)
+        train_X = train_X / rms
+        test_X = test_X / rms
     hidden_dim = train_X.shape[1]
     torch.manual_seed(42)
     probe = nn.Linear(hidden_dim, 1)
@@ -133,8 +144,12 @@ def main() -> None:
     parser.add_argument("--model", default=OLMO_REPO, help="HuggingFace model ID.")
     parser.add_argument("--n-epochs", type=int, default=50)
     parser.add_argument("--lr", type=float, default=1e-2)
+    parser.add_argument("--rms-normalize", action="store_true",
+                        help="Scale-normalized control (Paper 1 §4.4).")
+    parser.add_argument("--grid", choices=["default","extended"], default="default")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
+    GRID = NOISE_LEVELS if args.grid=='default' else EXTENDED_NOISE_LEVELS
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -206,8 +221,8 @@ def main() -> None:
 
             layer_result = run_fragility_for_probe(
                 train_X, train_y, test_X, test_y,
-                noise_levels=NOISE_LEVELS,
-                n_epochs=args.n_epochs, lr=args.lr,
+                noise_levels=GRID,
+                n_epochs=args.n_epochs, lr=args.lr, rms_normalize=args.rms_normalize,
             )
             per_layer[str(layer_idx)] = layer_result
 
@@ -265,8 +280,8 @@ def main() -> None:
 
         pooled_per_layer[str(layer_idx)] = run_fragility_for_probe(
             train_X, train_y, test_X, test_y,
-            noise_levels=NOISE_LEVELS,
-            n_epochs=args.n_epochs, lr=args.lr,
+            noise_levels=GRID,
+            n_epochs=args.n_epochs, lr=args.lr, rms_normalize=args.rms_normalize,
         )
 
     pooled_capped = [d["critical_noise_capped"] for d in pooled_per_layer.values()]
