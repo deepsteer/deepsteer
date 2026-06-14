@@ -39,7 +39,7 @@ different modes of moral representation:
    sense in which *framework* denotes a theory-level position such as
    deontology or utilitarianism. We retain *framework* in part because
    *foundation* is itself overloaded in the language-model setting,
-   where a "foundation model" is a base, pre-instruction-tuned model,
+   where a "foundation model" is a base, pre-fine-tuning model,
    exactly the class of models we probe.] This is detection without
    structure.
 
@@ -53,38 +53,44 @@ different modes of moral representation:
    relationships from moral psychology. This is the precondition
    for moral reasoning.
 
-Applied to OLMo-2 1B and OLMoE-1B-7B, we find clear *integration*:
-foundation directions are distinct (mean pairwise cosine similarity
-$\approx 0.22$--$0.27$ across layers, far from collapse) and span 5 effective dimensions
-at every layer. However, hierarchical clustering does not recover
-the MFT distinction between individualizing and binding foundations
-(the inter-framework structure the model develops is not aligned
-with human moral-psychological categories, despite the directions
-being well-separated).
+Applied to OLMo-2 1B and OLMoE-1B-7B (with a dense OLMo-2 7B as a
+scale check), we report three findings:
 
-Extending the fragility protocol to per-foundation probes shows a
-uniform cross-architecture effect rather than a per-foundation one:
-once accuracy is averaged over multiple noise seeds, every foundation
-is more fragile in MoE than in dense (a ${\sim}2.3\times$ gap), and no
-single foundation is reliably most or least robust within an
-architecture. Output dilution suppresses moral encoding across the
-board.
+**Finding 1: Moral foundations are represented with integration
+geometry, but not the structure moral psychology predicts.**
+Foundation directions are distinct (mean pairwise cosine similarity
+$\approx 0.22$--$0.27$ across layers, far from collapse) and span 5
+effective dimensions at every layer: the integration signature, not
+collapse or isolation. Hierarchical clustering does not recover the
+MFT individualizing/binding split, at both the dense 1B and 7B; the dominant
+structure the model forms is a care--sanctity pairing that crosses
+MFT groups.
 
-This paper makes three contributions:
+**Finding 2: The geometry of moral dilemmas is partially
+compositional.** Probes for 15 two-foundation dilemmas reach 94.2%
+mean accuracy, and each dilemma direction is partly explained by the
+2D subspace of its two component foundation directions. Dilemma pairs
+that share a component foundation are closer in representation space
+than those that do not (mean cosine 0.273 vs. 0.196, permutation
+$p = 0.0001$), and the MoE architecture preserves this compositional
+structure.
 
-1. **Framework-specific probing methodology.** We introduce probe
-   direction geometry as a tool for measuring structured moral
-   representations, bridging the gap between binary moral probing
-   and the richer structure posited by moral psychology.
+**Finding 3: Output dilution degrades every foundation uniformly,
+not selectively.** Extending the fragility protocol to per-foundation
+probes shows a uniform cross-architecture effect rather than a
+per-foundation one: once accuracy is averaged over multiple noise
+seeds, every foundation is more fragile in MoE than in dense (a
+${\sim}2.3\times$ gap), and no single foundation is reliably most or
+least robust within an architecture. An apparent complexity--fragility
+ordering does not survive scale normalization (§4.11). Output dilution
+suppresses moral encoding across the board.
 
-2. **Empirical geometric characterization.** We show that OLMo-2
-   1B and OLMoE-1B-7B exhibit the integration signature, that
-   framework geometry is comparable across architectures, and that
-   the model's inter-framework structure does not align with MFT
-   group predictions despite clear directional separation.
-
-3. **Differential fragility.** We demonstrate that moral foundations
-   differ in robustness, and that MoE architecture
-   disproportionately degrades sanctity/degradation
-   representations, the first evidence that output dilution is
-   not foundation-uniform.
+This paper introduces probe-direction geometry, a method for
+measuring structured moral representations that bridges binary moral
+probing and the richer structure posited by moral psychology. With
+it, we give the first geometric characterization of foundation and
+dilemma representations in base language models, and show that this
+geometry is comparable across dense and MoE architectures and stable
+from 1B to 7B. We also report the first per-foundation fragility
+comparison across architectures, which finds that output dilution
+degrades moral encoding uniformly rather than selectively.
