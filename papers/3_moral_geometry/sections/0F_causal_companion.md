@@ -6,7 +6,7 @@ The geometry reported in the main text is read off the
 representation: it shows where foundation information is decodable.
 Whether the model *uses* that information during generation is a
 separate, causal question. Here we report initial causal checks on
-the OLMo-2~7B foundation directions used throughout this paper, which
+the OLMo-2 7B foundation directions used throughout this paper, which
 indicate that the directions are functionally implicated rather than
 probing artifacts. A full causal localization is left to future work.
 
@@ -18,7 +18,7 @@ the six foundations, is negative at every layer tested and deepens
 with depth, from $-0.12$ at layer 4 to $-0.32$ at layer 14. Removing a
 foundation's direction selectively harms that foundation, and the
 effect is strongest where the directions are most stable. These
-numbers are on OLMo-2~7B (`allenai/OLMo-2-1124-7B`), layers 4--14, over
+numbers are on OLMo-2 7B (`allenai/OLMo-2-1124-7B`), layers 4--14, over
 48 prompts (`outputs/probe_engineering_7B/direction_ablation_mean_diff.json`).
 
 **Steering injection.** Adding $\alpha$ times a foundation's direction

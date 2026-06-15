@@ -35,7 +35,7 @@ accuracies, carries the paper's claims.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig1_cosine_heatmap.pdf}
-\caption{Pairwise cosine similarity between foundation probe directions at layer 7 (bootstrap-stable; all six foundations exceed the 0.8 stability threshold at this layer; §4.6), OLMo-2 1B. Mean off-diagonal cosine = 0.262. See Appendix~\ref{app:cosine} for matrices at layers 0 and 15.}
+\caption{Pairwise cosine similarity between foundation probe directions at layer 7 (bootstrap-stable; all six foundations exceed the 0.8 stability threshold at this layer; §4.6), OLMo-2 1B. Mean off-diagonal cosine = 0.262. See Appendix \ref{app:cosine} for matrices at layers 0 and 15.}
 \label{fig:cosine_heatmap}
 \end{figure}
 
@@ -45,11 +45,11 @@ directions exceed the 0.8 stability threshold; §4.6, with the single
 exception of authority at layer 8, 0.792), mean pairwise
 cosine similarity ranges from **0.232 to 0.274**, far below the
 collapse threshold ($>0.95$) and below the intermediate zone
-($0.8$--$0.95$). Figure~\ref{fig:cosine_heatmap} shows the
+($0.8$--$0.95$). Figure \ref{fig:cosine_heatmap} shows the
 representative pattern at layer 7 (mean cosine 0.262). The
 peak-separation layer (layer 0, mean cosine 0.216) is below the
 bootstrap stability threshold for all foundations and is reported
-in Appendix~\ref{app:cosine}.
+in Appendix \ref{app:cosine}.
 
 The cosine similarities are uniformly *positive* at all layers
 (range 0.14--0.35), indicating that the foundation directions share
@@ -312,7 +312,7 @@ moral-salience component every moral direction carries, but the
 in the 2D spans of foundation pairs it shares no component with. That
 baseline is **0.044** at the matched peak layer, so the compositional
 signal is ${\sim}2.7\times$ the mismatched baseline (and matched
-exceeds mismatched at every layer; Appendix~\ref{app:dilemma_membership}).
+exceeds mismatched at every layer; Appendix \ref{app:dilemma_membership}).
 The signal is real but modest: even matched, only ${\sim}12$\% of each
 dilemma direction's variance is explained by its component foundation
 subspace. The remaining ${\sim}88$\% (mean residual norm = 0.939) lies
@@ -350,7 +350,7 @@ pairs is **0.273** versus **0.196** for non-sharing pairs (difference
 foundation-pair label is attached to each dilemma direction (which
 shuffles the share/no-share partition of the 105 pairwise cosines)
 gives $p = 0.0001$ at layer 13, and the minimum $p$ across all layers
-is also $0.0001$ (10{,}000 permutations). The difference is positive at
+is also $0.0001$ (10,000 permutations). The difference is positive at
 every layer, so the compositional structure is a general property of
 the dilemma direction geometry, not a layer-specific artifact.
 
@@ -408,7 +408,7 @@ encoding conflict-specific features such as trade-off framing and
 tension that lie outside the moral subspace entirely.
 
 **Scale replication.** The partial-compositionality result reproduces
-on OLMo-2~7B with the same matched-vs-mismatched structure. Mean peak
+on OLMo-2 7B with the same matched-vs-mismatched structure. Mean peak
 matched membership is 0.090, against a mismatched-pair baseline of
 0.032 (${\sim}2.8\times$, vs.\ the $2.7\times$ at 1B); mean residual
 norm is 0.953; and component balance is 0.455 (vs.\ 0.486 at 1B, where
@@ -434,7 +434,7 @@ built on them, are reliable.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.7\linewidth]{fig_dilemma_fragility_gradient.pdf}
-\caption{Raw mean critical noise for probes at three complexity levels (single-foundation from Exp.~7, pooled and per-type dilemma). The apparent gradient does not survive RMS normalization (see text): under scale correction the single-foundation and pooled-dilemma values converge, indicating the raw ordering reflects register-dependent activation scale rather than encoding robustness.}
+\caption{Raw mean critical noise for probes at three complexity levels (single-foundation from Exp. 7, pooled and per-type dilemma). The apparent gradient does not survive RMS normalization (see text): under scale correction the single-foundation and pooled-dilemma values converge, indicating the raw ordering reflects register-dependent activation scale rather than encoding robustness.}
 \label{fig:fragility_gradient}
 \end{figure}
 
@@ -506,7 +506,7 @@ layer 0).
 
 **Representation-engineering directions.** We also test
 paired-difference PCA \citep{zou2023representation}: for each
-pair~$i$, compute $\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
+pair $i$, compute $\mathbf{d}_i = \mathbf{a}_{\text{moral},i} -
 \mathbf{a}_{\text{neutral},i}$ and take the first principal
 component. This method performs poorly: the first PC explains only
 8--11\% of variance (barely above chance in $\mathbb{R}^{2048}$),
@@ -533,9 +533,9 @@ mean-difference; §5.5).
 
 ## 4.14 Scale validation: geometry persists from 1B to 7B
 
-We replicate the core geometric findings on OLMo-2~7B (the 1124
+We replicate the core geometric findings on OLMo-2 7B (the 1124
 release, 32 layers, hidden dimension 4096), a dense model with 7.3B
-parameters, versus 1.5B for OLMo-2~1B. The integration signature holds.
+parameters, versus 1.5B for OLMo-2 1B. The integration signature holds.
 Mean pairwise cosine similarity ranges from **0.193 to 0.244** across
 layers (1B: 0.216--0.274), positive everywhere and far below the
 collapse threshold. Effective dimensionality is **5 at every one of
@@ -546,7 +546,7 @@ component, at both scales.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{scale_comparison_cosine_heatmap.pdf}
-\caption{Foundation direction cosine similarity for OLMo-2 1B (layer 7/16) and 7B (layer 14/32), at matched relative depth. Mean off-diagonal cosine is 0.262 (1B) and 0.240 (7B) at these display layers; both sit in the integration range. Effective dimensionality is 5 for both (Figure~\ref{fig:scale_overlay}).}
+\caption{Foundation direction cosine similarity for OLMo-2 1B (layer 7/16) and 7B (layer 14/32), at matched relative depth. Mean off-diagonal cosine is 0.262 (1B) and 0.240 (7B) at these display layers; both sit in the integration range. Effective dimensionality is 5 for both (Figure \ref{fig:scale_overlay}).}
 \label{fig:scale_heatmap}
 \end{figure}
 
@@ -600,7 +600,7 @@ without reference to foundation labels, and ask whether the discovered
 groups align with the foundations.
 
 K-means and spectral clustering ($k$ selected by silhouette score,
-$k = 2$--$8$) on OLMo-2~7B moral activations produce clusters that
+$k = 2$--$8$) on OLMo-2 7B moral activations produce clusters that
 barely align with MFT foundations. Adjusted mutual information between
 the discovered clusters and the foundation labels peaks at **0.032**
 (layer 11) and is near zero or slightly negative at most layers;
@@ -643,7 +643,7 @@ applied to both datasets for a fair comparison.
 
 The integration signature replicates on the genuine validated items.
 The six MFV directions span **5 effective dimensions at every layer**
-of OLMo-2~7B, identical to the directions derived from our dataset.
+of OLMo-2 7B, identical to the directions derived from our dataset.
 Mean pairwise cosine is higher for MFV (0.42--0.62 across layers, 0.62
 at the display layer 8) than for the matched mean-difference directions
 on our data (0.41 at the display layer), an expected small-sample

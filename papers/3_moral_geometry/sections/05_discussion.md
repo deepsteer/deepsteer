@@ -21,7 +21,7 @@ directions are geometrically distinct objects that happen to share
 a common moral-salience component.
 
 This holds across scale, architecture, and dataset. Effective
-dimensionality is 5 at every layer of OLMo-2~1B, OLMo-2~7B, and
+dimensionality is 5 at every layer of OLMo-2 1B, OLMo-2 7B, and
 OLMoE-1B-7B, and on the independently constructed Moral Foundations
 Vignettes (§4.14, §4.16). Integration is the default geometric mode
 for moral representations in these models, not a property of one
@@ -176,7 +176,7 @@ model maintains both competing moral claims in tension rather than
 collapsing to a resolution, suggesting that moral comprehension
 (the capacity to represent the structure of ethical disagreement)
 may precede and be separable from moral judgment. This pattern is
-scale-stable: OLMo-2~7B reproduces the partial-compositionality
+scale-stable: OLMo-2 7B reproduces the partial-compositionality
 profile (9.1\% subspace membership, 0.95 residual, 0.46 component
 balance; §4.9), so the conflict-as-tension representation is not an
 artifact of the smaller model's capacity.
@@ -286,7 +286,7 @@ not whether that information is *used* during generation. Our 7B
 foundation directions provide initial causal evidence on this
 question: ablating a foundation's direction selectively perturbs that
 foundation's continuations, and injecting it produces a dose-response
-shift (Appendix~\ref{app:causal}). Full causal localization across
+shift (Appendix \ref{app:causal}). Full causal localization across
 layers is left to future work; the geometry reported here is
 descriptive of the representation, with this initial causal evidence
 that the directions are functionally implicated.
