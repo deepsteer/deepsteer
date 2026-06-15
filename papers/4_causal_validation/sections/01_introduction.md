@@ -14,7 +14,7 @@ Three questions remain open:
 3. **Mechanistic correspondence.** Do the supervised probe directions correspond to features the model discovers on its own? Sparse autoencoders (SAEs) learn unsupervised features from general text. If morally selective SAE features align with probe directions, the directions are not artifacts of the probing procedure but reflect native model structure.
 
 We address all three questions using the same OLMo-2 1B model and 240-pair moral probing dataset from \citet{reblitzrichardson2026geometry}.
-Section~\ref{causal-validation} presents direction ablation and steering injection experiments.
-Section~\ref{behavioral-grounding} reports projection-based foundation classification on held-out, external, and causal evaluation stimuli.
-Section~\ref{sae-analysis} compares SAE feature geometry with probe directions.
-Section~\ref{discussion} synthesizes the three forms of evidence and discusses implications for representation engineering of moral concepts.
+Section \ref{causal-validation} presents direction ablation and steering injection experiments.
+Section \ref{behavioral-grounding} reports projection-based foundation classification on held-out, external, and causal evaluation stimuli.
+Section \ref{sae-analysis} compares SAE feature geometry with probe directions.
+Section \ref{discussion} synthesizes the three forms of evidence and discusses implications for representation engineering of moral concepts.
