@@ -72,7 +72,14 @@ _FALLBACK_HARMLESS = [
 
 
 def last_token_means(model, prompts, input_format, layers):
-    """Mean of last-token residual activations over prompts, per layer."""
+    """Mean of last-input-token residual activations over prompts, per layer.
+
+    This IS Heretic's "first-token" residual: with the chat template applied and
+    add_generation_prompt=True, the last input position is the one that produces
+    the first generated token. Heretic's own code reads hidden_states[:, -1, :]
+    (src/heretic/model.py); Arditi et al. use the same position. So last-token
+    here matches both -- no first/last divergence despite the README wording.
+    """
     sums = {L: None for L in layers}
     for p in prompts:
         if input_format == "chat" and getattr(model.tokenizer, "chat_template", None):
