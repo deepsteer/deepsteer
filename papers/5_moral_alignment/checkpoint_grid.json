@@ -1,0 +1,127 @@
+[
+  {
+    "label": "olmo3_pretrain_stage3_step1000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step1000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step2000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step2000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step3000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step3000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step4000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step4000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step5000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step5000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step6000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step6000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step7000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step7000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step8000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step8000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step9000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step9000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step10000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step10000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11000",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step11000"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11900",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step11900"
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11921",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "stage3-step11921"
+  },
+  {
+    "label": "olmo3_base",
+    "repo": "allenai/Olmo-3-1025-7B",
+    "revision": "main"
+  },
+  {
+    "label": "olmo3_sft_final",
+    "repo": "allenai/Olmo-3-7B-Instruct-SFT",
+    "revision": "main"
+  },
+  {
+    "label": "olmo3_dpo_final",
+    "repo": "allenai/Olmo-3-7B-Instruct-DPO",
+    "revision": "main"
+  },
+  {
+    "label": "olmo3_instruct_final",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "main"
+  },
+  {
+    "label": "olmo3_instruct_step_050",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_050"
+  },
+  {
+    "label": "olmo3_instruct_step_100",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_100"
+  },
+  {
+    "label": "olmo3_instruct_step_150",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_150"
+  },
+  {
+    "label": "olmo3_instruct_step_200",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_200"
+  },
+  {
+    "label": "olmo3_instruct_step_250",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_250"
+  },
+  {
+    "label": "olmo3_instruct_step_300",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_300"
+  },
+  {
+    "label": "olmo3_instruct_step_350",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_350"
+  },
+  {
+    "label": "olmo3_instruct_step_400",
+    "repo": "allenai/Olmo-3-7B-Instruct",
+    "revision": "step_400"
+  }
+]

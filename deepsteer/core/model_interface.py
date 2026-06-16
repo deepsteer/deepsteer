@@ -36,6 +36,7 @@ class ModelFamily(str, enum.Enum):
 
 
 _CONFIG_TYPE_TO_FAMILY: dict[str, ModelFamily] = {
+    "olmo3": ModelFamily.OLMO,
     "olmo2": ModelFamily.OLMO,
     "olmo": ModelFamily.OLMO,
     "olmoe": ModelFamily.OLMOE,
