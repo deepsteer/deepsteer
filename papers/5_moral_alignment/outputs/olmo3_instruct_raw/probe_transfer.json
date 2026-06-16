@@ -1,0 +1,1614 @@
+{
+  "analysis": "probe_transfer",
+  "model": "allenai/Olmo-3-7B-Instruct",
+  "revision": null,
+  "input_format": "raw",
+  "base_directions": "papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz",
+  "n_layers": 32,
+  "full_attention_layers": [
+    3,
+    7,
+    11,
+    15,
+    19,
+    23,
+    27,
+    31
+  ],
+  "foundations": [
+    "care_harm",
+    "fairness_cheating",
+    "liberty_oppression",
+    "loyalty_betrayal",
+    "authority_subversion",
+    "sanctity_degradation"
+  ],
+  "per_foundation": {
+    "care_harm": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.9471,
+        "cos_base_vs_fresh_meandiff": 0.7283
+      },
+      "1": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8732,
+        "cos_base_vs_fresh_meandiff": 0.7009
+      },
+      "2": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8299,
+        "cos_base_vs_fresh_meandiff": 0.6835
+      },
+      "3": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8081,
+        "cos_base_vs_fresh_meandiff": 0.6753
+      },
+      "4": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7839,
+        "cos_base_vs_fresh_meandiff": 0.658
+      },
+      "5": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.784,
+        "cos_base_vs_fresh_meandiff": 0.6456
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7808,
+        "cos_base_vs_fresh_meandiff": 0.6539
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8054,
+        "cos_base_vs_fresh_meandiff": 0.6695
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7935,
+        "cos_base_vs_fresh_meandiff": 0.6565
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7831,
+        "cos_base_vs_fresh_meandiff": 0.6601
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7839,
+        "cos_base_vs_fresh_meandiff": 0.6701
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7673,
+        "cos_base_vs_fresh_meandiff": 0.6595
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7628,
+        "cos_base_vs_fresh_meandiff": 0.6481
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7523,
+        "cos_base_vs_fresh_meandiff": 0.6387
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.76,
+        "cos_base_vs_fresh_meandiff": 0.6485
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7614,
+        "cos_base_vs_fresh_meandiff": 0.6423
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7529,
+        "cos_base_vs_fresh_meandiff": 0.6419
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7754,
+        "cos_base_vs_fresh_meandiff": 0.6542
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7933,
+        "cos_base_vs_fresh_meandiff": 0.6633
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7838,
+        "cos_base_vs_fresh_meandiff": 0.6631
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7861,
+        "cos_base_vs_fresh_meandiff": 0.6585
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7869,
+        "cos_base_vs_fresh_meandiff": 0.6615
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7883,
+        "cos_base_vs_fresh_meandiff": 0.6651
+      },
+      "23": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7944,
+        "cos_base_vs_fresh_meandiff": 0.6646
+      },
+      "24": {
+        "transfer_auc": 0.9688,
+        "transfer_auc_abs": 0.9688,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7883,
+        "cos_base_vs_fresh_meandiff": 0.6672
+      },
+      "25": {
+        "transfer_auc": 0.9688,
+        "transfer_auc_abs": 0.9688,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7764,
+        "cos_base_vs_fresh_meandiff": 0.6614
+      },
+      "26": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7676,
+        "cos_base_vs_fresh_meandiff": 0.6577
+      },
+      "27": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7607,
+        "cos_base_vs_fresh_meandiff": 0.6535
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7382,
+        "cos_base_vs_fresh_meandiff": 0.6381
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7009,
+        "cos_base_vs_fresh_meandiff": 0.6051
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6522,
+        "cos_base_vs_fresh_meandiff": 0.5788
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6017,
+        "cos_base_vs_fresh_meandiff": 0.5388
+      }
+    },
+    "fairness_cheating": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.9391,
+        "cos_base_vs_fresh_meandiff": 0.7309
+      },
+      "1": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8586,
+        "cos_base_vs_fresh_meandiff": 0.6998
+      },
+      "2": {
+        "transfer_auc": 0.9688,
+        "transfer_auc_abs": 0.9688,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8177,
+        "cos_base_vs_fresh_meandiff": 0.6911
+      },
+      "3": {
+        "transfer_auc": 0.9688,
+        "transfer_auc_abs": 0.9688,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7834,
+        "cos_base_vs_fresh_meandiff": 0.671
+      },
+      "4": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7752,
+        "cos_base_vs_fresh_meandiff": 0.664
+      },
+      "5": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7591,
+        "cos_base_vs_fresh_meandiff": 0.6513
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7704,
+        "cos_base_vs_fresh_meandiff": 0.6688
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7584,
+        "cos_base_vs_fresh_meandiff": 0.6581
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7356,
+        "cos_base_vs_fresh_meandiff": 0.6422
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7294,
+        "cos_base_vs_fresh_meandiff": 0.6292
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7408,
+        "cos_base_vs_fresh_meandiff": 0.6385
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.734,
+        "cos_base_vs_fresh_meandiff": 0.6305
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7374,
+        "cos_base_vs_fresh_meandiff": 0.6293
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7232,
+        "cos_base_vs_fresh_meandiff": 0.6212
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7306,
+        "cos_base_vs_fresh_meandiff": 0.6114
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7489,
+        "cos_base_vs_fresh_meandiff": 0.6298
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7462,
+        "cos_base_vs_fresh_meandiff": 0.6301
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7471,
+        "cos_base_vs_fresh_meandiff": 0.6227
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7837,
+        "cos_base_vs_fresh_meandiff": 0.64
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7697,
+        "cos_base_vs_fresh_meandiff": 0.6318
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7699,
+        "cos_base_vs_fresh_meandiff": 0.6379
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7746,
+        "cos_base_vs_fresh_meandiff": 0.6381
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7771,
+        "cos_base_vs_fresh_meandiff": 0.6404
+      },
+      "23": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7658,
+        "cos_base_vs_fresh_meandiff": 0.6451
+      },
+      "24": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.753,
+        "cos_base_vs_fresh_meandiff": 0.6438
+      },
+      "25": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7509,
+        "cos_base_vs_fresh_meandiff": 0.6409
+      },
+      "26": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.753,
+        "cos_base_vs_fresh_meandiff": 0.641
+      },
+      "27": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7299,
+        "cos_base_vs_fresh_meandiff": 0.6384
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7292,
+        "cos_base_vs_fresh_meandiff": 0.6235
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7064,
+        "cos_base_vs_fresh_meandiff": 0.6001
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6546,
+        "cos_base_vs_fresh_meandiff": 0.5657
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.5886,
+        "cos_base_vs_fresh_meandiff": 0.52
+      }
+    },
+    "liberty_oppression": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.9348,
+        "cos_base_vs_fresh_meandiff": 0.7079
+      },
+      "1": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8439,
+        "cos_base_vs_fresh_meandiff": 0.6795
+      },
+      "2": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8267,
+        "cos_base_vs_fresh_meandiff": 0.6759
+      },
+      "3": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7905,
+        "cos_base_vs_fresh_meandiff": 0.6594
+      },
+      "4": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7798,
+        "cos_base_vs_fresh_meandiff": 0.6597
+      },
+      "5": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7907,
+        "cos_base_vs_fresh_meandiff": 0.6718
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7893,
+        "cos_base_vs_fresh_meandiff": 0.6753
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.77,
+        "cos_base_vs_fresh_meandiff": 0.6678
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.769,
+        "cos_base_vs_fresh_meandiff": 0.6549
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7671,
+        "cos_base_vs_fresh_meandiff": 0.6571
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7743,
+        "cos_base_vs_fresh_meandiff": 0.6649
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7519,
+        "cos_base_vs_fresh_meandiff": 0.644
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7468,
+        "cos_base_vs_fresh_meandiff": 0.6312
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7455,
+        "cos_base_vs_fresh_meandiff": 0.629
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7586,
+        "cos_base_vs_fresh_meandiff": 0.6294
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7844,
+        "cos_base_vs_fresh_meandiff": 0.6389
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7708,
+        "cos_base_vs_fresh_meandiff": 0.6192
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7833,
+        "cos_base_vs_fresh_meandiff": 0.6234
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8007,
+        "cos_base_vs_fresh_meandiff": 0.6318
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8096,
+        "cos_base_vs_fresh_meandiff": 0.6373
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8095,
+        "cos_base_vs_fresh_meandiff": 0.6399
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8051,
+        "cos_base_vs_fresh_meandiff": 0.643
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8055,
+        "cos_base_vs_fresh_meandiff": 0.6402
+      },
+      "23": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8043,
+        "cos_base_vs_fresh_meandiff": 0.647
+      },
+      "24": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7972,
+        "cos_base_vs_fresh_meandiff": 0.6499
+      },
+      "25": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7937,
+        "cos_base_vs_fresh_meandiff": 0.6507
+      },
+      "26": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7929,
+        "cos_base_vs_fresh_meandiff": 0.6501
+      },
+      "27": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7687,
+        "cos_base_vs_fresh_meandiff": 0.6458
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7508,
+        "cos_base_vs_fresh_meandiff": 0.636
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7424,
+        "cos_base_vs_fresh_meandiff": 0.6219
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6953,
+        "cos_base_vs_fresh_meandiff": 0.5775
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6557,
+        "cos_base_vs_fresh_meandiff": 0.5517
+      }
+    },
+    "loyalty_betrayal": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.9365,
+        "cos_base_vs_fresh_meandiff": 0.7352
+      },
+      "1": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8572,
+        "cos_base_vs_fresh_meandiff": 0.7046
+      },
+      "2": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8203,
+        "cos_base_vs_fresh_meandiff": 0.693
+      },
+      "3": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.796,
+        "cos_base_vs_fresh_meandiff": 0.6853
+      },
+      "4": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7784,
+        "cos_base_vs_fresh_meandiff": 0.6702
+      },
+      "5": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7748,
+        "cos_base_vs_fresh_meandiff": 0.6649
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7759,
+        "cos_base_vs_fresh_meandiff": 0.6786
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7714,
+        "cos_base_vs_fresh_meandiff": 0.6655
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7494,
+        "cos_base_vs_fresh_meandiff": 0.6638
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7387,
+        "cos_base_vs_fresh_meandiff": 0.6532
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7361,
+        "cos_base_vs_fresh_meandiff": 0.6596
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.724,
+        "cos_base_vs_fresh_meandiff": 0.6466
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7193,
+        "cos_base_vs_fresh_meandiff": 0.6427
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7269,
+        "cos_base_vs_fresh_meandiff": 0.6473
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.745,
+        "cos_base_vs_fresh_meandiff": 0.6451
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7608,
+        "cos_base_vs_fresh_meandiff": 0.6441
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7622,
+        "cos_base_vs_fresh_meandiff": 0.642
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7859,
+        "cos_base_vs_fresh_meandiff": 0.6604
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7989,
+        "cos_base_vs_fresh_meandiff": 0.6641
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7873,
+        "cos_base_vs_fresh_meandiff": 0.6646
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8034,
+        "cos_base_vs_fresh_meandiff": 0.6776
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7972,
+        "cos_base_vs_fresh_meandiff": 0.6789
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7927,
+        "cos_base_vs_fresh_meandiff": 0.6719
+      },
+      "23": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7995,
+        "cos_base_vs_fresh_meandiff": 0.6763
+      },
+      "24": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7961,
+        "cos_base_vs_fresh_meandiff": 0.673
+      },
+      "25": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7865,
+        "cos_base_vs_fresh_meandiff": 0.6619
+      },
+      "26": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7812,
+        "cos_base_vs_fresh_meandiff": 0.6566
+      },
+      "27": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7694,
+        "cos_base_vs_fresh_meandiff": 0.6553
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7579,
+        "cos_base_vs_fresh_meandiff": 0.6407
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7183,
+        "cos_base_vs_fresh_meandiff": 0.6159
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6747,
+        "cos_base_vs_fresh_meandiff": 0.5848
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6244,
+        "cos_base_vs_fresh_meandiff": 0.5611
+      }
+    },
+    "authority_subversion": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.9281,
+        "cos_base_vs_fresh_meandiff": 0.6814
+      },
+      "1": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8468,
+        "cos_base_vs_fresh_meandiff": 0.6657
+      },
+      "2": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8197,
+        "cos_base_vs_fresh_meandiff": 0.6692
+      },
+      "3": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.809,
+        "cos_base_vs_fresh_meandiff": 0.6611
+      },
+      "4": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7963,
+        "cos_base_vs_fresh_meandiff": 0.6565
+      },
+      "5": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7857,
+        "cos_base_vs_fresh_meandiff": 0.6624
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7903,
+        "cos_base_vs_fresh_meandiff": 0.6693
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7796,
+        "cos_base_vs_fresh_meandiff": 0.6632
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7531,
+        "cos_base_vs_fresh_meandiff": 0.6489
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7466,
+        "cos_base_vs_fresh_meandiff": 0.6374
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.747,
+        "cos_base_vs_fresh_meandiff": 0.6444
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7007,
+        "cos_base_vs_fresh_meandiff": 0.602
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6995,
+        "cos_base_vs_fresh_meandiff": 0.5928
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7045,
+        "cos_base_vs_fresh_meandiff": 0.6032
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7234,
+        "cos_base_vs_fresh_meandiff": 0.6085
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7465,
+        "cos_base_vs_fresh_meandiff": 0.6113
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.759,
+        "cos_base_vs_fresh_meandiff": 0.6125
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.753,
+        "cos_base_vs_fresh_meandiff": 0.6014
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7634,
+        "cos_base_vs_fresh_meandiff": 0.6114
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7646,
+        "cos_base_vs_fresh_meandiff": 0.6095
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7965,
+        "cos_base_vs_fresh_meandiff": 0.6303
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7999,
+        "cos_base_vs_fresh_meandiff": 0.6293
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8004,
+        "cos_base_vs_fresh_meandiff": 0.6313
+      },
+      "23": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7902,
+        "cos_base_vs_fresh_meandiff": 0.6348
+      },
+      "24": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7894,
+        "cos_base_vs_fresh_meandiff": 0.6464
+      },
+      "25": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7845,
+        "cos_base_vs_fresh_meandiff": 0.6493
+      },
+      "26": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7718,
+        "cos_base_vs_fresh_meandiff": 0.6484
+      },
+      "27": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7628,
+        "cos_base_vs_fresh_meandiff": 0.6499
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7511,
+        "cos_base_vs_fresh_meandiff": 0.6374
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.716,
+        "cos_base_vs_fresh_meandiff": 0.6086
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.669,
+        "cos_base_vs_fresh_meandiff": 0.5623
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6132,
+        "cos_base_vs_fresh_meandiff": 0.5195
+      }
+    },
+    "sanctity_degradation": {
+      "0": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.947,
+        "cos_base_vs_fresh_meandiff": 0.7267
+      },
+      "1": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8676,
+        "cos_base_vs_fresh_meandiff": 0.6853
+      },
+      "2": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8412,
+        "cos_base_vs_fresh_meandiff": 0.6882
+      },
+      "3": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8184,
+        "cos_base_vs_fresh_meandiff": 0.6766
+      },
+      "4": {
+        "transfer_auc": 0.9844,
+        "transfer_auc_abs": 0.9844,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8117,
+        "cos_base_vs_fresh_meandiff": 0.6698
+      },
+      "5": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8027,
+        "cos_base_vs_fresh_meandiff": 0.676
+      },
+      "6": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.8134,
+        "cos_base_vs_fresh_meandiff": 0.6963
+      },
+      "7": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7865,
+        "cos_base_vs_fresh_meandiff": 0.6792
+      },
+      "8": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7763,
+        "cos_base_vs_fresh_meandiff": 0.6742
+      },
+      "9": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.875,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7733,
+        "cos_base_vs_fresh_meandiff": 0.6627
+      },
+      "10": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7641,
+        "cos_base_vs_fresh_meandiff": 0.6753
+      },
+      "11": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7389,
+        "cos_base_vs_fresh_meandiff": 0.6557
+      },
+      "12": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7284,
+        "cos_base_vs_fresh_meandiff": 0.6441
+      },
+      "13": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7393,
+        "cos_base_vs_fresh_meandiff": 0.6412
+      },
+      "14": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7459,
+        "cos_base_vs_fresh_meandiff": 0.6321
+      },
+      "15": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7399,
+        "cos_base_vs_fresh_meandiff": 0.6228
+      },
+      "16": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 0.9375,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7487,
+        "cos_base_vs_fresh_meandiff": 0.6348
+      },
+      "17": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7549,
+        "cos_base_vs_fresh_meandiff": 0.6348
+      },
+      "18": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7637,
+        "cos_base_vs_fresh_meandiff": 0.6362
+      },
+      "19": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7732,
+        "cos_base_vs_fresh_meandiff": 0.6395
+      },
+      "20": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7824,
+        "cos_base_vs_fresh_meandiff": 0.6419
+      },
+      "21": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7533,
+        "cos_base_vs_fresh_meandiff": 0.6361
+      },
+      "22": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7721,
+        "cos_base_vs_fresh_meandiff": 0.6518
+      },
+      "23": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7839,
+        "cos_base_vs_fresh_meandiff": 0.6527
+      },
+      "24": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7985,
+        "cos_base_vs_fresh_meandiff": 0.6707
+      },
+      "25": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7998,
+        "cos_base_vs_fresh_meandiff": 0.6724
+      },
+      "26": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7784,
+        "cos_base_vs_fresh_meandiff": 0.6621
+      },
+      "27": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7639,
+        "cos_base_vs_fresh_meandiff": 0.6604
+      },
+      "28": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7558,
+        "cos_base_vs_fresh_meandiff": 0.6623
+      },
+      "29": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.7369,
+        "cos_base_vs_fresh_meandiff": 0.6527
+      },
+      "30": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6887,
+        "cos_base_vs_fresh_meandiff": 0.6245
+      },
+      "31": {
+        "transfer_auc": 1.0,
+        "transfer_auc_abs": 1.0,
+        "transfer_acc": 1.0,
+        "fresh_probe_acc": 1.0,
+        "cos_base_vs_fresh_probe": 0.6419,
+        "cos_base_vs_fresh_meandiff": 0.5893
+      }
+    }
+  },
+  "summary": {
+    "care_harm": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 0.9375,
+      "cos_base_vs_fresh_probe": 0.9471
+    },
+    "fairness_cheating": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 0.9375,
+      "cos_base_vs_fresh_probe": 0.9391
+    },
+    "liberty_oppression": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 1.0,
+      "cos_base_vs_fresh_probe": 0.9348
+    },
+    "loyalty_betrayal": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 0.9375,
+      "cos_base_vs_fresh_probe": 0.9365
+    },
+    "authority_subversion": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 0.9375,
+      "cos_base_vs_fresh_probe": 0.9281
+    },
+    "sanctity_degradation": {
+      "best_layer": 0,
+      "transfer_auc_abs": 1.0,
+      "transfer_acc": 0.9375,
+      "cos_base_vs_fresh_probe": 0.947
+    }
+  }
+}
