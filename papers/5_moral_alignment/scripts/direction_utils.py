@@ -44,6 +44,8 @@ PROBE_SEED = 42
 PROBE_EPOCHS = 50
 PROBE_LR = 1e-2
 
+_NO_CHAT_TEMPLATE_WARNED = False
+
 
 # ---------------------------------------------------------------------------
 # Activation collection
@@ -57,15 +59,21 @@ def chat_wrap(tokenizer, text: str) -> tuple[str, tuple[int, int]]:
     rendered string, used to mask template tokens when pooling.
     """
     template = getattr(tokenizer, "chat_template", None)
-    if template:
-        full = tokenizer.apply_chat_template(
-            [{"role": "user", "content": text}],
-            tokenize=False,
-            add_generation_prompt=False,
-        )
-    else:
-        logger.warning("Tokenizer has no chat_template; using OLMo-style fallback.")
-        full = f"<|im_start|>user\n{text}<|im_end|>\n"
+    if not template:
+        # Base / pretraining checkpoints have no chat template. Probe the raw
+        # text rather than fabricating <|im_start|> tokens the model never saw
+        # (which would distort its activations). Warn once per run.
+        global _NO_CHAT_TEMPLATE_WARNED
+        if not _NO_CHAT_TEMPLATE_WARNED:
+            logger.warning("Tokenizer has no chat_template; probing raw text "
+                           "(expected for base/pretraining checkpoints).")
+            _NO_CHAT_TEMPLATE_WARNED = True
+        return text, (0, len(text))
+    full = tokenizer.apply_chat_template(
+        [{"role": "user", "content": text}],
+        tokenize=False,
+        add_generation_prompt=False,
+    )
     start = full.rfind(text)
     if start < 0:  # template altered the content (rare); fall back to whole string
         logger.warning("Could not locate content span in templated string.")
