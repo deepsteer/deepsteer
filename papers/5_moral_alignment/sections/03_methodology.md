@@ -49,19 +49,57 @@ post-training preserves or restructures the moral representation.
 
 ## 3.4 Coupling: comprehension vs.\ compliance
 
-We operationalize the comprehension--compliance link on 48 morally-loaded
-scenarios, each tagged with a target foundation and an expected judgment. For
-each scenario we (i) read the residual at the stable layer at the final prompt
-token, project it onto the six foundation directions, $z$-score each
-foundation's projection across scenarios, and take the dominant foundation;
-the scenario is *comprehended* if the dominant foundation matches the target;
-(ii) generate a completion and parse its moral judgment; the scenario *complies*
-if the judgment matches the expected one. Coupling is the per-scenario agreement
-between the comprehension bit and the compliance bit, summarized by raw
-agreement and the $\phi$ correlation, plus
-$P(\text{comply}\mid\text{comprehend})$ versus
-$P(\text{comply}\mid\neg\text{comprehend})$. This needs only the reliable
-approve/disapprove judgment parser, not a six-way text classifier.
+Comprehension and compliance can each be measured on their own; the question
+this paper turns on is how tightly the first predicts the second. We measure
+that link per scenario, on the 48 moral scenarios of the behavioral benchmark
+(six foundations $\times$ four difficulty levels: obvious, moderate, subtle,
+adversarial), each annotated with a target foundation and an expected
+approve/disapprove judgment, presented through the chat template.
+
+**Comprehension signal (internal).** For a scenario we take the residual-stream
+activation at the stable layer (layer 16) at the final prompt token, the
+position from which the model begins its answer, and project it onto the six
+base-trained foundation directions. The six projections sit on different scales,
+so we $z$-score each foundation's projection across the 48 scenarios and define
+the dominant foundation as the $\arg\max$ of the $z$-scored projections. The
+scenario is \emph{comprehended} if its dominant foundation matches the annotated
+target. This is a stricter test than probe accuracy: probe accuracy asks whether
+a foundation is decodable in aggregate, whereas this asks whether the model
+places \emph{this} scenario on the right foundation at the decision point.
+Chance is $1/6 \approx 0.17$. We use the base-trained directions at every state,
+so comprehension is read on the same six axes throughout.
+
+**Compliance signal (behavioral).** We greedily generate a completion and parse
+its moral judgment; the scenario \emph{complies} if the judgment matches the
+expected one. We use this approve/disapprove judgment, not the comply/refuse
+classifier, because the former is parsed reliably from a direct ``is this
+acceptable?'' prompt while the latter is noisier on borderline requests
+(Appendix B).
+
+**Coupling statistics.** Each scenario yields two bits, comprehended and
+complied, and a $2\times2$ contingency table over the 48 scenarios. We summarize
+it three ways: raw agreement (the fraction of scenarios on which the two bits
+coincide); the $\phi$ coefficient (the Pearson correlation between the two binary
+variables, equivalently the Matthews correlation of the table), for which
+$\phi = 0$ is statistical independence; and the conditional compliance rates
+$P(\text{comply}\mid\text{comprehend})$ and
+$P(\text{comply}\mid\neg\text{comprehend})$, whose difference is the
+predictive-gap form of the same relationship. Reading all three keeps the
+agreement number from being mistaken for coupling when it is driven by the base
+rates of the two bits.
+
+**What the measure is and is not.** Coupling here is correlational: it asks
+whether the foundation the model internally activates co-varies, across
+scenarios, with whether it behaves correctly. It does not show that the moral
+representation \emph{causes} the behavior; a causal test would steer the
+foundation direction during generation and read the change in judgment, which we
+leave to future work. With 48 scenarios and keyword judgment parsing the estimate
+is noisy, and difficulty level is a partial confound we do not control, so we
+report coupling qualitatively, as the result that the two are barely linked,
+rather than as a precise coefficient. Its value is comparative: applying the
+same procedure at SFT, DPO, Instruct, and the ablated model makes the trend in
+coupling and its small magnitude interpretable even when any single coefficient
+is imprecise.
 
 ## 3.5 Persona direction
 
