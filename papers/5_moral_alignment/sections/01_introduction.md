@@ -1,0 +1,92 @@
+# 1. Introduction
+
+Does a language model that behaves morally understand morality, or has it
+only learned to comply? Earlier papers in this series studied what models
+*represent*: moral content is linearly decodable early in pre-training and
+across nearly all layers \citep{reblitzrichardson2026fragility}, is encoded
+uniformly across mixture-of-experts experts rather than specialized
+\citep{reblitzrichardson2026dilution}, and organizes into structured,
+five-dimensional framework geometry whose directions are causal for moral
+judgments \citep{reblitzrichardson2026geometry, reblitzrichardson2026causal}.
+All of that was measured on base, pre-trained models. The moral behavior we
+actually deploy and align, refusing harmful requests and giving
+morally-aware answers, is produced by *post-training*: supervised fine-tuning
+(SFT), preference optimization (DPO), and reinforcement learning with
+verifiable rewards (RLVR). This paper asks what post-training does to moral
+representation. Does alignment *teach* morality, or does it *wire* a
+pre-existing moral representation to behavior?
+
+We separate two things a model can have. **Comprehension** is the moral content
+a model internally represents: which foundation a scenario engages, how
+foundations relate, whether the representation is decodable and stable.
+**Compliance** is whether the model's behavior conforms: whether it refuses a
+harmful request, whether its stated judgment matches the morally expected one.
+A model can have either without the other. Our hypothesis is that alignment is a
+**coupling change, not a teaching change**: post-training does not create moral
+understanding, it connects understanding that pre-training already built to
+behavioral output. If so, failures of alignment, jailbreaks and ablations, are
+failures of *coupling*, not of *understanding*.
+
+We test this on the full OLMo-3 7B pipeline, which publishes every stage:
+the base model and 13 stage-3 pre-training checkpoints, the SFT and DPO
+snapshots, and the final RLVR-tuned Instruct model with 8 intermediate
+checkpoints, 25 model states in all, plus a refusal-ablated instruct.
+Across them we measure comprehension (foundation probe-direction transfer and
+geometry), compliance (behavioral moral judgment and refusal), the coupling
+between them, the persona direction and its angle to the moral subspace, and
+the geometry of the refusal direction itself. The results form a chain, in
+which each finding raises the question the next one answers.
+
+**Finding 1: Moral comprehension is a pre-training property.** Across all 25
+states the six foundations are linearly decodable at 100%, span five effective
+dimensions, and base-trained directions transfer as near-perfect classifiers
+(AUC $\approx 1.0$). The moral subspace *crystallizes* during pre-training:
+the cosine between a checkpoint's foundation directions and the final base
+model's rises monotonically from $0.87$ to $0.999$ over the stage-3 anneal.
+Comprehension is in place before any alignment.
+
+If comprehension is already present at the base, the natural question is what
+post-training changes. **Finding 2: post-training reorients moral
+representation, it does not re-teach it, and SFT does so once.** SFT applies a
+single ${\sim}40°$ rotation to the moral subspace (direction cosine to base
+$0.999 \rightarrow 0.757$); DPO and all eight RLVR checkpoints leave it flat.
+Effective dimensionality stays at five, mean pairwise foundation cosine barely
+moves ($0.262 \rightarrow 0.250$), and the framework clustering is preserved.
+Alignment rotates the moral representation slightly and then leaves it alone.
+
+If post-training preserves comprehension rather than building it, then whatever
+alignment adds to behavior must be coupled to that fixed representation only
+loosely or not at all. **Finding 3: comprehension and compliance are only
+weakly coupled, and that weak coupling is itself the result.** Per-scenario
+agreement between the model's internally dominant foundation and its behavioral
+correctness rises across post-training ($0.375 \rightarrow 0.500$; $\phi$
+$-0.19 \rightarrow +0.05$) but remains weak: even at the final Instruct model,
+$P(\text{comply} \mid \text{comprehend}) \approx P(\text{comply} \mid
+\neg\text{comprehend}) \approx 0.75$. A near-zero coupling is not a null result;
+it states that in the fully aligned model, moral representation and behavioral
+compliance are barely linked. This predicts a specific, testable consequence:
+if compliance were routed *through* moral representations, removing compliance
+would damage comprehension; weak coupling predicts instead that compliance is a
+*separate* mechanism that can be removed while comprehension survives.
+
+**Finding 4: the refusal mechanism is geometrically separate from morality, and
+removing it confirms the dissociation.** The refusal direction recovered by
+Heretic-style difference-of-means \citep{arditi2024refusal} is nearly orthogonal
+to the six-foundation moral subspace (projection fraction $0.10$, mean
+$|\cos| = 0.06$). Ablating it leaves comprehension untouched (effective
+dimensionality 5, direction transfer and probe accuracy identical to the
+un-ablated instruct) and moral judgment intact (behavioral accuracy
+$0.75 \rightarrow 0.73$), while refusal collapses (refusal rate
+$0.25 \rightarrow 0.00$): the ablated model now answers requests it previously
+refused. This is the high-comprehension, low-compliance cell of the
+dissociation, realized in a real model.
+
+Together the four findings populate a comprehension$\times$compliance matrix in
+which the low-comprehension row is empty, every OLMo-3 state has full moral
+decodability, and all variation lives in the high-comprehension row, where
+compliance moves independently of understanding. The contribution is a method
+for measuring comprehension, compliance, and their coupling across an alignment
+pipeline, and the result that alignment is a wiring step: it preserves moral
+comprehension built in pre-training and attaches a separable compliance
+mechanism, so that compliance can be removed without touching what the model
+understands.

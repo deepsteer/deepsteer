@@ -35,14 +35,19 @@ foundation cosine barely moves (0.262 → 0.250); eff-dim stays 5. The
 Loyalty–Authority binding pair persists; SFT mildly reshuffles the rest
 (Care → outlier, Sanctity↔Fairness).
 
-**F3 — Comprehension and compliance are weakly coupled.** Per-scenario
-agreement between internal moral comprehension (dominant foundation matches the
-target) and behavioral compliance rises across post-training (0.375 → 0.479 →
-0.500 for SFT → DPO → Instruct; φ −0.19 → +0.05) but stays weak: even at
-Instruct, P(comply | comprehend) ≈ P(comply | ¬comprehend) ≈ 0.75. Persona is
-decodable throughout (~0.94) but its angle to the moral subspace only edges up
-(|cos| 0.076 → 0.085) — persona-morality coupling is weak even at the final
-model.
+**F3 — Comprehension and compliance are only weakly coupled, and that weak
+coupling is the result.** Per-scenario agreement between internal moral
+comprehension (dominant foundation matches target) and behavioral compliance
+rises across post-training (0.375 → 0.479 → 0.500 for SFT → DPO → Instruct;
+φ −0.19 → +0.05) but stays weak: even at Instruct,
+P(comply | comprehend) ≈ P(comply | ¬comprehend) ≈ 0.75. φ ≈ 0.05 is not a
+failed measurement — it is informative. In the fully aligned model, moral
+representation and behavioral compliance are barely linked, and *that* is the
+vulnerability. It also *predicts F4*: if coupling were strong, refusal would
+have to live inside the moral subspace and ablating it would damage
+comprehension; weak coupling predicts refusal is a separate mechanism. Persona
+is decodable throughout (~0.94) but its angle to the moral subspace only edges
+up (|cos| 0.076 → 0.085).
 
 **F4 — The refusal mechanism is geometrically separate from morality
 (dissociation).** The Heretic refusal direction is ~orthogonal to the
@@ -52,6 +57,18 @@ probe acc 1.0 — identical to instruct) and moral judgment (MoralFoundationsPro
 0.75 → 0.73), while refusal collapses (refusal rate 0.25 → 0.00; the model now
 answers requests it previously refused). This is the high-comprehension /
 low-compliance cell of the dissociation matrix, realized.
+
+## Narrative arc (a logical chain, not a list)
+Each finding motivates the next question, and F3 sets up F4 as prediction →
+confirmation:
+- comprehension exists (F1) →
+- post-training *preserves* rather than *creates* it (F2) →
+- comprehension and compliance are only weakly coupled (F3) →
+- *therefore* compliance should be removable without touching comprehension —
+  confirmed by Heretic ablation (F4).
+Write F3 as the prediction ("if coupling were strong, ablation would damage
+comprehension") and F4 as the experiment that confirms it. Do not hedge F3 as a
+weak result; frame it as the informative finding that drives the dissociation.
 
 ## The 2×2 (real data)
 Low-comprehension row is empty (every OLMo-3 state has full moral decodability).
