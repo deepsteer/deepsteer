@@ -1,73 +1,70 @@
 #!/usr/bin/env python3
-"""Build the harmful/harmless prompt set for Heretic-style refusal ablation.
+"""Build Heretic's EXACT harmful/harmless prompt set for refusal ablation.
 
-Matches Arditi et al. (2024) methodology (sprint choice 3.1a): harmful
-instructions from AdvBench, harmless instructions from Alpaca. Samples a fixed,
-seeded subset and writes ``papers/5_moral_alignment/refusal_prompts.json`` with
-provenance, replacing the placeholder set baked into heretic_ablation.py.
+Matches p-e-w/heretic's config.default.toml verbatim (sprint choice 3.1a):
+  bad  prompts = "mlabonne/harmful_behaviors", column "text", train[:400] (+ test[:100] eval)
+  good prompts = "mlabonne/harmless_alpaca",  column "text", train[:400] (+ test[:100] eval)
+Prompts are taken in dataset order (Heretic uses "first N"), NOT randomly
+sampled, so the set reproduces Heretic exactly.
+
+Writes ``papers/5_moral_alignment/refusal_prompts.json`` with keys:
+  harmful, harmless        -> train[:n_dir]  (used to compute the refusal direction)
+  harmful_eval, harmless_eval -> test[:n_eval] (Heretic's refusal-count eval set)
 
 Usage:
-    python papers/5_moral_alignment/scripts/build_refusal_prompts.py --n 256
+    python papers/5_moral_alignment/scripts/build_refusal_prompts.py
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import random
 from pathlib import Path
 
 OUT = Path("papers/5_moral_alignment/refusal_prompts.json")
 
+# Heretic config.default.toml defaults.
+HARMFUL_DS = "mlabonne/harmful_behaviors"
+HARMLESS_DS = "mlabonne/harmless_alpaca"
+COLUMN = "text"
+
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Build AdvBench/Alpaca refusal prompts.")
-    ap.add_argument("--n", type=int, default=256, help="Prompts per class.")
-    ap.add_argument("--seed", type=int, default=42)
+    ap = argparse.ArgumentParser(description="Build Heretic's exact refusal prompt set.")
+    ap.add_argument("--n-dir", type=int, default=400, help="Train prompts per class (Heretic: 400).")
+    ap.add_argument("--n-eval", type=int, default=100, help="Test prompts per class (Heretic: 100).")
     args = ap.parse_args()
-
-    import csv
-    import io
-    import urllib.request
 
     from datasets import load_dataset
 
-    # AdvBench harmful_behaviors from the original llm-attacks repo (ungated;
-    # the HF mirror walledai/AdvBench is gated). Columns: goal, target.
-    adv_url = ("https://raw.githubusercontent.com/llm-attacks/llm-attacks/"
-               "main/data/advbench/harmful_behaviors.csv")
-    with urllib.request.urlopen(adv_url) as resp:
-        reader = csv.DictReader(io.StringIO(resp.read().decode("utf-8")))
-        harmful_all = [row["goal"].strip() for row in reader if row.get("goal", "").strip()]
+    def take(name: str, split: str, n: int) -> list[str]:
+        ds = load_dataset(name, split=split)
+        return [ds[i][COLUMN] for i in range(min(n, len(ds)))]
 
-    alp = load_dataset("tatsu-lab/alpaca", split="train")
-    # Harmless = self-contained instructions (no extra input field), de-duplicated.
-    harmless_all = list(dict.fromkeys(
-        r["instruction"].strip()
-        for r in alp
-        if not r.get("input") and r["instruction"] and r["instruction"].strip()
-    ))
-
-    rng = random.Random(args.seed)
-    n_h = min(args.n, len(harmful_all))
-    n_s = min(args.n, len(harmless_all))
-    harmful = sorted(rng.sample(harmful_all, n_h))
-    harmless = sorted(rng.sample(harmless_all, n_s))
+    harmful = take(HARMFUL_DS, "train", args.n_dir)
+    harmless = take(HARMLESS_DS, "train", args.n_dir)
+    harmful_eval = take(HARMFUL_DS, "test", args.n_eval)
+    harmless_eval = take(HARMLESS_DS, "test", args.n_eval)
 
     payload = {
         "harmful": harmful,
         "harmless": harmless,
+        "harmful_eval": harmful_eval,
+        "harmless_eval": harmless_eval,
         "provenance": {
-            "harmful_source": "llm-attacks AdvBench harmful_behaviors.csv (Zou et al. 2023, GCG)",
-            "harmless_source": "tatsu-lab/alpaca (self-contained instructions, no input)",
-            "method": "Arditi et al. 2024 refusal-direction protocol (sprint 3.1a)",
-            "n_per_class": {"harmful": n_h, "harmless": n_s},
-            "seed": args.seed,
-            "available": {"harmful": len(harmful_all), "harmless": len(harmless_all)},
+            "source": "p-e-w/heretic config.default.toml (exact set, sprint 3.1a)",
+            "harmful_dataset": HARMFUL_DS,
+            "harmless_dataset": HARMLESS_DS,
+            "column": COLUMN,
+            "selection": "first-N in dataset order (Heretic uses 'first N', not random)",
+            "n_dir_per_class": {"harmful": len(harmful), "harmless": len(harmless)},
+            "n_eval_per_class": {"harmful": len(harmful_eval), "harmless": len(harmless_eval)},
+            "note": "Heretic computes the direction as a FIRST-token difference-of-means.",
         },
     }
     OUT.write_text(json.dumps(payload, indent=2))
-    print(f"Wrote {OUT}: {n_h} harmful, {n_s} harmless")
+    print(f"Wrote {OUT}: harmful={len(harmful)} harmless={len(harmless)} "
+          f"(+eval {len(harmful_eval)}/{len(harmless_eval)})")
     print(f"  harmful[0]:  {harmful[0][:80]!r}")
     print(f"  harmless[0]: {harmless[0][:80]!r}")
 
