@@ -174,6 +174,7 @@ rsync -az --delete \
   --exclude 'build/' --exclude '.DS_Store' \
   --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
   --exclude 'ablated_model/' \
+  --exclude 'phase_c1_acts/' --exclude 'phase_c4_comp_acts/' --exclude '*_activations.npz' \
   -e "ssh ${SSH_OPTS[*]}" \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 
