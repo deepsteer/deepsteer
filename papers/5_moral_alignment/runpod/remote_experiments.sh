@@ -15,7 +15,8 @@ GRID="${GRID:-$P5/checkpoint_grid.json}"
 
 INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
 DEVICE="${DEVICE:-cuda}"
-INPUT_FORMAT="${INPUT_FORMAT:-chat}"           # Sprint 2 format (set after 1.1/1.2 decision)
+INPUT_FORMAT="${INPUT_FORMAT:-raw}"            # pipeline probing format; Sprint 1 decided raw
+                                               # (coupling + behavioral use chat internally)
 STABLE_LAYER="${STABLE_LAYER:-16}"             # in the 15-31 stable band
 
 # Step toggles (1 = run). VALIDATE=1 overrides to a cheap single-model smoke.

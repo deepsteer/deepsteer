@@ -52,11 +52,12 @@ VALIDATE=1 ./run_session.sh
 # 3. Sprint 1 (instruct de-risk): probe transfer raw+chat, behavioral, persona
 ONLY="transfer behavioral persona" ./run_session.sh
 
-# 4. Sprint 2 (full grid) with the chosen format
-INPUT_FORMAT=chat ONLY="pipeline coupling" ./run_session.sh
+# 4. Sprint 2 (full grid). Pipeline probes raw (Sprint 1 decision); coupling +
+#    behavioral use chat internally.
+ONLY="pipeline coupling" ./run_session.sh
 ```
 
-Or one shot (after the format decision): `INPUT_FORMAT=chat ./run_session.sh`.
+Or one shot: `./run_session.sh`.
 
 ### Useful env overrides
 
@@ -64,7 +65,7 @@ Or one shot (after the format decision): `INPUT_FORMAT=chat ./run_session.sh`.
 |---|---|---|
 | `VALIDATE` | 0 | 1 = cheap smoke then stop |
 | `ONLY` | (all) | `transfer behavioral persona pipeline coupling` |
-| `INPUT_FORMAT` | chat | Sprint 2 probing format (set after 1.1/1.2) |
+| `INPUT_FORMAT` | raw | pipeline probing format (Sprint 1 decided raw; coupling/behavioral use chat) |
 | `STABLE_LAYER` | 16 | coupling read layer (in the 15–31 stable band) |
 | `KEEP_POD` | 0 | 1 = leave pod running to debug |
 | `REUSE_POD_ID` | — | attach to an existing pod (no create/terminate) |

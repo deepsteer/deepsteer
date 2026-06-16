@@ -14,8 +14,8 @@
 #   2. VALIDATE=1 ./run_session.sh        # cheap ~5-15 min smoke on the pod
 #   3. inspect outputs/_validate_*, decide raw-vs-chat input format
 #   4. ONLY="transfer behavioral persona" ./run_session.sh   # Sprint 1
-#   5. INPUT_FORMAT=chat ONLY="pipeline coupling" ./run_session.sh   # Sprint 2
-#   (or one shot: INPUT_FORMAT=chat ./run_session.sh)
+#   5. ONLY="pipeline coupling" ./run_session.sh   # Sprint 2 (pipeline=raw; coupling/behavioral=chat)
+#   (or one shot: ./run_session.sh)
 #
 # Usage:
 #   export RUNPOD_API_KEY=...
@@ -44,7 +44,7 @@ REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
 # Phase 2 step config (passed through to the remote runner).
 VALIDATE="${VALIDATE:-0}"
 INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
-INPUT_FORMAT="${INPUT_FORMAT:-chat}"
+INPUT_FORMAT="${INPUT_FORMAT:-raw}"   # pipeline probing format (Sprint 1 decided raw)
 STABLE_LAYER="${STABLE_LAYER:-16}"
 RUN_TRANSFER="${RUN_TRANSFER:-1}"
 RUN_BEHAVIORAL="${RUN_BEHAVIORAL:-1}"
