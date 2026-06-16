@@ -42,6 +42,9 @@ outputs/*.log
 outputs/.DS_Store
 # Large, reproducible activation caches (results JSON are kept; *_directions.npz are not matched)
 **/*_activations.npz
+# Phase 2 pipeline per-checkpoint direction caches (~180MB across 25 states,
+# regenerable via pipeline_study.py; the results JSON hold all metrics).
+papers/5_moral_alignment/outputs/pipeline/*/probe_directions.npz
 
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt

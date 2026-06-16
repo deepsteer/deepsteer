@@ -59,10 +59,29 @@ def stage_comprehension(stage_dir: Path) -> float:
 
 def stage_compliance(stage_dir: Path) -> float:
     bb = _load(stage_dir / "behavioral_baseline.json")
-    if not bb:
+    if bb:
+        mf = bb.get("results", {}).get("moral_foundations", {})
+        if "overall_accuracy" in mf:
+            return float(mf["overall_accuracy"])
+    # Fall back to the coupling run's behavioral compliance (same 48 scenarios).
+    cp = _load(stage_dir / "coupling.json")
+    if cp and cp.get("compliance_rate") is not None:
+        return float(cp["compliance_rate"])
+    return float("nan")
+
+
+def stage_preservation(stage_dir: Path) -> float:
+    """Stable-band (L15-31) mean cos(base-trained dir, this state's fresh dir)."""
+    mp = _load(stage_dir / "moral_probing.json")
+    if not mp:
         return float("nan")
-    mf = bb.get("results", {}).get("moral_foundations", {})
-    return float(mf.get("overall_accuracy", float("nan")))
+    vals = []
+    for pl in mp.get("per_foundation", {}).values():
+        for L in range(15, 32):
+            v = pl.get(str(L), {}).get("cos_base_vs_fresh_probe")
+            if v is not None:
+                vals.append(v)
+    return float(np.mean(vals)) if vals else float("nan")
 
 
 def stage_coupling(stage_dir: Path) -> float:
@@ -126,12 +145,14 @@ def main() -> None:
     comp = [stage_comprehension(d) for _, d in stage_dirs]
     cply = [stage_compliance(d) for _, d in stage_dirs]
     coup = [stage_coupling(d) for _, d in stage_dirs]
+    pres = [stage_preservation(d) for _, d in stage_dirs]
     persona_acc, persona_ang = zip(*[stage_persona(d) for _, d in stage_dirs]) \
         if stage_dirs else ([], [])
 
-    # -- Figure 1: three-curve --
+    # -- Figure 1: three-curve (+ direction-preservation) --
     fig, ax = plt.subplots(figsize=(max(8, len(x) * 0.8), 5))
     ax.plot(x, comp, "o-", color="#43A047", label="Comprehension (probe acc)")
+    ax.plot(x, pres, "^-", color="#FB8C00", label="Direction preservation (cos base↔fresh)")
     ax.plot(x, cply, "s-", color="#E53935", label="Compliance (behavioral acc)")
     ax.plot(x, coup, "D-", color="#1E88E5", label="Coupling (agreement)")
     ax.set_xticks(x)

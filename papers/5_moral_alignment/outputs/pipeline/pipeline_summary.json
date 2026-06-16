@@ -1,0 +1,127 @@
+[
+  {
+    "label": "olmo3_pretrain_stage3_step1000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.2523
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step2000",
+    "persona_peak_acc": 0.9688,
+    "mean_geo_cosine": 0.2516
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step3000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.251
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step4000",
+    "persona_peak_acc": 0.9583,
+    "mean_geo_cosine": 0.2503
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step5000",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2534
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step6000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.2519
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step7000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.2517
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step8000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.2506
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step9000",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2508
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step10000",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.2514
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11000",
+    "persona_peak_acc": 0.9271,
+    "mean_geo_cosine": 0.252
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11900",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2521
+  },
+  {
+    "label": "olmo3_pretrain_stage3_step11921",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2521
+  },
+  {
+    "label": "olmo3_base",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2521
+  },
+  {
+    "label": "olmo3_sft_final",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2426
+  },
+  {
+    "label": "olmo3_dpo_final",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2416
+  },
+  {
+    "label": "olmo3_instruct_final",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2415
+  },
+  {
+    "label": "olmo3_instruct_step_050",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2416
+  },
+  {
+    "label": "olmo3_instruct_step_100",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2416
+  },
+  {
+    "label": "olmo3_instruct_step_150",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2416
+  },
+  {
+    "label": "olmo3_instruct_step_200",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2417
+  },
+  {
+    "label": "olmo3_instruct_step_250",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2419
+  },
+  {
+    "label": "olmo3_instruct_step_300",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2419
+  },
+  {
+    "label": "olmo3_instruct_step_350",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2419
+  },
+  {
+    "label": "olmo3_instruct_step_400",
+    "persona_peak_acc": 0.9375,
+    "mean_geo_cosine": 0.2418
+  }
+]
