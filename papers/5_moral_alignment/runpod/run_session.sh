@@ -150,6 +150,8 @@ for _ in $(seq 1 90); do
 done
 [ -n "$SSH_HOST" ] || { echo "ERROR: pod never exposed an SSH endpoint"; exit 1; }
 echo ">> SSH endpoint: root@$SSH_HOST:$SSH_PORT"
+echo ">> Log in from another terminal:"
+echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST"
 
 SSH_OPTS=(-p "$SSH_PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10)
 echo ">> Waiting for sshd..."
