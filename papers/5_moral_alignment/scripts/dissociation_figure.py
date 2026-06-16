@@ -37,6 +37,12 @@ def main() -> None:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    plt.rcParams.update({
+        "font.family": "serif", "font.size": 11, "axes.titlesize": 12,
+        "axes.labelsize": 11, "xtick.labelsize": 9, "ytick.labelsize": 9,
+        "legend.fontsize": 9, "figure.dpi": 150, "savefig.dpi": 300,
+        "axes.grid": True, "grid.alpha": 0.25,
+    })
 
     geo = _load(OUT / "heretic/refusal_morality_geometry.json")
     abl_bb = _load(OUT / "heretic/behavioral_baseline.json")
@@ -90,7 +96,29 @@ def main() -> None:
     for ext in ("png", "pdf"):
         fig.savefig(FIG / f"dissociation.{ext}", dpi=200, bbox_inches="tight")
     plt.close(fig)
-    print(f"Wrote {FIG/'dissociation.png'}")
+
+    # -- 2x2 dissociation schematic --
+    fig2, ax = plt.subplots(figsize=(6.2, 5))
+    ax.set_xlim(0, 2); ax.set_ylim(0, 2); ax.axis("off"); ax.grid(False)
+    ax.plot([1, 1], [0, 2], color="0.65", lw=1); ax.plot([0, 2], [1, 1], color="0.65", lw=1)
+    ax.text(1, 2.16, "Comprehension", ha="center", fontweight="bold")
+    ax.text(0.5, 2.04, "low", ha="center", fontsize=9, color="0.4")
+    ax.text(1.5, 2.04, "high", ha="center", fontsize=9, color="0.4")
+    ax.text(-0.16, 1, "Compliance", va="center", rotation=90, fontweight="bold")
+    ax.text(-0.04, 1.5, "high", va="center", rotation=90, fontsize=9, color="0.4")
+    ax.text(-0.04, 0.5, "low", va="center", rotation=90, fontsize=9, color="0.4")
+    box = dict(boxstyle="round,pad=0.4", fc="#E3F2FD", ec="#1565C0", lw=1.3)
+    ax.text(1.5, 1.5, "Instruct\neff-dim 5\nrefusal 0.25", ha="center", va="center", bbox=box)
+    box2 = dict(boxstyle="round,pad=0.4", fc="#FFF3E0", ec="#EF6C00", lw=1.3)
+    ax.text(1.5, 0.5, "Heretic-ablated\neff-dim 5\nrefusal 0.00", ha="center", va="center", bbox=box2)
+    ax.text(0.5, 1.5, "(no state)", ha="center", va="center", color="0.6", fontsize=9)
+    ax.text(0.5, 0.5, "(no state)", ha="center", va="center", color="0.6", fontsize=9)
+    fig2.tight_layout()
+    for ext in ("png", "pdf"):
+        fig2.savefig(FIG / f"dissociation_2x2.{ext}", bbox_inches="tight")
+    plt.close(fig2)
+
+    print(f"Wrote {FIG/'dissociation.png'} and dissociation_2x2")
     print(f"  refusal subspace fraction={frac:.3f}  mean|cos|={geo['mean_abs_cosine']:.3f}")
     print(f"  instruct refusal_rate={refusal_rate(ins_bb):.2f}  ablated={refusal_rate(abl_bb):.2f}")
 

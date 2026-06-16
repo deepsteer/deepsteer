@@ -64,8 +64,19 @@ individualizing foundations (Care becomes an outlier; Sanctity pairs with
 Fairness). Per-stage cosine matrices (\Cref{fig:grid}, Appendix) show the same:
 post-training applies a small rigid-ish rotation, not a restructuring. The 8
 full-attention layers of OLMo-3's hybrid attention (layers 3, 7, \dots, 31) show
-no periodicity in any layer-wise metric; the moral geometry is unaffected by
-attention type (Section 3).
+no periodicity in any layer-wise metric (\Cref{fig:layer}); the moral geometry is
+unaffected by attention type (Section 3).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{layerwise_geometry}
+\caption{Framework geometry by layer. (a) Mean pairwise foundation cosine for
+base and Instruct nearly coincide at every layer, and the 8 full-attention
+layers (dotted) show no periodic deviation. (b) Base-direction preservation
+$\cos(\text{base},\text{fresh})$ by layer for Instruct: high in the earliest
+layers, ${\sim}0.75$ through the stable band, lower near the output.}
+\label{fig:layer}
+\end{figure}
 
 ## 4.3 Comprehension and compliance are only weakly coupled
 
@@ -134,7 +145,7 @@ that") the ablated model now attempts (\Cref{fig:diss}, right).
 ## 4.5 The dissociation matrix
 
 These results populate a comprehension$\times$compliance matrix
-(\Cref{tab:twobytwo}). The low-comprehension row is empty: every OLMo-3 state,
+(\Cref{fig:twobytwo}). The low-comprehension row is empty: every OLMo-3 state,
 from the earliest pre-training checkpoint to the ablated model, has full moral
 decodability. All variation lives in the high-comprehension row, where
 compliance moves independently of understanding. Instruct sits at high
@@ -142,18 +153,12 @@ comprehension with refusal intact; the ablated model sits at high comprehension
 with refusal removed. There is no state that understands morality less; there
 are states that comply less while understanding exactly as much.
 
-\begin{table}[t]
+\begin{figure}[t]
 \centering
-\caption{The dissociation matrix, populated. Comprehension is measured by
-effective dimensionality and probe accuracy; compliance by refusal rate on
-harmful requests.}
-\label{tab:twobytwo}
-\begin{tabular}{lll}
-\toprule
- & Low comprehension & High comprehension \\
-\midrule
-High compliance & --- & Instruct (eff-dim 5, refusal 0.25) \\
-Low compliance  & --- & Ablated (eff-dim 5, refusal 0.00) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=0.62\linewidth]{dissociation_2x2}
+\caption{The dissociation matrix, populated. The low-comprehension column is
+empty: every OLMo-3 state has full comprehension (effective dimensionality 5).
+The two populated cells differ only in compliance (refusal rate on harmful
+requests): Instruct refuses, the refusal-ablated model does not.}
+\label{fig:twobytwo}
+\end{figure}
