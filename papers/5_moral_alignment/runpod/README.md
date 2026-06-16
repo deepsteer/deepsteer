@@ -16,6 +16,10 @@ the pipeline sweep. Mitigations baked in:
   checkpoints can't comply, so coupling there is uninformative).
 - Step toggles (`ONLY=`, `RUN_*`) and a cheap `VALIDATE=1` smoke avoid paying
   for the full sweep before the code path is confirmed on the pod.
+- The repo sync ships only the `deepsteer` package + **this paper's** outputs
+  (~37 MB). Shared excludes in `papers/runpod_common/rsync_exclude.txt` drop
+  model blobs, activation caches, and every other paper's outputs; each launcher
+  re-includes just its own via `--include '/papers/<self>/outputs/***'`.
 
 Rough estimate: validation ~5–15 min; Sprint 1 ~30–45 min; Sprint 2 pipeline
 ~2 h (download-bound) + coupling ~20 min. Whole session well under the

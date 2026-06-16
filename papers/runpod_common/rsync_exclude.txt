@@ -1,0 +1,39 @@
+# Shared rsync excludes for all DeepSteer RunPod syncs (rsync --exclude-from).
+#
+# These are the UNIVERSAL "never ship over the wire" patterns. They are applied
+# FIRST (highest precedence), so a per-paper output include cannot accidentally
+# re-add a model blob.
+#
+# Each launcher appends, AFTER this file, two filters to keep only its OWN
+# paper's outputs:
+#     --include '/papers/<self_paper>/outputs/***'
+#     --exclude '/papers/*/outputs/'
+# Result: the deepsteer package + the launching paper's outputs (small
+# directions .npz / results .json) sync; every other paper's outputs and all
+# large blobs are skipped.
+
+# VCS / build / editor / OS
+.git/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+build/
+.DS_Store
+
+# Model weights / adapters (re-downloaded on the pod from HF)
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+ablated_model/
+
+# Large reproducible activation caches
+phase_c1_acts/
+phase_c4_comp_acts/
+*_activations.npz
+
+# Logs / run sentinels
+*.log
+.session_done

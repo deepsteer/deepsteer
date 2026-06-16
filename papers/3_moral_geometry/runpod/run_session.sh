@@ -43,6 +43,10 @@ DIRECTIONS_NPZ="${DIRECTIONS_NPZ:-papers/3_moral_geometry/outputs/exp1_2_3_7B/ex
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
 
+# Standardized sync: shared universal excludes + keep only THIS paper's outputs.
+SELF_PAPER="papers/3_moral_geometry"
+RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
+
 # Step toggles passed through to the remote runner.
 RUN_BENCH="${RUN_BENCH:-1}"
 RUN_BOOTSTRAP="${RUN_BOOTSTRAP:-1}"
@@ -169,14 +173,13 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    { apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rsync; } || \
    { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
 
-echo ">> Syncing repo -> pod:$REMOTE_DIR"
-# Exclude large model/cache blobs (SAE caches, checkpoints) — multi-GB and not
-# needed by any RunPod step. The needed inputs are .json/.npz/.py/datasets.
+echo ">> Syncing repo -> pod:$REMOTE_DIR (this paper's outputs + package only; blobs/other papers excluded)"
+# Filter order matters: shared universal excludes (blobs/caches) win first, then
+# keep THIS paper's outputs, then drop every other paper's outputs.
 rsync -az --delete \
-  --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' \
-  --exclude '.venv' --exclude 'venv' --exclude '*.egg-info' \
-  --exclude 'build/' --exclude '.DS_Store' \
-  --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
+  --exclude-from "$RSYNC_EXCLUDE" \
+  --include "/$SELF_PAPER/outputs/***" \
+  --exclude '/papers/*/outputs/' \
   -e "ssh ${SSH_OPTS[*]}" \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 

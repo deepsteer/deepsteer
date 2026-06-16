@@ -55,6 +55,10 @@ RUN_COUPLING="${RUN_COUPLING:-1}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
 
+# Standardized sync: shared universal excludes + keep only THIS paper's outputs.
+SELF_PAPER="papers/5_moral_alignment"
+RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
+
 # ONLY="pipeline coupling" runs just the named step(s); forces others off.
 if [ -n "${ONLY:-}" ]; then
   RUN_TRANSFER=0; RUN_BEHAVIORAL=0; RUN_PERSONA=0; RUN_PIPELINE=0; RUN_COUPLING=0
@@ -167,14 +171,13 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    { apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rsync; } || \
    { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
 
-echo ">> Syncing repo -> pod:$REMOTE_DIR (base directions .npz/.json included; model blobs excluded)"
+echo ">> Syncing repo -> pod:$REMOTE_DIR (this paper's outputs + package only; blobs/other papers excluded)"
+# Filter order matters: shared universal excludes (blobs/caches) win first, then
+# keep THIS paper's outputs, then drop every other paper's outputs.
 rsync -az --delete \
-  --exclude '.git' --exclude '__pycache__' --exclude '*.pyc' \
-  --exclude '.venv' --exclude 'venv' --exclude '*.egg-info' \
-  --exclude 'build/' --exclude '.DS_Store' \
-  --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
-  --exclude 'ablated_model/' \
-  --exclude 'phase_c1_acts/' --exclude 'phase_c4_comp_acts/' --exclude '*_activations.npz' \
+  --exclude-from "$RSYNC_EXCLUDE" \
+  --include "/$SELF_PAPER/outputs/***" \
+  --exclude '/papers/*/outputs/' \
   -e "ssh ${SSH_OPTS[*]}" \
   "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 
