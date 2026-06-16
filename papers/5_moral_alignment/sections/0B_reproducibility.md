@@ -36,6 +36,10 @@ processing. Commands are in `papers/5_moral_alignment/runpod/`
 ablation). Per-state results JSON are committed under `outputs/`; per-checkpoint
 direction caches are regenerable and not committed.
 
-**Note on references.** The bibliography of this rough draft includes entries
-added for this paper that have not yet been audited against primary sources;
-a citation-verification pass is pending before submission.
+**Note on references.** External citations were verified against primary
+sources (arXiv abstract pages and publisher records): the refusal-direction
+\citep{arditi2024refusal}, alignment-faking \citep{greenblatt2024faking},
+persona-features \citep{wang2025persona}, OLMo-3 \citep{olmo3_2025}, and
+Heretic \citep{pew2025heretic} entries were confirmed for title, first author,
+and identifier. The companion-paper entries (Papers 1--4 of this series) cite
+working titles.
