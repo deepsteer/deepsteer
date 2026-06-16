@@ -48,7 +48,7 @@ Comprehension is in place before any alignment.
 If comprehension is already present at the base, the natural question is what
 post-training changes. **Finding 2: post-training reorients moral
 representation, it does not re-teach it, and SFT does so once.** SFT applies a
-single ${\sim}40°$ rotation to the moral subspace (direction cosine to base
+single ${\sim}40^{\circ}$ rotation to the moral subspace (direction cosine to base
 $0.999 \rightarrow 0.757$); DPO and all eight RLVR checkpoints leave it flat.
 Effective dimensionality stays at five, mean pairwise foundation cosine barely
 moves ($0.262 \rightarrow 0.250$), and the framework clustering is preserved.

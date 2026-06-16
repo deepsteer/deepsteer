@@ -1,0 +1,137 @@
+% main.tex — Paper 5: From Comprehension to Compliance.
+% arXiv-targeted; NeurIPS 2025 preprint style.
+%
+% Build:  make pdf   (pandoc per section -> latexmk)
+% Section .tex live in build/sections/<NN>.tex (generated from ../sections/<NN>.md).
+
+\documentclass{article}
+
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+\setlength{\emergencystretch}{3em}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+\Urlmuskip=0mu plus 1mu
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\providecommand{\real}[1]{#1}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{graphicx}
+\graphicspath{{../figures/}{../outputs/figures/}}
+\usepackage{xcolor}
+
+\usepackage[colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalize, noabbrev]{cleveref}
+
+\title{From Comprehension to Compliance: How Post-Training Couples Moral
+Representations to Model Behavior in Language Models}
+
+\author{%
+  Orion Reblitz-Richardson\thanks{%
+    Distiller Labs. Correspondence to Distiller Labs
+    \textless\texttt{orion@orionr.com}\textgreater.}
+}
+
+\date{June 2026}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcounter{none}
+
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\textbf{#1}}
+\newcommand{\StringTok}[1]{\textit{#1}}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ImportTok}[1]{\textbf{#1}}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\AttributeTok}[1]{#1}
+
+% =====================================================================
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Does a language model that behaves morally understand morality, or has it only
+learned to comply? We separate moral \emph{comprehension} (what a model
+internally represents) from \emph{compliance} (how it behaves) and track both
+across the full OLMo-3 7B alignment pipeline, 25 model states spanning base,
+13 pre-training checkpoints, SFT, DPO, and RLVR, plus a refusal-ablated model.
+Moral comprehension is a pre-training property: the six Moral Foundations are
+linearly decodable at 100\%, span five effective dimensions, and transfer as
+near-perfect classifiers at every stage, with the moral subspace crystallizing
+during pre-training (direction cosine to the final base $0.87 \to 0.999$).
+Post-training reorients rather than re-teaches: SFT rotates the subspace
+${\sim}40^{\circ}$ once, while DPO and RLVR leave it unchanged. Comprehension and
+behavioral compliance are only weakly coupled ($\phi \approx 0.05$ even in the
+fully aligned model), which predicts that compliance is a separable mechanism.
+A Heretic-style refusal direction is nearly orthogonal to the moral subspace
+(projection fraction $0.10$); ablating it removes refusal while leaving
+comprehension and moral judgment intact. Alignment is a wiring step, not a
+teaching step: it couples a separable compliance mechanism to moral
+representations that pre-training already built.
+\end{abstract}
+
+% =====================================================================
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_methodology.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_conclusion.tex}
+
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code agent on
+Opus~4.8) for code scaffolding, experimental scripts, and prose drafting. The
+author retains responsibility for experimental design, all scientific claims,
+and final wording.
+\end{ack}
+
+\bibliography{references}
+
+\appendix
+\newpage
+\begin{center}
+  \rule{0.5\linewidth}{0.4pt}\\[0.6em]
+  {\Large\bfseries Appendices}\\[0.25em]
+  {\small Supplementary material.}\\[0.4em]
+  \rule{0.5\linewidth}{0.4pt}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/0A_tables.tex}
+\input{sections/0B_reproducibility.tex}
+
+\end{document}
