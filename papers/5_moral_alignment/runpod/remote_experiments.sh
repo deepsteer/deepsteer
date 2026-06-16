@@ -27,6 +27,8 @@ RUN_BEHAVIORAL="${RUN_BEHAVIORAL:-1}"  # Sprint 1.5: behavioral baseline (instru
 RUN_PERSONA="${RUN_PERSONA:-1}"        # Sprint 1.4: persona probe on instruct
 RUN_PIPELINE="${RUN_PIPELINE:-1}"      # Sprint 2.2: full grid probing + geometry
 RUN_COUPLING="${RUN_COUPLING:-1}"      # Sprint 2.3: coupling on post-training states
+RUN_HERETIC="${RUN_HERETIC:-0}"        # Sprint 3: refusal ablation + post-ablation battery
+REFUSAL_PROMPTS="${REFUSAL_PROMPTS:-$P5/refusal_prompts.json}"
 
 # Post-training states for coupling (instruct-capable only; pretraining ckpts
 # can't comply, so coupling there is uninformative). "label repo revision".
@@ -139,8 +141,39 @@ PY
   done <<< "$COUPLING_SPECS"
 fi
 
+# ------------------------------- SPRINT 3 ------------------------------------
+# Refusal ablation (Arditi single-direction) on instruct, then the post-ablation
+# battery: the high-comprehension / low-compliance ("psychopath") cell.
+if [ "$RUN_HERETIC" = 1 ]; then
+  run_step "3.1 heretic ablation (instruct)" \
+    python "$SCRIPTS/heretic_ablation.py" --model "$INSTRUCT_MODEL" \
+      --prompts "$REFUSAL_PROMPTS" \
+      --moral-npz "$BASE_DIR/exp1_probe_directions.npz" \
+      --refusal-layer "$STABLE_LAYER" --input-format chat --device "$DEVICE" \
+      --output-dir "$OUT/heretic"
+  ABL="$OUT/heretic/ablated_model"
+  if [ -d "$ABL" ]; then
+    # Probe the ablated model like any other pipeline state (lands in pipeline/).
+    echo "[{\"label\":\"olmo3_ablated\",\"repo\":\"$ABL\",\"revision\":null}]" \
+      > "$OUT/heretic/ablated_grid.json"
+    run_step "3.3 ablated: probing + geometry + persona" \
+      python "$SCRIPTS/pipeline_study.py" --grid "$OUT/heretic/ablated_grid.json" \
+        --base-dir "$BASE_DIR" --input-format "$INPUT_FORMAT" --device "$DEVICE" \
+        --output-dir "$OUT/pipeline"
+    run_step "3.3 ablated: coupling" \
+      python "$SCRIPTS/coupling_measurement.py" --model "$ABL" \
+        --probe-dir "$BASE_DIR" --layer "$STABLE_LAYER" --input-format chat \
+        --device "$DEVICE" --output-dir "$OUT/pipeline/olmo3_ablated"
+    run_step "3.3 ablated: behavioral (expect compliance collapse)" \
+      python "$SCRIPTS/behavioral_baseline.py" --model "$ABL" --benchmark both \
+        --input-format chat --device "$DEVICE" --output-dir "$OUT/heretic"
+  else
+    echo "WARN: ablated model not at $ABL; skipping post-ablation battery."
+  fi
+fi
+
 log "Session complete. Output directories:"
-ls -d "$OUT"/olmo3_instruct* "$OUT"/pipeline 2>/dev/null || true
+ls -d "$OUT"/olmo3_instruct* "$OUT"/pipeline "$OUT"/heretic 2>/dev/null || true
 
 # Completion sentinel the launcher polls for (survives SSH drops).
 touch "$REPO_DIR/.session_done"

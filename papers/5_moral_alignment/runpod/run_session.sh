@@ -51,6 +51,7 @@ RUN_BEHAVIORAL="${RUN_BEHAVIORAL:-1}"
 RUN_PERSONA="${RUN_PERSONA:-1}"
 RUN_PIPELINE="${RUN_PIPELINE:-1}"
 RUN_COUPLING="${RUN_COUPLING:-1}"
+RUN_HERETIC="${RUN_HERETIC:-0}"   # Sprint 3 (off by default; ONLY=heretic to run)
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
@@ -61,7 +62,7 @@ RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 
 # ONLY="pipeline coupling" runs just the named step(s); forces others off.
 if [ -n "${ONLY:-}" ]; then
-  RUN_TRANSFER=0; RUN_BEHAVIORAL=0; RUN_PERSONA=0; RUN_PIPELINE=0; RUN_COUPLING=0
+  RUN_TRANSFER=0; RUN_BEHAVIORAL=0; RUN_PERSONA=0; RUN_PIPELINE=0; RUN_COUPLING=0; RUN_HERETIC=0
   for _s in $ONLY; do
     case "$_s" in
       transfer) RUN_TRANSFER=1 ;;
@@ -69,10 +70,11 @@ if [ -n "${ONLY:-}" ]; then
       persona) RUN_PERSONA=1 ;;
       pipeline) RUN_PIPELINE=1 ;;
       coupling) RUN_COUPLING=1 ;;
+      heretic) RUN_HERETIC=1 ;;
       *) echo "WARN: unknown ONLY step '$_s'" ;;
     esac
   done
-  echo ">> ONLY='$ONLY' -> transfer=$RUN_TRANSFER behavioral=$RUN_BEHAVIORAL persona=$RUN_PERSONA pipeline=$RUN_PIPELINE coupling=$RUN_COUPLING"
+  echo ">> ONLY='$ONLY' -> transfer=$RUN_TRANSFER behavioral=$RUN_BEHAVIORAL persona=$RUN_PERSONA pipeline=$RUN_PIPELINE coupling=$RUN_COUPLING heretic=$RUN_HERETIC"
 fi
 
 for bin in curl jq ssh rsync; do
@@ -193,7 +195,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      VALIDATE=$VALIDATE INSTRUCT_MODEL='$INSTRUCT_MODEL' \
      INPUT_FORMAT='$INPUT_FORMAT' STABLE_LAYER=$STABLE_LAYER \
      RUN_TRANSFER=$RUN_TRANSFER RUN_BEHAVIORAL=$RUN_BEHAVIORAL RUN_PERSONA=$RUN_PERSONA \
-     RUN_PIPELINE=$RUN_PIPELINE RUN_COUPLING=$RUN_COUPLING \
+     RUN_PIPELINE=$RUN_PIPELINE RUN_COUPLING=$RUN_COUPLING RUN_HERETIC=$RUN_HERETIC \
      setsid bash papers/5_moral_alignment/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."

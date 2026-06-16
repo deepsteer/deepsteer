@@ -78,7 +78,27 @@ python papers/5_moral_alignment/scripts/pipeline_figures.py \
     --pipeline-dir papers/5_moral_alignment/outputs/pipeline --layer 16
 ```
 
-Sprint 3 (Heretic ablation) is a separate, shorter session — run
-`heretic_ablation.py` with a real Arditi/Heretic harmful/harmless prompt set
-(replace the placeholder) and re-run the measurement battery on the ablated
-model.
+## Sprint 3 — Heretic ablation (separate, shorter session)
+
+The harmful/harmless prompt set (AdvBench + Alpaca, Arditi protocol) is built
+once, locally, and committed:
+
+```bash
+python papers/5_moral_alignment/scripts/build_refusal_prompts.py --n 256
+```
+
+Then one push-button GPU session ablates the refusal direction from instruct and
+runs the full post-ablation battery (probing + geometry + persona + coupling +
+behavioral) — the high-comprehension / low-compliance cell:
+
+```bash
+ONLY="heretic" ./run_session.sh
+```
+
+Outputs land in `outputs/heretic/` (refusal-morality geometry, ablation metadata)
+and `outputs/pipeline/olmo3_ablated/` (probing/geometry/persona/coupling). The
+14 GB ablated model stays on the pod (excluded from download). Prediction:
+geometry preserved (eff-dim 5, cos ≈ instruct), behavioral compliance collapses,
+and the refusal direction's overlap with the moral subspace tells us whether
+alignment routes compliance *through* moral representations or as a separate
+mechanism.
