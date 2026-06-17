@@ -6,6 +6,12 @@ Exception: lora_experiment.py is Validated (Paper 1, condition C3).
 
 from __future__ import annotations
 
+from deepsteer.steering.ablation_resistance import (
+    DEFAULT_ART_LAMBDA,
+    AblationResistanceSteering,
+    build_subspace_basis,
+    load_foundation_directions,
+)
 from deepsteer.steering.chat_lora_trainer import (
     OLMO2_CHAT_TEMPLATE,
     ChatLoRAResult,
@@ -30,12 +36,16 @@ from deepsteer.steering.training_time_steering import (
 )
 
 __all__ = [
+    "AblationResistanceSteering",
     "ChatLoRAResult",
     "ChatLoRATrainer",
     "ChatSFTDataset",
     "DataMixer",
+    "DEFAULT_ART_LAMBDA",
     "DEFAULT_ACTIVATION_PATCH_GAMMA",
     "DEFAULT_GRADIENT_PENALTY_LAMBDA",
+    "build_subspace_basis",
+    "load_foundation_directions",
     "LoRATrainer",
     "OLMO2_CHAT_TEMPLATE",
     "ProbeMonitor",

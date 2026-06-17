@@ -45,8 +45,13 @@ DEP_KIND="${DEP_KIND:-probe}"          # moral direction kind to ablate (probe|m
 PER_STATE="${PER_STATE:-0}"            # 1 -> ablate each state's own directions
 DATASET_TARGET="${DATASET_TARGET:-40}" # probing pairs per foundation
 RUN_DEPENDENCY="${RUN_DEPENDENCY:-1}"  # Sprint 5.2: moral dependency across the grid
-RUN_ART_SFT="${RUN_ART_SFT:-0}"        # Sprint 6 (auto-skips until art_sft.py exists)
+RUN_ART_SFT="${RUN_ART_SFT:-0}"        # Sprint 6.4: control-SFT + ART-SFT training
 RUN_EVAL="${RUN_EVAL:-0}"              # Sprint 7 (auto-skips until eval_pipeline.py exists)
+# Sprint 6 ART knobs (used when RUN_ART_SFT=1).
+ART_LAMBDA="${ART_LAMBDA:-0.01}"
+ART_MAX_STEPS="${ART_MAX_STEPS:-400}"
+N_GENERAL="${N_GENERAL:-1500}"
+N_MORAL="${N_MORAL:-1500}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
@@ -205,6 +210,8 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE DEP_KIND='$DEP_KIND' PER_STATE=$PER_STATE \
      DATASET_TARGET=$DATASET_TARGET \
+     ART_LAMBDA=$ART_LAMBDA ART_MAX_STEPS=$ART_MAX_STEPS \
+     N_GENERAL=$N_GENERAL N_MORAL=$N_MORAL \
      RUN_DEPENDENCY=$RUN_DEPENDENCY RUN_ART_SFT=$RUN_ART_SFT RUN_EVAL=$RUN_EVAL \
      setsid bash papers/6_ablation_resistance/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
@@ -229,9 +236,13 @@ echo ">> Experiments finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
 echo ">> Downloading results (model blobs excluded)"
+# Excludes the 14 GB weight blobs (only the small LoRA adapters + result JSON
+# come back): model shards, the Heretic-ablated models, and the eval-time
+# reconstructed merged models. Adapters (outputs/*/adapter) are NOT matched, so
+# they download — they are the durable artifact.
 rsync -az \
   --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
-  --exclude 'ablated_model/' --exclude 'merged_model/' \
+  --exclude 'ablated_model/' --exclude 'merged_model/' --exclude '_merged/' \
   -e "ssh ${SSH_OPTS[*]}" \
   "root@$SSH_HOST:$REMOTE_DIR/papers/6_ablation_resistance/outputs/" \
   "$REPO_ROOT/papers/6_ablation_resistance/outputs/"

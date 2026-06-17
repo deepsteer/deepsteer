@@ -55,6 +55,8 @@ class ChatLoRAStep:
     lr: float
     n_assistant_tokens: int
     aux_loss: float | None = None
+    art_loss: float | None = None
+    art_gap: float | None = None
 
 
 @dataclass
@@ -84,7 +86,8 @@ class ChatLoRAResult:
             "steps": [
                 {"step": s.step, "loss": s.loss, "lr": s.lr,
                  "n_assistant_tokens": s.n_assistant_tokens,
-                 "aux_loss": s.aux_loss}
+                 "aux_loss": s.aux_loss, "art_loss": s.art_loss,
+                 "art_gap": s.art_gap}
                 for s in self.steps
             ],
             "eval_snapshots": self.eval_snapshots,
@@ -289,6 +292,9 @@ class ChatLoRATrainer:
         steering: Any = None,
         steering_calibrate: bool = False,
         steering_target_ratio: float = 0.10,
+        art_steering: Any = None,
+        art_calibrate: bool = False,
+        art_target_ratio: float = 0.10,
     ) -> None:
         self._model = model
         self._conversations = conversations
@@ -312,6 +318,13 @@ class ChatLoRATrainer:
         self._steering = steering
         self._steering_calibrate = steering_calibrate
         self._steering_target_ratio = steering_target_ratio
+        # Optional :class:`AblationResistanceSteering` (Sprint 6 ART). Separate
+        # from ``steering`` because ART runs a second, ablated forward pass per
+        # step rather than reading a captured activation. Typed Any to avoid the
+        # import cycle (the steering module imports from this file).
+        self._art_steering = art_steering
+        self._art_calibrate = art_calibrate
+        self._art_target_ratio = art_target_ratio
 
     @property
     def model(self) -> WhiteBoxModel:
@@ -403,6 +416,8 @@ class ChatLoRATrainer:
         # the layer indices resolve correctly under the PEFT wrapper).
         if self._steering is not None:
             self._steering.attach(self._model)
+        if self._art_steering is not None:
+            self._art_steering.attach(self._model)
 
         logger.info("Eval at step 0 (pre-training)...")
         snapshots.append(self._run_eval(0))
@@ -465,6 +480,38 @@ class ChatLoRATrainer:
 
                 loss = loss + aux_loss
 
+            # NEW: ablation-resistance (ART) term — runs a second, ablated
+            # forward and rewards the model when ablation widens the gap.
+            # normal_loss is the PURE SFT loss (sft_loss_value), so an active
+            # gradient_penalty aux term does not contaminate the gap.
+            art_loss_value: float | None = None
+            art_gap_value: float | None = None
+            if self._art_steering is not None:
+                art_loss = self._art_steering.compute_art_loss(
+                    self._model, input_ids=input_ids, attention_mask=attention_mask,
+                    labels=labels, normal_loss=sft_loss_value,
+                )
+                if self._art_calibrate and step == 1:
+                    new_lambda = self._art_steering.calibrate_coefficient(
+                        first_batch_sft_loss=sft_loss_value,
+                        first_batch_gap=self._art_steering.last_gap or 0.0,
+                        target_ratio=self._art_target_ratio,
+                    )
+                    logger.info(
+                        "ART calibration: λ %.5f → %.5f (sft=%.3f, gap=%.4f, "
+                        "target ratio=%.2f)",
+                        self._art_steering.coefficient, new_lambda, sft_loss_value,
+                        self._art_steering.last_gap or 0.0, self._art_target_ratio,
+                    )
+                    self._art_steering.set_coefficient(new_lambda)
+                    art_loss = self._art_steering.compute_art_loss(
+                        self._model, input_ids=input_ids, attention_mask=attention_mask,
+                        labels=labels, normal_loss=sft_loss_value,
+                    )
+                art_loss_value = float(art_loss.detach().item())
+                art_gap_value = self._art_steering.last_gap
+                loss = loss + art_loss
+
             if torch.isnan(loss):
                 logger.warning("NaN loss at step %d, skipping", step)
                 optimizer.zero_grad()
@@ -485,12 +532,20 @@ class ChatLoRATrainer:
                 lr=scheduler.get_last_lr()[0],
                 n_assistant_tokens=n_asst,
                 aux_loss=aux_loss_value,
+                art_loss=art_loss_value,
+                art_gap=art_gap_value,
             )
             steps.append(step_record)
 
             if step % 10 == 0:
                 elapsed = time.time() - t0
-                if aux_loss_value is not None:
+                if art_loss_value is not None:
+                    logger.info(
+                        "  Step %d/%d: sft=%.4f art=%.4f gap=%.4f lr=%.2e (%.1fs)",
+                        step, self._max_steps, sft_loss_value, art_loss_value,
+                        art_gap_value or 0.0, scheduler.get_last_lr()[0], elapsed,
+                    )
+                elif aux_loss_value is not None:
                     logger.info(
                         "  Step %d/%d: sft=%.4f aux=%.4f lr=%.2e (%.1fs)",
                         step, self._max_steps, sft_loss_value, aux_loss_value,
@@ -514,6 +569,8 @@ class ChatLoRATrainer:
         # runs on this model sees an unpatched, normal forward pass.
         if self._steering is not None:
             self._steering.detach()
+        if self._art_steering is not None:
+            self._art_steering.detach()
 
         total_time = time.time() - t0
 
@@ -547,6 +604,14 @@ class ChatLoRATrainer:
                 "coefficient": self._steering.coefficient,
                 "calibrated": self._steering_calibrate,
                 "target_ratio": self._steering_target_ratio,
+            }
+        if self._art_steering is not None:
+            training_config["art_steering"] = {
+                "coefficient": self._art_steering.coefficient,
+                "n_directions": self._art_steering.n_directions,
+                "n_layers": len(self._art_steering.target_layers),
+                "calibrated": self._art_calibrate,
+                "target_ratio": self._art_target_ratio,
             }
 
         result = ChatLoRAResult(

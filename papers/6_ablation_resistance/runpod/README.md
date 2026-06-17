@@ -59,9 +59,12 @@ Steps are toggled by env vars (`1` = run). Defaults:
 
 | Toggle | Default | Step | Notes |
 |---|---|---|---|
-| `RUN_DEPENDENCY` | 1 | Sprint 5.2 moral dependency across the grid | 25 states; `--purge-hf-cache` keeps disk near one 7B. Main cost. |
-| `RUN_ART_SFT` | 0 | Sprint 6 ART-SFT | **Auto-skips** until `scripts/art_sft.py` exists. |
-| `RUN_EVAL` | 0 | Sprint 7 post-ART eval | **Auto-skips** until `scripts/eval_pipeline.py` exists. |
+| `RUN_DEPENDENCY` | 1 | Sprint 5.2 moral dependency across the grid | 25 states; `--purge-hf-cache` keeps disk near one 7B. |
+| `RUN_ART_SFT` | 0 | Sprint 6.4 control-SFT + ART-SFT | Preps the Tülu 3 general+moral mix, then trains both (LoRA). Saves **adapters only** (`--no-merge`). `ONLY=art`. |
+| `RUN_EVAL` | 0 | Sprint 7 post-ART battery + Heretic | Reconstructs merged models from adapters, runs the 4-cell comparison into `outputs/eval/`. `ONLY=eval`. |
+
+Sprint 6 knobs: `ART_LAMBDA` (0.01), `ART_MAX_STEPS` (400), `N_GENERAL`/`N_MORAL` (1500 each).
+Run train+eval together in one pod: `RUN_ART_SFT=1 RUN_EVAL=1 ./run_session.sh`.
 
 Knobs:
 - `VALIDATE=1` — cheap single-state smoke (`olmo3_base`, 16 capped texts), then stop.
@@ -103,6 +106,22 @@ python papers/6_ablation_resistance/scripts/dependency_figures.py \
   --label "per-state directions" --overlay-label "base directions (transfer)" \
   --figures-dir papers/6_ablation_resistance/outputs/figures_perstate
 ```
+
+## Persisting large artifacts across pod shutdown
+
+The 14 GB merged models are **never** the durable unit. Sprint 6 saves only the
+small LoRA **adapters** (`outputs/{art,control}_sft/adapter`, ~135 MB each),
+which sync back automatically; the launcher's download excludes every weight blob
+(`*.safetensors`, `merged_model/`, `ablated_model/`, `_merged/`). Sprint 7
+reconstructs each merged model from base + adapter on the pod (ephemeral), so a
+pod shutdown loses nothing reproducible — re-sync the adapters next session and
+eval rebuilds the merged models.
+
+If you ever need the *merged* 7B models themselves persisted (to deploy or hand
+off), push them to a private HF Hub repo from the pod (region-independent,
+durable, uses your existing HF token) rather than relying on container disk; a
+RunPod network volume (`VOLUME_GB>0`, mounted at `/workspace`) also works but is
+region-locked, which constrains the GPU-capacity search.
 
 ## Notes / caveats
 

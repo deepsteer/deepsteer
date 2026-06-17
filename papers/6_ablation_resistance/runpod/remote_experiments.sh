@@ -21,6 +21,15 @@ DEP_KIND="${DEP_KIND:-probe}"            # probe | meandiff
 PER_STATE="${PER_STATE:-0}"              # 1 -> ablate each state's own directions
 DATASET_TARGET="${DATASET_TARGET:-40}"   # probing pairs per foundation
 
+# Sprint 6 ART-SFT config.
+BASE_MODEL="${BASE_MODEL:-allenai/Olmo-3-1025-7B}"
+INSTRUCT_TEMPLATE_FROM="${INSTRUCT_TEMPLATE_FROM:-allenai/Olmo-3-7B-Instruct}"
+SFT_DATA="${SFT_DATA:-$P6/data/sft_mix.jsonl}"
+N_GENERAL="${N_GENERAL:-1500}"
+N_MORAL="${N_MORAL:-1500}"
+ART_LAMBDA="${ART_LAMBDA:-0.01}"
+ART_MAX_STEPS="${ART_MAX_STEPS:-400}"
+
 # Step toggles (1 = run). VALIDATE=1 overrides to a cheap single-model smoke.
 VALIDATE="${VALIDATE:-0}"
 RUN_SETUP="${RUN_SETUP:-1}"
@@ -92,34 +101,45 @@ if [ "$RUN_DEPENDENCY" = 1 ]; then
       --output-dir "$DEP_OUT" "${PER_STATE_FLAG[@]}"
 fi
 
-# ------------------------------- SPRINT 6 (placeholder) ----------------------
-# ART-SFT training. Auto-skips until the script is written (see plan Phase A.5).
+# ------------------------------- SPRINT 6 (ART-SFT) --------------------------
+# Prepare the general+moral chat mix (once), then train control-SFT (λ=0) and
+# ART-SFT (λ>0, calibrated) on the SAME data — only the ART term differs.
 if [ "$RUN_ART_SFT" = 1 ]; then
-  if [ -f "$SCRIPTS/art_sft.py" ]; then
-    run_step "6.4 ART-SFT (lambda>0)" \
-      python "$SCRIPTS/art_sft.py" --model allenai/Olmo-3-1025-7B \
-        --moral-directions "$BASE_DIRECTIONS" --art-lambda 0.01 \
-        --output-dir "$OUT/art_sft" --device "$DEVICE"
-    run_step "6.4 control-SFT (lambda=0)" \
-      python "$SCRIPTS/art_sft.py" --model allenai/Olmo-3-1025-7B \
-        --art-lambda 0.0 --output-dir "$OUT/control_sft" --device "$DEVICE"
+  if [ ! -f "$SFT_DATA" ]; then
+    run_step "6.3 prepare SFT mix (Tülu 3 general + moral)" \
+      python "$SCRIPTS/prepare_sft_data.py" --output "$SFT_DATA" \
+        --n-general "$N_GENERAL" --n-moral "$N_MORAL"
   else
-    echo "SKIP Sprint 6 ART-SFT: $SCRIPTS/art_sft.py not present yet"
+    echo "SFT mix already present at $SFT_DATA; skipping prep."
   fi
+  # --no-merge: save only the small LoRA adapter (the durable artifact that syncs
+  # back). Sprint 7 reconstructs the 14 GB merged model from base+adapter on the
+  # pod, so nothing 14 GB needs to survive a shutdown.
+  run_step "6.4 control-SFT (λ=0)" \
+    python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
+      --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
+      --art-lambda 0.0 --max-steps "$ART_MAX_STEPS" --no-merge \
+      --output-dir "$OUT/control_sft" --device "$DEVICE"
+  run_step "6.4 ART-SFT (λ=$ART_LAMBDA, calibrated)" \
+    python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
+      --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
+      --moral-directions "$BASE_DIRECTIONS" --direction-kind "$DEP_KIND" \
+      --art-lambda "$ART_LAMBDA" --art-calibrate --max-steps "$ART_MAX_STEPS" --no-merge \
+      --output-dir "$OUT/art_sft" --device "$DEVICE"
 fi
 
-# ------------------------------- SPRINT 7 (placeholder) ----------------------
-# Post-ART evaluation battery + Heretic ablation. Auto-skips until written.
+# ------------------------------- SPRINT 7 (eval) -----------------------------
+# Post-ART battery + Heretic on both conditions, reconstructing merged models
+# from the durable adapters. The 4-cell comparison lands in $OUT/eval/.
 if [ "$RUN_EVAL" = 1 ]; then
-  if [ -f "$SCRIPTS/eval_pipeline.py" ]; then
-    run_step "7 post-ART evaluation battery" \
-      python "$SCRIPTS/eval_pipeline.py" \
-        --art-model "$OUT/art_sft/merged_model" \
-        --control-model "$OUT/control_sft/merged_model" \
-        --base-directions "$BASE_DIRECTIONS" --device "$DEVICE"
-  else
-    echo "SKIP Sprint 7 eval: $SCRIPTS/eval_pipeline.py not present yet"
-  fi
+  run_step "7 post-ART evaluation battery + Heretic" \
+    python "$SCRIPTS/eval_pipeline.py" \
+      --art-adapter "$OUT/art_sft/adapter" \
+      --control-adapter "$OUT/control_sft/adapter" \
+      --base-model "$BASE_MODEL" \
+      --base-dir "$P5/outputs/olmo3_base" --base-directions "$BASE_DIRECTIONS" \
+      --refusal-prompts "$P5/refusal_prompts.json" \
+      --output-dir "$OUT/eval" --device "$DEVICE"
 fi
 
 log "Session complete. Output directories:"
