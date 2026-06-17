@@ -46,6 +46,14 @@ outputs/.DS_Store
 # regenerable via pipeline_study.py; the results JSON hold all metrics).
 papers/5_moral_alignment/outputs/pipeline/*/probe_directions.npz
 
+# Working artifacts — never committed (audit reports, fix logs).
+**/bib_audit_report.md
+**/FIXLOG.md
+
+# RunPod VALIDATE smoke + local self-transfer scratch (regenerable, not results).
+papers/*/outputs/_validate_*/
+papers/*/outputs/*_selftransfer/
+
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt
 **/sae_layer*.pt

@@ -1,0 +1,68 @@
+\section{Supplementary tables}\label{appendix-a.-supplementary-tables}
+
+Table \ref{tab:transfer} reports the comprehension trajectory: base-trained
+foundation directions stay near-perfect classifiers (AUC \(\approx 1.0\)) and full
+probe accuracy at every state, while the cosine between the base directions and
+each state's freshly fitted directions crystallizes during pre-training and
+drops once at SFT. Table \ref{tab:coupling} reports the coupling battery on the
+instruct-capable states and the ablated model. Refusal--morality cosines
+(layer 16): Care \(0.074\), Fairness \(0.062\), Liberty \(0.068\), Loyalty \(0.061\),
+Authority \(0.038\), Sanctity \(0.059\); moral-subspace projection fraction \(0.104\);
+mean \(|\cos| = 0.061\).
+
+\begin{table}[h]
+\centering
+\caption{Comprehension across the pipeline (stable layer band 15--31).
+cos(base,fresh) is the cosine between base and per-state fitted foundation
+directions, averaged over foundations.}
+\label{tab:transfer}
+\begin{tabular}{lccc}
+\toprule
+State & probe acc & transfer AUC & cos(base,fresh) \\
+\midrule
+pretrain step1000   & 1.00 & 1.00 & 0.869 \\
+pretrain step6000   & 1.00 & 1.00 & 0.930 \\
+pretrain step11921  & 1.00 & 1.00 & 0.999 \\
+base (main)         & 1.00 & 1.00 & 0.999 \\
+SFT                 & 1.00 & 1.00 & 0.757 \\
+DPO                 & 1.00 & 1.00 & 0.757 \\
+Instruct (RLVR)     & 1.00 & 1.00 & 0.757 \\
+Instruct, ablated   & 1.00 & 1.00 & 0.749 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Comprehension--compliance coupling. Comprehension rate = internal
+dominant foundation matches target; compliance = moral-judgment accuracy;
+agreement and $\phi$ between the two per scenario ($N=48$).}
+\label{tab:coupling}
+\begin{tabular}{lcccc}
+\toprule
+State & comprehension & compliance & agreement & $\phi$ \\
+\midrule
+SFT              & 0.417 & 0.792 & 0.375 & $-0.191$ \\
+DPO              & 0.438 & 0.750 & 0.479 & $+0.024$ \\
+Instruct (RLVR)  & 0.458 & 0.750 & 0.500 & $+0.048$ \\
+Instruct, ablated& 0.417 & 0.729 & 0.521 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{geometry_grid}
+\caption{Foundation cosine matrices at base, SFT, DPO, and Instruct (layer 16).
+The structure is preserved across post-training; SFT applies a small rotation.}
+\label{fig:grid}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{persona_emergence}
+\caption{Persona probe peak accuracy and persona--morality mean $|\cos|$ across
+the pipeline. Persona is decodable throughout (${\sim}0.94$) but stays nearly
+orthogonal to the moral subspace.}
+\label{fig:persona}
+\end{figure}
