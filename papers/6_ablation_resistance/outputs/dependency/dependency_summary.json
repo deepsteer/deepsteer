@@ -1,0 +1,299 @@
+{
+  "analysis": "moral_dependency_pipeline",
+  "grid": "papers/5_moral_alignment/checkpoint_grid.json",
+  "base_directions": "papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz",
+  "per_state_directions": false,
+  "direction_kind": "probe",
+  "dataset": {
+    "version": "v2",
+    "target_per_foundation": 40,
+    "split": "all",
+    "n_pairs": 240,
+    "pairs_per_foundation": {
+      "care_harm": 40,
+      "fairness_cheating": 40,
+      "liberty_oppression": 40,
+      "loyalty_betrayal": 40,
+      "authority_subversion": 40,
+      "sanctity_degradation": 40
+    }
+  },
+  "n_states": 25,
+  "trajectory": [
+    {
+      "label": "olmo3_pretrain_stage3_step1000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step1000",
+      "moral_dependency_score": 0.011979,
+      "moral_dependency_ppl_ratio": 1.012051,
+      "delta_ce_moral": 0.20894,
+      "delta_ce_neutral": 0.196961,
+      "ce_moral": 3.604765,
+      "ce_neutral": 3.881125
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step2000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step2000",
+      "moral_dependency_score": 0.013779,
+      "moral_dependency_ppl_ratio": 1.013874,
+      "delta_ce_moral": 0.202619,
+      "delta_ce_neutral": 0.188841,
+      "ce_moral": 3.621908,
+      "ce_neutral": 3.878822
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step3000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step3000",
+      "moral_dependency_score": 0.016743,
+      "moral_dependency_ppl_ratio": 1.016884,
+      "delta_ce_moral": 0.209399,
+      "delta_ce_neutral": 0.192656,
+      "ce_moral": 3.626028,
+      "ce_neutral": 3.895748
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step4000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step4000",
+      "moral_dependency_score": 0.017057,
+      "moral_dependency_ppl_ratio": 1.017203,
+      "delta_ce_moral": 0.20951,
+      "delta_ce_neutral": 0.192453,
+      "ce_moral": 3.611124,
+      "ce_neutral": 3.880676
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step5000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step5000",
+      "moral_dependency_score": 0.017978,
+      "moral_dependency_ppl_ratio": 1.01814,
+      "delta_ce_moral": 0.2113,
+      "delta_ce_neutral": 0.193322,
+      "ce_moral": 3.604386,
+      "ce_neutral": 3.875769
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step6000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step6000",
+      "moral_dependency_score": 0.011662,
+      "moral_dependency_ppl_ratio": 1.011731,
+      "delta_ce_moral": 0.209167,
+      "delta_ce_neutral": 0.197505,
+      "ce_moral": 3.592194,
+      "ce_neutral": 3.86796
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step7000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step7000",
+      "moral_dependency_score": 0.013132,
+      "moral_dependency_ppl_ratio": 1.013219,
+      "delta_ce_moral": 0.21393,
+      "delta_ce_neutral": 0.200797,
+      "ce_moral": 3.561754,
+      "ce_neutral": 3.847637
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step8000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step8000",
+      "moral_dependency_score": 0.010828,
+      "moral_dependency_ppl_ratio": 1.010887,
+      "delta_ce_moral": 0.214721,
+      "delta_ce_neutral": 0.203892,
+      "ce_moral": 3.564514,
+      "ce_neutral": 3.852725
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step9000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step9000",
+      "moral_dependency_score": 0.016488,
+      "moral_dependency_ppl_ratio": 1.016625,
+      "delta_ce_moral": 0.218888,
+      "delta_ce_neutral": 0.2024,
+      "ce_moral": 3.560263,
+      "ce_neutral": 3.860607
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step10000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step10000",
+      "moral_dependency_score": 0.010988,
+      "moral_dependency_ppl_ratio": 1.011049,
+      "delta_ce_moral": 0.219052,
+      "delta_ce_neutral": 0.208064,
+      "ce_moral": 3.556318,
+      "ce_neutral": 3.837906
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11000",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step11000",
+      "moral_dependency_score": 0.008078,
+      "moral_dependency_ppl_ratio": 1.008111,
+      "delta_ce_moral": 0.219251,
+      "delta_ce_neutral": 0.211173,
+      "ce_moral": 3.551335,
+      "ce_neutral": 3.828481
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11900",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step11900",
+      "moral_dependency_score": 0.010636,
+      "moral_dependency_ppl_ratio": 1.010693,
+      "delta_ce_moral": 0.219738,
+      "delta_ce_neutral": 0.209102,
+      "ce_moral": 3.547031,
+      "ce_neutral": 3.829006
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11921",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "stage3-step11921",
+      "moral_dependency_score": 0.010611,
+      "moral_dependency_ppl_ratio": 1.010668,
+      "delta_ce_moral": 0.219755,
+      "delta_ce_neutral": 0.209144,
+      "ce_moral": 3.546988,
+      "ce_neutral": 3.828983
+    },
+    {
+      "label": "olmo3_base",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision": "main",
+      "moral_dependency_score": 0.010611,
+      "moral_dependency_ppl_ratio": 1.010668,
+      "delta_ce_moral": 0.219755,
+      "delta_ce_neutral": 0.209144,
+      "ce_moral": 3.546988,
+      "ce_neutral": 3.828983
+    },
+    {
+      "label": "olmo3_sft_final",
+      "repo": "allenai/Olmo-3-7B-Instruct-SFT",
+      "revision": "main",
+      "moral_dependency_score": 0.031375,
+      "moral_dependency_ppl_ratio": 1.031872,
+      "delta_ce_moral": 0.264792,
+      "delta_ce_neutral": 0.233418,
+      "ce_moral": 4.035145,
+      "ce_neutral": 4.313794
+    },
+    {
+      "label": "olmo3_dpo_final",
+      "repo": "allenai/Olmo-3-7B-Instruct-DPO",
+      "revision": "main",
+      "moral_dependency_score": 0.054936,
+      "moral_dependency_ppl_ratio": 1.056473,
+      "delta_ce_moral": 0.286,
+      "delta_ce_neutral": 0.231064,
+      "ce_moral": 4.102112,
+      "ce_neutral": 4.453128
+    },
+    {
+      "label": "olmo3_instruct_final",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "main",
+      "moral_dependency_score": 0.06315,
+      "moral_dependency_ppl_ratio": 1.065187,
+      "delta_ce_moral": 0.287193,
+      "delta_ce_neutral": 0.224043,
+      "ce_moral": 4.148722,
+      "ce_neutral": 4.505017
+    },
+    {
+      "label": "olmo3_instruct_step_050",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_050",
+      "moral_dependency_score": 0.054749,
+      "moral_dependency_ppl_ratio": 1.056275,
+      "delta_ce_moral": 0.285198,
+      "delta_ce_neutral": 0.23045,
+      "ce_moral": 4.099142,
+      "ce_neutral": 4.450241
+    },
+    {
+      "label": "olmo3_instruct_step_100",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_100",
+      "moral_dependency_score": 0.054951,
+      "moral_dependency_ppl_ratio": 1.056489,
+      "delta_ce_moral": 0.285093,
+      "delta_ce_neutral": 0.230142,
+      "ce_moral": 4.101546,
+      "ce_neutral": 4.452523
+    },
+    {
+      "label": "olmo3_instruct_step_150",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_150",
+      "moral_dependency_score": 0.055372,
+      "moral_dependency_ppl_ratio": 1.056934,
+      "delta_ce_moral": 0.284792,
+      "delta_ce_neutral": 0.22942,
+      "ce_moral": 4.103112,
+      "ce_neutral": 4.453739
+    },
+    {
+      "label": "olmo3_instruct_step_200",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_200",
+      "moral_dependency_score": 0.055731,
+      "moral_dependency_ppl_ratio": 1.057313,
+      "delta_ce_moral": 0.285105,
+      "delta_ce_neutral": 0.229374,
+      "ce_moral": 4.097262,
+      "ce_neutral": 4.448504
+    },
+    {
+      "label": "olmo3_instruct_step_250",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_250",
+      "moral_dependency_score": 0.055697,
+      "moral_dependency_ppl_ratio": 1.057277,
+      "delta_ce_moral": 0.284952,
+      "delta_ce_neutral": 0.229256,
+      "ce_moral": 4.096821,
+      "ce_neutral": 4.44786
+    },
+    {
+      "label": "olmo3_instruct_step_300",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_300",
+      "moral_dependency_score": 0.054072,
+      "moral_dependency_ppl_ratio": 1.05556,
+      "delta_ce_moral": 0.28425,
+      "delta_ce_neutral": 0.230178,
+      "ce_moral": 4.100728,
+      "ce_neutral": 4.449386
+    },
+    {
+      "label": "olmo3_instruct_step_350",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_350",
+      "moral_dependency_score": 0.053649,
+      "moral_dependency_ppl_ratio": 1.055115,
+      "delta_ce_moral": 0.283408,
+      "delta_ce_neutral": 0.229759,
+      "ce_moral": 4.106992,
+      "ce_neutral": 4.454884
+    },
+    {
+      "label": "olmo3_instruct_step_400",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision": "step_400",
+      "moral_dependency_score": 0.054062,
+      "moral_dependency_ppl_ratio": 1.05555,
+      "delta_ce_moral": 0.283184,
+      "delta_ce_neutral": 0.229122,
+      "ce_moral": 4.11697,
+      "ce_neutral": 4.463581
+    }
+  ]
+}
