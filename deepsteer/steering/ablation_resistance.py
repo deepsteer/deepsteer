@@ -170,6 +170,7 @@ class AblationResistanceSteering:
         moral_directions: dict[str, dict[int, np.ndarray]] | str,
         *,
         coefficient: float = DEFAULT_ART_LAMBDA,
+        max_coefficient: float = 1.0,
         target_layers: list[int] | None = None,
         direction_kind: str = "probe",
         foundations: list[str] | None = None,
@@ -179,6 +180,7 @@ class AblationResistanceSteering:
             moral_directions = load_foundation_directions(moral_directions)
         self._directions = moral_directions
         self._coefficient = float(coefficient)
+        self._max_coefficient = float(max_coefficient)
         self._requested_layers = target_layers
         self._direction_kind = direction_kind
         self._foundations = foundations
@@ -293,6 +295,30 @@ class AblationResistanceSteering:
 
     # -- ART loss -----------------------------------------------------------
 
+    @torch.no_grad()
+    def measure_gap(
+        self,
+        model: WhiteBoxModel,
+        *,
+        input_ids: Tensor,
+        attention_mask: Tensor,
+        labels: Tensor,
+        normal_loss: Tensor | float,
+    ) -> float:
+        """No-grad ``L_ablated - L_sft`` for cheap λ calibration (no graph kept)."""
+        if not self._attached:
+            raise RuntimeError("ART steering not attached; call attach(model) first.")
+        with self._ablation(model):
+            l_ablated = model.model(
+                input_ids=input_ids, attention_mask=attention_mask, labels=labels,
+            ).loss
+        sft_val = float(normal_loss.detach().item()) if isinstance(normal_loss, Tensor) \
+            else float(normal_loss)
+        self._last_sft = sft_val
+        self._last_ablated = float(l_ablated.item())
+        self._last_gap = self._last_ablated - sft_val
+        return self._last_gap
+
     def compute_art_loss(
         self,
         model: WhiteBoxModel,
@@ -339,12 +365,16 @@ class AblationResistanceSteering:
     ) -> float:
         """Suggest λ so that |ART| ≈ ``target_ratio`` × L_sft on the first batch.
 
-        ``|ART| = λ |gap|``; solve ``λ |gap| = ratio × sft``. Caller decides
-        whether to apply via :meth:`set_coefficient`.
+        ``|ART| = λ |gap|``; solve ``λ |gap| = ratio × sft``, then clamp to
+        ``max_coefficient``. The clamp matters: when the gap is small the raw λ
+        explodes (e.g. gap 0.02, sft 1.5 -> λ ~6), which makes the ART gradient
+        dominate the SFT gradient. λ≈1 is the balanced point (ART grad = -∇gap,
+        same scale as the SFT grad). Caller applies via :meth:`set_coefficient`.
         """
         if abs(first_batch_gap) < 1e-9:
             return self._coefficient
-        return target_ratio * max(first_batch_sft_loss, 1e-6) / abs(first_batch_gap)
+        lam = target_ratio * max(first_batch_sft_loss, 1e-6) / abs(first_batch_gap)
+        return min(lam, self._max_coefficient)
 
     def __repr__(self) -> str:
         return (f"AblationResistanceSteering(kind={self._direction_kind!r}, "

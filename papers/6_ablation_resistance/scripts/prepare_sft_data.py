@@ -23,8 +23,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import random
 import re
+import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -145,6 +147,14 @@ def main() -> None:
           f"(moral ratio {stats['moral_ratio']:.2f})")
     print(f"  pools: general {stats['n_general_pool']}, moral {stats['n_moral_pool']}")
     print(f"  top moral sources: {stats['top_moral_sources']}")
+
+    # HF streaming (xet) leaves a background download thread that can segfault at
+    # interpreter shutdown ("PyGILState_Release: ... no thread-state"). All output
+    # is written and flushed above, so exit hard to skip that broken finalizer
+    # (otherwise the step exits non-zero despite having fully succeeded).
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)
 
 
 if __name__ == "__main__":

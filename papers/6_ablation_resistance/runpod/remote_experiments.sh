@@ -45,6 +45,8 @@ export OMP_NUM_THREADS="$CPU_THREADS" MKL_NUM_THREADS="$CPU_THREADS" \
        OPENBLAS_NUM_THREADS="$CPU_THREADS" NUMEXPR_NUM_THREADS="$CPU_THREADS"
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 \
        TOKENIZERS_PARALLELISM=false PYTHONUNBUFFERED=1
+# Reduce CUDA fragmentation (ART's paired forward is memory-heavy on 80 GB).
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 log() { echo -e "\n=== [$(date +%H:%M:%S)] $* ==="; }
 run_step() { local name="$1"; shift; log "START $name"
@@ -114,18 +116,28 @@ if [ "$RUN_ART_SFT" = 1 ]; then
   fi
   # --no-merge: save only the small LoRA adapter (the durable artifact that syncs
   # back). Sprint 7 reconstructs the 14 GB merged model from base+adapter on the
-  # pod, so nothing 14 GB needs to survive a shutdown.
-  run_step "6.4 control-SFT (λ=0)" \
-    python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
-      --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
-      --art-lambda 0.0 --max-steps "$ART_MAX_STEPS" --no-merge \
-      --output-dir "$OUT/control_sft" --device "$DEVICE"
-  run_step "6.4 ART-SFT (λ=$ART_LAMBDA, calibrated)" \
-    python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
-      --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
-      --moral-directions "$BASE_DIRECTIONS" --direction-kind "$DEP_KIND" \
-      --art-lambda "$ART_LAMBDA" --art-calibrate --max-steps "$ART_MAX_STEPS" --no-merge \
-      --output-dir "$OUT/art_sft" --device "$DEVICE"
+  # pod, so nothing 14 GB needs to survive a shutdown. Each condition is skipped
+  # if its adapter WEIGHTS already exist (idempotent re-runs; the adapter syncs up
+  # from a prior successful run).
+  if [ -f "$OUT/control_sft/adapter/adapter_model.safetensors" ]; then
+    echo "control_sft adapter already present; skipping control-SFT."
+  else
+    run_step "6.4 control-SFT (λ=0)" \
+      python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
+        --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
+        --art-lambda 0.0 --max-steps "$ART_MAX_STEPS" --no-merge \
+        --output-dir "$OUT/control_sft" --device "$DEVICE"
+  fi
+  if [ -f "$OUT/art_sft/adapter/adapter_model.safetensors" ]; then
+    echo "art_sft adapter already present; skipping ART-SFT."
+  else
+    run_step "6.4 ART-SFT (λ=$ART_LAMBDA, calibrated, cap 1.0)" \
+      python "$SCRIPTS/art_sft.py" --model "$BASE_MODEL" \
+        --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
+        --moral-directions "$BASE_DIRECTIONS" --direction-kind "$DEP_KIND" \
+        --art-lambda "$ART_LAMBDA" --art-calibrate --max-steps "$ART_MAX_STEPS" --no-merge \
+        --output-dir "$OUT/art_sft" --device "$DEVICE"
+  fi
 fi
 
 # ------------------------------- SPRINT 7 (eval) -----------------------------

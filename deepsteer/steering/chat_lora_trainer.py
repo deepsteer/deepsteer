@@ -480,44 +480,51 @@ class ChatLoRATrainer:
 
                 loss = loss + aux_loss
 
-            # NEW: ablation-resistance (ART) term — runs a second, ablated
-            # forward and rewards the model when ablation widens the gap.
-            # normal_loss is the PURE SFT loss (sft_loss_value), so an active
-            # gradient_penalty aux term does not contaminate the gap.
-            art_loss_value: float | None = None
-            art_gap_value: float | None = None
-            if self._art_steering is not None:
-                art_loss = self._art_steering.compute_art_loss(
-                    self._model, input_ids=input_ids, attention_mask=attention_mask,
-                    labels=labels, normal_loss=sft_loss_value,
-                )
-                if self._art_calibrate and step == 1:
-                    new_lambda = self._art_steering.calibrate_coefficient(
-                        first_batch_sft_loss=sft_loss_value,
-                        first_batch_gap=self._art_steering.last_gap or 0.0,
-                        target_ratio=self._art_target_ratio,
-                    )
-                    logger.info(
-                        "ART calibration: λ %.5f → %.5f (sft=%.3f, gap=%.4f, "
-                        "target ratio=%.2f)",
-                        self._art_steering.coefficient, new_lambda, sft_loss_value,
-                        self._art_steering.last_gap or 0.0, self._art_target_ratio,
-                    )
-                    self._art_steering.set_coefficient(new_lambda)
-                    art_loss = self._art_steering.compute_art_loss(
-                        self._model, input_ids=input_ids, attention_mask=attention_mask,
-                        labels=labels, normal_loss=sft_loss_value,
-                    )
-                art_loss_value = float(art_loss.detach().item())
-                art_gap_value = self._art_steering.last_gap
-                loss = loss + art_loss
-
             if torch.isnan(loss):
                 logger.warning("NaN loss at step %d, skipping", step)
                 optimizer.zero_grad()
                 continue
 
+            # Backward the SFT(+aux) loss FIRST so its graph frees before the
+            # ablated forward. ART's paired forward would otherwise hold two full
+            # 7B graphs live at once and OOM an 80 GB card; backward-then-backward
+            # accumulates the same gradient at ~one-graph peak memory.
             loss.backward()
+
+            # ablation-resistance (ART) term — a second, ablated forward whose
+            # gradient (-λ ∇L_ablated) rewards the model when ablation widens the
+            # gap. normal_loss is the PURE SFT loss so a gradient_penalty aux term
+            # never contaminates the gap.
+            art_loss_value: float | None = None
+            art_gap_value: float | None = None
+            if self._art_steering is not None:
+                if self._art_calibrate and step == 1:
+                    gap = self._art_steering.measure_gap(  # no-grad, cheap
+                        self._model, input_ids=input_ids, attention_mask=attention_mask,
+                        labels=labels, normal_loss=sft_loss_value,
+                    )
+                    new_lambda = self._art_steering.calibrate_coefficient(
+                        first_batch_sft_loss=sft_loss_value, first_batch_gap=gap,
+                        target_ratio=self._art_target_ratio,
+                    )
+                    logger.info(
+                        "ART calibration: λ %.5f → %.5f (sft=%.3f, gap=%.4f, "
+                        "target ratio=%.2f, cap=%.2f)",
+                        self._art_steering.coefficient, new_lambda, sft_loss_value,
+                        gap, self._art_target_ratio, self._art_steering._max_coefficient,
+                    )
+                    self._art_steering.set_coefficient(new_lambda)
+                art_loss = self._art_steering.compute_art_loss(
+                    self._model, input_ids=input_ids, attention_mask=attention_mask,
+                    labels=labels, normal_loss=sft_loss_value,
+                )
+                if torch.isnan(art_loss):
+                    logger.warning("NaN ART loss at step %d, skipping ART term", step)
+                else:
+                    art_loss.backward()  # frees the ablated graph; grads accumulate
+                    art_loss_value = float(art_loss.detach().item())
+                    art_gap_value = self._art_steering.last_gap
+
             torch.nn.utils.clip_grad_norm_(
                 [p for p in self._model._model.parameters() if p.requires_grad],
                 self._max_grad_norm,

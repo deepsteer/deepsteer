@@ -85,10 +85,11 @@ def materialize_merged(adapter: str, base_model: str, dest: Path, *, dry_run: bo
     if dry_run:
         logger.info("  [dry-run] would merge %s + adapter %s -> %s", base_model, adapter, dest)
         return str(dest)
+    import torch
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer
     logger.info("Merging base %s + adapter %s -> %s", base_model, adapter, dest)
-    base = AutoModelForCausalLM.from_pretrained(base_model)
+    base = AutoModelForCausalLM.from_pretrained(base_model, torch_dtype=torch.float16)
     merged = PeftModel.from_pretrained(base, adapter).merge_and_unload()
     dest.mkdir(parents=True, exist_ok=True)
     merged.save_pretrained(dest)

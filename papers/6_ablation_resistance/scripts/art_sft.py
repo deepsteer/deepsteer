@@ -73,6 +73,9 @@ def main() -> None:
     ap.add_argument("--art-calibrate", action="store_true",
                     help="Calibrate λ so |ART| ≈ target-ratio × L_sft on the first batch.")
     ap.add_argument("--art-target-ratio", type=float, default=0.10)
+    ap.add_argument("--art-max-lambda", type=float, default=1.0,
+                    help="Cap on the calibrated λ. λ≈1 balances the ART and SFT "
+                         "gradients; a tiny gap would otherwise blow λ up.")
     ap.add_argument("--art-layers", default=None,
                     help="Comma-separated layer subset for ART; default all complete layers.")
     ap.add_argument("--output-dir", required=True)
@@ -126,6 +129,7 @@ def main() -> None:
         layers = [int(x) for x in args.art_layers.split(",")] if args.art_layers else None
         art = AblationResistanceSteering(
             args.moral_directions, coefficient=args.art_lambda,
+            max_coefficient=args.art_max_lambda,
             direction_kind=args.direction_kind, target_layers=layers,
         )
         print(f"ART: {args.moral_directions} ({args.direction_kind}), λ={args.art_lambda}, "
