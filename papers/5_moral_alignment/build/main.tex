@@ -99,9 +99,14 @@ behavioral compliance are only weakly coupled ($\phi \approx 0.05$ even in the
 fully aligned model), which predicts that compliance is a separable mechanism.
 A Heretic-style refusal direction is nearly orthogonal to the moral subspace
 (projection fraction $0.10$); ablating it removes refusal while leaving
-comprehension and moral judgment intact. Alignment is a wiring step, not a
+comprehension and moral judgment intact. We then test whether this separation
+can be repaired: a training-time ablation-resistance loss deepens the model's
+reliance on its moral subspace but cannot move the compliance mechanism into it,
+because the refusal direction forms during post-training from pre-training
+features already orthogonal to moral structure. Alignment is a wiring step, not a
 teaching step: it couples a separable compliance mechanism to moral
-representations that pre-training already built.
+representations that pre-training already built, and making that wiring robust to
+ablation is a pre-training problem, not a post-training one.
 \end{abstract}
 
 % =====================================================================

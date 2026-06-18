@@ -81,12 +81,31 @@ un-ablated instruct) and moral judgment intact (behavioral accuracy
 refused. This is the high-comprehension, low-compliance cell of the
 dissociation, realized in a real model.
 
-Together the four findings populate a comprehension\(\times\)compliance matrix in
+\textbf{The separation is a vulnerability, and it cannot be repaired after
+pre-training.} If compliance is a separable mechanism, the obvious defense is to
+couple it back to comprehension, so that the refusal-direction ablation of
+Finding 4 can no longer remove one without the other. We first measure how much
+the model relies on its moral subspace for generation, a reliance that is
+present at the base and grows roughly sixfold across alignment, then attempt to
+deepen it with ablation-resistance training: an auxiliary fine-tuning loss that
+rewards the model when projecting the moral subspace out of its activations
+degrades its output. The intervention builds strong dependence on the moral
+subspace but does not couple compliance to it. That dependence is orthogonal to
+the refusal direction an attacker removes, and refusal ablation damages the
+trained model no more than the control. The failure is developmental: the
+refusal feature forms during post-training out of pre-training proto-features
+that are already orthogonal to the moral subspace, so a post-training loss acts
+too late to relocate it. Making alignment ablation-resistant is, on this
+evidence, a pre-training problem.
+
+Together these findings populate a comprehension\(\times\)compliance matrix in
 which the low-comprehension row is empty, every OLMo-3 state has full moral
 decodability, and all variation lives in the high-comprehension row, where
-compliance moves independently of understanding. The contribution is a method
-for measuring comprehension, compliance, and their coupling across an alignment
-pipeline, and the result that alignment is a wiring step: it preserves moral
-comprehension built in pre-training and attaches a separable compliance
-mechanism, so that compliance can be removed without touching what the model
-understands.
+compliance moves independently of understanding. The contribution is twofold: a
+method for measuring comprehension, compliance, and their coupling across an
+alignment pipeline, with the result that alignment is a wiring step that
+preserves moral comprehension built in pre-training and attaches a separable
+compliance mechanism, so that compliance can be removed without touching what the
+model understands; and the finding that this separation cannot be undone after
+the fact, which locates the problem of ablation-resistant alignment in
+pre-training rather than post-training.
