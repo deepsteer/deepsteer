@@ -7,7 +7,7 @@ set -uo pipefail
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
 
-P6="papers/6_ablation_resistance"
+P6="papers/5_moral_alignment"
 SCRIPTS="$P6/scripts"
 OUT="$P6/outputs"
 P5="papers/5_moral_alignment"

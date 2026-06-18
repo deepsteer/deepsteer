@@ -25,9 +25,9 @@ reconstructs each merged model on the pod's (ephemeral) disk before the battery,
 so nothing 14 GB ever has to survive a pod shutdown — see the runpod README.
 
 Usage (adapters — recommended, durable):
-    python papers/6_ablation_resistance/scripts/eval_pipeline.py \
-        --art-adapter   papers/6_ablation_resistance/outputs/art_sft/adapter \
-        --control-adapter papers/6_ablation_resistance/outputs/control_sft/adapter \
+    python papers/5_moral_alignment/scripts/eval_pipeline.py \
+        --art-adapter   papers/5_moral_alignment/outputs/art_sft/adapter \
+        --control-adapter papers/5_moral_alignment/outputs/control_sft/adapter \
         --base-model allenai/Olmo-3-1025-7B \
         --base-dir papers/5_moral_alignment/outputs/olmo3_base \
         --device cuda
@@ -49,7 +49,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 _P5 = "papers/5_moral_alignment/scripts"
-_P6 = "papers/6_ablation_resistance/scripts"
+_P6 = "papers/5_moral_alignment/scripts"
 _DEFAULT_BASE_DIR = "papers/5_moral_alignment/outputs/olmo3_base"
 _DEFAULT_REFUSAL_PROMPTS = "papers/5_moral_alignment/refusal_prompts.json"
 
@@ -254,7 +254,7 @@ def main() -> None:
                     help="Override base directions npz; default <base-dir>/exp1_probe_directions.npz.")
     ap.add_argument("--refusal-prompts", default=_DEFAULT_REFUSAL_PROMPTS)
     ap.add_argument("--layer", type=int, default=16)
-    ap.add_argument("--output-dir", default="papers/6_ablation_resistance/outputs/eval")
+    ap.add_argument("--output-dir", default="papers/5_moral_alignment/outputs/eval")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--skip-heretic", action="store_true")
     ap.add_argument("--keep-merged", action="store_true",

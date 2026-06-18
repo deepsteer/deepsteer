@@ -15,8 +15,8 @@ on RunPod — it exercises the same functions the pipeline uses on the pod:
 Exits non-zero if any check fails, so it can gate a launcher.
 
 Usage:
-    python papers/6_ablation_resistance/scripts/local_test.py
-    python papers/6_ablation_resistance/scripts/local_test.py --real   # + real 7B
+    python papers/5_moral_alignment/scripts/local_test.py
+    python papers/5_moral_alignment/scripts/local_test.py --real   # + real 7B
 """
 
 from __future__ import annotations

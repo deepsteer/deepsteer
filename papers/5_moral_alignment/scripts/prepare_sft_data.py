@@ -13,8 +13,8 @@ WildJailbreak) with a content-keyword fallback, then sampled at a target ratio.
 Output: chat JSONL (``{"messages": [...]}``) consumable by art_sft.py.
 
 Usage (RunPod, fast network):
-    python papers/6_ablation_resistance/scripts/prepare_sft_data.py \
-        --output papers/6_ablation_resistance/data/sft_mix.jsonl \
+    python papers/5_moral_alignment/scripts/prepare_sft_data.py \
+        --output papers/5_moral_alignment/data/sft_mix.jsonl \
         --n-general 1500 --n-moral 1500
 """
 

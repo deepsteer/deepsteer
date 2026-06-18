@@ -14,8 +14,8 @@ Renders, from the dependency sweep's ``dependency_summary.json``:
 Matplotlib-only; styling matches paper 5's pipeline_figures.py.
 
 Usage:
-    python papers/6_ablation_resistance/scripts/dependency_figures.py \
-        --summary papers/6_ablation_resistance/outputs/dependency/dependency_summary.json
+    python papers/5_moral_alignment/scripts/dependency_figures.py \
+        --summary papers/5_moral_alignment/outputs/dependency/dependency_summary.json
 """
 
 from __future__ import annotations
@@ -94,9 +94,9 @@ def _divider(ax, groups):
 def main() -> None:
     ap = argparse.ArgumentParser(description="Paper 6 moral-dependency trajectory figures.")
     ap.add_argument("--summary",
-                    default="papers/6_ablation_resistance/outputs/dependency/dependency_summary.json")
+                    default="papers/5_moral_alignment/outputs/dependency/dependency_summary.json")
     ap.add_argument("--grid", default=None, help="Override grid path for state ordering.")
-    ap.add_argument("--figures-dir", default="papers/6_ablation_resistance/outputs/figures")
+    ap.add_argument("--figures-dir", default="papers/5_moral_alignment/outputs/figures")
     ap.add_argument("--overlay-summary", default=None,
                     help="Second summary to overlay on the trajectory (e.g. per-state).")
     ap.add_argument("--label", default="base directions (transfer)",

@@ -8,8 +8,8 @@
 #      directions — the exact production path at small scale.
 #
 # Usage:
-#   bash papers/6_ablation_resistance/runpod/local_test.sh        # unit checks only (fast)
-#   REAL=1 bash papers/6_ablation_resistance/runpod/local_test.sh # + real 7B (loads ~14 GB from cache)
+#   bash papers/5_moral_alignment/runpod/local_test_phase3.sh        # unit checks only (fast)
+#   REAL=1 bash papers/5_moral_alignment/runpod/local_test_phase3.sh # + real 7B (loads ~14 GB from cache)
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -21,16 +21,16 @@ SMALL_DEVICE="${SMALL_DEVICE:-cpu}"
 echo ">> Local pre-flight (model=$SMALL_MODEL device=$SMALL_DEVICE real=${REAL:-0})"
 # Avoid empty-array expansion (macOS bash 3.2 errors under `set -u`); branch instead.
 if [ "${REAL:-0}" = 1 ]; then
-  python papers/6_ablation_resistance/scripts/local_test.py \
+  python papers/5_moral_alignment/scripts/local_test.py \
     --model "$SMALL_MODEL" --device "$SMALL_DEVICE" --real
 else
-  python papers/6_ablation_resistance/scripts/local_test.py \
+  python papers/5_moral_alignment/scripts/local_test.py \
     --model "$SMALL_MODEL" --device "$SMALL_DEVICE"
 fi
 rc=$?
 if [ "$rc" -eq 0 ]; then
   echo ">> Local pre-flight PASSED. Next: RunPod dry-run ->"
-  echo "     export RUNPOD_API_KEY=...; VALIDATE=1 papers/6_ablation_resistance/runpod/run_session.sh"
+  echo "     export RUNPOD_API_KEY=...; VALIDATE=1 papers/5_moral_alignment/runpod/run_session_phase3.sh"
 else
   echo ">> Local pre-flight FAILED (rc=$rc). Fix before spending GPU time."
 fi

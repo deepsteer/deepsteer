@@ -32,11 +32,11 @@ subprocess per state.
 numpy/torch only; no sklearn/scipy.
 
 Usage:
-    python papers/6_ablation_resistance/scripts/moral_dependency.py \
+    python papers/5_moral_alignment/scripts/moral_dependency.py \
         --model allenai/Olmo-3-1025-7B \
         --revision main \
         --directions-npz papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz \
-        --output-dir papers/6_ablation_resistance/outputs/dependency/olmo3_base \
+        --output-dir papers/5_moral_alignment/outputs/dependency/olmo3_base \
         --device cuda
 """
 

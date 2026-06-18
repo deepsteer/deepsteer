@@ -18,10 +18,10 @@ Writes one ``<output-dir>/<label>/moral_dependency.json`` per state plus a
 ``dependency_summary.json`` with the trajectory (score, deltas, ppl ratio).
 
 Usage (RunPod, full grid):
-    python papers/6_ablation_resistance/scripts/moral_dependency_pipeline.py \
+    python papers/5_moral_alignment/scripts/moral_dependency_pipeline.py \
         --grid papers/5_moral_alignment/checkpoint_grid.json \
         --base-directions papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz \
-        --output-dir papers/6_ablation_resistance/outputs/dependency \
+        --output-dir papers/5_moral_alignment/outputs/dependency \
         --purge-hf-cache --device cuda
 """
 
@@ -129,7 +129,7 @@ def main() -> None:
     ap.add_argument("--pipeline-dir", default=_DEFAULT_PIPELINE_DIR,
                     help="Phase 2 pipeline outputs (per-state probe_directions.npz).")
     ap.add_argument("--direction-kind", choices=["probe", "meandiff"], default="probe")
-    ap.add_argument("--output-dir", default="papers/6_ablation_resistance/outputs/dependency")
+    ap.add_argument("--output-dir", default="papers/5_moral_alignment/outputs/dependency")
     ap.add_argument("--device", default=None)
     ap.add_argument("--dataset-target", type=int, default=40)
     ap.add_argument("--dataset-version", default="v2")

@@ -9,19 +9,19 @@
 # Prerequisites (local): curl, jq, ssh, rsync; RUNPOD_API_KEY exported; an SSH
 # keypair at $SSH_KEY (+ .pub) injected via PUBLIC_KEY so sshd authorizes you.
 #
-# Recommended flow (cost-minimizing — see runpod/README.md):
-#   1. Local pre-flight:  bash papers/6_ablation_resistance/runpod/local_test.sh
-#   2. RunPod dry-run:    VALIDATE=1 ./run_session.sh    # ~5-10 min, one model
+# Recommended flow (cost-minimizing — see runpod/README_phase3.md):
+#   1. Local pre-flight:  bash papers/5_moral_alignment/runpod/local_test_phase3.sh
+#   2. RunPod dry-run:    VALIDATE=1 ./run_session_phase3.sh    # ~5-10 min, one model
 #   3. inspect outputs/_validate_dependency, confirm the score looks sane
-#   4. Full Sprint 5:     ./run_session.sh               # 25-state sweep (~3 h)
+#   4. Full Sprint 5:     ./run_session_phase3.sh               # 25-state sweep (~3 h)
 #
 # Usage:
 #   export RUNPOD_API_KEY=...
-#   VALIDATE=1 ./run_session.sh           # cheap validation run, then stop
-#   ./run_session.sh                      # full session (Sprint 5 dependency sweep)
-#   ONLY="dependency" ./run_session.sh    # just the named step(s)
-#   KEEP_POD=1 ./run_session.sh           # don't terminate at the end
-#   REUSE_POD_ID=<id> ./run_session.sh    # attach to an existing pod
+#   VALIDATE=1 ./run_session_phase3.sh           # cheap validation run, then stop
+#   ./run_session_phase3.sh                      # full session (Sprint 5 dependency sweep)
+#   ONLY="dependency" ./run_session_phase3.sh    # just the named step(s)
+#   KEEP_POD=1 ./run_session_phase3.sh           # don't terminate at the end
+#   REUSE_POD_ID=<id> ./run_session_phase3.sh    # attach to an existing pod
 set -euo pipefail
 
 # ---------------------------- config (override via env) ----------------------
@@ -64,7 +64,7 @@ API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
 # ALSO needs Paper 5's outputs (the moral directions npz + per-state pipeline
 # directions it ablates), so those are included too — the universal excludes still
 # strip the big blobs (ablated_model/, *.safetensors) first.
-SELF_PAPER="papers/6_ablation_resistance"
+SELF_PAPER="papers/5_moral_alignment"
 DEP_PAPER="papers/5_moral_alignment"
 RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 
@@ -217,7 +217,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      ART_LAMBDA=$ART_LAMBDA ART_MAX_STEPS=$ART_MAX_STEPS \
      N_GENERAL=$N_GENERAL N_MORAL=$N_MORAL \
      RUN_DEPENDENCY=$RUN_DEPENDENCY RUN_ART_SFT=$RUN_ART_SFT RUN_EVAL=$RUN_EVAL \
-     setsid bash papers/6_ablation_resistance/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
+     setsid bash papers/5_moral_alignment/runpod/remote_phase3.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo "----------------------------------------------------------------------"
@@ -250,11 +250,11 @@ rsync -az \
   --exclude 'model-*.safetensors' --exclude 'model.safetensors' \
   --exclude 'ablated_model/' --exclude 'merged_model/' --exclude '_merged/' \
   -e "ssh ${SSH_OPTS[*]}" \
-  "root@$SSH_HOST:$REMOTE_DIR/papers/6_ablation_resistance/outputs/" \
-  "$REPO_ROOT/papers/6_ablation_resistance/outputs/"
+  "root@$SSH_HOST:$REMOTE_DIR/papers/5_moral_alignment/outputs/" \
+  "$REPO_ROOT/papers/5_moral_alignment/outputs/"
 
-echo ">> Done. New Phase 3 outputs under papers/6_ablation_resistance/outputs/."
+echo ">> Done. New Phase 3 outputs under papers/5_moral_alignment/outputs/."
 echo ">> Next (local): dependency trajectory figure (Sprint 5.3) once that script exists:"
-echo "     python papers/6_ablation_resistance/scripts/dependency_figures.py \\"
-echo "       --summary papers/6_ablation_resistance/outputs/dependency/dependency_summary.json"
+echo "     python papers/5_moral_alignment/scripts/dependency_figures.py \\"
+echo "       --summary papers/5_moral_alignment/outputs/dependency/dependency_summary.json"
 # pod terminated by the EXIT trap

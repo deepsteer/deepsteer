@@ -13,10 +13,10 @@ toggles are present and **auto-skip** until their scripts exist.
 
 | File | Runs where | Purpose |
 |---|---|---|
-| `local_test.sh` | Local | Pre-flight: unit checks (+ optional capped real run). Gate before any GPU spend. |
-| `run_session.sh` | Local | Orchestrator: create pod, rsync up, exec, rsync down, terminate |
-| `remote_experiments.sh` | Pod | The experiment plan (toggle-driven, fail-soft) |
-| `../scripts/local_test.py` | Local | The actual unit-level checks `local_test.sh` invokes |
+| `local_test_phase3.sh` | Local | Pre-flight: unit checks (+ optional capped real run). Gate before any GPU spend. |
+| `run_session_phase3.sh` | Local | Orchestrator: create pod, rsync up, exec, rsync down, terminate |
+| `remote_phase3.sh` | Pod | The experiment plan (toggle-driven, fail-soft) |
+| `../scripts/local_test.py` | Local | The actual unit-level checks `local_test_phase3.sh` invokes |
 
 ## Prerequisites
 
@@ -39,18 +39,18 @@ dry-run first.
 
 ```bash
 # Gate 1 — LOCAL pre-flight (seconds; no large download)
-bash papers/6_ablation_resistance/runpod/local_test.sh
+bash papers/5_moral_alignment/runpod/local_test_phase3.sh
 # optional: also run the real 7B path from cache (~1 min load)
-REAL=1 bash papers/6_ablation_resistance/runpod/local_test.sh
+REAL=1 bash papers/5_moral_alignment/runpod/local_test_phase3.sh
 
 # Gate 2 — RunPod DRY-RUN (~5-10 min, one model, cache purged after)
 export RUNPOD_API_KEY=...
-cd papers/6_ablation_resistance/runpod
-VALIDATE=1 ./run_session.sh
+cd papers/5_moral_alignment/runpod
+VALIDATE=1 ./run_session_phase3.sh
 #   inspect outputs/_validate_dependency/dependency_summary.json — score sane?
 
 # Gate 3 — FULL Sprint 5 sweep (~3 GPU-hours, 25 states)
-./run_session.sh
+./run_session_phase3.sh
 ```
 
 ## What runs (and minimizing compute)
@@ -64,7 +64,7 @@ Steps are toggled by env vars (`1` = run). Defaults:
 | `RUN_EVAL` | 0 | Sprint 7 post-ART battery + Heretic | Reconstructs merged models from adapters, runs the 4-cell comparison into `outputs/eval/`. `ONLY=eval`. |
 
 Sprint 6 knobs: `ART_LAMBDA` (0.01), `ART_MAX_STEPS` (400), `N_GENERAL`/`N_MORAL` (1500 each).
-Run train+eval together in one pod: `RUN_ART_SFT=1 RUN_EVAL=1 ./run_session.sh`.
+Run train+eval together in one pod: `RUN_ART_SFT=1 RUN_EVAL=1 ./run_session_phase3.sh`.
 
 Knobs:
 - `VALIDATE=1` — cheap single-state smoke (`olmo3_base`, 16 capped texts), then stop.
@@ -78,7 +78,7 @@ Knobs:
 
 Cost levers:
 - Trap-based teardown means a crashed run still terminates the pod.
-- `remote_experiments.sh` is fail-soft (no `set -e`): one failed state doesn't
+- `remote_phase3.sh` is fail-soft (no `set -e`): one failed state doesn't
   abort the sweep, and partial results still download.
 - `--purge-hf-cache` deletes each 7B revision after it's measured, so the 25
   distinct revisions never co-reside on disk.
@@ -87,7 +87,7 @@ Rough estimate for the full Sprint 5 sweep: ~3 GPU-hours, ~$3–5 on an A100 80 
 
 ## After the run (local)
 
-Outputs land under `papers/6_ablation_resistance/outputs/`:
+Outputs land under `papers/5_moral_alignment/outputs/`:
 - base-transfer sweep -> `dependency/` (`dependency_summary.json` = trajectory;
   `<label>/moral_dependency.json` per state)
 - `PER_STATE=1` sweep -> `dependency_perstate/` (separate, so it never clobbers
@@ -96,15 +96,15 @@ Outputs land under `papers/6_ablation_resistance/outputs/`:
 Figures (Sprint 5.3):
 ```bash
 # base-transfer trajectory
-python papers/6_ablation_resistance/scripts/dependency_figures.py \
-  --summary papers/6_ablation_resistance/outputs/dependency/dependency_summary.json
+python papers/5_moral_alignment/scripts/dependency_figures.py \
+  --summary papers/5_moral_alignment/outputs/dependency/dependency_summary.json
 
 # per-state vs base-transfer overlay (the confirmation comparison)
-python papers/6_ablation_resistance/scripts/dependency_figures.py \
-  --summary papers/6_ablation_resistance/outputs/dependency_perstate/dependency_summary.json \
-  --overlay-summary papers/6_ablation_resistance/outputs/dependency/dependency_summary.json \
+python papers/5_moral_alignment/scripts/dependency_figures.py \
+  --summary papers/5_moral_alignment/outputs/dependency_perstate/dependency_summary.json \
+  --overlay-summary papers/5_moral_alignment/outputs/dependency/dependency_summary.json \
   --label "per-state directions" --overlay-label "base directions (transfer)" \
-  --figures-dir papers/6_ablation_resistance/outputs/figures_perstate
+  --figures-dir papers/5_moral_alignment/outputs/figures_perstate
 ```
 
 ## Persisting large artifacts across pod shutdown

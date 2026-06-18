@@ -19,12 +19,12 @@ matching how the model is actually used. Saves the LoRA adapter, the training
 record, and (default) the merged model for downstream eval (Sprint 7).
 
 Usage:
-    python papers/6_ablation_resistance/scripts/art_sft.py \
+    python papers/5_moral_alignment/scripts/art_sft.py \
         --model allenai/Olmo-3-1025-7B \
-        --data papers/6_ablation_resistance/data/sft_mix.jsonl \
+        --data papers/5_moral_alignment/data/sft_mix.jsonl \
         --moral-directions papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz \
         --art-lambda 0.01 --art-calibrate \
-        --output-dir papers/6_ablation_resistance/outputs/art_sft --device cuda
+        --output-dir papers/5_moral_alignment/outputs/art_sft --device cuda
 """
 
 from __future__ import annotations
