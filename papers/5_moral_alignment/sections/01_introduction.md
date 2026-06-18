@@ -53,10 +53,8 @@ Effective dimensionality stays at five, mean pairwise foundation cosine barely
 moves ($0.262 \rightarrow 0.250$), and the framework clustering is preserved.
 Alignment rotates the moral representation slightly and then leaves it alone.
 
-If post-training preserves comprehension rather than building it, then whatever
-alignment adds to behavior must be coupled to that fixed representation only
-loosely or not at all. **Finding 3: Comprehension and compliance are only
-weakly coupled, and that weak coupling is itself the result.** Per-scenario
+**Finding 3: Comprehension and compliance are only weakly coupled, and that weak
+coupling is itself the result.** Per-scenario
 agreement between the model's internally dominant foundation and its behavioral
 correctness rises across post-training ($0.375 \rightarrow 0.500$; $\phi$
 $-0.19 \rightarrow +0.05$) but remains weak: even at the final Instruct model,
