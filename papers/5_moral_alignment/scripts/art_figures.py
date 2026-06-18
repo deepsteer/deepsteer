@@ -91,7 +91,7 @@ def main() -> None:
                label=f"hinge target ({args.target_gap})")
     ax.axhline(0, color="0.6", lw=0.8, ls=":")
     ax.set_xlabel("training step")
-    ax.set_ylabel("ART gap  =  CE(ablated) − CE(normal)  on moral text  (nats/token)")
+    ax.set_ylabel("ART gap (nats/token)")
     ax.set_title("ART only bites once the gap is on concentrated moral text")
     ax.legend(loc="upper left", framealpha=0.9)
     _save(fig, figdir, "art_training_dynamics")
