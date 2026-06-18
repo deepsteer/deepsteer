@@ -74,8 +74,10 @@ def main() -> None:
                     help="Calibrate λ so |ART| ≈ target-ratio × L_sft on the first batch.")
     ap.add_argument("--art-target-ratio", type=float, default=0.10)
     ap.add_argument("--art-max-lambda", type=float, default=1.0,
-                    help="Cap on the calibrated λ. λ≈1 balances the ART and SFT "
-                         "gradients; a tiny gap would otherwise blow λ up.")
+                    help="Cap on the calibrated λ.")
+    ap.add_argument("--art-target-gap", type=float, default=0.3,
+                    help="Hinge target: drive L_ablated-L_sft up to this (nats), "
+                         "then stop. Bounds dependency so the objective can't run away.")
     ap.add_argument("--art-layers", default=None,
                     help="Comma-separated layer subset for ART; default all complete layers.")
     ap.add_argument("--output-dir", required=True)
@@ -129,11 +131,11 @@ def main() -> None:
         layers = [int(x) for x in args.art_layers.split(",")] if args.art_layers else None
         art = AblationResistanceSteering(
             args.moral_directions, coefficient=args.art_lambda,
-            max_coefficient=args.art_max_lambda,
+            max_coefficient=args.art_max_lambda, target_gap=args.art_target_gap,
             direction_kind=args.direction_kind, target_layers=layers,
         )
         print(f"ART: {args.moral_directions} ({args.direction_kind}), λ={args.art_lambda}, "
-              f"calibrate={args.art_calibrate}")
+              f"target_gap={args.art_target_gap}, calibrate={args.art_calibrate}")
 
     eval_callbacks = []
     monitor = None

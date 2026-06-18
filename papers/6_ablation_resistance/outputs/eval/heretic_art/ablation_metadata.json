@@ -1,0 +1,22 @@
+{
+  "model": "papers/6_ablation_resistance/outputs/eval/_merged/art",
+  "revision": null,
+  "refusal_layer": 16,
+  "n_weights_modified": 64,
+  "input_format": "chat",
+  "n_harmful": 400,
+  "n_harmless": 400,
+  "refusal_morality_geometry": {
+    "refusal_layer": 16,
+    "cosine_to_foundations": {
+      "Care": 0.0583,
+      "Fairness": 0.0269,
+      "Liberty": 0.0596,
+      "Loyalty": 0.0463,
+      "Authority": 0.0536,
+      "Sanctity": 0.0372
+    },
+    "moral_subspace_projection_fraction": 0.0828,
+    "mean_abs_cosine": 0.047
+  }
+}

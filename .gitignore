@@ -54,6 +54,13 @@ papers/5_moral_alignment/outputs/pipeline/*/probe_directions.npz
 papers/*/outputs/_validate_*/
 papers/*/outputs/*_selftransfer/
 
+# Paper 6 model weight blobs (regenerable; result JSON + adapter configs ARE
+# tracked, weights are not — LoRA adapters ~40MB each, merged/ablated ~14GB).
+papers/6_ablation_resistance/outputs/**/*.safetensors
+papers/6_ablation_resistance/outputs/**/merged_model/
+papers/6_ablation_resistance/outputs/**/ablated_model/
+papers/6_ablation_resistance/outputs/**/_merged/
+
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt
 **/sae_layer*.pt

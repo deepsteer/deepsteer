@@ -171,6 +171,7 @@ class AblationResistanceSteering:
         *,
         coefficient: float = DEFAULT_ART_LAMBDA,
         max_coefficient: float = 1.0,
+        target_gap: float = 0.3,
         target_layers: list[int] | None = None,
         direction_kind: str = "probe",
         foundations: list[str] | None = None,
@@ -181,6 +182,7 @@ class AblationResistanceSteering:
         self._directions = moral_directions
         self._coefficient = float(coefficient)
         self._max_coefficient = float(max_coefficient)
+        self._target_gap = float(target_gap)
         self._requested_layers = target_layers
         self._direction_kind = direction_kind
         self._foundations = foundations
@@ -328,13 +330,15 @@ class AblationResistanceSteering:
         labels: Tensor,
         normal_loss: Tensor | float,
     ) -> Tensor:
-        """Run the ablated forward and return ``-λ (L_ablated - L_sft)``.
+        """Run the ablated forward and return ``λ·relu(target_gap - gap)``.
 
-        ``normal_loss`` is the trainer's already-computed SFT loss; pass it
-        DETACHED so only the ablated term carries gradient. The returned tensor
-        is graph-attached through ``L_ablated`` (and thus through the
-        differentiable projection), so adding it to the trainer's loss and
-        calling ``.backward()`` teaches the model to depend on the subspace.
+        ``gap = L_ablated - L_sft``. The hinge drives the gap up to
+        ``target_gap`` then gives zero gradient (bounded, unlike the original
+        ``-λ·gap`` which ran away). ``normal_loss`` is the trainer's SFT loss;
+        pass it DETACHED so only the ablated term carries gradient. The returned
+        tensor is graph-attached through ``L_ablated`` (and thus the
+        differentiable projection), so ``.backward()`` teaches the model to
+        depend on the subspace — up to the target.
         """
         if not self._attached:
             raise RuntimeError("ART steering not attached; call attach(model) first.")
@@ -348,7 +352,11 @@ class AblationResistanceSteering:
         sft_val = float(normal_loss.detach().item()) if isinstance(normal_loss, Tensor) \
             else float(normal_loss)
         gap = l_ablated - normal_loss          # graph-attached via l_ablated
-        art = -self._coefficient * gap
+        # Hinge: drive the gap UP toward target_gap, then ZERO gradient. The
+        # unbounded -λ·gap objective runs away (gap exploded to 50+ nats and
+        # destroyed the SFT loss); relu(target_gap - gap) bounds the dependency
+        # the model is rewarded for building, then stops pushing.
+        art = self._coefficient * torch.clamp(self._target_gap - gap, min=0.0)
 
         self._last_sft = sft_val
         self._last_ablated = float(l_ablated.detach().item())
@@ -365,15 +373,14 @@ class AblationResistanceSteering:
     ) -> float:
         """Suggest λ so that |ART| ≈ ``target_ratio`` × L_sft on the first batch.
 
-        ``|ART| = λ |gap|``; solve ``λ |gap| = ratio × sft``, then clamp to
-        ``max_coefficient``. The clamp matters: when the gap is small the raw λ
-        explodes (e.g. gap 0.02, sft 1.5 -> λ ~6), which makes the ART gradient
-        dominate the SFT gradient. λ≈1 is the balanced point (ART grad = -∇gap,
-        same scale as the SFT grad). Caller applies via :meth:`set_coefficient`.
+        With the hinge objective ``ART = λ·relu(target_gap - gap)``, solve for λ
+        such that the initial ART loss ≈ ``ratio × sft``, then clamp to
+        ``max_coefficient``. Uses the hinge magnitude ``relu(target_gap - gap)``
+        (not the raw gap), so a tiny starting gap no longer blows λ up. Caller
+        applies via :meth:`set_coefficient`.
         """
-        if abs(first_batch_gap) < 1e-9:
-            return self._coefficient
-        lam = target_ratio * max(first_batch_sft_loss, 1e-6) / abs(first_batch_gap)
+        shortfall = max(self._target_gap - first_batch_gap, 1e-6)
+        lam = target_ratio * max(first_batch_sft_loss, 1e-6) / shortfall
         return min(lam, self._max_coefficient)
 
     def __repr__(self) -> str:

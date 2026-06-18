@@ -109,11 +109,13 @@ def test_build_subspace_basis_skips_incomplete_layers():
 
 
 def test_calibrate_coefficient():
-    art = AblationResistanceSteering({}, coefficient=0.01)
-    # want lambda*|gap| = ratio*sft -> lambda = 0.1*2.0/0.5 = 0.4
-    assert abs(art.calibrate_coefficient(2.0, 0.5, target_ratio=0.1) - 0.4) < 1e-9
-    # degenerate gap -> keep current
-    assert art.calibrate_coefficient(2.0, 0.0) == 0.01
+    # Hinge magnitude = target_gap - gap. λ = ratio*sft / shortfall, capped.
+    art = AblationResistanceSteering({}, target_gap=1.0, max_coefficient=10.0)
+    # shortfall = 1.0 - 0.0 = 1.0 -> λ = 0.1*2.0/1.0 = 0.2
+    assert abs(art.calibrate_coefficient(2.0, 0.0, target_ratio=0.1) - 0.2) < 1e-9
+    # tiny shortfall (gap near target) would blow λ up -> capped at max_coefficient
+    capped = AblationResistanceSteering({}, target_gap=1.0, max_coefficient=0.1)
+    assert capped.calibrate_coefficient(2.0, 0.999, target_ratio=0.1) == 0.1
 
 
 # ---------------------------------------------------------------------------
@@ -142,7 +144,9 @@ def test_art_gradient_flows_to_lora_real_model():
     rng = np.random.default_rng(0)
     dirs = {f: {L: rng.standard_normal(hidden).astype(np.float32) for L in range(n_layers)}
             for f in FOUNDATION_ORDER}
-    art = AblationResistanceSteering(dirs, coefficient=0.5)
+    # Large target_gap so the hinge is always active (we're testing gradient
+    # flow through the ablation, not the saturation cutoff).
+    art = AblationResistanceSteering(dirs, coefficient=0.5, target_gap=1e6)
     art.attach(model)
 
     ids = torch.randint(0, 100, (1, 8))

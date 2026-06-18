@@ -39,6 +39,9 @@ VOLUME_GB="${VOLUME_GB:-0}"
 POD_NAME="${POD_NAME:-deepsteer-p6-7b}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
 REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
+# Optional: a read HF token forwarded to the pod for faster downloads + higher
+# rate limits (public models work without it; left empty = anonymous).
+HF_TOKEN="${HF_TOKEN:-}"
 
 # Phase 3 step config (passed through to the remote runner).
 VALIDATE="${VALIDATE:-0}"
@@ -208,7 +211,7 @@ echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HO
 echo ">> Launching experiments detached on pod (log: $REMOTE_LOG)"
 ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
   "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
-   ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
+   ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR ${HF_TOKEN:+HF_TOKEN=$HF_TOKEN} \
      VALIDATE=$VALIDATE DEP_KIND='$DEP_KIND' PER_STATE=$PER_STATE \
      DATASET_TARGET=$DATASET_TARGET \
      ART_LAMBDA=$ART_LAMBDA ART_MAX_STEPS=$ART_MAX_STEPS \
