@@ -1,7 +1,7 @@
 [
   {
     "label": "art_ablated",
-    "persona_peak_acc": 0.9375,
-    "mean_geo_cosine": 0.2531
+    "persona_peak_acc": 0.9271,
+    "mean_geo_cosine": 0.2766
   }
 ]

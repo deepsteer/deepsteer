@@ -9,14 +9,14 @@
   "refusal_morality_geometry": {
     "refusal_layer": 16,
     "cosine_to_foundations": {
-      "Care": 0.0583,
-      "Fairness": 0.0269,
-      "Liberty": 0.0596,
-      "Loyalty": 0.0463,
-      "Authority": 0.0536,
-      "Sanctity": 0.0372
+      "Care": 0.0389,
+      "Fairness": 0.0186,
+      "Liberty": 0.0597,
+      "Loyalty": 0.0415,
+      "Authority": 0.0338,
+      "Sanctity": 0.0308
     },
-    "moral_subspace_projection_fraction": 0.0828,
-    "mean_abs_cosine": 0.047
+    "moral_subspace_projection_fraction": 0.0693,
+    "mean_abs_cosine": 0.0372
   }
 }

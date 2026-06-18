@@ -14,7 +14,7 @@
         "checkpoint_step": null,
         "extra": {}
       },
-      "timestamp": 1781733295.1546218,
+      "timestamp": 1781748300.4193997,
       "metadata": {
         "n_scenarios": 48,
         "temperature": 0.0
@@ -217,7 +217,7 @@
         "checkpoint_step": null,
         "extra": {}
       },
-      "timestamp": 1781734172.7465801,
+      "timestamp": 1781748892.3468938,
       "metadata": {
         "n_scenarios": 20,
         "n_personas": 4,
