@@ -45,9 +45,8 @@ the cosine between a checkpoint's foundation directions and the final base
 model's rises monotonically from $0.87$ to $0.999$ over the stage-3 anneal.
 Comprehension is in place before any alignment.
 
-If comprehension is already present at the base, the natural question is what
-post-training changes. **Finding 2: post-training reorients moral
-representation, it does not re-teach it, and SFT does so once.** SFT applies a
+**Finding 2: Post-training reorients moral representation, it does not re-teach
+it, and SFT does so once.** SFT applies a
 single ${\sim}40^{\circ}$ rotation to the moral subspace (direction cosine to base
 $0.999 \rightarrow 0.757$); DPO and all eight RLVR checkpoints leave it flat.
 Effective dimensionality stays at five, mean pairwise foundation cosine barely
@@ -56,7 +55,7 @@ Alignment rotates the moral representation slightly and then leaves it alone.
 
 If post-training preserves comprehension rather than building it, then whatever
 alignment adds to behavior must be coupled to that fixed representation only
-loosely or not at all. **Finding 3: comprehension and compliance are only
+loosely or not at all. **Finding 3: Comprehension and compliance are only
 weakly coupled, and that weak coupling is itself the result.** Per-scenario
 agreement between the model's internally dominant foundation and its behavioral
 correctness rises across post-training ($0.375 \rightarrow 0.500$; $\phi$
@@ -69,7 +68,7 @@ if compliance were routed *through* moral representations, removing compliance
 would damage comprehension; weak coupling predicts instead that compliance is a
 *separate* mechanism that can be removed while comprehension survives.
 
-**Finding 4: the refusal mechanism is geometrically separate from morality, and
+**Finding 4: The refusal mechanism is geometrically separate from morality, and
 removing it confirms the dissociation.** The refusal direction recovered by
 Heretic-style difference-of-means \citep{arditi2024refusal} is nearly orthogonal
 to the six-foundation moral subspace (projection fraction $0.10$, mean
