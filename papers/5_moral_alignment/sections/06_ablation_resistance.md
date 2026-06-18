@@ -13,15 +13,10 @@ into a statement about where alignment's wiring is set.
 ## 6.1 Moral generation depends on the moral subspace, and the dependence grows with alignment
 
 Decodability (Section 4.1) says morality is *present* in the representation; it
-does not say the model *uses* it. We first measure how much each pipeline state
-relies on its moral subspace for generation, with a difference-in-differences
-that mirrors the refusal ablation of Section 3. We project the six foundation
-directions out of the residual stream at every layer and measure the resulting
-increase in cross-entropy on morally-loaded text relative to matched-neutral
-text:
-$$\text{dependency} = \big(\text{CE}^{\text{abl}}_{\text{moral}} - \text{CE}_{\text{moral}}\big) - \big(\text{CE}^{\text{abl}}_{\text{neutral}} - \text{CE}_{\text{neutral}}\big).$$
-The neutral arm controls for the generic cost of removing any six directions;
-the difference isolates the moral-specific reliance.
+does not say the model *uses* it. We measure how much each pipeline state relies
+on its moral subspace for generation with the dependency metric of Section 3.7:
+the moral-specific increase in next-token cross-entropy when the six foundation
+directions are projected out of the residual stream at every layer.
 
 Dependency is positive at every state and grows through alignment
 (\Cref{fig:dep}). It is flat at ${\sim}{+}0.011$ nats/token across the stage-3
@@ -54,26 +49,13 @@ outside this subspace. Dependence and compliance grow in different places.
 
 ## 6.2 Ablation-resistance training
 
-We attempt to force the two together. Ablation-resistance training (ART) adds an
-auxiliary loss during supervised fine-tuning that rewards the model when
-ablating the moral subspace hurts. Each step runs a paired forward pass: the
-standard loss $L_{\text{sft}}$, and an ablated loss $L_{\text{abl}}$ computed
-with the six foundation directions projected out of every layer's residual
-stream. A bounded hinge drives the gap up to a target and then stops,
-$$\text{ART} = \lambda \,\operatorname{relu}\!\big(g^\star - (L_{\text{abl}} - L_{\text{sft}})\big),$$
-with $g^\star$ the target gap. The projection is differentiable in the
-activations (the directions are frozen), so the gradient teaches the model to
-route generation through the moral subspace, up to $g^\star$. The bound is
-necessary: an unbounded $-\lambda\,(L_{\text{abl}} - L_{\text{sft}})$ objective
-diverges, inflating $L_{\text{abl}}$ without limit and destroying the standard
-loss.
-
-We fine-tune OLMo-3 base into an instruct model with LoRA (rank 16, query and
-value projections) on a general-plus-moral chat mixture, in two conditions that
-are identical except for the ART term: a control ($\lambda=0$) and ART
-($\lambda$ calibrated on the first batch and capped at $1$). Both train for the
-same steps on the same data; we then run the full Section 4 battery on each and
-apply the Section 4.4 refusal ablation to both.
+We attempt to deepen this dependency into a coupling with ablation-resistance
+training (ART; Section 3.7): an auxiliary fine-tuning loss that rewards the model
+when projecting the moral subspace out of its activations degrades its output,
+bounded by a hinge so the objective cannot diverge. We fine-tune OLMo-3 base into
+an instruct model with LoRA in two conditions identical except for the ART term,
+a control ($\lambda=0$) and ART, then run the full Section 4 battery and the
+Section 4.4 refusal ablation on both.
 
 ## 6.3 ART builds dependence, but in the wrong subspace
 

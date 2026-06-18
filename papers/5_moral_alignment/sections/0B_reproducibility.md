@@ -29,6 +29,22 @@ classifier scores an opening refusal (e.g.\ "I'm sorry, but I can't \dots") as a
 refusal regardless of length, correcting a failure mode that scored long
 declines as compliance.
 
+**Ablation-resistance training.** The dependency metric projects the six base
+foundation directions (orthonormalized) out of every layer's residual stream and
+reports the moral-minus-neutral difference-in-differences of next-token
+cross-entropy on the probing texts. ART fine-tunes `Olmo-3-1025-7B` with LoRA
+(rank 16, $\alpha$ 32, query/value, lr $10^{-4}$, 400 steps) on a 2{,}460-record
+general-plus-moral chat mix (a Tülu-3 SFT subset, moral records by source tag and
+keyword), with the moral-pool ART loss ($g^\star = 0.3$, $\lambda$
+first-batch-calibrated and capped at 1) measured on the train-split moral probing
+sentences; the control is identical with $\lambda = 0$. The paired forward backs
+the SFT and ablated losses separately to bound memory. Adapters (the durable
+artifact) and the four-cell evaluation are committed under
+`outputs/{art_sft,control_sft,eval}/`; code is
+`scripts/{moral_dependency,moral_dependency_pipeline,prepare_sft_data,art_sft,eval_pipeline}.py`
+and `deepsteer/steering/ablation_resistance.py`, run via
+`runpod/run_session_phase3.sh` (`RUN_ART_SFT=1 RUN_EVAL=1`).
+
 **Runs.** Probing and geometry on Apple MPS (base) and a single A100 (pipeline);
 the disk-bounded pipeline sweep purges each checkpoint's weights after
 processing. Commands are in `papers/5_moral_alignment/runpod/`

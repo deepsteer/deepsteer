@@ -133,3 +133,45 @@ benchmark (the fraction of harmful/borderline requests the model declines). The
 refusal classifier flags an opening refusal as a refusal regardless of length;
 this corrects a failure mode in which a long ``I'm sorry, but I can't \dots''
 decline was scored as compliance (Appendix B).
+
+\subsection{Moral-subspace dependency and ablation-resistance training}\label{moral-subspace-dependency-and-ablation-resistance-training}
+
+Two further measures (Section 6) ask whether moral comprehension is \emph{used},
+and whether its use can be strengthened into a coupling.
+
+\textbf{Dependency.} Decodability says morality is present; dependency asks how much
+the model relies on it to generate. We project the six foundation directions out
+of the residual stream at every layer, the activation analog of the weight
+ablation in Section 3.6 (at each layer the hidden state is orthogonalized against
+an orthonormal basis of the foundation span), and measure the resulting increase
+in next-token cross-entropy on morally-loaded text relative to matched-neutral
+text:
+\[\text{dependency} = \big(\text{CE}^{\text{abl}}_{\text{moral}} - \text{CE}_{\text{moral}}\big) - \big(\text{CE}^{\text{abl}}_{\text{neutral}} - \text{CE}_{\text{neutral}}\big).\]
+The neutral arm controls for the generic cost of removing any six directions; the
+difference isolates the moral-specific reliance. We report it across the grid
+using the base foundation directions, comparable across states, and as a
+robustness check using each state's own directions.
+
+\textbf{Ablation-resistance training (ART).} To test whether that dependency can be
+deepened into a coupling, we add an auxiliary loss during supervised fine-tuning.
+Each step runs a paired forward pass: the standard loss \(L_{\text{sft}}\) and an
+ablated loss \(L_{\text{abl}}\) computed with the foundation subspace projected out
+of every layer. The projection is differentiable in the activations (the frozen
+directions carry no gradient), so the gradient can teach the model to route
+generation through the moral subspace. A bounded hinge drives the gap up to a
+target \(g^\star\) and then stops:
+\[\text{ART} = \lambda\,\operatorname{relu}\!\big(g^\star - (L_{\text{abl}} - L_{\text{sft}})\big).\]
+The bound is necessary: the unbounded \(-\lambda\,(L_{\text{abl}}-L_{\text{sft}})\)
+objective diverges, inflating \(L_{\text{abl}}\) without limit and destroying the
+standard loss. The gap is measured on a pool of concentrated moral text, not the
+mixed fine-tuning batch where general content dilutes it to a no-op
+(Section 6.3); \(\lambda\) is calibrated so the ART term is \({\sim}10\%\) of
+\(L_{\text{sft}}\) on the first batch and capped at \(1\).
+
+\textbf{ART-SFT and evaluation.} We fine-tune OLMo-3 base into an instruct model with
+LoRA (rank 16, query/value projections) on a general-plus-moral chat mixture (a
+Tülu-3 SFT subset with a moral-content supplement), in two conditions identical
+except for the ART term: a control (\(\lambda=0\)) and ART. We then run the full
+battery (Sections 3.2--3.5, plus dependency) on each model and apply the
+Section 3.6 refusal ablation to both, yielding a four-cell comparison (control
+and ART, each with and without refusal ablation).
