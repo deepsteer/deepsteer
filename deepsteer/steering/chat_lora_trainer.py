@@ -498,10 +498,13 @@ class ChatLoRATrainer:
             art_loss_value: float | None = None
             art_gap_value: float | None = None
             if self._art_steering is not None:
+                use_pool = self._art_steering.uses_pool
                 if self._art_calibrate and step == 1:
-                    gap = self._art_steering.measure_gap(  # no-grad, cheap
-                        self._model, input_ids=input_ids, attention_mask=attention_mask,
-                        labels=labels, normal_loss=sft_loss_value,
+                    gap = (  # no-grad, cheap
+                        self._art_steering.measure_gap_pool(self._model) if use_pool
+                        else self._art_steering.measure_gap(
+                            self._model, input_ids=input_ids, attention_mask=attention_mask,
+                            labels=labels, normal_loss=sft_loss_value)
                     )
                     new_lambda = self._art_steering.calibrate_coefficient(
                         first_batch_sft_loss=sft_loss_value, first_batch_gap=gap,
@@ -509,14 +512,17 @@ class ChatLoRATrainer:
                     )
                     logger.info(
                         "ART calibration: λ %.5f → %.5f (sft=%.3f, gap=%.4f, "
-                        "target ratio=%.2f, cap=%.2f)",
+                        "target ratio=%.2f, cap=%.2f, pool=%s)",
                         self._art_steering.coefficient, new_lambda, sft_loss_value,
                         gap, self._art_target_ratio, self._art_steering._max_coefficient,
+                        use_pool,
                     )
                     self._art_steering.set_coefficient(new_lambda)
-                art_loss = self._art_steering.compute_art_loss(
-                    self._model, input_ids=input_ids, attention_mask=attention_mask,
-                    labels=labels, normal_loss=sft_loss_value,
+                art_loss = (
+                    self._art_steering.compute_art_loss_pool(self._model) if use_pool
+                    else self._art_steering.compute_art_loss(
+                        self._model, input_ids=input_ids, attention_mask=attention_mask,
+                        labels=labels, normal_loss=sft_loss_value)
                 )
                 if torch.isnan(art_loss):
                     logger.warning("NaN ART loss at step %d, skipping ART term", step)

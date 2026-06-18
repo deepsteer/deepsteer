@@ -42,6 +42,7 @@ Usage::
 from __future__ import annotations
 
 import logging
+import random
 import re
 from contextlib import contextmanager
 from typing import Any
@@ -175,6 +176,10 @@ class AblationResistanceSteering:
         target_layers: list[int] | None = None,
         direction_kind: str = "probe",
         foundations: list[str] | None = None,
+        moral_pool_texts: list[str] | None = None,
+        pool_batch_size: int = 8,
+        pool_max_len: int = 64,
+        pool_seed: int = 0,
         device: str | None = None,
     ) -> None:
         if isinstance(moral_directions, (str, bytes)) or hasattr(moral_directions, "__fspath__"):
@@ -187,6 +192,17 @@ class AblationResistanceSteering:
         self._direction_kind = direction_kind
         self._foundations = foundations
         self._device = device
+
+        # Optional moral-only gap pool. When set, the ART gap is measured on this
+        # concentrated moral text (not the diluted SFT batch where general content
+        # makes ablating the moral subspace barely register). Tokenized at attach.
+        self._pool_texts = list(moral_pool_texts) if moral_pool_texts else None
+        self._pool_batch_size = int(pool_batch_size)
+        self._pool_max_len = int(pool_max_len)
+        self._pool_tokenized: list = []
+        self._pool_order: list[int] = []
+        self._pool_cursor = 0
+        self._pool_rng = random.Random(pool_seed)
 
         # Resolved at attach() (needs model.info.n_layers / device / dtype).
         self._basis_t: dict[int, Tensor] = {}
@@ -222,6 +238,11 @@ class AblationResistanceSteering:
     @property
     def n_directions(self) -> int:
         return len(self._names)
+
+    @property
+    def uses_pool(self) -> bool:
+        """True if the ART gap is measured on the moral pool, not the SFT batch."""
+        return self._pool_texts is not None
 
     @property
     def last_gap(self) -> float | None:
@@ -269,10 +290,22 @@ class AblationResistanceSteering:
             L: torch.from_numpy(basis_np[L]).to(device=device, dtype=torch.float32)
             for L in self._layers
         }
+        if self._pool_texts:
+            tok = model.tokenizer
+            self._pool_tokenized = [
+                tok(t, truncation=True, max_length=self._pool_max_len,
+                    return_tensors="pt")["input_ids"][0]
+                for t in self._pool_texts
+            ]
+            self._pool_order = list(range(len(self._pool_tokenized)))
+            self._pool_rng.shuffle(self._pool_order)
+            self._pool_cursor = 0
+
         self._attached = True
         logger.info(
-            "ART attached: %d %s directions over %d layers, λ=%.4f",
+            "ART attached: %d %s directions over %d layers, λ=%.4f%s",
             len(self._names), self._direction_kind, len(self._layers), self._coefficient,
+            f", moral pool {len(self._pool_tokenized)} texts" if self._pool_texts else "",
         )
 
     def detach(self) -> None:
@@ -364,6 +397,47 @@ class AblationResistanceSteering:
         self._gap_history.append(self._last_gap)
         self._art_history.append(float(art.detach().item()))
         return art
+
+    # -- moral-pool mode ----------------------------------------------------
+
+    def _sample_pool_batch(self, model: WhiteBoxModel):
+        """Next ``pool_batch_size`` tokenized moral texts -> (ids, attn, labels)."""
+        param = next(model.model.parameters())
+        pad_id = model.tokenizer.pad_token_id or model.tokenizer.eos_token_id or 0
+        seqs = []
+        for _ in range(min(self._pool_batch_size, len(self._pool_tokenized))):
+            if self._pool_cursor >= len(self._pool_order):
+                self._pool_rng.shuffle(self._pool_order)
+                self._pool_cursor = 0
+            seqs.append(self._pool_tokenized[self._pool_order[self._pool_cursor]])
+            self._pool_cursor += 1
+        maxlen = max(s.shape[0] for s in seqs)
+        b = len(seqs)
+        ids = torch.full((b, maxlen), pad_id, dtype=torch.long)
+        attn = torch.zeros((b, maxlen), dtype=torch.long)
+        labels = torch.full((b, maxlen), -100, dtype=torch.long)
+        for i, s in enumerate(seqs):
+            n = s.shape[0]
+            ids[i, :n] = s
+            attn[i, :n] = 1
+            labels[i, :n] = s  # full-LM loss over the (entirely moral) text
+        return ids.to(param.device), attn.to(param.device), labels.to(param.device)
+
+    def compute_art_loss_pool(self, model: WhiteBoxModel) -> Tensor:
+        """ART loss with the gap measured on a sampled moral-pool batch."""
+        ids, attn, labels = self._sample_pool_batch(model)
+        with torch.no_grad():
+            l_normal = model.model(input_ids=ids, attention_mask=attn, labels=labels).loss
+        return self.compute_art_loss(model, input_ids=ids, attention_mask=attn,
+                                     labels=labels, normal_loss=float(l_normal.item()))
+
+    def measure_gap_pool(self, model: WhiteBoxModel) -> float:
+        """No-grad pool gap (L_ablated - L_normal on a moral-pool batch)."""
+        ids, attn, labels = self._sample_pool_batch(model)
+        with torch.no_grad():
+            l_normal = model.model(input_ids=ids, attention_mask=attn, labels=labels).loss
+        return self.measure_gap(model, input_ids=ids, attention_mask=attn,
+                                labels=labels, normal_loss=float(l_normal.item()))
 
     def calibrate_coefficient(
         self,

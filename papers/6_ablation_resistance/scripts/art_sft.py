@@ -78,6 +78,13 @@ def main() -> None:
     ap.add_argument("--art-target-gap", type=float, default=0.3,
                     help="Hinge target: drive L_ablated-L_sft up to this (nats), "
                          "then stop. Bounds dependency so the objective can't run away.")
+    ap.add_argument("--art-gap-source", choices=["moral_pool", "batch"], default="moral_pool",
+                    help="moral_pool: measure the ART gap on concentrated moral text "
+                         "(default; avoids the dilution that made 'batch' a no-op). "
+                         "batch: gap on the mixed SFT batch (the v1 behaviour).")
+    ap.add_argument("--art-moral-pool", default=None,
+                    help="File of moral texts (one per line) for the gap pool; "
+                         "default = the probing dataset's train moral sentences.")
     ap.add_argument("--art-layers", default=None,
                     help="Comma-separated layer subset for ART; default all complete layers.")
     ap.add_argument("--output-dir", required=True)
@@ -129,13 +136,24 @@ def main() -> None:
     art = None
     if is_art:
         layers = [int(x) for x in args.art_layers.split(",")] if args.art_layers else None
+        moral_pool = None
+        if args.art_gap_source == "moral_pool":
+            if args.art_moral_pool:
+                moral_pool = [ln.strip() for ln in open(args.art_moral_pool) if ln.strip()]
+            else:
+                from deepsteer.datasets.pipeline import build_probing_dataset
+                ds = build_probing_dataset(target_per_foundation=40, dataset_version="v2")
+                moral_pool = [p.moral for p in ds.train]
         art = AblationResistanceSteering(
             args.moral_directions, coefficient=args.art_lambda,
             max_coefficient=args.art_max_lambda, target_gap=args.art_target_gap,
             direction_kind=args.direction_kind, target_layers=layers,
+            moral_pool_texts=moral_pool,
         )
         print(f"ART: {args.moral_directions} ({args.direction_kind}), λ={args.art_lambda}, "
-              f"target_gap={args.art_target_gap}, calibrate={args.art_calibrate}")
+              f"target_gap={args.art_target_gap}, gap_source={args.art_gap_source}"
+              + (f" ({len(moral_pool)} pool texts)" if moral_pool else "")
+              + f", calibrate={args.art_calibrate}")
 
     eval_callbacks = []
     monitor = None
