@@ -28,6 +28,7 @@ RUN_PERSONA="${RUN_PERSONA:-1}"        # Sprint 1.4: persona probe on instruct
 RUN_PIPELINE="${RUN_PIPELINE:-1}"      # Sprint 2.2: full grid probing + geometry
 RUN_COUPLING="${RUN_COUPLING:-1}"      # Sprint 2.3: coupling on post-training states
 RUN_HERETIC="${RUN_HERETIC:-0}"        # Sprint 3: refusal ablation + post-ablation battery
+RUN_MALLEABILITY="${RUN_MALLEABILITY:-0}"  # Tier 2: proto-refusal extraction + malleability
 REFUSAL_PROMPTS="${REFUSAL_PROMPTS:-$P5/refusal_prompts.json}"
 
 # Post-training states for coupling (instruct-capable only; pretraining ckpts
@@ -77,6 +78,15 @@ if [ "$VALIDATE" = 1 ]; then
     python "$SCRIPTS/pipeline_study.py" --grid "$GRID" --base-dir "$BASE_DIR" \
       --input-format "$INPUT_FORMAT" --device "$DEVICE" --purge-hf-cache \
       --only olmo3_base,olmo3_instruct_final --output-dir "$OUT/_validate_pipeline"
+  if [ "$RUN_MALLEABILITY" = 1 ]; then
+    run_step "VALIDATE: proto-refusal smoke (base, 4 prompts) + analysis" \
+      bash -c "python '$SCRIPTS/extract_proto_refusal.py' --only olmo3_base \
+        --prompts '$REFUSAL_PROMPTS' --max-prompts 4 --device '$DEVICE' --purge-hf-cache \
+        --output-dir '$OUT/_validate_measurement/stage3' && \
+        python '$SCRIPTS/malleability_analysis.py' \
+        --stage3-dir '$OUT/_validate_measurement/stage3' --no-figure \
+        --output-dir '$OUT/_validate_measurement'"
+  fi
   log "VALIDATION complete. Inspect $OUT/_validate_* then run full (VALIDATE=0)."
   touch "$REPO_DIR/.session_done"; exit 0
 fi
@@ -172,8 +182,25 @@ if [ "$RUN_HERETIC" = 1 ]; then
   fi
 fi
 
+# ----------------------- MEASUREMENT COUPLING (TIER 2) -----------------------
+# Proto-refusal contrast per stage-3 checkpoint (+ base), then the malleability
+# analysis (M2/M3/M4). The per-checkpoint MFT + persona directions are already
+# cached under outputs/pipeline/ (synced up); only the proto-refusal contrast is
+# new, so this loads each stage-3 checkpoint once. --purge-hf-cache bounds disk.
+if [ "$RUN_MALLEABILITY" = 1 ]; then
+  run_step "T2.1 proto-refusal extraction (stage-3 + base)" \
+    python "$SCRIPTS/extract_proto_refusal.py" --grid "$GRID" \
+      --prompts "$REFUSAL_PROMPTS" --input-format raw --device "$DEVICE" \
+      --purge-hf-cache --output-dir "$OUT/measurement/stage3"
+  run_step "T2.2 malleability analysis (M2/M3/M4 + figure)" \
+    python "$SCRIPTS/malleability_analysis.py" \
+      --stage3-dir "$OUT/measurement/stage3" --pipeline-dir "$OUT/pipeline" \
+      --instruct-persona-npz "$OUT/olmo3_instruct/persona_directions.npz" \
+      --output-dir "$OUT/measurement"
+fi
+
 log "Session complete. Output directories:"
-ls -d "$OUT"/olmo3_instruct* "$OUT"/pipeline "$OUT"/heretic 2>/dev/null || true
+ls -d "$OUT"/olmo3_instruct* "$OUT"/pipeline "$OUT"/heretic "$OUT"/measurement 2>/dev/null || true
 
 # Completion sentinel the launcher polls for (survives SSH drops).
 touch "$REPO_DIR/.session_done"
