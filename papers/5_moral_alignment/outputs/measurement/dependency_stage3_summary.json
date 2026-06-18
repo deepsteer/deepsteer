@@ -1,0 +1,339 @@
+{
+  "analysis": "dependency_stage3_summary",
+  "confirms": "Paper 5 \u00a76.1: dependency positive everywhere, flat through stage-3, ~6x rise post-training.",
+  "stage3_positive_and_flat": true,
+  "summary": {
+    "fixed_base_directions": {
+      "stage3": {
+        "n_stage3_checkpoints": 13,
+        "all_positive": true,
+        "mean": 0.013074,
+        "min": 0.008078,
+        "max": 0.017978
+      },
+      "base": 0.010611,
+      "sft": 0.031375,
+      "dpo": 0.054936,
+      "instruct": 0.06315,
+      "post_training_fold_increase": 4.83,
+      "trajectory": [
+        {
+          "label": "olmo3_base",
+          "dependency_score": 0.010611,
+          "delta_ce_moral": 0.219755,
+          "delta_ce_neutral": 0.209144
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step1000",
+          "dependency_score": 0.011979,
+          "delta_ce_moral": 0.20894,
+          "delta_ce_neutral": 0.196961
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step2000",
+          "dependency_score": 0.013779,
+          "delta_ce_moral": 0.202619,
+          "delta_ce_neutral": 0.188841
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step3000",
+          "dependency_score": 0.016743,
+          "delta_ce_moral": 0.209399,
+          "delta_ce_neutral": 0.192656
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step4000",
+          "dependency_score": 0.017057,
+          "delta_ce_moral": 0.20951,
+          "delta_ce_neutral": 0.192453
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step5000",
+          "dependency_score": 0.017978,
+          "delta_ce_moral": 0.2113,
+          "delta_ce_neutral": 0.193322
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step6000",
+          "dependency_score": 0.011662,
+          "delta_ce_moral": 0.209167,
+          "delta_ce_neutral": 0.197505
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step7000",
+          "dependency_score": 0.013132,
+          "delta_ce_moral": 0.21393,
+          "delta_ce_neutral": 0.200797
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step8000",
+          "dependency_score": 0.010828,
+          "delta_ce_moral": 0.214721,
+          "delta_ce_neutral": 0.203892
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step9000",
+          "dependency_score": 0.016488,
+          "delta_ce_moral": 0.218888,
+          "delta_ce_neutral": 0.2024
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step10000",
+          "dependency_score": 0.010988,
+          "delta_ce_moral": 0.219052,
+          "delta_ce_neutral": 0.208064
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11000",
+          "dependency_score": 0.008078,
+          "delta_ce_moral": 0.219251,
+          "delta_ce_neutral": 0.211173
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11900",
+          "dependency_score": 0.010636,
+          "delta_ce_moral": 0.219738,
+          "delta_ce_neutral": 0.209102
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11921",
+          "dependency_score": 0.010611,
+          "delta_ce_moral": 0.219755,
+          "delta_ce_neutral": 0.209144
+        },
+        {
+          "label": "olmo3_sft_final",
+          "dependency_score": 0.031375,
+          "delta_ce_moral": 0.264792,
+          "delta_ce_neutral": 0.233418
+        },
+        {
+          "label": "olmo3_dpo_final",
+          "dependency_score": 0.054936,
+          "delta_ce_moral": 0.286,
+          "delta_ce_neutral": 0.231064
+        },
+        {
+          "label": "olmo3_instruct_step_050",
+          "dependency_score": 0.054749,
+          "delta_ce_moral": 0.285198,
+          "delta_ce_neutral": 0.23045
+        },
+        {
+          "label": "olmo3_instruct_step_100",
+          "dependency_score": 0.054951,
+          "delta_ce_moral": 0.285093,
+          "delta_ce_neutral": 0.230142
+        },
+        {
+          "label": "olmo3_instruct_step_150",
+          "dependency_score": 0.055372,
+          "delta_ce_moral": 0.284792,
+          "delta_ce_neutral": 0.22942
+        },
+        {
+          "label": "olmo3_instruct_step_200",
+          "dependency_score": 0.055731,
+          "delta_ce_moral": 0.285105,
+          "delta_ce_neutral": 0.229374
+        },
+        {
+          "label": "olmo3_instruct_step_250",
+          "dependency_score": 0.055697,
+          "delta_ce_moral": 0.284952,
+          "delta_ce_neutral": 0.229256
+        },
+        {
+          "label": "olmo3_instruct_step_300",
+          "dependency_score": 0.054072,
+          "delta_ce_moral": 0.28425,
+          "delta_ce_neutral": 0.230178
+        },
+        {
+          "label": "olmo3_instruct_step_350",
+          "dependency_score": 0.053649,
+          "delta_ce_moral": 0.283408,
+          "delta_ce_neutral": 0.229759
+        },
+        {
+          "label": "olmo3_instruct_step_400",
+          "dependency_score": 0.054062,
+          "delta_ce_moral": 0.283184,
+          "delta_ce_neutral": 0.229122
+        },
+        {
+          "label": "olmo3_instruct_final",
+          "dependency_score": 0.06315,
+          "delta_ce_moral": 0.287193,
+          "delta_ce_neutral": 0.224043
+        }
+      ]
+    },
+    "per_state_directions": {
+      "stage3": {
+        "n_stage3_checkpoints": 13,
+        "all_positive": true,
+        "mean": 0.00917,
+        "min": 0.003281,
+        "max": 0.017014
+      },
+      "base": 0.010325,
+      "sft": 0.016666,
+      "dpo": 0.033571,
+      "instruct": 0.044413,
+      "post_training_fold_increase": 4.84,
+      "trajectory": [
+        {
+          "label": "olmo3_base",
+          "dependency_score": 0.010325,
+          "delta_ce_moral": 0.219872,
+          "delta_ce_neutral": 0.209547
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step1000",
+          "dependency_score": 0.003334,
+          "delta_ce_moral": 0.208646,
+          "delta_ce_neutral": 0.205312
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step2000",
+          "dependency_score": 0.003281,
+          "delta_ce_moral": 0.196308,
+          "delta_ce_neutral": 0.193027
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step3000",
+          "dependency_score": 0.015229,
+          "delta_ce_moral": 0.205714,
+          "delta_ce_neutral": 0.190485
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step4000",
+          "dependency_score": 0.011765,
+          "delta_ce_moral": 0.20349,
+          "delta_ce_neutral": 0.191725
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step5000",
+          "dependency_score": 0.017014,
+          "delta_ce_moral": 0.21296,
+          "delta_ce_neutral": 0.195946
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step6000",
+          "dependency_score": 0.015231,
+          "delta_ce_moral": 0.208443,
+          "delta_ce_neutral": 0.193211
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step7000",
+          "dependency_score": 0.003812,
+          "delta_ce_moral": 0.20749,
+          "delta_ce_neutral": 0.203678
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step8000",
+          "dependency_score": 0.004716,
+          "delta_ce_moral": 0.209866,
+          "delta_ce_neutral": 0.205151
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step9000",
+          "dependency_score": 0.009732,
+          "delta_ce_moral": 0.216126,
+          "delta_ce_neutral": 0.206394
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step10000",
+          "dependency_score": 0.007423,
+          "delta_ce_moral": 0.217391,
+          "delta_ce_neutral": 0.209968
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11000",
+          "dependency_score": 0.006909,
+          "delta_ce_moral": 0.21828,
+          "delta_ce_neutral": 0.211371
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11900",
+          "dependency_score": 0.010439,
+          "delta_ce_moral": 0.219903,
+          "delta_ce_neutral": 0.209463
+        },
+        {
+          "label": "olmo3_pretrain_stage3_step11921",
+          "dependency_score": 0.010325,
+          "delta_ce_moral": 0.219872,
+          "delta_ce_neutral": 0.209547
+        },
+        {
+          "label": "olmo3_sft_final",
+          "dependency_score": 0.016666,
+          "delta_ce_moral": 0.258075,
+          "delta_ce_neutral": 0.241409
+        },
+        {
+          "label": "olmo3_dpo_final",
+          "dependency_score": 0.033571,
+          "delta_ce_moral": 0.276628,
+          "delta_ce_neutral": 0.243057
+        },
+        {
+          "label": "olmo3_instruct_step_050",
+          "dependency_score": 0.033726,
+          "delta_ce_moral": 0.276816,
+          "delta_ce_neutral": 0.243089
+        },
+        {
+          "label": "olmo3_instruct_step_100",
+          "dependency_score": 0.034336,
+          "delta_ce_moral": 0.276342,
+          "delta_ce_neutral": 0.242006
+        },
+        {
+          "label": "olmo3_instruct_step_150",
+          "dependency_score": 0.035579,
+          "delta_ce_moral": 0.276123,
+          "delta_ce_neutral": 0.240544
+        },
+        {
+          "label": "olmo3_instruct_step_200",
+          "dependency_score": 0.036105,
+          "delta_ce_moral": 0.27632,
+          "delta_ce_neutral": 0.240214
+        },
+        {
+          "label": "olmo3_instruct_step_250",
+          "dependency_score": 0.0372,
+          "delta_ce_moral": 0.276408,
+          "delta_ce_neutral": 0.239208
+        },
+        {
+          "label": "olmo3_instruct_step_300",
+          "dependency_score": 0.036425,
+          "delta_ce_moral": 0.276157,
+          "delta_ce_neutral": 0.239732
+        },
+        {
+          "label": "olmo3_instruct_step_350",
+          "dependency_score": 0.034888,
+          "delta_ce_moral": 0.274572,
+          "delta_ce_neutral": 0.239683
+        },
+        {
+          "label": "olmo3_instruct_step_400",
+          "dependency_score": 0.034766,
+          "delta_ce_moral": 0.274349,
+          "delta_ce_neutral": 0.239583
+        },
+        {
+          "label": "olmo3_instruct_final",
+          "dependency_score": 0.044413,
+          "delta_ce_moral": 0.280358,
+          "delta_ce_neutral": 0.235945
+        }
+      ]
+    }
+  }
+}

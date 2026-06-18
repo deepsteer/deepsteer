@@ -1,0 +1,31 @@
+{
+  "analysis": "assistant_axis_agreement",
+  "model": "allenai/Olmo-3-7B-Instruct",
+  "revision": null,
+  "n_contrast_pairs": 30,
+  "conventions": {
+    "input_format": "raw",
+    "pooling": "mean (matches persona_probe_base.py)",
+    "axis_direction_kind": "mean_diff (Lu et al. contrast); probe also reported",
+    "persona_npz": "/Users/orionr/dev/deepsteer/papers/5_moral_alignment/outputs/olmo3_instruct/persona_directions.npz",
+    "persona_key": "persona",
+    "band": [
+      15,
+      31
+    ]
+  },
+  "back_transfer_caveat": "The Assistant-Axis is defined only at a chat/Instruct model. A base/stage-3 checkpoint has no assistant persona, so 'persona at a stage-3 checkpoint' is well-defined only as a BACK-TRANSFERRED Instruct direction (mirror Approach 4b), not a fresh per-checkpoint fit. This script extracts the axis at Instruct only.",
+  "decision_rule": {
+    "high_cosine": ">=0.7: cached persona probe is a valid stand-in; Tier-2 stage-3 scan can reuse the cheap object.",
+    "low_cosine": "<0.7: the Assistant-Axis upgrade is load-bearing; Tier 2 must extract the Assistant-Axis per checkpoint (back-transferred from Instruct)."
+  },
+  "left_for_human_review": "Whether Tier 2 uses (a) the cached persona direction, (b) a back-transferred Instruct Assistant-Axis, or (c) a fresh per-checkpoint fit, depends on this cosine and is not decided here.",
+  "status": "pending_extraction",
+  "blocker": "Instruct weights not cached locally (only the base model allenai/Olmo-3-1025-7B is present; the Instruct/SFT/DPO cache entries are 8K ref stubs). The Assistant-Axis requires Instruct forward passes, so this agreement cosine is a model-extraction step, not a zero-compute analysis. Run without --plan-only on a host with the Instruct model (e.g. fold into the Tier-2 extraction pass) to fill in the cosine.",
+  "cosine_probe_vs_persona": null,
+  "cosine_meandiff_vs_persona_meandiff": null,
+  "human_decision": {
+    "choice": "defer_to_tier2",
+    "rationale": "M1 refusal decomposition shows refusal is ~99% residual and barely overlaps persona (cos ~0.02), so the Assistant-Axis object is low-priority for the coupling target. Extract it in the Tier-2 A100 pass (back-transferred from Instruct), not via a local 7B run."
+  }
+}
