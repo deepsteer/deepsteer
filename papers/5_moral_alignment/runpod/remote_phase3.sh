@@ -182,7 +182,16 @@ fi
 if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
   [ -f "$STAGE1_MORAL_NPZ" ] || \
     echo "WARN: $STAGE1_MORAL_NPZ missing — Stage 1 needs the cached V directions (did pipeline/ sync?)."
-  GEN_FLAG=(); [ -n "$STAGE1_GENERAL" ] && GEN_FLAG=(--general-jsonl "$STAGE1_GENERAL")
+  # Default to a REAL general corpus (not the probing-text fallback): stream
+  # wikitext-103 once and reuse. Override with STAGE1_GENERAL=<jsonl>.
+  if [ -z "$STAGE1_GENERAL" ]; then
+    STAGE1_GENERAL="$P6/data/general_corpus.jsonl"
+    if [ ! -f "$STAGE1_GENERAL" ]; then
+      run_step "Stage1 prep general corpus (wikitext-103 -> general_corpus.jsonl)" \
+        python "$SCRIPTS/prepare_coupling_general.py" --output "$STAGE1_GENERAL" --n 4000
+    fi
+  fi
+  GEN_FLAG=(); [ -f "$STAGE1_GENERAL" ] && GEN_FLAG=(--general-jsonl "$STAGE1_GENERAL")
   run_step "Stage1 forced coupling ($STAGE1_CAPACITY, $STAGE1_MAX_STEPS steps)" \
     python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
       --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
