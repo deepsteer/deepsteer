@@ -163,7 +163,11 @@ echo ">> SSH endpoint: root@$SSH_HOST:$SSH_PORT"
 echo ">> Log in from another terminal:"
 echo "     ssh -p $SSH_PORT -i $SSH_KEY -o StrictHostKeyChecking=no root@$SSH_HOST"
 
-SSH_OPTS=(-p "$SSH_PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10)
+# ServerAlive* so a HUNG established connection self-aborts (~60s) instead of
+# freezing the stream loop forever — a stalled `ssh tail` must not block the
+# .session_done check and leak the (still-billed) pod past completion.
+SSH_OPTS=(-p "$SSH_PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+  -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4)
 echo ">> Waiting for sshd..."
 for _ in $(seq 1 30); do
   ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" 'echo ok' 2>/dev/null | grep -q ok && break
