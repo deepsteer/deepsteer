@@ -1,0 +1,35 @@
+{
+  "analysis": "stage1_compare",
+  "capacity": "r16_qv",
+  "control": {
+    "proj_ref_0": 0.124842,
+    "proj_ref_final": 0.114678,
+    "d_proj": -0.010163999999999992,
+    "d_off": -0.00179,
+    "d_moral": 0.9026045881607194,
+    "d_neutral": 0.8392682995538991,
+    "d_general": 0.2867584122692062
+  },
+  "coupling": {
+    "proj_ref_0": 0.124842,
+    "proj_ref_final": 0.205236,
+    "d_proj": 0.08039400000000001,
+    "d_off": -1.5000000000001124e-05,
+    "d_moral": 0.913325696405284,
+    "d_neutral": 0.9377650923748724,
+    "d_general": 0.2896631988537366
+  },
+  "coupling_specific": {
+    "proj_move": 0.090558,
+    "offtarget_move": 0.001775,
+    "moral_harm": 0.010721,
+    "neutral_harm": 0.098497,
+    "general_harm": 0.002905,
+    "neutral_minus_moral_harm": 0.087776
+  },
+  "verdict": "moves_clean_vs_control",
+  "thresholds": {
+    "move": 0.03,
+    "harm": 0.1
+  }
+}

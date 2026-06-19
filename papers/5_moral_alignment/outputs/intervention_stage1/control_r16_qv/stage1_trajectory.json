@@ -1,0 +1,259 @@
+{
+  "analysis": "forced_coupling_stage1",
+  "model": "allenai/Olmo-3-1025-7B",
+  "revision": "stage3-step11921",
+  "moral_npz": "papers/5_moral_alignment/outputs/pipeline/olmo3_pretrain_stage3_step11921/probe_directions.npz",
+  "prompts": "/workspace/deepsteer/papers/5_moral_alignment/refusal_prompts.json",
+  "general_corpus": "papers/5_moral_alignment/data/general_corpus.jsonl",
+  "config": {
+    "capacity": "r16_qv",
+    "target_proj": 0.4,
+    "lam": 0.0,
+    "calibrate": false,
+    "lr": 0.0001,
+    "batch_size": 4,
+    "seq_len": 512,
+    "pos_batch": 8,
+    "neg_batch": 8,
+    "max_steps": 300,
+    "ppl_band": 0.5,
+    "seed": 42
+  },
+  "verdict": "no_move",
+  "capacity": "r16_qv",
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ]
+  },
+  "baseline_proj_refusal": 0.124842,
+  "final_proj_refusal": 0.114678,
+  "projection_moved": -0.010164,
+  "target_proj": 0.4,
+  "first_guard_breach_step": null,
+  "records": [
+    {
+      "step": 0,
+      "proj_refusal": 0.124842,
+      "proj_neutral_contrast": 0.095952,
+      "lm_moral": 3.3981342438197277,
+      "lm_neutral": 3.725955059518458,
+      "lm_general": 2.7460109911009587,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      }
+    },
+    {
+      "step": 25,
+      "proj_refusal": 0.124828,
+      "proj_neutral_contrast": 0.096322,
+      "lm_moral": 3.392072305221365,
+      "lm_neutral": 3.7168114658213254,
+      "lm_general": 2.7098713784316466,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.2697,
+      "couple_step": 0.1465
+    },
+    {
+      "step": 50,
+      "proj_refusal": 0.123803,
+      "proj_neutral_contrast": 0.096101,
+      "lm_moral": 3.4315529514383445,
+      "lm_neutral": 3.7473378806687982,
+      "lm_general": 2.666265441569399,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.5506,
+      "couple_step": 0.1505
+    },
+    {
+      "step": 75,
+      "proj_refusal": 0.117843,
+      "proj_neutral_contrast": 0.095829,
+      "lm_moral": 3.955680507115185,
+      "lm_neutral": 4.247135913421504,
+      "lm_general": 2.8789295871778533,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.5142,
+      "couple_step": 0.1524
+    },
+    {
+      "step": 100,
+      "proj_refusal": 0.112501,
+      "proj_neutral_contrast": 0.093401,
+      "lm_moral": 4.289786646319922,
+      "lm_neutral": 4.540924340956439,
+      "lm_general": 3.1509365072922,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.7878,
+      "couple_step": 0.1549
+    },
+    {
+      "step": 125,
+      "proj_refusal": 0.113392,
+      "proj_neutral_contrast": 0.092726,
+      "lm_moral": 4.259913354735467,
+      "lm_neutral": 4.514387969258415,
+      "lm_general": 3.0179477472576535,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.6197,
+      "couple_step": 0.1478
+    },
+    {
+      "step": 150,
+      "proj_refusal": 0.114401,
+      "proj_neutral_contrast": 0.093626,
+      "lm_moral": 4.208927673759235,
+      "lm_neutral": 4.46443571925658,
+      "lm_general": 2.9718285157480313,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.454,
+      "couple_step": 0.1455
+    },
+    {
+      "step": 175,
+      "proj_refusal": 0.114613,
+      "proj_neutral_contrast": 0.09378,
+      "lm_moral": 4.253725539362521,
+      "lm_neutral": 4.511400579911545,
+      "lm_general": 2.9931728964631588,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.6905,
+      "couple_step": 0.1532
+    },
+    {
+      "step": 200,
+      "proj_refusal": 0.11402,
+      "proj_neutral_contrast": 0.093785,
+      "lm_moral": 4.326730154699504,
+      "lm_neutral": 4.587002606411692,
+      "lm_general": 3.0634893664319183,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.8498,
+      "couple_step": 0.1527
+    },
+    {
+      "step": 225,
+      "proj_refusal": 0.114452,
+      "proj_neutral_contrast": 0.09398,
+      "lm_moral": 4.327815248269239,
+      "lm_neutral": 4.5935554094829,
+      "lm_general": 3.0557334441118305,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.9027,
+      "couple_step": 0.1531
+    },
+    {
+      "step": 250,
+      "proj_refusal": 0.114695,
+      "proj_neutral_contrast": 0.094186,
+      "lm_moral": 4.288478786441189,
+      "lm_neutral": 4.554730747943102,
+      "lm_general": 3.015255542245882,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.5094,
+      "couple_step": 0.153
+    },
+    {
+      "step": 275,
+      "proj_refusal": 0.114677,
+      "proj_neutral_contrast": 0.094173,
+      "lm_moral": 4.298887835898717,
+      "lm_neutral": 4.563514012221973,
+      "lm_general": 3.03049818768169,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.8947,
+      "couple_step": 0.1532
+    },
+    {
+      "step": 300,
+      "proj_refusal": 0.114678,
+      "proj_neutral_contrast": 0.094162,
+      "lm_moral": 4.300738831980447,
+      "lm_neutral": 4.565223359072357,
+      "lm_general": 3.032769403370165,
+      "guards": {
+        "guard1_neutral_not_worse": true,
+        "guard2_probe_ok": null,
+        "guard3_offtarget_flat": true,
+        "guard4_ppl_band": true,
+        "all_green": true
+      },
+      "lm_step": 2.9778,
+      "couple_step": 0.1511
+    }
+  ],
+  "elapsed_s": 307.8
+}
