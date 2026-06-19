@@ -183,21 +183,32 @@ if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
   [ -f "$STAGE1_MORAL_NPZ" ] || \
     echo "WARN: $STAGE1_MORAL_NPZ missing — Stage 1 needs the cached V directions (did pipeline/ sync?)."
   # Default to a REAL general corpus (not the probing-text fallback): stream
-  # wikitext-103 once and reuse. Override with STAGE1_GENERAL=<jsonl>.
+  # wikitext-103 once and reuse. Override with STAGE1_GENERAL=<jsonl>. (We do NOT
+  # bundle the corpus in the repo; it is generated here.) prepare_coupling_general
+  # exits non-zero (and we re-verify the line count below) if streaming fails, so
+  # we never silently train on an empty corpus.
   if [ -z "$STAGE1_GENERAL" ]; then
     STAGE1_GENERAL="$P6/data/general_corpus.jsonl"
-    if [ ! -f "$STAGE1_GENERAL" ]; then
+    MIN_DOCS=1000
+    if [ "$(wc -l < "$STAGE1_GENERAL" 2>/dev/null || echo 0)" -lt "$MIN_DOCS" ]; then
       run_step "Stage1 prep general corpus (wikitext-103 -> general_corpus.jsonl)" \
         python "$SCRIPTS/prepare_coupling_general.py" --output "$STAGE1_GENERAL" --n 4000
     fi
   fi
-  GEN_FLAG=(); [ -f "$STAGE1_GENERAL" ] && GEN_FLAG=(--general-jsonl "$STAGE1_GENERAL")
-  run_step "Stage1 forced coupling ($STAGE1_CAPACITY, $STAGE1_MAX_STEPS steps)" \
-    python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
-      --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
-      --capacity "$STAGE1_CAPACITY" --max-steps "$STAGE1_MAX_STEPS" --calibrate \
-      --label "coupling_$STAGE1_CAPACITY" --device "$DEVICE" "${GEN_FLAG[@]}" $STAGE1_EXTRA \
-      --output-dir "$OUT/intervention_stage1"
+  CORPUS_LINES="$(wc -l < "$STAGE1_GENERAL" 2>/dev/null || echo 0)"
+  if [ "$CORPUS_LINES" -lt 100 ]; then
+    echo "ERROR: general corpus '$STAGE1_GENERAL' has $CORPUS_LINES docs (need >=100)."
+    echo "       Skipping Stage 1 to avoid a degenerate run. Set HF_TOKEN (rate limits)"
+    echo "       or pass STAGE1_GENERAL=<a valid jsonl> and re-run."
+  else
+    echo "Stage 1 general corpus: $STAGE1_GENERAL ($CORPUS_LINES docs)"
+    run_step "Stage1 forced coupling ($STAGE1_CAPACITY, $STAGE1_MAX_STEPS steps)" \
+      python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+        --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+        --capacity "$STAGE1_CAPACITY" --max-steps "$STAGE1_MAX_STEPS" --calibrate \
+        --label "coupling_$STAGE1_CAPACITY" --device "$DEVICE" --general-jsonl "$STAGE1_GENERAL" \
+        $STAGE1_EXTRA --output-dir "$OUT/intervention_stage1"
+  fi
 fi
 
 log "Session complete. Output directories:"

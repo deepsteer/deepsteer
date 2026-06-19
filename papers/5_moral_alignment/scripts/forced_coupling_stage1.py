@@ -79,6 +79,7 @@ logger = logging.getLogger(__name__)
 
 _PAPER_ROOT = Path(__file__).resolve().parent.parent
 _DEF_PROMPTS = _PAPER_ROOT / "refusal_prompts.json"
+_MIN_GENERAL_DOCS = 100  # below this a --general-jsonl corpus is rejected (fail loud)
 
 # Capacity ladder presets: (lora_rank | None for full, lora_alpha, target_modules).
 CAPACITY = {
@@ -160,7 +161,9 @@ def load_text_pools(
     moral = [p.moral for p in pairs]
     neutral = [p.neutral for p in pairs]
 
-    if general_jsonl and Path(general_jsonl).exists():
+    if general_jsonl:
+        if not Path(general_jsonl).exists():
+            raise RuntimeError(f"--general-jsonl {general_jsonl} does not exist.")
         general = []
         for ln in open(general_jsonl):
             ln = ln.strip()
@@ -173,6 +176,14 @@ def load_text_pools(
                 general.append(ln)
             if len(general) >= max_general:
                 break
+        # Fail loud: an empty/tiny corpus would train on padding, collapse the LM
+        # loss to ~0, and make Guard 4 nan (the wasted-GPU failure mode).
+        if len(general) < _MIN_GENERAL_DOCS:
+            raise RuntimeError(
+                f"--general-jsonl {general_jsonl} loaded only {len(general)} docs "
+                f"(< {_MIN_GENERAL_DOCS}). Refusing to train on a degenerate corpus. "
+                "Regenerate it (prepare_coupling_general.py, set HF_TOKEN) or pass a "
+                "valid STAGE1_GENERAL.")
     else:
         logger.warning("No --general-jsonl; using probing texts as the SMOKE general "
                        "corpus. Pass a real general corpus for the production run.")

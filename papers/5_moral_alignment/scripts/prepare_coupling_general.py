@@ -24,6 +24,9 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
+import sys
+import time
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -33,7 +36,8 @@ def stream_docs(dataset: str, config: str | None, split: str, *, n: int,
                 doc_chars: int, min_chars: int):
     """Yield up to ``n`` concatenated general-text documents from a streamed HF set."""
     from datasets import load_dataset
-    ds = load_dataset(dataset, config, split=split, streaming=True)
+    token = os.environ.get("HF_TOKEN") or None  # higher rate limits if set
+    ds = load_dataset(dataset, config, split=split, streaming=True, token=token)
     buf, made = "", 0
     for row in ds:
         line = (row.get("text") or "").strip()
@@ -50,21 +54,10 @@ def stream_docs(dataset: str, config: str | None, split: str, *, n: int,
         yield buf
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description="Stream a general-text LM corpus to JSONL.")
-    ap.add_argument("--output", required=True)
-    ap.add_argument("--dataset", default="wikitext")
-    ap.add_argument("--config", default="wikitext-103-raw-v1")
-    ap.add_argument("--split", default="train")
-    ap.add_argument("--n", type=int, default=4000, help="Number of documents.")
-    ap.add_argument("--doc-chars", type=int, default=600, help="Target chars per document.")
-    ap.add_argument("--min-chars", type=int, default=200)
-    args = ap.parse_args()
-
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+def build(args) -> int:
+    """Stream the corpus to JSONL; return the number of docs written."""
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-
     n = 0
     with open(out, "w") as fh:
         for doc in stream_docs(args.dataset, args.config, args.split,
@@ -73,12 +66,55 @@ def main() -> None:
             n += 1
             if n % 1000 == 0:
                 logger.info("  wrote %d docs", n)
+    return n
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Stream a general-text LM corpus to JSONL.")
+    ap.add_argument("--output", required=True)
+    ap.add_argument("--dataset", default="wikitext")
+    ap.add_argument("--config", default="wikitext-103-raw-v1")
+    ap.add_argument("--split", default="train")
+    ap.add_argument("--n", type=int, default=4000, help="Number of documents.")
+    ap.add_argument("--doc-chars", type=int, default=600, help="Target chars per document.")
+    ap.add_argument("--min-chars", type=int, default=200)
+    ap.add_argument("--min-docs", type=int, default=None,
+                    help="Fail if fewer than this many docs are written (default n//4, >=100).")
+    ap.add_argument("--retries", type=int, default=3)
+    args = ap.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    min_docs = args.min_docs if args.min_docs is not None else max(100, args.n // 4)
+
+    n = 0
+    for attempt in range(1, args.retries + 1):
+        try:
+            n = build(args)
+        except Exception as e:  # transient streaming/network/rate-limit failure
+            logger.warning("attempt %d/%d failed: %s", attempt, args.retries, e)
+            n = 0
+        if n >= min_docs:
+            break
+        if attempt < args.retries:
+            logger.warning("got %d docs (< %d); retrying in %ds", n, min_docs, 5 * attempt)
+            time.sleep(5 * attempt)
+
+    # Fail loud: a too-small corpus would make Stage 1 train on padding (LM loss
+    # collapses to ~0, Guard 4 -> nan). Exit non-zero so the harness skips Stage 1
+    # rather than wasting GPU on a degenerate run.
+    if n < min_docs:
+        print(f"ERROR: only {n} docs from {args.dataset}/{args.config} after {args.retries} "
+              f"attempts (need >= {min_docs}). Set HF_TOKEN for higher rate limits, or pass "
+              f"STAGE1_GENERAL=<your own jsonl>.", file=sys.stderr)
+        return 1
+
     meta = {"dataset": args.dataset, "config": args.config, "split": args.split,
             "n_docs": n, "doc_chars": args.doc_chars}
-    with open(out.with_suffix(".meta.json"), "w") as fh:
+    with open(Path(args.output).with_suffix(".meta.json"), "w") as fh:
         json.dump(meta, fh, indent=2)
-    print(f"Wrote {n} general-text docs to {out} (source: {args.dataset}/{args.config})")
+    print(f"Wrote {n} general-text docs to {args.output} (source: {args.dataset}/{args.config})")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
