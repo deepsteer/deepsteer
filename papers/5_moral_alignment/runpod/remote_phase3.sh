@@ -46,6 +46,7 @@ RUN_ART_SFT="${RUN_ART_SFT:-0}"          # Sprint 6 (auto-skips until art_sft.py
 RUN_EVAL="${RUN_EVAL:-0}"                # Sprint 7 (auto-skips until eval_pipeline.py exists)
 RUN_COUPLING_STAGE1="${RUN_COUPLING_STAGE1:-0}"  # Forced-coupling Stage 1 (off by default)
 RUN_STAGE1_GATE="${RUN_STAGE1_GATE:-0}"          # Part-A gate checks (A1 families + A2 basis)
+RUN_STAGE2="${RUN_STAGE2:-0}"                     # Stage 2 S0-S3 (SFT -> A3 gate -> mechanism); no S4 battery
 # Gate re-runs these conditions WITH --save-adapter (deterministic seed 42), then
 # checks. "label capacity lambda" per line; the control is the lambda=0 r64 arm.
 STAGE1_GATE_SPECS="${STAGE1_GATE_SPECS:-
@@ -277,8 +278,92 @@ if [ "$RUN_STAGE1_GATE" = 1 ]; then
   fi
 fi
 
+# ----------------------- STAGE 2 (S0-S3, gated on A3) ------------------------
+# S0 merge gate adapters -> SFT base; S1 SFT both arms (art_sft lambda=0, Tulu
+# mix); S2 A3 causal MFT-ablation GATE (first); S3 mechanism-persistence (post-SFT
+# refusal->V projection) + Part-A guards on the post-SFT models. The S4 Heretic
+# 4-cell battery is NOT run here -- separate session after human sign-off.
+if [ "$RUN_STAGE2" = 1 ]; then
+  S2OUT="$OUT/intervention_stage2"; GATE_OUT="$OUT/intervention_stage1"
+  mkdir -p "$S2OUT"
+  if [ -z "$STAGE1_GENERAL" ]; then
+    STAGE1_GENERAL="$P6/data/general_corpus.jsonl"
+    [ "$(wc -l < "$STAGE1_GENERAL" 2>/dev/null || echo 0)" -lt 1000 ] && \
+      run_step "S0 prep general corpus" \
+        python "$SCRIPTS/prepare_coupling_general.py" --output "$STAGE1_GENERAL" --n 4000
+  fi
+  # Ensure the rung-2 coupled + matched control adapters exist (deterministic).
+  while read -r lbl lam; do
+    [ -z "${lbl:-}" ] && continue
+    [ -f "$GATE_OUT/$lbl/adapter/adapter_model.safetensors" ] && continue
+    LAMFLAG="--calibrate"; [ "$lam" = "0.0" ] && LAMFLAG="--lambda 0.0"
+    run_step "S0 re-run $lbl (+save-adapter)" \
+      python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+        --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+        --capacity r64_qv_mlp --max-steps "$STAGE1_MAX_STEPS" $LAMFLAG --save-adapter \
+        --label "$lbl" --device "$DEVICE" --general-jsonl "$STAGE1_GENERAL" --output-dir "$GATE_OUT"
+  done <<< "
+coupling_r64_qv_mlp 1.0
+control_r64_qv_mlp 0.0"
+  # S0 merge continued-pretrain adapters into the SFT base.
+  while read -r arm lbl; do
+    [ -z "${arm:-}" ] && continue
+    [ -d "$S2OUT/${arm}_cpt_merged" ] && continue
+    run_step "S0 merge $arm continued-pretrain" \
+      python "$SCRIPTS/merge_adapter.py" --base-model "$BASE_MODEL" \
+        --revision "$STAGE1_REVISION" --adapter "$GATE_OUT/$lbl/adapter" \
+        --dest "$S2OUT/${arm}_cpt_merged"
+  done <<< "
+coupled coupling_r64_qv_mlp
+control control_r64_qv_mlp"
+  # S1 SFT both arms (lambda=0 plain chat SFT on the Tulu mix).
+  [ -f "$SFT_DATA" ] || run_step "S1 prep SFT mix" \
+    python "$SCRIPTS/prepare_sft_data.py" --output "$SFT_DATA" \
+      --n-general "$N_GENERAL" --n-moral "$N_MORAL"
+  for arm in coupled control; do
+    if [ -d "$S2OUT/${arm}_sft/merged_model" ]; then
+      echo "${arm}_sft already present; skipping SFT."
+    else
+      run_step "S1 SFT $arm (lambda=0)" \
+        python "$SCRIPTS/art_sft.py" --model "$S2OUT/${arm}_cpt_merged" \
+          --chat-template-from "$INSTRUCT_TEMPLATE_FROM" --data "$SFT_DATA" \
+          --art-lambda 0.0 --max-steps "$ART_MAX_STEPS" \
+          --output-dir "$S2OUT/${arm}_sft" --device "$DEVICE"
+      rm -rf "$S2OUT/${arm}_cpt_merged"   # free disk; only the post-SFT model is needed
+    fi
+  done
+  # S2 A3 causal MFT-ablation GATE (first action).
+  run_step "S2 A3 causal MFT-ablation gate" \
+    python "$SCRIPTS/stage2_a3_causal.py" \
+      --coupled-model "$S2OUT/coupled_sft/merged_model" \
+      --control-model "$S2OUT/control_sft/merged_model" \
+      --base-npz "$STAGE1_MORAL_NPZ" --device "$DEVICE" --output-dir "$S2OUT"
+  A3_PASS="$(python -c "import json;print(json.load(open('$S2OUT/stage2_a3.json')).get('A3_pass'))" 2>/dev/null)"
+  if [ "$A3_PASS" != "True" ]; then
+    echo "A3 GATE = $A3_PASS: coupled refusal not MFT-mediated -> 0.50 is geometric only."
+    echo "STOPPING before S3/S4 (deeper negative). No battery spent."
+  else
+    echo "A3 GATE PASSED -> S3 mechanism-persistence + Part-A guards."
+    for arm in coupled control; do
+      run_step "S3 refusal->V geometry ($arm post-SFT)" \
+        python "$SCRIPTS/heretic_ablation.py" --model "$S2OUT/${arm}_sft/merged_model" \
+          --prompts "$P5/refusal_prompts.json" --moral-npz "$STAGE1_MORAL_NPZ" \
+          --refusal-layer 16 --input-format chat --no-save-model \
+          --output-dir "$S2OUT/heretic_${arm}" --device "$DEVICE"
+    done
+    run_step "S3 Part-A guards (post-SFT, full models)" \
+      python "$SCRIPTS/stage1_gate_checks.py" --base-npz "$STAGE1_MORAL_NPZ" --full-models \
+        --control "control_sft:$S2OUT/control_sft/merged_model" \
+        --condition "coupled_sft:$S2OUT/coupled_sft/merged_model" \
+        --device "$DEVICE" --output-dir "$S2OUT"
+  fi
+  echo "Stage 2 S0-S3 done. Inspect $S2OUT/{stage2_a3.json, heretic_*/refusal_morality_geometry.json,"
+  echo "  stage1_gate_report.json}. Hard stop for sign-off before the S4 Heretic battery."
+fi
+
 log "Session complete. Output directories:"
-ls -d "$OUT"/dependency* "$OUT"/art_sft "$OUT"/control_sft "$OUT"/intervention_stage1 2>/dev/null || true
+ls -d "$OUT"/dependency* "$OUT"/art_sft "$OUT"/control_sft "$OUT"/intervention_stage1 \
+  "$OUT"/intervention_stage2 2>/dev/null || true
 
 # Completion sentinel the launcher polls for (survives SSH drops).
 touch "$REPO_DIR/.session_done"

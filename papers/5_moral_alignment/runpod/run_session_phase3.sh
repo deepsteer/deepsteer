@@ -53,6 +53,7 @@ RUN_ART_SFT="${RUN_ART_SFT:-0}"        # Sprint 6.4: control-SFT + ART-SFT train
 RUN_EVAL="${RUN_EVAL:-0}"              # Sprint 7 (auto-skips until eval_pipeline.py exists)
 RUN_COUPLING_STAGE1="${RUN_COUPLING_STAGE1:-0}"  # Forced-coupling Stage 1 (ONLY=coupling_stage1)
 RUN_STAGE1_GATE="${RUN_STAGE1_GATE:-0}"          # Part-A gate checks (ONLY=stage1_gate)
+RUN_STAGE2="${RUN_STAGE2:-0}"                     # Stage 2 S0-S3 SFT->A3 gate (ONLY=stage2)
 # Sprint 6 ART knobs (used when RUN_ART_SFT=1).
 ART_LAMBDA="${ART_LAMBDA:-0.01}"
 ART_MAX_STEPS="${ART_MAX_STEPS:-400}"
@@ -77,7 +78,7 @@ RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 
 # ONLY="dependency" runs just the named step(s); forces others off.
 if [ -n "${ONLY:-}" ]; then
-  RUN_DEPENDENCY=0; RUN_ART_SFT=0; RUN_EVAL=0; RUN_COUPLING_STAGE1=0; RUN_STAGE1_GATE=0
+  RUN_DEPENDENCY=0; RUN_ART_SFT=0; RUN_EVAL=0; RUN_COUPLING_STAGE1=0; RUN_STAGE1_GATE=0; RUN_STAGE2=0
   for _s in $ONLY; do
     case "$_s" in
       dependency) RUN_DEPENDENCY=1 ;;
@@ -85,10 +86,11 @@ if [ -n "${ONLY:-}" ]; then
       eval) RUN_EVAL=1 ;;
       coupling_stage1) RUN_COUPLING_STAGE1=1 ;;
       stage1_gate) RUN_STAGE1_GATE=1 ;;
+      stage2) RUN_STAGE2=1 ;;
       *) echo "WARN: unknown ONLY step '$_s'" ;;
     esac
   done
-  echo ">> ONLY='$ONLY' -> dependency=$RUN_DEPENDENCY art=$RUN_ART_SFT eval=$RUN_EVAL coupling_stage1=$RUN_COUPLING_STAGE1 stage1_gate=$RUN_STAGE1_GATE"
+  echo ">> ONLY='$ONLY' -> dependency=$RUN_DEPENDENCY art=$RUN_ART_SFT eval=$RUN_EVAL coupling_stage1=$RUN_COUPLING_STAGE1 stage1_gate=$RUN_STAGE1_GATE stage2=$RUN_STAGE2"
 fi
 
 for bin in curl jq ssh rsync; do
@@ -232,7 +234,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      STAGE1_CAPACITY='$STAGE1_CAPACITY' STAGE1_MAX_STEPS=$STAGE1_MAX_STEPS \
      ${STAGE1_GENERAL:+STAGE1_GENERAL='$STAGE1_GENERAL'} ${STAGE1_EXTRA:+STAGE1_EXTRA='$STAGE1_EXTRA'} \
      RUN_DEPENDENCY=$RUN_DEPENDENCY RUN_ART_SFT=$RUN_ART_SFT RUN_EVAL=$RUN_EVAL \
-     RUN_COUPLING_STAGE1=$RUN_COUPLING_STAGE1 RUN_STAGE1_GATE=$RUN_STAGE1_GATE \
+     RUN_COUPLING_STAGE1=$RUN_COUPLING_STAGE1 RUN_STAGE1_GATE=$RUN_STAGE1_GATE RUN_STAGE2=$RUN_STAGE2 \
      setsid bash papers/5_moral_alignment/runpod/remote_phase3.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."

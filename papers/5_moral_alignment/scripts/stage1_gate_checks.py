@@ -165,9 +165,11 @@ def families(harmful, harmless):
 # ---------------------------------------------------------------------------
 
 
-def load_model(base_model, revision, adapter, device):
+def load_model(base_model, revision, adapter, device, *, full=False):
     from deepsteer.core.model_interface import WhiteBoxModel
     from deepsteer.core.types import AccessTier
+    if full:  # condition path IS a standalone model dir (e.g. a post-SFT merged model)
+        return WhiteBoxModel(adapter, device=device, access_tier=AccessTier.WEIGHTS)
     m = WhiteBoxModel(base_model, device=device, access_tier=AccessTier.WEIGHTS,
                       revision=revision)
     if adapter:
@@ -281,6 +283,8 @@ def main() -> None:
                     help="label:adapter_path for a coupled condition (repeatable).")
     ap.add_argument("--include-base", action="store_true",
                     help="Also score the un-adapted base checkpoint as a reference.")
+    ap.add_argument("--full-models", action="store_true",
+                    help="Conditions are standalone model dirs (post-SFT), not base+adapter.")
     ap.add_argument("--band", type=int, nargs=2, default=[15, 31])
     ap.add_argument("--skip-a2", action="store_true")
     ap.add_argument("--prompts", default=str(_PAPER_ROOT / "refusal_prompts.json"))
@@ -310,7 +314,8 @@ def main() -> None:
     fam = families(harmful, harmless)
     for lbl, adapter in conds:
         t0 = time.time()
-        model = load_model(args.base_model, args.revision, adapter or None, args.device)
+        model = load_model(args.base_model, args.revision, adapter or None, args.device,
+                           full=args.full_models)
         logger.info("[%s] loaded in %.1fs", lbl, time.time() - t0)
         a1_proj[lbl] = {n: family_projection(model, pos, neg, base_dirs, foundations, band)
                         for n, (pos, neg) in fam.items()}
