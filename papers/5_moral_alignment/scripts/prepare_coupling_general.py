@@ -72,7 +72,9 @@ def build(args) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Stream a general-text LM corpus to JSONL.")
     ap.add_argument("--output", required=True)
-    ap.add_argument("--dataset", default="wikitext")
+    # Namespaced id: the bare "wikitext" alias is rejected by newer `datasets`
+    # ("Repository id must be 'namespace/name'"); Salesforce/wikitext is the repo.
+    ap.add_argument("--dataset", default="Salesforce/wikitext")
     ap.add_argument("--config", default="wikitext-103-raw-v1")
     ap.add_argument("--split", default="train")
     ap.add_argument("--n", type=int, default=4000, help="Number of documents.")
