@@ -45,6 +45,13 @@ RUN_DEPENDENCY="${RUN_DEPENDENCY:-1}"    # Sprint 5.2: dependency across the gri
 RUN_ART_SFT="${RUN_ART_SFT:-0}"          # Sprint 6 (auto-skips until art_sft.py exists)
 RUN_EVAL="${RUN_EVAL:-0}"                # Sprint 7 (auto-skips until eval_pipeline.py exists)
 RUN_COUPLING_STAGE1="${RUN_COUPLING_STAGE1:-0}"  # Forced-coupling Stage 1 (off by default)
+RUN_STAGE1_GATE="${RUN_STAGE1_GATE:-0}"          # Part-A gate checks (A1 families + A2 basis)
+# Gate re-runs these conditions WITH --save-adapter (deterministic seed 42), then
+# checks. "label capacity lambda" per line; the control is the lambda=0 r64 arm.
+STAGE1_GATE_SPECS="${STAGE1_GATE_SPECS:-
+control_r64_qv_mlp r64_qv_mlp 0.0
+coupling_r16_qv r16_qv 1.0
+coupling_r64_qv_mlp r64_qv_mlp 1.0}"
 
 # Cap CPU threads: the pod is a container on a huge shared host; torch otherwise
 # spawns ~100 intra-op threads for tiny matmuls (50-100x slower). Export BEFORE
@@ -224,6 +231,49 @@ if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
         python "$SCRIPTS/stage1_compare.py" --capacity "$STAGE1_CAPACITY" \
           --dir "$OUT/intervention_stage1"
     fi
+  fi
+fi
+
+# --------------------- PART-A GATE CHECKS (A1 + A2) --------------------------
+# Re-run the gate conditions WITH --save-adapter (deterministic, seed 42 -> same
+# trajectories, now persisted), then A1 (three off-target families) + A2
+# (frozen-vs-fresh basis + eff-dim). A3 (causal MFT-ablation -> refusal damage) is
+# DEFERRED to Stage 2 (pre-SFT base models do not refuse). Hard stop after for
+# human sign-off; Stage 2 does NOT run here.
+if [ "$RUN_STAGE1_GATE" = 1 ]; then
+  GATE_OUT="$OUT/intervention_stage1"
+  # Ensure the same real general corpus (sets STAGE1_GENERAL; skip gate if absent).
+  if [ -z "$STAGE1_GENERAL" ]; then
+    STAGE1_GENERAL="$P6/data/general_corpus.jsonl"
+    if [ "$(wc -l < "$STAGE1_GENERAL" 2>/dev/null || echo 0)" -lt 1000 ]; then
+      run_step "Gate prep general corpus (wikitext-103)" \
+        python "$SCRIPTS/prepare_coupling_general.py" --output "$STAGE1_GENERAL" --n 4000
+    fi
+  fi
+  if [ "$(wc -l < "$STAGE1_GENERAL" 2>/dev/null || echo 0)" -lt 100 ]; then
+    echo "ERROR: gate needs a valid general corpus ($STAGE1_GENERAL empty). Set HF_TOKEN / STAGE1_GENERAL."
+  else
+    while read -r lbl cap lam; do
+      [ -z "${lbl:-}" ] && continue
+      if [ -f "$GATE_OUT/$lbl/adapter/adapter_model.safetensors" ]; then
+        echo "adapter for $lbl already present; skipping re-run."
+      else
+        LAMFLAG="--calibrate"; [ "$lam" = "0.0" ] && LAMFLAG="--lambda 0.0"
+        run_step "Gate re-run $lbl ($cap, lambda=$lam, +save-adapter)" \
+          python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+            --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+            --capacity "$cap" --max-steps "$STAGE1_MAX_STEPS" $LAMFLAG --save-adapter \
+            --label "$lbl" --device "$DEVICE" --general-jsonl "$STAGE1_GENERAL" \
+            --output-dir "$GATE_OUT"
+      fi
+    done <<< "$STAGE1_GATE_SPECS"
+    run_step "Stage1 gate checks (A1 families + A2 basis)" \
+      python "$SCRIPTS/stage1_gate_checks.py" --base-model "$BASE_MODEL" \
+        --revision "$STAGE1_REVISION" --base-npz "$STAGE1_MORAL_NPZ" \
+        --control "control_r64_qv_mlp:$GATE_OUT/control_r64_qv_mlp/adapter" \
+        --condition "coupling_r16_qv:$GATE_OUT/coupling_r16_qv/adapter" \
+        --condition "coupling_r64_qv_mlp:$GATE_OUT/coupling_r64_qv_mlp/adapter" \
+        --device "$DEVICE" --output-dir "$GATE_OUT"
   fi
 fi
 
