@@ -30,12 +30,21 @@ N_MORAL="${N_MORAL:-1500}"
 ART_LAMBDA="${ART_LAMBDA:-0.01}"
 ART_MAX_STEPS="${ART_MAX_STEPS:-400}"
 
+# Forced-coupling Stage 1 config (representational pre-check; no SFT, no Heretic).
+STAGE1_REVISION="${STAGE1_REVISION:-stage3-step11921}"   # late stage-3 (Tier 2: no window)
+STAGE1_MORAL_NPZ="${STAGE1_MORAL_NPZ:-$PIPELINE_DIR/olmo3_pretrain_stage3_step11921/probe_directions.npz}"
+STAGE1_CAPACITY="${STAGE1_CAPACITY:-r16_qv}"   # rung 1; climb via STAGE1_CAPACITY=r64_qv_mlp|full
+STAGE1_MAX_STEPS="${STAGE1_MAX_STEPS:-300}"
+STAGE1_GENERAL="${STAGE1_GENERAL:-}"   # general LM corpus jsonl; empty -> probing-text fallback
+STAGE1_EXTRA="${STAGE1_EXTRA:-}"       # extra flags, e.g. "--probe-monitor --stop-on-breach"
+
 # Step toggles (1 = run). VALIDATE=1 overrides to a cheap single-model smoke.
 VALIDATE="${VALIDATE:-0}"
 RUN_SETUP="${RUN_SETUP:-1}"
 RUN_DEPENDENCY="${RUN_DEPENDENCY:-1}"    # Sprint 5.2: dependency across the grid
 RUN_ART_SFT="${RUN_ART_SFT:-0}"          # Sprint 6 (auto-skips until art_sft.py exists)
 RUN_EVAL="${RUN_EVAL:-0}"                # Sprint 7 (auto-skips until eval_pipeline.py exists)
+RUN_COUPLING_STAGE1="${RUN_COUPLING_STAGE1:-0}"  # Forced-coupling Stage 1 (off by default)
 
 # Cap CPU threads: the pod is a container on a huge shared host; torch otherwise
 # spawns ~100 intra-op threads for tiny matmuls (50-100x slower). Export BEFORE
@@ -81,13 +90,24 @@ echo "Directions=$BASE_DIRECTIONS Kind=$DEP_KIND PerState=$PER_STATE Device=$DEV
 # download, purged after). Confirms the pod, deps, synced directions, the
 # ablation hooks, and the CE/DiD path all work BEFORE the full 25-state sweep.
 if [ "$VALIDATE" = 1 ]; then
-  run_step "VALIDATE: dependency on olmo3_base (16 texts)" \
-    python "$SCRIPTS/moral_dependency_pipeline.py" --grid "$GRID" \
-      --base-directions "$BASE_DIRECTIONS" --direction-kind "$DEP_KIND" \
-      --only olmo3_base --max-texts 16 --no-per-text \
-      --device "$DEVICE" --purge-hf-cache \
-      --output-dir "$OUT/_validate_dependency" "${PER_STATE_FLAG[@]}"
-  log "VALIDATION complete. Inspect $OUT/_validate_dependency/dependency_summary.json,"
+  if [ "$RUN_DEPENDENCY" = 1 ]; then
+    run_step "VALIDATE: dependency on olmo3_base (16 texts)" \
+      python "$SCRIPTS/moral_dependency_pipeline.py" --grid "$GRID" \
+        --base-directions "$BASE_DIRECTIONS" --direction-kind "$DEP_KIND" \
+        --only olmo3_base --max-texts 16 --no-per-text \
+        --device "$DEVICE" --purge-hf-cache \
+        --output-dir "$OUT/_validate_dependency" "${PER_STATE_FLAG[@]}"
+  fi
+  if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
+    GEN_FLAG=(); [ -n "$STAGE1_GENERAL" ] && GEN_FLAG=(--general-jsonl "$STAGE1_GENERAL")
+    run_step "VALIDATE: forced-coupling stage1 smoke (4 steps, purge after)" \
+      python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+        --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+        --capacity "$STAGE1_CAPACITY" --max-steps 4 --eval-every 2 --warmup-steps 1 \
+        --calibrate --device "$DEVICE" "${GEN_FLAG[@]}" \
+        --output-dir "$OUT/_validate_stage1"
+  fi
+  log "VALIDATION complete. Inspect $OUT/_validate_*,"
   log "then run the full sweep with VALIDATE=0."
   touch "$REPO_DIR/.session_done"; exit 0
 fi
@@ -154,8 +174,25 @@ if [ "$RUN_EVAL" = 1 ]; then
       --output-dir "$OUT/eval" --device "$DEVICE"
 fi
 
+# ------------------- FORCED COUPLING (STAGE 1, limited) ----------------------
+# Representational pre-check: can a bounded regularizer move proto-refusal->MFT
+# projection without tripping the four specificity guards? No SFT, no Heretic.
+# Hard stop after this for human review (do NOT chain Stage 2). Climb the
+# capacity ladder via STAGE1_CAPACITY=r16_qv -> r64_qv_mlp -> full.
+if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
+  [ -f "$STAGE1_MORAL_NPZ" ] || \
+    echo "WARN: $STAGE1_MORAL_NPZ missing — Stage 1 needs the cached V directions (did pipeline/ sync?)."
+  GEN_FLAG=(); [ -n "$STAGE1_GENERAL" ] && GEN_FLAG=(--general-jsonl "$STAGE1_GENERAL")
+  run_step "Stage1 forced coupling ($STAGE1_CAPACITY, $STAGE1_MAX_STEPS steps)" \
+    python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+      --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+      --capacity "$STAGE1_CAPACITY" --max-steps "$STAGE1_MAX_STEPS" --calibrate \
+      --label "coupling_$STAGE1_CAPACITY" --device "$DEVICE" "${GEN_FLAG[@]}" $STAGE1_EXTRA \
+      --output-dir "$OUT/intervention_stage1"
+fi
+
 log "Session complete. Output directories:"
-ls -d "$OUT"/dependency* "$OUT"/art_sft "$OUT"/control_sft 2>/dev/null || true
+ls -d "$OUT"/dependency* "$OUT"/art_sft "$OUT"/control_sft "$OUT"/intervention_stage1 2>/dev/null || true
 
 # Completion sentinel the launcher polls for (survives SSH drops).
 touch "$REPO_DIR/.session_done"
