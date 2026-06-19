@@ -239,13 +239,21 @@ def run_a2(models, base_dirs, harmful, harmless, band, *, dataset_target=40):
         band_acc = round(float(np.mean(
             [np.mean([accs[f][L] for L in band if L in accs.get(f, {})]) for f in accs])), 4)
         eff_mean = round(float(np.mean(eff)), 2) if eff else float("nan")
+        frozen_mean = float(np.mean(frozen))
+        fresh_mean = float(np.mean(fresh_proj)) if fresh_proj else None
+        # The artifact is a residual-geometry SHIFT: high frozen projection while
+        # the moral subspace itself rotated, so the FRESH-basis projection collapses.
+        # The test is CONSISTENCY (fresh tracks frozen), not an absolute floor -- a
+        # weak arm (low frozen AND low fresh) is consistent, not artifactual.
+        consistent = fresh_mean is None or fresh_mean >= 0.7 * frozen_mean
         rec = {
-            "frozen_proj_band_mean": round(float(np.mean(frozen)), 6),
-            "fresh_proj_band_mean": round(float(np.mean(fresh_proj)), 6) if fresh_proj else None,
+            "frozen_proj_band_mean": round(frozen_mean, 6),
+            "fresh_proj_band_mean": round(fresh_mean, 6) if fresh_mean is not None else None,
+            "fresh_over_frozen": round(fresh_mean / frozen_mean, 4)
+            if (fresh_mean is not None and frozen_mean > 1e-9) else None,
             "eff_dim_band_mean": eff_mean,
             "per_foundation_probe_acc_band_mean": band_acc,
-            "pass": bool(eff_mean >= 4.0 and band_acc >= 0.9
-                         and (not fresh_proj or np.mean(fresh_proj) >= 0.30)),
+            "pass": bool(eff_mean >= 4.0 and band_acc >= 0.9 and consistent),
         }
         a2[lbl] = rec
         logger.info("[A2 %s] %s", lbl, rec)

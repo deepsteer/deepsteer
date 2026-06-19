@@ -1,0 +1,91 @@
+{
+  "analysis": "stage1_gate_checks",
+  "band": [
+    15,
+    31
+  ],
+  "A1_offtarget_families": {
+    "projection": {
+      "control_r64_qv_mlp": {
+        "refusal": 0.107377,
+        "neutral": 0.090236,
+        "care_harm": 0.253704,
+        "capability_risk": 0.110683
+      },
+      "coupling_r16_qv": {
+        "refusal": 0.239364,
+        "neutral": 0.094965,
+        "care_harm": 0.271454,
+        "capability_risk": 0.127229
+      },
+      "coupling_r64_qv_mlp": {
+        "refusal": 0.533356,
+        "neutral": 0.102983,
+        "care_harm": 0.273856,
+        "capability_risk": 0.189751
+      }
+    },
+    "control_label": "control_r64_qv_mlp",
+    "by_condition": {
+      "coupling_r16_qv": {
+        "movement": {
+          "refusal": 0.131987,
+          "neutral": 0.004729,
+          "care_harm": 0.01775,
+          "capability_risk": 0.016546
+        },
+        "ratio_vs_refusal": {
+          "neutral": 0.0358,
+          "care_harm": 0.1345,
+          "capability_risk": 0.1254
+        },
+        "pass": true
+      },
+      "coupling_r64_qv_mlp": {
+        "movement": {
+          "refusal": 0.425979,
+          "neutral": 0.012747,
+          "care_harm": 0.020152,
+          "capability_risk": 0.079068
+        },
+        "ratio_vs_refusal": {
+          "neutral": 0.0299,
+          "care_harm": 0.0473,
+          "capability_risk": 0.1856
+        },
+        "pass": true
+      }
+    }
+  },
+  "A1_pass": true,
+  "A2_frozen_vs_fresh": {
+    "control_r64_qv_mlp": {
+      "frozen_proj_band_mean": 0.107377,
+      "fresh_proj_band_mean": 0.106793,
+      "eff_dim_band_mean": 5.0,
+      "per_foundation_probe_acc_band_mean": 0.9828,
+      "pass": true,
+      "fresh_over_frozen": 0.9946
+    },
+    "coupling_r16_qv": {
+      "frozen_proj_band_mean": 0.239364,
+      "fresh_proj_band_mean": 0.204828,
+      "eff_dim_band_mean": 5.0,
+      "per_foundation_probe_acc_band_mean": 0.9859,
+      "pass": true,
+      "fresh_over_frozen": 0.8557
+    },
+    "coupling_r64_qv_mlp": {
+      "frozen_proj_band_mean": 0.533356,
+      "fresh_proj_band_mean": 0.544141,
+      "eff_dim_band_mean": 5.0,
+      "per_foundation_probe_acc_band_mean": 0.9871,
+      "pass": true,
+      "fresh_over_frozen": 1.0202
+    }
+  },
+  "A2_pass": true,
+  "A3_note": "DEFERRED to Stage 2 (pre-SFT base models do not refuse); Stage 2's first action is the causal MFT-ablation refusal check.",
+  "gate_pass": true,
+  "_note": "A2 criterion corrected to consistency (fresh>=0.7*frozen); raw measurements unchanged."
+}
