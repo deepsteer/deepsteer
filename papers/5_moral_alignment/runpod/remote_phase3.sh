@@ -202,12 +202,28 @@ if [ "$RUN_COUPLING_STAGE1" = 1 ]; then
     echo "       or pass STAGE1_GENERAL=<a valid jsonl> and re-run."
   else
     echo "Stage 1 general corpus: $STAGE1_GENERAL ($CORPUS_LINES docs)"
+    # CONTROL (lambda=0): identical continued-pretrain WITHOUT the coupling term.
+    # Needed to attribute any held-out LM-quality change to the regularizer vs.
+    # plain LoRA-on-general forgetting (mirrors Section 6's control-SFT vs ART-SFT).
+    if [ "${STAGE1_RUN_CONTROL:-1}" = 1 ]; then
+      run_step "Stage1 CONTROL (lambda=0, $STAGE1_CAPACITY)" \
+        python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
+          --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
+          --capacity "$STAGE1_CAPACITY" --max-steps "$STAGE1_MAX_STEPS" --lambda 0.0 \
+          --label "control_$STAGE1_CAPACITY" --device "$DEVICE" --general-jsonl "$STAGE1_GENERAL" \
+          $STAGE1_EXTRA --output-dir "$OUT/intervention_stage1"
+    fi
     run_step "Stage1 forced coupling ($STAGE1_CAPACITY, $STAGE1_MAX_STEPS steps)" \
       python "$SCRIPTS/forced_coupling_stage1.py" --model "$BASE_MODEL" \
         --revision "$STAGE1_REVISION" --moral-npz "$STAGE1_MORAL_NPZ" \
         --capacity "$STAGE1_CAPACITY" --max-steps "$STAGE1_MAX_STEPS" --calibrate \
         --label "coupling_$STAGE1_CAPACITY" --device "$DEVICE" --general-jsonl "$STAGE1_GENERAL" \
         $STAGE1_EXTRA --output-dir "$OUT/intervention_stage1"
+    if [ "${STAGE1_RUN_CONTROL:-1}" = 1 ]; then
+      run_step "Stage1 compare (control vs coupling -> STAGE1_COMPARE.md)" \
+        python "$SCRIPTS/stage1_compare.py" --capacity "$STAGE1_CAPACITY" \
+          --dir "$OUT/intervention_stage1"
+    fi
   fi
 fi
 
