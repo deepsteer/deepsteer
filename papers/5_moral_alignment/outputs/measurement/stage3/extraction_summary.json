@@ -1,0 +1,99 @@
+{
+  "analysis": "proto_refusal_extraction",
+  "grid": "papers/5_moral_alignment/checkpoint_grid.json",
+  "prompts": {
+    "path": "papers/5_moral_alignment/refusal_prompts.json",
+    "provenance": {
+      "source": "p-e-w/heretic config.default.toml (exact set, sprint 3.1a)",
+      "harmful_dataset": "mlabonne/harmful_behaviors",
+      "harmless_dataset": "mlabonne/harmless_alpaca",
+      "column": "text",
+      "selection": "first-N in dataset order (Heretic uses 'first N', not random)",
+      "n_dir_per_class": {
+        "harmful": 400,
+        "harmless": 400
+      },
+      "n_eval_per_class": {
+        "harmful": 100,
+        "harmless": 100
+      },
+      "note": "Heretic computes the direction as a FIRST-token difference-of-means."
+    },
+    "n_harmful": 400,
+    "n_harmless": 400
+  },
+  "input_format": "raw",
+  "n_states": 14,
+  "states": [
+    {
+      "label": "olmo3_base",
+      "ok": true,
+      "contrast_norm_l16": 11.278053
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step1000",
+      "ok": true,
+      "contrast_norm_l16": 11.896463
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step2000",
+      "ok": true,
+      "contrast_norm_l16": 11.905506
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step3000",
+      "ok": true,
+      "contrast_norm_l16": 11.835817
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step4000",
+      "ok": true,
+      "contrast_norm_l16": 11.574762
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step5000",
+      "ok": true,
+      "contrast_norm_l16": 11.704047
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step6000",
+      "ok": true,
+      "contrast_norm_l16": 11.74974
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step7000",
+      "ok": true,
+      "contrast_norm_l16": 11.588148
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step8000",
+      "ok": true,
+      "contrast_norm_l16": 11.419189
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step9000",
+      "ok": true,
+      "contrast_norm_l16": 11.334188
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step10000",
+      "ok": true,
+      "contrast_norm_l16": 11.372048
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11000",
+      "ok": true,
+      "contrast_norm_l16": 11.277514
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11900",
+      "ok": true,
+      "contrast_norm_l16": 11.277696
+    },
+    {
+      "label": "olmo3_pretrain_stage3_step11921",
+      "ok": true,
+      "contrast_norm_l16": 11.278053
+    }
+  ]
+}
