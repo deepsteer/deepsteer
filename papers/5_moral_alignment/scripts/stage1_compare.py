@@ -87,7 +87,7 @@ def main() -> int:
                "control": ctrl, "coupling": coup, "coupling_specific": spec,
                "verdict": verdict,
                "thresholds": {"move": args.move_thresh, "harm": args.harm_thresh}}
-    with open(d / "stage1_compare.json", "w") as fh:
+    with open(d / f"stage1_compare_{args.capacity}.json", "w") as fh:
         json.dump(payload, fh, indent=2)
 
     md = [
@@ -111,8 +111,8 @@ def main() -> int:
         "coupling degrades LM broadly (not moral-specific); moves_but_degenerate -> "
         "§6 recurs (neutral-specific harm or off-target sink).",
     ]
-    (d / "STAGE1_COMPARE.md").write_text("\n".join(md) + "\n")
-    print(f"Wrote {d/'stage1_compare.json'} and STAGE1_COMPARE.md")
+    (d / f"STAGE1_COMPARE_{args.capacity}.md").write_text("\n".join(md) + "\n")
+    print(f"Wrote {d}/stage1_compare_{args.capacity}.json and STAGE1_COMPARE_{args.capacity}.md")
     print(f"  VERDICT: {verdict} | coupling-specific proj move {spec['proj_move']:+.4f}, "
           f"neutral-minus-moral harm {spec['neutral_minus_moral_harm']:+.3f}")
     return 0

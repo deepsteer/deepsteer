@@ -115,7 +115,12 @@ def main() -> int:
     with open(Path(args.output).with_suffix(".meta.json"), "w") as fh:
         json.dump(meta, fh, indent=2)
     print(f"Wrote {n} general-text docs to {args.output} (source: {args.dataset}/{args.config})")
-    return 0
+    # pyarrow/datasets streaming threads can segfault at interpreter finalization
+    # ("PyGILState_Release ..."), which makes the harness see a false FAILED even
+    # though the corpus was written. Hard-exit clean after flushing.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)
 
 
 if __name__ == "__main__":
