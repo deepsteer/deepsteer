@@ -685,6 +685,8 @@ def main() -> None:
     ap.add_argument("--device", default=None)
     ap.add_argument("--output-dir", default=str(_PAPER_ROOT / "outputs/intervention_stage1"))
     ap.add_argument("--label", default=None)
+    ap.add_argument("--save-adapter", action="store_true",
+                    help="Persist the trained adapter (needed for the Part-A gate checks).")
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s",
@@ -714,6 +716,16 @@ def main() -> None:
         seed=args.seed)
 
     result = run_stage1(model, reg, moral, neutral, general, args)
+    if args.save_adapter:
+        # Persist the trained adapter so the Part-A gate checks can reload this
+        # coupled model (the Stage-1 runs are deterministic at seed 42, but not
+        # saving the adapter means re-training to inspect it). LoRA -> small
+        # adapter; full-parameter -> the whole model (avoid unless needed).
+        adapter_dir = out / "adapter"
+        adapter_dir.mkdir(exist_ok=True)
+        model._model.save_pretrained(adapter_dir)
+        model.tokenizer.save_pretrained(adapter_dir)
+        print(f"  saved adapter -> {adapter_dir}")
     model.release()
 
     payload = {
