@@ -29,9 +29,10 @@ set -euo pipefail
 # ---------------------------- config (override via env) ----------------------
 : "${RUNPOD_API_KEY:?export RUNPOD_API_KEY first}"
 # OLMo-3 7B is ~14 GB fp16; --purge-hf-cache bounds disk to ~one model, so 24-48
-# GB cards are plenty. 80 GB types listed first only for headroom / availability.
+# GB cards are plenty. SXM A100 first (NVLink hosts tend to have faster network /
+# download), then PCIe A100, then 48->24 GB fallbacks for availability.
 GPU_TYPE="${GPU_TYPE:-}"
-GPU_TYPES="${GPU_TYPES:-NVIDIA A100 80GB PCIe,NVIDIA A100-SXM4-80GB,NVIDIA L40S,NVIDIA RTX 6000 Ada Generation,NVIDIA RTX A6000,NVIDIA A40,NVIDIA GeForce RTX 4090,NVIDIA RTX A5000}"
+GPU_TYPES="${GPU_TYPES:-NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe,NVIDIA L40S,NVIDIA RTX 6000 Ada Generation,NVIDIA RTX A6000,NVIDIA A40,NVIDIA GeForce RTX 4090,NVIDIA RTX A5000}"
 CLOUD_TYPES="${CLOUD_TYPES:-SECURE,COMMUNITY}"
 [ -n "$GPU_TYPE" ] && GPU_TYPES="$GPU_TYPE"
 IMAGE="${IMAGE:-runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04}"
