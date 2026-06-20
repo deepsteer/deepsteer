@@ -61,10 +61,14 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import direction_utils as du  # noqa: E402
 
+from deepsteer.foundations import FOUNDATION_ORDER  # noqa: E402
+
 logger = logging.getLogger(__name__)
 
 _PAPER_ROOT = Path(__file__).resolve().parent.parent
 _DEF_PERSONA = _PAPER_ROOT / "outputs/olmo3_instruct/persona_directions.npz"
+_DEF_REFUSAL = _PAPER_ROOT / "outputs/heretic/refusal_directions.npz"
+_DEF_MORAL = _PAPER_ROOT / "outputs/olmo3_base/exp1_probe_directions.npz"
 _DEF_OUT = _PAPER_ROOT / "outputs/measurement"
 
 # ---------------------------------------------------------------------------
@@ -230,6 +234,11 @@ def main() -> None:
                     choices=["persona", "persona_meandiff"])
     ap.add_argument("--input-format", choices=["raw", "chat"], default="raw",
                     help="raw matches persona_probe_base conventions.")
+    ap.add_argument("--refusal-npz", default=str(_DEF_REFUSAL),
+                    help="Heretic refusal direction = the alignment latent (Instruct).")
+    ap.add_argument("--refusal-key", default="refusal")
+    ap.add_argument("--moral-npz", default=str(_DEF_MORAL),
+                    help="Base MFT foundation directions = the moral subspace V.")
     ap.add_argument("--band", type=int, nargs=2, default=[15, 31])
     ap.add_argument("--device", default=None)
     ap.add_argument("--output-dir", default=str(_DEF_OUT))
@@ -312,6 +321,59 @@ def main() -> None:
     band_md = _band_mean({L: abs(c) for L, c in cos_md.items()}, band)
     stand_in_valid = bool(max(band_probe, band_md) >= 0.7)
 
+    # ---- THE deferred measurement: Assistant Axis vs the alignment/refusal
+    # direction and the moral subspace. Does the Assistant Axis carry refusal
+    # (Approach 4c revival) or is it orthogonal to both (refusal sui generis)? ----
+    aa = directions["mean_diff"]  # Lu et al. contrast = the Assistant Axis
+    align, moral_geom, refusal_decomp, verdict = {}, {}, {}, None
+    have_ref = bool(args.refusal_npz and Path(args.refusal_npz).exists())
+    have_mft = bool(args.moral_npz and Path(args.moral_npz).exists())
+    refusal = du.load_directions(args.refusal_npz)[args.refusal_key] if have_ref else {}
+    moral = du.load_directions(args.moral_npz) if have_mft else {}
+    foundations = [f for f in FOUNDATION_ORDER if f in moral]
+    if have_ref:
+        cos_ref = {L: round(du.cosine(aa[L], refusal[L]), 6) for L in aa if L in refusal}
+        align = {
+            "cos_aa_vs_refusal_layer16": cos_ref.get(16),
+            "band_mean_abs_cos_aa_vs_refusal": _band_mean(
+                {L: abs(c) for L, c in cos_ref.items()}, band),
+            "per_layer": {str(L): cos_ref[L] for L in sorted(cos_ref)},
+        }
+    if have_mft:
+        from heretic_ablation import subspace_projection_fraction
+        aa_proj = {L: subspace_projection_fraction(aa[L], [moral[f][L] for f in foundations])
+                   for L in aa if all(L in moral.get(f, {}) for f in foundations)}
+        moral_geom = {
+            "aa_to_mft_projection_layer16": round(aa_proj.get(16, float("nan")), 6),
+            "band_mean_aa_to_mft_projection": _band_mean(aa_proj, band),
+        }
+    if have_ref and have_mft:
+        from measure_refusal_decomposition import decompose_layer
+        from moral_dependency import build_subspace_basis
+        mft_basis, _, _ = build_subspace_basis(moral, kind="probe", n_layers=n_layers)
+        per = {}
+        for L in band:
+            if L in mft_basis and L in aa and L in refusal:
+                fL = {f: moral[f][L] for f in foundations if L in moral[f]}
+                per[L] = decompose_layer(refusal[L], mft_basis[L], aa[L], list(fL), fL)
+        if per:
+            refusal_decomp = {
+                "layer16": per.get(16),
+                "band_means": {key: round(float(np.mean([per[L][key] for L in per])), 6)
+                               for key in ("mft_frac", "persona_unique_frac", "residual_frac")},
+                "note": "persona_unique_frac = Assistant-Axis-UNIQUE energy in the refusal "
+                        "direction. Tier-1 toxic-voice gave 0.000; much greater means the "
+                        "Assistant Axis carries refusal (Approach 4c revival).",
+            }
+            aa_unique = refusal_decomp["band_means"]["persona_unique_frac"]
+            cos16 = align.get("cos_aa_vs_refusal_layer16") or 0.0
+            verdict = ("Assistant Axis CARRIES refusal materially more than toxic-voice "
+                       "(Approach 4c revived; the Stage-2 negative coupled the wrong persona "
+                       "object) " if (abs(cos16) >= 0.20 or aa_unique >= 0.04) else
+                       "Assistant Axis ~orthogonal to refusal (like toxic-voice): refusal is "
+                       "carried by none of the named directions; strengthens the Stage-2 "
+                       "'refusal is sui generis' reading")
+
     payload = {
         **common,
         "status": "measured",
@@ -323,14 +385,26 @@ def main() -> None:
         "band_mean_abs_cosine_probe": band_probe,
         "band_mean_abs_cosine_meandiff": band_md,
         "cached_persona_is_valid_standin": stand_in_valid,
+        "assistant_axis_vs_refusal": align,
+        "assistant_axis_vs_mft": moral_geom,
+        "refusal_decomposition_with_assistant_axis": refusal_decomp,
+        "persona_alignment_verdict": verdict,
     }
     path = out / "persona_axis_agreement.json"
     with open(path, "w") as fh:
         json.dump(payload, fh, indent=2)
     print(f"Wrote {path}")
-    print(f"  band {args.band[0]}-{args.band[1]} mean|cos|: probe {band_probe:.4f}, "
-          f"mean-diff {band_md:.4f}")
-    print(f"  cached persona valid stand-in (>=0.7): {stand_in_valid}")
+    print(f"  AA vs cached toxic-voice persona |cos| band: {band_md:.4f}")
+    print(f"  AA vs REFUSAL |cos| @L16: {align.get('cos_aa_vs_refusal_layer16')} "
+          f"(band {align.get('band_mean_abs_cos_aa_vs_refusal')})")
+    print(f"  AA -> MFT projection @L16: {moral_geom.get('aa_to_mft_projection_layer16')} "
+          f"(band {moral_geom.get('band_mean_aa_to_mft_projection')})")
+    if refusal_decomp:
+        bm = refusal_decomp["band_means"]
+        print(f"  refusal decomposition (band): MFT {bm['mft_frac']}, "
+              f"AA-unique {bm['persona_unique_frac']}, residual {bm['residual_frac']} "
+              f"(Tier-1 toxic-voice AA-unique was 0.000)")
+    print(f"  VERDICT: {verdict}")
 
 
 if __name__ == "__main__":

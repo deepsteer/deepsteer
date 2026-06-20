@@ -54,6 +54,7 @@ RUN_PIPELINE="${RUN_PIPELINE:-1}"
 RUN_COUPLING="${RUN_COUPLING:-1}"
 RUN_HERETIC="${RUN_HERETIC:-0}"   # Sprint 3 (off by default; ONLY=heretic to run)
 RUN_MALLEABILITY="${RUN_MALLEABILITY:-0}"   # Tier 2 (off by default; ONLY=malleability to run)
+RUN_ASSISTANT_AXIS="${RUN_ASSISTANT_AXIS:-0}"   # deferred Task 1.2 (ONLY=assistant_axis)
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
@@ -65,7 +66,7 @@ RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 # ONLY="pipeline coupling" runs just the named step(s); forces others off.
 if [ -n "${ONLY:-}" ]; then
   RUN_TRANSFER=0; RUN_BEHAVIORAL=0; RUN_PERSONA=0; RUN_PIPELINE=0; RUN_COUPLING=0; RUN_HERETIC=0
-  RUN_MALLEABILITY=0
+  RUN_MALLEABILITY=0; RUN_ASSISTANT_AXIS=0
   for _s in $ONLY; do
     case "$_s" in
       transfer) RUN_TRANSFER=1 ;;
@@ -75,10 +76,11 @@ if [ -n "${ONLY:-}" ]; then
       coupling) RUN_COUPLING=1 ;;
       heretic) RUN_HERETIC=1 ;;
       malleability) RUN_MALLEABILITY=1 ;;
+      assistant_axis) RUN_ASSISTANT_AXIS=1 ;;
       *) echo "WARN: unknown ONLY step '$_s'" ;;
     esac
   done
-  echo ">> ONLY='$ONLY' -> transfer=$RUN_TRANSFER behavioral=$RUN_BEHAVIORAL persona=$RUN_PERSONA pipeline=$RUN_PIPELINE coupling=$RUN_COUPLING heretic=$RUN_HERETIC malleability=$RUN_MALLEABILITY"
+  echo ">> ONLY='$ONLY' -> transfer=$RUN_TRANSFER behavioral=$RUN_BEHAVIORAL persona=$RUN_PERSONA pipeline=$RUN_PIPELINE coupling=$RUN_COUPLING heretic=$RUN_HERETIC malleability=$RUN_MALLEABILITY assistant_axis=$RUN_ASSISTANT_AXIS"
 fi
 
 for bin in curl jq ssh rsync; do
@@ -204,7 +206,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
      INPUT_FORMAT='$INPUT_FORMAT' STABLE_LAYER=$STABLE_LAYER \
      RUN_TRANSFER=$RUN_TRANSFER RUN_BEHAVIORAL=$RUN_BEHAVIORAL RUN_PERSONA=$RUN_PERSONA \
      RUN_PIPELINE=$RUN_PIPELINE RUN_COUPLING=$RUN_COUPLING RUN_HERETIC=$RUN_HERETIC \
-     RUN_MALLEABILITY=$RUN_MALLEABILITY \
+     RUN_MALLEABILITY=$RUN_MALLEABILITY RUN_ASSISTANT_AXIS=$RUN_ASSISTANT_AXIS \
      setsid bash papers/5_moral_alignment/runpod/remote_experiments.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."

@@ -29,6 +29,7 @@ RUN_PIPELINE="${RUN_PIPELINE:-1}"      # Sprint 2.2: full grid probing + geometr
 RUN_COUPLING="${RUN_COUPLING:-1}"      # Sprint 2.3: coupling on post-training states
 RUN_HERETIC="${RUN_HERETIC:-0}"        # Sprint 3: refusal ablation + post-ablation battery
 RUN_MALLEABILITY="${RUN_MALLEABILITY:-0}"  # Tier 2: proto-refusal extraction + malleability
+RUN_ASSISTANT_AXIS="${RUN_ASSISTANT_AXIS:-0}"  # deferred Task 1.2: Assistant-Axis vs refusal/MFT
 REFUSAL_PROMPTS="${REFUSAL_PROMPTS:-$P5/refusal_prompts.json}"
 
 # Post-training states for coupling (instruct-capable only; pretraining ckpts
@@ -197,6 +198,17 @@ if [ "$RUN_MALLEABILITY" = 1 ]; then
       --stage3-dir "$OUT/measurement/stage3" --pipeline-dir "$OUT/pipeline" \
       --instruct-persona-npz "$OUT/olmo3_instruct/persona_directions.npz" \
       --output-dir "$OUT/measurement"
+fi
+
+# ------------------ ASSISTANT AXIS vs ALIGNMENT (deferred Task 1.2) ----------
+# Extract the Lu et al. Assistant Axis at Instruct and measure its cosine to the
+# refusal direction and the MFT subspace -- the persona<->alignment number deferred
+# three times. npz defaults (heretic refusal, base MFT, instruct persona) are
+# committed and synced up. One Instruct load.
+if [ "$RUN_ASSISTANT_AXIS" = 1 ]; then
+  run_step "Assistant-Axis vs refusal/MFT (instruct)" \
+    python "$SCRIPTS/assistant_axis_agreement.py" --model "$INSTRUCT_MODEL" \
+      --input-format raw --device "$DEVICE" --output-dir "$OUT/measurement"
 fi
 
 log "Session complete. Output directories:"
