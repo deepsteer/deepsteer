@@ -332,25 +332,29 @@ control control_r64_qv_mlp"
       rm -rf "$S2OUT/${arm}_cpt_merged"   # free disk; only the post-SFT model is needed
     fi
   done
-  # S2 A3 causal MFT-ablation GATE (first action).
+  # S2 A3 causal MFT-ablation GATE (first action). --dump-samples for a coherence
+  # check (rule out the ablation-degrades-generation classifier confound).
   run_step "S2 A3 causal MFT-ablation gate" \
     python "$SCRIPTS/stage2_a3_causal.py" \
       --coupled-model "$S2OUT/coupled_sft/merged_model" \
-      --control-model "$S2OUT/control_sft/merged_model" \
+      --control-model "$S2OUT/control_sft/merged_model" --dump-samples 6 \
       --base-npz "$STAGE1_MORAL_NPZ" --device "$DEVICE" --output-dir "$S2OUT"
   A3_PASS="$(python -c "import json;print(json.load(open('$S2OUT/stage2_a3.json')).get('A3_pass'))" 2>/dev/null)"
+  # S3a refusal->V geometry: ALWAYS run -- cheap, the DIRECT win-condition-#1
+  # measurement, and the cleanest characterization of the deeper negative on a fail.
+  for arm in coupled control; do
+    run_step "S3 refusal->V geometry ($arm post-SFT)" \
+      python "$SCRIPTS/heretic_ablation.py" --model "$S2OUT/${arm}_sft/merged_model" \
+        --prompts "$P5/refusal_prompts.json" --moral-npz "$STAGE1_MORAL_NPZ" \
+        --refusal-layer 16 --input-format chat --no-save-model \
+        --output-dir "$S2OUT/heretic_${arm}" --device "$DEVICE"
+  done
   if [ "$A3_PASS" != "True" ]; then
-    echo "A3 GATE = $A3_PASS: coupled refusal not MFT-mediated -> 0.50 is geometric only."
-    echo "STOPPING before S3/S4 (deeper negative). No battery spent."
+    echo "A3 GATE = $A3_PASS: refusal not MFT-mediated. S3 refusal->V geometry above + "
+    echo "stage2_a3_samples.json characterize the deeper negative. Skipping the post-SFT "
+    echo "Part-A guards + S4 battery (no battery spent)."
   else
-    echo "A3 GATE PASSED -> S3 mechanism-persistence + Part-A guards."
-    for arm in coupled control; do
-      run_step "S3 refusal->V geometry ($arm post-SFT)" \
-        python "$SCRIPTS/heretic_ablation.py" --model "$S2OUT/${arm}_sft/merged_model" \
-          --prompts "$P5/refusal_prompts.json" --moral-npz "$STAGE1_MORAL_NPZ" \
-          --refusal-layer 16 --input-format chat --no-save-model \
-          --output-dir "$S2OUT/heretic_${arm}" --device "$DEVICE"
-    done
+    echo "A3 GATE PASSED -> post-SFT Part-A guards."
     run_step "S3 Part-A guards (post-SFT, full models)" \
       python "$SCRIPTS/stage1_gate_checks.py" --base-npz "$STAGE1_MORAL_NPZ" --full-models \
         --control "control_sft:$S2OUT/control_sft/merged_model" \
