@@ -1,0 +1,703 @@
+{
+  "analysis": "refusal_decomposition",
+  "description": "Energy decomposition of the Instruct refusal direction onto {moral subspace, persona-unique, residual}.",
+  "inputs": {
+    "refusal_npz": "/workspace/deepsteer/papers/6_cross_model/outputs/llama31_instruct/refusal_directions.npz",
+    "refusal_key": "refusal",
+    "moral_npz": "/workspace/deepsteer/papers/6_cross_model/outputs/llama31_base/exp1_probe_directions.npz",
+    "moral_kind": "probe",
+    "moral_directions": [
+      "care_harm",
+      "fairness_cheating",
+      "liberty_oppression",
+      "loyalty_betrayal",
+      "authority_subversion",
+      "sanctity_degradation"
+    ],
+    "persona_npz": "/workspace/deepsteer/papers/6_cross_model/outputs/llama31_instruct/persona_directions.npz",
+    "persona_key": "persona",
+    "persona_source": "instruct"
+  },
+  "conventions": {
+    "directions": "unit-norm float32, 4096-dim, layers 0..31",
+    "partition": "mft_frac + persona_unique_frac + residual_frac == 1.0 (squared-norm energy of the unit refusal vector)",
+    "mft_basis": "SVD-orthonormalised span of the 6 base probe foundation directions (same basis the dependency metric ablates)",
+    "note": "MFT directions are base; refusal+persona are Instruct. F4 used base MFT directions against the Instruct refusal direction, so the headline mft_frac is comparable."
+  },
+  "headline_layer": 16,
+  "headline": {
+    "mft_frac": 0.005053,
+    "persona_unique_frac": 0.000431,
+    "residual_frac": 0.994516,
+    "mft_norm_ratio": 0.071084,
+    "cos_refusal_persona": 0.030124,
+    "persona_total_frac": 0.000907,
+    "persona_in_subspace_norm": 0.16773,
+    "mean_abs_cos_to_foundations": 0.040717,
+    "cos_to_foundations": {
+      "Care": 0.0353,
+      "Fairness": 0.0295,
+      "Liberty": 0.0518,
+      "Loyalty": 0.0602,
+      "Authority": 0.0345,
+      "Sanctity": 0.033
+    },
+    "mft_rank": 6
+  },
+  "verdict": {
+    "target": "create_overlap_from_scratch",
+    "rationale": "refusal is dominated by the residual and only weakly persona-carried; coupling must create overlap from scratch (hardest)."
+  },
+  "f4_crosscheck": {
+    "mft_norm_ratio_here": 0.071084,
+    "f4_published_subspace_projection_fraction": 0.1044,
+    "matches_f4": false
+  },
+  "band_summary": {
+    "band": [
+      15,
+      31
+    ],
+    "mft_frac_mean": 0.003468,
+    "persona_unique_frac_mean": 0.000503,
+    "residual_frac_mean": 0.996029,
+    "cos_refusal_persona_mean": -0.005096
+  },
+  "per_layer": {
+    "0": {
+      "mft_frac": 0.002346,
+      "persona_unique_frac": 0.00043,
+      "residual_frac": 0.997224,
+      "mft_norm_ratio": 0.048434,
+      "cos_refusal_persona": 0.02511,
+      "persona_total_frac": 0.000631,
+      "persona_in_subspace_norm": 0.192292,
+      "mean_abs_cos_to_foundations": 0.0204,
+      "cos_to_foundations": {
+        "Care": 0.0032,
+        "Fairness": 0.0427,
+        "Liberty": 0.0216,
+        "Loyalty": 0.0076,
+        "Authority": 0.0271,
+        "Sanctity": 0.0202
+      },
+      "mft_rank": 6
+    },
+    "1": {
+      "mft_frac": 0.000679,
+      "persona_unique_frac": 0.000275,
+      "residual_frac": 0.999046,
+      "mft_norm_ratio": 0.026055,
+      "cos_refusal_persona": -0.018118,
+      "persona_total_frac": 0.000328,
+      "persona_in_subspace_norm": 0.261172,
+      "mean_abs_cos_to_foundations": 0.008633,
+      "cos_to_foundations": {
+        "Care": 0.0097,
+        "Fairness": -0.0107,
+        "Liberty": -0.0041,
+        "Loyalty": -0.0134,
+        "Authority": -0.0036,
+        "Sanctity": 0.0103
+      },
+      "mft_rank": 6
+    },
+    "2": {
+      "mft_frac": 0.00069,
+      "persona_unique_frac": 2e-06,
+      "residual_frac": 0.999308,
+      "mft_norm_ratio": 0.026273,
+      "cos_refusal_persona": 0.004974,
+      "persona_total_frac": 2.5e-05,
+      "persona_in_subspace_norm": 0.244434,
+      "mean_abs_cos_to_foundations": 0.011833,
+      "cos_to_foundations": {
+        "Care": 0.0179,
+        "Fairness": -0.0066,
+        "Liberty": 0.0141,
+        "Loyalty": 0.0136,
+        "Authority": 0.0067,
+        "Sanctity": 0.0121
+      },
+      "mft_rank": 6
+    },
+    "3": {
+      "mft_frac": 0.002009,
+      "persona_unique_frac": 2e-06,
+      "residual_frac": 0.997988,
+      "mft_norm_ratio": 0.044823,
+      "cos_refusal_persona": 0.008568,
+      "persona_total_frac": 7.3e-05,
+      "persona_in_subspace_norm": 0.285994,
+      "mean_abs_cos_to_foundations": 0.027583,
+      "cos_to_foundations": {
+        "Care": 0.0332,
+        "Fairness": 0.0247,
+        "Liberty": 0.0221,
+        "Loyalty": 0.0325,
+        "Authority": 0.0279,
+        "Sanctity": 0.0251
+      },
+      "mft_rank": 6
+    },
+    "4": {
+      "mft_frac": 0.008448,
+      "persona_unique_frac": 0.000896,
+      "residual_frac": 0.990655,
+      "mft_norm_ratio": 0.091915,
+      "cos_refusal_persona": 0.044841,
+      "persona_total_frac": 0.002011,
+      "persona_in_subspace_norm": 0.254109,
+      "mean_abs_cos_to_foundations": 0.054083,
+      "cos_to_foundations": {
+        "Care": 0.0773,
+        "Fairness": 0.0534,
+        "Liberty": 0.0565,
+        "Loyalty": 0.0527,
+        "Authority": 0.0461,
+        "Sanctity": 0.0385
+      },
+      "mft_rank": 6
+    },
+    "5": {
+      "mft_frac": 0.009682,
+      "persona_unique_frac": 0.001515,
+      "residual_frac": 0.988803,
+      "mft_norm_ratio": 0.098399,
+      "cos_refusal_persona": 0.057518,
+      "persona_total_frac": 0.003308,
+      "persona_in_subspace_norm": 0.255043,
+      "mean_abs_cos_to_foundations": 0.05365,
+      "cos_to_foundations": {
+        "Care": 0.0687,
+        "Fairness": 0.0284,
+        "Liberty": 0.0514,
+        "Loyalty": 0.0805,
+        "Authority": 0.0582,
+        "Sanctity": 0.0347
+      },
+      "mft_rank": 6
+    },
+    "6": {
+      "mft_frac": 0.013901,
+      "persona_unique_frac": 0.004481,
+      "residual_frac": 0.981618,
+      "mft_norm_ratio": 0.117903,
+      "cos_refusal_persona": 0.091679,
+      "persona_total_frac": 0.008405,
+      "persona_in_subspace_norm": 0.249851,
+      "mean_abs_cos_to_foundations": 0.073317,
+      "cos_to_foundations": {
+        "Care": 0.0712,
+        "Fairness": 0.0616,
+        "Liberty": 0.0722,
+        "Loyalty": 0.0972,
+        "Authority": 0.0688,
+        "Sanctity": 0.0689
+      },
+      "mft_rank": 6
+    },
+    "7": {
+      "mft_frac": 0.018786,
+      "persona_unique_frac": 0.014175,
+      "residual_frac": 0.96704,
+      "mft_norm_ratio": 0.137061,
+      "cos_refusal_persona": 0.141975,
+      "persona_total_frac": 0.020157,
+      "persona_in_subspace_norm": 0.225268,
+      "mean_abs_cos_to_foundations": 0.0819,
+      "cos_to_foundations": {
+        "Care": 0.084,
+        "Fairness": 0.0726,
+        "Liberty": 0.1052,
+        "Loyalty": 0.076,
+        "Authority": 0.0572,
+        "Sanctity": 0.0964
+      },
+      "mft_rank": 6
+    },
+    "8": {
+      "mft_frac": 0.016452,
+      "persona_unique_frac": 0.015,
+      "residual_frac": 0.968548,
+      "mft_norm_ratio": 0.128265,
+      "cos_refusal_persona": 0.143359,
+      "persona_total_frac": 0.020552,
+      "persona_in_subspace_norm": 0.244202,
+      "mean_abs_cos_to_foundations": 0.079783,
+      "cos_to_foundations": {
+        "Care": 0.0641,
+        "Fairness": 0.0631,
+        "Liberty": 0.1004,
+        "Loyalty": 0.085,
+        "Authority": 0.0732,
+        "Sanctity": 0.0929
+      },
+      "mft_rank": 6
+    },
+    "9": {
+      "mft_frac": 0.013378,
+      "persona_unique_frac": 0.017393,
+      "residual_frac": 0.96923,
+      "mft_norm_ratio": 0.115662,
+      "cos_refusal_persona": 0.147325,
+      "persona_total_frac": 0.021705,
+      "persona_in_subspace_norm": 0.225985,
+      "mean_abs_cos_to_foundations": 0.066017,
+      "cos_to_foundations": {
+        "Care": 0.06,
+        "Fairness": 0.0458,
+        "Liberty": 0.0996,
+        "Loyalty": 0.0559,
+        "Authority": 0.0542,
+        "Sanctity": 0.0806
+      },
+      "mft_rank": 6
+    },
+    "10": {
+      "mft_frac": 0.020513,
+      "persona_unique_frac": 0.026544,
+      "residual_frac": 0.952943,
+      "mft_norm_ratio": 0.143224,
+      "cos_refusal_persona": 0.18203,
+      "persona_total_frac": 0.033135,
+      "persona_in_subspace_norm": 0.223612,
+      "mean_abs_cos_to_foundations": 0.0854,
+      "cos_to_foundations": {
+        "Care": 0.0709,
+        "Fairness": 0.0732,
+        "Liberty": 0.1257,
+        "Loyalty": 0.0821,
+        "Authority": 0.0714,
+        "Sanctity": 0.0891
+      },
+      "mft_rank": 6
+    },
+    "11": {
+      "mft_frac": 0.013329,
+      "persona_unique_frac": 0.024455,
+      "residual_frac": 0.962216,
+      "mft_norm_ratio": 0.11545,
+      "cos_refusal_persona": 0.172562,
+      "persona_total_frac": 0.029778,
+      "persona_in_subspace_norm": 0.222206,
+      "mean_abs_cos_to_foundations": 0.0708,
+      "cos_to_foundations": {
+        "Care": 0.0591,
+        "Fairness": 0.0673,
+        "Liberty": 0.0936,
+        "Loyalty": 0.0707,
+        "Authority": 0.0562,
+        "Sanctity": 0.0779
+      },
+      "mft_rank": 6
+    },
+    "12": {
+      "mft_frac": 0.009663,
+      "persona_unique_frac": 0.008375,
+      "residual_frac": 0.981962,
+      "mft_norm_ratio": 0.098299,
+      "cos_refusal_persona": 0.108164,
+      "persona_total_frac": 0.0117,
+      "persona_in_subspace_norm": 0.224099,
+      "mean_abs_cos_to_foundations": 0.061483,
+      "cos_to_foundations": {
+        "Care": 0.0688,
+        "Fairness": 0.0678,
+        "Liberty": 0.0673,
+        "Loyalty": 0.0542,
+        "Authority": 0.0463,
+        "Sanctity": 0.0645
+      },
+      "mft_rank": 6
+    },
+    "13": {
+      "mft_frac": 0.010026,
+      "persona_unique_frac": 0.006802,
+      "residual_frac": 0.983171,
+      "mft_norm_ratio": 0.100132,
+      "cos_refusal_persona": 0.098768,
+      "persona_total_frac": 0.009755,
+      "persona_in_subspace_norm": 0.214985,
+      "mean_abs_cos_to_foundations": 0.061033,
+      "cos_to_foundations": {
+        "Care": 0.0645,
+        "Fairness": 0.0458,
+        "Liberty": 0.0661,
+        "Loyalty": 0.0773,
+        "Authority": 0.0471,
+        "Sanctity": 0.0654
+      },
+      "mft_rank": 6
+    },
+    "14": {
+      "mft_frac": 0.008786,
+      "persona_unique_frac": 0.004971,
+      "residual_frac": 0.986244,
+      "mft_norm_ratio": 0.093733,
+      "cos_refusal_persona": 0.083034,
+      "persona_total_frac": 0.006895,
+      "persona_in_subspace_norm": 0.191202,
+      "mean_abs_cos_to_foundations": 0.055833,
+      "cos_to_foundations": {
+        "Care": 0.0432,
+        "Fairness": 0.0589,
+        "Liberty": 0.0695,
+        "Loyalty": 0.0532,
+        "Authority": 0.0449,
+        "Sanctity": 0.0653
+      },
+      "mft_rank": 6
+    },
+    "15": {
+      "mft_frac": 0.009416,
+      "persona_unique_frac": 0.002363,
+      "residual_frac": 0.988221,
+      "mft_norm_ratio": 0.097039,
+      "cos_refusal_persona": 0.062373,
+      "persona_total_frac": 0.00389,
+      "persona_in_subspace_norm": 0.186714,
+      "mean_abs_cos_to_foundations": 0.057617,
+      "cos_to_foundations": {
+        "Care": 0.0503,
+        "Fairness": 0.0547,
+        "Liberty": 0.0723,
+        "Loyalty": 0.0719,
+        "Authority": 0.0428,
+        "Sanctity": 0.0537
+      },
+      "mft_rank": 6
+    },
+    "16": {
+      "mft_frac": 0.005053,
+      "persona_unique_frac": 0.000431,
+      "residual_frac": 0.994516,
+      "mft_norm_ratio": 0.071084,
+      "cos_refusal_persona": 0.030124,
+      "persona_total_frac": 0.000907,
+      "persona_in_subspace_norm": 0.16773,
+      "mean_abs_cos_to_foundations": 0.040717,
+      "cos_to_foundations": {
+        "Care": 0.0353,
+        "Fairness": 0.0295,
+        "Liberty": 0.0518,
+        "Loyalty": 0.0602,
+        "Authority": 0.0345,
+        "Sanctity": 0.033
+      },
+      "mft_rank": 6
+    },
+    "17": {
+      "mft_frac": 0.004079,
+      "persona_unique_frac": 5e-06,
+      "residual_frac": 0.995917,
+      "mft_norm_ratio": 0.063863,
+      "cos_refusal_persona": 0.005547,
+      "persona_total_frac": 3.1e-05,
+      "persona_in_subspace_norm": 0.164417,
+      "mean_abs_cos_to_foundations": 0.035617,
+      "cos_to_foundations": {
+        "Care": 0.0313,
+        "Fairness": 0.0311,
+        "Liberty": 0.0488,
+        "Loyalty": 0.0321,
+        "Authority": 0.0235,
+        "Sanctity": 0.0469
+      },
+      "mft_rank": 6
+    },
+    "18": {
+      "mft_frac": 0.003179,
+      "persona_unique_frac": 0.001046,
+      "residual_frac": 0.995775,
+      "mft_norm_ratio": 0.056385,
+      "cos_refusal_persona": -0.024306,
+      "persona_total_frac": 0.000591,
+      "persona_in_subspace_norm": 0.166084,
+      "mean_abs_cos_to_foundations": 0.034067,
+      "cos_to_foundations": {
+        "Care": 0.0386,
+        "Fairness": 0.0364,
+        "Liberty": 0.0394,
+        "Loyalty": 0.0303,
+        "Authority": 0.0253,
+        "Sanctity": 0.0344
+      },
+      "mft_rank": 6
+    },
+    "19": {
+      "mft_frac": 0.002143,
+      "persona_unique_frac": 0.00047,
+      "residual_frac": 0.997387,
+      "mft_norm_ratio": 0.046291,
+      "cos_refusal_persona": -0.015409,
+      "persona_total_frac": 0.000237,
+      "persona_in_subspace_norm": 0.164849,
+      "mean_abs_cos_to_foundations": 0.0242,
+      "cos_to_foundations": {
+        "Care": 0.0329,
+        "Fairness": 0.0289,
+        "Liberty": 0.0338,
+        "Loyalty": 0.0234,
+        "Authority": 0.012,
+        "Sanctity": 0.0142
+      },
+      "mft_rank": 6
+    },
+    "20": {
+      "mft_frac": 0.004143,
+      "persona_unique_frac": 0.000741,
+      "residual_frac": 0.995116,
+      "mft_norm_ratio": 0.064366,
+      "cos_refusal_persona": -0.017587,
+      "persona_total_frac": 0.000309,
+      "persona_in_subspace_norm": 0.165846,
+      "mean_abs_cos_to_foundations": 0.034983,
+      "cos_to_foundations": {
+        "Care": 0.0335,
+        "Fairness": 0.0432,
+        "Liberty": 0.0501,
+        "Loyalty": 0.0385,
+        "Authority": 0.0191,
+        "Sanctity": 0.0255
+      },
+      "mft_rank": 6
+    },
+    "21": {
+      "mft_frac": 0.004046,
+      "persona_unique_frac": 0.000238,
+      "residual_frac": 0.995716,
+      "mft_norm_ratio": 0.063611,
+      "cos_refusal_persona": -0.007071,
+      "persona_total_frac": 5e-05,
+      "persona_in_subspace_norm": 0.158881,
+      "mean_abs_cos_to_foundations": 0.038117,
+      "cos_to_foundations": {
+        "Care": 0.0353,
+        "Fairness": 0.0451,
+        "Liberty": 0.0485,
+        "Loyalty": 0.0404,
+        "Authority": 0.0304,
+        "Sanctity": 0.029
+      },
+      "mft_rank": 6
+    },
+    "22": {
+      "mft_frac": 0.002566,
+      "persona_unique_frac": 0.000336,
+      "residual_frac": 0.997098,
+      "mft_norm_ratio": 0.050655,
+      "cos_refusal_persona": -0.011092,
+      "persona_total_frac": 0.000123,
+      "persona_in_subspace_norm": 0.157656,
+      "mean_abs_cos_to_foundations": 0.030733,
+      "cos_to_foundations": {
+        "Care": 0.0244,
+        "Fairness": 0.0384,
+        "Liberty": 0.0346,
+        "Loyalty": 0.035,
+        "Authority": 0.0278,
+        "Sanctity": 0.0242
+      },
+      "mft_rank": 6
+    },
+    "23": {
+      "mft_frac": 0.003033,
+      "persona_unique_frac": 0.000141,
+      "residual_frac": 0.996826,
+      "mft_norm_ratio": 0.055068,
+      "cos_refusal_persona": -0.004663,
+      "persona_total_frac": 2.2e-05,
+      "persona_in_subspace_norm": 0.163402,
+      "mean_abs_cos_to_foundations": 0.032567,
+      "cos_to_foundations": {
+        "Care": 0.0295,
+        "Fairness": 0.0307,
+        "Liberty": 0.0455,
+        "Loyalty": 0.0369,
+        "Authority": 0.0265,
+        "Sanctity": 0.0263
+      },
+      "mft_rank": 6
+    },
+    "24": {
+      "mft_frac": 0.002381,
+      "persona_unique_frac": 0.000563,
+      "residual_frac": 0.997056,
+      "mft_norm_ratio": 0.048798,
+      "cos_refusal_persona": -0.01744,
+      "persona_total_frac": 0.000304,
+      "persona_in_subspace_norm": 0.159949,
+      "mean_abs_cos_to_foundations": 0.02455,
+      "cos_to_foundations": {
+        "Care": 0.0211,
+        "Fairness": 0.0172,
+        "Liberty": 0.0455,
+        "Loyalty": 0.0243,
+        "Authority": 0.015,
+        "Sanctity": 0.0242
+      },
+      "mft_rank": 6
+    },
+    "25": {
+      "mft_frac": 0.002715,
+      "persona_unique_frac": 0.0007,
+      "residual_frac": 0.996585,
+      "mft_norm_ratio": 0.052105,
+      "cos_refusal_persona": -0.02004,
+      "persona_total_frac": 0.000402,
+      "persona_in_subspace_norm": 0.166739,
+      "mean_abs_cos_to_foundations": 0.02645,
+      "cos_to_foundations": {
+        "Care": 0.0306,
+        "Fairness": 0.0265,
+        "Liberty": 0.0464,
+        "Loyalty": 0.0226,
+        "Authority": 0.0179,
+        "Sanctity": 0.0147
+      },
+      "mft_rank": 6
+    },
+    "26": {
+      "mft_frac": 0.002713,
+      "persona_unique_frac": 0.000504,
+      "residual_frac": 0.996784,
+      "mft_norm_ratio": 0.052083,
+      "cos_refusal_persona": -0.015938,
+      "persona_total_frac": 0.000254,
+      "persona_in_subspace_norm": 0.164474,
+      "mean_abs_cos_to_foundations": 0.025033,
+      "cos_to_foundations": {
+        "Care": 0.0325,
+        "Fairness": 0.0212,
+        "Liberty": 0.0435,
+        "Loyalty": 0.0281,
+        "Authority": 0.0169,
+        "Sanctity": 0.008
+      },
+      "mft_rank": 6
+    },
+    "27": {
+      "mft_frac": 0.001614,
+      "persona_unique_frac": 0.000112,
+      "residual_frac": 0.998274,
+      "mft_norm_ratio": 0.040179,
+      "cos_refusal_persona": -0.006047,
+      "persona_total_frac": 3.7e-05,
+      "persona_in_subspace_norm": 0.172742,
+      "mean_abs_cos_to_foundations": 0.0175,
+      "cos_to_foundations": {
+        "Care": 0.0156,
+        "Fairness": 0.0121,
+        "Liberty": 0.0385,
+        "Loyalty": 0.0174,
+        "Authority": 0.0162,
+        "Sanctity": 0.0052
+      },
+      "mft_rank": 6
+    },
+    "28": {
+      "mft_frac": 0.00212,
+      "persona_unique_frac": 0.000201,
+      "residual_frac": 0.997679,
+      "mft_norm_ratio": 0.046043,
+      "cos_refusal_persona": -0.011873,
+      "persona_total_frac": 0.000141,
+      "persona_in_subspace_norm": 0.150707,
+      "mean_abs_cos_to_foundations": 0.01885,
+      "cos_to_foundations": {
+        "Care": 0.0276,
+        "Fairness": 0.0156,
+        "Liberty": 0.0317,
+        "Loyalty": 0.0176,
+        "Authority": 0.009,
+        "Sanctity": -0.0116
+      },
+      "mft_rank": 6
+    },
+    "29": {
+      "mft_frac": 0.00338,
+      "persona_unique_frac": 0.000442,
+      "residual_frac": 0.996178,
+      "mft_norm_ratio": 0.058137,
+      "cos_refusal_persona": -0.016771,
+      "persona_total_frac": 0.000281,
+      "persona_in_subspace_norm": 0.167507,
+      "mean_abs_cos_to_foundations": 0.023683,
+      "cos_to_foundations": {
+        "Care": 0.0229,
+        "Fairness": 0.0353,
+        "Liberty": 0.0498,
+        "Loyalty": 0.0119,
+        "Authority": 0.0143,
+        "Sanctity": 0.0079
+      },
+      "mft_rank": 6
+    },
+    "30": {
+      "mft_frac": 0.002892,
+      "persona_unique_frac": 9.7e-05,
+      "residual_frac": 0.997011,
+      "mft_norm_ratio": 0.053776,
+      "cos_refusal_persona": -0.004018,
+      "persona_total_frac": 1.6e-05,
+      "persona_in_subspace_norm": 0.181304,
+      "mean_abs_cos_to_foundations": 0.026833,
+      "cos_to_foundations": {
+        "Care": 0.0215,
+        "Fairness": 0.0331,
+        "Liberty": 0.0494,
+        "Loyalty": 0.0231,
+        "Authority": 0.022,
+        "Sanctity": 0.0119
+      },
+      "mft_rank": 6
+    },
+    "31": {
+      "mft_frac": 0.003489,
+      "persona_unique_frac": 0.000155,
+      "residual_frac": 0.996355,
+      "mft_norm_ratio": 0.059069,
+      "cos_refusal_persona": -0.012429,
+      "persona_total_frac": 0.000154,
+      "persona_in_subspace_norm": 0.190624,
+      "mean_abs_cos_to_foundations": 0.01835,
+      "cos_to_foundations": {
+        "Care": -0.0297,
+        "Fairness": 0.0085,
+        "Liberty": 0.0199,
+        "Loyalty": -0.0102,
+        "Authority": -0.0104,
+        "Sanctity": -0.0314
+      },
+      "mft_rank": 6
+    }
+  },
+  "persona_base_sensitivity": {
+    "persona_npz": "/workspace/deepsteer/papers/6_cross_model/outputs/llama31_base/persona_directions.npz",
+    "persona_source": "base",
+    "headline": {
+      "mft_frac": 0.005053,
+      "persona_unique_frac": 0.000154,
+      "residual_frac": 0.994793,
+      "mft_norm_ratio": 0.071084,
+      "cos_refusal_persona": 0.021155,
+      "persona_total_frac": 0.000448,
+      "persona_in_subspace_norm": 0.152157,
+      "mean_abs_cos_to_foundations": 0.040717,
+      "cos_to_foundations": {
+        "Care": 0.0353,
+        "Fairness": 0.0295,
+        "Liberty": 0.0518,
+        "Loyalty": 0.0602,
+        "Authority": 0.0345,
+        "Sanctity": 0.033
+      },
+      "mft_rank": 6
+    },
+    "band_summary": {
+      "persona_unique_frac_mean": 0.000533,
+      "cos_refusal_persona_mean": -0.00725
+    }
+  }
+}

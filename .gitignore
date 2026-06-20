@@ -73,6 +73,9 @@ papers/5_moral_alignment/outputs/intervention_stage2/**/adapter/
 papers/6_cross_model/outputs/**/*.safetensors
 papers/6_cross_model/outputs/**/ablated_model/
 papers/6_cross_model/outputs/**/*.bin
+# Transient per-model exp1 figures (written to a shared dir, overwritten by each
+# model; not a Paper 6 deliverable — phase1_cross_model.* is). Regenerable.
+papers/6_cross_model/outputs/figures/
 
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt
