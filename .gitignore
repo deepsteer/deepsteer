@@ -67,6 +67,13 @@ papers/5_moral_alignment/outputs/**/_merged/
 papers/5_moral_alignment/outputs/intervention_stage1/**/adapter/
 papers/5_moral_alignment/outputs/intervention_stage2/**/adapter/
 
+# Paper 6 (cross-model) — Heretic-ablated model weight blobs are regenerable
+# (~14GB each); the small direction npz caches + decomposition result JSON ARE
+# tracked so the decomposition re-runs locally with no GPU.
+papers/6_cross_model/outputs/**/*.safetensors
+papers/6_cross_model/outputs/**/ablated_model/
+papers/6_cross_model/outputs/**/*.bin
+
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt
 **/sae_layer*.pt

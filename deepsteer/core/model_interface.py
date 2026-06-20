@@ -30,6 +30,7 @@ class ModelFamily(str, enum.Enum):
     OLMO = "olmo"
     OLMOE = "olmoe"
     LLAMA = "llama"
+    QWEN = "qwen"
     MISTRAL = "mistral"
     GPT2 = "gpt2"
     UNKNOWN = "unknown"
@@ -41,6 +42,8 @@ _CONFIG_TYPE_TO_FAMILY: dict[str, ModelFamily] = {
     "olmo": ModelFamily.OLMO,
     "olmoe": ModelFamily.OLMOE,
     "llama": ModelFamily.LLAMA,
+    "qwen2": ModelFamily.QWEN,
+    "qwen3": ModelFamily.QWEN,
     "mistral": ModelFamily.MISTRAL,
     "gpt2": ModelFamily.GPT2,
     "gpt_neo": ModelFamily.GPT2,
