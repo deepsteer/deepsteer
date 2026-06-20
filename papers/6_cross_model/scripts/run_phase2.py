@@ -98,8 +98,16 @@ def steps_for(spec: reg.ModelSpec, *, dry_run: bool, dataset_target: int,
         return cmd
 
     def behav(model: str, out: str) -> list[str]:
+        # behavioral_baseline is the dominant cost (~14 min/state at the 256-token
+        # default, driven by the 80 persona-shift generations). The moral-judgment
+        # (approve/disapprove) and comply-vs-refuse classifications are both decided
+        # in the opening tokens, so capping generation length leaves the measured
+        # numbers intact while stopping long compliant generations from running to
+        # 256 (~2-3x faster). Override with BEHAV_MAX_TOKENS.
+        max_tok = os.environ.get("BEHAV_MAX_TOKENS", "96")
         return [sys.executable, str(_P5 / "behavioral_baseline.py"), "--model", model,
-                "--benchmark", "both", "--input-format", "chat", "--output-dir", out]
+                "--benchmark", "both", "--input-format", "chat",
+                "--max-tokens", max_tok, "--output-dir", out]
 
     steps = [
         (f"{spec.key}:1-ablate", [
