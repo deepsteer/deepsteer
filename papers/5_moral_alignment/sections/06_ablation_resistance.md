@@ -178,8 +178,8 @@ coupling term.
 The contrast moves into the subspace, cleanly. A rank-16 query/value adapter is
 too weak (the projection reaches only $0.20$), matching the capacity limit of
 Section 6.3, but a rank-64 adapter that also writes the MLP, including
-\texttt{down\_proj}, drives the projection from the $0.10$ baseline to $0.50$,
-past the $0.40$ threshold of Section 6.3. Subtracting the control isolates a
+\texttt{down\_proj}, drives the projection from the $0.10$ baseline to $0.50$
+(\Cref{fig:forcedcoupling}a), past the $0.40$ threshold of Section 6.3. Subtracting the control isolates a
 coupling-specific move of $+0.38$ (the control drifts to $0.12$). The move is
 specific and the moral representation is intact: against the refusal contrast's
 movement, an off-target neutral contrast and a care/harm contrast move at ratios
@@ -193,6 +193,21 @@ achievable: the proto-refusal contrast can be placed inside the moral subspace
 during pre-training without disturbing moral comprehension.
 
 ## 6.6 Geometric coupling does not survive fine-tuning as functional resistance
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{forced_coupling}
+\caption{Forced coupling is geometric, not functional. (a) The
+continued-pre-training regularizer drives the refusal--moral-subspace projection
+from the $0.10$ baseline to $0.50$, past the $0.40$ threshold (Section 6.5), but
+supervised fine-tuning halves it to $0.26$, below the threshold, while the control
+stays near baseline; pre-SFT is the proto-refusal contrast, post-SFT the fitted
+refusal direction Heretic ablation targets. (b) Projecting the moral subspace out
+of the residual stream at inference raises the coupled model's refusal rate
+($0.79 \to 0.93$) instead of removing it, with the control flat: the subspace
+carries comprehension, not compliance.}
+\label{fig:forcedcoupling}
+\end{figure}
 
 A relocated contrast is not yet a coupled mechanism. We fine-tune the coupled
 checkpoint into an instruct model with plain supervised fine-tuning (the Section
@@ -210,7 +225,8 @@ survives, a factor of roughly $2.7$ over control, but it falls from the
 pre-fine-tuning $0.50$ and lands below the $0.40$ threshold. The residual overlap
 is also not load-bearing. Projecting the moral subspace out of the residual stream
 at inference does not reduce the coupled model's refusal; it raises it, from
-$0.79$ to $0.93$, while leaving the control near flat ($0.83$ to $0.79$). Ablating
+$0.79$ to $0.93$ (\Cref{fig:forcedcoupling}b), while leaving the control near flat
+($0.83$ to $0.79$). Ablating
 the subspace the coupling targeted makes the model refuse *more*, not less.
 
 The increase is not an artifact of ablation degrading generation. The ablated

@@ -106,7 +106,10 @@ because the refusal direction forms during post-training from pre-training
 features already orthogonal to moral structure. Alignment is a wiring step, not a
 teaching step: it couples a separable compliance mechanism to moral
 representations that pre-training already built, and making that wiring robust to
-ablation is a pre-training problem, not a post-training one.
+ablation is a pre-training problem, not a post-training one. A direct
+pre-training intervention bears this out only halfway: a regularizer places the
+refusal contrast inside the moral subspace geometrically, but the coupling does
+not survive fine-tuning as a functional dependence.
 \end{abstract}
 
 % =====================================================================

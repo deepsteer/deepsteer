@@ -93,7 +93,11 @@ trained model no more than the control. The failure is developmental: the
 refusal feature forms during post-training out of pre-training proto-features
 that are already orthogonal to the moral subspace, so a post-training loss acts
 too late to relocate it. Making alignment ablation-resistant is, on this
-evidence, a pre-training problem.
+evidence, a pre-training problem. We then run that pre-training intervention
+directly: a continued-pre-training regularizer places the refusal contrast
+geometrically inside the moral subspace, but the coupling does not survive
+fine-tuning as a functional dependence, and the separation holds. Geometric
+coupling is installable; functional ablation-resistance is not.
 
 Together these findings populate a comprehension$\times$compliance matrix in
 which the low-comprehension row is empty, every OLMo-3 state has full moral
@@ -105,4 +109,5 @@ preserves moral comprehension built in pre-training and attaches a separable
 compliance mechanism, so that compliance can be removed without touching what the
 model understands; and the finding that this separation cannot be undone after
 the fact, which locates the problem of ablation-resistant alignment in
-pre-training rather than post-training.
+pre-training rather than post-training, where a direct intervention installs the
+coupling in the representation but does not make it functional.
