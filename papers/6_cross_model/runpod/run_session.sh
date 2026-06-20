@@ -41,10 +41,12 @@ POD_NAME="${POD_NAME:-deepsteer-p6-xmodel}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
 REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
 
-# Phase 1 step config (passed through to the remote runner).
+# Step config (passed through to the remote runner). REMOTE_SCRIPT selects the
+# phase: remote_phase1.sh (decomposition) or remote_phase2.sh (ablation battery).
 VALIDATE="${VALIDATE:-0}"
 MODELS="${MODELS:-all}"
 HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
+REMOTE_SCRIPT="${REMOTE_SCRIPT:-papers/6_cross_model/runpod/remote_phase1.sh}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
@@ -169,7 +171,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE MODELS='$MODELS' \
      HF_TOKEN='$HF_TOKEN' HUGGING_FACE_HUB_TOKEN='$HF_TOKEN' \
-     setsid bash papers/6_cross_model/runpod/remote_phase1.sh > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
+     setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
 echo ">> Launched. Streaming log below (run survives SSH drops; Ctrl-C terminates pod)."
 echo "----------------------------------------------------------------------"
