@@ -61,6 +61,11 @@ papers/5_moral_alignment/outputs/**/*.safetensors
 papers/5_moral_alignment/outputs/**/merged_model/
 papers/5_moral_alignment/outputs/**/ablated_model/
 papers/5_moral_alignment/outputs/**/_merged/
+# Forced-coupling Stage 1/2 adapter dirs: weights ignored above; the remaining
+# tokenizer.json (~7MB) + adapter_config copies are regenerable and redundant with
+# the committed stage1_trajectory.json / stage2_a3.json results.
+papers/5_moral_alignment/outputs/intervention_stage1/**/adapter/
+papers/5_moral_alignment/outputs/intervention_stage2/**/adapter/
 
 # SAE artifacts (large binary files)
 **/sae_activation_cache.pt
