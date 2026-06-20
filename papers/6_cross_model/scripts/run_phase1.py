@@ -147,7 +147,10 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
     validate = os.environ.get("VALIDATE", "0") == "1"
-    dataset_target = 4 if validate else args.dataset_target
+    # exp1 skips any foundation with <5 train pairs; target=8 (-> ~6 train/2 test
+    # per foundation) keeps the smoke cheap while still producing moral directions
+    # so the decompose step actually runs.
+    dataset_target = 8 if validate else args.dataset_target
     max_prompts = args.max_prompts if validate else None
 
     keys = reg.PANEL_ORDER if args.models == "all" else [k.strip() for k in args.models.split(",")]

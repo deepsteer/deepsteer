@@ -22,7 +22,11 @@ echo ">> installing deepsteer (editable)..."
 pip install -q --break-system-packages -e ".[all]" 2>&1 | tail -2 \
   || pip install -q --break-system-packages -e . 2>&1 | tail -2
 
-echo ">> HF_TOKEN: $([ -n "${HF_TOKEN:-}${HUGGING_FACE_HUB_TOKEN:-}" ] && echo set || echo UNSET (Llama will 401))"
+if [ -n "${HF_TOKEN:-}${HUGGING_FACE_HUB_TOKEN:-}" ]; then
+  echo ">> HF_TOKEN: set"
+else
+  echo ">> HF_TOKEN: UNSET -- gated Llama-3.1 steps will 401"
+fi
 echo ">> Phase 1 [VALIDATE=$VALIDATE] models=$MODELS"
 
 VALIDATE="$VALIDATE" python papers/6_cross_model/scripts/run_phase1.py --models "$MODELS"
