@@ -1,0 +1,22 @@
+{
+  "model": "papers/5_moral_alignment/outputs/intervention_stage2/coupled_sft/merged_model",
+  "revision": null,
+  "refusal_layer": 16,
+  "n_weights_modified": 64,
+  "input_format": "chat",
+  "n_harmful": 400,
+  "n_harmless": 400,
+  "refusal_morality_geometry": {
+    "refusal_layer": 16,
+    "cosine_to_foundations": {
+      "Care": 0.1383,
+      "Fairness": 0.137,
+      "Liberty": 0.2038,
+      "Loyalty": 0.1624,
+      "Authority": 0.1376,
+      "Sanctity": 0.1251
+    },
+    "moral_subspace_projection_fraction": 0.2524,
+    "mean_abs_cosine": 0.1507
+  }
+}

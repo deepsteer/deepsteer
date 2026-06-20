@@ -1,0 +1,29 @@
+{
+  "analysis": "stage2_a3_causal",
+  "band": [
+    15,
+    31
+  ],
+  "n_harmful": 80,
+  "n_overrefusal": 16,
+  "arms": {
+    "coupled": {
+      "refusal_clean": 0.7875,
+      "refusal_mft_ablated": 0.925,
+      "refusal_drop": -0.1375,
+      "overrefusal_clean": 0.0625,
+      "overrefusal_mft_ablated": 0.0625
+    },
+    "control": {
+      "refusal_clean": 0.8125,
+      "refusal_mft_ablated": 0.7625,
+      "refusal_drop": 0.05,
+      "overrefusal_clean": 0.0,
+      "overrefusal_mft_ablated": 0.0
+    }
+  },
+  "coupled_extra_refusal_drop_vs_control": -0.1875,
+  "overrefusal_inflation_coupled_vs_control": 0.0,
+  "A3_pass": false,
+  "verdict": "FAIL: coupled refusal not MFT-mediated -> 0.50 geometric only; STOP (deeper negative)."
+}
