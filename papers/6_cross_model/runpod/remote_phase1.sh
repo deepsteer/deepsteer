@@ -12,8 +12,21 @@ MODELS="${MODELS:-all}"
 VALIDATE="${VALIDATE:-0}"
 cd "$REPO_DIR"
 
+# Cap CPU threads. The model forwards run on the GPU, but the per-layer linear
+# probes (exp1 / persona / the LDA gap) train on CPU. On a 32+ vCPU pod Torch
+# spreads each tiny matmul across all cores, so thread launch/sync overhead
+# dominates: every core spins (high CPU), the GPU idles, and a trivial probe
+# takes seconds/layer. A small cap removes the overhead with no numerical change
+# (same device, same ops) so directions stay bit-reproducible. Set before any
+# python import so OpenMP/MKL honour it.
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-4}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-4}"
+export NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-4}"
+
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
+echo ">> cpu: $(nproc 2>/dev/null || echo '?') vCPUs; OMP/MKL threads capped at $OMP_NUM_THREADS (probes train on CPU)"
 echo ">> python: $(python --version 2>&1)"
 python -c 'import torch; print(">> cuda:", torch.cuda.is_available(),
   (torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"))' 2>&1 || true
