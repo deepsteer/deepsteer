@@ -5,25 +5,34 @@
     31
   ],
   "n_harmful": 80,
-  "n_overrefusal": 16,
+  "n_overrefusal": 60,
   "arms": {
     "coupled": {
       "refusal_clean": 0.7875,
       "refusal_mft_ablated": 0.925,
       "refusal_drop": -0.1375,
-      "overrefusal_clean": 0.0625,
-      "overrefusal_mft_ablated": 0.0625
+      "overrefusal_clean": 0.0167,
+      "overrefusal_mft_ablated": 0.0
     },
     "control": {
-      "refusal_clean": 0.8125,
-      "refusal_mft_ablated": 0.7625,
-      "refusal_drop": 0.05,
+      "refusal_clean": 0.825,
+      "refusal_mft_ablated": 0.7875,
+      "refusal_drop": 0.0375,
       "overrefusal_clean": 0.0,
       "overrefusal_mft_ablated": 0.0
     }
   },
-  "coupled_extra_refusal_drop_vs_control": -0.1875,
-  "overrefusal_inflation_coupled_vs_control": 0.0,
+  "coupled_extra_refusal_drop_vs_control": -0.175,
+  "overrefusal_inflation_coupled_vs_control": -0.0167,
+  "over_refusal_split": {
+    "n": 60,
+    "coupled_clean": 0.0167,
+    "control_clean": 0.0,
+    "coupled_ablated": 0.0,
+    "control_ablated": 0.0,
+    "coupled_extra_overrefusal_clean": 0.0167,
+    "coupled_overrefusal_change_under_ablation": -0.0167
+  },
   "A3_pass": false,
   "verdict": "FAIL: coupled refusal not MFT-mediated -> 0.50 geometric only; STOP (deeper negative)."
 }
