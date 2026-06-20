@@ -147,7 +147,7 @@ subspace would have to *absorb* the proto-features that post-training later
 recruits for compliance, so that the refusal direction, when it forms, lands
 inside the moral subspace and its ablation incurs collateral damage to moral
 comprehension. That is a pre-training-time intervention, and a sharper
-experiment than applying the same loss earlier; we leave it to future work.
+experiment than applying the same loss earlier; we run it next.
 
 We scope the claim to what we tested. The evidence here covers SFT-time,
 LoRA-based ablation-resistance training that targets moral-generation
@@ -158,3 +158,99 @@ dependence in a subspace orthogonal to the one the threat removes, and the
 intervention does not relocate the compliance direction. On this evidence,
 coupling moral comprehension to compliance tightly enough to survive ablation is
 not a post-training adjustment but a pre-training one.
+
+## 6.5 Forcing the coupling during continued pre-training
+
+Section 6.4 points to a sharper experiment: make the moral subspace absorb the
+proto-refusal feature *before* post-training recruits it, so that the refusal
+direction, when it forms, lands inside that subspace. We run this as a
+representational intervention on a late stage-3 pre-training checkpoint. The
+regularizer is the geometric counterpart of the dependency loss of Section 6.2.
+At each step we compute the harmful/harmless contrast
+$\Delta = \overline{h}_{\text{harmful}} - \overline{h}_{\text{harmless}}$ from
+last-token residuals (the Section 4.4 proto-refusal contrast, recomputed live from
+the current model), project it onto the frozen six-foundation subspace $V$, and
+penalize the orthogonal energy with a hinge so the objective cannot run past its
+target. We add this to a language-modeling loss on general text (continued
+pre-training, LoRA); a $\lambda{=}0$ control trains identically without the
+coupling term.
+
+The contrast moves into the subspace, cleanly. A rank-16 query/value adapter is
+too weak (the projection reaches only $0.20$), matching the capacity limit of
+Section 6.3, but a rank-64 adapter that also writes the MLP, including
+\texttt{down\_proj}, drives the projection from the $0.10$ baseline to $0.50$,
+past the $0.40$ threshold of Section 6.3. Subtracting the control isolates a
+coupling-specific move of $+0.38$ (the control drifts to $0.12$). The move is
+specific and the moral representation is intact: against the refusal contrast's
+movement, an off-target neutral contrast and a care/harm contrast move at ratios
+of $0.03$ and $0.05$ and a capability-risk-topic contrast at $0.19$, all far below
+one; effective dimensionality of the foundation directions stays at $5$;
+per-foundation probe accuracy stays at $0.99$; and the projection measured on
+directions refit on the coupled model tracks the frozen-basis projection ($0.54$
+versus $0.53$). The $0.50$ is a relocation of the contrast into a stable subspace,
+not a rotation of the subspace itself. The absorption Section 6.4 calls for is
+achievable: the proto-refusal contrast can be placed inside the moral subspace
+during pre-training without disturbing moral comprehension.
+
+## 6.6 Geometric coupling does not survive fine-tuning as functional resistance
+
+A relocated contrast is not yet a coupled mechanism. We fine-tune the coupled
+checkpoint into an instruct model with plain supervised fine-tuning (the Section
+6.2 recipe at $\lambda{=}0$, on the same data), fine-tune the control checkpoint
+identically, and ask the two questions Section 6 is about: does the refusal
+direction the model builds during fine-tuning land in the moral subspace, and
+does ablating that subspace damage refusal.
+
+Both fail. The two arms become working refusers (refusal rate $0.79$ coupled,
+$0.83$ control on the harmful set), so the regularizer does not break trainability.
+But fine-tuning halves the coupling: the refusal direction extracted from the
+post-fine-tuning coupled model, the direction Heretic ablation targets, projects
+$0.26$ onto the moral subspace against $0.09$ for the control. The coupling partly
+survives, a factor of roughly $2.7$ over control, but it falls from the
+pre-fine-tuning $0.50$ and lands below the $0.40$ threshold. The residual overlap
+is also not load-bearing. Projecting the moral subspace out of the residual stream
+at inference does not reduce the coupled model's refusal; it raises it, from
+$0.79$ to $0.93$, while leaving the control near flat ($0.83$ to $0.79$). Ablating
+the subspace the coupling targeted makes the model refuse *more*, not less.
+
+The increase is not an artifact of ablation degrading generation. The ablated
+completions are coherent, well-formed refusals, and the effect is specific to
+harmful prompts: on sixty benign requests phrased with alarming verbs (``kill a
+frozen process'', ``blow up balloons for a party''), the coupled model's
+over-refusal does not rise under ablation, it falls, from one false positive in
+sixty to zero, while harmful refusal rises. A brittleness account, in which
+removing the subspace destabilizes the model toward blanket refusal, predicts the
+opposite. Refusal calibration is otherwise intact: the coupled model's lone benign
+over-refusal, a request to break into one's own locked car, against zero for the
+control, is within noise.
+
+The reading is the dissociation of Section 4.4, holding firm. The moral subspace
+carries comprehension, not compliance: ablating it removes the model's purchase on
+the request's content, and a model that cannot engage the content defaults to
+refusing. Forcing the proto-refusal contrast geometrically into that subspace,
+even to a projection of $0.50$ before fine-tuning, does not make the refusal
+mechanism route through it. Fine-tuning builds compliance where it built it before,
+in a subspace the moral one does not control.
+
+## 6.7 What forced coupling settles, and what it opens
+
+The two halves constrain each other. The geometric obstacle of Sections 6.3 and
+6.4, that no fine-tuning loss moved the refusal direction toward the moral
+subspace, is not fundamental: a continued-pre-training regularizer moves it
+cleanly to $0.50$. What does not follow is function. The relocated contrast
+degrades through fine-tuning and, where it survives, does not mediate refusal. The
+comprehension/compliance dissociation withstands a direct, constructed attempt to
+break it, which is stronger evidence than the observational finding of Section 4.4
+alone: we tried to wire comprehension and compliance together and the model pulled
+them apart.
+
+This scopes the negative precisely and leaves one question open. We targeted the
+six-foundation moral subspace because it is the comprehension substrate this paper
+characterizes. Whether some other moral basis is load-bearing for refusal, a
+data-driven moral component or an explicit harm-avoidance direction, or whether
+refusal in these models is a non-moral compliance mechanism with no moral basis to
+couple to, our experiments do not separate. From the evidence here, ``the
+moral-foundations subspace is the wrong target'' and ``refusal is not morally
+mediated'' look the same. Distinguishing them is the natural next step, and it
+would turn the present negative, that this coupling does not take, into a positive
+statement about where refusal lives.
