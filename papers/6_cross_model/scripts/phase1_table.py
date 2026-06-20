@@ -76,7 +76,10 @@ def collect(spec: reg.ModelSpec) -> dict | None:
         row["consolidation"] = {
             "margin_dprime": hd.get("margin_dprime"),
             "single_dir_auc": hd.get("single_dir_auc"),
-            "band_mean_margin_dprime": cons.get("band_mean_margin_dprime"),
+            "single_dir_auc_cv": hd.get("single_dir_auc_cv"),
+            "full_auc_cv": hd.get("full_auc_cv"),
+            "auc_gap": hd.get("auc_gap"),
+            "band_mean_auc_gap": cons.get("band_mean_auc_gap"),
             "across_band_effrank": ab.get("effrank_90pct_uncentered"),
             "across_band_PR": ab.get("participation_ratio"),
             "geom_mean_abs_cos": geom.get("mean_abs_cosine"),
@@ -120,7 +123,9 @@ def print_table(rows: list[dict]) -> None:
     line("  cos(refusal,persona)", lambda r: r.get("decomp", {}).get("cos_refusal_persona"))
     print("- consolidation -")
     line("  margin d' (headline)", lambda r: r.get("consolidation", {}).get("margin_dprime"))
-    line("  single-dir AUC", lambda r: r.get("consolidation", {}).get("single_dir_auc"))
+    line("  single-dir AUC (cv)", lambda r: r.get("consolidation", {}).get("single_dir_auc_cv"))
+    line("  full-rank AUC (cv)", lambda r: r.get("consolidation", {}).get("full_auc_cv"))
+    line("  AUC gap (full-single)", lambda r: r.get("consolidation", {}).get("auc_gap"))
     line("  across-band eff-rank", lambda r: r.get("consolidation", {}).get("across_band_effrank"))
     line("  across-band PR", lambda r: r.get("consolidation", {}).get("across_band_PR"))
     print("- verdict -")

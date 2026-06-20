@@ -106,18 +106,115 @@ def effective_rank_uncentered(direction_list: list[np.ndarray], threshold: float
     return int(np.searchsorted(energy, threshold)) + 1
 
 
-def consolidation_at_layer(
-    H: np.ndarray, S: np.ndarray, r: np.ndarray
+def _ledoit_wolf_rho(Xc: np.ndarray) -> tuple[float, float]:
+    """Ledoit-Wolf shrinkage intensity toward ``mu*I`` for the cov of ``Xc``.
+
+    ``Xc`` is within-class-centred (n, d). Returns ``(rho, mu)`` for the shrunk
+    covariance ``Sigma* = rho*mu*I + (1-rho)*S``, S = Xc^T Xc / n. Computed via
+    the n x n Gram matrix, so no d x d covariance is materialised. rho -> 1 when
+    S is already ~isotropic (then LDA collapses to mean-diff); rho is smaller
+    when there is real covariance structure to exploit.
+    """
+    n, d = Xc.shape
+    G = Xc @ Xc.T                                  # (n, n) Gram
+    trace_S = float(np.sum(Xc * Xc)) / n           # tr(S)
+    mu = trace_S / d
+    normS2 = float(np.sum(G * G)) / (n * n)        # ||S||_F^2
+    delta2 = normS2 - 2 * mu * trace_S + d * mu * mu  # ||S - mu I||_F^2
+    sq = np.sum(Xc * Xc, axis=1)                   # ||x_i||^2
+    b_bar2 = float(np.sum(sq * sq)) / (n * n) - normS2 / n
+    beta2 = max(0.0, min(b_bar2, delta2))
+    rho = beta2 / delta2 if delta2 > 1e-18 else 1.0
+    return float(np.clip(rho, 0.0, 1.0)), float(mu)
+
+
+def shrinkage_lda_direction(Xtr: np.ndarray, ytr: np.ndarray) -> np.ndarray:
+    """Regularised full-rank linear discriminant direction (unit-norm).
+
+    w = Sigma*^{-1} (mu_pos - mu_neg) with Ledoit-Wolf-shrunk pooled within-class
+    covariance Sigma* = alpha I + gamma Xc^T Xc. Solved by Woodbury through an
+    n x n system (no d x d inverse). The shrinkage is data-adaptive, so this is a
+    fair "best linear classifier" upper bound that does not overfit at d >> n;
+    its rho -> 1 limit is exactly the mean-diff direction, which is what makes the
+    single-vs-full gap interpretable.
+    """
+    pos = Xtr[ytr == 1]
+    neg = Xtr[ytr == 0]
+    delta = pos.mean(0) - neg.mean(0)
+    Xc = np.concatenate([pos - pos.mean(0), neg - neg.mean(0)]).astype(np.float64)
+    n = Xc.shape[0]
+    rho, mu = _ledoit_wolf_rho(Xc)
+    alpha = max(rho * mu, 1e-8)
+    gamma = (1.0 - rho) / n
+    if gamma <= 0:                                 # fully isotropic -> mean-diff
+        return _unit(delta)
+    G = Xc @ Xc.T                                  # (n, n)
+    K = np.eye(n) / gamma + G / alpha              # (1/gamma) I + (1/alpha) G
+    rhs = Xc @ delta.astype(np.float64)            # (n,)
+    z = np.linalg.solve(K, rhs)
+    w = delta / alpha - (Xc.T @ z) / (alpha * alpha)
+    return _unit(w)
+
+
+def linear_separability_gap(
+    H: np.ndarray, S: np.ndarray, *, seed: int = 42, test_frac: float = 0.3
 ) -> dict:
-    """Margin + single-direction AUC for harmful/harmless acts along ``r``."""
+    """Single-direction vs full-rank linear separability of harmful/harmless.
+
+    Tests whether the SINGLE ablatable refusal direction captures all the linear
+    separability, or residual multi-direction refusal exists that a full
+    classifier finds. Both AUCs are held-out (cross-validated): with hidden-dim
+    >> n_prompts an in-sample full classifier separates trivially, so only
+    held-out AUC is honest, and the full classifier is the regularised
+    (Ledoit-Wolf shrinkage) LDA so it does not overfit and manufacture a fake gap.
+
+      * single_dir_auc_cv = AUC of the train-fit mean-diff direction on test.
+      * full_auc_cv       = AUC of the shrinkage-LDA direction on test.
+      * auc_gap           = full_auc_cv - single_dir_auc_cv. ~0 means the single
+        direction is the whole story (consolidated); positive means covariance
+        structure exposes separability the one direction misses.
+    """
+    rng = np.random.default_rng(seed)
+
+    def split(n: int) -> tuple[np.ndarray, np.ndarray]:
+        idx = rng.permutation(n)
+        k = max(1, int(round((1 - test_frac) * n)))
+        return idx[:k], idx[k:]
+
+    hi_tr, hi_te = split(len(H))
+    si_tr, si_te = split(len(S))
+    Htr, Hte, Str, Ste = H[hi_tr], H[hi_te], S[si_tr], S[si_te]
+
+    Xte = np.concatenate([Hte, Ste])
+    yte = np.concatenate([np.ones(len(Hte)), np.zeros(len(Ste))])
+    Xtr = np.concatenate([Htr, Str])
+    ytr = np.concatenate([np.ones(len(Htr)), np.zeros(len(Str))])
+
+    r_tr = _unit(Htr.mean(0) - Str.mean(0))
+    single = du.transfer_metrics(Xte, yte, r_tr)["auc_abs"]
+    w = shrinkage_lda_direction(Xtr, ytr)
+    full = du.transfer_metrics(Xte, yte, w)["auc_abs"]
+    return {
+        "single_dir_auc_cv": round(float(single), 4),
+        "full_auc_cv": round(float(full), 4),
+        "auc_gap": round(float(full - single), 4),
+    }
+
+
+def consolidation_at_layer(
+    H: np.ndarray, S: np.ndarray, r: np.ndarray, *, gap_seed: int = 42
+) -> dict:
+    """Margin + single-direction AUC (in-sample) + CV single-vs-full-rank gap."""
     r = _unit(r)
     pH, pS = H @ r, S @ r
-    return {
+    out = {
         "margin_dprime": round(separation_margin(pH, pS), 4),
         "single_dir_auc": round(single_direction_auc(pH, pS), 4),
         "n_harmful": int(len(H)),
         "n_harmless": int(len(S)),
     }
+    out.update(linear_separability_gap(H, S, seed=gap_seed))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -214,6 +311,9 @@ def main() -> None:
         "band": list(args.band),
         "band_mean_margin_dprime": band_mean("margin_dprime"),
         "band_mean_single_dir_auc": band_mean("single_dir_auc"),
+        "band_mean_single_dir_auc_cv": band_mean("single_dir_auc_cv"),
+        "band_mean_full_auc_cv": band_mean("full_auc_cv"),
+        "band_mean_auc_gap": band_mean("auc_gap"),
         "across_band_refusal_directions": across_band,
         "per_layer": {str(L): per_layer[L] for L in sorted(per_layer)},
     }
@@ -260,6 +360,8 @@ def main() -> None:
     if hd:
         print(f"  consolidation @L{args.layer}: d'={hd['margin_dprime']}, "
               f"single-dir AUC={hd['single_dir_auc']}")
+        print(f"  single-vs-full (CV): single={hd['single_dir_auc_cv']}, "
+              f"full={hd['full_auc_cv']}, gap={hd['auc_gap']}")
     if across_band:
         ab = across_band
         print(f"  across-band refusal dirs: eff-rank(90%)={ab['effrank_90pct_uncentered']}, "

@@ -78,6 +78,24 @@ Identical extraction across all three models, encoded in
   gate).** Ablate refusal; re-measure moral comprehension (probe acc / judgment /
   dependency); test whether ablation incurs collateral comprehension damage.
 
+## Refusal consolidation sub-check (Phase 1)
+"Is the single ablatable direction the whole story, or is refusal diffuse?"
+Per model, at the headline layer + band:
+- margin d' and single-direction AUC of harmful/harmless along the refusal
+  direction (how cleanly ONE direction separates);
+- **single-vs-full-rank AUC gap**: AUC(project onto the mean-diff refusal
+  direction) vs AUC(regularised full-rank classifier), both cross-validated on
+  held-out prompts. The full classifier is Ledoit-Wolf shrinkage LDA, not raw: at
+  hidden-dim >> n_prompts an unregularised classifier overfits and reports a fake
+  gap; data-adaptive shrinkage avoids that and its rho -> 1 limit is exactly
+  mean-diff, so gap ~ 0 means one direction captures all linear separability and
+  gap > 0 means residual multi-direction refusal. Synthetic check: clean
+  single-direction -> +0.00, isotropic two-direction -> +0.00, anisotropic
+  (mean-diff suboptimal) -> +0.19 (recovered, not washed out);
+- across-band UNCENTERED effective rank / participation ratio of the per-layer
+  refusal directions (collinear across depth = consolidated; centering would
+  misreport collinear as diffuse, so it is computed uncentered).
+
 ## Discriminating predictions (null is as publishable as positive)
 - **Refusal ~99% residual in Qwen AND Llama too** → thin-refusal refuted; the
   dissociation is structural and general. Strengthens Paper 5; Paper 6 is a clean
