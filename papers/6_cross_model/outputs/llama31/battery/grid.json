@@ -1,0 +1,10 @@
+[
+  {
+    "label": "instruct",
+    "repo": "meta-llama/Llama-3.1-8B-Instruct"
+  },
+  {
+    "label": "ablated",
+    "repo": "/workspace/deepsteer/papers/6_cross_model/outputs/llama31/heretic/ablated_model"
+  }
+]

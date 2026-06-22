@@ -1,0 +1,12 @@
+[
+  {
+    "label": "instruct",
+    "persona_peak_acc": 0.9479,
+    "mean_geo_cosine": 0.286
+  },
+  {
+    "label": "ablated",
+    "persona_peak_acc": 0.8958,
+    "mean_geo_cosine": 0.3082
+  }
+]

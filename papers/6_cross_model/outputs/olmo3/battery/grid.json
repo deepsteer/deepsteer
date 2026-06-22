@@ -1,0 +1,10 @@
+[
+  {
+    "label": "instruct",
+    "repo": "allenai/Olmo-3-7B-Instruct"
+  },
+  {
+    "label": "ablated",
+    "repo": "/workspace/deepsteer/papers/6_cross_model/outputs/olmo3/heretic/ablated_model"
+  }
+]

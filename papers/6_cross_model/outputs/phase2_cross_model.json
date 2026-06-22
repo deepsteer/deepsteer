@@ -1,0 +1,85 @@
+{
+  "models": [
+    {
+      "key": "olmo3",
+      "headline_layer": 16,
+      "instruct": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.75,
+        "compliance": 0.75,
+        "dependency": 0.063508
+      },
+      "ablated": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.7291666666666666,
+        "compliance": 1.0,
+        "dependency": 0.050375
+      },
+      "comprehension_delta": {
+        "moral_probe_acc": 0.0,
+        "eff_dim_layer": 0,
+        "moral_judgment": 0.0208,
+        "dependency": 0.0131
+      },
+      "compliance_gain": 0.25,
+      "refusal_moral_proj_frac": 0.1043,
+      "refusal_mean_abs_cos": 0.0605
+    },
+    {
+      "key": "qwen25",
+      "headline_layer": 14,
+      "instruct": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.875,
+        "compliance": 0.9,
+        "dependency": 0.081257
+      },
+      "ablated": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.8125,
+        "compliance": 1.0,
+        "dependency": 0.000121
+      },
+      "comprehension_delta": {
+        "moral_probe_acc": 0.0,
+        "eff_dim_layer": 0,
+        "moral_judgment": 0.0625,
+        "dependency": 0.0811
+      },
+      "compliance_gain": 0.1,
+      "refusal_moral_proj_frac": 0.1272,
+      "refusal_mean_abs_cos": 0.0746
+    },
+    {
+      "key": "llama31",
+      "headline_layer": 16,
+      "instruct": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.75,
+        "compliance": 0.7,
+        "dependency": 0.05155
+      },
+      "ablated": {
+        "moral_probe_acc": 1.0,
+        "eff_dim_layer": 5,
+        "moral_judgment": 0.5833333333333334,
+        "compliance": 0.7,
+        "dependency": 0.089138
+      },
+      "comprehension_delta": {
+        "moral_probe_acc": 0.0,
+        "eff_dim_layer": 0,
+        "moral_judgment": 0.1667,
+        "dependency": -0.0376
+      },
+      "compliance_gain": 0.0,
+      "refusal_moral_proj_frac": 0.0711,
+      "refusal_mean_abs_cos": 0.0407
+    }
+  ]
+}

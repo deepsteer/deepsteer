@@ -1,0 +1,10 @@
+[
+  {
+    "label": "instruct",
+    "repo": "Qwen/Qwen2.5-7B-Instruct"
+  },
+  {
+    "label": "ablated",
+    "repo": "/workspace/deepsteer/papers/6_cross_model/outputs/qwen25/heretic/ablated_model"
+  }
+]

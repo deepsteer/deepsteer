@@ -1,0 +1,13 @@
+{
+  "refusal_layer": 16,
+  "cosine_to_foundations": {
+    "Care": 0.0743,
+    "Fairness": 0.0628,
+    "Liberty": 0.0677,
+    "Loyalty": 0.0604,
+    "Authority": 0.0382,
+    "Sanctity": 0.0595
+  },
+  "moral_subspace_projection_fraction": 0.1043,
+  "mean_abs_cosine": 0.0605
+}
