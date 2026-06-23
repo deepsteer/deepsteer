@@ -1,0 +1,141 @@
+# 3. Methodology
+
+## 3.1 Model panel
+
+We compare a dense base+instruct pair from each of three families: OLMo-3 7B
+(base `Olmo-3-1025-7B`, instruct `Olmo-3-7B-Instruct`) as the anchor that
+reproduces the prior single-model result, Qwen2.5-7B \citep{qwen2025qwen25}, and
+Llama-3.1-8B \citep{grattafiori2024llama3}. The panel is fixed by three controls,
+each motivated by a known confound. It is **dense only**: a previous paper found
+that mixture-of-experts blocks dilute the moral signal in the residual stream by
+a large factor \citep{reblitzrichardson2026dilution}, so comparing a dense anchor
+against a sparse model would confound routing geometry with dilution. It is
+**size-matched** at ${\sim}7$--8B, because moral-representation properties are
+scale-dependent \citep{reblitzrichardson2026fragility} and we do not want scale as
+a free variable. And it is **non-reasoning**: we deliberately use Qwen2.5 and
+Llama-3.1 rather than their reasoning-mode successors, because refusal emitted
+inside a thinking trace is a different object than refusal in a direct response,
+and OLMo-3 has no such mode. Whether these results hold in reasoning models is a
+separate question we return to in the discussion.
+
+## 3.2 Identical extraction conventions
+
+The validity of any cross-model comparison rests on applying identical
+conventions to every model; otherwise "model A looks different" can be a
+measurement artifact. We extract every direction with the same pooling
+(mean over content tokens), the same direction estimator (mean-difference, with a
+seeded linear probe reported alongside), the same contrast sets, and the same
+input format per direction kind. Moral and persona directions are extracted on
+the **base** model from raw text; the refusal direction is extracted on the
+**instruct** model in chat format. The moral and persona collection path pools
+raw text directly and never applies a chat template, so the fact that Qwen2.5's
+base tokenizer ships a chat template does not leak into the geometry.
+
+Layer indices are the only thing that legitimately differs across models, and we
+fix them by depth fraction rather than absolute index. The anchor's stable band
+is layers 15--31 of 32 (depth fractions $0.47$--$0.97$) and its headline layer is
+the depth-$0.5$ layer (16 of 32). Mapping these fractions through
+$\mathrm{round}(f \cdot n_{\text{layers}})$ gives band $[15,31]$ / layer 16 for
+OLMo-3 (32 layers), band $[13,27]$ / layer 14 for Qwen2.5 (28 layers), and band
+$[15,31]$ / layer 16 for Llama-3.1 (32 layers). We report the decomposition at the
+depth-$0.5$ headline layer and summarize the stable band as a mean. Because OLMo-3
+is the anchor, this rule reproduces the prior paper's numbers exactly: the OLMo
+refusal projection-fraction we recover, $0.104$, matches the published $0.1044$,
+confirming the conventions transferred before any comparison is read.
+
+## 3.3 Direction extraction
+
+For each model we extract three sets of directions. The **moral subspace** is the
+span of six per-foundation probe-weight directions, fit on a balanced declarative
+moral/neutral probing set and orthonormalized by SVD into a five- to six-dimensional
+basis $S$. The **persona direction** is a single probe direction separating
+personal from non-personal identity statements. The **refusal direction** $r$ is
+the Arditi/Heretic estimator: the unit difference between the mean last-token
+residual activations of harmful and harmless instructions (the real Arditi prompt
+set, 400 of each, in chat format), computed per layer.
+
+## 3.4 Refusal decomposition
+
+We decompose the unit refusal direction $r$ at a layer into three energy
+(squared-norm) fractions that partition it exactly. With $S$ the orthonormal
+moral subspace basis and $u$ the unit persona component orthogonal to $S$,
+
+$$
+\text{mft\_frac} = \lVert \mathrm{proj}_S(r)\rVert^2, \quad
+\text{persona\_frac} = (r \cdot u)^2, \quad
+\text{residual\_frac} = 1 - \text{mft\_frac} - \text{persona\_frac}.
+$$
+
+Because $S \perp u$ by construction the three sum to $1$. We also report the
+norm-ratio $\sqrt{\text{mft\_frac}}$ (the projection fraction of the prior paper),
+the cosine of $r$ to each foundation, and the cosine of $r$ to the persona
+direction.
+
+## 3.5 Refusal consolidation
+
+To check whether any model's low moral fraction is an artifact of a diffuse
+refusal rather than genuine separation, we measure how concentrated the refusal
+signal is. At the headline layer we report the separation margin $d'$ and the
+single-direction AUC of harmful vs.\ harmless activations projected onto $r$. We
+then ask whether the single ablatable direction captures *all* the linear
+separability or whether residual multi-direction refusal exists, by comparing,
+on held-out prompts, the AUC of the mean-difference direction against the AUC of a
+regularized full-rank classifier. The full classifier is Ledoit-Wolf shrinkage
+linear discriminant analysis: at hidden dimension $\gg$ prompt count an
+unregularized classifier overfits and reports an inflated AUC, while data-adaptive
+shrinkage avoids that, and its $\rho \to 1$ limit is exactly the mean-difference
+direction, so the single-vs-full AUC gap is interpretable. Across the stable band
+we report the effective rank of the per-layer refusal directions, computed
+uncentered (centering a near-collinear set subtracts its shared component and
+reports full rank, which would misread a consolidated refusal as diffuse).
+
+## 3.6 Ablation and the comprehension battery
+
+We apply the Arditi/Heretic single-direction ablation, orthogonalizing every
+residual-writing matrix (attention `o_proj`, MLP `down_proj`) against $r$ at the
+chosen layer, $W \gets W - r\, r^{\top} W$. Because the depth-$0.5$ ablation that
+fully strips OLMo and Qwen only partially strips Llama, we **sweep the ablation
+layer by depth fraction** ($0.4$--$0.8$) for every model and ablate at the layer
+that most reduces the harmful refusal rate, so the comprehension battery runs at a
+layer where the ablation actually takes; we report the chosen layer and the refusal
+removed per model.
+
+On the unablated instruct model and on the ablated model we run the same battery:
+fresh per-foundation probe accuracy and the effective dimensionality of the moral
+subspace (the linear *representation*), behavioral moral-judgment accuracy on a
+48-scenario moral-foundations probe and persona-shift compliance (the *behavior*),
+and a moral-text dependency score. The discriminator is the instruct$\to$ablated
+**delta** on each comprehension measure: a delta near zero is a clean dissociation
+(refusal is not load-bearing for comprehension); a large delta means ablating
+refusal degrades comprehension in that model.
+
+## 3.7 Controls for the Llama effect
+
+Where ablation degrades behavioral moral judgment, two controls separate genuine
+coupling from confounds.
+
+**Random-direction control.** We ask whether the judgment drop is specific to the
+refusal direction or generic to a weight perturbation of that magnitude. We record
+the per-matrix Frobenius norm removed by the refusal ablation and then perturb the
+same matrices with random Gaussian noise of *identical per-matrix norm*, repeated
+over several independent draws. A plain random unit direction is near-orthogonal
+to the weights and removes almost nothing, which would bias the test toward
+"specific"; matching the magnitude is the fair null. We also ablate the persona
+direction, a real, decodable, comparable-magnitude, non-refusal/non-moral feature,
+as a structured control. For every condition we measure both moral judgment and
+the linear representation.
+
+**Ablation-strength sweep.** We vary the fraction $\alpha$ of the refusal direction
+removed, $W \gets W - \alpha\, r\, r^{\top} W$, from partial ($\alpha<1$) through
+full ($\alpha=1$) to over-ablation ($\alpha>1$, a measurement probe used to reach
+fuller refusal removal, not a deployable intervention), and at each step measure
+how much refusal is actually stripped (harmful refusal rate), moral judgment with
+a paired per-scenario bootstrap confidence interval, and the linear representation,
+against a magnitude-matched random null at the same removal magnitudes. If judgment
+degrades monotonically as more refusal is removed, and a matched random
+perturbation leaves it intact, the coupling is graded and direction-specific; if
+judgment is flat then cliffs at one step while refusal removal saturates, the drop
+is a destabilization artifact. Effect sizes are anchored on the coherent
+$\alpha \le 1$ regime; the over-ablation regime is reported only as a caveated
+endpoint, because at the strongest perturbations generation degrades and moral
+judgment falls below chance.

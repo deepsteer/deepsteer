@@ -1,0 +1,205 @@
+\section{Full Tables}\label{appendix-a.-full-tables}
+
+\subsection{Refusal-direction decomposition and consolidation}\label{a.1-refusal-direction-decomposition-and-consolidation}
+
+All values at the depth-\(0.5\) headline layer except the band columns, which are
+means over the stable band (OLMo/Llama layers 15--31, Qwen 13--27). Energy
+fractions partition the unit refusal direction and sum to \(1\). The norm-ratio is
+\(\sqrt{\text{moral fraction}}\), the projection fraction reported by the prior
+single-model paper. The single-vs-full-rank AUC gap compares the mean-difference
+direction against a Ledoit-Wolf shrinkage LDA on held-out prompts; the across-band
+effective rank and participation ratio are computed uncentered.
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{Full refusal-direction decomposition and consolidation per family.
+\label{tab:a-decomp}}\tabularnewline
+\toprule\noalign{}
+metric & OLMo-3 & Qwen2.5 & Llama-3.1 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+metric & OLMo-3 & Qwen2.5 & Llama-3.1 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+moral energy fraction & 0.0109 & 0.0162 & 0.0051 \\
+moral norm-ratio (projection fraction) & 0.1043 & 0.1272 & 0.0711 \\
+residual energy fraction & 0.9890 & 0.9832 & 0.9945 \\
+persona-unique energy fraction & 0.0001 & 0.0006 & 0.0004 \\
+mean abs.~cosine to foundations & 0.0605 & 0.0746 & 0.0407 \\
+cosine(refusal, persona) & 0.0241 & 0.0499 & 0.0301 \\
+band mean moral fraction & 0.0064 & 0.0100 & 0.0035 \\
+band mean residual fraction & 0.9933 & 0.9894 & 0.9960 \\
+margin \(d'\) (harmful vs.~harmless) & 9.81 & 5.57 & 7.62 \\
+single-direction AUC & 0.9999 & 0.9998 & 0.9995 \\
+single-vs-full-rank AUC gap & 0.0001 & 0.0000 & 0.0002 \\
+across-band effective rank & 3 & 6 & 4 \\
+across-band participation ratio & 1.93 & 3.16 & 2.23 \\
+\end{longtable}
+
+\subsection{Ablation and comprehension battery (swept ablation layer)}\label{a.2-ablation-and-comprehension-battery-swept-ablation-layer}
+
+Ablation at each model's swept (max-refusal-reduction) layer. Probe accuracy and
+effective dimensionality measure the linear representation; moral judgment and
+persona-shift compliance measure behavior. The moral-text dependency score is a
+sensitive cross-entropy difference on 240 texts and is noisy at this sample size;
+we include it for completeness but do not draw conclusions from it.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{Comprehension battery, instruct vs.~ablated, per family.
+\label{tab:a-battery}}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+metric
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+OLMo-3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Qwen2.5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Llama-3.1
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+metric
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+OLMo-3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Qwen2.5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Llama-3.1
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ablation layer (depth fraction) & 19 (0.59) & 14 (0.50) & 13 (0.41) \\
+harmful refusal rate: clean & 0.575 & 1.000 & 0.900 \\
+harmful refusal rate: ablated & 0.000 & 0.000 & 0.475 \\
+fresh probe accuracy: clean \(\to\) ablated & 1.0 \(\to\) 1.0 & 1.0 \(\to\) 1.0 & 1.0 \(\to\) 1.0 \\
+effective dimensionality: clean \(\to\) ablated & 5 \(\to\) 5 & 5 \(\to\) 5 & 5 \(\to\) 5 \\
+persona-shift compliance: clean \(\to\) ablated & 0.75 \(\to\) 1.00 & 0.90 \(\to\) 1.00 & 0.70 \(\to\) 0.95 \\
+moral judgment: clean \(\to\) ablated & 0.750 \(\to\) 0.792 & 0.875 \(\to\) 0.812 & 0.750 \(\to\) 0.604 \\
+moral dependency: clean \(\to\) ablated & 0.064 \(\to\) 0.049 & 0.081 \(\to\) 0.000 & 0.052 \(\to\) 0.071 \\
+\end{longtable}
+
+\subsection{Random-direction control (Llama-3.1, ablation layer 13)}\label{a.3-random-direction-control-llama-3.1-ablation-layer-13}
+
+Each condition ablates/perturbs and re-measures both moral judgment and the linear
+representation. The matched-random null perturbs the same residual-writing
+matrices with Gaussian noise of per-matrix Frobenius norm identical to the refusal
+ablation's (total removed \(\lVert W \rVert_F = 10.23\)), over eight draws. Persona
+ablates the comparable-magnitude persona direction.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{Random-direction and persona controls. Refusal judgment is a \(-20.8\sigma\)
+outlier below the matched-random null; representation is preserved under every
+condition.
+\label{tab:a-control}}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+condition
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+moral judgment
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+probe accuracy
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+eff.~dimensionality
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+condition
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+moral judgment
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+probe accuracy
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+eff.~dimensionality
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+clean (no perturbation) & 0.750 & 1.0 & 5 \\
+refusal-direction ablation & 0.604 & 1.0 & 5 \\
+persona-direction ablation & 0.750 & 1.0 & 5 \\
+matched-random null (mean \(\pm\) sd, \(n{=}8\)) & 0.747 \(\pm\) 0.007 & 1.0 & 5 \\
+\end{longtable}
+
+\subsection{Ablation-strength sweep (Llama-3.1, ablation layer 13)}\label{a.4-ablation-strength-sweep-llama-3.1-ablation-layer-13}
+
+The fraction \(\alpha\) of the refusal direction removed varies from partial through
+full to over-ablation. Moral-judgment drops are paired per-scenario bootstrap
+estimates against the \(\alpha{=}0\) baseline (5000 resamples, \(n{=}48\) scenarios).
+The matched-random null at \(\alpha{=}1.0\) is \(0.729 \pm 0.017\) and at
+\(\alpha{=}2.0\) is \(0.743 \pm 0.010\) (\(n{=}3\) draws each). Effect sizes are read
+from the coherent \(\alpha \le 1\) regime; at \(\alpha \ge 1.5\) moral judgment falls
+below chance as generation degrades.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
+\caption{Refusal-ablation strength sweep. Spearman correlation between refusal
+removed and judgment drop \(=1.0\).
+\label{tab:a-sweep}}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\(\alpha\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+refusal rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+refusal removed
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+moral judgment
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+judgment drop {[}95\% CI{]}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+probe acc
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+eff.~dim
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\(\alpha\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+refusal rate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+refusal removed
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+moral judgment
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+judgment drop {[}95\% CI{]}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+probe acc
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+eff.~dim
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.0 & 0.900 & 0.000 & 0.750 & --- & 1.0 & 5 \\
+0.5 & 0.900 & 0.000 & 0.667 & 0.083 {[}0.02, 0.17{]} & 1.0 & 5 \\
+1.0 & 0.475 & 0.425 & 0.604 & 0.146 {[}0.06, 0.25{]} & 1.0 & 5 \\
+1.5 & 0.000 & 0.900 & 0.146 & 0.604 {[}0.46, 0.75{]} & 0.99 & 5 \\
+2.0 & 0.025 & 0.875 & 0.167 & 0.583 {[}0.44, 0.73{]} & 1.0 & 5 \\
+\end{longtable}

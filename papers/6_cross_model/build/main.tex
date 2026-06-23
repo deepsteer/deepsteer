@@ -1,0 +1,146 @@
+% main.tex — Paper 6: Where Refusal Lives (cross-model).
+% arXiv-targeted; NeurIPS 2025 preprint style.
+%
+% Build:  make pdf   (pandoc per section -> latexmk)
+% Section .tex live in build/sections/<NN>.tex (generated from ../sections/<NN>.md).
+
+\documentclass{article}
+
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+\setlength{\emergencystretch}{3em}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+\Urlmuskip=0mu plus 1mu
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\providecommand{\real}[1]{#1}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{graphicx}
+\graphicspath{{../figures/}{../outputs/figures/}}
+\usepackage{xcolor}
+
+\usepackage[colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalize, noabbrev]{cleveref}
+
+\title{Where Refusal Lives: Refusal Is Geometrically Separate from Moral
+Representation Across Model Families, but Not Always from Moral Behavior}
+
+\author{%
+  Orion Reblitz-Richardson\thanks{%
+    Distiller Labs. Correspondence to Distiller Labs
+    \textless\texttt{orion@orionr.com}\textgreater.}
+}
+
+\date{June 2026}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcounter{none}
+
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\textbf{#1}}
+\newcommand{\StringTok}[1]{\textit{#1}}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ImportTok}[1]{\textbf{#1}}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\AttributeTok}[1]{#1}
+
+% =====================================================================
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A refusal direction can be stripped from many instruction-tuned models by a
+single rank-one weight edit. A prior paper showed that in OLMo-3 this direction
+is geometrically separate from the model's moral representation: it is almost
+entirely residual against the moral-foundations subspace, and ablating it removes
+refusal while leaving moral comprehension intact. We ask whether that separation
+is a property of language models in general or an artifact of one model's
+post-training. Holding the extraction conventions fixed, we run the same
+decomposition across three dense base+instruct families of similar size, OLMo-3
+7B, Qwen2.5-7B, and Llama-3.1-8B. Two results separate cleanly. Representationally
+the dissociation is family-invariant: in all three the refusal direction is
+${\sim}99\%$ residual and near-orthogonal to the six-foundation moral subspace
+(projection fraction $0.07$--$0.13$), and ablating it leaves the linear moral
+representation untouched (fresh probe accuracy $1.0$, effective dimensionality
+$5$). Behaviorally the picture is family-dependent: in OLMo-3 and Qwen2.5 a
+single-direction ablation removes refusal and leaves behavioral moral judgment
+intact, the clean comprehension/compliance dissociation, but in Llama-3.1 the
+refusal direction is both harder to ablate and \emph{entangled} with moral
+judgment. Removing it degrades Llama's behavioral moral judgment dose-dependently
+and refusal-direction-specifically: a magnitude-matched random weight
+perturbation, even at twice the magnitude, leaves judgment unchanged, while the
+matching perturbation along the refusal direction degrades it, all while the
+linear moral representation stays perfectly preserved. The refusal/moral
+separation that holds representationally across families therefore does not
+always hold behaviorally. We treat Llama's coupling as a measured property of one
+released model, established through controls rather than asserted, and make no
+claim about its training recipe. The work is diagnostic and produces no technique
+for constructing harder-to-remove refusal.
+\end{abstract}
+
+% =====================================================================
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_methodology.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_conclusion.tex}
+
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code agent on
+Opus~4.8) for code scaffolding, experimental scripts, and prose drafting. The
+author retains responsibility for experimental design, all scientific claims,
+and final wording.
+\end{ack}
+
+\bibliography{references}
+
+\appendix
+\newpage
+\begin{center}
+  \rule{0.5\linewidth}{0.4pt}\\[0.6em]
+  {\Large\bfseries Appendices}\\[0.25em]
+  {\small Supplementary material.}\\[0.4em]
+  \rule{0.5\linewidth}{0.4pt}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/0A_tables.tex}
+\input{sections/0B_reproducibility.tex}
+
+\end{document}
