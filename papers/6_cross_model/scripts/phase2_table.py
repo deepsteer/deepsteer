@@ -100,9 +100,14 @@ def collect(spec: reg.ModelSpec) -> dict | None:
     if all(v is None for v in instruct.values()) and all(v is None for v in ablated.values()):
         return None
     geom = _load(_OUT / spec.key / "heretic" / "refusal_morality_geometry.json") or {}
+    sweep = _load(_OUT / spec.key / "ablation_sweep.json") or {}
     comp_keys = ("moral_probe_acc", "eff_dim_layer", "moral_judgment", "dependency")
     return {
         "key": spec.key, "headline_layer": spec.primary_layer,
+        "ablate_layer": sweep.get("chosen_layer", geom.get("refusal_layer")),
+        "sweep_clean_refusal": sweep.get("clean_refusal"),
+        "sweep_ablated_refusal": sweep.get("chosen_ablated_refusal"),
+        "sweep_refusal_drop": sweep.get("chosen_drop"),
         "instruct": instruct, "ablated": ablated,
         "comprehension_delta": {k: _delta(instruct[k], ablated[k]) for k in comp_keys},
         "compliance_gain": _delta(ablated["compliance"], instruct["compliance"]),
@@ -129,7 +134,11 @@ def print_table(rows: list[dict]) -> None:
     def line(label, getter):
         print(f"{label:<26s}" + "".join(f"{_f(getter(r)):>14s}" for r in rows))
 
-    print("- refusal ablation -")
+    print("- refusal ablation (swept layer) -")
+    line("  ablation layer", lambda r: r["ablate_layer"])
+    line("  sweep refusal: clean", lambda r: r["sweep_clean_refusal"])
+    line("  sweep refusal: ablated", lambda r: r["sweep_ablated_refusal"])
+    line("  sweep refusal drop", lambda r: r["sweep_refusal_drop"])
     line("  refusal moral proj frac", lambda r: r["refusal_moral_proj_frac"])
     line("  compliance: instruct", lambda r: r["instruct"]["compliance"])
     line("  compliance: ablated", lambda r: r["ablated"]["compliance"])

@@ -60,6 +60,7 @@ logger = logging.getLogger(__name__)
 _PAPER6 = Path(__file__).resolve().parent.parent
 _REPO = _PAPER6.parent.parent
 _P5 = _REPO / "papers" / "5_moral_alignment" / "scripts"
+_P6 = _PAPER6 / "scripts"
 _REFUSAL_PROMPTS = _REPO / "papers" / "5_moral_alignment" / "refusal_prompts.json"
 _OUT = _PAPER6 / "outputs"
 
@@ -77,9 +78,20 @@ def _write_grid(spec: reg.ModelSpec, ablated_path: str, battery_dir: Path, *, wr
     return gpath
 
 
+def _sweep_step(spec: reg.ModelSpec, sweep_json: Path, n_prompts: int) -> tuple[str, list[str]]:
+    """Phase 2b: choose the ablation layer that actually strips refusal, per model."""
+    refusal_npz = str(_OUT / spec.instruct_out / "refusal_directions.npz")
+    cmd = [sys.executable, str(_P6 / "sweep_ablation.py"),
+           "--model", spec.instruct_repo, "--refusal-npz", refusal_npz,
+           "--prompts", str(_REFUSAL_PROMPTS), "--output", str(sweep_json),
+           "--n-prompts", str(n_prompts)]
+    return (f"{spec.key}:0-sweep", cmd)
+
+
 def steps_for(spec: reg.ModelSpec, *, dry_run: bool, dataset_target: int,
-              max_texts: int | None) -> tuple[list[tuple[str, list[str]]], Path, str]:
-    """Build the (label, argv) chain for one family. Returns (steps, battery_dir, ablated)."""
+              max_texts: int | None, ablate_layer: int
+              ) -> tuple[list[tuple[str, list[str]]], Path, str]:
+    """Build the battery chain for one family at *ablate_layer* -> (steps, battery, ablated)."""
     base_dir = _OUT / spec.base_out
     base_npz = str(base_dir / "exp1_probe_directions.npz")
     heretic_dir = _OUT / spec.key / "heretic"
@@ -110,10 +122,10 @@ def steps_for(spec: reg.ModelSpec, *, dry_run: bool, dataset_target: int,
                 "--max-tokens", max_tok, "--output-dir", out]
 
     steps = [
-        (f"{spec.key}:1-ablate", [
+        (f"{spec.key}:1-ablate-L{ablate_layer}", [
             sys.executable, str(_P5 / "heretic_ablation.py"),
             "--model", spec.instruct_repo, "--prompts", str(_REFUSAL_PROMPTS),
-            "--moral-npz", base_npz, "--refusal-layer", str(spec.primary_layer),
+            "--moral-npz", base_npz, "--refusal-layer", str(ablate_layer),
             "--input-format", spec.input_format_refusal,
             "--output-dir", str(heretic_dir), "--save-model"]),
         (f"{spec.key}:2-probe-effdim", [
@@ -129,26 +141,47 @@ def steps_for(spec: reg.ModelSpec, *, dry_run: bool, dataset_target: int,
     return steps, battery, ablated
 
 
-def run_model(spec: reg.ModelSpec, *, dry_run: bool,
-              dataset_target: int, max_texts: int | None, keep_ablated: bool) -> bool:
-    print(f"\n{'='*70}\n== {spec.key}  ({spec.family}, {spec.n_layers}L, ablate "
-          f"L{spec.primary_layer}){'  [GATED]' if spec.gated else ''}\n{'='*70}")
+def _run(label: str, cmd: list[str], *, dry_run: bool, gated: bool) -> bool:
+    print(f"\n>> {label}\n   {' '.join(cmd)}")
+    if dry_run:
+        return True
+    t0 = time.time()
+    proc = subprocess.run(cmd, cwd=str(_REPO))
+    if proc.returncode != 0:
+        print(f"!! {label} FAILED (exit {proc.returncode}) after {time.time()-t0:.0f}s")
+        if gated:
+            print("!! gated model; check HF_TOKEN has accepted-license access.")
+        return False
+    print(f"   ok ({time.time()-t0:.0f}s)")
+    return True
+
+
+def run_model(spec: reg.ModelSpec, *, dry_run: bool, dataset_target: int,
+              max_texts: int | None, keep_ablated: bool, sweep: bool, sweep_prompts: int) -> bool:
+    print(f"\n{'='*70}\n== {spec.key}  ({spec.family}, {spec.n_layers}L)"
+          f"{'  [GATED]' if spec.gated else ''}\n{'='*70}")
+
+    # Phase 2b: pick the ablation layer that actually strips refusal (default the
+    # depth-0.5 headline if the sweep is off or hasn't produced a result yet).
+    ablate_layer = spec.primary_layer
+    sweep_json = _OUT / spec.key / "ablation_sweep.json"
+    if sweep:
+        label, cmd = _sweep_step(spec, sweep_json, sweep_prompts)
+        if not _run(label, cmd, dry_run=dry_run, gated=spec.gated):
+            return False
+        if not dry_run and sweep_json.exists():
+            ablate_layer = int(json.loads(sweep_json.read_text())["chosen_layer"])
+            print(f"   sweep chose ablation layer L{ablate_layer} "
+                  f"(headline L{spec.primary_layer})")
+
     steps, _battery, ablated = steps_for(
-        spec, dry_run=dry_run, dataset_target=dataset_target, max_texts=max_texts)
+        spec, dry_run=dry_run, dataset_target=dataset_target, max_texts=max_texts,
+        ablate_layer=ablate_layer)
     ok = True
     for label, cmd in steps:
-        print(f"\n>> {label}\n   {' '.join(cmd)}")
-        if dry_run:
-            continue
-        t0 = time.time()
-        proc = subprocess.run(cmd, cwd=str(_REPO))
-        if proc.returncode != 0:
-            print(f"!! {label} FAILED (exit {proc.returncode}) after {time.time()-t0:.0f}s")
-            if spec.gated:
-                print(f"!! {spec.key} is gated; check HF_TOKEN has accepted-license access.")
+        if not _run(label, cmd, dry_run=dry_run, gated=spec.gated):
             ok = False
             break
-        print(f"   ok ({time.time()-t0:.0f}s)")
     # Bound disk: the 14 GB ablated model is regenerable; metrics JSON are kept.
     if not dry_run and not keep_ablated and Path(ablated).exists():
         shutil.rmtree(ablated, ignore_errors=True)
@@ -165,6 +198,10 @@ def main() -> None:
     ap.add_argument("--max-texts", type=int, default=32, help="Dependency text cap in VALIDATE.")
     ap.add_argument("--keep-ablated", action="store_true",
                     help="Do not delete the ablated model dir after the battery.")
+    ap.add_argument("--no-sweep", action="store_true",
+                    help="Skip the Phase-2b ablation-layer sweep; ablate at the depth-0.5 layer.")
+    ap.add_argument("--sweep-prompts", type=int, default=40,
+                    help="Harmful prompts for the sweep's refusal rate.")
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
@@ -181,7 +218,8 @@ def main() -> None:
     for spec in specs:
         results[spec.key] = run_model(
             spec, dry_run=args.dry_run, dataset_target=dataset_target,
-            max_texts=max_texts, keep_ablated=args.keep_ablated)
+            max_texts=max_texts, keep_ablated=args.keep_ablated,
+            sweep=not args.no_sweep, sweep_prompts=args.sweep_prompts)
 
     print(f"\n{'='*70}\nSummary [{mode}]:")
     for k in keys:
