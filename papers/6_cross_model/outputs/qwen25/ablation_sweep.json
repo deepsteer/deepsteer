@@ -1,0 +1,49 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "n_layers": 28,
+  "n_prompts": 40,
+  "clean_refusal": 1.0,
+  "candidates_depth_fracs": [
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8
+  ],
+  "per_layer": {
+    "11": {
+      "depth_frac": 0.393,
+      "ablated_refusal": 0.875,
+      "drop": 0.125,
+      "n_weights_modified": 56
+    },
+    "14": {
+      "depth_frac": 0.5,
+      "ablated_refusal": 0.0,
+      "drop": 1.0,
+      "n_weights_modified": 56
+    },
+    "17": {
+      "depth_frac": 0.607,
+      "ablated_refusal": 0.05,
+      "drop": 0.95,
+      "n_weights_modified": 56
+    },
+    "20": {
+      "depth_frac": 0.714,
+      "ablated_refusal": 0.0,
+      "drop": 1.0,
+      "n_weights_modified": 56
+    },
+    "22": {
+      "depth_frac": 0.786,
+      "ablated_refusal": 0.0,
+      "drop": 1.0,
+      "n_weights_modified": 56
+    }
+  },
+  "chosen_layer": 14,
+  "chosen_depth_frac": 0.5,
+  "chosen_ablated_refusal": 0.0,
+  "chosen_drop": 1.0
+}

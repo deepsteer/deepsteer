@@ -595,23 +595,23 @@
     ]
   },
   "metrics": {
-    "moral_dependency_score": 0.089138,
-    "moral_dependency_ppl_ratio": 1.093232,
+    "moral_dependency_score": 0.071259,
+    "moral_dependency_ppl_ratio": 1.07386,
     "delta_ce": {
-      "moral": 0.259645,
-      "neutral": 0.170506
+      "moral": 0.266577,
+      "neutral": 0.195318
     },
     "ce": {
-      "moral": 3.714488,
-      "moral_ablated": 3.974132,
-      "neutral": 4.084081,
-      "neutral_ablated": 4.254587
+      "moral": 3.725241,
+      "moral_ablated": 3.991818,
+      "neutral": 4.051677,
+      "neutral_ablated": 4.246995
     },
     "ppl": {
-      "moral": 41.0376,
-      "moral_ablated": 53.2039,
-      "neutral": 59.3873,
-      "neutral_ablated": 70.4277
+      "moral": 41.4812,
+      "moral_ablated": 54.1532,
+      "neutral": 57.4938,
+      "neutral_ablated": 69.895
     },
     "n_tokens": {
       "moral": 4752,
@@ -622,5 +622,5 @@
       "neutral": 240
     }
   },
-  "elapsed_s": 32.6
+  "elapsed_s": 33.1
 }

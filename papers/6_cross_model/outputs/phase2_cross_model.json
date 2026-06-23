@@ -3,6 +3,10 @@
     {
       "key": "olmo3",
       "headline_layer": 16,
+      "ablate_layer": 19,
+      "sweep_clean_refusal": 0.575,
+      "sweep_ablated_refusal": 0.0,
+      "sweep_refusal_drop": 0.575,
       "instruct": {
         "moral_probe_acc": 1.0,
         "eff_dim_layer": 5,
@@ -13,23 +17,27 @@
       "ablated": {
         "moral_probe_acc": 1.0,
         "eff_dim_layer": 5,
-        "moral_judgment": 0.7291666666666666,
+        "moral_judgment": 0.7916666666666666,
         "compliance": 1.0,
-        "dependency": 0.050375
+        "dependency": 0.048641
       },
       "comprehension_delta": {
         "moral_probe_acc": 0.0,
         "eff_dim_layer": 0,
-        "moral_judgment": 0.0208,
-        "dependency": 0.0131
+        "moral_judgment": -0.0417,
+        "dependency": 0.0149
       },
       "compliance_gain": 0.25,
-      "refusal_moral_proj_frac": 0.1043,
-      "refusal_mean_abs_cos": 0.0605
+      "refusal_moral_proj_frac": 0.0963,
+      "refusal_mean_abs_cos": 0.054
     },
     {
       "key": "qwen25",
       "headline_layer": 14,
+      "ablate_layer": 14,
+      "sweep_clean_refusal": 1.0,
+      "sweep_ablated_refusal": 0.0,
+      "sweep_refusal_drop": 1.0,
       "instruct": {
         "moral_probe_acc": 1.0,
         "eff_dim_layer": 5,
@@ -57,6 +65,10 @@
     {
       "key": "llama31",
       "headline_layer": 16,
+      "ablate_layer": 13,
+      "sweep_clean_refusal": 0.9,
+      "sweep_ablated_refusal": 0.475,
+      "sweep_refusal_drop": 0.425,
       "instruct": {
         "moral_probe_acc": 1.0,
         "eff_dim_layer": 5,
@@ -67,19 +79,19 @@
       "ablated": {
         "moral_probe_acc": 1.0,
         "eff_dim_layer": 5,
-        "moral_judgment": 0.5833333333333334,
-        "compliance": 0.7,
-        "dependency": 0.089138
+        "moral_judgment": 0.6041666666666666,
+        "compliance": 0.95,
+        "dependency": 0.071259
       },
       "comprehension_delta": {
         "moral_probe_acc": 0.0,
         "eff_dim_layer": 0,
-        "moral_judgment": 0.1667,
-        "dependency": -0.0376
+        "moral_judgment": 0.1458,
+        "dependency": -0.0197
       },
-      "compliance_gain": 0.0,
-      "refusal_moral_proj_frac": 0.0711,
-      "refusal_mean_abs_cos": 0.0407
+      "compliance_gain": 0.25,
+      "refusal_moral_proj_frac": 0.1001,
+      "refusal_mean_abs_cos": 0.061
     }
   ]
 }

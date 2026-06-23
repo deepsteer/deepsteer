@@ -7,6 +7,6 @@
   {
     "label": "ablated",
     "persona_peak_acc": 0.9583,
-    "mean_geo_cosine": 0.3067
+    "mean_geo_cosine": 0.3016
   }
 ]

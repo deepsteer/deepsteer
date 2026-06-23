@@ -1,0 +1,49 @@
+{
+  "model": "allenai/Olmo-3-7B-Instruct",
+  "n_layers": 32,
+  "n_prompts": 40,
+  "clean_refusal": 0.575,
+  "candidates_depth_fracs": [
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8
+  ],
+  "per_layer": {
+    "13": {
+      "depth_frac": 0.406,
+      "ablated_refusal": 0.75,
+      "drop": -0.175,
+      "n_weights_modified": 64
+    },
+    "16": {
+      "depth_frac": 0.5,
+      "ablated_refusal": 0.25,
+      "drop": 0.325,
+      "n_weights_modified": 64
+    },
+    "19": {
+      "depth_frac": 0.594,
+      "ablated_refusal": 0.0,
+      "drop": 0.575,
+      "n_weights_modified": 64
+    },
+    "22": {
+      "depth_frac": 0.688,
+      "ablated_refusal": 0.0,
+      "drop": 0.575,
+      "n_weights_modified": 64
+    },
+    "26": {
+      "depth_frac": 0.812,
+      "ablated_refusal": 0.0,
+      "drop": 0.575,
+      "n_weights_modified": 64
+    }
+  },
+  "chosen_layer": 19,
+  "chosen_depth_frac": 0.594,
+  "chosen_ablated_refusal": 0.0,
+  "chosen_drop": 0.575
+}

@@ -1,22 +1,22 @@
 {
   "model": "allenai/Olmo-3-7B-Instruct",
   "revision": null,
-  "refusal_layer": 16,
+  "refusal_layer": 19,
   "n_weights_modified": 64,
   "input_format": "chat",
   "n_harmful": 400,
   "n_harmless": 400,
   "refusal_morality_geometry": {
-    "refusal_layer": 16,
+    "refusal_layer": 19,
     "cosine_to_foundations": {
-      "Care": 0.0743,
-      "Fairness": 0.0628,
-      "Liberty": 0.0677,
-      "Loyalty": 0.0604,
-      "Authority": 0.0382,
-      "Sanctity": 0.0595
+      "Care": 0.0401,
+      "Fairness": 0.0729,
+      "Liberty": 0.0498,
+      "Loyalty": 0.0718,
+      "Authority": 0.0417,
+      "Sanctity": 0.0479
     },
-    "moral_subspace_projection_fraction": 0.1043,
-    "mean_abs_cosine": 0.0605
+    "moral_subspace_projection_fraction": 0.0963,
+    "mean_abs_cosine": 0.054
   }
 }

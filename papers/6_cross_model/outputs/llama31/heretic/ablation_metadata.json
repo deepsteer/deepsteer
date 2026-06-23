@@ -1,22 +1,22 @@
 {
   "model": "meta-llama/Llama-3.1-8B-Instruct",
   "revision": null,
-  "refusal_layer": 16,
+  "refusal_layer": 13,
   "n_weights_modified": 64,
   "input_format": "chat",
   "n_harmful": 400,
   "n_harmless": 400,
   "refusal_morality_geometry": {
-    "refusal_layer": 16,
+    "refusal_layer": 13,
     "cosine_to_foundations": {
-      "Care": 0.0353,
-      "Fairness": 0.0295,
-      "Liberty": 0.0518,
-      "Loyalty": 0.0602,
-      "Authority": 0.0345,
-      "Sanctity": 0.033
+      "Care": 0.0645,
+      "Fairness": 0.0458,
+      "Liberty": 0.0661,
+      "Loyalty": 0.0773,
+      "Authority": 0.0471,
+      "Sanctity": 0.0654
     },
-    "moral_subspace_projection_fraction": 0.0711,
-    "mean_abs_cosine": 0.0407
+    "moral_subspace_projection_fraction": 0.1001,
+    "mean_abs_cosine": 0.061
   }
 }
