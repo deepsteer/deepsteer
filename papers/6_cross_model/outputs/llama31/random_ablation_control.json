@@ -1,0 +1,88 @@
+{
+  "analysis": "random_ablation_control",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "layer": 13,
+  "headline_layer": 16,
+  "max_tokens": 96,
+  "n_random": 8,
+  "refusal_removed_frobenius_total": 10.2264,
+  "clean": {
+    "judgment": 0.75,
+    "probe_acc": 1.0,
+    "eff_dim": 5
+  },
+  "refusal": {
+    "judgment": 0.6042,
+    "probe_acc": 1.0,
+    "eff_dim": 5
+  },
+  "persona": {
+    "judgment": 0.75,
+    "probe_acc": 1.0,
+    "eff_dim": 5
+  },
+  "random_judgments": [
+    0.75,
+    0.75,
+    0.75,
+    0.75,
+    0.75,
+    0.7292,
+    0.75,
+    0.75
+  ],
+  "random_probe_accs": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "random_eff_dims": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
+  "judgment_null": {
+    "mean": 0.7474,
+    "std": 0.0069,
+    "z": -20.817,
+    "min": 0.7292,
+    "max": 0.75
+  },
+  "probe_acc_null": {
+    "mean": 1.0,
+    "std": 0.0,
+    "z": 0.0,
+    "min": 1.0,
+    "max": 1.0
+  },
+  "refusal_judgment_drop": 0.1458,
+  "random_judgment_drop_mean": 0.0026,
+  "clean_by_foundation": {
+    "care_harm": 1.0,
+    "fairness_cheating": 0.75,
+    "loyalty_betrayal": 0.625,
+    "authority_subversion": 0.625,
+    "sanctity_degradation": 0.75,
+    "liberty_oppression": 0.75
+  },
+  "refusal_by_foundation": {
+    "care_harm": 0.75,
+    "fairness_cheating": 0.5,
+    "loyalty_betrayal": 0.5,
+    "authority_subversion": 0.5,
+    "sanctity_degradation": 0.75,
+    "liberty_oppression": 0.625
+  },
+  "verdict": "refusal-specific: refusal-ablation judgment is an outlier BELOW the magnitude-matched random null (z=-20.82)",
+  "elapsed_s": 1522.3
+}
