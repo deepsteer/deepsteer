@@ -71,6 +71,28 @@ def _resolve_device(device: str | None) -> str:
     return "cpu"
 
 
+def _auto_dequant_config(model_name_or_path: str, revision: str | None):
+    """``Mxfp4Config(dequantize=True)`` for an mxfp4 repo (e.g. GPT-OSS), else None.
+
+    mxfp4 inference needs triton kernels that are not always present, and quantized
+    experts cannot be cleanly hooked/edited; dequantizing to the load dtype is the
+    portable default for activation/probing work. Runs only when the caller passes
+    no explicit ``quantization_config`` (which always takes precedence).
+    """
+    try:
+        from transformers import AutoConfig
+        cfg = AutoConfig.from_pretrained(model_name_or_path, revision=revision)
+        qc = getattr(cfg, "quantization_config", None)
+        method = qc.get("quant_method") if isinstance(qc, dict) else getattr(qc, "quant_method", None)
+        if method == "mxfp4":
+            from transformers import Mxfp4Config
+            logger.info("mxfp4 repo detected (%s); loading dequantized.", model_name_or_path)
+            return Mxfp4Config(dequantize=True)
+    except Exception as e:  # noqa: BLE001
+        logger.debug("mxfp4 auto-detect skipped for %s: %s", model_name_or_path, e)
+    return None
+
+
 def _default_dtype(device: str) -> torch.dtype:
     """float16 on GPU/MPS, float32 on CPU."""
     if device in ("cuda", "mps") or device.startswith("cuda:"):
@@ -138,10 +160,20 @@ class WhiteBoxModel(ModelInterface):
         access_tier: AccessTier = AccessTier.WEIGHTS,
         checkpoint_step: int | None = None,
         revision: str | None = None,
+        quantization_config: Any | None = None,
     ) -> None:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self._device = _resolve_device(device)
+
+        # Auto-dequantize mxfp4 repos (GPT-OSS) unless the caller pinned a config.
+        # mxfp4 dequantizes to bf16, so force the whole model to bf16 when no dtype
+        # was requested: the fp16 default would mismatch the dequantized bf16
+        # experts in the MoE grouped_mm (Half != BFloat16).
+        if quantization_config is None:
+            quantization_config = _auto_dequant_config(model_name_or_path, revision)
+            if quantization_config is not None and torch_dtype is None:
+                torch_dtype = torch.bfloat16
         self._dtype = torch_dtype or _default_dtype(self._device)
 
         logger.info(
@@ -151,6 +183,10 @@ class WhiteBoxModel(ModelInterface):
         self._tokenizer = AutoTokenizer.from_pretrained(
             model_name_or_path, revision=revision,
         )
+        # ``quantization_config`` is optional and defaults to None (no change for
+        # unquantized models). It is the clean path for loading a quantized repo
+        # under an explicit policy, e.g. ``Mxfp4Config(dequantize=True)`` to force
+        # GPT-OSS's mxfp4 experts to bf16 for a clean intervention (Paper 7 0d).
         if self._device == "mps":
             # MPS can fail with device_map="mps" on large models due to
             # single-buffer allocation limits.  Load to CPU first then move.
@@ -159,6 +195,7 @@ class WhiteBoxModel(ModelInterface):
                 torch_dtype=self._dtype,
                 low_cpu_mem_usage=True,
                 revision=revision,
+                quantization_config=quantization_config,
             )
             self._model = self._model.to("mps")
         else:
@@ -167,6 +204,7 @@ class WhiteBoxModel(ModelInterface):
                 torch_dtype=self._dtype,
                 device_map=self._device if self._device != "cpu" else None,
                 revision=revision,
+                quantization_config=quantization_config,
             )
             if self._device == "cpu":
                 self._model = self._model.to(self._device)

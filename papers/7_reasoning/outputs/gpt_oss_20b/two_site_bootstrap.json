@@ -1,0 +1,75 @@
+{
+  "analysis": "phase1_two_site_bootstrap",
+  "key": "gpt_oss_20b",
+  "b": 2000,
+  "sites": [
+    "eop",
+    "cot_last",
+    "cot_mean"
+  ],
+  "n_rows": {
+    "eop": [
+      64,
+      64
+    ],
+    "cot_last": [
+      64,
+      57
+    ],
+    "cot_mean": [
+      64,
+      57
+    ]
+  },
+  "point": {
+    "headline_layer": 12,
+    "mft_frac": {
+      "eop": 0.018107,
+      "cot_last": 0.004461,
+      "cot_mean": 0.027391
+    },
+    "eop_vs_cotlast_cosine": 0.1238,
+    "moral_asymmetry": -0.013646,
+    "cotlast_vs_cotmean_cosine": 0.4243,
+    "trace_distribution": 0.022929
+  },
+  "bootstrap_ci95": {
+    "mft_frac": {
+      "eop": {
+        "median": 0.017704,
+        "ci95_lo": 0.015116,
+        "ci95_hi": 0.020114
+      },
+      "cot_last": {
+        "median": 0.004455,
+        "ci95_lo": 0.003277,
+        "ci95_hi": 0.005895
+      },
+      "cot_mean": {
+        "median": 0.027253,
+        "ci95_lo": 0.024253,
+        "ci95_hi": 0.030144
+      }
+    },
+    "eop_vs_cotlast_cosine": {
+      "median": 0.122279,
+      "ci95_lo": 0.065179,
+      "ci95_hi": 0.181885
+    },
+    "moral_asymmetry": {
+      "median": -0.013204,
+      "ci95_lo": -0.016092,
+      "ci95_hi": -0.010325
+    },
+    "cotlast_vs_cotmean_cosine": {
+      "median": 0.418231,
+      "ci95_lo": 0.365677,
+      "ci95_hi": 0.451828
+    },
+    "trace_distribution": {
+      "median": 0.022788,
+      "ci95_lo": 0.019396,
+      "ci95_hi": 0.025899
+    }
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "analysis": "phase2a_trace_length_disentangle",
+  "min_n_per_class": 8,
+  "models": {
+    "gpt_oss_20b": {
+      "headline_layer": 12,
+      "float_dtypes": [
+        "torch.bfloat16"
+      ],
+      "harmful_trace_len_median": 54,
+      "harmless_trace_len_median": 189,
+      "n_closed_harmful": 64,
+      "n_closed_harmless": 44,
+      "closed_frac_harmful": 1.0,
+      "closed_frac_harmless": 0.772,
+      "matched_length_CONFOUNDED": {
+        "16": {
+          "moral_frac": 0.048135,
+          "n_harmful": 64,
+          "n_harmless": 57
+        },
+        "32": {
+          "moral_frac": 0.043378,
+          "n_harmful": 63,
+          "n_harmless": 57
+        },
+        "64": {
+          "moral_frac": 0.03467,
+          "n_harmful": 14,
+          "n_harmless": 55
+        },
+        "128": {
+          "moral_frac": null,
+          "n_harmful": 1,
+          "n_harmless": 34
+        },
+        "256": {
+          "moral_frac": null,
+          "n_harmful": 0,
+          "n_harmless": 19
+        },
+        "512": {
+          "moral_frac": null,
+          "n_harmful": 0,
+          "n_harmless": 15
+        }
+      },
+      "fractional_position": {
+        "0": {
+          "frac_pos": 0.05,
+          "moral_frac": 0.019339,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "1": {
+          "frac_pos": 0.15,
+          "moral_frac": 0.028557,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "2": {
+          "frac_pos": 0.25,
+          "moral_frac": 0.044402,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "3": {
+          "frac_pos": 0.35,
+          "moral_frac": 0.040563,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "4": {
+          "frac_pos": 0.45,
+          "moral_frac": 0.026285,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "5": {
+          "frac_pos": 0.55,
+          "moral_frac": 0.022353,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "6": {
+          "frac_pos": 0.65,
+          "moral_frac": 0.021984,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "7": {
+          "frac_pos": 0.75,
+          "moral_frac": 0.020628,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "8": {
+          "frac_pos": 0.85,
+          "moral_frac": 0.021216,
+          "n_harmful": 64,
+          "n_harmless": 44
+        },
+        "9": {
+          "frac_pos": 0.95,
+          "moral_frac": 0.009289,
+          "n_harmful": 64,
+          "n_harmless": 44
+        }
+      },
+      "fractional_mean_moral": 0.025462
+    },
+    "ds_r1_llama8b": {
+      "headline_layer": 16,
+      "float_dtypes": [
+        "torch.bfloat16"
+      ],
+      "harmful_trace_len_median": 709,
+      "harmless_trace_len_median": 602,
+      "n_closed_harmful": 43,
+      "n_closed_harmless": 44,
+      "closed_frac_harmful": 0.672,
+      "closed_frac_harmless": 0.688,
+      "matched_length_CONFOUNDED": {
+        "16": {
+          "moral_frac": 0.004825,
+          "n_harmful": 64,
+          "n_harmless": 61
+        },
+        "32": {
+          "moral_frac": 0.009702,
+          "n_harmful": 64,
+          "n_harmless": 61
+        },
+        "64": {
+          "moral_frac": 0.013144,
+          "n_harmful": 64,
+          "n_harmless": 60
+        },
+        "128": {
+          "moral_frac": 0.01594,
+          "n_harmful": 64,
+          "n_harmless": 60
+        },
+        "256": {
+          "moral_frac": 0.015299,
+          "n_harmful": 63,
+          "n_harmless": 57
+        },
+        "512": {
+          "moral_frac": 0.013712,
+          "n_harmful": 51,
+          "n_harmless": 38
+        }
+      },
+      "fractional_position": {
+        "0": {
+          "frac_pos": 0.05,
+          "moral_frac": 0.010388,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "1": {
+          "frac_pos": 0.15,
+          "moral_frac": 0.017486,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "2": {
+          "frac_pos": 0.25,
+          "moral_frac": 0.012272,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "3": {
+          "frac_pos": 0.35,
+          "moral_frac": 0.011256,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "4": {
+          "frac_pos": 0.45,
+          "moral_frac": 0.012585,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "5": {
+          "frac_pos": 0.55,
+          "moral_frac": 0.013606,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "6": {
+          "frac_pos": 0.65,
+          "moral_frac": 0.014698,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "7": {
+          "frac_pos": 0.75,
+          "moral_frac": 0.013848,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "8": {
+          "frac_pos": 0.85,
+          "moral_frac": 0.015302,
+          "n_harmful": 43,
+          "n_harmless": 41
+        },
+        "9": {
+          "frac_pos": 0.95,
+          "moral_frac": 0.013229,
+          "n_harmful": 43,
+          "n_harmless": 44
+        }
+      },
+      "fractional_mean_moral": 0.013467
+    },
+    "ds_r1_qwen14b": {
+      "headline_layer": 24,
+      "float_dtypes": [
+        "torch.bfloat16"
+      ],
+      "harmful_trace_len_median": 742,
+      "harmless_trace_len_median": 693,
+      "n_closed_harmful": 35,
+      "n_closed_harmless": 39,
+      "closed_frac_harmful": 0.547,
+      "closed_frac_harmless": 0.609,
+      "matched_length_CONFOUNDED": {
+        "16": {
+          "moral_frac": 0.016168,
+          "n_harmful": 64,
+          "n_harmless": 64
+        },
+        "32": {
+          "moral_frac": 0.033878,
+          "n_harmful": 64,
+          "n_harmless": 64
+        },
+        "64": {
+          "moral_frac": 0.031896,
+          "n_harmful": 64,
+          "n_harmless": 64
+        },
+        "128": {
+          "moral_frac": 0.027515,
+          "n_harmful": 64,
+          "n_harmless": 62
+        },
+        "256": {
+          "moral_frac": 0.023576,
+          "n_harmful": 64,
+          "n_harmless": 61
+        },
+        "512": {
+          "moral_frac": 0.01889,
+          "n_harmful": 48,
+          "n_harmless": 45
+        }
+      },
+      "fractional_position": {
+        "0": {
+          "frac_pos": 0.05,
+          "moral_frac": 0.031751,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "1": {
+          "frac_pos": 0.15,
+          "moral_frac": 0.01768,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "2": {
+          "frac_pos": 0.25,
+          "moral_frac": 0.018639,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "3": {
+          "frac_pos": 0.35,
+          "moral_frac": 0.01812,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "4": {
+          "frac_pos": 0.45,
+          "moral_frac": 0.014609,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "5": {
+          "frac_pos": 0.55,
+          "moral_frac": 0.016599,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "6": {
+          "frac_pos": 0.65,
+          "moral_frac": 0.014728,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "7": {
+          "frac_pos": 0.75,
+          "moral_frac": 0.019996,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "8": {
+          "frac_pos": 0.85,
+          "moral_frac": 0.015118,
+          "n_harmful": 35,
+          "n_harmless": 39
+        },
+        "9": {
+          "frac_pos": 0.95,
+          "moral_frac": 0.015256,
+          "n_harmful": 35,
+          "n_harmless": 39
+        }
+      },
+      "fractional_mean_moral": 0.01825
+    }
+  },
+  "verdict": {
+    "decision_metric": "fractional_position_closed_traces (matched cognitive phase)",
+    "survives": true,
+    "reading": "trace-distribution axis SURVIVES at matched cognitive phase -> Phase 2b (causal load-bearing) warranted.",
+    "fractional_position_verdict": {
+      "gpt_oss": 0.025462,
+      "distills": {
+        "ds_r1_llama8b": 0.013467,
+        "ds_r1_qwen14b": 0.01825
+      },
+      "survives": true
+    },
+    "matched_length_verdict_CONFOUNDED": {
+      "gpt_oss": 0.03467,
+      "distills": {
+        "ds_r1_llama8b": 0.013144,
+        "ds_r1_qwen14b": 0.031896
+      },
+      "survives": true,
+      "matched_N": 64
+    },
+    "both_methods_agree": true,
+    "precision_parity_ok": true,
+    "float_dtypes_per_model": {
+      "gpt_oss_20b": [
+        "torch.bfloat16"
+      ],
+      "ds_r1_llama8b": [
+        "torch.bfloat16"
+      ],
+      "ds_r1_qwen14b": [
+        "torch.bfloat16"
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "analysis": "phase2c_positions",
+  "key": "gpt_oss_20b",
+  "model": "openai/gpt-oss-20b",
+  "headline_layer": 12,
+  "band": [
+    11,
+    23
+  ],
+  "post_count": 3,
+  "post_instruction_suffix": "<|end|><|start|>assistant",
+  "t_inst_token_example": " database",
+  "n_harmful": 64,
+  "n_harmless": 64,
+  "separation": {
+    "harmful_vs_harmless_at_t_inst": 5.009,
+    "harmful_vs_harmless_at_t_post": 2.0307,
+    "cos_harmfulness_refusal": 0.1565
+  },
+  "refusal_clustering": null
+}

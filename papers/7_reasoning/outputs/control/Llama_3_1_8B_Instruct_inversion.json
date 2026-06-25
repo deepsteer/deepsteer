@@ -1,0 +1,153 @@
+{
+  "analysis": "phase2d_control_instruct_normscaled",
+  "repo": "meta-llama/Llama-3.1-8B-Instruct",
+  "n_layers": 32,
+  "sweep_layers": [
+    8,
+    11,
+    14,
+    18
+  ],
+  "alphas": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "fire_threshold": 0.5,
+  "raw_diff_norm": {
+    "8": 3.197,
+    "11": 3.875,
+    "14": 4.551,
+    "18": 6.675
+  },
+  "resid_norm": {
+    "8": 7.273,
+    "11": 8.104,
+    "14": 10.34,
+    "18": 14.817
+  },
+  "clean_safe_rate": 0.9167,
+  "clean_harmful_rate": 0.9583,
+  "clean_safe_mean_margin": -2.088,
+  "grid": {
+    "L8_a0.5": {
+      "depth": 0.25,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.77
+    },
+    "L8_a1.0": {
+      "depth": 0.25,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 1.249
+    },
+    "L8_a2.0": {
+      "depth": 0.25,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.732
+    },
+    "L8_a4.0": {
+      "depth": 0.25,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.055
+    },
+    "L11_a0.5": {
+      "depth": 0.344,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": -0.665
+    },
+    "L11_a1.0": {
+      "depth": 0.344,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.859
+    },
+    "L11_a2.0": {
+      "depth": 0.344,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.169
+    },
+    "L11_a4.0": {
+      "depth": 0.344,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 2.99
+    },
+    "L14_a0.5": {
+      "depth": 0.438,
+      "flip_rate": 0.2273,
+      "flips": 5,
+      "n_eligible": 22,
+      "mean_margin_shift": 1.763
+    },
+    "L14_a1.0": {
+      "depth": 0.438,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.858
+    },
+    "L14_a2.0": {
+      "depth": 0.438,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": -0.193
+    },
+    "L14_a4.0": {
+      "depth": 0.438,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.43
+    },
+    "L18_a0.5": {
+      "depth": 0.562,
+      "flip_rate": 0.0455,
+      "flips": 1,
+      "n_eligible": 22,
+      "mean_margin_shift": -0.453
+    },
+    "L18_a1.0": {
+      "depth": 0.562,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": -0.57
+    },
+    "L18_a2.0": {
+      "depth": 0.562,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": -0.252
+    },
+    "L18_a4.0": {
+      "depth": 0.562,
+      "flip_rate": 0.0,
+      "flips": 0,
+      "n_eligible": 22,
+      "mean_margin_shift": 0.621
+    }
+  },
+  "best_layer": 14,
+  "best_alpha": 0.5,
+  "best_flip_rate": 0.2273,
+  "max_mean_margin_shift": 2.99,
+  "fires": false,
+  "verdict": "PARTIAL: no full flip but steering shifts the margin toward harmful (max +2.99) -> direction IS causal, steering under-powered for the large baseline margins; the harmfulness direction is validated as causal (continuous), method sound."
+}

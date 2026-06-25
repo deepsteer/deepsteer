@@ -1,0 +1,27 @@
+{
+  "analysis": "phase2c_positions",
+  "key": "ds_r1_llama8b",
+  "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+  "headline_layer": 16,
+  "band": [
+    15,
+    31
+  ],
+  "post_count": 2,
+  "post_instruction_suffix": "<\uff5cAssistant\uff5c><think>",
+  "t_inst_token_example": "database",
+  "n_harmful": 64,
+  "n_harmless": 64,
+  "separation": {
+    "harmful_vs_harmless_at_t_inst": 4.3929,
+    "harmful_vs_harmless_at_t_post": 3.5875,
+    "cos_harmfulness_refusal": 0.1126
+  },
+  "refusal_clustering": {
+    "n_refused": 4,
+    "n_accepted": 20,
+    "refused_vs_accepted_at_t_post": 0.7214,
+    "refused_vs_accepted_at_t_inst": -0.9786,
+    "note": "flip check: harmful prompts split by refusal should separate at t_post-inst (refusal) but NOT cleanly at t_inst (harmfulness common)"
+  }
+}

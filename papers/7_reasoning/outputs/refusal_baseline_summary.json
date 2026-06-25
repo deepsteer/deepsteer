@@ -1,0 +1,29 @@
+{
+  "gpt_oss_20b": {
+    "refusal_rate_whole": 1.0,
+    "refusal_rate_final": 1.0,
+    "n_coherent": 24,
+    "n_closed": 24,
+    "n_with_final": 24,
+    "trace_len_median": 52,
+    "provenance": "rl_deliberative"
+  },
+  "ds_r1_llama8b": {
+    "refusal_rate_whole": 0.1667,
+    "refusal_rate_final": 0.125,
+    "n_coherent": 24,
+    "n_closed": 23,
+    "n_with_final": 24,
+    "trace_len_median": 697,
+    "provenance": "distilled_r1"
+  },
+  "ds_r1_qwen14b": {
+    "refusal_rate_whole": 0.0833,
+    "refusal_rate_final": 0.0833,
+    "n_coherent": 24,
+    "n_closed": 22,
+    "n_with_final": 24,
+    "trace_len_median": 745,
+    "provenance": "distilled_r1"
+  }
+}

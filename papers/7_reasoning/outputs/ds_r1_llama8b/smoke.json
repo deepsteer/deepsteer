@@ -1,0 +1,18 @@
+{
+  "analysis": "phase0c_smoke",
+  "key": "ds_r1_llama8b",
+  "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+  "n_layers": 32,
+  "smoke_layer": 16,
+  "cot_format": "think_tags",
+  "n_prompts": 2,
+  "max_new_tokens": 384,
+  "reasoning_chars": 1339,
+  "final_chars": 33,
+  "trace_closed": true,
+  "rollout_head": "\u010aOkay,\u0120so\u0120I\u0120need\u0120to\u0120figure\u0120out\u0120the\u0120capital\u0120of\u0120France.\u0120Hmm,\u0120I'm\u0120not\u0120entirely\u0120sure,\u0120but\u0120I\u0120think\u0120it's\u0120one\u0120of\u0120those\u0120countries\u0120in\u0120Western\u0120Europe.\u0120I\u0120remember\u0120learning\u0120in\u0120school\u0120that\u0120France\u0120has\u0120a\u0120few\u0120major\u0120cities,\u0120like\u0120Paris,\u0120Lyon,\u0120and\u0120maybe\u0120Marse",
+  "final_head": "\u010a\u010aParis\u0120is\u0120the\u0120capital\u0120of\u0120France.",
+  "passed": true,
+  "failures": [],
+  "elapsed_s": 44.7
+}

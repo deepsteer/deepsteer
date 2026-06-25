@@ -1,0 +1,3 @@
+# Raw per-token residual dumps (23-42MB each); figures regenerate from the
+# 1:1 JSON (trace_length_disentangle.json). Excluded to keep history lean.
+outputs/**/trace_profile.npz

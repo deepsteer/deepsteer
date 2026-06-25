@@ -1,0 +1,58 @@
+{
+  "analysis": "phase2f_position_vs_moral",
+  "models": {
+    "gpt_oss_20b": {
+      "headline_layer": 12,
+      "moral_subspace_dim": 6,
+      "hidden": 2880,
+      "harmfulness_in_moral_subspace_fraction": 0.1764,
+      "random_floor_fraction": 0.0456,
+      "above_chance_ratio": 3.87,
+      "mean_abs_cos_to_foundations": 0.1077,
+      "cos_to_foundations": {
+        "Care": 0.0925,
+        "Fairness": 0.1045,
+        "Liberty": 0.1508,
+        "Loyalty": 0.1085,
+        "Authority": 0.0901,
+        "Sanctity": 0.0999
+      }
+    },
+    "ds_r1_llama8b": {
+      "headline_layer": 16,
+      "moral_subspace_dim": 6,
+      "hidden": 4096,
+      "harmfulness_in_moral_subspace_fraction": 0.114,
+      "random_floor_fraction": 0.0383,
+      "above_chance_ratio": 2.98,
+      "mean_abs_cos_to_foundations": 0.0645,
+      "cos_to_foundations": {
+        "Care": 0.0563,
+        "Fairness": 0.0318,
+        "Liberty": 0.0893,
+        "Loyalty": 0.082,
+        "Authority": 0.0646,
+        "Sanctity": 0.0628
+      }
+    },
+    "ds_r1_qwen14b": {
+      "headline_layer": 24,
+      "moral_subspace_dim": 6,
+      "hidden": 5120,
+      "harmfulness_in_moral_subspace_fraction": 0.1147,
+      "random_floor_fraction": 0.0342,
+      "above_chance_ratio": 3.35,
+      "mean_abs_cos_to_foundations": 0.0669,
+      "cos_to_foundations": {
+        "Care": 0.0513,
+        "Fairness": 0.0799,
+        "Liberty": 0.0977,
+        "Loyalty": 0.0715,
+        "Authority": 0.0587,
+        "Sanctity": 0.0424
+      }
+    }
+  },
+  "mean_harmfulness_in_moral_fraction": 0.135,
+  "reading": "distinct: harmfulness is largely OUTSIDE the MFT moral subspace -> moral-foundations != harmfulness-judgment (sharp positioning vs Zhao)"
+}

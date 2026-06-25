@@ -1,0 +1,150 @@
+% main.tex — Paper 6: Where Refusal Lives (cross-model).
+% arXiv-targeted; NeurIPS 2025 preprint style.
+%
+% Build:  make pdf   (pandoc per section -> latexmk)
+% Section .tex live in build/sections/<NN>.tex (generated from ../sections/<NN>.md).
+
+\documentclass{article}
+
+\PassOptionsToPackage{round, comma, sort&compress, authoryear}{natbib}
+\usepackage[preprint]{neurips_2025}
+\bibliographystyle{plainnat}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+\setlength{\emergencystretch}{3em}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\urlstyle{tt}
+\Urlmuskip=0mu plus 1mu
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{calc}
+\providecommand{\real}[1]{#1}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{graphicx}
+\graphicspath{{../figures/}{../outputs/figures/}}
+\usepackage{xcolor}
+
+% Paper 7 token-position macros (Zhao et al. t_inst / t_post-inst).
+\newcommand{\tinst}{$t_{\mathrm{inst}}$}
+\newcommand{\tpost}{$t_{\mathrm{post\text{-}inst}}$}
+
+\usepackage[colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalize, noabbrev]{cleveref}
+
+\title{Comprehension Without Compliance: Harm Comprehension and Refusal Are
+Separately Encoded in Reasoning Models}
+
+\author{%
+  Orion Reblitz-Richardson\thanks{%
+    Distiller Labs. Correspondence to Distiller Labs
+    \textless\texttt{orion@orionr.com}\textgreater.}
+}
+
+\date{June 2026}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcounter{none}
+
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+\newenvironment{Shaded}{\begin{quote}}{\end{quote}}
+\newcommand{\KeywordTok}[1]{\textbf{#1}}
+\newcommand{\DataTypeTok}[1]{\textbf{#1}}
+\newcommand{\StringTok}[1]{\textit{#1}}
+\newcommand{\CommentTok}[1]{\textit{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textbf{#1}}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ImportTok}[1]{\textbf{#1}}
+\newcommand{\CommentVarTok}[1]{\textit{#1}}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\AttributeTok}[1]{#1}
+
+% =====================================================================
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Language models are trained to refuse harmful requests, but refusing a request is
+not the same as understanding that it is harmful. The distinction matters most for
+reasoning models, which think step by step before answering and which safety
+research increasingly relies on. When such a model refuses, is the refusal the
+result of reasoning about harm, or a reflex that runs alongside the reasoning
+without depending on it? We study where harm comprehension and refusal are
+represented inside three open reasoning models, including GPT-OSS-20B, whose ability
+to reason was trained by reinforcement learning rather than copied from a stronger
+model.
+
+Harm comprehension and refusal turn out to be encoded separately, and they stay
+nearly independent of each other even in the model whose deliberation was genuinely
+trained. The internal representation of harm is real: it is strongly decodable, and
+in models that answer directly, steering it flips the model's stated judgment of
+whether a request is harmful. Yet in the reasoning models that representation is
+spread across the chain of thought and concentrated away from the point where the
+refusal is decided, and the refusal itself is not controlled by any single internal
+direction. The harm representation is related to, but distinct from, the
+moral-foundation structure that other work measures. We also report a practical
+obstacle: the standard test for whether such a direction is causal reads the model's
+stated judgment, and reasoning models do not state one cleanly, which limits how
+interpretability tools built for direct-answering models carry over.
+
+Understanding that a request is harmful and acting on that understanding are separate
+things inside reasoning models, and they remain separate even when the model is
+trained to deliberate. This is a caution for safety methods that read a model's
+refusal as evidence of what it comprehends.
+\end{abstract}
+
+% =====================================================================
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_methodology.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_conclusion.tex}
+
+\begin{ack}
+This work made extensive use of Anthropic's Claude (the Claude Code agent on
+Opus~4.8) for code scaffolding, experimental scripts, and prose drafting. The
+author retains responsibility for experimental design, all scientific claims,
+and final wording.
+\end{ack}
+
+\bibliography{references}
+
+\appendix
+\newpage
+\begin{center}
+  \rule{0.5\linewidth}{0.4pt}\\[0.6em]
+  {\Large\bfseries Appendices}\\[0.25em]
+  {\small Supplementary material.}\\[0.4em]
+  \rule{0.5\linewidth}{0.4pt}
+\end{center}
+\vspace{0.5em}
+
+\input{sections/0A_tables.tex}
+\input{sections/0B_reproducibility.tex}
+
+\end{document}

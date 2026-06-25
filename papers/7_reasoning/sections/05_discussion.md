@@ -1,0 +1,62 @@
+# 5. Discussion
+
+**The dissociation extends into the reasoning regime.** The headline result is a
+negative one with a clear shape. A model trained by reinforcement learning to
+deliberate about harm does not, by virtue of that training, route its refusal
+through its harm comprehension. Harmfulness is strongly decodable at the instruction
+token and nearly orthogonal to the refusal direction in GPT-OSS-20B exactly as in
+the distilled models and as in the non-reasoning models of prior work. The
+comprehension/compliance dissociation is not an artifact of weak post-training; it
+survives the strongest deliberative-alignment training available in an open model.
+
+**Comprehension is present, distributed, and displaced.** GPT-OSS-20B carries the
+most trace-level moral content of the panel, and it deliberates about harm in a way
+the geometry can see. But that content peaks in the early-to-middle of the trace and
+fades to its lowest value at the decision, while the refusal decision is distributed
+across directions rather than bottlenecked through one. The model that most clearly
+reasons about harm is also the one whose refusal is least reducible to a single
+handle. Deliberation and a low-dimensional refusal mechanism are not the same thing,
+and in GPT-OSS-20B they come apart.
+
+**Functional versus imitated, and why we do not claim it.** The experiment we set
+out to run would ablate harm comprehension and ask whether refusal changes, more in
+the RL-deliberative model than in the imitated distills. Two facts block it, and we
+report them rather than force the claim. GPT-OSS-20B's refusal is distributed, so
+there is no clean low-dimensional ablation that isolates a load-bearing test; the
+distributed-ness does imply, weakly, that the moral subspace is not a refusal
+bottleneck, since nothing low-dimensional is, but that is an a-fortiori argument, not
+an ablation result. And the distilled models barely refuse, a behavior confounded
+with R1 distillation degrading refusal training, so their failure to translate harm
+comprehension into refusal cannot license a claim that the comprehension is
+decorative. The honest contribution is the dissociation and its reach, not a
+functional-versus-imitated split we cannot cleanly measure.
+
+**A constraint on interpretability methods for reasoning models.** That the
+reply-inversion readout is clean on instruct models and unreadable on reasoning
+models is not a nuisance of our setup; it is a property of the models. Methods that
+validate a direction by reading the model's stated judgment assume the model will
+state one in a position the readout can reach. Reasoning models do not: they reason
+past the question, echo it, or over-judge when forced. The harmfulness direction is
+nonetheless causal, as the instruct positive control shows, but its causal status on
+the reasoning models themselves cannot be established through a behavioral readout
+they do not emit. As refusal- and harmfulness-direction methods are increasingly
+applied to reasoning models, the readout channel, not the direction, becomes the
+binding constraint.
+
+**Harmfulness is not the moral foundations.** The harm-judgment that reasoning
+models encode at the instruction token overlaps the Moral Foundations subspace above
+chance but lies mostly outside it. Whatever reasoning models route their
+harm-comprehension through, it is a prohibited-capability representation more than a
+representation of Haidt's foundations. This sharpens the relationship between the
+present program, which measures moral structure, and the harmfulness account of
+\citet{zhao2025harmfulness}: the two are measuring related but distinct objects, and
+a result about one does not transfer to the other without the overlap measured.
+
+**Limitations.** The causal validation of the harmfulness direction is on instruct
+models, not the reasoning models, for the readout reason above; we therefore cannot
+claim the direction is load-bearing for refusal in the reasoning models. GPT-OSS-20B
+is the only MoE in the panel, confounding deliberation with architecture, and the
+two distills differ in scale. The distill behavioral contrast is confounded by
+distillation degrading refusal. Sample sizes for the trace-level and causal
+measurements are bounded by generation cost; we report held-out splits and
+chance floors throughout, and gate causal claims on a firing sensitivity yardstick.

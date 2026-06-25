@@ -1,0 +1,27 @@
+{
+  "analysis": "phase2c_positions",
+  "key": "ds_r1_qwen14b",
+  "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+  "headline_layer": 24,
+  "band": [
+    22,
+    47
+  ],
+  "post_count": 3,
+  "post_instruction_suffix": "<\uff5cAssistant\uff5c><think>\n",
+  "t_inst_token_example": " database",
+  "n_harmful": 64,
+  "n_harmless": 64,
+  "separation": {
+    "harmful_vs_harmless_at_t_inst": 5.0069,
+    "harmful_vs_harmless_at_t_post": 3.8378,
+    "cos_harmfulness_refusal": 0.1625
+  },
+  "refusal_clustering": {
+    "n_refused": 2,
+    "n_accepted": 22,
+    "refused_vs_accepted_at_t_post": -1.7796,
+    "refused_vs_accepted_at_t_inst": -0.3266,
+    "note": "flip check: harmful prompts split by refusal should separate at t_post-inst (refusal) but NOT cleanly at t_inst (harmfulness common)"
+  }
+}
