@@ -1,0 +1,57 @@
+{
+  "seed": 42,
+  "eval_frac": 0.2,
+  "min_eval_items": 100,
+  "note": "Identifiers-only split. Full ID lists live in the gitignored partition_ids.json; re-run this script to regenerate them and verify against the checksums below.",
+  "sources": {
+    "morables": {
+      "unit": "fable_alias",
+      "n_total": 709,
+      "n_train": 567,
+      "n_eval": 142,
+      "supports_balanced_eval": true,
+      "sha256": {
+        "train": "338a94e2d3d905a680dd0b238ebd4d135d6be84e4c5c8bc32e7d115548dba6fc",
+        "eval": "b2f2d9b564128d4543d8d65560465833ddfc5566e894b18a14cf2f6303fbf5f5"
+      }
+    },
+    "moral_stories": {
+      "unit": "instance_id",
+      "n_total": 12000,
+      "n_train": 9600,
+      "n_eval": 2400,
+      "supports_balanced_eval": true,
+      "sha256": {
+        "train": "7e4cb1bb9138956df00c3f320a8718f17f7c20a9d3e963253f81d2ec85d40ea9",
+        "eval": "30c5cd903163589c4e0fa3abf264410ac3b1a6e1e627eec63aacdfba5619338d"
+      }
+    },
+    "ethics": {
+      "unit": "input_sha1_16",
+      "n_total": 20601,
+      "n_train": 16481,
+      "n_eval": 4120,
+      "train_label_0acc_1unacc": {
+        "1": 7725,
+        "0": 8756
+      },
+      "train_register": {
+        "long": 8093,
+        "short": 8388
+      },
+      "eval_label_0acc_1unacc": {
+        "1": 1977,
+        "0": 2143
+      },
+      "eval_register": {
+        "short": 2086,
+        "long": 2034
+      },
+      "supports_balanced_eval": true,
+      "sha256": {
+        "train": "21da1cbc8ad28505867f775eb351ceaa87b2f9b1bcbeb9f76086df2ae7ce4db7",
+        "eval": "aa7a4b40a2d1b60cf9f0af7c470536a8964602abb4925de36bab3759017067bf"
+      }
+    }
+  }
+}

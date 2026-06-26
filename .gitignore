@@ -100,3 +100,6 @@ papers/6_cross_model/outputs/figures/
 # Large intermediate activation caches (reproducible via phase_c1_cache_activations.py)
 papers/1_accuracy_vs_fragility/outputs/phase_c1_acts/
 papers/1_accuracy_vs_fragility/outputs/phase_c4_comp_acts/
+
+# Direction 1: regenerable source-partition ID lists (run partition_sources.py)
+papers/direction1_moral_subspace/partition_ids.json
