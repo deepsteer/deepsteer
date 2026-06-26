@@ -48,7 +48,7 @@ MIN_EVAL_ITEMS = 100
 
 _OUT = Path(__file__).resolve().parent.parent
 _MANIFEST = _OUT / "partition_manifest.json"      # committed: summary + checksums
-_IDS = _OUT / "partition_ids.json"                # gitignored: full ID lists (regen)
+_IDS = _OUT / "partition_ids.json"                # committed: canonical split (ids only)
 
 
 # ---------------------------------------------------------------------------
@@ -162,9 +162,11 @@ def main() -> None:
     }
     manifest: dict = {"seed": SEED, "eval_frac": EVAL_FRAC,
                       "min_eval_items": MIN_EVAL_ITEMS,
-                      "note": ("Identifiers-only split. Full ID lists live in the "
-                               "gitignored partition_ids.json; re-run this script to "
-                               "regenerate them and verify against the checksums below."),
+                      "note": ("Identifiers-only split. The canonical split (full ID "
+                               "lists, unique to this repo) is committed in "
+                               "partition_ids.json. Re-running this script (seed=42) "
+                               "reproduces it; the per-split checksums below verify "
+                               "integrity against upstream source drift."),
                       "sources": {}}
     ids: dict = {"seed": SEED, "ids": {}}
     print(f"\n{'source':<16}{'unit':<18}{'total':>8}{'train':>8}{'eval':>8}"
@@ -189,8 +191,8 @@ def main() -> None:
         json.dump(manifest, fh, indent=2)
     with open(_IDS, "w") as fh:
         json.dump(ids, fh)
-    print(f"\nwrote {_MANIFEST.relative_to(_OUT.parent.parent)} (committed)")
-    print(f"wrote {_IDS.relative_to(_OUT.parent.parent)} (gitignored, regenerable)")
+    print(f"\nwrote {_MANIFEST.relative_to(_OUT.parent.parent)} (committed: summary)")
+    print(f"wrote {_IDS.relative_to(_OUT.parent.parent)} (committed: canonical split)")
 
     print("\n--- ETHICS balance (per split) ---")
     e = manifest["sources"]["ethics"]

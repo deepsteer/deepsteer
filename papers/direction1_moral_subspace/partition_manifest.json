@@ -2,7 +2,7 @@
   "seed": 42,
   "eval_frac": 0.2,
   "min_eval_items": 100,
-  "note": "Identifiers-only split. Full ID lists live in the gitignored partition_ids.json; re-run this script to regenerate them and verify against the checksums below.",
+  "note": "Identifiers-only split. The canonical split (full ID lists, unique to this repo) is committed in partition_ids.json. Re-running this script (seed=42) reproduces it; the per-split checksums below verify integrity against upstream source drift.",
   "sources": {
     "morables": {
       "unit": "fable_alias",
