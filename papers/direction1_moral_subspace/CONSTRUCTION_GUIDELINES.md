@@ -96,6 +96,19 @@ Moral-Stories + MORABLES `V_moral`.
 - **Training is two-source by construction: Moral Stories (workhorse bulk) + MORABLES
   (full clean yield, pooled iff it clears G-AXIS).** ETHICS is zero-in-training; it and
   Social Chemistry 101 are eval-side generalization probes.
+- **Registers: narrative + declarative, content-paired (dialogue deferred).** The sources
+  generate narrative pairs; declarative coverage comes from **re-rendering the same audited
+  content** into declarative surface (`generate_declarative_rerender.py`), holding moral
+  content and valence fixed and changing only the register — NOT fresh declarative generation
+  (which would re-confound register with content and reintroduce the §1.5 risk). Re-renderings
+  are re-audited; only clean ones are kept. Applied to train + in-distribution eval. This is
+  load-bearing: a narrative-only `V_moral` is likely register-specific (project finding that
+  linear probes fail declarative↔narrative transfer), which would undercut the "richer, more
+  general instrument" thesis. It also splits the ETHICS probe's confound into two clean tests:
+  (a) cross-register at constant content (narrative vs declarative re-renderings of the same
+  in-dist pairs = Track 4), and (b) the now-interpretable ETHICS declarative probe. **Dialogue
+  is a documented coverage limitation** — it cannot be re-rendered from fable/action content
+  without inventing speakers (new content, the wrong-way construction).
 - **Relational structure (§1.1) and parallelism (§1.2)** apply to every pair, both sides.
 - **Three registers (§3)** declarative / narrative / dialogue, per-source and per-register
   balance tracked in each split independently. MORABLES is register-narrow (event-retellings
