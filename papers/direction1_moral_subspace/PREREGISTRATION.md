@@ -305,3 +305,13 @@ line, never a silent edit.*
   to ETHICS's abstract-judgment register — a register **absent from training** — alongside
   Social Chemistry 101's deferred OOD role. Training set is two-source by construction. No
   change to G2, G3, G-AXIS thresholds.
+- **2026-06-26 (eval structure — two non-pooled tests):** The eval splits into two tests
+  with opposite balance needs. (1) **`eval_g2_indist`** — source-balanced in-distribution
+  (MORABLES 53 + Moral Stories 53 = 106). **GATE G2 reads ONLY this set, and only it is
+  paraphrased;** balancing keeps the paraphrase gap from being a source-shift artifact. (2)
+  **`eval_generalization_probe`** — all-clean ETHICS (118), **never pooled into G2** (pooling
+  would make the largest eval source the one register `V_moral` never trained on, so the
+  aggregate G2 would measure generalization, not contamination). Realized clean yields at
+  scale: MORABLES 0.41 train / 0.37 eval (below the 0.60 n=10 estimate — small calibration
+  samples over-estimate), Moral Stories 0.57 / 0.54, ETHICS 0.54. Final pre-paraphrase
+  dataset: train 805 (two-source), eval_g2_indist 106, eval_probe 118.
