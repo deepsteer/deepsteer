@@ -95,6 +95,11 @@ gate.
 > **If either fails → STOP and fix curation.** G2 failure blocks Tracks 3–4, Phase 3.5,
 > Phase 4, and Direction 2 (per plan §6, §9). No downstream number may be reported on a
 > subspace that fails G2.
+>
+> **Slice the STOP gates on (2026-06-27 amendment):** the hard STOP is computed on the **106
+> narrative** in-dist eval pairs only; the 28 declarative paraphrase gaps are **reported as
+> informative, not gated** (the 0.10 threshold is narrative-calibrated and the declarative
+> slice is thin + register-asymmetric). All 134 are paraphrased.
 
 **Reporting (not part of the pass/fail, but committed):** per-register breakdown
 (declarative / narrative / dialogue) of both accuracies and the gap; `auc_abs` alongside
@@ -327,3 +332,22 @@ line, never a silent edit.*
   Track-4 test has 28 content-paired pairs (directional signal, thin CI); **dialogue remains
   a documented coverage limitation.** Final pre-paraphrase dataset: train **1140**,
   eval_g2_indist **134** (106 narr + 28 decl), eval_probe **118**.
+- **2026-06-27 (G2 hard STOP gates on the narrative slice):** G2's hard STOP is computed on
+  the **106 narrative** in-dist eval pairs, **not** the aggregate 134. The 28 declarative
+  pairs are (a) selected-for-cleanliness survivors of the declarative 0.40 ceiling, (b) a
+  register `V_moral` covers only 29% in training, and (c) too thin (n=28, wide CI) to carry a
+  hard STOP at the **0.10 threshold, which was calibrated on Paper 1's narrative
+  construction**. A wide declarative paraphrase gap could reflect register-coverage asymmetry
+  or the 28-pair CI rather than contamination; admitting it to the aggregate risks a STOP that
+  is not about contamination. Therefore: **paraphrase all 134; the declarative slice's gap is
+  REPORTED as informative (not gated); the G2 STOP gates on the 106 narrative slice only.**
+  Same discipline as ETHICS — the clean pool gates, the thin/confounded slice reports.
+- **2026-06-27 (Track-4 cross-register is directional, not confirmatory):** The within-`V_moral`
+  cross-register transfer test uses **28 content-paired** narrative↔declarative eval pairs,
+  pool-capped by the declarative 0.40 ceiling × 106 narrative. At n=28 the CI is wide, and
+  given the project's prior finding that linear probes fail declarative↔narrative transfer, a
+  weak/null result **cannot distinguish "register augmentation didn't take" from
+  "underpowered."** Track 4 (cross-register) is therefore pre-registered as
+  **DIRECTIONAL / EXPLORATORY**, to be read as designed rather than as a shortfall. The
+  register fix's **confirmatory** wins are elsewhere: a less register-specific `V_moral` (29%
+  declarative training) and the decomposed/interpretable ETHICS probe.
