@@ -285,6 +285,14 @@ line, never a silent edit.*
   agreement, floor 0.67) and the moral-salience construct framing (§1). MORABLES moves from
   a stated-moral aphorism contrast to a fable-internal salience contrast; its pooling into
   `V_moral` is now cosine-gated. No change to G2, G3, or their thresholds.
+- **2026-06-26 (commit `1317307`+):** ETHICS register finding. First-batch calibration shows
+  ETHICS §1.5 (accidentally-moral) does not clear (≈0.40 fail) because its scenarios are
+  moral-judgment-native (the care/interpersonal frame carries residual valence a same-frame
+  edit can't strip); §1.2 stays perfect. Per the pre-registered fallback, ETHICS is
+  re-weighted toward its **hard-ambiguity-span role** (Track 1) with **reduced** bulk
+  contribution to the pooled `V_moral` direction, and its clean subset carries a
+  **selection-bias flag** (filtering keeps non-care-framed items). See
+  `CONSTRUCTION_GUIDELINES.md` (ETHICS section). No change to G2, G3, G-AXIS thresholds.
 
 ### Amendments
 *(none)*

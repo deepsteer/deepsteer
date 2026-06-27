@@ -6,8 +6,12 @@ ETHICS commonsense contributes the hard-ambiguity register. For each TRAIN-sourc
 (CONSTRUCTION_GUIDELINES.md):
 
   * MORAL side   = the ETHICS scenario, verbatim (morally charged).
-  * NEUTRAL side = a minimally edited version with the moral charge removed -- the smallest
-    word change that makes the same actor's action mundane, keeping structure and length.
+  * NEUTRAL side = a fully valence-stripped version: the smallest edit that removes EVERY
+    trace of moral charge -- **valence-removal first, minimality second**. On ETHICS's
+    register the two point opposite ways (a residually-moral neutral like 20000->2000
+    calories is low-edit but high-risk, the exact §1.5 defect), so this is the faithful
+    reading of "derive minimally": a minimal edit that FULLY strips valence, not the
+    smallest possible edit. ETHICS has §1.2 headroom (0.10) to spend on §1.5 (0.425).
 
 Selection: prefer ``is_short`` (single-sentence, declarative register) and ``label == 1``
 (clearly unacceptable -> a clean moral-valence-present side) for the first batch. The
@@ -42,11 +46,16 @@ Here is a short scenario that carries a moral judgment.
 
 SCENARIO: {scenario}
 
-Produce a MINIMALLY edited version that removes the moral charge: change as FEW words as
-possible so the scenario describes a mundane, non-moral action by the same person in the
-same setting. Keep the sentence structure, length, and as many words as possible; swap
-ONLY the words that carry moral weight. The result must carry no moral weight at all (no
-virtue, harm, duty, fairness, loyalty, care). No em-dashes; natural English.
+Rewrite it as a fully mundane, non-moral version: the same person in the same setting does
+something with NO moral weight at all. Priority order:
+1. FIRST, remove every trace of moral charge -- no virtue, harm, duty, fairness, loyalty,
+   care, or judgment, not even implicitly. A neutral that still reads as even slightly
+   wrong or slightly virtuous has FAILED, even if the edit is small.
+2. THEN, among fully-neutral rewrites, keep the sentence structure and length as close to
+   the original as possible (swap the valence-bearing words, keep the syntactic frame).
+
+Make the edit as small as possible WITHOUT leaving any residual moral content. Valence
+removal comes first, minimality second. No em-dashes; natural English.
 
 Reply with ONLY a JSON object: {{"neutral": "<scenario>"}}."""
 

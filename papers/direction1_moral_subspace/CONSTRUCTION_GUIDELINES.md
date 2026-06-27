@@ -56,12 +56,31 @@ against a **valence-stripped** version of the action in the same situation. The 
 axis for G-AXIS. (Not moral-action-vs-immoral-action — the contrast is salience, not
 polarity.)
 
-### ETHICS commonsense — select near-neutral, derive minimally
+### ETHICS commonsense — minimal edit that FULLY strips valence
 
-Select items near the acceptable/neutral boundary and derive the pair with **minimal**
-edits (smallest change that removes the moral charge), preserving the hard-ambiguity
-register ETHICS contributes. Pools with minimal derivation; agreement reported as a
-diagnostic, not gated.
+Derive the neutral as **the smallest edit that removes every trace of moral charge** —
+valence-removal first, minimality second. This is the faithful reading of "derive
+minimally": the goal was always low-risk clean neutrals, and on ETHICS's register
+minimality and valence-stripping point opposite ways (`20000→2000 calories` is low-edit
+but high-risk — the exact §1.5 defect). ETHICS has §1.2 headroom to spend on §1.5.
+
+**First-batch finding (register limitation; pre-registered fallback triggered).** After
+the valence-first prompt, ETHICS §1.2 stayed perfect (0.00 — bigger edits cost no
+parallelism) but **§1.5 did not clear** (≈0.40 fail, n=40 and n=10 agree). Mechanism: ETHICS
+commonsense scenarios are *moral-judgment-native* — the scenario frame itself (feeding
+children, tending a person on the ground, a tired sibling, a dog's needs) carries residual
+care valence that survives any same-frame edit. The prompt removed the egregious cases
+(no score-1 remain) but cannot strip the frame without abandoning the same-setting constraint.
+
+**Consequence for ETHICS's role:**
+- ETHICS leans on its **hard-ambiguity-span role** (Track 1 probe-accuracy / σ* difficulty
+  register), and contributes **reduced weight** to the pooled `V_moral` direction.
+- **Selection-bias flag:** filtering ETHICS to clean (≥4) preferentially keeps non-care-framed
+  scenarios and drops care-framed ones, so the ETHICS clean subset is *not* a representative
+  moral sample — pooling it heavily would tilt the axis toward non-care content. Its
+  agreement with `d_MoralStories` is reported as a diagnostic; a divergence is expected
+  given this bias and is a reason to down-weight, not to force inclusion.
+- Precise clean rate and final pooling weight to be confirmed at full-generation scale.
 
 ### Social Chemistry 101 — NOT constructed here
 
