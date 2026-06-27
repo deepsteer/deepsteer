@@ -313,5 +313,17 @@ line, never a silent edit.*
   would make the largest eval source the one register `V_moral` never trained on, so the
   aggregate G2 would measure generalization, not contamination). Realized clean yields at
   scale: MORABLES 0.41 train / 0.37 eval (below the 0.60 n=10 estimate — small calibration
-  samples over-estimate), Moral Stories 0.57 / 0.54, ETHICS 0.54. Final pre-paraphrase
-  dataset: train 805 (two-source), eval_g2_indist 106, eval_probe 118.
+  samples over-estimate), Moral Stories 0.57 / 0.54, ETHICS 0.54.
+- **2026-06-27 (register: two-register + declarative-ceiling finding):** Narrative-only
+  training (a §4.2 control violation) fixed by **re-rendering audited content into declarative
+  surface** (content held constant; `generate_declarative_rerender.py`). Achieved **71/29
+  narrative/declarative** train (805 / 335) and 106 / 28 in-dist eval. **Finding:** declarative
+  clean yield is capped at ~0.40 — forcing tight §1.2 parallelism (minimal-pair re-render)
+  trades directly into §1.5 (residual valence), clean stays ~0.42. This is the **same
+  minimality-vs-valence tension ETHICS exhibits, now shown to be REGISTER-intrinsic to
+  abstract/declarative statements**, not source-specific. One iteration confirmed the ceiling;
+  accepted per the ETHICS discipline (register finding, not failure). Consequences: `V_moral`
+  is narrative-dominant with a 29% declarative component (not 50/50); the cross-register
+  Track-4 test has 28 content-paired pairs (directional signal, thin CI); **dialogue remains
+  a documented coverage limitation.** Final pre-paraphrase dataset: train **1140**,
+  eval_g2_indist **134** (106 narr + 28 decl), eval_probe **118**.
