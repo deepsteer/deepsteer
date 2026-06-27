@@ -182,13 +182,15 @@ detects that while rejecting rank inflation.
 
 ---
 
-## 3A. GATE G-AXIS — cross-source axis agreement (MORABLES pooling; fixed now)
+## 3A. GATE G-AXIS — two-source axis agreement (MORABLES pooling; fixed now)
 
-MORABLES is the construct anchor, but its material is fables — a discourse type distinct
-from the action-contrast sources. To keep it in the direction-extraction path **without**
-letting a fable-specific axis distort `V_moral`, its inclusion is gated on agreement with
-the cleanest action-contrast source. This runs at Phase 2, **before** `V_moral` is
-finalized (so it is upstream of the eff-dim, null, and G3 measurements).
+The training composition is **two-source by construction: Moral Stories + MORABLES**
+(ETHICS contributes zero to the direction — see the 2026-06-26 amendment). **Moral Stories
+is the reference axis.** MORABLES is the construct anchor, but its material is fables — a
+discourse type distinct from the contemporary action-contrast register. To keep it in the
+direction-extraction path **without** letting a fable-specific axis distort `V_moral`, its
+inclusion is gated on agreement with Moral Stories. This runs at Phase 2, **before**
+`V_moral` is finalized (so it is upstream of the eff-dim, null, and G3 measurements).
 
 **Measurement (Phase 2, GPU).** Extract two per-source mean-diff **salience** directions on
 OLMo-3 Base, each from that source's TRAIN-source pairs only:
@@ -206,17 +208,19 @@ mean (15–31).
 the realized cosine is computed at Phase 2 before any pooling (two-step discipline, as G3).
 
 > **G-AXIS decision rule (let the cosine decide, not a judgment call):**
-> - `cos ≥ 0.67` → MORABLES **POOLS** into `V_moral` (construct-anchoring inside the
+> - `cos ≥ 0.67` → **PASS**: fables read the **same** moral-salience axis as contemporary
+>   action-contrasts. MORABLES **POOLS** into `V_moral` (construct-anchoring inside the
 >   subspace, as intended).
-> - `cos < 0.67` → MORABLES is **EXCLUDED** from `V_moral` and retained as construct-anchor
->   **evaluation only** (Track 1 probe-accuracy / σ*). The result *"fables read on a
->   different moral-salience axis than action-contrasts (cos = X < 0.67)"* is reported as a
->   **real finding, not a failure.**
+> - `cos < 0.67` → **FAIL**: fables read on an axis **distinguishable from contemporary
+>   scenarios specifically**. MORABLES is **EXCLUDED** from `V_moral` and retained as a
+>   construct-anchor **evaluation only** (Track 1 probe-accuracy / σ*). Reported as a
+>   **register finding, not a failure** — *"fable moral salience is distinguishable from
+>   contemporary action-contrast salience (cos = X < 0.67)."*
 
-Moral Stories is the reference axis. ETHICS pools with minimal derivation (select
-near-neutral items, derive minimally); its agreement with `d_MoralStories` is reported as a
-diagnostic, not a gate. `V_moral`'s final composition (which sources pooled) is fixed by
-G-AXIS before eff-dim, the null, and G3 are computed.
+This is a **two-source** agreement check against the Moral-Stories reference axis — there is
+no three-source consensus to invoke (ETHICS is zero-in-training). `V_moral` is therefore
+either Moral Stories alone (G-AXIS fail) or Moral Stories + MORABLES pooled (G-AXIS pass);
+that composition is fixed by G-AXIS before eff-dim, the null, and G3 are computed.
 
 ---
 
@@ -293,6 +297,11 @@ line, never a silent edit.*
   contribution to the pooled `V_moral` direction, and its clean subset carries a
   **selection-bias flag** (filtering keeps non-care-framed items). See
   `CONSTRUCTION_GUIDELINES.md` (ETHICS section). No change to G2, G3, G-AXIS thresholds.
-
-### Amendments
-*(none)*
+- **2026-06-26 (zero-ETHICS decision):** ETHICS contributes **zero** to the training
+  direction. Two consequences. (1) **G-AXIS is now a two-source check** (Moral Stories
+  reference + MORABLES); three-source-consensus language removed (§3A). (2) **ETHICS's eval
+  role upgrades from in-distribution check to generalization probe:** its bias-flagged eval
+  pairs (non-care-frame slice) test whether a Moral-Stories+MORABLES `V_moral` generalizes
+  to ETHICS's abstract-judgment register — a register **absent from training** — alongside
+  Social Chemistry 101's deferred OOD role. Training set is two-source by construction. No
+  change to G2, G3, G-AXIS thresholds.

@@ -72,22 +72,30 @@ children, tending a person on the ground, a tired sibling, a dog's needs) carrie
 care valence that survives any same-frame edit. The prompt removed the egregious cases
 (no score-1 remain) but cannot strip the frame without abandoning the same-setting constraint.
 
-**Consequence for ETHICS's role:**
-- ETHICS leans on its **hard-ambiguity-span role** (Track 1 probe-accuracy / σ* difficulty
-  register), and contributes **reduced weight** to the pooled `V_moral` direction.
-- **Selection-bias flag:** filtering ETHICS to clean (≥4) preferentially keeps non-care-framed
-  scenarios and drops care-framed ones, so the ETHICS clean subset is *not* a representative
-  moral sample — pooling it heavily would tilt the axis toward non-care content. Its
-  agreement with `d_MoralStories` is reported as a diagnostic; a divergence is expected
-  given this bias and is a reason to down-weight, not to force inclusion.
-- Precise clean rate and final pooling weight to be confirmed at full-generation scale.
+**Decision: ETHICS contributes ZERO to the training direction** (2026-06-26). Its
+register limitation (above) plus the clean-subset selection bias make it unsuitable as a
+bulk direction source; rather than force a biased contribution, it is removed from training
+entirely. Consequences:
+
+- **ETHICS eval role upgrades from in-distribution check to generalization probe.** With
+  zero ETHICS in training, its bias-flagged eval pairs (the non-care-frame slice that
+  clears the gates) now test whether a **Moral-Stories + MORABLES** `V_moral` generalizes
+  to ETHICS's **abstract-judgment register — a register absent from training.** This sits
+  alongside Social Chemistry 101's deferred OOD role (below).
+- **G-AXIS is a two-source check** (Moral Stories reference + MORABLES); no ETHICS
+  direction is extracted or pooled. See `PREREGISTRATION.md` §3A and the zero-ETHICS amendment.
 
 ### Social Chemistry 101 — NOT constructed here
 
-OOD generalization probe only (Track 4). No directions extracted from it.
+Deferred OOD generalization probe (Track 4). No directions extracted from it. Together with
+the ETHICS eval set, it forms the held-out generalization battery for a
+Moral-Stories + MORABLES `V_moral`.
 
 ## Cross-source rules
 
+- **Training is two-source by construction: Moral Stories (workhorse bulk) + MORABLES
+  (full clean yield, pooled iff it clears G-AXIS).** ETHICS is zero-in-training; it and
+  Social Chemistry 101 are eval-side generalization probes.
 - **Relational structure (§1.1) and parallelism (§1.2)** apply to every pair, both sides.
 - **Three registers (§3)** declarative / narrative / dialogue, per-source and per-register
   balance tracked in each split independently. MORABLES is register-narrow (event-retellings
