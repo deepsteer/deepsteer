@@ -80,11 +80,23 @@ _GATES = {
         "topic, participants, and structure constant. Score 5 if the only difference is the "
         "moral judgment; score 1 if the sides also differ in topic or scenario."
     ),
+    "g_abstraction_match": (
+        "ABSTRACTION / GENRE MATCH (fable-only control): both sides must sit at the same "
+        "concreteness level -- both CONCRETE event-retellings (same actors/scene/domain), "
+        "neither an abstract stated-moral/aphorism. Score 5 if both are concrete retellings "
+        "of the same event; score 1 if one side is an abstract aphorism and the other a "
+        "concrete narrative (a genre/abstraction shortcut)."
+    ),
 }
 
+# moral_neutral: v2 style + Direction-1 neutral-contrast (salience) pairs -> 1.1/1.2/1.5.
+# fable_salience: MORABLES fable-internal salience pairs -> 1.1/1.2/1.5 + abstraction match.
+# moral_moral: retained for any both-sides-moral pairs -> 1.1/1.2 + valence minimality.
 _GATESET = {
     "moral_neutral": ["g1_1_relational_structure", "g1_2_structural_parallelism",
                       "g1_5_accidentally_moral"],
+    "fable_salience": ["g1_1_relational_structure", "g1_2_structural_parallelism",
+                       "g1_5_accidentally_moral", "g_abstraction_match"],
     "moral_moral": ["g1_1_relational_structure", "g1_2_structural_parallelism",
                     "g_valence_minimality"],
 }
@@ -106,7 +118,8 @@ def _build_prompt(moral: str, contrast: str, gates: list[str]) -> str:
     )
 
 
-def audit_pair(client, moral: str, contrast: str, gates: list[str]) -> dict:
+def audit_pair(client, moral: str, contrast: str, gates: list[str],
+               fail_at: int = FAIL_AT_OR_BELOW) -> dict:
     """Score one pair on the enabled gates via a single Claude call."""
     resp = client.messages.create(
         model=MODEL, max_tokens=512,
@@ -120,7 +133,7 @@ def audit_pair(client, moral: str, contrast: str, gates: list[str]) -> dict:
     out: dict = {}
     for g in gates:
         s = int(scores[g]["score"])
-        out[g] = {"score": s, "passed": s > FAIL_AT_OR_BELOW,
+        out[g] = {"score": s, "passed": s > fail_at,
                   "reason": scores[g].get("reason", "")}
     out["clean"] = all(out[g]["passed"] for g in gates)
     return out
@@ -169,6 +182,9 @@ def main() -> None:
     ap.add_argument("--pair-type", choices=list(_GATESET), default="moral_neutral")
     ap.add_argument("--split", default=None, help="filter pairs by their 'split' field")
     ap.add_argument("--limit", type=int, default=None, help="audit only the first N pairs")
+    ap.add_argument("--fail-at", type=int, default=FAIL_AT_OR_BELOW,
+                    help="score <= this fails a gate (anti-triviality threshold; "
+                         "calibrate on the first batch via the printed score histogram)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -186,12 +202,14 @@ def main() -> None:
 
     client = anthropic.Anthropic()
     results, fails = [], {g: 0 for g in gates}
+    hist = {g: {s: 0 for s in range(1, 6)} for g in gates}  # score distribution
     n_clean = 0
     for i, p in enumerate(pairs):
-        r = audit_pair(client, p["moral"], p["contrast"], gates)
+        r = audit_pair(client, p["moral"], p["contrast"], gates, fail_at=args.fail_at)
         results.append({**{k: p[k] for k in ("id", "register", "source")}, **r})
         for g in gates:
             fails[g] += 0 if r[g]["passed"] else 1
+            hist[g][r[g]["score"]] += 1
         n_clean += int(r["clean"])
         if (i + 1) % 10 == 0 or i + 1 == len(pairs):
             print(f"  {i+1}/{len(pairs)} audited")
@@ -200,13 +218,16 @@ def main() -> None:
     n = len(pairs)
     summary = {
         "n_pairs": n, "pair_type": args.pair_type, "split": args.split,
+        "fail_at": args.fail_at,
         "fail_rate": {g: round(fails[g] / n, 3) for g in gates},
+        "score_hist": hist,        # 1-5 distribution per gate -> calibrate --fail-at
         "clean_pairs": n_clean, "clean_rate": round(n_clean / n, 3),
         "mechanical": mech,
     }
-    print("\n=== audit summary ===")
+    print(f"\n=== audit summary (fail-at <= {args.fail_at}) ===")
     for g in gates:
-        print(f"  {g:<32} fail rate {summary['fail_rate'][g]:.3f}")
+        h = " ".join(f"{s}:{hist[g][s]}" for s in range(1, 6))
+        print(f"  {g:<32} fail {summary['fail_rate'][g]:.3f} | scores[{h}]")
     print(f"  CLEAN (passes all gates): {n_clean}/{n} ({summary['clean_rate']:.3f})")
 
     if args.out:

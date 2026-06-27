@@ -49,6 +49,13 @@ predate the measurement and cannot be tuned to the answer.
   bag-of-words floor 0.598 (≈25 pp loss)**; σ-grid `S` with `max(S) = 10.0`.
   Source: `papers/1_accuracy_vs_fragility/sections/01_introduction.md`, `04_results.md`.
 - **Stable band (OLMo-3 7B):** layers **15–31** (project memory; used for robustness reporting).
+- **Construct framing — moral salience.** Every source uses a *salience contrast*:
+  moral-valence-present vs valence-stripped (neutral) retelling/action, holding scenario,
+  participants, and discourse type constant. `V_moral` is therefore a moral-**salience**
+  subspace, and the 0.1044 Paper 5 number is correspondingly the **salience baseline**
+  (refusal's projection onto that subspace). The per-source construction that realizes the
+  salience contrast — including the MORABLES fable-internal derivation and its abstraction
+  control — is specified in `CONSTRUCTION_GUIDELINES.md`.
 
 ---
 
@@ -175,6 +182,44 @@ detects that while rejecting rank inflation.
 
 ---
 
+## 3A. GATE G-AXIS — cross-source axis agreement (MORABLES pooling; fixed now)
+
+MORABLES is the construct anchor, but its material is fables — a discourse type distinct
+from the action-contrast sources. To keep it in the direction-extraction path **without**
+letting a fable-specific axis distort `V_moral`, its inclusion is gated on agreement with
+the cleanest action-contrast source. This runs at Phase 2, **before** `V_moral` is
+finalized (so it is upstream of the eff-dim, null, and G3 measurements).
+
+**Measurement (Phase 2, GPU).** Extract two per-source mean-diff **salience** directions on
+OLMo-3 Base, each from that source's TRAIN-source pairs only:
+
+- `d_MORABLES` — fable-internal salience pairs (moral-laden event-retelling vs neutral
+  event-retelling of the *same* fable event; both concrete; see `CONSTRUCTION_GUIDELINES.md`).
+- `d_MoralStories` — situation-held salience pairs (moral action vs valence-stripped action,
+  same situation).
+
+Compute `cos(d_MORABLES, d_MoralStories)` at the matched layer (16) and the stable-band
+mean (15–31).
+
+**Floor (fixed now): 0.67** — the lower end of the v2 cross-method agreement range
+(0.67–0.71, where mean-diff / LEACE / probe-weight agreed). Reported against this floor;
+the realized cosine is computed at Phase 2 before any pooling (two-step discipline, as G3).
+
+> **G-AXIS decision rule (let the cosine decide, not a judgment call):**
+> - `cos ≥ 0.67` → MORABLES **POOLS** into `V_moral` (construct-anchoring inside the
+>   subspace, as intended).
+> - `cos < 0.67` → MORABLES is **EXCLUDED** from `V_moral` and retained as construct-anchor
+>   **evaluation only** (Track 1 probe-accuracy / σ*). The result *"fables read on a
+>   different moral-salience axis than action-contrasts (cos = X < 0.67)"* is reported as a
+>   **real finding, not a failure.**
+
+Moral Stories is the reference axis. ETHICS pools with minimal derivation (select
+near-neutral items, derive minimally); its agreement with `d_MoralStories` is reported as a
+diagnostic, not a gate. `V_moral`'s final composition (which sources pooled) is fixed by
+G-AXIS before eff-dim, the null, and G3 are computed.
+
+---
+
 ## 4. Track 1 — σ* fragility acceptance (G5 input; form fixed now, constant deferred)
 
 Track 1 feeds the G5 conjunction ("`V_moral` no more fragile than the MFT baseline").
@@ -225,12 +270,21 @@ Fixed now:
 | Accidentally-moral neutrals inflating apparent signal | Phase-1 audit (mechanical `validate_pairs` + rebuilt LLM-scored §1.1/§1.2/§1.5 gates; see hook-verification) |
 | eff-dim convention drift (centered vs. uncentered) | Pinned uncentered @ 0.90; centered function explicitly excluded (§5) |
 | Activation-scale confound in σ* | RMS-normalized σ* mandatory for the cross-subspace comparison (§4) |
+| Fable-specific axis distorting `V_moral` | GATE G-AXIS: MORABLES pools only if `cos(d_MORABLES, d_MoralStories) ≥ 0.67`; else eval-only (§3A) |
+| Genre/abstraction shortcut in fable pairs | Abstraction/genre-match control: both sides concrete event-retellings (`CONSTRUCTION_GUIDELINES.md`); audit gate `g_abstraction_match` |
+| Anti-triviality LLM-score threshold uncalibrated | First-batch threshold pass: confirm score≤3 discriminates trivial pairs before scaling (`audit_runner.py --fail-at`) |
 
 ---
 
 *This pre-registration is frozen at commit `107f9f3`. Any later change to a threshold,
 the null construction, or a decision rule must be a dated amendment recorded below this
 line, never a silent edit.*
+
+### Amendments
+- **2026-06-26 (commit `8710641`+):** Added GATE G-AXIS (§3A, MORABLES cross-source axis
+  agreement, floor 0.67) and the moral-salience construct framing (§1). MORABLES moves from
+  a stated-moral aphorism contrast to a fable-internal salience contrast; its pooling into
+  `V_moral` is now cosine-gated. No change to G2, G3, or their thresholds.
 
 ### Amendments
 *(none)*
