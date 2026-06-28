@@ -81,8 +81,8 @@ def main() -> None:
     base = HERE.parent / "outputs" / "phase2"
     ap.add_argument("--base-artifacts", default=str(base / "base"))
     ap.add_argument("--instruct-artifacts", default=str(base / "instruct"))
-    ap.add_argument("--base-model", default="allenai/OLMo-3-7B")
-    ap.add_argument("--instruct-model", default="allenai/OLMo-3-7B-Instruct")
+    ap.add_argument("--base-model", default="allenai/Olmo-3-1025-7B")
+    ap.add_argument("--instruct-model", default="allenai/Olmo-3-7B-Instruct")
     ap.add_argument("--prompts", default=str(HERE.parents[1] / "5_moral_alignment"
                                              / "refusal_prompts.json"))
     ap.add_argument("--device", default=None)

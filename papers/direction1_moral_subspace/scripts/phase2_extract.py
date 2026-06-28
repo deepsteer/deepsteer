@@ -55,7 +55,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Phase 2 stage 0: per-source extraction.")
     ap.add_argument("--dataset", default=str(
         HERE.parents[2] / "deepsteer" / "datasets" / "direction1_vmoral_v1.json"))
-    ap.add_argument("--model", default="allenai/OLMo-3-7B")  # Base; verify exact id pre-run
+    ap.add_argument("--model", default="allenai/Olmo-3-1025-7B")  # Base; verify exact id pre-run
     ap.add_argument("--out", default=str(HERE.parent / "outputs" / "phase2"))
     ap.add_argument("--device", default=None)
     ap.add_argument("--mft", action="store_true",

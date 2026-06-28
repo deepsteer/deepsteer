@@ -63,7 +63,7 @@ each) + the tiny smoke model + HF cache headroom. Override `GPU_TYPES`, `DISK_GB
 
 | Env | Default | Notes |
 |---|---|---|
-| `BASE_MODEL` / `INSTRUCT_MODEL` | `allenai/OLMo-3-7B` / `-Instruct` | the two models |
+| `BASE_MODEL` / `INSTRUCT_MODEL` | `allenai/Olmo-3-1025-7B` / `-Instruct` | the two models |
 | `VALIDATE` | `0` | `1` = tiny-model plumbing smoke (also config-checks OLMo-3) |
 | `TRANSFORMERS_VERSION` | `5.12.1` | pinned (GPU-smoke-validated); override for a different build |
 | `PIP_EXTRA` | — | extra pip override, e.g. `transformers==<ver>` |

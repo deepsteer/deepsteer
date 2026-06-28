@@ -43,8 +43,8 @@ REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
 
 # Step config (passed through to the remote runner).
 VALIDATE="${VALIDATE:-0}"
-BASE_MODEL="${BASE_MODEL:-allenai/OLMo-3-7B}"
-INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/OLMo-3-7B-Instruct}"
+BASE_MODEL="${BASE_MODEL:-allenai/Olmo-3-1025-7B}"
+INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
 TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"  # pinned (smoke-validated); override if needed
 PIP_EXTRA="${PIP_EXTRA:-}"     # e.g. "transformers==X" extra override
 HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"

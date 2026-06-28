@@ -9,8 +9,8 @@ set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
-BASE_MODEL="${BASE_MODEL:-allenai/OLMo-3-7B}"
-INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/OLMo-3-7B-Instruct}"
+BASE_MODEL="${BASE_MODEL:-allenai/Olmo-3-1025-7B}"
+INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
 cd "$REPO_DIR"
 
 # G2's transfer probes + Track-1's σ* run on CPU/numpy; cap threads so tiny matmuls don't
@@ -58,8 +58,7 @@ echo ">> verifying OLMo-3 config resolves (config-only)..."
 python -c "from transformers import AutoConfig; \
   AutoConfig.from_pretrained('$BASE_MODEL'); AutoConfig.from_pretrained('$INSTRUCT_MODEL'); \
   print('>> OLMo-3 configs resolve OK on transformers', __import__('transformers').__version__)" \
-  || { echo \"ERROR: transformers $TRANSFORMERS_VERSION cannot resolve OLMo-3 config. \
-Set TRANSFORMERS_VERSION=<build with OLMo-3 support> and re-run.\"; exit 1; }
+  || { echo "ERROR: transformers $TRANSFORMERS_VERSION cannot resolve OLMo-3 config; set TRANSFORMERS_VERSION to a build with OLMo-3 support and re-run."; exit 1; }
 
 if [ "$VALIDATE" = "1" ]; then
   echo ">> VALIDATE=1: GPU plumbing smoke (tiny model both tags, few pairs)"

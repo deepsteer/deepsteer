@@ -15,8 +15,8 @@ set -euo pipefail
 S="$(cd "$(dirname "$0")/../scripts" && pwd)"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)/outputs/phase2"
 PY="${PYTHON:-python3}"
-BASE_MODEL="${BASE_MODEL:-allenai/OLMo-3-7B}"
-INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/OLMo-3-7B-Instruct}"
+BASE_MODEL="${BASE_MODEL:-allenai/Olmo-3-1025-7B}"
+INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
 
 run_tag () {  # $1=tag  $2=model  $3=mft_flag ("--mft" or "")
   local tag="$1" model="$2" mft="${3:-}" art="$ROOT/$1"
