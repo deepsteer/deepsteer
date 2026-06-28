@@ -249,13 +249,18 @@ Fixed now:
 
 ---
 
-## 5. eff-dim convention (the G3-null denominator) — fixed now
+## 5. eff-dim convention (the G3-null denominator)
 
-- **`V_moral` rank = uncentered effective dimensionality at variance-threshold 0.90**, from
-  the SVD of the stacked per-pair difference vectors (`pos − neg`). Uncentered because the
-  shared moral-valence axis is the *signal*; centering (what
-  `direction_utils.effective_dimensionality` does, line 332) would remove it and understate
-  the rank. Consistent with Paper 6's uncentered eff-rank.
+> **SUPERSEDED 2026-06-28 (finding-driven correction) — see the V_moral-construction amendment
+> below.** The original spec (uncentered eff-dim @ 0.90 of pooled per-pair diffs) was written
+> before the realized spectrum was known. The real-run spectrum has **no elbow** and is
+> **content-dominated** (singvals 31, 18, 15, 14, … flat; d_moral = top direction but only 7.5%
+> of variance), so eff-dim@0.90 = **385** measures CONTENT rank, not moral rank; the rank-3
+> moral structure lives only in the source mean-diff directions. `V_moral` is therefore
+> re-spec'd to the **span of the source moral directions**.
+
+- ~~**`V_moral` rank = uncentered effective dimensionality at variance-threshold 0.90**, from
+  the SVD of the stacked per-pair difference vectors (`pos − neg`).~~ (superseded; see above.)
 - **`V_moral`'s basis is orthonormal** (the top-`r` SVD left singular vectors), so the
   projection fraction is exactly the in-subspace norm.
 - **`direction_utils.effective_dimensionality` must NOT be called as-is** for this rank; an
@@ -389,3 +394,24 @@ line, never a silent edit.*
   rule (POSITIVE iff BOTH clear; split → NULL + flag) and M=0.05 are unchanged. Validated by the
   two-tag `VALIDATE` dry run. (A cross-model projection — instruct refusal × Base-V_moral — may
   be reported later as a transfer-robustness check, with the base→instruct caveat.)
+- **2026-06-28 (V_moral construction RE-SPEC — finding-driven correction):** The real run showed
+  single-source `V_moral` is **rank-1-moral + content** (eff-dim@0.90 = 385; flat no-elbow
+  spectrum; d_moral = 7.5% of variance), making G3 degenerate (null/persona/refusal all
+  ~0.7–0.8). **Restoring richness** (option 2): Understanding Fables (MIT) and ETHICS both add a
+  **distinguishable** moral axis — `cos(d_fables, d_moral)=0.53`, `cos(d_ethics, d_moral)=0.36`
+  (vs the non-moral persona ref 0.24); the three source directions span **effective rank 3**. The
+  rank-3 lives in the **source mean-diff directions, not the pooled per-pair-diff subspace**
+  (pooling fables barely moves the diff spectrum — content still dominates). Therefore **`V_moral`
+  = orthonormalized span of the source moral mean-diff directions** (`{d_moral, d_fables, d_ethics}`,
+  rank 3), constructed exactly like the MFT subspace (span of its 6 foundation directions, rank ~4)
+  — which makes G3 directly comparable to Paper 5's 0.1044 (refusal onto a foundation-direction
+  span). **The rank-matched null + persona control are recomputed on THIS span** (different
+  subspace ⇒ different null; two-step discipline: realized from the actual V_moral before the
+  refusal projection). G3 reported as the **rank-3 span point estimate (order-invariant,
+  headline) + a rank-sweep (1→2→3)**, refusal vector saved. Any per-axis "refusal aligns with the
+  fable/action axis" is **basis-dependent ⇒ diagnostic only, not a headline claim**. ETHICS's full
+  build (over-generate / filter / bias-flag) is now justified but feeds **G2**, not G3 (G3 reads
+  the source directions, already in hand). **Standalone cautionary finding (independent of G3's
+  result):** eff-dim thresholding on a no-elbow, content-dominated pooled-diff spectrum measures
+  **content rank, not moral rank** (385 vs the rank-3 in source directions) — a real caution about
+  constructing "moral subspaces" by SVD on per-pair difference vectors. G2, G3 rule, M=0.05 unchanged.
