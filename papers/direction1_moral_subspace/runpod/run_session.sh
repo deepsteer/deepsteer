@@ -45,7 +45,8 @@ REMOTE_DIR="${REMOTE_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
 BASE_MODEL="${BASE_MODEL:-allenai/OLMo-3-7B}"
 INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/OLMo-3-7B-Instruct}"
-PIP_EXTRA="${PIP_EXTRA:-}"     # e.g. "transformers>=4.57" if OLMo-3 unsupported by the upgrade
+TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"  # pinned (smoke-validated); override if needed
+PIP_EXTRA="${PIP_EXTRA:-}"     # e.g. "transformers==X" extra override
 HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
 REMOTE_SCRIPT="${REMOTE_SCRIPT:-papers/direction1_moral_subspace/runpod/remote_phase2.sh}"
 
@@ -170,7 +171,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
   "cd $REMOTE_DIR && rm -f '$REMOTE_DONE' '$REMOTE_LOG' && \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE BASE_MODEL='$BASE_MODEL' INSTRUCT_MODEL='$INSTRUCT_MODEL' \
-     PIP_EXTRA='$PIP_EXTRA' \
+     TRANSFORMERS_VERSION='$TRANSFORMERS_VERSION' PIP_EXTRA='$PIP_EXTRA' \
      HF_TOKEN='$HF_TOKEN' HUGGING_FACE_HUB_TOKEN='$HF_TOKEN' \
      setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 

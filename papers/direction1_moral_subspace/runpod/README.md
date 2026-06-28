@@ -64,8 +64,9 @@ each) + the tiny smoke model + HF cache headroom. Override `GPU_TYPES`, `DISK_GB
 | Env | Default | Notes |
 |---|---|---|
 | `BASE_MODEL` / `INSTRUCT_MODEL` | `allenai/OLMo-3-7B` / `-Instruct` | the two models |
-| `VALIDATE` | `0` | `1` = tiny-model plumbing smoke |
-| `PIP_EXTRA` | — | e.g. `transformers==<ver>` if the default upgrade lacks OLMo-3 |
+| `VALIDATE` | `0` | `1` = tiny-model plumbing smoke (also config-checks OLMo-3) |
+| `TRANSFORMERS_VERSION` | `5.12.1` | pinned (GPU-smoke-validated); override for a different build |
+| `PIP_EXTRA` | — | extra pip override, e.g. `transformers==<ver>` |
 | `GPU_TYPES` | 48 GB-class first | comma list searched in order |
 | `KEEP_POD` / `REUSE_POD_ID` | — | debug: keep / attach to a pod |
 
@@ -73,5 +74,14 @@ each) + the tiny smoke model + HF cache headroom. Override `GPU_TYPES`, `DISK_GB
 
 - [x] No-GPU structural test passes (`phase2_local_test.py`).
 - [x] Two-tag `VALIDATE` dry run passes end-to-end (local, OLMo-2-1B).
-- [ ] Cheap GPU `VALIDATE=1 ./run_session.sh` smoke (confirms the pod env + OLMo-3 transformers).
+- [x] GPU plumbing smoke passed on A6000 (full sequence end-to-end, pod terminated;
+      transformers now **pinned to 5.12.1**, the version that smoke validated).
+- [ ] Re-run `VALIDATE=1 ./run_session.sh` once more — now it also **config-checks OLMo-3**
+      on the pinned transformers (config download only) and aborts if it can't resolve. This
+      is the last cheap de-risk before loading the 14 GB weights.
 - [ ] Real `./run_session.sh`.
+
+Note: all smoke numbers (G2/G3/Track-1) are artifacts of the 8-pair OLMo-2-1B run, not
+signal. In particular Track-1 `σ*(V_moral)=0` is expected in the smoke (the 8-pair direction
+doesn't separate the 8 eval pairs at baseline); the real run's 877-train/96-eval direction
+will give meaningful σ*.

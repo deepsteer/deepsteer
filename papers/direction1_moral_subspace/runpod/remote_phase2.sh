@@ -31,10 +31,12 @@ echo ">> installing deepsteer (editable, core deps)..."
 pip install -q --break-system-packages -e . 2>&1 | tail -2 \
   || pip install -q --break-system-packages -e ".[all]" 2>&1 | tail -2
 
-# OLMo-3 is a recent architecture; the base image's transformers predates it. Upgrade to a
-# recent transformers (+ accelerate). Override with PIP_EXTRA="transformers==X" to pin.
-echo ">> upgrading transformers/accelerate for OLMo-3 support..."
-pip install -q --break-system-packages -U transformers accelerate 2>&1 | tail -2 || true
+# OLMo-3 is a recent architecture; the base image's transformers predates it. PIN to the
+# smoke-validated version (reproducible across runs + matches the GPU-smoke environment);
+# override with TRANSFORMERS_VERSION=... or PIP_EXTRA="transformers==X".
+TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"
+echo ">> installing transformers==$TRANSFORMERS_VERSION (pinned) + accelerate..."
+pip install -q --break-system-packages "transformers==$TRANSFORMERS_VERSION" -U accelerate 2>&1 | tail -2 || true
 if [ -n "${PIP_EXTRA:-}" ]; then
   echo ">> PIP_EXTRA: installing $PIP_EXTRA"
   pip install -q --break-system-packages -U $PIP_EXTRA 2>&1 | tail -2 || true
@@ -48,14 +50,16 @@ fi
 export HF_HUB_DOWNLOAD_TIMEOUT="${HF_HUB_DOWNLOAD_TIMEOUT:-60}"
 
 echo ">> transformers: $(python -c 'import transformers; print(transformers.__version__)' 2>&1)"
-# Fail fast (with a clear message) if this transformers can't resolve the OLMo-3 config,
-# so a real run aborts at install time rather than mid-extraction. Skipped in VALIDATE
-# (the smoke uses the tiny OLMo-2-1B, which any recent transformers supports).
-if [ "$VALIDATE" != "1" ]; then
-  python -c "from transformers import AutoConfig; AutoConfig.from_pretrained('$BASE_MODEL'); \
-    print('>> OLMo-3 config resolves OK')" 2>&1 | tail -3 \
-    || echo ">> WARN: AutoConfig for $BASE_MODEL failed; set PIP_EXTRA='transformers==<ver>' with OLMo-3 support."
-fi
+# Verify OLMo-3 resolves on this transformers (config download only -- KB, not the 14 GB
+# weights). Runs in BOTH modes: the VALIDATE smoke thus de-risks OLMo-3 cheaply even though
+# its pipeline uses OLMo-2-1B, and a real run fails fast BEFORE the weight download. ABORTS
+# on failure (-> .session_done -> pod terminates) so a bad transformers never burns the run.
+echo ">> verifying OLMo-3 config resolves (config-only)..."
+python -c "from transformers import AutoConfig; \
+  AutoConfig.from_pretrained('$BASE_MODEL'); AutoConfig.from_pretrained('$INSTRUCT_MODEL'); \
+  print('>> OLMo-3 configs resolve OK on transformers', __import__('transformers').__version__)" \
+  || { echo \"ERROR: transformers $TRANSFORMERS_VERSION cannot resolve OLMo-3 config. \
+Set TRANSFORMERS_VERSION=<build with OLMo-3 support> and re-run.\"; exit 1; }
 
 if [ "$VALIDATE" = "1" ]; then
   echo ">> VALIDATE=1: GPU plumbing smoke (tiny model both tags, few pairs)"
