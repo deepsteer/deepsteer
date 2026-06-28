@@ -53,8 +53,8 @@ def _diff_matrix(X, y):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Phase 2 stage 0: per-source extraction.")
-    ap.add_argument("--dataset", default=str(HERE.parents[1].joinpath(
-        "direction1_moral_subspace/outputs/full/dataset_2reg.json")))
+    ap.add_argument("--dataset", default=str(
+        HERE.parents[2] / "deepsteer" / "datasets" / "direction1_vmoral_v1.json"))
     ap.add_argument("--model", default="allenai/OLMo-3-7B")  # Base; verify exact id pre-run
     ap.add_argument("--out", default=str(HERE.parent / "outputs" / "phase2"))
     ap.add_argument("--device", default=None)
@@ -73,13 +73,19 @@ def main() -> None:
     ds = json.load(open(args.dataset))
     train = ds["train"]
 
+    # Extract the sources actually present in train (single-source = moral_stories only;
+    # MORABLES dropped). The reference source (for act_sample / null covariance) is the
+    # alphabetically-first, i.e. moral_stories.
+    sources = sorted({p["source"] for p in train})
+    ref_source = sources[0]
+
     model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     n_layers = model.info.n_layers
     band = [L for L in STABLE_BAND if L < n_layers] or list(range(n_layers))
     layers = sorted(set(band) | {min(MATCH_LAYER, n_layers - 1)})
 
     moral_dirs: dict[str, dict[int, np.ndarray]] = {}
-    for source in ("moral_stories", "morables"):
+    for source in sources:
         pairs = _pairs(train, source)
         if validate:
             pairs = pairs[:8]
@@ -89,7 +95,7 @@ def main() -> None:
         moral_dirs[source] = {L: du.mean_diff_direction(*acts[L]) for L in layers}
         diffs = {f"layer{L}": _diff_matrix(*acts[L]) for L in layers}
         np.savez(out / f"diffs_{source}.npz", **diffs)
-        if source == "moral_stories":  # activation sample for the null covariance
+        if source == ref_source:  # activation sample for the null covariance
             X16 = acts[min(MATCH_LAYER, n_layers - 1)][0]
             np.savez(out / "act_sample.npz",
                      X=X16.detach().cpu().numpy() if hasattr(X16, "detach") else X16,

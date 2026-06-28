@@ -359,8 +359,10 @@ line, never a silent edit.*
   the rest is obscure Perry-index fables in neither public-domain editions nor model knowledge.
   L'Estrange sourcing was assessed and rejected (won't reach the Babrius/Aphthonius tail; low
   per-fable value). Consequences: **`V_moral` is single-source — Moral Stories only**, two
-  registers (narrative 573 + declarative 304 = 877 train; eval_g2_indist 79). **GATE G-AXIS is
-  not run** (no second source to gate; the cross-source axis-agreement finding is out of scope);
+  registers (narrative 573 + declarative 304 = 877 train; eval_g2_indist 79, later expanded to
+  145 = 96 narrative + 49 declarative once source-balance stopped binding — the G2 narrative
+  STOP slice is now 96). **GATE G-AXIS is not run** (no second source to gate; the cross-source
+  axis-agreement finding is out of scope);
   the Phase-2 single-source branch runs directly. ETHICS remains the generalization probe.
   Committed Apache-clean dataset: `deepsteer/datasets/direction1_vmoral_v1.json`
   (+ `DATASET_LICENSES.md`). **Future work:** a fable-based extension if a clean public-domain

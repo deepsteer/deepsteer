@@ -45,6 +45,16 @@ def main() -> None:
                         "paraphrase_status": pp["status"]})
         eval_g2.append(row)
 
+    # merge the eval expansion (53 -> 96 MS narrative; source-balance no longer binds)
+    exp_path = _FULL / "ms_eval_expansion.json"
+    if exp_path.exists():
+        for r in json.load(open(exp_path))["pairs"]:
+            row = _keep(r, tf)
+            row.update({"moral_para": r.get("moral_para"),
+                        "neutral_para": r.get("neutral_para"),
+                        "paraphrase_status": r.get("paraphrase_status")})
+            eval_g2.append(row)
+
     probe = [_keep(p, ("id", "source", "register", "ethics_label", "moral", "neutral"))
              for p in ds["eval_generalization_probe"]]
 
