@@ -58,9 +58,9 @@ Hard rules:
 - Same characters, same setting, same domain in both. Change ONLY the moral valence.
 - STRUCTURAL MIRROR (critical): the neutral must mirror the moral side's syntax
   clause-for-clause -- same number of clauses, same connectives, same approximate length
-  (within a 1.2:1 word ratio). If the moral side has a consequence clause (e.g. "...so the
-  birds stripped the crop bare"), the neutral must keep a PARALLEL consequence clause with
-  a mundane, non-moral outcome. Swap only the valence-bearing words; keep the syntactic
+  (within a 1.2:1 word ratio). If the moral side has a consequence clause (e.g. a trailing
+  "...and so X happened"), the neutral must keep a PARALLEL consequence clause with a
+  mundane, non-moral outcome. Swap only the valence-bearing words; keep the syntactic
   frame identical.
 - The NEUTRAL side must carry no moral weight at all (no virtue, harm, duty, sacrifice,
   fairness, loyalty, etc.), even implicitly. No em-dashes; natural English.
