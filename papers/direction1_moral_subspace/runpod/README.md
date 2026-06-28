@@ -76,10 +76,10 @@ each) + the tiny smoke model + HF cache headroom. Override `GPU_TYPES`, `DISK_GB
 - [x] Two-tag `VALIDATE` dry run passes end-to-end (local, OLMo-2-1B).
 - [x] GPU plumbing smoke passed on A6000 (full sequence end-to-end, pod terminated;
       transformers now **pinned to 5.12.1**, the version that smoke validated).
-- [ ] Re-run `VALIDATE=1 ./run_session.sh` once more — now it also **config-checks OLMo-3**
-      on the pinned transformers (config download only) and aborts if it can't resolve. This
-      is the last cheap de-risk before loading the 14 GB weights.
-- [ ] Real `./run_session.sh`.
+- [x] OLMo-3 config gate passed on the corrected IDs (`Olmo-3-1025-7B` base +
+      `Olmo-3-7B-Instruct`) on the pinned transformers 5.12.1 — both resolve, `model_type='olmo3'`.
+- [ ] Real `./run_session.sh`. **(All pre-GPU gates pass; cleared to run.)** Only the OLMo-3
+      *weight* load (vs config) is first exercised here; if it trips, set `TRANSFORMERS_VERSION`.
 
 Note: all smoke numbers (G2/G3/Track-1) are artifacts of the 8-pair OLMo-2-1B run, not
 signal. In particular Track-1 `σ*(V_moral)=0` is expected in the smoke (the 8-pair direction
