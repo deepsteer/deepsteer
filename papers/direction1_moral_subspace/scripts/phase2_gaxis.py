@@ -43,7 +43,20 @@ def main() -> None:
     band = [L for L in meta["band"] if L in dirs.get("moral_stories", {})]
 
     if "morables" not in dirs:
-        raise SystemExit("morables directions absent; cannot run G-AXIS")
+        # Single-source V_moral (MORABLES dropped: CC-BY-NC + non-re-derivable; 2026-06-27
+        # amendment). G-AXIS is not applicable -- resolve directly to the single-source path.
+        artifact = {
+            "gate": "G-AXIS", "decision": "single_source_no_morables",
+            "v_moral_sources": ["moral_stories"], "reference_axis": "moral_stories",
+            "interpretation": ("MORABLES dropped from the program (CC-BY-NC + ~79% "
+                               "non-re-derivable); no second source to gate, so G-AXIS is "
+                               "not run. V_moral = Moral Stories only. Do NOT re-add ETHICS."),
+        }
+        with open(out / "g_axis_decision.json", "w") as fh:
+            json.dump(artifact, fh, indent=2)
+        print("G-AXIS not applicable: MORABLES absent -> single-source V_moral "
+              "(moral_stories only)")
+        return
 
     cos_layer = du.cosine(dirs["morables"][layer], dirs["moral_stories"][layer])
     cos_band = float(np.mean([du.cosine(dirs["morables"][L], dirs["moral_stories"][L])

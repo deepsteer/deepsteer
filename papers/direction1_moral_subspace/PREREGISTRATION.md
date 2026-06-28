@@ -351,3 +351,17 @@ line, never a silent edit.*
   **DIRECTIONAL / EXPLORATORY**, to be read as designed rather than as a shortfall. The
   register fix's **confirmatory** wins are elsewhere: a less register-specific `V_moral` (29%
   declarative training) and the decomposed/interpretable ETHICS probe.
+- **2026-06-27 (SINGLE-SOURCE V_moral — MORABLES dropped):** MORABLES is dropped from the
+  program for **two independent reasons**: (1) it is **CC-BY-NC-4.0**, incompatible with the
+  repo's Apache-2.0 posture (committing its retellings would make commercial use of `V_moral`
+  inherit NC); and (2) it is **~79% non-re-derivable** from public domain — only ~21% of our
+  selection is canonical enough for a model (Sonnet 4.6 or Opus 4.8) to retell from title+moral;
+  the rest is obscure Perry-index fables in neither public-domain editions nor model knowledge.
+  L'Estrange sourcing was assessed and rejected (won't reach the Babrius/Aphthonius tail; low
+  per-fable value). Consequences: **`V_moral` is single-source — Moral Stories only**, two
+  registers (narrative 573 + declarative 304 = 877 train; eval_g2_indist 79). **GATE G-AXIS is
+  not run** (no second source to gate; the cross-source axis-agreement finding is out of scope);
+  the Phase-2 single-source branch runs directly. ETHICS remains the generalization probe.
+  Committed Apache-clean dataset: `deepsteer/datasets/direction1_vmoral_v1.json`
+  (+ `DATASET_LICENSES.md`). **Future work:** a fable-based extension if a clean public-domain
+  source/method becomes viable. No change to G2, G3, or their thresholds.

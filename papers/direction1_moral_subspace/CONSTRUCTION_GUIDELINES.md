@@ -24,6 +24,12 @@ accidentally-moral form**: the valence-stripped side must not smuggle moral weig
 
 ### MORABLES — fable-internal derivation (NOT novel neutral construction)
 
+> **DROPPED (2026-06-27).** MORABLES is removed from the program: CC-BY-NC-4.0 (incompatible
+> with the repo's Apache-2.0) **and** ~79% non-re-derivable from public domain (obscure
+> Perry-index corpus). `V_moral` is **single-source (Moral Stories only)**; G-AXIS is not run.
+> See `PREREGISTRATION.md` (single-source amendment) and `deepsteer/datasets/DATASET_LICENSES.md`.
+> The method below is retained for a possible future public-domain-sourced fable extension.
+
 Derive **both** sides from the fable's own narrative material:
 
 - **Moral side:** a concrete retelling of the fable's central event with its moral valence
