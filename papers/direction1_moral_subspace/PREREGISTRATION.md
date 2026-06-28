@@ -367,3 +367,25 @@ line, never a silent edit.*
   Committed Apache-clean dataset: `deepsteer/datasets/direction1_vmoral_v1.json`
   (+ `DATASET_LICENSES.md`). **Future work:** a fable-based extension if a clean public-domain
   source/method becomes viable. No change to G2, G3, or their thresholds.
+- **2026-06-27 (G3 cross-model resolution + Point B wiring — two SAME-MODEL points):** The
+  cross-model question (V_moral on Base vs refusal on Instruct) is resolved by measuring each
+  refusal point **within its own model**, eliminating any Base↔Instruct projection:
+  - **Point A = BASE proto-refusal × Base-V_moral** — the refusal feature present before SFT
+    wires the gate (`extract_proto_refusal.py` construction: raw last-token mean-diff on the
+    base model), projected onto V_moral extracted on the **base** model, vs the **base** null.
+  - **Point B = INSTRUCT refusal gate × Instruct-V_moral** — the actual aligned-stage gate
+    (chat last-token mean-diff on the instruct model), projected onto V_moral extracted on the
+    **instruct** model, vs the **instruct** null. **This is the direct comparison to Paper 5's
+    0.1044** (instruct refusal × instruct subspace), now against the richer subspace.
+
+  Both prompt sets are the real Heretic set (`refusal_prompts.json`, 400 harmful/harmless), not
+  the fallback placeholder; **Point B is now a genuinely distinct object** (wired gate vs base
+  precursor), replacing the earlier `p_B = p_A` stub. `V_moral` is therefore extracted on **both**
+  models: **Base-V_moral** is the primary comprehension instrument (G2, Track-1, eff-dim); the
+  **Instruct-V_moral** exists for Point B's same-model measurement. Each point clears its OWN
+  frozen null + control (per-tag `null_artifact.json`), so predates-the-result holds per model.
+  "Robust across operationalizations" now spans the **pretraining-precursor (A)** and the
+  **aligned-gate (B)** refusal — the most meaningful axis — each cleanly same-model. The G3
+  rule (POSITIVE iff BOTH clear; split → NULL + flag) and M=0.05 are unchanged. Validated by the
+  two-tag `VALIDATE` dry run. (A cross-model projection — instruct refusal × Base-V_moral — may
+  be reported later as a transfer-robustness check, with the base→instruct caveat.)

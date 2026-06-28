@@ -83,8 +83,11 @@ def main() -> None:
                 vm = np.load(art / "v_moral.npz", allow_pickle=True)
                 print(f"  V_moral eff_dim={int(vm['eff_dim'])} basis={vm['basis'].shape}")
 
-                # --- Constraint 1: hard null sequence ---
-                g3_no_null = run("phase2_g3.py", art)
+                # --- Constraint 1: hard null sequence (g3 takes two same-model artifact dirs) ---
+                g3_no_null = subprocess.run(
+                    [sys.executable, str(S / "phase2_g3.py"),
+                     "--base-artifacts", str(art), "--instruct-artifacts", str(art)],
+                    capture_output=True, text=True)
                 aborted = g3_no_null.returncode != 0 and "null_artifact" in g3_no_null.stderr
                 ok &= aborted
                 print(f"  G3 WITHOUT null -> {'ABORTS (OK)' if aborted else 'NO ABORT (FAIL)'}")
