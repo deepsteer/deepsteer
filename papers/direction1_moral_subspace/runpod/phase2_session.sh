@@ -18,15 +18,22 @@ PY="${PYTHON:-python3}"
 BASE_MODEL="${BASE_MODEL:-allenai/OLMo-3-7B}"
 INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/OLMo-3-7B-Instruct}"
 
-run_tag () {  # $1=tag  $2=model
-  local tag="$1" model="$2" art="$ROOT/$1"
-  echo "== [$tag] stage 0: extract ($model) =="    ; "$PY" "$S/phase2_extract.py" --model "$model" --out "$art"
+run_tag () {  # $1=tag  $2=model  $3=mft_flag ("--mft" or "")
+  local tag="$1" model="$2" mft="${3:-}" art="$ROOT/$1"
+  echo "== [$tag] stage 0: extract ($model) $mft =="  ; "$PY" "$S/phase2_extract.py" --model "$model" --out "$art" $mft
   echo "== [$tag] stage 1: G-AXIS =="              ; "$PY" "$S/phase2_gaxis.py" --artifacts "$art"
   echo "== [$tag] stage 2: assemble V_moral =="    ; "$PY" "$S/phase2_assemble_vmoral.py" --artifacts "$art"
   echo "== [$tag] stage 3: FROZEN null (no refusal) ==" ; "$PY" "$S/phase2_null.py" --artifacts "$art"
 }
 
-run_tag base "$BASE_MODEL"
+# Base tag: full chain + the comprehension-instrument gates (G2 hard gate, Track-1 σ*).
+run_tag base "$BASE_MODEL" --mft
+echo "== [base] GATE G2 (contamination; HARD, gates narrative slice) =="
+"$PY" "$S/phase2_g2.py" --artifacts "$ROOT/base" --model "$BASE_MODEL"
+echo "== [base] Track-1 σ* fragility (numpy; reuses G2 acts) =="
+"$PY" "$S/phase2_track1.py" --artifacts "$ROOT/base"
+
+# Instruct tag: V_moral chain only (for G3 Point B's same-model measurement).
 run_tag instruct "$INSTRUCT_MODEL"
 
 echo "== stage 4: G3 (two same-model points; consumes both frozen nulls) =="

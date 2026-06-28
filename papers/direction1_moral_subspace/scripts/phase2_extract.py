@@ -58,6 +58,8 @@ def main() -> None:
     ap.add_argument("--model", default="allenai/OLMo-3-7B")  # Base; verify exact id pre-run
     ap.add_argument("--out", default=str(HERE.parent / "outputs" / "phase2"))
     ap.add_argument("--device", default=None)
+    ap.add_argument("--mft", action="store_true",
+                    help="also extract the 6-MFT-foundation baseline (for Track-1 + eff-dim)")
     args = ap.parse_args()
 
     validate = os.environ.get("VALIDATE") == "1"
@@ -111,10 +113,26 @@ def main() -> None:
     du.save_directions(out / "persona_direction.npz",
                        {"persona": {L: du.mean_diff_direction(*pacts[L]) for L in layers}})
 
+    # MFT baseline (6-foundation subspace) for Track-1 fragility comparison + eff-dim contrast.
+    if args.mft:
+        from collections import defaultdict
+
+        from deepsteer.datasets import load_moral_probing_v2
+        by_f: dict[str, list] = defaultdict(list)
+        for p in load_moral_probing_v2().all_pairs:
+            by_f[p.foundation.value].append((p.moral, p.neutral))
+        mft_dirs: dict[str, dict[int, np.ndarray]] = {}
+        for fnd, fpairs in by_f.items():
+            if validate:
+                fpairs = fpairs[:4]
+            facts = du.collect_pair_activations(model, fpairs, input_format="raw", layers=layers)
+            mft_dirs[fnd] = {L: du.mean_diff_direction(*facts[L]) for L in layers}
+        du.save_directions(out / "mft_directions.npz", mft_dirs)
+
     model.release()
     meta = {"model": args.model, "n_layers": n_layers, "band": band,
             "match_layer": min(MATCH_LAYER, n_layers - 1), "validate": validate,
-            "sources_extracted": list(moral_dirs)}
+            "sources_extracted": list(moral_dirs), "mft_extracted": args.mft}
     with open(out / "extract_meta.json", "w") as fh:
         json.dump(meta, fh, indent=2)
     print(f"stage0 extract done -> {out} | {meta}")
