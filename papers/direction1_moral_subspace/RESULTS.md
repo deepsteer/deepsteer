@@ -58,9 +58,26 @@ generalization across alternative rich-subspace constructions is future work.**
 
 ## Secondary results
 
-- **GATE G2 (contamination) = PASS** on the (single-source) narrative slice: `acc_surf 0.667
-  / acc_para 0.677`, gap −0.011 — the moral direction reads structure, not memorized text.
-  (Multi-source G2 coverage is in progress; see the G2/G3 distinction below.)
+- **GATE G2 (contamination) = PASS** on the Moral Stories narrative slice: `acc_surf 0.667 /
+  acc_para 0.677`, gap −0.011. The moral direction reads structure, not memorized text.
+- **Multi-source G2 coverage (OLMo-3 base, layer 16): every source clears the contamination
+  concern, none reads memorized surface text.** Each source's held-out eval pairs are
+  projected onto that source's own frozen base mean-diff direction; held-out separation is
+  verified disjoint by id (see the G2/G3 distinction below):
+
+  | source | slice | n | acc_surf | acc_para | gap | verdict |
+  |---|---|---:|---:|---:|---:|---|
+  | fables (held-out) | narrative, GATED | 15 | 0.967 | 0.967 | +0.000 | **PASS** |
+  | ETHICS (held-out) | declarative, informative | 197 | 0.701 | 0.761 | −0.061 | clears |
+  | ETHICS (extraction pairs) | declarative, diagnostic | 115 | 0.787 | 0.813 | −0.026 | clears |
+
+  The fable narrative slice (the only gated one; the 0.10/0.60 threshold is
+  narrative-calibrated) passes outright. Both ETHICS declarative slices show a **negative**
+  gap (paraphrase accuracy ≥ surface), the strongest anti-contamination signal: the direction
+  reads the moral structure, which survives paraphrasing rather than degrading. The ETHICS
+  held-out set (199 train-split pairs, disjoint from the 118 that produced `d_ethics`) is the
+  genuine held-out G2; the 118 extraction pairs are reported separately as the extraction-pair
+  paraphrase-gap diagnostic, and also show no surface memorization (−0.026).
 - **Track-1 (σ\*)**: single-source `V_moral` is no more fragile than the MFT baseline
   (RMS-normalized).
 
@@ -86,3 +103,8 @@ Multi-source G2 tests contamination of each source's **training pairs** and is a
 training-pair contamination, not a threat to the settled G3 headline.** If a G2 number comes
 in soft, the relevant follow-up is a paraphrase-gap check on the pairs the *direction* was
 extracted from — a separate question from dataset-completeness G2.
+
+In the event, no source came in soft: every held-out G2 cleared, and the ETHICS extraction-pair
+check (the −0.026 diagnostic above) confirms the direction is not memorizing its own training
+pairs either. So the distinction did not have to be invoked to defend the headline; it is
+recorded as the rule that *would* apply.
