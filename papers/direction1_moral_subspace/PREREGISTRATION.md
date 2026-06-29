@@ -446,3 +446,77 @@ line, never a silent edit.*
   thresholding on a no-elbow, content-dominated pooled-diff spectrum measures **content rank, not
   moral rank** (385 vs the rank-3 in the source directions) — a real caution for anyone
   constructing "moral subspaces" by SVD on per-pair difference vectors.
+- **2026-06-29 (REASONING-MODEL EXTENSION — OLMo-3-7B-Think; refusal positions pre-registered
+  BEFORE the run):** Extends G3 from Base+Instruct to a same-family reasoning model
+  (`allenai/Olmo-3-7B-Think`; verified `model_type=olmo3`, 32 layers, hidden 4096 — identical
+  architecture, so V_moral extraction is a model-id swap). Motivation: a reasoning model with an
+  explicit `<think>` trace is the **most adversarial test** of the orthogonality headline —
+  explicit moral reasoning about harm is exactly where refusal would couple to `V_moral` if it
+  couples anywhere. This is the model axis of the scope boundary in RESULTS.md, complementary to
+  the (still-open) subspace-construction axis.
+
+  **(A) `V_moral` is recomputed fresh in Think's space — no transfer.** Directions do not
+  transfer across models (per-model extraction; consistent with the cross-model degradation
+  finding). Re-extract `d_moral`, `d_fables`, `d_ethics`, the persona control, and the refusal
+  direction(s) in Think's own activations at layer 16 (stable band 15–31). Carry the
+  finding-driven **rank-3 source-direction-span construction** (not eff-dim@0.90) as the method.
+  **VERIFY, do not assume, that Think's pooled per-pair-diff spectrum is content-dominated** — a
+  one-line check (top moral-direction variance fraction + no-elbow). If Think unexpectedly shows a
+  low-rank *moral* elbow, that is itself a finding and the construction is revisited explicitly,
+  not silently reused. The two-step null (`q95`) and persona control (`c`) are recomputed on
+  Think's rank-3 span **before** any refusal vector is projected (fresh per model, same frozen
+  recipe).
+
+  **(B) Refusal POSITIONS — the load-bearing pre-registration.** The chat template auto-opens the
+  reasoning channel (templated tail = `<|im_start|>assistant\n<think>`), so the existing
+  last-input-token extractor lands on the `<think>` opener, *before* any reasoning. A single
+  mis-positioned extraction is dangerous here: **a wrong-position NULL is indistinguishable from
+  "orthogonality survives"** — if the post-answer refusal token is orthogonal but the in-trace
+  moral-reasoning representation couples, reading one position hides the exact coupling this
+  experiment exists to detect. Therefore refusal is extracted at **four pre-registered positions**,
+  grounded in the Zhao et al. keystone (`papers/7_reasoning/scripts/token_positions.py`), and **all
+  four are reported**:
+
+  | Pos | Site | Method | Role |
+  |---|---|---|---|
+  | **P0 `t_inst`** | last instruction-content token | prompt-side, no generation | harmfulness / comprehension site (Zhao: harm encoded here) |
+  | **P1 pre-trace gate (`t_post_inst`)** | the `<think>` opener (last templated token) | prompt-side, no generation | **direct methodological analog of Base/Instruct Points A/B** (last-input-token diff-of-means) — apples-to-apples with the existing 0.1044-regime result |
+  | **P2 in-trace** | last reasoning token before `</think>` | requires generation | **the coupling detector** — does the moral *reasoning* representation align with `V_moral`? Only the Think run can surface this |
+  | **P3 post-answer** | last answer token after `</think>` | requires generation | the refusal *decision* site (what the model actually outputs) |
+
+  Each position's refusal direction = harmful−harmless diff-of-means of activations at that
+  position over the real Heretic set (`refusal_prompts.json`, 400 h/h). P0/P1 are prompt-side
+  (deterministic, matched prompts — the clean diff). P2/P3 require a generated trace and are
+  **content-confounded** (harmful traces discuss refusing, harmless discuss the topic), so their
+  diff-of-means mixes refusal with topic; the persona control `c` + the rank-matched null still
+  bound "any meaningful direction projects high," and this caveat is reported with P2/P3.
+
+  **(C) Decision rule (unchanged spine; multiple-comparisons discipline fixed now).** Per position,
+  refusal is NULL vs the Think span iff `p ≤ q95 + M` **AND** `p ≤ c + M` (`M = 0.05`, the frozen
+  margin). To avoid position-fishing, the **pre-specified coupling hypothesis is P2 (in-trace)**:
+  "reasoning-model coupling detected" = **P2 clears both bars**. P1 and P3 are the
+  comparability/decision verdicts; P0 is the comprehension-site reading. **Headline outcomes,
+  pre-declared:** orthogonal at all four = the robust strengthening (the most adversarial case
+  still NULL); **orthogonal at P0/P1/P3 but coupled at P2 = the more interesting reasoning-specific
+  finding** (flagged for investigation, not retraction, per the Papers 5–7 claim discipline). NULL
+  remains the pre-declared more-publishable baseline; a P2 coupling would be the publishable
+  *positive*, and it is pre-registered as a specific, single hypothesis so it cannot be a post-hoc
+  fish across positions.
+
+  **(D) Generation protocol (fixed now).** Greedy decode (deterministic, reproducible),
+  `max_new_tokens` capped. **`</think>` is not a single token on this tokenizer — it is the
+  3-token subsequence `[524, 27963, 29]` (`</`, `think`, `>`); verified** — so the boundary is
+  located by matching that subsequence (P2 = the token immediately before it; P3 = the last
+  generated token after it). Likewise the keystone is verified on Think: `t_inst` = last
+  instruction token, post-instruction suffix = `<|im_end|>\n<|im_start|>assistant\n<think>`
+  (8 tokens), `t_post_inst` = the final `<think>`-opener token. A prompt that emits no `</think>`
+  within the cap is **excluded from P2/P3 and counted** (never silently dropped), with the
+  exclusion rate reported. P0/P1 use all prompts (prompt-side, no generation).
+
+  **(E) Scope — headline only; stage-trajectory is a separate experiment.** The
+  `Olmo-3-7B-Think-SFT` / `-Think-DPO` checkpoints enable a base→SFT→DPO trajectory, but that is
+  the Direction-2 "where does the dependence form" question — a **separate pre-registered
+  experiment**, not bundled here. This amendment runs the **headline clean**: Think final model,
+  four-position refusal, G3 + G2, fresh two-step null. G2 contamination coverage on Think uses the
+  same model-agnostic datasets (already built). The pre-registered spine (G3 rule, conjunction,
+  `M = 0.05`, two-step null) is **unchanged**.
