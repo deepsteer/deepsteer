@@ -295,6 +295,15 @@ the null construction, or a decision rule must be a dated amendment recorded bel
 line, never a silent edit.*
 
 ### Amendments
+
+> **How to read this trail.** Each amendment is anchored to the data property, measured
+> yield, or external constraint (license, register, spectrum) that forced it, stated before
+> the consequence that followed. The load-bearing spine — the **G3 decision rule, its
+> two-bar conjunction, the margin `M = 0.05`, and the two-step null protocol** (§0, §3.3,
+> §3.4) — is **unchanged by every amendment below**; NULL was the pre-declared more-publishable
+> outcome throughout. What moved was dataset composition and the `V_moral` rank/construction,
+> each time toward a harder or more faithful test, never toward the answer.
+
 - **2026-06-26 (commit `8710641`+):** Added GATE G-AXIS (§3A, MORABLES cross-source axis
   agreement, floor 0.67) and the moral-salience construct framing (§1). MORABLES moves from
   a stated-moral aphorism contrast to a fable-internal salience contrast; its pooling into
@@ -394,24 +403,46 @@ line, never a silent edit.*
   rule (POSITIVE iff BOTH clear; split → NULL + flag) and M=0.05 are unchanged. Validated by the
   two-tag `VALIDATE` dry run. (A cross-model projection — instruct refusal × Base-V_moral — may
   be reported later as a transfer-robustness check, with the base→instruct caveat.)
-- **2026-06-28 (V_moral construction RE-SPEC — finding-driven correction):** The real run showed
-  single-source `V_moral` is **rank-1-moral + content** (eff-dim@0.90 = 385; flat no-elbow
-  spectrum; d_moral = 7.5% of variance), making G3 degenerate (null/persona/refusal all
-  ~0.7–0.8). **Restoring richness** (option 2): Understanding Fables (MIT) and ETHICS both add a
-  **distinguishable** moral axis — `cos(d_fables, d_moral)=0.53`, `cos(d_ethics, d_moral)=0.36`
-  (vs the non-moral persona ref 0.24); the three source directions span **effective rank 3**. The
-  rank-3 lives in the **source mean-diff directions, not the pooled per-pair-diff subspace**
-  (pooling fables barely moves the diff spectrum — content still dominates). Therefore **`V_moral`
-  = orthonormalized span of the source moral mean-diff directions** (`{d_moral, d_fables, d_ethics}`,
-  rank 3), constructed exactly like the MFT subspace (span of its 6 foundation directions, rank ~4)
-  — which makes G3 directly comparable to Paper 5's 0.1044 (refusal onto a foundation-direction
-  span). **The rank-matched null + persona control are recomputed on THIS span** (different
-  subspace ⇒ different null; two-step discipline: realized from the actual V_moral before the
-  refusal projection). G3 reported as the **rank-3 span point estimate (order-invariant,
-  headline) + a rank-sweep (1→2→3)**, refusal vector saved. Any per-axis "refusal aligns with the
-  fable/action axis" is **basis-dependent ⇒ diagnostic only, not a headline claim**. ETHICS's full
-  build (over-generate / filter / bias-flag) is now justified but feeds **G2**, not G3 (G3 reads
-  the source directions, already in hand). **Standalone cautionary finding (independent of G3's
-  result):** eff-dim thresholding on a no-elbow, content-dominated pooled-diff spectrum measures
-  **content rank, not moral rank** (385 vs the rank-3 in source directions) — a real caution about
-  constructing "moral subspaces" by SVD on per-pair difference vectors. G2, G3 rule, M=0.05 unchanged.
+- **2026-06-28 (V_moral construction RE-SPEC — finding-driven correction):**
+  *Causal structure: a discovered property of the difference vectors invalidated the assumption
+  behind the §5 eff-dim spec, which forced the construction change. The trigger is a symmetric
+  defect, independent of what refusal does, so the change is anchored to the data, not the result.*
+
+  **(1) Discovered data property (outcome-independent).** The real-run spectrum of the pooled
+  per-pair difference vectors has **no elbow** and is **content-dominated**: singvals 31, 18, 15,
+  14, … flat; `d_moral` is the top direction but carries only **7.5% of variance**, so uncentered
+  eff-dim @ 0.90 = **385** (≈10% of the 4096-dim space). At rank 385 the subspace is degenerate
+  **for every direction tested** — null `q95` = 0.80, persona `c` = 0.73, and refusal all project
+  ~0.7–0.8. It has no discriminating power for *any* direction regardless of refusal's value;
+  the degeneracy is symmetric, so identifying it cannot be motivated by the orthogonality outcome.
+
+  **(2) Invalidated assumption.** §5 assumed uncentered eff-dim @ 0.90 of the pooled diffs would
+  capture *moral* rank. Property (1) shows it captures **content** rank: the moral structure is
+  not in the 0.90-variance subspace at all. The original §5 denominator was measuring the wrong
+  thing, so the G3-as-specified could not be run on it.
+
+  **(3) Forced correction.** The moral structure lives in the **source mean-diff directions**, not
+  the pooled-diff subspace (pooling fables barely moves the diff spectrum; content still
+  dominates). Two sources each add a **distinguishable** moral axis — `cos(d_fables, d_moral)=0.53`,
+  `cos(d_ethics, d_moral)=0.36` (vs the non-moral persona reference 0.24) — so the three source
+  directions span **effective rank 3**. Therefore **`V_moral` = orthonormalized span of the source
+  moral mean-diff directions** (`{d_moral, d_fables, d_ethics}`, rank 3), constructed exactly like
+  the MFT subspace (span of its 6 foundation directions, rank ~4). This makes G3 directly
+  comparable to Paper 5's 0.1044 (refusal onto a foundation-direction span). Note the bar moved
+  *toward* the harder, more comparable test (a richer subspace), not toward an easier one.
+
+  **What is preserved (the pre-registered spine is untouched).** The G3 decision rule, the
+  conjunction, and **M = 0.05 are unchanged**; NULL remains the pre-declared more-publishable
+  outcome. **The rank-matched null + persona control are recomputed on THIS span** under the
+  original two-step recipe (different subspace ⇒ different null; realized mechanically from the
+  actual `V_moral` before the refusal projection, which never enters the null). G3 is reported as
+  the **rank-3 span point estimate (order-invariant, headline) + a rank-sweep (1→2→3)**; the
+  refusal vector is saved. Any per-axis "refusal aligns with the fable/action axis" is
+  **basis-dependent ⇒ diagnostic only, not a headline claim**. ETHICS's full build (over-generate
+  / filter / bias-flag) is justified by this re-spec but feeds **G2**, not G3 (G3 reads the source
+  directions, already in hand).
+
+  **Standalone cautionary finding (a contribution, independent of G3's result):** eff-dim
+  thresholding on a no-elbow, content-dominated pooled-diff spectrum measures **content rank, not
+  moral rank** (385 vs the rank-3 in the source directions) — a real caution for anyone
+  constructing "moral subspaces" by SVD on per-pair difference vectors.

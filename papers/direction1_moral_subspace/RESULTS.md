@@ -52,9 +52,62 @@ strengthening of Papers 5–7.
 ### Scope boundary (stated, not left for a reviewer)
 
 Orthogonality is established against **one** rank-3 multi-source subspace and is **robust
-across ranks 1–3** (the rank-sweep). The sweep varies *rank*, not *construction* — so the
+across ranks 1–3** (the rank-sweep). The sweep varies *rank*, not *construction*, so the
 honest scope is: **holds against this rank-3 multi-source `V_moral`, robust across rank;
 generalization across alternative rich-subspace constructions is future work.**
+
+## Why this isn't a subspace reverse-engineered to the answer
+
+The sharp challenge to a result like this is: *you built the subspace, then measured refusal
+against it, so did you just find a subspace that gives the orthogonality answer you wanted?*
+The defense is that the test was frozen in `PREREGISTRATION.md` (commit `107f9f3`) before any
+`V_moral` existed and before any refusal vector was measured. Three quantities were fixed in
+advance:
+
+1. **The G3 decision rule and margin were fixed pre-data.** `M = 0.05`; G3 is POSITIVE only if
+   refusal clears BOTH the rank-matched null AND the persona control by `M`, for BOTH refusal
+   points; otherwise NULL. The conjunction, the two bars, and the margin were all committed
+   before the subspace was built. The rule **named NULL the more publishable outcome in
+   advance** (orthogonality robust across operationalizations, the strengthening of Papers
+   5–7), so the pre-registration did not lean toward a positive find.
+2. **The null and control are computed mechanically from the subspace, not chosen.** `q95` (the
+   rank-matched null) and `c` (the persona control) are a deterministic function of `V_moral`'s
+   geometry, produced by a recipe frozen pre-data (covariance-matched random directions at the
+   realized rank). In the run they are realized from the constructed `V_moral` and evaluated
+   **before** the refusal vector is projected; the refusal projection never enters the null. The
+   bar refusal had to clear was set by the subspace, not by the answer.
+3. **The G2 tolerance was fixed pre-data**, grounded in Paper 1's measured transfer regimes
+   (structural reading loses ≈1 pp, lexical lookup ≈25 pp), before the paraphrase set was
+   scored.
+
+What was **not** pre-registered is the rank and construction of `V_moral`: that changed once,
+mid-program, from single-source to a rank-3 multi-source span. The next section shows that
+change was forced by a discovered property of the difference vectors, not by the answer it
+produced.
+
+## Two findings the work produced
+
+These are results in their own right, independent of the orthogonality headline. Each also
+redirected the `V_moral` construction; the framing below leads with what was discovered, and
+the redirection follows from it.
+
+1. **Moral salience from a single contrastive source is rank-1, not a rich subspace.** One
+   source (Moral Stories) yields a single dominant moral direction carrying 7.5% of the
+   per-pair-difference variance, atop a flat content tail; there is no low-rank *moral* subspace
+   inside one source. This is a fact about how contrastive moral signal is distributed, and it
+   is what **invalidated the assumption that one source could stand in for "the moral
+   subspace"** and forced the move to multiple distinguishable constructs (+fables +ETHICS →
+   rank 3).
+2. **Effective-dimensionality thresholding on per-pair difference vectors measures content rank,
+   not moral rank.** The pooled-diff spectrum is elbow-less and content-dominated (singvals 31,
+   18, 15, 14, … flat), so "uncentered eff-dim @ 0.90" gives **385** (≈10% of the 4096-dim
+   space). At that rank the subspace is degenerate **for every direction**: refusal, persona,
+   and random all project ~0.7–0.8, so it discriminates nothing regardless of what refusal does.
+   The defect is symmetric, which is exactly why noticing it is not motivated by the
+   orthogonality answer. This is a real caution for anyone building "moral subspaces" by SVD on
+   contrastive diffs, and it is what **invalidated the original §5 eff-dim spec**: the rank-3
+   moral structure does not live in the 0.90-variance subspace at all, it lives in the source
+   mean-diff directions, so `V_moral` was re-spec'd to their span.
 
 ## Secondary results
 
@@ -80,19 +133,6 @@ generalization across alternative rich-subspace constructions is future work.**
   paraphrase-gap diagnostic, and also show no surface memorization (−0.026).
 - **Track-1 (σ\*)**: single-source `V_moral` is no more fragile than the MFT baseline
   (RMS-normalized).
-
-## Two standalone methodological findings (useful independent of the orthogonality headline)
-
-1. **Single-source moral salience is rank-1 + content.** A single contrastive source (Moral
-   Stories) yields one dominant moral direction (7.5% of the per-pair-diff variance) atop a
-   flat content tail; there is no rich low-rank moral subspace from one source. Rich moral
-   structure requires multiple distinguishable constructs (here, +fables +ETHICS → rank 3).
-2. **eff-dim thresholding on per-pair difference vectors measures content rank, not moral
-   rank.** The pooled-diff spectrum is elbow-less and content-dominated, so "uncentered
-   eff-dim @ 0.90" gave **385** (≈10% of the 4096-dim space), against which every direction —
-   refusal, persona, random — projects ~0.7–0.8 and the test is degenerate. The moral
-   structure lives in the source *mean-diff directions* (rank 3), not the 0.90-variance
-   subspace. Caution for anyone constructing "moral subspaces" by SVD on contrastive diffs.
 
 ## G2 ↔ G3 distinction (do not conflate)
 
