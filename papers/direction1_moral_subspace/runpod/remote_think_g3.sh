@@ -25,13 +25,14 @@ TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"
 echo ">> transformers==$TRANSFORMERS_VERSION + accelerate..."
 pip install -q --break-system-packages "transformers==$TRANSFORMERS_VERSION" -U accelerate 2>&1 | tail -1 || true
 [ -n "${PIP_EXTRA:-}" ] && pip install -q --break-system-packages -U $PIP_EXTRA 2>&1 | tail -1 || true
-# Resilient downloader: hf_transfer (multi-threaded HTTP, honors HF_HUB_DOWNLOAD_TIMEOUT and
-# auto-retries) instead of the xet backend, which stalled on the Think weights and ignores the
-# timeout (HF_XET_HIGH_PERFORMANCE never errors out -> the 14GB pull wedges forever).
+# Disable the xet backend: it stalled on the Think weights and ignores HF_HUB_DOWNLOAD_TIMEOUT
+# (HF_XET_HIGH_PERFORMANCE never errors out -> the 14GB pull wedges forever). With xet off, the
+# standard plain-HTTP downloader is single-stream but reliable and honors the timeout (a stalled
+# chunk errors at 60s and retries from cache). (This hub version retired hf_transfer, so no flag
+# for it -- xet-off is the whole lever.)
 export HF_HUB_DISABLE_XET=1
-pip install -q --break-system-packages hf_transfer >/dev/null 2>&1 && export HF_HUB_ENABLE_HF_TRANSFER=1
 export HF_HUB_DOWNLOAD_TIMEOUT="${HF_HUB_DOWNLOAD_TIMEOUT:-60}"
-echo ">> downloader: xet=disabled hf_transfer=${HF_HUB_ENABLE_HF_TRANSFER:-0}"
+echo ">> downloader: xet=disabled (standard HTTP, timeout ${HF_HUB_DOWNLOAD_TIMEOUT}s)"
 # Pre-pull the full repo once, explicitly, so a stalled shard errors+retries here (not mid-load).
 # Whole repo (no allow_patterns) so the chat-template file -- which lives OUTSIDE
 # tokenizer_config.json on this model -- is guaranteed to come down.
