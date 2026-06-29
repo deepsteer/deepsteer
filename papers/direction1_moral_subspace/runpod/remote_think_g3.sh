@@ -25,8 +25,23 @@ TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"
 echo ">> transformers==$TRANSFORMERS_VERSION + accelerate..."
 pip install -q --break-system-packages "transformers==$TRANSFORMERS_VERSION" -U accelerate 2>&1 | tail -1 || true
 [ -n "${PIP_EXTRA:-}" ] && pip install -q --break-system-packages -U $PIP_EXTRA 2>&1 | tail -1 || true
-pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_HIGH_PERFORMANCE=1
+# Resilient downloader: hf_transfer (multi-threaded HTTP, honors HF_HUB_DOWNLOAD_TIMEOUT and
+# auto-retries) instead of the xet backend, which stalled on the Think weights and ignores the
+# timeout (HF_XET_HIGH_PERFORMANCE never errors out -> the 14GB pull wedges forever).
+export HF_HUB_DISABLE_XET=1
+pip install -q --break-system-packages hf_transfer >/dev/null 2>&1 && export HF_HUB_ENABLE_HF_TRANSFER=1
 export HF_HUB_DOWNLOAD_TIMEOUT="${HF_HUB_DOWNLOAD_TIMEOUT:-60}"
+echo ">> downloader: xet=disabled hf_transfer=${HF_HUB_ENABLE_HF_TRANSFER:-0}"
+# Pre-pull the full repo once, explicitly, so a stalled shard errors+retries here (not mid-load).
+# Whole repo (no allow_patterns) so the chat-template file -- which lives OUTSIDE
+# tokenizer_config.json on this model -- is guaranteed to come down.
+export THINK_MODEL
+python - <<'PY' || { echo "ERROR: Think weight pre-pull failed; rerun (cache resumes)."; exit 1; }
+import os
+from huggingface_hub import snapshot_download
+snapshot_download(os.environ.get("THINK_MODEL", "allenai/Olmo-3-7B-Think"))
+print(">> Think weights cached")
+PY
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 if [ "$VALIDATE" != "1" ]; then
   python -c "from transformers import AutoConfig; AutoConfig.from_pretrained('$THINK_MODEL'); print('>> OLMo-3-Think config OK')" \
