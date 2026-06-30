@@ -112,11 +112,9 @@ class ExtractionSite(str, Enum):
     COT = "cot"                      # positions inside the generated reasoning (deliberative)
 
 
-class CoTFormat(str, Enum):
-    """How a model delimits its reasoning trace (parsing detail, not a method)."""
-
-    THINK_TAGS = "think_tags"            # <think> ... </think>  (DeepSeek-R1 distills)
-    HARMONY_ANALYSIS = "harmony_analysis"  # harmony "analysis" channel (GPT-OSS-20B)
+# CoTFormat moved to the shared deepsteer.reasoning.think_io (one source of truth); re-exported
+# here so `from model_registry import CoTFormat` keeps working.
+from deepsteer.reasoning.think_io import CoTFormat  # noqa: E402,F401
 
 
 class Provenance(str, Enum):

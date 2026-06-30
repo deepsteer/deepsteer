@@ -72,10 +72,11 @@ def main() -> None:
         args.out = str(P2 / "think" / "pilot")
         print(f"[PILOT] N={pilot_n}/set cap={args.max_new_tokens} -> {args.out}", flush=True)
 
-    # Decode mode. OLMo-3-Think's generation_config is sampling (temp 0.6, top_p 0.95); greedy
-    # (DO_SAMPLE=0) tends not to emit a clean </think> close. Default to the model's intended
-    # sampling with a FIXED seed (reproducible). DO_SAMPLE=0 forces greedy.
-    do_sample = os.environ.get("DO_SAMPLE", "1") != "0"
+    # Decode mode. GREEDY by default (deterministic, pre-registered; Paper 7 used greedy and the
+    # R1 distills closed </think> fine -- the earlier closed-rate=0.0 was a detection bug, now
+    # fixed by reusing the robust think_io boundary). DO_SAMPLE=1 opts into the model's intended
+    # sampling (temp 0.6, top_p 0.95) if a model ever needs it.
+    do_sample = os.environ.get("DO_SAMPLE", "0") == "1"
     gen_cfg = ({"do_sample": True, "temperature": float(os.environ.get("TEMPERATURE", "0.6")),
                 "top_p": float(os.environ.get("TOP_P", "0.95"))} if do_sample
                else {"do_sample": False})

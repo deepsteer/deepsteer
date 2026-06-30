@@ -11,11 +11,11 @@ keystone (`papers/7_reasoning/scripts/token_positions.py`):
 
 P0/P1 are prompt-side and, by causal masking, independent of what is generated afterwards, so
 all four positions are read from a SINGLE full-sequence forward (one generate + one forward).
-`</think>` has NO fixed token form: it is not a special token, and under BPE the leading `</`
-merges with the preceding char (`.</`=4005, ` </`, `\n</`, standalone `</`=524, ...), so a fixed
-subsequence misses almost every real close. The boundary is found on the STABLE suffix
-`[27963, 29]` (`think`,`>`) with a per-occurrence `</`-prefix check (`_find_think_close`). A
-generation that never closes `</think>` yields P2 = P3 = None (excluded, counted; never dropped).
+The `</think>` boundary (for P2/P3) is located by the SHARED `deepsteer.reasoning.think_io`
+helpers (`cot_token_boundary` / `split_rollout`): string-match the delimiter in the decoded
+text, then binary-search back to the token index -- robust to BPE token-merge artifacts on the
+delimiter (which broke an earlier fixed-token-subsequence matcher). A generation that never
+closes `</think>` yields P2 = P3 = None (excluded, counted; never dropped).
 
 GPU module: imports torch lazily so the file is importable for unit-style checks.
 """
@@ -31,41 +31,14 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "7_reasoning" / "scripts"))
 from token_positions import post_instruction_token_count  # noqa: E402
 
-# `</think>` is NOT a fixed token sequence: the leading `</` merges with the preceding char
-# under BPE (`.</`=4005, ` </`, standalone `</`=524, ...). Anchor on the stable suffix instead
-# and validate the `</` prefix per-occurrence -- see _find_think_close. (`<think>`/`</think>`
-# are not special tokens; convert_tokens_to_ids returns the unk id for both.)
+# The `</think>` boundary is located by the SHARED, robust helper (string-match in the decoded
+# text + binary-search back to the token index) -- immune to the BPE merges that broke a
+# fixed-token-subsequence matcher. Reused, not reimplemented (Paper 7 solved this in think_io).
+from deepsteer.reasoning import think_io as ti  # noqa: E402
+
+_FMT = ti.CoTFormat.THINK_TAGS
 # Terminators we do not want P3 to land on (measure the last MEANINGFUL answer token).
 _TERMINATORS = {100265, 100257}  # <|im_end|>, <|endoftext|>-class; eos added at runtime
-
-
-def _find_subseq(ids: list[int], sub: list[int], start: int = 0) -> int:
-    m = len(sub)
-    for i in range(start, len(ids) - m + 1):
-        if ids[i:i + m] == sub:
-            return i
-    return -1
-
-
-THINK_TOK = 27963  # 'think' -- stable token in both <think> and </think> on this tokenizer
-
-
-def _find_think_close(model, ids: list[int], start: int) -> tuple[int, int]:
-    """First `</think>` close in ids[start:]. Returns (close_start_idx, gt_idx) or (-1, -1).
-
-    `</think>` has NO fixed token form: under BPE the leading `</` merges with the preceding
-    char (`.</`=4005, ` </`, standalone `</`=524, ...) and the trailing `>` can merge forward,
-    so neither a fixed subsequence nor a fixed [think,>] suffix is reliable. The robust anchor
-    is the `think` token (27963), which appears in both tags; for each occurrence decode a small
-    window and string-match the literal `</think>` (an OPENER decodes `<think>`, not `</think>`,
-    so it is skipped). The opener lives in the prompt (< start), so the first match in the
-    generated region is the close.
-    """
-    tok = model.tokenizer
-    for j in range(start, len(ids)):
-        if ids[j] == THINK_TOK and "</think>" in tok.decode(ids[max(0, j - 2):j + 2]):
-            return j - 1, j + 1            # close_start ~ the '</'-token; gt_idx ~ the '>' token
-    return -1, -1
 
 
 def _last_meaningful(ids: list[int], after: int, terminators: set[int]) -> int | None:
@@ -119,7 +92,8 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
         gen = model.model.generate(**enc, **kw)
     full_ids = gen[0].tolist()
     acts = _forward_capture(model, full_ids, layer)
-    gen_text = tok.decode(full_ids[plen:])
+    gen_ids = full_ids[plen:]                  # the generated region (reasoning + answer)
+    gen_text = ti.decode_rollout(tok, gen_ids, _FMT)
 
     terminators = set(_TERMINATORS)
     if tok.eos_token_id is not None:
@@ -127,20 +101,25 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
 
     p0 = max(0, plen - post_count - 1)        # t_inst
     p1 = plen - 1                             # pre-trace gate (<think> opener, last templated)
-    close_start, gt_idx = _find_think_close(model, full_ids, plen)  # </think> in generated region
-    if close_start < 0:
-        idx2 = idx3 = None
+    # </think> boundary via the shared robust helper: index in gen_ids where reasoning ends
+    # (== len(gen_ids) if it never closed). P2 = last reasoning token; P3 = last answer token.
+    _, answer = ti.split_rollout(gen_text, _FMT)
+    boundary = ti.cot_token_boundary(tok, gen_ids, _FMT)
+    closed = boundary < len(gen_ids)
+    if closed:
+        idx2 = (plen + boundary - 1) if boundary >= 1 else None    # last reasoning token
+        idx3 = (_last_meaningful(full_ids, plen + boundary, terminators)
+                if answer.strip() else None)                       # last answer token
     else:
-        idx2 = close_start - 1                # last reasoning token before the '</'-token
-        idx3 = _last_meaningful(full_ids, gt_idx, terminators)  # answer token after '>'
+        idx2 = idx3 = None
 
     def take(i):
         return acts[i].float().cpu().numpy() if i is not None and i >= 0 else None
 
     return {"p0": take(p0), "p1": take(p1), "p2": take(idx2), "p3": take(idx3),
-            "closed": close_start >= 0, "has_answer": idx3 is not None,
+            "closed": closed, "has_answer": idx3 is not None,
             # string-level ground truth: did the model emit '</think>' AT ALL? (independent of
-            # the token detector -> separates "model didn't close" from "detector missed it")
+            # the token boundary -> separates "model didn't close" from "boundary mapping issue")
             "has_close_str": "</think>" in gen_text,
             "n": len(full_ids), "plen": plen, "n_gen": len(full_ids) - plen,
             "tail": gen_text[-300:], "gen_text": gen_text,  # gen_text kept only for samples
