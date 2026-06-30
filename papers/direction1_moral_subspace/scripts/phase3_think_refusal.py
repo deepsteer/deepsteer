@@ -43,7 +43,8 @@ def main() -> None:
     ap.add_argument("--out", default=str(P2 / "think"))
     ap.add_argument("--prompts", default=str(HERE.parents[1] / "5_moral_alignment"
                                              / "refusal_prompts.json"))
-    ap.add_argument("--max-new-tokens", type=int, default=1024)
+    ap.add_argument("--max-new-tokens", type=int,
+                    default=int(os.environ.get("MAX_NEW_TOKENS", 2048)))
     ap.add_argument("--device", default=None)
     args = ap.parse_args()
 
@@ -77,7 +78,9 @@ def main() -> None:
                   "closed_rate_harmless": round(res["closed_rate_harmless"], 3),
                   "answer_rate_harmful": round(res["answer_rate_harmful"], 3),
                   "answer_rate_harmless": round(res["answer_rate_harmless"], 3),
-                  "positions": {}}
+                  "gen_len": res["gen_len"], "positions": {}}
+    with open(out / "think_refusal_debug.json", "w") as fh:
+        json.dump({"gen_len": res["gen_len"], "samples": res["samples"]}, fh, indent=2)
     for pos, info in res["positions"].items():
         vec = info["vec"]
         if vec is None:
@@ -94,6 +97,9 @@ def main() -> None:
         json.dump(meta, fh, indent=2)
     print(f"closed rate h/s = {meta['closed_rate_harmful']}/{meta['closed_rate_harmless']} | "
           f"answer rate h/s = {meta['answer_rate_harmful']}/{meta['answer_rate_harmless']}")
+    g = res["gen_len"]
+    print(f"gen_len mean={g['mean']:.0f} p90={g['p90']:.0f} max={g['max']} "
+          f"hit_cap_frac={g['hit_cap_frac']:.2f} (cap={args.max_new_tokens})")
     print(f"think 4-position refusal done -> {out}")
 
 

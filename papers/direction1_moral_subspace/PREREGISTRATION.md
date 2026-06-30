@@ -504,14 +504,13 @@ line, never a silent edit.*
   fish across positions.
 
   **(D) Generation protocol (fixed now).** Greedy decode (deterministic, reproducible),
-  `max_new_tokens` capped. **`</think>` is not a single token on this tokenizer — it is the
-  3-token subsequence `[524, 27963, 29]` (`</`, `think`, `>`); verified** — so the boundary is
-  located by matching that subsequence (P2 = the token immediately before it; P3 = the last
-  generated token after it). Likewise the keystone is verified on Think: `t_inst` = last
-  instruction token, post-instruction suffix = `<|im_end|>\n<|im_start|>assistant\n<think>`
-  (8 tokens), `t_post_inst` = the final `<think>`-opener token. A prompt that emits no `</think>`
-  within the cap is **excluded from P2/P3 and counted** (never silently dropped), with the
-  exclusion rate reported. P0/P1 use all prompts (prompt-side, no generation).
+  `max_new_tokens` capped. `</think>` is located in the generated region (P2 = the last reasoning
+  token before it; P3 = the last meaningful answer token after it). The keystone is verified on
+  Think: `t_inst` = last instruction token, post-instruction suffix =
+  `<|im_end|>\n<|im_start|>assistant\n<think>` (8 tokens), `t_post_inst` = the final
+  `<think>`-opener token. A prompt that emits no `</think>` within the cap is **excluded from
+  P2/P3 and counted** (never silently dropped), with the exclusion rate reported. P0/P1 use all
+  prompts (prompt-side, no generation).
 
   **(E) Scope — headline only; stage-trajectory is a separate experiment.** The
   `Olmo-3-7B-Think-SFT` / `-Think-DPO` checkpoints enable a base→SFT→DPO trajectory, but that is
@@ -520,3 +519,21 @@ line, never a silent edit.*
   four-position refusal, G3 + G2, fresh two-step null. G2 contamination coverage on Think uses the
   same model-agnostic datasets (already built). The pre-registered spine (G3 rule, conjunction,
   `M = 0.05`, two-step null) is **unchanged**.
+
+  **Run-1 record + `</think>`-detection correction (2026-06-29, post-run).** First GPU run
+  executed. **Content-dominated check PASSED on Think** (`top_dir_var_frac = 0.0737`,
+  `effdim@0.90 = 385`, essentially identical to base) → the rank-3 source-direction construction
+  is confirmed the right method on Think, not assumed. **P0 (harm site) p = 0.291 and P1
+  (pre-trace gate) p = 0.101 vs null `q95 = 0.304`+M, persona `c = 0.525` → both NULL** (orthogonal);
+  P1 ≈ Paper-5 0.1044, consistent with Base/Instruct. **BUT P2/P3 closed-rate = 0.0**: the
+  `</think>` boundary detector used the fixed 3-token subsequence `[524, 27963, 29]`, which is
+  **wrong** — under BPE the leading `</` merges with the preceding char (`.</` = 4005, ` </`,
+  `\n</`, …; verified by in-context encode), so the fixed subsequence essentially never matches
+  generated text. This is a detection-MECHANISM bug, **not** a change to the position definitions
+  or any gate. **Correction:** anchor on the stable suffix `[27963, 29]` (`think`,`>`) and validate
+  the `</` prefix per occurrence (`_find_think_close`), taking the first `</`-validated close in
+  the generated region. Validated synthetically (`harm.</think>I can't…` → P2 = `harm`, P3 = `.`).
+  P0/P1 are unaffected (prompt-side, no `</think>`), so the P0/P1 NULL above stands; only P2/P3
+  need re-running (refusal-only, the moral/persona/axis artifacts are unchanged). Cap raised to
+  2048 with `gen_len`/closed-rate/sample-trace diagnostics so a cap-limited closed-rate is now
+  visible. The spine is untouched.
