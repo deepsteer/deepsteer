@@ -149,13 +149,22 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
     """
     post_count = post_instruction_token_count(model.tokenizer)
 
-    def collect(prompts):
-        rows = [generate_and_position(model, p, layer, max_new_tokens, post_count)
-                for p in prompts]
+    def collect(prompts, label):
+        # Serial GPU generation (NOT parallel_map -- one model). Print progress every 25
+        # prompts (and at the end) so the long run is visible; closed-so-far is the </think>
+        # adequacy signal the pilot validates. flush=True -> reaches session.log promptly.
+        rows, closed = [], 0
+        n = len(prompts)
+        for k, p in enumerate(prompts, 1):
+            row = generate_and_position(model, p, layer, max_new_tokens, post_count)
+            rows.append(row)
+            closed += int(row["closed"])
+            if k % 25 == 0 or k == n:
+                print(f"  {k}/{n} ({label}) done, closed-so-far={closed / k:.2f}", flush=True)
         return rows
 
-    h_rows = collect(harmful)
-    s_rows = collect(harmless)
+    h_rows = collect(harmful, "harmful")
+    s_rows = collect(harmless, "harmless")
 
     out: dict[str, object] = {"layer": layer, "post_count": post_count,
                               "max_new_tokens": max_new_tokens, "positions": {}}

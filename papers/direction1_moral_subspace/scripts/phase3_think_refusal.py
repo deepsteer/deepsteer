@@ -62,6 +62,16 @@ def main() -> None:
     if validate:
         harmful, harmless = harmful[:6], harmless[:6]
 
+    # PILOT mode: a cheap subset on the REAL Think model (not the 1B) to validate </think>
+    # detection + the cap distribution before the ~4hr full run. Separate out dir so it never
+    # clobbers the real refusal artifacts. Guarded by `not validate` so a forwarded VALIDATE=1
+    # cannot silently downgrade the pilot to the 1B.
+    pilot_n = int(os.environ.get("PILOT_N", "0") or 0)
+    if pilot_n > 0 and not validate:
+        harmful, harmless = harmful[:pilot_n], harmless[:pilot_n]
+        args.out = str(P2 / "think" / "pilot")
+        print(f"[PILOT] N={pilot_n}/set cap={args.max_new_tokens} -> {args.out}", flush=True)
+
     from deepsteer.core.model_interface import WhiteBoxModel
     from deepsteer.core.types import AccessTier
     model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)

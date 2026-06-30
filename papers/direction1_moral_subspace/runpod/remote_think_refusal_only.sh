@@ -12,7 +12,13 @@ REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
 THINK_MODEL="${THINK_MODEL:-allenai/Olmo-3-7B-Think}"
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-2048}"
+PILOT_N="${PILOT_N:-0}"
 cd "$REPO_DIR"
+# Prefix every log line with [HH:MM:SS] (shell echoes, pip, python progress) so throughput is
+# visible on the long run. `date -u` per line (one fork; negligible at this log volume) is
+# portable across bash versions; the redirect is installed in THIS process so the EXIT trap
+# below still fires + touches .session_done.
+exec > >(while IFS= read -r l; do printf '[%s] %s\n' "$(date -u +%H:%M:%S)" "$l"; done) 2>&1
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREADS:-4}"
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
@@ -39,9 +45,12 @@ snapshot_download(os.environ.get("THINK_MODEL", "allenai/Olmo-3-7B-Think"))
 print(">> Think weights cached")
 PY
 
-echo ">> 4-position refusal re-run on Think (</think> fix, cap=$MAX_NEW_TOKENS) ..."
-VALIDATE="$VALIDATE" MAX_NEW_TOKENS="$MAX_NEW_TOKENS" \
+if [ "$PILOT_N" -gt 0 ] 2>/dev/null; then
+  echo ">> PILOT N=$PILOT_N/set cap=$MAX_NEW_TOKENS (subset on the REAL Think model -> think/pilot/)"
+fi
+echo ">> 4-position refusal on Think (</think> fix, cap=$MAX_NEW_TOKENS, PILOT_N=$PILOT_N) ..."
+VALIDATE="$VALIDATE" PILOT_N="$PILOT_N" MAX_NEW_TOKENS="$MAX_NEW_TOKENS" \
   python "$REPO_DIR/papers/direction1_moral_subspace/scripts/phase3_think_refusal.py" \
   --model "$THINK_MODEL"
-echo ">> done. closed-rate + gen_len in think/think_refusal_meta.json; samples in"
-echo "   think/think_refusal_debug.json. Run locally: phase3_think_g3.py"
+echo ">> done. closed-rate + gen_len in think/think_refusal_meta.json (pilot: think/pilot/);"
+echo "   samples in think_refusal_debug.json. Run locally: phase3_think_g3.py"

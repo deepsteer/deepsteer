@@ -48,6 +48,8 @@ INSTRUCT_MODEL="${INSTRUCT_MODEL:-allenai/Olmo-3-7B-Instruct}"
 TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"  # pinned (smoke-validated); override if needed
 PIP_EXTRA="${PIP_EXTRA:-}"     # e.g. "transformers==X" extra override
 HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
+PILOT_N="${PILOT_N:-}"         # >0 -> cheap subset on the real model (think refusal pilot)
+MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-}"  # generation cap override (think refusal)
 REMOTE_SCRIPT="${REMOTE_SCRIPT:-papers/direction1_moral_subspace/runpod/remote_phase2.sh}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -172,6 +174,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE BASE_MODEL='$BASE_MODEL' INSTRUCT_MODEL='$INSTRUCT_MODEL' \
      TRANSFORMERS_VERSION='$TRANSFORMERS_VERSION' PIP_EXTRA='$PIP_EXTRA' \
+     PILOT_N='$PILOT_N' MAX_NEW_TOKENS='$MAX_NEW_TOKENS' \
      HF_TOKEN='$HF_TOKEN' HUGGING_FACE_HUB_TOKEN='$HF_TOKEN' \
      setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
