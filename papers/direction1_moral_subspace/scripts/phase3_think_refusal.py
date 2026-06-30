@@ -72,6 +72,11 @@ def main() -> None:
         args.out = str(P2 / "think" / "pilot")
         print(f"[PILOT] N={pilot_n}/set cap={args.max_new_tokens} -> {args.out}", flush=True)
 
+    # P2/P3 generation subset: P0/P1 are prompt-side (all prompts, cheap); only the expensive
+    # P2/P3 generation is capped at P23_N prompts/side (None = all). The full 400+400 generation
+    # is ~18hr; P23_N~64-100 brings it to a few hours with a still-solid diff-of-means.
+    p23_n = int(os.environ.get("P23_N", "0") or 0) or None
+
     # Decode mode. GREEDY by default (deterministic, pre-registered; Paper 7 used greedy and the
     # R1 distills closed </think> fine -- the earlier closed-rate=0.0 was a detection bug, now
     # fixed by reusing the robust think_io boundary). DO_SAMPLE=1 opts into the model's intended
@@ -89,14 +94,16 @@ def main() -> None:
     model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     L = min(MATCH_LAYER, model.info.n_layers - 1)
 
-    print(f"decode: {gen_cfg} | cap={args.max_new_tokens}", flush=True)
-    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg)
+    print(f"decode: {gen_cfg} | cap={args.max_new_tokens} | P0/P1 n={len(harmful)}/side | "
+          f"P2/P3 gen n={p23_n or len(harmful)}/side", flush=True)
+    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg, p23_n)
     model.release()
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     meta: dict = {"model": args.model, "layer": L, "max_new_tokens": args.max_new_tokens,
                   "n_harmful": len(harmful), "n_harmless": len(harmless),
+                  "n_prompt_side": res["n_prompt_side"], "n_gen_side": res["n_gen_side"],
                   "closed_rate_harmful": round(res["closed_rate_harmful"], 3),
                   "closed_rate_harmless": round(res["closed_rate_harmless"], 3),
                   "answer_rate_harmful": round(res["answer_rate_harmful"], 3),

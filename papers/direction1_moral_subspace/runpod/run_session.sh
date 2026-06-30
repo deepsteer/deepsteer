@@ -50,6 +50,7 @@ PIP_EXTRA="${PIP_EXTRA:-}"     # e.g. "transformers==X" extra override
 HF_TOKEN="${HF_TOKEN:-${HUGGING_FACE_HUB_TOKEN:-}}"
 PILOT_N="${PILOT_N:-}"         # >0 -> cheap subset on the real model (think refusal pilot)
 MAX_NEW_TOKENS="${MAX_NEW_TOKENS:-}"  # generation cap override (think refusal)
+P23_N="${P23_N:-}"             # >0 -> cap the P2/P3 GENERATION subset/side (P0/P1 stay full)
 REMOTE_SCRIPT="${REMOTE_SCRIPT:-papers/direction1_moral_subspace/runpod/remote_phase2.sh}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -174,7 +175,7 @@ ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" \
    ( PYTHONUNBUFFERED=1 REPO_DIR=$REMOTE_DIR \
      VALIDATE=$VALIDATE BASE_MODEL='$BASE_MODEL' INSTRUCT_MODEL='$INSTRUCT_MODEL' \
      TRANSFORMERS_VERSION='$TRANSFORMERS_VERSION' PIP_EXTRA='$PIP_EXTRA' \
-     PILOT_N='$PILOT_N' MAX_NEW_TOKENS='$MAX_NEW_TOKENS' \
+     PILOT_N='$PILOT_N' MAX_NEW_TOKENS='$MAX_NEW_TOKENS' P23_N='$P23_N' \
      HF_TOKEN='$HF_TOKEN' HUGGING_FACE_HUB_TOKEN='$HF_TOKEN' \
      setsid bash $REMOTE_SCRIPT > '$REMOTE_LOG' 2>&1 < /dev/null & ) >/dev/null 2>&1"
 
