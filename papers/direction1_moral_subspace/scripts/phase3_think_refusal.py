@@ -76,6 +76,9 @@ def main() -> None:
     # P2/P3 generation is capped at P23_N prompts/side (None = all). The full 400+400 generation
     # is ~18hr; P23_N~64-100 brings it to a few hours with a still-solid diff-of-means.
     p23_n = int(os.environ.get("P23_N", "0") or 0) or None
+    # P2 (in-trace) symmetric window: mean over the first COT_WINDOW_N reasoning tokens, SAME N
+    # both sides, so P2 is not a short-(harmful)-vs-long-(harmless) span-length contrast.
+    cot_window_n = int(os.environ.get("COT_WINDOW_N") or 256)
 
     # Decode mode. GREEDY by default (deterministic, pre-registered; Paper 7 used greedy and the
     # R1 distills closed </think> fine -- the earlier closed-rate=0.0 was a detection bug, now
@@ -95,8 +98,9 @@ def main() -> None:
     L = min(MATCH_LAYER, model.info.n_layers - 1)
 
     print(f"decode: {gen_cfg} | cap={args.max_new_tokens} | P0/P1 n={len(harmful)}/side | "
-          f"P2/P3 gen n={p23_n or len(harmful)}/side", flush=True)
-    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg, p23_n)
+          f"P2/P3 gen n={p23_n or len(harmful)}/side | P2 window N={cot_window_n}", flush=True)
+    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg,
+                                p23_n, cot_window_n)
     model.release()
 
     out = Path(args.out)
@@ -104,11 +108,15 @@ def main() -> None:
     meta: dict = {"model": args.model, "layer": L, "max_new_tokens": args.max_new_tokens,
                   "n_harmful": len(harmful), "n_harmless": len(harmless),
                   "n_prompt_side": res["n_prompt_side"], "n_gen_side": res["n_gen_side"],
+                  "cot_window_n": res["cot_window_n"],
                   "closed_rate_harmful": round(res["closed_rate_harmful"], 3),
                   "closed_rate_harmless": round(res["closed_rate_harmless"], 3),
+                  "window_ok_harmful": round(res["window_ok_harmful"], 3),
+                  "window_ok_harmless": round(res["window_ok_harmless"], 3),
                   "answer_rate_harmful": round(res["answer_rate_harmful"], 3),
                   "answer_rate_harmless": round(res["answer_rate_harmless"], 3),
                   "has_close_str_rate": round(res["has_close_str_rate"], 3),
+                  "reason_len": res["reason_len"],
                   "gen_cfg": gen_cfg, "gen_len": res["gen_len"], "positions": {}}
     with open(out / "think_refusal_debug.json", "w") as fh:
         json.dump({"gen_len": res["gen_len"], "samples": res["samples"]}, fh, indent=2)
@@ -118,7 +126,7 @@ def main() -> None:
             meta["positions"][pos] = {"saved": False, "n_harmful": info["n_harmful"],
                                       "n_harmless": info["n_harmless"]}
             print(f"  {pos}: NO vector (n_h={info['n_harmful']} n_s={info['n_harmless']}) "
-                  f"-- excluded (e.g. no </think> on this model)")
+                  f"-- a side has 0 (p3: benign doesn't reach a post-answer state within budget)")
             continue
         np.savez(out / f"refusal_think_{pos.upper()}.npz", refusal=vec, layer=L)
         meta["positions"][pos] = {"saved": True, "n_harmful": info["n_harmful"],
@@ -126,9 +134,11 @@ def main() -> None:
         print(f"  {pos}: refusal saved (n_h={info['n_harmful']} n_s={info['n_harmless']})")
     with open(out / "think_refusal_meta.json", "w") as fh:
         json.dump(meta, fh, indent=2)
-    print(f"closed rate h/s = {meta['closed_rate_harmful']}/{meta['closed_rate_harmless']} | "
-          f"has_close_str_rate = {meta['has_close_str_rate']} | "
-          f"answer rate h/s = {meta['answer_rate_harmful']}/{meta['answer_rate_harmless']}")
+    rl = res["reason_len"]
+    print(f"closed h/s = {meta['closed_rate_harmful']}/{meta['closed_rate_harmless']} | "
+          f"window-ok h/s = {meta['window_ok_harmful']}/{meta['window_ok_harmless']} "
+          f"(N={cot_window_n}) | reason_len h/s = "
+          f"{rl['harmful_mean']:.0f}/{rl['harmless_mean']:.0f}")
     g = res["gen_len"]
     print(f"gen_len mean={g['mean']:.0f} p90={g['p90']:.0f} max={g['max']} "
           f"hit_cap_frac={g['hit_cap_frac']:.2f} (cap={args.max_new_tokens})")

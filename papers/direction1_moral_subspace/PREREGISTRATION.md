@@ -537,3 +537,46 @@ line, never a silent edit.*
   need re-running (refusal-only, the moral/persona/axis artifacts are unchanged). Cap raised to
   2048 with `gen_len`/closed-rate/sample-trace diagnostics so a cap-limited closed-rate is now
   visible. The spine is untouched.
+
+  **P2 RE-SPEC to a SYMMETRIC in-trace window + P3 scoped UNMEASURED (2026-06-30, post-run-2).**
+  *Causal structure: a discovered, harm-correlated budget property would make the naive in-trace
+  span a span-length contrast; the symmetric window removes that confound. The change is forced by
+  the data and required for validity, not chosen for an outcome.*
+
+  **(1) Discovered data property (harm-correlated).** With the detector fixed, run-2 (greedy, cap
+  2048, n=64/side) gives `closed_rate` **harmful 0.906, harmless 0.000** (`has_close_str` agrees, so
+  it is genuine non-closure, not a detector miss; harmless samples are coherent, non-degenerate
+  reasoning). Benign prompts make the model reason out the whole answer *inside* the trace and blow
+  past budget without closing `</think>`; harmful prompts recognize the request and close early.
+  So **trace-completion state is correlated with the harmful/harmless label.**
+
+  **(2) The confound this creates for the naive P2.** A full-reasoning-span mean would average a
+  SHORT span for harmful (early `</think>`) vs the FULL 2048 for harmless (never closes). Span
+  *region/length* is then correlated with the label, so the P2 harmful−harmless diff-of-means would
+  be partly a short-span-vs-long-span contrast, **not a pure harm contrast** — the v1
+  animacy/shortcut failure mode, on **the single most important new measurement** (P2 is the one
+  site where coupling is actually expected). A confounded P2 cannot distinguish real coupling from a
+  span-length artifact in either direction.
+
+  **(3) Correction — symmetry is the requirement.** **P2 (in-trace) = mean over the FIRST
+  `cot_window_n` reasoning tokens** from the common anchor (the post-prompt reasoning start, the
+  keystone `t_post_inst`+1), **SAME N both sides** (pre-registered `N = 256`). Both sides become
+  "first N tokens of deliberation," so the span region is identical across the label and the
+  confound is gone — this is **confound-avoidance, not merely closure-robustness** (it also happens
+  to be closure-robust, since the first N tokens are reasoning whether or not the trace later
+  closes). A trace whose reasoning span < N is **excluded and counted** (window always pure
+  reasoning, never spilling into an answer). The **full-span mean (`P2_FULL`) is reported as a
+  ROBUSTNESS check only**: if window and full-span agree, the result is robust; if they diverge,
+  span-length sensitivity is localized.
+
+  **(4) P3 is UNMEASURED, not measured-and-null.** The post-answer contrast cannot be built because
+  the **benign side never reaches a post-answer state within budget** (the harmful side does). The
+  bounded claim is therefore: **orthogonal at harm-recognition (P0), gate (P1), and in-trace
+  deliberation (P2); the post-answer site (P3) is unmeasured for benign prompts.** The benign
+  over-reasoning is a minor finding (reasoning-model verbosity), stated as a constraint on the
+  contrast, not as a null result.
+
+  **Spine preserved.** P2 remains the single pre-registered coupling hypothesis; null `q95` +
+  persona `c` are span-properties (unchanged by P2's operationalization) and are recomputed on the
+  Think span **before** the P2 projection (two-step discipline). Greedy, `M = 0.05`, the G3 rule,
+  and the rank-3 construction are unchanged. Re-run fills P2 only (P0/P1 already settled).

@@ -51,6 +51,7 @@ if [ "$PILOT_N" -gt 0 ] 2>/dev/null; then
 fi
 echo ">> 4-position refusal on Think (cap=$MAX_NEW_TOKENS, PILOT_N=$PILOT_N, P23_N=$P23_N: P0/P1 all, P2/P3 subset) ..."
 VALIDATE="$VALIDATE" PILOT_N="$PILOT_N" MAX_NEW_TOKENS="$MAX_NEW_TOKENS" P23_N="$P23_N" \
+  COT_WINDOW_N="${COT_WINDOW_N:-}" \
   python "$REPO_DIR/papers/direction1_moral_subspace/scripts/phase3_think_refusal.py" \
   --model "$THINK_MODEL"
 echo ">> done. closed-rate + gen_len in think/think_refusal_meta.json (pilot: think/pilot/);"

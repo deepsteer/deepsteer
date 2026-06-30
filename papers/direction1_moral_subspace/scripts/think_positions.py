@@ -86,12 +86,19 @@ def prompt_only_positions(model, prompt: str, layer: int, post_count: int) -> di
 
 
 def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
-                          post_count: int, gen_cfg: dict | None = None) -> dict:
-    """One prompt -> {p0,p1,p2,p3: np.ndarray|None, closed, has_close_str, n, plen}.
+                          post_count: int, gen_cfg: dict | None = None,
+                          cot_window_n: int = 256) -> dict:
+    """One prompt -> P2 (in-trace) span-means + P3 (post-answer), plus diagnostics.
 
-    One generate + one full-sequence forward. `gen_cfg` selects decode: None / {do_sample:False}
-    = greedy; {do_sample:True, temperature, top_p} = the model's intended sampling (more likely
-    to emit a clean `</think>` close than greedy). Seed is set once by the caller for repro.
+    One generate + one full-sequence forward. `gen_cfg` selects decode (default greedy).
+
+    **P2 (in-trace) is a SYMMETRIC window** to avoid a span-length confound: the reasoning span
+    is short for harmful (early `</think>`) but the full 2048 for harmless (never closes), so a
+    full-span mean would be a short-vs-long contrast correlated with the label, not a pure harm
+    contrast. Primary **p2 = mean over the first `cot_window_n` reasoning tokens** from the common
+    anchor (the post-prompt reasoning start, located by the keystone), SAME N both sides -> both
+    are "first N tokens of deliberation", asymmetry gone. `p2_full` = mean over the whole
+    reasoning span (the confounded version) is reported as a ROBUSTNESS check only.
     """
     import torch
     tok = model.tokenizer
@@ -117,44 +124,46 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
     if tok.eos_token_id is not None:
         terminators.add(int(tok.eos_token_id))
 
-    p0 = max(0, plen - post_count - 1)        # t_inst
-    p1 = plen - 1                             # pre-trace gate (<think> opener, last templated)
     # </think> boundary via the shared robust helper: index in gen_ids where reasoning ends
-    # (== len(gen_ids) if it never closed). P2 = last reasoning token; P3 = last answer token.
+    # (== len(gen_ids) if it never closed).
     _, answer = ti.split_rollout(gen_text, _FMT)
     boundary = ti.cot_token_boundary(tok, gen_ids, _FMT)
     closed = boundary < len(gen_ids)
-    if closed:
-        idx2 = (plen + boundary - 1) if boundary >= 1 else None    # last reasoning token
-        idx3 = (_last_meaningful(full_ids, plen + boundary, terminators)
-                if answer.strip() else None)                       # last answer token
-    else:
-        idx2 = idx3 = None
+    reason_len = boundary if closed else len(gen_ids)   # # reasoning tokens from the anchor (plen)
 
-    def take(i):
-        return acts[i].float().cpu().numpy() if i is not None and i >= 0 else None
+    def span_mean(a, b):
+        return acts[a:b].mean(0).float().cpu().numpy() if b > a else None
 
-    return {"p0": take(p0), "p1": take(p1), "p2": take(idx2), "p3": take(idx3),
-            "closed": closed, "has_answer": idx3 is not None,
-            # string-level ground truth: did the model emit '</think>' AT ALL? (independent of
-            # the token boundary -> separates "model didn't close" from "boundary mapping issue")
-            "has_close_str": "</think>" in gen_text,
+    # P2 symmetric window: first cot_window_n reasoning tokens (excluded if reasoning < N, so the
+    # window is always PURE reasoning -- never spills into the answer for an early-closing harmful).
+    p2_window = span_mean(plen, plen + cot_window_n) if reason_len >= cot_window_n else None
+    p2_full = span_mean(plen, plen + reason_len) if reason_len >= 1 else None   # robustness only
+    # P3 post-answer: needs a closed trace AND a non-empty answer (the benign side won't reach it).
+    idx3 = (_last_meaningful(full_ids, plen + boundary, terminators)
+            if closed and answer.strip() else None)
+
+    return {"p0": acts[max(0, plen - post_count - 1)].float().cpu().numpy(),
+            "p1": acts[plen - 1].float().cpu().numpy(),
+            "p2": p2_window, "p2_full": p2_full,
+            "p3": acts[idx3].float().cpu().numpy() if idx3 is not None else None,
+            "closed": closed, "has_answer": idx3 is not None, "win_ok": p2_window is not None,
+            "has_close_str": "</think>" in gen_text, "reason_len": reason_len,
             "n": len(full_ids), "plen": plen, "n_gen": len(full_ids) - plen,
             "tail": gen_text[-300:], "gen_text": gen_text,  # gen_text kept only for samples
-            "p2_tok": (tok.decode([full_ids[idx2]]) if idx2 is not None and idx2 >= 0 else None),
             "p3_tok": (tok.decode([full_ids[idx3]]) if idx3 is not None else None)}
 
 
 def refusal_directions(model, harmful: list[str], harmless: list[str], layer: int,
                        max_new_tokens: int, gen_cfg: dict | None = None,
-                       p23_n: int | None = None) -> dict:
-    """Harmful-minus-harmless diff-of-means refusal direction at each of P0..P3.
+                       p23_n: int | None = None, cot_window_n: int = 256) -> dict:
+    """Harmful-minus-harmless diff-of-means refusal direction at P0, P1, P2(+robustness), P3.
 
     Split for cost: **P0/P1 are prompt-side** (no generation) so they use ALL prompts cheaply;
-    **P2/P3 require generation** (the ~4hr-class cost) so they use a SUBSET of `p23_n` prompts
-    per side (None = all). A diff-of-means direction is solid at n~64-100, so the subset barely
-    moves P2/P3 while cutting wall-clock by 400/p23_n. Returns unit vectors keyed 'p0'..'p3'
-    (None if a position has no clean pairing). `gen_cfg` -> generate_and_position decode mode.
+    **P2/P3 require generation** so they use a SUBSET of `p23_n` prompts/side (None = all).
+    **P2 (in-trace)** = symmetric first-`cot_window_n`-reasoning-token span-mean (same N both
+    sides -> no span-length confound); `p2_full` (full-span mean) is reported as a robustness
+    check only. **P3 (post-answer)** needs a closed trace + answer, which the benign side does not
+    reach within budget -> P3 is UNMEASURED there (not measured-and-null).
     """
     post_count = post_instruction_token_count(model.tokenizer)
 
@@ -167,13 +176,16 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
         return rows
 
     def collect_gen(prompts, label):     # P2/P3 -- generation, SUBSET
-        rows, closed, n = [], 0, len(prompts)
+        rows, closed, win, n = [], 0, 0, len(prompts)
         for k, p in enumerate(prompts, 1):
-            row = generate_and_position(model, p, layer, max_new_tokens, post_count, gen_cfg)
+            row = generate_and_position(model, p, layer, max_new_tokens, post_count,
+                                        gen_cfg, cot_window_n)
             rows.append(row)
             closed += int(row["closed"])
+            win += int(row["win_ok"])
             if k % 25 == 0 or k == n:
-                print(f"  {k}/{n} ({label}) gen done, closed-so-far={closed / k:.2f}", flush=True)
+                print(f"  {k}/{n} ({label}) gen done, closed={closed / k:.2f} "
+                      f"window-ok={win / k:.2f}", flush=True)
         return rows
 
     h_prompt = collect_prompt(harmful, "harmful")
@@ -184,11 +196,12 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
     s_gen = collect_gen(gs, "harmless")
 
     out: dict[str, object] = {"layer": layer, "post_count": post_count,
-                              "max_new_tokens": max_new_tokens,
+                              "max_new_tokens": max_new_tokens, "cot_window_n": cot_window_n,
                               "n_prompt_side": len(harmful), "n_gen_side": len(gh),
                               "positions": {}}
+    # p2 = symmetric window (PRIMARY), p2_full = full-span (ROBUSTNESS), p3 = post-answer.
     src = {"p0": (h_prompt, s_prompt), "p1": (h_prompt, s_prompt),
-           "p2": (h_gen, s_gen), "p3": (h_gen, s_gen)}
+           "p2": (h_gen, s_gen), "p2_full": (h_gen, s_gen), "p3": (h_gen, s_gen)}
     for pos, (hr, sr) in src.items():
         hv = np.array([r[pos] for r in hr if r[pos] is not None], dtype=np.float64)
         sv = np.array([r[pos] for r in sr if r[pos] is not None], dtype=np.float64)
@@ -198,14 +211,18 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
         r = hv.mean(0) - sv.mean(0)
         out["positions"][pos] = {"vec": r / (np.linalg.norm(r) + 1e-12),
                                  "n_harmful": int(len(hv)), "n_harmless": int(len(sv))}
-    # closed-rate / has_close_str / gen_len come from the GEN rows (P2/P3 subset) only.
+    # closed-rate / window-rate / has_close_str / gen_len from the GEN rows (P2/P3 subset) only.
     out["closed_rate_harmful"] = float(np.mean([r["closed"] for r in h_gen]))
     out["closed_rate_harmless"] = float(np.mean([r["closed"] for r in s_gen]))
+    out["window_ok_harmful"] = float(np.mean([r["win_ok"] for r in h_gen]))
+    out["window_ok_harmless"] = float(np.mean([r["win_ok"] for r in s_gen]))
     out["answer_rate_harmful"] = float(np.mean([r["has_answer"] for r in h_gen]))
     out["answer_rate_harmless"] = float(np.mean([r["has_answer"] for r in s_gen]))
-    # String-level ground truth: did the model emit '</think>' at all? ~0 -> model isn't closing
-    # (decode/cap); high but closed_rate low -> boundary mapping. Separates the two failure modes.
     out["has_close_str_rate"] = float(np.mean([r["has_close_str"] for r in h_gen + s_gen]))
+    rl = [r["reason_len"] for r in h_gen + s_gen]
+    out["reason_len"] = {"harmful_mean": float(np.mean([r["reason_len"] for r in h_gen])),
+                         "harmless_mean": float(np.mean([r["reason_len"] for r in s_gen])),
+                         "min": int(min(rl))}
     gen = [r["n_gen"] for r in h_gen + s_gen]
     out["gen_len"] = {"mean": float(np.mean(gen)), "max": int(max(gen)),
                       "p90": float(np.percentile(gen, 90)),
@@ -214,7 +231,8 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
     # closed_rate is diagnosable from the artifacts alone.
     def sample(rows, label):
         return [{"set": label, "closed": r["closed"], "has_close_str": r["has_close_str"],
-                 "n_gen": r["n_gen"], "p2_tok": r["p2_tok"], "p3_tok": r["p3_tok"],
+                 "n_gen": r["n_gen"], "reason_len": r["reason_len"], "win_ok": r["win_ok"],
+                 "p3_tok": r["p3_tok"],
                  "gen_text": r["gen_text"][:6000]}  # full trace (capped) to see the transition
                 for r in rows[:3]]
     out["samples"] = sample(h_gen, "harmful") + sample(s_gen, "harmless")

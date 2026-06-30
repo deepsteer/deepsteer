@@ -46,8 +46,13 @@ from phase2_g3_respec import (  # noqa: E402
 )
 
 TAG = "think"
+# P2 = symmetric first-N-reasoning-token window (PRIMARY in-trace coupling test);
+# P2_FULL = full-span mean (ROBUSTNESS, span-length-confounded); P3 = post-answer (UNMEASURED
+# for benign prompts -- the benign side doesn't reach a post-answer state within budget).
 POSITIONS = {"P0": "t_inst (harm/comprehension)", "P1": "pre-trace gate (A/B analog)",
-             "P2": "in-trace (coupling detector)", "P3": "post-answer (decision site)"}
+             "P2": "in-trace window (coupling detector)",
+             "P2_FULL": "in-trace full-span (robustness)",
+             "P3": "post-answer (decision site)"}
 
 
 def content_check(layer: int) -> dict:
@@ -89,8 +94,10 @@ def main() -> None:
     for pos, desc in POSITIONS.items():
         f = P2 / TAG / f"refusal_think_{pos}.npz"
         if not f.exists():
-            positions[pos] = {"desc": desc, "available": False,
-                              "reason": "no vector (e.g. position excluded; see refusal_meta)"}
+            reason = ("post-answer contrast unbuildable: the benign side doesn't reach a "
+                      "post-answer state within budget -> UNMEASURED (not measured-and-null)"
+                      if pos == "P3" else "no vector (a side has 0; see refusal_meta)")
+            positions[pos] = {"desc": desc, "available": False, "reason": reason}
             continue
         refusal = _unit(np.load(f)["refusal"])
         p_full = _frac(full["Q"], refusal)
@@ -107,23 +114,31 @@ def main() -> None:
                                          and p_full > full["c"] + MARGIN_M),
                           "rank_sweep": sweep}
 
-    p2 = positions.get("P2", {})
+    p2 = positions.get("P2", {})            # symmetric window (PRIMARY)
+    p2f = positions.get("P2_FULL", {})      # full-span (ROBUSTNESS)
     coupling = bool(p2.get("available") and p2.get("clears"))
+    robustness = None
+    if p2.get("available") and p2f.get("available"):
+        robustness = ("window + full-span AGREE" if p2["clears"] == p2f["clears"]
+                      else "window vs full-span DIVERGE -> span-length sensitivity localized")
     result = {
-        "design": "rank-3 source-direction Think V_moral; 4-position refusal; null+control "
-                  "recomputed on the Think span (fresh per-model, before projection)",
+        "design": "rank-3 source-direction Think V_moral; null+control recomputed on the Think "
+                  "span (two-step, before projection). P2 in-trace = SYMMETRIC first-N-reasoning-"
+                  "token window (no span-length confound); P2_FULL = full-span (robustness).",
         "model": json.load(open(P2 / TAG / "extract_meta.json"))["model"],
         "layer": layer, "margin_M": MARGIN_M,
         "content_check": content_check(layer),
         "rank3_span": {"rank": full["rank"], "null_q95": round(full["q95"], 4),
                        "control_c": round(full["c"], 4), "iso_floor": round(full["iso_floor"], 4)},
         "positions": positions,
-        "coupling_hypothesis": "P2 (in-trace) is the single pre-registered coupling hypothesis",
-        "headline": ("REASONING-COUPLING (P2 clears both bars)" if coupling
-                     else "NULL (refusal orthogonal at the in-trace site)"),
-        "note": "Report all positions. Orthogonal at all = robust strengthening; orthogonal "
-                "at P0/P1/P3 but coupled at P2 = the reasoning-specific finding (flag, not "
-                "retract). P2/P3 diff-of-means is content-confounded (caveat).",
+        "coupling_hypothesis": "P2 (symmetric in-trace window) is the single pre-registered "
+                               "coupling hypothesis; P2_FULL is a robustness check",
+        "robustness_p2_window_vs_full": robustness,
+        "headline": ("REASONING-COUPLING (P2 window clears both bars)" if coupling
+                     else "NULL (refusal orthogonal at the in-trace deliberation site)"),
+        "scope": "Bounded claim: orthogonal at harm-recognition (P0), gate (P1), and in-trace "
+                 "deliberation (P2). Post-answer site (P3) UNMEASURED for benign prompts (the "
+                 "benign side doesn't reach a post-answer state within budget) -- not null.",
     }
     (P2 / "think_g3_result.json").write_text(json.dumps(result, indent=2, default=float))
 
@@ -141,7 +156,10 @@ def main() -> None:
             print(f"  {pos} [{info['desc']}]: p={info['refusal_p']} vs "
                   f"q95+M={info['null_q95']+MARGIN_M:.4f} c+M={info['control_c']+MARGIN_M:.4f} "
                   f"-> {'CLEARS (coupling)' if info['clears'] else 'NULL'}")
+    if result["robustness_p2_window_vs_full"]:
+        print(f"  robustness: {result['robustness_p2_window_vs_full']}")
     print(f"  HEADLINE = {result['headline']}")
+    print(f"  scope: {result['scope']}")
 
 
 if __name__ == "__main__":
