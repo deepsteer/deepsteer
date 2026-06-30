@@ -47,28 +47,25 @@ def _find_subseq(ids: list[int], sub: list[int], start: int = 0) -> int:
     return -1
 
 
-THINK_SUFFIX = [27963, 29]  # 'think','>' -- the STABLE tail of both <think> and </think>
+THINK_TOK = 27963  # 'think' -- stable token in both <think> and </think> on this tokenizer
 
 
 def _find_think_close(model, ids: list[int], start: int) -> tuple[int, int]:
     """First `</think>` close in ids[start:]. Returns (close_start_idx, gt_idx) or (-1, -1).
 
-    `</think>` is NOT a single/fixed token: under BPE the leading `</` merges with the
-    preceding char (`.</`=4005, ` </`, `\\n</`, standalone `</`=524, ...), so a fixed 3-token
-    subsequence misses almost every real close. The stable invariant is the `[27963, 29]`
-    (`think`,`>`) suffix; a CLOSE is one whose preceding token decodes to something containing
-    `</` (an OPEN `<think>` has a preceding `<` without the slash). The opener lives in the
-    prompt (< start), so the first `</`-validated suffix in the generated region is the close.
+    `</think>` has NO fixed token form: under BPE the leading `</` merges with the preceding
+    char (`.</`=4005, ` </`, standalone `</`=524, ...) and the trailing `>` can merge forward,
+    so neither a fixed subsequence nor a fixed [think,>] suffix is reliable. The robust anchor
+    is the `think` token (27963), which appears in both tags; for each occurrence decode a small
+    window and string-match the literal `</think>` (an OPENER decodes `<think>`, not `</think>`,
+    so it is skipped). The opener lives in the prompt (< start), so the first match in the
+    generated region is the close.
     """
     tok = model.tokenizer
-    i = start
-    while True:
-        j = _find_subseq(ids, THINK_SUFFIX, i)  # index of 27963 ('think')
-        if j < 0:
-            return -1, -1
-        if j - 1 >= 0 and "</" in tok.decode([ids[j - 1]]):
-            return j - 1, j + 1            # close_start = the '</'-token; gt_idx = the '>' token
-        i = j + 1
+    for j in range(start, len(ids)):
+        if ids[j] == THINK_TOK and "</think>" in tok.decode(ids[max(0, j - 2):j + 2]):
+            return j - 1, j + 1            # close_start ~ the '</'-token; gt_idx ~ the '>' token
+    return -1, -1
 
 
 def _last_meaningful(ids: list[int], after: int, terminators: set[int]) -> int | None:
@@ -98,22 +95,31 @@ def _forward_capture(model, full_ids: list[int], layer: int):
 
 
 def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
-                          post_count: int) -> dict:
-    """One prompt -> {p0,p1,p2,p3: np.ndarray|None, closed, n, plen}.
+                          post_count: int, gen_cfg: dict | None = None) -> dict:
+    """One prompt -> {p0,p1,p2,p3: np.ndarray|None, closed, has_close_str, n, plen}.
 
-    Greedy decode (deterministic, reproducible). One generate + one full-sequence forward.
+    One generate + one full-sequence forward. `gen_cfg` selects decode: None / {do_sample:False}
+    = greedy; {do_sample:True, temperature, top_p} = the model's intended sampling (more likely
+    to emit a clean `</think>` close than greedy). Seed is set once by the caller for repro.
     """
     import torch
     tok = model.tokenizer
+    cfg = gen_cfg or {"do_sample": False}
     text = tok.apply_chat_template([{"role": "user", "content": prompt}],
                                    tokenize=False, add_generation_prompt=True)
     enc = tok(text, return_tensors="pt").to(model._device)
     plen = int(enc["input_ids"].shape[1])
+    kw = {"max_new_tokens": max_new_tokens, "num_beams": 1, "pad_token_id": tok.eos_token_id}
+    if cfg.get("do_sample"):
+        kw.update(do_sample=True, temperature=cfg.get("temperature", 0.6),
+                  top_p=cfg.get("top_p", 0.95))
+    else:
+        kw["do_sample"] = False
     with torch.no_grad():
-        gen = model.model.generate(**enc, max_new_tokens=max_new_tokens, do_sample=False,
-                                   num_beams=1, pad_token_id=tok.eos_token_id)
+        gen = model.model.generate(**enc, **kw)
     full_ids = gen[0].tolist()
     acts = _forward_capture(model, full_ids, layer)
+    gen_text = tok.decode(full_ids[plen:])
 
     terminators = set(_TERMINATORS)
     if tok.eos_token_id is not None:
@@ -133,19 +139,23 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
 
     return {"p0": take(p0), "p1": take(p1), "p2": take(idx2), "p3": take(idx3),
             "closed": close_start >= 0, "has_answer": idx3 is not None,
+            # string-level ground truth: did the model emit '</think>' AT ALL? (independent of
+            # the token detector -> separates "model didn't close" from "detector missed it")
+            "has_close_str": "</think>" in gen_text,
             "n": len(full_ids), "plen": plen, "n_gen": len(full_ids) - plen,
-            "tail": tok.decode(full_ids[plen:])[-300:],  # diagnostic: end of the generation
+            "tail": gen_text[-300:], "gen_text": gen_text,  # gen_text kept only for samples
             "p2_tok": (tok.decode([full_ids[idx2]]) if idx2 is not None and idx2 >= 0 else None),
             "p3_tok": (tok.decode([full_ids[idx3]]) if idx3 is not None else None)}
 
 
 def refusal_directions(model, harmful: list[str], harmless: list[str], layer: int,
-                       max_new_tokens: int) -> dict:
+                       max_new_tokens: int, gen_cfg: dict | None = None) -> dict:
     """Harmful-minus-harmless diff-of-means refusal direction at each of P0..P3.
 
     Returns unit refusal vectors keyed 'p0'..'p3' (None if a position has no clean pairing),
     plus per-position counts + exclusion stats. P0/P1 use all prompts; P2/P3 use only
     generations that closed `</think>` and produced an answer (excluded counts reported).
+    `gen_cfg` -> generate_and_position (greedy vs the model's intended sampling).
     """
     post_count = post_instruction_token_count(model.tokenizer)
 
@@ -156,7 +166,7 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
         rows, closed = [], 0
         n = len(prompts)
         for k, p in enumerate(prompts, 1):
-            row = generate_and_position(model, p, layer, max_new_tokens, post_count)
+            row = generate_and_position(model, p, layer, max_new_tokens, post_count, gen_cfg)
             rows.append(row)
             closed += int(row["closed"])
             if k % 25 == 0 or k == n:
@@ -181,6 +191,10 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
     out["closed_rate_harmless"] = float(np.mean([r["closed"] for r in s_rows]))
     out["answer_rate_harmful"] = float(np.mean([r["has_answer"] for r in h_rows]))
     out["answer_rate_harmless"] = float(np.mean([r["has_answer"] for r in s_rows]))
+    # String-level ground truth: did the model emit '</think>' at all? If this is ~0 the model
+    # isn't closing thinking (decode/cap issue); if it's high but closed_rate is low, the token
+    # detector is missing it. Separates the two failure modes.
+    out["has_close_str_rate"] = float(np.mean([r["has_close_str"] for r in h_rows + s_rows]))
     # Diagnostics: generation-length distribution tells us whether non-closes are the cap
     # (n_gen at max_new_tokens) vs a detection miss (short n_gen but closed=False).
     gen = [r["n_gen"] for r in h_rows + s_rows]
@@ -190,8 +204,9 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
     # A few decoded samples (end-of-generation + detected P2/P3 tokens) so a re-failure or a
     # cap-limited closed_rate is diagnosable from the artifacts alone.
     def sample(rows, label):
-        return [{"set": label, "closed": r["closed"], "n_gen": r["n_gen"],
-                 "p2_tok": r["p2_tok"], "p3_tok": r["p3_tok"], "tail": r["tail"]}
-                for r in rows[:4]]
+        return [{"set": label, "closed": r["closed"], "has_close_str": r["has_close_str"],
+                 "n_gen": r["n_gen"], "p2_tok": r["p2_tok"], "p3_tok": r["p3_tok"],
+                 "gen_text": r["gen_text"][:6000]}  # full trace (capped) to see the transition
+                for r in rows[:3]]
     out["samples"] = sample(h_rows, "harmful") + sample(s_rows, "harmless")
     return out

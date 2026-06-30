@@ -72,12 +72,24 @@ def main() -> None:
         args.out = str(P2 / "think" / "pilot")
         print(f"[PILOT] N={pilot_n}/set cap={args.max_new_tokens} -> {args.out}", flush=True)
 
+    # Decode mode. OLMo-3-Think's generation_config is sampling (temp 0.6, top_p 0.95); greedy
+    # (DO_SAMPLE=0) tends not to emit a clean </think> close. Default to the model's intended
+    # sampling with a FIXED seed (reproducible). DO_SAMPLE=0 forces greedy.
+    do_sample = os.environ.get("DO_SAMPLE", "1") != "0"
+    gen_cfg = ({"do_sample": True, "temperature": float(os.environ.get("TEMPERATURE", "0.6")),
+                "top_p": float(os.environ.get("TOP_P", "0.95"))} if do_sample
+               else {"do_sample": False})
+
+    import torch
+    torch.manual_seed(int(os.environ.get("SEED", "0")))
+
     from deepsteer.core.model_interface import WhiteBoxModel
     from deepsteer.core.types import AccessTier
     model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
     L = min(MATCH_LAYER, model.info.n_layers - 1)
 
-    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens)
+    print(f"decode: {gen_cfg} | cap={args.max_new_tokens}", flush=True)
+    res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg)
     model.release()
 
     out = Path(args.out)
@@ -88,7 +100,8 @@ def main() -> None:
                   "closed_rate_harmless": round(res["closed_rate_harmless"], 3),
                   "answer_rate_harmful": round(res["answer_rate_harmful"], 3),
                   "answer_rate_harmless": round(res["answer_rate_harmless"], 3),
-                  "gen_len": res["gen_len"], "positions": {}}
+                  "has_close_str_rate": round(res["has_close_str_rate"], 3),
+                  "gen_cfg": gen_cfg, "gen_len": res["gen_len"], "positions": {}}
     with open(out / "think_refusal_debug.json", "w") as fh:
         json.dump({"gen_len": res["gen_len"], "samples": res["samples"]}, fh, indent=2)
     for pos, info in res["positions"].items():
@@ -106,6 +119,7 @@ def main() -> None:
     with open(out / "think_refusal_meta.json", "w") as fh:
         json.dump(meta, fh, indent=2)
     print(f"closed rate h/s = {meta['closed_rate_harmful']}/{meta['closed_rate_harmless']} | "
+          f"has_close_str_rate = {meta['has_close_str_rate']} | "
           f"answer rate h/s = {meta['answer_rate_harmful']}/{meta['answer_rate_harmless']}")
     g = res["gen_len"]
     print(f"gen_len mean={g['mean']:.0f} p90={g['p90']:.0f} max={g['max']} "
