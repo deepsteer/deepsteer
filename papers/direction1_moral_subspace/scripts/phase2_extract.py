@@ -38,7 +38,7 @@ sys.path.insert(0, str(HERE.parents[2]))
 import direction_utils as du  # noqa: E402
 
 STABLE_BAND = list(range(15, 32))
-MATCH_LAYER = 16
+MATCH_LAYER = int(os.environ.get("MATCH_LAYER", "16"))  # 16 OLMo-3 32L; 12 GPT-OSS 24L (0.5 depth)
 
 
 def _pairs(rows, source):
@@ -66,8 +66,6 @@ def main() -> None:
     if validate:
         args.model = "allenai/OLMo-2-0425-1B"  # tiny smoke model
 
-    from deepsteer.core.model_interface import WhiteBoxModel
-    from deepsteer.core.types import AccessTier
     from deepsteer.datasets import get_persona_pairs
 
     out = Path(args.out)
@@ -81,7 +79,7 @@ def main() -> None:
     sources = sorted({p["source"] for p in train})
     ref_source = sources[0]
 
-    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
+    model = du.load_whitebox(args.model, args.device)  # mxfp4->bf16 dequant for GPT-OSS
     n_layers = model.info.n_layers
     band = [L for L in STABLE_BAND if L < n_layers] or list(range(n_layers))
     layers = sorted(set(band) | {min(MATCH_LAYER, n_layers - 1)})

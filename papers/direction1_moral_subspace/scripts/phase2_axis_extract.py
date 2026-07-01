@@ -29,7 +29,7 @@ sys.path.insert(0, str(HERE.parents[1] / "5_moral_alignment" / "scripts"))
 sys.path.insert(0, str(HERE.parents[2]))
 import direction_utils as du  # noqa: E402
 
-MATCH_LAYER = 16
+MATCH_LAYER = int(os.environ.get("MATCH_LAYER", "16"))  # 16 OLMo-3 32L; 12 GPT-OSS 24L
 _FULL = HERE.parent / "outputs" / "full"
 _DATASET = HERE.parents[2] / "deepsteer" / "datasets" / "direction1_vmoral_v1.json"
 
@@ -59,13 +59,10 @@ def main() -> None:
     if validate:
         args.model = "allenai/OLMo-2-0425-1B"
 
-    from deepsteer.core.model_interface import WhiteBoxModel
-    from deepsteer.core.types import AccessTier
-
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     sources = load_sources()
-    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
+    model = du.load_whitebox(args.model, args.device)  # mxfp4->bf16 dequant for GPT-OSS
     L = min(MATCH_LAYER, model.info.n_layers - 1)
 
     dirs: dict[str, dict[int, np.ndarray]] = {}

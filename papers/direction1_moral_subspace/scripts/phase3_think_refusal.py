@@ -30,17 +30,19 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parents[1] / "5_moral_alignment" / "scripts"))
 sys.path.insert(0, str(HERE.parents[2]))
+import direction_utils as du  # noqa: E402
 import heretic_ablation as ha  # noqa: E402  (fallback prompt sets)
 import think_positions as tp  # noqa: E402
 
 P2 = HERE.parent / "outputs" / "phase2"
 MATCH_LAYER = 16
+TAG = os.environ.get("THINK_TAG", "think")  # "think" (OLMo-3-Think) or "gpt_oss"
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="4-position refusal on OLMo-3-7B-Think.")
     ap.add_argument("--model", default="allenai/Olmo-3-7B-Think")
-    ap.add_argument("--out", default=str(P2 / "think"))
+    ap.add_argument("--out", default=str(P2 / TAG))
     ap.add_argument("--prompts", default=str(HERE.parents[1] / "5_moral_alignment"
                                              / "refusal_prompts.json"))
     ap.add_argument("--max-new-tokens", type=int,
@@ -69,7 +71,7 @@ def main() -> None:
     pilot_n = int(os.environ.get("PILOT_N", "0") or 0)
     if pilot_n > 0 and not validate:
         harmful, harmless = harmful[:pilot_n], harmless[:pilot_n]
-        args.out = str(P2 / "think" / "pilot")
+        args.out = str(P2 / TAG / "pilot")
         print(f"[PILOT] N={pilot_n}/set cap={args.max_new_tokens} -> {args.out}", flush=True)
 
     # P2/P3 generation subset: P0/P1 are prompt-side (all prompts, cheap); only the expensive
@@ -100,17 +102,7 @@ def main() -> None:
     is_gpt_oss = "gpt-oss" in args.model.lower() or "gpt_oss" in args.model.lower()
     fmt = CoTFormat.HARMONY_ANALYSIS if is_gpt_oss else CoTFormat.THINK_TAGS
 
-    from deepsteer.core.model_interface import WhiteBoxModel
-    from deepsteer.core.types import AccessTier
-    mkw = {}
-    if is_gpt_oss:  # mxfp4 -> bf16 dequant for precision parity (Paper 7's resolution)
-        mkw["torch_dtype"] = torch.bfloat16
-        try:
-            from transformers import Mxfp4Config
-            mkw["quantization_config"] = Mxfp4Config(dequantize=True)
-        except Exception as e:  # noqa: BLE001
-            print(f"  Mxfp4Config unavailable ({e}); relying on torch_dtype auto-dequant")
-    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS, **mkw)
+    model = du.load_whitebox(args.model, args.device)  # mxfp4->bf16 dequant for GPT-OSS
     # Depth-0.5 layer per model (OLMo-3 32L -> 16; GPT-OSS 24L -> 12); MATCH_LAYER env overrides.
     L = int(os.environ.get("MATCH_LAYER") or round(0.5 * model.info.n_layers))
     L = min(L, model.info.n_layers - 1)

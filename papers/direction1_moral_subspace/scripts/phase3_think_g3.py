@@ -23,6 +23,7 @@ reasoning-specific finding). Numpy only; no GPU.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -45,7 +46,7 @@ from phase2_g3_respec import (  # noqa: E402
     source_dirs,
 )
 
-TAG = "think"
+TAG = os.environ.get("THINK_TAG", "think")  # "think" (OLMo-3-Think) or "gpt_oss"
 # P2 = symmetric first-N-reasoning-token window (PRIMARY in-trace coupling test);
 # P2_FULL = full-span mean (ROBUSTNESS, span-length-confounded); P3 = post-answer (UNMEASURED
 # for benign prompts -- the benign side doesn't reach a post-answer state within budget).
@@ -72,7 +73,7 @@ def main() -> None:
     layer = int(json.load(open(P2 / TAG / "extract_meta.json"))["match_layer"])
     rng = np.random.default_rng(SEED)
 
-    dirs = source_dirs(TAG, P2 / "think_axis", layer)
+    dirs = source_dirs(TAG, P2 / f"{TAG}_axis", layer)
     persona = _unit(du.load_directions(P2 / TAG / "persona_direction.npz")["persona"][layer])
     X = np.load(P2 / TAG / "act_sample.npz")["X"].astype(np.float64)
     Xc = X - X.mean(0, keepdims=True)
@@ -140,7 +141,7 @@ def main() -> None:
                  "deliberation (P2). Post-answer site (P3) UNMEASURED for benign prompts (the "
                  "benign side doesn't reach a post-answer state within budget) -- not null.",
     }
-    (P2 / "think_g3_result.json").write_text(json.dumps(result, indent=2, default=float))
+    (P2 / f"{TAG}_g3_result.json").write_text(json.dumps(result, indent=2, default=float))
 
     cc = result["content_check"]
     print(f"=== G3 on rank-3 Think V_moral (layer {layer}) ===")

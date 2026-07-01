@@ -47,6 +47,26 @@ PROBE_LR = 1e-2
 _NO_CHAT_TEMPLATE_WARNED = False
 
 
+def load_whitebox(model_id: str, device=None, access_tier=None) -> WhiteBoxModel:
+    """WhiteBoxModel loader that dequantizes mxfp4 (GPT-OSS) to bf16 for precision parity.
+
+    GPT-OSS ships mxfp4-quantized MoE weights; Paper 7's resolution is
+    ``Mxfp4Config(dequantize=True)`` + bf16 (needs transformers>=4.55, torch>=2.6). OLMo/other
+    repos load unchanged, so this is a safe drop-in for the extraction/refusal scripts.
+    """
+    from deepsteer.core.types import AccessTier
+    kw: dict = {}
+    if "gpt-oss" in model_id.lower() or "gpt_oss" in model_id.lower():
+        kw["torch_dtype"] = torch.bfloat16
+        try:
+            from transformers import Mxfp4Config
+            kw["quantization_config"] = Mxfp4Config(dequantize=True)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Mxfp4Config unavailable (%s); relying on torch_dtype auto-dequant", e)
+    return WhiteBoxModel(model_id, device=device,
+                         access_tier=access_tier or AccessTier.WEIGHTS, **kw)
+
+
 # ---------------------------------------------------------------------------
 # Activation collection
 # ---------------------------------------------------------------------------
