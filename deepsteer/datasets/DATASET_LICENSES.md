@@ -32,3 +32,16 @@ editions nor model knowledge). See `papers/d1_moral_subspace/PREREGISTRATION.md`
 source/method becomes viable. Only NC-safe **index identifiers** (fable aliases) ever appear
 in the repo (`papers/d1_moral_subspace/partition_ids.json`); no MORABLES morals or
 story text are committed.
+
+## `papers/d2_decision_coupling/data/xstest_borderline.json` — XSTest borderline subset
+
+| Component | Source | Upstream license | Verified | Feeds |
+|---|---|---|---|---|
+| 40 borderline prompts (20 safe over-refusal-prone + 20 mild unsafe-contrast) | `paul-rottger/xstest` (Röttger et al., NAACL 2024; arXiv:2308.01263), commit `d7bb5bd` | **CC-BY-4.0** | source-repo README + LICENSE, 2026-07-01 | D2 B2 outcome-conditioned P2 pilot; D2 B5 over-refusal arm |
+
+CC-BY-4.0 permits research **and commercial** use with attribution + indication of changes;
+both are satisfied by the NOTICE entry and the provenance block inside the JSON. **Prompts
+only, no model completions** — pulled from the source repo, NOT the HF `xstest-v2-copy` mirror
+(whose bundled completions carry Meta / Mistral / OpenAI terms). Original prompt text is
+unmodified; the only modification is subset selection (documented in the file). Cite the XSTest
+paper when using the subset. Rebuild: `papers/d2_decision_coupling/scripts/build_xstest_borderline.py`.

@@ -68,6 +68,16 @@ chain**. What remains future work: generalization across **alternative rich-subs
 constructions** (a different source set), and whether a **training intervention** can make the
 moral subspace absorb the refusal direction (Direction 2).
 
+**Instrument limitation (same-layer projection).** Paper 1's storage/usage layer divergence
+applies reflexively to this measurement: a **same-layer** projection of refusal onto `V_moral`
+cannot detect a refusal circuit that reads moral features **through weights** from other layers.
+Every G3 number here compares two directions extracted at the same layer, so it bounds
+*representational* overlap at that layer, not a computational read across layers. The
+decision-level and cross-layer follow-ons (`../d2_decision_coupling/PREREGISTRATION.md`, Phases
+B/C: the moral-judgment decision direction, the outcome-conditioned in-trace contrast, and the
+refusal-readout Jacobian w.r.t. the moral-usage layer) measure that read directly. This scope
+note does not change any G3 verdict; it states what the same-layer instrument can and cannot see.
+
 ## Reasoning-model extension: a gradient across the chain, replicated across labs
 
 Orthogonality holds at the instruct gate; does it survive when a model **reasons explicitly**
@@ -200,9 +210,14 @@ the redirection follows from it.
   held-out set (199 train-split pairs, disjoint from the 118 that produced `d_ethics`) is the
   genuine held-out G2; the 118 extraction pairs are reported separately as the extraction-pair
   paraphrase-gap diagnostic, and also show no surface memorization (−0.026).
-- **Track-1 (σ\*), rank-3 headline instrument**: `V_moral` is no more fragile than the MFT
-  baseline (RMS-normalized) — σ\* **4.86 / MFT 0.0** (narrative), **9.56 / 9.56** (declarative),
-  measured on the *published* rank-3 span (`phase2_track1_rank3.py`), not the dropped single-source.
+- **Named finding — the moral subspace is more noise-robust than the MFT baseline on narrative.**
+  Track-1 σ\* (RMS-normalized, smallest noise scale where transfer accuracy drops below τ = 0.6),
+  measured on the *published* rank-3 span (`phase2_track1_rank3.py`), not the dropped single-source:
+  **narrative σ\* = 4.86 for `V_moral` vs 0.0 for the 6-foundation MFT subspace**; declarative
+  **9.56 / 9.56** (tied). On narrative text the MFT probe collapses at the smallest noise it is
+  tested at while `V_moral` survives to σ\* = 4.86, so the rich rank-3 subspace is not only no more
+  fragile than MFT, it is materially more robust in the register that dominates its construction.
+  This is promoted here from a parity footnote to a named result.
 
 ## G2 ↔ G3 distinction (do not conflate)
 
