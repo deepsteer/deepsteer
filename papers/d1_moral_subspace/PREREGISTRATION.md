@@ -624,3 +624,21 @@ line, never a silent edit.*
   thin-MFT), robust across the reasoning chain with a characterized gradient peaking in-trace,
   replicated across two reasoning models from different labs."* Direction 2 (training) is the NEXT
   paper, not the next section.
+- **2026-07-01 (CALIBRATION INSTRUMENTATION — additive; the spine is untouched):** A calibration
+  layer is added around the settled D1 headline before the write-up framing is finalized, specified
+  in `CALIBRATION_PREREG.md` (commit `5c542f6`) and the decision-coupling companion
+  `../d2_decision_coupling/PREREGISTRATION.md`. **Nothing in the G3 spine changes:** the decision
+  rule, the two-bar conjunction, `M = 0.05`, and the two-step null protocol (§0, §3.3–§3.4) are as
+  frozen; NULL remains the pre-declared more-publishable outcome. What is added is *instrumentation*
+  for the projection instrument, computed only after that prereg was committed: (A1) a **moral
+  positive control** — held-one-out `p(d_src | span{other two})` per tag, defining a **moral-family
+  band** `[min,max]` (rule R1) that is the yardstick for every "moral-adjacent" statement, plus the
+  MFT↔V_moral mutual projection (closes Paper 7 Phase 2f at the subspace level) and a calibrated
+  ladder (iso floor → null q50/q95 → refusal points → moral band → persona) that recontextualizes
+  the GPT-OSS in-trace P2 = 0.52; (A3) a refusal variance-percentile ("spare-channel") mechanism
+  annotation; (A4) bootstrap CIs, an EXPLORATORY combined-P2 Fisher statistic (R7; per-model
+  verdicts remain the pre-registered rule), and signed projections; (A5) proto-refusal continuity
+  `cos(proto-refusal_base, refusal_instruct)`. **Genuinely non-moral controls** (syntax + register,
+  rules R5/R6) and the persona reclassification are staged for B3, so the "below a known non-moral
+  axis" sentence is held until measured. This amendment is additive calibration + statistics; it
+  neither reopens nor re-litigates any G3 verdict.
