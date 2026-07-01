@@ -580,3 +580,47 @@ line, never a silent edit.*
   persona `c` are span-properties (unchanged by P2's operationalization) and are recomputed on the
   Think span **before** the P2 projection (two-step discipline). Greedy, `M = 0.05`, the G3 rule,
   and the rank-3 construction are unchanged. Re-run fills P2 only (P0/P1 already settled).
+
+  **MFT-comparison framings LOCKED (2026-06-30, from the committed-number pull; prose written
+  ONCE, after the three bundled numbers land — no "pending" placeholders).**
+  - **Q1 — 0.1044 is RAW.** `heretic_ablation.py:190`: `subspace_projection_fraction(refusal,
+    basis)` = least-squares projection of the instruct Heretic gate onto the **6-foundation MFT
+    span** at layer 16; **no null was ever built.** Both subspaces are judged each against its
+    **own rank-matched null**, not raw-vs-raw.
+  - **Q2 — rank language (locked):** state **"3 source directions vs 6 foundation directions"**
+    (the null-matching projection bases); cite **eff-dim 4 (MFT) vs 3 (V_moral)** separately as the
+    *variance* rank (`base/track1_result.json`). **On BOTH measures MFT is higher-dimensional (6≥3
+    directions, 4≥3 eff-dim).** So **"richer" must NEVER imply dimensionality** — the rich
+    subspace's contribution is **construct-diversity + verified-distinguishability +
+    contamination-resistance**, not more dimensions. The data contradicts "more complex" on both.
+  - **Q3 — σ\* gap:** committed Track-1 σ\* is the **single-source** V_moral (eff-dim 385), never
+    the rank-3 span → **re-run Track-1 σ\* on rank-3** (bundled) before claiming "as robust as MFT"
+    for the headline instrument. Don't characterize the published instrument's fragility via its
+    dropped predecessor.
+  - **Q4 — gradient framing (locked):** MFT was measured **gate-only** (single position, layer 16;
+    Base/Instruct have no `<think>`). The gate→harm→in-trace gradient has **no MFT counterpart** →
+    *"a gradient the earlier MFT work didn't measure,"* **never** *"a gradient MFT lacked."*
+  - **Fair "orthogonal to both" (base space, judged-vs-judged):** base proto-refusal (Point A) —
+    rank-3 V_moral `p=0.326 vs null 0.291 → NULL`; 6-foundation MFT `p=0.264 vs null 0.257 → NULL`.
+    The **instruct-gate** version (tightest same-object as 0.1044) needs the **instruct MFT**
+    extracted → **bundled into GPT-OSS** (only base MFT is committed).
+
+  **GPT-OSS = TERMINAL Direction-1 experiment (2026-06-30): replication-and-boundary, three
+  payloads.** The near-threshold in-trace P2 (0.009 below margin, robust across span defs) makes
+  GPT-OSS **replication of the headline on a second, differently-trained reasoning model**, not
+  cross-lab completeness — so it's in the headline paper, and it is the **LAST model** (two
+  independently-trained reasoning models suffice; resist a third / the 32B). Either outcome is
+  terminal: gradient replicates → model-generalization claim made; gradient diverges → "the
+  gradient is OLMo-specific," also a finding. **Three payloads on one pod:** (1) GPT-OSS full
+  four-position sweep (P0/P1/P2 symmetric-window + P3), **re-deriving the in-trace anchor for the
+  harmony trace structure** (NOT copied from OLMo's `<think>`; the analysis channel opens during
+  generation, not in the prompt) — a gate-only run would answer the old cross-lab-orthogonality
+  question and miss the gradient, which is the whole point; (2) **instruct-MFT-null** (tightest
+  judged-vs-judged reproduction); (3) **rank-3 σ\*** (headline-instrument robustness). GPT-OSS is
+  natively deliberative (no base/think fork), bf16-dequant for mxfp4 parity (Paper 7's resolution),
+  fresh nulls + content-check in GPT-OSS's own space (V_moral doesn't transfer). Expect
+  P3-unmeasured-for-benign again (likely worse verbosity — don't burn budget forcing closure).
+  Contribution target: *"refusal ⊥ moral representation — verified-rich rank-3 subspace (closes
+  thin-MFT), robust across the reasoning chain with a characterized gradient peaking in-trace,
+  replicated across two reasoning models from different labs."* Direction 2 (training) is the NEXT
+  paper, not the next section.
