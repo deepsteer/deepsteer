@@ -1,8 +1,9 @@
 # Direction 1 — Results
 
-**Date:** 2026-06-28. Substrate: OLMo-3 7B (Base `allenai/Olmo-3-1025-7B`, Instruct
-`allenai/Olmo-3-7B-Instruct`), layer 16, transformers 5.12.1. Methods + the full amendment
-trail in `PREREGISTRATION.md`.
+**Date:** 2026-06-30. Substrate: OLMo-3 7B (Base `allenai/Olmo-3-1025-7B`, Instruct
+`allenai/Olmo-3-7B-Instruct`, layer 16), extended to two reasoning models —
+`allenai/Olmo-3-7B-Think` (layer 16) and `openai/gpt-oss-20b` (layer 12, mxfp4→bf16, harmony).
+transformers 5.12.1. Methods + the full amendment trail in `PREREGISTRATION.md`.
 
 ## Headline (GATE G3): refusal is orthogonal to the rich rank-3 moral subspace
 
@@ -39,22 +40,90 @@ every rank, for both points (never clearing `q95 + 0.05`).
   projects 0.14 onto the rank-3 instruct `V_moral` — the same ~0.10–0.14 regime Paper 5
   measured against the thin rank-4 MFT subspace.
 
-### The thin-MFT objection is closed (D2 disposition: coexist, "orthogonality robust")
+### The thin-MFT objection is closed — judged-vs-judged (D2: coexist, "orthogonality robust")
 
 The single most dismissible weakness of the comprehension–compliance arc was "refusal looks
-orthogonal because your moral subspace is six thin MFT probes." Direction 1 answers it
-directly: it builds a **richer** subspace — rank-3, three distinguishable moral *constructs* —
-verifies the added richness (the axis test), and finds **refusal still orthogonal**, at the
-same level as the thin MFT subspace. Orthogonality is robust to the operationalization of
-"moral." Per the pre-registered D2 rule, `V_moral` and MFT coexist; the headline is the
-strengthening of Papers 5–7.
+orthogonal because your moral subspace is six thin MFT probes." Direction 1 answers it with the
+**same instruct refusal gate judged against each subspace's own rank-matched null**: it projects
+**0.144 onto the rich rank-3 `V_moral`** (null q95 0.266) and **0.155 onto the 6-foundation MFT
+span** (null q95 0.252) — **both NULL, both below chance**. Paper 5's 0.1044 was a *raw* number,
+never null-judged; the 0.155 here reproduces its magnitude *and* shows it sits below the
+rank-matched null. Refusal is orthogonal to *both* the thin and the rich subspace, fairly judged.
+The objection is closed airtight. Per the pre-registered D2 rule, `V_moral` and MFT coexist.
+
+**On "richer" — not "higher-dimensional."** The rich subspace is *lower*-dimensional than MFT on
+both measures: **3 source directions vs MFT's 6 foundation directions** (the null-matching
+projection bases), and **eff-dim 3 vs 4** (the variance rank of the pooled diffs). Its
+contribution is **construct-diversity + verified-distinguishability + contamination-resistance**,
+not more dimensions; "richer" never means "more complex." And it is no more fragile: Track-1 σ\* on
+the **rank-3 headline instrument** (not the dropped single-source) is **4.86 / MFT 0.0**
+(narrative) and **9.56 / 9.56** (declarative), RMS-normalized — as robust, at lower dimension.
 
 ### Scope boundary (stated, not left for a reviewer)
 
-Orthogonality is established against **one** rank-3 multi-source subspace and is **robust
-across ranks 1–3** (the rank-sweep). The sweep varies *rank*, not *construction*, so the
-honest scope is: **holds against this rank-3 multi-source `V_moral`, robust across rank;
-generalization across alternative rich-subspace constructions is future work.**
+Orthogonality is established against **one** rank-3 multi-source subspace, **robust across ranks
+1–3** (the rank-sweep varies *rank*, not *construction*) and — via the reasoning-model extension
+below — **across two independently-trained reasoning models and four positions along the reasoning
+chain**. What remains future work: generalization across **alternative rich-subspace
+constructions** (a different source set), and whether a **training intervention** can make the
+moral subspace absorb the refusal direction (Direction 2).
+
+## Reasoning-model extension: a gradient across the chain, replicated across labs
+
+Orthogonality holds at the instruct gate; does it survive when a model **reasons explicitly**
+about harm? G3 is extended to two independently-trained reasoning models — **OLMo-3-7B-Think**
+(Ai2) and **GPT-OSS-20B** (OpenAI) — with refusal measured at four positions along the reasoning
+chain: **P0** the harm-recognition site (`t_inst`, Zhao et al.), **P1** the pre-trace gate, **P2**
+the **in-trace deliberation** (a symmetric first-N-reasoning-token window, so the diff-of-means is
+opening deliberation and not a span-length contrast), and **P3** the post-answer decision site.
+Each model's `V_moral` is re-extracted fresh in its own space (directions do not transfer); the
+null and persona control are recomputed on each span before any refusal projection.
+
+**A gradient that peaks in-trace, robust across both models.** In both, the projection is smallest
+at the gate and **largest at the in-trace site**:
+
+| model (layer) | P1 gate | P0 harm | **P2 in-trace** | P3 post-answer | null q95+M / persona c+M |
+|---|---:|---:|---:|---:|---|
+| OLMo-3-Think (16) | 0.10 | 0.29 | **0.35** | — *(unmeasured, benign)* | 0.354 / 0.575 |
+| GPT-OSS-20B (12) | 0.19 | 0.47 | **0.52** | 0.25 | 0.386 / 0.653 |
+
+Explicit moral deliberation is consistently where refusal comes **closest** to the moral subspace.
+`P2_FULL` (the full-span mean) agrees with the window in both models — the peak is not a
+window artifact.
+
+**Two nuances, stated plainly (not smoothed into a flat NULL).**
+
+1. **Cross-model null-crossing.** OLMo's in-trace projection (0.35) sits **~0.009 below** its
+   rank-matched null — a near-miss. GPT-OSS's (0.52) **crosses** its null (0.39). So in a
+   differently-trained model the in-trace alignment is **stronger** — enough to exceed chance. The
+   gradient doesn't merely replicate; it strengthens.
+
+2. **Persona-control-binding in GPT-OSS.** The pre-registered verdict is **NULL in both** — but for
+   GPT-OSS the two controls **disagree**: P2 crosses the null yet stays below the persona
+   (non-moral) control (0.60). So the NULL rests entirely on the persona control. This is the
+   conjunction rule doing its designed job: **"below a non-moral semantic axis" is a stronger
+   orthogonality statement than "below random."** Its validity was **confirmed, not assumed**:
+   GPT-OSS's `V_moral` still **cleanly separates moral/neutral (acc 0.67, above OLMo's 0.64;
+   `gpt_oss/subspace_purity.json`)** and its three source axes stay distinct (cos 0.46–0.66, below
+   the 0.85 collinearity floor), so the subspace *is* isolating moral content. The high persona
+   value reflects **general entanglement** in GPT-OSS's space (moral↔persona cos 0.30 vs OLMo's
+   0.24) that inflates *all* projections — so refusal-below-persona is genuine orthogonality
+   evidence, not a shared-contamination artifact.
+
+**P3 is measurable for GPT-OSS** (0.25, NULL) but **unmeasured for OLMo-3-Think**: OLMo's benign
+reasoning exceeds the generation budget without reaching a post-answer state (a reasoning-verbosity
+*constraint on the contrast*, not a null); GPT-OSS reaches its final channel, so its decision site
+is measured.
+
+**The gradient is a novel measurement.** MFT was only ever measured at the single gate position
+(Paper 5; Base/Instruct have no reasoning traces), so this is **a gradient the earlier MFT work
+didn't measure** — not a contrast MFT lacked.
+
+**Terminal disposition.** Refusal is orthogonal to the moral representation **across the reasoning
+chain**, with a characterized gradient peaking in-trace that **replicates across two
+differently-trained reasoning models** and is strong enough in one to cross the rank-matched null
+while remaining below a non-moral control. This closes Direction 1's model axis; a training/
+pretraining intervention is the next program (Direction 2), not the next section.
 
 ## Why this isn't a subspace reverse-engineered to the answer
 
@@ -131,8 +200,9 @@ the redirection follows from it.
   held-out set (199 train-split pairs, disjoint from the 118 that produced `d_ethics`) is the
   genuine held-out G2; the 118 extraction pairs are reported separately as the extraction-pair
   paraphrase-gap diagnostic, and also show no surface memorization (−0.026).
-- **Track-1 (σ\*)**: single-source `V_moral` is no more fragile than the MFT baseline
-  (RMS-normalized).
+- **Track-1 (σ\*), rank-3 headline instrument**: `V_moral` is no more fragile than the MFT
+  baseline (RMS-normalized) — σ\* **4.86 / MFT 0.0** (narrative), **9.56 / 9.56** (declarative),
+  measured on the *published* rank-3 span (`phase2_track1_rank3.py`), not the dropped single-source.
 
 ## G2 ↔ G3 distinction (do not conflate)
 
