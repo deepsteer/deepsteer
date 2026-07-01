@@ -87,18 +87,19 @@ def prompt_only_positions(model, prompt: str, layer: int, post_count: int) -> di
 
 def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
                           post_count: int, gen_cfg: dict | None = None,
-                          cot_window_n: int = 256) -> dict:
+                          cot_window_n: int = 256, fmt=_FMT) -> dict:
     """One prompt -> P2 (in-trace) span-means + P3 (post-answer), plus diagnostics.
 
-    One generate + one full-sequence forward. `gen_cfg` selects decode (default greedy).
+    One generate + one full-sequence forward. `gen_cfg` selects decode (default greedy). `fmt`
+    (CoTFormat) selects the trace parser: THINK_TAGS (OLMo/R1: `<think>` opens in the prompt) or
+    HARMONY_ANALYSIS (GPT-OSS: the analysis channel opens DURING generation). The in-trace anchor
+    is re-derived per format via `ti.cot_content_start` -- the one thing that does not transfer.
 
-    **P2 (in-trace) is a SYMMETRIC window** to avoid a span-length confound: the reasoning span
-    is short for harmful (early `</think>`) but the full 2048 for harmless (never closes), so a
-    full-span mean would be a short-vs-long contrast correlated with the label, not a pure harm
-    contrast. Primary **p2 = mean over the first `cot_window_n` reasoning tokens** from the common
-    anchor (the post-prompt reasoning start, located by the keystone), SAME N both sides -> both
-    are "first N tokens of deliberation", asymmetry gone. `p2_full` = mean over the whole
-    reasoning span (the confounded version) is reported as a ROBUSTNESS check only.
+    **P2 (in-trace) is a SYMMETRIC window** to avoid a span-length confound: the reasoning span is
+    short for harmful (early close) but full for harmless (never closes), so a full-span mean would
+    be a short-vs-long contrast correlated with the label. Primary **p2 = mean over the first
+    `cot_window_n` reasoning tokens FROM THE ANCHOR** (reasoning-content start), SAME N both sides.
+    `p2_full` = whole-reasoning-span mean (confounded) is a ROBUSTNESS check only.
     """
     import torch
     tok = model.tokenizer
@@ -118,27 +119,33 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
     full_ids = gen[0].tolist()
     acts = _forward_capture(model, full_ids, layer)
     gen_ids = full_ids[plen:]                  # the generated region (reasoning + answer)
-    gen_text = ti.decode_rollout(tok, gen_ids, _FMT)
+    gen_text = ti.decode_rollout(tok, gen_ids, fmt)
 
-    terminators = set(_TERMINATORS)
+    # Format-agnostic terminators: all special/added tokens (channel markers, eos) so P3 lands on
+    # the last MEANINGFUL answer token for both `</think>` and harmony channel formats.
+    terminators = set(getattr(tok, "all_special_ids", []) or []) | set(_TERMINATORS)
     if tok.eos_token_id is not None:
         terminators.add(int(tok.eos_token_id))
 
-    # </think> boundary via the shared robust helper: index in gen_ids where reasoning ends
-    # (== len(gen_ids) if it never closed).
-    _, answer = ti.split_rollout(gen_text, _FMT)
-    boundary = ti.cot_token_boundary(tok, gen_ids, _FMT)
+    # Reasoning span in gen_ids = [content_start, boundary): content_start re-derived per format
+    # (THINK_TAGS 0; HARMONY after the generated <|channel|>analysis<|message|>); boundary =
+    # reasoning end (== len(gen_ids) if never closed).
+    _, answer = ti.split_rollout(gen_text, fmt)
+    content_start = ti.cot_content_start(tok, gen_ids, fmt)
+    boundary = ti.cot_token_boundary(tok, gen_ids, fmt)
     closed = boundary < len(gen_ids)
-    reason_len = boundary if closed else len(gen_ids)   # # reasoning tokens from the anchor (plen)
+    anchor = plen + content_start                        # full_ids-space reasoning-content start
+    reason_end = plen + (boundary if closed else len(gen_ids))
+    reason_len = reason_end - anchor                     # reasoning tokens from the anchor
 
     def span_mean(a, b):
         return acts[a:b].mean(0).float().cpu().numpy() if b > a else None
 
-    # P2 symmetric window: first cot_window_n reasoning tokens (excluded if reasoning < N, so the
-    # window is always PURE reasoning -- never spills into the answer for an early-closing harmful).
-    p2_window = span_mean(plen, plen + cot_window_n) if reason_len >= cot_window_n else None
-    p2_full = span_mean(plen, plen + reason_len) if reason_len >= 1 else None   # robustness only
-    # P3 post-answer: needs a closed trace AND a non-empty answer (the benign side won't reach it).
+    # P2 symmetric window: first cot_window_n reasoning tokens from the anchor (excluded if
+    # reasoning < N, so the window is always PURE reasoning -- never spills into the answer).
+    p2_window = span_mean(anchor, anchor + cot_window_n) if reason_len >= cot_window_n else None
+    p2_full = span_mean(anchor, reason_end) if reason_len >= 1 else None   # robustness only
+    # P3 post-answer: needs a closed trace AND a non-empty answer (benign side may not reach it).
     idx3 = (_last_meaningful(full_ids, plen + boundary, terminators)
             if closed and answer.strip() else None)
 
@@ -155,7 +162,7 @@ def generate_and_position(model, prompt: str, layer: int, max_new_tokens: int,
 
 def refusal_directions(model, harmful: list[str], harmless: list[str], layer: int,
                        max_new_tokens: int, gen_cfg: dict | None = None,
-                       p23_n: int | None = None, cot_window_n: int = 256) -> dict:
+                       p23_n: int | None = None, cot_window_n: int = 256, fmt=_FMT) -> dict:
     """Harmful-minus-harmless diff-of-means refusal direction at P0, P1, P2(+robustness), P3.
 
     Split for cost: **P0/P1 are prompt-side** (no generation) so they use ALL prompts cheaply;
@@ -179,7 +186,7 @@ def refusal_directions(model, harmful: list[str], harmless: list[str], layer: in
         rows, closed, win, n = [], 0, 0, len(prompts)
         for k, p in enumerate(prompts, 1):
             row = generate_and_position(model, p, layer, max_new_tokens, post_count,
-                                        gen_cfg, cot_window_n)
+                                        gen_cfg, cot_window_n, fmt)
             rows.append(row)
             closed += int(row["closed"])
             win += int(row["win_ok"])

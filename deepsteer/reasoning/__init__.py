@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from deepsteer.reasoning.think_io import (
     CoTFormat,
+    cot_content_start,
     cot_token_boundary,
     decode_rollout,
     has_reasoning_structure,
@@ -15,6 +16,7 @@ from deepsteer.reasoning.think_io import (
 
 __all__ = [
     "CoTFormat",
+    "cot_content_start",
     "cot_token_boundary",
     "decode_rollout",
     "has_reasoning_structure",

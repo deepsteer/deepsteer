@@ -32,7 +32,7 @@ from enum import Enum
 
 __all__ = [
     "CoTFormat", "think_prompt", "decode_rollout", "split_rollout", "cot_token_boundary",
-    "prompt_opened_trace", "looks_degenerate", "has_reasoning_structure",
+    "cot_content_start", "prompt_opened_trace", "looks_degenerate", "has_reasoning_structure",
     "SMOKE_HARMFUL", "SMOKE_HARMLESS", "SMOKE_EASY",
 ]
 
@@ -217,6 +217,41 @@ def cot_token_boundary(tokenizer, gen_ids, cot_format: CoTFormat) -> int:
     while lo < hi:
         mid = (lo + hi) // 2
         if len(decode_rollout(tokenizer, gen_ids[:mid], cot_format)) >= pos:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+
+def cot_content_start(tokenizer, gen_ids, cot_format: CoTFormat) -> int:
+    """Token index in ``gen_ids`` where reasoning CONTENT begins (after the open marker).
+
+    The reasoning-trace ANCHOR differs by format, which is the one thing that does not transfer
+    between reasoning models:
+      * ``THINK_TAGS`` -> 0. The ``<think>`` opener is in the PROMPT (``add_generation_prompt``),
+        so generation begins with reasoning content at gen index 0.
+      * ``HARMONY_ANALYSIS`` -> the token AFTER the GENERATED ``<|channel|>analysis<|message|>``
+        marker (GPT-OSS opens the analysis channel itself during generation). Located by string-
+        match + the same binary-search-to-token-index as ``cot_token_boundary``. Returns 0 if the
+        marker is absent (degenerate rollout -> treat the whole generation as reasoning).
+
+    So a "first-N-reasoning-token" window anchored at ``cot_content_start`` measures the same
+    thing (opening deliberation) across formats.
+    """
+    if cot_format == CoTFormat.THINK_TAGS:
+        return 0
+    if hasattr(gen_ids, "tolist"):
+        gen_ids = gen_ids.tolist()
+    full = decode_rollout(tokenizer, gen_ids, cot_format)
+    marker = "<|channel|>analysis<|message|>"
+    pos = full.find(marker)
+    if pos < 0:
+        return 0
+    target = pos + len(marker)
+    lo, hi = 0, len(gen_ids)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if len(decode_rollout(tokenizer, gen_ids[:mid], cot_format)) >= target:
             hi = mid
         else:
             lo = mid + 1

@@ -92,15 +92,34 @@ def main() -> None:
     import torch
     torch.manual_seed(int(os.environ.get("SEED", "0")))
 
+    from deepsteer.reasoning.think_io import CoTFormat
+
+    # Trace format per model: GPT-OSS uses the harmony analysis channel (opens during
+    # generation); OLMo/R1 use <think> tags (opens in the prompt). The in-trace anchor is
+    # re-derived per format in think_positions (cot_content_start) -- the non-transferable piece.
+    is_gpt_oss = "gpt-oss" in args.model.lower() or "gpt_oss" in args.model.lower()
+    fmt = CoTFormat.HARMONY_ANALYSIS if is_gpt_oss else CoTFormat.THINK_TAGS
+
     from deepsteer.core.model_interface import WhiteBoxModel
     from deepsteer.core.types import AccessTier
-    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS)
-    L = min(MATCH_LAYER, model.info.n_layers - 1)
+    mkw = {}
+    if is_gpt_oss:  # mxfp4 -> bf16 dequant for precision parity (Paper 7's resolution)
+        mkw["torch_dtype"] = torch.bfloat16
+        try:
+            from transformers import Mxfp4Config
+            mkw["quantization_config"] = Mxfp4Config(dequantize=True)
+        except Exception as e:  # noqa: BLE001
+            print(f"  Mxfp4Config unavailable ({e}); relying on torch_dtype auto-dequant")
+    model = WhiteBoxModel(args.model, device=args.device, access_tier=AccessTier.WEIGHTS, **mkw)
+    # Depth-0.5 layer per model (OLMo-3 32L -> 16; GPT-OSS 24L -> 12); MATCH_LAYER env overrides.
+    L = int(os.environ.get("MATCH_LAYER") or round(0.5 * model.info.n_layers))
+    L = min(L, model.info.n_layers - 1)
 
-    print(f"decode: {gen_cfg} | cap={args.max_new_tokens} | P0/P1 n={len(harmful)}/side | "
-          f"P2/P3 gen n={p23_n or len(harmful)}/side | P2 window N={cot_window_n}", flush=True)
+    print(f"decode: {gen_cfg} | fmt={fmt.value} | layer={L} | cap={args.max_new_tokens} | "
+          f"P0/P1 n={len(harmful)}/side | P2/P3 gen n={p23_n or len(harmful)}/side | "
+          f"P2 window N={cot_window_n}", flush=True)
     res = tp.refusal_directions(model, harmful, harmless, L, args.max_new_tokens, gen_cfg,
-                                p23_n, cot_window_n)
+                                p23_n, cot_window_n, fmt)
     model.release()
 
     out = Path(args.out)
