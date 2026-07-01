@@ -89,19 +89,12 @@ GATE_MIN_DELTA_PP = 10.0  # peak accuracy must beat TF-IDF baseline by ≥ 10 pp
 GATE_MIN_ABS_ACC = 0.65  # AND meet 65 % absolute
 
 
-def _clear_memory() -> None:
-    import torch
-
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
-def _parse_step(revision: str) -> int | None:
-    match = re.search(r"step(\d+)", revision)
-    return int(match.group(1)) if match else None
+from deepsteer.benchmarks.representational.trajectory import (  # noqa: E402
+    _parse_step_from_revision as _parse_step,
+)
 
 
 def _get_all_revisions() -> list[tuple[int, str]]:

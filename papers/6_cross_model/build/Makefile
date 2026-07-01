@@ -45,7 +45,7 @@ all: pdf
 # "# Appendix A. Foo" -> "# Foo") so LaTeX's \section / \subsection /
 # \appendix can auto-number.  Markdown source keeps the manual numbers
 # for human readability on github.
-sections/%.tex: ../sections/%.md pandoc-template.tex postprocess.py
+sections/%.tex: ../sections/%.md pandoc-template.tex ../../build_common/postprocess.py
 	@mkdir -p sections
 	$(PANDOC) $(PANDOC_FLAGS) -o $@.raw $<
 	@sed -E \
@@ -60,7 +60,7 @@ sections/%.tex: ../sections/%.md pandoc-template.tex postprocess.py
 	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[0-9]+\.[0-9.]* */\1/g' \
 	  -e 's/(\\texorpdfstring\{[^}]*\}+\{)[A-Z]\.[0-9.]+ */\1/g' \
 	  $@.raw > $@
-	@python3 postprocess.py $@
+	@python3 ../../build_common/postprocess.py $@
 	@rm -f $@.raw
 
 sections: $(SECTION_TEX)

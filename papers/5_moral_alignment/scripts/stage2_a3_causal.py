@@ -40,7 +40,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from moral_dependency import ablate_subspace, build_subspace_basis  # noqa: E402
 
 logger = logging.getLogger(__name__)

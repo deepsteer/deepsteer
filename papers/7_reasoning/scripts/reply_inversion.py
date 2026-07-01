@@ -42,7 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import model_registry as reg  # noqa: E402
 import think_io  # noqa: E402
-import token_positions as tp  # noqa: E402
+from deepsteer.reasoning import token_positions as tp  # noqa: E402
 from extract_two_site import _acts_from_ids  # noqa: E402
 
 logger = logging.getLogger(__name__)

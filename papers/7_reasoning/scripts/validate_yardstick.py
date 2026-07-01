@@ -42,7 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import model_registry as reg  # noqa: E402
 import think_io  # noqa: E402
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from causal_ablation import ablate_subspace, _orthonormal  # noqa: E402
 from debug_cot_ablation import collect_cot, gen_text, _unit  # noqa: E402
 from gpt_oss_precision_gate import refusal_direction  # noqa: E402

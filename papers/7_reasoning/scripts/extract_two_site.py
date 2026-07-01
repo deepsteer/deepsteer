@@ -54,7 +54,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import model_registry as reg  # noqa: E402
 import think_io  # noqa: E402
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from extract_refusal import consolidation_at_layer  # noqa: E402  (Paper 6, reused)
 from measure_refusal_decomposition import decompose_layer  # noqa: E402  (Paper 5)
 from moral_dependency import build_subspace_basis  # noqa: E402
@@ -64,8 +64,7 @@ from deepsteer.foundations import FOUNDATION_ORDER  # noqa: E402
 logger = logging.getLogger(__name__)
 
 
-def _unit(v: np.ndarray) -> np.ndarray:
-    return v / (np.linalg.norm(v) + 1e-12)
+_unit = du.unit_vector  # shared: deepsteer.directions.extraction.unit_vector
 
 
 @torch.no_grad()

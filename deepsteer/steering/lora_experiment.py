@@ -30,13 +30,7 @@ logger = logging.getLogger(__name__)
 REPO_ID = "allenai/OLMo-2-0425-1B-early-training"
 
 
-def _clear_memory() -> None:
-    """Free GPU/MPS memory."""
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 def _load_model(

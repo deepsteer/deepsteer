@@ -5,7 +5,7 @@ repository is **Apache-2.0**; everything committed here is Apache-2.0-compatible
 content (LLM-produced neutrals, retellings, register re-renderings, paraphrases) is original
 to this project and **Apache-2.0**. Source halves carry their upstream license, named below.
 
-## `direction1_vmoral_v1.json` — the single-source V_moral dataset
+## `d1_vmoral_v1.json` — the single-source V_moral dataset
 
 | Component | Source | Upstream license | Verified | Feeds |
 |---|---|---|---|---|
@@ -27,8 +27,8 @@ expression, so committing them would inject an NC carve-out into the dataset tha
 **dropped**: `V_moral` is single-source (Moral Stories). A public-domain re-derivation was
 evaluated and rejected — only ~21% of our MORABLES selection is canonical enough to retell
 from public-domain content (the rest is obscure Perry-index fables in neither public-domain
-editions nor model knowledge). See `papers/direction1_moral_subspace/PREREGISTRATION.md`
+editions nor model knowledge). See `papers/d1_moral_subspace/PREREGISTRATION.md`
 (single-source amendment). A fable-based extension may be revisited if a clean public-domain
 source/method becomes viable. Only NC-safe **index identifiers** (fable aliases) ever appear
-in the repo (`papers/direction1_moral_subspace/partition_ids.json`); no MORABLES morals or
+in the repo (`papers/d1_moral_subspace/partition_ids.json`); no MORABLES morals or
 story text are committed.

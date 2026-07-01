@@ -80,19 +80,12 @@ ORIGINAL_DIR = PAPER_DIR / "outputs/phase_c4_compositional"
 OUTPUT_DIR = PAPER_DIR / "outputs/phase_c4_compositional/3seed"
 
 
-def _clear_memory() -> None:
-    import torch
-
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
-def _parse_step(rev: str) -> int | None:
-    m = re.search(r"step(\d+)", rev)
-    return int(m.group(1)) if m else None
+from deepsteer.benchmarks.representational.trajectory import (  # noqa: E402
+    _parse_step_from_revision as _parse_step,
+)
 
 
 def _get_revisions() -> list[tuple[int, str]]:

@@ -27,7 +27,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 
 logger = logging.getLogger(__name__)
 _ONSET = 0.6

@@ -44,7 +44,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 _P5 = Path(__file__).resolve().parent.parent.parent / "5_moral_alignment" / "scripts"
 sys.path.insert(0, str(_P5))
 
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from heretic_ablation import subspace_projection_fraction  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT  # noqa: E402
@@ -57,8 +57,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _unit(v: np.ndarray) -> np.ndarray:
-    return v / (np.linalg.norm(v) + 1e-12)
+_unit = du.unit_vector  # shared: deepsteer.directions.extraction.unit_vector
 
 
 def separation_margin(proj_pos: np.ndarray, proj_neg: np.ndarray) -> float:

@@ -35,12 +35,11 @@ _P5 = Path(__file__).resolve().parent.parent.parent / "5_moral_alignment" / "scr
 sys.path.insert(0, str(_P5))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from moral_dependency import build_subspace_basis  # noqa: E402
 
 
-def _unit(v):
-    return v / (np.linalg.norm(v) + 1e-12)
+_unit = du.unit_vector  # shared: deepsteer.directions.extraction.unit_vector
 
 
 def _mft_frac(direction, basis):

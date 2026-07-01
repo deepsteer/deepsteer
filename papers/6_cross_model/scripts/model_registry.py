@@ -35,34 +35,16 @@ from dataclasses import dataclass
 # ---------------------------------------------------------------------------
 # Canonical band / layer fractions (anchored on OLMo-3, 32 layers)
 # ---------------------------------------------------------------------------
-# OLMo-3 stable band (Paper 5 Appendix B) is layers 15..31 of 32 -> depth
-# fractions (15/32, 31/32). Mapping ``round(f * n_layers)`` reproduces (15, 31)
-# at 32 layers and the top edge always lands on the last layer (n_layers - 1).
-BAND_FRACS: tuple[float, float] = (15 / 32, 31 / 32)  # (0.46875, 0.96875)
-
-# Primary single layer reported for cross-model comparability: depth-fraction
-# 0.5 (OLMo L16/32). This is the headline decomposition layer.
-PRIMARY_FRAC: float = 0.5
-
-
-def band_layers(n_layers: int) -> tuple[int, int]:
-    """Inclusive stable band ``(lo, hi)`` at the canonical depth fractions."""
-    return round(BAND_FRACS[0] * n_layers), round(BAND_FRACS[1] * n_layers)
-
-
-def primary_layer(n_layers: int) -> int:
-    """Headline single layer at depth-fraction 0.5."""
-    return round(PRIMARY_FRAC * n_layers)
-
-
-def olmo3_full_attention_layers(n_layers: int) -> list[int]:
-    """OLMo-3 hybrid attention: every 4th layer is full attention.
-
-    Annotation only (so any 4-layer periodicity in layer-wise plots is
-    attributable to attention type, not signal). Standard full-attention models
-    (Qwen2.5, Llama-3.1) carry ``None`` for this field.
-    """
-    return [i for i in range(n_layers) if (i + 1) % 4 == 0]
+# The depth-fraction rule lives in the core library so Papers 5/6/7 share one
+# copy (see ``deepsteer.geometry.depth``). Re-exported here so existing call
+# sites (``reg.BAND_FRACS``, ``reg.band_layers(...)``) keep working unchanged.
+from deepsteer.geometry.depth import (  # noqa: E402
+    BAND_FRACS,
+    PRIMARY_FRAC,
+    band_layers,
+    olmo3_full_attention_layers,
+    primary_layer,
+)
 
 
 # ---------------------------------------------------------------------------

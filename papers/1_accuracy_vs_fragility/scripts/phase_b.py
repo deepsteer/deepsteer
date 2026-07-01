@@ -47,15 +47,7 @@ REPO_ID = "allenai/OLMo-3-1025-7B"
 ALL_EXPERIMENTS = ["B1", "B2", "B3", "B4", "B5"]
 
 
-def _clear_memory() -> None:
-    """Free GPU/MPS memory."""
-    import torch
-
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 def _cleanup_cache_revision(revision: str) -> None:
@@ -200,10 +192,9 @@ def _reload_step_results(step: int, output_dir: Path) -> dict[str, dict]:
     return results
 
 
-def _parse_step(revision: str) -> int | None:
-    """Extract step number from a revision string like 'stage1-step12000'."""
-    match = re.search(r"step(\d+)", revision)
-    return int(match.group(1)) if match else None
+from deepsteer.benchmarks.representational.trajectory import (  # noqa: E402
+    _parse_step_from_revision as _parse_step,
+)
 
 
 def _get_stage1_revisions(all_revisions: list[str]) -> list[tuple[int, str]]:

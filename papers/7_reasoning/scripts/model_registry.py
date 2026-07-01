@@ -40,64 +40,31 @@ Panel (verified 2026-06-23 against HF primary sources; see PAPER_PLAN.md ledger)
 
 from __future__ import annotations
 
-import importlib.util
-import sys
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Reuse Paper 6's registry without forking. Both files are named
-# ``model_registry``; importing by plain name would alias to *this* module once
-# it is on sys.path (name collision), so load Paper 6's by file path under a
-# distinct module name instead.
+# Reuse the shared depth-fraction conventions. Papers 5/6/7 read one copy from
+# ``deepsteer.geometry.depth`` instead of importing Paper 6's registry by file
+# path. Paper 7's band pins its high edge to the last layer; that variant lives
+# in core as ``band_to_final_layer`` (see below for why the 48-layer model needs
+# it). ``BAND_FRACS``/``PRIMARY_FRAC``/``primary_layer`` re-export unchanged.
 # ---------------------------------------------------------------------------
-_THIS = Path(__file__).resolve()
-_REPO = _THIS.parent.parent.parent.parent
-_P6_REG_PATH = _REPO / "papers" / "6_cross_model" / "scripts" / "model_registry.py"
-if not _P6_REG_PATH.exists():
-    raise RuntimeError(f"Paper 6 registry not found at {_P6_REG_PATH}; cannot reuse conventions.")
-_spec = importlib.util.spec_from_file_location("p6_model_registry", _P6_REG_PATH)
-reg6 = importlib.util.module_from_spec(_spec)
-# Register before exec: the frozen-dataclass machinery resolves ``cls.__module__``
-# through ``sys.modules``, which is None for an unregistered module (Python 3.14).
-sys.modules["p6_model_registry"] = reg6
-_spec.loader.exec_module(reg6)
-
-# Re-export the anchor fractions so downstream code can read them from one place.
-BAND_FRACS: tuple[float, float] = reg6.BAND_FRACS  # (0.46875, 0.96875)
-PRIMARY_FRAC: float = reg6.PRIMARY_FRAC            # 0.5
+from deepsteer.geometry.depth import (  # noqa: E402
+    BAND_FRACS,
+    PRIMARY_FRAC,
+    band_to_final_layer,
+    primary_layer,
+)
 
 
 def band_layers(n_layers: int) -> tuple[int, int]:
-    """Inclusive stable band ``(lo, hi)`` at the canonical depth fractions.
-
-    The convention is "the band runs to the FINAL layer inclusive" — not "apply
-    ``round()`` literally." That endpoint matters: the last decoder layer's
-    residual output is the terminal state that feeds the unembedding/logit head,
-    the most readout-relevant layer, and late layers are where the refusal and
-    moral-subspace linear structure is most consolidated (Paper 5/6 chose the band
-    15..31 of 32 precisely to capture that late structure). So the band must
-    include each model's last layer for the depth span to be genuinely identical
-    across the panel.
-
-    Low edge: Paper 6's verbatim ``round(0.46875 * n)``. High edge: the last layer
-    ``n - 1``. This equals Paper 6's value for every layer count in its panel
-    (24 -> 23, 28 -> 27, 32 -> 31), where ``round(0.96875 * n) == n - 1`` already
-    holds. It differs only for the new 48-layer Qwen-14B distill: ``31/32 * 48 ==
-    46.5`` EXACTLY, and Python's round-half-to-even sends 46.5 -> 46, so the bare
-    rule would make Qwen-14B the lone model whose band stops one short of its last
-    layer (L46 of 0..47). Pinning ``hi = n - 1 = 47`` is therefore the MORE
-    convention-faithful choice (band-to-final-layer holds across the whole panel),
-    not a deviation from it. (Confirmed at the Phase 0 gate.)
+    """Paper 7 stable band: low edge at depth 0.46875, high edge pinned to the
+    last layer via ``deepsteer.geometry.depth.band_to_final_layer``. The pin
+    matters only for the 48-layer Qwen-14B distill (``31/32 * 48 == 46.5`` rounds
+    down to 46 under the bare rule); see that function for the full rationale.
     """
-    lo = reg6.band_layers(n_layers)[0]
-    return lo, n_layers - 1
-
-
-def primary_layer(n_layers: int) -> int:
-    """Headline single layer at depth-fraction 0.5 (Paper 6 rule, verbatim)."""
-    return reg6.primary_layer(n_layers)
+    return band_to_final_layer(n_layers)
 
 
 # ---------------------------------------------------------------------------

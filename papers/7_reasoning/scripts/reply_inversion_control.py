@@ -37,7 +37,7 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "5_moral_alignment" / "scripts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import token_positions as tp  # noqa: E402
+from deepsteer.reasoning import token_positions as tp  # noqa: E402
 from reply_inversion import steer, judge_logits, _verdict_ids, _HARM_Q, DEPTH_FRACS  # noqa: E402
 from extract_two_site import _acts_from_ids  # noqa: E402
 

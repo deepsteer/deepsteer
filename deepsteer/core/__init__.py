@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from deepsteer.core.benchmark_suite import Benchmark, BenchmarkSuite
+from deepsteer.core.device import clear_memory, enable_mps_histc_fallback
 from deepsteer.core.model_interface import (
     APIModel,
     ModelFamily,
@@ -56,4 +57,7 @@ __all__ = [
     # Benchmark runner
     "Benchmark",
     "BenchmarkSuite",
+    # Device helpers
+    "clear_memory",
+    "enable_mps_histc_fallback",
 ]

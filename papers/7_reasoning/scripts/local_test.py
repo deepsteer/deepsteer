@@ -46,6 +46,18 @@ sys.path.insert(0, str(_THIS.parent))
 
 import model_registry as reg  # noqa: E402  (Paper 7 registry)
 
+# Paper 6's registry, loaded by file path for the cross-paper parity checks below
+# (the validity anchor compares the Llama-8B distill to Paper 6's Llama spec; the
+# band test compares against Paper 6's bare round() rule). Both registries now read
+# their depth-fraction math from ``deepsteer.geometry.depth``, so this is a plain
+# cross-paper reference in the TEST, not the old production-code reuse-by-path hack.
+import importlib.util as _ilu  # noqa: E402
+
+_spec6 = _ilu.spec_from_file_location("p6_model_registry", _P6_SCRIPTS / "model_registry.py")
+reg6 = _ilu.module_from_spec(_spec6)
+sys.modules["p6_model_registry"] = reg6
+_spec6.loader.exec_module(reg6)
+
 _FAILS: list[str] = []
 
 
@@ -58,7 +70,6 @@ def check(cond: bool, msg: str) -> None:
 
 def test_band_math() -> None:
     print("\n[1] fractional band / primary-layer mapping (reused from Paper 6)")
-    reg6 = reg.reg6
     # Reuse parity: Paper 6 anchors are reproduced exactly.
     check(reg.band_layers(32) == (15, 31), "32L band == (15, 31) [Paper 5/6 anchor]")
     check(reg.primary_layer(32) == 16, "32L primary == L16 (depth 0.5)")
@@ -85,7 +96,6 @@ def test_band_math() -> None:
 
 def test_validity_anchor() -> None:
     print("\n[2] validity anchor: Llama-8B distill shares Paper 6 Llama geometry")
-    reg6 = reg.reg6
     llama_p6 = reg6.get("llama31")
     distill = reg.get("ds_r1_llama8b")
     check(distill.n_layers == llama_p6.n_layers == 32, "both 32 layers")
@@ -170,10 +180,13 @@ def test_assert_matches() -> None:
 
 def test_tooling_imports() -> None:
     print("\n[5] shared Paper 6 / Paper 5 / Paper 3 tooling imports cleanly")
-    check(reg.reg6 is not None and hasattr(reg.reg6, "ModelSpec"),
-          "Paper 6 registry loaded by path (reuse, not fork)")
+    check(reg6 is not None and hasattr(reg6, "ModelSpec"),
+          "Paper 6 registry loads for cross-paper parity checks")
+    from deepsteer.geometry import depth  # noqa: F401
+    check(depth.band_to_final_layer(48) == (22, 47) and depth.band_layers(48) == (22, 46),
+          "core depth conventions: band_to_final_layer pins hi=last, bare rule rounds")
     try:
-        import direction_utils as du  # noqa: F401
+        from deepsteer.directions import extraction as du  # noqa: F401
         check(hasattr(du, "cosine") and hasattr(du, "transfer_metrics"),
               "direction_utils (cosine / transfer_metrics) ok")
         check(hasattr(du, "load_directions") and hasattr(du, "save_directions"),

@@ -102,4 +102,4 @@ papers/1_accuracy_vs_fragility/outputs/phase_c1_acts/
 papers/1_accuracy_vs_fragility/outputs/phase_c4_comp_acts/
 
 # Direction 1: pilot/working generation + audit artifacts (regenerable)
-papers/direction1_moral_subspace/outputs/
+papers/d1_moral_subspace/outputs/

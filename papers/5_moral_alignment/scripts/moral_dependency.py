@@ -62,7 +62,7 @@ from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT
 # NPZ format stays in one place.
 _PHASE2_SCRIPTS = Path(__file__).resolve().parents[2] / "5_moral_alignment" / "scripts"
 sys.path.insert(0, str(_PHASE2_SCRIPTS))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

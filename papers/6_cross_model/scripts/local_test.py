@@ -88,7 +88,7 @@ def test_specs() -> None:
 def test_tooling_imports() -> None:
     print("\n[3] shared Paper 5 / Paper 3 tooling imports cleanly")
     try:
-        import direction_utils as du  # noqa: F401
+        from deepsteer.directions import extraction as du  # noqa: F401
         check(hasattr(du, "extract_pair_directions"), "du.extract_pair_directions ok")
         check(hasattr(du, "effective_dimensionality"), "du.effective_dimensionality ok")
         check(hasattr(du, "load_directions") and hasattr(du, "save_directions"),

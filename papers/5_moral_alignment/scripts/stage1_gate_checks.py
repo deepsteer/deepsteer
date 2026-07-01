@@ -60,7 +60,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from forced_coupling_stage1 import NEUTRAL_CONTRAST_A, NEUTRAL_CONTRAST_B  # noqa: E402
 from heretic_ablation import last_token_means, subspace_projection_fraction  # noqa: E402
 from probe_transfer import group_by_foundation  # noqa: E402

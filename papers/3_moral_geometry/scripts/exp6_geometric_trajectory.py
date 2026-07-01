@@ -59,17 +59,12 @@ from exp1_2_3_framework_geometry import (
 )
 
 
-def _clear_memory() -> None:
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
-def _parse_step(revision: str) -> int | None:
-    match = re.search(r"step(\d+)", revision)
-    return int(match.group(1)) if match else None
+from deepsteer.benchmarks.representational.trajectory import (  # noqa: E402
+    _parse_step_from_revision as _parse_step,
+)
 
 
 def _get_all_revisions() -> list[tuple[int, str]]:

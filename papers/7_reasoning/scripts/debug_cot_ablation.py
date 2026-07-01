@@ -33,14 +33,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import model_registry as reg  # noqa: E402
 import think_io  # noqa: E402
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from causal_ablation import ablate_subspace, _orthonormal  # noqa: E402
 from extract_two_site import _acts_from_ids  # noqa: E402
 from gpt_oss_precision_gate import _normalize, _REFUSAL, _looks_degenerate  # noqa: E402
 
 
-def _unit(v):
-    return v / (np.linalg.norm(v) + 1e-12)
+_unit = du.unit_vector  # shared: deepsteer.directions.extraction.unit_vector
 
 
 def collect_cot(model, prompts, layer, cot_format, max_new_tokens):

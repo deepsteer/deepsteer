@@ -41,27 +41,14 @@ logger = logging.getLogger(__name__)
 # MPS doesn't implement torch.histc for integer inputs, which the
 # transformers MoE router uses (grouped_mm_experts_forward). Patch it
 # to fall back to CPU for that one op.
-_orig_histc = torch.histc
-
-def _histc_mps_fallback(input, bins=100, min=0, max=0):
-    if input.device.type == "mps" or not input.is_floating_point():
-        return _orig_histc(input.cpu().float(), bins, min, max).to(input.device)
-    return _orig_histc(input, bins, min, max)
-
-torch.histc = _histc_mps_fallback
+from deepsteer.core.device import enable_mps_histc_fallback  # noqa: E402
+enable_mps_histc_fallback()
 
 OLMOE_REPO = "allenai/OLMoE-1B-7B-0924"
 OLMO_REPO = "allenai/OLMo-2-0425-1B"
 
 
-def _clear_memory() -> None:
-    import torch
-
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 def run_probes(model, dataset, output_dir: Path, label: str) -> dict:

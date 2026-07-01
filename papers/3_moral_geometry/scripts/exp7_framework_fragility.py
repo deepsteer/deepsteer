@@ -57,16 +57,8 @@ PROBE_SEED = 42
 N_BOOTSTRAP = 1000
 
 # MPS histc fix
-_orig_histc = torch.histc
-
-
-def _histc_mps_fallback(input, bins=100, min=0, max=0):
-    if input.device.type == "mps" or not input.is_floating_point():
-        return _orig_histc(input.cpu().float(), bins, min, max).to(input.device)
-    return _orig_histc(input, bins, min, max)
-
-
-torch.histc = _histc_mps_fallback
+from deepsteer.core.device import enable_mps_histc_fallback  # noqa: E402
+enable_mps_histc_fallback()
 
 from exp1_2_3_framework_geometry import (
     FOUNDATION_ORDER,
@@ -75,12 +67,7 @@ from exp1_2_3_framework_geometry import (
 )
 
 
-def _clear_memory() -> None:
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 def run_foundation_fragility(

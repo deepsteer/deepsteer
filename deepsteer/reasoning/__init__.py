@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from deepsteer.reasoning import token_positions
 from deepsteer.reasoning.think_io import (
     CoTFormat,
     cot_content_start,
@@ -24,4 +25,5 @@ __all__ = [
     "prompt_opened_trace",
     "split_rollout",
     "think_prompt",
+    "token_positions",
 ]

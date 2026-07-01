@@ -32,7 +32,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 import malleability_analysis as ma  # noqa: E402
 from heretic_ablation import subspace_projection_fraction  # noqa: E402
 

@@ -37,7 +37,9 @@ def _histc_mps_fallback(input, bins=100, min=0, max=0):
 torch.histc = _histc_mps_fallback
 ```
 
-This patch is applied in all OLMoE experiment scripts and does not
+This patch is applied in all OLMoE experiment scripts (via the shared
+`deepsteer.core.device.enable_mps_histc_fallback()` helper, which installs
+exactly the fallback above) and does not
 affect numerical results (the operation counts tokens per expert for
 load-balancing diagnostics, not for gradient computation).
 

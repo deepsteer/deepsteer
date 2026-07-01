@@ -30,7 +30,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT  # noqa: E402
 

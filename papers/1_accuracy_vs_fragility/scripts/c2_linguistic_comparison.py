@@ -57,19 +57,12 @@ PROBE_NAMES = ["moral", "sentiment", "syntax"]
 ONSET_ACCURACY = 0.70
 
 
-def _clear_memory() -> None:
-    """Free GPU/MPS memory."""
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
-def _parse_step(revision: str) -> int | None:
-    """Extract step number from a revision string like 'stage1-step9000-tokens19B'."""
-    match = re.search(r"step(\d+)", revision)
-    return int(match.group(1)) if match else None
+from deepsteer.benchmarks.representational.trajectory import (  # noqa: E402
+    _parse_step_from_revision as _parse_step,
+)
 
 
 def _get_all_revisions() -> list[tuple[int, str]]:

@@ -54,7 +54,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import model_registry as reg  # noqa: E402
 import think_io  # noqa: E402
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from moral_dependency import build_subspace_basis  # noqa: E402
 from gpt_oss_precision_gate import (_normalize, _REFUSAL, _looks_degenerate,  # noqa: E402
                                     refusal_direction)

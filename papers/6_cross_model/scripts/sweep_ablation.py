@@ -40,7 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 _P5 = Path(__file__).resolve().parent.parent.parent / "5_moral_alignment" / "scripts"
 sys.path.insert(0, str(_P5))
 
-import direction_utils as du  # noqa: E402
+from deepsteer.directions import extraction as du  # noqa: E402
 from heretic_ablation import orthogonalize_weights  # noqa: E402
 from stage2_a3_causal import refusal_eval  # noqa: E402
 

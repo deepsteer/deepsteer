@@ -20,6 +20,7 @@ Usage::
 
 from __future__ import annotations
 
+from deepsteer.directions import extraction
 from deepsteer.directions.compare import compare_directions
 from deepsteer.directions.leace import extract_leace_directions
 from deepsteer.directions.mean_diff import extract_mean_diff_directions
@@ -34,4 +35,5 @@ __all__ = [
     "extract_probe_directions",
     "extract_from_npz",
     "compare_directions",
+    "extraction",
 ]

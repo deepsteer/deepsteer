@@ -68,12 +68,7 @@ INDIVIDUALIZING = {"care_harm", "fairness_cheating", "liberty_oppression"}
 BINDING = {"loyalty_betrayal", "authority_subversion", "sanctity_degradation"}
 
 
-def _clear_memory() -> None:
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    if hasattr(torch, "mps") and torch.backends.mps.is_available():
-        torch.mps.empty_cache()
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 # ---------------------------------------------------------------------------

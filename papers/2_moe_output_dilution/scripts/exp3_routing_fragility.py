@@ -35,14 +35,8 @@ import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
-_orig_histc = torch.histc
-
-def _histc_mps_fallback(input, bins=100, min=0, max=0):
-    if input.device.type == "mps" or not input.is_floating_point():
-        return _orig_histc(input.cpu().float(), bins, min, max).to(input.device)
-    return _orig_histc(input, bins, min, max)
-
-torch.histc = _histc_mps_fallback
+from deepsteer.core.device import enable_mps_histc_fallback  # noqa: E402
+enable_mps_histc_fallback()
 
 OLMOE_REPO = "allenai/OLMoE-1B-7B-0924"
 NOISE_LEVELS = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0]
