@@ -253,6 +253,49 @@ def test_amendment3_cells():
           cc.rankk_moral_basis(srcs, 2).shape == (64, 2) and cc.rankk_moral_basis(srcs, 8).shape[1] == 3)
 
 
+def test_sweep():
+    print("Amendment 4 rank sweep + harm identification (pure math):")
+    import sweep as sw
+    rng = np.random.default_rng(5)
+    d = 64
+    # contrasts with a dominant direction d0 + weaker structure -> PC1 ~ d0, nested bases
+    d0 = s1._unit(rng.standard_normal(d))
+    d1 = s1._unit(rng.standard_normal(d))
+    contrasts = (rng.standard_normal((40, 1)) * 3.0) * d0 + (rng.standard_normal((40, 1))) * d1 \
+        + 0.1 * rng.standard_normal((40, d))
+    bases = sw.nested_pca_basis(contrasts, [1, 3, 8, 16])
+    check("nested_pca_basis shapes + caps", bases[1].shape == (d, 1) and bases[16].shape == (d, 16))
+    check("rank-1 basis lies inside rank-3 (nested)",
+          float(np.linalg.norm(bases[3].T @ bases[1])) > 0.999)
+    check("PC1 aligns with the dominant contrast direction", abs(float(bases[1][:, 0] @ d0)) > 0.9)
+    mean_c = contrasts.mean(0)
+    p1, p8 = sw.subspace_purity(bases[1], mean_c), sw.subspace_purity(bases[8], mean_c)
+    check("purity rises with rank", p8 >= p1 and p8 <= 1.0 + 1e-9, f"{p1:.3f}->{p8:.3f}")
+    ch = sw.cos_harm_components(bases[16], d0, n=3)
+    check("cos_harm_components returns |cos| in [0,1]", len(ch) == 3 and all(0 <= c <= 1 for c in ch))
+
+    # harm-partialed basis is orthogonal to the harm direction
+    V, _ = np.linalg.qr(rng.standard_normal((d, 3)))
+    harm = s1._unit(V @ np.array([1.0, 0.5, 0.2]))          # harm inside span(V)
+    Qp = sw.harm_partial_basis(V, harm)
+    check("harm_partial_basis is orthogonal to d_harm", float(np.linalg.norm(harm @ Qp)) < 1e-6,
+          f"{float(np.linalg.norm(harm @ Qp)):.2e}")
+
+    full = list(-0.1 + 0.005 * rng.standard_normal(30))
+    add1 = sw.additivity_ratio(full, [0.5 * x for x in full], [0.5 * x for x in full], rng)
+    check("additivity ~1 when restricted+complement = full", add1["additive"], str(add1["additivity_ratio"]))
+    add2 = sw.additivity_ratio(full, [0.6 * x for x in full], [0.6 * x for x in full], rng)
+    check("additivity >1 flagged non-additive (overlap)", not add2["additive"], str(add2["additivity_ratio"]))
+
+    ks = [1, 3, 8, 16]
+    v_broad = sw.shape_verdict({1: 0.30, 3: 0.45, 8: 0.65, 16: 0.80}, {1: .4, 3: .6, 8: .8, 16: 0.85}, 0.34, ks)
+    check("shape verdict: broad_moral", v_broad["verdict"] == "broad_moral", v_broad["verdict"])
+    v_harm = sw.shape_verdict({1: 0.33, 3: 0.34, 8: 0.35, 16: 0.36}, {1: .4, 3: .55, 8: .68, 16: 0.72}, 0.34, ks)
+    check("shape verdict: harm_saturating", v_harm["verdict"] == "harm_saturating", v_harm["verdict"])
+    v_ceil = sw.shape_verdict({1: 0.20, 3: 0.28, 8: 0.31, 16: 0.33}, {1: .2, 3: .3, 8: .34, 16: 0.36}, 0.30, ks)
+    check("shape verdict: instrument_ceiling", v_ceil["verdict"] == "instrument_ceiling", v_ceil["verdict"])
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
@@ -263,6 +306,7 @@ def main():
     test_stage2_math()
     test_causal_logic()
     test_amendment3_cells()
+    test_sweep()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)

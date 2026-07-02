@@ -30,6 +30,7 @@ from deepsteer.directions import extraction as du  # noqa: E402
 import stage1_attribution as s1  # noqa: E402
 import stage2_content as s2  # noqa: E402
 import causal_cells as cc  # noqa: E402
+import sweep as sw  # noqa: E402
 import patch_stimuli as ps  # noqa: E402
 from informat_ladder import extract_positions, pooled_chat_actsample, find_content_span, POS_CLASSES  # noqa: E402
 from heretic_ablation import last_token_means  # noqa: E402
@@ -127,6 +128,7 @@ def main() -> None:
     hidden = inp["refusal"].shape[0]
     Qrand = cc.random_ortho_basis(hidden, inp["Vbasis"].shape[1], rng2, exclude_Q=inp["Vbasis"])
     harmQ = inp["harm"][:, None]
+    Qhp = sw.harm_partial_basis(inp["Vbasis"], inp["harm"])   # V_moral with d_harm projected out (Amendment 4)
     tw = (screened["compositional_twins"] or manifest["compositional_twins"]["pairs"])
     tw_cap = (6 if validate else 120)                       # use all screened twins (>=2x transport headroom)
     tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:tw_cap]]
@@ -134,21 +136,39 @@ def main() -> None:
             if tw_pairs else inp["harm"])
     rt = (screened["request_twins"] or manifest["request_twins"]["pairs"])[:(6 if validate else None)]
 
-    full_d, restr_d, compl_d, harm_d, rand_d = [], [], [], [], []   # all read refusal, on request-twins
+    # Amendment 4 rank sweep (SWEEP=1 or validate): nested moral-contrast PCA basis + per-rank restrict.
+    KS = [1, 3, 8, 16]
+    run_sweep = os.environ.get("SWEEP") == "1" or validate
+    sweep_bases, sweep_rand_bases, sweep_meta = None, None, None
+    if run_sweep:
+        all_pairs = [pr for v in moral.values() for pr in v]
+        contrasts = extract_positions(model, all_pairs, [args.layer])["mean_content"][args.layer][1]
+        sweep_bases = sw.nested_pca_basis(contrasts, KS)
+        sweep_rand_bases = {k: cc.random_ortho_basis(hidden, sweep_bases[k].shape[1], rng2,
+                                                     exclude_Q=inp["Vbasis"]) for k in KS}
+        sweep_meta = {"purity_k": {k: round(sw.subspace_purity(sweep_bases[k], contrasts.mean(0)), 4)
+                                   for k in KS},
+                      "cos_harm_pc": sw.cos_harm_components(sweep_bases[max(KS)], inp["harm"], n=8),
+                      "ranks": {k: int(sweep_bases[k].shape[1]) for k in KS}}
+    sweep_ref = {k: [] for k in KS}; sweep_rand = {k: [] for k in KS}; sweep_jud = {k: [] for k in KS}
+
+    full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # all read refusal, request-twins
     for p in rt:
         try:
             sp, tp = cc.patch_positions(model, p["following"], p["violating"])
             L, r = args.layer, inp["refusal"]
             base = cc.baseline_proj(model, p["violating"], L, r)
-            full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r) - base)
-            restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
-                                          restrict_Q=inp["Vbasis"]) - base)
-            compl_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
-                                          restrict_Q=inp["Vbasis"], restrict_mode="complement") - base)
-            harm_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
-                                         restrict_Q=harmQ) - base)
-            rand_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
-                                         restrict_Q=Qrand) - base)
+            ic = lambda **kw: cc.interchange(model, p["following"], p["violating"], sp, tp, L, r, **kw) - base
+            full_d.append(ic())
+            restr_d.append(ic(restrict_Q=inp["Vbasis"]))
+            compl_d.append(ic(restrict_Q=inp["Vbasis"], restrict_mode="complement"))
+            harm_d.append(ic(restrict_Q=harmQ))
+            rand_d.append(ic(restrict_Q=Qrand))
+            hp_d.append(ic(restrict_Q=Qhp))                                  # V_moral perp harm
+            if run_sweep:
+                for k in KS:
+                    sweep_ref[k].append(ic(restrict_Q=sweep_bases[k]))
+                    sweep_rand[k].append(ic(restrict_Q=sweep_rand_bases[k]))
         except (ValueError, RuntimeError, IndexError):
             continue
 
@@ -157,9 +177,12 @@ def main() -> None:
         try:
             sp, tp = cc.patch_positions(model, p[0], p[1])
             jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
-            full_jud_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir) - jbase)
-            tc_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
-                                       restrict_Q=inp["Vbasis"]) - jbase)
+            jc = lambda **kw: cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir, **kw) - jbase
+            full_jud_d.append(jc())
+            tc_d.append(jc(restrict_Q=inp["Vbasis"]))
+            if run_sweep:
+                for k in KS:
+                    sweep_jud[k].append(jc(restrict_Q=sweep_bases[k]))
         except (ValueError, RuntimeError, IndexError):
             continue
 
@@ -190,16 +213,37 @@ def main() -> None:
     _m = lambda a: round(float(np.mean(a)), 4) if a else None
     ror = (cc.ratio_of_ratios(full_d, restr_d, full_jud_d, tc_d, rng2)
            if len(full_d) > 2 and len(full_jud_d) > 2 else None)
+    additivity = sw.additivity_ratio(full_d, restr_d, compl_d, rng2) if len(full_d) > 2 else None
+    harm_ci = None
+    if len(harm_d) > 2:
+        ha = np.asarray(harm_d)
+        hb = [ha[rng2.integers(0, len(ha), len(ha))].mean() for _ in range(2000)]
+        harm_ci = [round(float(np.percentile(hb, 2.5)), 4), round(float(np.percentile(hb, 97.5)), 4)]
+    sweep_result = None
+    if run_sweep and len(full_d) > 2 and len(full_jud_d) > 2:
+        fdm, fjm = float(np.mean(full_d)), float(np.mean(full_jud_d))
+        Rref = {k: float(np.mean(sweep_ref[k]) / fdm) for k in KS}
+        Rjud = {k: float(np.mean(sweep_jud[k]) / fjm) for k in KS}
+        Rrand = {k: float(np.mean(sweep_rand[k]) / fdm) for k in KS}
+        harm_r1 = float(np.mean(harm_d) / fdm) if harm_d else 0.0
+        sweep_result = {"ks": KS, "R_refusal_k": {k: round(Rref[k], 4) for k in KS},
+                        "R_judgment_k": {k: round(Rjud[k], 4) for k in KS},
+                        "random_null_k": {k: round(Rrand[k], 4) for k in KS},
+                        "harm_rank1_R": round(harm_r1, 4), **sweep_meta,
+                        "shape_verdict": sw.shape_verdict(Rref, Rjud, harm_r1, KS)}
     cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
              "cell_a_full_refusal_delta_mean": _m(full_d),
              "cell_b_restricted_refusal_delta_mean": _m(restr_d),
              "complement_refusal_delta_mean": _m(compl_d),          # expect: moves refusal
              "harm_restricted_refusal_delta_mean": _m(harm_d),      # expect: moves refusal if reads harm
+             "harm_partialed_refusal_delta_mean": _m(hp_d),         # V_moral perp harm; ~0 if V_moral effect IS harm
              "random_rank3_refusal_delta_mean": _m(rand_d),         # control: expect ~0
              "full_judgment_delta_mean": _m(full_jud_d),            # RIDER 0
              "transport_control_judgment_delta_mean": _m(tc_d),
              "mde_refusal": round(mde_ref, 4), "mde_judgment": round(mde_jud, 4),
              "ratio_of_ratios": ror,                                # Amendment 3 PRIMARY verdict
+             "additivity": additivity, "harm_rank1_ci": harm_ci,   # Amendment 4 identification
+             "sweep": sweep_result,                                 # Amendment 4 rank sweep + shape verdict
              "cell_b_verdict_absolute": cc.cell_b_verdict(         # the Amendment-1 absolute gate (continuity)
                  float(np.mean(full_d)) if full_d else 0.0, float(np.mean(restr_d)) if restr_d else 0.0,
                  float(np.mean(tc_d)) if tc_d else 0.0, mde_ref, mde_jud),
@@ -220,13 +264,19 @@ def main() -> None:
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     ph_keys = list(st1["per_head_contrib"].keys())          # per-head arrays for the standardized rider
     ph_arr = np.stack([st1["per_head_contrib"][k] for k in ph_keys]) if ph_keys else np.zeros((0, hidden))
-    np.savez(out / f"c1_inputs_{args.key}.npz", refusal=inp["refusal"], harm=inp["harm"],
-             Vbasis=inp["Vbasis"], channel_act=inp["channel_act"], layer=args.layer,
-             cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
-             cell_complement_deltas=np.array(compl_d), cell_harm_deltas=np.array(harm_d),
-             cell_random_deltas=np.array(rand_d), full_judgment_deltas=np.array(full_jud_d),
-             transport_control_deltas=np.array(tc_d),
-             per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
+    save = dict(refusal=inp["refusal"], harm=inp["harm"], Vbasis=inp["Vbasis"],
+                channel_act=inp["channel_act"], layer=args.layer,
+                cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
+                cell_complement_deltas=np.array(compl_d), cell_harm_deltas=np.array(harm_d),
+                cell_harm_partial_deltas=np.array(hp_d), cell_random_deltas=np.array(rand_d),
+                full_judgment_deltas=np.array(full_jud_d), transport_control_deltas=np.array(tc_d),
+                per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
+    if run_sweep:                                            # per-rank paired deltas (rows = KS)
+        save["sweep_ks"] = np.array(KS)
+        save["sweep_refusal"] = np.array([sweep_ref[k] for k in KS])
+        save["sweep_judgment"] = np.array([sweep_jud[k] for k in KS])
+        save["sweep_random"] = np.array([sweep_rand[k] for k in KS])
+    np.savez(out / f"c1_inputs_{args.key}.npz", **save)
     (out / f"c1_session_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps({k: v for k, v in result.items() if k not in ("sparsity_curve",)}, indent=2))
     if not st1["reconstruction_ok"]:
