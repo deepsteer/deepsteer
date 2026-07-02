@@ -240,4 +240,77 @@ never a silent edit.
 
 ### Amendments
 
-*(none yet)*
+- **2026-07-01 (Amendment 1 — massive-activation degeneracy → standardized geometry, in-format
+  ladder, cross-ablation reconcile; pre-registered BEFORE any recomputation):** Chunk-1 B1/B3
+  completed for the panel and surfaced a discovered, outcome-independent data property that
+  invalidates the covariance-matched null for two of three models. Recorded here before recomputing
+  any R2/R3/R5/R8 quantity.
+
+  **(1) Discovered property (outcome-independent).** Qwen2.5 and Llama-3.1 instruct have
+  **massive-activation outlier dimensions** (Qwen dim 458 = 59% of residual variance, Llama dim
+  788 = 32%; OLMo-3 top dim = 1.4%). These dominate raw mean-diffs (Qwen ethics≈moral `|cos|`=0.90)
+  and saturate the covariance-matched null (R2 null q95: Qwen 0.92, Llama 0.36; R3 pairwise-null
+  q95: Qwen 0.995, Llama 0.90), so Qwen/Llama R2/R3/R5 are uninterpretable as run. OLMo-3 is
+  well-conditioned (null 0.26, matching d1). This is the known attention-sink / massive-activations
+  phenomenon and is the cross-model analog of d1's eff-dim-385 content-domination caution; it is a
+  property of the models' activations, independent of what refusal/judgment do.
+
+  **(2) Primary fix — STANDARDIZED geometry.** Recompute mean-diff directions and the covariance
+  null in a per-dimension-standardized (z-scored) space: `d̃ = unit(d / σ)`, null drawn in the
+  standardized space. **Rider (a) — σ provenance is part of the recorded type block per
+  measurement:** σ must come from `act_samples` matched to the **format/position class** of the
+  directions being compared (chat-decision-site σ for the chat-decision R3 cell; raw-pooled σ for
+  the raw-content cells), and **sink-position tokens (BOS / first-token spikes) are excluded from
+  the σ sample** — otherwise the transform imports a new format confound. Every recomputed number
+  records which σ it used.
+
+  **(3) Rider (b) — OLMo invariance check (legitimacy proof, pre-registered).** Because OLMo has no
+  outlier dim, standardization must **preserve OLMo's R3 conclusion** (decision-level dissociation,
+  `|cos| ≤ pairwise-null + M`) raw→standardized. If OLMo's verdict flips under the transform, the
+  transform is manufacturing results and is **rejected**; the clean-instrument invariance is the
+  proof standardization is not fabricating the Qwen/Llama fix.
+
+  **(4) Rider (c) — top-k projection-out ROBUSTNESS VARIANT (not primary).** Alongside
+  standardization, report a variant that projects out dimensions **individually carrying > 5% of
+  residual variance** (criterion-based, not a free `k`: Qwen dim 458, Llama dim 788 qualify; OLMo
+  none). Reported as robustness; standardization is primary.
+
+  **(5) Rider (d) — Paper 6 back-audit.** Paper 6's cross-model geometric cells for Qwen/Llama used
+  the same covariance-matched null and were presumably saturated identically → **recompute those
+  geometric cells in standardized space from saved artifacts** (zero-GPU if the activation hygiene
+  held; else a `MISSING_ARTIFACTS.md` rider to regenerate). Llama's **behavioral** results
+  (ablation resistance, the judgment drop) **do not depend on the null and survive untouched**; only
+  the geometric numbers are re-audited.
+
+  **(6) Rider (e) — promote the degeneracy to a methods finding.** File in `ANOMALIES.md`:
+  *"covariance-matched nulls are unusable in massive-activation families (Qwen/Llama) without
+  robustification"* — a citable methods contribution connecting to the massive-activations /
+  attention-sink literature, relevant to anyone doing direction geometry on those families.
+
+  **(7) In-format ladder (the one targeted GPU chunk; local standardization runs first regardless).**
+  The R2 confound is separate from the outlier one: `V_moral` was extracted RAW/mean-pooled while the
+  judgment + refusal directions are CHAT/decision-site, so even the content `label_contrast` projects
+  low (OLMo 0.10). Fix by re-extracting the `V_moral` sources in **chat format, factor-decomposed** —
+  the same texts wrapped as user messages, extracted **both at last-token and mean-pooled-in-chat**,
+  so template and pooling contributions separate — then recompute the **entire in-format ladder**:
+  held-one-out band, syntax/register/persona controls, G3 refusal projection, and R2.
+  **Pre-registered branch (both publishable):** D1's orthogonality claim is **format-robust** iff
+  refusal sits below the in-format band by `M`; **otherwise it is scoped to the raw narrative
+  register**, with the attenuation documented (the register-bound reading — moral geometry itself is
+  register-dependent — is a pretraining-data story, genuinely interesting). Qwen/Llama directions are
+  defined in **standardized space and mapped back to model coordinates for injection**. **B5 rides in
+  this chunk and uses the CHAT-extracted subspace** for noise injection (behavior happens in chat
+  format; noising the raw-register subspace during chat inference would repeat the cross-format
+  mistake — which is why B5 correctly waited).
+
+  **(8) Cross-ablation reconcile rider.** The R3(iii) cross-ablation cell is currently
+  **unfalsifiable**, not merely underpowered: base refusal 0.167 on the 24-prompt subset is ~4
+  refusal events (a floor effect), and 0.167 disagrees with **Paper 6's ~0.575** for the same model
+  — a smell of **harness drift** (subset selection, chat template, or refusal-classifier), not model
+  behavior. Reconcile the eval configs at **zero GPU** (diff subset/template/classifier) before the
+  pod, then **rerun cross-ablation on the full high-base-rate harmful set**.
+
+  **Spine preserved.** `M = 0.05`, the R1–R8 rules, and NULL-publishable-both-branches are
+  unchanged. This amendment robustifies the instrument (standardization + top-k robustness), scopes
+  the format claim (in-format ladder branch), and reconciles the ablation harness — all recorded
+  before recomputation.

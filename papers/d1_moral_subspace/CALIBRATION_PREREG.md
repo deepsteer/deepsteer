@@ -249,3 +249,15 @@ never a silent edit.
   reclassification, R5). This addendum adds a sharper test on the *existing* draws; it changes no
   gate, no G3 verdict, and no R-rule. GPT-OSS wording locks for real after B3 tightens the axis-pair
   n, regardless of which branch fires here.
+
+- **2026-07-01 (A1 ladder is RAW-format; in-format re-test + standardized nulls pre-registered in
+  D2 Amendment 1):** The A1 band, ladder, and MFT↔V_moral numbers were computed in **raw /
+  mean-pooled** format. The Direction-2 in-format ladder
+  (`../d2_decision_coupling/PREREGISTRATION.md` Amendment 1 §7) re-derives band + controls + refusal
+  projection + R2 in **chat / decision-site** format (factor-decomposed: last-token vs
+  mean-pooled-in-chat) to test format-robustness (see the D1 `PREREGISTRATION.md` format-robustness
+  amendment). Amendment 1 §2 additionally pre-registers **standardized nulls** (per-dim z-score, σ
+  matched to the format/position class, sink tokens excluded) for massive-activation-outlier models
+  (Qwen/Llama), with an OLMo raw→standardized **invariance check** as the legitimacy proof and a
+  top-k projection-out (>5% variance) robustness variant. Additive instrumentation; no A1 headline
+  number is silently altered.

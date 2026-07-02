@@ -642,3 +642,16 @@ line, never a silent edit.*
   rules R5/R6) and the persona reclassification are staged for B3, so the "below a known non-moral
   axis" sentence is held until measured. This amendment is additive calibration + statistics; it
   neither reopens nor re-litigates any G3 verdict.
+- **2026-07-01 (FORMAT-ROBUSTNESS scoping branch for the G3 orthogonality claim — pre-registered
+  via the D2 in-format ladder):** The Direction-2 decision experiments surfaced that `V_moral` and
+  the A1 ladder were built in **raw / mean-pooled** format, whereas the aligned-model decision
+  directions (refusal gate, judgment-decision) live at the **chat / decision-site** position — a
+  format/position mismatch (the content `label_contrast` also projects low, ~0.10 on OLMo, the
+  tell). No committed G3 verdict changes; each stands **as a raw-format representational statement**.
+  This adds a pre-registered **format-robustness branch**, tested by the D2 in-format ladder
+  (`../d2_decision_coupling/PREREGISTRATION.md` Amendment 1 §7: chat-format, factor-decomposed
+  `V_moral` + full in-format ladder): G3 orthogonality is **format-robust** iff the refusal gate sits
+  below the **in-format** moral-family band by `M`; otherwise the claim is **scoped to the raw
+  narrative register**, attenuation documented (a register-bound moral geometry is a pretraining-data
+  finding, not a retraction). Frozen spine (rule, conjunction, `M = 0.05`, two-step null) unchanged;
+  both branches publishable in advance.
