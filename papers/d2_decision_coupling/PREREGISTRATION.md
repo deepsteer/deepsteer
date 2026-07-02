@@ -82,6 +82,12 @@ back to the pooled contrast with the content-leak caveated explicitly.
     decisions, so the refusal nulls in Papers 5–7 / D1 are strong evidence.
   - **category-mismatch** (≤ null + M): decision directions generically don't project onto content
     subspaces; D1 claims are **reframed, not retracted**, and (ii) becomes the primary instrument.
+  - **Calibrated target (from the A1 moral-family band, R1).** The band now gives R2's
+    sensitivity-confirmed branch a concrete yardstick, not just "above null": a judgment-decision
+    direction that lands **inside the moral-family band** while refusal sits at ~0.14 (P_B) is the
+    program's thesis in a single figure (moral *decisions* project like moral content; the refusal
+    *decision* does not). Report the judgment-decision projection against the band alongside the
+    null, on the same ladder.
 - **(ii) `|cos|(refusal, judgment-decision)`** and mutual projection, judged against the
   distribution of `|cos|` between covariance-matched random direction **pairs**. **R3 rule:**
   decision-level coupling detected **iff** above pairwise-null q95 + M.

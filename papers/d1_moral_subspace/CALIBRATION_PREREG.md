@@ -224,4 +224,28 @@ never a silent edit.
 
 ### Amendments
 
-*(none yet)*
+- **2026-07-01 (A4 addendum — Δ = band-min − P2 paired-bootstrap test, pre-registered before it is
+  computed):** The A4 marginal-CI overlap (GPT-OSS band-min CI vs P2 CI) was a **conservative
+  screen, not the test**: it ignores that band-min and P2 are computed from the **same resampled
+  `V_moral`** every bootstrap iteration and are therefore **positively correlated**, so comparing
+  their marginal CIs overstates the uncertainty of their *difference*. The pre-registered test for
+  the GPT-OSS sub-band claim is the **paired bootstrap CI of `Δ = band-min − P2`**, from the
+  existing A4 draws (B = 2000, seed 0): per iteration `i`, `Δ_i = band_min_i − P2_i` (paired, so the
+  covariance is captured). Report the **95% percentile CI** (primary) and the **BCa CI**
+  (robustness: bias-correction `z0` + jackknife-over-pairs acceleration). Point estimate
+  `Δ̂ = full-sample band-min − full-sample P2`.
+
+  **Branches (both pre-committed, before Δ is computed):**
+  - **Δ CI excludes 0** (band-min > P2 at 95%) → **adopt the sub-band framing (Option 1)**: refusal
+    P2 projects below the moral-family band. Carry a one-sentence **band-min attenuation note**:
+    band-min is a min-of-three-noisy-held-one-out statistic, downward-biased by the min operation +
+    direction-resampling, so it **understates** the true band floor; the reported sub-band gap is a
+    **lower bound**, and the bias direction therefore **favors** the sub-band claim.
+  - **Δ CI includes 0** → **Option 2 wording** for GPT-OSS: *"at the persona reference,
+    CI-inconclusive vs the band pending B3's axis-pair-n re-extraction."*
+
+  The framing sentence **carries the claim on the ladder `null → P2 → band`**; **persona is shown
+  for reference only** (pending B3's genuinely-non-moral syntax / register controls, per the persona
+  reclassification, R5). This addendum adds a sharper test on the *existing* draws; it changes no
+  gate, no G3 verdict, and no R-rule. GPT-OSS wording locks for real after B3 tightens the axis-pair
+  n, regardless of which branch fires here.
