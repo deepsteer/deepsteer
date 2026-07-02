@@ -105,3 +105,5 @@ papers/1_accuracy_vs_fragility/outputs/phase_c4_comp_acts/
 papers/d1_moral_subspace/outputs/
 # Direction 2: per-model session outputs (regenerable; numbers of record go in RESULTS.md)
 papers/d2_decision_coupling/outputs/
+# Direction 3: reproducible manifests/outputs
+papers/d3_decision_anatomy/outputs/
