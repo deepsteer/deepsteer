@@ -80,11 +80,29 @@ not the pretraining precursor. (Think refusal vectors are not saved → logged f
 
 - **Bootstrap CIs (B = 2000).** The moral-family band is tight and stable where all three source
   pair-sets are committed (base band-min 95% CI [0.47, 0.53], band-max [0.59, 0.65]; think similar).
-  **GPT-OSS carries the one real caveat:** with small axis-pair n (fables 62, ethics 118), its
-  band-min CI is wide and low ([0.47, 0.64]) and **overlaps the P2 CI [0.44, 0.53]**. So "P2 below
-  the moral band" holds at the **point estimate** (0.52 < 0.65) but is **not separated at 95%
-  confidence for GPT-OSS**; on OLMo the separation is clean. Fix queued: re-extract the GPT-OSS
-  axis pairs with more items + per-pair saves in B3.
+- **Paired Δ = band-min − P test (pre-registered A4 addendum, 2026-07-01).** The marginal-CI
+  overlap was only a conservative screen; band-min and P share the same resampled `V_moral` each
+  iteration, so the sub-band claim is tested on the **paired** difference Δ (percentile primary,
+  BCa robustness):
+
+  | point | Δ̂ | percentile CI (primary) | excl 0? | BCa CI | excl 0? |
+  |---|---:|---|---|---|---|
+  | base P_A | 0.211 | [0.144, 0.220] | **yes** | [0.204, 0.244] | yes |
+  | gpt_oss P0 | 0.183 | [0.033, 0.252] | **yes** | — | — |
+  | gpt_oss P1 | 0.462 | [0.284, 0.467] | **yes** | — | — |
+  | gpt_oss P3 | 0.398 | [0.217, 0.391] | **yes** | — | — |
+  | gpt_oss P2_FULL | 0.262 | [0.090, 0.270] | **yes** | [0.253, 0.301] | yes |
+  | **gpt_oss P2 (window)** | 0.127 | **[−0.029, 0.162]** | **no** | [0.089, 0.212] | yes |
+
+  Refusal is sub-band at **every point on every model except the single GPT-OSS in-trace P2
+  window point**, where the **primary (percentile) Δ-CI includes 0**. The percentile-vs-BCa split
+  is exactly the pre-registered **band-min attenuation**: band-min is a min-of-three-noisy statistic,
+  downward-biased under resampling, so it understates the true band floor; percentile does not
+  correct that bias, BCa does (and BCa excludes 0). Per the committed prereg, **percentile is
+  primary → the pre-registered verdict for the GPT-OSS P2 window point is Option 2**
+  ("at the persona reference, CI-inconclusive vs the band pending B3's axis-pair-n re-extraction").
+  The bias direction favors the sub-band claim, and both the bias-corrected BCa and the P2_FULL
+  robustness point exclude 0, so the claim survives correction; it **locks at B3** regardless.
 - **Combined P2 (R7, EXPLORATORY / post-hoc).** Per-model null-exceedance p of the in-trace P2:
   Think p = 0.015, GPT-OSS p = 0.0005 → Fisher χ²(4) = 23.5, **combined p ≈ 1.0e-4**. The in-trace
   peak's excess over the **random** null is a real, above-chance effect when pooled across the two
@@ -118,27 +136,31 @@ built during alignment, not selected from pretraining).
 
 ---
 
-## GATE A — framing decision (for human review)
+## GATE A — resolved (Orion, 2026-07-01)
 
-The calibration is clean and it favors the orthogonality headline. Recommended framing:
+Adopt Option 1 (calibrated sub-band framing) with the pre-registered Δ test deciding the single
+GPT-OSS P2 point:
 
-1. **GPT-OSS P2 = 0.52 against the band.** Characterize it as: *"above the random null and near the
-   non-moral persona reference, but below both persona and the moral-family band — in-trace refusal
-   deliberation is voice-adjacent, not moral-content-adjacent."* State the honest CI caveat: the
-   point estimate is below the band on every model; on GPT-OSS the small axis-pair n leaves the
-   band-min CI overlapping P2's CI, so the sub-band claim is point-estimate-clean and
-   CI-clean on OLMo but CI-overlapping on GPT-OSS (re-extraction queued for B3).
-2. **Combined P2.** Report the Fisher combined p ≈ 1e-4 as an EXPLORATORY confirmation that the
-   in-trace gradient is a real above-chance effect, while keeping the per-model NULL verdict (the
-   orthogonality claim rests on persona/band, not on refusal being at chance). This makes the
-   reasoning-extension narrative *stronger and more precise*, not weaker: the peak is real, and it
-   is still sub-moral-adjacent.
-3. **Two new mechanism findings** (A3 spare-channel, A5 no-crystallization) are ready to fold into
-   the Discussion as convergent support for "refusal is a narrow post-training add-on."
+1. **The claim rides on the ladder `null → P2 → band`; persona is reference-only** (pending B3's
+   genuinely-non-moral syntax / register controls, per the R5 persona reclassification). On the
+   OLMo family and at every GPT-OSS position except the P2 window, refusal is **sub-band with the
+   paired Δ-CI excluding 0**: in-trace refusal deliberation is voice-adjacent, not
+   moral-content-adjacent. For the **GPT-OSS P2 window point**, the primary (percentile) Δ-CI
+   includes 0 → **Option 2 wording** ("at the persona reference, CI-inconclusive vs the band pending
+   B3's axis-pair-n"), noting the min-statistic attenuation and that BCa + P2_FULL exclude 0. Locks
+   at B3 regardless of branch.
+2. **Combined P2** — Fisher p ≈ 1e-4 as EXPLORATORY confirmation the in-trace peak is a real
+   above-random effect (two independently-trained labs → independence holds for Fisher), while the
+   per-model NULL verdict stands (it rests on persona/band, not on refusal being at chance).
+3. **MFT↔V_moral (0.56 / 0.62, inside the band)** retro-validates Paper 5's instrument choice:
+   refusal's null was **not** an artifact of projecting against an outlier / degenerate subspace,
+   because the 6-foundation MFT span projects onto `V_moral` at genuinely-moral magnitude.
+4. **A3 spare-channel + A5 no-crystallization** fold into the Discussion as the
+   **fresh-low-variance-gate synthesis**: refusal is a freshly-built, low-variance post-training
+   gate, not a moral-content-derived direction.
 
-**Open question for the gate:** whether to publish the D1 write-up now with this calibration folded
-in (recommended), and whether to prioritize B3's GPT-OSS axis re-extraction (to close the one CI
-caveat) as part of the first Phase-B session. Nothing here reopens a G3 verdict.
+**Next step (green-lit):** Phase B session 1 (B1 + B3 + B5) proceeds once this addendum lands;
+B3's GPT-OSS axis re-extraction closes the one Δ caveat. Nothing here reopens a G3 verdict.
 
 ## Queued for B3 (`MISSING_ARTIFACTS.md`)
 

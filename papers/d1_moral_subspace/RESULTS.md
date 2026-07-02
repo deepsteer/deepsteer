@@ -31,11 +31,15 @@ every rank, for both points (never clearing `q95 + 0.05`).
 - **Refusal projects at or below the rank-matched null** onto `V_moral` (base ≈ null; instruct
   below null). This is a magnitude-like projection fraction: "at or below the null" means
   *less than chance alignment*, **not** signed opposition — no "anti-alignment" is claimed.
-- **Both points project below the persona reference (0.51).** Persona is a valid *non-moral*
-  baseline: prior work finds the persona/assistant axis orthogonal to moral directions
-  (|cos| ≈ 0.076–0.085). So refusal aligns with `V_moral` *less than a known non-moral
-  direction does* — the strong form of the orthogonality claim, grounded in that reference,
-  not merely asserted.
+- **Both points project below the moral-family band** (the A1 held-one-out positive control;
+  `CALIBRATION_RESULTS.md`). A genuinely-moral direction held out of `V_moral` projects back onto it
+  at **0.54–0.66** (base band), so the band is the calibrated yardstick for "moral-adjacent." The
+  claim rides on the ladder **null → refusal → band**: refusal sits at or below the null and well
+  below the band, i.e. *less* moral-adjacent than a held-out moral direction. The persona axis
+  (0.51) is shown **for reference only**: calibration finds persona sits just below the band
+  (a moral-adjacent voice reference, not a clean non-moral control), so the strong-form "below a
+  known non-moral axis" statement is deferred to the genuinely-non-moral syntax / register controls
+  in Direction 2 (R5).
 - **Point B (instruct gate) ≈ Paper 5's 0.1044.** The actual instruct-time refusal gate
   projects 0.14 onto the rank-3 instruct `V_moral` — the same ~0.10–0.14 regime Paper 5
   measured against the thin rank-4 MFT subspace.
@@ -50,6 +54,13 @@ span** (null q95 0.252) — **both NULL, both below chance**. Paper 5's 0.1044 w
 never null-judged; the 0.155 here reproduces its magnitude *and* shows it sits below the
 rank-matched null. Refusal is orthogonal to *both* the thin and the rich subspace, fairly judged.
 The objection is closed airtight. Per the pre-registered D2 rule, `V_moral` and MFT coexist.
+
+Calibration (A1) adds the converse check: the 6-foundation MFT span and the rank-3 `V_moral`
+project onto each other at **0.56 / 0.62** (base / instruct), inside the moral-family band and well
+above persona. So the two subspaces measure related-but-distinct moral content, neither nesting in
+the other. This **retro-validates Paper 5's instrument choice**: refusal's low projection onto MFT
+was not an artifact of projecting against an outlier or degenerate subspace, because MFT itself
+projects onto an independently-built moral subspace at genuinely-moral magnitude.
 
 **On "richer" — not "higher-dimensional."** The rich subspace is *lower*-dimensional than MFT on
 both measures: **3 source directions vs MFT's 6 foundation directions** (the null-matching
@@ -108,17 +119,26 @@ window artifact.
    differently-trained model the in-trace alignment is **stronger** — enough to exceed chance. The
    gradient doesn't merely replicate; it strengthens.
 
-2. **Persona-control-binding in GPT-OSS.** The pre-registered verdict is **NULL in both** — but for
-   GPT-OSS the two controls **disagree**: P2 crosses the null yet stays below the persona
-   (non-moral) control (0.60). So the NULL rests entirely on the persona control. This is the
-   conjunction rule doing its designed job: **"below a non-moral semantic axis" is a stronger
-   orthogonality statement than "below random."** Its validity was **confirmed, not assumed**:
-   GPT-OSS's `V_moral` still **cleanly separates moral/neutral (acc 0.67, above OLMo's 0.64;
-   `gpt_oss/subspace_purity.json`)** and its three source axes stay distinct (cos 0.46–0.66, below
-   the 0.85 collinearity floor), so the subspace *is* isolating moral content. The high persona
-   value reflects **general entanglement** in GPT-OSS's space (moral↔persona cos 0.30 vs OLMo's
-   0.24) that inflates *all* projections — so refusal-below-persona is genuine orthogonality
-   evidence, not a shared-contamination artifact.
+2. **The calibrated band recontextualizes P2 (persona is now reference-only).** The A1 held-one-out
+   positive control gives a **moral-family band** per model (GPT-OSS [0.65, 0.76];
+   `CALIBRATION_RESULTS.md`), and the orthogonality claim rides on the ladder **null → P2 → band**.
+   GPT-OSS P2 = 0.52 crosses its null yet sits **below the band**: in-trace deliberation is
+   voice-adjacent, not moral-content-adjacent. The pre-registered paired test Δ = band-min − P2
+   confirms sub-band at every position on both models **except the single GPT-OSS P2 window point**,
+   where the primary (percentile) Δ-CI includes 0 (Δ̂ = 0.13). That split is the pre-registered
+   **band-min attenuation** — band-min is a min-of-three statistic, downward-biased under resampling,
+   a bias whose direction *favors* the sub-band claim — and the bias-corrected BCa Δ-CI plus the
+   `P2_FULL` robustness point both exclude 0; the one window point **locks at B3** once GPT-OSS's
+   small-n axis pairs are re-extracted. Persona (0.60) is shown **for reference only**: calibration
+   reclassifies it as a **moral-adjacent voice** axis (it sits just below the band), so the
+   genuinely-non-moral controls (syntax / register) that would carry the strong-form statement are
+   deferred to Direction 2 (R5). The subspace is genuinely moral either way: GPT-OSS's `V_moral`
+   cleanly separates moral/neutral (acc 0.67) with distinct source axes (cos 0.46–0.66), and the
+   elevated persona there reflects general entanglement in GPT-OSS's space (moral↔persona cos 0.30
+   vs OLMo's 0.24). Combined across both independently-trained reasoning models (so Fisher
+   independence holds), the in-trace P2 exceeds the **random** null at **p ≈ 1e-4** (EXPLORATORY):
+   the peak is a real above-chance effect, and still sub-moral-adjacent — real, not noise, and not
+   moral-content coupling.
 
 **P3 is measurable for GPT-OSS** (0.25, NULL) but **unmeasured for OLMo-3-Think**: OLMo's benign
 reasoning exceeds the generation budget without reaching a post-answer state (a reasoning-verbosity
@@ -132,8 +152,25 @@ didn't measure** — not a contrast MFT lacked.
 **Terminal disposition.** Refusal is orthogonal to the moral representation **across the reasoning
 chain**, with a characterized gradient peaking in-trace that **replicates across two
 differently-trained reasoning models** and is strong enough in one to cross the rank-matched null
-while remaining below a non-moral control. This closes Direction 1's model axis; a training/
+while remaining below the moral-family band. This closes Direction 1's model axis; a training/
 pretraining intervention is the next program (Direction 2), not the next section.
+
+## Mechanism: refusal is a fresh, low-variance gate
+
+Two calibration findings (A3, A5; `CALIBRATION_RESULTS.md`) converge on *why* refusal reads
+orthogonal to the moral subspace. **A3 (spare-channel):** the wired refusal gate lives in a
+low-variance channel — the instruct gate and all four GPT-OSS positions project onto activation
+directions at or below the 10th percentile of variance among covariance-matched randoms, while the
+`V_moral` axes and persona occupy ordinary-to-high-variance channels. **A5 (no crystallization):**
+the base proto-refusal is nearly orthogonal to the wired instruct gate (`cos = 0.155`), so refusal
+does *not* crystallize from a pretraining precursor the way the moral subspace does
+(`cos(base, fresh) → 0.999` in Paper 5). The base proto-refusal is also *not* low-variance
+(percentile 37), so the narrow channel is a property of the **post-training-wired** gate, not the
+precursor. Together: refusal is a **freshly-built, low-variance add-on gate**, not a
+moral-content-derived direction. This mechanistically explains both its easy ablation (Heretic) and
+its at-or-below-null projection onto `V_moral`, and it is the constructive form of the orthogonality
+result — the refusal direction is the kind of object (narrow, late, non-crystallized) that *would*
+read orthogonal to a distributed moral representation.
 
 ## Why this isn't a subspace reverse-engineered to the answer
 

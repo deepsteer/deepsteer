@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from statistics import NormalDist
 
 import numpy as np
 
@@ -52,12 +53,58 @@ REFUSAL_VECS = {
                 "P3": "gpt_oss/refusal_think_P3.npz"},
 }
 SRC = ["moral_stories", "fables", "ethics"]
+# Points that get the full BCa treatment (jackknife-over-pairs); percentile is computed for all.
+BCA_POINTS = {"gpt_oss": ["P2", "P2_FULL"], "base": ["P_A_proto"]}
 
 
 def _ci(vals: list[float]) -> list[float]:
     a = np.asarray(vals)
     return [round(float(np.percentile(a, 2.5)), 4), round(float(np.percentile(a, 50)), 4),
             round(float(np.percentile(a, 97.5)), 4)]
+
+
+def _band_min_and_frac(dirs: dict[str, np.ndarray], v: np.ndarray) -> tuple[float, float]:
+    """(held-one-out band-min, projection fraction of v onto the rank-3 span) for given dirs."""
+    hv = {s: _frac(_ortho([dirs[o] for o in SRC if o != s]), dirs[s]) for s in SRC}
+    return min(hv.values()), _frac(_ortho([dirs[s] for s in SRC]), v)
+
+
+def _jackknife_delta(diffs: dict[str, np.ndarray], v: np.ndarray) -> np.ndarray:
+    """Leave-one-pair-out jackknife of Δ = band-min − proj(v). Only the left-out source's
+    direction changes per replicate; the other two stay at their full-sample mean-diff."""
+    full = {s: _unit(diffs[s].mean(0)) for s in SRC}
+    jack = []
+    for s in SRC:
+        D = diffs[s]
+        tot = D.sum(0)
+        n_s = D.shape[0]
+        for j in range(n_s):
+            dd = dict(full)
+            dd[s] = _unit((tot - D[j]) / (n_s - 1))
+            bmin, p = _band_min_and_frac(dd, v)
+            jack.append(bmin - p)
+    return np.asarray(jack)
+
+
+def _bca_ci(draws: np.ndarray, theta_hat: float, jack: np.ndarray,
+            alpha: float = 0.05) -> list[float]:
+    """Bias-corrected-and-accelerated 95% CI. z0 from bootstrap bias, a from jackknife skew."""
+    nd = NormalDist()
+    draws = np.asarray(draws)
+    frac = min(max((draws < theta_hat).mean(), 1e-6), 1 - 1e-6)
+    z0 = nd.inv_cdf(frac)
+    jbar = jack.mean()
+    num = ((jbar - jack) ** 3).sum()
+    den = 6.0 * (((jbar - jack) ** 2).sum() ** 1.5)
+    a = float(num / den) if den != 0 else 0.0
+
+    def adj(p: float) -> float:
+        z = nd.inv_cdf(p)
+        return nd.cdf(z0 + (z0 + z) / (1 - a * (z0 + z)))
+
+    lo = float(np.percentile(draws, 100 * adj(alpha / 2)))
+    hi = float(np.percentile(draws, 100 * adj(1 - alpha / 2)))
+    return [round(lo, 4), round(hi, 4)]
 
 
 def _load_diffs(tag: str, layer: int) -> dict[str, np.ndarray] | None:
@@ -80,6 +127,7 @@ def bootstrap_tag(tag: str, layer: int, rng) -> dict:
     heldout_bs = {s: [] for s in SRC}
     band_min_bs, band_max_bs = [], []
     refusal_bs = {n: [] for n in refusals}
+    delta_bs = {n: [] for n in refusals}  # paired Δ_i = band_min_i − P_i (same resampled V_moral)
     for _ in range(B):
         d = {}
         for s in SRC:
@@ -90,9 +138,33 @@ def bootstrap_tag(tag: str, layer: int, rng) -> dict:
         for s in SRC:
             hv[s] = _frac(_ortho([d[o] for o in SRC if o != s]), d[s])
             heldout_bs[s].append(hv[s])
-        band_min_bs.append(min(hv.values())); band_max_bs.append(max(hv.values()))
+        bmin = min(hv.values())
+        band_min_bs.append(bmin); band_max_bs.append(max(hv.values()))
         for n, rv in refusals.items():
-            refusal_bs[n].append(_frac(Q, rv))
+            p = _frac(Q, rv)
+            refusal_bs[n].append(p)
+            delta_bs[n].append(bmin - p)
+
+    # Paired Δ = band-min − P test (pre-registered A4 addendum, 2026-07-01).
+    delta = None
+    if refusals:
+        full = {s: _unit(diffs[s].mean(0)) for s in SRC}
+        delta = {}
+        for n, rv in refusals.items():
+            bmin_full, p_full = _band_min_and_frac(full, rv)
+            dhat = bmin_full - p_full
+            draws = np.asarray(delta_bs[n])
+            plo, pmed, phi = (float(np.percentile(draws, q)) for q in (2.5, 50, 97.5))
+            entry = {"delta_hat": round(dhat, 4),
+                     "percentile_ci": [round(plo, 4), round(phi, 4)],
+                     "percentile_median": round(pmed, 4),
+                     "percentile_excludes_0": bool(plo > 0)}
+            if n in BCA_POINTS.get(tag, []):
+                bca = _bca_ci(draws, dhat, _jackknife_delta(diffs, rv))
+                entry["bca_ci"] = bca
+                entry["bca_excludes_0"] = bool(bca[0] > 0)
+            delta[n] = entry
+
     return {
         "n_pairs": ns,
         "band_bootstrap": {
@@ -101,6 +173,7 @@ def bootstrap_tag(tag: str, layer: int, rng) -> dict:
         },
         "refusal_p_bootstrap": ({n: {"ci": _ci(refusal_bs[n])} for n in refusals}
                                 if refusals else None),
+        "delta_band_min_minus_p": delta,
     }
 
 
@@ -165,6 +238,11 @@ def main() -> None:
             if bs["refusal_p_bootstrap"]:
                 for n, v in bs["refusal_p_bootstrap"].items():
                     print(f"   refusal {n} p CI {v['ci']}")
+            if bs.get("delta_band_min_minus_p"):
+                for n, dv in bs["delta_band_min_minus_p"].items():
+                    bca = f" | BCa {dv['bca_ci']} excl0={dv['bca_excludes_0']}" if "bca_ci" in dv else ""
+                    print(f"   Δ(band_min−{n}) hat={dv['delta_hat']} pct-CI {dv['percentile_ci']} "
+                          f"excl0={dv['percentile_excludes_0']}{bca}")
         else:
             print(f"   band bootstrap SKIPPED: {bs['reason']}")
         if sc:
