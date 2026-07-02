@@ -95,6 +95,21 @@ the verdict.
    concentration, generator change) in the amendment before using the new null. Silent null
    drift is how transforms manufacture verdicts.
 
+12. **"One clears the MDE, the other doesn't" is the overlap fallacy in threshold clothing.**
+   Whether an effect clears its minimum detectable effect is a *power-dependent* binary: the
+   MDE shrinks as n grows, so the same effect flips from "doesn't move" to "moves" with no
+   change in the effect itself. Comparing two effects (or one effect at two sample sizes) by
+   which side of the MDE each lands on is trap 1 wearing a threshold — it is not a difference
+   test. Normalize instead: a within-outcome **ratio** (fraction of the full-patch effect that
+   survives a restriction) with a bootstrap CI on the *ratio difference*. *Program instance:*
+   the C1 subspace-restricted refusal effect (~−0.03) sat below the MDE at n = 11 ("reads
+   non-V_moral features") and above it at n = 23 ("V_moral is the read substrate") — the
+   verdict flipped purely because the MDE tightened past a roughly constant effect. The
+   ratio-of-ratios (R_judgment − R_refusal, CI-gated) bypassed the crossing and returned the
+   honest `under_transfer`. Whether V_moral is a substrate *at all* is a separate, legitimate
+   claim — settled by a paired Δ vs a random-rank-k control (CI excluded 0), not by the MDE
+   crossing.
+
 ## Ship-blockers
 
 - [ ] Bias-direction table attached to the verdict
@@ -107,9 +122,13 @@ the verdict.
 - [ ] Top-dim variance share checked before any covariance null; σ provenance
       format/position-matched; robustification pre-registered before recompute
 - [ ] Verdicts in measured channels carry the channel-chance level
+- [ ] No presence/absence verdict rests on which side of the MDE an effect lands; two-effect
+      comparisons use a normalized ratio + Δ-CI, not MDE-crossing
 
 Pairs with: `instrument-calibration` (the ladder these CIs live on), `program-thesis`
 (how exploratory results are worded).
 
 *Changelog — v2 (2026-07-02): added traps 9–11 from the standardization arc (compound
-Qwen saturation; channel-chance closure of the Qwen R3 anomaly; OLMo null drift).*
+Qwen saturation; channel-chance closure of the Qwen R3 anomaly; OLMo null drift). v2.1
+(2026-07-02): trap 12 (MDE-crossing overlap fallacy) from the C1 hardening run — the
+ratio-of-ratios reclassification of the refusal-substrate verdict.*

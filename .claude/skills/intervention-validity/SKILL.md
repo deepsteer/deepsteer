@@ -45,13 +45,20 @@ branches:                both result framings, written before data, both publish
 
 ## The rules
 
-1. **Stimulus–outcome matching.** A causal cell is informative only if the stimulus class
-   engages the outcome at baseline. Run the behavioral-discrimination screen first; a
-   stimulus that never moves the outcome yields structural flats that read as nulls.
-   *Case:* third-person narrative moral-status twins — nothing *refuses* a story; they can
-   move a judgment readout, and refusal-patching required surface-matched **request** twins
-   built as a separate asset. The mismatch was caught at design review; the skill exists so
-   it is caught at spec-block time.
+1. **Stimulus–outcome matching, and the screen must bracket the operating point.** A causal
+   cell is informative only if the stimulus class engages the outcome at baseline. Run the
+   behavioral-discrimination screen first; a stimulus that never moves the outcome yields
+   structural flats that read as nulls. But engagement is two-sided: **too-safe stimuli floor
+   the outcome exactly as too-alarming ones ceiling it**, and a "keep pairs whose baseline
+   differs" screen can still land entirely in a floor. Design a **severity ladder** (graded
+   stimuli whose scenario escalates while each pair stays surface-matched) and let the screen
+   select the *operating band* — the levels where the harmful member fires and the benign one
+   does not — then report the dose–response curve as a deliverable. *Case:* third-person
+   narrative moral-status twins — nothing *refuses* a story; refusal-patching required
+   surface-matched **request** twins as a separate asset. *Case:* those request twins, in an
+   XSTest-safe register, were so benign that only 2/8 violating members refused and 0 benign
+   members did — a floor that made the generate-under-patch flip test and the anti-refusal
+   discriminator inconclusive; the fix was a severity ladder with an operating-band screen.
 
 2. **Transport positive control (restricted interventions).** "Subspace-restricted patch
    didn't move Y" has a standing alternative: the restriction under-transfers *any* signal
@@ -105,4 +112,6 @@ Pairs with: `construct-audit` (typing of stimuli and sites; outcome_variable fie
 
 *Changelog — v1 (2026-07-02): created from the C1 design review; founding cases are the
 twin-patch stimulus–outcome mismatch and the degenerate negative branch of the
-subspace-restricted patch.*
+subspace-restricted patch. v1.1 (2026-07-02): rule 1 gains the operating-point/severity-ladder
+lesson from the C1 hardening run (XSTest-safe register floored the behavioral cells; too-safe
+floors as hard as too-alarming ceilings).*
