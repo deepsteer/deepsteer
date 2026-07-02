@@ -211,3 +211,77 @@ forward pass, no decomposition) and is **unchanged** — the first-run headline
 (`reads_non_vmoral_features`, transport control passed) stands. Spine preserved: `M = 0.05`, the
 two-step null, per-unit saves, position-validity, the pilot gate, all decisive-cell branch definitions
 unchanged.
+
+---
+
+### Amendment 3 (2026-07-02) — ratio-of-ratios verdict test, OLMo hardening cells, and the A1-robust comparative statistic
+
+Committed **before** the gated quantity is computed. The first OLMo run passed the absolute transport
+control (V_moral-restricted patch moves judgment above MDE) and returned `reads_non_vmoral_features`.
+That control is necessary but **not sufficient**: a rank-3 restriction that under-transfers *every*
+outcome uniformly could still clear the absolute judgment threshold while the "reads non-V_moral"
+reading is wrong. Amendment 3 replaces the sufficiency test with a **within-outcome transfer-fraction
+comparison** and pre-registers the OLMo-hardening cells + the panel's comparative statistic.
+
+**(0) The ratio-of-ratios verdict test [the gated quantity].** Define the fraction of each full-patch
+effect that survives V_moral restriction:
+- `R_refusal  = mean(restricted→refusal) / mean(full→refusal)` on request-twins (both deltas paired
+  per request-twin).
+- `R_judgment = mean(restricted→judgment) / mean(full→judgment)` on compositional twins (both deltas
+  paired per twin). **`full→judgment` is RIDER 0 — absent from the first run's saved arrays
+  (`c1_inputs_olmo3.npz` has full→refusal, restricted→refusal, restricted→judgment only); it must be
+  logged in the OLMo-hardening pod (interchange, `restrict_Q=None`, read `jdir`, on compositional
+  twins).** Until rider 0 lands, `R_judgment` is undefined and the test is not evaluated.
+
+  **Decision rule (frozen).** `reads_non_vmoral_features` **STANDS** iff `R_judgment − R_refusal ≥
+  M_ratio` (M_ratio = **0.15**) **and** the bootstrap 95% CI of `(R_judgment − R_refusal)` excludes 0
+  (2000 iters; resample request-twins for `R_refusal`, compositional twins for `R_judgment`,
+  independently; ratios formed on the resampled means). Reading: V_moral restriction preserves a
+  substantially larger share of the judgment effect than of the refusal effect → V_moral is a good
+  substrate for judgment but not for refusal → refusal reads elsewhere.
+  - CI excludes 0 but point `< M_ratio` → **"directionally confirmed, small margin"** (report, do not
+    over-claim).
+  - CI **includes 0** (ratios ≈ equal) → **RECLASSIFY `under_transfer`**: the restriction
+    under-transfers both outcomes comparably, so "reads non-V_moral" is not distinguished from
+    "rank-3 too weak." Cell-b is then **redesigned with a rank sweep** `k ∈ {1, 3, 8, 16}` (restrict
+    to the top-k of an over-complete moral basis) to map transfer-fraction vs rank **before any panel
+    extension**. No panel run proceeds under an unresolved `under_transfer`.
+
+**(1) OLMo-hardening cells (framings frozen).** Same loaded-model session as rider 0:
+- **complement patch** — patch all-*but*-V_moral (`I − QQ^T`). Expected: **moves refusal** (the
+  non-V_moral features carry it); a direct positive confirmation of `reads_non_vmoral_features`.
+- **harm-restricted patch** — restrict to the rank-1 t_inst harm direction (Zhao et al. 2025). If
+  refusal reads the harm feature specifically, this **moves refusal** where V_moral-restricted does
+  not → localizes "non-V_moral" toward harm.
+- **random-rank-3 restricted control** — restrict to a random rank-3 subspace (matched norm).
+  Expected: **does not move refusal** (nor judgment); shows the V_moral restriction is not "any rank-3
+  under-transfers." Ships with an MDE.
+- **generate-under-patch** — on ≥ 8 twins, upgrade from projection readouts to **behavioral refusal
+  flips** (does the completion flip refuse↔comply under the patch); closes the "readouts not
+  behavior" limitation.
+- **per-layer attention capture** — characterize the read for the earlier-layer top writers (the
+  first run's Stage 2 only covered the L_ref writers); closes the Stage-2 coverage limitation.
+- **L15 H15 discriminator** — the anti-refusal writer (spec −0.142): single-head mean/resample
+  ablation should **increase** XSTest-safe over-refusal if it is an anti-over-refusal head.
+
+**(2) Stimuli + bookkeeping (zero-GPU, before the pod).** Expand request-twins 24 → **~60** (target
+**n ≥ 25 surviving** the baseline-refusal screen); add transport twins for **≥ 2× MDE headroom** on
+the judgment control. Benign members drawn **away from alarming-surface phrasing** (XSTest-safe
+register) so benign-twin over-refusal is a reported datapoint, not a screen artifact. Resolve the
+**114-screened-vs-20-used** transport bookkeeping (the first run screened 114/200 compositional twins
+but the cell capped the transport sample at 20): the transport sample size is reported = used, and the
+cap is raised to meet the headroom target.
+
+**(3) A1-robust comparative statistic [panel].** The cross-model comparison uses the **ratio-of-ratios
+`R_refusal` (and `R_judgment − R_refusal`), NOT raw cell-b deltas** — a within-model ratio is immune
+to per-model overall transfer-fraction and to the A1 massive-activation scale differences. The
+pre-registered comparative prediction "**Llama reads content more**" = **higher `R_refusal`** (V_moral
+restriction preserves more of Llama's refusal effect than OLMo's). Llama Stage-1/2 extraction is run
+in **per-dim-standardized space** (dim-788-robust σ from format/position-matched sink-free
+decision-token samples; ANOMALIES A1), gated on the **OLMo raw→standardized invariance** check passing
+first (rider: save per-head arrays in the OLMo pod). Llama is pre-norm so **no LN-fold**, but the
+reconstruction band is verified anyway.
+
+Spine preserved: `M = 0.05` for cosine/fraction rungs, the two-step null, per-unit saves,
+position-validity, the pilot gate. Amendment 3 adds the ratio-of-ratios verdict gate, the hardening
+cells, and the comparative statistic; it does not relax any prior gate.
