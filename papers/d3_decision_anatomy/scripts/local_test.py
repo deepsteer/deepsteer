@@ -14,7 +14,10 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parents[2]))
 sys.path.insert(0, str(HERE.parents[1] / "d2_decision_coupling" / "scripts"))
 
+import numpy as np  # noqa: E402
+
 import patch_stimuli as ps  # noqa: E402
+import stage1_attribution as s1  # noqa: E402
 from deepsteer.datasets import get_request_twins  # noqa: E402
 
 FAILS = []
@@ -89,11 +92,57 @@ def test_screen_logic():
           not ps._refusal_differs(rm_flat, "help ... supported", "help ... worse"))
 
 
+def test_stage1_math():
+    print("Stage-1 attribution math (synthetic linear decomposition):")
+    rng = np.random.default_rng(0)
+    d = 64
+    r = s1._unit(rng.standard_normal(d))
+    # a ~10-dim channel subspace, then activations living in it
+    B, _ = np.linalg.qr(rng.standard_normal((d, 10)))
+    X = (rng.standard_normal((50, 10)) @ B.T) * 3.0
+    Qc = s1.channel_control_basis(X, r)
+    check("channel basis orthonormal", np.allclose(Qc.T @ Qc, np.eye(Qc.shape[1]), atol=1e-6))
+    check("refusal dir projected out of channel basis (|Qc^T r|~0)",
+          float(np.linalg.norm(Qc.T @ r)) < 1e-6, f"{float(np.linalg.norm(Qc.T @ r)):.2e}")
+
+    # per-head contributions: 2 heads aligned with r_hat (strong writers), 6 broadly-in-channel,
+    # plus embed + mlp; residual is their exact linear sum.
+    contribs = {}
+    contribs[(0, 0)] = 2.0 * r
+    contribs[(0, 1)] = 1.5 * r
+    for h in range(6):
+        contribs[(1, h)] = 0.8 * B[:, h]                      # channel writers (not r_hat)
+    mlp = {5: 0.3 * B[:, 0]}
+    embed = 0.1 * rng.standard_normal(d)
+    resid = sum(contribs.values()) + sum(mlp.values()) + embed
+    target = float(resid @ r)
+    writes = [float(c @ r) for c in contribs.values()] + [float(m @ r) for m in mlp.values()] + [float(embed @ r)]
+    check("reconstruction ~ 1.0 (residual is linear)",
+          abs(s1.reconstruction_ratio(writes, target) - 1.0) < 1e-9,
+          f"{s1.reconstruction_ratio(writes, target):.6f}")
+
+    spec = s1.head_specificity(contribs, r, Qc)
+    check("r_hat-aligned head has top specificity",
+          spec[(0, 0)]["specificity"] > spec[(1, 0)]["specificity"]
+          and spec[(0, 0)]["specificity"] > spec[(1, 3)]["specificity"])
+    check("channel-writer specificity is small (penalized by channel_mean)",
+          abs(spec[(1, 0)]["specificity"]) < spec[(0, 0)]["specificity"])
+    ks = s1.kselect(spec)
+    check("k-selection returns the two strong writers first + caps",
+          ks["ranked_heads"][0] == (0, 0) and ks["ranked_heads"][1] == (0, 1) and ks["k"] <= s1.K_CAP)
+
+    mf = s1.mlp_fraction([2.0, 1.5], [0.1])
+    check("mlp_fraction low -> no jacobian branch", not mf["jacobian_branch"])
+    mf2 = s1.mlp_fraction([0.2], [1.0, 1.0])
+    check("mlp_fraction > 0.5 -> jacobian branch", mf2["jacobian_branch"])
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
     test_manifest()
     test_screen_logic()
+    test_stage1_math()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)
