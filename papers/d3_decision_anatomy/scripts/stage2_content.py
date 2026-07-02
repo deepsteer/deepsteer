@@ -90,12 +90,27 @@ def stage2_pass(model, prompt: str, top_heads: list, l_ref: int, spans_fn) -> di
     def pre(module, inp):
         resid_in["x"] = inp[0][0].detach().float().cpu().numpy()  # (seq, hidden) input to L_ref
     h = model._get_layer_module(l_ref).register_forward_pre_hook(pre)
+    # SDPA/flash don't materialize attention weights -> force eager for this pass (restore after).
+    cfg = model.model.config
+    prev = getattr(cfg, "_attn_implementation", None)
     try:
+        try:
+            model.model.set_attn_implementation("eager")
+        except Exception:
+            cfg._attn_implementation = "eager"
         with torch.no_grad():
             out = model.model(**tok(text, return_tensors="pt").to(model._device),
                               output_attentions=True)
     finally:
         h.remove()
+        try:
+            model.model.set_attn_implementation(prev or "sdpa")
+        except Exception:
+            cfg._attn_implementation = prev
+    if not out.attentions or len(out.attentions) <= l_ref or out.attentions[l_ref] is None:
+        raise RuntimeError(f"attention weights not materialized at layer {l_ref} "
+                           f"(got {type(out.attentions).__name__}, len "
+                           f"{len(out.attentions) if out.attentions else 0}); eager attention failed")
     attn = out.attentions[l_ref][0].float().cpu().numpy()  # (n_heads, seq, seq)
     spans = spans_fn(model, text)
     X = resid_in["x"]                                       # (seq, hidden)
