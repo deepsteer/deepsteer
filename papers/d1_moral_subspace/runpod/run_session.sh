@@ -77,8 +77,11 @@ rp_sync_up
 if [ -n "${SYNC_EXTRA:-}" ]; then
   for p in $SYNC_EXTRA; do
     echo ">> extra-sync: $p"
-    rsync -az -R --exclude-from="$RSYNC_EXCLUDE" -e "ssh ${SSH_OPTS[*]}" \
-      "$REPO_ROOT/./$p" "root@$SSH_HOST:$REMOTE_DIR/"
+    # cd into the repo root and use a RELATIVE source so rsync -R recreates exactly "$p" under
+    # $REMOTE_DIR. macOS rsync ignores GNU's "/./" relative-root marker (it copied the full
+    # absolute path instead), so anchor via cwd rather than the dot marker.
+    ( cd "$REPO_ROOT" && rsync -az -R --exclude-from="$RSYNC_EXCLUDE" -e "ssh ${SSH_OPTS[*]}" \
+        "$p" "root@$SSH_HOST:$REMOTE_DIR/" )
   done
 fi
 
