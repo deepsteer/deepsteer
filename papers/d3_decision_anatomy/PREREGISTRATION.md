@@ -285,3 +285,62 @@ reconstruction band is verified anyway.
 Spine preserved: `M = 0.05` for cosine/fraction rungs, the two-step null, per-unit saves,
 position-validity, the pilot gate. Amendment 3 adds the ratio-of-ratios verdict gate, the hardening
 cells, and the comparative statistic; it does not relax any prior gate.
+
+---
+
+### Amendment 4 (2026-07-02) — rank sweep, harm identification, and behavioral severity ladder (resolves `under_transfer`)
+
+Committed **before** the Δ-substrate CI is computed and before the sweep is built. The powered
+hardening run returned **`under_transfer`** (`R_refusal = 0.338`, `R_judgment = 0.517`, diff 0.179 but
+CI [−0.238, 0.388] includes 0). The powered cells also showed V_moral is a **specific minority**
+substrate (restricted −0.028, random rank-3 −0.0005), that the **harm rank-1 direction (−0.026) ≈
+V_moral rank-3**, and a **behavioral floor** (2/8 baseline violating refusals, 0 benign). Amendment 4
+pre-registers the resolution: a rank sweep, harm identification, and a severity-ladder behavioral fix.
+One OLMo pod session.
+
+**(0) Substrate-language gate [zero-GPU, gated].** "V_moral is a specific refusal **substrate**"
+language is licensed **only if** the paired bootstrap 95% CI of `Δ = |V_moral-restricted→refusal| −
+|random-rank-3→refusal|` (paired per request-twin, from the saved `cell_restricted_deltas` vs
+`cell_random_deltas`) **excludes 0**. Also report `p(d_harm | V_moral) = frac(V_moral, d_harm)` at
+mean_content from the saved artifacts. These enter `papers/SYNTHESIS.md` (routing-form thesis) under
+this rule; if the CI includes 0, the wording drops to "V_moral-restricted moves refusal at n = 23 but
+is not separable from a random rank-3 restriction."
+
+**(1) Sweep spine.** A **nested moral-contrast PCA basis** (eigenvectors of the paired moral−neutral
+content-contrast covariance; nested `rank 1 ⊂ 3 ⊂ 8 ⊂ 16`), `k ∈ {1, 3, 8, 16}`. Per rank report:
+- **paired `R_refusal(k)` and `R_judgment(k)`** (restricted-to-rank-k ÷ full, paired over twins);
+- a **random rank-k null curve** (random orthonormal rank-k, V_moral-excluded; the specificity floor);
+- **per-rank moral/neutral purity** (how well rank-k separates moral vs neutral content);
+- **`cos(d_harm, PC_k)`** per component (where the harm direction sits in the basis);
+- an **additivity check**: `V_moral-restricted + complement vs full`, with CI (the powered run's
+  34% + 76% ≈ 110% suggests near-additivity; report it explicitly).
+
+**(2) Identification cells.**
+- **harm-partialed patch** — restrict to `V_moral` with `d_harm` **projected out** (`V_moral ⊥ d_harm`).
+  If this does **not** move refusal while full-`V_moral` does, refusal's V_moral effect **is** the harm
+  component.
+- **harm rank-1 replication with CI** — re-run the harm-restricted cell with a bootstrap CI.
+
+**(3) Shape verdicts (frozen, all publishable).**
+- **harm-saturating** — `R_refusal(k)` plateaus ≈ the harm-rank-1 level while `R_judgment(k)` climbs →
+  refusal's moral read **is the harm percept**, not the broad subspace.
+- **broad-moral** — `R_refusal(k)` climbs toward `R_judgment(k)` → rank-3 was a **truncation**; the
+  D1/D2 "refusal ⊥ morality" framing **softens** (refusal reads higher-rank moral content).
+- **instrument-ceiling** — both plateau `≪ 1` → **linear restricted transport saturates**; escalate to
+  nonlinear transport or declare the ceiling as the finding.
+
+**(4) Behavioral severity ladder.** ~30–40 authored **severity-ladder twins**: both members of a pair
+shift register **together** (surface-matched within pair), spanning a severity range. The pilot screen
+selects the **operating band** where violating-refuses **and** benign-complies. Deliverable: the
+**refusal-vs-severity psychometric curve** for both twin types (a behavioral dose-response on the harm
+cue, pairing with the harm-direction cell) + the pass rate. Passing twins are **dual-use** (type
+blocks note it) and feed the readout cells; **generate-under-patch** and the **L15 H15 over-refusal
+discriminator** run once the stimuli are out of the floor.
+
+**Held (not this session).** Mass twin-authoring (conditional on the sweep staying ambiguous); the
+Llama pod + its comparative pre-registration (the comparative **statistic is chosen after the shape
+verdict**). The Llama **standardization build proceeds in parallel** as zero-GPU (ANOMALIES A1).
+
+Spine preserved: `M = 0.05`, the two-step null, per-unit saves, position-validity, the pilot gate,
+`M_ratio = 0.15`, all Amendment-3 branch definitions. Amendment 4 adds the sweep, the identification
+cells, the shape verdicts, and the behavioral ladder; it relaxes no prior gate.
