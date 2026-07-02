@@ -57,7 +57,11 @@ REMOTE_SCRIPT="${REMOTE_SCRIPT:-papers/d1_moral_subspace/runpod/remote_phase2.sh
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 API="https://api.runpod.io/graphql?api_key=${RUNPOD_API_KEY}"
 
-SELF_PAPER="papers/d1_moral_subspace"
+# SELF_PAPER + RESULTS_SUBPATH are env-overridable so this launcher also drives sibling papers
+# (e.g. Direction-2 session 1: SELF_PAPER=papers/d2_decision_coupling RESULTS_SUBPATH=outputs).
+# Defaults reproduce the original Direction-1 Phase-2 behaviour exactly.
+SELF_PAPER="${SELF_PAPER:-papers/d1_moral_subspace}"
+RESULTS_SUBPATH="${RESULTS_SUBPATH:-outputs/phase2}"
 RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 
 source "$REPO_ROOT/papers/runpod_common/session_lib.sh"
@@ -102,16 +106,13 @@ echo "----------------------------------------------------------------------"
 echo ">> Phase 2 finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
-echo ">> Downloading results (phase2 saves no model weights; npz/json only)"
+echo ">> Downloading results ($SELF_PAPER/$RESULTS_SUBPATH; npz/json only, no model weights)"
+mkdir -p "$REPO_ROOT/$SELF_PAPER/$RESULTS_SUBPATH"
 rsync -az \
   --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
   -e "ssh ${SSH_OPTS[*]}" \
-  "root@$SSH_HOST:$REMOTE_DIR/$SELF_PAPER/outputs/phase2/" \
-  "$REPO_ROOT/$SELF_PAPER/outputs/phase2/"
+  "root@$SSH_HOST:$REMOTE_DIR/$SELF_PAPER/$RESULTS_SUBPATH/" \
+  "$REPO_ROOT/$SELF_PAPER/$RESULTS_SUBPATH/"
 
-echo ">> Done. Phase 2 results under $SELF_PAPER/outputs/phase2/:"
-echo ">>   base/g2_result.json       (G2 contamination PASS/STOP, narrative slice)"
-echo ">>   base/track1_result.json   (σ* V_moral vs MFT, RMS-normalized; eff-dim contrast)"
-echo ">>   g3_result.json            (Point A base-proto + Point B instruct-gate vs 0.1044)"
-echo ">>   {base,instruct}/{g_axis_decision,v_moral.npz,null_artifact}.json"
+echo ">> Done. Results under $SELF_PAPER/$RESULTS_SUBPATH/ (see the remote runner's log for the file list)."
 # pod terminated by the EXIT trap

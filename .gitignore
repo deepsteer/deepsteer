@@ -103,3 +103,5 @@ papers/1_accuracy_vs_fragility/outputs/phase_c4_comp_acts/
 
 # Direction 1: pilot/working generation + audit artifacts (regenerable)
 papers/d1_moral_subspace/outputs/
+# Direction 2: per-model session outputs (regenerable; numbers of record go in RESULTS.md)
+papers/d2_decision_coupling/outputs/
