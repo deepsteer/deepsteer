@@ -90,9 +90,6 @@ papers/6_cross_model/outputs/figures/
 .env
 *.pem
 
-# Coding agents
-.claude
-
 # Generated arXiv submission bundles and metadata
 /arxiv_*.tar.gz
 /arxiv_*.md
