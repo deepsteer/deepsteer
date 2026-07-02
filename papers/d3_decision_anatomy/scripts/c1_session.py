@@ -75,7 +75,7 @@ def main() -> None:
     ap.add_argument("--layer", type=int, default=16)
     ap.add_argument("--dataset", default=str(HERE.parents[2] / "deepsteer" / "datasets" / "d1_vmoral_v1.json"))
     ap.add_argument("--fables", default=str(HERE.parents[1] / "d1_moral_subspace" / "outputs" / "full" / "fables_train_full.json"))
-    ap.add_argument("--refusal-prompts", default=str(_P5 / "refusal_prompts.json"))
+    ap.add_argument("--refusal-prompts", default=str(_P5.parent / "refusal_prompts.json"))  # paper5 root
     ap.add_argument("--out", default=str(HERE.parent / "outputs"))
     args = ap.parse_args()
 

@@ -33,9 +33,9 @@ OUT = HERE.parent / "outputs"
 
 
 def _commit() -> str:
-    try:
-        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"],
-                                       cwd=str(HERE)).decode().strip()
+    try:  # stderr silenced: the synced pod has no .git ("fatal: not a git repository" noise)
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=str(HERE),
+                                       stderr=subprocess.DEVNULL).decode().strip()
     except Exception:
         return "unknown"
 
