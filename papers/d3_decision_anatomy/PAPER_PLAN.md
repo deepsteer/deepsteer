@@ -19,23 +19,34 @@ GPU items by ΔDecision/GPU-hour; per-unit saves).
 
 ---
 
-## 1. Contribution positioning (write AFTER the zero-GPU lit pass, §7)
+## 1. Contribution positioning (lit pass done — `LITERATURE.md`, all refs primary-verified)
 
-**Not** "attention heads matter for safety" (known: Arditi et al. single-direction refusal
-mediation; a growing literature on safety/refusal-relevant heads — verify exact refs before citing,
-per the program's citation-verification rule). **The contribution is three specific things:**
+Prior work (verified) localizes refusal to a **low-rank direction** (Arditi et al. 2024,
+`arXiv:2406.11717`; a 2026 follow-up argues > rank-1), to **sparse safety heads attributable through
+OV circuits** (Zhou et al. 2024, `arXiv:2410.13708` — Ships/Sahara; one head → 16× harmful), and
+separates **harmfulness from refusal** as directions (Zhao et al. 2025, `arXiv:2507.11878`); the
+low-dimensional special-token substrate is the **massive-activation / attention-sink** phenomenon
+(Sun et al. 2024 `arXiv:2402.17762`; Xiao et al. 2023 `arXiv:2309.17453`). So "attention heads
+mediate refusal/safety" is **established, not the contribution**.
 
-1. **The decision site is a *measured* low-rank control channel** (PR ~10–15, cross-model, caught by
-   a calibrated positive-control band — D2/`ANOMALIES.md` A2). This reframes "refusal is a
-   direction" as "refusal is written into a narrow bus," and makes head attribution a question about
-   **what gets transported into a channel of known dimensionality**, not a search.
-2. **Content-transport as the coupling test.** We do not ask "do heads write refusal" (they must). We
-   ask whether the writing heads **read moral content** (`mean_content` `V_moral`) vs read only a
-   harm *cue* (`t_inst` harmfulness, Zhao et al.) vs read surface alarm — the content×decision
-   *through-weights* cell that seven prior papers left unmeasured (`construct-audit` design matrix).
-3. **A negative-space result if it lands there:** a content patch that moves refusal via
-   *non-`V_moral`* features of moral content (causal cell b) would explain **every geometric null in
-   the program** at once — orthogonality with causal coupling, the sign-flip included.
+**Honesty rider (from the lit pass):** C1's **Stage 1 uses a known method** — per-head OV attribution
+is Sahara-style (Zhou et al.); it is credited, not claimed. The contribution is three things absent
+from the literature:
+
+1. **The decision site is a *calibrated, measured* ~10–15-dim control channel** (PR 14.7/8.6/10.2
+   cross-model, established by a positive-control band + position-validity rule, not assumed —
+   D2/`ANOMALIES.md` A2). This reads refusal as *written into a measured low-rank bus*, and makes
+   head attribution a question about **what is transported into a channel of known dimensionality**.
+2. **Content-transport as the coupling test.** Not "do heads write refusal" (they must), but whether
+   the writers **read moral content** (`mean_content` `V_moral`) vs a harm *cue* (Zhao's `t_inst`
+   harmfulness) vs surface alarm — the content×decision *through-weights* cell seven prior papers
+   left unmeasured (`construct-audit` design matrix).
+3. **A program-null-explaining negative-space result:** a content patch that moves refusal via
+   *non-`V_moral`* features of moral content (cell b) would explain **every geometric null in the
+   program** at once (orthogonality with causal coupling, the sign-flip included).
+
+Contribution in one line: **moral-content transport into a measured low-rank decision channel** — not
+"heads matter for safety."
 
 ## 2. The question, as a design-matrix cell
 
@@ -47,6 +58,10 @@ applied). Verdict language is therefore "reads-from / does-not-read-from," estab
 intervention, never by geometry.
 
 ## 3. Stage 1 — who writes the decision (per-head direct attribution)
+
+**Method credit:** per-head OV attribution of safety-relevant heads is Sahara-style (Zhou et al.
+2024, `arXiv:2410.13708`); Stage 1 applies it, it is not a C1 novelty (the novelty is Stage 2 +
+the causal content-transport cells + the calibrated-channel instrument, §1).
 
 At the refusal direction's layer `L_ref`, decompose the residual at the **decision-site token** into
 per-head OV contributions and per-MLP contributions, and project each onto the unit refusal
