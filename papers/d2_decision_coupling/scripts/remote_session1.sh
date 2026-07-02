@@ -135,14 +135,20 @@ for key in $MODELS; do
     python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
       --vmoral-npz "$VM" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
   fi
-  # in-format ladder (Amendment 1 §7): chat-format factor-decomposed V_moral -> full ladder + R2,
-  # then B5 in the CHAT subspace (the pre-registered B5; supersedes the raw 'b5' step above). Reuses
-  # this model's B1 refusal.npz + b1_judgment_dir (uploaded from the B1 chunk if not run here).
+  # in-format ladder (Amendment 1 §7): chat-format factor-decomposed V_moral -> full ladder + R2.
+  # FAST (extraction + numpy); reuses this model's B1 refusal.npz + b1_judgment_dir (uploaded from
+  # the B1 chunk if not run here). Kept SEPARATE from B5 so its results return without waiting on
+  # the (much slower) fragility sweep.
   if has_step informat; then
     echo ">> [$key] in-format ladder (chat V_moral, 3 position classes, full ladder + R2)"
     python "$D2/scripts/informat_ladder.py" --model "$repo" --key "$key" \
       --refusal-npz "$RF" --judgment-npz "$mdir/b1_judgment_dir_$key.npz" --out "$mdir" || true
-    echo ">> [$key] B5 moral fragility (R8), CHAT subspace [B5_N_RANDOM=${B5_N_RANDOM:-12}]"
+  fi
+  # B5 in the CHAT subspace (the pre-registered B5; supersedes the raw 'b5' step). SLOW: ~N_RANDOM x
+  # grid x N_DIR x prompts generations -> size it with B5_N_RANDOM / B5_SIGMA_GRID / B5_N_DIR, and
+  # prefer ONE MODEL PER CHUNK. Reuses chat_vmoral_<key>.npz from the 'informat' step.
+  if has_step b5chat; then
+    echo ">> [$key] B5 moral fragility (R8), CHAT subspace [N_RANDOM=${B5_N_RANDOM:-8} grid=${B5_SIGMA_GRID:-default} N_DIR=${B5_N_DIR:-4}]"
     python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
       --chat-vmoral-npz "$mdir/chat_vmoral_$key.npz" --out "$mdir" || true
   fi
