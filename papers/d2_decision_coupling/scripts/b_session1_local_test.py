@@ -6,6 +6,7 @@ on the pod. Run: python papers/d2_decision_coupling/scripts/b_session1_local_tes
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -17,6 +18,7 @@ sys.path.insert(0, str(HERE))
 import b1_judgment_direction as b1  # noqa: E402
 import b3_batched_extractions as b3  # noqa: E402
 import b5_moral_fragility as b5  # noqa: E402
+import informat_ladder as il  # noqa: E402
 
 FAILS = []
 
@@ -147,6 +149,66 @@ def test_b5() -> None:
     check("coherence accepts normal text", b5.is_coherent("Here is a clear and varied answer."))
 
 
+def test_informat_ladder() -> None:
+    print("In-format ladder (position span + format guard + raw reproduction):")
+    # (1) content-span finder: content block located inside a templated id sequence.
+    full = [1, 100, 101, 7, 8, 9, 200, 201]  # BOS + prefix + [7,8,9]=content + assistant tail
+    s, e = il.find_content_span(full, [7, 8, 9])
+    check("find_content_span locates content block", (s, e) == (3, 6), f"got {(s, e)}")
+    s2, e2 = il.find_content_span([1, 2, 3], [9, 9])  # absent -> trailing fallback, no crash
+    check("find_content_span falls back gracefully when absent", e2 == 3 and s2 == 2)
+
+    # (2) HARD GUARD: the chat null must consume a format/position-matched act_sample.
+    d = 64
+    rng = np.random.default_rng(0)
+    srcs = {s: il._unit(rng.standard_normal(d)) for s in il.SRC}
+    ctrls = {c: il._unit(rng.standard_normal(d)) for c in il.CONTROLS}
+    persona = il._unit(rng.standard_normal(d))
+    good = {"X": rng.standard_normal((50, d)), "tag": ("chat", "final_pre_assistant")}
+    bad = {"X": rng.standard_normal((50, d)), "tag": ("raw", "pooled")}
+    try:
+        il.ladder(srcs, ctrls, persona, good, ("chat", "final_pre_assistant"), standardize=True,
+                  rng=np.random.default_rng(0))
+        ok_match = True
+    except ValueError:
+        ok_match = False
+    check("ladder accepts format-matched null", ok_match)
+    raised = False
+    try:
+        il.ladder(srcs, ctrls, persona, bad, ("chat", "final_pre_assistant"),
+                  rng=np.random.default_rng(0))
+    except ValueError:
+        raised = True
+    check("ladder RAISES on chat-dirs x raw-null mismatch (the invariant)", raised)
+
+    # (3) raw reproduction: il.ladder(standardize=False) on the committed OLMo raw artifacts must
+    #     reproduce standardized_recompute's R5_raw band + controls (same ladder math).
+    outp = HERE.parent / "outputs"
+    sr = outp / "standardized_recompute.json"
+    vm = outp / "olmo3" / "vmoral_sources.npz"
+    if sr.exists() and vm.exists():
+        L = 16
+        z = np.load(vm)
+        sources = {s: z[f"{s}_layer{L}"].astype(float) for s in il.SRC}
+        controls = {c: np.load(outp / "olmo3" / f"b3_{c}_dir_olmo3.npz")[f"{c}_layer{L}"].astype(float)
+                    for c in il.CONTROLS}
+        persona_v = np.load(outp / "olmo3" / "persona_direction.npz")[f"persona_layer{L}"].astype(float)
+        refusal_v = np.load(outp / "olmo3" / "refusal.npz")["refusal"].astype(float)
+        X = np.load(outp / "olmo3" / "act_sample.npz")["X"].astype(float)
+        raw = il.ladder(sources, controls, persona_v, {"X": X, "tag": ("raw", "pooled")},
+                        ("raw", "pooled"), refusal=refusal_v, standardize=False,
+                        rng=np.random.default_rng(0))
+        ref = json.loads(sr.read_text())["olmo3"]["R5_raw"]
+        band_ok = raw["moral_family_band"] == ref["moral_family_band"]
+        ctrl_ok = all(abs(raw["c_controls"][c] - ref["c_controls"][c]) < 1e-6 for c in il.CONTROLS)
+        refp_ok = abs(raw["G3_refusal_p"] - ref["refusal_p"]) < 1e-6
+        check("raw ladder reproduces committed R5_raw band", band_ok,
+              f"{raw['moral_family_band']} vs {ref['moral_family_band']}")
+        check("raw ladder reproduces committed R5_raw controls + refusal_p", ctrl_ok and refp_ok)
+    else:
+        print("  [skip] raw-reproduction (chunk-1 artifacts not present locally)")
+
+
 def main() -> None:
     print("=== Phase B session 1 local gate ===\n")
     test_b1_parsing()
@@ -155,6 +217,7 @@ def main() -> None:
     test_b1_geometry_helpers()
     test_b3()
     test_b5()
+    test_informat_ladder()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}")
