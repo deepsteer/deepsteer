@@ -33,6 +33,29 @@ deepsteer/
 Read `ARCHITECTURE.md` for the full design rationale.
 Read `deepsteer/datasets/PROBING_PIPELINE_DESIGN.md` for the probing dataset pipeline.
 
+## Methodology Skills
+
+[#methodology-skills](#methodology-skills)
+
+Validity-gating skills live in `.claude/skills/`. Each is a `<name>/SKILL.md`
+with trigger conditions in its frontmatter; Claude Code auto-discovers them.
+Consult the relevant skill *before* the work it governs. These are not optional
+for the situations they name — a silently skipped calibration check is worse
+than a stall.
+
+| Skill                   | Consult before                                                                                          | Read first? |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ | ----------- |
+| `construct-audit`       | comparing any two directions/subspaces: cosine, projection fraction, principal angle, CKA, steering, ablation; any "X is orthogonal to Y" claim | For direction/geometry work |
+| `instrument-calibration`| reporting, accepting, or gating on any null / orthogonality / below-threshold result                   | For any NULL verdict |
+| `intervention-validity` | building or interpreting any patching, interchange, ablation, steering, or noise-injection experiment  | For causal work |
+| `estimator-traps`       | any CI, bootstrap, threshold, extremum, or evidence-combination verdict                                | For any stats verdict |
+| `compute-ordering`      | planning any experiment sequence, phase plan, or A100 session — enforces zero-GPU-first ordering       | When planning runs |
+| `anomaly-triage`        | writing any results/discussion section; at every phase end and human gate — maintains `ANOMALIES.md`   | For write-ups |
+| `program-thesis`        | committing any results, README, abstract, framing, or verdict wording — maintains `SYNTHESIS.md`       | For framing/prose |
+
+If a skill's `SKILL.md` is missing or its trigger is ambiguous, stop and flag it
+rather than proceeding without the check.
+
 ## Implementation Priorities
 
 Build in this order. Each phase should be working and testable before starting the next.
