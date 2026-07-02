@@ -8,9 +8,17 @@ score + what Stage 2 does with the writers (content transport).
 
 The residual stream is LINEAR: resid_{L}[t] = embed[t] + sum_{l<=L} (attn_l[t] + mlp_l[t]), and
 attn_l[t] = sum_h W_O^{l,h} z_h[t]. So <resid_{L_ref}[decision], r_hat> decomposes EXACTLY into
-per-(layer,head) OV writes + per-layer MLP writes + embed. The reconstruction >= 0.90 control
-(instrument-calibration positive control) therefore catches (a) missing components, or (b) r_hat
-being read post-final-LN (then fold the LN gain, escalate from the folded-LN approximation).
+per-(layer,head) OV writes + per-layer MLP writes + embed. The reconstruction control (a TWO-SIDED
+band 0.90 <= recon <= 1.10; instrument-calibration positive control) catches (a) missing components
+(undershoot), or (b) an un-folded norm on the block output (overshoot).
+
+REORDERED NORM (OLMo-2/3, ANOMALY A3): these families apply RMSNorm to the ATTENTION/MLP *output*
+before the residual add (post_attention_layernorm, post_feedforward_layernorm; no input norm), so the
+real residual write is norm(sum_h W_O^h z_h), not the raw sum -- the naive decomposition overshoots
+(~3x on Olmo-3-7B). RMSNorm is diagonal at a fixed token: norm(x) = (gamma / rms(x)) (.) x, so folding
+the per-dim gain g = gamma/rms onto each pre-norm component write is EXACT (sum -> <norm(total), r>).
+This is the pre-registered LN-fold escalation; it fires automatically for reordered-norm models and is
+a no-op for pre-norm models (Llama/Qwen), whose block output IS the residual write (recon ~1 natively).
 
 Amendment 1: head specificity = <contrib_h, r_hat> - mean_j <contrib_h, c_hat_j> over a norm-matched
 CHANNEL control basis {c_hat_j} (the decision-token channel minus r_hat) -- at PR~15 raw write
@@ -38,12 +46,29 @@ sys.path.insert(0, str(HERE.parents[1] / "6_cross_model" / "scripts"))
 K_THRESH = 0.80   # cumulative |specificity| for k-selection
 K_CAP = 10
 MLP_BRANCH = 0.50  # MLP write fraction above this -> Jacobian stage
-RECON_FLOOR = 0.90
+RECON_FLOOR = 0.90  # two-sided reconstruction band ...
+RECON_CEIL = 1.10   # ... an un-folded norm shows up as OVERSHOOT (recon > ceil), not undershoot
 
 
 def _unit(v):
     v = np.asarray(v, np.float64)
     return v / (np.linalg.norm(v) + 1e-12)
+
+
+def rms_gain(x: np.ndarray, weight: np.ndarray, eps: float = 1e-6) -> np.ndarray:
+    """Per-dim fold factor of an RMSNorm applied to x: g = weight / sqrt(mean(x^2) + eps). For a
+    reordered-norm block (OLMo-2/3) the residual write is norm(block_out); multiplying the pre-norm
+    per-component write vectors by g recovers the EXACT residual contribution, because RMSNorm is a
+    diagonal (per-dim gain * shared scalar) map at a fixed token -- sum_h (contrib_h (.) g) = norm(sum_h
+    contrib_h). No-op region: pre-norm models never call this (their block output is the write)."""
+    x = np.asarray(x, np.float64)
+    rms = float(np.sqrt(np.mean(x ** 2) + eps))
+    return np.asarray(weight, np.float64) / rms
+
+
+def reconstruction_ok(recon: float) -> bool:
+    """Two-sided: undershoot (missing components) OR overshoot (un-folded block norm) both fail."""
+    return bool(RECON_FLOOR <= recon <= RECON_CEIL)
 
 
 # --------------------------- pure math (model-free, unit-tested) ---------------------------
@@ -165,6 +190,23 @@ def attribute(model, prompt: str, r_hat: np.ndarray, l_ref: int) -> dict:
         for h in hooks:
             h.remove()
 
+    # Reordered-norm fold (A3): OLMo-2/3 write norm(attn_out)/norm(mlp_out) to the residual, so fold
+    # the per-layer RMSNorm gain onto each pre-norm component write vector -> exact residual contribs.
+    reordered = hasattr(model._get_layer_module(0), "post_feedforward_layernorm")
+    if reordered:
+        for l in range(l_ref + 1):
+            lm = model._get_layer_module(l)
+            a_out = np.sum([cap["per_head"][(l, h)] for h in range(n_heads)], axis=0)  # o_proj out (norm in)
+            na = lm.post_attention_layernorm
+            g_a = rms_gain(a_out, na.weight.detach().float().cpu().numpy(),
+                           getattr(na, "variance_epsilon", getattr(na, "eps", 1e-6)))
+            for h in range(n_heads):
+                cap["per_head"][(l, h)] = cap["per_head"][(l, h)] * g_a
+            nm = lm.post_feedforward_layernorm
+            g_m = rms_gain(cap["mlp"][l], nm.weight.detach().float().cpu().numpy(),
+                           getattr(nm, "variance_epsilon", getattr(nm, "eps", 1e-6)))
+            cap["mlp"][l] = cap["mlp"][l] * g_m
+
     rn = _unit(r_hat)
     target = float(cap["resid"] @ rn)
     head_writes = {k: float(v @ rn) for k, v in cap["per_head"].items()}
@@ -173,7 +215,7 @@ def attribute(model, prompt: str, r_hat: np.ndarray, l_ref: int) -> dict:
     recon = reconstruction_ratio(list(head_writes.values()) + list(mlp_writes.values()) + [embed_write],
                                  target)
     return {"target": target, "reconstruction": round(recon, 4),
-            "reconstruction_ok": bool(recon >= RECON_FLOOR),
+            "reconstruction_ok": reconstruction_ok(recon), "reordered_norm": bool(reordered),
             "per_head_contrib": cap["per_head"], "head_writes": head_writes,
             "mlp_writes": mlp_writes, "embed_write": embed_write}
 
@@ -202,13 +244,15 @@ def main() -> None:
     mf = mlp_fraction(list(res["head_writes"].values()), list(res["mlp_writes"].values()))
     out = {"model": args.model, "layer": args.layer, "channel_dim": int(Qc.shape[1]),
            "reconstruction": res["reconstruction"], "reconstruction_ok": res["reconstruction_ok"],
+           "reordered_norm": res["reordered_norm"],
            "mlp": mf, "k": ks["k"], "top_heads": [{"head": list(h), **spec[h]} for h in ks["ranked_heads"][:ks["k"]]],
            "sparsity_curve": ks["sparsity_curve"]}
     Path(args.out).mkdir(parents=True, exist_ok=True)
     (Path(args.out) / f"stage1_attribution_{args.key}.json").write_text(json.dumps(out, indent=2))
     print(json.dumps(out, indent=2))
     if not res["reconstruction_ok"]:
-        print(f"WARNING: reconstruction {res['reconstruction']} < {RECON_FLOOR} -> escalate LN handling")
+        print(f"WARNING: reconstruction {res['reconstruction']} outside [{RECON_FLOOR}, {RECON_CEIL}] "
+              f"(reordered_norm={res['reordered_norm']}) -> a component is still un-folded")
 
 
 if __name__ == "__main__":

@@ -180,3 +180,34 @@ this line, never a silent edit.*
   Spine preserved: `M = 0.05`, the two-step null, per-unit saves, position-validity all unchanged.
   This amendment strengthens the stimuli, the decisive cell, and the attribution instrument before any
   compute.
+
+---
+
+### Amendment 2 (2026-07-02) — two-sided reconstruction gate + reordered-norm LN-fold (executes the pre-registered escalation)
+
+**Trigger.** The first real C1 run (`Olmo-3-7B-Instruct`, layer 16) returned Stage-1
+`reconstruction = 3.05` — the per-head OV decomposition overshoots the true residual write by 3×. The
+original one-sided gate (`recon ≥ 0.90`) passed it silently. Cause: OLMo's **reordered norm**
+(RMSNorm on the attention/MLP *output* before the residual add), so the real write is
+`RMSNorm(Σ_h W_O^h z_h)`, not the raw sum. Logged as **ANOMALIES.md A3 (ledger)**.
+
+**This is not a new decision — §1 already named it:** "the reconstruction control ... catches ... r̂
+read post-final-LN (then **fold the LN gain, escalate from the folded-LN approximation**)." Amendment
+2 only formalizes the gate shape and the fold, and records that the escalation **fired for OLMo**.
+
+**Changes (committed before any folded number is computed):**
+1. **Two-sided reconstruction gate** `0.90 ≤ recon ≤ 1.10`. Overshoot (un-folded block norm) and
+   undershoot (missing components) both fail. `reconstruction_ok()` in `stage1_attribution.py`.
+2. **Exact RMSNorm fold** (`rms_gain`): per layer, multiply each pre-norm component write vector by
+   `g = γ / sqrt(mean(x²)+ε)` (RMSNorm is diagonal at a fixed token, so `Σ_h contrib_h ⊙ g =
+   norm(Σ_h contrib_h)` — exact, unit-tested to 1e-9). Auto-fires for reordered-norm families
+   (detected by `post_feedforward_layernorm`); no-op for pre-norm (Llama/Qwen reconstruct ~1.0 raw).
+   `reordered_norm` is recorded in every Stage-1 result.
+
+**Scope of impact.** Re-runs only the **Stage-1/2 head anatomy** (which heads write refusal, what
+they read); the un-folded top-head list, specificity, `k`, and `mlp_write_fraction` from the first
+run are **superseded** (inflated). The **decisive `cell_b_verdict`** is patch-based (reads the real
+forward pass, no decomposition) and is **unchanged** — the first-run headline
+(`reads_non_vmoral_features`, transport control passed) stands. Spine preserved: `M = 0.05`, the
+two-step null, per-unit saves, position-validity, the pilot gate, all decisive-cell branch definitions
+unchanged.

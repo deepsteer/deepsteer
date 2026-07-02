@@ -139,6 +139,30 @@ def test_stage1_math():
     check("mlp_fraction > 0.5 -> jacobian branch", mf2["jacobian_branch"])
 
 
+def test_reordered_norm_fold():
+    print("Reordered-norm fold + two-sided reconstruction gate (A3):")
+    # two-sided gate: an un-folded block norm shows up as OVERSHOOT, which must fail.
+    check("gate accepts recon ~1.0", s1.reconstruction_ok(1.0) and s1.reconstruction_ok(0.95))
+    check("gate rejects 3.05 overshoot (the OLMo un-folded case)", not s1.reconstruction_ok(3.05))
+    check("gate rejects undershoot 0.5", not s1.reconstruction_ok(0.5))
+
+    rng = np.random.default_rng(7)
+    d = 64
+    r = s1._unit(rng.standard_normal(d))
+    # per-head pre-norm writes whose sum is the attention output A (the RMSNorm input).
+    contribs = {h: rng.standard_normal(d) * (2.0 if h < 2 else 0.5) for h in range(8)}
+    A = np.sum(list(contribs.values()), axis=0)
+    weight, eps = rng.standard_normal(d) * 0.5 + 1.0, 1e-6
+    normed = weight * A / np.sqrt(np.mean(A ** 2) + eps)          # reference RMSNorm(A) = true write
+    g = s1.rms_gain(A, weight, eps)
+    folded_sum_write = sum(float((c * g) @ r) for c in contribs.values())
+    check("raw per-head sum OVERSHOOTS the normed write",
+          abs(sum(float(c @ r) for c in contribs.values())) > 1.3 * abs(float(normed @ r)))
+    check("folded per-head writes reconstruct <norm(A), r> exactly",
+          abs(folded_sum_write - float(normed @ r)) < 1e-9,
+          f"{folded_sum_write:.6f} vs {float(normed @ r):.6f}")
+
+
 def test_stage2_math():
     print("Stage-2 content-transport math (synthetic):")
     rng = np.random.default_rng(1)
@@ -194,6 +218,7 @@ def main():
     test_manifest()
     test_screen_logic()
     test_stage1_math()
+    test_reordered_norm_fold()
     test_stage2_math()
     test_causal_logic()
     print()

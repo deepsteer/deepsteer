@@ -108,3 +108,46 @@ slots at |cos| below even the low-dim random level → active separation.
 flagged position-invalid at extraction (`d2_decision_coupling/PREREGISTRATION.md` Amendment 2). The
 D1 reasoning-extension band rung (GPT-OSS P2 vs a raw-pooled band) inherits the same cross-position
 hazard and is being PR-audited + scoping-noted.
+
+---
+
+## A3 (ledger) — Reordered-norm architectures overshoot naive per-head OV attribution ~3×
+
+*Ledger entry A3; distinct from the "A3" / "A5" calibration rungs referenced in A2's prose, which are
+Phase-A calibration tasks, not ledger entries.*
+
+**Date:** 2026-07-02 · **Found in:** Direction-3 (`d3_decision_anatomy`) C1 Stage-1 per-head write
+attribution on `Olmo-3-7B-Instruct` (layer 16).
+
+**Observation.** The Stage-1 reconstruction — sum of per-(layer,head) OV writes + per-layer MLP
+writes + embed onto `r̂`, divided by the true `⟨resid_{L_ref}[decision], r̂⟩` — came back **3.05**,
+i.e. the linear decomposition **overshoots the actual residual write by 3×**. The original gate
+(`recon ≥ 0.90`, one-sided) **passed it**, because a floor only catches undershoot.
+
+**Mechanism.** OLMo-2/3 use **reordered (post-block) norm**: `post_attention_layernorm` is applied
+to the **attention output** and `post_feedforward_layernorm` to the **MLP output** *before* the
+residual add, and there is **no input norm** (confirmed in `transformers` `Olmo2DecoderLayer` /
+`Olmo3DecoderLayer`). So the true residual write of the attention block is `RMSNorm(Σ_h W_O^h z_h)`,
+not the raw sum — the naive OV decomposition skips the norm, and since the raw block output has RMS
+above the norm's target it inflates by ~3×. Pre-norm families (Llama, Qwen: norm on the block
+*input*) write the raw block output to the residual, so they reconstruct ~1.0 natively; this is why
+the overshoot never appeared before D3 (Papers 1–7 used activations/directions, never OV
+decomposition).
+
+**Fix (pre-registered LN-fold escalation, `d3_decision_anatomy/PREREGISTRATION.md` Amendment 2).**
+(i) **Two-sided gate** `0.90 ≤ recon ≤ 1.10` — overshoot now fails. (ii) **Exact RMSNorm fold:**
+RMSNorm is diagonal at a fixed token, `norm(x) = (γ / rms(x)) ⊙ x`, so multiplying each pre-norm
+per-component write vector by the per-layer gain `g = γ / sqrt(mean(x²)+ε)` recovers the exact
+residual contribution (`Σ_h contrib_h ⊙ g = norm(Σ_h contrib_h)`; unit-tested to 1e-9). Fires
+automatically for reordered-norm models (detected via `post_feedforward_layernorm`); a no-op for
+pre-norm models.
+
+**Affects.** Only the **Stage-1/2 head anatomy** (which heads write refusal, what they read) on
+OLMo-2/3 and any reordered-norm family — those numbers from the un-folded run are inflated and are
+being re-run folded. Does **not** affect the **decisive causal cell** (interchange patching reads the
+model's real forward pass, no decomposition) or any activation/direction result in Papers 1–7.
+
+**Why it's a contribution.** Per-head OV / logit-lens attribution silently overshoots ~3× on
+reordered-norm models unless the block norm is folded — a portable caution for a growing family
+(OLMo-2, OLMo-3, and other post-norm designs). The fold is exact and cheap. It belongs in the methods
+section alongside A1's null-degeneracy caution.

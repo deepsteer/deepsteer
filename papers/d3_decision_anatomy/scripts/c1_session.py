@@ -158,6 +158,7 @@ def main() -> None:
 
     result = {"model": args.model, "key": args.key, "layer": args.layer,
               "reconstruction": st1["reconstruction"], "reconstruction_ok": st1["reconstruction_ok"],
+              "reordered_norm": st1.get("reordered_norm", False),
               "mlp": mf, "k": ks["k"], "channel_dim": int(Qc.shape[1]),
               "top_heads": [{"head": list(h), **spec[h]} for h in top_heads],
               "sparsity_curve": ks["sparsity_curve"], "stage2": st2,
@@ -172,7 +173,9 @@ def main() -> None:
     (out / f"c1_session_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps({k: v for k, v in result.items() if k not in ("sparsity_curve",)}, indent=2))
     if not st1["reconstruction_ok"]:
-        print(f"WARNING: reconstruction {st1['reconstruction']} < {s1.RECON_FLOOR} -> escalate LN")
+        print(f"WARNING: reconstruction {st1['reconstruction']} outside "
+              f"[{s1.RECON_FLOOR}, {s1.RECON_CEIL}] (reordered_norm={st1.get('reordered_norm')}) "
+              f"-> Stage-1/2 anatomy is un-folded; verdict cell is unaffected")
 
 
 if __name__ == "__main__":
