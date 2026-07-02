@@ -205,7 +205,13 @@ def main() -> None:
     if args.mode == "rotate":
         run_rotate(args)
     else:
-        run_extract(args, reg.get(args.key), validate)
+        # Rotation extractions use suffixed keys (olmo3_base / olmo3_sft) that share the base
+        # model's registry layer/band; fall back to the stem when the exact key is unknown.
+        try:
+            spec = reg.get(args.key)
+        except KeyError:
+            spec = reg.get(args.key.split("_")[0])
+        run_extract(args, spec, validate)
 
 
 if __name__ == "__main__":

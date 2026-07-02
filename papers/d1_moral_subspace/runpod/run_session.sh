@@ -71,6 +71,17 @@ rp_provision_pod
 rp_wait_for_ssh
 rp_sync_up
 
+# Optional extra paths pushed to the pod verbatim AFTER the filtered sync (e.g. gitignored
+# source data a sibling paper's extraction needs). Space-separated, repo-relative; rsync -R
+# recreates each path under $REMOTE_DIR. Transient pod use only (never committed to the repo).
+if [ -n "${SYNC_EXTRA:-}" ]; then
+  for p in $SYNC_EXTRA; do
+    echo ">> extra-sync: $p"
+    rsync -az -R --exclude-from="$RSYNC_EXCLUDE" -e "ssh ${SSH_OPTS[*]}" \
+      "$REPO_ROOT/./$p" "root@$SSH_HOST:$REMOTE_DIR/"
+  done
+fi
+
 # ---------------------------------- execute ----------------------------------
 REMOTE_LOG="$REMOTE_DIR/session.log"
 REMOTE_DONE="$REMOTE_DIR/.session_done"
