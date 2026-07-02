@@ -314,3 +314,28 @@ never a silent edit.
   unchanged. This amendment robustifies the instrument (standardization + top-k robustness), scopes
   the format claim (in-format ladder branch), and reconciles the ablation harness — all recorded
   before recomputation.
+
+- **2026-07-01 (Amendment 1 addendum — in-format-ladder position classes, σ\* ratio, zero-GPU reads;
+  pre-pod, before the chat-format extraction runs):**
+  - **Position classes (one forward pass, saved as band-layer slices).** Extract three:
+    (1) **last-content-token**, (2) **final pre-assistant token**, (3) **mean-pooled-over-content**.
+    **PRIMARY = final pre-assistant token** for the G3 format-robustness scoping branch (the decision
+    site, apples-to-apples with the refusal gate and the judgment-decision direction); (1) and (3)
+    are secondary. **In-format applies to EVERY rung** — held-one-out sources, persona / syntax /
+    register controls, AND the null's `act_samples` — all chat-format at the matched position class.
+    Every recomputed number's type block carries `{format, position_class, σ_provenance}`.
+  - **σ\*_behavioral ratio RATIFIED = 0.5× baseline** (Track-1 two-step: criterion form fixed in A0;
+    the 0.5× ratio is ratified here, before B5 runs). B5 injects into the **chat-extracted** `V_moral`
+    at **generation positions**, RMS-scaled from **chat activations at those positions**; Qwen/Llama
+    injection directions are defined in **standardized space and mapped back to model coordinates**.
+  - **Zero-GPU reads (recorded before the pod).** (i) The chat decision-site space has **no dim > 5%
+    of variance** (projection-out is a no-op there), so R3's Qwen 0.32 is **not an outlier artifact —
+    it persists**. (ii) R3 dissociation margins below the MDE (`pairwise-null q95 + M`): OLMo 0.35,
+    Qwen 0.15, Llama 0.48 — all clear. (iii) OLMo's R3 null rose **0.27→0.41** because the
+    format-matched null now draws from the **chat decision-site covariance** (`acts_headline`), not
+    the raw pooled `act_sample` B1 used — higher baseline collinearity of the decision-site space,
+    not a regression. (iv)/(v) recorded in `../ANOMALIES.md`. **R5 (raw-format, format-confounded) is
+    the cell standardization and projection-out DISAGREE on** for both Qwen and Llama (Qwen: std →
+    refusal 0.20 > controls 0.10 = strong-form FALSE; projout → refusal 0.21 < controls 0.45–0.55 =
+    strong-form TRUE) → **not resolvable by robustification; the in-format chat ladder is the
+    discriminator** (the chat space is outlier-free per (i)).

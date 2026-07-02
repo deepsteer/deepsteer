@@ -54,3 +54,20 @@ projection null applied to D2's instruct-model `V_moral`**; no Paper 6 number ch
 behavioral results were never at risk (they don't use the null). Paper 6 saved no `act_sample` for
 Qwen/Llama, but since no covariance null was used there, no standardized re-audit is required (so no
 `MISSING_ARTIFACTS` rider is filed).
+
+**Post-standardization eff-dim (participation ratio).** The degeneracy's magnitude: raw PR = OLMo
+43, **Qwen 1.0, Llama 1.5** (one dim carries essentially all variance for Qwen/Llama); after
+per-dim z-scoring, PR = OLMo 94, **Qwen 39, Llama 89**. Standardization lifts Qwen/Llama from a
+rank-1 effective space to a genuinely multi-dimensional one — the quantitative before/after of the
+fix. (Measured; higher than a ~10–15 first estimate — the standardized space is richer than
+expected, but the raw PR≈1 → the collapse was near-total.)
+
+**Qwen is elevated in TWO cells — discriminator is the in-format ladder + the projection-out read.**
+Qwen's refusal geometry sits high in both the chat R3 cell (|cos| 0.32, still dissociation, but
+above OLMo's 0.10) and the raw R5 cell. On R5, the two robustifications **disagree**: standardization
+gives refusal 0.20 > controls 0.10 (strong-form FALSE), while top-k projection-out gives refusal
+0.21 < controls 0.45–0.55 (strong-form TRUE) — and the same disagreement appears for Llama. So R5 is
+not resolvable by robustification alone; the **chat-format in-format ladder** (whose decision-site
+space carries no >5%-variance dim, so it is outlier-free by construction) is the discriminator. This
+is a worked example of the entry's thesis: when standardization and projection-out disagree, the
+subspace is genuinely degenerate and needs a format/position change, not a null patch.
