@@ -77,19 +77,23 @@ def classify_head(src: dict, vs: dict, band_min: float, null_q95: float,
 # --------------------------- hook pass (model-dependent; pod) ---------------------------
 
 def stage2_pass(model, prompt: str, top_heads: list, l_ref: int, spans_fn) -> dict:
-    """Per top head: decision-token attention row + read vector (attention-weighted L_ref input
-    residual). Requires eager attention (output_attentions). spans_fn(model, prompt) -> position
-    spans dict. Returns {head: {attn_row, read_vec, source_dist}}."""
+    """Per top head (at ANY of its layers, not only l_ref -- Amendment 3 per-layer coverage):
+    decision-token attention row + read vector (attention-weighted input residual to that head's
+    layer). Requires eager attention (output_attentions). spans_fn(model, prompt) -> position spans
+    dict (token-index classes, layer-independent). Returns {head: {attn_row, read_vec, source_dist}}."""
     import torch
     tok = model.tokenizer
     text = (tok.apply_chat_template([{"role": "user", "content": prompt}], tokenize=False,
                                     add_generation_prompt=True)
             if getattr(tok, "chat_template", None) else prompt)
+    layers = sorted({int(l) for (l, _) in top_heads})
     resid_in = {}
 
-    def pre(module, inp):
-        resid_in["x"] = inp[0][0].detach().float().cpu().numpy()  # (seq, hidden) input to L_ref
-    h = model._get_layer_module(l_ref).register_forward_pre_hook(pre)
+    def make_pre(l):
+        def pre(module, inp):
+            resid_in[l] = inp[0][0].detach().float().cpu().numpy()  # (seq, hidden) input to layer l
+        return pre
+    hooks = [model._get_layer_module(l).register_forward_pre_hook(make_pre(l)) for l in layers]
     # SDPA/flash don't materialize attention weights -> force eager for this pass (restore after).
     cfg = model.model.config
     prev = getattr(cfg, "_attn_implementation", None)
@@ -102,24 +106,21 @@ def stage2_pass(model, prompt: str, top_heads: list, l_ref: int, spans_fn) -> di
             out = model.model(**tok(text, return_tensors="pt").to(model._device),
                               output_attentions=True)
     finally:
-        h.remove()
+        for h in hooks:
+            h.remove()
         try:
             model.model.set_attn_implementation(prev or "sdpa")
         except Exception:
             cfg._attn_implementation = prev
-    if not out.attentions or len(out.attentions) <= l_ref or out.attentions[l_ref] is None:
-        raise RuntimeError(f"attention weights not materialized at layer {l_ref} "
+    if not out.attentions or len(out.attentions) <= max(layers) or out.attentions[max(layers)] is None:
+        raise RuntimeError(f"attention weights not materialized up to layer {max(layers)} "
                            f"(got {type(out.attentions).__name__}, len "
                            f"{len(out.attentions) if out.attentions else 0}); eager attention failed")
-    attn = out.attentions[l_ref][0].float().cpu().numpy()  # (n_heads, seq, seq)
     spans = spans_fn(model, text)
-    X = resid_in["x"]                                       # (seq, hidden)
     res = {}
     for (l, hh) in top_heads:
-        if l != l_ref:
-            continue
-        a = attn[hh, -1, :]                                 # decision-token attention row
-        read_vec = (a[:, None] * X).sum(0)                 # attention-weighted source residual
+        a = out.attentions[l][0, hh, -1, :].float().cpu().numpy()  # decision-token attention row
+        read_vec = (a[:, None] * resid_in[l]).sum(0)               # attention-weighted source residual
         res[(l, hh)] = {"attn_row": a, "read_vec": read_vec,
                         "source_dist": source_distribution(a, spans)}
     return res

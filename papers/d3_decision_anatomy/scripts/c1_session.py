@@ -104,57 +104,107 @@ def main() -> None:
     mf = s1.mlp_fraction(list(st1["head_writes"].values()), list(st1["mlp_writes"].values()))
     top_heads = [tuple(h) for h in ks["ranked_heads"][:ks["k"]]]
 
-    # Stage 2: what those heads read (skip if the Jacobian branch fired).
+    # Stage 2: what those heads read, at EACH writer's own layer (Amendment 3 per-layer coverage;
+    # V_moral/harm are extracted at args.layer, so earlier-layer reads are compared in the shared
+    # residual-stream basis -- a cross-layer approximation, flagged in the result note).
     st2 = {}
     if not mf["jacobian_branch"]:
         rng = np.random.default_rng(0)
         null95 = s2.value_null_q95(inp["channel_act"] - inp["channel_act"].mean(0), inp["Vbasis"], rng)
         band_min = min(s2._frac(inp["Vbasis"], inp["Vbasis"][:, j]) for j in range(inp["Vbasis"].shape[1]))
-        s2pass = s2.stage2_pass(model, probe, [h for h in top_heads if h[0] == args.layer],
-                                args.layer, spans_fn)
+        s2pass = s2.stage2_pass(model, probe, top_heads, args.layer, spans_fn)
         for h, r in s2pass.items():
             vs = s2.value_side(r["read_vec"], inp["Vbasis"], inp["harm"])
-            st2[str(h)] = {"source_dist": r["source_dist"], **vs,
+            st2[str(h)] = {"source_dist": r["source_dist"], **vs, "at_read_layer": bool(h[0] == args.layer),
                            "classify": s2.classify_head(r["source_dist"], vs, band_min, null95)}
 
-    # ---- causal cells (a) + (b) + transport positive control (Amendment 1; projection readouts) ----
+    # ---- causal cells: refusal (request-twins) + judgment (compositional twins) interchange patches ----
+    # Amendment 3: full/restricted/COMPLEMENT/harm-restricted/random-control on refusal; full->judgment
+    # (RIDER 0) + restricted->judgment (transport) on judgment; ratio-of-ratios verdict; behavioral
+    # generate-under-patch; L15 H15 anti-refusal discriminator.
+    from b1_judgment_direction import is_refusal  # noqa: E402
     rng2 = np.random.default_rng(0)
+    hidden = inp["refusal"].shape[0]
+    Qrand = cc.random_ortho_basis(hidden, inp["Vbasis"].shape[1], rng2, exclude_Q=inp["Vbasis"])
+    harmQ = inp["harm"][:, None]
     tw = (screened["compositional_twins"] or manifest["compositional_twins"]["pairs"])
-    tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:(6 if validate else 40)]]
-    # judgment-decision direction = twin moral-status contrast at the decision token (transport readout)
+    tw_cap = (6 if validate else 120)                       # use all screened twins (>=2x transport headroom)
+    tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:tw_cap]]
     jdir = (_unit(extract_positions(model, tw_pairs, [args.layer])["final_pre_assistant"][args.layer][0])
             if tw_pairs else inp["harm"])
     rt = (screened["request_twins"] or manifest["request_twins"]["pairs"])[:(6 if validate else None)]
-    full_d, restr_d, tc_d = [], [], []
+
+    full_d, restr_d, compl_d, harm_d, rand_d = [], [], [], [], []   # all read refusal, on request-twins
     for p in rt:
         try:
             sp, tp = cc.patch_positions(model, p["following"], p["violating"])
-            base = cc.baseline_proj(model, p["violating"], args.layer, inp["refusal"])
-            full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
-                                         inp["refusal"]) - base)                          # cell (a)/full
-            restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
-                                          inp["refusal"], restrict_Q=inp["Vbasis"]) - base)  # cell (b)
+            L, r = args.layer, inp["refusal"]
+            base = cc.baseline_proj(model, p["violating"], L, r)
+            full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r) - base)
+            restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+                                          restrict_Q=inp["Vbasis"]) - base)
+            compl_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+                                          restrict_Q=inp["Vbasis"], restrict_mode="complement") - base)
+            harm_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+                                         restrict_Q=harmQ) - base)
+            rand_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+                                         restrict_Q=Qrand) - base)
         except (ValueError, RuntimeError, IndexError):
             continue
-    for p in tw_pairs[:(4 if validate else 20)]:                                          # transport control
+
+    full_jud_d, tc_d = [], []                              # full->judgment (rider 0) + restricted->judgment
+    for p in tw_pairs:
         try:
             sp, tp = cc.patch_positions(model, p[0], p[1])
             jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
+            full_jud_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir) - jbase)
             tc_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
                                        restrict_Q=inp["Vbasis"]) - jbase)
         except (ValueError, RuntimeError, IndexError):
             continue
+
+    # behavioral generate-under-patch: does the full patch flip a baseline refusal to compliance?
+    behav = {"n": 0, "base_refusals": 0, "flips_to_comply": 0}
+    for p in rt[:(3 if validate else 8)]:
+        try:
+            sp, tp = cc.patch_positions(model, p["following"], p["violating"])
+            base_ref = is_refusal(cc.generate_plain(model, p["violating"]))
+            patched_ref = is_refusal(cc.generate_under_patch(model, p["following"], p["violating"],
+                                                             sp, tp, args.layer))
+            behav["n"] += 1
+            behav["base_refusals"] += int(base_ref)
+            behav["flips_to_comply"] += int(base_ref and not patched_ref)
+        except (ValueError, RuntimeError, IndexError):
+            continue
+
+    # L15 H15-style anti-refusal discriminator: mean-ablate the most-negative-specificity top head;
+    # on benign (norm-following) requests it should INCREASE over-refusal.
+    anti = min(top_heads, key=lambda h: spec[h]["specificity"])
+    disc = None
+    if spec[anti]["specificity"] < 0:
+        benign = [p["following"] for p in rt[:(4 if validate else 12)]]
+        disc = cc.head_mean_ablation_refusal_rate(model, benign, anti[0], anti[1], is_refusal)
+
     mde_ref = cc.mde_bootstrap(full_d + restr_d, rng2) if len(full_d + restr_d) > 2 else float("inf")
-    mde_jud = cc.mde_bootstrap(tc_d, rng2) if len(tc_d) > 2 else float("inf")
+    mde_jud = cc.mde_bootstrap(full_jud_d + tc_d, rng2) if len(full_jud_d + tc_d) > 2 else float("inf")
+    _m = lambda a: round(float(np.mean(a)), 4) if a else None
+    ror = (cc.ratio_of_ratios(full_d, restr_d, full_jud_d, tc_d, rng2)
+           if len(full_d) > 2 and len(full_jud_d) > 2 else None)
     cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
-             "cell_a_full_refusal_delta_mean": round(float(np.mean(full_d)), 4) if full_d else None,
-             "cell_b_restricted_refusal_delta_mean": round(float(np.mean(restr_d)), 4) if restr_d else None,
-             "transport_control_judgment_delta_mean": round(float(np.mean(tc_d)), 4) if tc_d else None,
+             "cell_a_full_refusal_delta_mean": _m(full_d),
+             "cell_b_restricted_refusal_delta_mean": _m(restr_d),
+             "complement_refusal_delta_mean": _m(compl_d),          # expect: moves refusal
+             "harm_restricted_refusal_delta_mean": _m(harm_d),      # expect: moves refusal if reads harm
+             "random_rank3_refusal_delta_mean": _m(rand_d),         # control: expect ~0
+             "full_judgment_delta_mean": _m(full_jud_d),            # RIDER 0
+             "transport_control_judgment_delta_mean": _m(tc_d),
              "mde_refusal": round(mde_ref, 4), "mde_judgment": round(mde_jud, 4),
-             "cell_b_verdict": cc.cell_b_verdict(float(np.mean(full_d)) if full_d else 0.0,
-                                                 float(np.mean(restr_d)) if restr_d else 0.0,
-                                                 float(np.mean(tc_d)) if tc_d else 0.0,
-                                                 mde_ref, mde_jud)}
+             "ratio_of_ratios": ror,                                # Amendment 3 PRIMARY verdict
+             "cell_b_verdict_absolute": cc.cell_b_verdict(         # the Amendment-1 absolute gate (continuity)
+                 float(np.mean(full_d)) if full_d else 0.0, float(np.mean(restr_d)) if restr_d else 0.0,
+                 float(np.mean(tc_d)) if tc_d else 0.0, mde_ref, mde_jud),
+             "behavioral_generate_under_patch": behav,
+             "anti_refusal_discriminator": disc}
 
     result = {"model": args.model, "key": args.key, "layer": args.layer,
               "reconstruction": st1["reconstruction"], "reconstruction_ok": st1["reconstruction_ok"],
@@ -163,13 +213,20 @@ def main() -> None:
               "top_heads": [{"head": list(h), **spec[h]} for h in top_heads],
               "sparsity_curve": ks["sparsity_curve"], "stage2": st2,
               "screen_counts": screened["counts"], "cells": cells,
-              "note": "cells (c) XSTest generalization + (d) mean/resample head ablation deferred to "
-                      "the analysis follow-up; (a)/(b)/transport-control run here (projection readouts)"}
+              "note": "Amendment 3: ratio_of_ratios is the PRIMARY verdict (full->judgment = rider 0, now "
+                      "logged); complement/harm/random cells + behavioral flips + anti-refusal "
+                      "discriminator run here (projection readouts + generate-under-patch). Stage-2 "
+                      "earlier-layer reads use the shared residual basis (cross-layer approximation)."}
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
+    ph_keys = list(st1["per_head_contrib"].keys())          # per-head arrays for the standardized rider
+    ph_arr = np.stack([st1["per_head_contrib"][k] for k in ph_keys]) if ph_keys else np.zeros((0, hidden))
     np.savez(out / f"c1_inputs_{args.key}.npz", refusal=inp["refusal"], harm=inp["harm"],
              Vbasis=inp["Vbasis"], channel_act=inp["channel_act"], layer=args.layer,
              cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
-             transport_control_deltas=np.array(tc_d))  # per-unit saves (compute-ordering)
+             cell_complement_deltas=np.array(compl_d), cell_harm_deltas=np.array(harm_d),
+             cell_random_deltas=np.array(rand_d), full_judgment_deltas=np.array(full_jud_d),
+             transport_control_deltas=np.array(tc_d),
+             per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
     (out / f"c1_session_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps({k: v for k, v in result.items() if k not in ("sparsity_curve",)}, indent=2))
     if not st1["reconstruction_ok"]:

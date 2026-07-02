@@ -67,6 +67,55 @@ def ablation_outlier(refusal_delta_top: float, random_head_deltas: list[float]) 
             "head_specific": bool(refusal_delta_top < q10)}
 
 
+def ratio_of_ratios(full_ref, restr_ref, full_jud, restr_jud, rng, b: int = 2000,
+                    m_ratio: float = 0.15) -> dict:
+    """Amendment 3 verdict test (pure, unit-tested). Compare the fraction of each full-patch effect
+    that survives V_moral restriction: R_refusal = mean(restr_ref)/mean(full_ref) on request-twins,
+    R_judgment = mean(restr_jud)/mean(full_jud) on compositional twins. Bootstrap the difference,
+    resampling each twin set independently. reads_non_vmoral_features STANDS iff (R_j - R_r) >=
+    m_ratio AND the 95% CI is entirely positive; CI includes 0 -> under_transfer (rank sweep); CI
+    entirely negative -> reads_vmoral_more (surprising, refusal keeps MORE V_moral than judgment)."""
+    fr, rr = np.asarray(full_ref, float), np.asarray(restr_ref, float)
+    fj, rj = np.asarray(full_jud, float), np.asarray(restr_jud, float)
+    R_ref, R_jud = float(rr.mean() / fr.mean()), float(rj.mean() / fj.mean())
+    diffs = []
+    for _ in range(b):
+        i = rng.integers(0, len(fr), len(fr))
+        j = rng.integers(0, len(fj), len(fj))
+        diffs.append(rj[j].mean() / fj[j].mean() - rr[i].mean() / fr[i].mean())
+    lo, hi = (float(x) for x in np.percentile(diffs, [2.5, 97.5]))
+    diff = R_jud - R_ref
+    if lo > 0:
+        verdict = "reads_non_vmoral_features" if diff >= m_ratio else \
+                  "reads_non_vmoral_features_small_margin"
+    elif hi < 0:
+        verdict = "reads_vmoral_more"
+    else:
+        verdict = "under_transfer"       # ratios comparable -> redesign with the rank sweep
+    return {"R_refusal": round(R_ref, 4), "R_judgment": round(R_jud, 4), "diff": round(diff, 4),
+            "ci": [round(lo, 4), round(hi, 4)], "ci_excludes_0": bool(lo > 0 or hi < 0),
+            "stands": bool(verdict == "reads_non_vmoral_features"), "verdict": verdict,
+            "m_ratio": m_ratio}
+
+
+def random_ortho_basis(hidden: int, k: int, rng, exclude_Q=None) -> np.ndarray:
+    """Random rank-k orthonormal basis (optionally orthogonalized against exclude_Q's columns) for
+    the random-rank-k restricted CONTROL -- shows the V_moral restriction is not 'any rank-k fails'."""
+    M = rng.standard_normal((hidden, k))
+    if exclude_Q is not None:
+        M = M - exclude_Q @ (exclude_Q.T @ M)
+    Q, _ = np.linalg.qr(M)
+    return Q[:, :k]
+
+
+def rankk_moral_basis(source_dirs: list, k: int) -> np.ndarray:
+    """Over-complete moral basis truncated to rank k for the rank sweep k in {1,3,8,16}: QR of the
+    stacked source directions (per-source mean_content dirs), then the first k columns. Rank is
+    capped at the number of available source directions."""
+    Q, _ = np.linalg.qr(np.stack(source_dirs, axis=1))
+    return Q[:, :min(k, Q.shape[1])]
+
+
 # --------------------------- patch mechanics (model-dependent; pod) ---------------------------
 
 def _templated(model, text: str) -> str:
@@ -115,39 +164,55 @@ def _resid_at(model, text, layer, positions):
     return cap["x"][positions]  # (len(pos), hidden)
 
 
-def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None,
-                restrict_Q=None):
-    """Patch src's content into tgt at `layer`; return the decision-token projection onto r_hat read
-    at `read_layer` (default = layer). Length-agnostic: the src flipped span is MEAN-POOLED to one
-    content vector and broadcast across tgt's flipped-span positions (an aggregate-content swap, so
-    differently-tokenized moral-intent spans are comparable). FULL replaces the tgt content vector;
-    RESTRICTED (restrict_Q hidden,k) swaps only the in-subspace component (tgt keeps its off-subspace
-    part). tgt positions guarded against the current seq length (safe under KV-cached decoding)."""
-    import torch
-    read_layer = layer if read_layer is None else read_layer
-    src_resid = _resid_at(model, src, layer, src_pos).mean(0, keepdim=True)   # (1, hidden) content mean
-    Q = None if restrict_Q is None else torch.tensor(restrict_Q, dtype=src_resid.dtype,
-                                                     device=src_resid.device)
-    if Q is not None:
-        src_resid = (src_resid @ Q) @ Q.T                       # src's in-subspace component only
-    r = torch.tensor(_unit(r_hat), dtype=torch.float32, device=model._device)
-    proj = {}
-
+def _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode):
+    """Forward-pre-hook that swaps content at tgt_pos. FULL (Q None): replace with src_comp.
+    SUBSPACE: swap only the in-Q component (tgt keeps off-Q). COMPLEMENT: swap only the off-Q
+    component (tgt keeps its in-Q part) -- the direct 'refusal reads NON-V_moral' confirmation."""
     def patch_hook(module, inp):
         x = inp[0]
         pos = [p for p in tgt_pos if p < x.shape[1]]
         if pos:
             cur = x[0, pos, :]
-            x[0, pos, :] = (cur - (cur @ Q) @ Q.T + src_resid) if Q is not None \
-                else src_resid.expand(len(pos), -1)
+            if Q is None:
+                x[0, pos, :] = src_comp.expand(len(pos), -1)
+            elif restrict_mode == "complement":
+                x[0, pos, :] = (cur @ Q) @ Q.T + src_comp       # keep tgt in-Q, swap src off-Q
+            else:                                               # subspace
+                x[0, pos, :] = cur - (cur @ Q) @ Q.T + src_comp  # keep tgt off-Q, swap src in-Q
         return (x,) + inp[1:]
+    return patch_hook
+
+
+def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None,
+                restrict_Q=None, restrict_mode="subspace"):
+    """Patch src's content into tgt at `layer`; return the decision-token projection onto r_hat read
+    at `read_layer` (default = layer). Length-agnostic: the src flipped span is MEAN-POOLED to one
+    content vector and broadcast across tgt's flipped-span positions (an aggregate-content swap, so
+    differently-tokenized moral-intent spans are comparable). Modes: FULL (restrict_Q None) replaces
+    the tgt content vector; SUBSPACE (restrict_Q hidden,k) swaps only the in-subspace component;
+    COMPLEMENT swaps only the off-subspace component (Amendment 3 confirmatory cell). tgt positions
+    guarded against the current seq length (safe under KV-cached decoding)."""
+    import torch
+    read_layer = layer if read_layer is None else read_layer
+    src_resid = _resid_at(model, src, layer, src_pos).mean(0, keepdim=True)   # (1, hidden) content mean
+    Q = None if restrict_Q is None else torch.tensor(restrict_Q, dtype=src_resid.dtype,
+                                                     device=src_resid.device)
+    if Q is None:
+        src_comp = src_resid
+    elif restrict_mode == "complement":
+        src_comp = src_resid - (src_resid @ Q) @ Q.T            # src's off-subspace component
+    else:
+        src_comp = (src_resid @ Q) @ Q.T                        # src's in-subspace component
+    r = torch.tensor(_unit(r_hat), dtype=torch.float32, device=model._device)
+    proj = {}
 
     def read_hook(module, inp, out):
         t = out[0] if isinstance(out, tuple) else out
         proj["p"] = float(t[0, -1, :].float() @ r)
 
     tok = model.tokenizer
-    h1 = model._get_layer_module(layer).register_forward_pre_hook(patch_hook)
+    h1 = model._get_layer_module(layer).register_forward_pre_hook(
+        _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode))
     h2 = model._get_layer_module(read_layer).register_forward_hook(read_hook)
     try:
         with torch.no_grad():
@@ -174,3 +239,95 @@ def baseline_proj(model, text: str, read_layer: int, r_hat) -> float:
     finally:
         h.remove()
     return cap["p"]
+
+
+def generate_plain(model, tgt: str, max_tokens: int = 48) -> str:
+    """Chat-templated greedy completion with no patch (the behavioral baseline)."""
+    import torch
+    tok = model.tokenizer
+    ids = tok(_templated(model, tgt), return_tensors="pt").to(model._device)
+    with torch.no_grad():
+        out = model.model.generate(**ids, max_new_tokens=max_tokens, do_sample=False)
+    return tok.decode(out[0, ids["input_ids"].shape[1]:], skip_special_tokens=True)
+
+
+def generate_under_patch(model, src, tgt, src_pos, tgt_pos, layer, restrict_Q=None,
+                         restrict_mode="subspace", max_tokens: int = 48) -> str:
+    """Install the interchange patch (same modes as `interchange`) and GENERATE, returning the
+    completion text for behavioral refusal classification -- the behavioral upgrade from the
+    projection readout. The patch fires only on the prefill forward (the tgt_pos guard filters it out
+    during KV-cached decode, where seq len is 1)."""
+    import torch
+    src_resid = _resid_at(model, src, layer, src_pos).mean(0, keepdim=True)
+    Q = None if restrict_Q is None else torch.tensor(restrict_Q, dtype=src_resid.dtype,
+                                                     device=src_resid.device)
+    if Q is None:
+        src_comp = src_resid
+    elif restrict_mode == "complement":
+        src_comp = src_resid - (src_resid @ Q) @ Q.T
+    else:
+        src_comp = (src_resid @ Q) @ Q.T
+    tok = model.tokenizer
+    ids = tok(_templated(model, tgt), return_tensors="pt").to(model._device)
+    tgt_len = ids["input_ids"].shape[1]
+    pos = [p for p in tgt_pos if p < tgt_len]
+    h = model._get_layer_module(layer).register_forward_pre_hook(
+        _patch_hook_factory(pos, src_comp, Q, restrict_mode))
+    try:
+        with torch.no_grad():
+            out = model.model.generate(**ids, max_new_tokens=max_tokens, do_sample=False)
+    finally:
+        h.remove()
+    return tok.decode(out[0, tgt_len:], skip_special_tokens=True)
+
+
+def head_mean_ablation_refusal_rate(model, prompts, layer, head, is_refusal, ref_prompts=None,
+                                    max_tokens: int = 48) -> dict:
+    """Mean-ablate a single attention head (replace its o_proj input slice z_h with the reference-set
+    mean -> the head writes its mean contribution, on-distribution, with no variation; NOT zeroing)
+    and measure the refusal rate of the completions on `prompts`. For the L15 H15 anti-refusal
+    discriminator: on benign (norm-following) prompts, ablating it should INCREASE over-refusal."""
+    import torch
+    cfg = model.model.config
+    head_dim = getattr(cfg, "head_dim", cfg.hidden_size // cfg.num_attention_heads)
+    sl = slice(head * head_dim, (head + 1) * head_dim)
+    tok = model.tokenizer
+    oproj = model._get_layer_module(layer).self_attn.o_proj
+    ref = ref_prompts if ref_prompts is not None else prompts
+
+    zs = []                                       # decision-token z_h over the reference set
+    def cap(m, inp):
+        zs.append(inp[0][0, -1, sl].detach().float())
+    hc = oproj.register_forward_pre_hook(cap)
+    try:
+        with torch.no_grad():
+            for p in ref:
+                model.model(**tok(_templated(model, p), return_tensors="pt").to(model._device))
+    finally:
+        hc.remove()
+    mean_z = torch.stack(zs).mean(0).to(model._dtype)
+
+    def ablate(m, inp):
+        z = inp[0]
+        z[0, :, sl] = mean_z
+        return (z,) + inp[1:]
+
+    def rate(hooks):
+        n = 0
+        for p in prompts:
+            ids = tok(_templated(model, p), return_tensors="pt").to(model._device)
+            hs = [oproj.register_forward_pre_hook(ablate)] if hooks else []
+            try:
+                with torch.no_grad():
+                    out = model.model.generate(**ids, max_new_tokens=max_tokens, do_sample=False)
+            finally:
+                for h in hs:
+                    h.remove()
+            n += int(is_refusal(tok.decode(out[0, ids["input_ids"].shape[1]:], skip_special_tokens=True)))
+        return n / max(1, len(prompts))
+
+    base, abl = rate(False), rate(True)
+    return {"layer": layer, "head": head, "n_prompts": len(prompts),
+            "baseline_refusal_rate": round(base, 4), "ablated_refusal_rate": round(abl, 4),
+            "over_refusal_increase": round(abl - base, 4),
+            "anti_over_refusal_head": bool(abl - base > 0)}

@@ -212,6 +212,47 @@ def test_causal_logic():
     check("ablation within floor -> not head-specific", not ao2["head_specific"])
 
 
+def test_amendment3_cells():
+    print("Amendment 3 cells (ratio-of-ratios verdict + control bases):")
+    rng = np.random.default_rng(3)
+
+    def arrs(Rr, Rj, n=40, noise=0.01):
+        # full effects ~ -0.1 (refusal) / +0.1 (judgment); restricted = R * full + small noise
+        fr = -0.1 + noise * rng.standard_normal(n)
+        rr = Rr * fr + noise * rng.standard_normal(n)
+        fj = 0.1 + noise * rng.standard_normal(n)
+        rj = Rj * fj + noise * rng.standard_normal(n)
+        return fr, rr, fj, rj
+
+    fr, rr, fj, rj = arrs(0.23, 0.80)                      # V_moral keeps 80% of judgment, 23% of refusal
+    v = cc.ratio_of_ratios(fr, rr, fj, rj, rng)
+    check("reads_non_vmoral_features when R_judgment >> R_refusal",
+          v["verdict"] == "reads_non_vmoral_features" and v["stands"], str(v["verdict"]))
+    fr, rr, fj, rj = arrs(0.50, 0.50)                      # equal transfer fractions
+    v = cc.ratio_of_ratios(fr, rr, fj, rj, rng)
+    check("under_transfer when the ratios are comparable (CI includes 0)",
+          v["verdict"] == "under_transfer" and not v["ci_excludes_0"], str(v["verdict"]))
+    fr, rr, fj, rj = arrs(0.80, 0.20)                      # refusal keeps MORE V_moral than judgment
+    v = cc.ratio_of_ratios(fr, rr, fj, rj, rng)
+    check("reads_vmoral_more when R_judgment < R_refusal", v["verdict"] == "reads_vmoral_more", str(v["verdict"]))
+    fr, rr, fj, rj = arrs(0.30, 0.40)                      # positive but small (< M_ratio 0.15)
+    v = cc.ratio_of_ratios(fr, rr, fj, rj, rng)
+    check("small-margin branch when CI excludes 0 but diff < M_ratio",
+          v["verdict"] == "reads_non_vmoral_features_small_margin" and not v["stands"], str(v["verdict"]))
+
+    # control bases
+    Qr = cc.random_ortho_basis(64, 3, rng)
+    check("random_ortho_basis orthonormal rank-3", Qr.shape == (64, 3)
+          and np.allclose(Qr.T @ Qr, np.eye(3), atol=1e-6))
+    Vb, _ = np.linalg.qr(rng.standard_normal((64, 3)))
+    Qx = cc.random_ortho_basis(64, 3, rng, exclude_Q=Vb)
+    check("random_ortho_basis excludes the V_moral subspace", float(np.linalg.norm(Vb.T @ Qx)) < 1e-6,
+          f"{float(np.linalg.norm(Vb.T @ Qx)):.2e}")
+    srcs = [s1._unit(rng.standard_normal(64)) for _ in range(3)]
+    check("rankk_moral_basis caps at available source rank",
+          cc.rankk_moral_basis(srcs, 2).shape == (64, 2) and cc.rankk_moral_basis(srcs, 8).shape[1] == 3)
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
@@ -221,6 +262,7 @@ def main():
     test_reordered_norm_fold()
     test_stage2_math()
     test_causal_logic()
+    test_amendment3_cells()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)
