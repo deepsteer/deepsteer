@@ -213,7 +213,7 @@ def main() -> None:
     ap.add_argument("--persona-npz", required=False)
     ap.add_argument("--act-sample-npz", required=False)
     ap.add_argument("--harmful-eval",
-                    default=str(_P5 / "refusal_prompts.json"))
+                    default=str(_P5.parent / "refusal_prompts.json"))  # paper5 root, not scripts/
     ap.add_argument("--out", default=str(HERE.parent / "outputs"))
     ap.add_argument("--no-ablation", action="store_true", help="skip R3(iii) cross-ablation")
     args = ap.parse_args()
