@@ -42,3 +42,15 @@ and Direction-2 R2/R3/R5/R8 for Qwen/Llama. Does **not** affect OLMo-based numbe
 families" is a portable caution for anyone building moral/refusal/concept subspaces and testing them
 against activation-space nulls on Llama/Qwen — the field's default panel. It belongs in the methods
 section, not a footnote.
+
+**Paper 6 back-audit (2026-07-01, zero-GPU — rider d, CLEAN, no revision needed).** Paper 6's
+Qwen/Llama geometric cells do **not** use the vulnerable null: `exp2_framework_geometry` uses a
+**permutation test** (observed statistics ~0.01, unsaturated), and the refusal-morality geometry is
+a **raw projection fraction** with no covariance-matched null — and those fractions are low and
+un-inflated (`moral_subspace_projection_fraction`: OLMo 0.104, Qwen 0.127, Llama 0.071; mean|cos|
+0.04–0.07). Paper 6 also built its MFT subspace on the **base** model, whose foundation directions
+did not collapse onto the outlier dim. So the degeneracy is confined to the **covariance-matched
+projection null applied to D2's instruct-model `V_moral`**; no Paper 6 number changes. Llama's
+behavioral results were never at risk (they don't use the null). Paper 6 saved no `act_sample` for
+Qwen/Llama, but since no covariance null was used there, no standardized re-audit is required (so no
+`MISSING_ARTIFACTS` rider is filed).
