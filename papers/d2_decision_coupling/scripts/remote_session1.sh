@@ -12,6 +12,14 @@
 # Per model the sequence is: extract V_moral source dirs + refusal + persona + act_sample in the
 # model's OWN space (directions never transfer), then B1 (judgment-decision keystone), B3
 # (non-moral control dirs), B5 (moral fragility of refusal). B3 rotate (R6) runs on OLMo base+SFT.
+#
+# CHUNKING into ~4 h pods (B5's noise sweep is the cost; extract+B1+B3 are cheap). Each launch is
+# a fresh pod, but rp_sync_up re-uploads the per-model .npz a prior chunk rsync'd back, so a b5
+# chunk reuses the extract chunk's directions. Recommended 3-chunk split (env on the launch line):
+#   chunk 1 (~2-3 h):  STEPS=extract,b1,b3,rotate  MODELS="olmo3 qwen25 llama31"
+#   chunk 2 (~3-4 h):  STEPS=b5                     MODELS="olmo3 qwen25"   B5_N_RANDOM=8
+#   chunk 3 (~2-4 h):  STEPS=b5                     MODELS="llama31"        B5_N_RANDOM=8
+# (drop to one model per b5 chunk, or lower B5_N_RANDOM / B5_SIGMA_GRID, if a chunk risks > 4 h.)
 # Drops .session_done on exit so the billed pod never leaks.
 set -uo pipefail
 
@@ -48,10 +56,19 @@ if [ "$VALIDATE" = "1" ]; then
   exit 0
 fi
 
-# ---- per-model real run ----
+# ---- per-model real run (CHUNKABLE via MODELS + STEPS for ~4 h pod sessions) ----
+# MODELS: space-separated keys to process this chunk (default all three).
+# STEPS:  comma-separated subset of {extract,b1,b3,b5,rotate} (default all). 'extract' is the
+#         prerequisite for b1/b3/b5; when omitted, the per-model .npz from a prior chunk (rsync'd
+#         back, then re-uploaded by rp_sync_up) are reused. Chunk recipes are in the header.
+MODELS="${MODELS:-olmo3 qwen25 llama31}"
+STEPS="${STEPS:-extract,b1,b3,b5,rotate}"
+has_step () { case ",$STEPS," in *",$1,"*) return 0 ;; *) return 1 ;; esac; }
 # Panel: key -> instruct repo (base repo used only for the R6 rotation on OLMo).
 PANEL=("olmo3:allenai/Olmo-3-7B-Instruct" "qwen25:Qwen/Qwen2.5-7B-Instruct" "llama31:meta-llama/Llama-3.1-8B-Instruct")
+repo_for () { local k="$1" e; for e in "${PANEL[@]}"; do [ "${e%%:*}" = "$k" ] && { echo "${e#*:}"; return; }; done; }
 REFUSAL_PROMPTS="$REPO_DIR/papers/5_moral_alignment/refusal_prompts.json"
+echo ">> chunk: MODELS=[$MODELS] STEPS=[$STEPS]"
 
 extract_inputs () {  # $1=key $2=instruct_repo -> writes $OUT/$key/{vmoral_sources.npz,refusal.npz,persona_direction.npz,act_sample.npz}
   local key="$1" repo="$2" mdir="$OUT/$1"
@@ -90,32 +107,43 @@ print(">> assembled", mdir/"vmoral_sources.npz")
 PY
 }
 
-for entry in "${PANEL[@]}"; do
-  key="${entry%%:*}"; repo="${entry#*:}"; mdir="$OUT/$key"
+for key in $MODELS; do
+  repo="$(repo_for "$key")"; mdir="$OUT/$key"
+  [ -z "$repo" ] && { echo "WARN unknown model key '$key' (skipping)"; continue; }
   echo "==================== $key ($repo) ===================="
-  extract_inputs "$key" "$repo" || { echo "ERROR extract $key"; continue; }
+  if has_step extract; then
+    extract_inputs "$key" "$repo" || { echo "ERROR extract $key"; continue; }
+  else
+    echo ">> [$key] skip extract (reusing prior-chunk npz in $mdir)"
+  fi
   VM="$mdir/vmoral_sources.npz"; RF="$mdir/refusal.npz"
   PS="$mdir/persona_direction.npz"; AS="$mdir/act_sample.npz"
 
-  echo ">> [$key] B1 judgment-decision direction (R2/R3 + cross-ablation)"
-  python "$D2/scripts/b1_judgment_direction.py" --model "$repo" --key "$key" \
-    --vmoral-npz "$VM" --refusal-npz "$RF" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
-
-  echo ">> [$key] B3 non-moral control directions (R5 + fable-schema)"
-  python "$D2/scripts/b3_batched_extractions.py" --model "$repo" --key "$key" \
-    --vmoral-npz "$VM" --refusal-npz "$RF" --out "$mdir" || true
-
-  echo ">> [$key] B5 moral fragility of refusal (R8)"
-  python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
-    --vmoral-npz "$VM" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
+  if has_step b1; then
+    echo ">> [$key] B1 judgment-decision direction (R2/R3 + cross-ablation)"
+    python "$D2/scripts/b1_judgment_direction.py" --model "$repo" --key "$key" \
+      --vmoral-npz "$VM" --refusal-npz "$RF" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
+  fi
+  if has_step b3; then
+    echo ">> [$key] B3 non-moral control directions (R5 + fable-schema)"
+    python "$D2/scripts/b3_batched_extractions.py" --model "$repo" --key "$key" \
+      --vmoral-npz "$VM" --refusal-npz "$RF" --out "$mdir" || true
+  fi
+  if has_step b5; then
+    echo ">> [$key] B5 moral fragility of refusal (R8) [B5_N_RANDOM=${B5_N_RANDOM:-12}]"
+    python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
+      --vmoral-npz "$VM" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
+  fi
 done
 
 # ---- R6 rotation-specificity: OLMo-3 base + SFT control directions, then compare ----
-echo "==================== R6 rotation (OLMo-3 base + SFT) ===================="
-python "$D2/scripts/b3_batched_extractions.py" --model "allenai/Olmo-3-1025-7B" --key "olmo3_base" --out "$OUT" || true
-SFT_MODEL="${SFT_MODEL:-allenai/Olmo-3-7B-Instruct-SFT}"
-python "$D2/scripts/b3_batched_extractions.py" --model "$SFT_MODEL" --key "olmo3_sft" --out "$OUT" || true
-python "$D2/scripts/b3_batched_extractions.py" --mode rotate --base-tag olmo3_base --sft-tag olmo3_sft \
-  --moral-rotation-deg "${MORAL_ROTATION_DEG:-40}" --out "$OUT" || true
+if has_step rotate; then
+  echo "==================== R6 rotation (OLMo-3 base + SFT) ===================="
+  python "$D2/scripts/b3_batched_extractions.py" --model "allenai/Olmo-3-1025-7B" --key "olmo3_base" --out "$OUT" || true
+  SFT_MODEL="${SFT_MODEL:-allenai/Olmo-3-7B-Instruct-SFT}"
+  python "$D2/scripts/b3_batched_extractions.py" --model "$SFT_MODEL" --key "olmo3_sft" --out "$OUT" || true
+  python "$D2/scripts/b3_batched_extractions.py" --mode rotate --base-tag olmo3_base --sft-tag olmo3_sft \
+    --moral-rotation-deg "${MORAL_ROTATION_DEG:-40}" --out "$OUT" || true
+fi
 
-echo ">> session 1 done. rsync-back then analyze b1_result_*.json / b3_result_*.json / b5_fragility_*.json"
+echo ">> chunk done. rsync-back then analyze b1_result_*.json / b3_result_*.json / b5_fragility_*.json"

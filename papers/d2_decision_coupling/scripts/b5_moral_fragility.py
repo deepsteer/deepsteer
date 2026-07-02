@@ -39,9 +39,12 @@ from b1_judgment_direction import _ortho, is_refusal, load_vmoral_basis  # noqa:
 
 SEED = 0
 RATIO = 0.5  # sigma* = amplitude where harmful refusal < RATIO x baseline (Gate-A criterion form)
-N_RANDOM = 12  # covariance-matched random rank-3 subspaces (the floor distribution)
-N_DIR = 4      # in-subspace directions averaged per amplitude
-SIGMA_GRID = [0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0]  # Paper 1 grid, max 10
+# Cost knobs (env-overridable so the sweep can be sized to a ~4 h pod chunk). Defaults are the
+# full sweep; B5_N_RANDOM=8 + a 6-point grid roughly halves the generation count.
+N_RANDOM = int(os.environ.get("B5_N_RANDOM", "12"))  # covariance-matched random rank-3 subspaces
+N_DIR = int(os.environ.get("B5_N_DIR", "4"))          # in-subspace directions averaged per amplitude
+SIGMA_GRID = [float(x) for x in
+              os.environ.get("B5_SIGMA_GRID", "0,0.5,1,2,3,5,7,10").split(",")]  # Paper 1, max 10
 _unit = du.unit_vector
 
 
