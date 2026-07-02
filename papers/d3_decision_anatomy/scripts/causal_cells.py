@@ -117,15 +117,15 @@ def _resid_at(model, text, layer, positions):
 
 def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None,
                 restrict_Q=None):
-    """Patch src's content-position residuals into tgt at `layer`; return the decision-token
-    projection onto r_hat read at `read_layer` (default = layer). FULL swap replaces tgt content
-    with src content; RESTRICTED (restrict_Q hidden,k) swaps only the in-subspace component
-    (tgt keeps its off-subspace part). Positions must be length-matched (Amendment 1 exclusion)."""
+    """Patch src's content into tgt at `layer`; return the decision-token projection onto r_hat read
+    at `read_layer` (default = layer). Length-agnostic: the src flipped span is MEAN-POOLED to one
+    content vector and broadcast across tgt's flipped-span positions (an aggregate-content swap, so
+    differently-tokenized moral-intent spans are comparable). FULL replaces the tgt content vector;
+    RESTRICTED (restrict_Q hidden,k) swaps only the in-subspace component (tgt keeps its off-subspace
+    part). tgt positions guarded against the current seq length (safe under KV-cached decoding)."""
     import torch
-    if len(src_pos) != len(tgt_pos):
-        raise ValueError(f"length-mismatched flipped span ({len(src_pos)} vs {len(tgt_pos)}); excluded")
     read_layer = layer if read_layer is None else read_layer
-    src_resid = _resid_at(model, src, layer, src_pos)            # (k, hidden)
+    src_resid = _resid_at(model, src, layer, src_pos).mean(0, keepdim=True)   # (1, hidden) content mean
     Q = None if restrict_Q is None else torch.tensor(restrict_Q, dtype=src_resid.dtype,
                                                      device=src_resid.device)
     if Q is not None:
@@ -135,8 +135,11 @@ def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None
 
     def patch_hook(module, inp):
         x = inp[0]
-        cur = x[0, tgt_pos, :]
-        x[0, tgt_pos, :] = (cur - (cur @ Q) @ Q.T + src_resid) if Q is not None else src_resid
+        pos = [p for p in tgt_pos if p < x.shape[1]]
+        if pos:
+            cur = x[0, pos, :]
+            x[0, pos, :] = (cur - (cur @ Q) @ Q.T + src_resid) if Q is not None \
+                else src_resid.expand(len(pos), -1)
         return (x,) + inp[1:]
 
     def read_hook(module, inp, out):

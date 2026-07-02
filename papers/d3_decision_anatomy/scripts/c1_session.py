@@ -129,21 +129,21 @@ def main() -> None:
     for p in rt:
         try:
             sp, tp = cc.patch_positions(model, p["following"], p["violating"])
-        except ValueError:
+            base = cc.baseline_proj(model, p["violating"], args.layer, inp["refusal"])
+            full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
+                                         inp["refusal"]) - base)                          # cell (a)/full
+            restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
+                                          inp["refusal"], restrict_Q=inp["Vbasis"]) - base)  # cell (b)
+        except (ValueError, RuntimeError, IndexError):
             continue
-        base = cc.baseline_proj(model, p["violating"], args.layer, inp["refusal"])
-        full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
-                                     inp["refusal"]) - base)                              # cell (a)/full
-        restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
-                                      inp["refusal"], restrict_Q=inp["Vbasis"]) - base)   # cell (b) restricted
     for p in tw_pairs[:(4 if validate else 20)]:                                          # transport control
         try:
             sp, tp = cc.patch_positions(model, p[0], p[1])
-        except ValueError:
+            jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
+            tc_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
+                                       restrict_Q=inp["Vbasis"]) - jbase)
+        except (ValueError, RuntimeError, IndexError):
             continue
-        jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
-        tc_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
-                                   restrict_Q=inp["Vbasis"]) - jbase)
     mde_ref = cc.mde_bootstrap(full_d + restr_d, rng2) if len(full_d + restr_d) > 2 else float("inf")
     mde_jud = cc.mde_bootstrap(tc_d, rng2) if len(tc_d) > 2 else float("inf")
     cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
