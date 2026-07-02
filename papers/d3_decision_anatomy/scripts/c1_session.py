@@ -186,14 +186,21 @@ def main() -> None:
         except (ValueError, RuntimeError, IndexError):
             continue
 
+    # Amendment 4 severity ladder: psychometric curve + operating band -> behavioral out of the floor.
+    from deepsteer.datasets import get_severity_twins  # noqa: E402
+    sev = get_severity_twins()[:(10 if validate else None)]
+    psycho = cc.severity_psychometric(model, sev, is_refusal)
+    band_pairs = [(foll, viol) for (_f, lvl, foll, viol) in sev if lvl in psycho["operating_band"]]
+    behav_src = band_pairs or [(p["following"], p["violating"]) for p in rt]   # fall back if band empty
+
     # behavioral generate-under-patch: does the full patch flip a baseline refusal to compliance?
-    behav = {"n": 0, "base_refusals": 0, "flips_to_comply": 0}
-    for p in rt[:(3 if validate else 8)]:
+    behav = {"n": 0, "base_refusals": 0, "flips_to_comply": 0,
+             "source": "operating_band" if band_pairs else "request_twins_fallback"}
+    for foll, viol in behav_src[:(3 if validate else 10)]:
         try:
-            sp, tp = cc.patch_positions(model, p["following"], p["violating"])
-            base_ref = is_refusal(cc.generate_plain(model, p["violating"]))
-            patched_ref = is_refusal(cc.generate_under_patch(model, p["following"], p["violating"],
-                                                             sp, tp, args.layer))
+            sp, tp = cc.patch_positions(model, foll, viol)
+            base_ref = is_refusal(cc.generate_plain(model, viol))
+            patched_ref = is_refusal(cc.generate_under_patch(model, foll, viol, sp, tp, args.layer))
             behav["n"] += 1
             behav["base_refusals"] += int(base_ref)
             behav["flips_to_comply"] += int(base_ref and not patched_ref)
@@ -201,11 +208,11 @@ def main() -> None:
             continue
 
     # L15 H15-style anti-refusal discriminator: mean-ablate the most-negative-specificity top head;
-    # on benign (norm-following) requests it should INCREASE over-refusal.
+    # on benign (norm-following) requests it should INCREASE over-refusal (needs out-of-floor benign).
     anti = min(top_heads, key=lambda h: spec[h]["specificity"])
     disc = None
     if spec[anti]["specificity"] < 0:
-        benign = [p["following"] for p in rt[:(4 if validate else 12)]]
+        benign = [foll for foll, _ in behav_src][:(4 if validate else 12)]
         disc = cc.head_mean_ablation_refusal_rate(model, benign, anti[0], anti[1], is_refusal)
 
     mde_ref = cc.mde_bootstrap(full_d + restr_d, rng2) if len(full_d + restr_d) > 2 else float("inf")
@@ -247,6 +254,7 @@ def main() -> None:
              "cell_b_verdict_absolute": cc.cell_b_verdict(         # the Amendment-1 absolute gate (continuity)
                  float(np.mean(full_d)) if full_d else 0.0, float(np.mean(restr_d)) if restr_d else 0.0,
                  float(np.mean(tc_d)) if tc_d else 0.0, mde_ref, mde_jud),
+             "severity_psychometric": psycho,                      # Amendment 4 dose-response + operating band
              "behavioral_generate_under_patch": behav,
              "anti_refusal_discriminator": disc}
 
