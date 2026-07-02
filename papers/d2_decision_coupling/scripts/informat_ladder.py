@@ -279,8 +279,11 @@ def main():
                              "cross-position -- coupling settled by R3" % entry["position_invalid_reason"])
         result["positions"][p] = entry
 
-    valid = [p for p in POS_CLASSES if result["positions"][p]["position_valid"]]
-    result["primary_valid_position"] = valid[0] if valid else None
+    # Prefer mean_content (the raw mean-pooling analog -> apples-to-apples format-robustness read and
+    # the B5 injection subspace), then last_content, then the declared decision site.
+    PRIMARY_PREF = ["mean_content", "last_content", "final_pre_assistant"]
+    result["primary_valid_position"] = next(
+        (p for p in PRIMARY_PREF if result["positions"][p]["position_valid"]), None)
     result["pr_profile"] = {p: result["positions"][p]["participation_ratio"] for p in POS_CLASSES}
 
     # Save the chat V_moral for B5 from the VALID content position (Amendment 2 rider 6): inject
