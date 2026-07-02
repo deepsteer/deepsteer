@@ -69,12 +69,21 @@ def ablation_outlier(refusal_delta_top: float, random_head_deltas: list[float]) 
 
 # --------------------------- patch mechanics (model-dependent; pod) ---------------------------
 
-def patch_positions(model, a: str, b: str) -> tuple[list[int], list[int]]:
-    """Token indices of the flipped content span in each member (shared-prefix + flipped-span rule,
-    Amendment 1). Returns (idx_a, idx_b); raises if the pair cannot be aligned within budget."""
+def _templated(model, text: str) -> str:
+    """Chat-template so the last token is the decision site (final_pre_assistant), matching where
+    refusal/judgment live (D2 convention)."""
     tok = model.tokenizer
-    ta = tok(a, add_special_tokens=False)["input_ids"]
-    tb = tok(b, add_special_tokens=False)["input_ids"]
+    return (tok.apply_chat_template([{"role": "user", "content": text}], tokenize=False,
+                                    add_generation_prompt=True)
+            if getattr(tok, "chat_template", None) else text)
+
+
+def patch_positions(model, a: str, b: str) -> tuple[list[int], list[int]]:
+    """Token indices of the flipped content span in each (chat-templated) member (shared-prefix +
+    flipped-span rule, Amendment 1). Raises if the pair cannot be aligned within budget."""
+    tok = model.tokenizer
+    ta = tok(_templated(model, a), add_special_tokens=False)["input_ids"]
+    tb = tok(_templated(model, b), add_special_tokens=False)["input_ids"]
     p = 0
     for x, y in zip(ta, tb):
         if x != y:
@@ -100,7 +109,7 @@ def _resid_at(model, text, layer, positions):
         lambda m, inp: cap.__setitem__("x", inp[0][0].detach().clone()))
     try:
         with torch.no_grad():
-            model.model(**tok(text, return_tensors="pt").to(model._device))
+            model.model(**tok(_templated(model, text), return_tensors="pt").to(model._device))
     finally:
         hh.remove()
     return cap["x"][positions]  # (len(pos), hidden)
@@ -139,7 +148,26 @@ def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None
     h2 = model._get_layer_module(read_layer).register_forward_hook(read_hook)
     try:
         with torch.no_grad():
-            model.model(**tok(tgt, return_tensors="pt").to(model._device))
+            model.model(**tok(_templated(model, tgt), return_tensors="pt").to(model._device))
     finally:
         h1.remove(); h2.remove()
     return proj["p"]
+
+
+def baseline_proj(model, text: str, read_layer: int, r_hat) -> float:
+    """Unpatched decision-token projection onto r_hat (the patch baseline)."""
+    import torch
+    tok = model.tokenizer
+    r = torch.tensor(_unit(r_hat), dtype=torch.float32, device=model._device)
+    cap = {}
+
+    def read_hook(module, inp, out):
+        t = out[0] if isinstance(out, tuple) else out
+        cap["p"] = float(t[0, -1, :].float() @ r)
+    h = model._get_layer_module(read_layer).register_forward_hook(read_hook)
+    try:
+        with torch.no_grad():
+            model.model(**tok(_templated(model, text), return_tensors="pt").to(model._device))
+    finally:
+        h.remove()
+    return cap["p"]

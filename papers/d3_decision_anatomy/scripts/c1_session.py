@@ -117,17 +117,58 @@ def main() -> None:
             st2[str(h)] = {"source_dist": r["source_dist"], **vs,
                            "classify": s2.classify_head(r["source_dist"], vs, band_min, null95)}
 
+    # ---- causal cells (a) + (b) + transport positive control (Amendment 1; projection readouts) ----
+    rng2 = np.random.default_rng(0)
+    tw = (screened["compositional_twins"] or manifest["compositional_twins"]["pairs"])
+    tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:(6 if validate else 40)]]
+    # judgment-decision direction = twin moral-status contrast at the decision token (transport readout)
+    jdir = (_unit(extract_positions(model, tw_pairs, [args.layer])["final_pre_assistant"][args.layer][0])
+            if tw_pairs else inp["harm"])
+    rt = (screened["request_twins"] or manifest["request_twins"]["pairs"])[:(6 if validate else None)]
+    full_d, restr_d, tc_d = [], [], []
+    for p in rt:
+        try:
+            sp, tp = cc.patch_positions(model, p["following"], p["violating"])
+        except ValueError:
+            continue
+        base = cc.baseline_proj(model, p["violating"], args.layer, inp["refusal"])
+        full_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
+                                     inp["refusal"]) - base)                              # cell (a)/full
+        restr_d.append(cc.interchange(model, p["following"], p["violating"], sp, tp, args.layer,
+                                      inp["refusal"], restrict_Q=inp["Vbasis"]) - base)   # cell (b) restricted
+    for p in tw_pairs[:(4 if validate else 20)]:                                          # transport control
+        try:
+            sp, tp = cc.patch_positions(model, p[0], p[1])
+        except ValueError:
+            continue
+        jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
+        tc_d.append(cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
+                                   restrict_Q=inp["Vbasis"]) - jbase)
+    mde_ref = cc.mde_bootstrap(full_d + restr_d, rng2) if len(full_d + restr_d) > 2 else float("inf")
+    mde_jud = cc.mde_bootstrap(tc_d, rng2) if len(tc_d) > 2 else float("inf")
+    cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
+             "cell_a_full_refusal_delta_mean": round(float(np.mean(full_d)), 4) if full_d else None,
+             "cell_b_restricted_refusal_delta_mean": round(float(np.mean(restr_d)), 4) if restr_d else None,
+             "transport_control_judgment_delta_mean": round(float(np.mean(tc_d)), 4) if tc_d else None,
+             "mde_refusal": round(mde_ref, 4), "mde_judgment": round(mde_jud, 4),
+             "cell_b_verdict": cc.cell_b_verdict(float(np.mean(full_d)) if full_d else 0.0,
+                                                 float(np.mean(restr_d)) if restr_d else 0.0,
+                                                 float(np.mean(tc_d)) if tc_d else 0.0,
+                                                 mde_ref, mde_jud)}
+
     result = {"model": args.model, "key": args.key, "layer": args.layer,
               "reconstruction": st1["reconstruction"], "reconstruction_ok": st1["reconstruction_ok"],
               "mlp": mf, "k": ks["k"], "channel_dim": int(Qc.shape[1]),
               "top_heads": [{"head": list(h), **spec[h]} for h in top_heads],
               "sparsity_curve": ks["sparsity_curve"], "stage2": st2,
-              "screen_counts": screened["counts"],
-              "note": "cells (a)/(b)/(c)/(d) run on the screened request-twins/twins with the transport "
-                      "positive control (causal_cells.py); wired in the full session"}
+              "screen_counts": screened["counts"], "cells": cells,
+              "note": "cells (c) XSTest generalization + (d) mean/resample head ablation deferred to "
+                      "the analysis follow-up; (a)/(b)/transport-control run here (projection readouts)"}
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     np.savez(out / f"c1_inputs_{args.key}.npz", refusal=inp["refusal"], harm=inp["harm"],
-             Vbasis=inp["Vbasis"], channel_act=inp["channel_act"], layer=args.layer)
+             Vbasis=inp["Vbasis"], channel_act=inp["channel_act"], layer=args.layer,
+             cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
+             transport_control_deltas=np.array(tc_d))  # per-unit saves (compute-ordering)
     (out / f"c1_session_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps({k: v for k, v in result.items() if k not in ("sparsity_curve",)}, indent=2))
     if not st1["reconstruction_ok"]:
