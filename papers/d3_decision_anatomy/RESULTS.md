@@ -84,10 +84,28 @@ transport twins (kept 114/200 by the judgment-flip screen):
 | cell (b) `V_moral`-restricted patch → refusal | **−0.0348** | 0.0451 | no |
 | transport control: restricted patch → judgment | **+0.0237** | 0.0202 | yes |
 
-Verdict: **`reads_non_vmoral_features`**, transport control passed. The full patch moves refusal; the
-`V_moral`-restricted patch, which is demonstrably able to move judgment, does not move refusal. The
-restricted effect (0.035) is 26% of the full effect (0.134) but is not resolvable from zero at
-n = 11.
+Verdict (provisional, see below): **`reads_non_vmoral_features`**, absolute transport control passed.
+The full patch moves refusal; the `V_moral`-restricted patch, which is demonstrably able to move
+judgment, does not move refusal. The restricted effect (0.035) is 26% of the full effect (0.134) but
+is not resolvable from zero at n = 11.
+
+### Amendment 3 — ratio-of-ratios verdict test (pending rider 0)
+
+The absolute transport control is necessary but not sufficient: a rank-3 restriction that
+under-transfers *every* outcome uniformly could clear it while the "reads non-`V_moral`" reading is
+wrong. Amendment 3 pre-registers a within-outcome comparison. `R_refusal = mean(restricted→refusal) /
+mean(full→refusal) = **0.261**` (95% CI **[0.113, 0.767]** — wide at n = 11). `R_judgment =
+mean(restricted→judgment) / mean(full→judgment)` is **not yet computable**: `full→judgment` was not
+logged in the first run (**rider 0**, to be measured in the OLMo-hardening pod). The verdict
+`reads_non_vmoral_features` **stands only if** `R_judgment − R_refusal ≥ 0.15` with a bootstrap CI
+excluding 0; if the ratios come back comparable, it reclassifies to `under_transfer` and cell-b is
+redesigned with a rank sweep before any panel run. The wide `R_refusal` CI is why the hardening
+session expands to n ≥ 25 request-twins and ≥ 2× transport headroom.
+
+**Bookkeeping note (to fix in the hardening run).** The first run screened 114/200 compositional
+twins for the transport control but the cell **capped the transport sample at 20**; the reported
+`n_twins_transport = 20` reflects the cap, not the screen. The hardening run raises the cap so the
+transport sample equals what the screen keeps, at the ≥ 2× MDE headroom target.
 
 ## What this settles
 
