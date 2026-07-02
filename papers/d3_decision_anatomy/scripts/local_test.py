@@ -18,6 +18,8 @@ import numpy as np  # noqa: E402
 
 import patch_stimuli as ps  # noqa: E402
 import stage1_attribution as s1  # noqa: E402
+import stage2_content as s2  # noqa: E402
+import causal_cells as cc  # noqa: E402
 from deepsteer.datasets import get_request_twins  # noqa: E402
 
 FAILS = []
@@ -137,12 +139,63 @@ def test_stage1_math():
     check("mlp_fraction > 0.5 -> jacobian branch", mf2["jacobian_branch"])
 
 
+def test_stage2_math():
+    print("Stage-2 content-transport math (synthetic):")
+    rng = np.random.default_rng(1)
+    d = 48
+    # spans: 3 t_inst positions, 4 content, 2 template
+    spans = {"t_inst": [0, 1, 2], "content": [3, 4, 5, 6], "template": [7, 8]}
+    attn = np.zeros(9); attn[[0, 1, 2]] = 0.8 / 3; attn[[3, 4, 5, 6]] = 0.15 / 4; attn[[7, 8]] = 0.05 / 2
+    sd = s2.source_distribution(attn, spans)
+    check("source dist sums ~1 + t_inst plurality", abs(sum(sd[c] for c in spans) - 1.0) < 1e-6
+          and sd["plurality"] == "t_inst", str(sd))
+    Vb, _ = np.linalg.qr(rng.standard_normal((d, 3)))
+    harm = s1._unit(rng.standard_normal(d))
+    vs_moral = s2.value_side(Vb @ rng.standard_normal(3), Vb, harm)      # read vec IN V_moral
+    vs_harm = s2.value_side(harm * 2.0, Vb, harm)                        # read vec = harm dir
+    check("read-in-Vmoral loads Vmoral high", vs_moral["vmoral_frac"] > 0.9)
+    check("read=harm loads harm high, Vmoral low", vs_harm["harm_abs_cos"] > 0.99
+          and vs_harm["vmoral_frac"] < 0.3)
+    cl = s2.classify_head({"plurality": "t_inst"}, {"vmoral_frac": 0.10, "harm_abs_cos": 0.60},
+                          band_min=0.5, null_q95=0.3)
+    check("copy-head-for-harm classified", cl["copy_head_for_harm"] and cl["label"] == "copy-head-for-harm")
+    cl2 = s2.classify_head({"plurality": "content"}, {"vmoral_frac": 0.62, "harm_abs_cos": 0.1},
+                           band_min=0.5, null_q95=0.3)
+    check("moral-content-reading classified", cl2["moral_content_reading"]
+          and cl2["label"] == "moral-content-reading")
+
+
+def test_causal_logic():
+    print("Causal-cell decision logic (Amendment 1):")
+    rng = np.random.default_rng(2)
+    # cell (b) four branches, mde_refusal=0.05, mde_judgment=0.05
+    v1 = cc.cell_b_verdict(0.02, 0.0, 0.2, 0.05, 0.05)   # full doesn't move
+    check("no_content_effect when full < MDE", v1["verdict"] == "no_content_effect")
+    v2 = cc.cell_b_verdict(0.3, 0.0, 0.01, 0.05, 0.05)   # full moves, restricted can't move judgment
+    check("uninformative when transport control fails", v2["verdict"] == "uninformative"
+          and not v2["transport_control_passed"])
+    v3 = cc.cell_b_verdict(0.3, 0.25, 0.2, 0.05, 0.05)   # restricted moves refusal
+    check("vmoral_is_read_substrate when restricted moves refusal",
+          v3["verdict"] == "vmoral_is_read_substrate" and v3["transport_control_passed"])
+    v4 = cc.cell_b_verdict(0.3, 0.0, 0.2, 0.05, 0.05)    # full moves, restricted moves judgment not refusal
+    check("reads_non_vmoral_features (the program-null-explainer)",
+          v4["verdict"] == "reads_non_vmoral_features" and v4["transport_control_passed"])
+    mde = cc.mde_bootstrap([0.1, -0.05, 0.2, 0.0, 0.15, -0.1], rng)
+    check("mde_bootstrap positive + reasonable", 0 < mde < 0.5, f"mde={mde:.3f}")
+    ao = cc.ablation_outlier(-0.6, [-0.1, -0.05, 0.0, -0.15, 0.02])
+    check("ablation outlier below random floor -> head-specific", ao["head_specific"])
+    ao2 = cc.ablation_outlier(-0.08, [-0.6, -0.5, -0.4, -0.3, -0.2])
+    check("ablation within floor -> not head-specific", not ao2["head_specific"])
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
     test_manifest()
     test_screen_logic()
     test_stage1_math()
+    test_stage2_math()
+    test_causal_logic()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)
