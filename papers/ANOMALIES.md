@@ -71,3 +71,40 @@ not resolvable by robustification alone; the **chat-format in-format ladder** (w
 space carries no >5%-variance dim, so it is outlier-free by construction) is the discriminator. This
 is a worked example of the entry's thesis: when standardization and projection-out disagree, the
 subspace is genuinely degenerate and needs a format/position change, not a null patch.
+
+---
+
+## A2 — The decision-site is a low-dimensional control-token bottleneck (band-below-null ⇒ position-invalid)
+
+**Date:** 2026-07-01 · **Found in:** the D2 in-format ladder (`informat_ladder.py`), OLMo-3-Instruct.
+
+**Observation.** The chat **`final_pre_assistant`** position (the assistant-header token — the
+decision site where the refusal gate and judgment-decision direction are defined) has a
+**participation ratio of 14.7** — a ~15-effective-dimensional channel — while content positions
+(`mean_content`) are full-rank-healthy. There the positive-control moral band **[0.40, 0.47] sits
+BELOW the covariance null (0.557)**: held-one-out moral directions project onto their own span *less*
+than random directions do, so the projection-fraction instrument has **no discriminating power**.
+It is **not** an outlier dim (top dim 0.2%) and **not** standardization-fixable (null stays 0.52).
+Three independent estimates converge on ~15 dims: `√(3/14.7) = 0.45` ↔ null_q95 0.557 ↔ the R3
+pairwise-|cos| null 0.41–0.51.
+
+**The general tell (portable).** **Band-below-null ⇒ position-invalid instrument.** The A1
+positive-control band is not just a yardstick for "moral-adjacent"; it is a **validity check on the
+measurement position**. Any projection-fraction result at a position where the positive control
+falls below the covariance null is uninterpretable, whatever the direction-of-interest does.
+
+**Reframe (a finding, not a failure).** The decision site being a narrow control channel is the
+*mechanism*. Stacked with A3 (refusal in a ≤q10-variance channel) and A5 (refusal does not
+crystallize from a pretraining precursor, cos 0.155): the refusal gate is a fresh post-training
+construction in a narrow control channel at a template-token bottleneck that moral content does not
+reach (band-below-null there, healthy at content positions). Content-vs-decision geometric
+orthogonality is therefore **architecturally guaranteed**, and any comprehension→decision coupling
+must be carried by the **attention heads writing into the bottleneck** — a concrete anatomical
+target for the causal (C1) follow-up. R3 (a decision-direction cosine, immune to the projection
+null) reads *stronger* under this lens: in a ~15-slot channel, judgment and refusal occupy different
+slots at |cos| below even the low-dim random level → active separation.
+
+**Fix + guard.** `participation_ratio` is a required type-block field; positions with PR < 30 are
+flagged position-invalid at extraction (`d2_decision_coupling/PREREGISTRATION.md` Amendment 2). The
+D1 reasoning-extension band rung (GPT-OSS P2 vs a raw-pooled band) inherits the same cross-position
+hazard and is being PR-audited + scoping-noted.

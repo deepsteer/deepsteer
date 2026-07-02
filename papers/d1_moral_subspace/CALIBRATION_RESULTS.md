@@ -162,6 +162,19 @@ GPT-OSS P2 point:
 **Next step (green-lit):** Phase B session 1 (B1 + B3 + B5) proceeds once this addendum lands;
 B3's GPT-OSS axis re-extraction closes the one Δ caveat. Nothing here reopens a G3 verdict.
 
+## Cross-position caveat on the reasoning-extension band rung (2026-07-01)
+
+The D2 in-format work (`../d2_decision_coupling/PREREGISTRATION.md` Amendment 2) showed that the
+moral-family **band** is position-specific and that a decision-adjacent token can be a low-rank
+bottleneck where the band drops below the covariance null. The reasoning-extension ladder here
+placed **GPT-OSS P2 = 0.52 against a band (0.65–0.76) computed from raw mean-pooled directions** — a
+**cross-position rung** (in-trace window vs raw-pooled band). **P2's null is position-matched, so
+"P2 crosses its null" stands**; but the **band comparison is cross-position** and inherits the
+mismatch. Pending fix (zero-GPU if the per-rollout activation hygiene held): a **PR audit of the
+P0–P3 windows** to confirm they are not low-rank bottlenecks, and a position-matched band. Until
+then the band-relative statements in the reasoning section are **scoped as cross-position**; the
+null-relative statements (P2 above/below its own position-matched null) are unaffected.
+
 ## Queued for B3 (`MISSING_ARTIFACTS.md`)
 
 - GPT-OSS + Think MFT directions (for the reasoning-tag MFT↔V_moral comparison).

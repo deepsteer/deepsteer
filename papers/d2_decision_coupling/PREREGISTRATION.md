@@ -339,3 +339,74 @@ never a silent edit.
     refusal 0.20 > controls 0.10 = strong-form FALSE; projout → refusal 0.21 < controls 0.45–0.55 =
     strong-form TRUE) → **not resolvable by robustification; the in-format chat ladder is the
     discriminator** (the chat space is outlier-free per (i)).
+
+- **2026-07-01 (Amendment 2 — decision-site bottleneck: position-validity rule + finalized verdicts;
+  pre-registered before the in-format verdict is finalized):** The in-format ladder ran on OLMo-3 and
+  surfaced a discovered, outcome-independent property that reframes the whole in-format question.
+
+  **(1) Discovered property (measured).** The pre-declared PRIMARY position `final_pre_assistant`
+  (the assistant-header token) is a **~15-effective-dimension control channel** (participation ratio
+  **14.7**) — *not* an outlier artifact (top dim 0.2%) and *not* standardization-fixable (null 0.52
+  vs 0.56). Its positive-control band **[0.40, 0.47] sits BELOW the covariance null (0.557)**: moral
+  directions project onto their own span *less* than random, so the projection instrument has **no
+  power** there. Three independent estimates converge on ~15 dims: `√(3/14.7) = 0.45` (rank-3 null
+  median) ↔ measured `null_q95 = 0.557` ↔ the R3 pairwise-null 0.41–0.51 (random pairs in ~15 dims).
+
+  **(2) Position-validity RULE (pre-registered, general).** A position where the positive-control
+  band sits **below** the covariance null **fails the R1 ladder requirement** and is
+  **position-invalid** for projection-fraction tests. **PRIMARY switches by this rule, not by
+  outcome:** `final_pre_assistant` is invalid; the valid in-format position is **`mean_content`**
+  (band 0.54–0.64 ≫ null 0.28). Report BOTH positions' full numbers, including refusal-at-(invalid)-
+  PRIMARY = 0.497 < its 0.557 null — **nothing positive was suppressed by the switch**.
+
+  **(3) Verdicts (finalized under the valid position + R3).**
+  - **`V_moral` is FORMAT-ROBUST.** At the valid in-format position (`mean_content`) the band
+    0.54–0.64 ≈ raw 0.52–0.66 → the moral content subspace is register-consistent. The earlier
+    "register-scoped" reading is **RETRACTED** (it was the invalid-position artifact).
+  - **Decision coupling is settled by R3** (a decision-direction cosine + pairwise-cosine null,
+    position-valid by construction): **dissociation, panel-wide**. Under the bottleneck reading R3 is
+    *stronger*: in a ~15-slot channel, judgment and refusal still occupy **different** slots, at |cos|
+    below even the low-dim random level (OLMo/Llama) → **active separation**, not incidental
+    orthogonality.
+  - **R2/G3 (a decision direction onto the content `V_moral`) is declared NOT WELL-POSED
+    cross-position:** the decision directions live only at the control-token bottleneck, the content
+    subspace only at content positions; they **do not coexist at any single valid position**. This
+    non-coexistence **is the mechanism, not a limitation**.
+
+  **(4) Mechanistic synthesis (the finding).** Stacking A3 (refusal in a ≤q10-variance channel), A5
+  (refusal fresh post-training, cos 0.155 to proto-refusal), and this (decision site = ~15-dim
+  control-token bottleneck moral content does not reach): the refusal gate is a fresh post-training
+  construction in a narrow control channel at a template-token bottleneck, while moral content stays
+  at content positions. **Content-vs-decision geometric orthogonality is therefore architecturally
+  guaranteed**, and any comprehension→decision coupling must be carried by the **attention heads
+  that write into the bottleneck** — which hands **C1 a concrete anatomical target** (the heads
+  writing to the decision-site token), not a fishing expedition.
+
+  **(5) Type-block schema.** `participation_ratio` is now a **required** type-block field; positions
+  with **PR < 30** are **flagged position-invalid at extraction time**, not discovered at verdict
+  time.
+
+  **(6) B5 injection-site correction.** Inject into the **`mean_content`-extracted `V_moral` at
+  user-content token positions** (band layers, RMS from chat activations there), NOT the header token
+  — noising a subspace where it isn't represented tests nothing. This makes B5 a **causal
+  content→decision probe (a mini-C1)** on top of the R8 baseline; the R8 criterion (σ\*_moral outlier
+  below the random floor, 0.5× ratio) is unchanged.
+
+  **(7) Reflexive audit — D1's reasoning-extension band rung has the same disease.** GPT-OSS P2 =
+  0.52 was read against a moral-family band (0.65–0.76) computed from **raw mean-pooled** directions
+  — a **cross-position rung**. P2's null was position-matched, so **above-null stands**, but the BAND
+  comparison inherits the cross-position mismatch. Fix (zero-GPU if hygiene held): a **PR audit of the
+  P0–P3 windows** from saved per-rollout activations + a **cross-position scoping sentence** on the
+  band rung in the D1 reasoning section either way. Option-2 salvage: mean-pooling "refusal" over
+  content tokens does NOT relocate refusal — it manufactures a harmful-topic **content** direction
+  (the P2 confound in new clothes); re-typed as the **harm-content × `V_moral` (content×content)
+  cell** (Zhao harmfulness vs `V_moral`, both at `mean_content`) it is valuable — compute if
+  `mean_content` slices were saved, else ledger to `MISSING_ARTIFACTS.md`.
+
+  **(8) Procedural note.** The **positive-control band caught this** — without Phase A's ladder,
+  "band below null" is invisible and a false "register-scoped" claim ships. The calibration layer
+  paid for itself again.
+
+  **Spine preserved.** `M = 0.05`, the R-rules, NULL-publishable unchanged. The PRIMARY switch is by
+  the pre-existing R1 validity rule (band ≥ null), not by outcome; recorded before the verdict is
+  finalized.
