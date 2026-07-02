@@ -205,6 +205,11 @@ def test_informat_ladder() -> None:
         check("raw ladder reproduces committed R5_raw band", band_ok,
               f"{raw['moral_family_band']} vs {ref['moral_family_band']}")
         check("raw ladder reproduces committed R5_raw controls + refusal_p", ctrl_ok and refp_ok)
+        # Amendment 2: participation_ratio + position_valid are required type-block fields.
+        check("type block carries participation_ratio + position_valid",
+              "participation_ratio" in raw and "position_valid" in raw)
+        check("healthy raw position is position_valid (band>=null, PR>=30)",
+              raw["position_valid"] is True, f"PR={raw.get('participation_ratio')}")
     else:
         print("  [skip] raw-reproduction (chunk-1 artifacts not present locally)")
 

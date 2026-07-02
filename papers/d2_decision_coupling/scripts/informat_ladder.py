@@ -135,6 +135,18 @@ def injection_basis(sources, chat_sigma, standardize):
     return ortho([_unit(s) for s in sources])
 
 
+def participation_ratio(X: np.ndarray) -> float:
+    """(sum eig)^2 / sum(eig^2) of the centered covariance — the effective dimensionality. A low PR
+    marks a control-token bottleneck where the projection instrument loses power (ANOMALIES A2)."""
+    Xc = np.asarray(X, np.float64) - np.asarray(X, np.float64).mean(0)
+    ev = np.linalg.eigvalsh(np.cov(Xc, rowvar=False))
+    ev = ev[ev > 0]
+    return float((ev.sum() ** 2) / (ev ** 2).sum())
+
+
+PR_FLOOR = 30.0  # positions below this (or with band < null) are position-invalid (Amendment 2)
+
+
 def _null_q95_on(Q, Ac, rng, k=K):
     n = Ac.shape[0]
     return float(np.percentile([frac(Q, Ac.T @ rng.standard_normal(n)) for _ in range(k)], 95))
@@ -156,8 +168,14 @@ def ladder(sources, controls, persona, act_sample, tag, *, refusal=None, judgmen
     bnd, hv = band(S)
     c = {ck: round(frac(Q, std_unit(cv, sig)), 4) for ck, cv in controls.items()}
     c["persona"] = round(frac(Q, std_unit(persona, sig)), 4)
+    pr = round(participation_ratio(X), 1)
+    # Position-validity (Amendment 2): PR floor AND positive-control band must clear the null.
+    position_valid = bool(pr >= PR_FLOOR and bnd[0] >= q95)
     out = {"format": tag[0], "position_class": tag[1], "standardized": standardize,
            "sigma_provenance": act_sample.get("sigma_provenance", "act_sample @ (format,pos)"),
+           "participation_ratio": pr, "position_valid": position_valid,
+           "position_invalid_reason": (None if position_valid else
+                                       ("PR<30 bottleneck" if pr < PR_FLOOR else "band<null")),
            "null_q95": round(q95, 4), "moral_family_band": bnd, "heldout": hv, "c_controls": c}
     if refusal is not None:
         p_ref = round(frac(Q, std_unit(refusal, sig)), 4)
@@ -239,7 +257,7 @@ def main():
     refusal = _unit(np.load(args.refusal_npz)["refusal"].astype(np.float64)) if args.refusal_npz and Path(args.refusal_npz).exists() else None
     judgment = _unit(np.load(args.judgment_npz)["judgment_dir"].astype(np.float64)) if args.judgment_npz and Path(args.judgment_npz).exists() else None
 
-    result = {"model": args.model, "key": args.key, "layer": layer, "primary": PRIMARY,
+    result = {"model": args.model, "key": args.key, "layer": layer, "primary_declared": PRIMARY,
               "standardized": standardize, "positions": {}}
     for p in POS_CLASSES:
         tag = ("chat", p)
@@ -247,23 +265,36 @@ def main():
         sources = {s: src_pos[s][p][layer][0] for s in SRC}
         controls = {c: ctl_pos[c][p][layer][0] for c in CONTROLS}
         persona = per_pos[p][layer][0]
-        is_primary = p == PRIMARY
-        result["positions"][p] = ladder(
-            sources, controls, persona, acts, tag,
-            refusal=refusal if is_primary else None,
-            judgment=judgment if is_primary else None,
-            standardize=standardize, rng=np.random.default_rng(SEED))
+        is_decision = p == PRIMARY  # refusal/judgment are decision-site objects
+        entry = ladder(sources, controls, persona, acts, tag,
+                       refusal=refusal if is_decision else None,
+                       judgment=judgment if is_decision else None,
+                       standardize=standardize, rng=np.random.default_rng(SEED))
+        if is_decision and refusal is not None and not entry["position_valid"]:
+            # Amendment 2: R2/G3 NOT well-posed here -- decision directions and the content subspace
+            # do not coexist at a valid position; report the numbers but flag them (mechanism, not
+            # limitation). Coupling is settled by R3 (position-valid by construction).
+            entry["R2_G3_well_posed"] = False
+            entry["note"] = ("decision-site position invalid (%s); R2/G3 reported but NOT well-posed "
+                             "cross-position -- coupling settled by R3" % entry["position_invalid_reason"])
+        result["positions"][p] = entry
 
-    # Save the chat V_moral injection basis (model coords; standardized->mapped-back for outlier
-    # families) + chat persona + chat act_sample at PRIMARY, for B5 (Amendment 1 §7 rider 3).
+    valid = [p for p in POS_CLASSES if result["positions"][p]["position_valid"]]
+    result["primary_valid_position"] = valid[0] if valid else None
+    result["pr_profile"] = {p: result["positions"][p]["participation_ratio"] for p in POS_CLASSES}
+
+    # Save the chat V_moral for B5 from the VALID content position (Amendment 2 rider 6): inject
+    # where V_moral is actually represented, not the control-token bottleneck. injection_basis maps
+    # standardized->model coords for outlier families (a span-identity, see its docstring).
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
-    prim_sources = [_unit(src_pos[s][PRIMARY][layer][0]) for s in SRC]
-    chat_sig = act_pos[PRIMARY][layer].std(0) + 1e-12
-    inj = injection_basis(prim_sources, chat_sig, standardize)   # (hidden, 3), model coords
+    b5_pos = result["primary_valid_position"] or PRIMARY
+    src_v = [_unit(src_pos[s][b5_pos][layer][0]) for s in SRC]
+    chat_sig = act_pos[b5_pos][layer].std(0) + 1e-12
+    inj = injection_basis(src_v, chat_sig, standardize)   # (hidden, 3), model coords
     np.savez(out / f"chat_vmoral_{args.key}.npz",
-             inject_basis=inj.T, sources=np.stack(prim_sources),
-             persona=_unit(per_pos[PRIMARY][layer][0]), act_sample=act_pos[PRIMARY][layer],
-             chat_sigma=chat_sig, layer=layer, position_class=PRIMARY, standardized=standardize)
+             inject_basis=inj.T, sources=np.stack(src_v),
+             persona=_unit(per_pos[b5_pos][layer][0]), act_sample=act_pos[b5_pos][layer],
+             chat_sigma=chat_sig, layer=layer, position_class=b5_pos, standardized=standardize)
     (out / f"informat_ladder_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2))
 
