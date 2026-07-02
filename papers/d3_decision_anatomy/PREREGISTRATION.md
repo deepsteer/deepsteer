@@ -118,4 +118,65 @@ this line, never a silent edit.*
 
 ### Amendments
 
-*(none yet)*
+- **2026-07-02 (Amendment 1 — referee-pass corrections, pre-registered before the typing prep builds
+  any asset):** A review of the skeleton found one stimulus–outcome mis-specification, one degenerate
+  branch in the decisive cell, and a head-attribution specificity gap; plus two lit-driven framing
+  changes. All fixed here before any patch stimulus is built.
+
+  **(1) Twin cell — stimulus–outcome mismatch (fix).** The v2 1,200 twins are **third-person
+  narrative** moral-status pairs; stock instruct models do **not** refuse discussion of either side,
+  so "swap twin activations → Δrefusal" is **flat by construction** and says nothing about transport.
+  Correction:
+  - **Twins carry `outcome_variable = judgment-decision readout`** (the outcome they can actually
+    move); Δrefusal is reported but **pre-registered expected-flat** on twins.
+  - **New asset — request-twins.** Recast a v2 subset as **surface-matched requests** ("help me plan
+    to [norm-following vs violating action]"), holding surface form, flipping only moral status.
+    These are the **minimal-pair refusal-patching stimuli** for cell (a)/(b). Built now in the typing
+    prep with type blocks + provenance.
+  - **XSTest is a category-contrast, not a minimal pair** → typed as the **looser generalization
+    cell**, not the minimal-pair cell (its role in (c) is harm-cue-vs-surface separation, not a clean
+    twin swap).
+  - **Token-alignment metadata per pair** (patch positions must map across the two members). Fixed
+    rule for length-mismatched pairs: **align on the shared prefix + the flipped content span**;
+    pairs that cannot be aligned to within a fixed token budget are **excluded and counted**.
+
+  **(2) Decisive cell (b) — the negative branch was degenerate; add a transport positive control.**
+  "Full patch moves refusal, `V_moral`-restricted doesn't → reads non-`V_moral` features" has an
+  **unexcluded alternative:** the moral variable is encoded **beyond rank 3 / nonlinearly**, so a
+  rank-3-restricted swap **under-transfers** any moral signal (instrument too weak, not "features
+  elsewhere"). **Transport positive control (pre-registered):** the `V_moral`-restricted patch must
+  first be shown to **move the judgment readout/behavior on twins**. Then:
+  - restricted patch flips **judgment** but not **refusal** → **"refusal reads non-`V_moral`
+    features"** is clean (the program-null-explaining result);
+  - restricted patch cannot even move **judgment** → the **negative branch is uninformative**
+    (rank-3 under-transfer not excluded); only the **positive** branch of the cell carries weight.
+  **Both branch framings (both publishable):**
+  - **`V_moral`-restricted patch MOVES refusal** → geometric orthogonality at the readout **plus**
+    causal transport of `V_moral` content into the writers = the **complete through-weights story with
+    anatomy** (the strongest positive outcome).
+  - **only full moves it, restricted moves judgment-not-refusal** → refusal reads moral content
+    through **non-`V_moral`** features = explains every geometric null in the program.
+
+  **(3) Head attribution needs a channel-matched null (PR ≈ 15 specificity).** In a ~15-dim token,
+  any head that writes strongly into the token projects onto most channel directions, so raw
+  "projection onto refusal" collapses "top refusal-writers" into "top token-writers." **Head score
+  (fixed now) = ⟨write_h, r̂⟩ − mean_j ⟨write_h, ĉ_j⟩**, where `{ĉ_j}` are **channel-basis control
+  directions** (an orthonormal basis of the decision-token channel, norm-matched). Causal checks use
+  **mean / resample ablation, not zeroing** (zeroed OV outputs are off-distribution). The
+  reconstruction ≥ 0.90 control checks the **decomposition**; the channel-matched score checks
+  **specificity** — both are required.
+
+  **(4) Pilot gate before any patching session — behavioral-discrimination screen.** Keep only
+  twins / request-twins whose **baseline behavior differs across the pair** (judgment flips, or
+  refusal differs). MPS-runnable on OLMo; a patch pair with no baseline behavioral gap cannot be
+  moved and is dropped (counted).
+
+  **(5) Positioning (lit-driven, `LITERATURE.md`).** (a) **Promote Qi et al. 2024 (`2406.05946`) to
+  framing:** the decision-site bottleneck is a candidate geometric mechanism of *shallow alignment*;
+  C1 = "the measured substrate of shallow alignment" (correlational until a causal cell ties channel
+  to depth). (b) **Engage Wollschläger et al. 2025 (`2502.17420`):** refusal is a concept cone; state
+  "channel, not direction" — a ~15-dim channel hosts a cone, compatible, reconciled explicitly.
+
+  Spine preserved: `M = 0.05`, the two-step null, per-unit saves, position-validity all unchanged.
+  This amendment strengthens the stimuli, the decisive cell, and the attribution instrument before any
+  compute.

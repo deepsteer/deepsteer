@@ -14,12 +14,14 @@ source). Each entry marks how it was verified.
 | Sun, Chen, et al. (2024) — *Massive Activations in LLMs* | `arXiv:2402.17762` | a few activations ~10^5× larger, **input-constant**, act as implicit bias terms, concentrate attention | grounds `ANOMALIES.md` A1 (Qwen/Llama outlier dims) AND the decision-site low-rank substrate |
 | Xiao, Tian, et al. (2023) — *Efficient Streaming LMs with Attention Sinks* | `arXiv:2309.17453` (ICLR 2024) | **attention-sink** tokens absorb attention mass | grounds the decision-site / template-token as a sink-like low-rank position (the bottleneck) |
 | Olsson, Elhage, et al. (2022) — *In-context Learning and Induction Heads* | `arXiv:2209.11895` | **induction/copy heads** `[A][B]…[A]→[B]`; causal in small models | grounds C1's **copy-head hypothesis** (a head copying `t_inst` harmfulness into the decision token) |
+| Qi, Panda, Lyu, Ma, Roy, Beirami, Mittal, Henderson (2024) — *Safety Alignment Should Be Made More Than Just a Few Tokens Deep* | `arXiv:2406.05946` | safety alignment is **shallow** — adapts the generative distribution "primarily over only its very first few output tokens"; deepening improves robustness | **PROMOTE to framing:** the decision-site control-token bottleneck is the **geometric mechanism** of Qi's behavioral shallow-alignment. Position C1 as "the substrate of shallow alignment, measured" |
+| Wollschläger, Elstner, Geisler, Cohen-Addad, Günnemann, Gasteiger (2025) — *The Geometry of Refusal in LLMs: Concept Cones and Representational Independence* | `arXiv:2502.17420` | refusal = **multiple independent directions + multi-dimensional concept cones**, contra a single direction | **must engage:** D2/C1 place refusal in a low-rank *channel*; a ~15-dim channel comfortably **hosts** a cone (compatible), but the claim must be stated as channel-not-direction and reconciled explicitly |
 
 ## Found in search, NOT yet primary-verified (cite only after verifying)
 
 - *There Is More to Refusal in LLMs than a Single Direction* (`arXiv:2602.02132`, 2026) — argues refusal
-  exceeds a single direction. **Directly relevant** (refusal is low-rank but > rank-1, converging with
-  C1/D2's ~10–15-dim channel). Very recent; verify before leaning on it.
+  exceeds a single direction (converges with the Wollschläger cone + the ~10–15-dim channel). Very
+  recent; verify before leaning on it. (Wollschläger 2502.17420 is now primary-verified, table above.)
 - *Understanding Refusal in LMs with Sparse Autoencoders* (`arXiv:2505.23556`) — refusal SAE features.
 - 2026 head-specialization / jailbreak work: `2606.28153` (attention-head specialization under
   jailbreak), `2603.27518` (over-refusal + representation subspaces), `2601.15801` (safety vectors).
@@ -54,6 +56,18 @@ Three lines of verified prior work converge on the pieces C1 assembles:
 > a measured low-rank decision channel**, and a causal cell (`V_moral`-restricted patch) that, in one
 > outcome, would explain the program's geometric nulls (orthogonality with causal coupling through
 > non-subspace features). It is not "attention heads matter for safety," which is established.
+
+**Framing promotion (Qi et al. 2024).** Qi et al. show *behaviorally* that safety alignment is
+shallow — concentrated in the first few output tokens. The decision-site control-token bottleneck
+(PR ~10–15 at the assistant-header token, cross-model) is a candidate **geometric mechanism** for
+that shallowness: alignment writes into a narrow bus at exactly the position Qi identify. C1 is
+positioned as *"the measured substrate of shallow alignment,"* a stronger frame than head-attribution
+alone (correlational until a causal cell ties the channel to the depth effect; stated as such).
+
+**Cone reconciliation (Wollschläger et al. 2025).** Refusal is multi-dimensional (a concept cone),
+contra Arditi's single direction. **Compatible** with D2/C1: we claim refusal is written into a
+low-rank *channel* (~15 dims), not that refusal is one direction — a 15-dim channel comfortably hosts
+a cone. The write-up states "channel, not direction" and reconciles explicitly.
 
 **Honesty riders folded into the plan:**
 - **Stage 1 is a known method** (Zhou/Sahara). The `PAPER_PLAN` and `PREREGISTRATION` must credit it

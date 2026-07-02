@@ -45,6 +45,13 @@ from the literature:
    *non-`V_moral`* features of moral content (cell b) would explain **every geometric null in the
    program** at once (orthogonality with causal coupling, the sign-flip included).
 
+**Framing (lit-driven):** the decision-site bottleneck is a candidate **geometric mechanism of shallow
+alignment** (Qi et al. 2024 show behaviorally that alignment lives in the first few output tokens; the
+control-token channel is where it is written) — so C1 is *"the measured substrate of shallow
+alignment,"* not head-attribution alone (correlational until a causal cell ties channel to depth).
+And refusal being a low-rank **channel** (~15 dims) is stated as **channel, not direction**: it hosts
+the multi-dimensional concept cone of Wollschläger et al. 2025, reconciled explicitly, not papered over.
+
 Contribution in one line: **moral-content transport into a measured low-rank decision channel** — not
 "heads matter for safety."
 
@@ -73,8 +80,14 @@ projection onto `r̂` (reconstruction check, §6 calibration).
   final LN gain into the readout; treat the per-token LN scale as a constant at the decision token).
   Stated as an approximation, its reconstruction error reported; if reconstruction < 0.9 of the true
   projection, escalate to exact per-token LN.
-- **Deliverables:** the **head-sparsity curve** (cumulative |write| vs head rank) and the
-  **unexplained MLP fraction**.
+- **Head specificity (channel-matched null, Amendment 1).** At PR ≈ 15, any strong token-writer
+  projects onto most channel directions, so raw ⟨write, r̂⟩ conflates "refusal-writer" with
+  "token-writer." Head score = **⟨write_h, r̂⟩ − mean_j ⟨write_h, ĉ_j⟩** over a norm-matched
+  channel-basis control `{ĉ_j}`. Causal checks use **mean / resample ablation, not zeroing**
+  (off-distribution). Reconstruction ≥ 0.90 checks the *decomposition*; this checks *specificity* —
+  both required.
+- **Deliverables:** the **head-sparsity curve** (cumulative specificity-adjusted |write| vs rank) and
+  the **unexplained MLP fraction**.
 - **Pre-registered branch (fixed now):** if MLPs carry **> ~50%** of the write, the head story is
   incomplete → the **Jacobian stage** (cross-layer attribution of `r̂` w.r.t. earlier residual) is
   added; this is a branch, not a failure (see §6 branches).
@@ -101,19 +114,27 @@ All patches at content positions, decision measured at the bottleneck token (ref
 behaviorally (refusal rate, reconciled classifier). Controls per `construct-audit`: matched-random
 + named-reference heads, and the twin-surface match removes the register/valence/topic covariates.
 
-- **(a) Twin patching.** Swap content-position activations between **moral-status twins** (the v2
-  1,200 minimal pairs: surface-matched, only moral status flips). Measure Δ(refusal projection) at
-  the bottleneck + Δ(behavior). Establishes whether moral *content* at content positions changes the
-  refusal decision at all.
-- **(b) Subspace-restricted patch (the decisive cell).** The **same** patch restricted to the
-  `mean_content` `V_moral` subspace vs the **full residual**. **Full moves refusal but
-  `V_moral`-restricted does not ⇒ the read uses *non-`V_moral`* features of moral content** — which
-  would explain every geometric null in the program (orthogonality + causal coupling). The
-  complementary outcome (`V_moral`-restricted moves it) would mean the moral subspace *is* the read
-  substrate, reopening the geometric story.
-- **(c) XSTest safe↔unsafe patching.** Patch between XSTest pairs where **alarming surface is held
-  and harm flips** (and its converse: safe with alarming words). Separates **harm-cue reading** from
-  **moral-status reading** — the confound-genealogy control for "surface alarm."
+- **(a) Twin patching (outcome = judgment; refusal via request-twins).** *Fix (Amendment 1):* the v2
+  narrative twins don't trigger refusal, so their outcome variable is the **judgment-decision readout**
+  (Δrefusal reported, pre-registered **expected-flat**). The refusal outcome is measured on
+  **request-twins** — a v2 subset recast as surface-matched requests (only moral status flips) — the
+  minimal-pair refusal-patching stimuli. Establishes whether moral *content* at content positions
+  changes the decision the model actually makes.
+- **(b) Subspace-restricted patch (the decisive cell) + its transport positive control.** The same
+  patch restricted to `mean_content` `V_moral` vs full residual. *Fix (Amendment 1): the negative
+  branch is degenerate without a positive control* — a rank-3-restricted swap may simply under-transfer
+  a beyond-rank-3 moral variable. So the `V_moral`-restricted patch must **first move the judgment
+  readout** (transport positive control). Then, **both branches publishable:**
+  - restricted patch **moves refusal** → orthogonality at the readout **+** causal transport of
+    `V_moral` content into the writers — the complete through-weights story with anatomy;
+  - restricted patch **flips judgment but not refusal** → refusal reads moral content through
+    **non-`V_moral`** features → **explains every geometric null in the program**;
+  - restricted patch **can't move judgment either** → negative branch **uninformative** (under-transfer
+    not excluded); only the positive branch carries weight.
+- **(c) XSTest safe↔unsafe patching (generalization cell, not a minimal pair).** XSTest is a
+  category-contrast; typed as the looser **generalization** cell. Patch where **alarming surface is
+  held and harm flips** (+ converse) to separate **harm-cue reading** from **moral-status reading**
+  (confound genealogy for "surface alarm").
 - **(d) Top-head ablation / resample-patch → behavior**, with matched-random and named-reference
   head controls; report the behavioral Δ against the matched-random null (outlier test), never raw.
 
