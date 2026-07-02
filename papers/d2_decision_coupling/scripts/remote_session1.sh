@@ -17,9 +17,10 @@
 # a fresh pod, but rp_sync_up re-uploads the per-model .npz a prior chunk rsync'd back, so a b5
 # chunk reuses the extract chunk's directions. Recommended 3-chunk split (env on the launch line):
 #   chunk 1 (~2-3 h):  STEPS=extract,b1,b3,rotate  MODELS="olmo3 qwen25 llama31"
-#   chunk 2 (~3-4 h):  STEPS=b5                     MODELS="olmo3 qwen25"   B5_N_RANDOM=8
-#   chunk 3 (~2-4 h):  STEPS=b5                     MODELS="llama31"        B5_N_RANDOM=8
-# (drop to one model per b5 chunk, or lower B5_N_RANDOM / B5_SIGMA_GRID, if a chunk risks > 4 h.)
+#   chunk 2 (~3-5 h):  STEPS=informat  MODELS="olmo3 qwen25 llama31"  SYNC_EXTRA=papers/d1_moral_subspace/outputs/full
+#                      (chat-format ladder + R2 + CHAT-subspace B5; reuses chunk-1 refusal/judgment)
+# STEPS=b5 (raw-space fragility) is retained as a baseline but the pre-registered B5 is the CHAT
+# one inside 'informat' (Amendment 1 §7 rider 3). Lower B5_N_RANDOM / B5_SIGMA_GRID if a chunk > 4 h.
 # Drops .session_done on exit so the billed pod never leaks.
 set -uo pipefail
 
@@ -130,9 +131,20 @@ for key in $MODELS; do
       --vmoral-npz "$VM" --refusal-npz "$RF" --out "$mdir" || true
   fi
   if has_step b5; then
-    echo ">> [$key] B5 moral fragility of refusal (R8) [B5_N_RANDOM=${B5_N_RANDOM:-12}]"
+    echo ">> [$key] B5 moral fragility of refusal (R8), RAW space [B5_N_RANDOM=${B5_N_RANDOM:-12}]"
     python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
       --vmoral-npz "$VM" --persona-npz "$PS" --act-sample-npz "$AS" --out "$mdir" || true
+  fi
+  # in-format ladder (Amendment 1 §7): chat-format factor-decomposed V_moral -> full ladder + R2,
+  # then B5 in the CHAT subspace (the pre-registered B5; supersedes the raw 'b5' step above). Reuses
+  # this model's B1 refusal.npz + b1_judgment_dir (uploaded from the B1 chunk if not run here).
+  if has_step informat; then
+    echo ">> [$key] in-format ladder (chat V_moral, 3 position classes, full ladder + R2)"
+    python "$D2/scripts/informat_ladder.py" --model "$repo" --key "$key" \
+      --refusal-npz "$RF" --judgment-npz "$mdir/b1_judgment_dir_$key.npz" --out "$mdir" || true
+    echo ">> [$key] B5 moral fragility (R8), CHAT subspace [B5_N_RANDOM=${B5_N_RANDOM:-12}]"
+    python "$D2/scripts/b5_moral_fragility.py" --model "$repo" --key "$key" \
+      --chat-vmoral-npz "$mdir/chat_vmoral_$key.npz" --out "$mdir" || true
   fi
 done
 

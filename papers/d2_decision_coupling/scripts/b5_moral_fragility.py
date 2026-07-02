@@ -144,6 +144,9 @@ def main() -> None:
     ap.add_argument("--model", default="allenai/Olmo-3-7B-Instruct")
     ap.add_argument("--key", default="olmo3")
     ap.add_argument("--vmoral-npz", required=False)
+    ap.add_argument("--chat-vmoral-npz", required=False,
+                    help="informat_ladder chat_vmoral_<key>.npz: inject into the chat subspace "
+                         "at generation positions (standardized->mapped-back for outlier families)")
     ap.add_argument("--persona-npz", required=False)
     ap.add_argument("--act-sample-npz", required=False)
     ap.add_argument("--harmful-eval", default=str(HERE.parents[1] / "5_moral_alignment"
@@ -167,18 +170,33 @@ def main() -> None:
     xst = json.loads(Path(args.xstest).read_text())["items"]
     xstest_safe = [it["prompt"] for it in xst if it["label"] == "safe"][:(6 if validate else 20)]
 
-    X = np.load(args.act_sample_npz)["X"].astype(np.float64) if args.act_sample_npz and \
-        Path(args.act_sample_npz).exists() else None
-    if X is None:  # smoke fallback: sample activations from the harmful prompts
-        acts = [model.get_activations(p, [layer])[layer][0].float().numpy() for p in harmful[:4]]
-        X = np.concatenate(acts, 0)
+    # In-format (chat) injection (Amendment 1 §7 rider 3): inject into the chat-extracted V_moral at
+    # generation positions, RMS-scaled from chat activations there; Qwen/Llama basis was defined in
+    # standardized space and mapped back to model coords by informat_ladder.injection_basis.
+    chat_mode = bool(args.chat_vmoral_npz and Path(args.chat_vmoral_npz).exists())
+    persona_vec = None
+    if chat_mode:
+        z = np.load(args.chat_vmoral_npz)
+        layer = int(z["layer"])
+        X = z["act_sample"].astype(np.float64)                 # chat act_sample @ PRIMARY
+        Q_moral = z["inject_basis"].T.astype(np.float64)       # (hidden, 3), model coords
+        persona_vec = _unit(z["persona"].astype(np.float64))
+        inject_space = f"chat/{str(z['position_class'])} (standardized->mapped-back={bool(z['standardized'])})"
+    else:
+        X = np.load(args.act_sample_npz)["X"].astype(np.float64) if args.act_sample_npz and \
+            Path(args.act_sample_npz).exists() else None
+        if X is None:  # smoke fallback: sample activations from the harmful prompts
+            acts = [model.get_activations(p, [layer])[layer][0].float().numpy() for p in harmful[:4]]
+            X = np.concatenate(acts, 0)
+        Q_moral = load_vmoral_basis(Path(args.vmoral_npz), layer) if args.vmoral_npz and \
+            Path(args.vmoral_npz).exists() else covmatched_subspace(X - X.mean(0), 3, rng)
+        if args.persona_npz and Path(args.persona_npz).exists():
+            persona_vec = _unit(du.load_directions(args.persona_npz)["persona"][layer].astype(np.float64))
+        inject_space = "raw"
     Xc = X - X.mean(0, keepdims=True)
     rms_scale = rms(X)
-
-    Q_moral = load_vmoral_basis(Path(args.vmoral_npz), layer) if args.vmoral_npz and \
-        Path(args.vmoral_npz).exists() else covmatched_subspace(Xc, 3, rng)
     result = {"model": args.model, "key": args.key, "layer": layer, "rms_scale": round(rms_scale, 4),
-              "ratio": RATIO, "sigma_grid": grid}
+              "ratio": RATIO, "sigma_grid": grid, "inject_space": inject_space}
 
     result["moral"] = sweep_subspace(model, layer, Q_moral, harmful, xstest_safe, rms_scale, rng, grid)
     randoms = []
@@ -187,10 +205,9 @@ def main() -> None:
         randoms.append(sweep_subspace(model, layer, Qr, harmful, xstest_safe, rms_scale, rng, grid))
     result["random_floor"] = {"n": len(randoms),
                               "sigma_stars": [round(r["sigma_star"], 3) for r in randoms]}
-    if args.persona_npz and Path(args.persona_npz).exists():
-        pv = _unit(du.load_directions(args.persona_npz)["persona"][layer].astype(np.float64))
-        Qp = pv.reshape(-1, 1)
-        result["persona"] = sweep_subspace(model, layer, Qp, harmful, xstest_safe, rms_scale, rng, grid)
+    if persona_vec is not None:
+        result["persona"] = sweep_subspace(model, layer, persona_vec.reshape(-1, 1), harmful,
+                                           xstest_safe, rms_scale, rng, grid)
 
     result["R8"] = r8_verdict(result["moral"]["sigma_star"], result["random_floor"]["sigma_stars"])
 

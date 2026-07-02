@@ -208,6 +208,22 @@ def test_informat_ladder() -> None:
     else:
         print("  [skip] raw-reproduction (chunk-1 artifacts not present locally)")
 
+    # (4) injection_basis map-back (B5 chat injection, Amendment 1 §7 rider 3).
+    dd = 48
+    rng2 = np.random.default_rng(3)
+    srcs3 = [il._unit(rng2.standard_normal(dd)) for _ in range(3)]
+    sigma = np.abs(rng2.standard_normal(dd)) + 0.5  # non-uniform per-dim scale
+    B_raw = il.injection_basis(srcs3, sigma, standardize=False)
+    B_std = il.injection_basis(srcs3, sigma, standardize=True)
+    check("injection_basis shapes (d,3)", B_raw.shape == (dd, 3) and B_std.shape == (dd, 3))
+    check("injection_basis orthonormal in model coords (both)",
+          np.allclose(B_raw.T @ B_raw, np.eye(3), atol=1e-6)
+          and np.allclose(B_std.T @ B_std, np.eye(3), atol=1e-6))
+    check("injection basis spans the raw sources", abs(il.frac(B_raw, srcs3[0]) - 1.0) < 1e-6)
+    # span-identity: standardized->mapped-back spans the SAME subspace as raw (proved no-op).
+    check("standardized->mapped-back spans the same subspace as raw (span-identity)",
+          all(abs(il.frac(B_raw, B_std[:, i]) - 1.0) < 1e-6 for i in range(3)))
+
 
 def main() -> None:
     print("=== Phase B session 1 local gate ===\n")

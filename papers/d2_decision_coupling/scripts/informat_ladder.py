@@ -117,6 +117,24 @@ def _require_matched(tag_actsample: tuple, tag_dirs: tuple) -> None:
                          f"directions {tag_dirs} — the chat null must consume chat act_samples")
 
 
+def injection_basis(sources, chat_sigma, standardize):
+    """Rank-3 orthonormal injection basis in MODEL coordinates for B5 (Amendment 1 §7 rider 3).
+
+    NOTE (proved, and asserted in the local test): for a FIXED set of source directions the
+    "define in standardized space, map back to model coords (x = x_tilde * sigma)" operation is a
+    SPAN-IDENTITY -- ortho({s_i / sigma}) with each column then multiplied by sigma spans exactly
+    span({s_i}), because (s_i / sigma) * sigma = s_i element-wise. So the chat V_moral injection
+    subspace is identical whether or not it is routed through standardized space, and B5 draws
+    unit(Q @ z) which samples the subspace independently of the in-subspace basis rotation.
+
+    B5's outlier robustness therefore comes not from this map (a no-op on the span) but from
+    (a) using the CHAT-extracted sources -- the chat decision-site space carries no >5%-variance
+    dim (ANOMALIES A1 read i), so the subspace is outlier-free by construction -- and (b) the
+    random-floor subspaces being covariance-matched to the CHAT act_sample. `standardize` /
+    `chat_sigma` are kept for API symmetry with the ladder and to document the equivalence."""
+    return ortho([_unit(s) for s in sources])
+
+
 def _null_q95_on(Q, Ac, rng, k=K):
     n = Ac.shape[0]
     return float(np.percentile([frac(Q, Ac.T @ rng.standard_normal(n)) for _ in range(k)], 95))
@@ -197,7 +215,9 @@ def main():
         args.model = "allenai/OLMo-2-0425-1B"
     import model_registry as reg  # noqa: E402
     spec = reg.get(args.key)
-    n_cap = 12 if validate else None
+    # INFORMAT_N=20 caps items/cell WITHOUT forcing the tiny model -> the OLMo-MPS n~20 end-to-end
+    # validation (Amendment 1 addendum): INFORMAT_N=20 python informat_ladder.py --model <olmo3> ...
+    n_cap = int(os.environ.get("INFORMAT_N") or "0") or (12 if validate else None)
 
     model = du.load_whitebox(args.model)
     same = model.info.n_layers == spec.n_layers
@@ -234,12 +254,16 @@ def main():
             judgment=judgment if is_primary else None,
             standardize=standardize, rng=np.random.default_rng(SEED))
 
-    # Save chat V_moral basis + chat act_sample at PRIMARY for B5 injection (Amendment 1 §7 rider 3).
+    # Save the chat V_moral injection basis (model coords; standardized->mapped-back for outlier
+    # families) + chat persona + chat act_sample at PRIMARY, for B5 (Amendment 1 §7 rider 3).
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     prim_sources = [_unit(src_pos[s][PRIMARY][layer][0]) for s in SRC]
+    chat_sig = act_pos[PRIMARY][layer].std(0) + 1e-12
+    inj = injection_basis(prim_sources, chat_sig, standardize)   # (hidden, 3), model coords
     np.savez(out / f"chat_vmoral_{args.key}.npz",
-             basis=ortho(prim_sources).T, act_sample=act_pos[PRIMARY][layer],
-             layer=layer, position_class=PRIMARY, standardized=standardize)
+             inject_basis=inj.T, sources=np.stack(prim_sources),
+             persona=_unit(per_pos[PRIMARY][layer][0]), act_sample=act_pos[PRIMARY][layer],
+             chat_sigma=chat_sig, layer=layer, position_class=PRIMARY, standardized=standardize)
     (out / f"informat_ladder_{args.key}.json").write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2))
 
