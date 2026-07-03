@@ -61,8 +61,16 @@ judgment reads the subspace broadly.
   standardized |cos(P2, d_harm)| = 0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13 — which is *why* P2
   projected below the moral-family band in D1. Same mechanism, independent model, independent
   measurement (projection, not patching).
-- **Open (cross-model, causal).** Is `harm_saturating` general causally? The comparative is the
-  **one-knob model**: on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
+- **Settled (cross-model, depth-verified).** Refusal's read and commitment **differ by model family**,
+  on two axes confirmed at depth-matched layer 12: *what* it reads — OLMo & GPT-OSS read **harm**
+  (`R_refusal < R_judgment`, saturates), Llama reads **broad moral content** (`R_refusal ≈ R_judgment`,
+  gap closes); *how* it commits — OLMo at/after the read layer, Llama **early** (disengage depth-gated).
+  Llama's early-commitment of a broad moral read is the candidate mechanism for its Paper-6 robustness
+  anomaly. The naive layer-16 `A`-asymmetry (+0.82) was mostly a read-layer artifact (→ −0.28 at matched
+  depth); the discipline that caught it is the depth-indexed-verdict pattern (methods note).
+- **Held (panel breadth).** The two-axis result is n = 3 (OLMo causal, GPT-OSS correlational, Llama
+  causal). Qwen extends the instruct panel; the OLMo `harm_saturating` one-knob is the flagship anchor:
+  on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
   RMSE 0.036 (one free parameter) — refusal reads the same content as judgment, clipped at the harm
   ceiling. **Llama-3.1-8B: diagnosed, not yet resolved.** Clean OLMo-like anatomy and an A1-clean
   decision channel, but the refusal cells came back chaotic. Amendment 7/8 traced it to two things:
