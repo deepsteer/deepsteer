@@ -14,6 +14,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parents[2]))
 sys.path.insert(0, str(HERE.parents[1] / "d2_decision_coupling" / "scripts"))
+sys.path.insert(0, str(HERE.parents[1] / "7_reasoning" / "scripts"))   # Tier-1 harmony helpers
 
 import numpy as np  # noqa: E402
 
@@ -363,6 +364,44 @@ def test_standardize():
         print("  [skip] OLMo npz not present -> regression parity checked on the pod")
 
 
+def test_tier1_reasoning():
+    print("Amendment 5 Tier-1 reasoning cells (pure math):")
+    import reasoning_cells as rc
+    rng = np.random.default_rng(1)
+    # asymmetry A. failure mode 1: a reversible reader (both prefills move) must NOT read as engage-only.
+    A_rev = rc.asymmetry_A([1, 1, 1, 0], [1, 0, 1, 1], rng)["A"]
+    check("tier1 A: reversible reader ~ 0 (not engage-only)", abs(A_rev) < 0.2, f"A={A_rev}")
+    A_lat = rc.asymmetry_A([1, 1, 1, 1], [0, 0, 0, 0], rng)["A"]
+    check("tier1 A: engage-only (disengage dead) -> +1", A_lat > 0.99, f"A={A_lat}")
+    # commitment fraction. failure mode 2: an early jump must give a LOW fraction; a mid-trace dip must
+    # not reset commitment (monotone-max), and a never-predictive trace must return None (not 1.0).
+    c_early = rc.commitment_fraction([0.5, 0.95, 0.7, 0.95, 1.0])["commitment_fraction"]
+    check("tier1 commit: early jump -> low fraction, dip does not reset", c_early is not None and c_early <= 0.5,
+          f"cf={c_early}")
+    check("tier1 commit: never-predictive -> None (not spurious 1.0)",
+          rc.commitment_fraction([0.5, 0.5, 0.5, 0.5])["commitment_fraction"] is None)
+    # position gate. failure mode 3: a content-position PR (high) must lock behavioral_primary; a
+    # bottleneck PR must NOT.
+    g_hi = rc.position_gate_verdict(66.7, 3.0)
+    g_lo = rc.position_gate_verdict(13.0, 0.8)
+    check("tier1 gate: high-PR content channel -> behavioral_primary", g_hi["behavioral_primary"] and not g_hi["position_valid"])
+    check("tier1 gate: low-PR bottleneck -> position_valid", g_lo["position_valid"] and not g_lo["behavioral_primary"])
+    # decision predictability AUC. failure mode 4: separable refuse/comply projections must read AUC=1,
+    # constant projections AUC=0.5 (no false commitment), and the sign must not matter.
+    proj = np.array([2.0, 3.0, 2.5, -1.0, -2.0, -1.5]); ref = np.array([1, 1, 1, 0, 0, 0], bool)
+    check("tier1 AUC: separable -> 1.0; sign-agnostic", rc.decision_predictability(proj, ref) == 1.0
+          and rc.decision_predictability(-proj, ref) == 1.0)
+    check("tier1 AUC: constant projection -> 0.5 (chance, no false commitment)",
+          rc.decision_predictability(np.ones(6), ref) == 0.5)
+    # refusal classifier on a canned harmony rollout: FINAL channel decides, not the analysis.
+    roll = ("<|channel|>analysis<|message|>The user wants X. This could be fine.<|end|>"
+            "<|channel|>final<|message|>I'm sorry, but I can't help with that.<|return|>")
+    from deepsteer.reasoning.think_io import CoTFormat
+    from gpt_oss_precision_gate import _normalize, _REFUSAL
+    check("tier1 refusal: classifies the FINAL channel (refuse), not the analysis",
+          rc._refusal_final(roll, CoTFormat.HARMONY_ANALYSIS, _normalize, _REFUSAL) is True)
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
@@ -375,6 +414,7 @@ def main():
     test_amendment3_cells()
     test_sweep()
     test_standardize()
+    test_tier1_reasoning()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)
