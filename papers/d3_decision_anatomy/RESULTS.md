@@ -233,8 +233,17 @@ harm clip on *every* model.
   instrument, not stimulus power**: the mean-pooled aggregate-content interchange (the length-agnostic
   swap) is too coarse for Llama's *diverse severe* operating-band twins (for "embezzle" vs "handle
   honestly", mean-pooling the flipped span dilutes the specific harmful tokens). The power table
-  correctly says the re-run is futile — the disciplined outcome. Llama's causal one-knob verdict is
-  **bounded-unresolved**; its contribution is the clean diagnostics (A1-clean decision channel,
-  OLMo-like anatomy, intent-coupled behavior). Resolving it needs a **per-token content-swap instrument**
-  (not more twins).
+  correctly says a same-design re-run is futile — the disciplined outcome.
+
+  **Amendment 7 instrument diagnosis → refusal-specific, dynamic-range (fixable).** The judgment cell is
+  the instrument's positive control: the full patch moves **judgment coherently** on Llama (bootstrap CI
+  [+0.004, +0.053] excludes 0) while **refusal is chaotic** (CI [−0.04, +0.23]). So the patch works — the
+  block is **refusal-specific**, and it is **saturation, not content-robustness**: the refusal-delta SD
+  *grows* with severity (0.296 → 0.323 → 0.352) as the violating twins hit the refusal ceiling (baseline
+  refuse 0.83–1.0), so the projection is latched and the patch has no dynamic range. OLMo's refusal moved
+  because it was *weak* (unsaturated); Llama's operating-band twins are too far past the boundary. The
+  judgment cell certifies the instrument, so the earlier "reads beyond harm" hint was an artifact of the
+  chaotic full-refusal denominator. **Fix (pre-registered, cheap): boundary-band twins** at Llama's
+  ~0.5-refusal severity (between the current levels 2 and 3), in the projection's dynamic range — not a
+  per-token instrument, not more of the same saturated twins.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

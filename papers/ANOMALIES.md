@@ -183,3 +183,37 @@ rank-1 restriction can under-transfer for a nonlinear reason, not an instrument-
 a restricted causal cell, and expect low-rank restrictions to be nonlinearly inert" is a portable
 caution for the whole probe-then-patch workflow. The one-knob model turns the deviation into a
 concrete nonlinearity candidate rather than noise. Belongs in the methods section with A1–A3.
+
+---
+
+## A5 (ledger) — Massive activations are position-dependent; and interchange patches die at outcome saturation (use the orthogonal cell as the instrument certificate)
+
+**Date:** 2026-07-02 · **Found in:** Direction-3 C1 Llama-3.1-8B panel run + Amendment-6/7 diagnosis.
+
+**Two findings from the same run.**
+
+**(1) Massive-activation outliers are POSITION-dependent (strengthens A2).** Llama-3.1's dim-788 carries
+32% of residual variance *at content positions* (A1), yet the **decision-token channel** where the
+refusal/judgment cells read is **A1-clean** (participation ratio 13.5, covariance null 0.148 → 0.114
+barely moves under standardization). So the outlier lives at content positions, not the ~13-dim
+control-token decision bottleneck — which is clean and low-rank across OLMo **and** Llama alike. The A2
+"decision site is a narrow control-token channel" finding is therefore cross-model, and A1's
+standardization is less critical at the decision token than at content positions. Cheap follow-up if it
+matters: a per-position top-dim-share profile.
+
+**(2) Interchange patches lose dynamic range at outcome saturation — certify with an orthogonal cell.**
+On Llama the content-swap patch produced **sign-chaotic** refusal deltas (SD 0.31, median +0.029, vs
+OLMo's clean −0.083), which read as a broken instrument. The **judgment cell is the positive control**:
+the same patch moved judgment **coherently** (CI excludes 0). So the patch works; the refusal chaos is
+**saturation** — the operating-band violating twins sit at the refusal ceiling (baseline refuse 0.83–1.0),
+so the decision-token refusal projection is latched and has no room to move (refusal-delta SD grows with
+severity 0.296 → 0.352 as saturation deepens). OLMo's refusal moved because it was *weak* (unsaturated).
+
+**The portable caution.** A causal readout run at a saturated outcome yields chaotic, sign-unstable
+deltas that mimic instrument failure. Diagnose with a **coherence root-split against an orthogonal
+outcome the same patch should move** (here: judgment); if the orthogonal cell is coherent, the
+instrument is certified and the null is a **dynamic-range** property of the saturated outcome, fixed by
+**boundary-band stimuli** (outcome ~0.5), not a new instrument. Power tables computed from within-level
+variance say *before the pod* whether a re-run can resolve it — they said Llama's same-design re-run was
+futile, and the diagnosis said why. Belongs in the methods section with the intervention-validity
+operating-point rule.
