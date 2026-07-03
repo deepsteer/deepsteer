@@ -68,12 +68,14 @@ judgment reads the subspace broadly.
   decision channel, but the refusal cells came back chaotic. Amendment 7/8 traced it to two things:
   saturation (fixed by boundary-band twins), and — the real mechanism — **hysteresis**. The
   bidirectional cell shows Llama's refusal **latches**: it engages coherently when harmful content is
-  *added* (reverse patch +0.14, CI excludes 0) but is unmoved when harm is *removed* (forward patch
-  −0.01, incoherent), with the judgment cell certifying the instrument at the boundary. OLMo's forward
-  direction was coherent (not latched) — a clean cross-model difference, and a candidate mechanism for
-  Llama being the program's robustness anomaly (a latching gate is intrinsically hard to reverse/ablate).
-  The forward-direction one-knob is uninformative for Llama; the clean channel is the reverse direction
-  (Amendment 9 decomposes it). Qwen and GPT-OSS held. (Standardized extraction, A1: the dim-788/dim-458
+  *added* (+0.14, CI excludes 0) but is unmoved when harm is *removed* (−0.01, incoherent). The
+  cross-model asymmetry is **statistically resolved**: `A_Llama = +0.82` vs `A_OLMo = −0.20` (OLMo
+  bidirectionally responsive — both directions coherent), `A_Llama − A_OLMo = 1.03, 95% CI [0.16, 1.61],
+  excludes 0`. Refusal directional symmetry **differs by model** — OLMo reversible, Llama
+  engage-dominant/latch-like — a candidate mechanism for Llama being the program's robustness anomaly (a
+  latching gate is intrinsically hard to reverse/ablate). Whether it is a true latch or early-commitment
+  (a patch-layer sweep discriminates) and what its engage direction reads is the last open Llama cell.
+  Qwen and GPT-OSS held. (Standardized extraction, A1: the dim-788/dim-458
   outliers live at content positions, not the decision channel, which is clean and ~13-dim across OLMo
   and Llama alike — a cross-model strengthening of A2, ledger A5.)
 

@@ -275,7 +275,16 @@ harm clip on *every* model.
   patch layer on some twins) or a partial latch. The frozen rule: "latch" is claimed only if disengage
   fails at *all* patch depths; the **patch-layer sweep** (Amendment 9 mechanism cell) discriminates.
   The robustness-mechanism reading stays a **candidate** until then — and both latch and early-commitment
-  predict the Paper-6 anomaly, so the conjunction survives either branch. Remaining (model-dependent):
-  the engage-direction dual-basis sweep (reads-broad on the working channel), the Llama disengage
-  patch-layer sweep, `A_OLMo` (OLMo's engage cell), and behavioral flips-to-refuse.
+  predict the Paper-6 anomaly, so the conjunction survives either branch.
+
+  **Amendment 9 cross-model asymmetry — statistically resolved.** `A_OLMo = −0.20` (CI [−0.86, +0.33],
+  includes 0) with **both directions coherent** (disengage −0.62, engage +0.41, both CIs exclude 0) —
+  OLMo's refusal is **bidirectionally responsive** (reverses cleanly), disengaging on 70% of twins.
+  With `A_Llama = +0.82`, **`A_Llama − A_OLMo = 1.03, 95% CI [0.16, 1.61], excludes 0`**: refusal
+  directional symmetry **genuinely differs by model** — OLMo reversible, Llama engage-dominant/latch-like.
+  Bonus robustness check: OLMo's **standardized** disengage sweep reproduces `harm_saturating` (`R_refusal`
+  saturates at 0.31 ≈ harm 0.35 while `R_judgment` climbs to 0.65) — the flagship holds under
+  standardization, not just the fold. **Still pending (one Llama pod, `PATCH_LAYERS`):** the disengage
+  patch-layer sweep (latch vs early-commitment mechanism verdict) and the Llama engage sweep (reads-broad
+  on the coherent channel).
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).
