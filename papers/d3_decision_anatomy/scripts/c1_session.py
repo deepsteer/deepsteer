@@ -211,29 +211,55 @@ def main() -> None:
                       "ranks": {k: int(sweep_bases[k].shape[1]) for k in KS}}
     sweep_ref = {k: [] for k in KS}; sweep_rand = {k: [] for k in KS}; sweep_jud = {k: [] for k in KS}
 
-    full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # all read refusal, request-twins
-    rev_d = []                                              # bidirectional: violating->following (Amendment 8)
+    full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # disengage (remove harm)
+    rev_d, eng_restr_d, eng_harm_d = [], [], []            # engage (add harm) full + decomposition (Amendment 9)
+    eng_sweep = {k: [] for k in KS}
     for foll, viol in rt_pairs:
         try:
             sp, tp = cc.patch_positions(model, foll, viol)
             L, r = args.layer, inp["refusal"]
             base = cc.baseline_proj(model, viol, L, r, sigma=sigma)
-            ic = lambda **kw: cc.interchange(model, foll, viol, sp, tp, L, r,
+            ic = lambda **kw: cc.interchange(model, foll, viol, sp, tp, L, r,   # disengage: following->violating
                                              sigma=sigma, **kw) - base
-            rev_base = cc.baseline_proj(model, foll, L, r, sigma=sigma)   # reverse direction baseline
-            rev_d.append(cc.interchange(model, viol, foll, tp, sp, L, r, sigma=sigma) - rev_base)
+            rev_base = cc.baseline_proj(model, foll, L, r, sigma=sigma)
+            rc = lambda **kw: cc.interchange(model, viol, foll, tp, sp, L, r,    # engage: violating->following
+                                             sigma=sigma, **kw) - rev_base
             full_d.append(ic())
             restr_d.append(ic(restrict_Q=inp["Vbasis"]))
             compl_d.append(ic(restrict_Q=inp["Vbasis"], restrict_mode="complement"))
             harm_d.append(ic(restrict_Q=harmQ))
             rand_d.append(ic(restrict_Q=Qrand))
             hp_d.append(ic(restrict_Q=Qhp))                                  # V_moral perp harm
+            rev_d.append(rc())                                              # engage full
+            eng_restr_d.append(rc(restrict_Q=inp["Vbasis"]))               # engage restricted to V_moral
+            eng_harm_d.append(rc(restrict_Q=harmQ))                        # engage restricted to harm
             if run_sweep:
                 for k in KS:
                     sweep_ref[k].append(ic(restrict_Q=sweep_bases[k]))
                     sweep_rand[k].append(ic(restrict_Q=sweep_rand_bases[k]))
+                    eng_sweep[k].append(rc(restrict_Q=sweep_bases[k]))     # engage-direction sweep (reads-broad)
         except (ValueError, RuntimeError, IndexError):
             continue
+
+    # Amendment 9 mechanism cell (ii): DISENGAGE patch-layer sweep. If an EARLIER patch layer restores
+    # disengage coherence -> the decision crystallized early (early-commitment), not a hard latch.
+    patch_layers = [int(x) for x in os.environ.get("PATCH_LAYERS", "").split(",") if x.strip()]
+    patch_layer_sweep = {}
+    for pl in patch_layers:
+        dd = []
+        for foll, viol in rt_pairs[:(6 if validate else None)]:
+            try:
+                sp, tp = cc.patch_positions(model, foll, viol)
+                b = cc.baseline_proj(model, viol, pl, inp["refusal"], sigma=sigma)
+                dd.append(cc.interchange(model, foll, viol, sp, tp, pl, inp["refusal"], sigma=sigma) - b)
+            except (ValueError, RuntimeError, IndexError):
+                continue
+        if len(dd) > 2:
+            dd = np.asarray(dd)
+            bt = [dd[rng2.integers(0, len(dd), len(dd))].mean() for _ in range(2000)]
+            lo, hi = (float(x) for x in np.percentile(bt, [2.5, 97.5]))
+            patch_layer_sweep[str(pl)] = {"disengage_mean": round(float(dd.mean()), 4),
+                                          "ci": [round(lo, 4), round(hi, 4)], "coherent": bool(lo > 0 or hi < 0)}
 
     full_jud_d, tc_d = [], []                              # full->judgment (rider 0) + restricted->judgment
     for p in tw_pairs:
@@ -252,16 +278,21 @@ def main() -> None:
 
     # behavioral generate-under-patch on the operating-band twins (psychometric + band computed above).
     behav_src = band_pairs or rt_pairs                     # fall back to request-twins if band empty
-    behav = {"n": 0, "base_refusals": 0, "flips_to_comply": 0,
+    behav = {"n": 0, "base_refuse_violating": 0, "base_comply_following": 0,
+             "flips_to_comply_disengage": 0, "flips_to_refuse_engage": 0,   # Amendment 9 both directions
              "source": "operating_band" if band_pairs else "request_twins_fallback"}
     for foll, viol in behav_src[:(3 if validate else 10)]:
         try:
             sp, tp = cc.patch_positions(model, foll, viol)
-            base_ref = is_refusal(cc.generate_plain(model, viol))
-            patched_ref = is_refusal(cc.generate_under_patch(model, foll, viol, sp, tp, args.layer))
+            base_v = is_refusal(cc.generate_plain(model, viol))            # violating baseline
+            base_f = is_refusal(cc.generate_plain(model, foll))            # following baseline
+            dis = is_refusal(cc.generate_under_patch(model, foll, viol, sp, tp, args.layer))  # remove harm
+            eng = is_refusal(cc.generate_under_patch(model, viol, foll, tp, sp, args.layer))  # add harm
             behav["n"] += 1
-            behav["base_refusals"] += int(base_ref)
-            behav["flips_to_comply"] += int(base_ref and not patched_ref)
+            behav["base_refuse_violating"] += int(base_v)
+            behav["base_comply_following"] += int(not base_f)
+            behav["flips_to_comply_disengage"] += int(base_v and not dis)  # disengage flip
+            behav["flips_to_refuse_engage"] += int((not base_f) and eng)   # engage flip
         except (ValueError, RuntimeError, IndexError):
             continue
 
@@ -293,9 +324,25 @@ def main() -> None:
         lo, hi = (float(x) for x in np.percentile(bb, [2.5, 97.5]))
         return {"mean": round(float(a.mean()), 4), "ci": [round(lo, 4), round(hi, 4)],
                 "coherent": bool(lo > 0 or hi < 0)}
-    # Amendment 8: bidirectional latch/hysteresis (forward vs reverse) + judgment recertification (A7).
-    bidirectional = {"forward_following_to_violating": _ci(full_d), "reverse_violating_to_following": _ci(rev_d)}
+    # Amendment 8/9: bidirectional (disengage forward vs engage reverse) + judgment recert + asymmetry A.
+    bidirectional = {"disengage_following_to_violating": _ci(full_d), "engage_violating_to_following": _ci(rev_d)}
     judgment_recert = _ci(full_jud_d)
+    asymmetry_A = None
+    if len(full_d) > 2 and len(rev_d) > 2:
+        e, dz = np.asarray(rev_d), np.asarray(full_d)         # engage, disengage (paired per twin)
+        A = lambda ee, dd: (abs(ee.mean()) - abs(dd.mean())) / (abs(ee.mean()) + abs(dd.mean()) + 1e-12)
+        ab = [A(e[i], dz[i]) for i in (rng2.integers(0, len(e), len(e)) for _ in range(4000))]
+        asymmetry_A = {"A": round(float(A(e, dz)), 4),
+                       "ci": [round(float(np.percentile(ab, 2.5)), 4), round(float(np.percentile(ab, 97.5)), 4)],
+                       "frac_twins_disengage": round(float((dz < -0.05).mean()), 3),  # bimodality read
+                       "note": "A=0 symmetric, +1 engage-only latch; frac_twins_disengage bimodality"}
+    engage_sweep_result = None
+    if run_sweep and len(rev_d) > 2:
+        rem = float(np.mean(rev_d))
+        Reng = {k: round(float(np.mean(eng_sweep[k]) / rem), 4) for k in KS}
+        engage_sweep_result = {"ks": KS, "R_engage_refusal_k": Reng,
+                               "engage_harm_rank1_R": round(float(np.mean(eng_harm_d) / rem), 4) if eng_harm_d else None,
+                               "engage_restricted_over_full": round(float(np.mean(eng_restr_d) / rem), 4) if eng_restr_d else None}
     sweep_result = None
     if run_sweep and len(full_d) > 2 and len(full_jud_d) > 2:
         fdm, fjm = float(np.mean(full_d)), float(np.mean(full_jud_d))
@@ -313,6 +360,9 @@ def main() -> None:
              "gate": psycho["gate"],                               # Amendment 8 auto-bank gate
              "bidirectional": bidirectional,                       # Amendment 8 latch/hysteresis
              "judgment_recert": judgment_recert,                   # Amendment 7/8 instrument certificate
+             "asymmetry_A": asymmetry_A,                           # Amendment 9 engage/disengage asymmetry
+             "engage_sweep": engage_sweep_result,                  # Amendment 9 reads-broad on the engage channel
+             "patch_layer_sweep": patch_layer_sweep,               # Amendment 9 latch vs early-commitment
              "cell_a_full_refusal_delta_mean": _m(full_d),
              "cell_b_restricted_refusal_delta_mean": _m(restr_d),
              "complement_refusal_delta_mean": _m(compl_d),          # expect: moves refusal
@@ -352,7 +402,8 @@ def main() -> None:
                 cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
                 cell_complement_deltas=np.array(compl_d), cell_harm_deltas=np.array(harm_d),
                 cell_harm_partial_deltas=np.array(hp_d), cell_random_deltas=np.array(rand_d),
-                cell_reverse_deltas=np.array(rev_d), full_judgment_deltas=np.array(full_jud_d),
+                cell_reverse_deltas=np.array(rev_d), cell_engage_restricted_deltas=np.array(eng_restr_d),
+                cell_engage_harm_deltas=np.array(eng_harm_d), full_judgment_deltas=np.array(full_jud_d),
                 transport_control_deltas=np.array(tc_d),
                 per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
     if run_sweep:                                            # per-rank paired deltas (rows = KS)
