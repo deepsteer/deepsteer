@@ -217,3 +217,38 @@ instrument is certified and the null is a **dynamic-range** property of the satu
 variance say *before the pod* whether a re-run can resolve it — they said Llama's same-design re-run was
 futile, and the diagnosis said why. Belongs in the methods section with the intervention-validity
 operating-point rule.
+
+## A6 (ledger) — Deliberation-prefill asymmetry is operating-point-confounded when the gate is a step; the graded projection readout de-confounds it
+
+**Date:** 2026-07-03 · **Found in:** Direction-3 GPT-OSS-20B Tier-1 commit-axis run (Amendment 5/12).
+
+**The trap (A7 recurring on a reasoning model).** The reasoning-prefill deliberation cell (engage =
+inculpating prefill, disengage = exculpating prefill) emitted a clean-looking `A = 1.0` (engage flips
+benign→refuse 7/8; disengage flips violating→comply 0/8). It read as one-way early-commitment. It is
+**saturation**: the disengage arm was tested on violating items that already refuse at baseline (7/8 at
+the ceiling), while the engage arm was tested on unsaturated benign items (room to move up). An
+asymmetry statistic that compares an arm-with-headroom against an arm-at-the-ceiling is the same
+dynamic-range confound A5(2)/A7 names. `A = 1.0` with a bootstrap CI of **width 0** is the tell:
+disengage is uniformly 0, so every resample returns 1 — a degenerate CI, not a precise estimate
+(rule-of-three: disengage 0/7 → 95% upper ≈ 0.43, not 0). And the harm-separability commitment curve
+(~1.0 from trace-bin 1) measures when *harm is represented*, not when the *decision* is fixed —
+harmful/harmless traces differ from the start regardless.
+
+**Why the usual fix (boundary-band stimuli) is not enough here.** A5's fix was boundary-band twins
+(outcome ~0.5). GPT-OSS's gate is a **step** — the severity ladder finds no unsaturated violating level
+(empty boundary band). So the operating point cannot be bracketed behaviorally at the existing
+resolution.
+
+**The de-confounder (Amendment 12).** Replace the binary disengage flip with a **graded exculpatory
+prefill series** (weak→strong) and read a **continuous projection** (the decision-channel residual under
+each prefill onto the refusal direction) alongside the behavioral flip. The graded projection registers
+sub-flip movement, so "no flip at maximum prefill" splits cleanly into *reversible* (projection moves
+toward comply) vs *genuine downward-robustness* (projection flat) — saturation can no longer masquerade
+as commitment. A pre-registered band-existence check (per-item base-refuse histogram: smooth →
+resolution-limited → finer ladder; bimodal → step) decides whether a finer ladder is even buildable.
+
+**The portable rule.** A deliberation/prefill asymmetry is only interpretable when both arms sit off the
+outcome ceiling. When the gate is a step (no boundary band), do not report the asymmetry — switch to a
+**graded intervention with a continuous readout** that registers sub-threshold movement, and report the
+behavioral flip and the graded readout separately. Belongs in the methods note beside the
+operating-point rule (pattern 4) as its reasoning-model instance.

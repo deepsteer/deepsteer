@@ -348,4 +348,33 @@ harm clip on *every* model.
   **earlier** (disengage depth-gated, fails at the read layer). Llama's early-commitment of a broad moral
   read is a strong candidate for its Paper-6 robustness anomaly; the conjunction survives whether the
   mechanism is labelled latch or early-commitment.
+- **GPT-OSS-20B — Tier-1 commit axis (Amendment 5/12).** The reads axis was already banked
+  correlationally (in-trace P2 harm-loading 0.49; prompt→trace 0.977). The first Tier-1 session
+  (A100-80GB) banks three results that do **not** depend on the disengage resolution:
+  - **Position gate PASSES — the decision channel is the D2 bottleneck on a fourth architecture.** The
+    harmony END_OF_PROMPT decision channel has post-standardization **participation ratio 12.79** (below
+    the 25 ceiling), position-valid. Across four families the decision site is a **9–15-dim control-token
+    bottleneck** — OLMo 14.7 / Qwen 8.6 / Llama 10.2 / **GPT-OSS 12.79** — now including a 20B reasoning
+    MoE. This is the strongest cross-model generalization of the D2 finding in the program, and it is the
+    licence for the projection reads; the frozen "band-not-below-null → behavioral-primary" downgrade did
+    not fire.
+  - **Deliberation is consequential (engage arm).** An inculpating-analysis prefill flips *unsaturated*
+    benign requests to refuse **7/7** (Wilson 95% [0.65, 1.0]). Prefilled reasoning changes the decision,
+    which argues *against* a decision fixed before the trace begins.
+  - **The null-ratio corroborates harm-keying at the reflexive site.** At the decision channel the
+    refusal direction is high-variance (null-ratio 372) — the channel's dominant axis of variation across
+    harmful/harmless prompts *is* the refusal split, consistent with a harm-keyed reflexive gate. (This is
+    the reflexive-site complement of D1's in-trace P2 harm-loading; the below-null spare-channel reading
+    is a content-position property, not a decision-channel one.)
+  - **Commit-axis verdict HELD — the A7 saturation trap, caught (ledger A6).** The raw disengage arm
+    (exculpatory prefill on ceiling-refusing violating items, 0/7, rule-of-three ≤ 0.43) and the
+    harm-separability commitment curve (~1.0 from trace-bin 1) are **operating-point-confounded**:
+    GPT-OSS's gate is a step, so the severity ladder finds no unsaturated violating band (empty boundary
+    band), and disengage=0 cannot be told from a ceiling. `A = 1.0` with a zero-width CI is the tell.
+    Amendment 12 redesigns the disengage instrument — a **graded exculpatory-prefill series with a
+    continuous projection readout** (A7-robust: it registers sub-flip movement, so "flat at maximum
+    prefill" is genuine downward-robustness, not a ceiling) — plus a band-existence gate and an
+    un-confounded within-harm-status commitment curve. The commit-axis verdict (reversible vs
+    reversible-up-robust-down) waits on that one modest pod; the current honest read is
+    **engage-consequential, disengage-untestable-at-this-operating-point**.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

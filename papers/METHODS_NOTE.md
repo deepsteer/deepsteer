@@ -25,6 +25,10 @@ depth relative to commitment.**
   nonlinearly inert (the causal counterpart of the eff-dim caution).
 - **A5** — massive activations are position-dependent (clean at the decision channel despite a global
   outlier); and interchange patches die at outcome saturation — certify with an orthogonal cell.
+- **A6** — a deliberation/prefill asymmetry is operating-point-confounded when the gate is a step (no
+  boundary band); switch to a graded intervention with a continuous readout that registers sub-threshold
+  movement, and report the behavioral flip and the graded readout separately (the reasoning-model
+  instance of the operating-point rule).
 
 ## Estimator / intervention patterns
 

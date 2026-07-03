@@ -1,10 +1,12 @@
 # Synthesis — how the refusal decision relates to the moral subspace
 
-Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-02: D3 rank sweep
-resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
-verdict against the rank-1 harm-coextensive alternative and added the GPT-OSS prompt→trace harm
-consistency. Numbers of record live in each direction's RESULTS; this file states the throughline and
-is re-dated on each substantive change.
+Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-03: the GPT-OSS Tier-1
+session ran — banks the position gate (decision channel a 12.79-dim bottleneck, D2 on a fourth
+architecture), engage-consequential deliberation (7/7), and harm-keying corroboration; the commit-axis
+verdict is held behind the Amendment-12 graded-disengage redesign (the A7 saturation trap, caught).
+Earlier: D3 rank sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the
+Llama reads-broad verdict against the rank-1 harm-coextensive alternative. Numbers of record live in
+each direction's RESULTS; this file states the throughline and is re-dated on each substantive change.
 
 ## Thesis (routing form — resolved for OLMo-3)
 
@@ -27,8 +29,9 @@ judgment reads the subspace broadly.
   crystallize** from a pretraining precursor (cos 0.155 base→instruct), unlike the moral subspace
   (cos 0.999); it is a fresh post-training construction in a low-variance channel.
 
-- **D2 (geometry of the decision).** The decision site (`final_pre_assistant`) is a **~10–15-dim
-  control-token bottleneck** (participation ratio 14.7 / 8.6 / 10.2 on OLMo / Qwen / Llama; band below
+- **D2 (geometry of the decision).** The decision site (`final_pre_assistant`) is a **~9–15-dim
+  control-token bottleneck** across **four families** (participation ratio 14.7 / 8.6 / 10.2 / 12.79 on
+  OLMo / Qwen / Llama / GPT-OSS-20B, the last a reasoning MoE at its harmony decision token; band below
   the covariance null → position-invalid for content). Refusal-decision ⊥ judgment-decision at |cos|
   below even the low-dim random level. Content and decision do not coexist at one valid position, so
   content-vs-decision orthogonality is **architecturally guaranteed**, and any coupling must ride the
@@ -64,9 +67,16 @@ judgment reads the subspace broadly.
   |cos(refusal, V_moral ⊥ d_harm)| = **0.001** (near-purely harm), and **in-trace** (P2) 0.49 vs 0.13 —
   a **prompt→trace consistent** harm read, which is *why* P2 projected below the moral-family band in D1.
   Same mechanism, independent model, independent measurement (projection, not patching).
-  (`gpt_oss_harm_audit.py`.) The **causal** GPT-OSS extension is Tier-1-held behind a position-validity
-  gate: the harmony decision-token band-below-null check runs first in-pod; if it fails, GPT-OSS stays
-  behavioral-primary-only (this correlational result is independent of that gate).
+  (`gpt_oss_harm_audit.py`.) The **Tier-1 session has run** (A100-80GB) and banks three results
+  independent of the disengage resolution: (i) the **position gate PASSES** — GPT-OSS's harmony decision
+  channel is a **12.79-dim bottleneck**, so the decision site is the D2 low-dim control channel on a
+  fourth architecture (a 20B reasoning MoE), and the projection reads are licensed; (ii) **deliberation
+  is consequential** — an inculpating prefill flips benign→refuse 7/7 (Wilson [0.65, 1.0]), so the
+  decision is *not* fixed before the trace; (iii) the decision-channel **null-ratio corroborates
+  harm-keying** at the reflexive site. The **commit-axis verdict is held**: the raw disengage arm hit the
+  A7 saturation trap (GPT-OSS's gate is a step, no boundary band), so Amendment 12 redesigns it as a
+  graded exculpatory-prefill series with a continuous projection readout (A7-robust) — one modest pod
+  resolves reversible vs reversible-up-robust-down.
 - **Settled (cross-model, depth-verified).** Refusal's read and commitment **differ by model family**,
   on two axes confirmed at depth-matched layer 12: *what* it reads — OLMo & GPT-OSS read **harm**
   (`R_refusal < R_judgment`, saturates), Llama reads **broad moral content** (`R_refusal ≈ R_judgment`,
@@ -99,10 +109,11 @@ judgment reads the subspace broadly.
   axis does not point along); the rank-2/4 severity-harm basis is a stated extraction rider, prior
   against coextensivity. So the two-dimensional table is final: *what* refusal reads (OLMo/GPT-OSS harm;
   Llama broad moral) × *how* it commits (OLMo at/after the read layer; Llama early). Llama's early-commitment of a broad moral read is
-  a strong candidate for its Paper-6 robustness anomaly. Qwen and GPT-OSS held.
-  (Standardized extraction, A1: the dim-788/dim-458
-  outliers live at content positions, not the decision channel, which is clean and ~13-dim across OLMo
-  and Llama alike — a cross-model strengthening of A2, ledger A5.)
+  a strong candidate for its Paper-6 robustness anomaly. **GPT-OSS's commit-axis placement is in
+  progress** (Tier-1 banked position + engage; the graded-disengage pod resolves reversibility); Qwen
+  held. (Standardized extraction, A1: the dim-788/dim-458
+  outliers live at content positions, not the decision channel, which is clean and ~9–15-dim across OLMo,
+  Llama, and GPT-OSS alike — a cross-model strengthening of A2, ledgers A5/A6.)
 
 ## Method spine (portable, promoted to ANOMALIES)
 
