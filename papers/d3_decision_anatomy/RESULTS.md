@@ -344,10 +344,14 @@ harm clip on *every* model.
   **Cross-model picture (two-dimensional, depth-verified).** *What* refusal reads: OLMo & GPT-OSS read
   **harm** (refusal transfer < judgment, saturates at harm); Llama reads **broad moral content** (refusal
   transfer ≈ judgment, gap closes) — holds at both the read layer and the depth-matched coherent layer.
-  *How* it commits: OLMo commits at/after the read layer (disengage works there); Llama commits
-  **earlier** (disengage depth-gated, fails at the read layer). Llama's early-commitment of a broad moral
-  read is a strong candidate for its Paper-6 robustness anomaly; the conjunction survives whether the
-  mechanism is labelled latch or early-commitment.
+  *How* it commits: OLMo commits at/after the read layer (disengage works there) and **GPT-OSS is a
+  reversible reader** (graded exculpatory deliberation flips violating→comply 6/10 + monotone projection
+  shift; graded engage flips benign→refuse 7/7); Llama commits **earlier** (disengage depth-gated, fails
+  at the read layer). Llama's early-commitment of a broad moral read is a strong candidate for its
+  Paper-6 robustness anomaly; the conjunction survives whether the mechanism is labelled latch or
+  early-commitment. **The suggestive n=3 pattern**: the two harm-readers (OLMo, GPT-OSS) are the
+  reversible/late-committing ones, while the broad-moral reader (Llama) early-commits — a hypothesis for
+  the follow-on panel, not a claim at n=3.
 - **GPT-OSS-20B — Tier-1 commit axis (Amendment 5/12).** The reads axis was already banked
   correlationally (in-trace P2 harm-loading 0.49; prompt→trace 0.977). The first Tier-1 session
   (A100-80GB) banks three results that do **not** depend on the disengage resolution:
@@ -366,15 +370,25 @@ harm clip on *every* model.
     harmful/harmless prompts *is* the refusal split, consistent with a harm-keyed reflexive gate. (This is
     the reflexive-site complement of D1's in-trace P2 harm-loading; the below-null spare-channel reading
     is a content-position property, not a decision-channel one.)
-  - **Commit-axis verdict HELD — the A7 saturation trap, caught (ledger A6).** The raw disengage arm
-    (exculpatory prefill on ceiling-refusing violating items, 0/7, rule-of-three ≤ 0.43) and the
-    harm-separability commitment curve (~1.0 from trace-bin 1) are **operating-point-confounded**:
-    GPT-OSS's gate is a step, so the severity ladder finds no unsaturated violating band (empty boundary
-    band), and disengage=0 cannot be told from a ceiling. `A = 1.0` with a zero-width CI is the tell.
-    Amendment 12 redesigns the disengage instrument — a **graded exculpatory-prefill series with a
-    continuous projection readout** (A7-robust: it registers sub-flip movement, so "flat at maximum
-    prefill" is genuine downward-robustness, not a ceiling) — plus a band-existence gate and an
-    un-confounded within-harm-status commitment curve. The commit-axis verdict (reversible vs
-    reversible-up-robust-down) waits on that one modest pod; the current honest read is
-    **engage-consequential, disengage-untestable-at-this-operating-point**.
+  - **Commit-axis verdict RESOLVED (Amendment 12): GPT-OSS refusal is a REVERSIBLE READER.** The first
+    run's disengage 0/7 was the A7 saturation trap (ledger A6): the single weak exculpatory prefill on
+    ceiling-refusing items, with an empty boundary band (`band_existence: step_function`, only 5.6% of
+    violating items in the [0.2,0.8] mid-band — GPT-OSS's gate is a genuine step, so no finer ladder
+    would land a band). The **graded** exculpatory series de-confounds it. At the strongest prefill the
+    ceiling-refusing violating items **flip to comply 6/10** (behavioral), and the decision-channel
+    refusal projection moves **monotonically toward comply in all 10 items** across weak→strong (mean
+    −124.6, `frac_projection_moved 1.0`, `frac_monotone 1.0`). The **behavioral flip is the primary
+    evidence** (it is the model's actual generated answer, downstream of the whole forward); the
+    projection **corroborates with a caveat** — it reads the last token of the injected prefill, so it
+    partly reflects the prefill's own "this is benign" surface content, not a pure decision-state readout
+    (a cleaner readout is the in-trace decision token *after* the model responds to the prefill — a
+    refinement, noted). Even so, the two agree, and the graded structure is the control: if the flips were
+    the prefill merely asserting benignness, the *weakest* prefill would already read low, not spike (215)
+    then fall to 78 as rhetorical strength climbs while the behavioral flip rate rises. So GPT-OSS is
+    **reversible in both directions** — inculpating prefill drives benign→refuse (7/7), exculpatory
+    prefill drives violating→comply (6/10) — the affirmative answer to deliberative reversibility, and the
+    clean contrast to Llama's early-commitment. (The within-series projection is the valid metric; the
+    no-prefill baseline reads a different token and is position-confounded, kept as context only.) The **within-harm-status commitment curve is `not_computable_at_this_operating_
+    point`** (step-function gate, no borderline items) — reported as such, never the harm-separability
+    fallback (Amendment 12 rule).
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

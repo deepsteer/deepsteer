@@ -1,12 +1,13 @@
 # Synthesis — how the refusal decision relates to the moral subspace
 
-Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-03: the GPT-OSS Tier-1
-session ran — banks the position gate (decision channel a 12.79-dim bottleneck, D2 on a fourth
-architecture), engage-consequential deliberation (7/7), and harm-keying corroboration; the commit-axis
-verdict is held behind the Amendment-12 graded-disengage redesign (the A7 saturation trap, caught).
-Earlier: D3 rank sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the
-Llama reads-broad verdict against the rank-1 harm-coextensive alternative. Numbers of record live in
-each direction's RESULTS; this file states the throughline and is re-dated on each substantive change.
+Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-03: the GPT-OSS commit
+axis is RESOLVED — the graded-disengage pod (Amendment 12) shows GPT-OSS refusal is a **reversible
+reader** (strong exculpatory deliberation flips violating→comply 6/10 + monotone projection), the clean
+contrast to Llama's early-commitment; the same run banked the position gate (decision channel a 12.79-dim
+bottleneck, D2 on a fourth architecture) and engage-consequential deliberation (7/7). Earlier: D3 rank
+sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
+verdict against the rank-1 harm-coextensive alternative. Numbers of record live in each direction's
+RESULTS; this file states the throughline and is re-dated on each substantive change.
 
 ## Thesis (routing form — resolved for OLMo-3)
 
@@ -73,10 +74,13 @@ judgment reads the subspace broadly.
   fourth architecture (a 20B reasoning MoE), and the projection reads are licensed; (ii) **deliberation
   is consequential** — an inculpating prefill flips benign→refuse 7/7 (Wilson [0.65, 1.0]), so the
   decision is *not* fixed before the trace; (iii) the decision-channel **null-ratio corroborates
-  harm-keying** at the reflexive site. The **commit-axis verdict is held**: the raw disengage arm hit the
-  A7 saturation trap (GPT-OSS's gate is a step, no boundary band), so Amendment 12 redesigns it as a
-  graded exculpatory-prefill series with a continuous projection readout (A7-robust) — one modest pod
-  resolves reversible vs reversible-up-robust-down.
+  harm-keying** at the reflexive site. The **commit-axis verdict is now RESOLVED (Amendment 12): GPT-OSS
+  refusal is a reversible reader.** The first run's disengage 0/7 was the A7 saturation trap (step-function
+  gate, no boundary band); the graded exculpatory-prefill series de-confounds it — strong exculpatory
+  deliberation flips ceiling-refusing violating→comply **6/10** and moves the decision-channel projection
+  monotonically toward comply in all 10 items. So GPT-OSS reverses in both directions (benign→refuse and
+  violating→comply), the affirmative answer to deliberative reversibility and the clean contrast to
+  Llama's early-commitment.
 - **Settled (cross-model, depth-verified).** Refusal's read and commitment **differ by model family**,
   on two axes confirmed at depth-matched layer 12: *what* it reads — OLMo & GPT-OSS read **harm**
   (`R_refusal < R_judgment`, saturates), Llama reads **broad moral content** (`R_refusal ≈ R_judgment`,
@@ -109,9 +113,10 @@ judgment reads the subspace broadly.
   axis does not point along); the rank-2/4 severity-harm basis is a stated extraction rider, prior
   against coextensivity. So the two-dimensional table is final: *what* refusal reads (OLMo/GPT-OSS harm;
   Llama broad moral) × *how* it commits (OLMo at/after the read layer; Llama early). Llama's early-commitment of a broad moral read is
-  a strong candidate for its Paper-6 robustness anomaly. **GPT-OSS's commit-axis placement is in
-  progress** (Tier-1 banked position + engage; the graded-disengage pod resolves reversibility); Qwen
-  held. (Standardized extraction, A1: the dim-788/dim-458
+  a strong candidate for its Paper-6 robustness anomaly. **GPT-OSS is placed on the commit axis: a
+  reversible reader** (graded deliberation flips it both ways) — so the two harm-readers (OLMo, GPT-OSS)
+  are the reversible/late-committing ones and the broad-moral reader (Llama) early-commits, a suggestive
+  n=3 pattern for the follow-on panel; Qwen held. (Standardized extraction, A1: the dim-788/dim-458
   outliers live at content positions, not the decision channel, which is clean and ~9–15-dim across OLMo,
   Llama, and GPT-OSS alike — a cross-model strengthening of A2, ledgers A5/A6.)
 
