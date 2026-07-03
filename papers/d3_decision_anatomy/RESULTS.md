@@ -224,5 +224,17 @@ harm clip on *every* model.
   OLMo's. **One directional signal:** `R_refusal` reaches 0.44 at rank 16, ~3× Llama's harm-rank-1
   level (0.14), and the harm-saturation one-knob model *fails* (RMSE 0.12) — Llama refusal *hints* at
   reading beyond harm (the "reads content more" direction), but the noise makes it not resolvable.
-  **Power fix:** more operating-band twins at a single severity level (homogeneous), then re-run.
+
+  **Amendment 6 power table → `bounded-unresolved` (do not re-run).** The pre-registered power
+  computation (within-level variance from the heterogeneous run) shows homogenizing does **not** rescue
+  Llama: the per-twin full deltas are **sign-inconsistent** (range −0.47 to +0.82, median +0.029, SD
+  0.31 vs OLMo's clean −0.083 mean / 0.11 SD), so within-level variance ≈ cross-level, and MDE(n=40) ≈
+  0.08 while effects are sign-unstable — no feasible `n` resolves it. The blocker is the **measurement
+  instrument, not stimulus power**: the mean-pooled aggregate-content interchange (the length-agnostic
+  swap) is too coarse for Llama's *diverse severe* operating-band twins (for "embezzle" vs "handle
+  honestly", mean-pooling the flipped span dilutes the specific harmful tokens). The power table
+  correctly says the re-run is futile — the disciplined outcome. Llama's causal one-knob verdict is
+  **bounded-unresolved**; its contribution is the clean diagnostics (A1-clean decision channel,
+  OLMo-like anatomy, intent-coupled behavior). Resolving it needs a **per-token content-swap instrument**
+  (not more twins).
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).
