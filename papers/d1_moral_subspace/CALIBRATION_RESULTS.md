@@ -46,6 +46,20 @@ three is the **moral-family band**, the yardstick for "moral-adjacent."
   and below the moral-family band [0.65, 0.76]**. So in-trace refusal deliberation is at most
   voice-adjacent, not moral-content-adjacent.
 
+- **The 0.52, under the D3 routing lens (retro-audit, 2026-07-02).** D3 showed causally on OLMo-3
+  that refusal reads the *harm percept*, not the broad moral subspace (`harm_saturating`). The same
+  reading closes the GPT-OSS P2 story. GPT-OSS is a strong massive-activation outlier (top-dim
+  variance 0.70, ANOMALIES A1), so the audit is done per-dim-standardized; it holds raw too.
+  Projecting the saved in-trace refusal direction (P2, layer 12) onto the model's own harm and moral
+  directions, **standardized: |cos(P2, d_harm)| = 0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13**
+  (raw: 0.57 vs 0.22; `cos(V_moral, d_harm)` = 0.13 std / 0.22 raw). P2 is **harm-loaded** either way,
+  and standardization *sharpens* the gap (3.8×). P2 sits below the moral-family band not because
+  in-trace refusal is unrelated to morality, but because it reads the **harm sliver** of `V_moral`,
+  only weakly aligned with the broad subspace the band measures. This is the same mechanism D3
+  established causally on OLMo, now in an independent model (a 20B reasoning MoE) via an independent
+  measurement (in-trace projection, not interchange patching). *(OLMo-3-Think P2 was not saved with a
+  refusal direction — MISSING_ARTIFACTS; the same decomposition is a one-line re-extraction if wanted.)*
+
 **MFT ↔ V_moral mutual projection (content-vs-content; closes Paper 7 Phase 2f at the subspace
 level).** On the tags where MFT is committed (base, instruct):
 

@@ -53,9 +53,15 @@ judgment reads the subspace broadly.
   refusal substrate (Δ CI excludes 0), and the rank sweep resolves *which* moral content: the **harm
   percept**, not the broad subspace (`harm_saturating`). Refusal reads harm; judgment reads the
   subspace broadly — different reads of the same content.
-- **Open (cross-model).** Is `harm_saturating` a property of OLMo-3 or general? The panel (Llama, Qwen)
-  reads each model's `R_refusal(k)` saturation shape against its own harm-rank-1 level. Standardized
-  extraction (A1), gated on OLMo raw→standardized invariance.
+- **Cross-model corroboration (correlational).** GPT-OSS-20B (an independent reasoning MoE) already
+  supports the routing reading: its saved in-trace refusal direction (P2) is **harm-loaded** —
+  standardized |cos(P2, d_harm)| = 0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13 — which is *why* P2
+  projected below the moral-family band in D1. Same mechanism, independent model, independent
+  measurement (projection, not patching).
+- **Open (cross-model, causal).** Is `harm_saturating` general causally? The panel (Llama, Qwen, then
+  GPT-OSS under Amendment 5) reads each model's `R_refusal(k)` saturation shape against its own
+  harm-rank-1 level. Standardized extraction (A1; GPT-OSS is the strongest outlier at 0.70 top-dim
+  variance), gated on OLMo raw→standardized invariance (passed: Spearman 0.92).
 
 ## Method spine (portable, promoted to ANOMALIES)
 
