@@ -49,12 +49,13 @@ repo_for () { local k="$1" e; for e in "${PANEL[@]}"; do [ "${e%%:*}" = "$k" ] &
 
 for key in $MODELS; do
   repo="$(repo_for "$key")"; [ -z "$repo" ] && { echo "WARN unknown key $key"; continue; }
-  LAYER=$(python - "$key" <<'PY'
+  LAYER="${LAYER_OVERRIDE:-$(python - "$key" <<'PY'
 import sys; sys.path.insert(0,"papers/6_cross_model/scripts")
 import model_registry as reg; print(reg.get(sys.argv[1]).primary_layer)
 PY
-)
-  echo "==================== $key ($repo) layer=$LAYER ===================="
-  python "$D3/scripts/c1_session.py" --model "$repo" --key "$key" --layer "$LAYER" --out "$OUT" || true
+)}"   # LAYER_OVERRIDE forces the read/patch layer (Amendment 10 depth verification, e.g. Llama L12)
+  RUNKEY="${key}${LAYER_OVERRIDE:+_L$LAYER_OVERRIDE}"   # distinct output file for depth-verification runs
+  echo "==================== $key ($repo) layer=$LAYER key=$RUNKEY ===================="
+  python "$D3/scripts/c1_session.py" --model "$repo" --key "$RUNKEY" --layer "$LAYER" --out "$OUT" || true
 done
 echo ">> C1 session done. rsync-back -> analyze c1_session_*.json (reconstruction, top heads, Stage-2 transport)."
