@@ -91,6 +91,39 @@ def main() -> None:
     model = du.load_whitebox(args.model)
 
     inp = extract_inputs(model, args.layer, moral, rp, n_cap or 60)
+    refusal_raw = np.asarray(inp["refusal"], float).copy()   # attribute()/fold/reconstruction stay RAW
+
+    # STANDARDIZE (ANOMALIES A1): rebind geometry directions to per-dim-standardized (zscore) or
+    # top-k-projection-out (projout) space so the massive-activation outlier dims cannot dominate the
+    # V_moral restriction, the channel null, or the readout on Llama/Qwen/GPT-OSS. `factor` (per-dim
+    # multiplier) standardizes vectors; `sigma` is threaded to the cells (patch restriction in the
+    # standardized frame + standardized readout). No-op on OLMo up to the #17 invariance.
+    standardize = os.environ.get("STANDARDIZE") == "1"
+    robustify = os.environ.get("ROBUSTIFY", "zscore")
+    factor = None; sigma = None; std_meta = None
+    if standardize:
+        var = inp["channel_act"].var(0)
+        if robustify == "projout":
+            big = var / (var.sum() + 1e-12) > 0.05
+            factor = np.where(big, 0.0, 1.0)                 # zero the >5%-variance dims
+        else:
+            sig = np.sqrt(var); sig = np.where(sig > 1e-8, sig, 1.0)
+            factor = 1.0 / sig; sigma = sig                  # zscore; sigma threads to the cells
+        _oc = lambda M: np.linalg.qr(M)[0][:, :M.shape[1]]   # re-orthonormalize columns in the new frame
+        q95_raw = s2.value_null_q95(inp["channel_act"] - inp["channel_act"].mean(0), inp["Vbasis"],
+                                    np.random.default_rng(0))
+        inp["refusal"] = inp["refusal"] * factor
+        inp["harm"] = inp["harm"] * factor
+        inp["Vbasis"] = _oc(inp["Vbasis"] * factor[:, None])
+        inp["channel_act"] = inp["channel_act"] * factor
+        q95_std = s2.value_null_q95(inp["channel_act"] - inp["channel_act"].mean(0), inp["Vbasis"],
+                                    np.random.default_rng(0))
+        ev = inp["channel_act"].var(0)
+        std_meta = {"robustify": robustify, "null_q95_raw": round(float(q95_raw), 4),
+                    "null_q95_std": round(float(q95_std), 4),
+                    "post_std_participation_ratio": round(float((ev.sum() ** 2) / (ev ** 2).sum()), 2),
+                    "n_dims_projected_out": int((factor == 0).sum()) if robustify == "projout" else 0}
+    _std = (lambda v: np.asarray(v, float) * factor) if standardize else (lambda v: v)
 
     # pilot screen (behavioral-discrimination) on the typed stimuli
     manifest = ps.build_manifest()
@@ -99,8 +132,9 @@ def main() -> None:
     # Stage 1: per-head write attribution at the decision token, on a harmful request.
     Qc = s1.channel_control_basis(inp["channel_act"], inp["refusal"])
     probe = (screened["request_twins"] or manifest["request_twins"]["pairs"])[0]["violating"]
-    st1 = s1.attribute(model, probe, inp["refusal"], args.layer)
-    spec = s1.head_specificity(st1["per_head_contrib"], inp["refusal"], Qc)
+    st1 = s1.attribute(model, probe, refusal_raw, args.layer)   # RAW: fold + reconstruction in raw space
+    contribs_eff = {h: _std(c) for h, c in st1["per_head_contrib"].items()}
+    spec = s1.head_specificity(contribs_eff, inp["refusal"], Qc)   # standardized specificity
     ks = s1.kselect(spec)
     mf = s1.mlp_fraction(list(st1["head_writes"].values()), list(st1["mlp_writes"].values()))
     top_heads = [tuple(h) for h in ks["ranked_heads"][:ks["k"]]]
@@ -115,7 +149,7 @@ def main() -> None:
         band_min = min(s2._frac(inp["Vbasis"], inp["Vbasis"][:, j]) for j in range(inp["Vbasis"].shape[1]))
         s2pass = s2.stage2_pass(model, probe, top_heads, args.layer, spans_fn)
         for h, r in s2pass.items():
-            vs = s2.value_side(r["read_vec"], inp["Vbasis"], inp["harm"])
+            vs = s2.value_side(_std(r["read_vec"]), inp["Vbasis"], inp["harm"])   # standardized read
             st2[str(h)] = {"source_dist": r["source_dist"], **vs, "at_read_layer": bool(h[0] == args.layer),
                            "classify": s2.classify_head(r["source_dist"], vs, band_min, null95)}
 
@@ -127,13 +161,13 @@ def main() -> None:
     rng2 = np.random.default_rng(0)
     hidden = inp["refusal"].shape[0]
     Qrand = cc.random_ortho_basis(hidden, inp["Vbasis"].shape[1], rng2, exclude_Q=inp["Vbasis"])
-    harmQ = inp["harm"][:, None]
+    harmQ = _unit(inp["harm"])[:, None]                     # unit harm as a rank-1 basis (std or raw frame)
     Qhp = sw.harm_partial_basis(inp["Vbasis"], inp["harm"])   # V_moral with d_harm projected out (Amendment 4)
     tw = (screened["compositional_twins"] or manifest["compositional_twins"]["pairs"])
     tw_cap = (6 if validate else 120)                       # use all screened twins (>=2x transport headroom)
     tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:tw_cap]]
-    jdir = (_unit(extract_positions(model, tw_pairs, [args.layer])["final_pre_assistant"][args.layer][0])
-            if tw_pairs else inp["harm"])
+    jdir = (_unit(_std(extract_positions(model, tw_pairs, [args.layer])["final_pre_assistant"][args.layer][0]))
+            if tw_pairs else _unit(inp["harm"]))            # judgment readout in the standardized frame
     rt = (screened["request_twins"] or manifest["request_twins"]["pairs"])[:(6 if validate else None)]
 
     # Amendment 4 rank sweep (SWEEP=1 or validate): nested moral-contrast PCA basis + per-rank restrict.
@@ -142,8 +176,8 @@ def main() -> None:
     sweep_bases, sweep_rand_bases, sweep_meta = None, None, None
     if run_sweep:
         all_pairs = [pr for v in moral.values() for pr in v]
-        contrasts = extract_positions(model, all_pairs, [args.layer])["mean_content"][args.layer][1]
-        sweep_bases = sw.nested_pca_basis(contrasts, KS)
+        contrasts = _std(extract_positions(model, all_pairs, [args.layer])["mean_content"][args.layer][1])
+        sweep_bases = sw.nested_pca_basis(contrasts, KS)     # PCA basis in the standardized frame
         sweep_rand_bases = {k: cc.random_ortho_basis(hidden, sweep_bases[k].shape[1], rng2,
                                                      exclude_Q=inp["Vbasis"]) for k in KS}
         sweep_meta = {"purity_k": {k: round(sw.subspace_purity(sweep_bases[k], contrasts.mean(0)), 4)
@@ -157,8 +191,9 @@ def main() -> None:
         try:
             sp, tp = cc.patch_positions(model, p["following"], p["violating"])
             L, r = args.layer, inp["refusal"]
-            base = cc.baseline_proj(model, p["violating"], L, r)
-            ic = lambda **kw: cc.interchange(model, p["following"], p["violating"], sp, tp, L, r, **kw) - base
+            base = cc.baseline_proj(model, p["violating"], L, r, sigma=sigma)
+            ic = lambda **kw: cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+                                             sigma=sigma, **kw) - base
             full_d.append(ic())
             restr_d.append(ic(restrict_Q=inp["Vbasis"]))
             compl_d.append(ic(restrict_Q=inp["Vbasis"], restrict_mode="complement"))
@@ -176,8 +211,9 @@ def main() -> None:
     for p in tw_pairs:
         try:
             sp, tp = cc.patch_positions(model, p[0], p[1])
-            jbase = cc.baseline_proj(model, p[1], args.layer, jdir)
-            jc = lambda **kw: cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir, **kw) - jbase
+            jbase = cc.baseline_proj(model, p[1], args.layer, jdir, sigma=sigma)
+            jc = lambda **kw: cc.interchange(model, p[0], p[1], sp, tp, args.layer, jdir,
+                                             sigma=sigma, **kw) - jbase
             full_jud_d.append(jc())
             tc_d.append(jc(restrict_Q=inp["Vbasis"]))
             if run_sweep:
@@ -261,6 +297,7 @@ def main() -> None:
     result = {"model": args.model, "key": args.key, "layer": args.layer,
               "reconstruction": st1["reconstruction"], "reconstruction_ok": st1["reconstruction_ok"],
               "reordered_norm": st1.get("reordered_norm", False),
+              "standardize": std_meta,                               # A1 null de-saturation (if STANDARDIZE=1)
               "mlp": mf, "k": ks["k"], "channel_dim": int(Qc.shape[1]),
               "top_heads": [{"head": list(h), **spec[h]} for h in top_heads],
               "sparsity_curve": ks["sparsity_curve"], "stage2": st2,

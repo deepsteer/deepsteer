@@ -6,6 +6,7 @@ Run: python papers/d3_decision_anatomy/scripts/local_test.py
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -296,6 +297,55 @@ def test_sweep():
     check("shape verdict: instrument_ceiling", v_ceil["verdict"] == "instrument_ceiling", v_ceil["verdict"])
 
 
+def test_standardize():
+    print("STANDARDIZE / A1-robustification (pure math):")
+    rng = np.random.default_rng(9)
+    d, n = 48, 300
+    X = rng.standard_normal((n, d)); X[:, 0] *= 9.0          # dim 0 = massive-activation outlier
+    var = X.var(0)
+    # projout: factor zeros exactly the >5%-variance dims
+    big = var / var.sum() > 0.05
+    f_proj = np.where(big, 0.0, 1.0)
+    check("projout zeros the outlier dim (dim 0)", f_proj[0] == 0.0 and f_proj[1:].sum() == d - 1,
+          f"{int((f_proj == 0).sum())} dim(s) out")
+    # zscore de-saturates the covariance null when V_moral loads on the outlier
+    Vb, _ = np.linalg.qr(np.column_stack([X[:5].mean(0), rng.standard_normal(d), rng.standard_normal(d)]))
+    Vb = Vb[:, :3]
+    q_raw = s2.value_null_q95(X - X.mean(0), Vb, np.random.default_rng(0))
+    sig = np.sqrt(var); fz = 1.0 / sig
+    Xs = X * fz; Vbs = np.linalg.qr(Vb * fz[:, None])[0][:, :3]
+    q_std = s2.value_null_q95(Xs - Xs.mean(0), Vbs, np.random.default_rng(0))
+    check("zscore de-saturates the covariance null (q95 drops)", q_std < q_raw, f"{q_raw:.3f} -> {q_std:.3f}")
+    # standardized-frame subspace patch round-trips: off-subspace RAW component preserved
+    sigv = sig
+    Q = Vbs[:, :2]                                           # std-frame basis
+    cur = rng.standard_normal(d) * sigv; src = rng.standard_normal(d) * sigv
+    cur_w, src_w = cur / sigv, src / sigv
+    new_w = cur_w - (cur_w @ Q) @ Q.T + (src_w @ Q) @ Q.T    # subspace swap in std frame
+    new = new_w * sigv                                       # map back to raw
+    off = cur_w - (cur_w @ Q) @ Q.T
+    check("std-frame subspace patch preserves the tgt off-subspace part",
+          np.allclose((new / sigv) - (src_w @ Q) @ Q.T, off, atol=1e-9))
+
+    # regression parity: c1-style standardized Stage-1 lead head == #17 invariance lead head
+    npz = HERE.parent / "outputs" / "c1_inputs_olmo3.npz"
+    if npz.exists():
+        z = np.load(npz)
+        C = z["per_head_contribs"].astype(float); keys = [tuple(int(x) for x in k) for k in z["per_head_keys"]]
+        Xc = z["channel_act"].astype(float); r = z["refusal"].astype(float)
+        s = np.sqrt(Xc.var(0)); s = np.where(s > 1e-8, s, 1.0); fac = 1.0 / s
+        Qc = s1.channel_control_basis(Xc * fac, r * fac)
+        spec = s1.head_specificity({h: C[i] * fac for i, h in enumerate(keys)}, r * fac, Qc)
+        lead = max(keys, key=lambda h: abs(spec[h]["specificity"]))
+        inv = json.loads((HERE.parent / "outputs" / "standardized_invariance_olmo3.json").read_text()) \
+            if (HERE.parent / "outputs" / "standardized_invariance_olmo3.json").exists() else None
+        if inv:
+            check("regression parity: c1 std lead head == #17 std lead head",
+                  list(lead) == inv["lead_head_std"], f"{list(lead)} vs {inv['lead_head_std']}")
+    else:
+        print("  [skip] OLMo npz not present -> regression parity checked on the pod")
+
+
 def main():
     print("=== C1 typing-prep local gate ===\n")
     test_request_twins()
@@ -307,6 +357,7 @@ def main():
     test_causal_logic()
     test_amendment3_cells()
     test_sweep()
+    test_standardize()
     print()
     if FAILS:
         print(f"FAILED: {FAILS}"); sys.exit(1)

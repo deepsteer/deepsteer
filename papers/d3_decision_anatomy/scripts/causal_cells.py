@@ -164,55 +164,70 @@ def _resid_at(model, text, layer, positions):
     return cap["x"][positions]  # (len(pos), hidden)
 
 
-def _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode):
+def _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode, sig=None):
     """Forward-pre-hook that swaps content at tgt_pos. FULL (Q None): replace with src_comp.
     SUBSPACE: swap only the in-Q component (tgt keeps off-Q). COMPLEMENT: swap only the off-Q
-    component (tgt keeps its in-Q part) -- the direct 'refusal reads NON-V_moral' confirmation."""
+    component. STANDARDIZE (sig given, ANOMALIES A1): the restriction is done in per-dim-standardized
+    coordinates (÷ sig), then mapped back to raw (× sig) for injection, so the outlier dims do not
+    dominate the V_moral restriction on Llama/Qwen/GPT-OSS. src_comp + Q are in the standardized space
+    when sig is given."""
     def patch_hook(module, inp):
         x = inp[0]
         pos = [p for p in tgt_pos if p < x.shape[1]]
         if pos:
             cur = x[0, pos, :]
+            cur_w = cur / sig if sig is not None else cur       # -> work (standardized) space
             if Q is None:
-                x[0, pos, :] = src_comp.expand(len(pos), -1)
+                new_w = src_comp.expand(len(pos), -1)
             elif restrict_mode == "complement":
-                x[0, pos, :] = (cur @ Q) @ Q.T + src_comp       # keep tgt in-Q, swap src off-Q
+                new_w = (cur_w @ Q) @ Q.T + src_comp            # keep tgt in-Q, swap src off-Q
             else:                                               # subspace
-                x[0, pos, :] = cur - (cur @ Q) @ Q.T + src_comp  # keep tgt off-Q, swap src in-Q
+                new_w = cur_w - (cur_w @ Q) @ Q.T + src_comp    # keep tgt off-Q, swap src in-Q
+            x[0, pos, :] = new_w * sig if sig is not None else new_w   # -> raw space for injection
         return (x,) + inp[1:]
     return patch_hook
 
 
 def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None,
-                restrict_Q=None, restrict_mode="subspace"):
+                restrict_Q=None, restrict_mode="subspace", sigma=None):
     """Patch src's content into tgt at `layer`; return the decision-token projection onto r_hat read
     at `read_layer` (default = layer). Length-agnostic: the src flipped span is MEAN-POOLED to one
     content vector and broadcast across tgt's flipped-span positions (an aggregate-content swap, so
     differently-tokenized moral-intent spans are comparable). Modes: FULL (restrict_Q None) replaces
     the tgt content vector; SUBSPACE (restrict_Q hidden,k) swaps only the in-subspace component;
     COMPLEMENT swaps only the off-subspace component (Amendment 3 confirmatory cell). tgt positions
-    guarded against the current seq length (safe under KV-cached decoding)."""
+    guarded against the current seq length (safe under KV-cached decoding).
+
+    STANDARDIZE (sigma given, ANOMALIES A1): the restriction runs in per-dim-standardized coordinates
+    and the readout onto r_hat is standardized (r_hat + restrict_Q must be supplied in the same
+    standardized space). Patch injection is still raw; only the restriction basis and the readout
+    metric are standardized, so the A1 outlier dims cannot dominate the V_moral restriction or the
+    projection on Llama/Qwen/GPT-OSS."""
     import torch
     read_layer = layer if read_layer is None else read_layer
     src_resid = _resid_at(model, src, layer, src_pos).mean(0, keepdim=True)   # (1, hidden) content mean
+    sig = None if sigma is None else torch.tensor(sigma, dtype=src_resid.dtype, device=src_resid.device)
+    src_w = src_resid / sig if sig is not None else src_resid                 # -> work space
     Q = None if restrict_Q is None else torch.tensor(restrict_Q, dtype=src_resid.dtype,
                                                      device=src_resid.device)
     if Q is None:
-        src_comp = src_resid
+        src_comp = src_w
     elif restrict_mode == "complement":
-        src_comp = src_resid - (src_resid @ Q) @ Q.T            # src's off-subspace component
+        src_comp = src_w - (src_w @ Q) @ Q.T                    # src's off-subspace component (work space)
     else:
-        src_comp = (src_resid @ Q) @ Q.T                        # src's in-subspace component
+        src_comp = (src_w @ Q) @ Q.T                            # src's in-subspace component (work space)
     r = torch.tensor(_unit(r_hat), dtype=torch.float32, device=model._device)
+    sig_r = None if sigma is None else torch.tensor(sigma, dtype=torch.float32, device=model._device)
     proj = {}
 
     def read_hook(module, inp, out):
         t = out[0] if isinstance(out, tuple) else out
-        proj["p"] = float(t[0, -1, :].float() @ r)
+        tw = (t[0, -1, :].float() / sig_r) if sig_r is not None else t[0, -1, :].float()
+        proj["p"] = float(tw @ r)
 
     tok = model.tokenizer
     h1 = model._get_layer_module(layer).register_forward_pre_hook(
-        _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode))
+        _patch_hook_factory(tgt_pos, src_comp, Q, restrict_mode, sig))
     h2 = model._get_layer_module(read_layer).register_forward_hook(read_hook)
     try:
         with torch.no_grad():
@@ -222,16 +237,19 @@ def interchange(model, src, tgt, src_pos, tgt_pos, layer, r_hat, read_layer=None
     return proj["p"]
 
 
-def baseline_proj(model, text: str, read_layer: int, r_hat) -> float:
-    """Unpatched decision-token projection onto r_hat (the patch baseline)."""
+def baseline_proj(model, text: str, read_layer: int, r_hat, sigma=None) -> float:
+    """Unpatched decision-token projection onto r_hat (the patch baseline). STANDARDIZE (sigma given):
+    standardized readout, r_hat supplied in the standardized space."""
     import torch
     tok = model.tokenizer
     r = torch.tensor(_unit(r_hat), dtype=torch.float32, device=model._device)
+    sig_r = None if sigma is None else torch.tensor(sigma, dtype=torch.float32, device=model._device)
     cap = {}
 
     def read_hook(module, inp, out):
         t = out[0] if isinstance(out, tuple) else out
-        cap["p"] = float(t[0, -1, :].float() @ r)
+        tw = (t[0, -1, :].float() / sig_r) if sig_r is not None else t[0, -1, :].float()
+        cap["p"] = float(tw @ r)
     h = model._get_layer_module(read_layer).register_forward_hook(read_hook)
     try:
         with torch.no_grad():
