@@ -296,24 +296,28 @@ harm clip on *every* model.
   so OLMo commits at or after the read layer; Llama's fails at 16 but works at 8–14, so Llama commits
   *earlier*. The commitment-depth difference is real and depth-informed.
 
-  **Amendment 10 verification — the reads-dimension and the A-magnitude are held (read-layer confound).**
-  The reads-broad and A-asymmetry numbers were both read at layer 16, which is **post-commitment** for
-  Llama, so they may be **read-layer artifacts**: (v) `A` is depth-dependent — +0.82 at layer 16 but
-  ≈ +0.14 at layer 12 and −0.17 at layer 14 (the coherent depths), so "Llama is engage-dominant" is a
-  layer-16 statement, not a depth-invariant property, and the cross-model `A` comparison is not
-  depth-matched (needs OLMo's disengage-by-layer). (iii) The rank-1 harm engage cell is −0.006 with
-  sign-frac 0.49 (**noise near zero**, not a clean "harm carries nothing"); (i) the multi-rank
-  severity-harm basis engage curve was never built (the blocking gap). So the **reads-broad claim is
-  held** pending the engage dual-basis sweep at Llama's **pre-commitment coherent depth (layer 12)**;
-  the pre-registered branches: harm-basis-dominant-early → unified harm-keying (family difference is
-  depth + ratchet), broad-dominant-at-all-coherent-depths → reads-broad stands. What is **not** in
-  doubt: early-commitment (the depth-dependence is the finding), and the anti-over-refusal head (L15 H6)
-  firing. **Llama arc:** underpowered (A6) → saturated (A7) → boundary-fixed/asymmetric (A8) →
-  early-commitment [frozen] + reads-broad [held, A9/A10].
+  **Amendment 10 depth verification — both dimensions RESOLVED at depth-matched layer 12.** The
+  reads-broad and A-asymmetry were both read at layer 16 = post-commitment, so we re-ran the full cell
+  battery at Llama's pre-commitment coherent depth (layer 12) and matched OLMo there.
+  - **The A-asymmetry was largely a read-layer artifact, correctly re-attributed.** `A_Llama` flips from
+    +0.82 (layer 16) to **−0.28** at layer 12, and `A_Llama − A_OLMo` shrinks from **+1.03 to +0.26**.
+    So Llama is not fundamentally engage-dominant; the +0.82 reflected measuring *post-commitment*. The
+    asymmetry is a **consequence** of early-commitment, not a third property.
+  - **Reads-broad SURVIVES depth-matching (branch: broad-dominant-at-all-coherent-depths).** At layer 12
+    Llama's disengage sweep is **`broad_moral`**: `R_refusal` climbs to 0.85 ≈ `R_judgment` 0.79 (**gap
+    closes** — refusal reads *as broadly as judgment*), harm-rank-1 only 0.59. OLMo@12 stays
+    **harm-keyed** (`R_refusal` 0.43 < `R_judgment` 0.53, gap open). So Llama reads broad and OLMo reads
+    harm at *matched* depth — the two-dimensional table is final.
+  - **Early-commitment confirmed:** Llama's disengage is **−0.57 coherent at layer 12** but incoherent
+    at 16; OLMo's works at both. Llama commits earlier.
+  **Llama arc closes:** underpowered (A6) → saturated (A7) → boundary-fixed (A8) → early-commitment +
+  reads-broad (A9) → **depth-verified (A10)**.
 
-  **Cross-model picture.** *How* it commits (frozen): OLMo commits at/after the read layer (disengage
-  works there); Llama commits **earlier** (disengage fails at the read layer, works below ~15) — a
-  candidate for its Paper-6 robustness anomaly, and the conjunction survives whether the mechanism is
-  labelled latch or early-commitment. *What* it reads (held): OLMo & GPT-OSS read **harm**; whether
-  Llama reads broad moral content or a depth-shifted harm percept awaits the layer-12 sweep.
+  **Cross-model picture (two-dimensional, depth-verified).** *What* refusal reads: OLMo & GPT-OSS read
+  **harm** (refusal transfer < judgment, saturates at harm); Llama reads **broad moral content** (refusal
+  transfer ≈ judgment, gap closes) — holds at both the read layer and the depth-matched coherent layer.
+  *How* it commits: OLMo commits at/after the read layer (disengage works there); Llama commits
+  **earlier** (disengage depth-gated, fails at the read layer). Llama's early-commitment of a broad moral
+  read is a strong candidate for its Paper-6 robustness anomaly; the conjunction survives whether the
+  mechanism is labelled latch or early-commitment.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).
