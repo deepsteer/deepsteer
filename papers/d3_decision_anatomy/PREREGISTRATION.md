@@ -600,3 +600,47 @@ collides with an OLMo writer index; verify it is Llama's own min-specificity top
 Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, all
 prior branch definitions. Amendment 9 adds the asymmetry statistic, the mechanism discriminator, the
 engage-direction sweep, and the behavioral flip counts.
+
+---
+
+### Amendment 10 (2026-07-02) — verification before SYNTHESIS freeze (depth-confound + sign audit)
+
+Pre-registered before computing the verification quantities (some can change the reads/asymmetry
+verdicts). The reads-broad verdict was read at layer 16, which is **post-commitment** for Llama
+(early-commitment) — so it may be a depth artifact; and the `A` comparison patched both models at layer
+16, which may not be depth-matched. Verify before freezing SYNTHESIS.
+
+**Zero-GPU (saved arrays):**
+- (i) **Harm-basis engage curve** `k ∈ {1, 2, 4}`: the engage sweep used only the moral basis + a
+  rank-1 harm cell; the severity-derived multi-rank harm basis was never built. If absent → the
+  **blocking gap** that the conditional pod fills (reads-broad vs richer-harm-percept, now on engage).
+- (ii) **`d_harm` monotonicity validation** (Llama): twin-difference projection onto `d_harm` climbs
+  with severity → cited in RESULTS beside the −0.04, or flagged as an extraction rider if unsaved.
+- (iii) **Sign audit** of the rank-1 engage harm cell: engage-full is +0.14 but `engage_harm_rank1_R =
+  −0.04` (opposite sign). Audit `eng_harm_d` sign under the nomenclature freeze — a sign bug would
+  invalidate the −0.04.
+- (iv) **Harm-partialed engage cell** + one-knob fits against **both** bases (moral + harm).
+- (v) **OLMo patch-depth vs read-layer**: is the `A` comparison **depth-matched**? Recompute `A` at a
+  matched *relative* depth if the data exists (else an OLMo patch-layer rider).
+
+**Conditional pod (or MPS if it fits): engage dual-basis sweep at Llama layer 12 (+14 if budget)** —
+the pre-commitment coherent depth. Frozen branches:
+- **harm-basis-dominant-early** (harm basis dominates at layer 12) → **depth-resolved routing verdict**:
+  unified harm-keying across the family; the OLMo/Llama difference is **depth + ratchet**, not
+  *what* is read.
+- **broad-dominant-at-all-coherent-depths** → **reads-broad stands**; the two-dimensional table is final.
+
+**SYNTHESIS freeze policy.** The **commitment-dimension** sentence (early-commitment, not hard latch)
+is clean and **freezes now** with depth-indexed phrasing: "bidirectional below ~layer 15, engage-only
+at the read layer." The **reads-dimension** sentence is **held** until (i)/(iv) or the layer-12 sweep
+lands.
+
+**Methods note.** Add the **"depth-indexed intervention verdicts"** pattern: a verdict about what a
+circuit *reads* must state the intervention depth **relative to commitment**. Drafting proceeds in
+parallel; nothing above blocks it.
+
+**Panel inheritance.** Qwen and GPT-OSS adopt **dual-basis-at-two-depths + depth-matched `A`** as
+standard cells; Amendment 5 (GPT-OSS) adds the **bidirectional cell** — "does deliberative training
+produce a reversible reader" is now formally testable with the `A` statistic.
+
+Spine preserved throughout. Amendment 10 adds only verification cells and the depth-matched comparison.
