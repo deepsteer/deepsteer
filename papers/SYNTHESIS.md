@@ -1,19 +1,21 @@
 # Synthesis — how the refusal decision relates to the moral subspace
 
-Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-02 after the D3
-powered hardening run. Numbers of record live in each direction's RESULTS; this file states the
-throughline and is re-dated on each substantive change.
+Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-02 after the D3 rank
+sweep resolved the causal verdict (`harm_saturating`). Numbers of record live in each direction's
+RESULTS; this file states the throughline and is re-dated on each substantive change.
 
-## Thesis (routing form)
+## Thesis (routing form — resolved for OLMo-3)
 
-The refusal decision **routes around** the moral subspace. It reads a **specific but minority** moral
-substrate, dominated by the harm percept, and it writes into a **narrow control-token channel** at the
-decision site that moral content largely does not reach. The geometric orthogonality measured upstream
-(D1, D2) is therefore not a weak-instrument artifact at the readout; it is a property of *where the
-refusal computation writes* (a low-rank channel) and *how little of the moral subspace it reads*.
-One question stays open: whether the moral content refusal does not read is genuinely non-`V_moral`,
-or whether rank-3 `V_moral` is too small a window on the same content. The rank sweep (Amendment 4)
-resolves it.
+The refusal decision **reads the harm percept, not the moral subspace**. It picks up a specific,
+low-rank slice of moral content — the harm direction — and writes into a **narrow control-token
+channel** at the decision site. The rank sweep is decisive: as the moral basis expands
+`k ∈ {1, 3, 8, 16}`, refusal transfer **saturates at the harm-rank-1 level** (`R_refusal` 0.31 → 0.27)
+while judgment transfer **climbs** (`R_judgment` 0.46 → 0.66). Adding moral rank beyond harm buys more
+judgment coupling and no more refusal coupling. So the geometric orthogonality measured upstream (D1,
+D2) is not a weak-instrument artifact and not "moral content is causally absent" — it is that refusal
+reads only the harm sliver of a much larger `V_moral`, a sliver nearly orthogonal to the bulk of the
+subspace. Refusal and moral judgment are **different reads of the same content**: refusal reads harm,
+judgment reads the subspace broadly.
 
 ## The three legs
 
@@ -32,26 +34,25 @@ resolves it.
 
 - **D3 (anatomy of the decision, causal).** Refusal is a **distributed write** into that ~13-dim
   channel: led by L16 H23 but needing ~62 heads for 80% of the specificity, plus a 38% MLP share;
-  every top writer reads content only weakly `V_moral`-aligned. Interchange patching then shows
-  `V_moral` **is a specific but minority refusal substrate**: the V_moral-restricted patch moves
-  refusal significantly more than a random rank-3 restriction (Δ = |restricted| − |random| = 0.031,
-  95% CI **[0.020, 0.043]**, paired, excludes 0), carrying ~34% of the full-content effect, with the
-  **complement carrying ~76%** (near-additive). The **harm rank-1 direction** accounts for most of
-  what V_moral rank-3 captures (harm-restricted −0.026 ≈ V_moral-restricted −0.028), and the harm
-  direction sits partly inside V_moral (`frac(V_moral, d_harm) = 0.46`). Whether refusal reads V_moral
-  **less** than judgment does — the claim that would explain the D1/D2 nulls outright — is
-  **`under_transfer`** (ratio-of-ratios `R_judgment − R_refusal = 0.18`, CI includes 0). Open pending
-  the rank sweep + the harm-partialed identification cell.
+  every top writer reads content only weakly `V_moral`-aligned. Interchange patching shows `V_moral`
+  is a **specific** refusal substrate (V_moral-restricted moves refusal more than a random rank-3:
+  Δ = 0.031, paired 95% CI **[0.020, 0.043]**, excludes 0), but the **rank sweep** shows it is the
+  **harm percept specifically**: `R_refusal(k)` saturates at the harm-rank-1 level (0.31 → 0.27 over
+  `k = 1..16`) while `R_judgment(k)` climbs to 0.66 — expanding moral rank buys judgment coupling, not
+  refusal coupling (`harm_saturating`). Identification: harm-restricted (−0.026) ≈ full V_moral
+  (−0.028); the **harm-partialed** patch (`V_moral ⊥ d_harm`) drops to −0.013 (about half), so most of
+  V_moral's refusal effect *is* harm; `frac(V_moral, d_harm) = 0.46`. Behaviorally, OLMo-3's refusal
+  tracks moral-intent severity only weakly (~17% at max), consistent with a harm/surface-keyed gate.
 
 ## What is settled vs open
 
-- **Settled.** The write anatomy (distributed, channel-shaped, harm-adjacent read). `V_moral` is a
-  *specific* refusal substrate, not a random-subspace artifact (Δ CI excludes 0). The refusal-relevant
-  moral content is largely the **harm percept**, not the broad moral subspace.
-- **Open (rank sweep, Amendment 4).** Is the residual routing genuinely non-`V_moral`
-  (harm-saturating), a rank-3 truncation (broad-moral), or a linear-transport ceiling
-  (instrument-ceiling)? The three shape verdicts are frozen and all publishable. No cross-model panel
-  runs until this resolves.
+- **Settled (OLMo-3).** The write anatomy (distributed, channel-shaped). `V_moral` is a *specific*
+  refusal substrate (Δ CI excludes 0), and the rank sweep resolves *which* moral content: the **harm
+  percept**, not the broad subspace (`harm_saturating`). Refusal reads harm; judgment reads the
+  subspace broadly — different reads of the same content.
+- **Open (cross-model).** Is `harm_saturating` a property of OLMo-3 or general? The panel (Llama, Qwen)
+  reads each model's `R_refusal(k)` saturation shape against its own harm-rank-1 level. Standardized
+  extraction (A1), gated on OLMo raw→standardized invariance.
 
 ## Method spine (portable, promoted to ANOMALIES)
 

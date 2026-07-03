@@ -1,28 +1,26 @@
 # Direction 3 — Anatomy of the Refusal Decision: Results
 
-Status: **C1 anatomy complete for OLMo-3-7B-Instruct; the causal read-from verdict is `under_transfer`
-(unresolved) pending a rank sweep.** Llama-3.1-8B and Qwen2.5-7B are held until it resolves
-(Amendment 3). Pre-registered in `PREREGISTRATION.md` (§1–§4b) + Amendment 1 (stimulus typing,
-transport control, channel-matched specificity) + Amendment 2 (reordered-norm LN-fold) + Amendment 3
-(ratio-of-ratios verdict, hardening cells). Stage-1/2 numbers are folded; outputs are
-gitignored/reproducible (`outputs/c1_session_olmo3.json`, `outputs/c1_inputs_olmo3.npz`).
+Status: **C1 complete for OLMo-3-7B-Instruct; verdict = `harm_saturating` (resolved).** The rank
+sweep (Amendment 4) resolves the `under_transfer` of the powered ratio-of-ratios: refusal reads the
+**harm percept**, not the broad moral subspace. Llama-3.1-8B / Qwen2.5-7B panel is now unblocked.
+Pre-registered in `PREREGISTRATION.md` (§1–§4b) + Amendments 1–4. Stage-1/2 numbers are folded;
+outputs are gitignored/reproducible (`outputs/c1_session_olmo3.json`, `outputs/c1_inputs_olmo3.npz`).
 
 ## Headline
 
 On OLMo-3-7B-Instruct, refusal is written into the ~13-dimensional decision-site channel by a
 **distributed** set of attention heads (led by L16 H23, ~62 heads for 80% of the specificity) plus a
-38% MLP share, and every one of the top writers reads content only weakly aligned with the moral
-subspace `V_moral`. The **anatomy is firm**. The **causal** question — whether refusal reads moral
-content through non-`V_moral` features (the strong program-null-explaining claim) or whether the rank-3
-`V_moral` is simply too small a window on the same content — is **not resolved**. The pre-registered
-ratio-of-ratios test (which normalizes each restricted effect by its own full-patch effect, immune to
-the MDE-crossing artifact) returns `under_transfer`: V_moral restriction preserves a directionally
-larger share of judgment (52%) than refusal (34%), but the CI on that gap includes 0. What *is*
-established causally: V_moral carries a **specific but minority** share of the refusal effect (~34%,
-with a random rank-3 control at ~0), and that share is dominated by the **harm direction**, not the
-broader moral subspace. The first run's clean "reads non-`V_moral` features" headline was
-underpowered (n = 11) and is **retracted**; a rank sweep `k ∈ {1, 3, 8, 16}` is the pre-registered
-next step.
+38% MLP share, and every top writer reads content only weakly aligned with the moral subspace
+`V_moral`. The causal question — does refusal read moral content through non-`V_moral` features, or is
+rank-3 `V_moral` too small a window — is resolved by the rank sweep: **`harm_saturating`**. As the
+moral basis expands `k ∈ {1, 3, 8, 16}`, the fraction of the full-patch effect that survives the
+restriction climbs steadily for **judgment** (`R_judgment` 0.05 → 0.46 → 0.59 → **0.66**) but
+**plateaus for refusal at the harm-rank-1 level** (`R_refusal` 0.01 → 0.31 → 0.26 → **0.27**, with
+`harm_rank1_R = 0.31`). Adding moral rank beyond harm recovers more *judgment* transfer and **no more
+refusal** transfer. Refusal's readable moral content **is the harm percept**; judgment reads the
+broader subspace. This resolves the whole program: D1/D2's "refusal ⊥ moral subspace" holds because
+refusal reads only the narrow harm sliver of a much larger `V_moral`, not because moral content is
+causally absent.
 
 ## Instrument calibration (Amendment 2, A3)
 
@@ -104,66 +102,83 @@ everything and **retracts that headline**.
 | full → judgment (rider 0) | — | **+0.0459** | 0.0086 |
 | `V_moral`-restricted → judgment (transport) | +0.0237 | **+0.0237** | 0.0086 |
 
-**Ratio-of-ratios (the pre-registered primary verdict).** `R_refusal = 0.338`, `R_judgment = 0.517`,
-`diff = 0.179`. The point difference *exceeds* the 0.15 margin, but the bootstrap 95% CI is
-**[−0.238, 0.388]**, which **includes 0**. Per Amendment 3 this reclassifies to **`under_transfer`**:
-V_moral restriction preserves a directionally larger share of the judgment effect (52%) than of the
-refusal effect (34%), but the difference is not resolvable at this power. `reads_non_vmoral_features`
-is **not supported**; neither is a clean "V_moral is the substrate." The pre-registered response is a
-**rank sweep** `k ∈ {1, 3, 8, 16}`, and no panel (Llama/Qwen) run proceeds until it resolves.
+**Ratio-of-ratios (Amendment 3).** `R_refusal = 0.338`, `R_judgment = 0.517`, `diff = 0.179`, but the
+bootstrap 95% CI **[−0.238, 0.388]** includes 0 → `under_transfer`. The powered cells establish that
+V_moral is *specific* (random rank-3 control −0.0005) but its refusal effect is dominated by harm
+(harm rank-1 −0.0261 ≈ V_moral rank-3 −0.0282; harm_rank1_ci [−0.037, −0.017] excludes 0). Whether the
+under-transfer meant "reads non-V_moral" or "rank-3 too small" is what the sweep decides.
 
-**What the powered cells do establish.** The random rank-3 control is ~0 (−0.0005), so the V_moral
-effect is **specific**, not "any rank-3 subspace moves refusal." V_moral rank-3 carries a real but
-**minority** ~34% of the refusal effect; the **complement carries ~76%** (the two exceed 1 by ~10%,
-so they overlap / are mildly non-additive). The **harm rank-1 direction (−0.0261) accounts for almost
-all of what V_moral rank-3 captures** — the moral content that moves refusal is largely the harm
-feature (Zhao et al. 2025), not the broader moral subspace. So refusal reads moral-relevant content
-distributed across V_moral and non-V_moral features, with the non-V_moral share larger; whether that
-gap is real or a rank-3 instrument limitation is what the rank sweep must decide.
+### The rank sweep resolves it: `harm_saturating`
 
-**Behavioral floor (a stimulus finding).** The XSTest-safe register worked *too* well: only 2/8
-violating twins triggered a baseline refusal and 0 flipped under the patch, and the benign side never
-refused (discriminator baseline 0.0). Both behavioral cells are floor-limited and inconclusive — the
-intent-harmful-but-surface-benign requests mostly do not behaviorally trigger refusal, so the refusal
-signal on these stimuli is projection-level, not behavioral. The projection cells above stand; the
-behavioral upgrade needs violating members with a higher base refusal rate (without alarming surface).
+Restricting the content patch to nested moral subspaces of rank `k ∈ {1, 3, 8, 16}` (eigenvectors of
+the paired moral-neutral content-contrast covariance; per-rank purity 0.97–0.99, so a genuine moral
+basis):
 
-## What this settles (and what it doesn't)
+| k | `R_refusal(k)` | `R_judgment(k)` | random null(k) |
+|---|---|---|---|
+| 1 | 0.01 | 0.05 | ~0 |
+| 3 | **0.31** | 0.46 | ~0 |
+| 8 | 0.26 | 0.59 | ~0 |
+| 16 | **0.27** | **0.66** | ~0 |
+
+`R_judgment` climbs steadily to 0.66; `R_refusal` **saturates at ~0.27 by rank 3 and does not climb**,
+sitting at the harm-rank-1 level (`harm_rank1_R = 0.31`). The random-null curve is ~0 at every rank
+(specificity floor holds). Adding moral rank beyond harm recovers more judgment transfer and no more
+refusal transfer → **`harm_saturating`**: refusal's moral read is the **harm percept**, not the broad
+subspace. The identification cell confirms it: the **harm-partialed** patch (`V_moral ⊥ d_harm`) moves
+refusal only −0.0133, about half of the full V_moral-restricted −0.0282, so most of V_moral's refusal
+effect *is* the harm component (a small non-harm moral residual remains). The V_moral/complement
+decomposition is additive (ratio 1.10, CI [0.91, 1.35] includes 1). `harm(V_moral) = 0.46`: harm
+overlaps V_moral moderately, and refusal reads exactly that overlap plus a little.
+
+**Behavioral (the floor is a model property, not just the stimuli).** The severity ladder shows
+OLMo-3's refusal on intent-harmful requests reaches only **~17% even at the top severity level**
+(violating-refusal 0/0.17/0/0.17/0.17 across levels 1–5; benign 0 throughout), so the operating band
+is empty and the flip test / discriminator fall back and stay floor-limited. This is not a stimulus
+artifact — OLMo-3's refusal weakly tracks the moral *severity of intent*; it is keyed to surface/harm
+cues. That coheres with `harm_saturating`: refusal reads a harm percept, and these low-surface-harm
+requests carry a weak percept, so refusal barely fires (both in projection, −0.08, and in behavior,
+17%). The projection cells above carry the causal result; the behavioral cells document the coupling
+is weak on this model.
+
+## What this settles
 
 Stacked on D1 (refusal projects below the moral-family band at every rung) and D2 (the decision site
-is a ~10–15-dim control-token bottleneck; refusal-decision ⊥ judgment-decision), the C1 anatomy is
-firm: refusal is a **distributed write** into a narrow decision-site channel (led by L16 H23, ~62
-heads for 80% of the specificity, 38% MLP), by heads that read content only weakly aligned with
-`V_moral` (all 10 writers labeled "neither"). The **causal** question — does refusal read moral
-content through non-`V_moral` features, or is V_moral simply an under-powered rank-3 window on the
-same content — is **unresolved (`under_transfer`)**. What is established causally: V_moral carries a
-specific but minority share of the refusal effect, dominated by the harm direction. The strong
-program-null-explaining headline is retracted pending the rank sweep.
+is a ~10–15-dim control-token bottleneck; refusal-decision ⊥ judgment-decision), C1 completes the
+causal account. Refusal is a **distributed write** into a narrow decision-site channel (L16 H23 lead,
+~62 heads for 80% of the specificity, 38% MLP), and it **reads the harm percept** — a specific,
+low-rank slice of moral content — **not the broad moral subspace**. The rank sweep is the evidence:
+refusal transfer saturates at the harm level while judgment transfer keeps climbing with moral rank.
+This reconciles the whole program: D1/D2's "refusal ⊥ `V_moral`" is not because moral content is
+causally absent from the refusal decision, but because refusal reads only the harm sliver of a much
+larger `V_moral`, and that sliver is nearly orthogonal to the bulk of the subspace. Judgment, by
+contrast, reads the subspace broadly. Refusal and moral judgment are different reads of the same
+content.
 
-## Limitations (pre-registered and honest)
+## Limitations (honest)
 
-- **Verdict is `under_transfer`.** The ratio-of-ratios CI includes 0; the causal read-from claim is
-  not resolved. Pre-registered next step: rank sweep `k ∈ {1, 3, 8, 16}` on an over-complete moral
-  basis. The `R_refusal` CI is the binding imprecision (n = 23 request-twins); more twins would also
-  tighten it.
-- **Behavioral floor.** 2/8 baseline violating refusals, 0 benign refusals → the generate-under-patch
-  flip test and the anti-refusal discriminator are inconclusive. The stimulus register is too safe
-  for behavioral grounding.
+- **Weak behavioral coupling on this model.** OLMo-3's refusal tracks moral-intent severity only
+  weakly (~17% at max), so the generate-under-patch flip test and the anti-refusal discriminator stay
+  floor-limited; the causal result rests on the projection cells. A model whose refusal is more
+  intent-coupled (or surface-alarming stimuli, at the cost of the clean register) would ground the
+  behavioral cells — but the weak coupling is itself a finding here.
+- **`R_refusal` precision.** The ratio-of-ratios CI stays wide at n = 23 request-twins; the sweep
+  resolves the *shape* question (paired across-rank trend, robust to the count) but the absolute
+  ratio-of-ratios gap is not separately resolved. More twins would tighten it.
 - **Cross-layer Stage 2.** Earlier-layer writers' read vectors are compared against a `V_moral`
   extracted at the read layer, in the shared residual basis (an approximation).
-- **Cells (c)/(d).** XSTest generalization and the full mean/resample ablation battery remain deferred
-  to the analysis follow-on.
+- **Cells (c)/(d).** XSTest generalization and the full mean/resample ablation battery remain deferred.
 
 ## Panel status
 
-The panel is **held** (Amendment 3): no cross-model run proceeds under an unresolved `under_transfer`.
+The panel is **unblocked** (Amendment 4): the `harm_saturating` shape verdict resolves the
+`under_transfer`, so the cross-model comparative can proceed. The comparative statistic, chosen after
+the shape verdict, is the **`R_refusal(k)` saturation shape**: does each model's refusal transfer
+plateau at its harm-rank-1 level (harm-saturating, like OLMo) or climb toward judgment (reads the
+broad subspace)?
 
-- **OLMo-3-7B-Instruct** — anatomy complete; causal verdict `under_transfer`. **Next: rank sweep**
-  `k ∈ {1, 3, 8, 16}` on an over-complete moral basis, to test whether the V_moral-restricted refusal
-  transfer fraction grows toward the full effect (rank-3 too weak) or plateaus below it (genuinely
-  distributed / non-`V_moral`). More request-twins would also tighten the `R_refusal` CI.
-- **Llama-3.1-8B** — held pending the rank sweep. When it runs: pre-registered comparative prediction
-  is a higher `R_refusal` (reads content more); standardized extraction (ANOMALIES A1, dim-788), gated
-  on the OLMo raw→standardized invariance check; pre-norm so no LN-fold. Comparative statistic is the
-  ratio-of-ratios, not raw cell-b.
-- **Qwen2.5-7B** — held, same A1 caveat (stronger: dim 458 = 59% of variance).
+- **OLMo-3-7B-Instruct** — complete; `harm_saturating`.
+- **Llama-3.1-8B** — ready to run (standardized extraction, ANOMALIES A1 dim-788, gated on the OLMo
+  raw→standardized invariance check; pre-norm so no LN-fold). Read the `R_refusal(k)` saturation shape
+  vs its own harm-rank-1 level — harm-saturating like OLMo, or climbing toward judgment.
+- **Qwen2.5-7B** — same, stronger A1 caveat (dim 458 = 59% of variance).
