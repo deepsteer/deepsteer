@@ -300,9 +300,14 @@ harm clip on *every* model.
   reads-broad and A-asymmetry were both read at layer 16 = post-commitment, so we re-ran the full cell
   battery at Llama's pre-commitment coherent depth (layer 12) and matched OLMo there.
   - **The A-asymmetry was largely a read-layer artifact, correctly re-attributed.** `A_Llama` flips from
-    +0.82 (layer 16) to **−0.28** at layer 12, and `A_Llama − A_OLMo` shrinks from **+1.03 to +0.26**.
-    So Llama is not fundamentally engage-dominant; the +0.82 reflected measuring *post-commitment*. The
-    asymmetry is a **consequence** of early-commitment, not a third property.
+    +0.82 (layer 16) to **−0.28** at layer 12 (CI [−0.47, +0.03]), and — with **OLMo `A` recomputed at
+    the same matched depth**, `A_OLMo@12 = −0.54` (CI [−0.81, −0.32], not the read-layer `A_OLMo@16 =
+    −0.20`) — `A_Llama − A_OLMo` shrinks from **+1.03 to +0.26 = (−0.28) − (−0.54)**. The comparison is
+    depth-symmetric: both models measured at layer 12, no read-layer value leaked into the frozen
+    difference (Amendment 11.4). So Llama is not fundamentally engage-dominant; the +0.82 reflected
+    measuring *post-commitment*. The asymmetry is a **consequence** of early-commitment, not a third
+    property. (OLMo is *more* disengage-leaning at 12 than at 16 — `frac_twins_disengage` 0.96 vs 0.70 —
+    consistent with OLMo committing later: at the pre-decision depth both models still reverse.)
   - **Reads-broad SURVIVES depth-matching (branch: broad-dominant-at-all-coherent-depths).** At layer 12
     Llama's disengage sweep is **`broad_moral`**: `R_refusal` climbs to 0.85 ≈ `R_judgment` 0.79 (**gap
     closes** — refusal reads *as broadly as judgment*), harm-rank-1 only 0.59. OLMo@12 stays
@@ -310,8 +315,31 @@ harm clip on *every* model.
     harm at *matched* depth — the two-dimensional table is final.
   - **Early-commitment confirmed:** Llama's disengage is **−0.57 coherent at layer 12** but incoherent
     at 16; OLMo's works at both. Llama commits earlier.
+  - **Harm-coextensive alternative — rank-1 REJECTED, rank-2/4 an extraction rider (Amendment 11).**
+    reads-broad is "beyond harm" only if a harm basis does not span the engage-driving moral directions.
+    The **rank-1** alternative is resolvable from saved arrays and fails decisively: weighting each moral
+    PC by its marginal contribution to the engage effect (from the saved `engage_sweep`), the rank-1
+    harm percept `d_harm` (the request-twin harmful−harmless direction) spans only **3.6%** of the
+    engage-driving basis (`harm_coextensive.py`). The engage weight sits on PC2–PC3 (0.23 each), where
+    `d_harm` captures 9.4% / 0.03% — the transfer grows into moral directions `d_harm` does not point
+    along. So a **single** harm cue cannot masquerade as the broad read. Scope: this is the *request-twin*
+    d_harm; a harm axis mis-specified for the engage stimuli would also read low, which is exactly why
+    the definitive test is the **rank-2/4** version — a richer multi-dimensional harm percept built from
+    the **severity ladder** (stimulus-matched to engage), asking whether it spans PC2–PC3. That needs the
+    severity-twin paired content contrasts, which the C1 run did not save: it is a **stated extraction
+    rider** (`sweep.harm_capture_curve` is built and unit-tested against it). Prior is against
+    harm-coextensive (PC3 carries equal engage weight and is near-orthogonal to the harm axis), but the
+    number rides the extraction.
+  - **Dropped dual-basis harm cell (fork discipline, rule 7).** The pre-registered (A6/A9)
+    **severity-derived dual-basis sweep** — run the engage sweep against a harm basis in parallel with
+    the moral basis — was **not run**. The **gap-closes-to-judgment** comparison (`R_refusal ≈ R_judgment`
+    at matched depth) is a cleaner reads-broad discriminator than the dual-basis curve: refusal matching
+    *judgment's* transfer already shows refusal reads the broad subspace judgment reads. The dual-basis
+    cell would only re-test the same conclusion against a harm basis, which the rank-1 capture above
+    already covers for the resolvable part. Recorded as a **stated fork**, not a silent drop; the
+    remaining rank-2/4 piece is the extraction rider above.
   **Llama arc closes:** underpowered (A6) → saturated (A7) → boundary-fixed (A8) → early-commitment +
-  reads-broad (A9) → **depth-verified (A10)**.
+  reads-broad (A9) → **depth-verified (A10)** → **harm-coextensive-checked (A11)**.
 
   **Cross-model picture (two-dimensional, depth-verified).** *What* refusal reads: OLMo & GPT-OSS read
   **harm** (refusal transfer < judgment, saturates at harm); Llama reads **broad moral content** (refusal

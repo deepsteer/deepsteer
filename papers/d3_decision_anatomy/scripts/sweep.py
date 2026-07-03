@@ -73,6 +73,47 @@ def additivity_ratio(full: list[float], restr: list[float], compl: list[float], 
             "additive": bool(lo <= 1.0 <= hi)}
 
 
+def engage_marginal_weights(R_engage_k: dict, ks: list[int]) -> dict[int, float]:
+    """Turn the saved per-k engage transfer outcomes R_engage(k) into a per-PC marginal weight — how
+    much of the engage effect each moral PC *adds*. The jump R(k_i) − R(k_{i-1}) is the marginal
+    contribution of the PCs newly included in that band (indices k_{i-1}+1 .. k_i), split evenly across
+    them; negatives (noise) clip to 0. Returns {pc_index (1-based): weight}. Used to ask whether the
+    harm basis spans the directions that actually *drive* engage, not just any moral direction."""
+    R = {int(kk): float(vv) for kk, vv in R_engage_k.items()}   # JSON round-trips keys to str
+    order = sorted(int(k) for k in ks)
+    w: dict[int, float] = {}
+    prev_k, prev_R = 0, 0.0
+    for k in order:
+        band = list(range(prev_k + 1, k + 1))
+        marg = max(0.0, R[k] - prev_R)
+        share = marg / len(band) if band else 0.0
+        for pc in band:
+            w[pc] = share
+        prev_k, prev_R = k, R[k]
+    return w
+
+
+def harm_capture_curve(harm_bases: dict[int, np.ndarray], moral_pcs: np.ndarray,
+                       pc_weights: dict[int, float]) -> dict[int, dict]:
+    """For each nested harm-basis rank j (e.g. severity-derived 1⊂2⊂4), how much of the engage-driving
+    moral basis does span(H_j) capture? Per moral PC i, capture_i = ||proj_{H_j} pc_i||^2 in [0,1]; the
+    headline is the **engage-weighted** capture = Σ_i w_i·capture_i / Σ_i w_i, with w_i from
+    engage_marginal_weights. capture≈1 ⇒ harm-coextensive (reads-broad is a rich harm read); capture≪1
+    ⇒ reads-broad is genuinely beyond the harm percept. moral_pcs columns are unit PCs (hidden, n_pc)."""
+    P = np.asarray(moral_pcs, np.float64)
+    n_pc = P.shape[1]
+    out: dict[int, dict] = {}
+    for j, H in sorted(harm_bases.items()):
+        Q, _ = np.linalg.qr(np.asarray(H, np.float64))       # orthonormal span(H_j)
+        cap = [float(np.linalg.norm(Q.T @ _unit(P[:, i])) ** 2) for i in range(n_pc)]
+        wsum = sum(pc_weights.get(i + 1, 0.0) for i in range(n_pc))
+        weighted = (sum(pc_weights.get(i + 1, 0.0) * cap[i] for i in range(n_pc)) / wsum
+                    if wsum > 0 else float("nan"))
+        out[j] = {"per_pc_capture": [round(c, 4) for c in cap],
+                  "engage_weighted_capture": round(weighted, 4)}
+    return out
+
+
 def shape_verdict(R_refusal_k: dict, R_judgment_k: dict, harm_rank1_R: float,
                   ks: list[int], plateau_tol: float = 0.1, ceiling: float = 0.6) -> dict:
     """Frozen Amendment-4 shape verdict from the sweep curves (all publishable).

@@ -1,8 +1,10 @@
 # Synthesis — how the refusal decision relates to the moral subspace
 
-Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-02 after the D3 rank
-sweep resolved the causal verdict (`harm_saturating`). Numbers of record live in each direction's
-RESULTS; this file states the throughline and is re-dated on each substantive change.
+Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-02: D3 rank sweep
+resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
+verdict against the rank-1 harm-coextensive alternative and added the GPT-OSS prompt→trace harm
+consistency. Numbers of record live in each direction's RESULTS; this file states the throughline and
+is re-dated on each substantive change.
 
 ## Thesis (routing form — resolved for OLMo-3)
 
@@ -57,10 +59,14 @@ judgment reads the subspace broadly.
   percept**, not the broad subspace (`harm_saturating`). Refusal reads harm; judgment reads the
   subspace broadly — different reads of the same content.
 - **Cross-model corroboration (correlational).** GPT-OSS-20B (an independent reasoning MoE) already
-  supports the routing reading: its saved in-trace refusal direction (P2) is **harm-loaded** —
-  standardized |cos(P2, d_harm)| = 0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13 — which is *why* P2
-  projected below the moral-family band in D1. Same mechanism, independent model, independent
-  measurement (projection, not patching).
+  supports the routing reading: its refusal direction is **harm-loaded at both positions it carries
+  signal** — at the **prompt** (P0, `t_inst`) standardized |cos(refusal, d_harm)| = **0.977** vs
+  |cos(refusal, V_moral ⊥ d_harm)| = **0.001** (near-purely harm), and **in-trace** (P2) 0.49 vs 0.13 —
+  a **prompt→trace consistent** harm read, which is *why* P2 projected below the moral-family band in D1.
+  Same mechanism, independent model, independent measurement (projection, not patching).
+  (`gpt_oss_harm_audit.py`.) The **causal** GPT-OSS extension is Tier-1-held behind a position-validity
+  gate: the harmony decision-token band-below-null check runs first in-pod; if it fails, GPT-OSS stays
+  behavioral-primary-only (this correlational result is independent of that gate).
 - **Settled (cross-model, depth-verified).** Refusal's read and commitment **differ by model family**,
   on two axes confirmed at depth-matched layer 12: *what* it reads — OLMo & GPT-OSS read **harm**
   (`R_refusal < R_judgment`, saturates), Llama reads **broad moral content** (`R_refusal ≈ R_judgment`,
@@ -87,9 +93,12 @@ judgment reads the subspace broadly.
   matched depth `A_Llama = −0.28` and `A_Llama − A_OLMo` shrinks from +1.03 to +0.26 — so the asymmetry
   is a *consequence* of early-commitment, not a third property. *Reads:* it survives depth-matching —
   at layer 12 Llama's refusal reads **as broadly as judgment** (`R_refusal 0.85 ≈ R_judgment 0.79`, gap
-  closes → `broad_moral`), while OLMo stays **harm-keyed** (`R_refusal 0.43 < R_judgment 0.53`). So the
-  two-dimensional table is final: *what* refusal reads (OLMo/GPT-OSS harm; Llama broad moral) × *how* it
-  commits (OLMo at/after the read layer; Llama early). Llama's early-commitment of a broad moral read is
+  closes → `broad_moral`), while OLMo stays **harm-keyed** (`R_refusal 0.43 < R_judgment 0.53`). The
+  reads-broad verdict survives the **harm-coextensive** alternative at rank 1: a single harm cue spans
+  only **3.6%** of the engage-driving moral basis (the transfer grows into moral directions the harm
+  axis does not point along); the rank-2/4 severity-harm basis is a stated extraction rider, prior
+  against coextensivity. So the two-dimensional table is final: *what* refusal reads (OLMo/GPT-OSS harm;
+  Llama broad moral) × *how* it commits (OLMo at/after the read layer; Llama early). Llama's early-commitment of a broad moral read is
   a strong candidate for its Paper-6 robustness anomaly. Qwen and GPT-OSS held.
   (Standardized extraction, A1: the dim-788/dim-458
   outliers live at content positions, not the decision channel, which is clean and ~13-dim across OLMo

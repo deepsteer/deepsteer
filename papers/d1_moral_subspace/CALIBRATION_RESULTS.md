@@ -58,11 +58,38 @@ three is the **moral-family band**, the yardstick for "moral-adjacent."
   only weakly aligned with the broad subspace the band measures. This is the same mechanism D3
   established causally on OLMo, now in an independent model (a 20B reasoning MoE) via an independent
   measurement (in-trace projection, not interchange patching). *Caveats:* the σ is from GPT-OSS's own
-  decision-token `act_sample` (format/position-matched, ANOMALIES A1); and the three directions sit at
-  different positions (P2 in-trace, harmfulness at `t_inst`, moral at content), so this is a
+  **content-position** `act_sample` at the match layer (layer 12) — a per-dim scale that de-weights the
+  A1 massive-activation dims, which is all standardization needs here; it is *not* the harmony
+  decision-token sample (that is unsaved → the Tier-1 pod's first gate, below). The three directions sit
+  at different positions (P2 in-trace, harmfulness at `t_inst`, moral at content), so this is a
   cross-position cosine in the shared residual basis — a correlational corroboration, not a
   position-matched causal claim. *(OLMo-3-Think P2 was not saved with a refusal direction —
   MISSING_ARTIFACTS; the same decomposition is a one-line re-extraction if a Think pod ever runs.)*
+
+- **Prompt→trace reads-harm consistency (Amendment 5 rider, 2026-07-02).** The same decomposition run
+  at the **prompt position** P0 (`t_inst`) — where the refusal diff-of-means is the harmfulness percept
+  itself — gives **std |cos(P0, d_harm)| = 0.977 vs |cos(P0, V_moral ⊥ d_harm)| = 0.001**: refusal at
+  the prompt is **near-purely harm**, with no resolvable non-harm moral component. In-trace (P2) it
+  stays harm-dominant but attenuates (0.49 vs 0.13). So the harm read is **consistent from prompt to
+  trace** — GPT-OSS refusal picks up the harm sliver at the instruction token and carries it into the
+  deliberation, exactly the routing D3 established causally on OLMo. (P1/P3 carry near-zero refusal
+  signal in both bases and are uninformative.) Reproducible: `scripts/gpt_oss_harm_audit.py` →
+  `outputs/phase2/gpt_oss/harm_audit.json`. This is the pre-condition rider that lets the GPT-OSS
+  extension stay a *correlational* corroboration without a pod; the causal C1-MoE remains Tier-2 held.
+
+- **A5 position-validity pre-condition — the harmony decision-token check must ride the pod (2026-07-02).**
+  The frozen A5 pre-condition (post-standardization PR + band-below-null **at the harmony decision
+  token**) is **not computable from saved arrays**: the saved GPT-OSS `act_sample` is a *content*
+  position (`acts[match_layer][0]` from the moral-side pairs, `phase2_extract.py`), not the decision
+  token. What the content sample *does* show is the A1 outlier and that content is high-dimensional —
+  top-dim variance share **0.699**, raw covariance PR **1.88** (collapsed by the outlier), post-standardize
+  PR **66.7** — consistent with D2 (content positions are high-dim; the decision channel is the ~13-dim
+  bottleneck, and you cannot infer the channel PR from a content sample). So the decision-token
+  post-std PR + band-below-null is the **Tier-1 pod's first gate**: extract decision-token activations,
+  check band-below-null; if it holds, the channel is position-valid and the psychometric / prefill /
+  commitment cells proceed; if not, **GPT-OSS stays behavioral-primary-only** (frozen A5 rule). The
+  correlational harm decomposition above is independent of this gate (it standardizes direction vectors,
+  not the channel), so it stands regardless.
 
 **MFT ↔ V_moral mutual projection (content-vs-content; closes Paper 7 Phase 2f at the subspace
 level).** On the tags where MFT is committed (base, instruct):

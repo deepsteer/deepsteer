@@ -296,6 +296,23 @@ def test_sweep():
     v_ceil = sw.shape_verdict({1: 0.20, 3: 0.28, 8: 0.31, 16: 0.33}, {1: .2, 3: .3, 8: .34, 16: 0.36}, 0.30, ks)
     check("shape verdict: instrument_ceiling", v_ceil["verdict"] == "instrument_ceiling", v_ceil["verdict"])
 
+    # Amendment 11 harm-coextensive builder: engage weights + capture curve.
+    # failure mode 1: marginal weights leak into PCs outside the band that added the R jump.
+    ew = sw.engage_marginal_weights({1: 0.02, 3: 0.48, 8: 0.63, 16: 0.53}, [1, 3, 8, 16])
+    check("engage weights: k=16 band gets 0 (R fell, clipped)", ew[16] == 0.0, f"{ew[16]}")
+    check("engage weights: mass on the PC2-3 and PC4-8 bands (the climb)",
+          ew[2] > 0 and ew[5] > 0 and abs(sum(ew.values()) - 0.63) < 1e-9, f"sum={sum(ew.values()):.3f}")
+    # failure mode 2: a harm basis that spans a moral PC must read capture≈1 for that PC, ~0 for an
+    # orthogonal PC — and the engage-weighted headline must down-weight PCs the harm basis misses.
+    dd = 32
+    pcs = np.linalg.qr(rng.standard_normal((dd, 6)))[0][:, :6]     # 6 orthonormal moral PCs
+    H = {1: pcs[:, :1], 2: pcs[:, :2], 4: pcs[:, :4]}              # harm basis = first j PCs
+    cap = sw.harm_capture_curve(H, pcs, ew)
+    check("capture curve: rank-1 harm captures PC1 fully, PC6 not at all",
+          cap[1]["per_pc_capture"][0] > 0.99 and cap[1]["per_pc_capture"][5] < 1e-6)
+    check("capture curve: rank-4 weighted capture < 1 when engage weight sits on missed PC5",
+          cap[4]["engage_weighted_capture"] < 0.999, f"{cap[4]['engage_weighted_capture']}")
+
 
 def test_standardize():
     print("STANDARDIZE / A1-robustification (pure math):")
