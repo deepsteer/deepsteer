@@ -64,13 +64,15 @@ judgment reads the subspace broadly.
 - **Open (cross-model, causal).** Is `harm_saturating` general causally? The comparative is the
   **one-knob model**: on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
   RMSE 0.036 (one free parameter) — refusal reads the same content as judgment, clipped at the harm
-  ceiling. **Llama-3.1-8B: run but underpowered** — clean OLMo-like anatomy and an A1-clean decision
-  channel, but the causal cells are below MDE (heterogeneous severity-band twins, variance ~3× OLMo's).
-  A directional hint that Llama refusal reads *beyond* harm (`R_refusal` 0.44 at rank 16 vs harm-rank-1
-  0.14; one-knob fails) — the "reads content more" direction — is not resolvable without more
-  homogeneous operating-band power. Qwen next, then GPT-OSS (Amendment 5). Standardized extraction (A1;
-  the dim-788/dim-458 outliers turn out to live at content positions, not the decision channel, which is
-  clean and ~13-dim across OLMo and Llama alike — a cross-model strengthening of A2).
+  ceiling. **Llama-3.1-8B: diagnosed, not yet resolved.** Clean OLMo-like anatomy and an A1-clean
+  decision channel, but the refusal cells came back chaotic. Amendment 7 traced this to
+  **saturation, not a broken instrument**: the judgment cell (orthogonal positive control) moves
+  coherently, while the operating-band twins sit at the refusal ceiling (baseline refuse 0.83–1.0), so
+  the projection is latched. The three branches (reads-broad / richer-harm-percept / bounded) enter a
+  **boundary-band re-run unweighted** (Amendment 8; the earlier "reads beyond harm" hint is voided as a
+  latched-input artifact). Qwen and GPT-OSS held behind it. Standardized extraction (A1; the
+  dim-788/dim-458 outliers live at content positions, not the decision channel, which is clean and
+  ~13-dim across OLMo and Llama alike — a cross-model strengthening of A2, ledger A5).
 
 ## Method spine (portable, promoted to ANOMALIES)
 

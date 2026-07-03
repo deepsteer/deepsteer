@@ -218,12 +218,11 @@ harm clip on *every* model.
   MLP 0.30, all writers "neither"), and Llama's refusal **tracks intent severity** (severity-ladder
   operating band 3–5, baseline refusal 9/10 — more intent-coupled than OLMo). But the causal cells are
   underpowered: `mde_refusal = 0.073` and `full = 0.093` (barely clears), every decomposition cell is
-  below MDE, `R_refusal_k` is non-monotone (0.25 / 0.08 / 0.30 / 0.44), `R_judgment_k` is
-  denominator-noise-inflated (> 1), and the ratio-of-ratios CI is enormous ([−2.3, 4.9] →
-  `under_transfer`). The severity-band twins (levels 3–5) are heterogeneous, so the variance is ~3×
-  OLMo's. **One directional signal:** `R_refusal` reaches 0.44 at rank 16, ~3× Llama's harm-rank-1
-  level (0.14), and the harm-saturation one-knob model *fails* (RMSE 0.12) — Llama refusal *hints* at
-  reading beyond harm (the "reads content more" direction), but the noise makes it not resolvable.
+  below MDE, `R_refusal_k` is non-monotone, `R_judgment_k` is denominator-noise-inflated (> 1), and the
+  ratio-of-ratios CI is enormous ([−2.3, 4.9] → `under_transfer`). **The `R_refusal` numbers here (and
+  any "reads beyond harm" reading of them) are VOIDED (Amendment 8):** the Amendment-7 diagnosis below
+  shows their denominator is latched/saturated (A5), so they carry no evidential weight. The three
+  branches (reads-broad / richer-harm-percept / bounded) enter the boundary-band re-run **unweighted**.
 
   **Amendment 6 power table → `bounded-unresolved` (do not re-run).** The pre-registered power
   computation (within-level variance from the heterogeneous run) shows homogenizing does **not** rescue
