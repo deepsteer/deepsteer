@@ -151,3 +151,35 @@ model's real forward pass, no decomposition) or any activation/direction result 
 reordered-norm models unless the block norm is folded — a portable caution for a growing family
 (OLMo-2, OLMo-3, and other post-norm designs). The fold is exact and cheap. It belongs in the methods
 section alongside A1's null-degeneracy caution.
+
+---
+
+## A4 (ledger) — Variance and purity do not imply causal relevance; low-rank restrictions can be nonlinearly inert
+
+**Date:** 2026-07-02 · **Found in:** Direction-3 (`d3_decision_anatomy`) C1 rank sweep on
+`Olmo-3-7B-Instruct`.
+
+**Observation.** In the nested moral-contrast PCA sweep, **PC1** — the top singular vector of the
+moral-neutral content contrasts, carrying the most contrast variance, `subspace_purity = 0.974`, and
+the single most harm-aligned component (`cos(d_harm, PC1) = 0.35`) — is **causally inert**: restricting
+the interchange patch to rank 1 moves neither readout (`R_refusal(1) = 0.01`, `R_judgment(1) = 0.05`).
+The causal signal appears only at rank 3. The one-knob saturation model
+`R_refusal(k) ≈ min(harm_ceiling, R_judgment(k))` fits the plateau (k ≥ 3) to RMSE 0.036 but
+**over-predicts rank 1 by ~4×** (measured 0.013 vs predicted 0.052).
+
+**Mechanism (candidate).** The refusal readout is **nonlinear at low rank**: it needs a threshold
+amount of the (distributed) harm direction — which spreads across PCs 1–4 (`cos` 0.35/0.25/0.20/0.19)
+— before it engages, so no single high-variance component is a causal lever on its own. Variance
+(where the contrast energy sits) and causal relevance (which direction the readout reads) are different
+directions; purity (how much of the mean contrast a subspace captures) certifies the *basis*, not the
+*causal lever*.
+
+**Affects.** Any interpretation that reads causal importance off a component's variance share, its
+probe purity, or its alignment with a target direction. In this program it is the causal counterpart
+of the eff-dim caution (A1/A2): a high-variance or high-purity direction can be causally silent, and a
+rank-1 restriction can under-transfer for a nonlinear reason, not an instrument-weakness reason.
+
+**Why it's a contribution.** "Don't infer causal relevance from variance/purity/alignment; verify with
+a restricted causal cell, and expect low-rank restrictions to be nonlinearly inert" is a portable
+caution for the whole probe-then-patch workflow. The one-knob model turns the deviation into a
+concrete nonlinearity candidate rather than noise. Belongs in the methods section with A1–A3.

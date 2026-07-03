@@ -144,6 +144,25 @@ The causal signal appears only at rank 3, where the basis spans enough of the (d
 direction. The direction that carries the most moral-contrast variance is not the direction refusal (or
 judgment) causally reads.
 
+### One-knob model — refusal transfer = judgment transfer, capped at the harm ceiling
+
+The whole sweep collapses to a **single free parameter**. Refusal reads the *same* content judgment
+does, but its transfer **saturates at a harm ceiling**:
+`R_refusal(k) ≈ min(harm_ceiling, R_judgment(k))`, with the ceiling ≈ `harm_rank1_R = 0.31`. The fit
+over the plateau (k ≥ 3) is near-exact (RMSE **0.036**; residual **−0.002 at k=3**, −0.05 at k=8),
+while the two harm-amplitude alternatives (`ceiling · harm_capture` and `· harm_capture²`) miss by
+0.10–0.24. So refusal does not read a *different* subspace than judgment — it reads the same content
+through a readout that clips once the harm content is exhausted.
+
+**PC1 deviates → nonlinearity candidate.** At rank 1 the model over-predicts: measured `R_refusal(1)
+= 0.013` vs predicted `min(0.31, 0.052) = 0.052`, a −0.039 deviation (~4×). PC1 — the highest-variance,
+most-harm-aligned single component — is *more* causally inert than any linear-in-content model allows.
+The refusal readout needs a threshold amount of the (distributed) harm direction before it engages;
+that threshold nonlinearity is logged (ANOMALIES **A4**). The harm-partialed residual (`R = 0.16`) sits
+above the model's harm-only floor, the same resolvable non-harm read as the identification cell. This
+one-knob model is the flagship (`outputs/one_knob_olmo3.png`); the panel comparative becomes **"does
+the same one-knob model fit"** — sharper than shape-vs-level.
+
 **Behavioral (the floor is a model property, not just the stimuli).** The severity ladder shows
 OLMo-3's refusal on intent-harmful requests reaches only **~17% even at the top severity level**
 (violating-refusal 0/0.17/0/0.17/0.17 across levels 1–5; benign 0 throughout), so the operating band
