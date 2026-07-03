@@ -749,3 +749,34 @@ un-confounds the commitment curve. **All quantities below are pre-registered bef
 
 Spine preserved. A12 hardens the commit axis against the A7 operating-point trap and un-confounds the
 commitment curve; the reads axis (P2 harm-loading) and the position gate are already banked.
+
+### Amendment 13 (2026-07-03) — SYNTHESIS hygiene: architecture confound + the dimensionality rival (zero-GPU)
+
+The two-axis table (what reads × how commits) is the clean measured result and stays. The *interpretation
+line* above it — the n=3 "harm-readers reversible, broad-reader early-commits" co-occurrence — needs two
+corrections, both pre-registered here before the reframe is written.
+
+1. **Name the confound, not just n.** The axis split across OLMo / GPT-OSS / Llama is **also** a
+   lineage / scale / tokenizer / reasoning-vs-instruct split, so the "reads-harm ↔ reversible" pairing is
+   architecture-confounded, not just under-powered. The **deconfounding design** (varies one axis at a
+   time) is the honest replacement for "n=3": (a) a **deliberation-trained OLMo variant** — same
+   architecture, changes the commitment/training axis, isolates whether reversibility tracks the read or
+   the reasoning-training; (b) **Qwen** as a **lineage-independent** third harm/broad datapoint (a fourth
+   family that is neither OLMo-lineage nor a reasoning MoE), so the read↔commit pairing is tested off the
+   existing confound. Named as the follow-on panel, not run here.
+
+2. **The one-axis rival (dimensionality → reversibility).** Test whether *what reads* and *how commits*
+   are **one property with two signatures**: correlate the **refusal-read effective rank** (the causal
+   saturation rank per model — OLMo `harm_saturating` ⇒ ~rank-1; Llama `broad_moral` ⇒ high rank; GPT-OSS
+   the harm-loading proxy ⇒ low rank) against **commitment depth / reversibility** across the three
+   points. **Frozen response:** if the three points are ordinally consistent (low read-rank ↔ reversible;
+   high read-rank ↔ early-commit), SYNTHESIS carries **"dimensionality of the refusal read → reversibility"**
+   as the sharpened, *falsifiable-continuous* follow-on hypothesis, **superseding** the two-column
+   co-occurrence framing (which is categorical and adds no mechanism). If the points are inconsistent,
+   keep the co-occurrence framing and drop the dimensionality claim. Either way the statement is a
+   **hypothesis for the deconfounding panel**, not a result at n=3 (three confounded points cannot
+   separate a genuine dimensionality→reversibility law from the architecture confound; consistency only
+   licenses the hypothesis).
+
+Spine preserved. A13 is framing hygiene: the measured table is untouched; the interpretation becomes a
+confound-named dimensionality hypothesis with its deconfounding path.
