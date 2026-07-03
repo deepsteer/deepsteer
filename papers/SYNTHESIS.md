@@ -43,9 +43,12 @@ judgment reads the subspace broadly.
   the rank-16 moral basis**. Identification: harm-restricted (−0.026) ≈ full V_moral (−0.028), but the
   **harm-partialed** patch (`V_moral ⊥ d_harm`) still moves refusal −0.013 (95% CI excludes 0, about
   half) → harm-dominant **with a resolvable residual non-harm moral read**; `frac(V_moral, d_harm) =
-  0.46`. The dominant-variance contrast component (PC1) is **causally inert** for both readouts
-  (`R(1) ≈ 0`) — variance is not causal relevance. Behaviorally, OLMo-3's refusal tracks moral-intent
-  severity only weakly (~17% at max), consistent with a harm/surface-keyed gate.
+  0.46`. That residual is the **Direction-2 toehold**: it is the one place refusal demonstrably reads
+  moral content beyond the harm cue, so whatever moral-judgment↔refusal coupling exists (D2's question)
+  has to live there — a rank-2 non-harm sliver, not the broad subspace. The dominant-variance contrast
+  component (PC1) is **causally inert** for both readouts (`R(1) ≈ 0`) — variance is not causal
+  relevance. Behaviorally, OLMo-3's refusal tracks moral-intent severity only weakly (~17% at max),
+  consistent with a harm/surface-keyed gate.
 
 ## What is settled vs open
 
@@ -58,10 +61,12 @@ judgment reads the subspace broadly.
   standardized |cos(P2, d_harm)| = 0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13 — which is *why* P2
   projected below the moral-family band in D1. Same mechanism, independent model, independent
   measurement (projection, not patching).
-- **Open (cross-model, causal).** Is `harm_saturating` general causally? The panel (Llama, Qwen, then
-  GPT-OSS under Amendment 5) reads each model's `R_refusal(k)` saturation shape against its own
-  harm-rank-1 level. Standardized extraction (A1; GPT-OSS is the strongest outlier at 0.70 top-dim
-  variance), gated on OLMo raw→standardized invariance (passed: Spearman 0.92).
+- **Open (cross-model, causal).** Is `harm_saturating` general causally? The comparative is the
+  **one-knob model**: on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
+  RMSE 0.036 (one free parameter) — refusal reads the same content as judgment, clipped at the harm
+  ceiling. The panel (Llama, Qwen, then GPT-OSS under Amendment 5) asks whether the same one-knob model
+  fits. Standardized extraction (A1; GPT-OSS is the strongest outlier at 0.70 top-dim variance), gated
+  on OLMo raw→standardized invariance (passed: Spearman 0.92).
 
 ## Method spine (portable, promoted to ANOMALIES)
 

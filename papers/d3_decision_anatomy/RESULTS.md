@@ -205,9 +205,10 @@ content.
 
 The panel is **unblocked** (Amendment 4): the `harm_saturating` shape verdict resolves the
 `under_transfer`, so the cross-model comparative can proceed. The comparative statistic, chosen after
-the shape verdict, is the **`R_refusal(k)` saturation shape**: does each model's refusal transfer
-plateau at its harm-rank-1 level (harm-saturating, like OLMo) or climb toward judgment (reads the
-broad subspace)?
+the shape verdict, is now the **one-knob model fit**: does each model's `R_refusal(k)` follow
+`min(harm_ceiling, R_judgment(k))` with the same near-zero plateau residual and the same PC1 deviation?
+That is sharper than shape-vs-level — it asks whether refusal reads the same content as judgment with a
+harm clip on *every* model.
 
 - **OLMo-3-7B-Instruct** — complete; `harm_saturating`.
 - **Llama-3.1-8B** — ready to run (standardized extraction, ANOMALIES A1 dim-788, gated on the OLMo

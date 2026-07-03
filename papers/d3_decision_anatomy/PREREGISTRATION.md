@@ -375,10 +375,15 @@ survives a reasoning MoE with a distinct training regime.
    (likely for MoE), the Jacobian branch fires → attribute to the **top experts by router weight**;
    full expert-level circuit attribution is a follow-on.
 
-4. **Harmony decision-token.** GPT-OSS's harmony format has distinct channel tokens. Pre-register the
-   decision-site token (the token before the assistant response channel opens; the D1 P2 position and
-   the assistant-header analog are candidates) and **verify the A2 position-validity rule** (PR ≥ 30)
-   there before the pod.
+4. **Harmony decision-token — a hard pre-condition.** GPT-OSS's harmony format has distinct channel
+   tokens. Pre-register the decision-site token (the token before the assistant response channel opens;
+   the D1 P2 position and the assistant-header analog are candidates). **Two pre-conditions gate the
+   projection (secondary) outcome, measured before the sweep:** (a) the **post-standardization
+   participation ratio** at that token must be reported, and (b) the **standardized band-below-null
+   validity check** (A2: the positive-control moral band must sit *above* the covariance null at that
+   position). **If the position is invalid (band-below-null or PR < 30 even standardized), GPT-OSS is
+   behavioral-primary-only by pre-registration** — the projection-readout sweep is not reported as a
+   causal transfer, only the behavioral flips + the psychometric curve stand.
 
 5. **Reconstruction + A1.** Verify GPT-OSS norm placement and apply the A3 fold if reordered; verify
    the reconstruction band regardless. GPT-OSS is the **strongest A1 outlier** (top-dim variance

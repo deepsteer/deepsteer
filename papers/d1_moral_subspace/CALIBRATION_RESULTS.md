@@ -57,8 +57,12 @@ three is the **moral-family band**, the yardstick for "moral-adjacent."
   in-trace refusal is unrelated to morality, but because it reads the **harm sliver** of `V_moral`,
   only weakly aligned with the broad subspace the band measures. This is the same mechanism D3
   established causally on OLMo, now in an independent model (a 20B reasoning MoE) via an independent
-  measurement (in-trace projection, not interchange patching). *(OLMo-3-Think P2 was not saved with a
-  refusal direction — MISSING_ARTIFACTS; the same decomposition is a one-line re-extraction if wanted.)*
+  measurement (in-trace projection, not interchange patching). *Caveats:* the σ is from GPT-OSS's own
+  decision-token `act_sample` (format/position-matched, ANOMALIES A1); and the three directions sit at
+  different positions (P2 in-trace, harmfulness at `t_inst`, moral at content), so this is a
+  cross-position cosine in the shared residual basis — a correlational corroboration, not a
+  position-matched causal claim. *(OLMo-3-Think P2 was not saved with a refusal direction —
+  MISSING_ARTIFACTS; the same decomposition is a one-line re-extraction if a Think pod ever runs.)*
 
 **MFT ↔ V_moral mutual projection (content-vs-content; closes Paper 7 Phase 2f at the subspace
 level).** On the tags where MFT is committed (base, instruct):
