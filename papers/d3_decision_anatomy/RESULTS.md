@@ -243,6 +243,25 @@ harm clip on *every* model.
   because it was *weak* (unsaturated); Llama's operating-band twins are too far past the boundary. The
   judgment cell certifies the instrument, so the earlier "reads beyond harm" hint was an artifact of the
   chaotic full-refusal denominator. **Fix (pre-registered, cheap): boundary-band twins** at Llama's
-  ~0.5-refusal severity (between the current levels 2 and 3), in the projection's dynamic range — not a
-  per-token instrument, not more of the same saturated twins.
+  ~0.5-refusal severity, in the projection's dynamic range.
+
+  **Amendment 8 boundary run → the block is HYSTERESIS, not (only) saturation.** The boundary fix
+  landed: 36 micro-graded twins, gate passed (all 3 sub-levels in the [0.4, 0.7] band, unsaturated). The
+  bidirectional cell then found the real mechanism — Llama's refusal is **directionally asymmetric**:
+  - **reverse (add harm, violating→following): +0.142, CI [+0.086, +0.212], coherent** (sign-frac 0.81);
+  - **forward (remove harm, following→violating): −0.014, CI [−0.084, +0.052], incoherent** (sign-frac 0.51).
+
+  The judgment cell recertified coherent at the boundary, so this is real: **Llama's refusal latches** —
+  it engages when harmful content is added but does not release when it is removed. That is not
+  saturation (these twins refuse ~0.5); it is a **hysteresis** property, and a candidate mechanism for
+  Llama being the program's robustness anomaly (a latching gate is intrinsically hard to reverse/ablate).
+  OLMo's forward direction *was* coherent (−0.083), so OLMo is **not** latched — a clean cross-model
+  difference (pending OLMo's own bidirectional cell to confirm). Consequence: the **forward-direction**
+  sweep/one-knob is uninformative for Llama (the harm-saturating vs reads-broad question can't be read
+  off a latched forward direction); the clean causal channel is the **reverse** direction. Two bonuses:
+  the **anti-over-refusal head fired** for the first time (ablating L15 H6 raised benign refusal 0 →
+  0.083, `anti_over_refusal_head: true`), and generate-under-patch confirmed the latch behaviorally (7/10
+  baseline refusals, 0 flipped by the forward patch). **Next: decompose the coherent reverse direction**
+  (Amendment 9) — sweep/harm-basis on add-harm — and run OLMo's bidirectional cell for the hysteresis
+  comparison.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

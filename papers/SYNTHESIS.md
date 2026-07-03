@@ -65,14 +65,17 @@ judgment reads the subspace broadly.
   **one-knob model**: on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
   RMSE 0.036 (one free parameter) — refusal reads the same content as judgment, clipped at the harm
   ceiling. **Llama-3.1-8B: diagnosed, not yet resolved.** Clean OLMo-like anatomy and an A1-clean
-  decision channel, but the refusal cells came back chaotic. Amendment 7 traced this to
-  **saturation, not a broken instrument**: the judgment cell (orthogonal positive control) moves
-  coherently, while the operating-band twins sit at the refusal ceiling (baseline refuse 0.83–1.0), so
-  the projection is latched. The three branches (reads-broad / richer-harm-percept / bounded) enter a
-  **boundary-band re-run unweighted** (Amendment 8; the earlier "reads beyond harm" hint is voided as a
-  latched-input artifact). Qwen and GPT-OSS held behind it. Standardized extraction (A1; the
-  dim-788/dim-458 outliers live at content positions, not the decision channel, which is clean and
-  ~13-dim across OLMo and Llama alike — a cross-model strengthening of A2, ledger A5).
+  decision channel, but the refusal cells came back chaotic. Amendment 7/8 traced it to two things:
+  saturation (fixed by boundary-band twins), and — the real mechanism — **hysteresis**. The
+  bidirectional cell shows Llama's refusal **latches**: it engages coherently when harmful content is
+  *added* (reverse patch +0.14, CI excludes 0) but is unmoved when harm is *removed* (forward patch
+  −0.01, incoherent), with the judgment cell certifying the instrument at the boundary. OLMo's forward
+  direction was coherent (not latched) — a clean cross-model difference, and a candidate mechanism for
+  Llama being the program's robustness anomaly (a latching gate is intrinsically hard to reverse/ablate).
+  The forward-direction one-knob is uninformative for Llama; the clean channel is the reverse direction
+  (Amendment 9 decomposes it). Qwen and GPT-OSS held. (Standardized extraction, A1: the dim-788/dim-458
+  outliers live at content positions, not the decision channel, which is clean and ~13-dim across OLMo
+  and Llama alike — a cross-model strengthening of A2, ledger A5.)
 
 ## Method spine (portable, promoted to ANOMALIES)
 
