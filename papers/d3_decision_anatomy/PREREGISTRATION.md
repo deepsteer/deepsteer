@@ -460,3 +460,48 @@ ever matters.
 Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, the
 pilot gate, all Amendment 3/4 branch definitions. Amendment 6 adds the second basis, the power table,
 the composition covariate, and the `d_harm` validity gate.
+
+---
+
+### Amendment 7 (2026-07-02) — instrument-diagnosis tree (all zero-GPU; pre-registered before computing)
+
+Amendment 6's power table showed Llama's block is the interchange instrument, not stimulus power
+(per-twin refusal deltas sign-chaotic, SD 0.31; behavioral `flips_to_comply = 0`). Before building any
+fix, diagnose *why* from the saved arrays. The tree is fixed now; the branch is chosen by the data.
+
+**Root split — the judgment cell is the instrument's positive control.** The full patch is measured on
+both refusal (`cell_full_deltas`) and judgment (`full_judgment_deltas`). Compute the per-twin JUDGMENT
+delta **sign-coherence** (bootstrap 95% CI of the mean; fraction same-sign) for Llama, with OLMo as the
+reference.
+- **Judgment coherent (CI excludes 0) while refusal is chaotic (CI includes 0) → REFUSAL-SPECIFIC.**
+  The patch *works* (it moves judgment); Llama's refusal specifically does not respond — a
+  content-robustness candidate, not a broken instrument.
+- **Judgment ALSO chaotic → INSTRUMENT-BROKEN.** The patch is noisy regardless of readout.
+
+**Refusal-specific branch:**
+- (a) **Delta vs baseline decision margin** (proxy: severity level / baseline refusal prob). Structure
+  → **dynamic-range** verdict; fix = boundary-band twins drawn off the measured psychometric curve.
+- (b) **Direction asymmetry** (benign→violating vs violating→benign, from saved cells if available;
+  else pre-register a small confirmation cell). Asymmetric → **latch/hysteresis** finding.
+- (c) Neither → **content-robustness candidate**: run the layer-divergence proxy; divergence below the
+  patch layer → patch-layer fix; else **genuine robustness**, reported with the judgment cell as the
+  validity certificate (the instrument is proven to work, so the refusal null is real).
+
+**Instrument-broken branch:**
+- (a) **Delta split by length-match status** + audit which alignment rule actually executed.
+  Mismatched-only chaos → **per-position swap on length-matched twins** (build spec, moderate).
+- (b) **Raw-vs-std delta correlation** closes the readout-noise reading (requires a raw-readout
+  re-derivation; flagged if the raw deltas were not saved).
+
+**Escalation menu (build only what the branch demands):** boundary-band authoring (cheap) /
+per-position aligned swap (moderate) / patch-layer or multi-layer flag (cheap harness change) /
+directional steering **only as last resort**, with the construct shift pre-registered (steering tests
+direction-sensitivity, not content-reading — a different claim per construct-audit).
+
+**Held:** the Qwen pod until the diagnosis lands (whatever breaks on Llama likely breaks on Qwen's
+severe band; the harness fix, if any, exists before the third model burns a pod). **Ledger:** the
+median-sign flip (Llama +0.029 vs OLMo −0.083) attaches to whichever branch resolves it; the
+dim-788-at-content-positions result closes the Amendment-6 position-dependence entry (A2 strengthened).
+
+Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity,
+all prior branch definitions. Amendment 7 adds only the diagnosis tree and its fixed decision rules.
