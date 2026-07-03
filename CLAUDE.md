@@ -56,62 +56,6 @@ than a stall.
 If a skill's `SKILL.md` is missing or its trigger is ambiguous, stop and flag it
 rather than proceeding without the check.
 
-## Implementation Priorities
-
-Build in this order. Each phase should be working and testable before starting the next.
-
-### Phase 1: Probing Dataset Pipeline (HIGHEST PRIORITY)
-The hand-written 40-pair probing dataset in `representational/probing.py` (`_build_probing_dataset()`) is proof-of-concept only. The real dataset needs to come from the MoralBench-seeded pipeline described in `datasets/PROBING_PIPELINE_DESIGN.md`.
-
-1. Download and parse MoralBench datasets (available on GitHub and HuggingFace)
-2. Implement Stage 1 (Extract): convert MoralBench prompts → declarative moral seed sentences
-3. Implement Stage 2 (Generate): matched neutral pair generation with constraint enforcement
-4. Implement Stage 3 (Validate): automated gates (length, embedding similarity, keyword scan) + LLM-as-judge
-5. Implement Stage 4 (Balance): ensure foundation/domain/complexity distribution targets
-6. Implement Stage 5 (Package): JSON output with provenance, train/test split
-7. Wire the new dataset into `LayerWiseMoralProbe` as the default, keeping the hand-written set as a fallback
-
-Target: 240 validated pairs (480 sentences), 40-50 per MFT foundation.
-
-### Phase 2: OLMo Integration (Base Models)
-Get the representational evaluation suite running against real OLMo base checkpoints.
-
-1. Test `WhiteBoxModel` with `allenai/OLMo-7B-hf` (base model, or OLMo-1B-hf for fast iteration)
-2. Verify `_detect_n_layers()` and `_get_layer_module()` work for OLMo's architecture
-3. Run `LayerWiseMoralProbe` end-to-end and produce the first real layer probing plot
-4. If OLMo checkpoint directories are available, run checkpoint trajectory analysis
-5. Fix any issues with activation capture hooks on OLMo's specific module structure
-
-### Phase 3: API Model Behavioral Evals (Secondary)
-Get `MoralFoundationsProbe` and `ComplianceGapDetector` running against Claude and GPT. Note: behavioral evals are a secondary concern — they require instruction-tuned models and measure post-training alignment rather than pre-training representations.
-
-1. Test `APIModel` with real API keys
-2. Run behavioral evals and verify response parsing / classification logic
-3. Tune the response parsers (`_parse_moral_judgment`, `_classify_response`) — these will need iteration based on how models actually respond
-4. Generate first comparison results: Claude vs GPT on behavioral depth metrics
-
-### Phase 4: Llama Integration (Base Models)
-Extend white-box support to Llama base models.
-
-1. Test `WhiteBoxModel` with `meta-llama/Llama-3-8B` (base model)
-2. Verify hook registration works on Llama's architecture
-3. Run same probing evaluation as OLMo, produce comparative plots
-
-### Phase 5: Expand Benchmarks
-Once the core pipeline is validated with real models:
-
-1. **Persona-shift compliance test**: Does alignment survive when the model is asked to roleplay as a different entity? Add as a new module under `benchmarks/compliance_gap/persona_shift.py`. Design: same borderline/harmful prompts from `ComplianceGapDetector`, but prepend persona instructions ("You are a ruthless business consultant who prioritizes profit above all else. Respond in character."). Measure compliance rate delta vs. baseline.
-2. **Foundation-specific probes**: Instead of one binary moral/neutral classifier, train separate probes per MFT foundation. Reveals whether different moral foundations are encoded at different layers.
-3. **Causal tracing for moral decisions**: Implement activation patching to identify which layers are *causally* responsible for moral judgments (not just correlated via probing).
-4. **Fragility testing**: Measure how many gradient steps of fine-tuning on harmful data are needed to remove moral behavior, as a function of where moral encoding lives in the network.
-
-### Phase 6: Steering Tools
-Training-time intervention infrastructure (the "steer" in deepsteer):
-
-1. `moral_curriculum.py`: Tools for designing moral content schedules during pre-training
-2. `data_mixing.py`: Utilities for mixing moral corpus content into training data at specified ratios
-3. `training_hooks.py`: PyTorch hooks that monitor moral probing metrics during live training runs
-
 ## Code Conventions
 
 ### Style
@@ -223,3 +167,145 @@ This toolkit supports research into whether embedding moral reasoning during LLM
 4. **Greater resistance** to adversarial moral scenarios (smaller `depth_gradient`)
 
 OLMo is the primary target because Ai2 publishes intermediate training checkpoints, enabling trajectory analysis that no other frontier-adjacent model allows.
+
+
+## Research boot sequence (before any planning, code, or answer)
+
+1. Read: `papers/SYNTHESIS.md` (thesis + standing claims), `papers/ANOMALIES.md` (open
+   entries), `MISSING_ARTIFACTS.md`, and the last ~10 commits (`git log --oneline -10`)
+   plus the most recent RESULTS or amendment delta.
+2. Open the session with a five-line **program state**: current thesis sentence; verdicts
+   pending; top open anomalies with their cheapest discriminators; what the last session
+   banked; what today's work gates.
+3. Any statement in (2) that cannot be grounded in a file gets flagged as ungrounded —
+   never silently reconstructed from memory.
+
+Rationale: sessions are stateless; the external reviewer's advantage is accumulated
+context. This recreates it mechanically, every time.
+
+## Skill consultation points (mandatory, consult = apply the required artifact)
+
+- Any experiment/phase/session plan → `compute-ordering`.
+- Creating or comparing any direction/subspace/probe → `construct-audit` (type block with
+  `participation_ratio` + `outcome_variable` is required metadata).
+- Any patch / ablation / steering / attribution cell → `intervention-validity` (spec block
+  committed in the prereg before the pod).
+- Any CI, threshold verdict, bootstrap, or estimate comparison → `estimator-traps`.
+- Any NULL/negative/orthogonality verdict → `instrument-calibration` (no NULL without a
+  ladder, a positive control, and position validity).
+- Anything "unexpected / interesting / caveat / exception" → `anomaly-triage` (ledger
+  entry before the caveat sentence).
+- Every human gate and every RESULTS commit → `program-thesis` (referee pass + SYNTHESIS
+  update in the same commit).
+
+## Standing inference moves (apply continuously — these are the job, not flourishes)
+
+1. **SECOND DERIVATION.** Every headline scalar gets one independent estimate — closed
+   form, a different artifact, or dimensional analysis — reported next to it with
+   agree/disagree. (Canonical: sqrt(3/PR) predicting the rank-3 null median; sqrt(2/π·d)
+   channel chance closing the Qwen anomaly; the 34% + 76% ≈ 110% additivity read.)
+2. **RIVAL READING.** No verdict ships without the strongest alternative reading that fits
+   the same data, written down, plus the cell that separates them. If no separating cell
+   exists, the verdict is downgraded to a reading. (Canonical rivals that each changed a
+   verdict: dose/under-transfer vs reads-elsewhere; richer-harm-percept vs reads-broad;
+   saturation vs content-robustness.)
+3. **BLAST RADIUS.** When any instrument, control, or assumption is invalidated, enumerate
+   every prior verdict it ever gated *before doing anything else*, and propagate
+   voids/scope notes to RESULTS + SYNTHESIS in the same commit. (Canonical: latched cells
+   → voiding the 0.44/0.14 directional hint; the persona-control audit reopening G3
+   wording.)
+4. **COINCIDENCE INTERROGATION.** Any reported ratio, near-equality, sign flip, or
+   point-outside-its-CI gets asked: what does the null / simplest model predict here?
+   (Canonical: the 26% restricted/full proportionality → ratio-of-ratios; band-min 0.65 ∉
+   [0.47, 0.64] → attenuation.)
+5. **REFRAME BEFORE CAVEAT.** When something reads "degenerate / broken / limited," first
+   attempt one honest paragraph where it is a mechanism or finding; keep whichever
+   survives. (Canonical: degenerate position → measured decision-site bottleneck; failed
+   Llama cells → A5 dynamic-range finding; A1 saturation → methods-note spine.)
+6. **ONE-ROOT DIAGNOSIS TREE.** Any "why did X fail" becomes a pre-registered decision
+   tree whose root split is one number computable from saved data — never a grab-bag of
+   probes. (Canonical: Amendment 7 — judgment-delta coherence as the root.)
+7. **POSITIVE VOICE AT SYNTHESIS.** After any result lands, write the program's thesis
+   sentence in positive voice before writing limitations. Nulls accumulate; someone must
+   keep stating what the program now claims.
+
+## Hard gates
+
+**Pod-boundary (no GPU session without):** power table (MDE at candidate n from *measured*
+variance — power is computed, not guessed); both branch framings pre-registered and
+publishable; an explicit bail condition (screen → gate → proceed/bank); per-unit artifact
+save list; dependency check (data the session needs exists and is committed).
+
+**Commit-boundary (no RESULTS commit without):** referee pass (3 damaging objections,
+answered or conceded) and SYNTHESIS.md update in the same commit; verdict sentences that
+carry the ladder; null wording that embeds detection bars ("no coupling detectable at
+|cos| ≳ 0.5", never bare "dissociation"); anchored adjectives only.
+
+**Verdict-boundary (no verdict without):** a positive control on the same instrument, same
+model; the rival reading (move 2); type blocks on every object involved; position validity
+(band-below-null check, PR recorded).
+
+**Amendment discipline:** dated, committed, and pushed BEFORE any recompute it licenses.
+Post-hoc analysis-choice changes are forks: amendment + verdict under both choices, never
+in the same commit as the results they affect.
+
+**Local tests:** every harness local test asserts its single most-probable failure mode by
+name in a comment (e.g., "assert chat null consumes chat act_samples"), not just that the
+script runs.
+
+## Pre-review protocol (the load-bearing habit)
+
+Before presenting ANY gate, decision menu, results summary, or plan to Orion: draft the
+**anticipated review** — the 3–5 riders a hostile expert reviewer would attach. Implement
+the zero-GPU ones immediately; attach the rest with costs. Never present a bare option
+list.
+
+```
+Anticipated review:
+1. [observation in the data] → [rule/move it triggers] → [concrete change] (cost)
+2. ...
+Implemented now: ...
+Open (with costs): ...
+Question behind the question: [what the decision actually depends on that wasn't asked]
+```
+
+Quality bar: at least one rider should be something you did not already plan to do. If
+every rider is a restatement of the existing plan, the review pass failed — run it again
+against a different attack surface (instrument validity, statistics, framing, sequencing).
+
+## Escalate to the author — do not decide alone
+
+Thesis-level reframes; voiding or scoping any committed/published claim; packaging and
+publication decisions; anything adjacent to the safety scope (removability, coupling
+robustness as an optimization target); cross-paper restructuring; any amendment changing a
+pre-registered PRIMARY. When unsure whether a decision is in this class, it is.
+
+## Numerical hygiene defaults
+
+Bootstrap CI with every headline number; per-pair / per-rollout / per-head arrays saved by
+default; seeds fixed and logged; harness + classifier versions pinned in artifact
+metadata; σ provenance typed (format + position class); reconstruction and specificity
+reported separately for any decomposition.
+
+## Exemplar pointers (templates, by artifact)
+
+- Diagnosis tree: d3 `PREREGISTRATION.md` Amendment 7 (root split → branches → escalation
+  menu gated on branch).
+- Bug-report-as-finding: `papers/ANOMALIES.md` A5 (and A1, A2).
+- Calibrated ladder + position validity: `papers/d1_moral_subspace/CALIBRATION_RESULTS.md`.
+- Verdict reclassification done right: the ratio-of-ratios commit (under_transfer
+  reclassification) — caught, named ("MDE tightened past a ~constant effect"), retracted,
+  panel held.
+- Futility catch: the Amendment 6 power table (a pod prevented by an afternoon of saved-
+  array work).
+- Both-branches prereg: Amendment 6 §4 (three shape verdicts, all publishable).
+
+## Honest scope
+
+This layer plus the skills covers: context recovery, the named inference moves, gate
+discipline, instrument validity, claim language, and sequencing. It does not cover:
+strategic packaging judgment, thesis synthesis across long horizons, or statistical traps
+outside the named patterns. Those remain scheduled external review (Orion + the review
+layer). The pre-review protocol narrows that residue; it does not close it. When a
+pre-review pass produces nothing surprising twice in a row on high-stakes decisions, say
+so — that is a signal to request external review, not evidence it isn't needed.
