@@ -210,8 +210,19 @@ the shape verdict, is now the **one-knob model fit**: does each model's `R_refus
 That is sharper than shape-vs-level — it asks whether refusal reads the same content as judgment with a
 harm clip on *every* model.
 
-- **OLMo-3-7B-Instruct** — complete; `harm_saturating`.
-- **Llama-3.1-8B** — ready to run (standardized extraction, ANOMALIES A1 dim-788, gated on the OLMo
-  raw→standardized invariance check; pre-norm so no LN-fold). Read the `R_refusal(k)` saturation shape
-  vs its own harm-rank-1 level — harm-saturating like OLMo, or climbing toward judgment.
-- **Qwen2.5-7B** — same, stronger A1 caveat (dim 458 = 59% of variance).
+- **OLMo-3-7B-Instruct** — complete; `harm_saturating`, one-knob fits (RMSE 0.036).
+- **Llama-3.1-8B** — run, but **underpowered; verdict not resolved.** Clean parts: pre-norm
+  reconstruction 1.0008 (no fold — architecture cross-check), the decision channel is **A1-clean**
+  (participation ratio 13.5, null 0.148 → 0.114 barely moves → the dim-788 outlier lives at content
+  positions, not the decision bottleneck), the anatomy is OLMo-like (distributed write, 13-dim channel,
+  MLP 0.30, all writers "neither"), and Llama's refusal **tracks intent severity** (severity-ladder
+  operating band 3–5, baseline refusal 9/10 — more intent-coupled than OLMo). But the causal cells are
+  underpowered: `mde_refusal = 0.073` and `full = 0.093` (barely clears), every decomposition cell is
+  below MDE, `R_refusal_k` is non-monotone (0.25 / 0.08 / 0.30 / 0.44), `R_judgment_k` is
+  denominator-noise-inflated (> 1), and the ratio-of-ratios CI is enormous ([−2.3, 4.9] →
+  `under_transfer`). The severity-band twins (levels 3–5) are heterogeneous, so the variance is ~3×
+  OLMo's. **One directional signal:** `R_refusal` reaches 0.44 at rank 16, ~3× Llama's harm-rank-1
+  level (0.14), and the harm-saturation one-knob model *fails* (RMSE 0.12) — Llama refusal *hints* at
+  reading beyond harm (the "reads content more" direction), but the noise makes it not resolvable.
+  **Power fix:** more operating-band twins at a single severity level (homogeneous), then re-run.
+- **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

@@ -64,9 +64,13 @@ judgment reads the subspace broadly.
 - **Open (cross-model, causal).** Is `harm_saturating` general causally? The comparative is the
   **one-knob model**: on OLMo, `R_refusal(k) = min(harm_ceiling, R_judgment(k))` fits the sweep to
   RMSE 0.036 (one free parameter) — refusal reads the same content as judgment, clipped at the harm
-  ceiling. The panel (Llama, Qwen, then GPT-OSS under Amendment 5) asks whether the same one-knob model
-  fits. Standardized extraction (A1; GPT-OSS is the strongest outlier at 0.70 top-dim variance), gated
-  on OLMo raw→standardized invariance (passed: Spearman 0.92).
+  ceiling. **Llama-3.1-8B: run but underpowered** — clean OLMo-like anatomy and an A1-clean decision
+  channel, but the causal cells are below MDE (heterogeneous severity-band twins, variance ~3× OLMo's).
+  A directional hint that Llama refusal reads *beyond* harm (`R_refusal` 0.44 at rank 16 vs harm-rank-1
+  0.14; one-knob fails) — the "reads content more" direction — is not resolvable without more
+  homogeneous operating-band power. Qwen next, then GPT-OSS (Amendment 5). Standardized extraction (A1;
+  the dim-788/dim-458 outliers turn out to live at content positions, not the decision channel, which is
+  clean and ~13-dim across OLMo and Llama alike — a cross-model strengthening of A2).
 
 ## Method spine (portable, promoted to ANOMALIES)
 
