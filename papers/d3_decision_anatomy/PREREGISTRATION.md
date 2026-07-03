@@ -400,3 +400,63 @@ survives a reasoning MoE with a distinct training regime.
 **Sequence:** #18 Llama → Qwen (template reuse) → GPT-OSS pod once this skeleton is finalized and
 passes local test. Spine preserved throughout: `M = 0.05`, `M_ratio = 0.15`, two-step null,
 per-unit saves, position-validity, the pilot gate, all Amendment 3/4 branch definitions.
+
+---
+
+### Amendment 6 (2026-07-02) — dual-basis Llama re-run: is it "reads broad" or a richer harm percept?
+
+Committed **before** authoring the stimulus batch or computing the design parameters. The first Llama
+run was underpowered (heterogeneous severity-band twins, cells below MDE) but left a directional hint:
+`R_refusal` reached 0.44 at rank 16, ~3× Llama's harm-rank-1 level (0.14), and the harm-saturation
+one-knob model failed. **Why this pod matters most:** if the hint is real, Llama is the model where
+refusal reads the *broad moral subspace* — which would be the mechanistic explanation for Llama being
+the program's n=1 robustness anomaly (judgment degrading under refusal ablation, partial
+unablatability, eff-rank-4 refusal). Routing thesis meets robustness conjunction, causally — the
+flagship's cross-model figure.
+
+**The confound to kill first.** "Reads beyond harm" has a rival reading: **rank-1 `d_harm` underfits
+Llama's harm percept.** `R_refusal 0.44 ≫ harm-rank-1 0.14` is equally consistent with Llama
+representing harm **multi-dimensionally** (severity × category × intent — and "intent-coupled refusal"
+gestures exactly there), so the moral basis's higher PCs pick up *additional harm* content that a
+rank-1 `d_harm` misses, not non-harm moral content.
+
+**Design change — the dual nested-basis sweep (the discriminator).** Run the sweep against **two**
+nested bases: (1) the **moral-contrast basis** (as now, `k ∈ {1, 3, 8, 16}`), and (2) a
+**severity-derived harm basis** built from the severity ladder's graded contrasts (`k ∈ {1, 2, 4}`).
+The one-knob fit runs against **both**, with **RMSE bootstrap error bars** (a fit-failure verdict needs
+its uncertainty). Discriminator:
+- `R_refusal` follows the **harm basis** and saturates against the moral basis beyond the harm span →
+  **harm-keyed with a richer harm percept** (harm-keying generalizes; harm *dimensionality* is the
+  family difference).
+- `R_refusal` climbs the **moral basis** where the harm basis is exhausted → **genuinely reads broad
+  moral content** (routing differs by family; the robustness-conjunction mechanism; the GPT-OSS
+  comparative is reframed).
+- **still-unresolved at the computed power** → report as bounded; Qwen proceeds anyway.
+
+**Power is computed, not guessed.** The heterogeneous run gives within-level variance for free
+(per-twin full effects at levels 3/4/5 separately). Compute the **MDE(n) table** for `n ∈ {16, 24, 32,
+40}` from the measured within-level variance and author to the `n` it demands. **Select the level** by
+the measured psychometric curve (refusal-discrimination pass rate × headroom, weighing benign-twin
+over-refusal risk), not an assumed level 5.
+
+**`d_harm` validity (pre-condition).** Confirm `d_harm` is Llama-extracted (t_inst, Llama act samples);
+validate it against the severity ladder — twin-difference projection onto `d_harm` must **climb
+monotonically with severity level**. If flat/non-monotone, `d_harm` is mis-specified for Llama and the
+0.14 baseline means nothing → re-extract before anything else.
+
+**Composition-covariate (handles the stimulus asymmetry by measurement, not equation).** A single
+stimulus set both models refuse differentially does not exist (OLMo barely refuses). Instead report
+each set's **twin-difference composition** (harm / ⊥harm-moral / residual content fractions) as a
+covariate beside each model's curves, and state that the **within-model** design (each model's `R(k)`
+shape against its own harm level, now against its own two bases) was chosen precisely because
+cross-model stimulus equating is impossible. Composition-aware comparison is the defensible comparative.
+
+**Held.** Qwen until the Llama design is proven (then same harness, same dual-basis statistic); the
+GPT-OSS Amendment 5 inherits the dual-basis + composition-covariate upgrades. **Ledger note:** Llama's
+decision-token channel reads A1-clean despite the global dim-788 outlier → massive dims may be
+**position-dependent**; a one-line ANOMALIES entry + a cheap per-position top-dim-share profile if it
+ever matters.
+
+Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, the
+pilot gate, all Amendment 3/4 branch definitions. Amendment 6 adds the second basis, the power table,
+the composition covariate, and the `d_harm` validity gate.
