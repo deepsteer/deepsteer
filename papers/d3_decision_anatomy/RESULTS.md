@@ -292,16 +292,28 @@ harm clip on *every* model.
   so by the frozen rule the verdict is **early-commitment**: the refusal decision **crystallizes before
   layer 16**. Patching content earlier (pre-commitment) reverses refusal; patching at 16 (post) cannot —
   and adding harm can still tip a not-yet-committed case, so the engage/disengage asymmetry is a one-way
-  ratchet. And the **engage sweep answers reads-broad**: `R_engage` **climbs to 0.58** (rank 16) while
-  `engage_harm_rank1_R = −0.04` (harm carries nothing) — so Llama's refusal reads the **broad moral
-  subspace, not harm**, the opposite of OLMo's harm-saturation and a confirmation of the pre-registered
-  "Llama reads content more." Behaviorally the asymmetry lands (1 engage flip-to-refuse, 0 disengage
-  flip-to-comply), and the anti-over-refusal head (L15 H6) fires. **The Llama arc closes:** underpowered
-  (A6) → saturated (A7) → boundary-fixed/asymmetric (A8) → **early-commitment + reads-broad (A9)**.
+  ratchet. **This is the frozen, robust finding.** OLMo's disengage is coherent *at* layer 16 (−0.62),
+  so OLMo commits at or after the read layer; Llama's fails at 16 but works at 8–14, so Llama commits
+  *earlier*. The commitment-depth difference is real and depth-informed.
 
-  **Cross-model picture (two-dimensional).** *What* refusal reads: OLMo & GPT-OSS read **harm**; Llama
-  reads **broad moral content**. *How* it commits: OLMo is **symmetric/reversible**; Llama is
-  **early-commitment** (crystallizes early, ratchets). Both make refusal hard to reverse/ablate, so
-  Llama's mechanism is a strong **candidate for its Paper-6 robustness anomaly** — and the conjunction
-  survives whether the label is latch or early-commitment.
+  **Amendment 10 verification — the reads-dimension and the A-magnitude are held (read-layer confound).**
+  The reads-broad and A-asymmetry numbers were both read at layer 16, which is **post-commitment** for
+  Llama, so they may be **read-layer artifacts**: (v) `A` is depth-dependent — +0.82 at layer 16 but
+  ≈ +0.14 at layer 12 and −0.17 at layer 14 (the coherent depths), so "Llama is engage-dominant" is a
+  layer-16 statement, not a depth-invariant property, and the cross-model `A` comparison is not
+  depth-matched (needs OLMo's disengage-by-layer). (iii) The rank-1 harm engage cell is −0.006 with
+  sign-frac 0.49 (**noise near zero**, not a clean "harm carries nothing"); (i) the multi-rank
+  severity-harm basis engage curve was never built (the blocking gap). So the **reads-broad claim is
+  held** pending the engage dual-basis sweep at Llama's **pre-commitment coherent depth (layer 12)**;
+  the pre-registered branches: harm-basis-dominant-early → unified harm-keying (family difference is
+  depth + ratchet), broad-dominant-at-all-coherent-depths → reads-broad stands. What is **not** in
+  doubt: early-commitment (the depth-dependence is the finding), and the anti-over-refusal head (L15 H6)
+  firing. **Llama arc:** underpowered (A6) → saturated (A7) → boundary-fixed/asymmetric (A8) →
+  early-commitment [frozen] + reads-broad [held, A9/A10].
+
+  **Cross-model picture.** *How* it commits (frozen): OLMo commits at/after the read layer (disengage
+  works there); Llama commits **earlier** (disengage fails at the read layer, works below ~15) — a
+  candidate for its Paper-6 robustness anomaly, and the conjunction survives whether the mechanism is
+  labelled latch or early-commitment. *What* it reads (held): OLMo & GPT-OSS read **harm**; whether
+  Llama reads broad moral content or a depth-shifted harm percept awaits the layer-12 sweep.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).

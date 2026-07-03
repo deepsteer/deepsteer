@@ -71,15 +71,16 @@ judgment reads the subspace broadly.
   *added* (+0.14, CI excludes 0) but is unmoved when harm is *removed* (−0.01, incoherent). The
   cross-model asymmetry is **statistically resolved**: `A_Llama = +0.82` vs `A_OLMo = −0.20` (OLMo
   bidirectionally responsive — both directions coherent), `A_Llama − A_OLMo = 1.03, 95% CI [0.16, 1.61],
-  excludes 0`. Refusal directional symmetry **differs by model** — OLMo reversible, Llama
-  engage-dominant. The patch-layer sweep names the mechanism: Llama's disengage is coherent at layers 8,
-  12, 14 but not 16, so the refusal decision is **early-commitment** (crystallizes before the decision
-  site; a one-way ratchet), **not a hard latch**. And Llama's engage sweep answers the original
-  reads-broad question: `R_engage` climbs to 0.58 while harm carries nothing (`engage_harm_rank1_R
-  = −0.04`) — **Llama reads the broad moral subspace, not harm**, the opposite of OLMo. So the
-  cross-model story is two-dimensional: *what* refusal reads (OLMo/GPT-OSS harm, Llama broad moral) and
-  *how* it commits (OLMo symmetric/reversible, Llama early-commitment). Both make refusal hard to
-  reverse/ablate → a strong candidate for Llama's Paper-6 robustness anomaly. Qwen and GPT-OSS held.
+  excludes 0` at the read layer. **Commitment dimension (frozen, depth-indexed):** the patch-layer sweep
+  names the mechanism — Llama's disengage is **bidirectional below ~layer 15 but engage-only at the read
+  layer** (coherent at 8/12/14, incoherent at 16), so the refusal decision is **early-commitment**
+  (crystallizes before the decision site; a one-way ratchet), **not a hard latch**; OLMo's disengage
+  works *at* the read layer (−0.62), so OLMo commits later. **Reads dimension (held, Amendment 10):** the
+  reads-broad and A-magnitude numbers were read at layer 16 = post-commitment, and `A` is depth-dependent
+  (+0.82 at 16, ≈+0.14 at 12, −0.17 at 14), so both may be read-layer artifacts; the engage dual-basis
+  sweep at Llama's coherent depth (layer 12) resolves whether Llama reads broad moral content or a
+  depth-shifted harm percept. What is robust either way: Llama commits earlier than OLMo — a strong
+  candidate for its Paper-6 robustness anomaly. Qwen and GPT-OSS held.
   (Standardized extraction, A1: the dim-788/dim-458
   outliers live at content positions, not the decision channel, which is clean and ~13-dim across OLMo
   and Llama alike — a cross-model strengthening of A2, ledger A5.)
