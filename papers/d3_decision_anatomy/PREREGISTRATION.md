@@ -505,3 +505,45 @@ dim-788-at-content-positions result closes the Amendment-6 position-dependence e
 
 Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity,
 all prior branch definitions. Amendment 7 adds only the diagnosis tree and its fixed decision rules.
+
+---
+
+### Amendment 8 (2026-07-02) — boundary-band Llama re-run (executes the Amendment-7 dynamic-range fix)
+
+Committed **before** authoring. Amendment 7 diagnosed Llama's chaotic refusal cells as
+**dynamic-range/saturation** (judgment cell certified the instrument; operating-band twins sit at the
+refusal ceiling). Amendment 8 fixes it with boundary-band stimuli and hardens the re-run.
+
+**(0) Void the directional hint.** The `R_refusal 0.44 vs harm-rank-1 0.14` "reads beyond harm" hint is
+**retracted** in RESULTS + SYNTHESIS: its inputs are diagnosed latched (A5), so it carries no evidential
+weight. The three branches (**reads-broad / richer-harm-percept / bounded-unresolved**) enter the re-run
+**unweighted**.
+
+**(1) Band census → authoring spec (zero-GPU).** From the existing psychometric, census the existing
+twins for a boundary band (violating-refuse `p ∈ [0.4, 0.7]`) and read the **level-2→3 slope**. If the
+slope is steep (a single-level jump 0.33 → 1.0, as observed), author a **micro-graded ladder** (finer
+severity steps between levels 2 and 3); if boundary twins can't be hit by severity alone, vary an
+**orthogonal knob** (specificity/immediacy of the harmful ask) to land the band.
+
+**(2) Selection-regression control.** The pilot screen selects twins into the band on a noisy baseline;
+that selection regresses to the mean. The pod **re-measures the baseline independently** on the selected
+twins, and the **shrinkage** (screen-band vs re-measured-band drift) is reported. Cells use the
+re-measured band, not the screen-selected one.
+
+**(3) Pod structure (gated).** `screen → GATE (≥ N boundary twins, N from the power table) →` the
+Amendment-6 **dual-basis patch run** (moral basis `k ∈ {1, 3, 8, 16}`, Llama-ladder-derived harm basis
+`k ∈ {1, 2, 4}`, harm-partialed cell, one-knob fit against **both** bases with RMSE error bars) **+
+bidirectional cells** (following→violating **and** violating→following; asymmetry = latch/hysteresis,
+Amendment 7 (b)) **+ judgment recertification at the boundary** (re-confirm the instrument is coherent
+at the new operating point). **Gate fail → bank `bounded-unresolved`, automatic** (no forcing).
+
+**(4) Composition covariate.** A twin-difference composition table (harm / ⊥harm-moral / residual
+fractions) for **both** models' stimulus sets; OLMo's baseline-refusal distribution is added to the A5
+ledger entry (the dynamic-range comparison OLMo-weak vs Llama-saturated).
+
+**(5) Methods-note (standing task).** During the authoring/build window, draft the methods note: A1–A5
+plus the power-table and orthogonal-cell-certificate patterns are a complete methods-paper skeleton now.
+
+Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, all
+prior branch definitions. Amendment 8 adds the boundary-band authoring, the gate, the bidirectional and
+recertification cells, the selection-regression control, and the composition covariate.
