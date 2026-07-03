@@ -284,7 +284,24 @@ harm clip on *every* model.
   directional symmetry **genuinely differs by model** — OLMo reversible, Llama engage-dominant/latch-like.
   Bonus robustness check: OLMo's **standardized** disengage sweep reproduces `harm_saturating` (`R_refusal`
   saturates at 0.31 ≈ harm 0.35 while `R_judgment` climbs to 0.65) — the flagship holds under
-  standardization, not just the fold. **Still pending (one Llama pod, `PATCH_LAYERS`):** the disengage
-  patch-layer sweep (latch vs early-commitment mechanism verdict) and the Llama engage sweep (reads-broad
-  on the coherent channel).
+  standardization, not just the fold.
+
+  **Amendment 9 mechanism verdict → EARLY-COMMITMENT (not a hard latch), and Llama reads BROAD.** The
+  patch-layer sweep is decisive: Llama's disengage is **coherent at layers 8, 12, 14** (−0.12, −0.11,
+  −0.20; all CIs exclude 0) but **incoherent at layer 16** (−0.014). It fails only at the decision site,
+  so by the frozen rule the verdict is **early-commitment**: the refusal decision **crystallizes before
+  layer 16**. Patching content earlier (pre-commitment) reverses refusal; patching at 16 (post) cannot —
+  and adding harm can still tip a not-yet-committed case, so the engage/disengage asymmetry is a one-way
+  ratchet. And the **engage sweep answers reads-broad**: `R_engage` **climbs to 0.58** (rank 16) while
+  `engage_harm_rank1_R = −0.04` (harm carries nothing) — so Llama's refusal reads the **broad moral
+  subspace, not harm**, the opposite of OLMo's harm-saturation and a confirmation of the pre-registered
+  "Llama reads content more." Behaviorally the asymmetry lands (1 engage flip-to-refuse, 0 disengage
+  flip-to-comply), and the anti-over-refusal head (L15 H6) fires. **The Llama arc closes:** underpowered
+  (A6) → saturated (A7) → boundary-fixed/asymmetric (A8) → **early-commitment + reads-broad (A9)**.
+
+  **Cross-model picture (two-dimensional).** *What* refusal reads: OLMo & GPT-OSS read **harm**; Llama
+  reads **broad moral content**. *How* it commits: OLMo is **symmetric/reversible**; Llama is
+  **early-commitment** (crystallizes early, ratchets). Both make refusal hard to reverse/ablate, so
+  Llama's mechanism is a strong **candidate for its Paper-6 robustness anomaly** — and the conjunction
+  survives whether the label is latch or early-commitment.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).
