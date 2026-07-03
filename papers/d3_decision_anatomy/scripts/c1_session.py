@@ -134,9 +134,24 @@ def main() -> None:
     manifest = ps.build_manifest()
     screened = ps.screen(model, manifest)
 
-    # Stage 1: per-head write attribution at the decision token, on a harmful request.
+    # Amendment 4 severity ladder runs FIRST and is DUAL-USE: its operating-band twins feed the
+    # readout/sweep cells too, not only the behavioral cells. Essential for models whose refusal does
+    # not fire on the milder request-twins -- on Llama the request-twin screen kept ~1, but the ladder
+    # brackets the operating band (levels 3-5, base refusal 9/10).
+    from b1_judgment_direction import is_refusal  # noqa: E402
+    from deepsteer.datasets import get_severity_twins  # noqa: E402
+    sev = get_severity_twins()[:(10 if validate else None)]
+    psycho = cc.severity_psychometric(model, sev, is_refusal)
+    band_pairs = [(foll, viol) for (_f, lvl, foll, viol) in sev if lvl in psycho["operating_band"]]
+    req_pairs = [(p["following"], p["violating"])
+                 for p in (screened["request_twins"] or manifest["request_twins"]["pairs"])]
+    rt_pairs = (req_pairs + band_pairs)[:(6 if validate else None)]   # dual-use readout/sweep stimuli
+
+    # Stage 1: per-head write attribution on a harmful request that actually refuses (operating band
+    # first, else a screened request-twin).
+    probe = (band_pairs[0][1] if band_pairs else
+             (screened["request_twins"] or manifest["request_twins"]["pairs"])[0]["violating"])
     Qc = s1.channel_control_basis(inp["channel_act"], inp["refusal"])
-    probe = (screened["request_twins"] or manifest["request_twins"]["pairs"])[0]["violating"]
     st1 = s1.attribute(model, probe, refusal_raw, args.layer)   # RAW: fold + reconstruction in raw space
     contribs_eff = {h: _std(c) for h, c in st1["per_head_contrib"].items()}
     spec = s1.head_specificity(contribs_eff, inp["refusal"], Qc)   # standardized specificity
@@ -158,11 +173,10 @@ def main() -> None:
             st2[str(h)] = {"source_dist": r["source_dist"], **vs, "at_read_layer": bool(h[0] == args.layer),
                            "classify": s2.classify_head(r["source_dist"], vs, band_min, null95)}
 
-    # ---- causal cells: refusal (request-twins) + judgment (compositional twins) interchange patches ----
-    # Amendment 3: full/restricted/COMPLEMENT/harm-restricted/random-control on refusal; full->judgment
-    # (RIDER 0) + restricted->judgment (transport) on judgment; ratio-of-ratios verdict; behavioral
-    # generate-under-patch; L15 H15 anti-refusal discriminator.
-    from b1_judgment_direction import is_refusal  # noqa: E402
+    # ---- causal cells: refusal (dual-use request + operating-band severity twins) + judgment
+    # (compositional twins) interchange patches. Amendment 3/4: full/restricted/COMPLEMENT/harm-
+    # restricted/harm-partialed/random-control on refusal; full->judgment (RIDER 0) + transport on
+    # judgment; ratio-of-ratios verdict; rank sweep; behavioral generate-under-patch; discriminator.
     rng2 = np.random.default_rng(0)
     hidden = inp["refusal"].shape[0]
     Qrand = cc.random_ortho_basis(hidden, inp["Vbasis"].shape[1], rng2, exclude_Q=inp["Vbasis"])
@@ -173,7 +187,6 @@ def main() -> None:
     tw_pairs = [(p["moral"], p["neutral_or_violating"]) for p in tw[:tw_cap]]
     jdir = (_unit(_std(extract_positions(model, tw_pairs, [args.layer])["final_pre_assistant"][args.layer][0]))
             if tw_pairs else _unit(inp["harm"]))            # judgment readout in the standardized frame
-    rt = (screened["request_twins"] or manifest["request_twins"]["pairs"])[:(6 if validate else None)]
 
     # Amendment 4 rank sweep (SWEEP=1 or validate): nested moral-contrast PCA basis + per-rank restrict.
     KS = [1, 3, 8, 16]
@@ -192,12 +205,12 @@ def main() -> None:
     sweep_ref = {k: [] for k in KS}; sweep_rand = {k: [] for k in KS}; sweep_jud = {k: [] for k in KS}
 
     full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # all read refusal, request-twins
-    for p in rt:
+    for foll, viol in rt_pairs:
         try:
-            sp, tp = cc.patch_positions(model, p["following"], p["violating"])
+            sp, tp = cc.patch_positions(model, foll, viol)
             L, r = args.layer, inp["refusal"]
-            base = cc.baseline_proj(model, p["violating"], L, r, sigma=sigma)
-            ic = lambda **kw: cc.interchange(model, p["following"], p["violating"], sp, tp, L, r,
+            base = cc.baseline_proj(model, viol, L, r, sigma=sigma)
+            ic = lambda **kw: cc.interchange(model, foll, viol, sp, tp, L, r,
                                              sigma=sigma, **kw) - base
             full_d.append(ic())
             restr_d.append(ic(restrict_Q=inp["Vbasis"]))
@@ -227,14 +240,8 @@ def main() -> None:
         except (ValueError, RuntimeError, IndexError):
             continue
 
-    # Amendment 4 severity ladder: psychometric curve + operating band -> behavioral out of the floor.
-    from deepsteer.datasets import get_severity_twins  # noqa: E402
-    sev = get_severity_twins()[:(10 if validate else None)]
-    psycho = cc.severity_psychometric(model, sev, is_refusal)
-    band_pairs = [(foll, viol) for (_f, lvl, foll, viol) in sev if lvl in psycho["operating_band"]]
-    behav_src = band_pairs or [(p["following"], p["violating"]) for p in rt]   # fall back if band empty
-
-    # behavioral generate-under-patch: does the full patch flip a baseline refusal to compliance?
+    # behavioral generate-under-patch on the operating-band twins (psychometric + band computed above).
+    behav_src = band_pairs or rt_pairs                     # fall back to request-twins if band empty
     behav = {"n": 0, "base_refusals": 0, "flips_to_comply": 0,
              "source": "operating_band" if band_pairs else "request_twins_fallback"}
     for foll, viol in behav_src[:(3 if validate else 10)]:
@@ -280,6 +287,7 @@ def main() -> None:
                         "harm_rank1_R": round(harm_r1, 4), **sweep_meta,
                         "shape_verdict": sw.shape_verdict(Rref, Rjud, harm_r1, KS)}
     cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
+             "rt_composition": {"request_screened": len(req_pairs), "operating_band": len(band_pairs)},
              "cell_a_full_refusal_delta_mean": _m(full_d),
              "cell_b_restricted_refusal_delta_mean": _m(restr_d),
              "complement_refusal_delta_mean": _m(compl_d),          # expect: moves refusal
