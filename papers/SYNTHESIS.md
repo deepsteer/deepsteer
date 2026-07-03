@@ -39,10 +39,13 @@ judgment reads the subspace broadly.
   Δ = 0.031, paired 95% CI **[0.020, 0.043]**, excludes 0), but the **rank sweep** shows it is the
   **harm percept specifically**: `R_refusal(k)` saturates at the harm-rank-1 level (0.31 → 0.27 over
   `k = 1..16`) while `R_judgment(k)` climbs to 0.66 — expanding moral rank buys judgment coupling, not
-  refusal coupling (`harm_saturating`). Identification: harm-restricted (−0.026) ≈ full V_moral
-  (−0.028); the **harm-partialed** patch (`V_moral ⊥ d_harm`) drops to −0.013 (about half), so most of
-  V_moral's refusal effect *is* harm; `frac(V_moral, d_harm) = 0.46`. Behaviorally, OLMo-3's refusal
-  tracks moral-intent severity only weakly (~17% at max), consistent with a harm/surface-keyed gate.
+  refusal coupling (`harm_saturating`) — **~73% of refusal's causal twin-difference input lies outside
+  the rank-16 moral basis**. Identification: harm-restricted (−0.026) ≈ full V_moral (−0.028), but the
+  **harm-partialed** patch (`V_moral ⊥ d_harm`) still moves refusal −0.013 (95% CI excludes 0, about
+  half) → harm-dominant **with a resolvable residual non-harm moral read**; `frac(V_moral, d_harm) =
+  0.46`. The dominant-variance contrast component (PC1) is **causally inert** for both readouts
+  (`R(1) ≈ 0`) — variance is not causal relevance. Behaviorally, OLMo-3's refusal tracks moral-intent
+  severity only weakly (~17% at max), consistent with a harm/surface-keyed gate.
 
 ## What is settled vs open
 

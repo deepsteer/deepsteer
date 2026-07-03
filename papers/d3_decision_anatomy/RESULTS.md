@@ -125,11 +125,24 @@ basis):
 sitting at the harm-rank-1 level (`harm_rank1_R = 0.31`). The random-null curve is ~0 at every rank
 (specificity floor holds). Adding moral rank beyond harm recovers more judgment transfer and no more
 refusal transfer → **`harm_saturating`**: refusal's moral read is the **harm percept**, not the broad
-subspace. The identification cell confirms it: the **harm-partialed** patch (`V_moral ⊥ d_harm`) moves
-refusal only −0.0133, about half of the full V_moral-restricted −0.0282, so most of V_moral's refusal
-effect *is* the harm component (a small non-harm moral residual remains). The V_moral/complement
-decomposition is additive (ratio 1.10, CI [0.91, 1.35] includes 1). `harm(V_moral) = 0.46`: harm
-overlaps V_moral moderately, and refusal reads exactly that overlap plus a little.
+subspace. Equivalently, **~73% of refusal's causal twin-difference input lies outside the rank-16 moral
+basis** (`1 − R_refusal(16)`; 69% at the rank-3 peak) — the surface/harm-adjacent share, now quantified.
+
+**Identification.** Harm alone nearly reproduces the full V_moral-restricted effect (harm-restricted
+−0.0261 ≈ restricted −0.0282), but the **harm-partialed** patch (`V_moral ⊥ d_harm`) still moves
+refusal **−0.0133, 95% CI [−0.023, −0.005], excludes 0** — about half of the full V_moral effect. So
+V_moral's refusal effect is **harm-dominant with a resolvable residual non-harm moral read** (harm and
+the residual overlap, hence the two fractions sum past 1). The V_moral/complement decomposition is
+additive (ratio 1.10, CI [0.91, 1.35] includes 1). `harm(V_moral) = 0.46`: harm overlaps V_moral
+moderately, and refusal reads that overlap plus the small residual.
+
+**Variance is not causal relevance (the eff-dim lesson, made causal).** `cos(d_harm, PC_k)` =
+[0.35, 0.25, 0.20, 0.19, …] — harm spreads across the top four contrast PCs, concentrated in PC1. Yet
+**PC1, the dominant-variance component (purity 0.974) and the most harm-aligned, is causally inert**:
+restricting the patch to rank 1 moves neither readout (`R_refusal(1) = 0.01`, `R_judgment(1) = 0.05`).
+The causal signal appears only at rank 3, where the basis spans enough of the (distributed) harm
+direction. The direction that carries the most moral-contrast variance is not the direction refusal (or
+judgment) causally reads.
 
 **Behavioral (the floor is a model property, not just the stimuli).** The severity ladder shows
 OLMo-3's refusal on intent-harmful requests reaches only **~17% even at the top severity level**
