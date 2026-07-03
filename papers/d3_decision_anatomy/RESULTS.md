@@ -260,8 +260,22 @@ harm clip on *every* model.
   sweep/one-knob is uninformative for Llama (the harm-saturating vs reads-broad question can't be read
   off a latched forward direction); the clean causal channel is the **reverse** direction. Two bonuses:
   the **anti-over-refusal head fired** for the first time (ablating L15 H6 raised benign refusal 0 →
-  0.083, `anti_over_refusal_head: true`), and generate-under-patch confirmed the latch behaviorally (7/10
-  baseline refusals, 0 flipped by the forward patch). **Next: decompose the coherent reverse direction**
-  (Amendment 9) — sweep/harm-basis on add-harm — and run OLMo's bidirectional cell for the hysteresis
-  comparison.
+  0.083, `anti_over_refusal_head: true` — confirmed as Llama's own min-specificity head L15 H6, spec
+  −1.71, beside the +2.95 refusal writer L15 H7), and generate-under-patch confirmed the asymmetry
+  behaviorally (7/10 baseline refusals, 0 flipped by the disengage patch).
+
+  **Amendment 9 nomenclature + asymmetry (zero-GPU).** Fixed terms: **engage** = harm-add (refusal ↑),
+  **disengage** = harm-removal (refusal ↓). Under this, OLMo's original **−0.134** full cell is a
+  **coherent DISENGAGE** datapoint at OLMo's band — OLMo's refusal *does* release when harm is removed,
+  so the OLMo specificity claim's disengage half is already evidenced. The asymmetry statistic
+  `A = (|engage| − |disengage|)/(|engage| + |disengage|)` gives **`A_Llama = 0.82`, 95% CI [0.19, 0.98]**
+  (engage-dominant, near-latch; CI excludes symmetry). But the per-twin scatter is **bimodal, not a
+  uniform disengage-null**: disengage un-latches (< −0.05) on ~38% of Llama's twins. So it is **not a
+  hard universal latch** — consistent with **early-commitment** (the decision crystallizes before the
+  patch layer on some twins) or a partial latch. The frozen rule: "latch" is claimed only if disengage
+  fails at *all* patch depths; the **patch-layer sweep** (Amendment 9 mechanism cell) discriminates.
+  The robustness-mechanism reading stays a **candidate** until then — and both latch and early-commitment
+  predict the Paper-6 anomaly, so the conjunction survives either branch. Remaining (model-dependent):
+  the engage-direction dual-basis sweep (reads-broad on the working channel), the Llama disengage
+  patch-layer sweep, `A_OLMo` (OLMo's engage cell), and behavioral flips-to-refuse.
 - **Qwen2.5-7B** — same harness (`MODELS="qwen25"`), stronger A1 caveat (dim 458 = 59% of variance).
