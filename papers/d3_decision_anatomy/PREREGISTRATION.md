@@ -344,3 +344,54 @@ verdict**). The Llama **standardization build proceeds in parallel** as zero-GPU
 Spine preserved: `M = 0.05`, the two-step null, per-unit saves, position-validity, the pilot gate,
 `M_ratio = 0.15`, all Amendment-3 branch definitions. Amendment 4 adds the sweep, the identification
 cells, the shape verdicts, and the behavioral ladder; it relaxes no prior gate.
+
+---
+
+### Amendment 5 (SKELETON, 2026-07-02) — GPT-OSS-20B reasoning-MoE extension of C1
+
+**Status: SKELETON.** Framings frozen; thresholds/positions finalized before the GPT-OSS pod, after
+Llama/Qwen reuse the harness. GPT-OSS is the panel endpoint (most new harness). Motivation: its
+in-trace refusal (P2) already reads **harm-loaded** (D1 retro-audit: standardized |cos(P2, d_harm)| =
+0.49 vs |cos(P2, V_moral ⊥ d_harm)| = 0.13), so it is a strong test of whether `harm_saturating`
+survives a reasoning MoE with a distinct training regime.
+
+1. **Outcome redefinition (both pre-registered).** OLMo's refusal barely tracked intent severity (a
+   behavioral floor), so the OLMo primary was the projection readout. GPT-OSS refuses far more
+   (harmful-prompt baseline ~1.0), so behavior is viable. **PRIMARY = behavioral** (generate-under-
+   patch refuse↔comply flips on operating-band severity-ladder twins). **SECONDARY = the rank-r
+   refusal-subspace projection readout** (OLMo-comparable). The behavioral primary is the upgrade the
+   OLMo floor prevented.
+
+2. **Severity-ladder inversion.** GPT-OSS baseline ~1.0 **inverts** OLMo's floor risk into a
+   benign-twin **over-refusal** risk (the following member may also refuse). The ladder brackets both
+   ends, so the operating-band screen still finds where violating-refuses AND benign-complies — the
+   band just shifts down in severity. **Deliverable: the refusal-vs-severity psychometric curve per
+   model** — how steeply each model's refusal rises with intent severity is itself a cross-model
+   harm-keying comparison.
+
+3. **MoE Stage-1 scope.** The decision-token write is a router-weighted mix of expert MLPs. Stage 1 =
+   per-head attention OV write (well-defined) + a **router-weighted MLP fraction**; the reconstruction
+   control still holds (residual is linear over attn + routed-MLP + embed). If MLP fraction > 0.50
+   (likely for MoE), the Jacobian branch fires → attribute to the **top experts by router weight**;
+   full expert-level circuit attribution is a follow-on.
+
+4. **Harmony decision-token.** GPT-OSS's harmony format has distinct channel tokens. Pre-register the
+   decision-site token (the token before the assistant response channel opens; the D1 P2 position and
+   the assistant-header analog are candidates) and **verify the A2 position-validity rule** (PR ≥ 30)
+   there before the pod.
+
+5. **Reconstruction + A1.** Verify GPT-OSS norm placement and apply the A3 fold if reordered; verify
+   the reconstruction band regardless. GPT-OSS is the **strongest A1 outlier** (top-dim variance
+   0.70) → Stage-1/2 and every null run **per-dim standardized**; raw reported only as the degenerate
+   baseline (no OLMo-style raw↔std invariance is expected — standardized is primary).
+
+6. **Comparative branches (frozen).**
+   - `R_refusal(k)` **saturates** at the harm level → the **strongest generality** of
+     `harm_saturating` (a reasoning MoE with deliberative alignment still routes refusal through harm).
+   - `R_refusal(k)` **climbs** toward judgment → a **training-regime exception**: deliberative
+     alignment lets refusal read broader moral content; connect to the deliberative-alignment
+     literature (the model reasons over moral content, not just the harm cue).
+
+**Sequence:** #18 Llama → Qwen (template reuse) → GPT-OSS pod once this skeleton is finalized and
+passes local test. Spine preserved throughout: `M = 0.05`, `M_ratio = 0.15`, two-step null,
+per-unit saves, position-validity, the pilot gate, all Amendment 3/4 branch definitions.
