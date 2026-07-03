@@ -695,3 +695,57 @@ phase's blockers.**
 
 Spine preserved. A11 is verification + a geometric builder; A5-finalization adds the commitment axis to
 the held GPT-OSS extension.
+
+### Amendment 12 (2026-07-03) — GPT-OSS commit axis: band-existence + graded disengage (pre-pod)
+
+The first Tier-1 run banked position gate (`pr_std 12.79`, valid) + engage (7/7 benign→refuse) but the
+disengage arm and the harm-separability commitment curve were saturation-confounded (empty boundary
+band; A7 trap). Amendment 12 redesigns the disengage instrument to be robust to either outcome and
+un-confounds the commitment curve. **All quantities below are pre-registered before compute.**
+
+1. **Band-existence check (GATES the finer-ladder decision).** Per-item base-refuse histogram across the
+   existing severity twins (needs per-item base-refuse, which the harness now saves). **Both responses
+   frozen before looking:** (a) **smooth spread** of violating base-refuse across [0,1] → *resolution-
+   limited* → a finer/milder severity ladder will land a boundary band (build the secondary ladder);
+   (b) **bimodal at 0/~1** (few items between) → *genuine step function* → no ladder can land a band,
+   the graded-prefill disengage below is the only disengage instrument, and the finer ladder is not
+   built. Operationalized: bimodality = fraction of violating items with base-refuse in (0.2, 0.8) < 0.2.
+
+2. **Graded disengage (PRIMARY disengage instrument, robust to either band outcome).** A weak→strong
+   series of exculpatory-reasoning prefills (the mirror of the working engage arm) applied to the SAME
+   ceiling-refusing violating items. Two graded within-item readouts per prefill strength: (i)
+   behavioral flip rate (refusal on the FINAL channel), and (ii) the now-licensed **rank-r projection
+   readout** — the decision-channel activation under each prefill projected onto the refusal direction
+   (a graded, continuous within-item measure that does not need a behavioral flip to register movement).
+   The milder-severity ladder is **secondary/confirmatory**, built only under branch 1(a).
+
+3. **Frozen branches (all publishable).**
+   - **strong-exculpatory-prefill flips** (behavioral flip OR monotone projection decrease toward the
+     comply pole at high prefill strength) → *disengage consequential → GPT-OSS reversible*: the Llama
+     contrast, an affirmative answer to deliberative reversibility.
+   - **maximal prefill cannot move it** (no flip AND flat/limited projection movement at max strength) →
+     *genuine downward-robustness at consequential-engage* — a distinct third pattern (**reversible up,
+     robust down**), not a saturation artifact (the graded projection readout rules saturation out).
+   - **resolution-limited histogram** (branch 1a) → finer ladder as the behavioral cross-check on the
+     prefill result.
+
+4. **Commitment curve, un-confounded.** Replace harm-separability predictability with
+   **decision-predictability WITHIN fixed harm-status**: regress the final behavioral outcome on
+   trace-fraction activations using **borderline items only** (items whose outcome is not determined by
+   harm status — harmful-that-comply / harmless-that-refuse, or graded-prefill items that flip). This
+   measures when the *decision* (not the harm representation) becomes fixed. **If no borderline items
+   exist** (step-function case), report the commitment curve as **`not_computable_at_this_operating_
+   point`** — never substitute the harm-confounded version (the rule already written into the harness).
+
+5. **Write-up NOW (does not wait on the disengage resolution).** These enter RESULTS/SYNTHESIS this
+   commit: the **engage 7/7** result (deliberation consequential upward); the **PR-gate fourth-
+   architecture confirmation** (decision channel 9–15 dim across OLMo/Qwen/Llama/GPT-OSS — a strong D2
+   generalization, foregrounded); the **null-ratio corroborates harm-keying** sentence. Only the
+   **commit-axis verdict cell** waits for the graded-disengage pod.
+
+6. **Pod scope.** Graded-prefill disengage (behavioral + projection) + decision-predictability curve +
+   (conditional on branch 1a) finer-ladder cross-check. One modest 80 GB session; the prefill arm needs
+   no KV-patching, same as engage.
+
+Spine preserved. A12 hardens the commit axis against the A7 operating-point trap and un-confounds the
+commitment curve; the reads axis (P2 harm-loading) and the position gate are already banked.
