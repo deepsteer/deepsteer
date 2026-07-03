@@ -299,7 +299,7 @@ def prefill_deliberation(model, band_pairs, cot_format, is_refusal_final, rng,
             "disengage_mean_shift": round(float(np.mean(disengage)), 4) if disengage else None}
 
 
-def sampled_base_refuse(model, items, cot_format, is_refusal_final, k: int = 8,
+def sampled_base_refuse(model, items, cot_format, is_refusal_final, k: int = 5,
                         max_new_tokens: int = 512, validate: bool = False) -> list[float]:
     """Amendment 12 band-existence input: per-item base-refuse RATE from k sampled rollouts (temperature),
     so each item's rate is continuous in [0,1]. `items` are single prompts (the violating members)."""
