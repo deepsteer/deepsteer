@@ -644,3 +644,54 @@ standard cells; Amendment 5 (GPT-OSS) adds the **bidirectional cell** — "does 
 produce a reversible reader" is now formally testable with the `A` statistic.
 
 Spine preserved throughout. Amendment 10 adds only verification cells and the depth-matched comparison.
+
+---
+
+### Amendment 11 (2026-07-02) — Llama epilogue (zero-GPU + small builder)
+
+1. **Rule-7 line (fork discipline).** Document the **dropped dual-basis harm cell**: the severity-harm
+   basis was pre-registered (A6/A9) but never run, because the **gap-closes-to-judgment** comparison is
+   a cleaner reads-broad discriminator (refusal matching judgment's transfer ⇒ refusal reads the broad
+   subspace judgment reads). Recorded so the drop is a stated fork, not silent.
+2. **Severity-harm-basis builder** (nested rank 1⊂2⊂4 from the severity-ladder paired contrasts) +
+   **capture curve**: how much of the engage-driving moral basis a rank-k harm basis spans (geometric),
+   against the saved per-k engage outcomes. Resolves the **harm-coextensive** alternative to reads-broad.
+   Needs the severity-twin content contrasts (extraction rider if unsaved).
+3. **Harm-coextensive caveat** in RESULTS beside reads-broad, pending the capture number: reads-broad is
+   "beyond harm" only if the harm basis does **not** span the engage-driving moral directions.
+4. **Symmetric-depth confirmation.** The frozen cross-model `A` comparison uses **`A_OLMo` recomputed at
+   the matched depth** (layer 12: −0.54), not the read-layer value (−0.20) — `A_Llama − A_OLMo = +0.26`
+   is `(−0.28) − (−0.54)`. Verify no read-layer value leaked into the frozen comparison.
+
+### Amendment 5 finalization (2026-07-02) — GPT-OSS commitment axis (pre-pod)
+
+The GPT-OSS extension inherits the **commitment axis** (reversible-reader test):
+- (i) **Prefill-bidirectional deliberation cells** on operating-band severity twins: **engage** =
+  inculpating-analysis prefill, **disengage** = exculpating prefill; the `A` statistic **at the
+  deliberation level** + per-twin scatter. (The content-swap patch is replaced by a reasoning prefill,
+  the reasoning-model analog of the depth intervention.)
+- (ii) **Trace-position commitment curve**: at what **trace fraction** the final decision becomes
+  predictable, from activations captured during the same generations (the reasoning analog of the
+  depth-commitment curve).
+- (iii) **Frozen branches (all publishable):** reversible-reader (engage & disengage both move, low `A`)
+  → deliberative training yields a reversible reader; early-commit-in-trace (decision predictable at low
+  trace fraction, disengage fails late) → in-trace early-commitment; harm-keyed-deliberation (prefill
+  moves refusal via harm content only) → unified harm-keying at the trace level.
+
+**Safety scope.** Characterization of a released model on borderline-severity items; rates reported; no
+technique optimization; one-off cells per the standing claim ceiling.
+
+**Zero-GPU pre-conditions (from saved harmony-token samples).** Post-standardization PR + the
+band-below-null validity check at the harmony decision token; **expected outcome locks
+behavioral-primary** (A5 pre-condition rule). **Rider:** the **P0 (prompt-position) harm/⊥harm
+decomposition** from saved arrays, so the correlational reads-harm chain is **prompt→trace consistent**
+before any pod.
+
+**Compute tiers.** **Tier 1** (one modest 20B session): psychometric curve + prefill deliberation cells
++ trace-position commitment curve. **Tier 2** (held, decide after Tier 1): full causal C1-MoE —
+KV-persistent dual-basis prompt patches (causal reads verdict), router-weighted Stage-1, depth×position
+commitment map (~2–3× a Llama session). **Tier 2 and Qwen are the follow-on paper's openers, not this
+phase's blockers.**
+
+Spine preserved. A11 is verification + a geometric builder; A5-finalization adds the commitment axis to
+the held GPT-OSS extension.
