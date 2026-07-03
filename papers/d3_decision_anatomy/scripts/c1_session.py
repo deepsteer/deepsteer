@@ -139,10 +139,17 @@ def main() -> None:
     # not fire on the milder request-twins -- on Llama the request-twin screen kept ~1, but the ladder
     # brackets the operating band (levels 3-5, base refusal 9/10).
     from b1_judgment_direction import is_refusal  # noqa: E402
-    from deepsteer.datasets import get_severity_twins  # noqa: E402
-    sev = get_severity_twins()[:(10 if validate else None)]
+    from deepsteer.datasets import get_severity_twins, get_boundary_twins  # noqa: E402
+    boundary_mode = os.environ.get("BOUNDARY") == "1"
+    sev = (get_boundary_twins() if boundary_mode else get_severity_twins())[:(12 if validate else None)]
     psycho = cc.severity_psychometric(model, sev, is_refusal)
-    band_pairs = [(foll, viol) for (_f, lvl, foll, viol) in sev if lvl in psycho["operating_band"]]
+    # BOUNDARY (Amendment 8): select the [0.4,0.7] boundary band (dynamic range) + gate; else operating band.
+    sel_band = psycho["boundary_band"] if boundary_mode else psycho["operating_band"]
+    band_pairs = [(foll, viol) for (_f, lvl, foll, viol) in sev if lvl in sel_band]
+    n_gate = 4 if validate else 12
+    psycho["gate"] = {"mode": "boundary" if boundary_mode else "operating",
+                      "selected_band": [str(x) for x in sel_band], "n_band_pairs": len(band_pairs),
+                      "n_required": n_gate, "gate_pass": bool(len(band_pairs) >= n_gate)}
     req_pairs = [(p["following"], p["violating"])
                  for p in (screened["request_twins"] or manifest["request_twins"]["pairs"])]
     rt_pairs = (req_pairs + band_pairs)[:(6 if validate else None)]   # dual-use readout/sweep stimuli
@@ -205,6 +212,7 @@ def main() -> None:
     sweep_ref = {k: [] for k in KS}; sweep_rand = {k: [] for k in KS}; sweep_jud = {k: [] for k in KS}
 
     full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # all read refusal, request-twins
+    rev_d = []                                              # bidirectional: violating->following (Amendment 8)
     for foll, viol in rt_pairs:
         try:
             sp, tp = cc.patch_positions(model, foll, viol)
@@ -212,6 +220,8 @@ def main() -> None:
             base = cc.baseline_proj(model, viol, L, r, sigma=sigma)
             ic = lambda **kw: cc.interchange(model, foll, viol, sp, tp, L, r,
                                              sigma=sigma, **kw) - base
+            rev_base = cc.baseline_proj(model, foll, L, r, sigma=sigma)   # reverse direction baseline
+            rev_d.append(cc.interchange(model, viol, foll, tp, sp, L, r, sigma=sigma) - rev_base)
             full_d.append(ic())
             restr_d.append(ic(restrict_Q=inp["Vbasis"]))
             compl_d.append(ic(restrict_Q=inp["Vbasis"], restrict_mode="complement"))
@@ -274,6 +284,18 @@ def main() -> None:
         ha = np.asarray(harm_d)
         hb = [ha[rng2.integers(0, len(ha), len(ha))].mean() for _ in range(2000)]
         harm_ci = [round(float(np.percentile(hb, 2.5)), 4), round(float(np.percentile(hb, 97.5)), 4)]
+
+    def _ci(a):                                            # bootstrap mean + sign-coherence (CI excludes 0)
+        if len(a) < 3:
+            return None
+        a = np.asarray(a, float)
+        bb = [a[rng2.integers(0, len(a), len(a))].mean() for _ in range(2000)]
+        lo, hi = (float(x) for x in np.percentile(bb, [2.5, 97.5]))
+        return {"mean": round(float(a.mean()), 4), "ci": [round(lo, 4), round(hi, 4)],
+                "coherent": bool(lo > 0 or hi < 0)}
+    # Amendment 8: bidirectional latch/hysteresis (forward vs reverse) + judgment recertification (A7).
+    bidirectional = {"forward_following_to_violating": _ci(full_d), "reverse_violating_to_following": _ci(rev_d)}
+    judgment_recert = _ci(full_jud_d)
     sweep_result = None
     if run_sweep and len(full_d) > 2 and len(full_jud_d) > 2:
         fdm, fjm = float(np.mean(full_d)), float(np.mean(full_jud_d))
@@ -287,7 +309,10 @@ def main() -> None:
                         "harm_rank1_R": round(harm_r1, 4), **sweep_meta,
                         "shape_verdict": sw.shape_verdict(Rref, Rjud, harm_r1, KS)}
     cells = {"n_request_twins": len(full_d), "n_twins_transport": len(tc_d),
-             "rt_composition": {"request_screened": len(req_pairs), "operating_band": len(band_pairs)},
+             "rt_composition": {"request_screened": len(req_pairs), "band": len(band_pairs)},
+             "gate": psycho["gate"],                               # Amendment 8 auto-bank gate
+             "bidirectional": bidirectional,                       # Amendment 8 latch/hysteresis
+             "judgment_recert": judgment_recert,                   # Amendment 7/8 instrument certificate
              "cell_a_full_refusal_delta_mean": _m(full_d),
              "cell_b_restricted_refusal_delta_mean": _m(restr_d),
              "complement_refusal_delta_mean": _m(compl_d),          # expect: moves refusal
@@ -327,7 +352,8 @@ def main() -> None:
                 cell_full_deltas=np.array(full_d), cell_restricted_deltas=np.array(restr_d),
                 cell_complement_deltas=np.array(compl_d), cell_harm_deltas=np.array(harm_d),
                 cell_harm_partial_deltas=np.array(hp_d), cell_random_deltas=np.array(rand_d),
-                full_judgment_deltas=np.array(full_jud_d), transport_control_deltas=np.array(tc_d),
+                cell_reverse_deltas=np.array(rev_d), full_judgment_deltas=np.array(full_jud_d),
+                transport_control_deltas=np.array(tc_d),
                 per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
     if run_sweep:                                            # per-rank paired deltas (rows = KS)
         save["sweep_ks"] = np.array(KS)

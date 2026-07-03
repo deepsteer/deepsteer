@@ -35,6 +35,7 @@ from deepsteer.datasets.persona_pairs import (
 from deepsteer.datasets.loaders import load_dilemma_pairs, load_moral_probing_v2
 from deepsteer.datasets.pipeline import build_probing_dataset
 from deepsteer.datasets.register_pairs import get_register_dataset, get_register_pairs
+from deepsteer.datasets.boundary_twins import get_boundary_twins
 from deepsteer.datasets.request_twins import get_request_twins
 from deepsteer.datasets.sentiment_pairs import get_sentiment_dataset, get_sentiment_pairs
 from deepsteer.datasets.severity_twins import get_severity_twins
@@ -58,6 +59,7 @@ __all__ = [
     "get_persona_pairs_by_category",
     "get_register_dataset",
     "get_register_pairs",
+    "get_boundary_twins",
     "get_request_twins",
     "get_severity_twins",
     "get_sentiment_dataset",
