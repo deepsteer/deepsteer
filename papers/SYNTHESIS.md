@@ -7,7 +7,9 @@ contrast to Llama's early-commitment; the same run banked the position gate (dec
 bottleneck, D2 on a fourth architecture) and engage-consequential deliberation (7/7). Earlier: D3 rank
 sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
 verdict against the rank-1 harm-coextensive alternative. Numbers of record live in each direction's
-RESULTS; this file states the throughline and is re-dated on each substantive change.
+RESULTS; this file states the throughline and is re-dated on each substantive change. (Amendment 13:
+the two-axis table's *interpretation* is reframed as a confound-named dimensionality hypothesis, not an
+n=3 claim.)
 
 ## Thesis (routing form — resolved for OLMo-3)
 
@@ -114,9 +116,15 @@ judgment reads the subspace broadly.
   against coextensivity. So the two-dimensional table is final: *what* refusal reads (OLMo/GPT-OSS harm;
   Llama broad moral) × *how* it commits (OLMo at/after the read layer; Llama early). Llama's early-commitment of a broad moral read is
   a strong candidate for its Paper-6 robustness anomaly. **GPT-OSS is placed on the commit axis: a
-  reversible reader** (graded deliberation flips it both ways) — so the two harm-readers (OLMo, GPT-OSS)
-  are the reversible/late-committing ones and the broad-moral reader (Llama) early-commits, a suggestive
-  n=3 pattern for the follow-on panel; Qwen held. (Standardized extraction, A1: the dim-788/dim-458
+  reversible reader** (graded deliberation flips it both ways). The measured table stands; its
+  *interpretation* is a follow-on hypothesis, not an n=3 claim (Amendment 13): the read↔commit pairing is
+  **architecture-confounded** (lineage/scale/tokenizer/reasoning-vs-instruct), deconfounded only by
+  varying one axis at a time (a deliberation-trained OLMo variant; Qwen as a lineage-independent point).
+  The sharpened rival is **dimensionality → reversibility** — refusal-read effective rank (OLMo/GPT-OSS
+  ~rank-1 harm; Llama ~rank-8 broad) is ordinally consistent with reversibility across all three points,
+  which *licenses* "dimensionality of the refusal read → reversibility" as the falsifiable follow-on
+  hypothesis (superseding the categorical co-occurrence) but cannot confirm it at three confounded
+  points. Qwen held. (Standardized extraction, A1: the dim-788/dim-458
   outliers live at content positions, not the decision channel, which is clean and ~9–15-dim across OLMo,
   Llama, and GPT-OSS alike — a cross-model strengthening of A2, ledgers A5/A6.)
 

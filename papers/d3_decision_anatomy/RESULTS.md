@@ -349,9 +349,27 @@ harm clip on *every* model.
   shift; graded engage flips benign→refuse 7/7); Llama commits **earlier** (disengage depth-gated, fails
   at the read layer). Llama's early-commitment of a broad moral read is a strong candidate for its
   Paper-6 robustness anomaly; the conjunction survives whether the mechanism is labelled latch or
-  early-commitment. **The suggestive n=3 pattern**: the two harm-readers (OLMo, GPT-OSS) are the
-  reversible/late-committing ones, while the broad-moral reader (Llama) early-commits — a hypothesis for
-  the follow-on panel, not a claim at n=3.
+  early-commitment. **The two-axis table is the measured result and stands.** *Interpretation
+  (Amendment 13, hypothesis for the follow-on panel).* Across the three points the read and the
+  commitment co-vary: the two harm-readers (OLMo, GPT-OSS) are reversible/late, the broad-moral reader
+  (Llama) early-commits. Two cautions make this a hypothesis, not a law:
+  - **The split is architecture-confounded, not just n=3.** OLMo / GPT-OSS / Llama differ in lineage,
+    scale, tokenizer, and reasoning-vs-instruct training, so "reads-harm ↔ reversible" rides those
+    confounds. Deconfounding varies **one axis at a time**, and both points are **existing checkpoints**
+    (measurement, not training — in scope): **OLMo-3-7B-Think** is the ready deliberation-trained variant
+    of the OLMo anchor (same architecture, changes only the reasoning-training axis), isolating whether
+    reversibility tracks the read or the reasoning-training; **Qwen** adds a **lineage-independent** fourth
+    harm/broad datapoint off the existing confound.
+  - **The sharpened rival — dimensionality → reversibility.** *What reads* and *how commits* may be one
+    property with two signatures: the **refusal-read effective rank** (causal saturation rank) predicts
+    reversibility. The three points are ordinally consistent — OLMo ~rank-1 (`harm_saturating`, R_refusal
+    flat 0.33 ≈ harm-rank-1 0.355) reversible; GPT-OSS ~rank-1 (harm-loading proxy 0.49 vs 0.13, no causal
+    sweep) reversible; Llama ~rank-8 (`broad_moral`, R_refusal climbs to 0.85, harm-rank-1 undershoots at
+    0.59) early-commit — low read-rank ↔ reversible, high ↔ early. Consistency at n=3 **licenses** the
+    continuous, falsifiable hypothesis "**dimensionality of the refusal read → reversibility**" (which
+    supersedes the categorical harm-vs-broad co-occurrence by adding a mechanism); it cannot **confirm**
+    it, because three confounded points cannot separate a genuine dimensionality law from the architecture
+    split. The deconfounding panel is where it is tested.
 - **GPT-OSS-20B — Tier-1 commit axis (Amendment 5/12).** The reads axis was already banked
   correlationally (in-trace P2 harm-loading 0.49; prompt→trace 0.977). The first Tier-1 session
   (A100-80GB) banks three results that do **not** depend on the disengage resolution:
