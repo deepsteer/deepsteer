@@ -547,3 +547,56 @@ plus the power-table and orthogonal-cell-certificate patterns are a complete met
 Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, all
 prior branch definitions. Amendment 8 adds the boundary-band authoring, the gate, the bidirectional and
 recertification cells, the selection-regression control, and the composition covariate.
+
+---
+
+### Amendment 9 (2026-07-02) — engage/disengage asymmetry: hysteresis vs early-commitment (pre-registered before building)
+
+The Amendment-8 boundary run showed Llama's refusal is directionally asymmetric: coherent when harmful
+content is added, incoherent when it is removed. Amendment 9 pins the statistic, the mechanism
+discriminator, and the still-open reads-broad question on the working (engage) channel.
+
+**(1) Nomenclature freeze.** **engage** = harm-add (following→violating context; refusal ↑);
+**disengage** = harm-removal (violating→following context; refusal ↓). All D3 docs audited to this.
+**Reclassification:** OLMo's original **−0.134** full cell is a **coherent DISENGAGE** datapoint at
+OLMo's band (removing harm lowers OLMo's refusal) — so OLMo's disengage is already evidenced; RESULTS
+states this. Llama's disengage (−0.014, incoherent) is the contrast.
+
+**(2) Asymmetry statistic.** `A = (|engage| − |disengage|) / (|engage| + |disengage|)` per model,
+paired within twins, bootstrap 95% CI. `A ≈ 0` symmetric; `A → +1` engage-only (full latch). The
+**cross-model claim = the CI on `A_Llama − A_OLMo`**. Report the **per-twin engage-vs-disengage
+scatter**: a uniform disengage-null vs a **bimodal** pattern (some twins un-latch) is itself diagnostic.
+
+**(3) Mechanism cells — hysteresis vs early-commitment.**
+- (i) **Twin-difference norm at `t_inst` by layer** (both models): where does the moral-status contrast
+  crystallize relative to the patch layer? Zero-GPU **iff** per-layer `t_inst` slices were saved; else a
+  cheap extraction rider.
+- (ii) **Patch-layer sweep on Llama disengage:** patch the disengage swap at earlier layers. If an
+  earlier patch **restores disengage coherence**, the decision **crystallized early** (early-commitment),
+  not a true latch. **Wording (frozen): "latch" is claimed ONLY if disengage fails at all accessible
+  depths;** if an earlier layer restores it → **early-commitment** verdict.
+
+**(4) Engage-direction dual-basis sweep (the reads-broad question, on the coherent channel).** Run the
+sweep on the **engage** direction: moral basis `k ∈ {1, 3, 8, 16}` vs the Llama-ladder-derived harm
+basis, one-knob fit against both (Amendment 6 machinery), sign conventions per the freeze. This finally
+answers whether Llama's refusal, *in the direction it moves*, reads broad moral content or harm.
+
+**(5) Behavioral counts.** Report **flips-to-refuse** (engage: does the add-harm patch flip a benign
+request to refuse) **and flips-to-comply** (disengage) beside the projections — the asymmetry lands as
+behavior or it is a readout-only claim.
+
+**(6) OLMo cells local-first.** Run OLMo's engage + a matched-band disengage replication on **MPS** if
+the harness ports; pod only if not. Check **Llama-8B MPS feasibility** for the patch-layer sweep before
+provisioning a pod.
+
+**(7) Claim ceiling.** Released-model characterization stays within the standing safety line. The
+robustness-mechanism sentence stays **"candidate mechanism"** until (3) picks latch vs early-commitment
+— and note that **both mechanisms predict the Paper-6 robustness anomaly, so the conjunction survives
+either branch**.
+
+**(8) Head bookkeeping.** Confirm the anti-over-refusal head ID on Llama **independently** — `L15 H6`
+collides with an OLMo writer index; verify it is Llama's own min-specificity top head, not a carryover.
+
+Spine preserved: `M = 0.05`, `M_ratio = 0.15`, two-step null, per-unit saves, position-validity, all
+prior branch definitions. Amendment 9 adds the asymmetry statistic, the mechanism discriminator, the
+engage-direction sweep, and the behavioral flip counts.
