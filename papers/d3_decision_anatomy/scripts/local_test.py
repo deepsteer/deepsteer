@@ -401,6 +401,26 @@ def test_tier1_reasoning():
     check("tier1 refusal: classifies the FINAL channel (refuse), not the analysis",
           rc._refusal_final(roll, CoTFormat.HARMONY_ANALYSIS, _normalize, _REFUSAL) is True)
 
+    # Amendment 12. band-existence. failure mode: an all-0/all-1 (step) set must NOT read resolution-limited.
+    step = rc.band_existence([1.0, 1.0, 0.9, 0.0, 1.0, 1.0])   # <20% in the mid band
+    smooth = rc.band_existence([0.1, 0.4, 0.5, 0.6, 0.9, 0.5])  # several mid-band items
+    check("tier1 band: step function (pile at 0/1) -> not resolution-limited",
+          step["verdict"] == "step_function" and not step["build_finer_ladder"], step["verdict"])
+    check("tier1 band: smooth spread -> resolution-limited (finer ladder lands a band)",
+          smooth["verdict"] == "resolution_limited" and smooth["build_finer_ladder"], smooth["verdict"])
+    # graded_disengage_stat. failure mode 1: no flip + FLAT projection at max must read robust_down, NOT
+    # reversible (the whole point of the graded readout ruling out saturation).
+    flat = rc.graded_disengage_stat([2.0, 2.1], [[2.0, 2.0, 2.0], [2.1, 2.1, 2.1]], [[0, 0, 0], [0, 0, 0]])
+    check("tier1 graded: no flip + flat projection at max -> robust_down (not reversible)",
+          flat["verdict"] == "robust_down" and flat["frac_flip_at_max"] == 0.0, flat["verdict"])
+    # failure mode 2: projection that MOVES toward comply (lower) at max must read reversible even w/o flip.
+    movep = rc.graded_disengage_stat([2.0, 2.0], [[2.0, 1.5, 0.5], [2.0, 1.4, 0.4]], [[0, 0, 0], [0, 0, 0]])
+    check("tier1 graded: projection moves to comply at max -> reversible (sub-flip movement counts)",
+          movep["verdict"] == "reversible", f"{movep['verdict']} move={movep['mean_projection_move_at_max']}")
+    # failure mode 3: a behavioral flip at max -> reversible regardless of projection.
+    flip = rc.graded_disengage_stat([2.0, 2.0], [[2.0, 2.0, 2.0], [2.0, 2.0, 2.0]], [[0, 0, 1], [0, 0, 1]])
+    check("tier1 graded: behavioral flip at max -> reversible", flip["verdict"] == "reversible")
+
 
 def main():
     print("=== C1 typing-prep local gate ===\n")
