@@ -416,7 +416,7 @@ def test_tier1_reasoning():
     # failure mode 2: projection that MOVES toward comply (lower) at max must read reversible even w/o flip.
     movep = rc.graded_disengage_stat([2.0, 2.0], [[2.0, 1.5, 0.5], [2.0, 1.4, 0.4]], [[0, 0, 0], [0, 0, 0]])
     check("tier1 graded: projection moves to comply at max -> reversible (sub-flip movement counts)",
-          movep["verdict"] == "reversible", f"{movep['verdict']} move={movep['mean_projection_move_at_max']}")
+          movep["verdict"] == "reversible", f"{movep['verdict']} move={movep['mean_projection_move_weak_to_strong']}")
     # failure mode 3: a behavioral flip at max -> reversible regardless of projection.
     flip = rc.graded_disengage_stat([2.0, 2.0], [[2.0, 2.0, 2.0], [2.0, 2.0, 2.0]], [[0, 0, 1], [0, 0, 1]])
     check("tier1 graded: behavioral flip at max -> reversible", flip["verdict"] == "reversible")
