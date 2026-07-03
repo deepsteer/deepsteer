@@ -99,7 +99,7 @@ def main() -> None:
     # multiplier) standardizes vectors; `sigma` is threaded to the cells (patch restriction in the
     # standardized frame + standardized readout). No-op on OLMo up to the #17 invariance.
     standardize = os.environ.get("STANDARDIZE") == "1"
-    robustify = os.environ.get("ROBUSTIFY", "zscore")
+    robustify = os.environ.get("ROBUSTIFY") or "zscore"      # empty env (launcher default) -> zscore
     factor = None; sigma = None; std_meta = None
     if standardize:
         var = inp["channel_act"].var(0)
@@ -118,10 +118,15 @@ def main() -> None:
         inp["channel_act"] = inp["channel_act"] * factor
         q95_std = s2.value_null_q95(inp["channel_act"] - inp["channel_act"].mean(0), inp["Vbasis"],
                                     np.random.default_rng(0))
-        ev = inp["channel_act"].var(0)
+        # participation ratio from the COVARIANCE eigenvalues (z-scoring trivially sets every diagonal
+        # variance to 1, so the diagonal-variance PR is always d; the correlation-matrix PR is the
+        # meaningful A1 de-saturation number).
+        def _pr(X):
+            s = np.linalg.svd(X - X.mean(0), compute_uv=False)[:min(X.shape)] ** 2
+            return float((s.sum() ** 2) / ((s ** 2).sum() + 1e-12))
         std_meta = {"robustify": robustify, "null_q95_raw": round(float(q95_raw), 4),
                     "null_q95_std": round(float(q95_std), 4),
-                    "post_std_participation_ratio": round(float((ev.sum() ** 2) / (ev ** 2).sum()), 2),
+                    "participation_ratio_std": round(_pr(inp["channel_act"]), 2),
                     "n_dims_projected_out": int((factor == 0).sum()) if robustify == "projout" else 0}
     _std = (lambda v: np.asarray(v, float) * factor) if standardize else (lambda v: v)
 
