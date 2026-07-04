@@ -9,7 +9,7 @@ effects by which side of the MDE each lands on is the overlap fallacy: it reads 
 in power as a difference in kind. Compare two effects instead by a within-outcome ratio and a
 bootstrap CI on the ratio difference (the estimator-traps trap-12 pattern).
 
-**Worked case: the D3 `under_transfer` reclassification.** The first D3 headline was
+**Worked case: the `under_transfer` reclassification.** The first headline was
 `reads_non_vmoral_features` at n=11, resting on an absolute transport comparison (a
 V_moral-restricted patch clears its MDE, a comparison patch does not). That absolute
 comparison was necessary but not sufficient. Re-run at n=23 with a within-outcome
@@ -25,17 +25,17 @@ MDE-crossing, is the comparison of record. (The specificity claim that survives 
 a difference CI, not an overlap check: V_moral-restricted moves refusal more than a random
 rank-3, Δ = 0.031, paired 95% CI [0.020, 0.043], excludes 0.)
 
-A second instance from Paper 7: an early raw diff-of-means null (harm direction 0.44–0.49 of
+A second instance, from reasoning models: an early raw diff-of-means null (harm direction 0.44–0.49 of
 residual norm) read as "harmfulness is not causally encoded," but that was a magnitude
 artifact. Reply-inversion recovered the causal signal (Qwen2.5-14B-Instruct shift +17.4 flips
 33%, Llama-3.1-8B-Instruct +3.0 flips 23%). Magnitude and residual-norm share are not causal
 relevance; a causal readout is.
 
-## 3.2 Power tables before the pod {#power-tables}
+## 3.2 Power tables before compute {#power-tables}
 
 Compute MDE(n) from measured within-condition variance before spending compute. If no
-feasible n resolves the effect, the block is the instrument, not the sample, and the pod is
-futile.
+feasible n resolves the effect, the block is the instrument, not the sample, and the compute
+run is futile.
 
 **Worked case: the Llama bounded-unresolved table.** The Llama refusal cells came back chaotic
 (§3.3, §4). The temptation was a larger same-design re-run. The power table, built from
@@ -44,7 +44,7 @@ denominator was [−2.3, 4.9], and no feasible n at that variance closes it, bec
 denominator is saturated rather than noisy. The underpowered Llama `R_refusal_k` and
 `R_judgment_{k>1}` cells were voided as denominator-latched, and the clean channel was
 identified as the *reverse* (disengage) direction, not more samples in the forward one. An
-afternoon of saved-array work prevented a pod. This is the general rule: saving per-pair /
+afternoon of saved-array work prevented a compute run. This is the general rule: saving per-pair /
 per-rollout / per-head arrays by default keeps the power computation zero-GPU, so futility is
 caught before the session, not after.
 

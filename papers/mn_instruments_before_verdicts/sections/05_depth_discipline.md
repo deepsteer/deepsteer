@@ -29,7 +29,7 @@ early-commitment, not an independent latch. What survives depth-matching is the 
 difference: at layer 12 Llama reads broad (`broad_moral`: R_refusal 0.85 ≈ R_judgment 0.79,
 gap closes, harm-rank-1 only 0.59) while OLMo stays harm-keyed (R_refusal 0.43 < R_judgment
 0.53, gap open). The read-layer +0.82 is retained only as a voided number with its replacement,
-never as a finding (CLAIMS V-D3-8).
+never as a finding.
 
 \begin{figure}[t]
 \centering

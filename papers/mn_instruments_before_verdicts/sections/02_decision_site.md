@@ -1,12 +1,12 @@
 # 2. The decision-site instrument and its calibration ladder {#decision-site}
 
-Four anomalies converge on one object: the projection-fraction / cosine instrument used to
-ask whether a direction of interest lives inside a subspace. A2 is the position where it
-fails, A5(1) shows that position is architecture-general, A1 is the null that degenerates
-underneath it, and A3 is the attribution decomposition that overshoots when the same
+Four failures converge on one object: the projection-fraction / cosine instrument used to
+ask whether a direction of interest lives inside a subspace. One is the position where it
+fails, another shows that position is architecture-general, a third is the null that degenerates
+underneath it, and a fourth is the attribution decomposition that overshoots when the same
 channel is read per-head. Each is stated as: failure → tell → protocol → certifying check.
 
-## 2.1 A2 — band-below-null means the position is invalid, not that the direction is absent {#a2-band-below-null}
+## 2.1 Band-below-null means the position is invalid, not that the direction is absent {#a2-band-below-null}
 
 **Failure as it appeared.** At the chat `final_pre_assistant` decision token on
 OLMo-3-Instruct, the positive-control moral band came out at [0.40, 0.47], and the honest
@@ -27,7 +27,7 @@ R3 pairwise-|cos| null of 0.41–0.51.
 
 **The protocol.** `participation_ratio` is a required type-block field on every extracted
 direction, and any position with PR < 30 is flagged position-invalid for content
-projection-fraction tests at extraction time (D2 Amendment 2). All three chat decision
+projection-fraction tests at extraction time. All three chat decision
 sites (14.7 / 8.6 / 10.2) fall below the gate.
 
 **The certifying check and the reframe.** Position-invalid does not mean uninterpretable
@@ -58,7 +58,7 @@ not the content rule.
 **Figure 2** is the calibrated ladder at this position: the moral band [0.40, 0.47] plotted
 below the covariance null 0.557, the visual form of the tell.
 
-## 2.2 A5(1) — the massive-activation outlier is position-dependent, so the bottleneck is clean {#a5-outlier}
+## 2.2 The massive-activation outlier is position-dependent, so the bottleneck is clean {#a5-outlier}
 
 **Failure as it appeared.** Llama-3.1 carries a massive-activation outlier: dim 788 holds
 32% of residual variance. The worry was that this outlier contaminated every geometric read
@@ -72,22 +72,22 @@ number.
 cells actually read, Llama is clean: participation ratio 13.5, covariance null 0.148, which
 barely moves to 0.114 under per-dimension standardization. The outlier lives at content
 positions, not at the ~13-dim control-token decision bottleneck, which is clean and low-rank
-across OLMo and Llama alike. So A2's "decision site is a narrow control-token channel"
-finding is cross-model, and A1's standardization matters more at content positions than at
-the decision token. This is why the A1 null degeneracy (next) and the A2 bottleneck are two
+across OLMo and Llama alike. So the "decision site is a narrow control-token channel"
+finding is cross-model, and the standardization fix matters more at content positions than at
+the decision token. This is why the null degeneracy (next) and the bottleneck are two
 different failures at two different positions, not one confound.
 
-## 2.3 A1 — covariance-matched nulls degenerate in massive-activation families {#a1-covariance-null}
+## 2.3 Covariance-matched nulls degenerate in massive-activation families {#a1-covariance-null}
 
 **Failure as it appeared.** The covariance-matched, rank-matched null (draw random
 directions from `N(0, Σ̂)` of residual activations, project onto the rank-r subspace) is the
-honest null used throughout Papers 5–7 and D1. On the instruct-model geometry it saturates:
+honest null used throughout the program's earlier representational studies. On the instruct-model geometry it saturates:
 R2 null q95 = 0.92 on Qwen and 0.36 on Llama, R3 pairwise-null q95 = 0.995 on Qwen and 0.90
 on Llama, versus 0.26 on OLMo-3. At a saturated null every direction projects like a typical
 direction, so the test has no discriminating power.
 
 **The tell.** The null value itself is near its ceiling. The mechanism is the same massive
-activations as A5(1): Qwen dim 458 = 59% of residual variance, Llama dim 788 = 32%, OLMo-3's
+activations as the outlier finding above: Qwen dim 458 = 59% of residual variance, Llama dim 788 = 32%, OLMo-3's
 top dim = 1.4%. `Σ̂` is dominated by these dims, covariance-matched random directions nearly
 all align with them, and they project ~1 onto any subspace with a component there. The same
 dims collapse distinct raw mean-diff directions (Qwen ethics ≈ moral mean-diff |cos| = 0.90).
@@ -96,7 +96,7 @@ Xiao et al., 2023).
 
 **The protocol.** Recompute directions and the null in a per-dimension-standardized space
 (z-score by σ from a format/position-matched activation sample, sink tokens excluded), the
-primary fix (D2 Amendment 1). The criterion-based robustness variant projects out each
+primary fix. The criterion-based robustness variant projects out each
 dimension individually above 5% of variance. Behavioral results (ablation, judgment
 accuracy) never use this null and are untouched; only geometric cells need the re-audit.
 
@@ -116,16 +116,16 @@ in-format chat ladder (whose decision-site space carries no >5%-variance dim, so
 outlier-free by construction) is the discriminator. This is the entry's own thesis applied to
 itself: no single null repair resolves a genuinely rank-1 space.
 
-**Scope of the fix.** A companion audit (Paper 6, zero-GPU) found its Qwen/Llama geometric
+**Scope of the fix.** A companion audit found that the program's Qwen/Llama geometric
 cells were never at risk: they use a permutation test (observed statistics ~0.01,
 unsaturated) and raw projection fractions that are low and un-inflated (moral-subspace
 projection fraction 0.104 OLMo / 0.127 Qwen / 0.071 Llama, mean|cos| 0.04–0.07), and the MFT
 subspace was built on the base model whose foundation directions did not collapse onto the
 outlier dim. The degeneracy is confined to the covariance-matched projection null applied to
-D2's instruct-model `V_moral`. The general caution stands: covariance-matched nulls silently
+the program's instruct-model `V_moral`. The general caution stands: covariance-matched nulls silently
 degenerate in massive-activation families, the field's default Llama/Qwen panel.
 
-## 2.4 A3 — reordered-norm architectures overshoot naive per-head OV attribution ~3× {#a3-ov-attribution}
+## 2.4 Reordered-norm architectures overshoot naive per-head OV attribution ~3× {#a3-ov-attribution}
 
 **Failure as it appeared.** The Stage-1 write attribution on OLMo-3-7B-Instruct (sum of
 per-head OV writes + per-layer MLP writes + embed onto the refusal direction, divided by the

@@ -1,18 +1,16 @@
 # 1. Introduction {#introduction}
 
-*Methods note. Started 2026-07-02 (Direction-3 Amendment 10); drafted to full text 2026-07-03.*
-
-A causal interpretability program (Directions D1–D3, plus the earlier Papers 1–7) kept
+A causal interpretability program kept
 producing results that dissolved under an instrument check. Each of the failures below
 looked like a finding first. This note collects the six that turned into portable methods
-findings (`ANOMALIES.md`, A1–A6) and the estimator and intervention patterns the program
+findings and the estimator and intervention patterns the program
 re-derived, and states each as a protocol other people can run. The scientific results
 (what refusal reads, how it commits) live in the direction papers and the flagship draft;
-this note is the portable methodology. Numbers here trace to the program's claim ledger
-(`CLAIMS.md`); every scalar carries its detection bar or its control.
+this note is the portable methodology. Numbers here trace to the program's claim ledger;
+every scalar carries its detection bar or its control.
 
 The discipline is four moves: **calibrate the instrument against a positive-control ladder,
-certify it with an orthogonal cell, compute power before spending the pod, and state every
+certify it with an orthogonal cell, compute power before spending compute, and state every
 read-from verdict at a stated depth relative to the model's commitment.** Each section
 below takes one instrument, shows the failure as it first appeared, names the tell that
 caught it, gives the protocol, and states the check that certifies the fix.
@@ -48,7 +46,7 @@ finding motivated; the flagship carries the finding.
 \label{fig:bottleneck-pr}
 \end{figure}
 
-(The bottleneck PR bar across the four architectures is **Figure 1**, which uses the D2
-in-format-ladder value 10.2 for Llama, comparable to OLMo 14.7 and Qwen 8.6; the D3 C1
+(The bottleneck PR bar across the four architectures is **Figure 1**, which uses the
+in-format-ladder value 10.2 for Llama, comparable to OLMo 14.7 and Qwen 8.6; the
 decision-token measurement for Llama is 13.5, a second position and harness. Both are
 below 30.)

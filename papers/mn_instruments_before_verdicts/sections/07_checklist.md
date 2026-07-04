@@ -49,7 +49,7 @@ appendix-form restatements of the companion skills.
   intervention with a continuous readout and report the behavioral flip and the graded readout
   separately. Validate the readout on the model class it is run on.
 
-**Before the pod:**
+**Before a compute run:**
 
 - Compute MDE(n) from measured within-condition variance. If no feasible n resolves the effect,
   the block is the instrument, not the sample; do not spend the compute. Save per-pair /
@@ -58,5 +58,5 @@ appendix-form restatements of the companion skills.
 
 **Before any commit or draft:**
 
-- Every printed scalar traces to an anchored claim-ledger row; voided numbers stay in the VOID
-  register with their replacements so they cannot re-enter prose as findings.
+- Every printed scalar traces to an anchored claim-ledger row; voided numbers stay in a register
+  of superseded claims with their replacements so they cannot re-enter prose as findings.

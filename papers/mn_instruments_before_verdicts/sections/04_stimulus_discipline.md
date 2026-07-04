@@ -10,7 +10,7 @@ This is where the readout itself can lie. Reasoning models defeat clean judgment
 validated on the model class it is run on, at an operating point where the outcome is not
 pinned.
 
-## 4.1 A6 — a deliberation/prefill asymmetry is operating-point-confounded when the gate is a step {#a6-deliberation}
+## 4.1 A deliberation/prefill asymmetry is operating-point-confounded when the gate is a step {#a6-deliberation}
 
 **Failure as it appeared.** On GPT-OSS-20B the reasoning-prefill deliberation cell (engage =
 inculpating prefill, disengage = exculpating prefill) emitted a clean-looking asymmetry
@@ -28,7 +28,7 @@ same run: the harm-separability commitment curve reads ~1.0 from the first trace
 measures when *harm is represented* (harmful and harmless traces differ from the start),
 not when the *decision* is fixed.
 
-**Why the usual fix is not enough here.** A5's fix was boundary-band twins (outcome ~0.5).
+**Why the usual fix is not enough here.** That fix was boundary-band twins (outcome ~0.5).
 GPT-OSS's gate is a step: the severity ladder finds no unsaturated violating level (empty
 boundary band, 5.6% of items in the mid-band). The operating point cannot be bracketed
 behaviorally at the existing resolution, so more boundary-band stimuli do not exist to collect.
