@@ -18,7 +18,7 @@ for "moral-adjacent." Persona sits just below every band, so it is carried as a 
 reference rather than as a clean non-moral control.
 
 | Tag (layer) | Held-one-out (ms / fables / ethics) | Moral-family band [min, max] | Persona | Refusal point(s) |
-|---|---|---|---:|---|
+|--------|--------|-------|---:|-------------------|
 | Base (16) | 0.537 / 0.664 / 0.569 | [0.537, 0.664] | 0.510 | proto-refusal 0.33 |
 | Instruct (16) | 0.523 / 0.637 / 0.555 | [0.523, 0.637] | 0.506 | gate 0.14 |
 | Reasoning, OLMo-3-Think (16) | 0.537 / 0.667 / 0.573 | [0.537, 0.667] | 0.525 | gate 0.10 · harm-recognition 0.29 · in-trace 0.35 |
