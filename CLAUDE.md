@@ -172,7 +172,7 @@ OLMo is the primary target because Ai2 publishes intermediate training checkpoin
 ## Research boot sequence (before any planning, code, or answer)
 
 1. Read: `papers/SYNTHESIS.md` (thesis + standing claims), `papers/ANOMALIES.md` (open
-   entries), `MISSING_ARTIFACTS.md`, and the last ~10 commits (`git log --oneline -10`)
+   entries), `papers/MISSING_ARTIFACTS.md`, and the last ~10 commits (`git log --oneline -10`)
    plus the most recent RESULTS or amendment delta.
 2. Open the session with a five-line **program state**: current thesis sentence; verdicts
    pending; top open anomalies with their cheapest discriminators; what the last session
