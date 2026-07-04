@@ -25,13 +25,14 @@ deepsteer/
 │   ├── compliance_gap/    # ComplianceGapDetector (API tier)
 │   └── representational/  # LayerWiseMoralProbe (weights tier)
 ├── datasets/              # Probing datasets and generation pipeline
+├── papers/                # Research directions, papers, and programs
 ├── viz/                   # Matplotlib visualization functions
 ├── steering/              # Training-time intervention tools
 └── outputs/               # Untracked output viz and matching JSON
 ```
 
 Read `ARCHITECTURE.md` for the full design rationale.
-Read `deepsteer/datasets/PROBING_PIPELINE_DESIGN.md` for the probing dataset pipeline.
+Read `deepsteer/datasets/DATASET_GUIDELINES.md` for datasets.
 
 ## Methodology Skills
 
@@ -106,29 +107,10 @@ rather than proceeding without the check.
 ### What NOT To Do
 - Do not reimplement transformer architectures. Use HuggingFace models with hooks.
 - Do not add `torch.compile` or mixed precision — keep it simple for now. Optimization later.
-- Do not create a web UI or dashboard. Matplotlib plots saved to disk are sufficient for Phase 1-4.
+- Do not create a web UI or dashboard. Matplotlib plots saved to disk are sufficient.
 - Do not add MLflow, wandb, or other experiment tracking. JSON files are the tracking system.
-- Do not train or fine-tune models. DeepSteer is an evaluation and analysis toolkit. Steering happens through data curation and curriculum design, not through gradient updates within this library.
 - Do not hardcode model paths or API keys. Use constructor arguments and environment variables.
 - Do not write overly defensive code with excessive try/except blocks. Let errors propagate with clear messages. The user is a researcher, not an end consumer.
-
-## Key Files to Understand
-
-| File | Purpose | Read first? |
-|---|---|---|
-| `core/types.py` | All dataclasses and enums | Yes |
-| `core/model_interface.py` | Model abstraction, ModelFamily, architecture detection | Yes |
-| `core/moe_model.py` | MoEWhiteBoxModel for OLMoE expert/router analysis | For MoE work |
-| `core/benchmark_suite.py` | Benchmark base class + suite runner | Yes |
-| `foundations.py` | Canonical MFT constants (FOUNDATION_ORDER, groups) | Yes |
-| `directions/` | Direction extraction (mean-diff, LEACE, probe-weight) | For direction work |
-| `geometry/` | Geometric analysis (cosine, clustering, subspace) | For geometry work |
-| `causal/` | Causal validation (ablation, steering, behavioral) | For causal work |
-| `benchmarks/moral_reasoning/foundations.py` | MoralFoundationsProbe implementation | For behavioral work |
-| `benchmarks/compliance_gap/greenblatt.py` | ComplianceGapDetector implementation | For behavioral work |
-| `benchmarks/representational/probing.py` | LayerWiseMoralProbe implementation | For white-box work |
-| `viz/__init__.py` | All visualization functions | When producing plots |
-| `datasets/PROBING_PIPELINE_DESIGN.md` | Full design for dataset generation | For Phase 1 |
 
 ## Running Things
 
@@ -157,7 +139,7 @@ python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-7B-hf \
     --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 
-## Context: Research Goals
+## Research Goals
 
 This toolkit supports research into whether embedding moral reasoning during LLM pre-training produces deeper, more robust alignment than post-hoc methods (RLHF, Constitutional AI). The key hypothesis: pre-training aligned models will show:
 
@@ -255,7 +237,7 @@ script runs.
 
 ## Pre-review protocol (the load-bearing habit)
 
-Before presenting ANY gate, decision menu, results summary, or plan to Orion: draft the
+Before presenting ANY gate, decision menu, results summary, or plan to author: draft the
 **anticipated review** — the 3–5 riders a hostile expert reviewer would attach. Implement
 the zero-GPU ones immediately; attach the rest with costs. Never present a bare option
 list.
@@ -305,7 +287,7 @@ reported separately for any decomposition.
 This layer plus the skills covers: context recovery, the named inference moves, gate
 discipline, instrument validity, claim language, and sequencing. It does not cover:
 strategic packaging judgment, thesis synthesis across long horizons, or statistical traps
-outside the named patterns. Those remain scheduled external review (Orion + the review
+outside the named patterns. Those remain scheduled external review (author + the review
 layer). The pre-review protocol narrows that residue; it does not close it. When a
 pre-review pass produces nothing surprising twice in a row on high-stakes decisions, say
 so — that is a signal to request external review, not evidence it isn't needed.
