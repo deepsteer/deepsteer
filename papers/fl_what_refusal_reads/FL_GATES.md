@@ -58,3 +58,20 @@ percept (beat 5, OLMo causal) · 8 Across families: what it reads × how it comm
   GPT-OSS harm-audit + reasoning harmfulness cells (§8) come from the absorbed Papers 5/6/7 and are
   written as FL's own results (no self-cite), per the hard rule. External priors are cited where
   extended (`zhao2025harmfulness`, `arditi2024refusal`).
+
+## Bib verification — DONE (2026-07-04)
+All 21 cited entries checked against primary sources (arXiv abstract pages / the tool repo):
+- **Verified exact** (title / ID / first author): arditi2024refusal (2406.11717), bai2022constitutional
+  (2212.08073), ouyang2022instructgpt (NeurIPS 2022, 2203.02155), rafailov2023dpo (NeurIPS 2023,
+  2305.18290), greenblatt2024faking (2412.14093), zhao2025harmfulness (2507.11878, "LLMs Encode
+  Harmfulness and Refusal Separately"), grattafiori2024llama3 (2407.21783), openai2025gptoss
+  (2508.10925), qwen2025qwen25 (2412.15115), olmo3_2025 (2512.13961), belrose2023leace (2306.03819),
+  hendrycks2021ethics (2008.02275), park2024linear (2311.03658), zou2023repe (2310.01405),
+  meng2022rome (2202.05262), hubinger2024sleeper (2401.05566), pew2025heretic (github.com/p-e-w/heretic).
+- **Fixed:** grattafiori2024llama3 author was "Llama Team, AI @ Meta" → corrected to "Grattafiori,
+  Aaron and others" (arXiv canonical first author; matches the key).
+- **Not re-verified (low-risk, standard):** graham2013mft, haidt2012righteous (well-known
+  moral-psychology book/journal, inherited from Paper 1's published bib).
+- **Publication-status gate (not a verification issue):** reblitzrichardson2026geometry (P3, the
+  pretraining-duo cite) is unpublished with no arXiv ID — either P3 goes to arXiv or the cite becomes
+  "in preparation" before FL submission. reblitzrichardson2026fragility (Paper 1) is published (v2 in progress).
