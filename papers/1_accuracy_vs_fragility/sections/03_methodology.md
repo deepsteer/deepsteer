@@ -174,11 +174,11 @@ fragility), we lift the cap with an **extended grid**
 
 ## 3.5 Target models and checkpoints
 
-Three OLMo (Groeneveld et al., 2024; OLMo Team, 2025; Team OLMo, 2025) base models.
-**OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`; OLMo Team, 2025), 37
+Three OLMo (Groeneveld et al., 2024; Team OLMo, 2025a; Team OLMo, 2025b) base models.
+**OLMo-2 1B early-training** (`allenai/OLMo-2-0425-1B-early-training`; Team OLMo, 2025a), 37
 checkpoints at 1K-step intervals from step 0 to step 36K (~76B
 tokens), the primary data source for §4.1 onsets and §4.2
-fragility. **OLMo-3 7B stage 1** (`allenai/Olmo-3-1025-7B`; Team OLMo, 2025):
+fragility. **OLMo-3 7B stage 1** (`allenai/Olmo-3-1025-7B`; Team OLMo, 2025b):
 probing on 20 stage-1 checkpoints through ~1.4M steps (~10T tokens), and
 fragility on 5 of those checkpoints (steps 0, 353K, 705K, 1,059K, 1,413,814);
 §4.2 7B corroboration and Appendix B causal tracing. **OLMo-2 1B final**

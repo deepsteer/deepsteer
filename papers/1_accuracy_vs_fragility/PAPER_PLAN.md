@@ -1,5 +1,13 @@
 # Paper 1 Plan: *When Probing Accuracy Saturates, Fragility Resolves*
 
+> **v2 scope note (2026-07-04).** This plan predates the §4.4 activation-scale control.
+> Finding 2 as described below (a raw layer-depth robustness gradient developing monotonically;
+> the post-saturation fragility decline) is **corrected in arXiv v2**: the gradient is *largely
+> activation scale* (attenuates to ~2× under RMS normalization, ordering fails 8/37; the residual
+> is not claimed), and the post-saturation decline is *withdrawn* as a scale artifact. Finding 2
+> is now the confound-isolation itself. See `papers/CLAIMS.md` VOID rows V-P1-1 / V-P1-2 and §4.4.
+> Findings 1 (staged emergence) and 3 (data curation) are unchanged. Plan text below is historical.
+
 **Status:** Framing locked in. Phase C4 compositional probe ablation complete; abstract sentence locked to Outcome B variant. 3-seed compositional fragility replication complete (verdict `decline_real`); §4.3 locked to the *full subsection* branch. Drafting on §3 Methodology and §4 Results in flight; remaining items are §1 Introduction, §2 Related Work, §5 Discussion, §6 Conclusion, abstract tightening pass, and figure styling.
 
 **Source-of-truth note.** Where this document and `RESEARCH_BRIEF.md` differ on Paper 1 framing, **this document takes precedence.** The BRIEF is the public-facing two-paper summary written before Paper 1 framing was locked. Specifically: the BRIEF lists Paper 1 findings in science-first ordering; Paper 1 itself is methodology-first.

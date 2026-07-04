@@ -67,7 +67,7 @@ compositional dataset (§3.2) categorizes by construction pattern
 **OLMo.** Groeneveld et al. (2024) released the OLMo family with
 full intermediate checkpoint releases (the infrastructure that
 makes dense-sampling trajectory analysis possible), extended in
-the OLMo-2 release (OLMo Team, 2025) to substantially longer
+the OLMo-2 release (Team OLMo, 2025a) to substantially longer
 training schedules. Our 37-checkpoint 1B early-training and
 20-checkpoint 7B stage-1 trajectories rely on these open releases;
 the methodology applies to any open-checkpoint family with dense

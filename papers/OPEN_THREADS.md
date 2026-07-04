@@ -78,6 +78,13 @@ Prices are rough A100-hour estimates for the parked pods.
 - **R_refusal precision** (ratio-of-ratios CI wide at n=23) — the sweep resolves the *shape*; ships
   as a stated limitation. More twins would tighten it. Parked.
 - **xstest_borderline.json provenance** — dependency for B5 session 1, not the headline. Parked.
+- **OT-9 — whitened / PR-matched fragility control (P1 residual gradient).** §4.4 reports a residual
+  ~2× (1.8–3.1×) layer-depth ratio surviving RMS normalization, explicitly **not claimed** as a
+  genuine gradient: RMS controls per-layer scale, not covariance shape. The test that would establish
+  (or kill) a genuine residual gradient is injecting noise in each layer's **whitened** (or
+  participation-ratio-matched) basis, re-running the 37-checkpoint fragility trajectory. **Optional**
+  (the v2 claims do not depend on it). Price: ~0.5–1h (re-extract + whiten + re-probe across
+  checkpoints; comparable to the original refragility run). Feeds a possible P1 v3 or the methods note.
 
 ---
 
@@ -111,8 +118,12 @@ finding), and that build is W3, beyond this gate.**
    published headline → **errata-class → v2**. Mitigation: v1 pre-flagged the possibility, so the
    erratum is a quantified confirmation of a stated caveat, not a reversal. §4.3 numbers in v1 are
    already the correct v2 ones (NI-5 clean in the published paper too).
-   **→ ESCALATE (W3): the erratum wording scopes the abstract-level Finding 2 — Orion decides;
-   this session HOLDS (no v2 drafted).**
+   **→ UPDATE 2026-07-04: Template A approved (Finding 2 = confound-isolation; both sub-claims
+   VOID per V-P1-1/2). v2 PDF built (`papers/1_accuracy_vs_fragility.pdf`), abstract reworded, §4.4
+   residual non-claim added, citation fix applied, v2 comment drafted. Held for two pre-submission
+   bib flags (ref-list omits OLMo-2/3 entries; 2025a/b disambiguation), not for wording. Cross-paper
+   dependency: Paper 3 cites this paper's §4.4 (v2-only), so v2 is the version its citation resolves
+   against — another reason v2 ships.**
 2. **~~Bib verification~~ → CLOSED CLEAN (§A).** No Paper-1 errata; one cosmetic author-form nit
    (`OLMo Team`→`Team OLMo` in `olmo2_2025`) to fix at drafting. The OLMoE confabulation MEMORY
    flagged is already fixed in the committed bib.

@@ -10,7 +10,7 @@ asking *whether* a model represents a property at a given snapshot.
 
 It does not work well for asking *how a representation evolves
 during pre-training*. We demonstrate the failure mode concretely. On
-the OLMo-2 1B early-training trajectory (OLMo Team, 2025),
+the OLMo-2 1B early-training trajectory (Team OLMo, 2025a),
 37 model checkpoints densely sampled at 1K-step intervals across
 steps 0-36K (~76B tokens), a binary linear probe trained on a
 240-pair moral / neutral minimal-pair dataset reaches ~95% mean

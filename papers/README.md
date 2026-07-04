@@ -10,11 +10,14 @@ in **[RESEARCH_PLAN.md](../RESEARCH_PLAN.md)**).
   the first ~5% of pre-training as a sharp phase transition.
   Moralized semantic distinctions appear *before* sentiment polarity
   and far before syntactic competence.
-- **Fragility reveals what accuracy cannot** — probing accuracy
+- **Fragility finds what accuracy cannot** — probing accuracy
   saturates quickly, but fragility testing (robustness to activation
-  noise) exposes a layer-depth gradient that continues evolving long
-  after accuracy plateaus. *Probing accuracy is the wrong
-  discriminator; fragility is the metric that actually moves.*
+  noise) still separates representations that accuracy cannot: matched
+  fine-tuning corpora with identical accuracy leave distinct fragility
+  profiles at the same layer. (The raw cross-layer layer-depth gradient
+  is largely an activation-scale effect; use RMS-normalized fragility
+  for cross-layer claims, raw for within-layer.) *Probing accuracy is
+  the wrong discriminator; fragility is the metric that actually moves.*
 - **Data curation reshapes structure, not content** — LoRA fine-tuning
   shows that training content doesn't change *whether* moral concepts
   are encoded but *how* they're organized. Repetitive declarative

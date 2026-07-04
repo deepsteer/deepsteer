@@ -345,7 +345,15 @@ $\sigma^*$ ratio grows over training to as much as $14.7\times$ (step
 10K) and is $7.1\times$ at step 36K; under RMS normalization it stays
 near $2\times$ throughout (1.8--3.1$\times$) and the late $\ge$ mid
 $\ge$ early ordering fails outright at 8 of 37 checkpoints. The
-gradient is largely activation scale, not robustness.
+gradient is largely activation scale, not robustness. We do not claim
+the residual ${\sim}2\times$ as a genuine robustness gradient. RMS
+normalization equalizes per-layer scale but not covariance shape, so a
+fixed isotropic perturbation still interacts differently with layers
+whose activation covariances differ in anisotropy and effective
+dimensionality, which can leave a residual ratio near $2\times$ that is
+not encoding robustness. Establishing a genuine residual gradient would
+require a whitened or participation-ratio-matched control (noise
+injected in each layer's own whitened basis), which we do not run here.
 
 *The post-saturation evolution mostly disappears.* Raw mean $\sigma^*$
 declines from 18.3 (step 4K) to 4.7 (step 36K) after accuracy
@@ -384,7 +392,8 @@ claims and raw $\sigma^*$ for within-layer comparisons** (where scale
 is controlled by design). This distinction is itself a contribution:
 noise-injection probing is widely used, and the activation-scale
 confound applies to any such method that compares across layers in raw
-units.
+units. We develop this caution, with other interpretability-instrument
+failure modes, in a companion methods note (in preparation).
 
 Numbers source: `outputs/phase_c1_refragility/trajectory.json`
 (seed-averaged extended-grid raw and RMS-normalized fragility for all

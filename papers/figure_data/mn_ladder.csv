@@ -1,0 +1,3 @@
+position,band_min,band_max,null_q95,label
+final_pre_assistant (decision site),0.40,0.47,0.557,band BELOW null → position-invalid
+mean_content (content),0.54,0.64,0.28,band ABOVE null → position-valid

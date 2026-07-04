@@ -5,6 +5,12 @@ confirmed Mac-feasible (~14 GB bf16, 24 GB unified memory). All
 experiments designed for single-GPU / MPS execution; checkpoint
 trajectory analysis is sequential (load, probe, unload).
 
+> **Cross-paper note (2026-07-04).** References below to Paper 1's "layer-level" /
+> "layer-depth robustness gradient" point to a claim Paper 1 v2 corrects: that raw gradient is
+> largely an activation-scale effect (RMS-normalization control, §4.4). Any P2 comparison to it
+> must use the RMS-normalized (scale-controlled) form, not the raw gradient. This ties into P2's
+> own held SNR-normalized fragility fix (`papers/OPEN_THREADS.md`).
+
 **Relationship to Paper 1.** Paper 1 (*When Probing Accuracy Saturates,
 Fragility Resolves*) establishes fragility as a complementary metric
 to probing accuracy in dense OLMo models. Paper 2 extends both

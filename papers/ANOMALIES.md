@@ -224,8 +224,8 @@ operating-point rule.
 
 **The trap (A7 recurring on a reasoning model).** The reasoning-prefill deliberation cell (engage =
 inculpating prefill, disengage = exculpating prefill) emitted a clean-looking `A = 1.0` (engage flips
-benign→refuse 7/8; disengage flips violating→comply 0/8). It read as one-way early-commitment. It is
-**saturation**: the disengage arm was tested on violating items that already refuse at baseline (7/8 at
+benign→refuse 7/7; disengage flips violating→comply 0/7). It read as one-way early-commitment. It is
+**saturation**: the disengage arm was tested on violating items that already refuse at baseline (7/7 at
 the ceiling), while the engage arm was tested on unsaturated benign items (room to move up). An
 asymmetry statistic that compares an arm-with-headroom against an arm-at-the-ceiling is the same
 dynamic-range confound A5(2)/A7 names. `A = 1.0` with a bootstrap CI of **width 0** is the tell:
@@ -252,3 +252,14 @@ outcome ceiling. When the gate is a step (no boundary band), do not report the a
 **graded intervention with a continuous readout** that registers sub-threshold movement, and report the
 behavioral flip and the graded readout separately. Belongs in the methods note beside the
 operating-point rule (pattern 4) as its reasoning-model instance.
+
+---
+
+## Process ledger
+
+**2026-07-03 — the cold-boot W0 audit caught a live erratum that warm sessions had missed.**
+The fresh-context ledger reconciliation (CLAUDE.md boot sequence) found that arXiv:2606.11375v1
+lacks its own §4.4 activation-scale control, so its Finding 2 ships an un-scoped raw fragility
+gradient → v2 erratum required. No warm working session had flagged it. Evidence that the
+boot-sequence design pays for itself, and a datapoint for the open periodic-fresh-eyes cadence
+question (how often to force a cold-context re-audit of committed/published claims).
