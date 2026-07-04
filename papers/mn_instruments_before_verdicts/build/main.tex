@@ -79,8 +79,7 @@
 \usepackage[capitalize, noabbrev]{cleveref}
 
 % --- Title / authors ------------------------------------------------
-\title{Instruments before verdicts: measurement discipline for\\
-  causal claims about refusal and moral representation}
+\title{Calibrating Interpretability Instruments Before Trusting Their Verdicts}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -146,22 +145,24 @@
 \maketitle
 
 \begin{abstract}
-A causal claim about what a model's circuit reads or writes is only as
-good as the instrument that measured it, and interpretability
-instruments fail in specific, diagnosable ways. A covariance-matched
-null can saturate so every direction projects like a typical one; a
-per-head attribution can overshoot the true residual write threefold;
-an interchange patch can go sign-chaotic because its outcome is pinned
-at a ceiling; a reads-X verdict can be an artifact of measuring past
-the layer where the model already decided. This methods note collects
-six such failures from a causal interpretability program on refusal
-and moral representation across four language-model architectures.
-Each first looked like a finding. We state each as a protocol others
-can run: calibrate the instrument against a positive-control ladder,
-certify it with an orthogonal cell, compute power before spending
-compute, and state every read-from verdict at a depth referenced to
-the model's commitment. Every scalar carries its detection bar or its
-control.
+Causal claims about language-model internals rest on measurements: a projection, a cosine,
+an ablation delta, an interchange patch. These measurements fail in specific, diagnosable
+ways that return a plausible number instead of an error, so a broken instrument reads as a
+finding. A covariance-matched null can saturate until every direction looks typical; a
+per-head attribution can overshoot the true residual write threefold on a common
+architecture family; an interchange patch can go sign-chaotic because its outcome is pinned
+at a ceiling; a read-from verdict can be an artifact of measuring past the layer where the
+model already decided.
+
+This note documents six such failures from a causal interpretability program on refusal and
+moral representation across four open-weight architectures. For each we give the tell that
+catches it and a protocol keyed to a detectable trigger (reordered normalization, massive
+activations, a low-dimensional decision channel), so readers can check whether their own
+setup is exposed. The discipline reduces to four moves: calibrate against a positive-control
+ladder, certify with an orthogonal cell, compute power before spending compute, and state
+every read-from verdict at a depth referenced to the model's commitment. Applied to the
+program's own published paper, the discipline caught an abstract-level error. A causal claim
+is only as good as the instrument behind it.
 \end{abstract}
 
 % =======================================================================

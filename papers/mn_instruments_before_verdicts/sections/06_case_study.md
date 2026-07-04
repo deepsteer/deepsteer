@@ -1,4 +1,4 @@
-# 6. Case study: the D3 refusal-reads-what / commits-how program {#case-study}
+# 6. Case study: one program's amendments as caught failures {#case-study}
 
 The Direction-3 program asked two questions of the refusal decision: *what* moral content it
 reads, and *how* it commits. Its pre-registration trail (D3 Amendments 1–13, with the null and

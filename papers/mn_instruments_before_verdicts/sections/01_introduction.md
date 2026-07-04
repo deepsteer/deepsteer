@@ -1,4 +1,4 @@
-# 1. Introduction: the instrument problem, and the discovery that motivated it {#introduction}
+# 1. Introduction {#introduction}
 
 *Methods note. Started 2026-07-02 (Direction-3 Amendment 10); drafted to full text 2026-07-03.*
 
