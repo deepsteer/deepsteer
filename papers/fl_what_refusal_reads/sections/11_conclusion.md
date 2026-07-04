@@ -10,9 +10,9 @@ coupling keeps climbing. A four-model panel separates *what* refusal reads (harm
 moral content) from *how* it commits (at the read layer, early, or reversibly), with GPT-OSS as
 an existence proof that a deliberating model can read harm and still be argued out of a refusal.
 The positive claim is sharp and actionable: alignment is shallow because the refusal decision
-reads a small separable feature rather than the model's moral understanding, and the same
-anatomy that explains why refusal is easy to remove also names where deeper alignment would
-have to write, into the directions judgment already reads.
+reads a small separable feature rather than the model's moral understanding. The same anatomy
+that explains why refusal is easy to remove also names where deeper alignment would have to
+write: into the directions judgment already reads.
 
 **Safety scope.** This work characterizes the refusal geometry of released open-weight models,
 in order to explain a known property (that refusal is cheap to remove) and to locate where a

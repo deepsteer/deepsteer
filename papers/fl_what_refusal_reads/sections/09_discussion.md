@@ -8,15 +8,15 @@ a fresh post-training gate (\Cref{fresh-gate}) that lives in a narrow control-to
 channel (\Cref{bottleneck}) and reads only the harm percept, a rank-1 slice of the moral
 subspace nearly orthogonal to the bulk (\Cref{reads-harm}). The compliance wrapper reads a
 harm cue over a narrow bus; the model's moral understanding sits mostly off that bus. This is
-not that comprehension is causally absent, the same patches that barely move refusal move
-judgment across the whole subspace, but that refusal does not consult it. Shallow alignment is
+not that comprehension is causally absent: the same patches that barely move refusal move
+judgment across the whole subspace. Refusal simply does not consult it. Shallow alignment is
 shallow because the refusal decision reads a small, separable feature rather than the model's
 moral representation.
 
 **Why refusal is easy to remove.** The account predicts the removability that motivated this
 work. A control that occupies a low-variance channel and reads a rank-1 harm slice is a small
-target: a rank-one edit that cancels the refusal direction leaves the moral subspace, which the
-refusal decision was not reading, untouched [@arditi2024refusal], which is why automated
+target. A rank-one edit that cancels the refusal direction leaves the moral subspace untouched,
+because the refusal decision was not reading it [@arditi2024refusal]; that is why automated
 censorship removal succeeds without degrading the model [@pew2025heretic]. Removability is not
 a surprising fragility; it is what a harm-keyed gate over a narrow bus looks like from the
 outside. The same geometry explains why safety behavior can be trained shallowly enough to be

@@ -41,7 +41,8 @@ layer, early, or reversibly), with GPT-OSS as an existence proof that a delibera
 can read harm and still be talked out of a refusal.
 
 The measurement discipline behind these claims, the positive-control ladders, the
-position-validity gates, and the depth-referenced verdicts, is documented separately (a
-companion methods note, in preparation); here we cite it where a number depends on it and
-otherwise report the findings. Throughout, every null carries its detection bar, and every
-quantitative adjective carries its number.
+position-validity gates, and the depth-referenced verdicts, is set out in
+\Cref{app:calibration}, with the instrument's failure modes treated in a companion methods
+note (in preparation). The work was pre-registered; the pre-registration and its amendment
+trail are public (\Cref{app:repro}). Throughout, every null carries its detection bar, and
+every quantitative adjective carries its number.

@@ -1,0 +1,4 @@
+tag,band_min,band_max,refusal,persona,null_q95
+Base,0.537,0.664,0.33,0.510,0.291
+Instruct,0.523,0.637,0.14,0.506,0.266
+GPT-OSS,0.649,0.764,0.52,0.603,0.340

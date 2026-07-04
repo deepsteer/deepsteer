@@ -1,8 +1,8 @@
 # 5. The decision site is a control-token bottleneck {#bottleneck}
 
-Where does the refusal decision live, and why is content-versus-decision orthogonality so
-easy to find there? The answer is a structural fact about the decision site that holds on
-every architecture we test.
+The refusal decision lives at a control-token bottleneck, a 9-to-15 effective-dimensional
+channel that holds on every architecture we test. This structural fact about the decision
+site is also why content-versus-decision orthogonality is so easy to find there.
 
 The decision site is the control token where the chat template hands off to the model's
 answer: the token before the assistant header on the instruct models, the end-of-prompt token
@@ -27,8 +27,9 @@ subspace. Three independent estimates agree that the channel carries about 15 ef
 dimensions: $\sqrt{3/14.7} = 0.45$ as a closed-form projection expectation, the covariance
 null q95 of 0.557, and the pairwise-cosine null of 0.41–0.51. Because of this, participation
 ratio is a required field on every extracted direction, and any position below 30 is flagged
-invalid for content projection-fraction tests. The position-validity protocol and its
-positive-control ladder are documented in the companion methods note (in preparation).
+invalid for content projection-fraction tests. The position-validity protocol, its
+positive-control ladder, and the covariance-matched nulls are in \Cref{app:calibration}; the
+instrument's failure modes are treated in a companion methods note (in preparation).
 
 One reconciling sentence is needed before the next section, because the bottleneck cuts two
 ways. It is position-invalid *for content projection-fraction tests* (the band-below-null

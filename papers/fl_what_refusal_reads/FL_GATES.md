@@ -75,3 +75,41 @@ All 21 cited entries checked against primary sources (arXiv abstract pages / the
 - **Publication-status gate (not a verification issue):** reblitzrichardson2026geometry (P3, the
   pretraining-duo cite) is unpublished with no arXiv ID — either P3 goes to arXiv or the cite becomes
   "in preparation" before FL submission. reblitzrichardson2026fragility (Paper 1) is published (v2 in progress).
+
+## Appendix drafting flags (populated 2026-07-04, appendices A–E)
+
+- «CHECK: OLMo-3 instruct repo id.» The appendix write-brief proposed
+  `allenai/Olmo-3-1025-7B-Instruct` (date-stamped) for the instruct model, but the repo id of
+  record across the D-series docs and the D2 model table is `allenai/Olmo-3-7B-Instruct` (NO date
+  stamp; the base is date-stamped `allenai/Olmo-3-1025-7B`, the instruct is not — a known Ai2
+  naming inconsistency). App E (`0E_reproducibility.md` §E.4) uses `allenai/Olmo-3-7B-Instruct`,
+  the id of record. Confirm against HF before submission (do not "fix" it to the date-stamped form).
+- «CHECK: model revisions/pins.» No explicit checkpoint revision (commit/branch) is pinned in the
+  D-series docs — drivers read the live model and `assert_matches_model` on layer/hidden/model_type
+  rather than pinning a revision. App E §E.4 states "default branch at the pinned transformers
+  version." If a specific revision was used for the A100 runs, add it to the E.4 table before
+  submission.
+- «CHECK: Qwen/Llama base-vs-instruct in §2.1 prose.» The setup section names the panel
+  "Qwen2.5-7B" and "Llama-3.1-8B" (no `-Instruct` suffix) but describes four *chat* models; the
+  D2/D3 runs of record use `Qwen/Qwen2.5-7B-Instruct` and `meta-llama/Llama-3.1-8B-Instruct`. App E
+  §E.4 lists the `-Instruct` repos (the actual runs). Confirm the §2.1 prose intends the instruct
+  variants (this is a body-section wording call for the polishing agent, flagged here for
+  consistency with the appendix repo table).
+- «CHECK: OLMo hidden-dim / Qwen hidden-dim not stated in appendices.» OLMo-3 and Llama hidden 4096
+  are confirmed in the D-series; Qwen2.5-7B and GPT-OSS (2880) hidden dims were NOT restated in the
+  appendices to avoid inferring un-sourced values. If a hidden-size column is wanted in E.4, source
+  Qwen's from the registry first.
+- Numbers with a stated convention caveat carried into the appendix tables (all traceable, none
+  invented): the base rank-3 null q95 is the calibration-ladder value of record (0.291, matching the
+  body §4), not the 0.31 that appears in an older results table (NI-1). The Llama decision-channel
+  participation ratio of record is 10.2 (in-format ladder), with 13.5 labeled as the second-position
+  decision-token harness (NI-2) — both stated in App D §D.1. The OLMo refusal-transfer plateau uses
+  the folded-primary values (R_refusal 0.31 at rank-3 peak, 0.27 at rank-16; ceiling 0.31), matching
+  the body §7 and figure CSV (NI-4).
+
+## Appendices + quality pass + figure restyle (2026-07-04)
+- Five appendices added (A directions/stimuli, B calibration/nulls/controls [cites the methods note], C causal-anatomy tables, D per-model panel detail, E reproducibility) + the `\appendix` block in main.tex. FL is now 27 pp.
+- Main text polished for reviewer clarity; heavy detail trimmed into `\Cref{app:*}` while headline numbers stay in-text.
+- Figures (FL + MN) restyled to Paper 1's look (Material palette, descriptive suptitles + lettered panel titles, bold value labels, black bar edges, o-/s- markers). No data dropped.
+- **Calibration-ladder figure corrected:** the reused two-position validity figure was replaced with the intended per-model refusal-below-band ladder (Base 0.33 / Instruct 0.14 / GPT-OSS 0.52, all below their moral-family bands), matching its caption. The MN keeps the two-position validity ladder (correct there).
+- §2 now states the panel is the instruction-tuned checkpoints (the runs of record); short model forms used elsewhere.

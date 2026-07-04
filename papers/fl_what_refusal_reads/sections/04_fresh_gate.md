@@ -20,14 +20,13 @@ the narrowness is a property of the *installed* gate, not of the raw contrast. R
 wired into a spare channel that carries little of the model's activation variance.
 
 **It projects below the moral-family band at every rung.** The base proto-refusal projects
-0.33 onto the base moral subspace (covariance-matched null q95 0.291; the persona reference
-sits at 0.51), and the aligned gate projects 0.14 onto the aligned moral subspace (null q95
-0.26). Across a rank sweep over the moral basis (one to three sources) refusal never clears
-the null-plus-margin bar. Read against a richer construction the story is the same: the
-aligned gate projects 0.144 onto the rank-3 moral subspace (null q95 0.266) and 0.155 onto
-the six-foundation moral-foundations span (null q95 0.252), both null. \Cref{fig:ladder} shows
-the calibrated ladder that turns these into verdicts: floor, matched null, measurement, and
-positive band on one axis, with refusal below the band.
+0.33 onto the base moral subspace (covariance-matched null q95 0.291), and the aligned gate
+projects 0.14 onto the aligned moral subspace (null q95 0.26). Across a rank sweep over the
+moral basis (one to three sources) refusal never clears the null-plus-margin bar, and the
+same holds against a richer six-foundation construction (per-model projections and nulls in
+\Cref{app:calibration}). \Cref{fig:ladder} shows the calibrated ladder that turns these into
+verdicts: floor, matched null, measurement, and positive band on one axis, with refusal below
+the band.
 
 These three readings converge. The refusal gate is a freshly built, low-variance
 post-training control, not a direction derived from the model's moral content. That is the

@@ -32,18 +32,19 @@ transfer 0.85 is essentially equal to judgment transfer 0.79, the gap that stays
 closes on Llama, and a harm-rank-1 restriction recovers only 0.59. The reads-broad verdict
 survives a harm-coextensive alternative at rank 1: a single harm cue spans only 3.6% of the
 moral basis that drives Llama's refusal, so the transfer grows into moral directions the harm
-axis does not point along (the rank-2/4 severity-ladder version of this control is a stated
-extraction rider on contrasts not yet saved). Llama reads broad moral content, not just harm.
+axis does not point along (a severity-ladder version of this control at rank 2–4 awaits
+contrasts not yet collected). Llama reads broad moral content, not just harm. The full
+depth-matched battery at layer 12 is in \Cref{app:panel}.
 
 The commitment axis is why the matched-depth qualifier is load-bearing. Llama's refusal is
 directionally asymmetric at the decision boundary (36 micro-graded twins): adding harmful
 content moves refusal coherently ($+0.142$, 95% CI [$+0.086$, $+0.212$], sign fraction 0.81),
 but removing harmful content does not (disengage $-0.014$, 95% CI [$-0.084$, $+0.052$], sign
 fraction 0.51, incoherent). A patch-layer sweep names the mechanism: Llama's disengage is
-coherent below the read layer ($-0.12 / -0.11 / -0.20$ at layers 8/12/14, confidence intervals
-excluding 0; the depth-matched full cell at layer 12 reads $-0.57$) but incoherent at the read
-layer 16 ($-0.014$). OLMo's disengage, by contrast, is coherent at the read layer ($-0.62$).
-Llama commits *early*, crystallizing its refusal before the decision site; OLMo commits at or
+coherent below the read layer but incoherent at the read layer 16 ($-0.014$), while OLMo's
+disengage is coherent at its read layer ($-0.62$). The full patch-layer sweep is in
+\Cref{app:panel}. Llama commits *early*, crystallizing its refusal before the decision site;
+OLMo commits at or
 after the read layer.
 
 This resolves a robustness anomaly in the same panel. Llama's refusal is entangled with moral
@@ -76,7 +77,8 @@ reader*. An inculpating-analysis prefill flips unsaturated benign requests to re
 consequential. And in the other direction, a graded exculpatory prefill flips ceiling-refusing
 violating items to comply 6 out of 10, with the decision-channel refusal projection moving
 monotonically toward comply in all 10 items (projection-moved fraction 1.0, monotone fraction
-1.0). \Cref{fig:reversibility} shows the graded panel. GPT-OSS reverses in both directions;
+1.0). \Cref{fig:reversibility} shows the graded panel, with the per-strength series tabulated
+in \Cref{app:panel}. GPT-OSS reverses in both directions;
 its refusal is a read that deliberation can re-argue, the clean contrast to Llama's early
 commitment.
 

@@ -5,16 +5,19 @@ validity results from papers D1 (moral-subspace calibration), D2 (decision
 coupling), and D3 (refusal engage/disengage asymmetry). Every figure reads only
 from its committed CSV in this directory; no model, GPU, or network access.
 
-Figures produced (vector PDF, ~4.5 in wide, clean academic matplotlib):
-  1. mn_bottleneck_pr.pdf   <- mn_bottleneck_pr.csv
-  2. mn_ladder.pdf          <- mn_ladder.csv
-  3. mn_depth_collapse.pdf  <- mn_depth_collapse.csv
+Figures produced (vector PDF + PNG mirror, Paper-1 higher-readability style):
+  1. mn_bottleneck_pr.{pdf,png}   <- mn_bottleneck_pr.csv
+  2. mn_ladder.{pdf,png}          <- mn_ladder.csv
+  3. mn_depth_collapse.{pdf,png}  <- mn_depth_collapse.csv
 
 Run from this directory:
     python3 regen_mn_figures.py
 
-Colors: Okabe-Ito (colorblind-safe). Categorical hues assigned in a fixed order,
-never cycled; identity never carried by color alone (legends / direct labels).
+Style: matches papers/1_accuracy_vs_fragility/scripts/*. Material palette with a
+fixed semantic mapping (moral/judgment = indigo, refusal/invalid = red, valid =
+green, null/reference = gray, secondary = orange), descriptive figure suptitles,
+lettered panel titles, direct bold value labels, and both PDF + PNG output.
+Identity is never carried by color alone (legends / direct labels).
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ from __future__ import annotations
 import os
 
 import matplotlib
+import numpy as np
 import pandas as pd
 
 matplotlib.use("Agg")  # headless, deterministic vector output
@@ -29,43 +33,42 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# --- Okabe-Ito colorblind-safe palette -------------------------------------
-OI_BLUE = "#0072B2"
-OI_VERMILLION = "#D55E00"
-OI_GREEN = "#009E73"
-OI_ORANGE = "#E69F00"
-INK = "#222222"
-MUTED = "#666666"
-FAINT = "#C9C9C9"
+# --- Material palette (Paper-1 convention) ---------------------------------
+GREEN = "#4CAF50"    # valid
+RED = "#F44336"      # refusal / invalid / critical boundary
+INDIGO = "#3F51B5"   # moral / judgment / primary measured series
+ORANGE = "#FF9800"   # 4th series
+GRAY = "#9E9E9E"     # null / reference lines / faint secondary
+GRAY_EC = "#999999"  # annotation-box edge
 
-# --- Shared restrained academic style --------------------------------------
+# --- Minimal rcParams: default font, white bg, embeddable PDF text ---------
 plt.rcParams.update(
     {
         "figure.facecolor": "white",
         "axes.facecolor": "white",
         "savefig.facecolor": "white",
         "font.size": 10,
-        "axes.titlesize": 11,
-        "axes.labelsize": 10.5,
-        "xtick.labelsize": 9.5,
-        "ytick.labelsize": 9.5,
-        "legend.fontsize": 9,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.edgecolor": "#444444",
-        "axes.linewidth": 0.8,
-        "xtick.color": "#444444",
-        "ytick.color": "#444444",
-        "axes.labelcolor": INK,
-        "text.color": INK,
-        "figure.dpi": 150,
+        "xtick.labelsize": 9,
+        "ytick.labelsize": 9,
         "pdf.fonttype": 42,  # embed TrueType, editable text in the PDF
     }
 )
 
+ANN_BBOX = dict(boxstyle="round", fc="white", ec=GRAY_EC, alpha=0.85)
+
 
 def _resolve(name: str) -> str:
     return os.path.join(HERE, name)
+
+
+def _save(fig: plt.Figure, stem: str) -> str:
+    """Write both a vector PDF and a 200-dpi PNG mirror; return the PDF path."""
+    pdf = _resolve(f"{stem}.pdf")
+    png = _resolve(f"{stem}.png")
+    fig.savefig(pdf)
+    fig.savefig(png, dpi=200)
+    plt.close(fig)
+    return pdf
 
 
 # ---------------------------------------------------------------------------
@@ -74,63 +77,78 @@ def _resolve(name: str) -> str:
 def fig_bottleneck_pr() -> str:
     df = pd.read_csv(_resolve("mn_bottleneck_pr.csv"))
     models = df["model"].tolist()
-    x = range(len(models))
+    x = np.arange(len(models))
     ds = df["decision_site_pr"].tolist()
     content = df["content_pr"].tolist()  # NaN where missing (GPT-OSS)
 
-    fig, ax = plt.subplots(figsize=(4.8, 3.4))
+    fig, ax = plt.subplots(figsize=(7.4, 4.8))
 
     # Faint background bars: content-position dimensionality (where measured).
     ax.bar(
         x,
         [0 if pd.isna(c) else c for c in content],
-        width=0.72,
-        color=FAINT,
-        edgecolor="none",
+        width=0.6,
+        color=GRAY,
+        alpha=0.35,
+        edgecolor=GRAY,
+        linewidth=0.7,
         zorder=1,
-        label="content-position PR",
+        label="Content-position PR (reference)",
     )
     # Foreground bars: the decision-site bottleneck.
     ax.bar(
         x,
         ds,
-        width=0.46,
-        color=OI_BLUE,
-        edgecolor="none",
+        width=0.38,
+        color=INDIGO,
+        edgecolor="black",
+        linewidth=0.7,
         zorder=3,
-        label="decision-site PR",
+        label="Decision-site PR",
     )
 
-    # Direct value labels on the decision-site bars (identity not color-alone).
+    # Direct value labels (identity not color-alone): decision-site bold,
+    # content-position lighter above the faint bar.
     for xi, v in zip(x, ds):
         ax.text(xi, v + 0.7, f"{v:.1f}", ha="center", va="bottom",
-                fontsize=9, color=INK)
+                fontsize=9, fontweight="bold", color=INDIGO)
+    for xi, c in zip(x, content):
+        if not pd.isna(c):
+            ax.text(xi, c + 0.7, f"{c:.0f}", ha="center", va="bottom",
+                    fontsize=8, color=GRAY_EC)
 
     # Position-validity gate.
-    ax.axhline(30, ls="--", lw=1.3, color=OI_VERMILLION, zorder=2)
+    ax.axhline(30, ls="--", lw=1.3, color=RED, zorder=2)
     ax.text(
         len(models) - 0.5,
         30.9,
-        "position-validity gate\n(PR<30 → invalid for content projection)",
+        "Position-validity gate (PR < 30\n→ invalid for content projection)",
         ha="right",
         va="bottom",
-        fontsize=8.3,
-        color=OI_VERMILLION,
+        fontsize=8,
+        color=RED,
+        bbox=ANN_BBOX,
     )
 
-    ax.set_ylabel("participation ratio (effective dim)")
-    ax.set_ylim(0, 45)
-    ax.set_xticks(list(x))
-    ax.set_xticklabels(models, rotation=18, ha="right")
+    ax.set_ylabel("Participation ratio (effective dim)", fontsize=10)
+    ax.set_ylim(0, 46)
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=15, ha="right", fontsize=9)
     ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color="#EDEDED", lw=0.8)
-    ax.legend(frameon=False, loc="upper left", handlelength=1.4)
+    ax.grid(True, axis="y", alpha=0.3)
+    ax.legend(loc="upper left", fontsize=9)
+    ax.set_title(
+        "(a) Decision-site vs content-position participation ratio, four architectures",
+        fontsize=10, loc="left",
+    )
 
-    fig.tight_layout()
-    out = _resolve("mn_bottleneck_pr.pdf")
-    fig.savefig(out)
-    plt.close(fig)
-    return out
+    fig.suptitle(
+        "The decision site is a 9-to-15-dimensional control-token bottleneck "
+        "(four open-weight models)",
+        fontsize=11,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    return _save(fig, "mn_bottleneck_pr")
 
 
 # ---------------------------------------------------------------------------
@@ -139,10 +157,10 @@ def fig_bottleneck_pr() -> str:
 def fig_ladder() -> str:
     df = pd.read_csv(_resolve("mn_ladder.csv"))
 
-    fig, ax = plt.subplots(figsize=(4.8, 3.5))
+    fig, ax = plt.subplots(figsize=(7.4, 4.8))
 
-    verdict_color = {0: OI_VERMILLION, 1: OI_GREEN}  # invalid / valid
-    half_w = 0.24
+    verdict_color = {0: RED, 1: GREEN}  # invalid / valid
+    half_w = 0.22
 
     for i, row in df.iterrows():
         c = verdict_color[i]
@@ -160,36 +178,42 @@ def fig_ladder() -> str:
                 zorder=2,
             )
         )
-        # Covariance null q95 as a horizontal marker across the band width.
-        ax.hlines(null, i - half_w - 0.04, i + half_w + 0.04,
-                  color=INK, lw=1.6, ls=(0, (4, 2)), zorder=3)
-        ax.text(i + half_w + 0.06, null, f"null q95 = {null:.3f}",
-                va="center", ha="left", fontsize=8.3, color=INK)
+        # Covariance null q95 as a horizontal dashed marker across the band.
+        ax.hlines(null, i - half_w - 0.05, i + half_w + 0.05,
+                  color=GRAY, lw=1.8, ls=(0, (4, 2)), zorder=3)
+        ax.text(i + half_w + 0.07, null, f"Null q95 = {null:.3f}",
+                va="center", ha="left", fontsize=8, color=GRAY_EC)
         # Band label.
-        ax.text(i, hi + 0.015, f"moral band\n[{lo:.2f}, {hi:.2f}]",
-                ha="center", va="bottom", fontsize=8.3, color=c)
+        ax.text(i, hi + 0.012, f"Moral band [{lo:.2f}, {hi:.2f}]",
+                ha="center", va="bottom", fontsize=8, fontweight="bold", color=c)
         # Verdict tell.
-        tell = "band BELOW null\n→ position-INVALID" if i == 0 else \
-               "band ABOVE null\n→ position-valid"
-        y_tell = lo - 0.015 if i == 0 else lo - 0.02
-        ax.text(i, y_tell, tell, ha="center", va="top",
-                fontsize=8.6, color=c, fontweight="bold")
+        tell = "Band below null\n→ position-invalid" if i == 0 else \
+               "Band above null\n→ position-valid"
+        ax.text(i, lo - 0.016, tell, ha="center", va="top",
+                fontsize=9, color=c, fontweight="bold")
 
-    ax.set_ylabel("projection fraction")
+    ax.set_ylabel("Projection fraction", fontsize=10)
     ax.set_ylim(0.20, 0.70)
     ax.set_xlim(-0.6, 1.75)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(
-        ["final pre-assistant\n(decision site)", "mean content\n(content)"]
+        ["Final pre-assistant\n(decision site)", "Mean content\n(content)"],
+        fontsize=9,
     )
     ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color="#EDEDED", lw=0.8)
+    ax.grid(True, axis="y", alpha=0.3)
+    ax.set_title(
+        "(a) Moral band vs covariance-matched null at two positions",
+        fontsize=10, loc="left",
+    )
 
-    fig.tight_layout()
-    out = _resolve("mn_ladder.pdf")
-    fig.savefig(out)
-    plt.close(fig)
-    return out
+    fig.suptitle(
+        "The moral band sits below the covariance null at the decision site "
+        "(OLMo-3-7B-Instruct)",
+        fontsize=11,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    return _save(fig, "mn_ladder")
 
 
 # ---------------------------------------------------------------------------
@@ -201,12 +225,12 @@ def fig_depth_collapse() -> str:
     # x categorical, narrative order: read layer (16) then matched depth (12).
     layer_order = [16, 12]
     xpos = {16: 0, 12: 1}
-    series = {"Llama-3.1-8B": OI_VERMILLION, "OLMo-3-7B": OI_BLUE}
+    series = {"OLMo-3-7B": INDIGO, "Llama-3.1-8B": RED}
 
-    fig, ax = plt.subplots(figsize=(4.8, 3.6))
-    ax.axhline(0, color=MUTED, lw=1.0, ls="--", zorder=1)
-    ax.text(1.42, 0.0, "A = 0\n(symmetric)", va="center", ha="left",
-            fontsize=8.3, color=MUTED)
+    fig, ax = plt.subplots(figsize=(7.4, 4.8))
+    ax.axhline(0, color=GRAY, lw=1.0, ls="--", zorder=1)
+    ax.text(1.5, 0.0, "A = 0\n(symmetric)", va="center", ha="left",
+            fontsize=8, color=GRAY_EC)
 
     for model, color in series.items():
         sub = df[df["model"] == model].set_index("layer").loc[layer_order]
@@ -216,37 +240,43 @@ def fig_depth_collapse() -> str:
         hi = (sub["ci_high"] - sub["A"]).tolist()
         ax.errorbar(
             xs, ys, yerr=[lo, hi],
-            marker="o", ms=6.5, lw=2.0, color=color,
+            marker="o", ms=5, lw=2, color=color, alpha=0.9,
             capsize=3.5, elinewidth=1.3, label=model, zorder=3,
         )
 
     # Llama collapse annotation.
     ax.annotate(
         "Llama A: +0.82 → −0.28\n(read-layer artifact)",
-        xy=(0, 0.82), xytext=(0.18, 0.55),
-        fontsize=8.3, color=OI_VERMILLION,
-        arrowprops=dict(arrowstyle="->", color=OI_VERMILLION, lw=1.0),
+        xy=(0, 0.82), xytext=(0.34, 0.66),
+        fontsize=8, color=RED, bbox=ANN_BBOX,
+        arrowprops=dict(arrowstyle="->", color=RED, lw=1.0),
     )
     # Cross-model difference annotation.
-    ax.text(0.0, -1.02,
-            "A_Llama − A_OLMo:  +1.03 (read)  →  +0.26 (matched)",
-            ha="left", va="center", fontsize=8.4, color=INK)
+    ax.text(0.0, -1.0,
+            "A(Llama) − A(OLMo):  +1.03 (read)  →  +0.26 (matched)",
+            ha="left", va="center", fontsize=8, color="black", bbox=ANN_BBOX)
 
-    ax.set_ylabel("engage/disengage asymmetry  A")
+    ax.set_ylabel("Engage/disengage asymmetry A", fontsize=10)
     ax.set_ylim(-1.15, 1.12)
-    ax.set_xlim(-0.35, 1.9)
+    ax.set_xlim(-0.35, 1.95)
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(["layer 16\n(read layer)",
-                        "layer 12\n(depth-matched /\npre-commitment)"])
+    ax.set_xticklabels(["Layer 16\n(read layer)",
+                        "Layer 12\n(depth-matched /\npre-commitment)"], fontsize=9)
     ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color="#EDEDED", lw=0.8)
-    ax.legend(frameon=False, loc="upper right", handlelength=1.6)
+    ax.grid(True, axis="y", alpha=0.3)
+    ax.legend(loc="upper right", fontsize=9)
+    ax.set_title(
+        "(a) Asymmetry A vs patch layer (read layer 16 to depth-matched 12)",
+        fontsize=10, loc="left",
+    )
 
-    fig.tight_layout()
-    out = _resolve("mn_depth_collapse.pdf")
-    fig.savefig(out)
-    plt.close(fig)
-    return out
+    fig.suptitle(
+        "The Llama read-layer asymmetry collapses at matched depth "
+        "(Llama-3.1-8B vs OLMo-3-7B)",
+        fontsize=11,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    return _save(fig, "mn_depth_collapse")
 
 
 def main() -> None:
