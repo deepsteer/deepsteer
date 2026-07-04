@@ -76,6 +76,7 @@ rather than proceeding without the check.
 - Don't hedge with "This suggests" or "It is worth noting that"; state the conclusion directly
 - Don't open sentences with "Importantly,", "Notably,", "Crucially,", "Interestingly,", or "Specifically,"
 - Write like a careful human researcher, not a summarizer. Prefer short direct sentences over long ones joined by dashes.
+- **Standard acknowledgments block (identical across every paper — do not vary per paper).** Use exactly this text, in the LaTeX `\begin{ack}...\end{ack}` environment (`neurips_2025.sty` renders the "Acknowledgments and Disclosure of Funding" heading) or under a `### Acknowledgments and Disclosure of Funding` heading in non-LaTeX: *"This work made extensive use of Anthropic's Claude (the Claude Code agent on Opus 4.6, 4.7, 4.8 and Fable 5) for code scaffolding, experimental scripts, and prose drafting. The author retains responsibility for experimental design, all scientific claims, and final wording."* When the model list changes, update it here and propagate to every paper (a one-line `re.sub` over `papers/*/build/main.tex`); never let acks drift per paper.
 
 ### Design Principles
 - **Hooks on real models, not reimplementations.** Never write a custom transformer. Use PyTorch forward hooks on actual model modules from HuggingFace.
