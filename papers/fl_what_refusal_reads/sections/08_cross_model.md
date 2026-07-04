@@ -8,15 +8,17 @@ reversibly).
 **The harm direction is a real, causal, cross-model object.** Before separating the axes, the
 harm percept has to be more than an OLMo artifact, and it is. Harmfulness and refusal are
 separately encoded at the instruction token, with the harmfulness read discriminating cleanly
-(d-prime 5.01 on GPT-OSS) and near-orthogonal to the downstream refusal read (cosine 0.16),
-extending Zhao et al. [@zhao2025harmfulness] to deliberative reasoning models. The harm
+(d-prime, the standardized mean separation between the harmful and harmless activation
+distributions, 5.01 on GPT-OSS) and near-orthogonal to the downstream refusal read (cosine
+0.16), extending Zhao et al. [@zhao2025harmfulness] to deliberative reasoning models. The harm
 direction is largely outside the moral subspace, with an in-subspace fraction of 0.18 on
 GPT-OSS and 0.11 on reasoning distills, 3.0–3.9 times the $\sqrt{k/d} \approx 0.04$ chance
 floor, so about 85% of it lies outside the moral foundations, the same "reads a harm sliver"
-object the OLMo rank sweep formalizes. And it is causal: reply-inversion steering along the
-harm direction flips model judgments (Qwen2.5-14B-Instruct shift $+17.4$ flips 33% of replies,
-Llama-3.1-8B-Instruct $+3.0$ flips 23%), where an earlier raw diff-of-means null was a
-magnitude artifact [@zhao2025harmfulness].
+object the OLMo rank sweep formalizes. And it is causal: reply-inversion steering
+(adding the harm direction to the residual stream and counting how many model replies flip from
+one judgment to its opposite) along the harm direction flips model judgments (Qwen2.5-14B-Instruct
+shift $+17.4$ flips 33% of replies, Llama-3.1-8B-Instruct $+3.0$ flips 23%), where an earlier raw
+diff-of-means null was a magnitude artifact [@zhao2025harmfulness].
 
 ## 8.1 Llama reads broad and commits early {#llama}
 
@@ -49,25 +51,32 @@ after the read layer.
 
 This resolves a robustness anomaly in the same panel. Llama's refusal is entangled with moral
 judgment where the other models' is not: at the best ablation layer, removing refusal drops
-judgment accuracy from 0.75 to 0.604, a $-21\sigma$ outlier against matched-random ablations
-(0.747 $\pm$ 0.007) and dose-dependent (Spearman 1.0). Early commitment of a broad moral read
+judgment accuracy from 0.75 to 0.604, far outside the random-ablation band (matched-random
+ablations 0.747 $\pm$ 0.007) and dose-dependent (Spearman 1.0). Early commitment of a broad moral read
 is the mechanism:
 because Llama reads broad moral content and commits before the decision site, ablating its
 refusal reaches into the moral read in a way OLMo's harm-keyed late-committing gate does not.
 The cross-model asymmetry that first looked like a third property is instead a consequence of
 early commitment. Read at the layer where each model commits, the naive asymmetry statistic is
 $+0.82$; read at matched depth (layer 12), it collapses to $-0.28$ on Llama against $-0.54$ on
-OLMo, a difference of $+0.26$. \Cref{fig:depth} shows the collapse, the depth-referenced
-verdict that separates a genuine difference from a measurement taken past the commitment layer.
+OLMo. The $+0.26$ residual difference should not be over-read: the layer-12 Llama value
+($-0.28$) has a confidence interval that includes 0, so the two models' matched-depth
+asymmetries are not cleanly separated. The load-bearing cross-model finding is the reads-axis
+difference (Llama's refusal transfer 0.85 is broad where OLMo's holds at the harm-rank-1 level),
+not the residual asymmetry. \Cref{fig:depth} shows the collapse, the depth-referenced verdict
+that separates a genuine difference from a measurement taken past the commitment layer.
 
 ## 8.2 GPT-OSS reads harm and is reversible {#gpt-oss}
 
 GPT-OSS reads harm, but correlationally rather than by interchange. Its refusal direction is
 harm-loaded at both positions it carries signal: at the prompt (the instruction token) the
 standardized cosine to the harm direction is 0.977 against 0.001 for the harm-orthogonal moral
-subspace (near-purely harm), and in-trace it stays harm-dominant but attenuates (0.49 versus
-0.13). This is a prompt-to-trace consistent harm read, and it is why the in-trace refusal
-projection landed below the moral-family band earlier. It is a projection result, not a
+subspace. That prompt-token value is near-collinear: at the instruction token the refusal and
+harm directions are built from overlapping contrasts, so "reads harm" there is close to
+tautological. In-trace, where the two directions are less entangled, it stays harm-dominant but
+attenuates: standardized cosine 0.49 versus 0.13, raw cosine 0.57 versus 0.22. This is a
+prompt-to-trace consistent harm read, and it is why the in-trace refusal projection landed
+below the moral-family band earlier. It is a projection result, not a
 patching result, so the reads-harm placement for GPT-OSS is correlational; the causal
 interchange version is held.
 
@@ -78,7 +87,9 @@ consequential. And in the other direction, a graded exculpatory prefill flips ce
 violating items to comply 6 out of 10, with the decision-channel refusal projection moving
 monotonically toward comply in all 10 items (projection-moved fraction 1.0, monotone fraction
 1.0). \Cref{fig:reversibility} shows the graded panel, with the per-strength series tabulated
-in \Cref{app:panel}. GPT-OSS reverses in both directions;
+in \Cref{app:panel}. These reversibility results rest on small samples on a single model
+(n=7 engage, n=10 disengage on GPT-OSS), and the corroborating projection is read at a
+prefill-contaminated position (\Cref{limitations}). GPT-OSS reverses in both directions;
 its refusal is a read that deliberation can re-argue, the clean contrast to Llama's early
 commitment.
 
@@ -88,15 +99,18 @@ commitment.
 \centering
 \caption{What refusal reads $\times$ how it commits, across three model families. Rows are
 the models with a resolved commitment reading; columns are the two axes. OLMo's read is by
-interchange, Llama's by interchange at matched depth, GPT-OSS's by projection (correlational).}
+interchange, Llama's by interchange at matched depth, GPT-OSS's by projection (correlational).
+OLMo's commitment cell is interchange-only and has low behavioral dynamic range: OLMo barely
+refuses (about 17\%), so its commitment reading rests on the interchange disengage rather than
+on behavior (\Cref{reads-harm}, \Cref{limitations}).}
 \label{tab:two-axis}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Model & What refusal reads & How it commits \\
 \midrule
-OLMo-3-7B & Harm percept (transfer saturates & At / after the read layer \\
- & at the harm-rank-1 level, ceiling 0.31; & (disengage coherent at the \\
- & judgment reads broadly) & read layer, $-0.62$) \\[2pt]
+OLMo-3-7B & Harm percept (transfer holds & At / after the read layer, \\
+ & at the harm-rank-1 level, ceiling 0.31; & interchange-only (disengage \\
+ & judgment reads 0.66) & coherent, $-0.62$) \\[2pt]
 Llama-3.1-8B & Broad moral content (refusal & Early (disengage coherent \\
  & transfer 0.85 $\approx$ judgment 0.79 & below layer 15, incoherent \\
  & at matched depth, gap closes) & at the read layer 16) \\[2pt]
@@ -128,8 +142,10 @@ scale sweep. We state the hypothesis to be tested, not a mechanism established.
 \includegraphics[width=\linewidth]{fl_depth_collapse.pdf}
 \caption{Depth-referenced verdicts, the Llama-versus-OLMo asymmetry. Read at each model's own
 read layer, Llama's refusal asymmetry statistic is $+0.82$, which reads as a third property (a
-hard latch). Read at matched depth (layer 12), it collapses to $-0.28$ against OLMo's $-0.54$,
-a difference of $+0.26$. The read-layer value was a post-commitment artifact: Llama commits
+hard latch). Read at matched depth (layer 12), it collapses to $-0.28$ against OLMo's $-0.54$.
+The $+0.26$ residual difference is not cleanly resolved (the layer-12 Llama value has a
+confidence interval including 0); the load-bearing contrast is the reads axis, not the residual
+asymmetry. The read-layer value was a post-commitment artifact: Llama commits
 early, so a measurement at its read layer is taken past the layer where the decision was
 already fixed. The asymmetry is a consequence of early commitment, not a separate axis.}
 \label{fig:depth}

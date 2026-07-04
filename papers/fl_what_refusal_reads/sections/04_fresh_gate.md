@@ -6,8 +6,9 @@ moral-family band on every model tested.
 
 **It does not crystallize from a precursor.** We measure the cosine between the base model's
 proto-refusal direction and the aligned model's refusal gate at the layer where the gate is
-defined. It is 0.155, well below the 0.50 threshold that the moral subspace clears on its way
-to 0.999. The number is the headline pairing of \Cref{fig:crystal}: 0.999 for comprehension,
+defined. It is 0.155, well below the 0.50 crystallization threshold (set above the near-zero cosine
+expected of two unrelated high-dimensional directions), where the moral subspace instead
+reaches 0.999. The number is the headline pairing of \Cref{fig:crystal}: 0.999 for comprehension,
 0.155 for the gate. The aligned refusal gate is substantially a post-training construction,
 not a re-pointing of something the base model already had.
 

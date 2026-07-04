@@ -24,8 +24,10 @@ and recompute both models there.
 
 **The certifying check.** At matched layer 12, `A_Llama = −0.28` (CI [−0.47, +0.03]) and
 `A_OLMo@12 = −0.54` (CI [−0.81, −0.32]), a difference of +0.26, down from +1.03 at the read
-layer. The apparent third property collapses: the asymmetry is a *consequence* of
-early-commitment, not an independent latch. What survives depth-matching is the reads-axis
+layer. The Llama asymmetry CI [−0.47, +0.03] includes 0, and no difference-CI is reported on
+the residual +0.26, so the surviving cross-model claim rests on the reads-axis difference, not
+on a residual asymmetry. The apparent third property collapses: the asymmetry is a *consequence*
+of early-commitment, not an independent latch. What survives depth-matching is the reads-axis
 difference: at layer 12 Llama reads broad (`broad_moral`: R_refusal 0.85 ≈ R_judgment 0.79,
 gap closes, harm-rank-1 only 0.59) while OLMo stays harm-keyed (R_refusal 0.43 < R_judgment
 0.53, gap open). The read-layer +0.82 is retained only as a voided number with its replacement,

@@ -2,9 +2,10 @@
 
 The causal core is on OLMo-3, where interchange patching [@meng2022rome] on the heads that
 write the decision channel resolves *what* the refusal decision reads. The answer is the harm
-percept: a rank-1 slice of the moral subspace, aligned with a harm direction
-[@zhao2025harmfulness], and not the broad subspace that moral judgment reads on the same
-patches. Moral directions here are causal and foundation-specific to begin with, a preliminary
+percept: a mostly-extra-moral harm direction, aligned with a harm direction
+[@zhao2025harmfulness], that clips a low-rank corner of the moral subspace. About three-quarters
+of refusal's causal input lies off the subspace (the rank sweep below reports 73% outside the
+rank-16 basis); it is not the broad subspace that moral judgment reads on the same patches. Moral directions here are causal and foundation-specific to begin with, a preliminary
 we established with foundation-wise ablation whose specificity strengthens with depth; the
 OLMo-3 interchange cells below sharpen that into a rank sweep that says *which* moral content
 refusal uses.
@@ -36,15 +37,16 @@ direction captures a fraction 0.46 of the moral subspace.
 define the restricted-transfer coefficient $R_r(k)$ as the fraction of the full interchange
 effect on $r$ that is reproduced when the patch is confined to the top-$k$ directions of the
 moral subspace. As $k$ grows over $\{1, 3, 8, 16\}$, judgment transfer climbs
-$0.05 \to 0.46 \to 0.59 \to 0.66$ while refusal transfer *saturates*
-$0.01 \to 0.31 \to 0.26 \to 0.27$ at the harm-rank-1 level (harm-rank-1 transfer 0.31), with a
+$0.05 \to 0.46 \to 0.59 \to 0.66$ while refusal transfer *peaks at $k = 3$ (0.31) and then holds
+flat at 0.26–0.27* ($0.01 \to 0.31 \to 0.26 \to 0.27$) at the harm-rank-1 level (harm-rank-1
+transfer 0.31), with a
 random-direction null near zero at every rank and per-rank purity 0.97–0.99. Expanding the
 moral basis beyond harm buys more judgment coupling and no more refusal coupling. This is the
 central finding, and \Cref{fig:oneknob} plots it: refusal reads the harm percept and stops;
 judgment keeps reading as the subspace widens. About 73% of refusal's causal twin-difference
 input lies outside the rank-16 moral basis (69% already at the rank-3 peak). Judgment reads
-the subspace broadly *on the same patches*, which is the within-model proof that the content
-is there to be read; refusal simply does not read it.
+two-thirds of the subspace patch effect (0.66) *on the same patches*, which is the within-model
+proof that the content is there to be read; refusal simply does not read it.
 
 **One free parameter fits the sweep.** The refusal curve is the judgment curve clipped at a
 harm ceiling: $R_{\text{refusal}}(k) \approx \min(\text{harm ceiling}, R_{\text{judgment}}(k))$,
@@ -69,11 +71,12 @@ harm-surface-keyed gate predicts. That weak coupling is why the cross-model comm
 \caption{The nested rank sweep on OLMo-3, the paper's central causal result. As the moral
 basis expands ($k \in \{1, 3, 8, 16\}$), judgment transfer $R_{\text{judgment}}(k)$ climbs
 $0.05 \to 0.46 \to 0.59 \to 0.66$ (open markers) while refusal transfer
-$R_{\text{refusal}}(k)$ saturates $0.01 \to 0.31 \to 0.26 \to 0.27$ at the harm-rank-1 level
+$R_{\text{refusal}}(k)$ peaks at $k = 3$ (0.31) and then holds flat at 0.26–0.27
+($0.01 \to 0.31 \to 0.26 \to 0.27$) at the harm-rank-1 level
 (filled markers); a random-direction null is near zero throughout. The dashed curve is the
 one-knob fit $R_{\text{refusal}}(k) \approx \min(\text{harm ceiling} \approx 0.31,
 R_{\text{judgment}}(k))$, RMSE 0.036 on the plateau. Refusal reads the harm percept and stops;
-judgment reads the subspace broadly on the same patches. Regenerable from committed data
+judgment reads two-thirds of the subspace patch effect (0.66) on the same patches. Regenerable from committed data
 (\Cref{app:repro}).}
 \label{fig:oneknob}
 \end{figure}

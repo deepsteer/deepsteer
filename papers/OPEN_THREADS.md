@@ -146,3 +146,26 @@ finding), and that build is W3, beyond this gate.**
    the **erratum wording** — it scopes abstract-level Finding 2, so it's yours; the v2 build is W3
    (held this phase).
 4. Paper-B disposition (F5) — or defer to Gate W2 per the plan.
+
+---
+
+## H. Self-review escalations (2026-07-04 hostile-reviewer pass; detail in SELF_REVIEW.md)
+
+Both drafts were reviewed from the delivered PDF in the external-reviewer frame. The shared
+root objection is overclaiming relative to the evidence; the AUTO fixes (honest scoping, anchor
+corrections, notation/limitations, per-mode coverage, related-work positioning) are applied and
+built. The following are thesis/scope/publication calls left to Orion. Each is self-contained
+here so it survives independent of the review scratch doc.
+
+| # | escalation | why it is Orion's | options |
+|---|---|---|---|
+| **H1** | **FL title** over-generalizes a single-model causal result. Table 1 shows Llama refusal reads *broad* moral content by interchange (transfer 0.85 ≈ judgment 0.79); the titular "reads harm, not the moral subspace" is causally supported on OLMo (n=23) and contradicted on Llama. | the title scopes the whole contribution | keep as-is (panel-general claim); **or** "Refusal Reads a Low-Rank Slice of Moral Content"; **or** scope to "On OLMo-3, refusal reads the harm percept" + make §8 explicitly a cross-model variation study |
+| **H2** | **FL contribution scope** — the causal rank sweep is one model (OLMo, n=23, near the MDE); GPT-OSS is correlational, Qwen never appears on the read axis. | rescoping the headline is a framing decision | AUTO already softened abstract/§1 to "causal on OLMo; panel is a cross-architecture consistency check with one dissenting read (Llama)"; the whole-contribution rescope to single-model-causal is yours |
+| **H3** | **Publish P3** — FL §3 (compositional moral encoding) rests on `reblitzrichardson2026geometry` ("How LMs Organize Competing Moral Frameworks"), cited once, currently an in-series `note={Paper 3, this series}`. | publication decision | publish P3 (gives a real cite) / fold the two numbers into an FL appendix / leave as in-series pointer |
+| **H4** | **Release underlying arrays** — 5/6 MN modes and several FL cells cite numbers whose backing lives in uncommitted local `outputs/` files, so a reviewer cannot check them from the page. | data-release decision (repo policy: derived arrays uncommitted) | release per-unit arrays as a supplement / cite the source papers where each number is primary / ship scoped with the honest verifiability caveat (AUTO-stated) |
+| **H5** | **MN scope** — "protocols others can run" vs. externally-validated. All evidence is one program on one panel (OLMo-3/Qwen2.5/Llama-3.1/GPT-OSS). | scope of the note's claim | honest rescope to "lessons from one program, offered as portable" (AUTO-hedged now, Limitations added) vs. commit to a broader external-validation claim (needs cross-program evidence) |
+
+**[POD] items surfaced (frozen phase cannot run; AUTO edits scope the claims instead):** the full
+read×commit grid on every panel model; more request-twins to lift n=23 past the MDE; a
+decorrelating control for the refusal/harm genealogy (harmful-but-complied / benign-but-refused);
+a non-moral positive-projection control for the calibration ladder (persona is moral-adjacent).

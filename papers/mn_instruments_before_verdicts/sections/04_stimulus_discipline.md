@@ -43,14 +43,16 @@ band-existence check decides whether a finer ladder is even buildable: the per-i
 histogram is read as smooth (resolution-limited, build a finer ladder) versus bimodal (a step,
 switch to the graded readout).
 
-**The certifying check.** Under the graded series, GPT-OSS is a reversible reader: strong
-exculpatory prefill flips ceiling-refusing violating items to comply 6/10, and the
-decision-channel refusal projection moves monotonically toward comply in all 10 items
-(frac_projection_moved 1.0, frac_monotone 1.0). The behavioral flip is the primary readout; the
-monotone projection corroborates it (with a last-token caveat on the projection). The engage
-direction is separately consequential: an inculpating-analysis prefill flips unsaturated benign
-requests to refuse 7/7 (Wilson 95% [0.65, 1.0]), so the decision is not fixed before the trace.
-The first-run disengage 0/7 was the saturation trap, now resolved. Report the behavioral flip
+**The certifying check.** These GPT-OSS behavioral cells are small, n = 7 to 10 items per
+arm, and the flip fractions below should be read at that sample size. Under the graded series,
+GPT-OSS is a reversible reader: strong exculpatory prefill flips ceiling-refusing violating
+items to comply 6/10 (reported without a CI at n=10), and the decision-channel refusal
+projection moves monotonically toward comply in all 10 items (frac_projection_moved 1.0,
+frac_monotone 1.0). The behavioral flip is the primary readout; the monotone projection
+corroborates it (with a last-token caveat on the projection). The engage direction is
+separately consequential: an inculpating-analysis prefill flips unsaturated benign requests to
+refuse 7/7 (Wilson 95% [0.65, 1.0]), so the decision is not fixed before the trace. The
+first-run disengage 0/7 was the saturation trap, now resolved. Report the behavioral flip
 and the graded readout separately; the asymmetry statistic itself is not reported, because it
 is uninterpretable when one arm sits at the ceiling.
 

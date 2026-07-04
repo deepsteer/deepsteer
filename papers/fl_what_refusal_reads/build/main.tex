@@ -153,13 +153,16 @@ rank-3 moral subspace crystallizes to a base-to-aligned cosine of 0.999 and post
 rotates it once. The refusal gate, in contrast, is a fresh post-training construction
 (base-to-instruct cosine 0.155) written into a narrow 9-to-15 effective-dimensional
 control-token channel at the decision site, where the refusal decision is orthogonal to the
-moral-judgment decision. A nested interchange rank sweep on OLMo resolves what refusal reads:
-as the moral basis expands, judgment coupling climbs while refusal coupling saturates at the
-rank-1 harm level, so refusal reads the harm percept, a low-rank slice, not the broad subspace
-that judgment reads on the same patches. A four-model panel then separates two axes, what
-refusal reads (harm versus broad moral content) and how it commits (at the read layer, early,
-or reversibly). Refusal routes around the moral subspace; that is why it is easy to remove and
-hard to deepen.
+moral-judgment decision. The causal test is single-model: a nested interchange rank sweep on
+OLMo (n=23 request-twins) resolves what refusal reads. As the moral basis expands, judgment
+coupling climbs while refusal coupling levels off at the rank-1 harm level, so on OLMo refusal
+reads the harm percept, a low-rank slice, not the broad subspace that judgment reads on the
+same patches. A four-model panel is a cross-architecture consistency check, not a second causal
+test; it separates two axes, what refusal reads (harm versus broad moral content) and how it
+commits (at the read layer, early, or reversibly), and families vary: Llama reads broad moral
+content by interchange, the one dissenting read. Refusal reads a low-rank, largely-harm slice
+and routes around the bulk of the moral subspace; that is why it is easy to remove. Whether
+widening the read also deepens the behavior is the open question this raises.
 \end{abstract}
 
 % =======================================================================

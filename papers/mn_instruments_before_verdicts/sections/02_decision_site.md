@@ -6,6 +6,26 @@ fails, another shows that position is architecture-general, a third is the null 
 underneath it, and a fourth is the attribution decomposition that overshoots when the same
 channel is read per-head. Each is stated as: failure → tell → protocol → certifying check.
 
+Several participation ratios recur below, at different positions and under different
+normalizations. Table 1 lists them together so that each PR can be traced to its model,
+position, and normalization.
+
+| Model | Decision-site PR | Decision-token PR | Content-position PR | Geometric-cell PR (raw → std) |
+|---|---|---|---|---|
+| OLMo-3-7B-Instruct | 14.7 | n/a | 40+ | 43 → 94 |
+| Qwen2.5-7B | 8.6 | n/a | 33+ | 1.0 → 39 |
+| Llama-3.1-8B | 10.2 | 13.5 | 35+ | 1.5 → 89 |
+| GPT-OSS-20B | 12.79 | n/a | n/a | n/a |
+
+Table: Participation ratio (PR = (Σλ)²/Σλ²) by model, position, and normalization. The
+decision-site column is the in-format-ladder value plotted in Figure 1; the decision-token
+column is a second position and harness, measured for Llama only (13.5). Content-position PRs
+are full-rank-healthy. The geometric-cell column is the raw → standardized pair of §2.3,
+where per-dimension standardization lifts Qwen and Llama out of near-rank-1 collapse.
+GPT-OSS 12.79 is its harmony decision-token PR, treated as position-valid for the refusal
+decision-direction read against a separate MoE PR ceiling of 25 (§2.1). n/a marks a quantity
+not measured for that model.
+
 ## 2.1 Band-below-null means the position is invalid, not that the direction is absent {#a2-band-below-null}
 
 **Failure as it appeared.** At the chat `final_pre_assistant` decision token on
@@ -21,9 +41,11 @@ instrument. The moral band is not only a yardstick for "moral-adjacent"; it is a
 check on the measurement position. The cause here is dimensionality, not an outlier
 dimension (the top dim carries 0.2% of variance) and not a null that standardization can
 rescue (the null stays 0.52 after z-scoring). The channel is simply narrow: participation
-ratio 14.7. Three independent estimates converge on ~15 effective dimensions, the
-second-derivation check: `√(3/14.7) = 0.45` against a null q95 of 0.557, and against the
-R3 pairwise-|cos| null of 0.41–0.51.
+ratio 14.7. The `√(3/14.7) = 0.45` heuristic (a rank-3 subspace at PR 14.7) predicts a
+median-scale projection; comparing that 0.45 against a null q95 of 0.557 and against the
+rank-3 pairwise-|cos| null of 0.41–0.51 is a consistency check that the numbers are the
+right size, not a convergence of three independent estimates on one value (0.45 is a
+median-scale prediction, 0.557 is a q95).
 
 **The protocol.** `participation_ratio` is a required type-block field on every extracted
 direction, and any position with PR < 30 is flagged position-invalid for content
@@ -31,20 +53,23 @@ projection-fraction tests at extraction time. All three chat decision
 sites (14.7 / 8.6 / 10.2) fall below the gate.
 
 **The certifying check and the reframe.** Position-invalid does not mean uninterpretable
-model. A projection-fraction test fails there, but a decision-*direction* cosine (R3) does
+model. A projection-fraction test fails there, but a decision-*direction* cosine does
 not: it is immune to the projection null. In a ~15-slot channel, refusal and judgment
 directions occupy different slots at |cos| below even the low-dim random level, which reads
 as active separation, not a weak-instrument artifact. Concretely, refusal-decision is
 orthogonal to judgment-decision with no coupling detectable above |cos| 0.10 against a null
-q95 of 0.41 on OLMo (0.32 vs 0.42 on Qwen, 0.08 vs 0.51 on Llama). The narrow channel is
-the mechanism: refusal is written into a control-token bottleneck that moral content does
-not reach (band-below-null there, healthy at content positions), so content-vs-decision
-orthogonality is architecturally favored, and any comprehension-to-decision coupling has to
-ride the attention heads writing into the bottleneck, a concrete anatomical target.
+q95 of 0.41 on OLMo (0.32 vs 0.42 on Qwen, 0.08 vs 0.51 on Llama). Geometrically, the
+moral-content band sits below the null at this bottleneck (band-below-null there, healthy at
+content positions), so content-versus-decision orthogonality is structurally favored here.
+This is a geometric observation, not a functional one: that moral content projects weakly
+onto the decision channel does not by itself establish that it fails to reach the decision,
+which is a causal claim that the note's own standard resolves only with an intervention cell.
+Read as geometry, any comprehension-to-decision coupling would have to ride the attention
+heads writing into the bottleneck, a concrete anatomical target.
 
 One reconciling sentence is required for prose. The bottleneck is position-invalid for
 content projection-fraction tests (band-below-null) and position-valid for decision-direction
-reads (R3 cosine, and the GPT-OSS refusal projection). GPT-OSS's decision channel is called
+reads (decision-direction cosine, and the GPT-OSS refusal projection). GPT-OSS's decision channel is called
 "position-valid (PR 12.79)" against a separate MoE PR sanity ceiling of 25; that ceiling is
 not the content rule.
 
@@ -82,8 +107,8 @@ different failures at two different positions, not one confound.
 **Failure as it appeared.** The covariance-matched, rank-matched null (draw random
 directions from `N(0, Σ̂)` of residual activations, project onto the rank-r subspace) is the
 honest null used throughout the program's earlier representational studies. On the instruct-model geometry it saturates:
-R2 null q95 = 0.92 on Qwen and 0.36 on Llama, R3 pairwise-null q95 = 0.995 on Qwen and 0.90
-on Llama, versus 0.26 on OLMo-3. At a saturated null every direction projects like a typical
+the moral-subspace projection null q95 = 0.92 on Qwen and 0.36 on Llama, the pairwise-cosine
+null q95 = 0.995 on Qwen and 0.90 on Llama, versus 0.26 on OLMo-3. At a saturated null every direction projects like a typical
 direction, so the test has no discriminating power.
 
 **The tell.** The null value itself is near its ceiling. The mechanism is the same massive
@@ -102,13 +127,14 @@ accuracy) never use this null and are untouched; only geometric cells need the r
 
 **The certifying check.** The clean instrument must give the same verdict raw and
 standardized: OLMo, whose activations are well-conditioned, does. The quantitative
-before/after is the participation ratio: raw PR = OLMo 43, Qwen 1.0, Llama 1.5 (one dim
-carries essentially all variance for Qwen and Llama); after z-scoring, PR = OLMo 94, Qwen 39,
-Llama 89. The raw PR ≈ 1 shows the collapse was near-total; standardization lifts Qwen and
-Llama into a genuinely multi-dimensional space.
+before/after is the participation ratio (Table 1, geometric-cell column): raw PR = OLMo 43,
+Qwen 1.0, Llama 1.5 (one dim carries essentially all variance for Qwen and Llama); after
+z-scoring, PR = OLMo 94, Qwen 39, Llama 89. The raw PR ≈ 1 shows the collapse was near-total;
+standardization lifts Qwen and Llama into a genuinely multi-dimensional space.
 
-**A boundary case that names the residual limit.** On the R5 cell the two robustifications
-*disagree*: standardization gives refusal 0.20 above controls 0.10 (strong-form false), while
+**A boundary case that names the residual limit.** On the refusal-projection cell the two
+robustifications *disagree*: standardization gives refusal 0.20 above controls 0.10
+(strong-form false), while
 top-k projection-out gives refusal 0.21 below controls 0.45–0.55 (strong-form true), and the
 same split appears on Llama. When standardization and projection-out disagree, the subspace
 is genuinely degenerate and needs a format or position change, not a null patch. The
@@ -116,14 +142,18 @@ in-format chat ladder (whose decision-site space carries no >5%-variance dim, so
 outlier-free by construction) is the discriminator. This is the entry's own thesis applied to
 itself: no single null repair resolves a genuinely rank-1 space.
 
-**Scope of the fix.** A companion audit found that the program's Qwen/Llama geometric
-cells were never at risk: they use a permutation test (observed statistics ~0.01,
-unsaturated) and raw projection fractions that are low and un-inflated (moral-subspace
-projection fraction 0.104 OLMo / 0.127 Qwen / 0.071 Llama, mean|cos| 0.04–0.07), and the MFT
-subspace was built on the base model whose foundation directions did not collapse onto the
-outlier dim. The degeneracy is confined to the covariance-matched projection null applied to
-the program's instruct-model `V_moral`. The general caution stands: covariance-matched nulls silently
-degenerate in massive-activation families, the field's default Llama/Qwen panel.
+**Scope of the fix.** Which null a cell uses decides whether the degeneracy touches it. The
+instruct-model moral-subspace projection cells use the covariance-matched null (the one that
+degenerates); the program's Qwen/Llama geometric cells use a permutation test and raw
+(unnormalized) projection fractions; the behavioral cells use no geometric null at all. A
+companion audit found the permutation-and-raw-projection cells were never at risk: the
+permutation test's observed statistics are ~0.01 (unsaturated), the raw projection fractions
+are low and un-inflated (moral-subspace projection fraction 0.104 OLMo / 0.127 Qwen / 0.071
+Llama, mean|cos| 0.04–0.07), and the moral-foundations subspace was built on the base model
+whose foundation directions did not collapse onto the outlier dim. The degeneracy is confined
+to the covariance-matched projection null applied to the instruct-model moral subspace. The
+general caution stands: covariance-matched nulls silently degenerate in massive-activation
+families, the field's default Llama/Qwen panel.
 
 ## 2.4 Reordered-norm architectures overshoot naive per-head OV attribution ~3× {#a3-ov-attribution}
 

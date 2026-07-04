@@ -1,6 +1,7 @@
 # 6. Refusal is orthogonal to moral judgment at the decision {#decision-orthogonality}
 
-The refusal decision is orthogonal to the moral-judgment decision on every model. With both
+The refusal decision is separated from the moral-judgment decision on every model, cleanly on
+OLMo and Llama and by a thinner, standardization-dependent margin on Qwen. With both
 directions defined at the same valid decision token, the comparison is a single cosine per
 model, read against a calibrated null and the moral-family band.
 
@@ -8,7 +9,9 @@ On OLMo-3 the cosine between the refusal-decision and judgment-decision directio
 with no coupling detectable above $|\cos|$ 0.10 against a null q95 of 0.41: a margin of 0.35
 below the minimum detectable effect (null q95 plus a 0.05 margin). On Qwen the cosine is 0.32
 against a null q95 of 0.42 (margin 0.15), and on Llama it is 0.08 against a null q95 of 0.51
-(margin 0.48). All three margins clear the detection bar; the refusal and judgment directions
+(margin 0.48). Qwen's 0.15 margin is the thinnest and is standardization-dependent (the cosine
+and its null both shift under whitening), where OLMo's and Llama's clear the bar with room. All
+three margins clear the detection bar; the refusal and judgment directions
 occupy different slots of the low-dimensional decision channel at a separation below even the
 random level for a channel that narrow. This reads as active separation, not a
 weak-instrument artifact: the same channel where a projection-fraction test has no power still

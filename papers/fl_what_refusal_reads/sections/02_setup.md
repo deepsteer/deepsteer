@@ -10,6 +10,7 @@ the instruction-tuned checkpoints of OLMo-3-7B [@olmo3_2025], Qwen2.5-7B
 base and post-training checkpoints, so we can watch a representation form during pretraining
 and track it through supervised fine-tuning and reinforcement stages. The other three
 provide cross-lineage and cross-architecture generalization for the representational cells.
+Llama-3.1-8B-Instruct is a gated model; access and checkpoint details are in \Cref{app:repro}.
 
 ## 2.2 Directions and subspaces {#directions}
 

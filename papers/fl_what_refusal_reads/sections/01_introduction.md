@@ -23,9 +23,12 @@ control-token bottleneck at the decision site. It does not read the broad moral 
 where comprehension lives. The two are nearly orthogonal, which is exactly why the refusal
 control is thin and removable while the comprehension underneath it is not.
 
-We establish this across four open-weight models (OLMo-3-7B-Instruct, Qwen2.5-7B,
-Llama-3.1-8B, and the reasoning mixture-of-experts GPT-OSS-20B) with a combination of
-geometric measurement and causal interchange. The argument runs in seven steps. Moral
+The geometric measurements span four open-weight models (OLMo-3-7B-Instruct, Qwen2.5-7B,
+Llama-3.1-8B, and the reasoning mixture-of-experts GPT-OSS-20B); the causal interchange test
+that resolves *what* refusal reads is single-model (OLMo, n=23 request-twins), and the
+four-model panel that follows is a cross-architecture consistency check with one dissenting
+read (Llama reads broad moral content by interchange), not a second causal test. The argument
+runs in seven steps. Moral
 comprehension is pretraining-native and survives alignment: a rank-3 moral subspace
 crystallizes during pretraining to a base-to-aligned cosine of 0.999, and post-training
 rotates it once and then leaves it. The refusal gate, by contrast, is a fresh post-training
@@ -34,8 +37,8 @@ decision site itself is a 9-to-15 effective-dimensional control-token bottleneck
 architectures, and at that site the refusal-decision direction is orthogonal to the
 moral-judgment-decision direction. A nested interchange rank sweep on OLMo resolves *what*
 refusal reads: as the moral basis expands, judgment coupling climbs while refusal coupling
-saturates at the rank-1 harm level. Refusal reads harm; judgment reads the subspace broadly;
-they are different reads of the same content. A cross-model panel then separates two axes,
+levels off at the rank-1 harm level. Refusal reads harm; judgment reads two-thirds of the
+subspace patch effect (0.66); they are different reads of the same content. A cross-model panel then separates two axes,
 *what* refusal reads (harm versus broad moral content) and *how* it commits (at the read
 layer, early, or reversibly), with GPT-OSS as an existence proof that a deliberating model
 can read harm and still be talked out of a refusal.

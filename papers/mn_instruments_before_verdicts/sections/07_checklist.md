@@ -6,7 +6,7 @@ appendix-form restatements of the companion skills.
 **Before any projection-fraction / cosine geometric cell:**
 
 - Record `participation_ratio` at the measurement position. If PR < 30, the position is
-  invalid for content projection-fraction tests; report a decision-direction cosine (R3)
+  invalid for content projection-fraction tests; report a decision-direction cosine
   instead, or move to a valid position.
 - Check the positive-control band against the covariance null at that position. Band-below-null
   means the instrument has no discriminating power there; do not report absence.
