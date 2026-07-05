@@ -15,14 +15,14 @@ position, and normalization.
 | OLMo-3-7B-Instruct | 14.7 | n/a | 40+ | 43 → 94 |
 | Qwen2.5-7B | 8.6 | n/a | 33+ | 1.0 → 39 |
 | Llama-3.1-8B | 10.2 | 13.5 | 35+ | 1.5 → 89 |
-| GPT-OSS-20B | 12.79 | n/a | n/a | n/a |
+| GPT-OSS-20B | 12.8 | n/a | n/a | n/a |
 
 Table: Participation ratio (PR = (Σλ)²/Σλ²) by model, position, and normalization. The
 decision-site column is the in-format-ladder value plotted in Figure 1; the decision-token
 column is a second position and harness, measured for Llama only (13.5). Content-position PRs
 are full-rank-healthy. The geometric-cell column is the raw → standardized pair of §2.3,
 where per-dimension standardization lifts Qwen and Llama out of near-rank-1 collapse.
-GPT-OSS 12.79 is its harmony decision-token PR, treated as position-valid for the refusal
+GPT-OSS 12.8 is its harmony decision-token PR, treated as position-valid for the refusal
 decision-direction read against a separate MoE PR ceiling of 25 (§2.1). n/a marks a quantity
 not measured for that model.
 
@@ -70,7 +70,7 @@ heads writing into the bottleneck, a concrete anatomical target.
 One reconciling sentence is required for prose. The bottleneck is position-invalid for
 content projection-fraction tests (band-below-null) and position-valid for decision-direction
 reads (decision-direction cosine, and the GPT-OSS refusal projection). GPT-OSS's decision channel is called
-"position-valid (PR 12.79)" against a separate MoE PR sanity ceiling of 25; that ceiling is
+"position-valid (PR 12.8)" against a separate MoE PR sanity ceiling of 25; that ceiling is
 not the content rule.
 
 \begin{figure}[t]

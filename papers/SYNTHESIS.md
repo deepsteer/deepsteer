@@ -3,7 +3,7 @@
 Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-03: the GPT-OSS commit
 axis is RESOLVED — the graded-disengage pod (Amendment 12) shows GPT-OSS refusal is a **reversible
 reader** (strong exculpatory deliberation flips violating→comply 6/10 + monotone projection), the clean
-contrast to Llama's early-commitment; the same run banked the position gate (decision channel a 12.79-dim
+contrast to Llama's early-commitment; the same run banked the position gate (decision channel a 12.8-dim
 bottleneck, D2 on a fourth architecture) and engage-consequential deliberation (7/7). Earlier: D3 rank
 sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
 verdict against the rank-1 harm-coextensive alternative. Numbers of record live in each direction's
@@ -11,18 +11,73 @@ RESULTS; this file states the throughline and is re-dated on each substantive ch
 the two-axis table's *interpretation* is reframed as a confound-named dimensionality hypothesis, not an
 n=3 claim.)
 
-## Thesis (routing form — resolved for OLMo-3)
+## Thesis (three tiers by evidence scope) — updated 2026-07-05
 
-The refusal decision **reads the harm percept, not the moral subspace**. It picks up a specific,
-low-rank slice of moral content — the harm direction — and writes into a **narrow control-token
-channel** at the decision site. The rank sweep is decisive: as the moral basis expands
-`k ∈ {1, 3, 8, 16}`, refusal transfer **saturates at the harm-rank-1 level** (`R_refusal` 0.31 → 0.27)
-while judgment transfer **climbs** (`R_judgment` 0.46 → 0.66). Adding moral rank beyond harm buys more
-judgment coupling and no more refusal coupling. So the geometric orthogonality measured upstream (D1,
-D2) is not a weak-instrument artifact and not "moral content is causally absent" — it is that refusal
-reads only the harm sliver of a much larger `V_moral`, a sliver nearly orthogonal to the bulk of the
-subspace. Refusal and moral judgment are **different reads of the same content**: refusal reads harm,
-judgment reads the subspace broadly.
+The refusal decision reads only a **low-rank slice** of the moral content the model comprehends, and
+sits in a **narrow control-token channel** geometrically separate from the broad moral subspace. The
+claim decomposes by evidence scope; each tier carries its strongest counter-reading and the experiment
+that separates it. The single-OLMo-scope of the prior version under-claimed Tier 1, which is the
+strongest thing the program holds.
+
+**Tier 1 — panel-level structure (four families: OLMo-3-7B, Qwen2.5-7B, Llama-3.1-8B, GPT-OSS-20B).**
+
+- **Decision-site bottleneck (four families).** The decision site is a low-dimensional control-token
+  channel: participation ratio **14.7 / 8.6 / 10.2 / 12.8** on OLMo / Qwen / Llama / GPT-OSS (range
+  8.6–14.7; GPT-OSS at its harmony decision token).
+- **Below-band (four models).** Refusal projects **below the moral-family band on every model**; even
+  the highest refusal projection is less moral-adjacent than a held-out moral direction (base band-min
+  95% CI [0.47, 0.53], refusal under it).
+- **Decision orthogonality (three families with extracted decision directions; decisive on OLMo and
+  Llama, marginal on Qwen).** Refusal-decision ⊥ judgment-decision: OLMo |cos| 0.10 vs null q95 0.41
+  (margin 0.35), Llama 0.08 vs 0.51 (margin 0.48), Qwen 0.32 vs 0.42 (**margin 0.15,
+  standardization-dependent** — the cosine and its null both shift under whitening). **GPT-OSS is
+  outside this clause**: its causal decision directions are held (correlational-only), so the cell was
+  not run there.
+- **Causal echo (OLMo, corroborating Tier 1).** The OLMo causal recovery fraction is the causal twin of
+  the geometric below-band result: only **~31%** of the refusal interchange effect is recoverable from
+  the moral subspace (`R` is normalized to [0,1]; Llama reaches 0.85, so the ceiling is reachable and
+  0.31 is genuinely low, not a metric floor).
+- *Counter-reading:* the Qwen orthogonality could be a **standardization artifact** — its margin may
+  flip under a defensible whitening variant, and Qwen has documented massive-activation pathology.
+  *Separating experiment:* report Qwen's decision cosine and its null under both raw and whitened bases;
+  if it flips, Qwen drops from decisive to marginal (already the stated form).
+
+**Tier 2 — what the slice is, and how it commits (OLMo-3-causal; family-varying).**
+
+- **OLMo-3 (interchange rank sweep, n=23 request-twins).** Refusal **saturates at the harm-rank-1
+  level** (`R_refusal` peaks 0.31 at k=3, holds 0.26–0.27) while judgment **climbs** (`R_judgment` →
+  0.66) on the same patches: refusal reads a **harm slice**, not the broad subspace; **73%** of its
+  causal input lies off the rank-16 basis (69% already at the rank-3 peak).
+- **Llama (interchange at matched depth).** Refusal transfer **0.85 ≈ judgment 0.79** — reads **broad**
+  moral content, the dissenting read.
+- **GPT-OSS (projection, correlational; interchange held).** Harm-keyed (prompt |cos| 0.977, in-trace
+  0.49 vs 0.13) and **reversible** — a graded exculpatory prefill flips **6/10 violating→comply** with
+  monotone projection movement (definition and graded panel: FL §8.2 / Amendment 12).
+- **Qwen — not measured on the read axis** (no causal read cell was run; this is a missing cell, not a
+  null, so no detection bar applies — a Qwen read would have to be run to make a null claim).
+- *Method note (the confound is confined to GPT-OSS):* the OLMo (harm) and Llama (broad) reads **both
+  use interchange**, so their difference is **family, not method**; only GPT-OSS's read is
+  method-distinct (correlational projection).
+- *Counter-reading:* **method variance masquerading as family variance.** *Separating experiment:* run
+  the interchange rank sweep on GPT-OSS (Tier-2 C1-MoE, held) so all reads share the method. Partial
+  bridge already in hand: OLMo and Llama share the method and still differ.
+
+**Tier 3 — fresh construction / doesn't crystallize (OLMo-3-only; checkpoint-based).**
+
+Refusal does **not crystallize** from a pretraining precursor (proto-refusal→gate cosine **0.155**)
+while the moral subspace does (checkpoint-to-final **0.869 → 0.999**); refusal is a fresh post-training
+construction in a low-variance channel.
+
+- *Counter-reading:* **estimability floor.** The 0.999 is a valid same-pipeline positive control for
+  detecting continuity, but the two constructs differ in checkpoint-estimability — moral content is
+  abundant in pretraining, refusal behavior is scarce, so proto-refusal is plausibly the noisier
+  estimate and a low 0.155 could be attenuation, not genuine discontinuity. *Separating experiment:* a
+  split-half (resample the refusal contrast, recompute proto-refusal, self-cosine) or adjacent-checkpoint
+  self-cosine puts a reliability ceiling under 0.155 (~0.9 → fresh-construction solid; ~0.3 → mostly
+  attenuation floor). **Not zero-GPU with current saves** (`refusal_base.npz` stores only the final
+  4096-d direction; the crystallization trajectory carries a single flat 0.155, no per-checkpoint
+  proto-refusal), so it needs re-extraction on the base checkpoint — a pod. **FL ships this as a stated
+  limitation until the control runs.**
 
 ## The three legs
 
@@ -33,11 +88,12 @@ judgment reads the subspace broadly.
   (cos 0.999); it is a fresh post-training construction in a low-variance channel.
 
 - **D2 (geometry of the decision).** The decision site (`final_pre_assistant`) is a **~9–15-dim
-  control-token bottleneck** across **four families** (participation ratio 14.7 / 8.6 / 10.2 / 12.79 on
+  control-token bottleneck** across **four families** (participation ratio 14.7 / 8.6 / 10.2 / 12.8 on
   OLMo / Qwen / Llama / GPT-OSS-20B, the last a reasoning MoE at its harmony decision token; band below
   the covariance null → position-invalid for content). Refusal-decision ⊥ judgment-decision at |cos|
   below even the low-dim random level. Content and decision do not coexist at one valid position, so
-  content-vs-decision orthogonality is **architecturally guaranteed**, and any coupling must ride the
+  content-vs-decision orthogonality is **structurally favored** (the site is a learned control-token
+  bottleneck, so what routes through it is trainable, not fixed), and any coupling must ride the
   **heads that write the bottleneck**. That is the D3 target.
 
 - **D3 (anatomy of the decision, causal).** Refusal is a **distributed write** into that ~13-dim
@@ -72,7 +128,7 @@ judgment reads the subspace broadly.
   Same mechanism, independent model, independent measurement (projection, not patching).
   (`gpt_oss_harm_audit.py`.) The **Tier-1 session has run** (A100-80GB) and banks three results
   independent of the disengage resolution: (i) the **position gate PASSES** — GPT-OSS's harmony decision
-  channel is a **12.79-dim bottleneck**, so the decision site is the D2 low-dim control channel on a
+  channel is a **12.8-dim bottleneck**, so the decision site is the D2 low-dim control channel on a
   fourth architecture (a 20B reasoning MoE), and the projection reads are licensed; (ii) **deliberation
   is consequential** — an inculpating prefill flips benign→refuse 7/7 (Wilson [0.65, 1.0]), so the
   decision is *not* fixed before the trace; (iii) the decision-channel **null-ratio corroborates

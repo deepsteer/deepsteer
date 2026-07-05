@@ -28,7 +28,7 @@ credibility asset; it is cited from the flagship, not hidden.
   cos 0.35) is causally inert (rank-1 moves neither readout, 0.01 / 0.05), the lesson that
   variance is not causal relevance. Both the one-knob RMSE 0.036 and the PC1-inert reading are
   illustrative point estimates, reported without CIs. Verdict: `harm_saturating`.
-- **GPT-OSS commit axis.** The first session banked the position gate (PR 12.79),
+- **GPT-OSS commit axis.** The first session banked the position gate (PR 12.8),
   consequential engage deliberation (benign→refuse 7/7), and the first-run disengage 0/7 that
   looked irreversible.
 - **Power table.** The saved-array power computation ruled the Llama same-design

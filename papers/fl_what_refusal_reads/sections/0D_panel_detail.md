@@ -15,13 +15,13 @@ of removing it.
 | OLMo-3-7B-Instruct | 14.7 | 40+ | no (band [0.40, 0.47] below null 0.557) |
 | Qwen2.5-7B-Instruct | 8.6 | 33+ | no |
 | Llama-3.1-8B-Instruct | 10.2 | 35+ | no |
-| GPT-OSS-20B | 12.79 | high-dimensional | valid for decision reads (below the 25 ceiling) |
+| GPT-OSS-20B | 12.8 | high-dimensional | valid for decision reads (below the 25 ceiling) |
 
 : The decision site is a 9-to-15 effective-dimensional control-token bottleneck on every
 architecture tested, including a 20B reasoning mixture-of-experts. The Llama value of record is 10.2
 (measured on the in-format ladder, directly comparable to OLMo's 14.7 and Qwen's 8.6); a separate
 decision-token harness reads 13.5 at a second position, and both are far below 30. GPT-OSS's harmony
-decision channel passes its own validity gate at participation ratio 12.79.
+decision channel passes its own validity gate at participation ratio 12.8.
 
 ## D.2 Llama reads broad and commits early: the depth-matched battery {#app:llama-depth}
 
@@ -97,7 +97,7 @@ plus the reversibility result.
 
 | Cell | Value |
 |---|---|
-| Position gate (harmony decision channel) | participation ratio 12.79, below the 25 ceiling, position-valid |
+| Position gate (harmony decision channel) | participation ratio 12.8, below the 25 ceiling, position-valid |
 | Engage flip (inculpating prefill, benign $\to$ refuse) | 7/7 (Wilson 95% [0.65, 1.0]) |
 | Disengage flip (graded exculpatory prefill, violating $\to$ comply) | 6/10 |
 | Decision-channel projection under graded disengage | moved toward comply in all 10 items (projection-moved fraction 1.0, monotone fraction 1.0, mean $-124.6$) |

@@ -64,7 +64,7 @@ The discipline in this note was forced by one discovery. Across four architectur
 decision site (the assistant-header or end-of-prompt control token where the refusal gate
 and the judgment direction are defined) is a low-dimensional bottleneck. The participation
 ratio there is 14.7 on OLMo-3-7B-Instruct, 8.6 on Qwen2.5-7B, 10.2 on Llama-3.1-8B, and
-12.79 on GPT-OSS-20B (a 20B reasoning MoE at its harmony decision token). A 9-to-15
+12.8 on GPT-OSS-20B (a 20B reasoning MoE at its harmony decision token). A 9-to-15
 effective-dimensional channel, on every model tested, while content positions at the same
 layers are full-rank-healthy (PR 40+/33+/35+). This is a substantive finding about where
 the refusal decision lives, and it belongs in the flagship. But it is also the reason the
@@ -77,7 +77,7 @@ finding motivated; the flagship carries the finding.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{mn_bottleneck_pr.pdf}
-\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.79 (a 20B reasoning MoE at its harmony decision token). All four fall below the PR $<$ 30 position-validity gate, while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
+\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning MoE at its harmony decision token). All four fall below the PR $<$ 30 position-validity gate, while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
 \label{fig:bottleneck-pr}
 \end{figure}
 

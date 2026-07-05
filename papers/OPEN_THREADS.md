@@ -195,8 +195,33 @@ a non-moral positive-projection control for the calibration ladder (persona is m
 0.999" mislabel in the abstract, §1, §3, §11); detection bar on the orthogonality verdict;
 per-cell causal-vs-correlational labels.
 
-**Open (Orion): SYNTHESIS thesis scope.** Proposal to restructure the single OLMo-3-scoped
-thesis into three evidence tiers (panel-level structural / OLMo-causal family-varying read /
-OLMo-only checkpoint crystallization), mirroring the FL paper and the new title. Plus a
-rule-9 fix to SYNTHESIS line 40 ("architecturally guaranteed" → "structurally favored").
-Awaiting sign-off before the SYNTHESIS edit lands.
+**SYNTHESIS thesis scope — LANDED 2026-07-05 (Orion approved structure + review repairs).**
+Restructured the single OLMo-3-scoped thesis into three evidence tiers (Tier 1 panel-level
+structure / Tier 2 OLMo-causal family-varying read / Tier 3 OLMo-only checkpoint
+crystallization), each carrying its counter-reading + separating experiment per the register
+contract. Repairs applied: Qwen orthogonality carries its standardization-dependence and the
+"decisive on OLMo/Llama, marginal on Qwen" form; the orthogonality clause is scoped to the
+three families with extracted decision directions (GPT-OSS held, named); families named in the
+Tier 1 header ("panel" was overloaded vs the removability panel); the OLMo/Llama method-bridge
+(both interchange) confines the family-vs-method confound to GPT-OSS; the R-normalization read
+(~31% recoverable = causal twin of below-band) added to Tier 1's orbit; line-40
+"architecturally guaranteed" → "structurally favored"; 12.79 → 12.8 everywhere (13 sites).
+
+Two data-grounded refinements to the review (Orion should note):
+- **"Qwen absent on the read axis" is not-measured, not a null.** §8's method summary omits
+  Qwen entirely — there is no Qwen read cell, so no detection bar applies. Phrasing corrected
+  to "not measured" in SYNTHESIS and the FL abstract; a Qwen read would have to be run to make
+  a null claim. Also fixed: FL abstract said 76% off-subspace; §7 primary is **73%** (rank-16;
+  69% at the rank-3 peak) — corrected.
+- **The Tier 3 estimability control is NOT zero-GPU.** `refusal_base.npz` stores only the final
+  4096-d proto-refusal direction (no per-sample activations for a split-half), and the
+  crystallization trajectory carries a single flat 0.155 (no per-checkpoint proto-refusal for an
+  adjacent-checkpoint self-cosine). So it needs re-extraction on the base checkpoint.
+
+**New pre-ship control (priced pod): proto-refusal reliability ceiling under the 0.155.**
+Split-half (resample the refusal contrast, recompute proto-refusal, self-cosine) or
+adjacent-checkpoint self-cosine. Both branches publishable: self-consistency ~0.9 →
+fresh-construction claim solid; ~0.3 → 0.155 is mostly attenuation floor and the Tier 3 claim
+scopes to "low base→instruct cosine, reliability-limited." Price: ~0.3–0.5h GPU (re-extract
+proto-refusal on the OLMo-3 base checkpoint + one adjacent checkpoint). FL Tier 3 ships the
+estimability counter as a stated limitation until this runs.

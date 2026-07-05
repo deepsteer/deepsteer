@@ -9,7 +9,7 @@ answer: the token before the assistant header on the instruct models, the end-of
 in the reasoning model's harmony format. This is where the refusal gate and the judgment
 direction are defined, because it is the last position the model reads before it commits to a
 reply. At that token the residual stream is a low-dimensional bottleneck. Its participation
-ratio is 14.7 on OLMo-3-7B-Instruct, 8.6 on Qwen2.5-7B, 10.2 on Llama-3.1-8B, and 12.79 on
+ratio is 14.7 on OLMo-3-7B-Instruct, 8.6 on Qwen2.5-7B, 10.2 on Llama-3.1-8B, and 12.8 on
 GPT-OSS-20B, a 9-to-15 effective-dimensional channel on all four models. Content positions at
 the same layers are full-rank-healthy by comparison (participation ratio above 40 on OLMo,
 above 33 on Qwen, above 35 on Llama). \Cref{fig:bottleneck} plots the four decision-site
@@ -36,7 +36,7 @@ ways. It is position-invalid *for content projection-fraction tests* (the band-b
 tell), but position-valid *for decision-direction reads*: a cosine between two directions both
 defined at the decision token is immune to the projection null, and the GPT-OSS refusal
 projection is read at a decision channel that passes its own validity gate at participation
-ratio 12.79. So the bottleneck does not block the comparison the next section makes; it blocks
+ratio 12.8. So the bottleneck does not block the comparison the next section makes; it blocks
 only the content-projection comparison, and it does so on all four architectures.
 
 The structural consequence is the setup for the causal work. Content and the decision do not
@@ -52,7 +52,7 @@ heads that write into the bottleneck. That is a concrete anatomical target, and
 \centering
 \includegraphics[width=\linewidth]{fl_bottleneck_pr.pdf}
 \caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct
-14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.79 (a 20B reasoning
+14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning
 mixture-of-experts at its harmony decision token). All four fall below the participation-ratio
 30 position-validity gate, while content positions at the same layers stay full-rank-healthy
 (above 40/33/35). The refusal decision lives in a 9-to-15 effective-dimensional control-token
