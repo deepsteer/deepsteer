@@ -11,9 +11,9 @@ OLMo-3 interchange cells below sharpen that into a rank sweep that says *which* 
 refusal uses.
 
 **The write is distributed.** Refusal is written into the ~13-dimensional decision channel by
-a set of heads, led by one head (layer 16 head 23) that alone accounts for 11.6% of the total
+a set of heads, led by one head (layer 16 head 23) that alone accounts for 11.7% of the total
 specificity but does not carry the decision. Cumulative channel-matched specificity reaches
-44% at the top ten heads and needs about 62 heads for 80%. Attention is not the whole story:
+45% at the top ten heads and needs about 67 heads for 80% (62 heads reach 79%). Attention is not the whole story:
 multilayer perceptrons contribute 38% of the decision-site write (write fraction 0.384). None
 of the top ten writers is a clean harm-copy head; all are labeled neither-moral-nor-harm, with
 a moral-subspace fraction of 0.15–0.28 and comparable harm loading. Refusal is written broadly,

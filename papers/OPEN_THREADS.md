@@ -190,11 +190,12 @@ a non-moral positive-projection control for the calibration ladder (persona is m
   FL App E.7 + MN §9 cite it; raw activations reviewer-request (MORABLES NC noted). Also fixed:
   `12.79`→`12.8` in the two paper figure CSVs + regenerated both bottleneck figures (prose was
   already 12.8; figures now match).
-  Follow-ups (not blocking): (a) FL §7 "about 62 heads for 80%" — the saved sparsity curve reaches
-  80% at ~67 heads (62 → ~79%); reconcile the prose to the curve. (b) FL §E.5 says "Okabe-Ito"
-  palette but `regen_fl_figures.py` uses the Material palette — pick one. (c) matplotlib embeds a
-  PDF CreationDate, so figures are content- but not byte-reproducible; strip for byte-repro if
-  wanted. (d) stand up the actual raw-activation release channel (Zenodo/HF or on-request inbox).
+  Follow-ups: (a) DONE — FL §7 reconciled to the saved curve (11.7% top head / 45% top-ten /
+  ~67 heads for 80%, 62→79%). (b) DONE — FL §E.5 now names the Material palette honestly and rests
+  the accessibility claim on redundant encoding (never color-alone), not a colorblind-safe palette.
+  (c) DONE — both regen scripts pin `SOURCE_DATE_EPOCH`; figures verified byte-identical across two
+  runs. (d) OPEN — stand up the actual raw-activation release channel (Zenodo/HF or on-request
+  inbox); README currently says "on request."
 - **H5 — RESOLVED.** MN abstract adds "four architectures across three families within a single
   program; external replication across programs is future work."
 

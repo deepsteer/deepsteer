@@ -24,6 +24,9 @@ from __future__ import annotations
 
 import os
 
+# Pin the PDF CreationDate so figures are byte-reproducible across runs.
+os.environ.setdefault("SOURCE_DATE_EPOCH", "0")
+
 import matplotlib
 import numpy as np
 import pandas as pd
