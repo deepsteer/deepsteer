@@ -1,0 +1,6 @@
+stage,moral_cos,refusal_cos
+step 1000,0.869,0.155
+converged,0.999,0.155
+SFT,0.757,0.155
+DPO,0.757,0.155
+RLVR,0.757,0.155

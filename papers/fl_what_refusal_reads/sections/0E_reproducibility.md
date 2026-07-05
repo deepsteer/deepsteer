@@ -113,3 +113,15 @@ Output JSON carries full metadata per record (model name and repo, extraction po
 participation ratio, format, number of pairs, harness and classifier version, and timestamp), so a
 result traces to the artifact it came from. All code, scripts, committed figure CSVs, and structured
 output are released at <https://github.com/deepsteer/deepsteer/>.
+
+The distilled artifacts behind every figure and headline number, the per-head write and specificity
+arrays, the calibrated covariance nulls, the participation-ratio profiles, the calibration ladders,
+and the rank-sweep outcomes, are indexed in `deepsteer/supplement/MANIFEST.json`, each with a
+content hash, its provenance, and the figure or table it backs. The two instruments shared with the
+companion methods note (the decision-site participation-ratio profile and the depth-asymmetry panel)
+live in the supplement once and are cited by both papers; `deepsteer/supplement/scripts/verify.py`
+checks that this paper's plotting copies carry the same values as the canonical files, so a shared
+number can change in only one place. Model ids, decision layers, standardization settings, and seeds
+are pinned in `deepsteer/supplement/PROVENANCE.md`. Raw residual-stream activation caches are
+available to reviewers on request (some moral-content caches inherit a non-commercial license); every
+distilled artifact is re-derivable from them via the run scripts named there.

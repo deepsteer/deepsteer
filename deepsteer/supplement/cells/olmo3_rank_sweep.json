@@ -1,0 +1,53 @@
+{
+  "ceiling_harm_rank1_R": 0.3131,
+  "ks_exact": [
+    1,
+    3,
+    8
+  ],
+  "R_refusal": {
+    "1": 0.0125,
+    "3": 0.3112,
+    "8": 0.2628,
+    "16": 0.2735
+  },
+  "R_judgment": {
+    "1": 0.0519,
+    "3": 0.4635,
+    "8": 0.5906,
+    "16": 0.6614
+  },
+  "harm_capture": {
+    "1": 0.3455,
+    "3": 0.4705,
+    "8": 0.5321,
+    "16": 0.5321
+  },
+  "saturation_model": {
+    "1": 0.0519,
+    "3": 0.3131,
+    "8": 0.3131
+  },
+  "saturation_resid": {
+    "1": -0.0394,
+    "3": -0.0019,
+    "8": -0.0503
+  },
+  "saturation_rmse_plateau": 0.0356,
+  "amplitude_linear_resid": {
+    "1": -0.0957,
+    "3": 0.1639,
+    "8": 0.0962
+  },
+  "amplitude_quad_resid": {
+    "1": -0.0249,
+    "3": 0.2419,
+    "8": 0.1742
+  },
+  "pc1_measured": 0.0125,
+  "pc1_predicted": 0.0519,
+  "pc1_deviation": -0.0394,
+  "pc1_deviates": true,
+  "harm_partialed_R": 0.1597,
+  "verdict": "one-knob saturation fits the plateau; PC1 deviates (nonlinearity candidate)"
+}

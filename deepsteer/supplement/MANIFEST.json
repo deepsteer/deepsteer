@@ -1,0 +1,224 @@
+{
+  "supplement": "DeepSteer: refusal reads a slice of moral content — distilled artifacts",
+  "policy": "Distilled artifacts only (per-head contributions, nulls, PR profiles, ladders, sweep outcomes). Raw activations are not included; they are available on reviewer request (see README.md).",
+  "shared_artifacts_live_once": true,
+  "artifact_count": 14,
+  "artifacts": [
+    {
+      "path": "cells/gpt_oss_tier1.json",
+      "bytes": 6142,
+      "sha256": "c58e45323ffac040da546cd9226ef66711af5c5c759b533a572504c395f16bf4",
+      "description": "GPT-OSS-20B Tier-1 session: harmony-decision-token position gate (PR 12.8), band-existence gate, consequential deliberation (benign->refuse 7/7), graded disengage (violating->comply 6/10, monotone projection). Tier-2 causal C1-MoE held.",
+      "produced_by": "D3 Tier-1 session (Amendment 12)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 8.2"
+      ]
+    },
+    {
+      "path": "cells/llama31_decision_anatomy.json",
+      "bytes": 18738,
+      "sha256": "bf8d9a399b52ed556c37da3c9e6694707fb68c677626451b4ec508026b145664",
+      "description": "Llama-3.1 decision-anatomy session: the broad-moral read (refusal transfer ~0.85 ~= judgment ~0.79 by interchange at matched depth).",
+      "produced_by": "D3 C1 session (Llama-3.1)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 8"
+      ]
+    },
+    {
+      "path": "cells/llama31_depth_L12.json",
+      "bytes": 17103,
+      "sha256": "2a984f6914b5a2fd2eee1a0b0171ed8ae55d398dda02928d4d9a89739de14267",
+      "description": "Llama-3.1 depth-matched (layer 12) session; the read-layer asymmetry collapses to the depth-matched value (paired with olmo3_depth_L12).",
+      "produced_by": "D3 depth-matched session (Llama-3.1)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 8",
+        "methods-note:sec 5"
+      ]
+    },
+    {
+      "path": "cells/olmo3_decision_anatomy.json",
+      "bytes": 18248,
+      "sha256": "b868b7bee0b87047e73d29216279db50cfd5c77c4f92f963b94fe951707e1713",
+      "description": "OLMo-3 decisive-cell session: request-twin cells, transport positive control, channel-matched nulls, MDEs, ratio-of-ratios, per-head write attribution, behavioral generate-under-patch. Distilled summary; no raw activations.",
+      "produced_by": "D3 C1 session (RMSNorm-folded, reconstruction 0.9999)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 6, sec 7, App C"
+      ]
+    },
+    {
+      "path": "cells/olmo3_depth_L12.json",
+      "bytes": 16971,
+      "sha256": "d3aca5c009f5e7f39982aeba989efc6e8505385d5096395889c743d252fd5d50",
+      "description": "OLMo-3 depth-matched (layer 12) decision-anatomy session for the read-vs-commit asymmetry recomputation.",
+      "produced_by": "D3 depth-matched session",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 8",
+        "methods-note:sec 5"
+      ]
+    },
+    {
+      "path": "cells/olmo3_rank_sweep.json",
+      "bytes": 946,
+      "sha256": "4d5bd32f163a19e1bc65030a5456c6c443c42bcd3ae33d31621836c5090591d9",
+      "description": "OLMo-3 one-knob rank-sweep coefficients: R_refusal/R_judgment/harm_capture by k, harm-rank-1 ceiling 0.3131, plateau RMSE 0.0356, PC1 causal-inertia, harm-partialed R 0.1597.",
+      "produced_by": "D3 rank sweep",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 7"
+      ]
+    },
+    {
+      "path": "figure_data/bottleneck_pr.csv",
+      "bytes": 191,
+      "sha256": "446967ea65ff4697dc8fed2201f5d45d44fda671e34419446a435fb54647d2e7",
+      "description": "Participation ratio at the decision site by model, plus decision-token, content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
+      "produced_by": "cells/olmo3_decision_anatomy.json + per-model D2 position-gate sessions",
+      "shared_across_papers": true,
+      "cited_by": [
+        "flagship:Fig bottleneck-PR (sec 5)",
+        "methods-note:Fig 1 + Table 1 (sec 2)"
+      ],
+      "columns": [
+        "model",
+        "decision_site_pr",
+        "decision_token_pr",
+        "content_pr",
+        "geometric_pr_raw",
+        "geometric_pr_std"
+      ]
+    },
+    {
+      "path": "figure_data/calibration_ladder_permodel.csv",
+      "bytes": 156,
+      "sha256": "d846bec2d58b6fd7e28d0af2d64759552526c8aef69e00665cb2ffdea4b7391b",
+      "description": "Per-model calibrated ladder: moral-family band [min,max], refusal projection, persona reference, covariance-null q95. Every refusal point lands below its band.",
+      "produced_by": "D1 calibration sessions (a1_ladder*.json)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:Fig calibration-ladder (sec 6), Table 3 (App B)"
+      ],
+      "columns": [
+        "tag",
+        "band_min",
+        "band_max",
+        "refusal",
+        "persona",
+        "null_q95"
+      ]
+    },
+    {
+      "path": "figure_data/calibration_ladder_position.csv",
+      "bytes": 202,
+      "sha256": "5dcc312f3c74b43e97f4b5bba8b070ae845902ade8774e2e0b31bac6b0b3f8e9",
+      "description": "Two-position validity ladder: at the decision site the positive-control band sits BELOW the covariance null (position-invalid for content); at a content position it sits above (valid).",
+      "produced_by": "D2 position-gate session (OLMo-3-Instruct)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "methods-note:Fig 2 (sec 2.1)"
+      ],
+      "columns": [
+        "position",
+        "band_min",
+        "band_max",
+        "null_q95",
+        "label"
+      ]
+    },
+    {
+      "path": "figure_data/crystallization.csv",
+      "bytes": 121,
+      "sha256": "4c60aa4b228915816b8a24cf3c1857d44be9947e62da5f7991e02c379e452632",
+      "description": "Moral-subspace crystallization (checkpoint-to-final cosine 0.869->0.999, then a single SFT rotation to 0.757) against the flat proto-refusal->gate cosine 0.155 (single measurement, no per-checkpoint trajectory).",
+      "produced_by": "D1 phase-2 base/instruct direction extraction",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:Fig crystallization (sec 3, sec 4)"
+      ],
+      "columns": [
+        "stage",
+        "moral_cos",
+        "refusal_cos"
+      ]
+    },
+    {
+      "path": "figure_data/depth_asymmetry.csv",
+      "bytes": 154,
+      "sha256": "1d239b6f316414c590217949dce21e15d7f777fff7e499b297d8f6b9d0a8f651",
+      "description": "Read-vs-commit asymmetry statistic A by model and layer with bootstrap CIs; the read-layer value collapses to the depth-matched layer-12 value.",
+      "produced_by": "cells/olmo3_depth_L12.json, cells/llama31_depth_L12.json",
+      "shared_across_papers": true,
+      "cited_by": [
+        "flagship:Fig depth-collapse (sec 8)",
+        "methods-note:Fig 3 (sec 5)"
+      ],
+      "columns": [
+        "model",
+        "layer",
+        "A",
+        "ci_low",
+        "ci_high"
+      ]
+    },
+    {
+      "path": "figure_data/head_attribution.csv",
+      "bytes": 351,
+      "sha256": "9877d4d62b9c31e3889f7b056f017fabac8e248a14f7f14c3d3133f6a6fc6da1",
+      "description": "OLMo-3 Stage-1 per-head write attribution at the decision channel: top-10 heads by channel-matched specificity with cumulative-specificity fraction (led by L16H23 at 11.7%; ~67 heads reach 80%; MLP write fraction 0.384).",
+      "produced_by": "cells/olmo3_decision_anatomy.json (top_heads, sparsity_curve, mlp)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:sec 7 + App C (per-head attribution)"
+      ],
+      "columns": [
+        "rank",
+        "layer",
+        "head",
+        "write",
+        "specificity",
+        "cum_specificity_frac"
+      ]
+    },
+    {
+      "path": "figure_data/rank_sweep.csv",
+      "bytes": 133,
+      "sha256": "03e7b7f961ab5a69e7496f12d2666dabd7be1c08dd38c09312b735f82da34d55",
+      "description": "Nested interchange rank sweep on OLMo-3 (n=23 request-twins): restricted-transfer R_judgment and R_refusal over k in {1,3,8,16}, random-direction null, and the one-knob harm-ceiling fit.",
+      "produced_by": "cells/olmo3_rank_sweep.json",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:Fig one-knob (sec 7)"
+      ],
+      "columns": [
+        "k",
+        "R_judgment",
+        "R_refusal",
+        "random_null",
+        "one_knob_fit"
+      ]
+    },
+    {
+      "path": "figure_data/reversibility.csv",
+      "bytes": 140,
+      "sha256": "2268fadc35834da062dc9acf056c9fc6e3a28b70b42ac81ba31c86adcd37ff32",
+      "description": "GPT-OSS graded exculpatory/inculpating prefill flips with Wilson CIs: inculpating benign->refuse 7/7, exculpating violating->comply 6/10 (the reversible-reader result).",
+      "produced_by": "cells/gpt_oss_tier1.json (graded_disengage / deliberation)",
+      "shared_across_papers": false,
+      "cited_by": [
+        "flagship:Fig reversibility (sec 8.2)"
+      ],
+      "columns": [
+        "direction",
+        "flipped",
+        "n",
+        "frac",
+        "ci_low",
+        "ci_high"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,935 @@
+{
+  "model": "allenai/Olmo-3-7B-Instruct",
+  "key": "olmo3_L12",
+  "layer": 12,
+  "reconstruction": 1.0,
+  "reconstruction_ok": true,
+  "reordered_norm": true,
+  "standardize": {
+    "robustify": "zscore",
+    "null_q95_raw": 0.114,
+    "null_q95_std": 0.1059,
+    "participation_ratio_std": 17.17,
+    "n_dims_projected_out": 0
+  },
+  "mlp": {
+    "mlp_write_fraction": 0.2918,
+    "jacobian_branch": false,
+    "note": "MLP > 0.50 -> head story incomplete, add the Jacobian stage (\u00a71 branch)"
+  },
+  "k": 10,
+  "channel_dim": 17,
+  "top_heads": [
+    {
+      "head": [
+        11,
+        20
+      ],
+      "write": 4.63372,
+      "specificity": 5.24172,
+      "channel_mean": -0.60801
+    },
+    {
+      "head": [
+        12,
+        28
+      ],
+      "write": 1.57675,
+      "specificity": 1.60061,
+      "channel_mean": -0.02386
+    },
+    {
+      "head": [
+        11,
+        0
+      ],
+      "write": 1.44669,
+      "specificity": 1.59285,
+      "channel_mean": -0.14616
+    },
+    {
+      "head": [
+        10,
+        11
+      ],
+      "write": 1.60663,
+      "specificity": 1.41441,
+      "channel_mean": 0.19222
+    },
+    {
+      "head": [
+        9,
+        29
+      ],
+      "write": 1.06303,
+      "specificity": 1.1856,
+      "channel_mean": -0.12257
+    },
+    {
+      "head": [
+        7,
+        17
+      ],
+      "write": 1.00234,
+      "specificity": 1.05354,
+      "channel_mean": -0.0512
+    },
+    {
+      "head": [
+        11,
+        8
+      ],
+      "write": -1.37785,
+      "specificity": -1.04722,
+      "channel_mean": -0.33064
+    },
+    {
+      "head": [
+        10,
+        21
+      ],
+      "write": 0.9392,
+      "specificity": 1.02378,
+      "channel_mean": -0.08459
+    },
+    {
+      "head": [
+        9,
+        0
+      ],
+      "write": 0.98191,
+      "specificity": 1.01538,
+      "channel_mean": -0.03347
+    },
+    {
+      "head": [
+        10,
+        3
+      ],
+      "write": 0.78211,
+      "specificity": 0.89486,
+      "channel_mean": -0.11275
+    }
+  ],
+  "sparsity_curve": [
+    0.123,
+    0.1606,
+    0.198,
+    0.2311,
+    0.259,
+    0.2837,
+    0.3083,
+    0.3323,
+    0.3561,
+    0.3771,
+    0.3956,
+    0.4141,
+    0.4317,
+    0.449,
+    0.4657,
+    0.4814,
+    0.4968,
+    0.5103,
+    0.5223,
+    0.5343,
+    0.5461,
+    0.5571,
+    0.5674,
+    0.5763,
+    0.5846,
+    0.5928,
+    0.6009,
+    0.609,
+    0.617,
+    0.625,
+    0.6329,
+    0.6404,
+    0.6477,
+    0.6549,
+    0.6618,
+    0.6682,
+    0.6745,
+    0.6807,
+    0.6869,
+    0.693,
+    0.6991,
+    0.7052,
+    0.711,
+    0.7169,
+    0.7226,
+    0.728,
+    0.7334,
+    0.7385,
+    0.7437,
+    0.7488,
+    0.7537,
+    0.7581,
+    0.7625,
+    0.7668,
+    0.7709,
+    0.7746,
+    0.7783,
+    0.7817,
+    0.7851,
+    0.7885,
+    0.7918,
+    0.7952,
+    0.7984,
+    0.8015,
+    0.8045,
+    0.8073,
+    0.81,
+    0.8128,
+    0.8154,
+    0.818,
+    0.8206,
+    0.8231,
+    0.8256,
+    0.8281,
+    0.8306,
+    0.8331,
+    0.8354,
+    0.8376,
+    0.8397,
+    0.8418,
+    0.8439,
+    0.8459,
+    0.8479,
+    0.8499,
+    0.8519,
+    0.8538,
+    0.8558,
+    0.8577,
+    0.8595,
+    0.8614,
+    0.8632,
+    0.8649,
+    0.8666,
+    0.8683,
+    0.8699,
+    0.8715,
+    0.8731,
+    0.8748,
+    0.8764,
+    0.878,
+    0.8795,
+    0.8811,
+    0.8826,
+    0.8841,
+    0.8857,
+    0.8872,
+    0.8886,
+    0.8901,
+    0.8915,
+    0.8928,
+    0.8942,
+    0.8955,
+    0.8968,
+    0.898,
+    0.8993,
+    0.9005,
+    0.9016,
+    0.9028,
+    0.9039,
+    0.9051,
+    0.9062,
+    0.9074,
+    0.9085,
+    0.9096,
+    0.9107,
+    0.9118,
+    0.9128,
+    0.9138,
+    0.9148,
+    0.9159,
+    0.9169,
+    0.9179,
+    0.9188,
+    0.9198,
+    0.9207,
+    0.9217,
+    0.9226,
+    0.9235,
+    0.9244,
+    0.9252,
+    0.9261,
+    0.927,
+    0.9278,
+    0.9286,
+    0.9294,
+    0.9303,
+    0.931,
+    0.9318,
+    0.9326,
+    0.9334,
+    0.9342,
+    0.935,
+    0.9358,
+    0.9365,
+    0.9373,
+    0.938,
+    0.9388,
+    0.9396,
+    0.9403,
+    0.9411,
+    0.9418,
+    0.9425,
+    0.9433,
+    0.944,
+    0.9447,
+    0.9454,
+    0.9462,
+    0.9469,
+    0.9476,
+    0.9483,
+    0.949,
+    0.9497,
+    0.9504,
+    0.951,
+    0.9517,
+    0.9523,
+    0.9529,
+    0.9535,
+    0.9542,
+    0.9548,
+    0.9553,
+    0.9559,
+    0.9565,
+    0.9571,
+    0.9577,
+    0.9582,
+    0.9588,
+    0.9593,
+    0.9599,
+    0.9604,
+    0.9609,
+    0.9614,
+    0.9619,
+    0.9624,
+    0.9628,
+    0.9633,
+    0.9638,
+    0.9643,
+    0.9647,
+    0.9652,
+    0.9656,
+    0.9661,
+    0.9665,
+    0.9669,
+    0.9674,
+    0.9678,
+    0.9682,
+    0.9686,
+    0.969,
+    0.9694,
+    0.9697,
+    0.9701,
+    0.9705,
+    0.9709,
+    0.9712,
+    0.9716,
+    0.9719,
+    0.9723,
+    0.9726,
+    0.973,
+    0.9733,
+    0.9736,
+    0.974,
+    0.9743,
+    0.9746,
+    0.975,
+    0.9753,
+    0.9756,
+    0.9759,
+    0.9762,
+    0.9765,
+    0.9769,
+    0.9772,
+    0.9775,
+    0.9778,
+    0.978,
+    0.9783,
+    0.9786,
+    0.9789,
+    0.9792,
+    0.9795,
+    0.9797,
+    0.98,
+    0.9803,
+    0.9806,
+    0.9808,
+    0.9811,
+    0.9814,
+    0.9816,
+    0.9819,
+    0.9822,
+    0.9824,
+    0.9827,
+    0.9829,
+    0.9832,
+    0.9834,
+    0.9837,
+    0.9839,
+    0.9842,
+    0.9844,
+    0.9847,
+    0.9849,
+    0.9851,
+    0.9854,
+    0.9856,
+    0.9858,
+    0.986,
+    0.9863,
+    0.9865,
+    0.9867,
+    0.9869,
+    0.9871,
+    0.9873,
+    0.9875,
+    0.9877,
+    0.9879,
+    0.9881,
+    0.9883,
+    0.9885,
+    0.9887,
+    0.9889,
+    0.9891,
+    0.9892,
+    0.9894,
+    0.9896,
+    0.9898,
+    0.99,
+    0.9901,
+    0.9903,
+    0.9905,
+    0.9906,
+    0.9908,
+    0.991,
+    0.9911,
+    0.9913,
+    0.9915,
+    0.9916,
+    0.9918,
+    0.992,
+    0.9921,
+    0.9923,
+    0.9924,
+    0.9926,
+    0.9927,
+    0.9929,
+    0.993,
+    0.9931,
+    0.9933,
+    0.9934,
+    0.9935,
+    0.9937,
+    0.9938,
+    0.9939,
+    0.9941,
+    0.9942,
+    0.9943,
+    0.9944,
+    0.9946,
+    0.9947,
+    0.9948,
+    0.9949,
+    0.9951,
+    0.9952,
+    0.9953,
+    0.9954,
+    0.9955,
+    0.9956,
+    0.9958,
+    0.9959,
+    0.996,
+    0.9961,
+    0.9962,
+    0.9963,
+    0.9964,
+    0.9965,
+    0.9966,
+    0.9967,
+    0.9968,
+    0.9968,
+    0.9969,
+    0.997,
+    0.9971,
+    0.9972,
+    0.9973,
+    0.9973,
+    0.9974,
+    0.9975,
+    0.9976,
+    0.9977,
+    0.9977,
+    0.9978,
+    0.9979,
+    0.998,
+    0.998,
+    0.9981,
+    0.9981,
+    0.9982,
+    0.9983,
+    0.9983,
+    0.9984,
+    0.9984,
+    0.9985,
+    0.9985,
+    0.9986,
+    0.9986,
+    0.9987,
+    0.9988,
+    0.9988,
+    0.9989,
+    0.9989,
+    0.999,
+    0.999,
+    0.9991,
+    0.9991,
+    0.9991,
+    0.9992,
+    0.9992,
+    0.9993,
+    0.9993,
+    0.9993,
+    0.9994,
+    0.9994,
+    0.9994,
+    0.9995,
+    0.9995,
+    0.9995,
+    0.9996,
+    0.9996,
+    0.9996,
+    0.9996,
+    0.9997,
+    0.9997,
+    0.9997,
+    0.9997,
+    0.9998,
+    0.9998,
+    0.9998,
+    0.9998,
+    0.9998,
+    0.9999,
+    0.9999,
+    0.9999,
+    0.9999,
+    0.9999,
+    0.9999,
+    0.9999,
+    0.9999,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "stage2": {
+    "(11, 20)": {
+      "source_dist": {
+        "t_inst": 0.8745,
+        "content": 0.1252,
+        "template": 0.0003,
+        "plurality": "t_inst"
+      },
+      "vmoral_frac": 0.1955,
+      "harm_abs_cos": 0.2212,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": true,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(12, 28)": {
+      "source_dist": {
+        "t_inst": 0.0243,
+        "content": 0.9736,
+        "template": 0.0022,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.0848,
+      "harm_abs_cos": 0.123,
+      "at_read_layer": true,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(11, 0)": {
+      "source_dist": {
+        "t_inst": 0.2454,
+        "content": 0.737,
+        "template": 0.0177,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.1244,
+      "harm_abs_cos": 0.1761,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(10, 11)": {
+      "source_dist": {
+        "t_inst": 0.1355,
+        "content": 0.8519,
+        "template": 0.0126,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.117,
+      "harm_abs_cos": 0.1582,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(9, 29)": {
+      "source_dist": {
+        "t_inst": 0.3957,
+        "content": 0.5732,
+        "template": 0.0311,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.0613,
+      "harm_abs_cos": 0.0885,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(7, 17)": {
+      "source_dist": {
+        "t_inst": 0.6883,
+        "content": 0.3,
+        "template": 0.0117,
+        "plurality": "t_inst"
+      },
+      "vmoral_frac": 0.0425,
+      "harm_abs_cos": 0.0469,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(11, 8)": {
+      "source_dist": {
+        "t_inst": 0.0187,
+        "content": 0.0121,
+        "template": 0.9691,
+        "plurality": "template"
+      },
+      "vmoral_frac": 0.0266,
+      "harm_abs_cos": 0.047,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(10, 21)": {
+      "source_dist": {
+        "t_inst": 0.0426,
+        "content": 0.9431,
+        "template": 0.0144,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.0855,
+      "harm_abs_cos": 0.1316,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(9, 0)": {
+      "source_dist": {
+        "t_inst": 0.2136,
+        "content": 0.7863,
+        "template": 0.0001,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.0789,
+      "harm_abs_cos": 0.1336,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    },
+    "(10, 3)": {
+      "source_dist": {
+        "t_inst": 0.0309,
+        "content": 0.9329,
+        "template": 0.0362,
+        "plurality": "content"
+      },
+      "vmoral_frac": 0.0972,
+      "harm_abs_cos": 0.14,
+      "at_read_layer": false,
+      "classify": {
+        "reads_vmoral_above_null": false,
+        "copy_head_for_harm": false,
+        "moral_content_reading": false,
+        "label": "neither"
+      }
+    }
+  },
+  "screen_counts": {
+    "compositional_twins": 114,
+    "request_twins": 23
+  },
+  "cells": {
+    "n_request_twins": 23,
+    "n_twins_transport": 114,
+    "rt_composition": {
+      "request_screened": 23,
+      "band": 0
+    },
+    "gate": {
+      "mode": "operating",
+      "selected_band": [],
+      "n_band_pairs": 0,
+      "n_required": 12,
+      "gate_pass": false
+    },
+    "bidirectional": {
+      "disengage_following_to_violating": {
+        "mean": -2.0387,
+        "ci": [
+          -2.5775,
+          -1.4748
+        ],
+        "coherent": true
+      },
+      "engage_violating_to_following": {
+        "mean": 0.6069,
+        "ci": [
+          0.1872,
+          1.026
+        ],
+        "coherent": true
+      }
+    },
+    "judgment_recert": {
+      "mean": 0.6104,
+      "ci": [
+        0.4551,
+        0.7817
+      ],
+      "coherent": true
+    },
+    "asymmetry_A": {
+      "A": -0.5412,
+      "ci": [
+        -0.8063,
+        -0.3169
+      ],
+      "frac_twins_disengage": 0.957,
+      "note": "A=0 symmetric, +1 engage-only latch; frac_twins_disengage bimodality"
+    },
+    "engage_sweep": {
+      "ks": [
+        1,
+        3,
+        8,
+        16
+      ],
+      "R_engage_refusal_k": {
+        "1": 0.0036,
+        "3": 0.5396,
+        "8": 0.342,
+        "16": 0.266
+      },
+      "engage_harm_rank1_R": 0.2701,
+      "engage_restricted_over_full": 0.5517
+    },
+    "patch_layer_sweep": {},
+    "cell_a_full_refusal_delta_mean": -2.0387,
+    "cell_b_restricted_refusal_delta_mean": -0.7272,
+    "complement_refusal_delta_mean": -1.4793,
+    "harm_restricted_refusal_delta_mean": -0.6111,
+    "harm_partialed_refusal_delta_mean": -0.3623,
+    "random_rank3_refusal_delta_mean": 0.0084,
+    "full_judgment_delta_mean": 0.6104,
+    "transport_control_judgment_delta_mean": 0.2867,
+    "mde_refusal": 0.3249,
+    "mde_judgment": 0.0976,
+    "ratio_of_ratios": {
+      "R_refusal": 0.3567,
+      "R_judgment": 0.4697,
+      "diff": 0.113,
+      "ci": [
+        0.0039,
+        0.2036
+      ],
+      "ci_excludes_0": true,
+      "stands": false,
+      "verdict": "reads_non_vmoral_features_small_margin",
+      "m_ratio": 0.15
+    },
+    "additivity": {
+      "additivity_ratio": 1.0823,
+      "ci": [
+        1.0014,
+        1.1735
+      ],
+      "additive": false
+    },
+    "harm_rank1_ci": [
+      -0.8072,
+      -0.4254
+    ],
+    "sweep": {
+      "ks": [
+        1,
+        3,
+        8,
+        16
+      ],
+      "R_refusal_k": {
+        "1": 0.0228,
+        "3": 0.3291,
+        "8": 0.4268,
+        "16": 0.4304
+      },
+      "R_judgment_k": {
+        "1": 0.0026,
+        "3": 0.4148,
+        "8": 0.5169,
+        "16": 0.5347
+      },
+      "random_null_k": {
+        "1": 0.0006,
+        "3": 0.0007,
+        "8": 0.0071,
+        "16": 0.0102
+      },
+      "harm_rank1_R": 0.2997,
+      "purity_k": {
+        "1": 0.9751,
+        "3": 0.9846,
+        "8": 0.9903,
+        "16": 0.9936
+      },
+      "cos_harm_pc": [
+        0.2972,
+        0.2734,
+        0.132,
+        0.1569,
+        0.0611,
+        0.1421,
+        0.0434,
+        0.0485
+      ],
+      "ranks": {
+        "1": 1,
+        "3": 3,
+        "8": 8,
+        "16": 16
+      },
+      "shape_verdict": {
+        "verdict": "instrument_ceiling",
+        "R_refusal_top": 0.4304,
+        "R_judgment_top": 0.5347,
+        "harm_rank1_R": 0.2997,
+        "refusal_climbs": true,
+        "gap_closes": false
+      }
+    },
+    "cell_b_verdict_absolute": {
+      "verdict": "vmoral_is_read_substrate",
+      "transport_control_passed": true,
+      "reason": "restricted patch moves refusal -> geometric orthogonality at the readout + causal transport of V_moral content into the writers (complete through-weights story with anatomy)"
+    },
+    "severity_psychometric": {
+      "curve": {
+        "1": {
+          "following_refusal_rate": 0.0,
+          "violating_refusal_rate": 0.0,
+          "separation": 0.0,
+          "n": 6
+        },
+        "2": {
+          "following_refusal_rate": 0.0,
+          "violating_refusal_rate": 0.167,
+          "separation": 0.167,
+          "n": 6
+        },
+        "3": {
+          "following_refusal_rate": 0.0,
+          "violating_refusal_rate": 0.0,
+          "separation": 0.0,
+          "n": 6
+        },
+        "4": {
+          "following_refusal_rate": 0.0,
+          "violating_refusal_rate": 0.167,
+          "separation": 0.167,
+          "n": 6
+        },
+        "5": {
+          "following_refusal_rate": 0.0,
+          "violating_refusal_rate": 0.167,
+          "separation": 0.167,
+          "n": 6
+        }
+      },
+      "operating_band": [],
+      "boundary_band": [],
+      "separation_max": 0.167,
+      "selection_regression_halfgap": null,
+      "gate": {
+        "mode": "operating",
+        "selected_band": [],
+        "n_band_pairs": 0,
+        "n_required": 12,
+        "gate_pass": false
+      }
+    },
+    "behavioral_generate_under_patch": {
+      "n": 10,
+      "base_refuse_violating": 2,
+      "base_comply_following": 10,
+      "flips_to_comply_disengage": 2,
+      "flips_to_refuse_engage": 0,
+      "source": "request_twins_fallback"
+    },
+    "anti_refusal_discriminator": {
+      "layer": 11,
+      "head": 8,
+      "n_prompts": 12,
+      "baseline_refusal_rate": 0.0,
+      "ablated_refusal_rate": 0.0,
+      "over_refusal_increase": 0.0,
+      "anti_over_refusal_head": false
+    }
+  },
+  "note": "Amendment 3: ratio_of_ratios is the PRIMARY verdict (full->judgment = rider 0, now logged); complement/harm/random cells + behavioral flips + anti-refusal discriminator run here (projection readouts + generate-under-patch). Stage-2 earlier-layer reads use the shared residual basis (cross-layer approximation)."
+}

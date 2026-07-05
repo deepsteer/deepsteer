@@ -182,10 +182,19 @@ a non-moral positive-projection control for the calibration ladder (persona is m
   broad); Qwen absent on the read axis."
 - **H3 — RESOLVED.** P2/P3 arXiv-forthcoming; FL's P3 self-cite note de-labeled and the eprint
   id drops in at publication.
-- **H4 — IN PROGRESS.** Building `deepsteer/supplement/` (manifest-indexed, distilled artifacts
-  only — per-head contribs, nulls, PR profiles, ladders, sweep outcomes; not raw activations).
-  MN cites comprehensively; FL cites per quantitative figure + ships regen scripts with pinned
-  revisions/seeds; shared arrays live once. Raw activations on reviewer request.
+- **H4 — LANDED v1 2026-07-05.** `deepsteer/supplement/` built: 14 distilled artifacts
+  (8 figure_data CSVs + 6 distilled cell JSONs), `MANIFEST.json` (sha256 + provenance + cited_by
+  + CSV schemas via `scripts/build.py`), `scripts/verify.py` (integrity + shared-arrays-live-once
+  mirror-drift guard), `README.md`, `PROVENANCE.md` (model ids/layers/standardization/seeds).
+  Shared instruments (bottleneck-PR, depth-asymmetry) canonical once; paper mirrors sha-checked.
+  FL App E.7 + MN §9 cite it; raw activations reviewer-request (MORABLES NC noted). Also fixed:
+  `12.79`→`12.8` in the two paper figure CSVs + regenerated both bottleneck figures (prose was
+  already 12.8; figures now match).
+  Follow-ups (not blocking): (a) FL §7 "about 62 heads for 80%" — the saved sparsity curve reaches
+  80% at ~67 heads (62 → ~79%); reconcile the prose to the curve. (b) FL §E.5 says "Okabe-Ito"
+  palette but `regen_fl_figures.py` uses the Material palette — pick one. (c) matplotlib embeds a
+  PDF CreationDate, so figures are content- but not byte-reproducible; strip for byte-repro if
+  wanted. (d) stand up the actual raw-activation release channel (Zenodo/HF or on-request inbox).
 - **H5 — RESOLVED.** MN abstract adds "four architectures across three families within a single
   program; external replication across programs is future work."
 

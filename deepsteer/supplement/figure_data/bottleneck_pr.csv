@@ -1,0 +1,5 @@
+model,decision_site_pr,decision_token_pr,content_pr,geometric_pr_raw,geometric_pr_std
+OLMo-3-7B,14.7,,40,43,94
+Qwen2.5-7B,8.6,,33,1.0,39
+Llama-3.1-8B,10.2,13.5,35,1.5,89
+GPT-OSS-20B,12.8,,,,
