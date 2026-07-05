@@ -169,3 +169,34 @@ here so it survives independent of the review scratch doc.
 read×commit grid on every panel model; more request-twins to lift n=23 past the MDE; a
 decorrelating control for the refusal/harm genealogy (harmful-but-complied / benign-but-refused);
 a non-moral positive-projection control for the calibration ladder (persona is moral-adjacent).
+
+### Resolved 2026-07-04/05 (Orion)
+
+- **H1 — RESOLVED.** New FL title *"Refusal Reads Only a Slice of What the Model Knows"* +
+  subtitle *"Harm-Keyed Routing and Its Exceptions Across Model Families."* The earlier
+  *"...Slices of Moral Content"* proposal was declined on accuracy: it framed harm as moral
+  content, contradicting the 76%-off-subspace finding; the chosen title keeps harm and the
+  subspace distinct and flags the exceptions (Llama-broad, GPT-OSS-reversible) in the subtitle.
+- **H2 — RESOLVED (keep AUTO scope + one sentence).** Abstract now carries per-cell labels:
+  "causal on OLMo-3, corroborative on GPT-OSS (correlational), contrastive on Llama (causal,
+  broad); Qwen absent on the read axis."
+- **H3 — RESOLVED.** P2/P3 arXiv-forthcoming; FL's P3 self-cite note de-labeled and the eprint
+  id drops in at publication.
+- **H4 — IN PROGRESS.** Building `deepsteer/supplement/` (manifest-indexed, distilled artifacts
+  only — per-head contribs, nulls, PR profiles, ladders, sweep outcomes; not raw activations).
+  MN cites comprehensively; FL cites per quantitative figure + ships regen scripts with pinned
+  revisions/seeds; shared arrays live once. Raw activations on reviewer request.
+- **H5 — RESOLVED.** MN abstract adds "four architectures across three families within a single
+  program; external replication across programs is future work."
+
+**Program-thesis pass (title + both abstracts).** Anchored adjectives (0.869→0.999; 40°/0.757;
+0.155; 9–15 dim; |cos|<0.10 null 0.41; 0.66 vs 0.31; 76% off); construction-named cosines
+(checkpoint-to-final crystallization vs proto-refusal-to-gate — corrected a "base-to-aligned
+0.999" mislabel in the abstract, §1, §3, §11); detection bar on the orthogonality verdict;
+per-cell causal-vs-correlational labels.
+
+**Open (Orion): SYNTHESIS thesis scope.** Proposal to restructure the single OLMo-3-scoped
+thesis into three evidence tiers (panel-level structural / OLMo-causal family-varying read /
+OLMo-only checkpoint crystallization), mirroring the FL paper and the new title. Plus a
+rule-9 fix to SYNTHESIS line 40 ("architecturally guaranteed" → "structurally favored").
+Awaiting sign-off before the SYNTHESIS edit lands.

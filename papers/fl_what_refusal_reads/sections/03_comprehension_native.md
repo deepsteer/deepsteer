@@ -28,7 +28,8 @@ representation that forms in pretraining, is broad and low-rank, and is preserve
 alignment.
 
 The contrast that organizes the rest of the paper is with the refusal gate. Where the moral
-subspace crystallizes to a base-to-aligned cosine of 0.999, the refusal gate reaches only
+subspace crystallizes during pretraining to a checkpoint-to-final cosine of 0.999 (and survives
+alignment with a single ~40-degree rotation), the refusal gate reaches only
 0.155 from its pretraining precursor. Comprehension is deep and inherited; the refusal
 decision, as the next section shows, is a shallow, freshly built control. \Cref{fig:crystal}
 plots the two side by side.

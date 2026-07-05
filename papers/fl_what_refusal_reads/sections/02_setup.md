@@ -2,7 +2,7 @@
 
 ## 2.1 Models {#models}
 
-The panel is four open-weight chat models spanning three lineages, two scales, a
+The panel is four open-weight chat models spanning three families, two scales, a
 mixture-of-experts design, and an explicitly deliberative reasoning model:
 the instruction-tuned checkpoints of OLMo-3-7B [@olmo3_2025], Qwen2.5-7B
 [@qwen2025qwen25], Llama-3.1-8B [@grattafiori2024llama3], and GPT-OSS-20B

@@ -79,7 +79,8 @@
 \usepackage[capitalize, noabbrev]{cleveref}
 
 % --- Title / authors ------------------------------------------------
-\title{Refusal Reads the Harm Percept, Not the Moral Subspace}
+\title{Refusal Reads Only a Slice of What the Model Knows\\[0.4em]
+  {\large\mdseries Harm-Keyed Routing and Its Exceptions Across Model Families}}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -147,21 +148,25 @@
 \begin{abstract}
 Alignment applied after pretraining is shallow in a measurable way: a refusal direction can be
 ablated with a rank-one edit. We ask what that refusal decision actually reads. Across four
-open-weight models (OLMo-3-7B, Qwen2.5-7B, Llama-3.1-8B, and the reasoning
-mixture-of-experts GPT-OSS-20B) we find that moral comprehension is pretraining-native: a
-rank-3 moral subspace crystallizes to a base-to-aligned cosine of 0.999 and post-training only
-rotates it once. The refusal gate, in contrast, is a fresh post-training construction
-(base-to-instruct cosine 0.155) written into a narrow 9-to-15 effective-dimensional
-control-token channel at the decision site, where the refusal decision is orthogonal to the
-moral-judgment decision. The causal test is single-model: a nested interchange rank sweep on
-OLMo (n=23 request-twins) resolves what refusal reads. As the moral basis expands, judgment
-coupling climbs while refusal coupling levels off at the rank-1 harm level, so on OLMo refusal
-reads the harm percept, a low-rank slice, not the broad subspace that judgment reads on the
-same patches. A four-model panel is a cross-architecture consistency check, not a second causal
-test; it separates two axes, what refusal reads (harm versus broad moral content) and how it
-commits (at the read layer, early, or reversibly), and families vary: Llama reads broad moral
-content by interchange, the one dissenting read. Refusal reads a low-rank, largely-harm slice
-and routes around the bulk of the moral subspace; that is why it is easy to remove. Whether
+open-weight models spanning three families (OLMo-3-7B, Qwen2.5-7B, Llama-3.1-8B, and the
+reasoning mixture-of-experts GPT-OSS-20B) we separate what the model comprehends from what its
+refusal gate reads. Moral comprehension is pretraining-native: a rank-3 moral subspace
+crystallizes during pretraining (checkpoint-to-final cosine 0.869 rising to 0.999) and
+alignment rotates it once (about 40 degrees, base-to-SFT cosine 0.757), never rebuilding it.
+The refusal gate, in contrast, is a fresh post-training construction with almost no pretraining
+precursor (proto-refusal-to-gate cosine 0.155), written into a narrow 9-to-15
+effective-dimensional control-token channel where the refusal decision is orthogonal to the
+moral-judgment decision (|cos| below 0.10, null 0.41). What refusal reads is established
+causally on one model, a nested interchange rank sweep on OLMo-3 (n=23 request-twins): as the
+moral basis expands, judgment coupling climbs to 0.66 while refusal coupling levels off at the
+rank-1 harm level (0.31), and 76\% of refusal's causal input lies off the moral subspace, so on
+OLMo refusal reads the harm percept, a low-rank slice, not the broad subspace that judgment
+reads on the same patches. The read is causal on OLMo-3, corroborative on GPT-OSS
+(correlational), and contrastive on Llama (causal, broad); Qwen is absent on the read axis. The
+panel separates what refusal reads (harm versus broad moral content) from how it commits (at
+the read layer, early, or reversibly), and families differ: Llama reads broad moral content by
+interchange, the one dissenting read. Refusal reads only a low-rank, largely-harm slice and
+routes around the bulk of the moral subspace, which is why a rank-one edit removes it. Whether
 widening the read also deepens the behavior is the open question this raises.
 \end{abstract}
 

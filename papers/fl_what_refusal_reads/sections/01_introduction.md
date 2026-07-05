@@ -30,9 +30,10 @@ four-model panel that follows is a cross-architecture consistency check with one
 read (Llama reads broad moral content by interchange), not a second causal test. The argument
 runs in seven steps. Moral
 comprehension is pretraining-native and survives alignment: a rank-3 moral subspace
-crystallizes during pretraining to a base-to-aligned cosine of 0.999, and post-training
-rotates it once and then leaves it. The refusal gate, by contrast, is a fresh post-training
-construction (base-to-instruct cosine 0.155) that lives in a low-variance channel. The
+crystallizes during pretraining to a checkpoint-to-final cosine of 0.999, and post-training
+rotates it once (about 40 degrees) and then leaves it. The refusal gate, by contrast, is a
+fresh post-training construction (proto-refusal-to-gate cosine 0.155) that lives in a
+low-variance channel. The
 decision site itself is a 9-to-15 effective-dimensional control-token bottleneck on all four
 architectures, and at that site the refusal-decision direction is orthogonal to the
 moral-judgment-decision direction. A nested interchange rank sweep on OLMo resolves *what*
