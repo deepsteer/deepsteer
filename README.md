@@ -9,20 +9,6 @@ A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignmen
 
 ***Alpha and pre-release software. DeepSteer is under active development.***
 
-## Research
-
-DeepSteer's results span four papers on OLMo-2 1B, OLMo-3 7B, and
-OLMoE-1B-7B. See **[papers/README.md](papers/README.md)** for findings;
-**[RESEARCH_BRIEF.md](RESEARCH_BRIEF.md)** for the full narrative;
-**[RESEARCH_PLAN.md](RESEARCH_PLAN.md)** for the experimental record.
-
-| Paper | Headline |
-|---|---|
-| 1 — *The Moral Emergence Curve* | Moral concepts emerge early; fragility resolves what accuracy cannot |
-| 2 — *MoE Expert-Level Moral Probing* | No expert specialization; 74× output dilution creates structural fragility |
-| 3 — *The Geometry of Moral Representation* | Integration signature; care–sanctity pairing; sanctity fragility reversal |
-| 4 — *Causal Validation* (preliminary) | Direction ablation, steering injection, behavioral grounding, SAE overlap |
-
 ## Core Thesis
 
 Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer gives you tools to detect, measure, visualize, and steer this difference across six dimensions:
