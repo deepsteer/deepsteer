@@ -188,7 +188,20 @@ construction in a low-variance channel.
 
 A1 (covariance nulls degenerate in massive-activation families → standardize), A2 (band-below-null ⇒
 position-invalid instrument), A3 (reordered-norm architectures overshoot per-head OV attribution ~3×
-→ fold the norm). Plus the estimator discipline this program keeps re-learning: **an absolute
-"one-clears-MDE-one-doesn't" comparison is the overlap fallacy** — normalize to a within-outcome ratio
-and gate on a bootstrap CI, which is what reclassified the D3 headline from a clean claim to the honest
-`under_transfer`.
+→ fold the norm), A7 (coarse-grid critical-noise σ* manufactures a spurious sign-flip under naive
+RMS-normalization — a censoring artifact; use a censoring-free/analytic σ*). Plus the estimator
+discipline this program keeps re-learning: **an absolute "one-clears-MDE-one-doesn't" comparison is
+the overlap fallacy** — normalize to a within-outcome ratio and gate on a bootstrap CI, which is what
+reclassified the D3 headline from a clean claim to the honest `under_transfer`.
+
+**Adversarial-review sweep (2026-07-05, DUO + methods notes).** Nine-paper hostile-review pass +
+two zero-GPU-plus-local-MPS confirmations. Standing-claim-relevant results: (i) **A7** above resolves
+the Paper-1 §4.3 scale-artifact objection in the paper's favor — declarative most fragile *survives*
+a censoring-free scale-matched estimator at the exact 1000-step cell (SNR Δ = 0.44, 95% CI [0.01, 0.91]
+excludes 0; raw overstates ~3×), so §4.3 keeps its ordering with a scale-sensitivity note, not an
+erratum. (ii) **Paper 3 "integration" is now calibrated**, not asserted: a matched-twin non-moral
+control run through the identical pipeline gives mean pairwise cosine 0.013 vs moral 0.26 (Δ = 0.22,
+95% CI [0.20, 0.24] excludes 0), so the shared component is moral-specific relative to a matched
+non-moral battery (affective-vs-moral is the named residual). FL/MN were scoped to their evidence
+(FL thesis made consistent with its already-scoped abstract; MN norm-fold prior art cited and verified);
+no refusal-program thesis change.

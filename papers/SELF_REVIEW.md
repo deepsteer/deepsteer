@@ -139,3 +139,40 @@ single-model-causal; the MN **rescope vs. external-validation** decision; publis
 pretraining-duo cite); **releasing the underlying arrays** for reproducibility; and the **[POD]**
 experiments (full model grid, more twins, decorrelating/non-moral controls) that a frozen phase
 cannot run — for those the honest move is to scope the claims, which the AUTO edits begin.
+
+---
+
+## Round-2 referee pass (2026-07-05) — the two new results (committed this pass)
+
+Author-approved iteration: AUTO fixes applied across FL/MN/P1/P3, two experiments run (P3 non-moral
+control; P1 §4.3 confound), verdicts re-checked. Referee objections for the two new *results*, each
+answered or conceded in-document.
+
+**P3 — non-moral positive control (calibrates "integration").**
+1. *"The matched-twin control is not the reviewer's stated mechanism (six probes sharing one neutral
+   pool)."* → **Answered.** Both constructions were run and reported: the shared-neutral-pool version
+   (the literal mechanism) gives cosine 0.53, *higher* than moral 0.26, and is shown as the ladder's
+   upper anchor. The moral directions use foundation-specific matched twins, which is *why* they avoid
+   that generic axis; the matched-twin non-moral control (0.013) is the construction-matched comparison.
+2. *"Moral vs generic evaluative/affective salience is not separated."* → **Conceded**, named as the
+   residual (§5.6) with its discriminating control (a matched-twin non-moral valence battery) named and
+   not run. Claim ceiling held to "moral-specific relative to a matched non-moral battery."
+3. *"The moral mean-cosine point (0.264) sits above its bootstrap CI [0.215, 0.255]."* → **Answered.**
+   Pair-resampling attenuates cosines toward 0, so the CI understates the true value; the bias is
+   conservative (widens the moral−non-moral gap). Membership reported as a difference-CI with the
+   per-pair-peak extremum flagged and the unbiased cross-layer version given alongside.
+
+**P1 — §4.3 scale-sensitivity confound check (v2 addendum).**
+1. *"Your run is a re-implementation, not the published §4.3 cell."* → **Answered.** Same base
+   (`OLMo-2-0425-1B-early-training` step 1000), same three corpora, same rank/alpha, and it reproduces
+   the published loss trajectory (declarative → 1.01); it is the published cell.
+2. *"An earlier arm showed the ordering flips under RMS-normalization."* → **Answered.** That flip was
+   a coarse-grid censoring artifact (σ*_rms pinned 14/16 layers at the floor); the analytic
+   censoring-free σ* (no grid, no cap) gives no flip. Documented as ANOMALIES A7 with the discriminator.
+3. *"The scale-matched effect only marginally clears 0 (SNR Δ-CI lower bound 0.008)."* → **Conceded and
+   scoped.** The v2 note reads "ordering robust, magnitude scale-sensitive": declarative most fragile
+   survives (Δ_snr 0.44, CI [0.01, 0.91]), but the scale confound removes ~2/3 of the raw gap, so the
+   raw σ* overstates ~3× and the RMS-normalized Δ-CI is the quantity to cite.
+
+Still Orion's (unchanged from above): FL title; MN array release + PR-gate derivation + a pod for the
+Fig-1/reads-axis CIs; whether to ship P1 v2. These sit at decision/pod walls, not effort walls.

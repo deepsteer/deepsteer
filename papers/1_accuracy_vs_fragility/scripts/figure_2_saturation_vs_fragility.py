@@ -10,8 +10,9 @@ is the saturation problem the paper is built around.
 
 Bottom panel: mean critical noise (the fragility scalar) across the
 same checkpoints.  Continues evolving long after accuracy plateaus, with
-the mean drifting from ~10 down toward ~3 between steps 4K and 36K.
-This is what "fragility resolves" means visually.
+the raw mean drifting from ~18.3 (step 4K) down toward ~4.7 (step 36K),
+matching Table 2.  This is what "fragility resolves" means in raw units;
+the RMS-normalized (scale-free) version is flat (see figure_rms_control).
 
 Sources:
     outputs/phase_c1/step_*/layer_wise_moral_probe_*.json   (per-layer accuracy)
@@ -164,7 +165,12 @@ def main() -> None:
         ax_frag.text(
             (sat_step + steps.max()) / 2,
             mean_crit.max() * 0.95,
-            f"fragility keeps resolving change ({mean_crit[steps >= sat_step].max():.1f} → {mean_crit[-1]:.1f})",
+            # Annotate the value AT the saturation step -> endpoint so the
+            # on-plot figure matches Table 2 (18.3 at step 4K -> 4.7 at 36K).
+            # (The intermediate post-saturation max is ~19.3 near step 9K, but
+            # Table 2 tabulates the saturation-point value as the trajectory
+            # start, so we key the annotation to that for consistency.)
+            f"fragility keeps resolving change ({mean_crit[steps == sat_step][0]:.1f} → {mean_crit[-1]:.1f})",
             ha="center", va="top", fontsize=9, color="#3F51B5", fontweight="bold",
         )
 

@@ -52,8 +52,8 @@ moves the model's downstream output). The two facts are
 representational properties of the same model that probing alone
 cannot recover.
 
-This appendix serves as supporting evidence for the §5.2
-fragility-as-richer-functional argument: probing accuracy is one
+This appendix is an uncontrolled, exploratory illustration of the §5.2
+fragility-as-richer-functional point: probing accuracy is one
 functional of the representation geometry; causal contribution is
 another; fragility is a third. All three keep evolving through
 training, often in different directions, and a complete picture of

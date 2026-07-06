@@ -189,10 +189,12 @@ compositional probe validation gate (§3.2). All loaded in fp16 on MPS;
 ## 3.6 Validity controls
 
 Three controls standard for linear-probing studies (leave-lexeme-out
-splits, paraphrase transfer, adversarial lexical swap) are reported
-in Appendix C. The compositional probe (§3.2) addresses the strongest
-version of "your probe is just reading vocabulary": its compositional
-encoding is established by leave-construction-out transfer and lift over
-the unigram lexical floor (§3.2, §4.1), not by the lexical floor alone,
-and it is a strictly stronger ablation than those three controls
-combined for the relevant question.
+splits, paraphrase transfer, adversarial lexical swap) are described
+as procedures in Appendix C. We do not run them; we rest the validity
+argument instead on the compositional leave-construction-out ablation
+(§3.2), whose compositional encoding is established by
+leave-construction-out transfer and lift over the unigram lexical floor
+(§3.2, §4.1), not by the lexical floor alone, and which is a strictly
+stronger ablation than those three controls combined for the relevant
+question. Paraphrase transfer is the one remaining surface-variation
+check we leave to future work.

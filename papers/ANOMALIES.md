@@ -255,6 +255,68 @@ operating-point rule (pattern 4) as its reasoning-model instance.
 
 ---
 
+## A7 (ledger) — Coarse-grid critical-noise σ* produces a spurious sign-flip under naive RMS-normalization (a censoring artifact, not a scale reversal)
+
+**Date:** 2026-07-05 · **Found in:** Paper 1 §4.3 data-curation confound re-check (`confound_rms.py`,
+OLMo-2-1B, 3 LoRA conditions, 400 steps; adversarial-review follow-up).
+
+**Observation.** A reviewer asked whether §4.3's "declarative = most fragile" (raw σ*: declarative
+7.38 < narrative 9.12, general 8.69) survives scale-matching, since declarative has the lowest mean
+activation RMS (2.19 vs 2.41 / 2.43). A re-implementation added an RMS-normalized arm (`σ*_rms`:
+normalize each layer to unit RMS, re-run the same fragility sweep on the fixed absolute grid). σ*_rms
+*reversed* the ordering (declarative most robust 4.75 vs narrative 3.00), which read as a clean "the
+ordering is a scale artifact" flip. It is not — the flip is an estimator artifact.
+
+**Mechanism (R_b confirmed zero-GPU; R_a rejected).** Three scale-matches disagree, diagnostically:
+naive aggregate σ*_raw/mean-RMS = 3.37 / 3.78 / 3.57 (no flip); proper per-layer σ*_raw/rms averaged
+= 3.30 / 4.10 / 3.80 (no flip); the script's σ*_rms arm = 4.75 / 3.00 / 3.88 (flip). The flip lives
+only in the σ*_rms arm. The per-layer forensic shows why: on the coarse grid {0.1,0.3,1,3,10} with
+cap-at-max, σ*_rms pins **14/16 layers at the 3.0 floor** for every condition, and the "flip" is
+driven by 4 scattered censored layers (σ*=cap) for declarative vs 0 for narrative — noise at the grid
+floor, no dynamic range. σ*_raw is the mirror image (10–14/16 layers censored at the 10-cap).
+Decisively, the raw ordering that defines §4.3 is driven by **early layers L0–L5, where declarative
+breaks at σ=3 while narrative/general are censored — and there the per-condition RMS is nearly
+identical** (0.78/0.77/0.77 … 1.86/1.93/1.94). Declarative's lower RMS sits at **deep** layers
+L9–L15, which are censored (no fragility signal) in raw. So the reviewer's "deep-layer RMS drives the
+fragility" mechanism does not drive the raw ordering, and the σ*_rms sign-flip does not survive a
+censoring-free estimator.
+
+**Reading.** R_b (artifact) over R_a (real per-sample/per-layer heterogeneity): the sign-flip is a
+coarse-grid censoring artifact. Under any censoring-free scale-match (per-layer SNR ratio) §4.3's
+ordering is preserved; the early-layer, RMS-matched fragility difference weakly *supports* it. The
+earlier escalation that the ordering "flips under scale-matching, vacating §4.3" is **withdrawn**.
+
+**Fix / definitive check (pre-registered; GPU held).** The coarse 5-point geometric grid with
+cap-at-max censors both arms. Censoring-free estimator: for a frozen linear probe with isotropic
+Gaussian test-noise, σ* has a closed form in the clean-margin distribution (no grid, no seeds), or use
+a finer grid. Definitive §4.3 verdict = the exact published cell (1000 steps) with (i) the
+analytic/fine-grid σ*, (ii) BOTH conventions (raw and per-layer-SNR), (iii) a paired bootstrap Δ-CI on
+σ*(narrative) − σ*(declarative), seeds fixed, bias-direction table. **Branch A** (flip confirmed under
+a censoring-free estimator) → P1v2 erratum, convention-dependence, do not headline the reversed
+ordering. **Branch B** (ordering preserved) → §4.3 survives with a scale-sensitivity note and the
+attenuated Δ-CI. Both branches feed the MN methods note as a case study.
+
+**Affects.** Any critical-noise-σ* fragility comparison read off a coarse geometric grid with
+cap-at-max, especially cross-condition comparisons where a naive RMS-normalization is applied. Extends
+`project_fragility_scale_confound`: raw σ* is confounded cross-layer, but a coarse-grid σ*_rms "fix"
+introduces its own censoring artifact — the control needs its own calibration.
+
+**Resolution (2026-07-05, exact cell — `confound_analytic.py`, 1000 steps, declarative fully
+memorized at loss 1.01, analytic censoring-free σ*).** **Branch B.** Under the grid-free estimator
+declarative is MOST fragile under BOTH conventions — raw σ* 2.90 < narrative 4.11 < general 4.63, and
+per-layer-SNR σ* 1.37 < 1.75 < 1.87. Paired bootstrap Δ = σ*(narrative) − σ*(declarative) excludes 0
+both ways: raw Δ 1.34, CI [0.24, 2.47]; SNR Δ 0.44, CI [0.008, 0.91] (frac Δ≤0 = 0.024). So §4.3's
+ordering is **genuine, not the scale artifact the reviewer proposed** — but the scale confound accounts
+for **~2/3 of the raw gap** (the SNR effect is ~3× smaller and only marginally clears 0). P1 v2
+disposition: keep §4.3, report the RMS-normalized/SNR Δ-CI with a scale-sensitivity note, do **not**
+headline the raw magnitude. The coarse-grid σ*_rms sign-flip is confirmed an estimator artifact.
+
+**Why it's a contribution.** "Naive RMS-normalization of a coarse-grid σ* can manufacture a spurious
+sign-flip via censoring" is an MN-genre caution (calibrate the estimator before trusting the flip).
+Belongs beside A1/A5.
+
+---
+
 ## Process ledger
 
 **2026-07-03 — the cold-boot W0 audit caught a live erratum that warm sessions had missed.**

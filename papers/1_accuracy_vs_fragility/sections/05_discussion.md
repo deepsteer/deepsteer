@@ -127,7 +127,7 @@ fragility-resolves-what-accuracy-misses pattern is open.
 
 **Raw-σ fragility and the scale confound (resolved in §4.4).** We add
 Gaussian noise in raw activation units (§3.4), which conflates probe
-margin with activation scale: hidden-state RMS grows ~11× from early to
+margin with activation scale: hidden-state RMS grows ~8× from early to
 late layers, so a fixed raw σ is a larger relative perturbation early
 than late. §4.4 runs the RMS-normalized control and finds that the
 §4.2 layer-depth gradient and its cross-checkpoint evolution are largely

@@ -116,9 +116,17 @@ configuration, and writes structured JSON output to
 `papers/1_accuracy_vs_fragility/outputs/<phase>/`
 with full metadata (model name, revision, timestamp, hyperparameters,
 dataset version) per the project's reproducibility convention. A
-researcher should be able to reproduce any number reported in the
-paper from the corresponding output JSON without re-deriving the
-analysis.
+researcher should be able to read any number reported in the paper
+from the corresponding output JSON without re-deriving the analysis.
+Re-running the experiments reproduces these numbers up to seed and MPS
+nondeterminism; the standard / sentiment / syntax headline onsets and
+the §4.3 LoRA run use an unset probe-init RNG (see the random-seeds
+table in Appendix E.2 above), so their re-runs match within seed
+variation rather than bitwise. Figure asset
+filenames (`figure_N_*`) are historical and do not always match the
+rendered figure numbers (two assets share the `figure_4_` base);
+cross-references are label-based, so the rendered numbers are correct
+regardless.
 
 ## E.6 Output JSON schema
 

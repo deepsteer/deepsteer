@@ -4,9 +4,11 @@
 
 We train the four linear probes from §3.1-§3.2 on hidden states from
 all 37 OLMo-2 1B early-training checkpoints (steps 0-36K at 1K
-intervals). Onset is the first checkpoint where mean probe accuracy
-across all 16 layers reaches 0.70. **Figure 1** plots the four
-mean-accuracy trajectories on a shared step axis.
+intervals). The *onset step* (distinct from the per-layer *onset
+layer* of §3.3, and read at a 0.70 threshold rather than 0.60) is the
+first checkpoint where mean probe accuracy across all 16 layers
+reaches 0.70. **Figure 1** plots the four mean-accuracy trajectories
+on a shared step axis.
 
 | Probe | Construction | Onset step | Onset mean acc | Plateau mean acc (step 36K) |
 |-------|--------------|-----------:|----------------:|-----------------------------:|
@@ -37,15 +39,18 @@ valence is encoded compositionally. Both findings are true; the
 strongest single-token reading of the standard onset is ruled out,
 while the staged reading (morally loaded words
 first, compositional moral integration second, syntactic competence
-last) holds. Onset accuracy alone understates the case: the 0.709
+last) holds. Onset ordering is a descriptive observation about
+lexical accessibility, not the load-bearing evidence: the 0.709
 onset sits only ~8 pp above the 0.63 lexical floor, and onset ordering
 across all four datasets tracks lexical-floor height (unigram TF-IDF
 floor: standard moral 0.86, sentiment 0.80, compositional 0.63, syntax
 0.59; the more lexically separable a dataset, the earlier its onset and
 the higher its plateau). Onset timing on its own therefore does not
-separate compositional encoding from lexical difficulty. The evidence
-that the probe recovers compositional rather than lexical signal comes
-from transfer and lift (§3.2).
+separate compositional encoding from lexical difficulty. The
+load-bearing evidence that the probe recovers compositional rather
+than lexical signal is the transfer-and-lift result (1b below):
+held-out leave-construction-out transfer of 0.848 versus 0.598 for a
+bag-of-words classifier (§3.2).
 
 **(1b) Compositional encoding is real, not lexical lookup
 (final-checkpoint evidence).** At the OLMo-2 1B final checkpoint
@@ -168,7 +173,7 @@ degrades.*
 heatmaps: probing accuracy (uniformly green after step 4K, no
 remaining structure to resolve) above raw critical noise (a band that
 deepens with layer index). The visible vertical gradient is real in
-raw units but, as §4.4 establishes, tracks the ${\sim}11\times$ growth
+raw units but, as §4.4 establishes, tracks the ${\sim}8\times$ growth
 in activation scale from early to late layers more than probe
 robustness per se. Same data; different metric; different visible
 structure.
@@ -317,9 +322,44 @@ in §3.1: probing datasets that contain animacy or register
 shortcuts will systematically underestimate fragility at layers
 where the probe exploits those shortcuts rather than moral content.
 
-Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md` and
+**Scale sensitivity of the §4.3 ordering (v2 addendum).** Because §4.3
+compares three separately fine-tuned models, the raw critical-noise
+confound of §4.4 (lower activation scale reads as higher fragility at
+fixed absolute noise) can act across conditions, not only across layers.
+The three conditions do not sit at identical activation scale: the
+declarative model's per-layer activation RMS runs about 10% below the two
+natural-text conditions on average and 15–20% below at deep layers (mean
+RMS 2.21 vs 2.42 and 2.45). We therefore re-ran the exact cell (step-1000
+checkpoint, identical corpora and LoRA settings, declarative memorized to
+loss 1.01) under a scale-controlled estimator: an analytic critical noise
+σ\* computed in closed form from the frozen linear probe's margin
+distribution (no grid, no cap), read both in raw activation units and
+after per-layer RMS normalization (unit-RMS, an SNR-matched noise scale).
+The coarse five-point grid used for the values above censors most layers,
+and a naive RMS-normalization on that grid manufactures a spurious sign
+reversal that the analytic estimator does not; that reversal is a
+censoring artifact, not a scale effect.
+
+The ordering survives scale-matching. Declarative remains the most fragile
+condition under both readings (analytic raw σ\* 2.90 vs 4.11 and 4.63;
+SNR σ\* 1.37 vs 1.75 and 1.87), and the paired bootstrap difference
+σ\*(narrative) − σ\*(declarative) excludes zero either way (raw Δ = 1.34,
+95% CI [0.24, 2.47]; SNR Δ = 0.44, 95% CI [0.01, 0.91]). The declarative
+condition is genuinely more fragile, not merely lower-scale. The scale
+correction is not negligible: RMS normalization removes about two-thirds
+of the raw analytic gap, so the scale-matched effect is roughly three
+times smaller than the raw difference and only marginally clears zero. The
+ordering is robust; the magnitude is scale-sensitive. The grid σ\* values
+reported above (5.63 / 6.94 / 7.38) are the coarse-grid estimate of the
+same ordering and overstate the condition separation on two counts, grid
+snapping and activation scale; the RMS-normalized SNR σ\* with its paired
+difference-CI is the quantity to cite. This is the cross-condition analog
+of the §4.4 cross-layer correction.
+
+Numbers source: `outputs/phase_c_tier2/c3/RESULTS.md`,
 `outputs/phase_c_tier2/c3/{narrative,declarative,general}_moral.json`
-(per-layer fragility for all three conditions).
+(per-layer fragility), and `outputs/phase_c_tier2/c3/confound_analytic/`
+(the scale-controlled analytic re-analysis and paired difference-CIs).
 
 ## 4.4 Scale-normalized fragility: a confound in raw critical noise
 
@@ -327,8 +367,8 @@ Raw critical noise injects Gaussian noise in raw activation units. That
 makes it sensitive to a confound we now isolate and correct: per-layer
 activation scale. On OLMo-2 1B the root-mean-square of a layer's hidden
 activations grows monotonically with depth, from ${\approx}0.13$ at the
-early layers to ${\approx}1.0$ (up to 1.66 at the last layer) at the
-late layers, an ${\sim}11\times$ range. A fixed raw $\sigma$ is
+early layers to ${\approx}1.0$ at the late layers (up to 1.66 at the
+last layer), an ${\sim}8\times$ growth. A fixed raw $\sigma$ is
 therefore a much larger *relative* perturbation at an early layer than
 at a late one, so early layers will look fragile and late layers robust
 *regardless of representational quality*. The layer-depth gradient of

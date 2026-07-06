@@ -39,11 +39,13 @@ point where their approach loses resolution.
 
 **Causal tracing.** Meng et al. (2022) introduced ROME and the
 causal-tracing methodology, which distinguishes layers that *encode*
-information from layers that *causally use* it. Our 7B
-causal-probing analysis (Appendix B) finds a ~10-layer divergence
-between probing peak and causal peak for moral information,
-replicating the storage-vs-use distinction in the moral domain as
-supporting evidence for the body's methodological thesis.
+information from layers that *causally use* it. As an uncontrolled
+exploratory observation, our 7B causal-probing analysis (Appendix B)
+finds the probing peak and the causal peak for moral information fall
+in different parts of the network. We report it as a direction for
+future work, not as a validated result or as supporting evidence for
+the body's thesis: the peak-layer argmax is unstable across probe
+seeds and the tracer has no specificity control (Appendix B).
 
 **Phase transitions.** Power et al. (2022) documented "grokking,"
 sudden phase transitions from memorization to generalization, with

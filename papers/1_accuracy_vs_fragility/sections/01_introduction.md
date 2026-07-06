@@ -62,8 +62,10 @@ flips in context ("protect" / "humiliate", "hungry" / "wealthy",
 (per-seed range 4K-7K), between sentiment (2K) and syntax (6K).
 The standard probe's step-1K onset measures how quickly moralized
 vocabulary becomes linearly separable, not how quickly moral
-valence is encoded compositionally; the staged reading is the
-honest one.
+valence is encoded compositionally; onset timing tracks lexical
+accessibility, so we establish the compositional encoding itself by
+held-out transfer across construction types that share no contrast
+tokens (§4.1), not by onset order.
 
 **Finding 2: Raw critical noise is confounded by activation scale;
 we isolate the confound and establish when the metric is valid.**
@@ -71,7 +73,7 @@ In raw units the standard probe shows a striking layer-depth
 robustness gradient that keeps evolving long after accuracy plateaus
 (late layers tolerate far more noise than early ones, and mean
 critical noise moves through step 36K). But per-layer activation RMS
-grows ~11× from early to late layers, so a fixed raw σ is a much larger
+grows ~8× from early to late layers, so a fixed raw σ is a much larger
 relative perturbation early than late. An RMS-normalized control
 (§4.4) shows the cross-layer gradient and its post-saturation evolution
 are largely this scale effect: the late/early ratio collapses from
