@@ -30,6 +30,7 @@
   url     = {https://arxiv.org/abs/2109.04404}
 }
 
+% VERIFY: author list incomplete ("... and others"); fill full author list from primary source (renders "et al.").
 @article{kovaleva2021bert,
   author  = {Kovaleva, Olga and others},
   title   = {{BERT} Busters: Outlier Dimensions that Disrupt Transformers},
@@ -70,10 +71,44 @@
   url     = {https://arxiv.org/abs/2104.07143}
 }
 
+% VERIFY: author list incomplete ("... and others"); fill full author list from primary source (renders "et al.").
 @article{belrose2023tunedlens,
   author  = {Belrose, Nora and others},
   title   = {Eliciting Latent Predictions from Transformers with the Tuned Lens},
   journal = {arXiv preprint arXiv:2303.08112},
   year    = {2023},
   url     = {https://arxiv.org/abs/2303.08112}
+}
+
+% Norm-fold / LayerNorm-into-weights prior art. Full author list, title, and year
+% verified against transformer-circuits.pub/2021/framework/index.html, which states
+% "up to a variable scaling, layer norm can be merged into adjacent weights."
+@misc{elhage2021framework,
+  author       = {Elhage, Nelson and Nanda, Neel and Olsson, Catherine and Henighan, Tom and Joseph, Nicholas and Mann, Ben and Askell, Amanda and Bai, Yuntao and Chen, Anna and Conerly, Tom and DasSarma, Nova and Drain, Dawn and Ganguli, Deep and Hatfield-Dodds, Zac and Hernandez, Danny and Jones, Andy and Kernion, Jackson and Lovitt, Liane and Ndousse, Kamal and Amodei, Dario and Brown, Tom and Clark, Jack and Kaplan, Jared and McCandlish, Sam and Olah, Chris},
+  title        = {A Mathematical Framework for Transformer Circuits},
+  year         = {2021},
+  howpublished = {Transformer Circuits Thread},
+  url          = {https://transformer-circuits.pub/2021/framework/index.html}
+}
+
+% TransformerLens library; its fold_ln folds LayerNorm/RMSNorm gain into subsequent
+% weights. BibTeX taken verbatim from the library's official citation page:
+% https://transformerlensorg.github.io/TransformerLens/content/citation.html
+@misc{nanda2022transformerlens,
+  author       = {Nanda, Neel and Bloom, Joseph},
+  title        = {{TransformerLens}},
+  year         = {2022},
+  howpublished = {\url{https://github.com/TransformerLensOrg/TransformerLens}}
+}
+
+% Source method for reply-inversion (harmfulness at instruction-token causal handle).
+% Title/authors verified against arXiv:2507.11878 abstract page.
+@article{zhao2025harmfulness,
+  author        = {Zhao, Jiachen and Huang, Jing and Wu, Zhengxuan and Bau, David and Shi, Weiyan},
+  title         = {{LLMs} Encode Harmfulness and Refusal Separately},
+  journal       = {arXiv preprint arXiv:2507.11878},
+  year          = {2025},
+  eprint        = {2507.11878},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2507.11878}
 }

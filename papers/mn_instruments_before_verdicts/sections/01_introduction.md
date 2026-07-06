@@ -26,7 +26,11 @@ refusal gate and the judgment direction are defined; *content positions* are the
 positions carrying the request text. The *moral subspace* is the rank-3 span of the moral
 mean-difference directions extracted from the moral-content datasets. The *refusal-decision*
 and *judgment-decision* directions are the mean-difference directions for refuse-versus-comply
-and for the moral judgment, read at the decision site. *Engage* and *disengage* name the two
+and for the moral judgment, read at the decision site. The *reconstruction fractions*
+$R_{\mathrm{refusal}}$ and $R_{\mathrm{judgment}}$ (written `R_refusal` and `R_judgment` below)
+give the share of the full interchange-patch effect on the refusal (respectively judgment)
+outcome that a restricted rank-$k$ subspace patch transfers, normalized to $[0,1]$, so $0$ is
+no transfer and $1$ is full reconstruction. *Engage* and *disengage* name the two
 directions of a content intervention: engage adds harmful content, disengage removes it.
 Terms are defined again at first use below.
 

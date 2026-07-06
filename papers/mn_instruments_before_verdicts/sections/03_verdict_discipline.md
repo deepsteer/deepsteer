@@ -27,9 +27,14 @@ rank-3, Δ = 0.031, paired 95% CI [0.020, 0.043], excludes 0.)
 
 A second instance, from reasoning models: an early raw diff-of-means null (harm direction 0.44–0.49 of
 residual norm) read as "harmfulness is not causally encoded," but that was a magnitude
-artifact. Reply-inversion recovered the causal signal (Qwen2.5-14B-Instruct shift +17.4 flips
-33%, Llama-3.1-8B-Instruct +3.0 flips 23%). Magnitude and residual-norm share are not causal
-relevance; a causal readout is.
+artifact. Reply-inversion \citep{zhao2025harmfulness} -- steering the model along the
+harmfulness direction at the instruction token and measuring the fraction of replies that flip
+between compliance and refusal -- produced a nonzero directional effect (Qwen2.5-14B-Instruct
+shift +17.4 flips 33%, Llama-3.1-8B-Instruct +3.0 flips 23%). These are raw flip fractions with
+no channel-matched random-direction specificity null at matched norm, so they establish "a
+directional intervention along the harm axis moves the reply," not that the harm axis does so
+over any matched-norm direction; the missing specificity control is a limitation of this
+readout. Magnitude and residual-norm share are not causal relevance; a causal readout is.
 
 ## 3.2 Power tables before compute {#power-tables}
 

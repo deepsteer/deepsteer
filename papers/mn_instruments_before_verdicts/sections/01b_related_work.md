@@ -19,11 +19,13 @@ failure, and the band-below-null tell that catches it, is the contribution.
 
 **Norm handling in attribution.** Reading a direction's per-head or per-layer contribution off
 the residual stream requires accounting for the block's normalization; the logit-lens and
-tuned-lens line makes the sensitivity to that choice explicit \citep{belrose2023tunedlens}. We
-add the specific, quantified failure for reordered (post-block) normalization as used by the
-OLMo-2/3 family: a naive per-head decomposition that skips the block norm overshoots the true
-residual write about threefold, and we give the exact RMSNorm-gain fold that recovers it, with a
-two-sided reconstruction gate (a one-sided floor misses overshoot).
+tuned-lens line makes the sensitivity to that choice explicit \citep{belrose2023tunedlens}.
+Folding the block RMSNorm gain into per-head attribution is itself standard interpretability
+tooling \citep{elhage2021framework, nanda2022transformerlens}, so the fold is not the contribution.
+What we add is the specific, quantified failure for reordered (post-block) normalization as used
+by the OLMo-2/3 family: a naive per-head decomposition that skips the block norm overshoots the
+true residual write about threefold, which we quantify and catch with a two-sided reconstruction
+gate (a one-sided floor misses overshoot).
 
 **Activation-patching methodology.** That patching verdicts depend on metric, corruption, and
 layer choice is the subject of best-practice work \citep{zhang2024patching}. Our stimulus and

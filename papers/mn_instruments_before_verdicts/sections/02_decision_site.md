@@ -50,7 +50,8 @@ median-scale prediction, 0.557 is a q95).
 **The protocol.** `participation_ratio` is a required type-block field on every extracted
 direction, and any position with PR < 30 is flagged position-invalid for content
 projection-fraction tests at extraction time. All three chat decision
-sites (14.7 / 8.6 / 10.2) fall below the gate.
+sites (14.7 / 8.6 / 10.2) fall below the gate. (The 30 is an absolute threshold, not normalized
+by $d_{\mathrm{model}}$ or rank, and its false-invalid rate is unquantified; see Limitations.)
 
 **The certifying check and the reframe.** Position-invalid does not mean uninterpretable
 model. A projection-fraction test fails there, but a decision-*direction* cosine does
@@ -145,12 +146,14 @@ itself: no single null repair resolves a genuinely rank-1 space.
 **Scope of the fix.** Which null a cell uses decides whether the degeneracy touches it. The
 instruct-model moral-subspace projection cells use the covariance-matched null (the one that
 degenerates); the program's Qwen/Llama geometric cells use a permutation test and raw
-(unnormalized) projection fractions; the behavioral cells use no geometric null at all. A
-companion audit found the permutation-and-raw-projection cells were never at risk: the
-permutation test's observed statistics are ~0.01 (unsaturated), the raw projection fractions
+(unnormalized) projection fractions; the behavioral cells use no geometric null at all. We report which null each cell class uses;
+on that accounting the permutation-and-raw-projection cells are not exposed to this degeneracy:
+the permutation test's observed statistics are ~0.01 (unsaturated), the raw projection fractions
 are low and un-inflated (moral-subspace projection fraction 0.104 OLMo / 0.127 Qwen / 0.071
 Llama, mean|cos| 0.04–0.07), and the moral-foundations subspace was built on the base model
-whose foundation directions did not collapse onto the outlier dim. The degeneracy is confined
+whose foundation directions did not collapse onto the outlier dim. This "not at risk" reading
+rests on a companion audit not released with this note and is not independently verifiable from
+it. The degeneracy is confined
 to the covariance-matched projection null applied to the instruct-model moral subspace. The
 general caution stands: covariance-matched nulls silently degenerate in massive-activation
 families, the field's default Llama/Qwen panel.
@@ -174,7 +177,12 @@ reconstruct ~1.0 natively, which is why the overshoot never appeared in Papers 1
 activations and directions, never OV decomposition).
 
 **The protocol.** A two-sided gate `0.90 ≤ recon ≤ 1.10` (overshoot now fails), plus an exact
-RMSNorm fold. RMSNorm is diagonal at a fixed token, `norm(x) = (γ / rms(x)) ⊙ x`, so
+RMSNorm fold. Folding the block norm into per-head attribution is standard
+interpretability tooling \citep{elhage2021framework, nanda2022transformerlens}; the contribution
+this note claims is not the fold but quantifying the ~3× overshoot it corrects on reordered-norm
+architectures, plus the two-sided reconstruction gate that catches it (a one-sided floor misses
+overshoot).
+RMSNorm is diagonal at a fixed token, `norm(x) = (γ / rms(x)) ⊙ x`, so
 multiplying each pre-norm per-component write by the per-layer gain
 `g = γ / sqrt(mean(x²) + ε)` recovers the exact residual contribution. The fold fires
 automatically for reordered-norm models (detected via `post_feedforward_layernorm`) and is a
