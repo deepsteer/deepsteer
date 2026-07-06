@@ -11,7 +11,15 @@ model learns representations in which moral foundations occupy
 distinct directions that share a positive common component (mean
 cosine $\approx 0.22$ at peak separation, $\approx 0.26$ at stable
 mid-network layers). This is genuine multi-dimensional moral
-structure, not a single "moral salience" detector.
+structure, not a single "moral salience" detector. The shared component
+is moral-specific relative to a matched non-moral concept battery built
+identically to the foundations: that battery gives a mean cosine of
+0.013 against the moral 0.26 (paired $\Delta = 0.223$, CI
+$[0.202, 0.244]$, excluding 0; §4.2), and the estimator's
+$[1+(k-1)\bar{c}]/k$ PC1 identity is confirmed to $<0.01$ across all
+three calibration constructions. The one control we do not run, and so
+the one claim we do not make, is whether this axis is specifically moral
+rather than generic affective salience (§5.6).
 
 The fact that effective dimensionality is 5 (near-maximal for 6
 directions) throughout the network rules out the possibility that
@@ -24,8 +32,8 @@ This holds across scale, architecture, and dataset. Effective
 dimensionality is 5 at every layer of OLMo-2 1B, OLMo-2 7B, and
 OLMoE-1B-7B, and on the independently constructed Moral Foundations
 Vignettes (§4.14, §4.16). Integration is the default geometric mode
-for moral representations in these models, not a property of one
-scale, architecture, or probing dataset.
+for moral representations in these models (all from Ai2's OLMo family;
+§5.6), not a property of one scale, architecture, or probing dataset.
 
 **Dataset sensitivity.** The mean cosine similarity is sensitive to
 neutral-pair quality: neutrals that inadvertently carry moral content
@@ -42,23 +50,29 @@ independently authored stimuli reproduce the 5-dimensional integration
 geometry, shows that the qualitative signature does not depend on our
 dataset.
 
-**The model's moral taxonomy is not MFT.** The inter-framework
-structure that emerges does not align with MFT's predicted
+**No evidence of MFT group structure.** The inter-framework
+structure that emerges shows no alignment with MFT's predicted
 individualizing/binding distinction: hierarchical clustering does
 not recover this partition at any layer, and the permutation test
-is non-significant throughout. Instead, the most consistent
-clustering feature is a care--sanctity pairing that crosses MFT
-groups. Both care and sanctity involve protection (of persons from
+is non-significant throughout. This is an underpowered null, not a
+demonstrated absence: the test enumerates only 20 partitions, so its
+smallest achievable $p$ is $0.05$ (observed minimum $0.32$; §4.3), we
+state no minimum detectable within/between gap, and we did not run a
+positive control confirming the test fires on planted group structure,
+so a small individualizing/binding effect cannot be excluded. Instead,
+the most consistent clustering feature is a care--sanctity pairing that
+crosses MFT groups. Both care and sanctity involve protection (of persons from
 harm, of sacred things from degradation), sharing distributional
 signatures that the model detects. The care--sanctity
 pairing is itself robust to dataset construction choices: it persists
 across different neutral-pair generation methods and quality
-thresholds, arguing against a dataset artifact explanation. The model's
-moral taxonomy is thus empirically grounded in corpus statistics rather
-than aligned with any a priori grouping from moral psychology,
-which is itself evidence of genuine structure learning (the model
-discovers which moral concepts are distributionally related) rather
-than surface keyword matching.
+thresholds, arguing against a dataset artifact explanation. The
+structure the model does form is thus empirically grounded in corpus
+statistics and is not detectably aligned with the a priori
+individualizing/binding grouping from moral psychology on this dataset,
+consistent with genuine structure learning (the model discovers which
+moral concepts are distributionally related) rather than surface
+keyword matching.
 
 A data-driven test sharpens this point. Clustering the moral
 activations themselves, without foundation labels, recovers the
@@ -181,14 +195,18 @@ profile (9.1\% subspace membership, 0.95 residual, 0.46 component
 balance; §4.9), so the conflict-as-tension representation is not an
 artifact of the smaller model's capacity.
 
-The complexity--fragility gradient (single-foundation
-$\sigma^* = 4.72$ $>$ pooled dilemma $\sigma^* = 3.12$ $>$
-per-type dilemma $\sigma^* = 2.90$) shows that representational
-complexity trades off against robustness. Dilemma representations
-sit in a higher-dimensional space and are correspondingly more
-fragile under Gaussian noise. This is consistent with the
-residual component encoding subtle contextual features that
-require higher precision to maintain.
+A raw complexity--fragility ordering (single-foundation
+$\sigma^* = 5.02$ $>$ pooled dilemma $3.81$ $>$ per-type dilemma
+$3.55$) might suggest that representational complexity trades off
+against robustness. It does not survive scale normalization: with
+noise scaled to each layer's activation RMS the single-foundation and
+pooled-dilemma values converge (both at the grid maximum) and the
+per-type value barely separates (§4.11). The raw ordering reflects
+register-dependent activation scale, not differential encoding
+robustness, so we make no complexity--robustness claim. The
+compositionality evidence in §4.9--4.10 (subspace membership,
+shared-component geometry, balanced loading) is geometric, not
+fragility-based, and is unaffected.
 
 ## 5.5 Register sensitivity: directions transfer, thresholds do not
 
@@ -256,11 +274,16 @@ dataset is deliberately minimal to demonstrate that structured
 geometry is recoverable even from small samples.
 
 **Permutation test power.** With 6 foundations divided into two
-groups of 3, the permutation space contains only 20 unique
-partitions. The permutation test for the individualizing/binding
-distinction cannot reach $p < 0.05$ unless the effect is very
-large. The dendrogram structure gives qualitative support, but
-the formal statistical test is underpowered.
+groups of 3, the permutation space contains only 20 unique partitions,
+so the smallest achievable $p$ is $1/20 = 0.05$, reached only if the
+observed split is the single most extreme partition; the observed
+minimum is $0.32$ (§4.3). We did not compute a minimum detectable
+within/between gap or run a positive control verifying that the test
+fires on planted group structure. Our MFT-group result is therefore "no
+evidence of individualizing/binding organization," not a demonstrated
+absence: a small group effect cannot be excluded. The absence of
+MFT-aligned dendrograms at any layer is consistent with this null but
+does not turn it into a positive claim.
 
 **One model family.** The three configurations span scale (1B and 7B
 dense) and architecture (dense and MoE), and the integration signature
@@ -280,13 +303,33 @@ accuracy of linear probes suggests that linear decoding captures
 the dominant signal, but does not rule out additional nonlinear
 structure.
 
+**Affective vs.\ moral salience.** The shared component that marks
+integration is moral-specific relative to a matched non-moral battery
+spanning affective, syntactic, stylistic, and topical concepts
+(sentiment, register, grammaticality, tense, number, topic; §4.2), each
+of which decodes at 1.00 peak accuracy while giving a near-zero pairwise
+cosine (0.013 vs.\ the moral 0.26). That battery does not isolate
+whether the shared moral axis is specifically *moral* or a generic
+*evaluative/affective* salience common to emotionally charged text,
+moral statements included. The cheapest discriminating control is a
+matched-twin non-moral valence/affective battery (positive vs.\ negative
+affect against matched neutrals, built exactly as the foundation probes
+are); we did not run it here. We therefore claim moral-specificity
+relative to a matched non-moral battery and leave affective-vs-moral as
+the open residual.
+
 **Causal status.** Probe directions are read off the representation:
 on their own they identify *where* foundation information is readable,
 not whether that information is *used* during generation. Our 7B
-foundation directions provide initial causal evidence on this
-question: ablating a foundation's direction selectively perturbs that
+foundation directions provide preliminary, uncontrolled causal checks:
+ablating a foundation's direction selectively perturbs that
 foundation's continuations, and injecting it produces a dose-response
-shift (Appendix \ref{app:causal}). Full causal localization across
-layers is left to future work; the geometry reported here is
-descriptive of the representation, with this initial causal evidence
-that the directions are functionally implicated.
+shift (Appendix \ref{app:causal}). These checks carry no
+random-direction or channel-matched null, so they do not yet separate
+foundation-specific action from the generic effect of projecting out
+(or amplifying) any stable direction, and the largest steering effects
+occur at off-distribution injection strengths ($\alpha = 20$). Full
+causal localization is left to future work; the geometry reported here
+is descriptive of the representation, and we treat this causal evidence
+as preliminary rather than as establishing that the directions are
+functionally implicated.

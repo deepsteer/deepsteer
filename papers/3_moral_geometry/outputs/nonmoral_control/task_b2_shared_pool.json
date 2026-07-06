@@ -1,0 +1,81 @@
+{
+  "task": "B2_shared_neutral_pool_construction",
+  "note": "Six non-moral marked poles vs the SAME 40 neutral statements (shared pool). Tests the reviewer's exact 'content-vs-shared-neutral by construction' mechanism.",
+  "concepts": [
+    "sentiment_positive",
+    "sentiment_negative",
+    "register_formal",
+    "register_informal",
+    "tense_past",
+    "topic_sports"
+  ],
+  "mean_cosine_per_layer": {
+    "0": 0.410422,
+    "1": 0.410276,
+    "2": 0.422667,
+    "3": 0.453515,
+    "4": 0.441677,
+    "5": 0.451656,
+    "6": 0.470976,
+    "7": 0.531094,
+    "8": 0.56904,
+    "9": 0.547582,
+    "10": 0.530686,
+    "11": 0.527561,
+    "12": 0.515385,
+    "13": 0.515129,
+    "14": 0.495976,
+    "15": 0.525808
+  },
+  "pc1_per_layer": {
+    "0": 0.512551,
+    "1": 0.512467,
+    "2": 0.522749,
+    "3": 0.54769,
+    "4": 0.537635,
+    "5": 0.545092,
+    "6": 0.561853,
+    "7": 0.612198,
+    "8": 0.643389,
+    "9": 0.625427,
+    "10": 0.611906,
+    "11": 0.609152,
+    "12": 0.598287,
+    "13": 0.598139,
+    "14": 0.582369,
+    "15": 0.611497
+  },
+  "eff_dim_per_layer": {
+    "0": 5,
+    "1": 5,
+    "2": 5,
+    "3": 5,
+    "4": 5,
+    "5": 5,
+    "6": 5,
+    "7": 5,
+    "8": 4,
+    "9": 4,
+    "10": 4,
+    "11": 4,
+    "12": 4,
+    "13": 4,
+    "14": 5,
+    "15": 4
+  },
+  "mean_cosine_layer7": 0.5310940146446228,
+  "mean_cosine_stable_band": 0.5061015444142478,
+  "peak_acc": {
+    "sentiment_positive": 1.0,
+    "sentiment_negative": 1.0,
+    "register_formal": 1.0,
+    "register_informal": 1.0,
+    "tense_past": 1.0,
+    "topic_sports": 1.0
+  },
+  "bootstrap_layer7_mean_cosine": 0.5288568034768104,
+  "bootstrap_layer7_CI95": [
+    0.5094230726361275,
+    0.5481016516685486
+  ]
+}

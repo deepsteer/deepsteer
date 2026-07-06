@@ -57,14 +57,26 @@ Applied to OLMo-2 1B and OLMoE-1B-7B (with a dense OLMo-2 7B as a
 scale check), we report three findings:
 
 **Finding 1: Moral foundations are represented with integration
-geometry, but not the structure moral psychology predicts.**
-Foundation directions are distinct (mean pairwise cosine similarity
-$\approx 0.22$--$0.27$ across layers, far from collapse) and span 5
-effective dimensions at every layer: the integration signature, not
-collapse or isolation. Hierarchical clustering does not recover the
-MFT individualizing/binding split, at both the dense 1B and 7B; the dominant
-structure the model forms is a care--sanctity pairing that crosses
-MFT groups.
+geometry, but we find no evidence of the structure moral psychology
+predicts.**
+Foundation directions are distinct: mean pairwise cosine similarity is
+$\approx 0.22$--$0.27$ across layers, positive everywhere and far from
+collapse. This positive shared component is the integration signature.
+Against a matched non-moral concept battery built identically to the
+foundations, it is ${\sim}20\times$ larger (0.26 vs.\ 0.013; paired
+$\Delta = 0.223$, CI $[0.202, 0.244]$, excluding 0; §4.2), so the shared
+component is moral-specific relative to a matched non-moral battery
+rather than a generic content-vs-neutral axis (whether it is
+specifically moral rather than generic affective salience is the one
+residual control we flag; §5.6). The six directions span 5 effective
+dimensions at
+every layer, which rules out collapse but, at the ceiling for six
+mean-centered directions, does not by itself separate integration from
+isolation. Hierarchical clustering does not recover the MFT
+individualizing/binding split at either the dense 1B or 7B, though the
+group-structure test is underpowered (smallest achievable $p = 0.05$,
+so a small effect is not excluded); the most consistent structure the
+model forms is a care--sanctity pairing that crosses MFT groups.
 
 **Finding 2: The geometry of moral dilemmas is partially
 compositional.** Probes for 15 two-foundation dilemmas reach 94.2%

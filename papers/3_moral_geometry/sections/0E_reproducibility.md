@@ -19,7 +19,7 @@ Experiment & Model & Wall time \\
 \midrule
 1--3 (probing + geometry + bootstrap) & OLMo-2 1B & $\sim$5 min \\
 5 (dense vs.\ MoE geometry) & OLMoE-1B-7B & $\sim$20 min \\
-6 (geometric trajectory) & OLMo-2 1B (20 ckpts) & $\sim$45 min \\
+6 (geometric trajectory) & OLMo-2 1B (37 ckpts) & $\sim$45 min \\
 7 (framework fragility) & OLMo-2 + OLMoE & $\sim$25 min \\
 \bottomrule
 \end{tabular}

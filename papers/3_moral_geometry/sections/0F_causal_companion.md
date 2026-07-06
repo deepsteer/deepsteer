@@ -5,10 +5,12 @@
 The geometry reported in the main text is read off the
 representation: it shows where foundation information is decodable.
 Whether the model *uses* that information during generation is a
-separate, causal question. Here we report initial causal checks on
-the OLMo-2 7B foundation directions used throughout this paper, which
-indicate that the directions are functionally implicated rather than
-probing artifacts. A full causal localization is left to future work.
+separate, causal question. Here we report preliminary, uncontrolled
+causal checks on the OLMo-2 7B foundation directions used throughout
+this paper. They carry no random-direction or channel-matched null, so
+they are consistent with the directions being functionally implicated
+but do not by themselves rule out the generic effect of intervening on
+any stable direction. A full causal localization is left to future work.
 
 **Direction ablation.** Projecting a foundation's direction out of the
 residual stream at a target layer degrades that foundation's
@@ -28,7 +30,10 @@ $\alpha = 1$ to $+0.16$, $+0.61$, $+1.85$, and $+3.59$ at
 $\alpha = 2, 5, 10, 20$. The same direction that decodes a foundation
 also steers generation toward it, in proportion to the dose.
 
-These results are descriptive rather than a full causal localization,
-which we leave to future work. They establish that the foundation
-directions in §4 correspond to features the model acts on during
-generation, not only to features that are linearly readable.
+These results are descriptive and uncontrolled rather than a full
+causal localization, which we leave to future work. Without a
+random-direction or channel-matched specificity control they do not
+separate foundation-specific action from generic intervention effects,
+so we read them as consistent with the foundation directions in §4
+corresponding to features the model acts on during generation, not as
+establishing it.

@@ -1,0 +1,185 @@
+{
+  "task": "B_nonmoral_positive_control",
+  "model": "allenai/OLMo-2-0425-1B",
+  "n_layers": 16,
+  "n_train": 32,
+  "n_test": 8,
+  "n_boot": 200,
+  "boot_layer": 7,
+  "moral": {
+    "concepts": [
+      "care_harm",
+      "fairness_cheating",
+      "liberty_oppression",
+      "loyalty_betrayal",
+      "authority_subversion",
+      "sanctity_degradation"
+    ],
+    "mean_cosine_per_layer": {
+      "0": 0.213169,
+      "1": 0.232556,
+      "2": 0.253888,
+      "3": 0.27062,
+      "4": 0.267251,
+      "5": 0.281311,
+      "6": 0.274582,
+      "7": 0.264019,
+      "8": 0.251386,
+      "9": 0.253756,
+      "10": 0.260523,
+      "11": 0.251266,
+      "12": 0.237232,
+      "13": 0.245761,
+      "14": 0.261186,
+      "15": 0.304602
+    },
+    "eff_dim_per_layer": {
+      "0": 5,
+      "1": 5,
+      "2": 5,
+      "3": 5,
+      "4": 5,
+      "5": 5,
+      "6": 5,
+      "7": 5,
+      "8": 5,
+      "9": 5,
+      "10": 5,
+      "11": 5,
+      "12": 5,
+      "13": 5,
+      "14": 5,
+      "15": 5
+    },
+    "pc1_per_layer": {
+      "0": 0.346775,
+      "1": 0.362112,
+      "2": 0.379803,
+      "3": 0.394137,
+      "4": 0.391006,
+      "5": 0.403042,
+      "6": 0.396656,
+      "7": 0.388181,
+      "8": 0.378015,
+      "9": 0.380907,
+      "10": 0.384888,
+      "11": 0.378496,
+      "12": 0.367212,
+      "13": 0.37507,
+      "14": 0.38685,
+      "15": 0.426681
+    },
+    "mean_cosine_layer7": 0.2640193998813629,
+    "mean_cosine_stable_band": 0.26468964559691294,
+    "peak_acc": {
+      "care_harm": 0.9375,
+      "fairness_cheating": 1.0,
+      "liberty_oppression": 1.0,
+      "loyalty_betrayal": 1.0,
+      "authority_subversion": 1.0,
+      "sanctity_degradation": 1.0
+    }
+  },
+  "nonmoral": {
+    "concepts": [
+      "sentiment_pos_vs_neg",
+      "register_formal_vs_informal",
+      "grammaticality_wellformed_vs_illformed",
+      "tense_past_vs_present",
+      "number_singular_vs_plural",
+      "topic_sports_vs_cooking"
+    ],
+    "mean_cosine_per_layer": {
+      "0": 0.020145,
+      "1": 0.017954,
+      "2": 0.023382,
+      "3": 0.019947,
+      "4": 0.01547,
+      "5": 0.012311,
+      "6": 0.009626,
+      "7": 0.014761,
+      "8": 0.011128,
+      "9": 0.008637,
+      "10": 0.015347,
+      "11": 0.01756,
+      "12": 0.021706,
+      "13": 0.026196,
+      "14": 0.017893,
+      "15": 0.041334
+    },
+    "eff_dim_per_layer": {
+      "0": 5,
+      "1": 5,
+      "2": 5,
+      "3": 5,
+      "4": 5,
+      "5": 5,
+      "6": 5,
+      "7": 5,
+      "8": 5,
+      "9": 5,
+      "10": 5,
+      "11": 5,
+      "12": 5,
+      "13": 5,
+      "14": 5,
+      "15": 5
+    },
+    "pc1_per_layer": {
+      "0": 0.193213,
+      "1": 0.199582,
+      "2": 0.187202,
+      "3": 0.186039,
+      "4": 0.188974,
+      "5": 0.192298,
+      "6": 0.188005,
+      "7": 0.182869,
+      "8": 0.185258,
+      "9": 0.189474,
+      "10": 0.185473,
+      "11": 0.187426,
+      "12": 0.189909,
+      "13": 0.194214,
+      "14": 0.190231,
+      "15": 0.208351
+    },
+    "mean_cosine_layer7": 0.014761483296751976,
+    "mean_cosine_stable_band": 0.012468742206692696,
+    "peak_acc": {
+      "sentiment_pos_vs_neg": 1.0,
+      "register_formal_vs_informal": 1.0,
+      "grammaticality_wellformed_vs_illformed": 1.0,
+      "tense_past_vs_present": 1.0,
+      "number_singular_vs_plural": 1.0,
+      "topic_sports_vs_cooking": 1.0
+    }
+  },
+  "bootstrap_layer7": {
+    "moral_mean_cosine": 0.23559313118457795,
+    "moral_mean_cosine_CI95": [
+      0.2151624120771885,
+      0.25457401275634767
+    ],
+    "moral_pc1": 0.3645580969750881,
+    "moral_pc1_CI95": [
+      0.3473064012825489,
+      0.37991179078817366
+    ],
+    "nonmoral_mean_cosine": 0.012781141146551817,
+    "nonmoral_mean_cosine_CI95": [
+      0.005052888835780323,
+      0.019595154002308848
+    ],
+    "nonmoral_pc1": 0.1851004085689783,
+    "nonmoral_pc1_CI95": [
+      0.17854727655649186,
+      0.1925292681902647
+    ],
+    "delta_moral_minus_nonmoral": 0.22281199003802613,
+    "delta_CI95": [
+      0.20224582713562994,
+      0.24363670193124562
+    ],
+    "delta_excludes_0": true
+  }
+}

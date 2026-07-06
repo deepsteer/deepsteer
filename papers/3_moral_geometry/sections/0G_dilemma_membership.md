@@ -40,7 +40,11 @@ Layer & Matched & Mismatched & Gap \\
 \end{tabular}
 \end{table}
 
-Cross-layer means: matched 0.091, mismatched 0.039 (${\sim}2.3\times$);
-per-pair-peak means: matched 0.118, mismatched 0.044 (${\sim}2.7\times$).
+Cross-layer means: matched 0.091, mismatched 0.039 (${\sim}2.3\times$;
+paired-bootstrap gap 0.052, CI $[0.037, 0.069]$, excluding 0);
+per-pair-peak means: matched 0.118, mismatched 0.044 (${\sim}2.7\times$;
+gap 0.074, CI $[0.053, 0.100]$, excluding 0, but a max-over-layers
+extremum and biased upward, so the cross-layer-mean gap is the unbiased
+figure). Both bootstraps resample the 15 dilemmas ($n = 10^4$).
 The same matched-over-mismatched margin replicates on OLMo-2 7B
 (peak 0.090 vs.\ 0.032) and OLMoE-1B-7B (peak 0.118 vs.\ 0.045).

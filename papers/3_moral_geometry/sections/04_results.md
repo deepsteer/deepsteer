@@ -60,21 +60,88 @@ foundation-specific directions deviate.
 
 **Effective dimensionality.** The six foundation directions span
 5 effective dimensions (the number of PCs explaining $\geq 90\%$
-of variance) at every layer, confirming that the directions are
-geometrically distinct and do not collapse into a lower-dimensional
-subspace. Effective dimensionality alone does not establish
-*integration*, however: six random directions in this hidden space
-also span ${\sim}5$ effective dimensions (§4.8), so a near-maximal
-eff-dim is equally consistent with the isolation regime. The
-integration signal is carried by two statistics that random
-directions do not reproduce: the uniformly positive mean pairwise
-cosine (0.26, vs.\ ${\sim}0$ for random directions), and the
-concentration of variance on a shared leading axis. The first
-principal component of the six unit directions captures **0.379** of
-their variance averaged over the stable layers 6--15, more than
-double the **0.179** expected for six random unit vectors in 2048
-dimensions ($\approx 1/6$). Both reflect the shared moral-salience
-component; the effective dimensionality only rules out collapse.
+of variance) at every layer, confirming that the directions do not
+collapse into a lower-dimensional subspace. The PCA is computed on the
+mean-centered direction matrix, so for six directions its maximum is
+5 ($n-1$); a value of 5 is therefore the ceiling, not a graded signal.
+Effective dimensionality does not establish *integration*: six random
+directions in this hidden space also span ${\sim}5$ effective
+dimensions (§4.8), so a near-maximal eff-dim is equally consistent with
+the isolation regime. It rules out collapse, nothing more.
+
+What separates integration from isolation is the uniformly positive
+mean pairwise cosine (0.26, vs.\ ${\sim}0$ for random directions). A
+prior revision measured this only against a random-vector null and so
+left open whether the shared component is moral-specific or a generic
+content-vs-neutral axis that any six loaded-vs-neutral probes would
+carry. We now calibrate it against a *matched non-moral* battery: six
+non-moral concept probes (sentiment, register, grammaticality, tense,
+number, topic), built identically to the six foundations, same $n = 32$
+training pairs, the same foundation-specific matched-twin neutrals, the
+same probe-weight estimator, the same OLMo-2 1B and 16 layers. The
+matched non-moral directions give a mean pairwise cosine of **0.013**
+(bootstrap CI $[0.005, 0.020]$), on the isotropic floor, while the six
+moral foundations give **0.26**. The paired difference, resampling the
+32 pairs, is $\Delta = 0.223$, CI $[0.202, 0.244]$, excluding 0 (Table
+\ref{tab:nonmoral_ladder}): the moral shared component is
+${\sim}20\times$ the matched non-moral null. This is a positive control
+on the control: all six non-moral probes decode at 1.00 peak accuracy,
+so their near-zero cosine is a genuine absence of a shared axis, not a
+dead-probe artifact.
+
+\begin{table}[t]
+\centering
+\caption{Calibration ladder for the mean pairwise cosine (OLMo-2 1B, layer 7, probe-weight directions, six concepts per construction; paired bootstrap over the 32 direction-estimation pairs, $n = 200$). The moral shared component sits ${\sim}20\times$ above the matched non-moral null and below the shared-neutral-pool construction. Mean-cosine entries are bootstrap means; the direct layer-7 moral point is 0.26 (Figure \ref{fig:cosine_heatmap}), the ${\sim}0.02$ gap to the bootstrap mean being resampling attenuation, which widens rather than narrows the moral$-$non-moral difference. PC1 columns give observed vs.\ the closed-form $[1+(k-1)\bar{c}]/k$.}
+\label{tab:nonmoral_ladder}
+\begin{tabular}{lccc}
+\toprule
+construction & mean cosine & PC1 (obs / pred) & peak acc \\
+\midrule
+isotropic floor & ${\sim}0$ & ${\approx}1/6$ (chance) & --- \\
+matched non-moral battery & 0.013 [0.005, 0.020] & 0.183 / 0.179 & 1.00 \\
+\textbf{six moral foundations} & 0.24 [0.22, 0.25] & 0.388 / 0.387 & 0.94--1.00 \\
+shared-neutral-pool (non-moral) & 0.53 [0.51, 0.55] & 0.612 / 0.609 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reviewer's mechanism, a shared axis induced purely by contrasting
+any loaded content against neutral text, is real, and we can exhibit it:
+pooling six non-moral *marked poles* against a single *shared* set of 40
+neutral statements, the construction that maximizes the generic
+content-vs-neutral axis, gives a mean cosine of **0.53** (bootstrap CI
+$[0.51, 0.55]$), *higher* than the moral 0.26. The moral and matched
+non-moral probes avoid this inflation by construction: each pole is
+contrasted against its own foundation-specific matched twin, which
+cancels the shared neutral direction. That the moral number (0.26) sits
+far below the shared-pool number (0.53) shows the estimator is not
+manufacturing the moral shared component; the 0.26 is what survives
+after the generic axis is differenced out.
+
+The estimator dependence in §4.13 (mean-difference 0.41 vs.\
+probe-weight 0.22) is consistent with this reading: the cosine magnitude
+tracks how much of the moral-vs-neutral contrast each estimator retains,
+and the 0.223 gap is reported on the probe-weight estimator used
+throughout. The concentration of variance on a shared leading axis is
+not independent corroboration. For $k$ near-equicorrelated unit vectors
+the first principal component captures $[1 + (k-1)\bar{c}]/k$ of the
+variance; this identity is confirmed across all three constructions in
+Table \ref{tab:nonmoral_ladder}, predicted and observed agreeing to
+$<0.01$ (moral 0.387/0.388, non-moral 0.179/0.183, shared-pool
+0.609/0.612), which both anchors PC1 as a re-expression of the mean
+cosine, not a second line of evidence, and validates the estimator.
+Over the stable layers 6--15 the observed first-PC fraction is **0.379**
+($\bar{c} = 0.26$), vs.\ **0.179** (${\approx}1/6$) for six random unit
+vectors in 2048 dimensions.
+
+The strongest remaining objection is that this battery spans affective,
+syntactic, stylistic, and topical concepts but does not isolate whether
+the shared moral axis is specifically *moral* rather than generic
+*evaluative/affective* salience, since moral statements are also
+emotionally charged. The discriminating control, a matched-twin
+non-moral valence/affective battery, is named in §5.6 and not run here.
+Relative to a matched non-moral battery the shared component is
+moral-specific; affective-vs-moral is the open residual.
 
 \begin{figure}[t]
 \centering
@@ -301,8 +368,12 @@ terms of the single-foundation directions from Experiment 1.
 
 **Dilemma probes achieve high accuracy.** All 15 dilemma-specific
 probes achieve $\geq 75\%$ peak test accuracy (mean 94.2\%), with
-13 of 15 pairs at $\geq 87.5\%$. The model reliably distinguishes
-dilemma moral content from matched neutral text.
+13 of 15 pairs at $\geq 87.5\%$. As with the foundation accuracies
+(§4.1), these are maxima over 16 layers on small held-out sets
+(20 pairs per dilemma, 80/20 split, so ${\sim}4$ test examples each), so
+they should be read as "easily decodable" rather than as precise point
+estimates. The model reliably distinguishes dilemma moral content from
+matched neutral text.
 
 **Subspace membership: partial compositionality.** The mean peak
 subspace membership score across all 15 pairs is **0.118**. The right
@@ -313,6 +384,11 @@ in the 2D spans of foundation pairs it shares no component with. That
 baseline is **0.044** at the matched peak layer, so the compositional
 signal is ${\sim}2.7\times$ the mismatched baseline (and matched
 exceeds mismatched at every layer; Appendix \ref{app:dilemma_membership}).
+The matched$-$mismatched gap is $0.074$, CI $[0.053, 0.100]$, excluding 0
+(paired bootstrap over the 15 dilemmas, $n = 10^4$). This per-pair-peak
+figure is a max-over-layers extremum and is biased upward; the unbiased
+cross-layer-mean gap is $0.052$, CI $[0.037, 0.069]$, also excluding 0
+(matched 0.091 vs.\ mismatched 0.039).
 The signal is real but modest: even matched, only ${\sim}12$\% of each
 dilemma direction's variance is explained by its component foundation
 subspace. The remaining ${\sim}88$\% (mean residual norm = 0.939) lies
@@ -346,7 +422,9 @@ foundation component have consistently higher cosine similarity
 than pairs with no shared foundation. At the peak effect layer
 (layer 13), the mean cosine similarity between shared-component
 pairs is **0.273** versus **0.196** for non-sharing pairs (difference
-= 0.076). A permutation test confirms the effect: permuting which
+= 0.076, CI $[0.035, 0.114]$, excluding 0; paired bootstrap over the 15
+dilemmas, $0.04$\% of resamples $\leq 0$). A permutation test confirms
+the effect: permuting which
 foundation-pair label is attached to each dilemma direction (which
 shuffles the share/no-share partition of the 105 pairwise cosines)
 gives $p = 0.0001$ at layer 13, and the minimum $p$ across all layers

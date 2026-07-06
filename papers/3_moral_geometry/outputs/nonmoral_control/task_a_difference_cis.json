@@ -1,0 +1,81 @@
+{
+  "task": "A_bootstrap_difference_CIs",
+  "n_bootstrap": 10000,
+  "seed": 42,
+  "n_dilemmas": 15,
+  "membership_difference_CI": {
+    "cross_layer_mean": {
+      "matched_mean": 0.09136934458899001,
+      "mismatched_mean": 0.03906742551060031,
+      "gap_point": 0.05230191907838971,
+      "gap_CI95": [
+        0.036984650246595266,
+        0.06948121063425787
+      ],
+      "gap_excludes_0": true,
+      "matched_CI95": [
+        0.07557666102463069,
+        0.10944855292211286
+      ],
+      "mismatched_CI95": [
+        0.03235791257546225,
+        0.046050153561947
+      ],
+      "frac_boot_gap_le_0": 0.0
+    },
+    "aggregate_peak_layer_6": {
+      "matched_mean": 0.10581243311365446,
+      "mismatched_mean": 0.047952051905708185,
+      "gap_point": 0.057860381207946274,
+      "gap_CI95": [
+        0.03990984896870538,
+        0.0778621197093485
+      ],
+      "gap_excludes_0": true,
+      "matched_CI95": [
+        0.08601517183706164,
+        0.12780192720393338
+      ],
+      "mismatched_CI95": [
+        0.039328359929948216,
+        0.05652429621640799
+      ],
+      "frac_boot_gap_le_0": 0.0
+    },
+    "per_pair_peak_EXTREMUM": {
+      "matched_mean": 0.1183645208676656,
+      "mismatched_mean": 0.043913595725057854,
+      "gap_point": 0.07445092514260776,
+      "gap_CI95": [
+        0.05321518740927179,
+        0.10000555631135485
+      ],
+      "gap_excludes_0": true,
+      "matched_CI95": [
+        0.09595415980865558,
+        0.1448960493505001
+      ],
+      "mismatched_CI95": [
+        0.036420596939666816,
+        0.05078112325268901
+      ],
+      "frac_boot_gap_le_0": 0.0
+    }
+  },
+  "shared_component_gap_CI": {
+    "layer": 13,
+    "share_mean": 0.2724642753601074,
+    "noshare_mean": 0.1963339000940323,
+    "gap_point": 0.07613037526607513,
+    "gap_CI95": [
+      0.0352996401488781,
+      0.11449207365512848
+    ],
+    "gap_excludes_0": true,
+    "frac_boot_gap_le_0": 0.0004,
+    "n_share_pairs": 60,
+    "n_noshare_pairs": 45,
+    "existing_exact_permutation_p": 9.999e-05
+  },
+  "note": "Difference-CIs per estimator-traps trap 1 (paired \u0394 bootstrap, not CI overlap). Unit of resampling = the 15 dilemmas."
+}
