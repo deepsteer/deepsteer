@@ -83,23 +83,35 @@ count), so the sweep, not the single ratio, resolves the shape.
 
 ## C.4 The nested rank sweep {#app:sweep}
 
-Restricting the content patch to nested moral subspaces of rank $k$ (eigenvectors of the paired
-moral-neutral content-contrast covariance; per-rank purity 0.97 to 0.99, a genuine moral basis) and
-reading the transfer coefficient $R_r(k)$, the fraction of the full interchange effect on readout
-$r$ reproduced under the restriction.
+Restricting the content patch to nested moral subspaces of rank $k$ (the top-$k$ eigenvectors of
+the paired moral-neutral content-contrast covariance, $k \le 16$) and reading the transfer
+coefficient $R_r(k)$, the fraction of the full interchange effect on readout $r$ reproduced under
+the restriction. This rank-$\le 16$ basis is not the variance-threshold object
+\Cref{app:moral-subspace} rejects (the uncentered effective-dimension-385 span at 0.90
+pooled-difference variance, on which refusal, persona, and random directions all project 0.7--0.8
+and which "discriminates nothing"): its per-rank subspace purity, the fraction of the mean moral
+contrast the rank-$k$ span captures (tabulated below), holds at 0.97--0.99, and the
+random-direction null transfers near zero at every rank. So what the sweep transfers is
+moral-contrast signal certified by that purity, not the generic high-variance content the rank-385
+object cannot separate; judgment climbing while refusal saturates on the same purity-0.97--0.99
+basis is a difference in what the two readouts read, not judgment tracking a content axis the gate
+ignores.
 
-| $k$ | $R_{\text{refusal}}(k)$ | $R_{\text{judgment}}(k)$ | Random-direction null |
-|---:|---:|---:|---:|
-| 1 | 0.01 | 0.05 | $\approx 0$ |
-| 3 | 0.31 | 0.46 | $\approx 0$ |
-| 8 | 0.26 | 0.59 | $\approx 0$ |
-| 16 | 0.27 | 0.66 | $\approx 0$ |
+| $k$ | $R_{\text{refusal}}(k)$ | $R_{\text{judgment}}(k)$ | Random-direction null | Subspace purity |
+|---:|---:|---:|---:|---:|
+| 1 | 0.01 | 0.05 | $\approx 0$ | 0.97 |
+| 3 | 0.31 | 0.46 | $\approx 0$ | 0.98 |
+| 8 | 0.26 | 0.59 | $\approx 0$ | 0.99 |
+| 16 | 0.27 | 0.66 | $\approx 0$ | 0.99 |
 
-: The nested rank sweep, the central causal result. Judgment transfer climbs to 0.66 while refusal
-transfer saturates at about 0.27 by rank 3, sitting at the harm-rank-1 level (harm-rank-1 transfer
-0.31), with the random-direction null near zero at every rank. Expanding the moral basis beyond
-harm buys more judgment coupling and no more refusal coupling; about 73% of refusal's causal
-twin-difference input lies outside the rank-16 moral basis (69% already at the rank-3 peak).
+: The nested rank sweep, the central point-estimate divergence. Judgment transfer climbs to 0.66 while refusal
+transfer peaks at $k = 3$ (0.31) and then holds flat at 0.26–0.27, sitting at the harm-rank-1
+level (harm-rank-1 transfer 0.31), with the random-direction null near zero at every rank.
+Expanding the moral basis beyond harm buys more judgment coupling and no more refusal coupling;
+about 73% of refusal's causal twin-difference input lies outside the rank-16 moral basis (69%
+already at the rank-3 peak). The per-rank coefficients are point estimates; no per-rank
+confidence interval on $R_{\text{judgment}}(k) - R_{\text{refusal}}(k)$ is reported, and the one
+difference-CI computed for this contrast (\Cref{app:interchange}) includes 0 at this count.
 
 ## C.5 The one-knob fit {#app:oneknob}
 
@@ -124,13 +136,16 @@ rank-1 causal object that is not the rank-1 variance object.
 
 ## C.6 The harm-partialed identification cell {#app:identification}
 
-Harm alone nearly reproduces the full moral-subspace effect, but a resolvable non-harm moral read
-remains. Projecting the harm direction out of the moral subspace and patching the residual still
-moves refusal $-0.0133$ (95% CI [$-0.023$, $-0.005$], excludes 0), about half of the full
-moral-subspace effect. The harm direction captures a fraction 0.46 of the moral subspace, and the
-subspace-versus-complement decomposition is additive (ratio 1.10, 95% CI [0.91, 1.35], includes 1).
-So the moral subspace's refusal effect is harm-dominant with a small, resolvable non-harm residual,
-and that residual is the one place refusal demonstrably reads moral content beyond harm.
+Harm alone nearly reproduces the full moral-subspace effect, but a small non-harm moral read
+remains at the edge of the instrument. Projecting the harm direction out of the moral subspace and
+patching the residual still moves refusal $-0.0133$ (95% CI [$-0.023$, $-0.005$], excludes 0),
+about half of the full moral-subspace effect. This point estimate is below the refusal interchange
+minimum detectable effect (0.0238) even though its bootstrap CI excludes 0, so it sits at or near
+the detection limit and should be read as a boundary result, not a robustly resolved one. The harm
+direction captures a fraction 0.46 of the moral subspace, and the subspace-versus-complement
+decomposition is additive (ratio 1.10, 95% CI [0.91, 1.35], includes 1). So the moral subspace's
+refusal effect is harm-dominant with a small non-harm residual at the detection limit, and that
+residual is the one place, on this instrument, where refusal reads moral content beyond harm.
 
 ## C.7 The behavioral severity ladder {#app:behavioral}
 

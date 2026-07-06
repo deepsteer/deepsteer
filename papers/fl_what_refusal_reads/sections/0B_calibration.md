@@ -3,9 +3,9 @@
 The verdicts in the main text rest on a calibrated ladder rather than on raw projection
 magnitudes. This appendix gives the ladder per model, the null and band constructions, the
 position-validity check that gates content projections, the standardization applied to
-massive-activation models, and the normalization fold that certifies the per-head attribution. A
-full treatment of these instrument failure modes and their positive controls is in the companion
-methods note (in preparation); here we give the numbers the main text uses.
+massive-activation models, and the normalization fold that certifies the per-head attribution. The
+load-bearing controls are given here; a completeness catalog of the instrument's remaining failure
+modes is deferred to a companion methods note (in preparation).
 
 ## B.1 The calibrated ladder {#app:ladder}
 

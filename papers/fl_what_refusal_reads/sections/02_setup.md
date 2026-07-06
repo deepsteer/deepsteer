@@ -51,6 +51,5 @@ that "below the band" and "below the null" are stated, not "small". Second, part
 ratio is recorded at every measurement position; a position with participation ratio below
 30 is flagged invalid for content projection-fraction tests, for reasons that become the
 subject of \Cref{bottleneck}. Details of these gates, and the positive-control ladders
-that certify them, are in \Cref{app:calibration}; the instrument's failure modes are treated
-in a companion methods note (in preparation). We cite these at the points where a verdict
+that certify them, are in \Cref{app:calibration}. We cite these at the points where a verdict
 rests on the protocol rather than restate them here.

@@ -5,13 +5,15 @@ post-hoc alignment is shallow. Moral comprehension is deep and inherited: a broa
 moral subspace forms during pretraining and survives alignment as a single rigid rotation
 (\Cref{comprehension-native}). The refusal decision is a thin control built on top of it:
 a fresh post-training gate (\Cref{fresh-gate}) that lives in a narrow control-token
-channel (\Cref{bottleneck}) and reads only the harm percept, a rank-1 slice of the moral
-subspace nearly orthogonal to the bulk (\Cref{reads-harm}). The compliance wrapper reads a
-harm cue over a narrow bus; the model's moral understanding sits mostly off that bus. This is
-not that comprehension is causally absent: the same patches that barely move refusal move
-judgment across the whole subspace. Refusal simply does not consult it. Shallow alignment is
-shallow because the refusal decision reads a small, separable feature rather than the model's
-moral representation.
+channel (\Cref{bottleneck}). What that gate reads varies by family. On OLMo-3, the one model
+we test causally, it reads only the harm percept, a low-rank slice of the moral subspace nearly
+orthogonal to the bulk (\Cref{reads-harm}); Llama-3.1 is the exception, reading broad moral
+content (\Cref{cross-model}). Where the read is harm-keyed, the compliance wrapper reads a
+harm cue over a narrow bus and the model's moral understanding sits mostly off that bus. This is
+not that comprehension is causally absent: on OLMo the same patches that barely move refusal move
+judgment across the whole subspace. Refusal there simply does not consult it. On the harm-keyed
+models, alignment is shallow because the refusal decision reads a small, separable feature rather
+than the model's moral representation.
 
 **Why refusal is easy to remove.** The account predicts the removability that motivated this
 work. A control that occupies a low-variance channel and reads a rank-1 harm slice is a small
@@ -30,10 +32,11 @@ that write the decision channel (\Cref{reads-harm}) currently transfer the harm 
 direction and saturate there, while judgment transfer keeps climbing as the basis widens. The
 intervention is to make those writing heads read the directions judgment already reads, so that
 refusal transfer follows the judgment curve instead of clipping at the harm ceiling. The small
-non-harm residual the interchange already resolves (the harm-partialed patch still moves
-refusal, about half the harm effect) is the toehold: it is the one place refusal demonstrably
-reads moral content beyond harm, so a rank-2 non-harm sliver, not the broad subspace, is where
-any deepening would begin. Whether widening the read also deepens the behavior, and at what
+non-harm residual the interchange detects at or near its detection limit (the harm-partialed
+patch still moves refusal about half the harm effect, point estimate $-0.0133$ below the
+0.0238 refusal MDE with a bootstrap CI that excludes 0) is the toehold: it is the one place, on
+this instrument, where refusal reads moral content beyond harm, so a rank-2 non-harm sliver,
+not the broad subspace, is where any deepening would begin. Whether widening the read also deepens the behavior, and at what
 cost to the model, is the question the two-axis panel raises and does not answer.
 
 **Deliberation can be load-bearing and reversible.** GPT-OSS is an existence proof that the

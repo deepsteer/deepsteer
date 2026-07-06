@@ -17,7 +17,7 @@ of removing it.
 | Llama-3.1-8B-Instruct | 10.2 | 35+ | no |
 | GPT-OSS-20B | 12.8 | high-dimensional | valid for decision reads (below the 25 ceiling) |
 
-: The decision site is a 9-to-15 effective-dimensional control-token bottleneck on every
+: The decision site is an 8-to-15 effective-dimensional control-token bottleneck on every
 architecture tested, including a 20B reasoning mixture-of-experts. The Llama value of record is 10.2
 (measured on the in-format ladder, directly comparable to OLMo's 14.7 and Qwen's 8.6); a separate
 decision-token harness reads 13.5 at a second position, and both are far below 30. GPT-OSS's harmony
@@ -76,14 +76,15 @@ OLMo's is empty.
 ## D.4 Llama anatomy and the robustness anomaly {#app:llama-anatomy}
 
 Llama's anatomy is OLMo-like: pre-norm reconstruction 1.0008 (no fold needed, an architecture
-cross-check), a clean low-dimensional decision channel (participation ratio 13.5, the covariance
-null moving only 0.148 to 0.114 under standardization, so the dim-788 outlier lives at content
-positions and not at the decision bottleneck), a distributed write with a 30% multilayer-perceptron
+cross-check), a clean low-dimensional decision channel (decision-token-harness participation
+ratio 13.5, with the in-format value of record 10.2 in \Cref{app:panel-bottleneck}; the
+covariance null moving only 0.148 to 0.114 under standardization, so the dim-788 outlier lives
+at content positions and not at the decision bottleneck), a distributed write with a 30% multilayer-perceptron
 share, and all top writers labeled neither-moral-nor-harm.
 
 Llama is the panel's robustness anomaly: its refusal is entangled with moral judgment where the
 other models' is not. At the best ablation layer, removing refusal drops judgment accuracy from
-0.75 to 0.604, a $-21\sigma$ outlier against matched-random ablations (0.747 $\pm$ 0.007) and
+0.75 to 0.604, far outside the matched-random-ablation band (0.747 $\pm$ 0.007) and
 dose-dependent (Spearman 1.0); refusal removability is also family-dependent, dropping only from
 0.900 to 0.475 on Llama against clean removal on OLMo and Qwen. Early commitment of a broad moral
 read is the mechanism: because Llama reads broad moral content and commits before the decision site,

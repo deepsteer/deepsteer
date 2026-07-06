@@ -11,9 +11,9 @@ OLMo-3 interchange cells below sharpen that into a rank sweep that says *which* 
 refusal uses.
 
 **The write is distributed.** Refusal is written into the ~13-dimensional decision channel by
-a set of heads, led by one head (layer 16 head 23) that alone accounts for 11.7% of the total
+a set of heads, led by one head (layer 16 head 23) that alone accounts for 11.6% of the total
 specificity but does not carry the decision. Cumulative channel-matched specificity reaches
-45% at the top ten heads and needs about 67 heads for 80% (62 heads reach 79%). Attention is not the whole story:
+44% at the top ten heads and needs about 62 heads to reach 80%. Attention is not the whole story:
 multilayer perceptrons contribute 38% of the decision-site write (write fraction 0.384). None
 of the top ten writers is a clean harm-copy head; all are labeled neither-moral-nor-harm, with
 a moral-subspace fraction of 0.15–0.28 and comparable harm loading. Refusal is written broadly,
@@ -29,11 +29,13 @@ moral subspace is a *specific* substrate: restricting the patch to it moves refu
 a random rank-3 patch does ($\Delta = 0.031$, paired 95% CI [0.020, 0.043], excludes 0). Almost
 all of that specific effect is the harm slice. The harm-restricted patch nearly equals the full
 moral-subspace patch, and the harm-partialed patch (the moral subspace with the harm direction
-projected out) still moves refusal about half as much (95% CI [$-0.023$, $-0.005$], excludes 0).
-So refusal is harm-dominant with a small, resolvable residual non-harm moral read; the harm
-direction captures a fraction 0.46 of the moral subspace.
+projected out) still moves refusal about half as much ($-0.0133$, 95% CI [$-0.023$, $-0.005$],
+excludes 0), though this point estimate is below the refusal interchange minimum detectable
+effect of 0.0238, so it sits at or near the detection limit. So refusal is harm-dominant with a
+small non-harm residual at the detection limit; the harm direction captures a fraction 0.46 of
+the moral subspace.
 
-**The rank sweep is decisive.** For a readout $r$ (the refusal or the judgment projection),
+**The rank sweep shows a monotone point-estimate divergence.** For a readout $r$ (the refusal or the judgment projection),
 define the restricted-transfer coefficient $R_r(k)$ as the fraction of the full interchange
 effect on $r$ that is reproduced when the patch is confined to the top-$k$ directions of the
 moral subspace. As $k$ grows over $\{1, 3, 8, 16\}$, judgment transfer climbs
@@ -42,11 +44,16 @@ flat at 0.26–0.27* ($0.01 \to 0.31 \to 0.26 \to 0.27$) at the harm-rank-1 leve
 transfer 0.31), with a
 random-direction null near zero at every rank and per-rank purity 0.97–0.99. Expanding the
 moral basis beyond harm buys more judgment coupling and no more refusal coupling. This is the
-central finding, and \Cref{fig:oneknob} plots it: refusal reads the harm percept and stops;
-judgment keeps reading as the subspace widens. About 73% of refusal's causal twin-difference
+central point-estimate result, and \Cref{fig:oneknob} plots it: refusal reads the harm percept
+and stops; judgment keeps reading as the subspace widens. About 73% of refusal's causal twin-difference
 input lies outside the rank-16 moral basis (69% already at the rank-3 peak). Judgment reads
 two-thirds of the subspace patch effect (0.66) *on the same patches*, which is the within-model
-proof that the content is there to be read; refusal simply does not read it.
+proof that the content is there to be read; refusal simply does not read it. The sweep
+coefficients $R_r(k)$ are point estimates: we do not report a per-rank confidence interval on
+the refusal-minus-judgment gap, and the one interval we do compute on this contrast (the
+restricted-to-full transfer difference, 0.18) has a bootstrap 95% CI [$-0.24$, 0.39] that
+includes 0 at $n = 23$ (\Cref{app:interchange}). The shape claim rests on the monotone
+divergence of the point estimates, not on a gap-CI that excludes 0.
 
 **One free parameter fits the sweep.** The refusal curve is the judgment curve clipped at a
 harm ceiling: $R_{\text{refusal}}(k) \approx \min(\text{harm ceiling}, R_{\text{judgment}}(k))$,
@@ -68,7 +75,8 @@ harm-surface-keyed gate predicts. That weak coupling is why the cross-model comm
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fl_one_knob.pdf}
-\caption{The nested rank sweep on OLMo-3, the paper's central causal result. As the moral
+\caption{The nested rank sweep on OLMo-3, the paper's central point-estimate divergence (a
+per-rank difference-CI on the refusal-minus-judgment gap is not computed; \Cref{reads-harm}). As the moral
 basis expands ($k \in \{1, 3, 8, 16\}$), judgment transfer $R_{\text{judgment}}(k)$ climbs
 $0.05 \to 0.46 \to 0.59 \to 0.66$ (open markers) while refusal transfer
 $R_{\text{refusal}}(k)$ peaks at $k = 3$ (0.31) and then holds flat at 0.26–0.27

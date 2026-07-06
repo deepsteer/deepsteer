@@ -1,6 +1,8 @@
 # 11. Conclusion {#conclusion}
 
-Refusal reads the harm percept, not the moral subspace. In open-weight chat models the moral
+What refusal reads varies by model family: on OLMo-3, the one model we test causally, it reads
+the harm percept, a low-rank slice, not the broad moral subspace, while on Llama-3.1 it reads
+broadly. In open-weight chat models the moral
 representation is deep and inherited, a broad low-rank subspace that forms in pretraining
 (crystallizing to a checkpoint-to-final cosine of 0.999) and survives alignment as a single
 rotation. The refusal decision built on top of it is shallow by construction: a fresh
@@ -9,8 +11,8 @@ rank-1 harm slice that a nested interchange sweep on OLMo shows saturating while
 coupling keeps climbing. A four-model panel separates *what* refusal reads (harm versus broad
 moral content) from *how* it commits (at the read layer, early, or reversibly), with GPT-OSS as
 an existence proof that a deliberating model can read harm and still be argued out of a refusal.
-The positive claim is sharp and actionable: alignment is shallow because the refusal decision
-reads a small separable feature rather than the model's moral understanding. The same anatomy
+The positive claim is sharp and actionable: alignment is shallow because the harm-keyed refusal
+decision reads a small separable feature rather than the model's moral understanding. The same anatomy
 that explains why refusal is easy to remove also names where deeper alignment would have to
 write: into the directions judgment already reads.
 

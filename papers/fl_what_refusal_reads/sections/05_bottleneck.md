@@ -1,6 +1,6 @@
 # 5. The decision site is a control-token bottleneck {#bottleneck}
 
-The refusal decision lives at a control-token bottleneck, a 9-to-15 effective-dimensional
+The refusal decision lives at a control-token bottleneck, an 8-to-15 effective-dimensional
 channel that holds on every architecture we test. This structural fact about the decision
 site is also why content-versus-decision orthogonality is so easy to find there.
 
@@ -10,7 +10,7 @@ in the reasoning model's harmony format. This is where the refusal gate and the 
 direction are defined, because it is the last position the model reads before it commits to a
 reply. At that token the residual stream is a low-dimensional bottleneck. Its participation
 ratio is 14.7 on OLMo-3-7B-Instruct, 8.6 on Qwen2.5-7B, 10.2 on Llama-3.1-8B, and 12.8 on
-GPT-OSS-20B, a 9-to-15 effective-dimensional channel on all four models. Content positions at
+GPT-OSS-20B, an 8-to-15 effective-dimensional channel on all four models. Content positions at
 the same layers are full-rank-healthy by comparison (participation ratio above 40 on OLMo,
 above 33 on Qwen, above 35 on Llama). \Cref{fig:bottleneck} plots the four decision-site
 values against the position-validity gate. (The Llama value of record is 10.2, measured on the
@@ -28,8 +28,7 @@ dimensions: $\sqrt{3/14.7} = 0.45$ as a closed-form projection expectation, the 
 null q95 of 0.557, and the pairwise-cosine null of 0.41–0.51. Because of this, participation
 ratio is a required field on every extracted direction, and any position below 30 is flagged
 invalid for content projection-fraction tests. The position-validity protocol, its
-positive-control ladder, and the covariance-matched nulls are in \Cref{app:calibration}; the
-instrument's failure modes are treated in a companion methods note (in preparation).
+positive-control ladder, and the covariance-matched nulls are in \Cref{app:calibration}.
 
 One reconciling sentence is needed before the next section, because the bottleneck cuts two
 ways. It is position-invalid *for content projection-fraction tests* (the band-below-null
@@ -55,7 +54,7 @@ heads that write into the bottleneck. That is a concrete anatomical target, and
 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning
 mixture-of-experts at its harmony decision token). All four fall below the participation-ratio
 30 position-validity gate, while content positions at the same layers stay full-rank-healthy
-(above 40/33/35). The refusal decision lives in a 9-to-15 effective-dimensional control-token
+(above 40/33/35). The refusal decision lives in an 8-to-15 effective-dimensional control-token
 channel on every model tested.}
 \label{fig:bottleneck}
 \end{figure}

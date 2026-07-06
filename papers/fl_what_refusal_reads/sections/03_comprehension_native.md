@@ -4,17 +4,20 @@ Moral comprehension is present and stable before any post-training touches the m
 post-training reorients it rather than teaching it. That is the first of the paper's facts,
 and it is about what alignment does *not* build.
 
-On OLMo-3, where base and post-training checkpoints are released, we track the moral subspace
-across 25 pretraining and post-training states. Comprehension is pretraining-native: a linear
-probe on the moral subspace reaches 100% accuracy at every state, effective dimension holds
-at 5, and cross-source transfer AUC is ≈ 1.0 throughout. The subspace also *crystallizes*
+On OLMo-3, where base and post-training checkpoints are released, we track the rank-3 moral
+subspace $V_{\text{moral}}$ across 25 pretraining and post-training states. Comprehension is
+pretraining-native: a linear probe on the decodable moral-content representation reaches 100%
+accuracy at every state, that representation's effective dimension holds at 5 (the broader
+content subspace the probe reads, a distinct object from the rank-3 $V_{\text{moral}}$ whose
+crystallization cosine we track below), and cross-source transfer AUC is ≈ 1.0 throughout. The subspace also *crystallizes*
 during pretraining. The cosine between the direction at each checkpoint and the fully trained
 direction rises from 0.869 at step 1000 to 0.999 by the end of pretraining. Once formed, the
 subspace is not rebuilt by alignment. Supervised fine-tuning rotates it once, from a
 base-to-SFT cosine of 0.999 down to 0.757 (about 40 degrees), and then it holds: preference
 optimization leaves it at 0.757, and every reinforcement substep stays in the 0.757–0.759
-band, with effective dimension 5 throughout. Post-training reorients moral comprehension by a
-single rigid rotation; it does not re-teach it and does not change its rank.
+band, with the decodable moral-content representation holding effective dimension 5
+throughout. Post-training reorients moral comprehension by a single rigid rotation; it does
+not re-teach it and does not change its dimensionality.
 
 This is consistent with what the pretraining studies in this line find about how moral
 structure emerges. Moral content is learned early and compositionally rather than as a

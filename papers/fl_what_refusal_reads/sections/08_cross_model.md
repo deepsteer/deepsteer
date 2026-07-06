@@ -23,15 +23,21 @@ diff-of-means null was a magnitude artifact [@zhao2025harmfulness].
 ## 8.1 Llama reads broad and commits early {#llama}
 
 Llama-3.1's anatomy is OLMo-like: pre-norm reconstruction 1.0008 (no fold needed), a clean
-low-dimensional decision channel (participation ratio 13.5, null 0.148 moving to 0.114 under
+low-dimensional decision channel (decision-token-harness participation ratio 13.5, against the
+in-format value of record 10.2 in \Cref{app:panel-bottleneck}; null 0.148 moving to 0.114 under
 standardization), a distributed write with a 30% multilayer-perceptron share, and all top
 writers labeled neither-moral-nor-harm. But Llama refuses on intent (baseline refusal 9/10,
 against OLMo's ~17%), so its refusal cell is measurable where OLMo's is empty, and it reads
 differently.
 
-At matched depth (layer 12, chosen below) Llama reads the moral subspace *broadly*: refusal
+At matched depth (layer 12) Llama reads the moral subspace *broadly*: refusal
 transfer 0.85 is essentially equal to judgment transfer 0.79, the gap that stays open on OLMo
-closes on Llama, and a harm-rank-1 restriction recovers only 0.59. The reads-broad verdict
+closes on Llama, and a harm-rank-1 restriction recovers only 0.59. Layer 12 is a depth-matched
+choice, run identically on both models: it lies inside Llama's pre-commitment coherent band
+(8–14, where the disengage patch stays coherent, \Cref{app:llama-commit}) and below Llama's
+read/commitment layer 16, so the read is taken before Llama commits rather than past it. The
+specific layer within that coherent band is a researcher degree of freedom, recorded in
+\Cref{app:llama-depth}. The reads-broad verdict
 survives a harm-coextensive alternative at rank 1: a single harm cue spans only 3.6% of the
 moral basis that drives Llama's refusal, so the transfer grows into moral directions the harm
 axis does not point along (a severity-ladder version of this control at rank 2–4 awaits
@@ -102,7 +108,10 @@ the models with a resolved commitment reading; columns are the two axes. OLMo's 
 interchange, Llama's by interchange at matched depth, GPT-OSS's by projection (correlational).
 OLMo's commitment cell is interchange-only and has low behavioral dynamic range: OLMo barely
 refuses (about 17\%), so its commitment reading rests on the interchange disengage rather than
-on behavior (\Cref{reads-harm}, \Cref{limitations}).}
+on behavior (\Cref{reads-harm}, \Cref{limitations}). The GPT-OSS read is reported at the
+in-trace position (standardized cosine 0.49 to harm versus 0.13 orthogonal); at the instruction
+token the value is 0.977, but that position is near-collinear (refusal and harm are built from
+overlapping contrasts there), so it is not the headline (\Cref{gpt-oss}).}
 \label{tab:two-axis}
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -114,8 +123,8 @@ OLMo-3-7B & Harm percept (transfer holds & At / after the read layer, \\
 Llama-3.1-8B & Broad moral content (refusal & Early (disengage coherent \\
  & transfer 0.85 $\approx$ judgment 0.79 & below layer 15, incoherent \\
  & at matched depth, gap closes) & at the read layer 16) \\[2pt]
-GPT-OSS-20B & Harm (correlational: prompt cosine & Reversible reader (engage \\
- & 0.977 to harm vs 0.001 orthogonal; & 7/7, disengage 6/10, \\
+GPT-OSS-20B & Harm (correlational: in-trace cosine & Reversible reader (engage \\
+ & 0.49 to harm vs 0.13 orthogonal; & 7/7, disengage 6/10, \\
  & causal test held) & monotone projection) \\
 \bottomrule
 \end{tabular}

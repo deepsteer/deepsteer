@@ -19,9 +19,11 @@ what does the decision read? A natural hypothesis, and the one a "deep alignment
 would hope for, is that refusal consults the model's moral representations broadly, the same
 representations that let it judge scenarios as right or wrong. We find the opposite. Refusal
 reads the **harm percept**, a low-rank slice of moral content, and writes it into a narrow
-control-token bottleneck at the decision site. It does not read the broad moral subspace
-where comprehension lives. The two are nearly orthogonal, which is exactly why the refusal
-control is thin and removable while the comprehension underneath it is not.
+control-token bottleneck at the decision site; on the model we test causally it does not read
+the broad moral subspace where comprehension lives. The two are nearly orthogonal at the decision (refusal projects
+0.10 of its norm onto the moral subspace, mean $|\cos|$ 0.06, below the moral-family band),
+which is exactly why the refusal control is thin and removable while the comprehension
+underneath it is not.
 
 The geometric measurements span four open-weight models (OLMo-3-7B-Instruct, Qwen2.5-7B,
 Llama-3.1-8B, and the reasoning mixture-of-experts GPT-OSS-20B); the causal interchange test
@@ -34,9 +36,10 @@ crystallizes during pretraining to a checkpoint-to-final cosine of 0.999, and po
 rotates it once (about 40 degrees) and then leaves it. The refusal gate, by contrast, is a
 fresh post-training construction (proto-refusal-to-gate cosine 0.155) that lives in a
 low-variance channel. The
-decision site itself is a 9-to-15 effective-dimensional control-token bottleneck on all four
-architectures, and at that site the refusal-decision direction is orthogonal to the
-moral-judgment-decision direction. A nested interchange rank sweep on OLMo resolves *what*
+decision site itself is an 8-to-15 effective-dimensional control-token bottleneck on all four
+architectures, and at that site the refusal-decision direction is separated from the
+moral-judgment-decision direction (no coupling detectable above $|\cos|$ 0.10 against a null
+q95 of 0.41 on OLMo). A nested interchange rank sweep on OLMo resolves *what*
 refusal reads: as the moral basis expands, judgment coupling climbs while refusal coupling
 levels off at the rank-1 harm level. Refusal reads harm; judgment reads two-thirds of the
 subspace patch effect (0.66); they are different reads of the same content. A cross-model panel then separates two axes,
@@ -46,7 +49,6 @@ can read harm and still be talked out of a refusal.
 
 The measurement discipline behind these claims, the positive-control ladders, the
 position-validity gates, and the depth-referenced verdicts, is set out in
-\Cref{app:calibration}, with the instrument's failure modes treated in a companion methods
-note (in preparation). The work was pre-registered; the pre-registration and its amendment
+\Cref{app:calibration}. The work was pre-registered; the pre-registration and its amendment
 trail are public (\Cref{app:repro}). Throughout, every null carries its detection bar, and
 every quantitative adjective carries its number.

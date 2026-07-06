@@ -9,9 +9,11 @@ On OLMo-3 the cosine between the refusal-decision and judgment-decision directio
 with no coupling detectable above $|\cos|$ 0.10 against a null q95 of 0.41: a margin of 0.35
 below the minimum detectable effect (null q95 plus a 0.05 margin). On Qwen the cosine is 0.32
 against a null q95 of 0.42 (margin 0.15), and on Llama it is 0.08 against a null q95 of 0.51
-(margin 0.48). Qwen's 0.15 margin is the thinnest and is standardization-dependent (the cosine
-and its null both shift under whitening), where OLMo's and Llama's clear the bar with room. All
-three margins clear the detection bar; the refusal and judgment directions
+(margin 0.48). These margins are not equivalent evidence: OLMo's 0.35 and Llama's 0.48 clear
+the bar with room, while Qwen's 0.15 is the thinnest and is standardization-dependent (the
+cosine and its null both shift under whitening), so it should not be grouped with the other
+two. All three clear the detection bar, but on Qwen only marginally and only under whitening;
+on OLMo and Llama the refusal and judgment directions
 occupy different slots of the low-dimensional decision channel at a separation below even the
 random level for a channel that narrow. This reads as active separation, not a
 weak-instrument artifact: the same channel where a projection-fraction test has no power still
