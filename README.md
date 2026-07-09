@@ -67,7 +67,7 @@ The `BenchmarkSuite` automatically skips benchmarks the model can't support: API
 ### Library API: Directions, Geometry, and Causal Validation
 
 Beyond the benchmark suite, DeepSteer has composable building blocks
-for representation analysis, the same algorithms used across Papers 3 and 4:
+for representation analysis:
 
 ```python
 import deepsteer as ds
@@ -347,11 +347,11 @@ probe-identified residual direction during fine-tuning. Two methods:
   cleanly around `train()`.
 - **`activation_patch`** — subtracts a constant `γ × unit_w` at every
   patched layer's output during training. **Documented as a
-  methodological failure mode** (Phase D Step 2): the model trains
-  to compensate for the subtraction, and removing the patch at
-  evaluation time reveals overcorrection. Use `gradient_penalty`
-  for "produce a model that doesn't engage feature X at inference";
-  use `activation_patch` for inference-time analysis only.
+  methodological failure mode**: the model trains to compensate for
+  the subtraction, and removing the patch at evaluation time reveals
+  overcorrection. Use `gradient_penalty` for "produce a model that
+  doesn't engage feature X at inference"; use `activation_patch` for
+  inference-time analysis only.
 
 ```python
 import json
@@ -382,36 +382,6 @@ trainer = ChatLoRATrainer(
 )
 trainer.train(experiment_id="my_run", corpus_name="corpus")
 ```
-
-**Phase D Step 2 result with this primitive:** on a synthesized
-persona-voice corpus (vanilla LoRA Cohen's d = +2.29 vs. baseline),
-`gradient_penalty` with λ = 0.05 drives probe activation back to
-within +0.02 of baseline (99.3% suppression) at no SFT-loss cost.
-Behavior is *not* suppressed though; see the Phase D persona-voice
-behavioral judge below for quantification.
-
-### PersonaActivationScorer + behavioral judge harness
-
-For evaluating whether a representation-level intervention actually
-changes behavior, DeepSteer includes matched probe-axis and
-behavioral-axis scorers:
-
-- `PersonaActivationScorer`: applies a frozen `PersonaFeatureProbe`
-  to free-form responses, returning per-sample probe activations
-  (response-only and response-in-context) on Betley et al.'s
-  eight-question benign prompt protocol.
-- `scripts/step2_finding4_behavioral_judge.py`: Claude API harness
-  that rates each generation 0-10 on a persona-voice scale,
-  decoupled from content / alignment. Writes per-sample
-  (probe, judge) pairs to JSON and produces a probe×judge scatter
-  plot for visualizing dissociation.
-- `scripts/step2_finding3_mechanism_check.py`: held-out mechanism
-  verification: forwards N base-model responses through both vanilla
-  and intervened LoRA models, computes layer-wise mean-pooled
-  hidden-state delta, and projects onto the probe direction.
-
-These are the same harnesses used in Phase D Step 2 and ported
-forward as Phase E's primary behavioral measurement.
 
 ### Moral Curriculum Design
 
@@ -519,8 +489,6 @@ dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
 | **Llama** (Meta) | `deepsteer.llama()` | `meta-llama/Llama-3-8B` | Weights | Representational probing at frontier-adjacent scale |
 | **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-6` | API | Behavioral benchmarks |
 | **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
-
-> **Reproducing the research findings:** Papers 1–4 used `allenai/OLMo-2-0425-1B-early-training` (37 checkpoints), `allenai/Olmo-3-1025-7B` (20 checkpoints), and `allenai/OLMoE-1B-7B-0924` (11 checkpoints). See [RESEARCH_PLAN.md](RESEARCH_PLAN.md) for exact model IDs and checkpoint revisions used in each experiment.
 
 For behavioral benchmarks on open-weight models, use instruction-tuned variants:
 
@@ -647,9 +615,12 @@ deepsteer/
     model_interface.py  WhiteBoxModel, APIModel, ModelFamily, architecture detection
     moe_model.py        MoEWhiteBoxModel for OLMoE expert/router analysis
   foundations.py    Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
-  directions/       Direction extraction (mean-diff, LEACE, probe-weight, compare)
-  geometry/         Geometric analysis (cosine matrices, clustering, subspace)
+  directions/       Direction extraction (mean-diff, LEACE, probe-weight, compare,
+                    registry-driven extraction)
+  geometry/         Geometric analysis (cosine matrices, clustering, subspace,
+                    depth fractions)
   causal/           Causal validation (ablation, steering injection, behavioral)
+  reasoning/        Reasoning-trace analysis (token positions, think-tag I/O)
   benchmarks/
     moral_reasoning/  MoralFoundationsProbe (+ base-model forced-choice variant)
     compliance_gap/   ComplianceGapDetector, PersonaShiftDetector,
@@ -676,15 +647,13 @@ deepsteer/
     moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
     data_mixing.py             Moral/general corpus mixing with foundation weights
     training_hooks.py          ProbeMonitor for live training metric tracking
+  supplement/       Supplement material generation (manifest-indexed artifacts)
 scripts/
   run_evaluation.py            Single-model CLI
   compare_models.py            Cross-model comparison CLI
   moral_emergence.py           Dense checkpoint trajectory driver
-papers/
-  1_accuracy_vs_fragility/     Paper 1 (+ scripts/phase_c1.py, phase_c4_*, etc.)
-  2_moe_output_dilution/       Paper 2 (+ scripts/exp1-5, Phase D scripts)
-  3_moral_geometry/            Paper 3 (+ scripts/exp1-7, probe_engineering/)
-  4_causal_validation/         Paper 4 (causal validation, preliminary)
+papers/            Research papers, directions, and program docs
+                   (see papers/README.md)
 tests/            Mirrors source structure
   directions/         Direction extraction unit tests
   geometry/           Geometric analysis unit tests

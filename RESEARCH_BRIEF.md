@@ -2,15 +2,23 @@
 
 **Orion Reblitz-Richardson** | Independent Alignment Researcher, Distiller Labs
 **Affiliation pursuit:** UH Mānoa Aloha Intelligence Initiative
-**Status snapshot:** June 2026
+**Status snapshot:** July 2026
 
 ---
 
 ## Summary
 
 DeepSteer is a PyTorch-native toolkit for measuring **how deeply** moral
-reasoning is embedded in language models during pre-training. The work
-covers four distinct contributions, scoped as four papers:
+reasoning is embedded in language models during pre-training, and how
+the refusal decision relates to the moral subspace. The work spans
+seven chronological papers (P1–P7), three research directions
+(D1–D3), and two publication-ready manuscripts (a flagship and a
+methods note). The program-level thesis: refusal reads only a narrow
+harm slice of the moral subspace through a low-dimensional
+control-token bottleneck, and families differ in what refusal reads
+and how it commits.
+
+### Chronological papers
 
 **Paper 1 — *The Moral Emergence Curve.*** Systematic measurement of
 when and how moral representations emerge during LLM pre-training.
@@ -317,6 +325,127 @@ projection-based foundation classification on held-out, external
 features, 3 epochs on 2M tokens) with moral selectivity and subspace
 overlap analysis, all on OLMo-2 1B (MPS, fp16). Experimental
 artifacts under `papers/4_causal_validation/outputs/`.
+
+## Paper 5 — Moral Alignment Dissociation
+
+### Headline findings
+
+1. **Moral comprehension crystallizes during pretraining.** Tracking
+   the moral subspace across the OLMo-3 7B alignment pipeline
+   (base → SFT → DPO → RLVR), the base→final cosine similarity
+   reaches 0.999: the subspace geometry discovered during pretraining
+   is preserved through all post-training stages.
+
+2. **SFT rotates the moral subspace once; DPO/RLVR do not.** SFT
+   introduces a ~40° rotation. Subsequent alignment stages (DPO,
+   RLVR) leave the rotated subspace unchanged. The alignment pipeline
+   builds compliance on top of a fixed moral geometry.
+
+3. **Refusal is orthogonal to morality.** The instruct-model refusal
+   direction projects onto the moral subspace at fraction 0.10,
+   consistent with the null. Ablating the refusal direction removes
+   safety compliance (0.75→1.0 compliance rate) but preserves moral
+   probe accuracy and subspace geometry.
+
+### Methodology
+
+Base→instruct trajectory analysis, direction extraction, subspace
+projection, refusal ablation, all on OLMo-3 7B (base + Instruct).
+Artifacts under `papers/5_moral_alignment/outputs/`.
+
+## Paper 6 — Cross-Model Diagnostic
+
+### Headline findings
+
+1. **Four-family bottleneck.** The decision site is a low-dimensional
+   control-token channel across all four model families: participation
+   ratio 14.7 (OLMo-3), 8.6 (Qwen2.5), 10.2 (Llama-3.1), 12.8
+   (GPT-OSS-20B).
+
+2. **Refusal is sub-band on every model.** The refusal projection
+   fraction falls below the moral-family band on every architecture
+   tested. Even the highest refusal projection is less moral-adjacent
+   than a held-out moral direction.
+
+3. **Registry-driven decomposition.** Per-model direction extraction
+   with uncentered effective rank, enabling systematic cross-model
+   comparison on a shared measurement basis.
+
+### Methodology
+
+Registry-driven per-model decomposition and consolidation on
+OLMo-3-7B, Qwen2.5-7B, Llama-3.1-8B. Artifacts under
+`papers/6_cross_model/outputs/`.
+
+## Paper 7 — Reasoning and Refusal
+
+### Headline findings
+
+1. **Decision-point traces.** Token-position-resolved analysis
+   locating the refusal decision at specific tokens in the generation
+   trace (instruction-end tokens for standard models, harmony
+   decision tokens for GPT-OSS).
+
+2. **GPT-OSS is a reversible reader.** Strong exculpatory
+   deliberation flips violating→comply in 6/10 cases with monotone
+   projection movement, the clean contrast to Llama's
+   early-commitment pattern.
+
+3. **Distributed refusal.** Refusal behavior is distributed across
+   layers rather than concentrated in a single circuit, consistent
+   with the narrow-channel bottleneck finding from Paper 6.
+
+### Methodology
+
+Decision-point extraction via `token_positions.py`, deliberation
+panel with graded prefills, on GPT-OSS-20B and R1 distills.
+Artifacts under `papers/7_reasoning/outputs/`.
+
+## Research Directions (D1–D3)
+
+The three directions form the backbone of the flagship paper:
+
+- **D1 — Moral Subspace:** constructs V_moral (rich rank-3 subspace
+  from three distinguishable moral sources), runs calibration ladders
+  (band-below-null tells), and tracks crystallization across the
+  alignment pipeline. Preregistered gates G2 (robustness) and G3
+  (refusal null) both pass.
+
+- **D2 — Decision Coupling:** measures decision-vs-decision
+  orthogonality (refusal ⊥ moral-judgment on OLMo, Llama, marginal
+  on Qwen), characterizes the control-token bottleneck on four
+  architectures, and tests format robustness.
+
+- **D3 — Decision Anatomy:** OLMo interchange rank sweep shows
+  refusal saturates at harm-rank-1 while judgment climbs
+  (harm_saturating); Llama reads broadly (the dissenting read);
+  GPT-OSS is a reversible reader. The two-axis panel (what × how)
+  is the flagship's central finding.
+
+## Publication Units
+
+The seven papers and three directions repackage into publication
+units organized by claim rather than chronology (see
+`papers/PACKAGING.md`):
+
+- **FL** — *What Refusal Reads* (flagship). Seven-beat arc: moral
+  comprehension is pretraining-native → refusal is a fresh
+  construction → decision-site bottleneck → decision orthogonality →
+  OLMo causal anatomy → cross-model panel → implications. Absorbs
+  P4–P7 + D1–D3. Rough draft built to reviewable PDF.
+
+- **MN** — *Instruments Before Verdicts* (methods note). The
+  instrument-calibration protocols (ANOMALIES A1–A6) as a reusable
+  methodology contribution: calibration ladders, verdict discipline
+  (ratio-of-ratios, power tables), stimulus discipline, depth
+  discipline (commitment-relative verdicts). LaTeX built to
+  arXiv-ready.
+
+- **DUO** — Papers 1 + 3 (pretraining duo). Standalone pair; the
+  flagship cites P1 for the emergence-curve finding.
+
+- **HELD-P2** — Paper 2 (MoE dilution). Held pending
+  SNR-normalized fragility fix.
 
 ## Toolkit Status
 

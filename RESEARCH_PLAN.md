@@ -2,41 +2,73 @@
 
 ## Moral Representation Dynamics, Expert-Level Probing, and Framework Geometry in OLMo Pre-Training
 
-### Status snapshot (May 2026, for external readers)
+### Status snapshot (July 2026, for external readers)
 
-This document is the live experimental record. The work currently
-spans four papers' worth of findings, all reproducible from artifacts
-under `papers/` and `outputs/`:
+This document is the live experimental record. The work spans seven
+chronological papers (P1–P7), three research directions (D1–D3), and
+two publication-ready manuscripts. All findings are reproducible from
+artifacts under `papers/` and `outputs/`. Program-level state lives
+in `papers/SYNTHESIS.md` (thesis), `papers/ANOMALIES.md` (open
+entries), `papers/CLAIMS.md` (anchored numbers), and
+`papers/PACKAGING.md` (old→new provenance map).
+
+**Chronological papers (completed experiments, filed by topic):**
 
 - **Paper 1 — Moral Emergence Curve (OLMo-2 1B + OLMo-3 7B):**
   three headline findings: moralized semantic distinctions emerge
   before sentiment and syntax; probing accuracy saturates while
   fragility evolves; data curation reshapes the fragility profile
-  without changing probing accuracy. Prose drafting in flight.
+  without changing probing accuracy. Paper 1 v2 drafted with
+  scale-sensitivity confound check.
 - **Paper 2 — MoE Expert-Level Moral Probing (OLMoE-1B-7B vs.
   OLMo-2 1B):** four findings: (i) no expert moral specialization
   (all 1,024 probes above 75 %, Gini < 0.03); (ii) MoE encoding is
   5.1× more fragile than dense (mean critical σ* = 0.84 vs. 4.25);
   (iii) output dilution explains the fragility (74× output scale gap);
   (iv) specialization never emerges during training (11 checkpoints,
-  Gini stable). The prior persona-mechanism findings (C10 v2 null,
-  Step 2 gradient-penalty, Step 2B behavioral dissociation) remain as
-  completed experiments under `papers/2_moe_output_dilution/outputs/phase_d/`.
+  Gini stable). Held pending SNR-normalized fragility fix.
 - **Paper 3 — Framework Geometry (OLMo-2 1B + OLMoE-1B-7B):**
-  integration signature (foundation directions distinct, effective
-  dimensionality 5, mean cosine ≈ 0.22–0.27); dendrogram does NOT
-  recover MFT individualizing/binding split (care–sanctity pairing
-  is the most consistent clustering feature); sanctity fragility
-  reversal across architectures (6.2×); framework geometry stabilizes
-  before accuracy; partial compositionality of moral dilemmas (~10 %
-  subspace membership); direction-finding robustness confirmed. Prose
-  drafted.
+  integration signature; non-MFT clustering; sanctity fragility
+  reversal; partial compositionality of moral dilemmas. Updated with
+  non-moral control calibration and difference-CIs on geometry scalars.
 - **Paper 4 — Causal Validation (OLMo-2 1B, preliminary):**
-  direction ablation is foundation-specific (mean specificity −0.63
-  at layer 12); steering injection shows dose–response specificity;
-  projection-based behavioral classification at 83.3 % on causal
-  prompts (chance 16.7 %); SAE features partially recover the moral
-  subspace at 3.2× random baseline. Prose drafted.
+  direction ablation, steering dose–response, behavioral grounding,
+  SAE partial recovery. Concept-absorbed into the flagship.
+- **Paper 5 — Moral Alignment Dissociation (OLMo-3 7B):**
+  base→instruct trajectory: moral subspace crystallizes in
+  pretraining (cos→0.999), SFT rotates it ~40°, refusal direction ⊥
+  moral subspace (projection fraction 0.10). Ablation removes safety
+  compliance but preserves moral geometry and judgment.
+- **Paper 6 — Cross-Model Diagnostic (OLMo-3 / Qwen2.5-7B /
+  Llama-3.1-8B):** registry-driven per-model decomposition;
+  four-family bottleneck discovery (PR 8.6–14.7); refusal
+  sub-band on every model.
+- **Paper 7 — Reasoning and Refusal (GPT-OSS-20B + R1 distills):**
+  decision-point traces; distributed refusal; Zhao et al. causal
+  handle (t_inst harmfulness + reply-inversion).
+
+**Research directions (active program, cross-paper):**
+
+- **D1 — Moral Subspace:** rich V_moral construction, calibration
+  ladder, below-band refusal geometry, crystallization trajectory.
+- **D2 — Decision Coupling:** decision-vs-decision orthogonality,
+  control-token bottleneck (four architectures), format robustness.
+- **D3 — Decision Anatomy:** OLMo interchange rank sweep
+  (harm_saturating), Llama reads-broad, GPT-OSS reversible reader,
+  two-axis panel.
+
+**Publication units (writeup phase, see `papers/PACKAGING.md`):**
+
+- **FL — flagship** (*What Refusal Reads*): absorbs P4–P7 + D1–D3
+  into a seven-beat arc. Thesis: refusal reads only a narrow harm
+  slice of the moral subspace through a low-dim control-token
+  bottleneck; families differ in what refusal reads and how it
+  commits. Rough draft built; reviewer-quality pass complete.
+- **MN — methods note** (*Instruments Before Verdicts*): the
+  instrument-calibration protocols (ANOMALIES A1–A6) as a reusable
+  methodology contribution. LaTeX built to arXiv-ready.
+- **DUO — P1 + P3** (pretraining duo): standalone pair, FL cites.
+- **HELD-P2**: MoE paper held pending SNR-normalized fragility fix.
 
 The companion public-facing document is
 [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md). Module-level documentation,

@@ -51,6 +51,7 @@ deepsteer/
 ├── foundations.py              # Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
 │
 ├── directions/                 # Direction extraction (model-agnostic, pure numpy)
+│   ├── extraction.py           # Consolidated direction extraction (registry-driven)
 │   ├── mean_diff.py            # Mean-difference direction (baseline)
 │   ├── leace.py                # LEACE / Fisher LDA direction
 │   ├── probe_weight.py         # Direction from trained probe weights / .npz files
@@ -60,6 +61,7 @@ deepsteer/
 │   ├── cosine.py               # Cosine similarity matrices, effective dimensionality
 │   ├── clustering.py           # Hierarchical clustering, permutation tests
 │   ├── subspace.py             # Orthonormal bases, subspace membership, null distributions
+│   ├── depth.py                # Depth fractions (projection fraction, registry-based)
 │   └── analysis.py             # Full geometric analysis orchestrator
 │
 ├── causal/                     # Causal validation (requires WhiteBoxModel)
@@ -115,6 +117,10 @@ deepsteer/
 │   ├── DATASET_GUIDELINES.md   # Quality rules for creating/auditing datasets
 │   └── DATASET_AUDIT.md        # Audit summary (structural + quality)
 │
+├── reasoning/                  # Reasoning-trace analysis
+│   ├── token_positions.py      # Decision-point token position extraction
+│   └── think_io.py             # Think-tag I/O for reasoning models
+│
 ├── steering/                   # Training-time intervention tools
 │   ├── moral_curriculum.py     # Curriculum design for moral pre-training
 │   ├── data_mixing.py          # Moral corpus mixing strategies
@@ -123,6 +129,13 @@ deepsteer/
 │   ├── lora_trainer.py         # LoRA fine-tuning for fragility experiments
 │   ├── chat_lora_trainer.py    # Chat-format LoRA (EM replication)
 │   └── lora_experiment.py      # LoRA experiment orchestration
+│
+├── supplement/                 # Supplement material generation
+│   ├── cells/                  # Per-cell distilled artifacts
+│   ├── figure_data/            # Shared figure data (CSVs)
+│   ├── scripts/                # Supplement build scripts
+│   ├── MANIFEST.json           # Manifest-indexed artifact registry
+│   └── PROVENANCE.md           # Artifact provenance documentation
 │
 ├── viz/                        # Visualization
 │   ├── __init__.py             # All plot functions (layer heatmaps, trajectories, etc.)
@@ -135,12 +148,28 @@ scripts/                        # CLI entrypoints
 │   ├── compare_models.py       # Cross-model comparison
 │   └── moral_emergence.py      # Moral concept emergence analysis
 │
-papers/                         # Research papers with reproducible experiments
-│   ├── 1_accuracy_vs_fragility/  # Probing accuracy vs fine-tuning fragility
-│   ├── 2_moe_output_dilution/   # MoE moral encoding and output dilution
-│   ├── 3_moral_geometry/        # Foundation geometry and probe engineering
-│   └── 4_causal_validation/     # Causal tracing validation
-│   # Each paper: scripts/ sections/ figures/ outputs/ build/
+papers/                         # Research papers and program-level docs
+│   ├── 1_accuracy_vs_fragility/  # Paper 1: probing accuracy vs fragility
+│   ├── 2_moe_output_dilution/   # Paper 2: MoE moral encoding (held)
+│   ├── 3_moral_geometry/        # Paper 3: foundation geometry
+│   ├── 4_causal_validation/     # Paper 4: causal validation (absorbed into FL)
+│   ├── 5_moral_alignment/       # Paper 5: moral alignment dissociation
+│   ├── 6_cross_model/           # Paper 6: cross-model diagnostic
+│   ├── 7_reasoning/             # Paper 7: reasoning and refusal
+│   ├── d1_moral_subspace/       # Direction 1: V_moral construction + calibration
+│   ├── d2_decision_coupling/    # Direction 2: decision coupling + bottleneck
+│   ├── d3_decision_anatomy/     # Direction 3: causal anatomy + cross-model panel
+│   ├── fl_what_refusal_reads/   # Flagship paper (absorbs P4-P7 + D1-D3)
+│   ├── mn_instruments_before_verdicts/  # Methods note (A1-A6 protocols)
+│   ├── build_common/            # Shared LaTeX build infrastructure
+│   ├── runpod_common/           # Shared RunPod session infrastructure
+│   ├── SYNTHESIS.md             # Program thesis + standing claims
+│   ├── ANOMALIES.md             # Open anomaly ledger
+│   ├── CLAIMS.md                # Master claim ledger (anchored numbers)
+│   ├── PACKAGING.md             # Old→new provenance map
+│   ├── OPEN_THREADS.md          # Audited thread register
+│   └── MISSING_ARTIFACTS.md     # Artifact gap tracking
+│   # Each paper/direction: scripts/ sections/ figures/ outputs/ build/
 │
 tests/                          # pytest suite mirroring source structure
 ```
@@ -254,12 +283,12 @@ comparable to their instruct counterparts, enabling cross-methodology comparison
 
 ## Key Research Questions This Enables
 
-1. **Do OLMo checkpoints show phase transitions in moral concept acquisition?** At what point during training do moral foundations become linearly decodable from representations?
+1. **Do OLMo checkpoints show phase transitions in moral concept acquisition?** At what point during training do moral foundations become linearly decodable from representations? (Answered: yes, sharp sigmoid within first ~5% of training; Papers 1, 3.)
 
-2. **Is moral reasoning more distributed in models trained on moral-rich corpora?** Compare probing classifier accuracy across layers for standard vs. morally-enriched pre-training.
+2. **How does the refusal decision relate to the moral subspace?** Refusal reads only a narrow harm slice through a low-dimensional control-token bottleneck, geometrically separate from broad moral comprehension. (Directions D1–D3, flagship.)
 
-3. **Do pre-training-aligned models show smaller compliance gaps than RLHF-aligned models?** The Greenblatt methodology applied as a function of alignment method.
+3. **Does this structure generalize across model families?** The decision-site bottleneck and below-band refusal geometry hold across OLMo-3, Qwen2.5, Llama-3.1, and GPT-OSS-20B, but families differ in what refusal reads and how it commits. (Papers 6–7, Direction D3.)
 
-4. **Can we predict alignment faking propensity from representational structure?** Building on Poser's finding that alignment fakers have more fragile safety circuits.
+4. **Is probing accuracy the right metric?** No. Fragility (noise-robustness) continues evolving long after probing accuracy saturates and detects representational changes invisible to accuracy, behavioral judges, and probe activation. (Papers 1–2, methods note.)
 
-5. **What moral curriculum produces the deepest alignment?** Systematic comparison of narrative corpora (fables, philosophy, case law) effects on alignment depth metrics.
+5. **Can training-time representation steering suppress alignment-relevant behavior?** At 1B, single-direction suppression works mechanically but fails to capture behavior due to feature redundancy; multi-direction (SAE-based) suppression at 7B is the scaling prediction. (Phase D results.)
