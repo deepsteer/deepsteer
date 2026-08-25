@@ -123,37 +123,29 @@ detect moral content broadly, but detection is a low bar. We ask
 whether they go further, distinguishing moral foundations from one
 another and organizing the relationships between them geometrically.
 
-We train six independent linear probes on open-weight language models
-(OLMo-2~1B and 7B, OLMoE-1B-7B), one per Moral Foundations Theory (MFT)
-category (\emph{care/harm}, \emph{fair/cheat}, \emph{lib/oppress},
-\emph{loy/betray}, \emph{auth/subv}, \emph{sanc/degrade}), and examine
-how the resulting directions relate to each other in representation
-space. The directions neither collapse into a single moral detector nor
-isolate from one another. They span five effective dimensions, the
-ceiling for six mean-centered directions, which rules out collapse, and
-they share a positive common component, which is the
-\textbf{signature of integration}. That shared component (mean pairwise
-cosine 0.26) is ${\sim}20\times$ a matched non-moral concept battery
-built identically (0.013; paired $\Delta = 0.223$, CI [0.202, 0.244],
-excluding 0), so the integration is moral-specific relative to that
-battery; whether it is specifically moral rather than generic affective
-salience is the open residual.
+We train six independent linear probes on open-weight language models,
+one per Moral Foundations Theory (MFT) category (\emph{care/harm},
+\emph{fair/cheat}, \emph{lib/oppress}, \emph{loy/betray},
+\emph{auth/subv}, \emph{sanc/degrade}), and examine how the resulting
+directions relate to each other in representation space. We find the
+directions neither collapse into a single moral detector nor isolate
+from one another. Rather, they span a near-maximal number of
+independent dimensions while sharing a positive common component. The
+shared component is \textbf{the signature of integration}, and it is
+moral-specific relative to a matched non-moral concept battery built
+identically (mean pairwise cosine 0.26 vs.\ 0.013).
 
 The geometry is consistent across architectures and scale and reaches
 its integration regime early in pre-training, well before probe
-accuracy saturates, then differentiates slowly. The structure the model
-discovers shows \textbf{no evidence} of the individualizing/binding
-distinction predicted by Moral Foundations Theory, though that test is
-underpowered (20 partitions, smallest achievable $p = 0.05$), so we
-report no evidence rather than absence; what structure it does form is
-grounded in corpus statistics rather than human theoretical categories.
-
-Extending to moral dilemmas, each dilemma direction composes only
-partially from its component foundations: ${\sim}12$\% of its variance
-projects onto them (about $2.7\times$ a mismatched-pair baseline), and
-the remaining ${\sim}88$\% encodes conflict-specific structure, with
-near-balanced loading on the two foundations in tension. The model represents
-moral tension itself, not a pre-resolved judgment.
+accuracy saturates. The structure the model discovers shows
+\textbf{no evidence} of the individualizing/binding distinction
+predicted by Moral Foundations Theory (an underpowered test: only 20
+candidate partitions exist) but rather reflects corpus statistics.
+Extending to moral dilemmas, each dilemma direction partially composes
+from its component foundations, at $2.7\times$ a mismatched-pair
+baseline, while the majority of its variance encodes conflict-specific
+structure. The model represents moral tension itself, not a
+pre-resolved judgment.
 \end{abstract}
 
 % =====================================================================

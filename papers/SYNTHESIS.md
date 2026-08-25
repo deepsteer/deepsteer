@@ -214,7 +214,11 @@ Organize and Structure Moral Knowledge*; its abstract keeps the calibrated-integ
 (0.26 vs matched non-moral 0.013), states the eff-dim 5 as the six-direction ceiling (rules out
 collapse, does not mark integration), and carries the MFT-grouping null's detection bar
 (20 partitions, smallest achievable p = 0.05); "loaded in balance" softened to the body's
-"near-balanced loading". MN abstract keeps the six-mode count. Author-approved abstract trims:
+"near-balanced loading". MN abstract keeps the six-mode count. (Same-day revision: P3 abstract rewritten to the
+author's leaner framing; the same hedges now ride as five in-line anchors — integration attributed
+to the shared component, 0.26 vs 0.013 pair, "no evidence" + 20-partition bar, integration-regime
+wording, 2.7x compositionality anchor — with the eff-dim-ceiling explanation, difference-CI, and
+affective-salience residual stated in the body rather than the abstract.) Author-approved abstract trims:
 P3 drops MFV replication + foundation-uniform fragility from the abstract (both remain in body);
 MN drops the fresh-context-re-read disclosure (remains in §6). Companion bibs now cite P1 at
 arXiv:2606.11375. arXiv Makefile targets fixed to ship main.bbl, in-tarball graphicspath, and
