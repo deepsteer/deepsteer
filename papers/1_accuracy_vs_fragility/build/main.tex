@@ -88,7 +88,7 @@
     \textless\texttt{orion@orionr.com}\textgreater.}
 }
 
-\date{May 2026}
+\date{August 2026}
 
 % --- Pandoc-generated section files use \tightlist -------------------
 \providecommand{\tightlist}{%
@@ -148,8 +148,8 @@
 \begin{abstract}
 Standard linear probing declares a property ``encoded'' when a
 classifier on hidden states achieves high accuracy. The protocol works
-well on a snapshot but breaks across pre-training: probe accuracy
-saturates within the first few thousand steps, leaving most of
+well on a snapshot but breaks across pre-training, with probe accuracy
+saturating within the first few thousand steps, leaving most of
 training invisible to the instrument.
 
 We introduce \emph{fragility}, a complementary per-layer metric
@@ -159,24 +159,24 @@ and the redundancy of representation, both of which keep evolving long
 after accuracy plateaus.
 
 Applied to open-checkpoint language models, fragility recovers
-structure that accuracy alone cannot see. Moralized representations
-emerge in stages, with high-accuracy detection of morally loaded
-words first and compositional encoding later. Because
-probe accuracy on its own tracks how lexically separable a dataset is,
-we establish the compositional encoding directly, by showing it
-transfers across construction types that share no contrast tokens.
-Raw critical noise also shows a layer-depth gradient, but we
-identify and correct a confound that, to our knowledge, has gone
-undocumented in noise-injection probing: deeper layers carry larger
+structure that accuracy alone cannot see. Moralized representations,
+our interest, emerge in stages, with high-accuracy detection of morally
+loaded words first and compositional encoding later. Because probe
+accuracy on its own tracks how lexically separable a dataset is, we
+establish the compositional encoding directly, by showing it transfers
+across construction types that share no contrast tokens.
+\emph{Where probing accuracy returns a flat answer, fragility returns a
+structured one.}
+
+Raw critical noise also shows a layer-depth gradient, but we identify
+and correct a confound that, to our knowledge, has gone undocumented in
+noise-injection probing. That is, deeper layers carry larger
 activations, so a fixed absolute noise makes them look more robust than
 they are. Rescaling per layer removes most of the gradient, while
 within-layer comparisons stay valid and still separate
-identical-accuracy corpora by fragility. We recommend
+identical-accuracy corpora by fragility. \emph{We recommend
 RMS-normalized critical noise for cross-layer claims and raw critical
-noise for within-layer comparisons.
-
-Where probing accuracy returns a flat answer, fragility returns a
-structured one.
+noise for within-layer comparisons.}
 \end{abstract}
 
 % =======================================================================

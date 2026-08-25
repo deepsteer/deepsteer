@@ -1,4 +1,4 @@
-# Paper 3 Plan: *How Language Models Organize Competing Moral Frameworks*
+# Paper 3 Plan: *How Language Models Organize and Structure Moral Knowledge*
 
 **Status:** Plan drafted. No experimental work started. All experiments
 reuse existing infrastructure from Papers 1 and 2. Primary models:
@@ -35,7 +35,7 @@ unchanged from Papers 1 and 2.
 
 ## Tentative title
 
-**Primary:** *How Language Models Organize Competing Moral Frameworks*
+**Primary:** *How Language Models Organize and Structure Moral Knowledge*
 
 Alternates:
 - *Beyond Moral Detection: Measuring Framework-Specific Structure in

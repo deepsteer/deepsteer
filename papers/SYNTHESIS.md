@@ -205,3 +205,17 @@ control run through the identical pipeline gives mean pairwise cosine 0.013 vs m
 non-moral battery (affective-vs-moral is the named residual). FL/MN were scoped to their evidence
 (FL thesis made consistent with its already-scoped abstract; MN norm-fold prior art cited and verified);
 no refusal-program thesis change.
+
+**Packaging (2026-08-25, arXiv finalization — no standing claim changed).** Titles and abstracts
+finalized for the P1/P2/P3/MN arXiv set. P2 retitled *Output Dilution: Redundant but Fragile
+Representations in MoE Models*; its abstract's "five-fold" corrected to the body's 4.2-fold
+(σ* 0.92 vs 3.81; the five-fold appeared nowhere in the paper). P3 retitled *How Language Models
+Organize and Structure Moral Knowledge*; its abstract keeps the calibrated-integration scope
+(0.26 vs matched non-moral 0.013), states the eff-dim 5 as the six-direction ceiling (rules out
+collapse, does not mark integration), and carries the MFT-grouping null's detection bar
+(20 partitions, smallest achievable p = 0.05); "loaded in balance" softened to the body's
+"near-balanced loading". MN abstract keeps the six-mode count. Author-approved abstract trims:
+P3 drops MFV replication + foundation-uniform fragility from the abstract (both remain in body);
+MN drops the fresh-context-re-read disclosure (remains in §6). Companion bibs now cite P1 at
+arXiv:2606.11375. arXiv Makefile targets fixed to ship main.bbl, in-tarball graphicspath, and
+(P3) outputs/figures; all four tarballs compile standalone with zero missing figures/citations.

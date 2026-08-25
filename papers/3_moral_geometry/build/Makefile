@@ -94,9 +94,11 @@ distclean: clean
 # Bundle main.tex + bib + sections + figures into a tarball arXiv accepts.
 arxiv: pdf
 	@mkdir -p arxiv-staging
-	cp $(MAIN_TEX) references.bib neurips_2025.sty arxiv-staging/
+	cp $(MAIN_TEX) main.bbl references.bib neurips_2025.sty arxiv-staging/
 	cp -r sections arxiv-staging/
 	cp -r ../figures arxiv-staging/figures
+	cp ../outputs/figures/*.pdf arxiv-staging/figures/
+	sed -i '' -e 's|\\graphicspath{.*}|\\graphicspath{{figures/}}|' arxiv-staging/main.tex
 	$(TAR) -czf arxiv.tar.gz -C arxiv-staging .
 	rm -rf arxiv-staging
 	@echo "==> arxiv.tar.gz ready for upload"

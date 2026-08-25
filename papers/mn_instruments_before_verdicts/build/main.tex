@@ -87,7 +87,7 @@
     \textless\texttt{orion@orionr.com}\textgreater.}
 }
 
-\date{July 2026}
+\date{August 2026}
 
 % --- Pandoc-generated section files use \tightlist -------------------
 \providecommand{\tightlist}{%
@@ -145,27 +145,24 @@
 \maketitle
 
 \begin{abstract}
-Causal claims about language-model internals rest on measurements: a projection, a cosine,
-an ablation delta, an interchange patch. These measurements fail in specific, diagnosable
-ways that return a plausible number instead of an error, so a broken instrument reads as a
-finding. A covariance-matched null can saturate until every direction looks typical; a
-per-head attribution can overshoot the true residual write threefold on reordered-normalization
-architectures; an interchange patch can go sign-chaotic because its outcome is pinned
-at a ceiling; a read-from verdict can be an artifact of measuring past the layer where the
-model already decided.
+Causal claims about large language model (LLM) internals rest on measurements. Those might
+include a projection, a cosine, an ablation delta, or an interchange patch among others. These
+measurements fail in specific, diagnosable ways that return a plausible number instead of an
+error, so a broken instrument can easily read as a finding. A covariance-matched null can
+saturate until every direction looks typical, a per-head attribution can overshoot the true
+residual write threefold on reordered-normalization architectures, an interchange patch can go
+sign-chaotic because its outcome is pinned at a ceiling, or a read-from verdict can be an
+artifact of measuring past the layer where the model already decided.
 
 This note documents six such failures from a causal interpretability program on refusal and
-moral representation across a four-model open-weight panel, each mode established on one or two
-of the four (not all six on all four). For each we give the tell that
-catches it and a protocol keyed to a detectable trigger (reordered normalization, massive
-activations, a low-dimensional decision channel), so readers can check whether their own
-setup is exposed. The discipline reduces to four moves: calibrate against a positive-control
-ladder, certify with an orthogonal cell, compute power before spending compute, and state
-every read-from verdict at a depth referenced to the model's commitment. Applied to the
-program's own published paper, a fresh-context re-read (not the protocol firing prospectively)
-caught an abstract-level error. The evidence is
-four architectures across three families within a single program; external replication across
-programs is future work. A causal claim is only as good as the instrument behind it.
+moral representation, spanning several papers and a four-model open-weight panel; each mode is
+established on one or two of the four. For each we give the tell that catches it and a protocol
+keyed to a detectable trigger (reordered normalization, massive activations, a low-dimensional
+decision channel), so we and readers can check whether a given setup is exposed. The discipline
+reduces to four moves: calibrate against a positive-control ladder, certify with an orthogonal
+cell, compute power before spending compute, and state every read-from verdict at a depth
+referenced to the model's commitment. The evidence is four architectures across three families
+within a single program; external replication across programs is future work.
 \end{abstract}
 
 % =======================================================================

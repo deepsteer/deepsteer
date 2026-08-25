@@ -1,4 +1,4 @@
-% main.tex — Paper 3: How Language Models Organize Competing Moral Frameworks.
+% main.tex — Paper 3: How Language Models Organize and Structure Moral Knowledge.
 % arXiv-targeted; NeurIPS 2025 preprint style.
 %
 % Build:
@@ -61,7 +61,7 @@
 \usepackage[capitalize, noabbrev]{cleveref}
 
 % --- Title / authors --------------------------------------------------
-\title{How Language Models Organize Competing Moral Frameworks}
+\title{How Language Models Organize and Structure Moral Knowledge}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -69,7 +69,7 @@
     \textless\texttt{orion@orionr.com}\textgreater.}
 }
 
-\date{May 2026}
+\date{August 2026}
 
 % --- Pandoc stubs -----------------------------------------------------
 \providecommand{\tightlist}{%
@@ -118,51 +118,42 @@
 \maketitle
 
 \begin{abstract}
-How do language models organize moral knowledge? Models detect moral
-content broadly, but detection is a low bar. We ask whether they go
-further: distinguishing moral foundations from one another and
-organizing the relationships between them.
+How do large language models (LLMs) organize moral knowledge? Models
+detect moral content broadly, but detection is a low bar. We ask
+whether they go further, distinguishing moral foundations from one
+another and organizing the relationships between them geometrically.
 
-Training six independent linear probes on OLMo-2~1B and 7B and
-OLMoE-1B-7B, one per foundation in Moral Foundations Theory (MFT),
-shows integration. Foundation directions in representation space are
-geometrically distinct, spanning five effective dimensions, yet share
-a common component, shown by a uniformly positive mean pairwise cosine
-(the effective dimensionality rules out collapse but, at its ceiling
-for six mean-centered directions, does not mark integration; the
-positive cosine is what marks integration rather than isolation). That
-positive cosine (0.26) is ${\sim}20\times$ a matched non-moral concept
-battery built identically to the foundations (0.013; paired
-$\Delta = 0.223$, CI [0.202, 0.244], excluding 0; all six non-moral
-probes decode at 1.00), so the shared component is moral-specific
-relative to a matched non-moral battery, not a generic
-content-vs-neutral axis; whether it is specifically moral rather than
-generic affective salience is the open residual. This
-is genuine multi-dimensional structure, not a single moral detector. The geometry is consistent
-across scale (1B to 7B dense), across dense and MoE architectures, and
-on the independently constructed Moral Foundations Vignettes; across
-pre-training it reaches this integration regime early (within a few
-thousand steps, well before probing accuracy saturates) and then
-slowly differentiates.
+We train six independent linear probes on open-weight language models
+(OLMo-2~1B and 7B, OLMoE-1B-7B), one per Moral Foundations Theory (MFT)
+category (\emph{care/harm}, \emph{fair/cheat}, \emph{lib/oppress},
+\emph{loy/betray}, \emph{auth/subv}, \emph{sanc/degrade}), and examine
+how the resulting directions relate to each other in representation
+space. The directions neither collapse into a single moral detector nor
+isolate from one another. They span five effective dimensions, the
+ceiling for six mean-centered directions, which rules out collapse, and
+they share a positive common component, which is the
+\textbf{signature of integration}. That shared component (mean pairwise
+cosine 0.26) is ${\sim}20\times$ a matched non-moral concept battery
+built identically (0.013; paired $\Delta = 0.223$, CI [0.202, 0.244],
+excluding 0), so the integration is moral-specific relative to that
+battery; whether it is specifically moral rather than generic affective
+salience is the open residual.
 
-The structure the model develops shows no evidence of the
-individualizing/binding distinction central to MFT: neither
-hierarchical clustering of the probe directions nor unsupervised
-clustering of the activations recovers it. The group-structure test is
-underpowered (only 20 partitions, smallest achievable $p = 0.05$), so a
-small effect is not excluded; we report no evidence of MFT grouping
-rather than its absence. What structure the model does form is grounded
-in corpus statistics rather than human theoretical categories. Seed-averaged fragility testing shows that output dilution
-is foundation-uniform: every foundation is more fragile in MoE than in
-dense, with no foundation reliably most or least robust within an
-architecture.
+The geometry is consistent across architectures and scale and reaches
+its integration regime early in pre-training, well before probe
+accuracy saturates, then differentiates slowly. The structure the model
+discovers shows \textbf{no evidence} of the individualizing/binding
+distinction predicted by Moral Foundations Theory, though that test is
+underpowered (20 partitions, smallest achievable $p = 0.05$), so we
+report no evidence rather than absence; what structure it does form is
+grounded in corpus statistics rather than human theoretical categories.
 
-Extending to moral dilemmas shows partial compositionality: each
-dilemma direction projects only ${\sim}12$\% of its variance onto its
-two component foundations (about $2.7\times$ a mismatched-pair
-baseline), and the remaining ${\sim}88$\% encodes conflict-specific
-structure beyond them, with balanced loading suggesting the model
-represents moral conflict itself rather than a pre-resolved judgment.
+Extending to moral dilemmas, each dilemma direction composes only
+partially from its component foundations: ${\sim}12$\% of its variance
+projects onto them (about $2.7\times$ a mismatched-pair baseline), and
+the remaining ${\sim}88$\% encodes conflict-specific structure, with
+near-balanced loading on the two foundations in tension. The model represents
+moral tension itself, not a pre-resolved judgment.
 \end{abstract}
 
 % =====================================================================
