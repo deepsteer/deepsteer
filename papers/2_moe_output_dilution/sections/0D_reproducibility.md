@@ -101,5 +101,6 @@ Exact versions are pinned in `pyproject.toml`.
 Each experiment produces a structured JSON summary file with full
 metadata (model name, revision, hyperparameters, per-layer results).
 Files are located in `papers/2_moe_output_dilution/outputs/` under
-experiment-specific subdirectories. All experimental scripts and
-output files are released alongside the paper.
+experiment-specific subdirectories. All code, scripts, and output
+JSON are released at <https://github.com/deepsteer/deepsteer/>; this
+paper's subdirectory is `papers/2_moe_output_dilution/`.

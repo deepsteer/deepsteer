@@ -7,7 +7,8 @@ script is the reproducibility contract for every figure.
 
 Every number in this note, the participation-ratio profiles, the calibrated covariance nulls,
 the positive-control ladders, the per-head write attribution, and the rank-sweep outcomes, is
-indexed in the shared supplement `deepsteer/supplement/MANIFEST.json`, each with a content hash,
+indexed in the shared supplement `deepsteer/supplement/MANIFEST.json` (public repository:
+<https://github.com/deepsteer/deepsteer/>), each with a content hash,
 its provenance, and the figure or table it backs. The two instruments this note shares with the
 companion flagship (the decision-site participation-ratio profile and the depth-asymmetry panel)
 live in the supplement once and are cited by both papers; `deepsteer/supplement/scripts/verify.py`
