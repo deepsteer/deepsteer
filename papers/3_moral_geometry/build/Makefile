@@ -96,8 +96,11 @@ arxiv: pdf
 	@mkdir -p arxiv-staging
 	cp $(MAIN_TEX) main.bbl references.bib neurips_2025.sty arxiv-staging/
 	cp -r sections arxiv-staging/
-	cp -r ../figures arxiv-staging/figures
-	cp ../outputs/figures/*.pdf arxiv-staging/figures/
+	@mkdir -p arxiv-staging/figures
+	@for f in $$(grep -ho 'includegraphics[^{]*{[^}]*}' sections/*.tex | sed 's/.*{//;s/}//' | sort -u); do \
+	  if [ -f ../figures/$$f ]; then cp ../figures/$$f arxiv-staging/figures/; \
+	  elif [ -f ../outputs/figures/$$f ]; then cp ../outputs/figures/$$f arxiv-staging/figures/; \
+	  else echo "MISSING FIGURE: $$f"; exit 1; fi; done
 	sed -i '' -e 's|\\graphicspath{.*}|\\graphicspath{{figures/}}|' arxiv-staging/main.tex
 	$(TAR) -czf arxiv.tar.gz -C arxiv-staging .
 	rm -rf arxiv-staging
