@@ -223,3 +223,8 @@ P3 drops MFV replication + foundation-uniform fragility from the abstract (both 
 MN drops the fresh-context-re-read disclosure (remains in §6). Companion bibs now cite P1 at
 arXiv:2606.11375. arXiv Makefile targets fixed to ship main.bbl, in-tarball graphicspath, and
 (P3) outputs/figures; all four tarballs compile standalone with zero missing figures/citations.
+
+**Publication (2026-08-27).** The arXiv set is live: P1 v2 (arXiv:2606.11375, adds the §4.4
+RMS-normalization control and the scoped abstract), P2 (arXiv:2608.25231), P3 (arXiv:2608.27402).
+Ids back-filled across companion bibs (P3/P4/P5/P6/FL). MN is upload-ready and held to submit
+paired with FL.

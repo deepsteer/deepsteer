@@ -180,8 +180,8 @@ a non-moral positive-projection control for the calibration ladder (persona is m
 - **H2 — RESOLVED (keep AUTO scope + one sentence).** Abstract now carries per-cell labels:
   "causal on OLMo-3, corroborative on GPT-OSS (correlational), contrastive on Llama (causal,
   broad); Qwen absent on the read axis."
-- **H3 — RESOLVED.** P2/P3 arXiv-forthcoming; FL's P3 self-cite note de-labeled and the eprint
-  id drops in at publication.
+- **H3 — RESOLVED (ids live 2026-08-26/27).** P2 = arXiv:2608.25231, P3 = arXiv:2608.27402;
+  both back-filled into FL/P4/P5/P6 bibs. FL's P3 cite is now a real reference.
 - **H4 — LANDED v1 2026-07-05.** `deepsteer/supplement/` built: 14 distilled artifacts
   (8 figure_data CSVs + 6 distilled cell JSONs), `MANIFEST.json` (sha256 + provenance + cited_by
   + CSV schemas via `scripts/build.py`), `scripts/verify.py` (integrity + shared-arrays-live-once

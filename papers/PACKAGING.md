@@ -82,7 +82,9 @@ bands.
 ## §3 — DUO (P1 + P3) provenance
 
 Standalone pretraining duo; FL cites P1 for beat 1 but does not absorb it. P1 is published
-(arXiv:2606.11375v1, 9 Jun 2026); P3 is draft-complete. **W0 resolved the v1→v2 question: a v2
+(arXiv:2606.11375; v2 with the §4.4 scale control submitted 25 Aug 2026); P2 is published
+(arXiv:2608.25231, 25 Aug 2026); P3 is published (arXiv:2608.27402, 27 Aug 2026); MN is
+upload-ready, held to submit as a pair with FL. **W0 resolved the v1→v2 question: a v2
 is required** — v1 lacks §4.4, so P1-04/P1-05 are errata-class (OT-1/F1); the erratum wording
 (it scopes abstract-level Finding 2) is escalated to Orion and the build is W3. Bib and §4.3 are
 both clean in v1. Claim ids P1-01..07, P3-01..03. The σ*-normalization control (P1 §4.4) links
