@@ -1,10 +1,12 @@
 # Write-up & Packaging Phase — Plan WP-1 (2026-07-03)
 
-**For:** Claude Code (Opus 4.8), cold start after `/clear`. Context = this document + the
+**For:** Claude Code (Fable 5.1 for the judgment sessions W4-1 and W4-3; Sonnet 5 for the
+pod-driver session W4-2; see Phase W4), cold start after `/clear`. Context = this document + the
 committed repo. First action every session: Run CLAUDE.md "Research boot sequence" then this plan.
-**Phase mode: experiments are FROZEN.** Zero-GPU claim-verification only. Any tempting
-experiment goes to OPEN_THREADS.md with a cost estimate and waits for a gate — no pods this
-phase. The research program (D1→D2→D3, three-model panel, two-axis resolution) is complete
+**Phase mode: experiments are FROZEN, with one exception.** Phase W4 (2026-09-10) unfreezes the
+program for exactly one targeted pod (Tier A + Tier B below); everything else stays
+zero-GPU claim-verification, and any other tempting experiment goes to OPEN_THREADS.md with a
+cost estimate and waits for a gate. The research program (D1→D2→D3, three-model panel, two-axis resolution) is complete
 per `papers/SYNTHESIS.md`; this phase converts it into papers.
 
 ---
@@ -152,3 +154,59 @@ abstract source. **Gate W3:** full FL draft → external review → arXiv decisi
 MN submitted (or Orion-approved final) · FL full draft through referee pass · PACKAGING /
 CLAIMS / OPEN_THREADS complete and clean · held-thread register (Qwen, Tier-2, projection
 refinement, P2 SNR, Direction 2) accurate and priced for the next phase decision.
+
+---
+
+## Phase W4 — venue-quality pod (2026-09-10)
+
+**Decisions of record (Orion, 2026-09-10; do not reopen in-session).**
+
+1. **Bar.** Venue quality before arXiv for MN and FL. The July self-review left both at
+   borderline-reject for overclaiming; every AUTO fix and H1–H5 escalation is resolved (OPEN_THREADS
+   §H). What remains are the [POD] items the frozen phase could only scope. W4 runs them.
+2. **Unfreeze scope.** Exactly one targeted A100 pod, pre-registered as D3 Amendments 14 (Tier A)
+   and 15 (Tier B) in `papers/d3_decision_anatomy/PREREGISTRATION.md`. Tier A = claim-bearing and
+   cheap: 14.1 proto-refusal reliability ceiling; 14.2 Llama rank-2/4 harm-coextensive; 14.3 GPT-OSS
+   post-response decision-token projection (+ the band-below-null half of the A5 pre-condition);
+   14.4 D1 P0–P3 per-rollout PR audit (+ Think MFT/refusal saves); 14.5 reconciled B1
+   cross-ablation; 14.6 per-unit saves for the MN instruments. Tier B = panel strength: 15.1 OLMo-3
+   additional request-twins; 15.2 Qwen2.5-7B-Instruct causal C1 read cell.
+3. **Everything else stays HELD at its OPEN_THREADS price.** Tier-2 GPT-OSS causal C1-MoE (§E,
+   ~2–3 Llama-sessions), Direction 2 (new program, safety-adjacent), the A13 deconfounding panel
+   (Think + Qwen sessions), C2 counterfactual-consistency DPO (§F.6, training, safety-adjacent), B5
+   fragility baseline, OT-9 whitened-fragility control. Not in Tier A/B means not in this pod.
+4. **Paper-B disposition: FL appendices.** The behavioral/interventional companion folds into FL as
+   appendices F (removability battery, from P6 §4.2 + P5 §4.4), G (distributed refusal, from P7 §4.3 +
+   D3 Stage 1), H (persona / Assistant-Axis + persona-shift compliance, from P5 §4.3 + P6 §4.2–4.3).
+   No companion note. Skeletons land in W4-1; prose in W4-3.
+5. **Raw-array release channel: Zenodo** (DOI of record). Public record = every per-unit array not
+   derived from a non-commercial source; MORABLES-derived caches are excluded or restricted with a
+   regeneration recipe. Plan in `deepsteer/supplement/RELEASE_PLAN.md`; DOI minted in W4-3.
+6. **MN and FL submit as a pair.**
+7. **Model assignments.** W4-1 (this session: rebuild, amendments, driver, skeletons, release plan,
+   gate summary) = Fable 5.1. W4-2 (pod driver on RunPod, manifests, sync; no verdicts) = Sonnet 5.
+   W4-3 (verdict rules, CLAIMS, prose, Zenodo DOI, hostile-reviewer pass, `make arxiv`) = Fable 5.1.
+
+**Session plan (compute-ordering template).**
+
+```
+SESSION W4-2 (est. 5–8 A100-80GB h; batched by loaded model, in this order)
+  model batch 1  OLMo-3-7B-Instruct         15.1 twins (pilot gate n=5 first) · 14.5 · 14.6 · 14.1 gate split-half
+  model batch 2  OLMo-3-7B-Think            14.4 P0–P3 per-rollout (+ MFT dirs, refusal .npz)
+  model batch 3  OLMo-3-7B base (main)      14.1 proto-refusal split-half (per-sample saves)
+  model batch 4  Llama-3.1-8B-Instruct      14.2 severity/boundary contrasts + moral PCs · 14.6 · reply-inversion null
+  model batch 5  GPT-OSS-20B                14.3 post-response decision token + band-below-null · 14.4 · 14.6
+  model batch 6  Qwen2.5-7B-Instruct        15.2 C1 read cell · 14.6
+  keystone:      15.1 (the flagship n) and 14.1 (the Tier-3 counter-reading) — both branches change FL wording
+  pilot gates:   15.1 first 5 twins end-to-end (deltas finite, sign-coherent full cell); 15.2 screen >= 12
+                 twins in band (else BOUNDARY=1; else bank indeterminate); 14.5 base refusal >= 0.40
+  depends on:    W4 twin batch committed (deepsteer/datasets/request_twins_w4.py); Amendments 14/15
+                 committed; Paper 5 stage-3 proto-refusal caches present locally for the zero-GPU arm
+  saves:         per-unit arrays per Amendment 14/15 artifact lists; manifest JSON with sha256 + HF
+                 revision hash actually loaded (fixes FL App E.4 "default branch")
+  gate after:    W4-3 (verdicts) -> Gate W4-3 (Orion reads review + PDFs -> submit paired)
+```
+
+The zero-GPU-first layer is in Amendment 14.1: the adjacent-checkpoint arm is computable now from
+Paper 5's cached per-checkpoint proto-refusal directions (`outputs/measurement/stage3/`, 14 states,
+same construction as `refusal_base.npz`), so only the split-half arm needs the pod.
