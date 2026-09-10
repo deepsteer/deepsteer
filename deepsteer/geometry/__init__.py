@@ -26,6 +26,22 @@ from deepsteer.geometry.cosine import (
     compute_cosine_matrix,
     compute_effective_dimensionality,
 )
+from deepsteer.geometry.participation import (
+    bootstrap_pr,
+    normalized_pr,
+    participation_ratio,
+    pr_gaussian_null,
+    pr_profile,
+    pr_shuffle_null,
+)
+from deepsteer.geometry.reliability import (
+    adjacent_self_cosine,
+    disattenuate,
+    disattenuate_bootstrap,
+    permutation_self_cosine_null,
+    spearman_brown,
+    split_half_self_cosine,
+)
 from deepsteer.geometry.subspace import (
     full_subspace_analysis,
     orthonormal_basis,
@@ -42,4 +58,16 @@ __all__ = [
     "subspace_membership",
     "full_subspace_analysis",
     "full_geometric_analysis",
+    "participation_ratio",
+    "bootstrap_pr",
+    "normalized_pr",
+    "pr_gaussian_null",
+    "pr_shuffle_null",
+    "pr_profile",
+    "split_half_self_cosine",
+    "spearman_brown",
+    "disattenuate",
+    "disattenuate_bootstrap",
+    "permutation_self_cosine_null",
+    "adjacent_self_cosine",
 ]

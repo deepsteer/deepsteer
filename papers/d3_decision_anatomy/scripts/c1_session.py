@@ -152,7 +152,10 @@ def main() -> None:
                       "n_required": n_gate, "gate_pass": bool(len(band_pairs) >= n_gate)}
     req_pairs = [(p["following"], p["violating"])
                  for p in (screened["request_twins"] or manifest["request_twins"]["pairs"])]
-    rt_pairs = (req_pairs + band_pairs)[:(6 if validate else None)]   # dual-use readout/sweep stimuli
+    # W4 (Amendment 15.1): RT_CAP caps the readout/sweep twins for the pilot gate (first n twins
+    # end-to-end before scaling); unset -> all screened twins, byte-identical to the run of record.
+    rt_cap = 6 if validate else (int(os.environ.get("RT_CAP") or 0) or None)
+    rt_pairs = (req_pairs + band_pairs)[:rt_cap]   # dual-use readout/sweep stimuli
 
     # Stage 1: per-head write attribution on a harmful request that actually refuses (operating band
     # first, else a screened request-twin).
@@ -214,6 +217,7 @@ def main() -> None:
     full_d, restr_d, compl_d, harm_d, rand_d, hp_d = [], [], [], [], [], []   # disengage (remove harm)
     rev_d, eng_restr_d, eng_harm_d = [], [], []            # engage (add harm) full + decomposition (Amendment 9)
     eng_sweep = {k: [] for k in KS}
+    rt_used: list[str] = []                                 # W4: per-twin id aligned with the delta arrays
     for foll, viol in rt_pairs:
         try:
             sp, tp = cc.patch_positions(model, foll, viol)
@@ -224,7 +228,7 @@ def main() -> None:
             rev_base = cc.baseline_proj(model, foll, L, r, sigma=sigma)
             rc = lambda **kw: cc.interchange(model, viol, foll, tp, sp, L, r,    # engage: violating->following
                                              sigma=sigma, **kw) - rev_base
-            full_d.append(ic())
+            full_d.append(ic()); rt_used.append(foll)
             restr_d.append(ic(restrict_Q=inp["Vbasis"]))
             compl_d.append(ic(restrict_Q=inp["Vbasis"], restrict_mode="complement"))
             harm_d.append(ic(restrict_Q=harmQ))
@@ -405,6 +409,7 @@ def main() -> None:
                 cell_reverse_deltas=np.array(rev_d), cell_engage_restricted_deltas=np.array(eng_restr_d),
                 cell_engage_harm_deltas=np.array(eng_harm_d), full_judgment_deltas=np.array(full_jud_d),
                 transport_control_deltas=np.array(tc_d),
+                rt_following=np.array(rt_used[:len(full_d)]),   # W4: twin id per delta row (set split)
                 per_head_contribs=ph_arr, per_head_keys=np.array(ph_keys))  # standardized-invariance rider
     if run_sweep:                                            # per-rank paired deltas (rows = KS)
         save["sweep_ks"] = np.array(KS)

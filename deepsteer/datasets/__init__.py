@@ -37,6 +37,11 @@ from deepsteer.datasets.pipeline import build_probing_dataset
 from deepsteer.datasets.register_pairs import get_register_dataset, get_register_pairs
 from deepsteer.datasets.boundary_twins import get_boundary_twins
 from deepsteer.datasets.request_twins import get_request_twins
+from deepsteer.datasets.request_twins_w4 import (
+    get_request_twins_union,
+    get_request_twins_w4,
+    w4_set_tags,
+)
 from deepsteer.datasets.sentiment_pairs import get_sentiment_dataset, get_sentiment_pairs
 from deepsteer.datasets.severity_twins import get_severity_twins
 from deepsteer.datasets.syntax_pairs import get_syntax_dataset, get_syntax_pairs
@@ -61,6 +66,9 @@ __all__ = [
     "get_register_pairs",
     "get_boundary_twins",
     "get_request_twins",
+    "get_request_twins_union",
+    "get_request_twins_w4",
+    "w4_set_tags",
     "get_severity_twins",
     "get_sentiment_dataset",
     "get_sentiment_pairs",

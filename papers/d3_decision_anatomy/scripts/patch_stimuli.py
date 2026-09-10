@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -69,7 +70,20 @@ def type_block(**kw) -> dict:
 
 def build_manifest() -> dict:
     twins = get_compositional_moral_pairs()
-    reqs = get_request_twins()
+    # Amendment 15.1 (W4): REQUEST_TWINS_SET selects the request-twin batch. 'original' = the 60 of
+    # record (default, byte-identical behaviour); 'w4' = the 48 new twins alone; 'union' = both, in
+    # order, with a per-pair set tag so the alone/pooled analyses can split the saved per-twin arrays.
+    twin_set = os.environ.get("REQUEST_TWINS_SET", "original")
+    if twin_set == "original":
+        reqs = get_request_twins(); tags = ["original"] * len(reqs)
+    elif twin_set == "w4":
+        from deepsteer.datasets import get_request_twins_w4
+        reqs = get_request_twins_w4(); tags = ["w4"] * len(reqs)
+    elif twin_set == "union":
+        from deepsteer.datasets import get_request_twins_union, w4_set_tags
+        reqs = get_request_twins_union(); tags = w4_set_tags()
+    else:
+        raise ValueError(f"REQUEST_TWINS_SET must be original|w4|union, got {twin_set!r}")
     xst = json.loads((HERE.parents[1] / "d2_decision_coupling" / "data"
                       / "xstest_borderline.json").read_text())["items"]
 
@@ -87,15 +101,16 @@ def build_manifest() -> dict:
                       for a, b in twins]},
         "request_twins": {
             "type_block": type_block(
-                source_dataset="deepsteer.datasets.get_request_twins (hand-authored)",
+                source_dataset=f"deepsteer.datasets request-twins set={twin_set} (hand-authored)",
                 format="chat request (1st person imperative)",
                 contrast_semantics="moral-status flip (norm-following vs violating intent)",
                 outcome_variable="refusal (behavioral + decision-token projection)",
                 role="MINIMAL-PAIR refusal-patching stimuli (cells a/b)",
                 known_covariates="shared prefix; residual: harm severity of the violating intent",
                 n_pairs=len(reqs)),
-            "pairs": [{"foundation": f, "following": a, "violating": b, "align": _align(a, b)}
-                      for f, a, b in reqs]},
+            "pairs": [{"foundation": f, "following": a, "violating": b, "align": _align(a, b),
+                       "set": tag}
+                      for (f, a, b), tag in zip(reqs, tags)]},
         "xstest_generalization": {
             "type_block": type_block(
                 source_dataset="papers/d2_decision_coupling/data/xstest_borderline.json (CC-BY-4.0)",
