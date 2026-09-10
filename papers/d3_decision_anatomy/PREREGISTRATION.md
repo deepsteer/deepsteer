@@ -780,3 +780,341 @@ corrections, both pre-registered here before the reframe is written.
 
 Spine preserved. A13 is framing hygiene: the measured table is untouched; the interpretation becomes a
 confound-named dimensionality hypothesis with its deconfounding path.
+
+### Amendment 14 (2026-09-10) — W4 Tier A: claim-bearing pre-ship cells (pre-pod)
+
+Context: Phase W4 (WRITEUP_PHASE_PLAN.md) unfreezes the program for one targeted pod. Amendment 14
+pre-registers the six Tier-A cells before any array is extracted. Each cell names its OPEN_THREADS row,
+the CLAIMS ids it can move, both branches (both publishable), the verdict rule with its detection bar,
+the positive control and null (measurement cells) or the intervention spec block (causal cells), and
+the per-unit artifacts that MUST be saved. Where the handoff draft disagreed with the repo of record,
+the repo wins; each such correction is marked **[repo-fix]**. Spine preserved: `M = 0.05`, the two-step
+null, folded-primary convention (NI-4), per-unit saves, position validity (PR recorded on every
+position), difference-CIs never overlap checks, and no NULL without a ladder.
+
+**Model batching (compute-ordering).** "OLMo-3" in the handoff is three loads: Instruct (15.1, 14.5,
+14.6, 14.1 gate-side), Think (14.4), base `main` (14.1 split-half). Order: OLMo-3-Instruct → OLMo-3-Think
+→ OLMo-3 base → Llama-3.1-8B-Instruct → GPT-OSS-20B → Qwen2.5-7B-Instruct. Every load records the HF
+commit hash actually resolved (`config._commit_hash`, falling back to `HfApi.model_info(...).sha`) into
+the run manifest; `assert_matches_model` runs on every load.
+
+#### 14.1 Proto-refusal reliability ceiling (FL Tier 3 estimability control)
+
+- **Source.** OPEN_THREADS §H "New pre-ship control"; SYNTHESIS Tier 3 counter-reading. **Moves:** D1-14,
+  D1-15 (fresh-construction wording), the FL abstract clause "almost no pretraining precursor", FL §3/§4,
+  MN crystallization figure caption; opens W4-01 (reliability ceiling) and W4-02 (per-checkpoint
+  proto-refusal→gate trajectory).
+- **[repo-fix] Zero-GPU arm exists.** Paper 5 cached per-checkpoint proto-refusal directions for all 14
+  OLMo-3 stage-3 states (`papers/5_moral_alignment/outputs/measurement/stage3/<label>/
+  proto_refusal_directions.npz`, keys `proto_refusal_layer{L}`, all layers, `raw` last-token diff-of-means
+  over the Heretic 400/400 set) — the **same construction** as `refusal_base.npz`
+  (`phase2_g3_respec_extract.refusal_vec(base, prompts, "raw", 16)`). So the adjacent-checkpoint
+  self-cosine and the full per-checkpoint proto-refusal→gate trajectory are computable now; only the
+  **split-half** arm (needs per-sample activations) is a pod item. OPEN_THREADS §H and
+  `supplement/PROVENANCE.md` say "not derivable from saved artifacts" — that statement is corrected by
+  this amendment (it was true of D1's saves, not Paper 5's).
+- **Quantities (frozen).** (a) `rel_adj = cos(proto@stage3-step11900, proto@stage3-step11921) @ L16`
+  (21 training steps apart; the reliability ceiling under checkpoint drift + sampling), plus the full
+  curve `cos(proto@step_s, proto@final)` for the 13 stage-3 steps. (b) Cache-consistency positive control:
+  `cos(proto@olmo3_base[main], refusal_base.npz) ≥ 0.99` (same model, same construction; if it fails the
+  cache is not the D1 object and (a) is void). (c) `traj(s) = cos(proto@step_s, refusal_instruct)` for all
+  13 steps: the proto-refusal→gate trajectory (the 0.155 of record is `traj(final)`). (d) **Pod arm,
+  split-half reliability of proto-refusal:** on OLMo-3 base `main`, per-sample L16 last-token activations
+  for all 400 harmful + 400 harmless Heretic prompts (raw format); resample 200 random half-splits of the
+  prompt index set (paired: each split takes half of harmful AND half of harmless), diff-of-means per
+  half, `r_half = cos(d_A, d_B)`; report the median and percentile 95% CI over splits, and the
+  Spearman–Brown full-length correction `rel_proto = 2·r̄/(1+r̄)`. (e) **Rider (same session, the gate
+  side of the disattenuation):** identical split-half on the **instruct gate** (chat format, L16, same
+  prompts) → `rel_gate`. The disattenuated cosine is `cos_corr = 0.155 / sqrt(rel_proto · rel_gate)`,
+  with a bootstrap CI propagated from the two split distributions. The handoff ceilinged only the
+  proto side; a disattenuation needs both reliabilities **[repo-fix: added]**.
+- **Positive control / null.** Positive control for the instrument: split-half self-cosine of the
+  moral-stories direction from the saved `diffs_moral_stories.npz` (base, L16; per-pair diffs are saved)
+  must be ≥ 0.9 — a direction the program knows is stable must read as stable on this estimator.
+  Null: self-cosine of two halves of a label-permuted contrast (labels shuffled within the same
+  activations), 200 permutations; the q95 is the chance ceiling for `r_half`.
+- **Branches (all publishable).** A `rel_proto ≥ 0.9` (and `rel_adj ≥ 0.9`): fresh-construction claim
+  stands as written; the disattenuated 0.155 changes by < 0.03. B `rel_proto ≤ 0.3`: 0.155 is mostly
+  attenuation floor; FL Tier 3 rescopes to "low base→instruct cosine, reliability-limited"; the
+  abstract's "almost no pretraining precursor" is dropped; D1-14/15 SCOPED. Between: `cos_corr` with its
+  CI carries the sentence ("proto-refusal→gate cosine 0.155, disattenuated X [CI]"), and the abstract
+  clause is rewritten to the corrected value. Any discordance between (a) and (d) (adjacent-checkpoint
+  low but split-half high, or the reverse) is a finding: checkpoint drift vs sampling noise are
+  separated by construction, and both numbers are reported.
+- **Detection bar.** With 200 harmful/200 harmless per half in d = 4096, the isotropic chance self-cosine
+  is ≈ sqrt(2/(π·4096)) ≈ 0.012; the permutation null supplies the realized ceiling. The bootstrap over
+  splits gives a CI half-width of ≈ 0.02 at n=200 splits (to be reported, not assumed).
+- **Save.** `w4/olmo3_base/proto_refusal_samples.npz` (per-sample L16 activations: harmful (400, 4096),
+  harmless (400, 4096), prompt index order, format tag); `w4/olmo3_instruct/gate_samples.npz` (same, chat);
+  every resampled half-direction (200 × 2 × 4096 per model); `w4/zero_gpu/proto_refusal_trajectory.json`
+  (a, b, c with per-layer values). Type blocks on every direction (position, PR, format, n, commit).
+- **Price.** ~0.2 A100-h (two forward-only passes over 800 prompts); zero-GPU arm now.
+
+#### 14.2 Llama severity-twin rank-2/4 harm-coextensive check
+
+- **Source.** OT §B row 2; MISSING_ARTIFACTS Amendment 11. **Moves:** D3-18 (reads-broad strength),
+  D3-19 (the rank-2/4 rider), FL §8 dissenting-read wording, D3-24 (Llama's read rank).
+- **[repo-fix] Stimuli of record.** The Llama layer-12 C1 run of record used the **boundary-band twins**
+  (36 pairs, `BOUNDARY=1`; `rt_composition {request_screened: 1, band: 36}`), not the severity ladder.
+  Amendment 11 names the *severity-ladder* contrasts. Both are extracted: **primary** = severity-ladder
+  twins (30 pairs, levels 1–5, `get_severity_twins`), matching A11's wording; **secondary** = boundary
+  twins (36), matching the run of record's stimuli. Both are forward-only.
+- **[repo-fix] Moral PCs are not saved.** `c1_inputs_llama31_L12.npz` saves `Vbasis`, `harm`,
+  `channel_act`, and the per-k deltas, but not the nested moral-contrast PCA basis. The moral PCs are
+  re-derived in-run from the same moral pairs (`load_moral_pairs`, all three sources, `mean_content`,
+  L12, standardized with σ from the **saved** `channel_act`, so the frame is reproducible bit-for-bit).
+  **Harness-parity check:** the re-derived `|cos(d_harm, PC_i)|` for i = 1..8 must match the saved
+  `cos_harm_pc` (0.199, 0.307, 0.018, 0.026, …) within 0.05 per component; a miss voids the cell.
+- **Procedure.** Per-pair `mean_content` contrasts (violating − following) at L12 in the standardized
+  frame → `sweep.nested_pca_basis(contrasts, [1, 2, 4])` → harm bases H_1 ⊂ H_2 ⊂ H_4 →
+  `sweep.harm_capture_curve(H, moral_pcs[:, :16], engage_marginal_weights(saved engage_sweep))` →
+  engage-weighted capture at j = 1, 2, 4. j = 1 must reproduce the saved rank-1 number (3.6%) within
+  0.02 (second check of parity).
+- **Positive control / null.** Positive control: the moral PCs' own split-half rank-4 basis (PCs from
+  half the moral pairs) must capture the engage-driving basis at ≥ 0.6 (an instrument that cannot
+  recover the basis from itself cannot certify a low harm capture). Null: rank-j bases built the same way
+  from the three non-moral control contrast sets (syntax, register, sentiment pairs at `mean_content`,
+  L12) → the q95 over controls and over 200 random orthonormal rank-j bases in the standardized frame
+  (channel-matched specificity). Report capture − null.
+- **Branches.** A `capture(4) − null_q95(4) ≤ 0.25`: Llama reads-broad ships at full strength ("beyond
+  harm"). B `capture(4) − null_q95(4) ≥ 0.50`: Llama reads a multi-dimensional harm percept; §8 softens to
+  "broader than OLMo's rank-1 harm, not established as beyond harm"; D3-24's "rank-8 broad" becomes
+  "rank-8, of which up to k harm-coextensive". Between: "partially harm-coextensive (capture X at rank
+  4)", both readings kept, D3-19 SCOPED. Thresholds are set at the D3 rank-1 rule's scale: the rank-1
+  capture of record is 0.036 and the OLMo harm-rank-1 R is 0.31 of the full effect, so 0.25 is "a
+  quarter of the engage-driving basis" and 0.50 "half".
+- **Save.** `w4/llama31/severity_contrasts_L12.npz` (per-pair (30, 4096) + boundary (36, 4096), raw and
+  standardized), `moral_contrasts_L12.npz` (per-pair, all sources), nested harm bases, moral PCs, control
+  bases, `harm_capture_L12.json`. **Price.** ~0.3 A100-h.
+
+#### 14.3 GPT-OSS post-response decision-token projection (+ the missing half of A5)
+
+- **Source.** OT §B row 5, §E row 3. **Moves:** D3-22 (projection from "corroboration w/ last-token
+  caveat" to co-primary or to behavioral-primary-only), D3-20 (completes the A5 pre-condition), FL §8.2
+  and Limitations "prefill-last-token caveat".
+- **[repo-fix] What is already banked.** The A5 pre-condition has two halves: post-standardization PR
+  (banked: 12.79 ≤ 25, `tier1_session_gpt_oss_20b.json`) and **band-below-null at the harmony decision
+  token**, which the Tier-1 gate did **not** compute (`position_gate_verdict` uses PR + the refusal
+  null-ratio only). MISSING_ARTIFACTS Amendment 11 lists both; only the band half is open. It runs here.
+- **Position definitions (frozen).** `P_prefill` = last token of (prompt + analysis opener + prefill),
+  the Tier-1 readout (`_prefill_proj`). **New: `P_dec`** = the token immediately before the first
+  generated token of the final channel, i.e. the `<|message|>` of `<|channel|>final<|message|>` in the
+  completed rollout, read by ONE forward over the full generated sequence (prompt + prefill + analysis +
+  final opener). If the rollout never opens a final channel, `P_dec` is **unmeasured and counted**
+  (never substituted). `P_dec` is the decision site after deliberation; `P_prefill` is before it.
+- **Procedure.** Same 10 ceiling-refusing violating items, same three-strength exculpatory series, same
+  refusal direction construction (END_OF_PROMPT diff-of-means, 64/64), same layer 12, greedy decoding
+  (replication check: the 6/10 behavioral flip at max strength must reproduce exactly; a mismatch is
+  harness drift and voids the cell). Read the projection at `P_dec` per item × strength (+ no-prefill
+  baseline). Statistic: `graded_disengage_stat` on the `P_dec` series (frac_monotone_toward_comply,
+  mean_projection_move_at_max) plus a paired bootstrap CI (over items) on the mean move.
+- **Positive control / null.** Positive control: the engage arm (7 benign items, inculpating prefill)
+  read at `P_dec` must move toward refuse (the direction the behavior demonstrably went). Null: the
+  same rollouts projected onto 200 covariance-matched random directions (from the `P_dec` act-sample);
+  the monotone fraction and mean move under random directions give the chance level.
+- **Band-below-null (A5 half).** Held-one-out moral-family band at the harmony decision token: the three
+  V_moral source directions extracted at END_OF_PROMPT in think format (moral pairs, 60/source), each
+  projected onto the span of the other two, vs the covariance-matched rank-2 null from the decision-token
+  act-sample. Band below null ⇒ the decision token is position-invalid for content, exactly as the D2
+  sites; band above null ⇒ note it as the one panel model where content survives at the decision token.
+  Either way D3-20's "position-valid" is scoped to *decision-direction* reads (NI-3 wording).
+- **Branches.** A (monotone fraction ≥ 0.8 at `P_dec` AND paired CI on the mean move toward comply
+  excludes 0 AND random-direction null q95 for the monotone fraction < 0.8): projection is co-primary
+  with the 6/10 flip; the Limitations paragraph is deleted. B (otherwise): reversibility ships
+  behavioral-primary only; the stated reason is that the post-deliberation decision token does not carry
+  the graded movement the prefill token does (a finding about *where* deliberation writes, reported).
+- **Save.** Per-rollout full token ids, `P_dec` and `P_prefill` activations (10 × 4 × 2880 + engage
+  7 × 2 × 2880), per-item projections, the decision-token act-sample (n ≥ 128) with its PR, the three
+  V_moral source directions at the decision token, `band_below_null_gptoss.json`. **Price.** ~0.3 A100-h.
+
+#### 14.4 D1 P0–P3 per-rollout PR audit (reasoning band rung)
+
+- **Source.** OT §B row 1; MISSING_ARTIFACTS Amendment 2 (per-rollout windows), A1 (Think MFT
+  directions), A3 (Think refusal vectors). **Moves:** D1-10, D1-11, D1-12 (drop or keep the
+  "scoped as cross-position" hedge); closes MISSING_ARTIFACTS A1/A3/Amendment-2(ii).
+- **[repo-fix] Price and design.** The handoff priced this at ~0.3 h. P0/P1 are prompt-side (400/400,
+  cheap). P2/P3 need generation; **no rollouts were saved** by the D1 runs, so re-generation is required.
+  Run-of-record parameters: GPT-OSS `n_gen = 64/side, max_new_tokens 1024, cot_window 16`; OLMo-3-Think
+  `max_new_tokens 2048, window 256`, P3 unmeasured (benign side never closes within budget). For a PR
+  audit the window needs only `window_n` reasoning tokens, not closure: **Think uses `max_new_tokens =
+  window + 64 = 320`**, which keeps its P2 audit at ~64 rollouts × 320 tokens. P3 on Think stays
+  unmeasured (as of record). Realistic price: GPT-OSS ~0.4 h, Think ~0.5 h.
+- **Procedure.** Per rollout, save the P0, P1, P2-window, P2-full, P3 activations at the match layer (12
+  GPT-OSS / 16 Think) and the generated token ids. Per position class: PR of the pooled (harmful +
+  harmless) activation sample; band-below-null: the three V_moral source directions re-extracted at that
+  position class (moral pairs through the same window pipeline, n = 32/source) held-one-out vs the
+  covariance-matched rank-2 null from that position's sample. Also the refusal direction per position
+  (diff-of-means) saved as `.npz` (closes A3 for Think) and the 6-foundation MFT directions on Think in
+  raw format (closes A1).
+- **Positive control / null.** Positive control: P0 (`t_inst`, a content position) must be PR-valid
+  (PR ≥ 30 and band ≥ null) — if even the content site fails, the audit instrument is miscalibrated for
+  reasoning traces and the rung stays hedged regardless. Null: covariance-matched rank-2 null per position.
+- **Branches.** A (P2 window PR ≥ 30 and band ≥ null on both models): D1 band-relative statements drop
+  the cross-position hedge; D1-10/11 VERIFIED-unscoped. B (P2 fails on either): the hedge stays, and the
+  failing model's in-trace rung is stated as "band-relative comparison not licensed at P2 (PR x, band
+  below null)"; null-relative claims (D1-11's null crossing, D1-12) are unaffected either way. Mixed
+  (one model passes): the hedge is per-model.
+- **Save.** `w4/<gpt_oss_20b|olmo3_think>/p0p3_rollouts.npz` (per-rollout activations per position,
+  token ids, closed/window flags), `refusal_P{0..3}.npz` (Think), `mft_directions.npz` (Think),
+  `pr_audit.json`. **Price.** ~0.9 A100-h total.
+
+#### 14.5 Reconciled B1 cross-ablation on the full harmful set
+
+- **Source.** OT §B row 4; V-D2-4; D2 Amendment 1 rider 8. **Moves:** D2-01 (adds or withholds the
+  causal arrow), FL §6 (R3 wording "geometric-only" vs "geometric + causal").
+- **Intervention spec block.**
+  `stimulus_class`: Heretic `harmful_eval` (100 held-out harmful requests, Paper 5 `refusal_prompts.json`)
+  for refusal; the D1 ETHICS forced-choice battery (120 items, counterbalanced) for judgment.
+  `outcome_variable`: refusal rate (shared `_classify_response`, opening-refusal rule) and judgment
+  accuracy. `baseline_discrimination`: **bail condition** — baseline refusal on the 100 must be ≥ 0.40
+  (Paper 6's 0.575 expected); below 0.40 the cell is banked as floor-limited and not run further.
+  `site`: layer 16 (registry primary), `final_pre_assistant`, PR recorded from the chat act-sample.
+  `transfer_scope`: rank-1 direction ablation (Arditi orthogonalization via `ablate_direction`).
+  `ablation_semantics`: projection-out at the layer (the Paper 5/6 semantics, kept for parity; not a
+  mean-ablation — stated). `alignment_rule`: n/a (no patching). `controls`: matched-random unit direction
+  (5 draws, matched norm) and the persona direction (named reference). `outcome_harness`:
+  `deepsteer.benchmarks.compliance_gap.greenblatt._classify_response` at the repo commit in the
+  manifest; `b1_judgment_direction.is_refusal`. `branches`: below.
+- **Verdict rule (difference-CI, never overlap).** Per prompt, outcome under baseline and under each
+  ablation; paired bootstrap (2000, seed 0) over prompts of `Δ_refusal(judgment-ablated) − Δ_refusal
+  (random-ablated)` and of `Δ_judgment(refusal-ablated) − Δ_judgment(random-ablated)`. Arrow detected iff
+  the CI excludes 0 **and** the persona control's Δ does not exceed the random q95. Detection bar: at
+  n = 100 and p ≈ 0.5 the MDE for a rate difference is ≈ 0.14; at n = 120 judgment items ≈ 0.13. Both
+  are reported next to the estimates.
+- **Branches.** A (either arrow's CI excludes 0): R3 ships causal + geometric with the arrow's direction
+  named. B (neither): R3 stays geometric-only (D2-01), now with the bar: "no causal cross-effect
+  detectable at Δ ≳ 0.14 in refusal rate".
+- **Save.** Per-prompt outcomes (100 × {baseline, judgment-abl, refusal-abl, persona-abl, random×5})
+  and generations; per-item judgment verdicts (120 × conditions); the directions used with type blocks.
+  **Price.** ~0.4 A100-h (≈ 1,300 short generations).
+
+#### 14.6 Per-unit saves for the MN instruments (no new claim)
+
+- **Source.** SELF_REVIEW MN should-fix items (Fig 1 error bars, PR gate normalization, §3.1 reply-
+  inversion specificity). **Moves:** D2-02, D2-09, D3-20 (CIs), P7-05 (specificity), MN Table 1/Fig 1.
+- **(a) PR with CIs.** For each panel model × position class ∈ {final_pre_assistant, last_content,
+  mean_content} (chat; GPT-OSS: harmony decision token + a content position), save the per-text
+  activation sample (n ≥ 240 texts, the in-format ladder's mix) at the primary layer, raw and
+  standardized. Bootstrap CI on PR (resample rows, 2000). Report `PR`, `PR/d`, `PR/(n−1)` (the
+  sample-size ceiling), and the null-referenced quantile: PR of a covariance-matched Gaussian sample
+  of the same n (200 draws) and of a **row-shuffled / sign-flipped** control that destroys token
+  identity while preserving marginals. The MN gate is then stated as a dimension- and n-normalized
+  quantile, not "25 for GPT-OSS". Rider: MN Table 1's "decision-token 13.5 vs decision-site 10.2"
+  Llama split is measured on the **same** sample here, so NI-2 closes with both positions labeled.
+- **(b) Reply-inversion specificity null (MN §3.1).** On Llama-3.1-8B-Instruct (the only reply-
+  inversion model in the panel; Qwen2.5-14B-Instruct is not loaded and its null is **not run**, stated),
+  the Paper 7 `reply_inversion_control` harness (norm-scaled steering at the swept layer, forced-answer
+  logit read, coherence gate) is re-run with the harm direction **and** 20 random unit directions at the
+  identical norm. Report the harm flip fraction and margin shift against the random q95 (channel-matched
+  specificity). Branch A: harm exceeds random q95 → "the harm axis moves the reply over matched-norm
+  directions" enters MN §3.1. Branch B: not → the sentence stays as the current limitation, now with the
+  measured chance level.
+- **Save.** Per-model per-position activation samples, PR bootstrap arrays, null PR draws; per-item
+  steered margins for harm and each random direction. **Price.** ~0.4 A100-h incremental across loads.
+
+**Tier A total: ~2.5 A100-h** (14.1 0.2 · 14.2 0.3 · 14.3 0.3 · 14.4 0.9 · 14.5 0.4 · 14.6 0.4), plus
+model-load overhead (six loads, ~0.1 h each).
+
+#### Referee pass (Amendment 14)
+
+1. *"Your split-half reliability corrects a cosine between directions measured in two different formats
+   (raw base vs chat instruct); disattenuation assumes the same construct in both."* Conceded in part:
+   the cross-format step is the 0.155 of record's own construction (D1 Point A raw, Point B chat). The
+   disattenuated value is reported as a ceiling-corrected version of *that* number, and the format
+   difference is stated as a residual that no reliability correction removes. The adjacent-checkpoint arm
+   is within-format and carries the drift reading on its own.
+2. *"The harm-coextensive null is a random rank-j basis, which is a weak null in a standardized 4096-d
+   space."* Answered: the null is channel-matched by construction — the same nested-PCA procedure applied
+   to three non-moral control contrast sets (syntax, register, sentiment) at the same position and layer,
+   with the random bases reported alongside as the floor; the positive control (self-capture ≥ 0.6) bounds
+   the instrument from above.
+3. *"Reading `P_dec` after the model responds lets the response content leak into the decision token, so
+   a monotone projection could just be the final channel echoing the prefill."* Conceded and separated:
+   the random-direction null at `P_dec` measures how much any direction moves with the prefill; the harm
+   read is claimed only above that chance level, and the engage arm at `P_dec` (movement toward refuse)
+   shows the readout is two-sided rather than prefill-echo.
+
+### Amendment 15 (2026-09-10) — W4 Tier B: panel strength (pre-pod)
+
+#### 15.1 OLMo-3 additional request-twins (lift the rank sweep past n = 23)
+
+- **Source.** OT §D "R_refusal precision"; SELF_REVIEW "n=23 underpowered"; MN §3.1. **Moves:** D3-06,
+  D3-07, D3-08 (headline shape), D3-09, D3-12 (one-knob fit), FL §7 and App C.
+- **[repo-fix] Dependency and pass rate.** The n = 23 of record is **23 of 60** authored request-twins
+  surviving the baseline-discrimination screen (`screen_counts.request_twins 23`; `rt_composition
+  {request_screened: 23, band: 0}` — the severity-ladder operating band was empty on OLMo). At that 38%
+  pass rate, reaching pooled n ≥ 40 needs ≈ 45 newly authored twins. A batch of **48** (8 per foundation)
+  is committed as `deepsteer.datasets.request_twins_w4` under the identical construction rule (exact
+  shared prefix; flip only the trailing moral-intent span; harm carried by intent in an XSTest-safe
+  register; no memorized text) and flagged for Orion's review at Gate W4-1. Expected pooled n ≈ 41;
+  the target n is Orion's to confirm.
+- **[repo-fix] Units and pooling.** The local `c1_session_olmo3.json` / `c1_inputs_olmo3.npz` are the
+  **standardized robustness rerun** (full → refusal −0.62 in standardized units), not the folded-primary
+  run whose numbers CLAIMS D3-06 carries (−0.0833). Pooling new per-twin deltas against those arrays
+  would mix units. So: **one session run over the union** (60 original + 48 new authored twins through
+  the same screen), folded-primary environment (`STANDARDIZE` unset, `SWEEP=1`, layer 16, same
+  classifier), per-twin deltas saved with a set tag. Analyses: **replication** (original-set subset must
+  return `harm_saturating` and R_refusal(16) within 0.10 of 0.27 — a harness-parity gate; a miss stops
+  the pooled analysis and is banked as drift), **alone** (new-set subset), **pooled** (all).
+- **Power table (from the saved per-twin arrays, resampled; scaffolding read, not a verdict).**
+  Ratio-of-ratios difference CI width: n = 23 → 0.84, n = 40 → 0.57, n = 60 → 0.46 (the recorded gap is
+  0.13–0.18, so the secondary does **not** resolve at n = 40; ≈ n = 140 would). R_refusal(16) CI width:
+  n = 23 → 0.49, n = 40 → 0.33. **What n = 40 buys is the primary (shape) at a third tighter CI, not the
+  secondary.** This is stated before the pod so the outcome cannot be read as a surprise.
+- **Primary.** Shape verdict (`sweep.shape_verdict`, frozen Amendment-4 rules) on the pooled sweep;
+  one-knob fit RMSE over the plateau. **Secondary.** Ratio-of-ratios CI at pooled n; the paired
+  Δ(V_moral-restricted vs random-rank-3) CI (D3-07).
+- **Branches.** Shape survives (pooled `harm_saturating`, alone-result same sign of R_judgment(16) −
+  R_refusal(16)) → headline unchanged with the tighter CI; pooled is primary. Shape changes (pooled not
+  `harm_saturating`, or alone disagrees in sign) → the one-knob model is reported as "fitted on 23, not
+  replicated on N", §7 rewrites to the pooled verdict, and D3-08/12 SCOPED. Pooled is primary **only if**
+  the alone result agrees in sign; otherwise both are reported and neither pooled.
+- **Pilot gate.** First 5 screened twins end-to-end (extract → screen → full/restricted/random cells →
+  sweep) before the remaining twins: every delta finite, full-cell sign coherent on ≥ 4/5, per-twin
+  arrays written. Fail → stop and bank the diagnostic.
+- **Spec block.** As Amendment 3/4 for the OLMo C1 cell (stimulus request-twins; outcome refusal
+  projection at the decision token; baseline screen; site L16 `final_pre_assistant` PR 14.7; scopes full
+  / rank-k restricted; transport control = judgment on compositional twins; alignment = shared prefix +
+  flipped span; classifier shared; both branches above).
+- **Save.** Per-twin deltas for every cell and every rank (rows tagged by set and twin id), screen
+  outcomes per twin, the moral PCA bases, `channel_act`. **Price.** ~1.0 A100-h (108 twins × ~15
+  interchange passes + screen), the largest single item.
+
+#### 15.2 Qwen2.5-7B-Instruct causal C1 read cell
+
+- **Source.** OT §E row 1; SYNTHESIS Tier 2 "Qwen — not measured". **Moves:** D3-23 (fills the empty
+  cell), D3-24 (a lineage-independent point for the dimensionality hypothesis), FL abstract "Qwen is not
+  measured on the read axis", FL §8 two-axis table (a fourth row).
+- **Protocol.** `c1_session.py --key qwen25 --layer 14` (registry primary at 28 layers) with
+  `STANDARDIZE=1` (A1: dim 458 carries 59% of content-position variance; the invariance proof on OLMo
+  licenses the standardized frame), `SWEEP=1`; same request-twins (60 original + 48 new), same screen,
+  same classifier. Pilot gate: screen must keep ≥ 12 request-twins; else `BOUNDARY=1` twins; if both
+  bands keep < 12 the cell is banked as **indeterminate (operating point)** and not forced.
+- **Spec block.** Stimulus request-twins (+ boundary twins if needed); outcome refusal projection at the
+  decision token (Qwen PR 8.6; A1 standardization recorded; channel null raw and std); scopes full /
+  rank-k; transport control judgment; alignment shared prefix; classifier shared; ablation n/a.
+- **Branches (all publishable, all fill the cell).** `harm_saturating` (OLMo-like plateau at the
+  harm-rank-1 level) / `broad_moral` (Llama-like gap-close) / `instrument_ceiling` / `indeterminate`
+  (below bar: the shape verdict's plateau tolerance 0.1 is not resolvable at the achieved n, stated with
+  the achieved CI widths). The two-axis table gains a Qwen row in every case; the abstract's "not
+  measured" becomes the measured reading.
+- **Save.** As 15.1 for Qwen. **Price.** ~1.0 A100-h.
+
+**Tier B total: ~2.0 A100-h. Pod total ≈ 4.5–5 A100-h plus ~0.6 h of model loads** (the handoff's
+5–7 h envelope holds).
+
+#### Referee pass (Amendment 15)
+
+1. *"The new twins were authored after the n = 23 result was known; the author could tune them toward
+   the plateau."* Conceded as a risk and controlled: the construction rule is unchanged and mechanical,
+   the batch is committed before the pod with a per-foundation count, the screen is the same blind
+   baseline-discrimination gate, and the alone-vs-pooled sign rule means a batch that behaves differently
+   from the original is reported, not averaged away.
+2. *"n = 40 still does not resolve the ratio-of-ratios."* Answered in the power table above: agreed, and
+   said before the run; the primary is the shape verdict, whose CI tightens by a third.
+3. *"Qwen at PR 8.6 with a 59%-variance outlier dimension is exactly where your own A1 says nulls
+   saturate."* Answered: the cell runs in the standardized frame with both nulls reported, the transport
+   positive control (judgment) must move under the same patch before any refusal null is read
+   (intervention-validity rule 2), and `indeterminate` is a pre-registered publishable branch.
+
+Spine preserved. Amendments 14/15 add cells; they relax no prior gate.

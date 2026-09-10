@@ -228,3 +228,28 @@ arXiv:2606.11375. arXiv Makefile targets fixed to ship main.bbl, in-tarball grap
 RMS-normalization control and the scoped abstract), P2 (arXiv:2608.25231), P3 (arXiv:2608.27402).
 Ids back-filled across companion bibs (P3/P4/P5/P6/FL). MN is upload-ready and held to submit
 paired with FL.
+
+## What the next result changes (W4 venue-quality pod, pre-registered 2026-09-10)
+
+Amendments 14/15 (`d3_decision_anatomy/PREREGISTRATION.md`) are committed before any array is
+extracted. Per cell, the branch → the edit this file takes:
+
+| cell | branch | thesis edit |
+|---|---|---|
+| 14.1 proto-refusal reliability | `rel_proto ≥ 0.9` | Tier 3 counter-reading closes; "fresh post-training construction" stands |
+| | `rel_proto ≤ 0.3` | Tier 3 rescopes to "low base→instruct cosine, reliability-limited"; the abstract drops "almost no pretraining precursor" |
+| | between | the disattenuated cosine (with CI) replaces 0.155 in the Tier 3 sentence |
+| 14.2 Llama rank-2/4 harm capture | capture ≤ 0.25 over null | Tier 2 Llama "reads broad" keeps "beyond harm" |
+| | capture ≥ 0.50 | Llama becomes "broader than OLMo's rank-1 harm, not established as beyond harm"; the dimensionality rival's Llama point is re-typed |
+| 14.3 GPT-OSS post-response decision token | monotone at `P_dec` | reversible-reader gains a co-primary projection read; the last-token caveat is deleted |
+| | not monotone | reversibility stays behavioral-primary; "deliberation writes at the prefill site, not the decision token" is added as a finding |
+| 14.4 P0–P3 PR audit | P2 PR-valid on both | D1 reasoning-band statements drop the cross-position hedge |
+| | P2 fails | the hedge stays per model; null-relative claims unchanged |
+| 14.5 reconciled cross-ablation | an arrow's Δ-CI excludes 0 | Tier 1 orthogonality gains a causal cross-arrow sentence (direction named) |
+| | neither | Tier 1 stays geometric with the bar "no cross-effect detectable at Δ ≳ 0.14" |
+| 15.1 OLMo twins to n ≈ 40 | `harm_saturating` replicates, alone agrees | Tier 2 OLMo headline unchanged, CI a third tighter |
+| | shape changes | one-knob reported as "fitted on 23, not replicated on N"; Tier 2 OLMo sentence rewritten to the pooled verdict |
+| 15.2 Qwen C1 read | any of four branches | Tier 2 gains a lineage-independent fourth read; "Qwen not measured" is retired; A13's dimensionality hypothesis gets its first off-confound point |
+
+Zero-GPU now: the adjacent-checkpoint arm of 14.1 (Paper 5's per-checkpoint proto-refusal caches),
+computed after this commit and recorded at Gate W4-1.
