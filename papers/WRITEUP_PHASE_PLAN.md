@@ -278,3 +278,10 @@ referee leads with. The self-review's lead objections were n = 23 near the MDE, 
 counter-reading, and Qwen's empty read cell; 15.1, 14.1, and 15.2 answer exactly those three in both
 branches, which is why they are the keystones. 14.2–14.4 remove hedges rather than change verdicts;
 if the budget must shrink, they go first, in the order 14.4 (0.9 h) → 14.2 → 14.3.
+
+**Gate W4-1 — CONFIRMED (Orion, 2026-09-10).** Amendment 14/15 wording as committed; the 48-twin W4
+batch approved, pooled n ≈ 41 accepted as the shape-only lift; budget ≈ 5.1 A100-h on an 80 GB card;
+six-load model order; both zero-cost W4-3 promotions approved (null rung → verdict input by dated
+amendment; per-checkpoint trajectory into the Tier-3 sentence). Session W4-2 (Sonnet 5) may run the
+pod: `scripts/remote_w4.sh` via the d1 launcher, `VALIDATE=1` first, then the real run;
+commit manifests and distilled CSVs only; no verdicts.
