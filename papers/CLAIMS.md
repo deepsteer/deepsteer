@@ -177,6 +177,43 @@ carried in PACKAGING §DUO; the load-bearing dispositions:
 
 ---
 
+## PAPER-B → FL appendices F–H (skeletons W4-1, 2026-09-10; prose W4-3)
+
+Disposition of record: Paper B folds into FL appendices F (removability battery), G (distributed
+refusal), H (persona / assistant axis / persona-shift compliance). Rows below are the numbers those
+skeletons cite that no earlier row carried.
+
+| id | claim (anchored sentence) | status | unit | artifact | figure |
+|---|---|---|---|---|---|
+| PB-01 | Single-direction refusal ablation at each model's swept best layer (OLMo L19, depth 0.59; Qwen L14, 0.50; Llama L13, 0.41) leaves probe accuracy 1.0→1.0 and eff-dim 5→5 on all three. | VERIFIED | FL App F | Paper 6 §4.2 Table (tab:battery) | — |
+| PB-02 | Persona-shift compliance rises under refusal ablation: OLMo 0.75→1.00, Qwen 0.90→1.00, Llama 0.70→0.95. | VERIFIED | FL App F / H | Paper 6 §4.2–4.3 | — |
+| PB-03 | Behavioral moral judgment under ablation: OLMo 0.75→0.79, Qwen 0.875→0.812, Llama 0.75→0.604 (the P6-03 anomaly). | VERIFIED | FL App F | Paper 6 §4.2–4.4 | — |
+| PB-04 | Llama dose-response: judgment drop 0.083 (95% CI [0.02, 0.17], n=48) at α=0.5 with refusal still 0.90; 0.146 (CI [0.06, 0.25]) at α=1; matched-random stays 0.74 at 2× magnitude; persona ablation leaves judgment at 0.75. | VERIFIED | FL App F | Paper 6 §4.4 | llama_dose_response |
+| PB-05 | Internal-foundation vs behavioral-judgment agreement 0.375→0.479→0.500 (SFT→DPO→Instruct), alongside φ −0.19→+0.02→+0.05 (P5-03). | VERIFIED | FL App H | Paper 5 §4.3 | — |
+| PB-06 | GPT-OSS distributed-refusal detail: end-of-prompt direction coherently flips 4% of held-out refusals, CoT-last 0%, CoT-mean 88% only via incoherence (coherence filter excludes) (P7-03 detail). | VERIFIED | FL App G | Paper 7 §4.3 | fig5_distributed_refusal |
+| PB-07 | OLMo-3 Stage-1 write table (write / channel-matched specificity): L16 H23 +0.742/+0.756; L15 H2 +0.302/+0.368; L14 H19 +0.334/+0.347; L15 H0 +0.265/+0.285; L11 H20 +0.246/+0.274; L16 H21 +0.172/+0.197; L14 H22 +0.178/+0.193; L15 H6 +0.175/+0.189; L13 H29 +0.139/+0.144; L15 H15 −0.130/−0.142 (anti-writer). | VERIFIED | FL App G | D3 RESULTS Stage 1; `c1_session_olmo3.json` (gitignored) | head_attribution.csv |
+
+**⚠ NI-9 (new, W4-1).** Cumulative channel-matched specificity: CLAIMS D3-01/02 carry **11.6% (top
+head) / 44% (top ten) / ~62 heads for 80%**; FL §7 was reconciled to the saved sparsity curve as
+**11.7% / 45% / ~67** (OPEN_THREADS §H, H4 follow-up (a)), and `supplement/figure_data/
+head_attribution.csv` describes "11.7% … ~67 heads". Pin one set of record (the saved curve) and
+update D3-01/02 + the App G skeleton before prose. Blocks the printed scalars, not the verdict.
+
+## W4 pod claims (pre-registered 2026-09-10 as D3 Amendments 14/15; verdicts at W4-3)
+
+| id | claim (anchored sentence) | status | unit | artifact | figure |
+|---|---|---|---|---|---|
+| W4-01 | Proto-refusal reliability ceiling under the 0.155: adjacent-checkpoint self-cosine 0.9999999 (stage3-step11900 vs step11921, L16, raw, Heretic 400/400) with cache-consistency positive control 0.99999998 (Paper 5 `olmo3_base` vs D1 `refusal_base.npz`); the split-half (prompt-sampling) reliability and the disattenuated cosine are pending the pod. | MEASURED (drift arm, zero-GPU) / HELD (split-half) | FL §4 Tier 3 | `d3/outputs/w4/zero_gpu/proto_refusal_trajectory.json` (gitignored) | — |
+| W4-02 | Proto-refusal crystallizes across the stage-3 anneal (cos to final 0.93 at step 1000 → 0.99 at step 9000 → 1.0), while the proto-refusal→instruct-gate cosine stays flat 0.139–0.155 across all 13 states; a covariance-matched single-direction null from the base L16 act_sample (n=1754) has q95 0.070 (descriptive rung; not a verdict input without an amendment). | MEASURED (zero-GPU) | FL §4 | same | candidate: crystallization figure second curve |
+| W4-03 | Llama L12 engage-weighted harm capture at rank 2 / 4 (severity primary, boundary secondary) vs control-basis and random-basis nulls; positive control self-capture. | HELD (14.2) | FL §8 | `w4/llama31/harm_capture_L12.json` | — |
+| W4-04 | GPT-OSS graded exculpatory series read at `P_dec` (post-response decision token): monotone fraction, mean move CI, random-direction null; band-below-null at the harmony decision token. | HELD (14.3) | FL §8.2 | `w4/gpt_oss_20b/decision_token_reread.json` | — |
+| W4-05 | P0–P3 per-rollout PR + band-below-null on GPT-OSS and OLMo-3-Think. | HELD (14.4) | FL App B / D1 | `w4/<key>/pr_audit.json` | — |
+| W4-06 | Reconciled cross-ablation arrows (judgment→refusal, refusal→judgment) as paired Δ-CIs vs random, with persona control and the 0.40 bail. | HELD (14.5) | FL §6 | `w4/olmo3_instruct/cross_ablation.json` | — |
+| W4-07 | PR with bootstrap CIs, PR/d, PR/(n−1), Gaussian and shuffle nulls per (model × position × normalization). | HELD (14.6) | MN Fig 1 / Table 1 | `w4/<key>/pr_profiles.json` | mn_bottleneck_pr |
+| W4-08 | Reply-inversion specificity: harm-direction flip fraction / margin shift vs q95 of 20 matched-norm random directions (Llama-3.1-8B-Instruct). | HELD (14.6b) | MN §3.1 | `w4/llama31/reply_inversion_null.json` | — |
+| W4-09 | OLMo-3 pooled rank sweep on the union twin set (original 60 + W4 48 authored; expected pooled n≈41): replication / alone / pooled shape verdicts with the pooled-primary sign rule. | HELD (15.1) | FL §7 | `w4/olmo3_instruct/pooled_sweep_olmo3_w4.json` | fl_one_knob |
+| W4-10 | Qwen2.5-7B-Instruct C1 read cell (standardized): shape verdict or indeterminate-at-operating-point. | HELD (15.2) | FL §8 two-axis table | `w4/qwen25/qwen25_read_cell.json` | — |
+
 ## VOID REGISTER (may be discussed as methods lessons in MN; never a finding in FL)
 
 | id | voided claim | replacement | source |
