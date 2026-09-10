@@ -22,7 +22,7 @@ the decision channel (D3 Stage 1, the anatomy behind \Cref{reads-harm} and \Cref
 
 - [D3-01] Refusal is written into the ~13-dimensional decision-site channel by a distributed set of
   heads led by L16 H23; cumulative channel-matched specificity is 44% at the top 10 heads and ~62
-  heads are needed for 80% ($k$ hit its cap of 10). «CHECK / NI-9: FL §7 was reconciled to the saved
+  heads are needed for 80% ($k$ hit its cap of 10). «CHECK / NI-9: FL \Cref{reads-harm} was reconciled to the saved
   curve as 11.7% (top head) / 45% (top ten) / ~67 heads for 80% (OPEN_THREADS H4 follow-up (a));
   CLAIMS D3-01/02 still carry 11.6% / 44% / ~62. Pin one set of record before prose.»
 - [D3-02, PB-07] Top writers by channel-matched specificity: L16 H23 write +0.742 (specificity
