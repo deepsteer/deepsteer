@@ -210,3 +210,71 @@ SESSION W4-2 (est. 5–8 A100-80GB h; batched by loaded model, in this order)
 The zero-GPU-first layer is in Amendment 14.1: the adjacent-checkpoint arm is computable now from
 Paper 5's cached per-checkpoint proto-refusal directions (`outputs/measurement/stage3/`, 14 states,
 same construction as `refusal_base.npz`), so only the split-half arm needs the pod.
+
+### Gate W4-1 — what Orion confirms before the pod runs (2026-09-10)
+
+**Banked this session (commits 63cffcf … ):** FL rebuilt against the P3 arXiv id (MN verified);
+this W4 section; D3 Amendments 14/15 (pre-registered before any extraction) with the SYNTHESIS branch
+table; `scripts/pod_w4.py` + `scripts/w4/` (dry-run known to run end-to-end; 413 tests green) and
+`scripts/remote_w4.sh`; the 48-twin W4 batch; `deepsteer.geometry.{reliability,participation}`;
+FL appendix skeletons F/G/H with CLAIMS rows PB-01..07 and W4-01..10; `supplement/RELEASE_PLAN.md`;
+the MISSING_ARTIFACTS closure map; the zero-GPU arm of 14.1.
+
+**Zero-GPU result already in hand (14.1 drift arm; CLAIMS W4-01/02).** Cache-consistency control
+0.99999998 (Paper 5 `olmo3_base` proto-refusal = D1 `refusal_base.npz`); adjacent-checkpoint
+self-cosine 0.9999999 (stage3-step11900 vs 11921); proto-refusal crystallizes 0.93 (step 1000) → 1.0
+(final) across the anneal; proto→gate cosine flat at 0.139–0.155 on all 13 states; covariance-matched
+single-direction null q95 0.070 (descriptive rung). Reading: Branch A on the drift arm; the split-half
+arm still bounds prompt-sampling reliability (identical prompts sit on both sides of the drift arm, so
+it cannot). Formal Tier-3 verdict at W4-3.
+
+**Confirm (decisions only Orion can make).**
+
+1. **Amendment wording.** 14.1 disattenuation rider (instruct-gate split-half added; both
+   reliabilities needed); 14.2 thresholds 0.25 / 0.50 over the control null; 14.3 `P_dec` definition
+   (token before the first final-channel token); 14.5 bail at baseline refusal < 0.40; 15.1 the
+   replication → alone → pooled rule with the sign agreement condition; 15.2 `indeterminate` as a
+   publishable branch.
+2. **Twin target n and the batch.** The 48 authored twins (`deepsteer/datasets/request_twins_w4.py`)
+   need your read for construction fidelity (exact prefix, intent-carried harm, no alarming lexicon).
+   At the recorded 38% screen pass rate the pooled n is ≈ 41. The power table says n = 40 tightens the
+   shape CI by a third but does **not** resolve the ratio-of-ratios (≈ n = 140 would). Options: accept
+   n ≈ 41 as the shape-only lift (default); author a second batch toward n ≈ 60 (+0.3 h, ratio still
+   unresolved); or drop 15.1 and spend the hour on 14.4 breadth.
+3. **Pod hour budget.** Per cell (A100-80GB): 14.1 0.2 · 14.2 0.3 · 14.3 0.3 · 14.4 0.9 (GPT-OSS 0.4 +
+   Think 0.5; the handoff's 0.3 assumed saved rollouts that do not exist) · 14.5 0.4 · 14.6 0.4 · 15.1
+   1.0 · 15.2 1.0 · six model loads ≈ 0.6 → **≈ 5.1 A100-h**, inside the 5–7 h envelope. 80 GB card is
+   mandatory (GPT-OSS bf16 ~40 GB); DISK_GB ≥ 250 for six models.
+4. **Model order.** OLMo-3-Instruct → OLMo-3-Think → OLMo-3 base (`main`) → Llama-3.1-8B-Instruct
+   (gated; HF_TOKEN on the pod) → GPT-OSS-20B → Qwen2.5-7B-Instruct. "OLMo-3" is three loads; the
+   handoff's four-model order is preserved at the family level.
+5. **Two zero-cost promotions for W4-3 (need your yes).** (a) Promote the descriptive null rung to a
+   verdict input by dated amendment, so the 0.155 rides a ladder (isotropic 0.012 / matched q95 0.070
+   / measurement 0.155 / moral crystallization 0.999) instead of the bare 0.50 threshold. (b) Let the
+   FL Tier-3 sentence carry the per-checkpoint trajectory (W4-02) as a second crystallization curve.
+
+**Anticipated review (pre-review protocol).**
+
+1. *Drift arm at 0.9999999 with the same 800 prompts on both sides* → estimator-traps (common-mode
+   sampling) → the split-half is the load-bearing reliability, the drift arm bounds drift only.
+   Implemented: both arms pre-registered as separate quantities; the write-up must not average them.
+2. *0.155 is ~2× the matched null q95 (0.070), so "almost no pretraining precursor" is the wrong
+   adjective regardless of reliability* → program-thesis anchored adjectives → the abstract clause
+   becomes "a weak precursor (0.155; matched-null q95 0.07) against 0.999 for the moral subspace".
+   Implemented: rung computed. Open: the amendment in (5a) (zero cost, W4-3).
+3. *The W4 twins were authored knowing the plateau* → construct-audit register drift → set tags,
+   alone/pooled sign rule, replication gate on the original 60. Open: none priced; a blind screen by
+   a second author would add nothing computational.
+4. *Think P3 stays unmeasured at cap 320* → the in-trace rung on Think is window-only whatever 14.4
+   returns; the P3 hedge survives the pod by design. Implemented: stated in 14.4.
+5. *14.5 harness parity: if the reconciled baseline lands near 0.40 the arrow is unpowered* → bail is
+   pre-registered; Open: extend to the 400 harmful train prompts (+0.3 h) if the baseline is 0.40–0.50.
+   Decide at the pilot read, not after the cell.
+
+**Implemented now:** riders 1, 3, 4 (in the amendment text and the driver), the rung behind 2.
+**Open (with costs):** 5a/5b amendments (0 h), second twin batch (+0.3 h), 14.5 extension (+0.3 h).
+**Question behind the question:** whether ~5 A100-h buys venue quality depends on which objection a
+referee leads with. The self-review's lead objections were n = 23 near the MDE, the Tier-3
+counter-reading, and Qwen's empty read cell; 15.1, 14.1, and 15.2 answer exactly those three in both
+branches, which is why they are the keystones. 14.2–14.4 remove hedges rather than change verdicts;
+if the budget must shrink, they go first, in the order 14.4 (0.9 h) → 14.2 → 14.3.

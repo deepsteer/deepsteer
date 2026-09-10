@@ -251,5 +251,12 @@ extracted. Per cell, the branch → the edit this file takes:
 | | shape changes | one-knob reported as "fitted on 23, not replicated on N"; Tier 2 OLMo sentence rewritten to the pooled verdict |
 | 15.2 Qwen C1 read | any of four branches | Tier 2 gains a lineage-independent fourth read; "Qwen not measured" is retired; A13's dimensionality hypothesis gets its first off-confound point |
 
-Zero-GPU now: the adjacent-checkpoint arm of 14.1 (Paper 5's per-checkpoint proto-refusal caches),
-computed after this commit and recorded at Gate W4-1.
+**Zero-GPU arm of 14.1, run 2026-09-10 after the amendment commit (CLAIMS W4-01/02).** Paper 5's
+per-checkpoint proto-refusal caches reproduce D1's `refusal_base.npz` at cosine 0.99999998 (positive
+control); adjacent checkpoints (stage3-step11900 vs 11921) agree at 0.9999999; proto-refusal itself
+crystallizes 0.93 (step 1000) → 1.0 across the anneal while the proto→gate cosine stays flat at
+0.139–0.155 on all 13 states, against a covariance-matched single-direction null q95 of 0.070
+(descriptive rung). Drift arm reads Branch A; the split-half (prompt-sampling) arm is the pod's,
+and the Tier 3 verdict waits for it. Standing edit already licensed by the rung: "almost no
+pretraining precursor" is an unanchored adjective for 0.155 ≈ 2× the matched null; the W4-3
+rewrite is "a weak precursor (0.155; matched-null q95 0.07) against 0.999 for the moral subspace".
