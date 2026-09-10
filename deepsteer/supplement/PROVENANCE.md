@@ -51,10 +51,13 @@ The distilled `cells/*.json` come from the Direction-3 decision-anatomy sessions
 Direction-1 phase-2 base/instruct direction extraction across published OLMo-3
 checkpoints.
 
-## Open reliability control (not yet run)
+## Reliability control under the 0.155 (W4; D3 Amendment 14.1)
 
-The proto-refusal->gate cosine (0.155) in `crystallization.csv` is a single
-measurement, not a per-checkpoint trajectory. A split-half or adjacent-checkpoint
-self-cosine on proto-refusal (a reliability ceiling under 0.155) is a pre-ship
-control that needs re-extraction on the base checkpoint; it is not derivable from
-the currently saved artifacts (`refusal_base.npz` holds only the final direction).
+The proto-refusal->gate cosine (0.155) in `crystallization.csv` was a single
+measurement. Its reliability ceiling has two arms. **Checkpoint-drift arm (zero-GPU,
+run 2026-09-10):** Paper 5's per-checkpoint proto-refusal caches (13 stage-3 states +
+base, same construction) give an adjacent-checkpoint self-cosine of 0.9999999 and a
+flat proto->gate trajectory 0.139-0.155 across the anneal (CLAIMS W4-01/02).
+**Prompt-sampling arm (pod, W4 14.1):** split-half self-cosine from per-sample base
+and instruct activations, plus the disattenuated cosine; pending. The public release
+plan for all per-unit arrays is `RELEASE_PLAN.md` (Zenodo, DOI minted in W4-3).

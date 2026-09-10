@@ -227,6 +227,12 @@ Two data-grounded refinements to the review (Orion should note):
   4096-d proto-refusal direction (no per-sample activations for a split-half), and the
   crystallization trajectory carries a single flat 0.155 (no per-checkpoint proto-refusal for an
   adjacent-checkpoint self-cosine). So it needs re-extraction on the base checkpoint.
+  **Correction (W4-1, 2026-09-10; D3 Amendment 14.1 [repo-fix]):** half of it *is* zero-GPU. Paper 5
+  cached per-checkpoint proto-refusal directions for all 14 OLMo-3 stage-3 states
+  (`papers/5_moral_alignment/outputs/measurement/stage3/`, same construction as `refusal_base.npz`,
+  cache-consistency cosine 0.99999998). The adjacent-checkpoint arm ran: self-cosine 0.9999999
+  (step11900 vs 11921), proto-refusal crystallizes 0.93→1.0 over the anneal, proto→gate flat
+  0.139–0.155 (CLAIMS W4-01/02). Only the **split-half** (prompt-sampling) arm needs the pod (14.1).
 
 **New pre-ship control (priced pod): proto-refusal reliability ceiling under the 0.155.**
 Split-half (resample the refusal contrast, recompute proto-refusal, self-cosine) or

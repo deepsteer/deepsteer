@@ -50,3 +50,25 @@
   harmony **decision token**) is not computable zero-GPU. It is the **Tier-1 pod's first gate**: extract
   decision-token activations, check band-below-null; if not below-null, GPT-OSS stays behavioral-
   primary-only (frozen A5 rule). The correlational P0/P2 harm decomposition is independent of this gate.
+
+## W4 closure map (2026-09-10; D3 PREREGISTRATION Amendments 14/15; `scripts/pod_w4.py --closure-map`)
+
+Every entry above is closed by a named unit of the W4 pod; the driver's manifest records the save and
+its sha256, and `tests/scripts/test_pod_w4.py` asserts the map covers every unique bullet in this file.
+
+| ledger entry | closing unit (model / cell) | saved as |
+|---|---|---|
+| A1 `think/mft_directions.npz` | OLMo-3-Think / 14.4 | `w4/olmo3_think/mft_directions.npz` |
+| A1 `gpt_oss/mft_directions.npz` | GPT-OSS-20B / 14.4 | `w4/gpt_oss_20b/mft_directions.npz` |
+| A3 Think refusal vectors P0–P3 | OLMo-3-Think / 14.4 | `w4/olmo3_think/refusal_P{0..3}.npz` |
+| A4 instruct fables/ethics per-pair diffs (listed twice above; one item) | OLMo-3-Instruct / 14.6 | `w4/olmo3_instruct/axis_diffs_{fables,ethics}.npz` |
+| Amendment 2 per-position chat act_samples | OLMo-3-Instruct, Llama-3.1, Qwen2.5 / 14.6 | `w4/<key>/position_samples.npz` (three position classes) |
+| Amendment 2 D1 P0–P3 per-rollout activations | Think + GPT-OSS / 14.4 | `w4/<key>/p0p3_rollouts.npz` |
+| Amendment 2 mean_content slices (refusal/judgment prompt sets) | OLMo-3-Instruct / 14.6 | `w4/olmo3_instruct/mean_content_slices.npz` |
+| Amendment 11 severity-twin contrasts (Llama L12) | Llama-3.1 / 14.2 | `w4/llama31/severity_contrasts_L12.npz` (+ boundary twins) |
+| Amendment 11 GPT-OSS decision-token act_sample (A5 band-below-null) | GPT-OSS-20B / 14.3 | `w4/gpt_oss_20b/decision_token_sample.npz` + `decision_token_reread.json` |
+
+Correction to the Amendment-11 GPT-OSS entry: the **PR half** of the A5 pre-condition was already
+banked by the Tier-1 run (post-std PR 12.79, `tier1_session_gpt_oss_20b.json`); only the
+band-below-null half was missing, and 14.3 computes it. Nothing here is regenerated inline; the pod
+saves are the closure.
