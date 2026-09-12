@@ -76,3 +76,20 @@ class TestBootstrapAndNulls:
         prof = pr_profile(_lowrank(k=5, n=60, d=32), n_boot=50, n_null=20, rng=np.random.default_rng(0))
         json.dumps(prof)  # no numpy arrays leak into the record
         assert set(prof) >= {"pr", "pr_over_d", "ci95", "gaussian_null", "shuffle_null"}
+
+
+class TestGramPath:
+    def test_gram_equals_svd_for_n_less_than_d(self):
+        # assert the n<d Gram-matrix shortcut (14.6 speedup) reproduces the SVD definition exactly
+        X = np.random.default_rng(3).standard_normal((60, 500)) * np.linspace(3, 0.1, 500)
+        Xc = X - X.mean(0)
+        s = np.linalg.svd(Xc, compute_uv=False) ** 2
+        assert participation_ratio(X) == pytest.approx(s.sum() ** 2 / (s ** 2).sum(), rel=1e-9)
+
+    def test_shuffle_null_preserves_marginals(self):
+        # assert the vectorized column permutation keeps every per-column variance (marginals intact)
+        X = _lowrank(k=3)
+        rng = np.random.default_rng(0)
+        idx = np.argsort(rng.random(X.shape), axis=0)
+        Xs = np.take_along_axis(X, idx, axis=0)
+        assert np.allclose(np.sort(Xs, 0), np.sort(X, 0))

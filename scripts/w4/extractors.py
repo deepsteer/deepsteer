@@ -39,7 +39,7 @@ class StubExtractor:
     def raw_pair_diffs(self, pairs, layer: int) -> np.ndarray:
         return self.rng.standard_normal((len(pairs), self.d))
 
-    def generate(self, prompt: str, max_tokens: int = 48) -> str:
+    def generate(self, prompt: str, max_tokens: int = 48, fmt: str = "raw") -> str:
         self._toggle += 1
         return REFUSAL_TEXT if self._toggle % 2 else COMPLY_TEXT
 
@@ -109,7 +109,14 @@ class RealExtractor:
         Xn = X.detach().cpu().numpy()
         return Xn[0::2] - Xn[1::2]
 
-    def generate(self, prompt: str, max_tokens: int = 48) -> str:
+    def generate(self, prompt: str, max_tokens: int = 48, fmt: str = "raw") -> str:
+        """Greedy generation. ``fmt="chat"`` wraps the prompt in the tokenizer's chat template
+        (Paper 6 ``random_ablation_control._chat_model`` parity); the raw path completes the bare
+        prompt, which on an instruct model reads like a base model and floors the refusal rate."""
+        tok = self.model.tokenizer
+        if fmt == "chat" and getattr(tok, "chat_template", None):
+            prompt = tok.apply_chat_template([{"role": "user", "content": prompt}], tokenize=False,
+                                             add_generation_prompt=True)
         return self.model.generate(prompt, max_tokens=max_tokens, temperature=0.0).text
 
     def ablate(self, layer: int, direction: np.ndarray):

@@ -10,9 +10,14 @@
 #                 papers/d3_decision_anatomy/outputs/c1_inputs_llama31_L12.npz \
 #                 papers/d3_decision_anatomy/outputs/c1_session_llama31_L12.json \
 #                 papers/d1_moral_subspace/outputs/phase2/base/diffs_moral_stories.npz \
-#                 papers/d1_moral_subspace/outputs/phase2/instruct/diffs_moral_stories.npz" \
+#                 papers/d1_moral_subspace/outputs/phase2/instruct/diffs_moral_stories.npz \
+#                 papers/d1_moral_subspace/outputs/phase2/refusal_base.npz \
+#                 papers/d1_moral_subspace/outputs/phase2/refusal_instruct.npz \
+#                 papers/5_moral_alignment/outputs/measurement/stage3" \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
-#   (prepend VALIDATE=1 for the no-model dry run on the pod; W4_MODELS / W4_UNITS subset the run.)
+#   (prepend VALIDATE=1 for the no-model dry run on the pod; W4_MODELS / W4_UNITS subset the run.
+#    The last three SYNC_EXTRA paths feed the 14.1 zero-GPU arm + end-of-run disattenuation; without
+#    them the driver records 14.1_zero_gpu = missing_inputs, as the 2026-09-12 run did.)
 #
 # Flow (compute-ordering + test-gates-before-GPU):
 #   1. local gates (no model): pytest tests/scripts/test_pod_w4.py + pod_w4.py --dry-run

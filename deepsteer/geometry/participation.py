@@ -26,8 +26,14 @@ def participation_ratio(X: np.ndarray) -> float:
     """
     Xc = np.asarray(X, np.float64)
     Xc = Xc - Xc.mean(0)
-    s = np.linalg.svd(Xc, compute_uv=False) ** 2
-    s = s[s > 0]
+    n, d = Xc.shape
+    if n < d:
+        # eigenvalues of the n x n Gram matrix == nonzero squared singular values of Xc; ~10x
+        # cheaper than the (n, d) SVD at n=240, d=4096 (the 14.6 bootstrap runs this 2000x per cell)
+        s = np.linalg.eigvalsh(Xc @ Xc.T)
+    else:
+        s = np.linalg.svd(Xc, compute_uv=False) ** 2
+    s = s[s > 1e-12 * max(1.0, float(s.max()))] if s.size else s
     if s.size == 0:
         return 0.0
     return float(s.sum() ** 2 / (s ** 2).sum())
@@ -119,10 +125,9 @@ def pr_shuffle_null(
     n, d = Xa.shape
     draws = np.empty(n_draws)
     for k in range(n_draws):
-        Xs = np.empty_like(Xa)
-        for j in range(d):
-            Xs[:, j] = Xa[rng.permutation(n), j]
-        draws[k] = participation_ratio(Xs)
+        # independent column permutations, vectorized (argsort of random keys per column)
+        idx = np.argsort(rng.random((n, d)), axis=0)
+        draws[k] = participation_ratio(np.take_along_axis(Xa, idx, axis=0))
     return {"pr": participation_ratio(Xa), "shuffle_q05": float(np.percentile(draws, 5)),
             "shuffle_q50": float(np.median(draws)), "n_draws": int(n_draws), "per_draw": draws}
 

@@ -383,24 +383,29 @@ def unit_14_5(ctx: Ctx) -> dict:
     """OLMo-3-Instruct: reconciled R3(iii) cross-ablation with paired difference-CIs and a bail rule."""
     from b1_judgment_direction import build_prompt, is_refusal, parse_verdict
     L = ctx.layer
-    hp = data.heretic_prompts(ctx.dry, n=ctx.n(64, 8))
+    # Pre-registered sizes: refusal direction from the Heretic 400/400 train set, outcomes on the
+    # 100 held-out harmful_eval requests (the first pod run used 64/64 + 64 via a shared cap).
+    hp = data.heretic_prompts(ctx.dry, n=None if not ctx.dry else 8)
     harmful = hp["harmful_eval"][:ctx.n(100, 6)]
     items = data.ethics_items(ctx.dry, n_cap=ctx.n(120, 6))
     flips = [bool(b) for b in ctx.rng.integers(0, 2, len(items))]
-    refusal = mean_diff(ctx.x.last_token_acts(hp["harmful"], "chat", L),
-                        ctx.x.last_token_acts(hp["harmless"], "chat", L))
+    # Harness parity with Paper 6's 0.575 baseline: chat-template generation for both outcomes.
+    # The first pod run generated from the bare prompt and floored refusal at 0.03 (bail invalid).
+    fmt = "chat" if ctx.spec.kind != "base" else "raw"
+    refusal = mean_diff(ctx.x.last_token_acts(hp["harmful"], fmt, L),
+                        ctx.x.last_token_acts(hp["harmless"], fmt, L))
     z = data.local_npz(REPO / "papers/d2_decision_coupling/outputs/olmo3/b1_judgment_dir_olmo3.npz")
     judgment = _unit(z["judgment_dir"]) if (z is not None and not ctx.dry) else _unit(ctx.rng.standard_normal(refusal.shape[0]))
     persona = _unit(ctx.x.raw_pair_diffs(data.persona_pairs(ctx.dry, n_cap=ctx.n(None, 6)), L).mean(0))
     randoms = [_unit(ctx.rng.standard_normal(refusal.shape[0])) for _ in range(ctx.n(5, 2))]
 
     def refusal_outcomes():
-        return np.array([int(is_refusal(ctx.x.generate(p, 64))) for p in harmful])
+        return np.array([int(is_refusal(ctx.x.generate(p, 64, fmt=fmt))) for p in harmful])
 
     def judgment_outcomes():
         out = []
         for (scn, gt), f in zip(items, flips):
-            v = parse_verdict(ctx.x.generate(build_prompt(scn, f)[0], 6))
+            v = parse_verdict(ctx.x.generate(build_prompt(scn, f)[0], 6, fmt=fmt))
             out.append(int(v == gt))
         return np.array(out)
 
@@ -423,6 +428,8 @@ def unit_14_5(ctx: Ctx) -> dict:
         return {"point": float(x.mean()), "ci95": [float(np.percentile(bt, 2.5)), float(np.percentile(bt, 97.5))]}
 
     res = {"unit": "14.5", "layer": L, "n_harmful": len(harmful), "n_judgment": len(items),
+           "prompt_format": fmt, "n_refusal_direction": [len(hp["harmful"]), len(hp["harmless"])],
+           "outcome_harness": "compliance_gap.greenblatt._classify_response (opening-refusal rule)",
            "baseline_refusal_rate": base_rate, "baseline_judgment_acc": float(base_j.mean()),
            "bail_floor_limited": bool(bail), "bail_rule": "baseline refusal >= 0.40 required",
            "mde_rate_diff_n_harmful": float(1.96 * np.sqrt(2 * 0.25 / max(1, len(harmful)))),

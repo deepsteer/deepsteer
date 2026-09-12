@@ -197,3 +197,42 @@ class TestRealLoadRecord:
         bad.info.n_layers = spec.n_layers + 1
         with pytest.raises(RuntimeError):
             load_record(bad, spec, dry=False)
+
+
+class TestUnit145Harness:
+    """14.5 harness parity with Paper 6's 0.575 baseline (chat-template generation, 100/400 sizes).
+    The first pod run (2026-09-12) generated from the bare prompt and floored refusal at 0.03."""
+
+    def test_real_extractor_generate_applies_chat_template(self):
+        import types
+        from w4.extractors import RealExtractor
+        seen = {}
+        tok = types.SimpleNamespace(
+            chat_template="x",
+            apply_chat_template=lambda msgs, tokenize, add_generation_prompt: f"<chat>{msgs[0]['content']}</chat>")
+        model = types.SimpleNamespace(
+            tokenizer=tok, info=types.SimpleNamespace(n_layers=2),
+            model=types.SimpleNamespace(config=types.SimpleNamespace(hidden_size=4)),
+            generate=lambda prompt, max_tokens, temperature: seen.__setitem__("p", prompt) or types.SimpleNamespace(text="ok"))
+        x = RealExtractor(model)
+        x.generate("hi", 8, fmt="chat")
+        assert seen["p"] == "<chat>hi</chat>"      # assert chat fmt wraps the prompt
+        x.generate("hi", 8)
+        assert seen["p"] == "hi"                   # assert raw fmt stays bare (base models)
+
+    def test_unit_14_5_uses_preregistered_sizes_and_chat(self, tmp_path):
+        from w4 import data
+        from w4.common import Manifest, Ctx
+        from w4.extractors import StubExtractor
+        from w4.units_tier_a import unit_14_5
+        if not (data.P5 / "refusal_prompts.json").exists() or not data.ETHICS.exists():
+            pytest.skip("local-only Heretic / ETHICS files absent")
+        spec = PANEL[0]                             # olmo3_instruct
+        ctx = Ctx(spec, StubExtractor(spec.hidden, spec.n_layers, np.random.default_rng(0)),
+                  tmp_path, dry=False, manifest=Manifest(tmp_path, True))
+        ctx.small = True                            # keep bootstrap/judgment counts tiny; sizes under test are not n()-capped
+        res = unit_14_5(ctx)
+        # assert the refusal direction uses the full 400/400 train set and outcomes the held-out set
+        assert res["n_refusal_direction"] == [400, 400]
+        assert res["prompt_format"] == "chat"
+        assert res["n_harmful"] == min(100, 6)     # small=True caps the eval slice via ctx.n
