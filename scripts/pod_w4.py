@@ -12,6 +12,7 @@ outputs; every saved file's sha256 and every load's resolved HF commit hash land
     python3 scripts/pod_w4.py --closure-map             # MISSING_ARTIFACTS.md -> unit map
     python3 scripts/pod_w4.py --verify-manifest         # recompute every sha256
     python3 scripts/pod_w4.py --models olmo3_instruct,llama31 --units 14.6,14.6b   # real, subset
+    python3 scripts/pod_w4.py --merge-from papers/d3_decision_anatomy/outputs/w4_rerun1 --reason "..."  # fold a rerun in
 
 Session W4-2 launches the real run through scripts/remote_w4.sh (RunPod). Verdict rules are applied
 in Session W4-3 from the saved arrays; this driver computes and saves, it does not judge.
@@ -40,6 +41,7 @@ from w4.common import (  # noqa: E402
     Ctx,
     Manifest,
     load_record,
+    merge_manifest,
     verify_manifest,
 )
 from w4.extractors import RealExtractor, StubExtractor  # noqa: E402
@@ -116,6 +118,9 @@ def main() -> int:
     ap.add_argument("--zero-gpu-only", action="store_true", help="only the 14.1 zero-GPU arm")
     ap.add_argument("--closure-map", action="store_true", help="print the MISSING_ARTIFACTS -> unit map")
     ap.add_argument("--verify-manifest", action="store_true")
+    ap.add_argument("--merge-from", default=None, metavar="DIR",
+                    help="fold a partial rerun's output dir (own manifest) into --out's manifest of record")
+    ap.add_argument("--reason", default="", help="with --merge-from: why the rerun happened")
     ap.add_argument("--models", default=None, help="comma list of panel keys (default: all, in order)")
     ap.add_argument("--units", default=None, help="comma list of unit ids (default: all for the model)")
     ap.add_argument("--tier", default="AB", help="A, B, or AB")
@@ -128,6 +133,10 @@ def main() -> int:
     if args.closure_map:
         for k, v in MISSING_ARTIFACTS_CLOSURE.items():
             print(f"{k:75s} -> {v}")
+        return 0
+    if args.merge_from:
+        p = merge_manifest(out_root, Path(args.merge_from), args.reason)
+        print(f"merged -> {p}; manifest OK")
         return 0
     if args.verify_manifest:
         bad = verify_manifest(out_root / "manifest_w4.json")

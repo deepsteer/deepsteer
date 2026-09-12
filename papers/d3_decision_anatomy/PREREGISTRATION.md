@@ -1118,3 +1118,35 @@ model-load overhead (six loads, ~0.1 h each).
    (intervention-validity rule 2), and `indeterminate` is a pre-registered publishable branch.
 
 Spine preserved. Amendments 14/15 add cells; they relax no prior gate.
+
+### Amendment 15/14 rider (2026-09-12) — W4 rerun pod: 15.2 gate wording, 14.5 generation save (pre-rerun)
+
+Committed after the W4 pod of 2026-09-12 (manifest `w4_20260912T190441`) and before any rerun array is
+extracted. Neither item changes a PRIMARY; both are pre-registered corrections of driver behaviour
+against the amendment text.
+
+1. **15.2 gate counts the operating band (clarification, no new rule).** Amendment 15.2 said "screen
+   must keep ≥ 12 request-twins; else `BOUNDARY=1` twins; if both bands keep < 12 → indeterminate".
+   The C1 harness of record has always been dual-use: its readout/sweep stimuli are the screened
+   request-twins **plus** the severity-ladder operating-band pairs (`rt_pairs = req_pairs +
+   band_pairs`; Llama L12's cell of record ran on 36 band pairs and 1 request twin). The W4 driver
+   keyed the fallback on request-twins alone: on Qwen the screen kept 1/108 request-twins, the pilot's
+   ladder found **18 operating-band pairs at levels 3–5 (≥ 12)**, and the driver nonetheless switched
+   the full cell to `BOUNDARY=1`, whose boundary band on the boundary-twin set was empty (0 pairs) →
+   banked `indeterminate_operating_point` with no sweep. Corrected rule, matching the harness and the
+   amendment's intent: the gate quantity is `request_screened + operating_band_pairs` from the pilot;
+   ≥ 12 → the full cell runs in operating mode; < 12 → `BOUNDARY=1`; boundary band < 12 → indeterminate.
+   The 15.2 cell is **rerun** under this rule (Qwen2.5-7B-Instruct, `STANDARDIZE=1`, `SWEEP=1`,
+   operating band, expected n = 19). The 2026-09-12 boundary-mode run stays in the manifest as the
+   record of the empty boundary band; its `qwen25_read_cell.json` is superseded, not deleted.
+2. **14.5 saves generations (save-list correction).** Amendment 14.5's save list names "per-prompt
+   outcomes … and generations"; the unit saved outcomes only. A new unit `14.5_gen` re-generates
+   greedily under the **saved** directions (`cross_ablation_outcomes.npz`: refusal, judgment-decision,
+   random_0; baseline) for the same 100 prompts, saves the texts with the classifier outcome per
+   text, and reports agreement with the saved outcomes as a determinism check (greedy decoding; any
+   disagreement is logged, not silently overwritten). This is the discriminator for ANOMALIES A8; it
+   adds no verdict rule. The 14.5 arrow verdict is **held** until A8 resolves.
+3. **Manifest discipline for partial reruns.** A rerun writes to its own output subdir and its own
+   manifest (`W4_OUT_SUBDIR`), then `pod_w4.py --merge-from` folds it into `manifest_w4.json`: rerun
+   artifacts replace same-path entries, unit statuses and gates for the rerun units are replaced, the
+   superseded entries are kept under `reruns[].superseded`, and the merged manifest is re-verified.

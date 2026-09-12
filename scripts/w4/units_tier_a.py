@@ -16,7 +16,7 @@ from deepsteer.geometry.reliability import (
 )
 
 from . import data
-from .common import Ctx, REPO
+from .common import W4_OUT, Ctx, REPO
 
 
 def _unit(v):
@@ -453,6 +453,39 @@ def unit_14_5(ctx: Ctx) -> dict:
     return res
 
 
+def unit_14_5_gen(ctx: Ctx) -> dict:
+    """A8 discriminator (rider 2026-09-12): re-generate under the SAVED 14.5 directions and keep the
+    texts. Baseline / refusal / judgment_decision / random_0 on the same 100 prompts, greedy; the
+    classifier outcome per text is compared with the saved outcomes (determinism check, logged)."""
+    from b1_judgment_direction import is_refusal
+    src = ctx.out / "cross_ablation_outcomes.npz"
+    if not src.exists():                       # partial rerun: read the run of record's save
+        src = W4_OUT / ctx.key / "cross_ablation_outcomes.npz"
+    z = np.load(src, allow_pickle=True)
+    L = int(z["layer"]); prompts = [str(p) for p in z["harmful_prompts"]]
+    fmt = "chat" if ctx.spec.kind != "base" else "raw"
+    conds = {"refusal": z["refusal_dir"], "judgment_decision": z["judgment_dir"], "random_0": z["random_dirs"][0]}
+    texts, outcomes, agree = {}, {}, {}
+    texts["baseline"] = [ctx.x.generate(p, 64, fmt=fmt) for p in prompts]
+    for name, d in conds.items():
+        with ctx.x.ablate(L, np.asarray(d, float)):
+            texts[name] = [ctx.x.generate(p, 64, fmt=fmt) for p in prompts]
+    for name, ts in texts.items():
+        outcomes[name] = np.array([int(is_refusal(t)) for t in ts])
+        saved = z[f"{name}_refusal"]
+        agree[name] = float((outcomes[name] == saved).mean()) if saved.shape == outcomes[name].shape else None
+    ctx.save("cross_ablation_generations", "14.5_gen", layer=L, source_npz=str(src.name),
+             harmful_prompts=np.array(prompts, dtype=object),
+             **{f"{k}_text": np.array(v, dtype=object) for k, v in texts.items()},
+             **{f"{k}_refusal": v for k, v in outcomes.items()})
+    res = {"unit": "14.5_gen", "layer": L, "n": len(prompts), "prompt_format": fmt, "source": str(src.name),
+           "rates": {k: float(v.mean()) for k, v in outcomes.items()},
+           "agreement_with_saved_outcomes": agree,
+           "note": "ANOMALIES A8 discriminator; texts saved for the coherence tally. No verdict here."}
+    ctx.save_json("cross_ablation_generations", "14.5_gen", res)
+    return res
+
+
 # ------------------------------------------------------------------ 14.6 -------------------------
 
 def unit_14_6(ctx: Ctx) -> dict:
@@ -526,4 +559,5 @@ def unit_14_6b(ctx: Ctx) -> dict:
 
 
 UNITS = {"14.1_proto": unit_14_1_proto, "14.1_gate": unit_14_1_gate, "14.2": unit_14_2, "14.3": unit_14_3,
+         "14.5_gen": unit_14_5_gen,
          "14.4": unit_14_4, "14.5": unit_14_5, "14.6": unit_14_6, "14.6b": unit_14_6b}

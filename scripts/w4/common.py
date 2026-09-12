@@ -49,7 +49,7 @@ class ModelLoad:
 # Pre-registered order: OLMo-3-Instruct -> OLMo-3-Think -> OLMo-3 base -> Llama -> GPT-OSS -> Qwen.
 PANEL: tuple[ModelLoad, ...] = (
     ModelLoad("olmo3_instruct", "allenai/Olmo-3-7B-Instruct", None, "instruct", 16, "p6", "olmo3",
-              ("15.1", "14.5", "14.6", "14.1_gate"), 32, 4096),
+              ("15.1", "14.5", "14.5_gen", "14.6", "14.1_gate"), 32, 4096),
     ModelLoad("olmo3_think", "allenai/Olmo-3-7B-Think", None, "think", 16, "p6", "olmo3",
               ("14.4",), 32, 4096),
     ModelLoad("olmo3_base", "allenai/Olmo-3-1025-7B", None, "base", 16, "p6", "olmo3",
@@ -258,3 +258,56 @@ def verify_manifest(path: Path) -> list[str]:
 
 def env_flag(name: str, default: str = "") -> str:
     return os.environ.get(name, default)
+
+
+def merge_manifest(main_out: Path, rerun_out: Path, reason: str) -> Path:
+    """Fold a partial rerun (own subdir + own manifest) into the manifest of record.
+
+    Rerun artifacts are MOVED to the same relative path under ``main_out`` and replace same-path
+    entries; unit statuses, pilot gates and loads for the rerun's units/models are replaced; every
+    superseded entry is kept under ``reruns[].superseded``. The merged manifest is re-verified.
+    (Amendment 15/14 rider 3, 2026-09-12: a fresh Manifest in the main tree would clobber the record.)
+    """
+    import json as _json
+    import shutil
+    main_p, rerun_p = main_out / "manifest_w4.json", rerun_out / "manifest_w4.json"
+    main, rerun = _json.loads(main_p.read_text()), _json.loads(rerun_p.read_text())
+    if rerun.get("dry_run") != main.get("dry_run"):
+        raise ValueError("refusing to merge a dry-run manifest into a real one (or vice versa)")
+    superseded = {"artifacts": [], "unit_status": {}, "pilot_gates": {}, "loads": []}
+    rerun_units = set(rerun["unit_status"]) - {"14.1_zero_gpu", "14.1_disattenuation"}
+    rerun_models = {l["key"] for l in rerun["loads"]}
+    by_path = {a["path"]: i for i, a in enumerate(main["artifacts"])}
+    for a in rerun["artifacts"]:
+        src = (REPO / a["path"]) if a["base"] == "repo" else (rerun_out / a["path"])
+        rel = src.resolve().relative_to(rerun_out.resolve())
+        dst = main_out / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(src), str(dst))
+        new = dict(a, path=str(dst.resolve().relative_to(REPO.resolve())) if dst.resolve().is_relative_to(REPO.resolve())
+                   else str(rel), base="repo" if dst.resolve().is_relative_to(REPO.resolve()) else "out",
+                   sha256=sha256(dst), bytes=dst.stat().st_size, rerun_id=rerun["run_id"])
+        if new["path"] in by_path:
+            superseded["artifacts"].append(main["artifacts"][by_path[new["path"]]])
+            main["artifacts"][by_path[new["path"]]] = new
+        else:
+            by_path[new["path"]] = len(main["artifacts"]); main["artifacts"].append(new)
+    for u in rerun_units:
+        if u in main["unit_status"]:
+            superseded["unit_status"][u] = main["unit_status"][u]
+        main["unit_status"][u] = dict(rerun["unit_status"][u], rerun_id=rerun["run_id"])
+    for g, v in rerun["pilot_gates"].items():
+        if g in main["pilot_gates"]:
+            superseded["pilot_gates"][g] = main["pilot_gates"][g]
+        main["pilot_gates"][g] = dict(v, rerun_id=rerun["run_id"])
+    for l in rerun["loads"]:
+        superseded["loads"].extend(x for x in main["loads"] if x["key"] == l["key"])
+        main["loads"] = [x for x in main["loads"] if x["key"] != l["key"]] + [dict(l, rerun_id=rerun["run_id"])]
+    main.setdefault("reruns", []).append({"run_id": rerun["run_id"], "reason": reason, "units": sorted(rerun_units),
+                                          "models": sorted(rerun_models), "versions": rerun.get("versions"),
+                                          "superseded": superseded})
+    main_p.write_text(_json.dumps(main, indent=2))
+    bad = verify_manifest(main_p)
+    if bad:
+        raise RuntimeError("merged manifest failed verification:\n" + "\n".join(bad))
+    return main_p

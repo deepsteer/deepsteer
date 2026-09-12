@@ -15,6 +15,10 @@
 #                 papers/d1_moral_subspace/outputs/phase2/refusal_instruct.npz \
 #                 papers/5_moral_alignment/outputs/measurement/stage3" \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   Partial rerun (e.g. 15.2 on the operating band + 14.5_gen), into its own subdir, then merged:
+#     W4_MODELS=qwen25,olmo3_instruct W4_UNITS=15.2,14.5_gen W4_OUT_SUBDIR=outputs/w4_rerun1 \
+#       RESULTS_SUBPATH=outputs/w4_rerun1 ... ./papers/d1_moral_subspace/runpod/run_session.sh
+#     python3 scripts/pod_w4.py --merge-from papers/d3_decision_anatomy/outputs/w4_rerun1 --reason "..."
 #   (prepend VALIDATE=1 for the no-model dry run on the pod; W4_MODELS / W4_UNITS subset the run.
 #    The last three SYNC_EXTRA paths feed the 14.1 zero-GPU arm + end-of-run disattenuation; without
 #    them the driver records 14.1_zero_gpu = missing_inputs, as the 2026-09-12 run did.)
@@ -33,7 +37,11 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-OUT="$REPO_DIR/papers/d3_decision_anatomy/outputs/w4"; mkdir -p "$OUT"
+# W4_OUT_SUBDIR (default outputs/w4): a partial rerun MUST write to its own subdir (e.g.
+# outputs/w4_rerun1, launched with RESULTS_SUBPATH=outputs/w4_rerun1) and be folded into the main
+# tree afterwards with `pod_w4.py --merge-from`; a fresh Manifest in outputs/w4 would clobber the
+# full manifest of record on rsync-back.
+OUT="$REPO_DIR/papers/d3_decision_anatomy/${W4_OUT_SUBDIR:-outputs/w4}"; mkdir -p "$OUT"
 
 echo ">> cuda: $(python -c 'import torch;print(torch.cuda.is_available())' 2>&1)"
 pip install -q --break-system-packages -e ".[all]" 2>&1 | tail -1 || pip install -q --break-system-packages -e . 2>&1 | tail -1

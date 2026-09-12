@@ -43,7 +43,11 @@ def _synth_c1_outputs(out: Path, key: str, rng, n_twins: int = 12, hidden: int =
     np.savez(npz, **save)
     js = out / f"c1_session_{key}.json"
     js.write_text(json.dumps({"key": key, "screen_counts": {"request_twins": n_twins, "compositional_twins": 30},
-                              "cells": {"n_request_twins": n_twins, "sweep": {"shape_verdict": {"verdict": "harm_saturating"}}}}))
+                              "cells": {"n_request_twins": n_twins,
+                                        "rt_composition": {"request_screened": n_twins, "band": 0},
+                                        "gate": {"mode": "operating", "n_band_pairs": 0, "n_required": 12,
+                                                 "gate_pass": False},
+                                        "sweep": {"shape_verdict": {"verdict": "harm_saturating"}}}}))
     return npz, js
 
 
@@ -136,23 +140,42 @@ def unit_15_1(ctx: Ctx) -> dict:
     return res
 
 
+def rt_count(session_json: Path) -> dict:
+    """Readout/sweep stimulus count of a c1_session run: screened request-twins + severity-ladder band
+    pairs (the harness's dual-use ``rt_pairs``; Amendment 15/14 rider 1, 2026-09-12)."""
+    c = json.loads(Path(session_json).read_text()).get("cells", {})
+    comp = c.get("rt_composition") or {"request_screened": c.get("n_request_twins", 0), "band": 0}
+    return {"request_screened": int(comp.get("request_screened", 0)), "band": int(comp.get("band", 0)),
+            "total": int(comp.get("request_screened", 0)) + int(comp.get("band", 0)),
+            "gate_mode": (c.get("gate") or {}).get("mode")}
+
+
 def unit_15_2(ctx: Ctx) -> dict:
-    """Qwen2.5-7B-Instruct: standardized C1 read cell with the screen gate + BOUNDARY fallback."""
+    """Qwen2.5-7B-Instruct: standardized C1 read cell with the screen gate + BOUNDARY fallback.
+
+    Gate quantity (rider 1): request_screened + operating-band pairs from the pilot. >= 12 -> the full
+    cell runs in operating mode; < 12 -> BOUNDARY=1; boundary band < 12 -> indeterminate. The first
+    W4 run keyed on request-twins alone (1/108 on Qwen) and skipped an 18-pair operating band."""
     env = {"REQUEST_TWINS_SET": "union", "SWEEP": "1", "STANDARDIZE": "1", "ROBUSTIFY": "zscore"}
     pnpz, pjs = run_c1(ctx, "qwen25_w4_pilot", env, rt_cap=5)
-    screened = json.loads(Path(pjs).read_text()).get("screen_counts", {}).get("request_twins", 0)
+    pilot_rt = rt_count(pjs)
     gate = pilot_gate(pnpz)
-    gate["screened_request_twins"] = int(screened)
+    gate["screened_request_twins"] = pilot_rt["request_screened"]
+    gate["operating_band_pairs"] = pilot_rt["band"]
+    gate["rt_total"] = pilot_rt["total"]
     ctx.manifest.gate("15.2_pilot_qwen25", gate["passed"], gate)
     ctx.manifest.add(pnpz, "15.2", ctx.key)
-    mode = "request"
-    if screened < 12:
+    mode = "operating"
+    if pilot_rt["total"] < 12:
         env["BOUNDARY"] = "1"; mode = "boundary"
     npz, js = run_c1(ctx, "qwen25_w4", env)
     ctx.manifest.add(npz, "15.2", ctx.key); ctx.manifest.add(js, "15.2", ctx.key)
     rec = json.loads(Path(js).read_text())
-    n = int(rec.get("cells", {}).get("n_request_twins", 0))
-    res = {"unit": "15.2", "pilot": gate, "stimulus_mode": mode, "n_request_twins": n, "env": env,
+    full_rt = rt_count(js)
+    n = full_rt["total"]
+    res = {"unit": "15.2", "pilot": gate, "stimulus_mode": mode, "n_readout_twins": n,
+           "rt_composition": full_rt, "n_request_twins": full_rt["request_screened"], "env": env,
+           "gate_rule": "request_screened + operating_band_pairs >= 12 (rider 2026-09-12)",
            "shape_verdict": (rec.get("cells", {}).get("sweep") or {}).get("shape_verdict"),
            "status": "indeterminate_operating_point" if n < 12 else "ran"}
     ctx.save_json("qwen25_read_cell", "15.2", res)

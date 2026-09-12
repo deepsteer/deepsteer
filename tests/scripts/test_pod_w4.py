@@ -236,3 +236,70 @@ class TestUnit145Harness:
         assert res["n_refusal_direction"] == [400, 400]
         assert res["prompt_format"] == "chat"
         assert res["n_harmful"] == min(100, 6)     # small=True caps the eval slice via ctx.n
+
+
+class TestRerunRider:
+    """Amendment 15/14 rider (2026-09-12): 15.2 gate counts the operating band; 14.5_gen re-generates
+    under the saved directions; a partial rerun merges into the manifest of record."""
+
+    def _ctx(self, tmp_path, spec, dry=True):
+        from w4.common import Ctx, Manifest
+        from w4.extractors import StubExtractor
+        return Ctx(spec, StubExtractor(spec.hidden, spec.n_layers, np.random.default_rng(0)),
+                   tmp_path, dry, Manifest(tmp_path, True))
+
+    def test_15_2_gate_counts_operating_band(self, tmp_path, monkeypatch):
+        # assert 1 request twin + 18 band pairs keeps operating mode (the first W4 run wrongly went BOUNDARY)
+        from w4 import units_tier_b as tb
+        calls = []
+        def fake_run_c1(ctx, key, env, rt_cap=None):
+            calls.append((key, dict(env)))
+            npz, js = tb._synth_c1_outputs(ctx.out, key, ctx.rng, n_twins=5)
+            d = json.loads(js.read_text()); d["cells"]["rt_composition"] = {"request_screened": 1, "band": 18}
+            js.write_text(json.dumps(d)); return npz, js
+        monkeypatch.setattr(tb, "run_c1", fake_run_c1)
+        spec = next(s for s in PANEL if s.key == "qwen25")
+        res = tb.unit_15_2(self._ctx(tmp_path, spec))
+        assert "BOUNDARY" not in calls[1][1] and res["stimulus_mode"] == "operating"
+        assert res["status"] == "ran" and res["n_readout_twins"] == 19
+
+    def test_15_2_falls_back_to_boundary_when_band_short(self, tmp_path, monkeypatch):
+        from w4 import units_tier_b as tb
+        calls = []
+        def fake_run_c1(ctx, key, env, rt_cap=None):
+            calls.append((key, dict(env)))
+            npz, js = tb._synth_c1_outputs(ctx.out, key, ctx.rng, n_twins=5)
+            d = json.loads(js.read_text()); d["cells"]["rt_composition"] = {"request_screened": 1, "band": 4}
+            js.write_text(json.dumps(d)); return npz, js
+        monkeypatch.setattr(tb, "run_c1", fake_run_c1)
+        spec = next(s for s in PANEL if s.key == "qwen25")
+        res = tb.unit_15_2(self._ctx(tmp_path, spec))
+        assert calls[1][1].get("BOUNDARY") == "1" and res["status"] == "indeterminate_operating_point"
+
+    def test_14_5_gen_reads_saved_directions_and_reports_agreement(self, dry_run):
+        out, m = dry_run
+        rec = json.loads((out / "olmo3_instruct" / "cross_ablation_generations.json").read_text())
+        z = np.load(out / "olmo3_instruct" / "cross_ablation_generations.npz", allow_pickle=True)
+        # assert the discriminator saved TEXTS for every condition and a determinism read per condition
+        for k in ("baseline", "refusal", "judgment_decision", "random_0"):
+            assert f"{k}_text" in z.files and k in rec["agreement_with_saved_outcomes"]
+        assert m["unit_status"]["olmo3_instruct/14.5_gen"]["status"] == "ok"
+
+    def test_merge_from_folds_rerun_into_record(self, tmp_path):
+        from w4.common import merge_manifest, verify_manifest
+        main = tmp_path / "w4"; rerun = tmp_path / "w4_rerun1"
+        pod_w4.run(main, dry=True, models=None, units=None)
+        pod_w4.run(rerun, dry=True, models=["qwen25"], units=["15.2"])
+        before = json.loads((main / "manifest_w4.json").read_text())
+        old_sha = next(a["sha256"] for a in before["artifacts"] if a["path"].endswith("qwen25/qwen25_read_cell.json"))
+        merge_manifest(main, rerun, "test rerun")
+        after = json.loads((main / "manifest_w4.json").read_text())
+        # assert the rerun replaced the same-path artifact, kept the superseded entry, and still verifies
+        new_sha = next(a["sha256"] for a in after["artifacts"] if a["path"].endswith("qwen25/qwen25_read_cell.json"))
+        assert after["reruns"][0]["units"] == ["qwen25/15.2"]
+        assert any(a["sha256"] == old_sha for a in after["reruns"][0]["superseded"]["artifacts"])
+        assert "rerun_id" in after["unit_status"]["qwen25/15.2"]
+        assert len(after["artifacts"]) == len(before["artifacts"])
+        assert not verify_manifest(main / "manifest_w4.json")
+        assert not (rerun / "qwen25" / "qwen25_read_cell.json").exists()   # moved, not copied
+        _ = new_sha

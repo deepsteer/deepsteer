@@ -317,6 +317,58 @@ Belongs beside A1/A5.
 
 ---
 
+## A8 (ledger) — Single-layer refusal-direction ablation scrambles refusal on half the prompts (33 comply→refuse, 17 refuse→comply) while five random directions move nothing
+
+**Date:** 2026-09-12 · **Found in:** W4 pod, unit 14.5 (reconciled B1 cross-ablation, OLMo-3-7B-Instruct,
+layer 16 output-hook projection-out; `deepsteer/supplement/cells/w4/olmo3_instruct/cross_ablation.json`,
+per-prompt outcomes in `outputs/w4/olmo3_instruct/cross_ablation_outcomes.npz`). Chat-template harness,
+100 held-out Heretic requests, refusal direction from the 400/400 train set, opening-refusal classifier.
+
+**Observation.** Baseline refusal 0.62. Ablating the **refusal** direction raises the rate to **0.78**,
+and the per-prompt table shows the rate hides the real event: **50 of 100 prompts change state** (33
+comply→refuse, 17 refuse→comply). Ablating the **judgment-decision** direction moves 12 (all
+comply→refuse, 0 the other way); the persona direction moves 1; each of five matched-norm random
+directions moves **0**. All directions are unit-norm at the same site; cos(refusal, judgment) = 0.13,
+cos(refusal, persona) = 0.08. Judgment accuracy is flat under every condition (0.72–0.76).
+
+**Type.** control-misbehavior + sign-flip under intervention (archetype 1 + 5). The pre-registered
+arrow reads Δ_refusal(judgment-ablated) − Δ_refusal(random-ablated) = +0.12 with the random arm at
+exactly 0; the refusal-ablated arm was supposed to be the removability positive control (Paper 6:
+OLMo 0.575 → 0.000) and instead moved the rate the wrong way.
+
+**Competing readings.**
+- R_a (instrument): a layer-16 output-hook projection-out is **not** the Paper 5/6 removability
+  instrument (Heretic-style weight orthogonalization across layers). Removing the direction at one
+  site perturbs the residual enough to derail generation, and the opening-refusal classifier's length
+  heuristic counts short or degenerate outputs as refusals. Prediction: the 33 new "refusals" are
+  incoherent or truncated, not "I can't help with that"; the 17 new "compliances" are equally off-form.
+- R_b (mechanism): the refusal direction is load-bearing and bistable at the gate; removing it flips
+  prompts near the decision boundary in both directions, and the +0.16 net is the classifier reading a
+  reorganized gate. Prediction: the flipped outputs are coherent, on-topic, and the flips concentrate
+  on prompts whose baseline refusal projection is nearest zero.
+- R_c (harness parity for the *arrow*, independent of R_a/R_b): the judgment-decision arm's 12
+  comply→refuse flips inherit whatever R_a/R_b says about the refusal arm; if R_a, the 12 flips are
+  the same off-target derailment at smaller amplitude and the arrow is void, not detected.
+
+**Discriminator.** Generations were not saved (the unit saved outcomes only; Amendment 14.5's save
+list said "outcomes and generations"). Re-generate greedily under the **saved** directions
+(byte-identical intervention) for baseline / refusal / judgment / random_0 and store the texts:
+`14.5_gen`, ~400 short generations, ≈ 0.15 A100-h plus the OLMo-Instruct load. Read: (i) manual
+coherence tally of the 50 flipped refusal-arm outputs and the 12 judgment-arm flips; (ii) flip
+probability vs |baseline refusal projection| (R_b predicts a boundary concentration); (iii) the same
+100 prompts under the Paper 5 `heretic_ablation` semantics as the removability control the cell
+should have had. **Promoted** to the W4 rerun pod (2026-09-12) under the promotion rule.
+
+**Thesis impact.** R_a: 14.5 Branch B stands only as "no cross-effect detectable" once the random
+q95 is restated from an instrument that does not derail generation; the +0.12 arrow is void and
+the R3 sentence stays geometric. R_b: the arrow is real (judgment-decision ablation raises refusal
+on 12 prompts), D2-01 gains a causal cross-arrow, and the refusal-direction bistability is a finding
+for FL §6. Either way the 14.5 verdict is held until the discriminator runs.
+
+**Status.** open → promoted (W4 rerun pod, `14.5_gen`). `resolution_type`: experiment.
+
+---
+
 ## Process ledger
 
 **2026-07-03 — the cold-boot W0 audit caught a live erratum that warm sessions had missed.**
