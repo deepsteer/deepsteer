@@ -164,3 +164,36 @@ class TestPooledSweep:
         np.savez(bad, cell_full_deltas=np.array([-1, 2, -1, 3, 2.0]), cell_restricted_deltas=np.zeros(5))
         assert pilot_gate(good)["passed"] is True
         assert pilot_gate(bad)["passed"] is False
+
+
+class TestRealLoadRecord:
+    """The real-load branch of ``load_record`` (skipped by every dry run) must resolve each panel
+    entry's registry by file path. Assert the failure mode that killed the first W4 pod launch:
+    a bare ``import model_registry`` resolving to Paper 7's registry (no ``olmo3`` key) even when
+    Paper 7's scripts dir shadows Paper 6's on sys.path."""
+
+    @staticmethod
+    def _fake_model(spec):
+        import types
+        cfg = types.SimpleNamespace(hidden_size=spec.hidden, _commit_hash="deadbeef",
+                                    model_type={"p7": "gpt_oss"}.get(spec.registry, "x"),
+                                    num_local_experts=32)
+        return types.SimpleNamespace(info=types.SimpleNamespace(n_layers=spec.n_layers),
+                                     model=types.SimpleNamespace(config=cfg), _dtype="bf16")
+
+    def test_every_panel_entry_resolves_its_registry_under_p7_shadowing(self, monkeypatch):
+        from w4.common import load_record
+        # assert p7 shadowing on sys.path does not redirect the p6 lookup
+        monkeypatch.syspath_prepend(str(REPO / "papers" / "7_reasoning" / "scripts"))
+        sys.modules.pop("model_registry", None)
+        for spec in PANEL:
+            rec = load_record(self._fake_model(spec), spec, dry=False)
+            assert rec["commit_hash"] == "deadbeef" and rec["dry_run"] is False, spec.key
+
+    def test_geometry_mismatch_still_fails_loud(self):
+        from w4.common import load_record
+        spec = PANEL[0]
+        bad = self._fake_model(spec)
+        bad.info.n_layers = spec.n_layers + 1
+        with pytest.raises(RuntimeError):
+            load_record(bad, spec, dry=False)

@@ -115,6 +115,24 @@ def resolved_commit_hash(model, repo: str, revision: str | None) -> str | None:
         return None
 
 
+_REGISTRY_FILES = {"p6": ("papers", "6_cross_model", "scripts", "model_registry.py"),
+                   "p7": ("papers", "7_reasoning", "scripts", "model_registry.py")}
+
+
+def _registry_module(which: str):
+    """Load a paper's model registry by absolute file path (immune to sys.path order)."""
+    import importlib.util
+    path = REPO.joinpath(*_REGISTRY_FILES[which])
+    name = f"w4_{which}_registry"
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod          # dataclasses in the registry need the module registered
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def load_record(model, spec: ModelLoad, dry: bool) -> dict:
     """Manifest entry for one load; runs the registry geometry assertion on real loads."""
     if dry:
@@ -125,14 +143,11 @@ def load_record(model, spec: ModelLoad, dry: bool) -> dict:
     cfg = model.model.config
     hidden = int(getattr(cfg, "hidden_size", spec.hidden))
     if spec.registry == "p6":
-        import model_registry as p6reg  # papers/6_cross_model/scripts
-        p6reg.get(spec.registry_key).assert_matches_model(n_layers, hidden)
+        # By file path, never by bare module name: on the pod a bare ``import model_registry``
+        # resolved to papers/7_reasoning's registry (no ``olmo3`` key) and killed the first load.
+        _registry_module("p6").get(spec.registry_key).assert_matches_model(n_layers, hidden)
     else:
-        import importlib.util
-        p7 = importlib.util.spec_from_file_location(
-            "p7_registry", REPO / "papers" / "7_reasoning" / "scripts" / "model_registry.py")
-        mod = importlib.util.module_from_spec(p7); p7.loader.exec_module(mod)
-        mod.get(spec.registry_key).assert_matches_model(
+        _registry_module("p7").get(spec.registry_key).assert_matches_model(
             n_layers, hidden, model_type_live=getattr(cfg, "model_type", None),
             n_experts_live=getattr(cfg, "num_local_experts", None))
     return {"key": spec.key, "repo": spec.repo, "revision_requested": spec.revision or "main",

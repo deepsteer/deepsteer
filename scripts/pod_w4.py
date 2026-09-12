@@ -119,9 +119,11 @@ def main() -> int:
     ap.add_argument("--models", default=None, help="comma list of panel keys (default: all, in order)")
     ap.add_argument("--units", default=None, help="comma list of unit ids (default: all for the model)")
     ap.add_argument("--tier", default="AB", help="A, B, or AB")
-    ap.add_argument("--out", default=str(W4_OUT))
+    ap.add_argument("--out", default=None,
+                    help=f"output root (default: {W4_OUT}; a --dry-run without --out goes to _dry/)")
     args = ap.parse_args()
-    out_root = Path(args.out)
+    # A dry run must never write random-tensor artifacts into the real output tree.
+    out_root = Path(args.out) if args.out else (W4_OUT / "_dry" if args.dry_run else W4_OUT)
 
     if args.closure_map:
         for k, v in MISSING_ARTIFACTS_CLOSURE.items():
