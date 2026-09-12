@@ -1,0 +1,149 @@
+{
+  "npz": "/workspace/deepsteer/papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/c1_inputs_olmo3_w4.npz",
+  "n_total": 42,
+  "replication_original": {
+    "label": "original",
+    "n": 23,
+    "R_refusal_k": {
+      "1": 0.013284872720817352,
+      "3": 0.3120492828234224,
+      "8": 0.26352211482611326,
+      "16": 0.27305502739924414
+    },
+    "R_refusal_ci95": {
+      "1": [
+        -0.03062588407918252,
+        0.05723175467094505
+      ],
+      "3": [
+        0.13813492694278734,
+        0.7095104218407098
+      ],
+      "8": [
+        0.10714613905566338,
+        0.6068384063504765
+      ],
+      "16": [
+        0.1431739522284999,
+        0.5625410525310122
+      ]
+    },
+    "R_judgment_k": {
+      "1": 0.052561189822766544,
+      "3": 0.461785929837022,
+      "8": 0.5890283901476966,
+      "16": 0.6593669576873411
+    },
+    "harm_rank1_R": 0.31365250065792444,
+    "shape_verdict": {
+      "verdict": "harm_saturating",
+      "R_refusal_top": 0.2731,
+      "R_judgment_top": 0.6594,
+      "harm_rank1_R": 0.3137,
+      "refusal_climbs": true,
+      "gap_closes": false
+    },
+    "gap_sign_at_kmax": 1.0
+  },
+  "alone_w4": {
+    "label": "w4",
+    "n": 19,
+    "R_refusal_k": {
+      "1": 0.047089689963643745,
+      "3": 0.21832073784333908,
+      "8": 0.15887898191909972,
+      "16": 0.19535734999885057
+    },
+    "R_refusal_ci95": {
+      "1": [
+        -0.03710948195849056,
+        0.13004848372702116
+      ],
+      "3": [
+        0.020429268378116115,
+        0.5281280492170181
+      ],
+      "8": [
+        -0.029660766719620223,
+        0.39626222661699406
+      ],
+      "16": [
+        -0.0006198062381860392,
+        0.445701375359363
+      ]
+    },
+    "R_judgment_k": {
+      "1": 0.052561189822766544,
+      "3": 0.461785929837022,
+      "8": 0.5890283901476966,
+      "16": 0.6593669576873411
+    },
+    "harm_rank1_R": 0.36359994467607054,
+    "shape_verdict": {
+      "verdict": "indeterminate",
+      "R_refusal_top": 0.1954,
+      "R_judgment_top": 0.6594,
+      "harm_rank1_R": 0.3636,
+      "refusal_climbs": true,
+      "gap_closes": false
+    },
+    "gap_sign_at_kmax": 1.0
+  },
+  "pooled": {
+    "label": "pooled",
+    "n": 42,
+    "R_refusal_k": {
+      "1": 0.026739110699450324,
+      "3": 0.27474554174727006,
+      "8": 0.22187439335353398,
+      "16": 0.24213153402186813
+    },
+    "R_refusal_ci95": {
+      "1": [
+        -0.013247711213266464,
+        0.06732583456705794
+      ],
+      "3": [
+        0.14442592777921448,
+        0.4841849150344035
+      ],
+      "8": [
+        0.1051250011644725,
+        0.4031856725811265
+      ],
+      "16": [
+        0.1340314683607457,
+        0.40457477322596297
+      ]
+    },
+    "R_judgment_k": {
+      "1": 0.052561189822766544,
+      "3": 0.461785929837022,
+      "8": 0.5890283901476966,
+      "16": 0.6593669576873411
+    },
+    "harm_rank1_R": 0.3335314662330804,
+    "shape_verdict": {
+      "verdict": "harm_saturating",
+      "R_refusal_top": 0.2421,
+      "R_judgment_top": 0.6594,
+      "harm_rank1_R": 0.3335,
+      "refusal_climbs": true,
+      "gap_closes": false
+    },
+    "gap_sign_at_kmax": 1.0
+  },
+  "pooled_is_primary": true,
+  "rule": "pooled result is primary only if the alone (w4) result agrees in sign of R_judgment(16) - R_refusal(16); else both reported, neither pooled",
+  "unit": "15.1",
+  "pilot": {
+    "n": 5,
+    "finite": true,
+    "sign_coherent": 5,
+    "passed": true
+  },
+  "env": {
+    "REQUEST_TWINS_SET": "union",
+    "SWEEP": "1"
+  }
+}

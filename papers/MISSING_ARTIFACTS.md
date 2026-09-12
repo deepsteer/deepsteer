@@ -60,7 +60,7 @@ its sha256, and `tests/scripts/test_pod_w4.py` asserts the map covers every uniq
 |---|---|---|
 | A1 `think/mft_directions.npz` | OLMo-3-Think / 14.4 | `w4/olmo3_think/mft_directions.npz` |
 | A1 `gpt_oss/mft_directions.npz` | GPT-OSS-20B / 14.4 | `w4/gpt_oss_20b/mft_directions.npz` |
-| A3 Think refusal vectors P0–P3 | OLMo-3-Think / 14.4 | `w4/olmo3_think/refusal_P{0..3}.npz` |
+| A3 Think refusal vectors P0–P3 | OLMo-3-Think / 14.4 | `w4/olmo3_think/refusal_P{0,1,2,2_FULL}.npz` (P3 unmeasured on Think by design, Amendment 14.4: benign side never closes at the 320-token cap) |
 | A4 instruct fables/ethics per-pair diffs (listed twice above; one item) | OLMo-3-Instruct / 14.6 | `w4/olmo3_instruct/axis_diffs_{fables,ethics}.npz` |
 | Amendment 2 per-position chat act_samples | OLMo-3-Instruct, Llama-3.1, Qwen2.5 / 14.6 | `w4/<key>/position_samples.npz` (three position classes) |
 | Amendment 2 D1 P0–P3 per-rollout activations | Think + GPT-OSS / 14.4 | `w4/<key>/p0p3_rollouts.npz` |

@@ -1,0 +1,607 @@
+{
+  "run_id": "w4_20260912T190441",
+  "dry_run": false,
+  "git_commit": "53eb783a78a8eeae5fa636559620a047aaf1418f",
+  "versions": {
+    "python": "3.11.10",
+    "numpy": "2.4.6",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.12.1"
+  },
+  "seed": 0,
+  "preregistration": "papers/d3_decision_anatomy/PREREGISTRATION.md Amendments 14/15",
+  "loads": [
+    {
+      "key": "olmo3_instruct",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision_requested": "main",
+      "commit_hash": "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
+      "n_layers": 32,
+      "hidden": 4096,
+      "layer": 16,
+      "model_type": "olmo3",
+      "dtype": "torch.float16",
+      "dry_run": false
+    },
+    {
+      "key": "olmo3_think",
+      "repo": "allenai/Olmo-3-7B-Think",
+      "revision_requested": "main",
+      "commit_hash": "d97e442d7cc678210054dbcc9b440894d62c89a4",
+      "n_layers": 32,
+      "hidden": 4096,
+      "layer": 16,
+      "model_type": "olmo3",
+      "dtype": "torch.float16",
+      "dry_run": false
+    },
+    {
+      "key": "olmo3_base",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision_requested": "main",
+      "commit_hash": "a81bae42db3975be1671e27b9c9a56da1a9f980f",
+      "n_layers": 32,
+      "hidden": 4096,
+      "layer": 16,
+      "model_type": "olmo3",
+      "dtype": "torch.float16",
+      "dry_run": false
+    },
+    {
+      "key": "llama31",
+      "repo": "meta-llama/Llama-3.1-8B-Instruct",
+      "revision_requested": "main",
+      "commit_hash": "0e9e39f249a16976918f6564b8830bc894c89659",
+      "n_layers": 32,
+      "hidden": 4096,
+      "layer": 12,
+      "model_type": "llama",
+      "dtype": "torch.float16",
+      "dry_run": false
+    },
+    {
+      "key": "gpt_oss_20b",
+      "repo": "openai/gpt-oss-20b",
+      "revision_requested": "main",
+      "commit_hash": "6cee5e81ee83917806bbde320786a8fb61efebee",
+      "n_layers": 24,
+      "hidden": 2880,
+      "layer": 12,
+      "model_type": "gpt_oss",
+      "dtype": "torch.bfloat16",
+      "dry_run": false
+    },
+    {
+      "key": "qwen25",
+      "repo": "Qwen/Qwen2.5-7B-Instruct",
+      "revision_requested": "main",
+      "commit_hash": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "n_layers": 28,
+      "hidden": 3584,
+      "layer": 14,
+      "model_type": "qwen2",
+      "dtype": "torch.float16",
+      "dry_run": false
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/cross_ablation_outcomes.npz",
+      "base": "repo",
+      "bytes": 292044,
+      "sha256": "f2db21d50e9730882d6e454e9cacdfe627f59b1a8a31cd197c7d5df3fb70650f",
+      "unit": "14.5",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/cross_ablation.json",
+      "base": "repo",
+      "bytes": 1685,
+      "sha256": "f743abb5f69abcba460f7332261434db2b6d7d7cfb05614453944aff6da822f8",
+      "unit": "14.5",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/position_samples.npz",
+      "base": "repo",
+      "bytes": 11831903,
+      "sha256": "61e327bca75c0c42a2377b928c7e98bea0df0baf6d0595fba36e01c66c1cd775",
+      "unit": "14.6",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/axis_diffs_fables.npz",
+      "base": "repo",
+      "bytes": 655628,
+      "sha256": "ca50332688e649195eec217594d28b39047d73d901fc493586a5e6e6a7eeae10",
+      "unit": "14.6",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/axis_diffs_ethics.npz",
+      "base": "repo",
+      "bytes": 655628,
+      "sha256": "846c8ab49920325cf2b6cbf0f2fde8498c59d0245f83019da0a8fbe14292a9b4",
+      "unit": "14.6",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/mean_content_slices.npz",
+      "base": "repo",
+      "bytes": 4064246,
+      "sha256": "043e793e93a1bdd1f5f30791e7446112fca7097a413bdcfa58a069d95775dfa1",
+      "unit": "14.6",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/pr_profiles.json",
+      "base": "repo",
+      "bytes": 4314,
+      "sha256": "b26765128f0f267a432bae86a1c8cd58df6458a86d75cb2880300a4e19cc83bd",
+      "unit": "14.6",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/gate_samples.npz",
+      "base": "repo",
+      "bytes": 13163979,
+      "sha256": "3d72a359f522626ce5ace5be5f4135e33f26ccbcb836477d2c771a69085cd3f8",
+      "unit": "14.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/gate_split_half_directions.npz",
+      "base": "repo",
+      "bytes": 13111164,
+      "sha256": "b53ba23c9e6657ac48814018d5dbbcb4d7f1d85f6f077b95efb2eef145be7edf",
+      "unit": "14.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/gate_split_half.json",
+      "base": "repo",
+      "bytes": 109240,
+      "sha256": "842a410feec2dca092bb7da8df643b23dca7d589d4507a1991640651fb230369",
+      "unit": "14.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/c1_inputs_olmo3_w4_pilot.npz",
+      "base": "repo",
+      "bytes": 19978128,
+      "sha256": "21b6f439a6b06f64183340c1a957f64409ea94cd99bf215010b66374e897ed83",
+      "unit": "15.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/c1_inputs_olmo3_w4.npz",
+      "base": "repo",
+      "bytes": 19999300,
+      "sha256": "eab7b01532eaea56d695814fa766edb8a5853ed27def79a0ce61f375ea744335",
+      "unit": "15.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/c1_session_olmo3_w4.json",
+      "base": "repo",
+      "bytes": 18282,
+      "sha256": "fb810c2e235f5c152989da77e2354fbcfe54071daed50c523f3e58ef2d4b1328",
+      "unit": "15.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/pooled_sweep_olmo3_w4.json",
+      "base": "repo",
+      "bytes": 3488,
+      "sha256": "0e25ef3cd2ecc4109746fbeb3fcb7ab4f260c92096234c14d09ac7847f89e51e",
+      "unit": "15.1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/p0p3_rollouts.npz",
+      "base": "repo",
+      "bytes": 4246376,
+      "sha256": "f4d46e66b2df231894a77874b1a2b23f2fcaba5c963fe972a0909227a153c7b9",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/refusal_P0.npz",
+      "base": "repo",
+      "bytes": 33286,
+      "sha256": "b8b7da9eb61c984cff25539a7e2018986852f964397f0086bde40c44e5cc3124",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/refusal_P1.npz",
+      "base": "repo",
+      "bytes": 33286,
+      "sha256": "56c28c9b1d7997a2674dde0df6b3faefc5276d75406d9c498ec0d45bca55743a",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/refusal_P2.npz",
+      "base": "repo",
+      "bytes": 33286,
+      "sha256": "c62fb971b5af34b3f7dea3d7ff4711cfbaedabe4f3ba8172b63c6bc347ca7371",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/refusal_P2_FULL.npz",
+      "base": "repo",
+      "bytes": 33286,
+      "sha256": "7a088a0e4360687c19ecb19c08f85e07dd5f61dd005d490385e03e1ed696f03d",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/mft_directions.npz",
+      "base": "repo",
+      "bytes": 198318,
+      "sha256": "611881f4fc4b01d1f885909c4f7bf60d9ab60319d693109e52b10f7830554e0f",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_think/pr_audit.json",
+      "base": "repo",
+      "bytes": 5242,
+      "sha256": "46f79809e0096706f86c87396f16e91aa48f876bd53b62f0aacac602ae9382bb",
+      "unit": "14.4",
+      "model": "olmo3_think"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_base/proto_refusal_samples.npz",
+      "base": "repo",
+      "bytes": 13163975,
+      "sha256": "76ac4a47e2c3062df18f2cc377c2aa93417756fa6ad1de762f2b6ad08d91fcec",
+      "unit": "14.1",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_base/proto_refusal_split_half_directions.npz",
+      "base": "repo",
+      "bytes": 13111164,
+      "sha256": "f5628532435b7ecb6b264416c0ab534c8348216854ac2c127ed57a0e87c2d92f",
+      "unit": "14.1",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_base/proto_refusal_split_half.json",
+      "base": "repo",
+      "bytes": 109612,
+      "sha256": "6d684f1b2ed3f15427104d2fca64bc5bc0e9251c4784d5006a6d0bfe00e14a85",
+      "unit": "14.1",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/severity_contrasts_L12.npz",
+      "base": "repo",
+      "bytes": 1099735,
+      "sha256": "e29600afe68d59dd9409973ea2426c2d8a77a7fa021b735133672d6332fa0ac6",
+      "unit": "14.2",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/moral_contrasts_L12.npz",
+      "base": "repo",
+      "bytes": 17845238,
+      "sha256": "449ba608d295f253d3b276d35031c3e575798ba4b3541cc5107cf8a6f370b768",
+      "unit": "14.2",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/harm_bases_L12.npz",
+      "base": "repo",
+      "bytes": 1150940,
+      "sha256": "df0c8912fce4499714d77b0d6f7e3876e49fa91576d8d2c55a721ac6bfce9fe7",
+      "unit": "14.2",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/harm_capture_L12.json",
+      "base": "repo",
+      "bytes": 6493,
+      "sha256": "1a351c671d11ece9be621e79a89b3d293aa5679605fc7d9f5e87c6adfefc6989",
+      "unit": "14.2",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/position_samples.npz",
+      "base": "repo",
+      "bytes": 11831903,
+      "sha256": "63bc71b1da794d9c7af320a39a633a4b25e07f94e5ba995d96659fd6b6aa6275",
+      "unit": "14.6",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/pr_profiles.json",
+      "base": "repo",
+      "bytes": 4228,
+      "sha256": "52307b6907782290bd39ad627fc8d53a1e266f584d638cdf3a78fa4667459833",
+      "unit": "14.6",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/reply_inversion_margins.npz",
+      "base": "repo",
+      "bytes": 724552,
+      "sha256": "1f439fbb525ab8a9320375ac0f5b5e4e8667388d32b872612e5f3803497b0d9c",
+      "unit": "14.6b",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/llama31/reply_inversion_null.json",
+      "base": "repo",
+      "bytes": 499,
+      "sha256": "d0839433393af18ce08a71e084e23fbc7575ec9cc103561efc93c1f614b9351d",
+      "unit": "14.6b",
+      "model": "llama31"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/decision_token_sample.npz",
+      "base": "repo",
+      "bytes": 1498372,
+      "sha256": "fa7a30a6c94252c4a97c06ef8844e7cda1e4a0f0bc4bb39b7d908077237d42b2",
+      "unit": "14.3",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/vmoral_sources_decision_token.npz",
+      "base": "repo",
+      "bytes": 69888,
+      "sha256": "cec01425c66453ad197c1b83128172e1d63201fbb6d6fba3f1391b492bf4cfbe",
+      "unit": "14.3",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/graded_reads.npz",
+      "base": "repo",
+      "bytes": 1483436,
+      "sha256": "e6b08a47009d7b9181f73ca462cc4117fd34835771ce05bb2d978642a27bcd52",
+      "unit": "14.3",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/decision_token_reread.json",
+      "base": "repo",
+      "bytes": 2824,
+      "sha256": "6c2c00048149ff59d3c4c44f68eea5a00a04261340b0d12d9400b189939dd732",
+      "unit": "14.3",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/p0p3_rollouts.npz",
+      "base": "repo",
+      "bytes": 3665168,
+      "sha256": "d65efd8f162c370434e3431aa2fff89babb1c0759ea5862ac76d344decfa2eed",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/refusal_P0.npz",
+      "base": "repo",
+      "bytes": 23558,
+      "sha256": "5147b913fdda05580aa3a7cd3bbdf66a5d8ad97f490f3ac51884893c472edbc0",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/refusal_P1.npz",
+      "base": "repo",
+      "bytes": 23558,
+      "sha256": "fc49388817b3b3a81c479bbf043f18c2f01beaf62623f6f3cfea76af9c091592",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/refusal_P2.npz",
+      "base": "repo",
+      "bytes": 23558,
+      "sha256": "d7f19aa33e0a250be8a130d064a1f50af9e72a150fe6401e507674ee22af6dff",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/refusal_P2_FULL.npz",
+      "base": "repo",
+      "bytes": 23558,
+      "sha256": "2f8739ff99cdef7003613da9273bf1948f178724a85f9fa0566c10164c6ad40f",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/refusal_P3.npz",
+      "base": "repo",
+      "bytes": 23558,
+      "sha256": "9d66e9264d7fea67817f7cc1f6e22345dfa48e29101c3e87cce176729d0df363",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/mft_directions.npz",
+      "base": "repo",
+      "bytes": 139950,
+      "sha256": "06ed4f26d82428762eddb5adb4c8e465c886bd39741130efb76189c24a2eaa5f",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/pr_audit.json",
+      "base": "repo",
+      "bytes": 6332,
+      "sha256": "1db1e38f8bcbd1eb5c4a06f374f9b6b9eb3674a3dc6d423473336c8b2e3b3a39",
+      "unit": "14.4",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/position_samples.npz",
+      "base": "repo",
+      "bytes": 1475108,
+      "sha256": "70c0c2c696b17eae3b0563c820c4a38585224af6216bedbc1961dede43db85d4",
+      "unit": "14.6",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/pr_profiles.json",
+      "base": "repo",
+      "bytes": 754,
+      "sha256": "4a5ca10bb7b4dba6780db45a4a35ffd4ecbb08c87c37c7feea908c48557e95fa",
+      "unit": "14.6",
+      "model": "gpt_oss_20b"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/position_samples.npz",
+      "base": "repo",
+      "bytes": 10357343,
+      "sha256": "1c04058190ea154e4dc2850c91efee24704b3077d8dcd08057bccf9734c9a45d",
+      "unit": "14.6",
+      "model": "qwen25"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/pr_profiles.json",
+      "base": "repo",
+      "bytes": 4214,
+      "sha256": "ada785f7669b439b9d55fbd6b433f5b3b2c2d683e3e37f52d2282abad1d876ed",
+      "unit": "14.6",
+      "model": "qwen25"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4_pilot.npz",
+      "base": "repo",
+      "bytes": 7905340,
+      "sha256": "68f007d4bd07dbaf92d5051f296ad01e981b3f0a1482115afad8b57317ba267f",
+      "unit": "15.2",
+      "model": "qwen25"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4.npz",
+      "base": "repo",
+      "bytes": 7903544,
+      "sha256": "80e5ee9bcc4ebcf602dbf1d0f514a61b84c580b57997236b923e3d29b957f0d4",
+      "unit": "15.2",
+      "model": "qwen25"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_session_qwen25_w4.json",
+      "base": "repo",
+      "bytes": 14512,
+      "sha256": "0300a0e7af977eb915818188fdec7153dbb4c1bd48632f366926c72adebb2ebe",
+      "unit": "15.2",
+      "model": "qwen25"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/qwen25_read_cell.json",
+      "base": "repo",
+      "bytes": 410,
+      "sha256": "9b229bc870651996a4359862220fff01044b1caa0ac270939c54d2c899c9729e",
+      "unit": "15.2",
+      "model": "qwen25"
+    }
+  ],
+  "pilot_gates": {
+    "15.1_pilot_olmo3": {
+      "passed": true,
+      "n": 5,
+      "finite": true,
+      "sign_coherent": 5
+    },
+    "15.2_pilot_qwen25": {
+      "passed": true,
+      "n": 5,
+      "finite": true,
+      "sign_coherent": 5,
+      "screened_request_twins": 1
+    }
+  },
+  "unit_status": {
+    "14.1_zero_gpu": {
+      "status": "ok",
+      "note": ""
+    },
+    "olmo3_instruct/14.5": {
+      "status": "ok",
+      "note": "2074.5s"
+    },
+    "olmo3_instruct/14.6": {
+      "status": "ok",
+      "note": "211.1s"
+    },
+    "olmo3_instruct/14.1_gate": {
+      "status": "ok",
+      "note": "30.3s"
+    },
+    "olmo3_instruct/15.1": {
+      "status": "ok",
+      "note": "1224.8s"
+    },
+    "olmo3_think/14.4": {
+      "status": "ok",
+      "note": "2859.3s"
+    },
+    "olmo3_base/14.1_proto": {
+      "status": "ok",
+      "note": "33.0s"
+    },
+    "llama31/14.2": {
+      "status": "ok",
+      "note": "98.5s"
+    },
+    "llama31/14.6": {
+      "status": "ok",
+      "note": "180.0s"
+    },
+    "llama31/14.6b": {
+      "status": "ok",
+      "note": "131.5s"
+    },
+    "gpt_oss_20b/14.3": {
+      "status": "ok",
+      "note": "516.2s"
+    },
+    "gpt_oss_20b/14.4": {
+      "status": "ok",
+      "note": "6533.0s"
+    },
+    "gpt_oss_20b/14.6": {
+      "status": "ok",
+      "note": "17.5s"
+    },
+    "qwen25/14.6": {
+      "status": "ok",
+      "note": "162.2s"
+    },
+    "qwen25/15.2": {
+      "status": "ok",
+      "note": "1233.9s"
+    },
+    "14.1_disattenuation": {
+      "status": "ok",
+      "note": ""
+    }
+  },
+  "missing_artifacts_closure": {
+    "A1 think mft_directions.npz": "olmo3_think/14.4 (MFT 6-foundation directions, raw)",
+    "A1 gpt_oss mft_directions.npz": "gpt_oss_20b/14.4 (MFT 6-foundation directions, raw)",
+    "A3 Think refusal vectors P0-P3 (.npz)": "olmo3_think/14.4 (refusal_P{0..3}.npz)",
+    "A4 instruct fables/ethics per-pair diff arrays": "olmo3_instruct/14.6 (axis_diffs_{fables,ethics}.npz)",
+    "Amendment 2 per-position chat act_samples (D2 in-format)": "olmo3_instruct+llama31+qwen25/14.6 (three position classes)",
+    "Amendment 2 D1 P0-P3 per-rollout activations": "olmo3_think+gpt_oss_20b/14.4 (p0p3_rollouts.npz)",
+    "Amendment 2 mean_content slices for refusal/judgment prompt sets": "olmo3_instruct/14.6 (mean_content_slices.npz)",
+    "Amendment 11 severity-twin paired content contrasts (Llama L12)": "llama31/14.2 (severity_contrasts_L12.npz)",
+    "Amendment 11 GPT-OSS harmony decision-token act_sample (A5 band-below-null)": "gpt_oss_20b/14.3 (decision_token_sample.npz + band_below_null)"
+  },
+  "git_commit_source": "launcher HEAD at rsync-up (pod checkout carries no .git); driver recorded 'unknown'",
+  "pod": {
+    "id": "5jplj3beawc6kk",
+    "gpu": "NVIDIA A100-SXM4-80GB (SECURE)",
+    "ssh_outages_min": [
+      40,
+      75
+    ],
+    "note": "two aborted launches preceded this run: registry KeyError (no unit ran) and the 14.5 raw-prompt harness run (killed at 14.6); neither's outputs were kept"
+  }
+}

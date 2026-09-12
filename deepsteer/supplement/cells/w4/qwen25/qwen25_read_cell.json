@@ -1,0 +1,21 @@
+{
+  "unit": "15.2",
+  "pilot": {
+    "n": 5,
+    "finite": true,
+    "sign_coherent": 5,
+    "passed": true,
+    "screened_request_twins": 1
+  },
+  "stimulus_mode": "boundary",
+  "n_request_twins": 1,
+  "env": {
+    "REQUEST_TWINS_SET": "union",
+    "SWEEP": "1",
+    "STANDARDIZE": "1",
+    "ROBUSTIFY": "zscore",
+    "BOUNDARY": "1"
+  },
+  "shape_verdict": null,
+  "status": "indeterminate_operating_point"
+}

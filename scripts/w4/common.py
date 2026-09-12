@@ -67,7 +67,7 @@ PANEL: tuple[ModelLoad, ...] = (
 MISSING_ARTIFACTS_CLOSURE: dict[str, str] = {
     "A1 think mft_directions.npz": "olmo3_think/14.4 (MFT 6-foundation directions, raw)",
     "A1 gpt_oss mft_directions.npz": "gpt_oss_20b/14.4 (MFT 6-foundation directions, raw)",
-    "A3 Think refusal vectors P0-P3 (.npz)": "olmo3_think/14.4 (refusal_P{0..3}.npz)",
+    "A3 Think refusal vectors P0-P3 (.npz)": "olmo3_think/14.4 (refusal_P{0,1,2,2_FULL}.npz; P3 unmeasured on Think by design, Amendment 14.4)",
     "A4 instruct fables/ethics per-pair diff arrays": "olmo3_instruct/14.6 (axis_diffs_{fables,ethics}.npz)",
     "Amendment 2 per-position chat act_samples (D2 in-format)": "olmo3_instruct+llama31+qwen25/14.6 (three position classes)",
     "Amendment 2 D1 P0-P3 per-rollout activations": "olmo3_think+gpt_oss_20b/14.4 (p0p3_rollouts.npz)",

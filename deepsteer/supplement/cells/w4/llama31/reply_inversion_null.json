@@ -1,0 +1,22 @@
+{
+  "unit": "14.6b",
+  "layer": 12,
+  "n_eval": 100,
+  "residual_norm": 7.757550239562988,
+  "alphas": {
+    "0.5": {
+      "harm_flip_frac": 0.0,
+      "harm_margin_shift": -2.122276595744681,
+      "random_flip_q95": 0.611,
+      "random_shift_q95": 2.3555207215541163,
+      "n_random": 20
+    },
+    "1.0": {
+      "harm_flip_frac": 0.0,
+      "harm_margin_shift": -2.617872340425532,
+      "random_flip_q95": 0.831,
+      "random_shift_q95": 2.8667134065431266,
+      "n_random": 20
+    }
+  }
+}

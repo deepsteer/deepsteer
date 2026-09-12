@@ -1,0 +1,91 @@
+{
+  "unit": "14.3",
+  "layer": 12,
+  "pr_profile_decision_token": {
+    "pr": 9.401592981481823,
+    "pr_over_d": 0.0032644420074589664,
+    "pr_over_n_minus_1": 0.07402829119277025,
+    "sample_rank_ceiling": 127,
+    "ci95": [
+      7.702246479884772,
+      10.005722547854464
+    ],
+    "gaussian_null": {
+      "pr": 9.401592981481823,
+      "null_q05": 7.311368739846209,
+      "null_q50": 8.986947515570126,
+      "null_q95": 10.691482181083519,
+      "quantile_of_measured": 0.67,
+      "n_draws": 200
+    },
+    "shuffle_null": {
+      "pr": 9.401592981481823,
+      "shuffle_q05": 111.62054030431163,
+      "shuffle_q50": 111.86638812956372,
+      "n_draws": 200
+    }
+  },
+  "band_held_one_out": {
+    "moral_stories": {
+      "frac": 0.5311467022463727,
+      "null_q95": 0.4815133303801554
+    },
+    "fables": {
+      "frac": 0.5412990055369242,
+      "null_q95": 0.4709101751560036
+    },
+    "ethics": {
+      "frac": 0.5404329314112996,
+      "null_q95": 0.34460846132652323
+    }
+  },
+  "band_min": 0.5311467022463727,
+  "null_q95_max": 0.4815133303801554,
+  "band_below_null": false,
+  "graded_stats": {
+    "P_prefill": {
+      "verdict": "reversible",
+      "n_items": 10,
+      "frac_flip_at_max": 0.5,
+      "frac_projection_moved_at_max": 1.0,
+      "mean_projection_move_weak_to_strong": 125.5322,
+      "mean_baseline_ref_move": 3.0375,
+      "frac_monotone_toward_comply": 1.0,
+      "move_thresh": 0.15,
+      "note": "reversible = flip OR within-series projection moves to comply (weak->strong); robust_down = no flip AND flat within-series projection (rules out saturation). baseline-ref move is position-confounded (different token) -> context only.",
+      "mean_move_at_max_ci95": [
+        -14.406551973419708,
+        7.552039833765657
+      ],
+      "n_items_read": 10
+    },
+    "P_dec": {
+      "verdict": "reversible",
+      "n_items": 8,
+      "frac_flip_at_max": 0.5,
+      "frac_projection_moved_at_max": 1.0,
+      "mean_projection_move_weak_to_strong": 116.6673,
+      "mean_baseline_ref_move": 115.355,
+      "frac_monotone_toward_comply": 1.0,
+      "move_thresh": 0.15,
+      "note": "reversible = flip OR within-series projection moves to comply (weak->strong); robust_down = no flip AND flat within-series projection (rules out saturation). baseline-ref move is position-confounded (different token) -> context only.",
+      "mean_move_at_max_ci95": [
+        -122.83609113294142,
+        -107.37925543856076
+      ],
+      "n_items_read": 8
+    }
+  },
+  "random_direction_null_P_dec": {
+    "monotone_frac_q95": 0.75,
+    "mean_move_q05": -116.71752877665936,
+    "n_random_dirs": 200
+  },
+  "engage_arm_P_dec": {
+    "n": 7,
+    "P_dec_mean_move_toward_refuse": 175.16185595286447,
+    "flips_to_refuse": 6
+  },
+  "n_items": 10,
+  "replication_flip_at_max_P_behavior": 0.5
+}
