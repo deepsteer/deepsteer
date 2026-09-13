@@ -41,7 +41,7 @@ write (fraction 0.384), below the 0.50 threshold at which a Jacobian stage would
 above the 0.23 the un-folded run had reported. That un-folded number is a calibration lesson in its
 own right: OLMo-3's reordered normalization makes the naive per-head attribution overshoot, and
 folding the per-layer RMSNorm gain brings the Stage-1 reconstruction from 3.05 to 0.9999 within a
-two-sided band of [0.90, 1.10], exact to one part in a billion (methods note, A3).
+two-sided band of [0.90, 1.10], exact to one part in a billion (the companion methods note [@reblitzrichardson2026instruments], mode A3).
 
 None of the ten top writers reads moral content in a way the calibrated instruments recognize. All
 ten are labeled neither-moral-nor-harm: none clears the moral-family band, none is a clean

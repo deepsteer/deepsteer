@@ -18,8 +18,8 @@ Persona is present and stable, and it is not moral content.
 
 It is moral-adjacent. On the rank-3 moral subspace the persona reference projects 0.51 on both the
 base and the instruct model, just below the moral-family band, which is why it is named a
-moral-adjacent voice reference in the ladder rather than a non-moral control. The methods note's
-calibration case study uses exactly this fact: a reference that projects 0.51 is a rung, not a
+moral-adjacent voice reference in the ladder rather than a non-moral control. The companion methods
+note's calibration case study [@reblitzrichardson2026instruments] uses exactly this fact: a reference that projects 0.51 is a rung, not a
 floor. On GPT-OSS the moral-to-persona cosine is higher (0.30 against OLMo's 0.24), a general
 entanglement on that model that raises its persona rung to 0.60.
 

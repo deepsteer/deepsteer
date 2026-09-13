@@ -5,7 +5,7 @@ magnitudes. This appendix gives the ladder per model, the null and band construc
 position-validity check that gates content projections, the standardization applied to
 massive-activation models, and the normalization fold that certifies the per-head attribution. The
 load-bearing controls are given here; a completeness catalog of the instrument's remaining failure
-modes is deferred to a companion methods note (in preparation).
+modes is the subject of the companion methods note [@reblitzrichardson2026instruments].
 
 ## B.1 The calibrated ladder {#app:ladder}
 

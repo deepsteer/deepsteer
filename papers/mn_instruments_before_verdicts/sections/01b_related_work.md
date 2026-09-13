@@ -44,6 +44,6 @@ positive-control band that falls below the covariance null marks the measurement
 as uninformative, and the integration of these checks into a pre-registration and verification
 protocol.
 
-The scientific results that exercise these instruments are reported in a companion flagship study
-(in preparation); this note is the portable methodology, and its evidence is the model panel and
+The scientific results that exercise these instruments are reported in the companion flagship paper
+\citep{reblitzrichardson2026slice}; this note is the portable methodology, and its evidence is the model panel and
 single program it was derived on (see the limitations).

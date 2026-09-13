@@ -10,7 +10,7 @@ the positive-control ladders, the per-head write attribution, and the rank-sweep
 indexed in the shared supplement `deepsteer/supplement/MANIFEST.json` (public repository:
 <https://github.com/deepsteer/deepsteer/>), each with a content hash,
 its provenance, and the figure or table it backs. The two instruments this note shares with the
-companion flagship (the decision-site participation-ratio profile and the depth-asymmetry panel)
+companion flagship \citep{reblitzrichardson2026slice} (the decision-site participation-ratio profile and the depth-asymmetry panel)
 live in the supplement once and are cited by both papers; `deepsteer/supplement/scripts/verify.py`
 asserts the note's plotting copies match the canonical values, so a shared number can change in
 only one place. Model ids, decision layers, standardization settings, and seeds are pinned in

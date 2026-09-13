@@ -18,6 +18,9 @@ in-format ladder and directly comparable to OLMo's 14.7 and Qwen's 8.6; on a lat
 the same position reads 10.3 with a subsampling interval of [10.1, 11.1], and 14.2 after per-dimension
 standardization; the decision-anatomy harness, standardized and on request-twin stimuli, reads 13.5.
 All are a few percent of the column-shuffle reference, \Cref{app:panel-bottleneck}.)
+The validity protocol this finding motivated (the band-below-null tell, the null-referenced
+participation-ratio gate, standardization and its invariance check) is the subject of the companion
+methods note [@reblitzrichardson2026instruments]; this paper carries the finding and uses the protocol.
 
 This narrowness is the reason a projection-fraction instrument fails at the decision site, and
 it is also a substantive fact about where the decision lives. At the OLMo-3 decision token the

@@ -6,7 +6,8 @@ looked like a finding first. This note collects the six that turned into portabl
 findings and the estimator and intervention patterns the program
 re-derived, and states each as a protocol we found portable within this program and offer
 for others to test. The scientific results
-(what refusal reads, how it commits) live in the direction papers and the flagship draft;
+(what refusal reads, how it commits) live in the companion flagship paper
+\citep{reblitzrichardson2026slice};
 this note is the portable methodology. Numbers here trace to the program's claim ledger;
 every scalar carries its detection bar or its control.
 
@@ -71,7 +72,7 @@ ratio there is 14.7 on OLMo-3-7B-Instruct, 8.6 on Qwen2.5-7B, 10.2 on Llama-3.1-
 12.8 on GPT-OSS-20B (a 20B reasoning MoE at its harmony decision token). A 9-to-15
 effective-dimensional channel, on every model tested, while content positions at the same
 layers are full-rank-healthy (PR 40+/33+/35+). This is a substantive finding about where
-the refusal decision lives, and it belongs in the flagship. But it is also the reason the
+the refusal decision lives, and it belongs in the flagship \citep{reblitzrichardson2026slice}. But it is also the reason the
 program's projection-fraction instruments failed: a positive control measured in a 15-slot
 channel projects onto its own span *less* than a random direction does, so the instrument
 had no discriminating power exactly where the interesting directions live. The finding and
