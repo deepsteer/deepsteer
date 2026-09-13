@@ -11,7 +11,50 @@ RESULTS; this file states the throughline and is re-dated on each substantive ch
 the two-axis table's *interpretation* is reframed as a confound-named dimensionality hypothesis, not an
 n=3 claim.)
 
-## Thesis (three tiers by evidence scope) — updated 2026-07-05
+## W4 verdicts (2026-09-13; `d3_decision_anatomy/W4_RESULTS.md`) — what changed
+
+Positive voice first (move 7): **the program now claims, with reliability-certified and replicated
+numbers, that refusal reads a low-rank harm slice of moral content on OLMo-3 (pooled n = 42,
+`harm_saturating`, CI a third tighter), that the refusal gate is a fresh post-training construction
+whose weak precursor (0.155, reliability 0.99 on both sides, 2.2× the matched null) does not
+crystallize, that the decision site is a 4–8%-of-reference bottleneck on four architectures with CIs,
+and that Qwen, the lineage-independent fourth family, reads beyond the harm rank-1 level and commits
+bidirectionally like OLMo.** Per cell:
+
+- **14.1 → Branch A.** Tier 3's estimability counter-reading closes. Tier-3 sentence of record: "a weak
+  precursor (0.155, 95% CI [0.147, 0.162]; matched-null q95 0.070; split-half reliability 0.99 on both
+  sides; flat 0.139–0.155 across 13 pretraining states) against 0.999 for the moral subspace".
+- **14.2 → fork (Amendment 16.3).** Per-component parity failed on a near-degenerate PC3 (VOID by the
+  letter); subspace parity passes and the rank-4 harm basis captures no more of Llama's engage-driving
+  basis than a sentiment basis (0.207 vs 0.239). Orion picks (a)/(b); Tier 2's Llama "beyond harm" is
+  unchanged either way (the rank-1 3.6% of record carries it).
+- **14.3 → reading, not co-primary.** The graded projection at the post-response decision token is
+  monotone (8/8) but not refusal-direction-specific: the refusal direction moves ≈ 1 SD toward comply
+  and a covariance-matched random direction moves at least that far in one draw in five, at the
+  prefill token and at the decision token alike. Reversibility stays behavioral-primary (5/10 replicated
+  vs 6/10; engage 7/7). **Escalated:** every "monotone projection" corroboration clause (this file's
+  header and Tier 2 bullet, D3-22, FL §8.2/table/App D/E/§10, MN §4/§6) keeps the behavioral leg and
+  scopes the projection leg. Band half: the moral band is ABOVE the null at GPT-OSS's decision token
+  (0.531 vs 0.482); "position-valid" is scoped to decision-direction reads.
+- **14.4 → Branch B on both models.** P1–P3 sit below the covariance null on Think and GPT-OSS (PR 3–10);
+  the in-trace rungs stay hedged per model; the trace window is a decision-like position, A2 on a
+  fifth kind of site. The absolute PR ≥ 30 control is not evaluable at n = 64 (A9).
+- **14.5 → candidate Branch A, held.** Judgment-decision ablation raises refusal +0.12 [0.06, 0.19]
+  over random (five random directions move nothing; persona moves 1/100); refusal ablation re-decides
+  50/100 prompts in both directions with coherent text (A8: derailment rejected). The Tier-1 causal
+  clause is escalated with the instrument scope (single-layer projection-out).
+- **14.6 → CIs banked; NI-2 closed; reply inversion Branch B.** Decision sites 14.7 [14.3, 16.2] /
+  8.6 [8.2, 9.4] / 10.3 [10.1, 11.1] / 9.4 [9.1, 10.7], each 4–8% of the column-shuffle reference;
+  Llama's 10.2-vs-13.5 was raw-vs-standardized at one position. On Llama the harm axis flips 0/100
+  replies at matched norm while random directions flip 61–83% (A10).
+- **15.1 → shape survives.** Pooled n = 42 `harm_saturating`, R_refusal(16) 0.242 [0.134, 0.405] vs
+  0.659; the 19 new twins alone `indeterminate` with the same sign; one-knob ceiling 0.246, RMSE 0.023;
+  ratio-of-ratios unresolved as predicted.
+- **15.2 → `indeterminate`, the empty cell filled.** Qwen reads beyond harm rank-1 (0.54 vs 0.38), gap
+  to judgment 0.12 [−0.04, 0.25] at n = 19; harm_saturating excluded at 0.6% of resamples; commits
+  bidirectionally (A −0.60). The two-axis table gains a fourth row.
+
+## Thesis (three tiers by evidence scope) — updated 2026-07-05, W4 notes 2026-09-13
 
 The refusal decision reads only a **low-rank slice** of the moral content the model comprehends, and
 sits in a **narrow control-token channel** geometrically separate from the broad moral subspace. The
@@ -53,8 +96,11 @@ strongest thing the program holds.
 - **GPT-OSS (projection, correlational; interchange held).** Harm-keyed (prompt |cos| 0.977, in-trace
   0.49 vs 0.13) and **reversible** — a graded exculpatory prefill flips **6/10 violating→comply** with
   monotone projection movement (definition and graded panel: FL §8.2 / Amendment 12).
-- **Qwen — not measured on the read axis** (no causal read cell was run; this is a missing cell, not a
-  null, so no detection bar applies — a Qwen read would have to be run to make a null claim).
+- **Qwen (interchange, standardized, n = 19 operating-band twins; W4 15.2).** Refusal reads **beyond the
+  harm rank-1 level** (R_refusal(16) 0.54 [0.42, 0.69] vs harm rank-1 0.38) and its gap to judgment
+  (0.12 [−0.04, 0.25]) is not resolved at n = 19: `indeterminate` between OLMo's plateau and Llama's
+  gap-close, with `harm_saturating` excluded (0.6% of resamples). Commit: bidirectionally coherent
+  (A −0.60), like OLMo. The empty cell is filled; the reading is stated at its anchored strength.
 - *Method note (the confound is confined to GPT-OSS):* the OLMo (harm) and Llama (broad) reads **both
   use interchange**, so their difference is **family, not method**; only GPT-OSS's read is
   method-distinct (correlational projection).
@@ -71,10 +117,13 @@ construction in a low-variance channel.
 - *Counter-reading:* **estimability floor.** The 0.999 is a valid same-pipeline positive control for
   detecting continuity, but the two constructs differ in checkpoint-estimability — moral content is
   abundant in pretraining, refusal behavior is scarce, so proto-refusal is plausibly the noisier
-  estimate and a low 0.155 could be attenuation, not genuine discontinuity. *Separating experiment:* a
+  estimate and a low 0.155 could be attenuation, not genuine discontinuity. *Separating experiment — RUN (W4 14.1, Branch A, 2026-09-13):* split-half reliability 0.991 (proto)
+  and 0.997 (gate), adjacent-checkpoint 1.0, disattenuated cosine 0.156, prompt-bootstrap CI
+  [0.147, 0.162]; the counter-reading is closed, the residual is the cross-format construct difference.
+  *(Historical text follows.)* a
   split-half (resample the refusal contrast, recompute proto-refusal, self-cosine) or adjacent-checkpoint
   self-cosine puts a reliability ceiling under 0.155 (~0.9 → fresh-construction solid; ~0.3 → mostly
-  attenuation floor). **Not zero-GPU with current saves** (`refusal_base.npz` stores only the final
+  attenuation floor). **Was not zero-GPU with the D1 saves** (`refusal_base.npz` stores only the final
   4096-d direction; the crystallization trajectory carries a single flat 0.155, no per-checkpoint
   proto-refusal), so it needs re-extraction on the base checkpoint — a pod. **FL ships this as a stated
   limitation until the control runs.**

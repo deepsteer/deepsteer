@@ -8,8 +8,10 @@ outputs are gitignored/reproducible (`outputs/c1_session_olmo3.json`, `outputs/c
 
 ## Headline
 
+*(NI-9, 2026-09-13: specificity scalars pinned to the saved sparsity curve, 11.7% / 45% / 67 heads; W4 verdicts in `W4_RESULTS.md`.)*
+
 On OLMo-3-7B-Instruct, refusal is written into the ~13-dimensional decision-site channel by a
-**distributed** set of attention heads (led by L16 H23, ~62 heads for 80% of the specificity) plus a
+**distributed** set of attention heads (led by L16 H23, 67 heads for 80% of the specificity) plus a
 38% MLP share, and every top writer reads content only weakly aligned with the moral subspace
 `V_moral`. The causal question — does refusal read moral content through non-`V_moral` features, or is
 rank-3 `V_moral` too small a window — is resolved by the rank sweep: **`harm_saturating`**. As the
@@ -35,7 +37,7 @@ identical across both runs.
 ## Stage 1 — who writes the decision
 
 Refusal writing is **distributed**, not a sparse safety-head circuit. Cumulative channel-matched
-specificity reaches only 44% at the top 10 heads and needs ~62 heads to reach 80% (`k` hit its cap
+specificity reaches only 45% at the top 10 heads and needs 67 heads to reach 80% (62 reach 0.787) (`k` hit its cap
 of 10). The write is led by one clear head with a long tail:
 
 | head | write onto refusal | channel-matched specificity |
@@ -51,7 +53,7 @@ of 10). The write is led by one clear head with a long tail:
 | L13 H29 | +0.139 | +0.144 |
 | L15 H15 | −0.130 | −0.142 (writes *against* refusal) |
 
-The lead head L16 H23 alone carries 11.6% of the total specificity; the writers span layers 11–16.
+The lead head L16 H23 alone carries 11.7% of the total specificity; the writers span layers 11–16.
 MLPs contribute **38%** of the decision-site write (`mlp_write_fraction` 0.384, below the 0.50
 Jacobian threshold so the head decomposition is adequate, but well above the 0.23 the un-folded run
 reported). This is the distributed / channel picture, consistent with the ~13-dim decision-site
@@ -178,7 +180,7 @@ is weak on this model.
 Stacked on D1 (refusal projects below the moral-family band at every rung) and D2 (the decision site
 is a ~10–15-dim control-token bottleneck; refusal-decision ⊥ judgment-decision), C1 completes the
 causal account. Refusal is a **distributed write** into a narrow decision-site channel (L16 H23 lead,
-~62 heads for 80% of the specificity, 38% MLP), and it **reads the harm percept** — a specific,
+67 heads for 80% of the specificity, 38% MLP), and it **reads the harm percept** — a specific,
 low-rank slice of moral content — **not the broad moral subspace**. The rank sweep is the evidence:
 refusal transfer saturates at the harm level while judgment transfer keeps climbing with moral rank.
 This reconciles the whole program: D1/D2's "refusal ⊥ `V_moral`" is not because moral content is

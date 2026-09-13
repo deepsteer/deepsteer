@@ -1,5 +1,7 @@
 # Missing artifacts ledger
 
+**Status 2026-09-13 (W4-3): every entry below is CLOSED by the W4 pod of 2026-09-12/13** (manifest `w4_20260912T190441` + rerun `w4_20260913T004257`, 56 artifacts, verified; closure map at the end of this file). The one carve-out is Think `refusal_P3`, unmeasured by design (Amendment 14.4).
+
 ## A1 (2026-07-01): MFT directions not committed for reasoning tags
 
 - `outputs/phase2/think/mft_directions.npz` absent -> MFT<->V_moral mutual projection not computable for `think`. Queue MFT extraction into B3 if the reasoning-tag subspace comparison is wanted (base/instruct are covered).

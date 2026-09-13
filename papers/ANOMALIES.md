@@ -365,7 +365,59 @@ the R3 sentence stays geometric. R_b: the arrow is real (judgment-decision ablat
 on 12 prompts), D2-01 gains a causal cross-arrow, and the refusal-direction bistability is a finding
 for FL §6. Either way the 14.5 verdict is held until the discriminator runs.
 
-**Status.** open; discriminator **run** (W4 rerun pod 74de8jk0usv335, 2026-09-13, `14.5_gen`, 9.7 min): texts for baseline / refusal / judgment_decision / random_0 saved in `outputs/w4/olmo3_instruct/cross_ablation_generations.npz`, per-prompt classifier outcomes agree **100%** with the saved 14.5 outcomes in all four conditions (greedy, byte-identical intervention), rates 0.62 / 0.78 / 0.74 / 0.62 reproduced. The coherence tally (R_a vs R_b) and the `heretic_ablation`-semantics control are W4-3 reads; no reading chosen here. `resolution_type`: experiment.
+**Status.** open; discriminator **run** (W4 rerun pod 74de8jk0usv335, 2026-09-13, `14.5_gen`, 9.7 min): texts for baseline / refusal / judgment_decision / random_0 saved in `outputs/w4/olmo3_instruct/cross_ablation_generations.npz`, per-prompt classifier outcomes agree **100%** with the saved 14.5 outcomes in all four conditions (greedy, byte-identical intervention), rates 0.62 / 0.78 / 0.74 / 0.62 reproduced. **Coherence tally (W4-3, 2026-09-13): R_a REJECTED.** All 33 comply→refuse outputs are well-formed opening refusals (median 336 chars, repetition 0.11, no debris); all 17 refuse→comply outputs are coherent "Certainly! However…" redirects; all 12 judgment-arm flips are well-formed refusals; length and repetition match baseline. R_b stands (a load-bearing, bistable direction: single-layer removal re-decides ~half the prompts in both directions). Remaining discriminator: flip probability vs |baseline refusal projection| (needs the 100 eval-prompt last-token activations, one forward pass, ~2 min GPU; not saved). The `heretic_ablation`-semantics control is the same price. Verdict impact: 14.5's judgment→refusal arrow (+0.12 [0.06, 0.19]) is a candidate Branch A with the instrument scope stated; escalated. `resolution_type`: experiment (partial).
+
+---
+
+## A9 (ledger) — An absolute participation-ratio gate is not evaluable below n ≈ 4·PR; reasoning-trace windows are decision-like positions
+
+**Date:** 2026-09-13 · **Found in:** W4 14.4 (`supplement/cells/w4/{olmo3_think,gpt_oss_20b}/pr_audit.json`).
+
+**Observation.** The pre-registered positive control for the P0–P3 audit required the content position
+P0 to read PR ≥ 30. With 64 rollouts per position the sample-rank ceiling is 63 and P0 reads 28.9
+(Think) and 22.1 (GPT-OSS), using 0.46 / 0.35 of the ceiling while sitting above its covariance-matched
+sampling null at quantile 1.0 on both models. The absolute bar cannot be met at this n by a position
+whose true PR is anywhere near it; the same texts' content positions at n = 240 read 27–97.
+
+**Type.** control-misbehavior (a bar that depends on n, applied at small n). **Reading.** Calibration
+closure (no experiment): the gate of record becomes null-referenced (W4-07 form: PR relative to the
+sample-rank ceiling and to the column-shuffle reference, with the Gaussian-null quantile), which is
+what MN §2 now states; the absolute 30 is kept only as the historical value with its n stated.
+
+**Finding folded in.** On both reasoning models the in-trace window (P2) reads PR 9.7 (Think) and 5.1
+(GPT-OSS) with the moral band below the covariance null, the same signature as the four chat decision
+sites (8.6–14.7) and unlike content positions. The reasoning window is a decision-like position: A2
+on a fifth kind of site, and the reason the in-trace rung stays band-hedged (Branch B, W4-05).
+
+**Status.** resolved (calibration). `resolution_type`: calibration.
+
+---
+
+## A10 (ledger) — Matched-norm random directions flip 61–83% of Llama reply-inversion margins; the harm axis flips none and pushes toward safe
+
+**Date:** 2026-09-13 · **Found in:** W4 14.6b (`supplement/cells/w4/llama31/reply_inversion_null.json`;
+margins in `outputs/w4/llama31/reply_inversion_margins.npz`).
+
+**Observation.** Llama-3.1-8B-Instruct, layer 12, forced-answer margin (positive = toward harmful),
+clean margins mean −1.78 (87% ≤ 0). Steering along the harm direction at 0.5× and 1.0× the residual
+norm flips 0/100 replies and shifts every margin further negative (−2.1, −2.6). Twenty random unit
+directions at the identical norm shift margins toward zero (per-direction means −1.75 … +1.06) and so
+flip 61% (q95) and 83% of the near-zero majority. cos(harm_dir, severity contrast) = +0.125: the sign
+convention is the conventional one.
+
+**Type.** control-misbehavior + sign-flip. **Competing readings.** R_a: the flip metric at this norm
+measures margin washout, not directed steering; any large perturbation regresses the margin toward
+zero and "flips" whatever sat near it, so the specificity null is saturated and uninformative for
+flips (the margin *shift* is the informative statistic, and there the harm direction is 4× any random
+direction, in the safe direction). R_b: on Llama the harm axis genuinely steers replies toward safe
+(the reply-inversion effect of record is on Qwen2.5-14B-Instruct, +17.4 flips 33%; Llama's own of
+record was +3.0 flips 23% with a different harness), i.e. the P7-05 Llama number does not reproduce
+under matched-norm steering. **Discriminator.** Zero-GPU on the saved margins: the per-item margin
+shift distribution for harm vs each random direction (a paired sign test separates "washout" from
+"directed"); then the Paper 7 harness's own coefficient and read on the same 100 items (one Llama
+load, ~0.2 A100-h). **Status.** open; MN §3.1 keeps the limitation with the measured chance level.
+**Thesis impact.** None on FL; MN §3.1's "specificity control missing" becomes "run and not passed at
+matched norm", a stronger statement of the same limitation.
 
 ---
 
