@@ -1,0 +1,20 @@
+{
+  "unit": "14.5_gen",
+  "layer": 16,
+  "n": 100,
+  "prompt_format": "chat",
+  "source": "cross_ablation_outcomes.npz",
+  "rates": {
+    "baseline": 0.62,
+    "refusal": 0.78,
+    "judgment_decision": 0.74,
+    "random_0": 0.62
+  },
+  "agreement_with_saved_outcomes": {
+    "baseline": 1.0,
+    "refusal": 1.0,
+    "judgment_decision": 1.0,
+    "random_0": 1.0
+  },
+  "note": "ANOMALIES A8 discriminator; texts saved for the coherence tally. No verdict here."
+}

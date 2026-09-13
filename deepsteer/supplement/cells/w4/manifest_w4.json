@@ -12,18 +12,6 @@
   "preregistration": "papers/d3_decision_anatomy/PREREGISTRATION.md Amendments 14/15",
   "loads": [
     {
-      "key": "olmo3_instruct",
-      "repo": "allenai/Olmo-3-7B-Instruct",
-      "revision_requested": "main",
-      "commit_hash": "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
-      "n_layers": 32,
-      "hidden": 4096,
-      "layer": 16,
-      "model_type": "olmo3",
-      "dtype": "torch.float16",
-      "dry_run": false
-    },
-    {
       "key": "olmo3_think",
       "repo": "allenai/Olmo-3-7B-Think",
       "revision_requested": "main",
@@ -72,6 +60,19 @@
       "dry_run": false
     },
     {
+      "key": "olmo3_instruct",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision_requested": "main",
+      "commit_hash": "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
+      "n_layers": 32,
+      "hidden": 4096,
+      "layer": 16,
+      "model_type": "olmo3",
+      "dtype": "torch.float16",
+      "dry_run": false,
+      "rerun_id": "w4_20260913T004257"
+    },
+    {
       "key": "qwen25",
       "repo": "Qwen/Qwen2.5-7B-Instruct",
       "revision_requested": "main",
@@ -81,7 +82,8 @@
       "layer": 14,
       "model_type": "qwen2",
       "dtype": "torch.float16",
-      "dry_run": false
+      "dry_run": false,
+      "rerun_id": "w4_20260913T004257"
     }
   ],
   "artifacts": [
@@ -473,33 +475,74 @@
       "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4_pilot.npz",
       "base": "repo",
       "bytes": 7905340,
-      "sha256": "68f007d4bd07dbaf92d5051f296ad01e981b3f0a1482115afad8b57317ba267f",
+      "sha256": "0156390dedd41ea1a836f14030aa41fa83c7187f61e8e693ddc3c0a6fe744b55",
       "unit": "15.2",
-      "model": "qwen25"
+      "model": "qwen25",
+      "rerun_id": "w4_20260913T004257"
     },
     {
       "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4.npz",
       "base": "repo",
-      "bytes": 7903544,
-      "sha256": "80e5ee9bcc4ebcf602dbf1d0f514a61b84c580b57997236b923e3d29b957f0d4",
+      "bytes": 7911612,
+      "sha256": "4ee31032f8f04fb6fc32326ed132080f8f13a3d2c565a105758a6d29ffcfff3e",
       "unit": "15.2",
-      "model": "qwen25"
+      "model": "qwen25",
+      "rerun_id": "w4_20260913T004257"
     },
     {
       "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_session_qwen25_w4.json",
       "base": "repo",
-      "bytes": 14512,
-      "sha256": "0300a0e7af977eb915818188fdec7153dbb4c1bd48632f366926c72adebb2ebe",
+      "bytes": 17161,
+      "sha256": "9055a6fe7108644a1661a879727780e16a4230192815070e77385e06df246cc4",
       "unit": "15.2",
-      "model": "qwen25"
+      "model": "qwen25",
+      "rerun_id": "w4_20260913T004257"
     },
     {
       "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/qwen25_read_cell.json",
       "base": "repo",
-      "bytes": 410,
-      "sha256": "9b229bc870651996a4359862220fff01044b1caa0ac270939c54d2c899c9729e",
+      "bytes": 811,
+      "sha256": "754294ce195f020f39f4afeaea3eb7dbc64116ad0992580932783bd7533544b0",
       "unit": "15.2",
-      "model": "qwen25"
+      "model": "qwen25",
+      "rerun_id": "w4_20260913T004257"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/cross_ablation_generations.npz",
+      "base": "repo",
+      "bytes": 154109,
+      "sha256": "0b7a1815429bd36a5652e3eee328c0bbc5c720f05799613728ea005ffe171f52",
+      "unit": "14.5_gen",
+      "model": "olmo3_instruct",
+      "rerun_id": "w4_20260913T004257"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/cross_ablation_generations.json",
+      "base": "repo",
+      "bytes": 462,
+      "sha256": "9e4f4c8f972c624faab2bba173499c0a55ac283147c758aec872750d79cdf3ed",
+      "unit": "14.5_gen",
+      "model": "olmo3_instruct",
+      "rerun_id": "w4_20260913T004257"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_session_qwen25_w4_pilot.json",
+      "base": "repo",
+      "bytes": 17169,
+      "sha256": "ab737ee0c7bbeee2c206e45a36b3ba4c66898392d358dd08f56a3a9f85ceaa51",
+      "unit": "15.2",
+      "model": "qwen25",
+      "note": "pilot session JSON, registered post-hoc (driver registered only the pilot npz)",
+      "rerun_id": "w4_20260913T004257"
+    },
+    {
+      "path": "papers/d3_decision_anatomy/outputs/w4/olmo3_instruct/c1_session_olmo3_w4_pilot.json",
+      "base": "repo",
+      "bytes": 18305,
+      "sha256": "7e0b385bf15393beadeebe7ef95b0d9159c70935f6eed744c6b673a4afa3271c",
+      "unit": "15.1",
+      "model": "olmo3_instruct",
+      "note": "pilot session JSON, registered post-hoc (driver registered only the pilot npz)"
     }
   ],
   "pilot_gates": {
@@ -514,7 +557,10 @@
       "n": 5,
       "finite": true,
       "sign_coherent": 5,
-      "screened_request_twins": 1
+      "screened_request_twins": 1,
+      "operating_band_pairs": 18,
+      "rt_total": 19,
+      "rerun_id": "w4_20260913T004257"
     }
   },
   "unit_status": {
@@ -576,11 +622,17 @@
     },
     "qwen25/15.2": {
       "status": "ok",
-      "note": "1233.9s"
+      "note": "913.1s",
+      "rerun_id": "w4_20260913T004257"
     },
     "14.1_disattenuation": {
       "status": "ok",
       "note": ""
+    },
+    "olmo3_instruct/14.5_gen": {
+      "status": "ok",
+      "note": "579.6s",
+      "rerun_id": "w4_20260913T004257"
     }
   },
   "missing_artifacts_closure": {
@@ -603,5 +655,107 @@
       75
     ],
     "note": "two aborted launches preceded this run: registry KeyError (no unit ran) and the 14.5 raw-prompt harness run (killed at 14.6); neither's outputs were kept"
-  }
+  },
+  "reruns": [
+    {
+      "run_id": "w4_20260913T004257",
+      "reason": "Amendment 15/14 rider (2026-09-12): 15.2 rerun on the operating band (driver had fallen back to an empty boundary band); 14.5_gen = ANOMALIES A8 discriminator (generations under the saved directions)",
+      "units": [
+        "olmo3_instruct/14.5_gen",
+        "qwen25/15.2"
+      ],
+      "models": [
+        "olmo3_instruct",
+        "qwen25"
+      ],
+      "versions": {
+        "python": "3.11.10",
+        "numpy": "2.4.6",
+        "torch": "2.6.0+cu124",
+        "transformers": "5.12.1"
+      },
+      "superseded": {
+        "artifacts": [
+          {
+            "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4_pilot.npz",
+            "base": "repo",
+            "bytes": 7905340,
+            "sha256": "68f007d4bd07dbaf92d5051f296ad01e981b3f0a1482115afad8b57317ba267f",
+            "unit": "15.2",
+            "model": "qwen25"
+          },
+          {
+            "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_inputs_qwen25_w4.npz",
+            "base": "repo",
+            "bytes": 7903544,
+            "sha256": "80e5ee9bcc4ebcf602dbf1d0f514a61b84c580b57997236b923e3d29b957f0d4",
+            "unit": "15.2",
+            "model": "qwen25"
+          },
+          {
+            "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/c1_session_qwen25_w4.json",
+            "base": "repo",
+            "bytes": 14512,
+            "sha256": "0300a0e7af977eb915818188fdec7153dbb4c1bd48632f366926c72adebb2ebe",
+            "unit": "15.2",
+            "model": "qwen25"
+          },
+          {
+            "path": "papers/d3_decision_anatomy/outputs/w4/qwen25/qwen25_read_cell.json",
+            "base": "repo",
+            "bytes": 410,
+            "sha256": "9b229bc870651996a4359862220fff01044b1caa0ac270939c54d2c899c9729e",
+            "unit": "15.2",
+            "model": "qwen25"
+          }
+        ],
+        "unit_status": {
+          "qwen25/15.2": {
+            "status": "ok",
+            "note": "1233.9s"
+          }
+        },
+        "pilot_gates": {
+          "15.2_pilot_qwen25": {
+            "passed": true,
+            "n": 5,
+            "finite": true,
+            "sign_coherent": 5,
+            "screened_request_twins": 1
+          }
+        },
+        "loads": [
+          {
+            "key": "olmo3_instruct",
+            "repo": "allenai/Olmo-3-7B-Instruct",
+            "revision_requested": "main",
+            "commit_hash": "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
+            "n_layers": 32,
+            "hidden": 4096,
+            "layer": 16,
+            "model_type": "olmo3",
+            "dtype": "torch.float16",
+            "dry_run": false
+          },
+          {
+            "key": "qwen25",
+            "repo": "Qwen/Qwen2.5-7B-Instruct",
+            "revision_requested": "main",
+            "commit_hash": "a09a35458c702b33eeacc393d103063234e8bc28",
+            "n_layers": 28,
+            "hidden": 3584,
+            "layer": 14,
+            "model_type": "qwen2",
+            "dtype": "torch.float16",
+            "dry_run": false
+          }
+        ]
+      },
+      "pod": {
+        "id": "74de8jk0usv335",
+        "gpu": "NVIDIA A100-SXM4-80GB (SECURE)",
+        "note": "one aborted launch preceded it (launcher dropped W4_* env; full panel started, killed at first load)"
+      }
+    }
+  ]
 }

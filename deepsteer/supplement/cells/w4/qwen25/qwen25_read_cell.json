@@ -5,17 +5,33 @@
     "finite": true,
     "sign_coherent": 5,
     "passed": true,
-    "screened_request_twins": 1
+    "screened_request_twins": 1,
+    "operating_band_pairs": 18,
+    "rt_total": 19
   },
-  "stimulus_mode": "boundary",
+  "stimulus_mode": "operating",
+  "n_readout_twins": 19,
+  "rt_composition": {
+    "request_screened": 1,
+    "band": 18,
+    "total": 19,
+    "gate_mode": "operating"
+  },
   "n_request_twins": 1,
   "env": {
     "REQUEST_TWINS_SET": "union",
     "SWEEP": "1",
     "STANDARDIZE": "1",
-    "ROBUSTIFY": "zscore",
-    "BOUNDARY": "1"
+    "ROBUSTIFY": "zscore"
   },
-  "shape_verdict": null,
-  "status": "indeterminate_operating_point"
+  "gate_rule": "request_screened + operating_band_pairs >= 12 (rider 2026-09-12)",
+  "shape_verdict": {
+    "verdict": "indeterminate",
+    "R_refusal_top": 0.541,
+    "R_judgment_top": 0.6597,
+    "harm_rank1_R": 0.3838,
+    "refusal_climbs": true,
+    "gap_closes": false
+  },
+  "status": "ran"
 }

@@ -365,7 +365,7 @@ the R3 sentence stays geometric. R_b: the arrow is real (judgment-decision ablat
 on 12 prompts), D2-01 gains a causal cross-arrow, and the refusal-direction bistability is a finding
 for FL §6. Either way the 14.5 verdict is held until the discriminator runs.
 
-**Status.** open → promoted (W4 rerun pod, `14.5_gen`). `resolution_type`: experiment.
+**Status.** open; discriminator **run** (W4 rerun pod 74de8jk0usv335, 2026-09-13, `14.5_gen`, 9.7 min): texts for baseline / refusal / judgment_decision / random_0 saved in `outputs/w4/olmo3_instruct/cross_ablation_generations.npz`, per-prompt classifier outcomes agree **100%** with the saved 14.5 outcomes in all four conditions (greedy, byte-identical intervention), rates 0.62 / 0.78 / 0.74 / 0.62 reproduced. The coherence tally (R_a vs R_b) and the `heretic_ablation`-semantics control are W4-3 reads; no reading chosen here. `resolution_type`: experiment.
 
 ---
 
