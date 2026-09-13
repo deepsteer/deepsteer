@@ -1149,6 +1149,32 @@ analysis-choice change, reported under both choices, never as a silent replaceme
    the verdict under both (a) and (b); FL prose may use (b) only if the fork is stated in the
    appendix. The choice between (a) and (b) is Orion's (escalated; it does not change a PRIMARY).
 
+### Amendment 17 (2026-09-13) — W4-3 pre-verdict: 14.3 forks (replication tolerance, standardized frame, magnitude specificity)
+
+Committed before W4_RESULTS.md. Three post-hoc analysis choices on the 14.3 cell, each declared as a
+fork and reported under both choices; none changes the pre-registered Branch A/B rule itself.
+
+1. **Replication tolerance.** Amendment 14.3 required the 6/10 behavioral flip at max strength to
+   "reproduce exactly; a mismatch is harness drift and voids the cell". The pod reproduced **5/10**
+   (one item; greedy decode of a 20B mxfp4 MoE under torch 2.6 vs the Tier-1 stack). (a) letter → the
+   cell is VOID and its reads are descriptive. (b) tolerance of one item at n = 10 (the two Wilson
+   intervals, [0.31, 0.83] and [0.24, 0.76], overlap almost entirely; the difference-CI on a paired
+   10-item flip count includes 0) → the cell is licensed. Reported under both.
+2. **Frame.** The unit read the P_prefill and P_dec projections in the raw activation frame. GPT-OSS
+   is a massive-activation model (ANOMALIES A1), so the A1-consistent read standardizes activations
+   and the refusal direction by the per-dimension σ of the decision-token act-sample (n = 128, the
+   same sample that supplies the covariance-matched random directions). Both frames are reported;
+   the standardized read is the one FL may quote, stated as such.
+3. **Magnitude specificity.** The pre-registered Branch A rule nulls only the monotone *fraction*
+   against random directions. A monotone fraction can be 1.0 for any direction when the prefill
+   rewrites the position's content (referee pass item 3, "prefill echo"), so the read is completed
+   by the same random-direction null applied to the mean strong-minus-weak *move* in SD-of-sample
+   units: one-sided p = fraction of covariance-matched random directions that move at least as far
+   toward comply as the refusal direction. This does not replace the rule; it is the specificity
+   read that decides whether Branch A's "co-primary" wording is anchored. If the refusal direction's
+   move is not distinguishable from random (p > 0.05), Branch A's letter can hold while the
+   co-primary promotion is withheld and the Limitations paragraph is rewritten, not deleted.
+
 ### Amendment 15/14 rider (2026-09-12) — W4 rerun pod: 15.2 gate wording, 14.5 generation save (pre-rerun)
 
 Committed after the W4 pod of 2026-09-12 (manifest `w4_20260912T190441`) and before any rerun array is
