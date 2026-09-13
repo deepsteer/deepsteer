@@ -176,3 +176,46 @@ answered or conceded in-document.
 
 Still Orion's (unchanged from above): FL title; MN array release + PR-gate derivation + a pod for the
 Fig-1/reads-axis CIs; whether to ship P1 v2. These sit at decision/pod walls, not effort walls.
+
+## Round-3 referee pass (2026-09-13, W4-3) — the post-pod drafts (FL 34 pp, MN 16 pp)
+
+Read as the hostile reviewer who saw the July drafts. Five objections, each with the draft's answer
+and what it costs.
+
+1. *"You changed the headline numbers between drafts (0.31 → 0.25 ceiling, 0.27 → 0.24 plateau,
+   73% → 76%). Which is the result?"* Answered: the rank sweep was replicated (19 new twins, same
+   screen, same harness), the original subset reproduced the run of record (0.27, `harm_saturating`),
+   and the pooled 42-twin sweep is primary under a sign rule pre-registered before the pod. App C
+   prints all three sets side by side; §7 states the replication in one sentence. Conceded: the new
+   batch alone reads `indeterminate` with a CI touching zero, and the paper says so rather than
+   averaging it away. Cost: none further; a referee who wants n ≈ 140 for the ratio-of-ratios is told
+   so in App C.
+2. *"The GPT-OSS reversible-reader claim lost a leg."* Conceded and stated: the monotone projection
+   that corroborated the behavioral flip fails a covariance-matched random-direction null at both the
+   prefill token and the post-response decision token (p 0.17–0.23). The claim is now behavioral
+   only (7/7, 6/10, 5/10 on replication), and §10 carries the finding that the projection is a
+   position effect. This is a weaker GPT-OSS row and an honest one; the two-axis table's commit cell
+   says "behavioral, n = 7 and 10".
+3. *"`Indeterminate` for Qwen is a way of not saying `broad`."* Answered with three anchored numbers:
+   `harm_saturating` is excluded (0.6% of resamples), refusal transfer sits 0.16 above its own harm
+   rank-1 level, and the gap to judgment (0.12) has a CI [−0.04, 0.25] that covers both the plateau
+   tolerance and zero. The bootstrap verdict split (55% indeterminate / 44% broad) is printed in App D.
+   Cost: a fourth row that is a reading, not a verdict; the abstract says "indeterminate", not "broad".
+4. *"Your reliability control is circular: split-half on the same prompts that produced the 0.155."*
+   Partly conceded: the split-half bounds prompt-sampling noise on each side, and the
+   adjacent-checkpoint arm bounds drift, but neither addresses the cross-format construct difference
+   (raw base vs chat instruct), which §4 and W4_RESULTS state as the residual no reliability correction
+   removes. The ladder (0.012 / 0.070 / 0.155 / 0.999) is the anchored statement; "weak precursor"
+   replaces "almost no precursor" throughout.
+5. *"The MN's reply-inversion specificity control failed and you kept the section."* Answered: the
+   section's claim was always "a directional intervention moves the reply", and the control's failure
+   is reported as the stronger form of the limitation (harm flips 0/100 at matched norm while random
+   directions flip 61–83% by washing margins toward zero; the harm direction pushes toward safe). The
+   Qwen-14B reply-inversion number of record is not re-tested and is scoped to that model (CLAIMS
+   P7-05). Cost: a ledger entry (A10) with a zero-GPU discriminator, unrun.
+
+Not raised by this pass and worth a referee's attention: the PR gate is now null-referenced
+(4–8% of the shuffle reference) and no longer an absolute 30, which changes MN's protocol statement
+in §2 and the checklist; the App C.8 cross-ablation is reported with its instrument scope and no
+Tier-1 causal sentence; the 14.4 audit found the reasoning-trace window to be a decision-like
+position (PR 5–10), which is stated in App B as the reason the in-trace rung stays hedged.

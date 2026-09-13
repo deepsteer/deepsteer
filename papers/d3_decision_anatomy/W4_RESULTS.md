@@ -352,7 +352,11 @@ two-axis (commit cell), App D (two rows), App E.4 (one line), §10 Limitations (
    its harm rank-1, and a gap CI that includes both 0 and 0.25. That is more than the empty cell it
    replaces and less than a verdict, which is what the row will say.
 
-## Escalations (decide before prose)
+## Escalations — decided (Orion, 2026-09-13: all three recommendations accepted)
+
+1 → (b) subspace parity, Branch A applied to FL §8 / App D / MN §6. 2 → scoping applied to CLAIMS D3-22, SYNTHESIS, FL §8.2 / table / App D / App E / §10, MN §4 / §6. 3 → the §6 sentence is held; App C.8 carries the cell descriptively.
+
+Original list:
 
 1. **14.2 fork:** (a) VOID or (b) subspace parity (Amendment 16.3).
 2. **14.3 scoping:** apply the blast-radius edits (behavioral leg kept, projection leg scoped) to

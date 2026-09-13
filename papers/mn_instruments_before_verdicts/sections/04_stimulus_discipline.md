@@ -46,10 +46,12 @@ switch to the graded readout).
 **The certifying check.** These GPT-OSS behavioral cells are small, n = 7 to 10 items per
 arm, and the flip fractions below should be read at that sample size. Under the graded series,
 GPT-OSS is a reversible reader: strong exculpatory prefill flips ceiling-refusing violating
-items to comply 6/10 (reported without a CI at n=10), and the decision-channel refusal
-projection moves monotonically toward comply in all 10 items (frac_projection_moved 1.0,
-frac_monotone 1.0). The behavioral flip is the primary readout; the monotone projection
-corroborates it (with a last-token caveat on the projection). The engage direction is
+items to comply 6/10 (reported without a CI at n=10; 5/10 on a later replication of the same
+items). The decision-channel refusal projection also moves monotonically toward comply along the
+series, at the prefill token and at the post-response decision token, but a covariance-matched
+random-direction null at each position shows the movement is not specific to the refusal direction
+(one random direction in five moves as far; one-sided p 0.17 to 0.23), so the behavioral flip is the
+only readout of record and the projection is reported as a position effect. The engage direction is
 separately consequential: an inculpating-analysis prefill flips unsaturated benign requests to
 refuse 7/7 (Wilson 95% [0.65, 1.0]), so the decision is not fixed before the trace. The
 first-run disengage 0/7 was the saturation trap, now resolved. Report the behavioral flip

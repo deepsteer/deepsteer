@@ -108,7 +108,7 @@ re-derivable without re-running a model:
   random-direction null across $k \in \{1, 3, 8, 16\}$, with per-rank purity (the sweep and one-knob
   fit in \Cref{app:sweep}, \Cref{app:oneknob}).
 - **Per-rollout** GPT-OSS decision-channel refusal projections across the graded-prefill series (the
-  monotone-projection cell in \Cref{app:gpt-oss}).
+  graded-projection cell in \Cref{app:gpt-oss}, including the post-response decision-token reads).
 - **Per-pair** moral-neutral content-contrast difference vectors and the covariance-matched null
   resample arrays behind the calibration ladder (\Cref{app:ladder}).
 

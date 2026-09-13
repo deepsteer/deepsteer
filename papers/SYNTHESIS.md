@@ -2,7 +2,7 @@
 
 Program-level thesis across Directions 1–3 (OLMo-3-7B primary). Updated 2026-07-03: the GPT-OSS commit
 axis is RESOLVED — the graded-disengage pod (Amendment 12) shows GPT-OSS refusal is a **reversible
-reader** (strong exculpatory deliberation flips violating→comply 6/10 + monotone projection), the clean
+reader** (strong exculpatory deliberation flips violating→comply 6/10; the monotone-projection corroboration was later found non-specific, W4 14.3), the clean
 contrast to Llama's early-commitment; the same run banked the position gate (decision channel a 12.8-dim
 bottleneck, D2 on a fourth architecture) and engage-consequential deliberation (7/7). Earlier: D3 rank
 sweep resolved the OLMo causal verdict (`harm_saturating`); Amendment 11 hardened the Llama reads-broad
@@ -27,12 +27,12 @@ bidirectionally like OLMo.** Per cell:
 - **14.2 → fork (Amendment 16.3).** Per-component parity failed on a near-degenerate PC3 (VOID by the
   letter); subspace parity passes and the rank-4 harm basis captures no more of Llama's engage-driving
   basis than a sentiment basis (0.207 vs 0.239). Orion picks (a)/(b); Tier 2's Llama "beyond harm" is
-  unchanged either way (the rank-1 3.6% of record carries it).
+  unchanged either way (the rank-1 3.6% of record carries it). **Orion chose (b), 2026-09-13:** Branch A, rank-4 capture below the sentiment control.
 - **14.3 → reading, not co-primary.** The graded projection at the post-response decision token is
   monotone (8/8) but not refusal-direction-specific: the refusal direction moves ≈ 1 SD toward comply
   and a covariance-matched random direction moves at least that far in one draw in five, at the
   prefill token and at the decision token alike. Reversibility stays behavioral-primary (5/10 replicated
-  vs 6/10; engage 7/7). **Escalated:** every "monotone projection" corroboration clause (this file's
+  vs 6/10; engage 7/7). **Applied (Orion, 2026-09-13):** every "monotone projection" corroboration clause (this file's
   header and Tier 2 bullet, D3-22, FL §8.2/table/App D/E/§10, MN §4/§6) keeps the behavioral leg and
   scopes the projection leg. Band half: the moral band is ABOVE the null at GPT-OSS's decision token
   (0.531 vs 0.482); "position-valid" is scoped to decision-direction reads.
@@ -94,8 +94,11 @@ strongest thing the program holds.
 - **Llama (interchange at matched depth).** Refusal transfer **0.85 ≈ judgment 0.79** — reads **broad**
   moral content, the dissenting read.
 - **GPT-OSS (projection, correlational; interchange held).** Harm-keyed (prompt |cos| 0.977, in-trace
-  0.49 vs 0.13) and **reversible** — a graded exculpatory prefill flips **6/10 violating→comply** with
-  monotone projection movement (definition and graded panel: FL §8.2 / Amendment 12).
+  0.49 vs 0.13) and **reversible** — a graded exculpatory prefill flips **6/10 violating→comply**
+  (5/10 on replication); the decision-channel projection moves monotonically with the prefill at both
+  the prefill and post-response tokens but not distinguishably from covariance-matched random
+  directions (W4 14.3), so the claim is behavioral-only (definition and graded panel: FL §8.2 /
+  Amendment 12).
 - **Qwen (interchange, standardized, n = 19 operating-band twins; W4 15.2).** Refusal reads **beyond the
   harm rank-1 level** (R_refusal(16) 0.54 [0.42, 0.69] vs harm rank-1 0.38) and its gap to judgment
   (0.12 [−0.04, 0.25]) is not resolved at n = 19: `indeterminate` between OLMo's plateau and Llama's

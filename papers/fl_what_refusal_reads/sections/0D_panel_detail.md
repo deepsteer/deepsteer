@@ -54,8 +54,18 @@ The reads-broad verdict survives a harm-coextensive alternative at rank 1: weigh
 principal component by its marginal contribution to the engage effect, the request-twin harm
 direction spans only 3.6% of the engage-driving moral basis, with the engage weight sitting on the
 second and third components (0.23 each) where the harm direction captures 9.4% and 0.03%. A single
-harm cue cannot masquerade as the broad read; the rank-2/4 severity-ladder version of this control
-is a stated extraction rider on contrasts not yet saved.
+harm cue cannot masquerade as the broad read. The rank-2/4 version was then run on the severity-ladder
+contrasts (30 pairs) and the boundary twins (36 pairs) at layer 12: engage-weighted capture 0.086 /
+0.192 / 0.207 (severity) and 0.049 / 0.127 / 0.142 (boundary) at ranks 1 / 2 / 4, against a
+control basis built the same way from sentiment contrasts at 0.092 / 0.140 / 0.239, syntax and
+register at or below 0.14, a random-basis q95 below 0.002, and a self-capture positive control of
+0.755 for the moral PCs' own split half. A rank-4 harm basis captures no more of the engage-driving
+basis than a rank-4 sentiment basis does. The moral principal components were re-derived in-run
+(the original session saved none); a per-component parity check against the four saved harm
+cosines matched on components 1, 2 and 4 and missed on the near-degenerate third component (0.157
+against 0.018), while the subspace-level parity (the harm projection onto the rank-4 span, 0.336
+against 0.367) held within 0.05, and the cell is read under the subspace rule (pre-registration
+Amendment 16.3).
 
 ## D.3 Llama patch-layer sweep and boundary cell {#app:llama-commit}
 
@@ -106,7 +116,7 @@ plus the reversibility result.
 | Position gate (harmony decision channel) | participation ratio 12.8, below the 25 ceiling, position-valid |
 | Engage flip (inculpating prefill, benign $\to$ refuse) | 7/7 (Wilson 95% [0.65, 1.0]) |
 | Disengage flip (graded exculpatory prefill, violating $\to$ comply) | 6/10 |
-| Decision-channel projection under graded disengage | moved toward comply in all 10 items (projection-moved fraction 1.0, monotone fraction 1.0, mean $-124.6$) |
+| Decision-channel projection under graded disengage | moved toward comply monotonically (10/10 at the prefill token, 8/8 at the post-response decision token), about $-1$ SD of the sample; not distinguishable from covariance-matched random directions (one-sided p 0.17 to 0.23), so not a corroborating leg |
 | Decision-channel null-ratio | 372 (the channel's dominant axis of variation is the refusal split) |
 | Prompt harm-loading (instruction token) | cosine 0.977 to harm against 0.001 harm-orthogonal (near-purely harm) |
 | In-trace harm-loading | cosine 0.49 to harm against 0.13 harm-orthogonal (harm-dominant, attenuated) |
@@ -133,8 +143,8 @@ harm-rank-1 level, ceiling 0.31) and commits at or after the read layer (disenga
 $-0.62$). Llama reads broad moral content by interchange at matched depth (refusal transfer 0.85
 essentially equal to judgment 0.79) and commits early (disengage coherent below layer 15, incoherent
 at the read layer 16). GPT-OSS reads harm correlationally (prompt cosine 0.977 to harm against 0.001
-orthogonal, causal test held) and is a reversible reader (engage 7/7, disengage 6/10, monotone
-projection). Qwen reads beyond the harm-rank-1 level by interchange (refusal transfer 0.54 at rank
+orthogonal, causal test held) and is a reversible reader on behavior (engage 7/7, disengage 6/10,
+5/10 on replication). Qwen reads beyond the harm-rank-1 level by interchange (refusal transfer 0.54 at rank
 16 against harm 0.38, gap to judgment 0.12 unresolved at 19 twins, verdict indeterminate) and
 commits bidirectionally at the read layer (disengage $-2.70$, engage $+0.68$, both coherent). The
 table is the measured result; its interpretation as a dimensionality-to-reversibility law is a

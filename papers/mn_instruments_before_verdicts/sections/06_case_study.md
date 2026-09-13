@@ -54,9 +54,11 @@ credibility asset; it is cited from the flagship, not hidden.
   at matched layer 12 (§5). This amendment started this note.
 - **Harm-coextensive hardening.** The reads-broad verdict survived the rank-1
   harm-coextensive alternative: a single harm cue spans only 3.6% of the engage-driving moral
-  basis (the rank-2/4 severity-ladder version is a stated extraction rider on unsaved contrasts).
+  basis, and the rank-2/4 severity-ladder version, run later, captures no more than a
+  rank-matched sentiment basis (0.21 vs 0.24 at rank 4).
 - **Graded disengage.** The step-gate saturation trap was de-confounded: GPT-OSS
-  is a reversible reader, violating→comply 6/10 with monotone projection in all 10 items (§4.1).
+  is a reversible reader on behavior, violating→comply 6/10 (5/10 on replication); the monotone
+  projection that first corroborated it failed a later random-direction specificity null (§4.1).
 - **Confound-named hypothesis.** The n=3 categorical co-occurrence
   ("harm-readers reversible, broad-reader early-commits") was replaced by a falsifiable
   dimensionality→reversibility hypothesis with an explicit architecture confound: the read↔commit

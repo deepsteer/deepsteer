@@ -22,12 +22,20 @@ result on one does not automatically transfer to the other. Where a cell is a pr
 we say so; where it is a behavioral flip we say so; we do not silently promote a projection
 movement to a behavior change.
 
-**The prefill-last-token projection caveat.** The GPT-OSS reversibility result is primary on
-the behavioral flip (6/10 violating items flipped to comply) and corroborated by the
-decision-channel projection moving monotonically toward comply in all 10 items. That projection
-is read at the last token of the prefill, a position whose activation carries prefill-specific
-content; the monotone projection is corroboration for the behavioral flip, not an independent
-causal claim.
+**The graded projection is not refusal-specific.** The GPT-OSS reversibility result is
+behavioral (6/10 violating items flipped to comply, 5/10 on replication; 7/7 benign items flipped
+to refuse). We also read the decision-channel refusal projection along the graded prefill series,
+first at the last prefill token and then, after the model had answered, at the token that opens the
+final channel. The projection moves toward comply monotonically at both positions (8 of 8 items
+that opened a final channel). It is not, however, distinguishable from what a random direction
+does there: against 500 covariance-matched random directions drawn from the decision-token
+activation sample, the refusal direction's strong-minus-weak move (about one standard deviation of
+the sample, in raw and in standardized units) is exceeded by one random direction in five
+(one-sided p 0.17 to 0.23 across positions and frames). The prefill rewrites the position's
+content, and any direction with variance there moves with it. The projection therefore says where
+deliberation writes, not that the refusal direction reads it, and it is not a second leg of the
+reversibility claim; a direction-specific causal test at the decision token is the held Tier-2
+cell.
 
 **Stimulus-composition covariates across model bands.** The moral-family bands and null values
 are computed per model on its own activation sample, and the stimulus sets that define the

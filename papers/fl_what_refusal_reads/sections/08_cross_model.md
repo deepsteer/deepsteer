@@ -40,8 +40,11 @@ specific layer within that coherent band is a researcher degree of freedom, reco
 \Cref{app:llama-depth}. The reads-broad verdict
 survives a harm-coextensive alternative at rank 1: a single harm cue spans only 3.6% of the
 moral basis that drives Llama's refusal, so the transfer grows into moral directions the harm
-axis does not point along (a severity-ladder version of this control at rank 2–4 awaits
-contrasts not yet collected). Llama reads broad moral content, not just harm. The full
+axis does not point along. The richer version of the control holds too: a harm basis of rank 2
+or 4 built from severity-ladder contrasts captures no more of the engage-driving moral basis
+(0.19 and 0.21) than a rank-matched basis built from sentiment contrasts (0.14 and 0.24), against
+a random-basis floor below 0.002 and a self-capture positive control of 0.76 (\Cref{app:panel}).
+Llama reads broad moral content, not just harm. The full
 depth-matched battery at layer 12 is in \Cref{app:panel}.
 
 The commitment axis is why the matched-depth qualifier is load-bearing. Llama's refusal is
@@ -90,12 +93,14 @@ What GPT-OSS adds is the commitment axis at its most informative extreme: it is 
 reader*. An inculpating-analysis prefill flips unsaturated benign requests to refuse 7 out of 7
 (Wilson 95% [0.65, 1.0]), so the decision is not fixed before the trace, deliberation is
 consequential. And in the other direction, a graded exculpatory prefill flips ceiling-refusing
-violating items to comply 6 out of 10, with the decision-channel refusal projection moving
-monotonically toward comply in all 10 items (projection-moved fraction 1.0, monotone fraction
-1.0). \Cref{fig:reversibility} shows the graded panel, with the per-strength series tabulated
-in \Cref{app:panel}. These reversibility results rest on small samples on a single model
-(n=7 engage, n=10 disengage on GPT-OSS), and the corroborating projection is read at a
-prefill-contaminated position (\Cref{limitations}). GPT-OSS reverses in both directions;
+violating items to comply 6 out of 10 (5 of 10 on a later replication of the same items).
+\Cref{fig:reversibility} shows the graded panel, with the per-strength series tabulated in
+\Cref{app:panel}. The decision-channel refusal projection also moves toward comply as the prefill
+strengthens, at the prefill token and at the post-response decision token alike, but that movement
+is not specific to the refusal direction: covariance-matched random directions move as far in about
+one draw in five (\Cref{limitations}), so the projection reports where the prefill writes and is
+not a second leg of the reversibility claim. These reversibility results rest on small samples on a
+single model (n=7 engage, n=10 disengage on GPT-OSS). GPT-OSS reverses in both directions;
 its refusal is a read that deliberation can re-argue, the clean contrast to Llama's early
 commitment.
 
@@ -129,8 +134,8 @@ Llama-3.1-8B & Broad moral content (refusal & Early (disengage coherent \\
  & transfer 0.85 $\approx$ judgment 0.79 & below layer 15, incoherent \\
  & at matched depth, gap closes) & at the read layer 16) \\[2pt]
 GPT-OSS-20B & Harm (correlational: in-trace cosine & Reversible reader (engage \\
- & 0.49 to harm vs 0.13 orthogonal; & 7/7, disengage 6/10, \\
- & causal test held) & monotone projection) \\
+ & 0.49 to harm vs 0.13 orthogonal; & 7/7, disengage 6/10; \\
+ & causal test held) & behavioral, $n = 7$ and 10) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -178,8 +183,7 @@ already fixed. The asymmetry is a consequence of early commitment, not a separat
 \includegraphics[width=\linewidth]{fl_gpt_oss_reversibility.pdf}
 \caption{GPT-OSS is a reversible reader. A graded exculpatory-analysis prefill (increasing
 strength, left to right) flips ceiling-refusing violating items toward compliance, 6 of 10
-flipping behaviorally, while the decision-channel refusal projection moves monotonically toward
-comply in all 10 items (monotone fraction 1.0). In the other direction an inculpating prefill
+flipping behaviorally (5 of 10 on replication). In the other direction an inculpating prefill
 flips benign requests to refuse 7 of 7. Deliberation is consequential and reversible in both
 directions, the clean contrast to Llama's early commitment.}
 \label{fig:reversibility}
