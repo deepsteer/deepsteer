@@ -1119,6 +1119,36 @@ model-load overhead (six loads, ~0.1 h each).
 
 Spine preserved. Amendments 14/15 add cells; they relax no prior gate.
 
+### Amendment 16 (2026-09-13) — W4-3 pre-verdict: the 14.1 null rung as a verdict input; the crystallization trajectory in the Tier-3 sentence; a declared fork on the 14.2 parity gate
+
+Committed before any W4 verdict is written (W4_RESULTS.md). Items 1–2 are the two zero-cost promotions
+Orion approved at Gate W4-1 (WRITEUP_PHASE_PLAN, Gate W4-1 item 5). Item 3 is a **fork**: a post-hoc
+analysis-choice change, reported under both choices, never as a silent replacement.
+
+1. **14.1 ladder (promotion 5a).** The covariance-matched single-direction null computed in the
+   zero-GPU arm (CLAIMS W4-02: q95 0.070 from the base L16 act-sample, n = 1754) is promoted from a
+   descriptive rung to a verdict input. The Tier-3 quantity is read on the ladder isotropic chance
+   sqrt(2/(π·4096)) ≈ 0.012 → matched-null q95 0.070 → measurement 0.155 → moral-subspace positive
+   control 0.999, instead of against the bare 0.50 threshold. Wording rule: 0.155 is "a weak
+   precursor (≈ 2× the matched-null q95)", never "almost no precursor"; the 0.50 threshold is kept as
+   the crystallization bar the moral subspace clears and refusal does not.
+2. **Tier-3 sentence carries the trajectory (promotion 5b).** The per-checkpoint proto-refusal→gate
+   cosine (flat 0.139–0.155 across 13 stage-3 states while proto-refusal's self-cosine to final rises
+   0.93 → 1.0) may be stated in the FL Tier-3 sentence and drawn as a second curve in the
+   crystallization figure.
+3. **14.2 parity gate — fork.** Amendment 14.2 pre-registered a per-component harness-parity check:
+   re-derived |cos(d_harm, PC_i)| for i = 1..8 must match the saved values within 0.05 each, else the
+   cell is void. The pod's re-derivation matches PC1/PC2/PC4+ within tolerance and misses on **PC3**
+   (0.157 vs 0.018; max |Δ| = 0.139): the third and neighbouring components of a 1057-pair PCA are a
+   near-degenerate pair whose order is not stable to the σ used for standardization, so a
+   per-component cosine is the wrong invariant for a rank-4 *subspace* comparison. The fork:
+   (a) **pre-registered rule** → the cell is VOID; its capture numbers are reported as descriptive only.
+   (b) **subspace-level parity** → the harm vector's projection fraction onto span(PC1..PC4) must match
+   the saved value within 0.05 (saved 0.367 from the four saved cosines; re-derived 0.337; |Δ| = 0.030).
+   Under (b) the cell is licensed and the Branch A/B rule of 14.2 applies unchanged. W4_RESULTS reports
+   the verdict under both (a) and (b); FL prose may use (b) only if the fork is stated in the
+   appendix. The choice between (a) and (b) is Orion's (escalated; it does not change a PRIMARY).
+
 ### Amendment 15/14 rider (2026-09-12) — W4 rerun pod: 15.2 gate wording, 14.5 generation save (pre-rerun)
 
 Committed after the W4 pod of 2026-09-12 (manifest `w4_20260912T190441`) and before any rerun array is
