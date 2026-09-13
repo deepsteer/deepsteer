@@ -303,3 +303,15 @@ class TestRerunRider:
         assert not verify_manifest(main / "manifest_w4.json")
         assert not (rerun / "qwen25" / "qwen25_read_cell.json").exists()   # moved, not copied
         _ = new_sha
+
+
+class TestLauncherPassthrough:
+    def test_launcher_forwards_every_w4_env_the_remote_reads(self):
+        # assert the d1 launcher forwards each W4_* variable remote_w4.sh consumes (the 2026-09-12
+        # rerun launched the full panel because W4_MODELS/W4_UNITS/W4_OUT_SUBDIR were dropped)
+        remote = (REPO / "scripts" / "remote_w4.sh").read_text()
+        launcher = (REPO / "papers" / "d1_moral_subspace" / "runpod" / "run_session.sh").read_text()
+        used = sorted(set(re.findall(r"\$\{(W4_[A-Z_]+)", remote)))
+        assert used, "remote_w4.sh reads no W4_* variables?"
+        for v in used:
+            assert f"{v}='${{{v}:-}}'" in launcher, f"launcher does not forward {v}"
