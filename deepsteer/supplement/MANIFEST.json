@@ -76,7 +76,7 @@
       "path": "figure_data/bottleneck_pr.csv",
       "bytes": 309,
       "sha256": "83e7a8a0bee6390deb80f7e250ea4830ce23b02e134dec57e6ab6c594f419547",
-      "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (the former decision-token column: Llama 13.5 was this position standardized), content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
+      "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (Llama 14.2, Qwen 13.5, OLMo 20.3 on the W4 sample; the D3-harness Llama 13.5 is a different sample), the former decision-token column, content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
       "produced_by": "cells/olmo3_decision_anatomy.json + per-model D2 position-gate sessions",
       "shared_across_papers": true,
       "cited_by": [

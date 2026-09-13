@@ -246,10 +246,12 @@ CI (half-samples, n^{-1/2} rescaled, 500 draws) is the interval of record for th
 shuffle reference and 3.6–7.4% of the sample-rank ceiling, and 2.6–9.4× below the content positions
 of the same texts; the content positions sit at or above their Gaussian null q95 (quantile 0.92–1.00)
 while the decision sites sit inside theirs (0.63–0.77), i.e. the decision site carries no
-dimensionality beyond its own covariance. **NI-2 closes:** Llama's "decision-site 10.2 vs
-decision-token 13.5" was never two positions; on one sample the same position reads 10.3 raw and 14.2
-standardized, and the 13.5 of record is the standardized D3-harness read (request-twin set). MN Table 1's
-"decision-token" column is relabeled a standardization column.
+dimensionality beyond its own covariance. **NI-2 resolves (corrected 2026-09-13 after the cold-context MN audit):** Llama's "decision-site 10.2 vs
+decision-token 13.5" is one position under two harnesses and normalizations, not two positions: on the
+W4 in-format sample it reads 10.3 raw and **14.2** standardized; the 13.5 of record is the D3
+decision-anatomy harness's standardized read on its request-twin sample (D3-14), consistent with 14.2
+within 0.7. An earlier draft of this paragraph wrongly identified 13.5 as the W4 standardized value
+(13.5 is Qwen's). MN Table 1's "decision-token" column is relabeled a standardization column.
 
 ## 14.6b Reply-inversion specificity (Amendment 14.6b; ledger A10)
 

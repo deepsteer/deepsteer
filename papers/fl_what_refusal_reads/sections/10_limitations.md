@@ -1,8 +1,8 @@
 # 10. Limitations {#limitations}
 
-**The panel is three points and confounded.** The two-axis table (\Cref{tab:two-axis}) is a
-measured result, but its interpretation as a dimensionality-to-reversibility law is a
-hypothesis on three models that differ in lineage, scale, tokenizer, and
+**The panel is three resolved points plus one indeterminate, and confounded.** The two-axis table
+(\Cref{tab:two-axis}) is a measured result, but its interpretation as a dimensionality-to-reversibility
+law is a hypothesis on three resolved models (Qwen's read is indeterminate) that differ in lineage, scale, tokenizer, and
 reasoning-versus-instruct training simultaneously. A one-axis account (the effective
 dimensionality of the refusal read predicts reversibility) and a lineage account fit the same
 three points equally well. We state the hypothesis; we do not claim the mechanism. Deconfounding

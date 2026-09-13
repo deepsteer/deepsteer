@@ -45,7 +45,7 @@ bidirectionally like OLMo.** Per cell:
   clause is escalated with the instrument scope (single-layer projection-out).
 - **14.6 → CIs banked; NI-2 closed; reply inversion Branch B.** Decision sites 14.7 [14.3, 16.2] /
   8.6 [8.2, 9.4] / 10.3 [10.1, 11.1] / 9.4 [9.1, 10.7], each 4–8% of the column-shuffle reference;
-  Llama's 10.2-vs-13.5 was raw-vs-standardized at one position. On Llama the harm axis flips 0/100
+  Llama's 10.2-vs-13.5 is one position under two harnesses (W4 in-format: 10.3 raw / 14.2 standardized; D3 harness: 13.5 standardized). On Llama the harm axis flips 0/100
   replies at matched norm while random directions flip 61–83% (A10).
 - **15.1 → shape survives.** Pooled n = 42 `harm_saturating`, R_refusal(16) 0.242 [0.134, 0.405] vs
   0.659; the 19 new twins alone `indeterminate` with the same sign; one-knob ceiling 0.246, RMSE 0.023;

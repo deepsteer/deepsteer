@@ -53,7 +53,7 @@ all writers neither), as \Cref{app:llama-anatomy} reports.
 ## G.3 Reading the two together {#app:distributed-reading}
 
 On both models the refusal write is many small contributions into a low-rank control channel, a
-refusal cone rather than a single direction, consistent with the 9-to-15-dimensional bottleneck of
+refusal cone rather than a single direction, consistent with the 8-to-15-dimensional bottleneck of
 \Cref{bottleneck}. The GPT-OSS battery shows the consequence for removability (no single direction
 suffices on a model whose refusal is spread across the trace), and the OLMo attribution shows the
 mechanism on a model where a single direction does suffice: even there, the direction that a

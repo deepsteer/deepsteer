@@ -79,7 +79,8 @@ to it moves refusal more than a random rank-3 patch does ($\Delta = 0.031$, pair
 moral-subspace patch ($-0.0282$), so almost all of the specific effect is harm. The
 ratio-of-ratios of restricted-to-full transfer is wider than the sweep below (refusal 0.34,
 judgment 0.52, difference 0.18 with a bootstrap 95% CI of [$-0.24$, 0.39] that includes 0 at this
-count), so the sweep, not the single ratio, resolves the shape.
+count; on the pooled 42-twin run the difference is 0.21 with CI [$-0.07$, 0.39], still including 0,
+as the pre-registered power table predicted), so the sweep, not the single ratio, resolves the shape.
 
 ## C.4 The nested rank sweep {#app:sweep}
 
@@ -110,8 +111,9 @@ session; the original subset reproduces the run of record ($R_{\text{refusal}}(1
 `harm_saturating`), the new subset alone reads `indeterminate` (same sign of the gap, plateau CI
 touching 0), and the pooled sweep is primary under the pre-registered sign rule. Judgment transfer
 climbs to 0.66 while pooled refusal transfer rises to $k = 3$ (0.27) and holds flat at 0.22–0.24,
-at the harm-rank-1 level (harm-rank-1 transfer 0.33), with the random-direction null near zero at
-every rank. About 76% of refusal's causal twin-difference input lies outside the rank-16 moral
+within the 0.10 tolerance of the harm-rank-1 transfer (0.33), with the random-direction null near
+zero at every rank. $R_{\text{judgment}}(k)$ is measured on the compositional twins shared by all
+three sets, so it is identical across the rows. About 76% of refusal's causal twin-difference input lies outside the rank-16 moral
 basis (73% already at the rank-3 peak). No per-rank confidence interval on
 $R_{\text{judgment}}(k) - R_{\text{refusal}}(k)$ is reported; the one difference-CI computed for
 this contrast (\Cref{app:interchange}) includes 0 at $n = 42$ (0.21, [$-0.07$, 0.39]), as the

@@ -49,7 +49,8 @@ threshold. Panel (b): across 13 stage-3 pretraining checkpoints the proto-refusa
 crystallizes (self-cosine to its final state 0.93 rising to 1.0) while its cosine to the eventual
 instruct gate stays flat between 0.139 and 0.155; split-half reliability is 0.99 on both sides of the
 0.155, so the low value is not estimation noise. Moral comprehension is pretraining-native and
-inherited; the refusal decision is a fresh post-training construction with a weak, non-crystallizing
+inherited; the refusal decision is a fresh post-training construction with a weak precursor whose alignment to the gate never grows; the
+precursor itself crystallizes, its alignment does not. It is a fresh
 precursor. Regenerable from committed data (\Cref{app:repro}).}
 \label{fig:crystal}
 \end{figure}

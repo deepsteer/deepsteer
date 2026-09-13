@@ -49,7 +49,7 @@ between activations on requests the model refuses and requests it complies with,
 decision token (the control token before the assistant header on instruct models, the end-of-prompt
 token in the reasoning model's harmony format), on OLMo-3 at layer 16. On the base model we also
 extract a *proto-refusal* direction from the same harmful-versus-harmless contrast, to test whether
-the aligned gate has a pretraining precursor. It does not: the cosine between the base proto-refusal
+the aligned gate has a pretraining precursor. It has only a weak one: the cosine between the base proto-refusal
 and the aligned refusal gate at the layer where the gate is defined is 0.155, below the 0.50
 crystallization threshold that the moral subspace clears on its way to 0.999.
 
@@ -89,7 +89,7 @@ randoms, and the readout it is associated with. Values below are for OLMo-3 unle
 |---|---|---:|---:|---:|---|
 | Moral subspace (3 source axes) | content (mean-pooled) | 16 | 40+ (content, healthy) | 59 / 36 / 16 (instruct axes) | moral comprehension (probe accuracy 1.0) |
 | Refusal gate (aligned) | decision token | 16 | 14.7 (decision bottleneck) | 0.0 ($\leq$ q10) | refusal behavior / projection |
-| Proto-refusal (base) | decision token | 16 | 14.7 (decision bottleneck) | 37.4 | base refusal precursor |
+| Proto-refusal (base) | decision token | 16 | not measured on the base model | 37.4 | base refusal precursor |
 | Judgment-decision | decision token | 16 | 14.7 (decision bottleneck) | ordinary-to-high | moral judgment |
 | Persona reference | content (mean-pooled) | 16 | 40+ (content, healthy) | 13 (instruct) / 4.5 (base) | speaker voice (reference axis) |
 | Harm direction | instruction token | 16 | full-rank content | ordinary-to-high | harmfulness percept |

@@ -157,8 +157,8 @@ The refusal gate, in contrast, is a fresh post-training construction with only a
 pretraining precursor (proto-refusal-to-gate cosine 0.155, twice a matched null's q95 of 0.07,
 reliability 0.99 on both sides), written into a narrow 8-to-15
 effective-dimensional control-token channel where the refusal decision is orthogonal to the
-moral-judgment decision (no coupling detectable above |cos| 0.10; on OLMo null q95 0.41, Qwen
-0.42, Llama 0.51). What refusal reads is established
+moral-judgment decision (|cos| 0.10 on OLMo and 0.08 on Llama against null q95 0.41 and 0.51;
+0.32 on Qwen against 0.42, the thinnest margin). What refusal reads is established
 causally on one model, a nested interchange rank sweep on OLMo-3 (42 request-twins, a 23-twin
 run replicated and pooled with 19 new twins): as the moral basis expands, judgment coupling
 climbs to 0.66 while refusal coupling levels off at the rank-1 harm level (0.24, 95\% CI

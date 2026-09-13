@@ -8,7 +8,7 @@ credibility asset; it is cited from the flagship, not hidden.
 - **Null degeneracy.** The instruct-model covariance null saturated on
   Qwen/Llama. Fix: standardized recompute; OLMo unchanged raw→standardized certified it.
 - **Position gate.** The decision site is a PR-14.7 bottleneck with the
-  positive control below the null. Fix: PR<30 position-invalid flag; V_moral re-typed as
+  positive control below the null. Fix: null-referenced PR position-invalid flag; V_moral re-typed as
   format-robust (invalid-position artifact at `final_pre_assistant`, band matches at the valid
   `mean_content` position), and the content-projection numbers re-typed as non-verdict.
 - **Referee-pass hardening.** Before any asset was built, a referee pass
@@ -69,8 +69,8 @@ credibility asset; it is cited from the flagship, not hidden.
 ## 6.1 Reflexive discipline: the program audits its own published paper {#reflexive-discipline}
 
 A cold-boot re-read turned the same scrutiny on the program's own published work. Paper 1 (Reblitz-Richardson, 2026, arXiv:2606.11375v1, 9 Jun 2026) stated a raw layer-depth fragility gradient as its abstract-level Finding 2: late layers
-were reported as far more fragile than early ones, with a raw late/early σ* ratio up to ~14.7×
-(the claim ledger records the range as 7–15×; Table 2 late 10.0 / early 1.8), plus a raw post-saturation
+were reported as far more fragile than early ones, with a raw late/early σ* ratio of 7 to 15× across
+checkpoints (one checkpoint's late 10.0 / early 1.8 in that paper's Table 2), plus a raw post-saturation
 σ* decline from 18.3 to 4.7. A post-submission control (§4.4, RMS normalization) shows the
 gradient is largely an activation-scale artifact: under RMS normalization the ratio collapses to
 ~1.8–2× (the residual ~2× is not claimed as a genuine gradient, since RMS controls scale not
@@ -124,15 +124,15 @@ protocols, each demonstrated on one or two members of a four-model panel, not si
 seen on four models.
 
 **The position-validity gate can flag a real direction.** The PR gate declares a position
-invalid for content projection-fraction tests, but its false-invalid rate is unquantified. A
-genuine content direction present at a narrow position would be flagged the same way as a
-weak-instrument artifact. The gate is calibrated to catch band-below-null cases; it is not
+invalid for content projection-fraction tests, but its false-invalid rate is not quantified beyond
+one panel case. A genuine content direction present at a narrow position would be flagged the same
+way as a weak-instrument artifact, and on this panel that happens once in four: GPT-OSS's harmony
+decision token sits at 8 percent of its shuffle reference and yet keeps its moral band above the
+covariance null (0.53 against 0.48), so the PR gate alone would have flagged a position the band
+test passes. The gate is calibrated to catch band-below-null cases; it is not
 calibrated against a bank of known-present directions at narrow positions, so it can suppress a
-real read. One panel position already shows the other side of this: at GPT-OSS's harmony decision
-token the held-one-out moral band sits above its covariance-matched null (0.53 against 0.48)
-despite a participation ratio of 9.4, so a narrow position can carry content the band detects,
-and the gate is a validity flag for the projection instrument, not a statement that the position
-is empty.
+real read. The gate is a validity flag for the projection instrument, not a statement that the position is
+empty, and the band test, not the PR alone, is the deciding check.
 
 **Standardization can destroy anisotropic signal.** Per-dimension standardization rescues the
 covariance-matched null in massive-activation families (§2.3), but z-scoring flattens genuine

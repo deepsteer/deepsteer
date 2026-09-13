@@ -1,7 +1,7 @@
 # 7. Checklist: the reusable protocol {#checklist}
 
 The ship-blocker gates below are the portable form of the program's discipline. They are
-appendix-form restatements of the companion skills.
+the portable form of the program's internal checklists.
 
 **Before any projection-fraction / cosine geometric cell:**
 

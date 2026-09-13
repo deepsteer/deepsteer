@@ -33,7 +33,7 @@ ROOT = os.path.normpath(os.path.join(HERE, ".."))
 # from. Shared artifacts are used by both papers and live here once.
 META: dict[str, dict] = {
     "figure_data/bottleneck_pr.csv": {
-        "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (the former decision-token column: Llama 13.5 was this position standardized), content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
+        "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (Llama 14.2, Qwen 13.5, OLMo 20.3 on the W4 sample; the D3-harness Llama 13.5 is a different sample), the former decision-token column, content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
         "produced_by": "cells/olmo3_decision_anatomy.json + per-model D2 position-gate sessions",
         "shared": True,
         "cited_by": ["flagship:Fig bottleneck-PR (sec 5)", "methods-note:Fig 1 + Table 1 (sec 2)"],

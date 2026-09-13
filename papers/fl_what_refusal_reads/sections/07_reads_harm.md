@@ -42,7 +42,7 @@ effect on $r$ that is reproduced when the patch is confined to the top-$k$ direc
 moral subspace. On the pooled 42 twins, as $k$ grows over $\{1, 3, 8, 16\}$, judgment transfer
 climbs $0.05 \to 0.46 \to 0.59 \to 0.66$ while refusal transfer *rises to $k = 3$ (0.27) and then
 holds flat at 0.22–0.24* ($0.03 \to 0.27 \to 0.22 \to 0.24$; at $k = 16$, 95% bootstrap CI
-[0.13, 0.41]) at the harm-rank-1 level (harm-rank-1 transfer 0.33), with a random-direction null
+[0.13, 0.41]), within the pre-registered 0.10 tolerance of the harm-rank-1 transfer (0.33), with a random-direction null
 near zero at every rank and per-rank purity 0.97–0.99. The shape replicates: the original 23
 twins alone give $0.01 \to 0.31 \to 0.26 \to 0.27$ (the run of record, the same
 `harm_saturating` verdict), the 19 new twins alone give $0.05 \to 0.22 \to 0.16 \to 0.20$ with
@@ -55,8 +55,8 @@ rank-16 moral basis (73% already at the rank-3 peak). Judgment reads two-thirds 
 patch effect (0.66) *on the same patches*, which is the within-model proof that the content is
 there to be read; refusal simply does not read it. The per-rank gap
 $R_{\text{judgment}}(k) - R_{\text{refusal}}(k)$ is not itself given a confidence interval, and the
-one interval we compute on this contrast (the restricted-to-full transfer difference, 0.21 on the
-pooled run) has a bootstrap 95% CI [$-0.07$, 0.39] that includes 0 at $n = 42$
+difference-CI we compute on this contrast (the restricted-to-full transfer difference, 0.21 on the
+pooled run, 0.18 on the original 23) has a bootstrap 95% CI [$-0.07$, 0.39] that includes 0 at $n = 42$
 (\Cref{app:interchange}), as the pre-registered power table said it would at this count. The shape
 claim rests on the replicated plateau, whose own interval excludes both zero and the judgment
 curve, not on a gap-CI.
@@ -86,8 +86,8 @@ per-rank difference-CI on the refusal-minus-judgment gap is not computed; \Cref{
 basis expands ($k \in \{1, 3, 8, 16\}$), judgment transfer $R_{\text{judgment}}(k)$ climbs
 $0.05 \to 0.46 \to 0.59 \to 0.66$ (open markers) while refusal transfer
 $R_{\text{refusal}}(k)$ rises to $k = 3$ (0.27) and then holds flat at 0.22–0.24
-($0.03 \to 0.27 \to 0.22 \to 0.24$, pooled $n = 42$; bars are 95\% bootstrap intervals over twins)
-at the harm-rank-1 level (filled markers); a random-direction null is near zero throughout. The
+($0.03 \to 0.27 \to 0.22 \to 0.24$, pooled $n = 42$; bars are 95\% bootstrap intervals over twins),
+within the 0.10 tolerance of the harm-rank-1 transfer 0.33 (filled markers); a random-direction null is near zero throughout. The
 dashed curve is the one-knob fit $R_{\text{refusal}}(k) \approx \min(\text{harm ceiling} = 0.25,
 R_{\text{judgment}}(k))$, RMSE 0.023. Refusal reads the harm percept and stops;
 judgment reads two-thirds of the subspace patch effect (0.66) on the same patches. Regenerable from committed data

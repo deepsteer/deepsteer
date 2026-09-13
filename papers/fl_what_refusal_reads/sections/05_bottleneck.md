@@ -14,8 +14,10 @@ GPT-OSS-20B, an 8-to-15 effective-dimensional channel on all four models. Conten
 the same layers are full-rank-healthy by comparison (participation ratio above 40 on OLMo,
 above 33 on Qwen, above 35 on Llama). \Cref{fig:bottleneck} plots the four decision-site
 values against the position-validity gate. (The Llama value of record is 10.2, measured on the
-in-format ladder and directly comparable to OLMo's 14.7 and Qwen's 8.6; a separate
-decision-token harness reads 13.5 at a second position. Both are far below 30.)
+in-format ladder and directly comparable to OLMo's 14.7 and Qwen's 8.6; on a later 240-text sample
+the same position reads 10.3 with a subsampling interval of [10.1, 11.1], and 14.2 after per-dimension
+standardization; the decision-anatomy harness, standardized and on request-twin stimuli, reads 13.5.
+All are a few percent of the column-shuffle reference, \Cref{app:panel-bottleneck}.)
 
 This narrowness is the reason a projection-fraction instrument fails at the decision site, and
 it is also a substantive fact about where the decision lives. At the OLMo-3 decision token the

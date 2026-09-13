@@ -14,17 +14,18 @@ position, and normalization.
 |---|---|---|---|---|---|
 | OLMo-3-7B-Instruct | 14.7 [14.3, 16.2] | 20.3 | 62.8 / 40.4 | 0.066 | 43 → 94 |
 | Qwen2.5-7B | 8.6 [8.2, 9.4] | 13.5 | 42.4 / 32.7 | 0.041 | 1.0 → 39 |
-| Llama-3.1-8B | 10.3 [10.1, 11.1] | 14.2 | 97.3 / 26.7 | 0.050 | 1.5 → 89 |
+| Llama-3.1-8B | 10.2 of record; 10.3 [10.1, 11.1] on this sample | 14.2 | 97.3 / 26.7 | 0.050 | 1.5 → 89 |
 | GPT-OSS-20B | 9.4 [9.1, 10.7] | 12.8 | n/a | 0.084 | n/a |
 
 Table: Participation ratio (PR = (Σλ)²/Σλ²) by model, position, and normalization, measured on one
 240-text sample per model (128 for GPT-OSS) at the primary layer. The raw decision-site column is
 the value plotted in Figure 1; intervals are subsampling intervals over texts (the row-resampling
 bootstrap is biased low because duplicated rows lower the sample rank, and is not used). The
-standardized column is the same position after per-dimension z-scoring; the Llama 13.5 quoted in
-earlier drafts as a second position and harness was this standardized read from the
-decision-anatomy harness, so the decision-token and decision-site numbers were one position under
-two normalizations. Content-position PRs are full-rank-healthy. The shuffle reference is the PR
+standardized column is the same position after per-dimension z-scoring. The Llama 13.5 quoted in
+§3.2 comes from the decision-anatomy harness (standardized, request-twin stimuli, a different
+sample): one position under a second harness and normalization, not a second token; the two
+standardized reads (13.5 there, 14.2 here) agree to within 0.7, and the in-format value of record
+stays 10.2 (10.3 on this sample). Content-position PRs are full-rank-healthy. The shuffle reference is the PR
 after independent column permutations, which keeps every marginal variance and destroys the
 correlations: every decision site sits at 4 to 8 percent of it, and at 3.6 to 7.4 percent of its
 sample-rank ceiling, while the content positions of the same texts sit 2.6 to 9.4 times higher.
@@ -46,7 +47,7 @@ position, so it cannot certify absence of anything.
 **The tell.** The positive control sits below the null. Band-below-null ⇒ position-invalid
 instrument. The moral band is not only a yardstick for "moral-adjacent"; it is a validity
 check on the measurement position. The cause here is dimensionality, not an outlier
-dimension (the top dim carries 0.2% of variance) and not a null that standardization can
+dimension (at this decision token the top dim carries 0.2% of variance) and not a null that standardization can
 rescue (the null stays 0.52 after z-scoring). The channel is simply narrow: participation
 ratio 14.7. The `√(3/14.7) = 0.45` heuristic (a rank-3 subspace at PR 14.7) predicts a
 median-scale projection; comparing that 0.45 against a null q95 of 0.557 and against the
@@ -65,7 +66,8 @@ content positions (Table 1); an absolute threshold of 30 was the working rule in
 earlier sessions, and it is kept here only as the historical value. An absolute bar is not
 evaluable at small sample sizes: with 64 rollouts the sample-rank ceiling is 63, and a content
 position that reads 22 to 29 there is above its own covariance-matched sampling null while
-failing the 30. (The false-invalid rate of the gate is unquantified; see Limitations.)
+failing the 30. (The false-invalid rate of the gate is not quantified beyond one panel case, GPT-OSS's
+decision token, where the band survives the null despite a low PR; see Limitations.)
 
 **The certifying check and the reframe.** Position-invalid does not mean uninterpretable
 model. A projection-fraction test fails there, but a decision-*direction* cosine does
@@ -109,7 +111,8 @@ token is a different position and had to be checked there, not assumed from the 
 number.
 
 **The protocol and check.** At the decision-token channel where the refusal and judgment
-cells actually read, Llama is clean: participation ratio 13.5, covariance null 0.148, which
+cells actually read, Llama is clean: participation ratio 13.5 (standardized, on that harness's
+request-twin sample; 14.2 standardized and 10.2 raw on the in-format sample), covariance null 0.148, which
 barely moves to 0.114 under per-dimension standardization. The outlier lives at content
 positions, not at the ~13-dim control-token decision bottleneck, which is clean and low-rank
 across OLMo and Llama alike. So the "decision site is a narrow control-token channel"
@@ -128,7 +131,7 @@ direction, so the test has no discriminating power.
 
 **The tell.** The null value itself is near its ceiling. The mechanism is the same massive
 activations as the outlier finding above: Qwen dim 458 = 59% of residual variance, Llama dim 788 = 32%, OLMo-3's
-top dim = 1.4%. `Σ̂` is dominated by these dims, covariance-matched random directions nearly
+top dim = 1.4% at the content position of the geometric cell. `Σ̂` is dominated by these dims, covariance-matched random directions nearly
 all align with them, and they project ~1 onto any subspace with a component there. The same
 dims collapse distinct raw mean-diff directions (Qwen ethics ≈ moral mean-diff |cos| = 0.90).
 This is the known massive-activations / attention-sink phenomenon (Sun et al., 2024;

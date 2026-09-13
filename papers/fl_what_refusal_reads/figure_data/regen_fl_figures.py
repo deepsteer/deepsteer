@@ -157,7 +157,7 @@ def fig_bottleneck_pr() -> str:
     )
 
     fig.suptitle(
-        "The refusal decision lives in a 9-to-15-dimensional control-token "
+        "The refusal decision lives in an 8-to-15-dimensional control-token "
         "bottleneck (four models)",
         fontsize=11,
     )
@@ -498,8 +498,8 @@ def fig_reversibility() -> str:
     # Monotone decision-channel note (all 10 exculpating items moved to comply).
     ax.text(
         0.5, 0.14,
-        "Decision-channel projection moved monotonically\n"
-        "toward comply in all 10 exculpating items",
+        "Behavioral flips only (5/10 on replication); the decision-channel\n"
+        "projection moves for random directions too, so it is not a second leg",
         transform=ax.transAxes, ha="center", va="bottom",
         fontsize=8, color=GRAY_EC, style="italic", bbox=ANN_BBOX,
     )

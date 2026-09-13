@@ -1,0 +1,42 @@
+{
+  "method": "m-out-of-n subsampling without replacement, m = n/2, 500 draws, deviations rescaled by sqrt(m/n); complements the row-resampling bootstrap in pr_profiles.json, which is biased low (duplicated rows lower the sample rank)",
+  "seed": 0,
+  "cells": {
+    "olmo3_instruct/final_pre_assistant": {
+      "n": 240,
+      "pr": 14.689,
+      "subsampling_ci95": [
+        14.334,
+        16.181
+      ],
+      "half_sample_median": 13.861
+    },
+    "llama31/final_pre_assistant": {
+      "n": 240,
+      "pr": 10.291,
+      "subsampling_ci95": [
+        10.101,
+        11.116
+      ],
+      "half_sample_median": 9.858
+    },
+    "qwen25/final_pre_assistant": {
+      "n": 240,
+      "pr": 8.64,
+      "subsampling_ci95": [
+        8.176,
+        9.438
+      ],
+      "half_sample_median": 8.31
+    },
+    "gpt_oss_20b/harmony_decision_token": {
+      "n": 128,
+      "pr": 9.402,
+      "subsampling_ci95": [
+        9.091,
+        10.647
+      ],
+      "half_sample_median": 8.698
+    }
+  }
+}

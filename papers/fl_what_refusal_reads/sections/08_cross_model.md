@@ -1,7 +1,9 @@
 # 8. Across families: what refusal reads and how it commits {#cross-model}
 
-The OLMo result is one model. A four-model panel shows that the harm-reading picture
-generalizes but that refusal decisions differ along two separable axes: *what* they read
+The OLMo result is one model. A four-model panel shows that the harm-reading picture holds on
+two of the four models (OLMo causally, GPT-OSS correlationally), that one model reads broad moral
+content and one is indeterminate between the two, and that refusal decisions differ along two
+separable axes: *what* they read
 (harm versus broad moral content) and *how* they commit (at the read layer, early, or
 reversibly).
 
@@ -17,15 +19,18 @@ floor, so about 85% of it lies outside the moral foundations, the same "reads a 
 object the OLMo rank sweep formalizes. And it is causal: reply-inversion steering
 (adding the harm direction to the residual stream and counting how many model replies flip from
 one judgment to its opposite) along the harm direction flips model judgments (Qwen2.5-14B-Instruct
-shift $+17.4$ flips 33% of replies, Llama-3.1-8B-Instruct $+3.0$ flips 23%), where an earlier raw
+shift $+17.4$ flips 33% of replies, Llama-3.1-8B-Instruct $+3.0$ flips 23%; the Llama number did not reproduce under
+matched-norm steering with a random-direction control, where the harm direction flipped none and
+pushed replies toward safe, so the causal claim rests on the Qwen cell), where an earlier raw
 diff-of-means null was a magnitude artifact [@zhao2025harmfulness].
 
 ## 8.1 Llama reads broad and commits early {#llama}
 
 Llama-3.1's anatomy is OLMo-like: pre-norm reconstruction 1.0008 (no fold needed), a clean
-low-dimensional decision channel (decision-token-harness participation ratio 13.5, against the
-in-format value of record 10.2 in \Cref{app:panel-bottleneck}; null 0.148 moving to 0.114 under
-standardization), a distributed write with a 30% multilayer-perceptron share, and all top
+low-dimensional decision channel (participation ratio 13.5 on the decision-anatomy harness,
+standardized, request-twin stimuli; the same position on the in-format sample reads 10.2 of record,
+10.3 [10.1, 11.1] raw and 14.2 standardized on the later 240-text sample, \Cref{app:panel-bottleneck};
+null 0.148 moving to 0.114 under standardization), a distributed write with a 30% multilayer-perceptron share, and all top
 writers labeled neither-moral-nor-harm. But Llama refuses on intent (baseline refusal 9/10,
 against OLMo's ~17%), so its refusal cell is measurable where OLMo's is empty, and it reads
 differently.
@@ -142,8 +147,8 @@ GPT-OSS-20B & Harm (correlational: in-trace cosine & Reversible reader (engage \
 
 \Cref{tab:two-axis} states the measured result: refusal reads harm on OLMo and GPT-OSS and
 broad moral content on Llama, and it commits at the read layer on OLMo, early on Llama, and
-reversibly on GPT-OSS. Qwen, the fourth row, was empty on the read axis in our earlier drafts;
-its interchange cell now reads refusal transfer 0.54 at rank 16 against a harm-rank-1 level of
+reversibly on GPT-OSS. Qwen, the fourth row, had no read-axis measurement until this run; its
+interchange cell reads refusal transfer 0.54 at rank 16 against a harm-rank-1 level of
 0.38, so Qwen's refusal reads beyond the single harm cue, but its gap to judgment (0.12) is not
 resolved against the 0.10 plateau tolerance at 19 twins. The pre-registered verdict is
 `indeterminate`: harm-saturating is excluded (0.6\% of bootstrap resamples), and broad is the
@@ -181,9 +186,9 @@ already fixed. The asymmetry is a consequence of early commitment, not a separat
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fl_gpt_oss_reversibility.pdf}
-\caption{GPT-OSS is a reversible reader. A graded exculpatory-analysis prefill (increasing
-strength, left to right) flips ceiling-refusing violating items toward compliance, 6 of 10
-flipping behaviorally (5 of 10 on replication). In the other direction an inculpating prefill
+\caption{GPT-OSS is a reversible reader, on behavior. A graded exculpatory-analysis prefill
+flips ceiling-refusing violating items toward compliance, 6 of 10
+flipping behaviorally at the strongest prefill (5 of 10 on replication). In the other direction an inculpating prefill
 flips benign requests to refuse 7 of 7. Deliberation is consequential and reversible in both
 directions, the clean contrast to Llama's early commitment.}
 \label{fig:reversibility}

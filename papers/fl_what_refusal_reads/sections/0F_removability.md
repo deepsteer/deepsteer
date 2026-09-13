@@ -25,10 +25,11 @@ ablated direction itself projects only 0.10 of its norm into the moral subspace 
 cosine 0.06 to the foundation directions), and removing it takes refusal from 0.25 to 0.00 on the
 Paper-5 borderline-plus-harmful request set while leaving comprehension where it was
 (base-to-fresh cosine 0.749, probe accuracy 1.0, effective dimension 5) and behavioral moral
-judgment essentially unchanged (0.73 against 0.75). The two OLMo refusal baselines quoted in this
-paper come from two request sets by construction: 0.25 on the Paper-5 borderline-plus-harmful set,
-and 0.575 on the Paper-6 held-out harmful set used for the cross-model battery below; each
-ablation result is read against its own baseline.
+judgment essentially unchanged (0.73 against 0.75). The OLMo refusal baselines quoted in this paper come from different request sets and harnesses by
+construction: 0.25 on the Paper-5 borderline-plus-harmful set, 0.575 on the Paper-6 held-out harmful
+set used for the cross-model battery below, and 0.62 on the same held-out set under the reconciled
+chat-template harness of \Cref{app:crossablation}; each ablation result is read against its own
+baseline.
 
 Removability is family-dependent. On the held-out harmful set, the single-direction ablation takes
 OLMo from 0.575 to 0.000 and Qwen from 1.000 to 0.000, but Llama only from 0.900 to 0.475. A

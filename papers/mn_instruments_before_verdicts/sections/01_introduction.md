@@ -81,12 +81,13 @@ finding motivated; the flagship carries the finding.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{mn_bottleneck_pr.pdf}
-\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning MoE at its harmony decision token). Whiskers are 95\% subsampling intervals on one 240-text sample per model (OLMo [14.3, 16.2], Qwen [8.2, 9.4], Llama [10.1, 11.1]; GPT-OSS raw 9.4 [9.1, 10.7], plotted at its standardized 12.8). All four sit at 4 to 8 percent of the column-shuffle reference (the historical absolute gate of 30 is drawn for orientation), while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
+\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning MoE at its harmony decision token). Whiskers are 95\% subsampling intervals on one 240-text sample per model (128 texts for GPT-OSS): OLMo [14.3, 16.2], Qwen [8.2, 9.4], Llama [10.1, 11.1] around its value of record 10.2 (10.3 on that sample); GPT-OSS is plotted at its standardized 12.8 from the Tier-1 session (raw 9.4 [9.1, 10.7] on the W4 sample). The faint reference bars are the in-format-ladder content-position values of record (40 / 33 / 35); Table 1 lists the W4 sample's content positions. All four sit at 4 to 8 percent of the column-shuffle reference (the historical absolute gate of 30 is drawn for orientation), while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
 \label{fig:bottleneck-pr}
 \end{figure}
 
 (The bottleneck PR bar across the four architectures is **Figure 1**, which uses the raw
 in-format-ladder values with subsampling intervals: OLMo 14.7 [14.3, 16.2], Qwen 8.6 [8.2, 9.4],
-Llama 10.3 [10.1, 11.1], GPT-OSS 9.4 [9.1, 10.7] raw and 12.8 standardized. The Llama 13.5
-quoted in earlier drafts as a second position was the standardized read of the same position.
-Every value is 4 to 8 percent of its column-shuffle reference.)
+Llama 10.2 of record (10.3 [10.1, 11.1] on the later 240-text sample), GPT-OSS 9.4 [9.1, 10.7]
+raw and 12.8 standardized from the Tier-1 session. The Llama 13.5 quoted in §3.2 is the
+decision-anatomy harness's standardized read of the same position on a different sample. Every
+value is 4 to 8 percent of its column-shuffle reference.)

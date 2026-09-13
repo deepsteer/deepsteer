@@ -7,7 +7,7 @@ Three estimator and intervention patterns gate how a number becomes a verdict.
 Whether an effect clears its minimum detectable effect is power-dependent. Comparing two
 effects by which side of the MDE each lands on is the overlap fallacy: it reads a difference
 in power as a difference in kind. Compare two effects instead by a within-outcome ratio and a
-bootstrap CI on the ratio difference (the estimator-traps trap-12 pattern).
+bootstrap CI on the ratio difference.
 
 **Worked case: the `under_transfer` reclassification.** The first headline was
 `reads_non_vmoral_features` at n=11, resting on an absolute transport comparison (a

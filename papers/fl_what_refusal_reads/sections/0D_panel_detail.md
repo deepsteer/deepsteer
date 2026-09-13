@@ -14,17 +14,18 @@ of removing it.
 |---|---:|---:|---|---:|---|
 | OLMo-3-7B-Instruct | 14.7 [14.3, 16.2] | 20.3 | 62.8 / 40.4 | 0.066 | no (band [0.40, 0.47] below null 0.557) |
 | Qwen2.5-7B-Instruct | 8.6 [8.2, 9.4] | 13.5 | 42.4 / 32.7 | 0.041 | no |
-| Llama-3.1-8B-Instruct | 10.3 [10.1, 11.1] | 14.2 | 97.3 / 26.7 | 0.050 | no |
+| Llama-3.1-8B-Instruct | 10.2 of record; 10.3 [10.1, 11.1] on this sample | 14.2 | 97.3 / 26.7 | 0.050 | no |
 | GPT-OSS-20B | 9.4 [9.1, 10.7] (raw); 12.8 standardized | 12.8 | high-dimensional | 0.084 | valid for decision reads; moral band above null (0.53 vs 0.48) |
 
 : The decision site is an 8-to-15 effective-dimensional control-token bottleneck on every
 architecture tested, including a 20B reasoning mixture-of-experts. All rows are measured on one
 240-text sample per model (128 for GPT-OSS) at the primary layer; intervals are subsampling
 intervals over texts; the shuffle reference is the participation ratio after independent column
-permutations, which preserves every marginal variance and destroys the correlations. The Llama value
-of record is 10.3 raw and 14.2 standardized at the same position; the 13.5 quoted in earlier drafts
-as a second position was the standardized read from the decision-anatomy harness, not a different
-token. GPT-OSS's harmony decision token is the one panel position where the held-one-out moral band
+permutations, which preserves every marginal variance and destroys the correlations. Llama's
+in-format value of record is 10.2; on this sample the same position reads 10.3 raw and 14.2
+standardized. The 13.5 reported for Llama's decision channel comes from the decision-anatomy harness
+(standardized, request-twin stimuli, a different sample), so it is one position under a second harness
+and normalization, not a second token; the standardized reads agree to within 0.7. GPT-OSS's harmony decision token is the one panel position where the held-one-out moral band
 (0.53) survives the covariance-matched null (q95 0.48), so its position validity is stated for
 decision-direction reads, and the content survival there is noted rather than assumed away.
 
@@ -91,8 +92,9 @@ OLMo's is empty.
 ## D.4 Llama anatomy and the robustness anomaly {#app:llama-anatomy}
 
 Llama's anatomy is OLMo-like: pre-norm reconstruction 1.0008 (no fold needed, an architecture
-cross-check), a clean low-dimensional decision channel (decision-token-harness participation
-ratio 13.5, with the in-format value of record 10.2 in \Cref{app:panel-bottleneck}; the
+cross-check), a clean low-dimensional decision channel (participation ratio 13.5 on the
+decision-anatomy harness, standardized; in-format value of record 10.2, 14.2 standardized on the
+240-text sample, \Cref{app:panel-bottleneck}; the
 covariance null moving only 0.148 to 0.114 under standardization, so the dim-788 outlier lives
 at content positions and not at the decision bottleneck), a distributed write with a 30% multilayer-perceptron
 share, and all top writers labeled neither-moral-nor-harm.
@@ -124,14 +126,16 @@ plus the reversibility result.
 : GPT-OSS Tier-1 cells. The position gate is the strongest cross-model generalization of the
 bottleneck finding (a 20B reasoning mixture-of-experts) and licenses the projection reads. GPT-OSS
 is a reversible reader: an inculpating prefill flips benign requests to refuse 7/7, and a graded
-exculpatory prefill flips ceiling-refusing violating items to comply 6/10 with the decision-channel
-projection moving monotonically toward comply in all 10 items. The behavioral flip is the primary
-evidence; the projection corroborates with the caveat that it reads the last token of the injected
-prefill. The reads-harm placement is correlational (the prompt-to-trace harm-loading), not causal,
+exculpatory prefill flips ceiling-refusing violating items to comply 6/10 (5/10 on replication). The
+behavioral flip is the only evidence of record: the decision-channel projection also moves toward
+comply along the series, but a covariance-matched random-direction null shows the movement is not
+specific to the refusal direction at either the prefill token or the post-response decision token
+(one-sided p 0.17 to 0.23), so it is reported as a position effect (\Cref{limitations}). The
+reads-harm placement is correlational (the prompt-to-trace harm-loading), not causal,
 because the interchange sweep is held for this model. The graded structure is the control that rules
-out the prefill merely asserting benignness: the weakest prefill does not read lowest, the
+out the prefill merely asserting benignness: the weakest prefill does not read lowest, the raw
 projection spikes (215) then falls (78) as rhetorical strength climbs while the behavioral flip rate
-rises. The within-harm-status commitment curve is not computable at this operating point (the gate
+rises (a position-level read, subject to the same non-specificity). The within-harm-status commitment curve is not computable at this operating point (the gate
 is a step function, only 5.6% of violating items in the mid-band), and is reported as such rather
 than replaced by a harm-separability fallback.
 

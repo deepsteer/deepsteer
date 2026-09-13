@@ -4,7 +4,7 @@ What refusal reads varies by model family: on OLMo-3, the one model we test caus
 the harm percept, a low-rank slice, not the broad moral subspace, while on Llama-3.1 it reads
 broadly. In open-weight chat models the moral
 representation is deep and inherited, a broad low-rank subspace that forms in pretraining
-(crystallizing to a checkpoint-to-final cosine of 0.999) and survives alignment as a single
+(on OLMo-3, crystallizing to a checkpoint-to-final cosine of 0.999) and survives alignment as a single
 rotation. The refusal decision built on top of it is shallow by construction: a fresh
 post-training gate (proto-refusal-to-gate cosine 0.155, a weak precursor) in a narrow control-token channel, reading a
 rank-1 harm slice that a nested interchange sweep on OLMo shows saturating while judgment

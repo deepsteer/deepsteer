@@ -219,3 +219,45 @@ Not raised by this pass and worth a referee's attention: the PR gate is now null
 in §2 and the checklist; the App C.8 cross-ablation is reported with its instrument scope and no
 Tier-1 causal sentence; the 14.4 audit found the reasoning-trace window to be a decision-like
 position (PR 5–10), which is stated in App B as the reason the in-trace rung stays hedged.
+
+## Round-4 cold-context audits (2026-09-13, W4-3, pre-arXiv) — two independent agents, final PDFs + CLAIMS only
+
+Each auditor saw only one final PDF and the claims ledger, with no memory of the edits. Dispositions:
+
+**FL (12 findings).** Blocker 1, §8 cited the Llama reply-inversion number (+3.0, flips 23%) as
+unqualified cross-model causal evidence although W4-08/A10 found it does not reproduce under
+matched-norm steering: FIXED (qualified; causal claim rests on the Qwen-14B cell). Blocker 2, Fig 6's
+in-figure annotation and the App D GPT-OSS table still presented the monotone projection as
+corroboration after the 14.3 scoping: FIXED (annotation and caption rewritten; the two-bar layout is
+now described as such). Should-fixes all FIXED: the 13.5 "second position" story in §5/§8.1/App D
+replaced by the one-position-two-harnesses statement; abstract's orthogonality clause now lists
+Qwen's 0.32 against its 0.42 null instead of grouping it under the 0.10 bar; "harm-rank-1 level"
+disambiguated (plateau 0.24 within the 0.10 tolerance of the harm-rank-1 transfer 0.33; ceiling 0.25
+is the fit); the pooled ratio-of-ratios CI added to App C.3 and the "one interval" wording dropped;
+D3-09 ledger row carries 76%/73% (pooled) beside 73%/69% (original); App A "It does not" → "only a
+weak one", Fig 1 caption no longer calls the precursor non-crystallizing; §8 "generalizes" → "holds
+on two of four, one broad, one indeterminate", §10 header "three resolved points plus one
+indeterminate", §11 crystallization scoped to OLMo-3; 8-to-15 harmonized; App A Table 2 no longer
+assigns the instruct PR to the base proto-refusal row; "earlier drafts" debris removed; three OLMo
+baselines named; auxiliary scalars ledgered (CLAIMS W4-11). Left as is: Llama content "35+" (value
+of record from the in-format ladder; the W4 sample's 97.3/26.7 sit in the App D table), the
+duplicated §8.1/D.4 sentence, "three families".
+
+**MN (10 findings).** Blocker 1 was an error introduced in this session, not drift: the NI-2 closure
+sentence identified Llama's 13.5 as its W4 standardized read; the W4 standardized value is 14.2 and
+13.5 is Qwen's. FIXED everywhere it had propagated (MN §1, Table 1 caption, §3.2; FL §5/§8.1/App D;
+CLAIMS W4-07, D2-02, D3-14; supplement build metadata; W4_RESULTS; SYNTHESIS): the 13.5 is the
+decision-anatomy harness's standardized read on its own sample, one position under two harnesses,
+consistent with 14.2 within 0.7. Blocker 2, Llama 10.2 vs 10.3 in one page: FIXED by keeping 10.2 as
+the value of record and stating the W4 sample's 10.3 with its interval where the interval appears
+(Table 1, Fig 1 caption, App D). Should-fixes FIXED: content-position reference bars labeled as
+values of record with Table 1 carrying the W4 sample; §7 case-study "PR<30 flag" → null-referenced;
+the false-invalid rate stated as one of four on this panel (GPT-OSS) instead of "unquantified"; the
+two OLMo top-dim shares given their positions; the σ* ratio sentence aligned to P1-04 (7 to 15×);
+subsampling intervals saved as `supplement/cells/w4/pr_subsampling_ci.json`; ledger rows D2-04 and
+P6-04 corrected, W4-08 pointer fixed, auxiliary scalars ledgered (W4-11); jargon ("trap-12",
+"companion skills") removed. Left as is: the abstract/§1 restated example run and the two openings
+(structure, author's call), the correspondence footnote, GPT-OSS plotted at its standardized 12.8
+(stated in the caption with the raw 9.4 [9.1, 10.7]).
+
+Both papers rebuilt; both arXiv tarballs compile standalone with zero undefined references.
