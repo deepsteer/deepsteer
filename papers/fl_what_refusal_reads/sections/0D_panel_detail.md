@@ -139,7 +139,7 @@ than replaced by a harm-separability fallback.
 
 The two axes are *what* refusal reads (harm versus broad moral content) and *how* it commits (at the
 read layer, early, or reversibly). OLMo reads harm by interchange (transfer saturates at the
-harm-rank-1 level, ceiling 0.31) and commits at or after the read layer (disengage coherent there,
+harm-rank-1 level, ceiling 0.25 on the pooled 42 twins) and commits at or after the read layer (disengage coherent there,
 $-0.62$). Llama reads broad moral content by interchange at matched depth (refusal transfer 0.85
 essentially equal to judgment 0.79) and commits early (disengage coherent below layer 15, incoherent
 at the read layer 16). GPT-OSS reads harm correlationally (prompt cosine 0.977 to harm against 0.001
