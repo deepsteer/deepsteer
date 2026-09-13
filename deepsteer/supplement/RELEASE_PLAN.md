@@ -1,6 +1,6 @@
 # Raw-array release plan (Zenodo, DOI of record)
 
-**Status 2026-09-13 (W4-3): bundle BUILT, upload pending Orion.** `scripts/build_release.py` wrote
+**Status 2026-09-13 (W4-3): PUBLISHED.** Version DOI of record **10.5281/zenodo.22731361** (v1; concept DOI 10.5281/zenodo.22731360 resolves to the latest version); record https://zenodo.org/records/22731361; all five files' MD5 verified against the local build (tarball e2904a9143fc384df1fabdb1c5a641cc). Papers cite the version DOI. Build record: `scripts/build_release.py` wrote
 `outputs/zenodo_v1/`: `deepsteer_fl_arrays_v1.tar.zst` (336 files, 2.77 GB uncompressed, 2.35 GB
 compressed, sha256 `c229dd72594186d1c52083bd6ee1d2ac05e1c1e6f17ba1a68e0e964e15945ba5`), `MANIFEST.json`
 (per file: path, bytes, sha256, group, unit/model/source run, HF repo + commit + dtype for every W4

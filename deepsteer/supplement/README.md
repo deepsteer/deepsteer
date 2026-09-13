@@ -17,7 +17,8 @@ nulls, participation-ratio profiles, positive-control ladders, and interchange
 rank-sweep outcomes — the numbers plotted and tabulated in the papers.
 
 **Not included here: the per-unit arrays.** They are released on Zenodo as the DOI of
-record (`deepsteer_fl_arrays_v1.tar.zst`, 336 files, 2.8 GB uncompressed, CC BY 4.0;
+record, 10.5281/zenodo.22731361 (v1; https://zenodo.org/records/22731361;
+`deepsteer_fl_arrays_v1.tar.zst`, 336 files, 2.8 GB uncompressed, CC BY 4.0;
 built by `scripts/build_release.py`, plan in `RELEASE_PLAN.md`). Caches whose stimuli are
 MORABLES retellings inherit that corpus's non-commercial license and are excluded from the
 public record with a regeneration recipe (`REGENERATE.md` in the deposit); the headline

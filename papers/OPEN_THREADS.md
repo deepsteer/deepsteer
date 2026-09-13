@@ -194,7 +194,7 @@ a non-moral positive-projection control for the calibration ladder (persona is m
   ~67 heads for 80%, 62→79%). (b) DONE — FL §E.5 now names the Material palette honestly and rests
   the accessibility claim on redundant encoding (never color-alone), not a colorblind-safe palette.
   (c) DONE — both regen scripts pin `SOURCE_DATE_EPOCH`; figures verified byte-identical across two
-  runs. (d) BUILT 2026-09-13 (W4-3) — Zenodo is the channel (WRITEUP_PHASE_PLAN W4 item 5):
+  runs. (d) DONE 2026-09-13 — published, DOI 10.5281/zenodo.22731361 (v1), cited in FL App E / MN §9 / README. Build record: — Zenodo is the channel (WRITEUP_PHASE_PLAN W4 item 5):
   `deepsteer/supplement/scripts/build_release.py` stages 336 files / 2.8 GB into one deterministic
   tarball + MANIFEST (sha256, unit, model, HF commit, cited_by) + PROVENANCE + REGENERATE + LICENSE
   under `outputs/zenodo_v1/`; MORABLES-derived and dataset files excluded. OPEN for Orion: reserve

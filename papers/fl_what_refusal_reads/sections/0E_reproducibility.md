@@ -132,7 +132,7 @@ contrast diffs and null resamples, the decision-site activation samples, and the
 proto-refusal directions) are deposited on Zenodo as `deepsteer_fl_arrays_v1.tar.zst` (336 files,
 2.8 GB uncompressed) under CC BY 4.0, with a manifest that records each file's SHA-256, its unit and
 model, the Hugging Face commit hash of the model that produced it, and the figure or claim it backs
-(DOI: 10.5281/zenodo.[reserved before submission]; built by
+(DOI: 10.5281/zenodo.22731361; built by
 `deepsteer/supplement/scripts/build_release.py` at the deposit commit). Caches whose stimuli are
 MORABLES retellings inherit that corpus's non-commercial license and are excluded from the public
 record with a regeneration recipe; the headline arrays use Moral Stories, public-domain fable

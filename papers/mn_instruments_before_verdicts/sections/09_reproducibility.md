@@ -19,5 +19,5 @@ samples with their bootstrap and null draws, the two-position validity ladder ar
 depth-matched per-twin deltas at layers 12 and 16, the RMSNorm-fold reconstruction arrays, and
 the reply-inversion margins for the harm direction and twenty matched-norm random directions)
 lives in the flagship's Zenodo deposit (`deepsteer_fl_arrays_v1.tar.zst`, CC BY 4.0, DOI
-10.5281/zenodo.[reserved before submission]); the deposit manifest lists the note's files by path
+10.5281/zenodo.22731361); the deposit manifest lists the note's files by path
 and SHA-256 so no shared array is duplicated.
