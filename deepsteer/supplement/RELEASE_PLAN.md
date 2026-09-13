@@ -1,5 +1,17 @@
 # Raw-array release plan (Zenodo, DOI of record)
 
+**Status 2026-09-13 (W4-3): bundle BUILT, upload pending Orion.** `scripts/build_release.py` wrote
+`outputs/zenodo_v1/`: `deepsteer_fl_arrays_v1.tar.zst` (336 files, 2.77 GB uncompressed, 2.35 GB
+compressed, sha256 `c229dd72594186d1c52083bd6ee1d2ac05e1c1e6f17ba1a68e0e964e15945ba5`), `MANIFEST.json`
+(per file: path, bytes, sha256, group, unit/model/source run, HF repo + commit + dtype for every W4
+file, license, cited_by; 241 MN-referenced paths), `PROVENANCE.md`, `REGENERATE.md`, `LICENSE`. No
+separate MN tarball: every array the methods note cites lives in the FL tarball and is referenced by
+path + sha256 (§1's shared-arrays-live-once rule). Exclusions applied per §2 (MORABLES-derived files,
+datasets under `outputs/full/`, smoke/dry/pilot trees, weights). W4 files were re-hashed against
+`manifest_w4.json` before staging. **Orion:** reserve the DOI on Zenodo, replace
+`10.5281/zenodo.[reserved before submission]` in FL App E, MN §9 and `supplement/README.md`, upload
+the five files, publish; then rebuild both papers.
+
 Decision of record (Orion, 2026-09-10; WRITEUP_PHASE_PLAN Phase W4 item 5): the per-unit arrays
 behind the flagship (FL) and the methods note (MN) are released on **Zenodo** as the DOI of record.
 The public record holds every array not derived from a non-commercial source; MORABLES-derived

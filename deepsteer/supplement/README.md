@@ -16,11 +16,13 @@ rather than duplicating them.
 nulls, participation-ratio profiles, positive-control ladders, and interchange
 rank-sweep outcomes — the numbers plotted and tabulated in the papers.
 
-**Not included: raw activations.** The residual-stream activation caches are large
-and, for the moral-content stimuli, partly derived from a non-commercial-licensed
-source (see Licensing). They are **available to reviewers on request**; contact the
-corresponding author. Every distilled artifact here is reproducible from the raw
-caches via the run scripts named in `PROVENANCE.md`.
+**Not included here: the per-unit arrays.** They are released on Zenodo as the DOI of
+record (`deepsteer_fl_arrays_v1.tar.zst`, 336 files, 2.8 GB uncompressed, CC BY 4.0;
+built by `scripts/build_release.py`, plan in `RELEASE_PLAN.md`). Caches whose stimuli are
+MORABLES retellings inherit that corpus's non-commercial license and are excluded from the
+public record with a regeneration recipe (`REGENERATE.md` in the deposit); the headline
+arrays are all deposited. Every distilled artifact here is reproducible from the deposited
+arrays via the run scripts named in `PROVENANCE.md`.
 
 ## Layout
 

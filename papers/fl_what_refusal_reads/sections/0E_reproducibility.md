@@ -125,6 +125,15 @@ companion methods note (the decision-site participation-ratio profile and the de
 live in the supplement once and are cited by both papers; `deepsteer/supplement/scripts/verify.py`
 checks that this paper's plotting copies carry the same values as the canonical files, so a shared
 number can change in only one place. Model ids, decision layers, standardization settings, and seeds
-are pinned in `deepsteer/supplement/PROVENANCE.md`. Raw residual-stream activation caches are
-available to reviewers on request (some moral-content caches inherit a non-commercial license); every
-distilled artifact is re-derivable from them via the run scripts named there.
+are pinned in `deepsteer/supplement/PROVENANCE.md`. The per-unit arrays behind every confidence
+interval in this paper (per-twin interchange deltas for every cell and rank, per-head write and
+specificity arrays, per-prompt ablation outcomes, per-rollout position activations, per-pair
+contrast diffs and null resamples, the decision-site activation samples, and the per-checkpoint
+proto-refusal directions) are deposited on Zenodo as `deepsteer_fl_arrays_v1.tar.zst` (336 files,
+2.8 GB uncompressed) under CC BY 4.0, with a manifest that records each file's SHA-256, its unit and
+model, the Hugging Face commit hash of the model that produced it, and the figure or claim it backs
+(DOI: 10.5281/zenodo.[reserved before submission]; built by
+`deepsteer/supplement/scripts/build_release.py` at the deposit commit). Caches whose stimuli are
+MORABLES retellings inherit that corpus's non-commercial license and are excluded from the public
+record with a regeneration recipe; the headline arrays use Moral Stories, public-domain fable
+retellings, and ETHICS, and are all deposited. Model weights are never deposited.
