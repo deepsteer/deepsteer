@@ -81,11 +81,12 @@ finding motivated; the flagship carries the finding.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{mn_bottleneck_pr.pdf}
-\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning MoE at its harmony decision token). All four fall below the PR $<$ 30 position-validity gate, while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
+\caption{The decision-site participation ratio across four architectures: OLMo-3-7B-Instruct 14.7, Qwen2.5-7B 8.6, Llama-3.1-8B 10.2, and GPT-OSS-20B 12.8 (a 20B reasoning MoE at its harmony decision token). Whiskers are 95\% subsampling intervals on one 240-text sample per model (OLMo [14.3, 16.2], Qwen [8.2, 9.4], Llama [10.1, 11.1]; GPT-OSS raw 9.4 [9.1, 10.7], plotted at its standardized 12.8). All four sit at 4 to 8 percent of the column-shuffle reference (the historical absolute gate of 30 is drawn for orientation), while content positions at the same layers stay full-rank-healthy (PR 40+/33+/35+). The refusal decision lives in a 9-to-15 effective-dimensional control-token channel, on every model tested.}
 \label{fig:bottleneck-pr}
 \end{figure}
 
-(The bottleneck PR bar across the four architectures is **Figure 1**, which uses the
-in-format-ladder value 10.2 for Llama, comparable to OLMo 14.7 and Qwen 8.6; the
-decision-token measurement for Llama is 13.5, a second position and harness. Both are
-below 30.)
+(The bottleneck PR bar across the four architectures is **Figure 1**, which uses the raw
+in-format-ladder values with subsampling intervals: OLMo 14.7 [14.3, 16.2], Qwen 8.6 [8.2, 9.4],
+Llama 10.3 [10.1, 11.1], GPT-OSS 9.4 [9.1, 10.7] raw and 12.8 standardized. The Llama 13.5
+quoted in earlier drafts as a second position was the standardized read of the same position.
+Every value is 4 to 8 percent of its column-shuffle reference.)

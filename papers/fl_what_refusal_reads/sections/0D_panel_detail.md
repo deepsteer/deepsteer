@@ -10,18 +10,23 @@ of removing it.
 
 ## D.1 The decision-site bottleneck across four architectures {#app:panel-bottleneck}
 
-| Model | Decision-site participation ratio | Content-position participation ratio | Position-valid for content projection? |
-|---|---:|---|---|
-| OLMo-3-7B-Instruct | 14.7 | 40+ | no (band [0.40, 0.47] below null 0.557) |
-| Qwen2.5-7B-Instruct | 8.6 | 33+ | no |
-| Llama-3.1-8B-Instruct | 10.2 | 35+ | no |
-| GPT-OSS-20B | 12.8 | high-dimensional | valid for decision reads (below the 25 ceiling) |
+| Model | Decision-site participation ratio [95% CI] | Standardized | Content positions (last / mean) | Fraction of the column-shuffle reference | Position-valid for content projection? |
+|---|---:|---:|---|---:|---|
+| OLMo-3-7B-Instruct | 14.7 [14.3, 16.2] | 20.3 | 62.8 / 40.4 | 0.066 | no (band [0.40, 0.47] below null 0.557) |
+| Qwen2.5-7B-Instruct | 8.6 [8.2, 9.4] | 13.5 | 42.4 / 32.7 | 0.041 | no |
+| Llama-3.1-8B-Instruct | 10.3 [10.1, 11.1] | 14.2 | 97.3 / 26.7 | 0.050 | no |
+| GPT-OSS-20B | 9.4 [9.1, 10.7] (raw); 12.8 standardized | 12.8 | high-dimensional | 0.084 | valid for decision reads; moral band above null (0.53 vs 0.48) |
 
 : The decision site is an 8-to-15 effective-dimensional control-token bottleneck on every
-architecture tested, including a 20B reasoning mixture-of-experts. The Llama value of record is 10.2
-(measured on the in-format ladder, directly comparable to OLMo's 14.7 and Qwen's 8.6); a separate
-decision-token harness reads 13.5 at a second position, and both are far below 30. GPT-OSS's harmony
-decision channel passes its own validity gate at participation ratio 12.8.
+architecture tested, including a 20B reasoning mixture-of-experts. All rows are measured on one
+240-text sample per model (128 for GPT-OSS) at the primary layer; intervals are subsampling
+intervals over texts; the shuffle reference is the participation ratio after independent column
+permutations, which preserves every marginal variance and destroys the correlations. The Llama value
+of record is 10.3 raw and 14.2 standardized at the same position; the 13.5 quoted in earlier drafts
+as a second position was the standardized read from the decision-anatomy harness, not a different
+token. GPT-OSS's harmony decision token is the one panel position where the held-one-out moral band
+(0.53) survives the covariance-matched null (q95 0.48), so its position validity is stated for
+decision-direction reads, and the content survival there is noted rather than assumed away.
 
 ## D.2 Llama reads broad and commits early: the depth-matched battery {#app:llama-depth}
 
@@ -129,6 +134,9 @@ $-0.62$). Llama reads broad moral content by interchange at matched depth (refus
 essentially equal to judgment 0.79) and commits early (disengage coherent below layer 15, incoherent
 at the read layer 16). GPT-OSS reads harm correlationally (prompt cosine 0.977 to harm against 0.001
 orthogonal, causal test held) and is a reversible reader (engage 7/7, disengage 6/10, monotone
-projection). The table is the measured result; its interpretation as a dimensionality-to-
-reversibility law is a hypothesis on three architecture-confounded points, stated for testing in
-\Cref{limitations}, not a mechanism established.
+projection). Qwen reads beyond the harm-rank-1 level by interchange (refusal transfer 0.54 at rank
+16 against harm 0.38, gap to judgment 0.12 unresolved at 19 twins, verdict indeterminate) and
+commits bidirectionally at the read layer (disengage $-2.70$, engage $+0.68$, both coherent). The
+table is the measured result; its interpretation as a dimensionality-to-reversibility law is a
+hypothesis on three architecture-confounded points plus one indeterminate point, stated for testing
+in \Cref{limitations}, not a mechanism established.

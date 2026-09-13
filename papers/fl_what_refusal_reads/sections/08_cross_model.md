@@ -103,9 +103,10 @@ commitment.
 
 \begin{table}[t]
 \centering
-\caption{What refusal reads $\times$ how it commits, across three model families. Rows are
-the models with a resolved commitment reading; columns are the two axes. OLMo's read is by
-interchange, Llama's by interchange at matched depth, GPT-OSS's by projection (correlational).
+\caption{What refusal reads $\times$ how it commits, across four models. Rows are the models
+with a commitment reading; columns are the two axes. OLMo's and Qwen's reads are by interchange
+(Qwen in the standardized frame on 19 operating-band twins), Llama's by interchange at matched
+depth, GPT-OSS's by projection (correlational).
 OLMo's commitment cell is interchange-only and has low behavioral dynamic range: OLMo barely
 refuses (about 17\%), so its commitment reading rests on the interchange disengage rather than
 on behavior (\Cref{reads-harm}, \Cref{limitations}). The GPT-OSS read is reported at the
@@ -118,8 +119,12 @@ overlapping contrasts there), so it is not the headline (\Cref{gpt-oss}).}
 Model & What refusal reads & How it commits \\
 \midrule
 OLMo-3-7B & Harm percept (transfer holds & At / after the read layer, \\
- & at the harm-rank-1 level, ceiling 0.31; & interchange-only (disengage \\
- & judgment reads 0.66) & coherent, $-0.62$) \\[2pt]
+ & at the harm-rank-1 level, ceiling 0.25; & interchange-only (disengage \\
+ & judgment reads 0.66; $n = 42$) & coherent, $-0.62$) \\[2pt]
+Qwen2.5-7B & Beyond the harm-rank-1 level & Bidirectionally responsive \\
+ & (refusal 0.54 [0.42, 0.69] vs harm 0.38; & at the read layer (disengage \\
+ & gap to judgment 0.12 [$-0.04$, 0.25] & $-2.70$, engage $+0.68$, both \\
+ & unresolved at $n = 19$: indeterminate) & coherent; $A = -0.60$) \\[2pt]
 Llama-3.1-8B & Broad moral content (refusal & Early (disengage coherent \\
  & transfer 0.85 $\approx$ judgment 0.79 & below layer 15, incoherent \\
  & at matched depth, gap closes) & at the read layer 16) \\[2pt]
@@ -132,9 +137,15 @@ GPT-OSS-20B & Harm (correlational: in-trace cosine & Reversible reader (engage \
 
 \Cref{tab:two-axis} states the measured result: refusal reads harm on OLMo and GPT-OSS and
 broad moral content on Llama, and it commits at the read layer on OLMo, early on Llama, and
-reversibly on GPT-OSS. This table is the empirical claim, and it stands.
+reversibly on GPT-OSS. Qwen, the fourth row, was empty on the read axis in our earlier drafts;
+its interchange cell now reads refusal transfer 0.54 at rank 16 against a harm-rank-1 level of
+0.38, so Qwen's refusal reads beyond the single harm cue, but its gap to judgment (0.12) is not
+resolved against the 0.10 plateau tolerance at 19 twins. The pre-registered verdict is
+`indeterminate`: harm-saturating is excluded (0.6\% of bootstrap resamples), and broad is the
+plurality alternative (44\%). On the commit axis Qwen behaves like OLMo, responsive in both
+directions at the read layer. This table is the empirical claim, and it stands.
 
-Its *interpretation* is a hypothesis, not an $n = 3$ result. The three points are ordinally
+Its *interpretation* is a hypothesis, not an $n = 3$ result. The three resolved points are ordinally
 consistent with a single underlying knob: the models whose refusal reads a low-rank harm slice
 (OLMo and GPT-OSS, roughly rank 1) are the ones that commit late or reversibly, and the model
 whose refusal reads broadly (Llama, roughly rank 8) is the one that commits early. This
@@ -144,7 +155,9 @@ architecture-confounded at three points: the models differ in lineage, scale, to
 reasoning-versus-instruct training all at once, so a dimensionality account and a
 lineage account fit the same table equally well. Deconfounding requires varying one axis at a
 time, for example a deliberation-trained variant of a single base model, or a lineage-matched
-scale sweep. We state the hypothesis to be tested, not a mechanism established.
+scale sweep. Qwen adds a fourth, lineage-independent point that sits in the middle of the read
+axis and with OLMo on the commit axis; it neither confirms nor breaks the ordering. We state the
+hypothesis to be tested, not a mechanism established.
 
 \begin{figure}[t]
 \centering

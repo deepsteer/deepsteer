@@ -33,7 +33,7 @@ ROOT = os.path.normpath(os.path.join(HERE, ".."))
 # from. Shared artifacts are used by both papers and live here once.
 META: dict[str, dict] = {
     "figure_data/bottleneck_pr.csv": {
-        "description": "Participation ratio at the decision site by model, plus decision-token, content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
+        "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (the former decision-token column: Llama 13.5 was this position standardized), content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
         "produced_by": "cells/olmo3_decision_anatomy.json + per-model D2 position-gate sessions",
         "shared": True,
         "cited_by": ["flagship:Fig bottleneck-PR (sec 5)", "methods-note:Fig 1 + Table 1 (sec 2)"],
@@ -57,8 +57,8 @@ META: dict[str, dict] = {
         "cited_by": ["methods-note:Fig 2 (sec 2.1)"],
     },
     "figure_data/rank_sweep.csv": {
-        "description": "Nested interchange rank sweep on OLMo-3 (n=23 request-twins): restricted-transfer R_judgment and R_refusal over k in {1,3,8,16}, random-direction null, and the one-knob harm-ceiling fit.",
-        "produced_by": "cells/olmo3_rank_sweep.json",
+        "description": "Nested interchange rank sweep on OLMo-3, pooled n=42 request-twins (23 original + 19 W4 replication) with 95% bootstrap intervals over twins, the per-subset R_refusal, random-direction null, and the one-knob harm-ceiling fit (ceiling 0.246, RMSE 0.023).",
+        "produced_by": "cells/olmo3_rank_sweep.json (n=23 of record) + cells/w4/olmo3_instruct/pooled_sweep_olmo3_w4.json (pooled)",
         "shared": False,
         "cited_by": ["flagship:Fig one-knob (sec 7)"],
     },

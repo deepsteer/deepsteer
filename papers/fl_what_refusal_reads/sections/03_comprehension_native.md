@@ -33,7 +33,7 @@ alignment.
 The contrast that organizes the rest of the paper is with the refusal gate. Where the moral
 subspace crystallizes during pretraining to a checkpoint-to-final cosine of 0.999 (and survives
 alignment with a single ~40-degree rotation), the refusal gate reaches only
-0.155 from its pretraining precursor. Comprehension is deep and inherited; the refusal
+0.155 from its weak pretraining precursor (reliability 0.99 on both sides). Comprehension is deep and inherited; the refusal
 decision, as the next section shows, is a shallow, freshly built control. \Cref{fig:crystal}
 plots the two side by side.
 
@@ -44,8 +44,12 @@ plots the two side by side.
 OLMo-3 moral subspace at each training checkpoint and the fully trained direction rises from
 0.869 at step 1000 to 0.999 during pretraining, then holds through post-training (supervised
 fine-tuning rotates it once to 0.757 and later stages leave it there). Right: the refusal
-gate's cosine to its pretraining precursor is only 0.155, far below the 0.50 crystallization
-threshold. Moral comprehension is pretraining-native and inherited; the refusal decision is a
-fresh post-training construction. Regenerable from committed data (\Cref{app:repro}).}
+gate's cosine to its pretraining precursor is only 0.155 (about twice a matched null's q95 of 0.070), far below the 0.50 crystallization
+threshold. Panel (b): across 13 stage-3 pretraining checkpoints the proto-refusal direction itself
+crystallizes (self-cosine to its final state 0.93 rising to 1.0) while its cosine to the eventual
+instruct gate stays flat between 0.139 and 0.155; split-half reliability is 0.99 on both sides of the
+0.155, so the low value is not estimation noise. Moral comprehension is pretraining-native and
+inherited; the refusal decision is a fresh post-training construction with a weak, non-crystallizing
+precursor. Regenerable from committed data (\Cref{app:repro}).}
 \label{fig:crystal}
 \end{figure}

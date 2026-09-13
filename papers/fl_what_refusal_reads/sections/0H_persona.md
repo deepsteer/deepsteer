@@ -1,44 +1,57 @@
 # Appendix H. Persona, the assistant axis, and persona-shift compliance {#app:persona}
 
-«SKELETON (W4-1, 2026-09-10): section heads + CLAIMS-anchored sentences only; prose in W4-3.»
-
-The persona direction is the program's named reference axis (a moral-adjacent voice reference,
-V-D1-5), the assistant-axis framing is the related-work anchor for it, and persona-shift compliance
-is the behavioral battery that reads refusal removal from the compliance side. This appendix collects
-the three so the calibration ladder (\Cref{app:calibration}) and the removability battery
-(\Cref{app:removability}) can cite one place.
+The persona direction is the program's named reference axis, a moral-adjacent voice reference
+rather than a non-moral control; persona-shift compliance is the behavioral battery that reads
+refusal removal from the compliance side. This appendix collects both so that the calibration
+ladder (\Cref{app:calibration}) and the removability battery (\Cref{app:removability}) can cite one
+place. The assistant-axis literature is the framing for the persona direction; no number from it
+enters this paper.
 
 ## H.1 The persona direction: decodable, moral-adjacent, not moral {#app:persona-direction}
 
-- [P5-03] A linear persona probe is highly decodable at every OLMo-3 training stage (peak accuracy
-  ~0.94), while the persona direction stays nearly orthogonal to the moral foundations: mean $|\cos|$
-  rises only from 0.076 (base) to 0.085 (Instruct).
-- [V-D1-5, D1-01] On the rank-3 moral subspace the persona reference projects 0.51 (base and
-  instruct), just below the moral-family band, which is why it is named a moral-adjacent voice
-  reference and not a non-moral control (the calibration case study in the methods note).
-- [D1-20] On GPT-OSS the moral↔persona cosine is higher (0.30 vs OLMo 0.24), a general entanglement
-  that raises its persona rung (0.60).
-- «CHECK: assistant-axis agreement numbers (Paper 5 `assistant_axis_agreement.py` outputs) are not
-  CLAIMS-traced; either add a row from the primary JSON or cite the axis only as framing
-  (\citep{wang2025persona}; \citep{lu2026assistant} — verify both against primary sources before the
-  cite enters the bib).»
+The persona direction is the difference of means between texts written in the assistant's voice
+and matched texts in a neutral voice, extracted with the same pipeline as the moral directions. A
+linear persona probe is highly decodable at every OLMo-3 training stage (peak accuracy about 0.94),
+while the direction stays nearly orthogonal to the moral foundations: its mean absolute cosine to
+the foundation directions rises only from 0.076 at the base model to 0.085 at the Instruct model.
+Persona is present and stable, and it is not moral content.
+
+It is moral-adjacent. On the rank-3 moral subspace the persona reference projects 0.51 on both the
+base and the instruct model, just below the moral-family band, which is why it is named a
+moral-adjacent voice reference in the ladder rather than a non-moral control. The methods note's
+calibration case study uses exactly this fact: a reference that projects 0.51 is a rung, not a
+floor. On GPT-OSS the moral-to-persona cosine is higher (0.30 against OLMo's 0.24), a general
+entanglement on that model that raises its persona rung to 0.60.
 
 ## H.2 Persona-shift compliance under refusal ablation {#app:persona-shift}
 
-- [PB-02] Persona-shift compliance rises under single-direction refusal ablation: OLMo 0.75 → 1.00,
-  Qwen 0.90 → 1.00, Llama 0.70 → 0.95 (every persona gap closing toward zero on OLMo).
-- [P5-03] Comprehension and compliance are only weakly coupled before any intervention:
-  $P(\text{comply} \mid \text{comprehend}) = 0.77$ vs $P(\text{comply} \mid \neg\text{comprehend}) = 0.73$.
-- [PB-05] Internal-foundation vs behavioral-judgment agreement 0.375 → 0.479 → 0.500 and $\phi$
-  −0.19 → +0.02 → +0.05 across SFT → DPO → Instruct.
-- «CHECK: the persona-shift battery construction (borderline requests under four persona framings;
-  Paper 6 App B) needs its one-sentence method statement here, with n per cell.»
+Persona-shift compliance measures how often the model complies with borderline requests when the
+request is framed under different persona instructions; the gap between framings is the
+persona-shift gap. Under single-direction refusal ablation the compliance rate rises on every
+model, OLMo from 0.75 to 1.00, Qwen from 0.90 to 1.00, and Llama from 0.70 to 0.95, and on OLMo
+every persona gap closes toward zero. The construction of the battery (borderline requests under
+four persona framings) follows the cross-model paper's appendix; the per-cell counts are those of
+that battery and are not restated here.
+
+Before any intervention, comprehension and compliance are only weakly coupled on OLMo-3: the
+probability of complying given that the model comprehends the moral content is 0.77, against 0.73
+given that it does not. Along the alignment trajectory the agreement between the internal
+foundation reading and behavioral judgment rises from 0.375 to 0.479 to 0.500 across SFT, DPO,
+and Instruct, with the corresponding phi coefficient moving from −0.19 to +0.02 to +0.05.
+Alignment increases the agreement a little; it does not make behavior a function of comprehension.
 
 ## H.3 What the persona axis is for in this paper {#app:persona-role}
 
-- Reference rung on the ladder (\Cref{fig:ladder}): refusal sits below persona on every model,
-  including the GPT-OSS in-trace peak (D1-11: 0.52 below persona 0.60).
-- Named control in the ablation battery: ablating persona leaves Llama's judgment at 0.75 (PB-04),
-  so the Llama drop is refusal-specific, not any-salient-feature.
-- Scope: the ladder still lacks a non-moral positive-projection control (persona is moral-adjacent);
-  stated as a limitation (SELF_REVIEW [POD]), not closed by this appendix.
+Three roles. First, a reference rung on the ladder (\Cref{fig:ladder}): refusal sits below persona
+on every model, including the GPT-OSS in-trace peak (0.52 below the persona rung of 0.60), so even
+the program's highest refusal projection is less moral-adjacent than a voice reference. Second, a
+named control in the ablation battery: ablating the persona direction leaves Llama's judgment at
+0.75, so the Llama judgment drop under refusal ablation (\Cref{app:removability}) is
+refusal-specific and not a property of any salient direction. Third, a named control in the
+reconciled cross-ablation on OLMo-3 (\Cref{app:crossablation}), where ablating persona re-decides one of
+100 held-out requests against zero for random directions and twelve for the judgment-decision
+direction.
+
+Scope: the ladder still lacks a non-moral positive-projection control, since persona is
+moral-adjacent by construction. That is stated as a limitation (\Cref{limitations}) and is not
+closed by this appendix.

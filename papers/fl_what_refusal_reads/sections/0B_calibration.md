@@ -37,7 +37,13 @@ q95 0.266) and 0.155 onto the six-foundation moral-foundations span (null q95 0.
 the reasoning models the in-trace point is the only place refusal approaches its null: OLMo-3-Think
 in-trace 0.35 sits just below its rank-matched null margin (a near-miss), while GPT-OSS
 in-trace 0.52 crosses its null (0.32 to 0.34) yet stays below both the persona reference (0.60) and
-the band [0.65, 0.76].
+the band [0.65, 0.76]. The band-relative reading of the in-trace points is scoped as
+cross-position on both reasoning models, and the scope is now measured rather than assumed: a
+per-rollout audit (32 rollouts per side) finds the in-trace window is a decision-like position, with
+participation ratio 9.7 (OLMo-3-Think) and 5.1 (GPT-OSS) and the held-one-out moral band below its
+covariance-matched null at that position on both models (0.22 vs 0.40; 0.57 vs 0.64), while the
+instruction token on the same rollouts keeps its band above the null (0.40 vs 0.15; 0.46 vs 0.32).
+The null-relative statements above (crossing, near-miss) do not depend on the band and stand.
 
 ## B.2 The covariance-matched rank-matched null {#app:null}
 

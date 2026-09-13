@@ -6,11 +6,20 @@ moral-family band on every model tested.
 
 **It does not crystallize from a precursor.** We measure the cosine between the base model's
 proto-refusal direction and the aligned model's refusal gate at the layer where the gate is
-defined. It is 0.155, well below the 0.50 crystallization threshold (set above the near-zero cosine
-expected of two unrelated high-dimensional directions), where the moral subspace instead
-reaches 0.999. The number is the headline pairing of \Cref{fig:crystal}: 0.999 for comprehension,
-0.155 for the gate. The aligned refusal gate is substantially a post-training construction,
-not a re-pointing of something the base model already had.
+defined. It is 0.155 (95% CI [0.147, 0.162] over prompt resamples), well below the 0.50
+crystallization threshold, where the moral subspace instead reaches 0.999. The number is read on
+a ladder rather than against the bare threshold: the isotropic chance cosine for two unrelated
+directions in this space is 0.012, a covariance-matched single-direction null has q95 0.070, the
+measurement is 0.155, and the moral subspace's own base-to-final cosine is 0.999. So the base
+model carries a weak precursor of the gate, about twice the matched null, not none. The number
+is not an artifact of noisy direction estimates: split-half reliability of the proto-refusal
+direction is 0.99 and of the instruct gate 0.99 (200 paired half-splits of the 400/400 prompt
+set, Spearman-Brown corrected), so the disattenuated cosine is 0.156. Nor does the precursor
+drift into the gate late in pretraining: across 13 stage-3 checkpoints the proto-refusal
+direction crystallizes toward its final form (self-cosine 0.93 rising to 1.0) while its cosine to
+the eventual gate stays flat between 0.139 and 0.155. \Cref{fig:crystal} plots both curves:
+0.999 for comprehension, a flat 0.15 for the gate. The aligned refusal gate is substantially a
+post-training construction, not a re-pointing of something the base model already had.
 
 **It lives in a low-variance channel.** Across residual dimensions ranked by variance, the
 wired instruct refusal gate sits at the bottom: its variance percentile is 0.0 (within the

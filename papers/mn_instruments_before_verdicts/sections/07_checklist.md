@@ -5,9 +5,12 @@ appendix-form restatements of the companion skills.
 
 **Before any projection-fraction / cosine geometric cell:**
 
-- Record `participation_ratio` at the measurement position. If PR < 30, the position is
-  invalid for content projection-fraction tests; report a decision-direction cosine
-  instead, or move to a valid position.
+- Record `participation_ratio` at the measurement position with a subsampling interval, and
+  state it against its references: the sample-rank ceiling $n - 1$, the column-shuffle PR of the
+  same marginals, and the content positions of the same texts. A position at a few percent of
+  its shuffle reference is invalid for content projection-fraction tests; report a
+  decision-direction cosine instead, or move to a valid position. (An absolute bar such as
+  PR < 30 is not evaluable below $n \approx 4 \cdot$PR.)
 - Check the positive-control band against the covariance null at that position. Band-below-null
   means the instrument has no discriminating power there; do not report absence.
 - In a massive-activation family (any Llama/Qwen-class panel), inspect the null value for

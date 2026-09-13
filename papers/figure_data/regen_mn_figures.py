@@ -112,8 +112,13 @@ def fig_bottleneck_pr() -> str:
 
     # Direct value labels (identity not color-alone): decision-site bold,
     # content-position lighter above the faint bar.
+    if "decision_site_pr_lo" in df.columns:
+        lo = df["decision_site_pr_lo"].to_numpy(dtype=float); hi = df["decision_site_pr_hi"].to_numpy(dtype=float)
+        ok = ~np.isnan(lo); dsa = np.asarray(ds, dtype=float)
+        ax.errorbar(x[ok], dsa[ok], yerr=[dsa[ok] - lo[ok], hi[ok] - dsa[ok]],
+                    fmt="none", ecolor="black", elinewidth=1.0, capsize=3, zorder=4)
     for xi, v in zip(x, ds):
-        ax.text(xi, v + 0.7, f"{v:.1f}", ha="center", va="bottom",
+        ax.text(xi + 0.24, v + 0.7, f"{v:.1f}", ha="left", va="bottom",
                 fontsize=9, fontweight="bold", color=INDIGO)
     for xi, c in zip(x, content):
         if not pd.isna(c):
@@ -125,7 +130,7 @@ def fig_bottleneck_pr() -> str:
     ax.text(
         len(models) - 0.5,
         30.9,
-        "Position-validity gate (PR < 30\n→ invalid for content projection)",
+        "Historical absolute gate (30); the gate of record\nis null-referenced (4–8% of the shuffle reference)",
         ha="right",
         va="bottom",
         fontsize=8,

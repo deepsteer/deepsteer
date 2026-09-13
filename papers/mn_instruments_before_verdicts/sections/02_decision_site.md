@@ -10,21 +10,28 @@ Several participation ratios recur below, at different positions and under diffe
 normalizations. Table 1 lists them together so that each PR can be traced to its model,
 position, and normalization.
 
-| Model | Decision-site PR | Decision-token PR | Content-position PR | Geometric-cell PR (raw → std) |
-|---|---|---|---|---|
-| OLMo-3-7B-Instruct | 14.7 | n/a | 40+ | 43 → 94 |
-| Qwen2.5-7B | 8.6 | n/a | 33+ | 1.0 → 39 |
-| Llama-3.1-8B | 10.2 | 13.5 | 35+ | 1.5 → 89 |
-| GPT-OSS-20B | 12.8 | n/a | n/a | n/a |
+| Model | Decision-site PR, raw [95% CI] | Decision-site PR, standardized | Content-position PR (last / mean) | Fraction of shuffle reference | Geometric-cell PR (raw → std) |
+|---|---|---|---|---|---|
+| OLMo-3-7B-Instruct | 14.7 [14.3, 16.2] | 20.3 | 62.8 / 40.4 | 0.066 | 43 → 94 |
+| Qwen2.5-7B | 8.6 [8.2, 9.4] | 13.5 | 42.4 / 32.7 | 0.041 | 1.0 → 39 |
+| Llama-3.1-8B | 10.3 [10.1, 11.1] | 14.2 | 97.3 / 26.7 | 0.050 | 1.5 → 89 |
+| GPT-OSS-20B | 9.4 [9.1, 10.7] | 12.8 | n/a | 0.084 | n/a |
 
-Table: Participation ratio (PR = (Σλ)²/Σλ²) by model, position, and normalization. The
-decision-site column is the in-format-ladder value plotted in Figure 1; the decision-token
-column is a second position and harness, measured for Llama only (13.5). Content-position PRs
-are full-rank-healthy. The geometric-cell column is the raw → standardized pair of §2.3,
-where per-dimension standardization lifts Qwen and Llama out of near-rank-1 collapse.
-GPT-OSS 12.8 is its harmony decision-token PR, treated as position-valid for the refusal
-decision-direction read against a separate MoE PR ceiling of 25 (§2.1). n/a marks a quantity
-not measured for that model.
+Table: Participation ratio (PR = (Σλ)²/Σλ²) by model, position, and normalization, measured on one
+240-text sample per model (128 for GPT-OSS) at the primary layer. The raw decision-site column is
+the value plotted in Figure 1; intervals are subsampling intervals over texts (the row-resampling
+bootstrap is biased low because duplicated rows lower the sample rank, and is not used). The
+standardized column is the same position after per-dimension z-scoring; the Llama 13.5 quoted in
+earlier drafts as a second position and harness was this standardized read from the
+decision-anatomy harness, so the decision-token and decision-site numbers were one position under
+two normalizations. Content-position PRs are full-rank-healthy. The shuffle reference is the PR
+after independent column permutations, which keeps every marginal variance and destroys the
+correlations: every decision site sits at 4 to 8 percent of it, and at 3.6 to 7.4 percent of its
+sample-rank ceiling, while the content positions of the same texts sit 2.6 to 9.4 times higher.
+The geometric-cell column is the raw → standardized pair of §2.3, where per-dimension
+standardization lifts Qwen and Llama out of near-rank-1 collapse. GPT-OSS 12.8 is its harmony
+decision-token PR, treated as position-valid for the refusal decision-direction read against a
+separate MoE PR ceiling of 25 (§2.1). n/a marks a quantity not measured for that model.
 
 ## 2.1 Band-below-null means the position is invalid, not that the direction is absent {#a2-band-below-null}
 
@@ -48,10 +55,17 @@ right size, not a convergence of three independent estimates on one value (0.45 
 median-scale prediction, 0.557 is a q95).
 
 **The protocol.** `participation_ratio` is a required type-block field on every extracted
-direction, and any position with PR < 30 is flagged position-invalid for content
-projection-fraction tests at extraction time. All three chat decision
-sites (14.7 / 8.6 / 10.2) fall below the gate. (The 30 is an absolute threshold, not normalized
-by $d_{\mathrm{model}}$ or rank, and its false-invalid rate is unquantified; see Limitations.)
+direction, and any position whose PR sits far below its own references is flagged
+position-invalid for content projection-fraction tests at extraction time. The gate is stated
+null-referenced rather than as an absolute number: the decision-site PR against the
+column-shuffle reference (the PR the same marginals would give without correlations), against
+the sample-rank ceiling $n - 1$, and against the content positions of the same texts. All four
+decision sites sit at 4 to 8 percent of the shuffle reference and 2.6 to 9.4 times below their
+content positions (Table 1); an absolute threshold of 30 was the working rule in the program's
+earlier sessions, and it is kept here only as the historical value. An absolute bar is not
+evaluable at small sample sizes: with 64 rollouts the sample-rank ceiling is 63, and a content
+position that reads 22 to 29 there is above its own covariance-matched sampling null while
+failing the 30. (The false-invalid rate of the gate is unquantified; see Limitations.)
 
 **The certifying check and the reframe.** Position-invalid does not mean uninterpretable
 model. A projection-fraction test fails there, but a decision-*direction* cosine does

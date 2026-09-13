@@ -33,8 +33,16 @@ between compliance and refusal -- produced a nonzero directional effect (Qwen2.5
 shift +17.4 flips 33%, Llama-3.1-8B-Instruct +3.0 flips 23%). These are raw flip fractions with
 no channel-matched random-direction specificity null at matched norm, so they establish "a
 directional intervention along the harm axis moves the reply," not that the harm axis does so
-over any matched-norm direction; the missing specificity control is a limitation of this
-readout. Magnitude and residual-norm share are not causal relevance; a causal readout is.
+over any matched-norm direction. We ran that control afterwards on Llama-3.1-8B-Instruct (layer
+12, 100 items, 20 random unit directions at the identical norm, half and full residual norm):
+the harm direction flipped no reply at either norm and shifted every margin coherently toward
+the safe side (mean shift $-2.1$ and $-2.6$ from a clean margin of $-1.8$), while random
+matched-norm directions washed the margins toward zero and thereby flipped 61 and 83 percent
+(q95) of the near-zero majority. The flip fraction is not a specific readout at that norm, and
+the Llama reply-inversion number above does not reproduce under matched-norm steering; the
+Qwen2.5-14B number was not re-tested. The specificity control is therefore not missing but
+failed, which is the stronger statement of the same limitation. Magnitude and residual-norm
+share are not causal relevance; a causal readout is.
 
 ## 3.2 Power tables before compute {#power-tables}
 

@@ -119,8 +119,13 @@ def fig_bottleneck_pr() -> str:
         label="Decision-site PR",
     )
 
+    if "decision_site_pr_lo" in df.columns:
+        lo = df["decision_site_pr_lo"].to_numpy(dtype=float); hi = df["decision_site_pr_hi"].to_numpy(dtype=float)
+        ok = ~np.isnan(lo)
+        ax.errorbar(x[ok], np.asarray(ds)[ok], yerr=[np.asarray(ds)[ok] - lo[ok], hi[ok] - np.asarray(ds)[ok]],
+                    fmt="none", ecolor="black", elinewidth=1.0, capsize=3, zorder=4)
     for xi, v in zip(x, ds):
-        ax.text(xi, v + 0.7, f"{v:.1f}", ha="center", va="bottom",
+        ax.text(xi + 0.24, v + 0.7, f"{v:.1f}", ha="left", va="bottom",
                 fontsize=9, fontweight="bold", color=INDIGO)
     for xi, c in zip(x, content):
         if not pd.isna(c):
@@ -131,7 +136,7 @@ def fig_bottleneck_pr() -> str:
     ax.text(
         len(models) - 0.5,
         30.9,
-        "Position-validity gate (PR < 30\n→ invalid for content projection)",
+        "Historical absolute gate (30); the gate of record\nis null-referenced (4–8% of the shuffle reference)",
         ha="right",
         va="bottom",
         fontsize=8,
@@ -294,7 +299,11 @@ def fig_crystallization() -> str:
     moral = df["moral_cos"].tolist()
     refusal = df["refusal_cos"].tolist()
 
-    fig, ax = plt.subplots(figsize=(7.6, 4.9))
+    traj = pd.read_csv(_src("fl_proto_trajectory.csv")) if os.path.exists(_src("fl_proto_trajectory.csv")) else None
+    if traj is not None:
+        fig, (ax, axb) = plt.subplots(1, 2, figsize=(11.2, 4.9), gridspec_kw={"width_ratios": [1.55, 1.0]})
+    else:
+        fig, ax = plt.subplots(figsize=(7.6, 4.9))
 
     # Pretraining vs alignment: a faint separator after "converged" (index 1).
     sep = 1.5
@@ -345,6 +354,25 @@ def fig_crystallization() -> str:
         fontsize=10, loc="left",
     )
 
+    if traj is not None:
+        st = traj["stage3_step"].to_numpy(); xb = np.arange(len(st))
+        axb.plot(xb, traj["proto_self_cos_to_final"], "o-", ms=4, lw=1.8, color=INDIGO, alpha=0.9,
+                 label="Proto-refusal, self-cosine to final")
+        axb.plot(xb, traj["proto_to_gate_cos"], "s-", ms=4, lw=1.8, color=RED, alpha=0.9,
+                 label="Proto-refusal → instruct gate")
+        axb.axhline(0.070, ls=":", lw=1.1, color=GRAY)
+        axb.text(0.2, 0.09, "matched-null q95 0.07", fontsize=7.5, color=GRAY_EC, va="bottom")
+        axb.axhline(0.50, ls="--", lw=1.0, color=GRAY)
+        axb.set_ylim(0.0, 1.13); axb.set_xticks(xb[::2])
+        axb.set_xticklabels([f"{int(v/1000)}k" if v < 11900 else str(v) for v in st[::2]], fontsize=8, rotation=30, ha="right")
+        axb.set_xlabel("Stage-3 pretraining checkpoint (step)", fontsize=9)
+        axb.set_axisbelow(True); axb.grid(True, axis="y", alpha=0.3)
+        axb.legend(loc="center right", fontsize=8)
+        axb.annotate("0.155", xy=(len(st) - 1, 0.1548), xytext=(len(st) - 1.6, 0.25), fontsize=9, color=RED,
+                     fontweight="bold", ha="center")
+        axb.set_title("(b) Precursor crystallizes; alignment to the gate stays flat",
+                      fontsize=10, loc="left")
+
     fig.suptitle(
         "Comprehension crystallizes in pretraining; the refusal gate does not "
         "(OLMo-3-7B)",
@@ -369,7 +397,7 @@ def fig_one_knob() -> str:
     fig, ax = plt.subplots(figsize=(7.8, 5.3))
 
     # Harm-ceiling reference (rank-1 harm level the refusal reader saturates at).
-    ax.axhline(0.31, ls=":", lw=1.1, color=GRAY, zorder=1)
+    ax.axhline(0.246, ls=":", lw=1.1, color=GRAY, zorder=1)
 
     # One-knob model overlay: min(0.31, R_judgment), drawn as a fit line.
     ax.plot(xpos, fit, lw=1.6, color="black", ls=(0, (5, 2)), zorder=3,
@@ -380,7 +408,16 @@ def fig_one_knob() -> str:
             zorder=5, label="R$_{\\mathrm{judgment}}$")
     # R_refusal saturates at the harm rank-1 level.
     ax.plot(xpos, refu, "s-", ms=5, lw=2, color=RED, alpha=0.9,
-            zorder=5, label="R$_{\\mathrm{refusal}}$")
+            zorder=5, label="R$_{\\mathrm{refusal}}$ (pooled n = 42)")
+    if "R_refusal_lo" in df.columns:
+        lo = df["R_refusal_lo"].to_numpy(); hi = df["R_refusal_hi"].to_numpy(); r = np.asarray(refu)
+        ax.errorbar(xpos, refu, yerr=[r - lo, hi - r], fmt="none", ecolor=RED, elinewidth=1.1,
+                    capsize=3, alpha=0.8, zorder=4)
+    if "R_refusal_original23" in df.columns:
+        ax.plot(xpos, df["R_refusal_original23"], "s", ms=4, mfc="none", mec=RED, alpha=0.7,
+                zorder=4, label="R$_{\\mathrm{refusal}}$ (original 23 twins)")
+        ax.plot(xpos, df["R_refusal_new19"], "D", ms=3.5, mfc="none", mec=RED, alpha=0.5,
+                zorder=4, label="R$_{\\mathrm{refusal}}$ (new 19 twins)")
     # Random null (~0 for all k).
     ax.plot(xpos, null, "^-", ms=5, lw=1.4, color=ORANGE, alpha=0.9,
             zorder=2, label="Random-basis null")
@@ -394,14 +431,14 @@ def fig_one_knob() -> str:
         arrowprops=dict(arrowstyle="->", color=INDIGO, lw=1.0),
     )
     ax.annotate(
-        "R$_{\\mathrm{refusal}}$ saturates at the\nharm rank-1 level (0.31)",
-        xy=(2, 0.26), xytext=(0.95, 0.12),
+        "R$_{\\mathrm{refusal}}$ saturates at the\nharm rank-1 level (0.25; 95% CI bars over twins)",
+        xy=(2, 0.22), xytext=(0.95, 0.09),
         fontsize=8, color=RED, ha="left", va="center", bbox=ANN_BBOX,
         arrowprops=dict(arrowstyle="->", color=RED, lw=1.0),
     )
     ax.annotate(
-        "One-knob model min(0.31, R$_{\\mathrm{judgment}}$),  RMSE 0.036",
-        xy=(3.0, 0.315), xytext=(3.45, 0.48),
+        "One-knob model min(0.25, R$_{\\mathrm{judgment}}$),  RMSE 0.023",
+        xy=(3.0, 0.25), xytext=(3.45, 0.47),
         fontsize=8, color="black", ha="right", va="center", bbox=ANN_BBOX,
         arrowprops=dict(arrowstyle="->", color="black", lw=0.9),
     )

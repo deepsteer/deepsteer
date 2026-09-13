@@ -10,7 +10,7 @@ requests carrying opposite judgment outcomes, $n = 23$).
 ## C.1 Who writes the decision {#app:write}
 
 The refusal write is distributed, not a sparse safety-head circuit. Cumulative channel-matched
-specificity reaches only 44% at the top ten heads and needs about 62 heads to reach 80%; the write
+specificity reaches only 45% at the top ten heads and needs 67 heads to reach 80%; the write
 is led by one head with a long tail, and multilayer perceptrons carry 38% of the decision-site
 write (write fraction 0.384, below the 0.50 Jacobian threshold so the head decomposition is
 adequate).
@@ -29,7 +29,7 @@ adequate).
 | L15 H15 | $-0.130$ | $-0.142$ |
 
 : Per-head write onto the refusal direction and channel-matched specificity, top ten writers. The
-lead head L16 H23 alone carries 11.6% of the total specificity; writers span layers 11 to 16, and
+lead head L16 H23 alone carries 11.7% of the total specificity; writers span layers 11 to 16, and
 L15 H15 is the sole anti-refusal writer. Refusal is written broadly into the decision channel, led
 by one head but not carried by it.
 
@@ -97,39 +97,44 @@ object cannot separate; judgment climbing while refusal saturates on the same pu
 basis is a difference in what the two readouts read, not judgment tracking a content axis the gate
 ignores.
 
-| $k$ | $R_{\text{refusal}}(k)$ | $R_{\text{judgment}}(k)$ | Random-direction null | Subspace purity |
-|---:|---:|---:|---:|---:|
-| 1 | 0.01 | 0.05 | $\approx 0$ | 0.97 |
-| 3 | 0.31 | 0.46 | $\approx 0$ | 0.98 |
-| 8 | 0.26 | 0.59 | $\approx 0$ | 0.99 |
-| 16 | 0.27 | 0.66 | $\approx 0$ | 0.99 |
+| $k$ | $R_{\text{refusal}}(k)$ pooled, $n = 42$ [95% CI] | original 23 | new 19 | $R_{\text{judgment}}(k)$ | Random-direction null | Subspace purity |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 0.03 [$-0.01$, 0.07] | 0.01 | 0.05 | 0.05 | $\approx 0$ | 0.97 |
+| 3 | 0.27 [0.14, 0.48] | 0.31 | 0.22 | 0.46 | $\approx 0$ | 0.98 |
+| 8 | 0.22 [0.11, 0.40] | 0.26 | 0.16 | 0.59 | $\approx 0$ | 0.99 |
+| 16 | 0.24 [0.13, 0.41] | 0.27 | 0.20 | 0.66 | $\approx 0$ | 0.99 |
 
-: The nested rank sweep, the central point-estimate divergence. Judgment transfer climbs to 0.66 while refusal
-transfer peaks at $k = 3$ (0.31) and then holds flat at 0.26–0.27, sitting at the harm-rank-1
-level (harm-rank-1 transfer 0.31), with the random-direction null near zero at every rank.
-Expanding the moral basis beyond harm buys more judgment coupling and no more refusal coupling;
-about 73% of refusal's causal twin-difference input lies outside the rank-16 moral basis (69%
-already at the rank-3 peak). The per-rank coefficients are point estimates; no per-rank
-confidence interval on $R_{\text{judgment}}(k) - R_{\text{refusal}}(k)$ is reported, and the one
-difference-CI computed for this contrast (\Cref{app:interchange}) includes 0 at this count.
+: The nested rank sweep, replicated and pooled. The original 23-twin run and a 19-twin replication
+(48 newly authored twins, 19 surviving the same baseline-discrimination screen) were run through one
+session; the original subset reproduces the run of record ($R_{\text{refusal}}(16)$ 0.27, verdict
+`harm_saturating`), the new subset alone reads `indeterminate` (same sign of the gap, plateau CI
+touching 0), and the pooled sweep is primary under the pre-registered sign rule. Judgment transfer
+climbs to 0.66 while pooled refusal transfer rises to $k = 3$ (0.27) and holds flat at 0.22–0.24,
+at the harm-rank-1 level (harm-rank-1 transfer 0.33), with the random-direction null near zero at
+every rank. About 76% of refusal's causal twin-difference input lies outside the rank-16 moral
+basis (73% already at the rank-3 peak). No per-rank confidence interval on
+$R_{\text{judgment}}(k) - R_{\text{refusal}}(k)$ is reported; the one difference-CI computed for
+this contrast (\Cref{app:interchange}) includes 0 at $n = 42$ (0.21, [$-0.07$, 0.39]), as the
+pre-registered power table predicted (about 140 twins would resolve it).
 
 ## C.5 The one-knob fit {#app:oneknob}
 
 The whole sweep collapses to a single free parameter: refusal transfer is judgment transfer clipped
 at a harm ceiling, $R_{\text{refusal}}(k) \approx \min(\text{harm ceiling}, R_{\text{judgment}}(k))$
-with the ceiling $\approx 0.31$.
+with the ceiling 0.25 on the pooled twins (0.28 original, 0.19 new; grid least squares over the four
+ranks).
 
-| $k$ | Measured $R_{\text{refusal}}(k)$ | One-knob prediction | Residual |
+| $k$ | Measured $R_{\text{refusal}}(k)$, pooled | One-knob prediction | Residual |
 |---:|---:|---:|---:|
-| 1 | 0.013 | 0.052 | $-0.039$ |
-| 3 | 0.31 | 0.31 | $-0.002$ |
-| 8 | 0.26 | 0.31 | $-0.05$ |
-| 16 | 0.27 | 0.31 | $-0.04$ |
+| 1 | 0.027 | 0.053 | $-0.026$ |
+| 3 | 0.275 | 0.246 | $+0.029$ |
+| 8 | 0.222 | 0.246 | $-0.024$ |
+| 16 | 0.242 | 0.246 | $-0.004$ |
 
-: The one-knob fit. Over the plateau ($k \geq 3$) the fit is near-exact (RMSE 0.036, residual
-$-0.002$ at $k = 3$), while two harm-amplitude alternatives (the ceiling scaled by the harm-capture
-fraction, and by its square) miss by 0.10 to 0.24. The one place it breaks is rank 1, where it
-over-predicts (measured 0.013 against predicted 0.052): the highest-variance contrast component,
+: The one-knob fit on the pooled sweep (RMSE 0.023 over all four ranks, 0.022 on the plateau; on the
+original 23 twins the ceiling is 0.28 at RMSE 0.027), while two harm-amplitude alternatives (the
+ceiling scaled by the harm-capture fraction, and by its square) miss by 0.10 to 0.24. The one place
+it strains is rank 1, where it over-predicts (measured 0.027 against predicted 0.053): the highest-variance contrast component,
 the most harm-aligned single direction (variance purity 0.974, cosine 0.35 to harm), is causally
 inert, moving neither readout at rank 1. Variance is not causal relevance; the harm read is a
 rank-1 causal object that is not the rank-1 variance object.
@@ -157,3 +162,44 @@ intent severity and refusal) that a harm-surface-keyed gate predicts, not a stim
 it is the reason the cross-model commitment axis in \Cref{app:panel} is measured on Llama and
 GPT-OSS rather than on OLMo, whose refusal barely fires on these requests both in projection
 ($-0.08$) and in behavior (17%).
+
+## C.8 The reconciled cross-ablation (activation-level projection-out) {#app:crossablation}
+
+A second causal instrument, distinct from interchange and from the weight-folded ablation of
+\Cref{app:removability}: the direction is projected out of the layer-16 residual output at every
+position during generation, and the outcomes are read behaviorally with the chat-template harness
+of the cross-model battery (100 held-out harmful requests for refusal, 120 forced-choice items for
+moral judgment; baseline refusal 0.62, judgment accuracy 0.74). The directions are the refusal
+direction (400/400 train set), the judgment-decision direction, the persona direction, and five
+random unit directions, all at the same site.
+
+| Ablated direction | Refusal rate | Judgment accuracy | Requests re-decided (comply→refuse / refuse→comply) |
+|---|---:|---:|---:|
+| none (baseline) | 0.62 | 0.742 | |
+| judgment-decision | 0.74 | 0.758 | 12 / 0 |
+| refusal | 0.78 | 0.750 | 33 / 17 |
+| persona | 0.63 | 0.725 | 1 / 0 |
+| random (five draws) | 0.62 each | 0.733 to 0.750 | 0 / 0 each |
+
+: The reconciled cross-ablation on OLMo-3-Instruct. Paired bootstrap over requests (2000 draws):
+ablating the judgment-decision direction raises refusal by 0.12 over the random draws (95% CI
+[0.06, 0.19]); ablating the refusal direction leaves judgment accuracy within 0.007 of the random
+draws ([$-0.018$, 0.033]; no cross-effect detectable at about 0.13 in judgment accuracy). The
+pre-registered minimum detectable effect for a refusal-rate difference at this count was 0.14, so
+the 0.12 is detected by its interval and lies below the planning bar. The persona control moves one
+request in a hundred against a random reference that moves none.
+
+Two things about this instrument are stated rather than assumed away. First, projecting the refusal
+direction out of the residual at one layer does not remove refusal on this model: it re-decides
+about half the requests in both directions, and every re-decided output is coherent (all 33 new
+refusals are well-formed opening refusals; all 17 new compliances are "Certainly, however"
+redirects; length and repetition match baseline). A single-layer projection-out and a weight-folded
+orthogonalization are different interventions on the same direction, and the removability claims
+of \Cref{app:removability} rest on the latter. Second, the judgment-decision effect is
+one-directional (12 requests to refuse, none to comply) and specific relative to five random
+directions and to the persona direction. Whether it should be read as judgment content feeding the
+refusal decision or as the removal of one more gate-adjacent direction is not settled by this cell;
+the remaining discriminator (whether the re-decided requests are the ones nearest the refusal
+boundary at baseline) is priced in the pre-registration and unrun. The interchange results of
+\Cref{app:interchange} remain the primary causal claim; this cell adds an ablation-side arrow, held
+at this scope.

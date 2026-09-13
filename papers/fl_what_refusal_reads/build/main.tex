@@ -153,17 +153,20 @@ reasoning mixture-of-experts GPT-OSS-20B) we separate what the model comprehends
 refusal gate reads. Moral comprehension is pretraining-native: a rank-3 moral subspace
 crystallizes during pretraining (checkpoint-to-final cosine 0.869 rising to 0.999) and
 alignment rotates it once (about 40 degrees, base-to-SFT cosine 0.757), never rebuilding it.
-The refusal gate, in contrast, is a fresh post-training construction with almost no pretraining
-precursor (proto-refusal-to-gate cosine 0.155), written into a narrow 8-to-15
+The refusal gate, in contrast, is a fresh post-training construction with only a weak
+pretraining precursor (proto-refusal-to-gate cosine 0.155, twice a matched null's q95 of 0.07,
+reliability 0.99 on both sides), written into a narrow 8-to-15
 effective-dimensional control-token channel where the refusal decision is orthogonal to the
 moral-judgment decision (no coupling detectable above |cos| 0.10; on OLMo null q95 0.41, Qwen
 0.42, Llama 0.51). What refusal reads is established
-causally on one model, a nested interchange rank sweep on OLMo-3 (n=23 request-twins): as the
-moral basis expands, judgment coupling climbs to 0.66 while refusal coupling levels off at the
-rank-1 harm level (0.31), and 73\% of refusal's causal input lies off the moral subspace, so on
+causally on one model, a nested interchange rank sweep on OLMo-3 (42 request-twins, a 23-twin
+run replicated and pooled with 19 new twins): as the moral basis expands, judgment coupling
+climbs to 0.66 while refusal coupling levels off at the rank-1 harm level (0.24, 95\% CI
+[0.13, 0.41]), and about three-quarters of refusal's causal input lies off the moral subspace, so on
 OLMo refusal reads the harm percept, a low-rank slice, not the broad subspace that judgment
 reads on the same patches. The read is causal on OLMo-3, corroborative on GPT-OSS
-(correlational), and contrastive on Llama (causal, broad); Qwen is not measured on the read axis. The
+(correlational), and contrastive on Llama (causal, broad); Qwen reads beyond the rank-1 harm level
+but its gap to judgment is unresolved at 19 twins (indeterminate). The
 panel separates what refusal reads (harm versus broad moral content) from how it commits (at
 the read layer, early, or reversibly), and families differ: Llama reads broad moral content by
 interchange, the one dissenting read. Where refusal reads only a low-rank, largely-harm slice and

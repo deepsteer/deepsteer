@@ -74,9 +74,9 @@
     },
     {
       "path": "figure_data/bottleneck_pr.csv",
-      "bytes": 191,
-      "sha256": "446967ea65ff4697dc8fed2201f5d45d44fda671e34419446a435fb54647d2e7",
-      "description": "Participation ratio at the decision site by model, plus decision-token, content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
+      "bytes": 309,
+      "sha256": "83e7a8a0bee6390deb80f7e250ea4830ce23b02e134dec57e6ab6c594f419547",
+      "description": "Participation ratio at the decision site by model with 95% subsampling intervals (W4 14.6, one 240-text sample per model; GPT-OSS interval is for its raw 9.4, the 12.8 is standardized), the standardized decision-site PR (the former decision-token column: Llama 13.5 was this position standardized), content-position, and raw->standardized geometric-cell PRs. The control-token bottleneck profile.",
       "produced_by": "cells/olmo3_decision_anatomy.json + per-model D2 position-gate sessions",
       "shared_across_papers": true,
       "cited_by": [
@@ -86,6 +86,9 @@
       "columns": [
         "model",
         "decision_site_pr",
+        "decision_site_pr_lo",
+        "decision_site_pr_hi",
+        "decision_site_pr_std",
         "decision_token_pr",
         "content_pr",
         "geometric_pr_raw",
@@ -185,10 +188,10 @@
     },
     {
       "path": "figure_data/rank_sweep.csv",
-      "bytes": 133,
-      "sha256": "03e7b7f961ab5a69e7496f12d2666dabd7be1c08dd38c09312b735f82da34d55",
-      "description": "Nested interchange rank sweep on OLMo-3 (n=23 request-twins): restricted-transfer R_judgment and R_refusal over k in {1,3,8,16}, random-direction null, and the one-knob harm-ceiling fit.",
-      "produced_by": "cells/olmo3_rank_sweep.json",
+      "bytes": 312,
+      "sha256": "938341291fc3b6134ae966dbda76b4e054ed9406dc617673e02f93ef95a11fd2",
+      "description": "Nested interchange rank sweep on OLMo-3, pooled n=42 request-twins (23 original + 19 W4 replication) with 95% bootstrap intervals over twins, the per-subset R_refusal, random-direction null, and the one-knob harm-ceiling fit (ceiling 0.246, RMSE 0.023).",
+      "produced_by": "cells/olmo3_rank_sweep.json (n=23 of record) + cells/w4/olmo3_instruct/pooled_sweep_olmo3_w4.json (pooled)",
       "shared_across_papers": false,
       "cited_by": [
         "flagship:Fig one-knob (sec 7)"
@@ -197,6 +200,10 @@
         "k",
         "R_judgment",
         "R_refusal",
+        "R_refusal_lo",
+        "R_refusal_hi",
+        "R_refusal_original23",
+        "R_refusal_new19",
         "random_null",
         "one_knob_fit"
       ]

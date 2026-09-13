@@ -27,7 +27,14 @@ credibility asset; it is cited from the flagship, not hidden.
   plateau (k≥3) at RMSE 0.036, and PC1 (highest variance, purity 0.974, most harm-aligned at
   cos 0.35) is causally inert (rank-1 moves neither readout, 0.01 / 0.05), the lesson that
   variance is not causal relevance. Both the one-knob RMSE 0.036 and the PC1-inert reading are
-  illustrative point estimates, reported without CIs. Verdict: `harm_saturating`.
+  illustrative point estimates, reported without CIs at n=23. Verdict: `harm_saturating`.
+- **Replicated and pooled (W4, 2026-09).** A 19-twin replication through the same screen and
+  harness reproduced the original subset (R_refusal(16) 0.27, `harm_saturating`); the new twins
+  alone read `indeterminate` with the same gap sign, and the pooled 42-twin sweep is primary:
+  R_refusal 0.03 → 0.27 → 0.22 → 0.24 [0.13, 0.41] against R_judgment 0.05 → 0.46 → 0.59 → 0.66,
+  one-knob ceiling 0.25 at RMSE 0.023, plateau interval a third narrower. The ratio-of-ratios
+  secondary stayed unresolved (0.21, [−0.07, 0.39]), exactly as the pre-registered power table
+  said it would at that count.
 - **GPT-OSS commit axis.** The first session banked the position gate (PR 12.8),
   consequential engage deliberation (benign→refuse 7/7), and the first-run disengage 0/7 that
   looked irreversible.
@@ -105,7 +112,7 @@ accordingly.
 **Per-mode model coverage.** The summary "six failures across four architectures" is honest
 only about the panel as a whole; each individual mode is established on one or two models, not
 on all four. The band-below-null position-invalid instrument (§2.1) is shown on
-OLMo-3-Instruct at its decision token, with the PR < 30 gate applied on OLMo, Qwen, and Llama.
+OLMo-3-Instruct at its decision token, with the null-referenced PR gate applied on OLMo, Qwen, Llama, and GPT-OSS.
 The massive-activation outlier's position-dependence (§2.2) is a Llama-3.1 finding cross-checked
 against OLMo. The covariance-matched null degeneration (§2.3) is a Qwen-and-Llama result with
 OLMo as the clean control. The reordered-norm OV overshoot (§2.4) is OLMo-only, since pre-norm
@@ -114,12 +121,16 @@ GPT-OSS-only. The read-layer depth artifact (§5) is Llama-versus-OLMo. So the n
 protocols, each demonstrated on one or two members of a four-model panel, not six effects each
 seen on four models.
 
-**The position-validity gate can flag a real direction.** The PR < 30 gate declares a position
+**The position-validity gate can flag a real direction.** The PR gate declares a position
 invalid for content projection-fraction tests, but its false-invalid rate is unquantified. A
 genuine content direction present at a narrow position would be flagged the same way as a
 weak-instrument artifact. The gate is calibrated to catch band-below-null cases; it is not
 calibrated against a bank of known-present directions at narrow positions, so it can suppress a
-real read.
+real read. One panel position already shows the other side of this: at GPT-OSS's harmony decision
+token the held-one-out moral band sits above its covariance-matched null (0.53 against 0.48)
+despite a participation ratio of 9.4, so a narrow position can carry content the band detects,
+and the gate is a validity flag for the projection instrument, not a statement that the position
+is empty.
 
 **Standardization can destroy anisotropic signal.** Per-dimension standardization rescues the
 covariance-matched null in massive-activation families (§2.3), but z-scoring flattens genuine

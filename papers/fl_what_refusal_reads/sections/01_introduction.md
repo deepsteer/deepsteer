@@ -27,14 +27,14 @@ underneath it is not.
 
 The geometric measurements span four open-weight models (OLMo-3-7B-Instruct, Qwen2.5-7B,
 Llama-3.1-8B, and the reasoning mixture-of-experts GPT-OSS-20B); the causal interchange test
-that resolves *what* refusal reads is single-model (OLMo, n=23 request-twins), and the
+that resolves *what* refusal reads is single-model (OLMo, 42 request-twins pooled from a 23-twin run and a 19-twin replication), and the
 four-model panel that follows is a cross-architecture consistency check with one dissenting
 read (Llama reads broad moral content by interchange), not a second causal test. The argument
 runs in seven steps. Moral
 comprehension is pretraining-native and survives alignment: a rank-3 moral subspace
 crystallizes during pretraining to a checkpoint-to-final cosine of 0.999, and post-training
 rotates it once (about 40 degrees) and then leaves it. The refusal gate, by contrast, is a
-fresh post-training construction (proto-refusal-to-gate cosine 0.155) that lives in a
+fresh post-training construction (proto-refusal-to-gate cosine 0.155, a weak precursor at twice the matched null) that lives in a
 low-variance channel. The
 decision site itself is an 8-to-15 effective-dimensional control-token bottleneck on all four
 architectures, and at that site the refusal-decision direction is separated from the
