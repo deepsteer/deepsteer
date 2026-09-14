@@ -56,14 +56,53 @@ CAL_SYSTEM = (
 
 
 def _provider(spec: str) -> str:
+    if spec.startswith("subagent"):
+        return "anthropic"  # Pro-account Claude via the CLI: same provider family as the API judge
     return "anthropic" if spec.startswith("claude") else spec.split(":", 1)[0]
+
+
+def _claude_cli(system: str, user: str, model: str) -> str:
+    """One-shot `claude -p` call on the Pro account. ANTHROPIC_API_KEY is stripped from the child
+    environment: with it set, the CLI bills the API instead of the claude.ai login."""
+    import os
+    import subprocess
+
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
+    }
+    r = subprocess.run(
+        [
+            "claude",
+            "-p",
+            "--model",
+            model,
+            "--system-prompt",
+            system,
+            "--output-format",
+            "text",
+            user,
+        ],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=300,
+    )
+    if r.returncode != 0:
+        raise RuntimeError(f"claude -p failed ({r.returncode}): {r.stderr[-300:]}")
+    return r.stdout.strip()
 
 
 class Judge:
     def __init__(self, spec: str) -> None:
         self.spec = spec
         self.provider = _provider(spec)
-        if self.provider == "anthropic":
+        self.cli = spec.startswith("subagent")
+        if self.cli:  # subagent | subagent:<model alias>
+            self.model = spec.split(":", 1)[1] if ":" in spec else "opus"
+            self.client = None
+        elif self.provider == "anthropic":
             import anthropic
 
             self.client = anthropic.Anthropic(timeout=120.0, max_retries=3)
@@ -77,6 +116,8 @@ class Judge:
             raise SystemExit(f"unknown judge {spec!r}")
 
     def ask(self, system: str, user: str) -> str:
+        if self.cli:
+            return _claude_cli(system, user, self.model)
         if self.provider == "anthropic":
             r = self.client.messages.create(
                 model=self.model,
@@ -262,7 +303,11 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     ap.add_argument("mode", choices=["external", "calibration", "breadth"])
-    ap.add_argument("--judge", required=True, help="claude | claude:<model> | openai:<model>")
+    ap.add_argument(
+        "--judge",
+        required=True,
+        help="subagent[:<alias>] (Pro account via claude -p) | claude[:<model>] | openai:<model>",
+    )
     ap.add_argument("--scenarios", nargs="*", type=Path)
     ap.add_argument("--calibration", type=Path)
     ap.add_argument("--jsonl", type=Path)
