@@ -1,0 +1,48 @@
+# KDG panel model registry (KDG_PANEL_SPEC §3). Revisions are pinned at first load by the pod
+# manifest (resolved HF commit hash); the `revision` field here is the requested revision.
+# Template drift is a fork: the chat template text is hashed into every artifact's metadata.
+tier1:
+  olmo3_instruct:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: null            # main at pilot time; the manifest records the resolved commit
+    kind: instruct
+    n_layers: 32
+    hidden: 4096
+    chat_template_note: >
+      With no system message the template injects a default system prompt ("You are a helpful
+      function-calling AI assistant. You do not currently have access to any functions.
+      <functions></functions>"). D_chat and J_stated use that default (no system prompt of our
+      own); the known-gap positive band supplies a system prompt, which REPLACES the default.
+      The rendered-template sha256 is saved per cell so the difference is auditable.
+  olmo3_base:
+    repo: allenai/Olmo-3-1025-7B
+    revision: null
+    kind: base
+    n_layers: 32
+    hidden: 4096
+tier2:
+  qwen25_instruct:
+    repo: Qwen/Qwen2.5-7B-Instruct
+    revision: null
+    kind: instruct
+    n_layers: 28
+    hidden: 3584
+  llama31_instruct:
+    repo: meta-llama/Llama-3.1-8B-Instruct
+    revision: null
+    kind: instruct
+    n_layers: 32
+    hidden: 4096
+    gated: true
+readout:
+  raw_answer_prefix: "Answer:"
+  raw_option_token_form: " <letter>"      # leading space; single token on OLMo-3 and Qwen2.5 (checked 2026-09-13)
+  chat_option_token_form: "<letter>"      # first generated token after the assistant header
+  base_option_mass_floor: 0.5             # §4.6 base-specific screen (fixed; changing it is a fork)
+  raw_permutations: 8                     # option orders per scenario for the raw-frame readout
+rollouts:
+  d_chat: 32
+  j_stated_sampled: 8
+  j_stated_greedy: 1
+  dose_arms: 16
+  temperature: 0.7

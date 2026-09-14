@@ -104,3 +104,7 @@ papers/d1_moral_subspace/outputs/
 papers/d2_decision_coupling/outputs/
 # Direction 3: reproducible manifests/outputs
 papers/d3_decision_anatomy/outputs/
+
+# KDG panel: per-rollout pod outputs (regenerable; numbers of record go in KDG_RESULTS.md)
+papers/kdg_panel/outputs/
+papers/kdg_panel/data/*.log
