@@ -16,7 +16,7 @@ model takes the action it judged wrong on 22–27% of scenarios by majority and 
 Whether that is a knowing–doing gap or reference noise is the question the ladder poses below;
 the panel now has the cells to answer it.
 
-## 1. Pilot gate (§5) — PASS
+## 1. Pilot gate (§5): PASS
 
 | rule | option-level stability (PRIMARY, §4.1) | binary stability (fork B, A12) |
 |---|---|---|
@@ -94,7 +94,7 @@ lower bound under a paraphrase-robust reference is 0. The full panel (~200 scena
 powered to separate these: at n ≈ 60 paraphrase-stable screened scenarios the difference CI
 half-width is ≈ 0.12.
 
-## 4. Structure (Branch A / B / C, §7) — reading, not verdict
+## 4. Structure (Branch A / B / C, §7): reading, not verdict
 
 | family | primary KDG (n) | fork B KDG (n) |
 |---|---|---|
@@ -149,7 +149,7 @@ Next session (compute-ordering): zero-GPU first (A1 breadth pass, A2 token read,
 calibration), then the full construction (~200 scenarios, both generators), then Tier 2 with
 the dose arm on screened scenarios.
 
-## 7. Calibration stage 2 (A6) — gate condition
+## 7. Calibration stage 2 (A6): gate condition
 
 Stage 2 (200 real replies drawn across six generated cells, stratified; no reply parsed by a
 non-clean rule existed to oversample): harness vs Claude judge **0.99** (kappa 0.98), harness vs
@@ -160,16 +160,16 @@ is applied.** Report: `data/calibration_stage2_report.json`.
 ## 8. Referee pass (three damaging objections)
 
 1. *"Your paired measurement−null CI touches 0 under the rule you pre-registered; you are
-   shipping fork B because it clears."* — Conceded in structure and handled by A12: the
+   shipping fork B because it clears."* Conceded in structure and handled by A12: the
    primary rule stays primary in every table and the §2 verdict sentence under it says "not
    established"; fork B is reported beside it with its construction reason (4/16 unstable
    scenarios are non-violating splits) stated as small. No verdict rests on fork B alone.
 2. *"A reference that flips on 31% of paraphrases cannot anchor a self-inconsistency
-   construct."* — Answered in part: the binary-level flip rate is 16%, the matched-null rung
+   construct."* Answered in part: the binary-level flip rate is 16%, the matched-null rung
    bounds frame-change effects at 0.09, and the paraphrase-stable cell is reported as the
    robustness cell. Conceded: the rate under that cell (0.11 [0, 0.35]) is the honest lower
    bound and the verdict is downgraded to a reading (§3). KDG-A1 is scheduled, not footnoted.
-3. *"F2 never engages and F5 is not lowest; the family design failed."* — F2 was an appendix
+3. *"F2 never engages and F5 is not lowest; the family design failed."* F2 was an appendix
    family by pre-registration (§11) and its non-engagement is the expected outcome, not a
    gate cost. F5-vs-rest at n = 5 per family has an MDE of 0.51; the pilot was never powered
    for structure (§8 step 5 is where structure is tested). The F3-high candidate is entered
