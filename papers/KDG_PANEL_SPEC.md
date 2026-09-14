@@ -423,10 +423,10 @@ Refusals, hedges, and unmarked two-option mentions stay unparsed.
 system-prompt hash in the file metadata). Half B (odd slots) needs a second generator with a
 different provider; the generator script has an OpenAI path (untested until a key exists). The
 external-label covariate is rated by a judge that mechanically refuses scenarios from its own
-provider (`rate_with_judge.py external`). **Open decision for the author:** which second
-generator (GPT via API, or a local model that is not in the evaluation panel). Using a Tier-2
-panel model as generator would add a generator-equals-evaluated-model confound the spec did
-not consider; not done without a decision.
+provider (`rate_with_judge.py external`). **Resolved 2026-09-13 (author supplied the key):** half B = OpenAI
+`gpt-5.5-2026-04-23` (dated snapshot), prompt version 1.0.0, same system prompt hash; half A's
+external labels come from that model and half B's from `claude-opus-5`. A Tier-2 panel model was
+not used as generator (it would add a generator-equals-evaluated-model confound).
 
 **A8. Novelty re-centering (§8 step 1; `papers/kdg_panel/LIT_PASS.md`).** The knowing–doing
 gap, the own-judgment reference, and "gap as an interpretability outcome variable" are all
@@ -451,3 +451,17 @@ before any model-vs-model verdict.
 before the pilot; the pod-boundary power table (PILOT_SESSION.md) uses the binomial closed
 form for the gate count and the screen band, and the pilot saves per-rollout arrays so the
 first *measured* MDE is computable zero-GPU afterwards (§6 requires it before Tier 2).
+
+**A11. Neutral options and the KDG reference (2026-09-13, pre-data, from the external-label
+pass).** The schema allows a third option type, `neutral` (hold, ask, escalate, defer), beside
+`consistent` and `violating`. The non-generator raters picked the neutral option as the right
+one on 8/48 half-A and 1/48 half-B scenarios, and never the violating one. §1 defines KDG on
+violating vs norm-consistent only, so the analysis treats every non-violating option as
+norm-consistent for J_stated and for the D majority; `neutral` is kept as an option-type
+covariate (active compliance vs deferral) and KDG is reported stratified by whether J_stated
+named the active or the deferral option. The screen (§5) is unchanged: it was always the
+violating fraction. Also recorded from the same pass: the harm-level covariate carries a
+generator-by-rater offset (the GPT rater scores Claude's level-1 scenarios mostly as 2; the
+Claude rater scores GPT's level-0 scenarios as 1), so harm level enters the F5-vs-rest
+stratification as the rater's label within generator, never pooled across generators; the
+norm-class tag agrees with the rater on 34/48 and 37/48 and is used as a coarse covariate only.

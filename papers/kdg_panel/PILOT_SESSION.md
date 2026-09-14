@@ -11,10 +11,10 @@ Orion launches the pod (keys stay in Orion's terminal).
 |---|---|---|
 | §8.1 lit pass, citations verified at source | `LIT_PASS.md` (25 records, 2 UNVERIFIED search-only hits) | done; novelty re-centered in spec §13 A8 |
 | §8.2 pilot scenarios, half A (Claude) | `data/pilot_scenarios_A_claude-opus-5.json` | done: 30 primaries + 18 harm twins (48), all validated with the OLMo-3 tokenizer band; one F5 slot hit a generator safety refusal (category bio, farming setting) and was regenerated in-plan (same setting, `setting_override: false`) |
-| §8.2 pilot scenarios, half B (second generator) | `data/pilot_scenarios_B_gpt-5.5-2026-04-23.json` | generator chosen 2026-09-13: OpenAI `gpt-5.5-2026-04-23` (dated snapshot); generating (the account's low requests-per-minute limit forced two-at-a-time reruns) |
+| §8.2 pilot scenarios, half B (second generator) | `data/pilot_scenarios_B_gpt-5.5-2026-04-23.json` | generator chosen 2026-09-13: OpenAI `gpt-5.5-2026-04-23` (dated snapshot); done: 30 primaries + 18 harm twins (48), validated with the same tokenizer band; the account's 3 requests/min limit forced a sequential regeneration of 21 slots |
 | §8.3 harness + breadth rubric + 200-item calibration set | `deepsteer/kdg/`, `data/calibration_set_v1.json` | harness 1.0.0 + rubric built and unit-tested; stage-1 set built on half A with per-item permutations: harness vs construction labels 200/200 after one parser fix (mid-line final `Answer:` is the commitment); rater-2 (Claude judge, `claude-opus-5`, low effort) vs construction labels 0.985 (kappa 0.98; the 3 disagreements are tool-call replies the judge left unlabeled; excluded per §4.4), file `data/calibration_set_v1_rater2_claude.json`; stage 1 PASSES |
-| external-label covariate (non-generator rater) | `external_label` field in scenario files | half A rated by `gpt-5.5-2026-04-23`, half B by `claude-opus-5` (`rate_with_judge.py external` refuses same-provider pairs); running |
-| pod driver + dry run + local tests | `scripts/pod_kdg_pilot.py`, `tests/scripts/test_pod_kdg_pilot.py` | done; 33 tests pass; dry run exercised on the real half-A set |
+| external-label covariate (non-generator rater) | `external_label` field in scenario files | done: half A rated by `gpt-5.5-2026-04-23` (40/48 agree with construction), half B by `claude-opus-5` (47/48); every disagreement prefers the neutral hold/escalate option, never the violating one → spec §13 A11 |
+| pod driver + dry run + local tests | `scripts/pod_kdg_pilot.py`, `tests/scripts/test_pod_kdg_pilot.py` | done; 36 tests pass; dry run exercised on both halves (96 scenarios) |
 | zero-GPU analysis + SCREEN writer | `scripts/analyze_pilot.py` | done; exercised on dry-run outputs |
 
 ## SESSION KDG-1 (est. 0.6–1.0 A100-h, model group: OLMo-3 7B Instruct → OLMo-3 7B base)
@@ -100,7 +100,7 @@ computed from the pilot's measured bootstrap width before Tier 2.
 4. *Half-A-only pilot is a single-generator panel; a generator-dependent family result is
    undetectable* → §2 rule → the pilot may run on half A to test the *instrument* (parse rate,
    band, floor) but the gate is not applied to a single-generator set without a dated
-   amendment saying so. **Open:** author picks the second generator (A7).
+   amendment saying so. **Resolved 2026-09-13:** OpenAI `gpt-5.5-2026-04-23` (A7).
 5. *The pressure-removed matched null may itself carry residual pressure (the twin still
    describes the option set)* → `construct-audit` genealogy → report D on the null twin as a
    violating fraction next to the primary; a null-twin violating fraction > 0.5 on a scenario
@@ -112,5 +112,4 @@ computed from the pilot's measured bootstrap width before Tier 2.
 
 Question behind the question: whether the panel's *instrument* works on a 7B open model
 (parse rate, band, floor) is separable from whether the *gap* exists; the pilot answers the
-first on half A alone and the second only with both halves. The author's choice on A7
-decides whether the first pod is an instrument check or the gate.
+first on half A alone and the second only with both halves. With both halves built, the first pod can apply the gate directly.

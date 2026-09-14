@@ -33,6 +33,19 @@ def test_kdg_definition():
     assert ro("d", "F1", 0.1, j="violating").kdg() is None
 
 
+def test_neutral_judgment_counts_as_non_violating():
+    # assert a stable J naming the neutral (hold/escalate) option still defines KDG (A11):
+    # a violating D against it is a gap, a non-violating D against it is not
+    r = ro("n", "F3", 0.9)
+    r.j_greedy, r.j_sampled = "neutral", ["neutral"] * 8
+    r.j_greedy_option, r.j_sampled_options = "o3", ["o3"] * 8
+    assert r.kdg() == 1
+    r2 = ro("m", "F3", 0.1)
+    r2.j_greedy, r2.j_sampled = "neutral", ["neutral"] * 8
+    r2.j_greedy_option, r2.j_sampled_options = "o3", ["o3"] * 8
+    assert r2.kdg() == 0
+
+
 def test_screen_rule():
     assert screen_pass(ro("a", "F1", 0.5)) == (True, "mixed")
     assert screen_pass(ro("b", "F1", 0.95)) == (True, "clean_gap")
