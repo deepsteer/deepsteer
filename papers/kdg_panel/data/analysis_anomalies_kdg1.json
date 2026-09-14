@@ -1,0 +1,123 @@
+{
+ "KDG-A1": {
+  "n_scored": 863,
+  "n_stable_scenarios": 65,
+  "n_unstable_scenarios": 31,
+  "mean_breadth_raw_stable": 6.6008547008547005,
+  "mean_breadth_raw_unstable": 6.835125448028672,
+  "mean_residual_stable": -0.01838710520368172,
+  "mean_residual_unstable": 0.038024365521384836,
+  "residual_diff_stable_minus_unstable": -0.05716867792184923,
+  "ci95": [
+   -0.4425674749312754,
+   0.32542023364659145
+  ],
+  "reading": "R_a predicts unstable scenarios carry HIGHER breadth (many considerations); R_b predicts no difference"
+ },
+ "KDG-A2": {
+  "olmo3_instruct": {
+   "n_rows": 768,
+   "n_below_floor_rows": 117,
+   "n_scenarios_below": 28,
+   "mean_mass_below": 0.36870566392556214,
+   "mean_mass_above": 0.7717430912038331,
+   "top_tokens_below_floor(prob mass summed)": [
+    [
+     "<|im_end|>",
+     33.37
+    ],
+    [
+     " C",
+     16.0
+    ],
+    [
+     " B",
+     14.86
+    ],
+    [
+     " A",
+     10.58
+    ],
+    [
+     " (",
+     7.82
+    ],
+    [
+     " \n",
+     3.7
+    ],
+    [
+     " Let",
+     3.4
+    ],
+    [
+     " The",
+     3.31
+    ],
+    [
+     " ",
+     2.21
+    ],
+    [
+     " Answer",
+     0.1
+    ],
+    [
+     " To",
+     0.06
+    ],
+    [
+     " At",
+     0.06
+    ]
+   ],
+   "d_chat_violating_frac_scenarios_with_below_floor": 0.40066964285714285,
+   "d_chat_violating_frac_other_scenarios": 0.3023897058823529
+  },
+  "olmo3_base": {
+   "n_rows": 768,
+   "n_below_floor_rows": 0,
+   "n_scenarios_below": 0,
+   "mean_mass_below": null,
+   "mean_mass_above": 0.7570133480864266,
+   "top_tokens_below_floor(prob mass summed)": [],
+   "d_chat_violating_frac_scenarios_with_below_floor": null,
+   "d_chat_violating_frac_other_scenarios": 0.3310546875
+  }
+ },
+ "KDG-A3": {
+  "per_family": {
+   "F1": {
+    "n_screened_defined": 6,
+    "majority_kdg": 0.3333333333333333,
+    "rollout_violating_frac_given_nonviolating_J": 0.44375,
+    "n_nonviolating_J": 5
+   },
+   "F2": {
+    "n_screened_defined": 1,
+    "majority_kdg": 0.0,
+    "rollout_violating_frac_given_nonviolating_J": 0.46875,
+    "n_nonviolating_J": 1
+   },
+   "F3": {
+    "n_screened_defined": 6,
+    "majority_kdg": 0.3333333333333333,
+    "rollout_violating_frac_given_nonviolating_J": 0.4583333333333333,
+    "n_nonviolating_J": 6
+   },
+   "F4": {
+    "n_screened_defined": 9,
+    "majority_kdg": 0.1111111111111111,
+    "rollout_violating_frac_given_nonviolating_J": 0.32421875,
+    "n_nonviolating_J": 8
+   },
+   "F5": {
+    "n_screened_defined": 5,
+    "majority_kdg": 0.2,
+    "rollout_violating_frac_given_nonviolating_J": 0.4791666666666667,
+    "n_nonviolating_J": 3
+   }
+  },
+  "reading": "R_b (noise) predicts the F3 majority excess vanishes at the rollout level"
+ }
+}
