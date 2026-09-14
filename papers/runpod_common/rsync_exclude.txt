@@ -40,3 +40,7 @@ phase_c4_comp_acts/
 
 # Repo-root outputs (viz/logs/Zenodo deposit bundle, 2+ GB); pods only write papers/<paper>/outputs
 /outputs/
+
+# KDG per-rollout arrays from finished pods (never needed on a pod; 2+ GB)
+/papers/kdg_panel/outputs/pilot/
+/papers/kdg_panel/outputs/_dry_local/
