@@ -87,11 +87,20 @@ class Judge:
             )
             # a refusal or text-less reply labels as unparsed (None), never as a guess
             return next((b.text for b in r.content if b.type == "text"), "")
-        r = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-        )
-        return r.choices[0].message.content or ""
+        import time
+
+        import openai
+
+        msgs = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        for attempt in range(40):
+            try:
+                r = self.client.chat.completions.create(model=self.model, messages=msgs)
+                return r.choices[0].message.content or ""
+            except openai.RateLimitError:  # 3 requests/min on this account: wait it out
+                if attempt == 39:
+                    raise
+                time.sleep(21)
+        return ""
 
 
 def _json(text: str) -> dict | None:

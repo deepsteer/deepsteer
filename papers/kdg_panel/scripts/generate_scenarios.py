@@ -286,6 +286,24 @@ class ClaudeGenerator:
         return json.loads(text)
 
 
+def openai_call_with_backoff(fn, *, tries: int = 40, wait_s: float = 21.0):
+    """Retry an OpenAI call on 429 with a fixed wait (the account limit is 3 requests/min)."""
+    import time
+
+    import openai
+
+    for attempt in range(tries):
+        try:
+            return fn()
+        except openai.RateLimitError as e:
+            if attempt == tries - 1:
+                raise
+            log.info(
+                "429 (%s); sleeping %.0fs (attempt %d/%d)", str(e)[:60], wait_s, attempt + 1, tries
+            )
+            time.sleep(wait_s)
+
+
 class OpenAIGenerator:
     """Second-generator path (spec §2). Untested until an OPENAI_API_KEY is available."""
 
@@ -301,13 +319,14 @@ class OpenAIGenerator:
             "\n\nReturn a JSON object with keys `primary` and `harm_twin` matching this "
             "JSON schema exactly:\n" + json.dumps(BUNDLE_SCHEMA)
         )
-        r = self.client.chat.completions.create(
-            model=self.model,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt(plan, feedback) + schema_note},
-            ],
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt(plan, feedback) + schema_note},
+        ]
+        r = openai_call_with_backoff(
+            lambda: self.client.chat.completions.create(
+                model=self.model, response_format={"type": "json_object"}, messages=messages
+            )
         )
         return json.loads(r.choices[0].message.content or "{}")
 
