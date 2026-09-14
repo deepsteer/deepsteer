@@ -10,6 +10,7 @@
 #
 #   VALIDATE=1 <same> ......  no-model dry run on the pod (plumbing), then exit — run this FIRST.
 #   KDG_MODELS=olmo3_instruct KDG_UNITS=d_chat_dose0,j_stated  subset the run.
+#   KDG_PROFILE=kdg2   A13 four-frame J cells (full panel; scenarios need 3 paraphrases per frame).
 #
 # Flow (compute-ordering + test-gates-before-GPU): local gates (pytest + dry run) -> VALIDATE
 # exit -> real run -> verify-manifest. Outputs rsync back to papers/kdg_panel/outputs/pilot/.
@@ -34,7 +35,7 @@ echo ">> transformers: $(python -c 'import transformers;print(transformers.__ver
 # ---- no-model gates always run first ----
 echo ">> KDG local gates:"
 python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_pilot.py || { echo "LOCAL GATE FAILED"; exit 1; }
-python papers/kdg_panel/scripts/pod_kdg_pilot.py --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+python papers/kdg_panel/scripts/pod_kdg_pilot.py --dry-run --out "$OUT/_dry" ${KDG_PROFILE:+--profile $KDG_PROFILE} || { echo "DRY RUN FAILED"; exit 1; }
 N_SCEN="$(python - <<'PY'
 import glob, json
 n = sum(len(json.load(open(p))["scenarios"]) for p in glob.glob("papers/kdg_panel/data/pilot_scenarios_*.json"))
@@ -54,6 +55,7 @@ echo ">> GPU VRAM: ${VRAM_GB} GB"
 ARGS=""
 [ -n "${KDG_MODELS:-}" ] && ARGS="$ARGS --models $KDG_MODELS"
 [ -n "${KDG_UNITS:-}" ] && ARGS="$ARGS --units $KDG_UNITS"
+[ -n "${KDG_PROFILE:-}" ] && ARGS="$ARGS --profile $KDG_PROFILE"
 echo "==================== KDG pilot pod ($ARGS) ===================="
 python papers/kdg_panel/scripts/pod_kdg_pilot.py --out "$OUT" $ARGS
 RC=$?

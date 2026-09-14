@@ -115,3 +115,39 @@ computed from the pilot's measured bootstrap width before Tier 2.
 Question behind the question: whether the panel's *instrument* works on a 7B open model
 (parse rate, band, floor) is separable from whether the *gap* exists; the pilot answers the
 first on half A alone and the second only with both halves. With both halves built, the first pod can apply the gate directly.
+
+
+## SESSION KDG-2 (full panel; est. 2.5–3.5 A100-h, model group: OLMo-3 Instruct → OLMo-3 base)
+
+```
+keystone:      A13 reference-strictness ladder on the full panel (~200 primaries + twins, both
+               generators): the "gap above the pressure-removed null" sentence at the strictest
+               level with >= 40 paired scenarios (expected half-width ~0.12)
+riders:        full gate (§5: >= 60 screened across >= 3 gate families, harness >= 0.95, no
+               generator reversal); F5-vs-rest harm-stratified via twins (KDG-A3 discriminator);
+               three-cell raw frame on the shared-floor subset; F2 promotion rule check
+cells:         KDG2_UNITS_INSTRUCT (pilot cells minus j_stated_paraphrase, plus j_stated_p0..2
+               and j_stated_pressure_removed_p0..2) + PILOT_UNITS_BASE; J prompts batched
+               across scenarios (batch 32)
+pilot gates:   VALIDATE=1 dry run on the pod exits 0; on the real run the first two cells
+               (d_chat_dose0, j_stated) must show parse rate >= 0.95 before the J frames proceed
+               (checked from the manifest by Orion at ~25 min; bail = stop the pod, fork the
+               template)
+depends on:    merged full scenario set committed with 3 paraphrases per frame on EVERY
+               scenario (pilot 96 via the paraphrase pass; new ~280 from prompt 1.1.0);
+               external labels cross-rated; tests green; remote script VALIDATE pass
+saves:         as KDG-1 plus the six A13 frame cells (per rollout text, parse, order, decision
+               log-prob vector)
+gate after:    human gate KDG-G2: A13 branch (survives / decays / non-monotone), full gate,
+               KDG-A1/A3 status, then KDG_RESULTS §10 + SYNTHESIS in one commit
+```
+
+Power (A13): verdict at the strictest level with n_paired >= 40. From the pilot, L1 keeps
+roughly 4/5 of L0 scenarios and L2 roughly 2/3 (paraphrase agreement 0.84 binary / 0.69
+option); with ~120 screened scenarios expected at ~200 primaries (pilot pass rate 19/48 =
+0.40), L1 ≈ 95 and L2 ≈ 80 paired scenarios, both above the bar. The full gate's own bar
+(>= 60 screened) is expected to clear at ~200 primaries with margin (pilot: 0.40 × 200 = 80).
+
+Cost from pilot timings with J batching: D cells ~5 min per 96 → ~10 min per 200; J cells
+15.5 min per 96 unbatched → ~15 min per 200 batched (estimate; verify at VALIDATE on a 16-
+scenario subset); eight J cells ≈ 2 h; raw cells minutes; base ~10 min. Total ≈ 2.5–3.5 h.
