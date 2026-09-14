@@ -26,7 +26,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from generate_scenarios import (  # noqa: E402
     ClaudeGenerator,
+    CodexGenerator,
     OpenAIGenerator,
+    codex_exec,
     openai_call_with_backoff,
 )
 
@@ -63,6 +65,9 @@ def _prompt(s, n_eval: int, n_pr: int, feedback: list[str] | None) -> str:
 
 
 def _call(gen, s, n_eval, n_pr, feedback):
+    if isinstance(gen, CodexGenerator):
+        prompt = SYSTEM + "\n\n---\n\n" + _prompt(s, n_eval, n_pr, feedback)
+        return json.loads(codex_exec(prompt, SCHEMA, model=gen.model))
     if isinstance(gen, ClaudeGenerator):
         r = gen.client.messages.create(
             model=gen.model,
@@ -105,11 +110,12 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     scen, meta = load_scenarios(a.scenarios)
     gen_tag = a.generator_override or meta["generator"]
-    gen = (
-        ClaudeGenerator(gen_tag)
-        if gen_tag.startswith("claude")
-        else OpenAIGenerator(gen_tag.split(":", 1)[-1])
-    )
+    if gen_tag.startswith("codex"):
+        gen = CodexGenerator(gen_tag.split(":", 1)[1] if ":" in gen_tag else None)
+    elif gen_tag.startswith("claude"):
+        gen = ClaudeGenerator(gen_tag)
+    else:
+        gen = OpenAIGenerator(gen_tag.split(":", 1)[-1])
     n_done = n_fail = 0
     for s in scen:
         if len(s.eval_text_paraphrases) == 3 and len(s.eval_text_pressure_removed_paraphrases) == 3:

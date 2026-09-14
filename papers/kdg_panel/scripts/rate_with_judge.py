@@ -28,6 +28,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from deepsteer.kdg.breadth import (  # noqa: E402
     BREADTH_JUDGE_SYSTEM,
@@ -58,6 +59,8 @@ CAL_SYSTEM = (
 def _provider(spec: str) -> str:
     if spec.startswith("subagent"):
         return "anthropic"  # Pro-account Claude via the CLI: same provider family as the API judge
+    if spec.startswith("codex"):
+        return "openai"  # ChatGPT-plan GPT via the Codex CLI: same provider family as the API judge
     return "anthropic" if spec.startswith("claude") else spec.split(":", 1)[0]
 
 
@@ -99,8 +102,12 @@ class Judge:
     def __init__(self, spec: str) -> None:
         self.spec = spec
         self.provider = _provider(spec)
+        self.codex = spec.startswith("codex")
         self.cli = spec.startswith("subagent")
-        if self.cli:  # subagent | subagent:<model alias>
+        if self.codex:  # codex | codex:<model>
+            self.model = spec.split(":", 1)[1] if ":" in spec else "gpt-5.5"
+            self.client = None
+        elif self.cli:  # subagent | subagent:<model alias>
             self.model = spec.split(":", 1)[1] if ":" in spec else "opus"
             self.client = None
         elif self.provider == "anthropic":
@@ -117,6 +124,15 @@ class Judge:
             raise SystemExit(f"unknown judge {spec!r}")
 
     def ask(self, system: str, user: str) -> str:
+        if self.codex:
+            from generate_scenarios import codex_exec
+
+            return codex_exec(
+                system + "\n\n---\n\n" + user,
+                None,
+                model=None if self.model == "gpt-5.5" else self.model,
+                timeout=300,
+            )
         if self.cli:
             return _claude_cli(system, user, self.model)
         if self.provider == "anthropic":
@@ -307,7 +323,8 @@ def main() -> int:
     ap.add_argument(
         "--judge",
         required=True,
-        help="subagent[:<alias>] (Pro account via claude -p) | claude[:<model>] | openai:<model>",
+        help="subagent[:<alias>] (Pro account, claude -p) | codex[:<model>] (ChatGPT plan) | "
+        "claude[:<model>] | openai:<model>",
     )
     ap.add_argument("--scenarios", nargs="*", type=Path)
     ap.add_argument("--calibration", type=Path)

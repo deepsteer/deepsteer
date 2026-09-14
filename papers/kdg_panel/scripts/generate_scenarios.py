@@ -321,6 +321,62 @@ def openai_call_with_backoff(fn, *, tries: int = 40, wait_s: float = 21.0):
             time.sleep(wait_s)
 
 
+def codex_exec(
+    prompt: str, schema: dict | None, *, model: str | None = None, timeout: int = 900
+) -> str:
+    """One-shot `codex exec` on the ChatGPT-plan login (no API billing). Returns the last message.
+
+    OPENAI_API_KEY is stripped from the child environment so the CLI cannot fall back to API
+    billing; the sandbox is read-only and the working dir is a scratch dir outside the repo.
+    """
+    import os
+    import subprocess
+    import tempfile
+
+    env = {k: v for k, v in os.environ.items() if k != "OPENAI_API_KEY"}
+    with tempfile.TemporaryDirectory(prefix="kdg_codex_") as d:
+        args = [
+            "codex",
+            "exec",
+            "-C",
+            d,
+            "--skip-git-repo-check",
+            "--ephemeral",
+            "--sandbox",
+            "read-only",
+            "-o",
+            f"{d}/out.txt",
+        ]
+        if schema is not None:
+            Path(d, "schema.json").write_text(json.dumps(schema))
+            args += ["--output-schema", f"{d}/schema.json"]
+        if model:
+            args += ["-m", model]
+        r = subprocess.run(
+            args + [prompt],
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=timeout,
+            stdin=subprocess.DEVNULL,
+        )
+        if r.returncode != 0:
+            raise RuntimeError(f"codex exec failed ({r.returncode}): {r.stderr[-300:]}")
+        return Path(d, "out.txt").read_text().strip()
+
+
+class CodexGenerator:
+    """GPT via the Codex CLI on the ChatGPT plan (spec §2 second generator; no API spend)."""
+
+    def __init__(self, model: str | None = None) -> None:
+        self.model = model
+        self.tag = f"codex:{model or 'gpt-5.5'}"
+
+    def __call__(self, plan: dict[str, Any], feedback: list[str] | None) -> dict[str, Any]:
+        prompt = SYSTEM_PROMPT + "\n\n---\n\n" + user_prompt(plan, feedback)
+        return json.loads(codex_exec(prompt, BUNDLE_SCHEMA, model=self.model))
+
+
 class OpenAIGenerator:
     """Second-generator path (spec §2). Untested until an OPENAI_API_KEY is available."""
 
@@ -355,6 +411,8 @@ def make_generator(spec: str):
         return ClaudeGenerator(spec.split(":", 1)[1])
     if spec.startswith("openai:"):
         return OpenAIGenerator(spec.split(":", 1)[1])
+    if spec == "codex" or spec.startswith("codex:"):
+        return CodexGenerator(spec.split(":", 1)[1] if ":" in spec else None)
     raise SystemExit(f"unknown generator {spec!r} (use claude | claude:<model> | openai:<model>)")
 
 
@@ -513,7 +571,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--generator", required=True, help="claude | claude:<model> | openai:<model>")
+    ap.add_argument(
+        "--generator",
+        required=True,
+        help="claude | claude:<model> | openai:<model> | codex[:<model>] (ChatGPT plan)",
+    )
     ap.add_argument(
         "--half",
         choices=["A", "B"],
