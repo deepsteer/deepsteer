@@ -309,6 +309,10 @@ def openai_call_with_backoff(fn, *, tries: int = 40, wait_s: float = 21.0):
         try:
             return fn()
         except openai.RateLimitError as e:
+            if "insufficient_quota" in str(e) or "no credits" in str(e):
+                raise RuntimeError(
+                    "OpenAI credits exhausted (insufficient_quota); add credits"
+                ) from e
             if attempt == tries - 1:
                 raise
             log.info(

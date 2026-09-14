@@ -96,7 +96,9 @@ class Judge:
             try:
                 r = self.client.chat.completions.create(model=self.model, messages=msgs)
                 return r.choices[0].message.content or ""
-            except openai.RateLimitError:  # 3 requests/min on this account: wait it out
+            except openai.RateLimitError as e:  # 3 requests/min on this account: wait it out
+                if "insufficient_quota" in str(e) or "no credits" in str(e):
+                    raise RuntimeError("OpenAI credits exhausted (insufficient_quota)") from e
                 if attempt == 39:
                     raise
                 time.sleep(21)
