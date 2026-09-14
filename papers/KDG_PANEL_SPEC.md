@@ -465,6 +465,8 @@ generator-by-rater offset (the GPT rater scores Claude's level-1 scenarios mostl
 Claude rater scores GPT's level-0 scenarios as 1), so harm level enters the F5-vs-rest
 stratification as the rater's label within generator, never pooled across generators; the
 norm-class tag agrees with the rater on 34/48 and 37/48 and is used as a coarse covariate only.
+**Ratified by the author 2026-09-14** (after the pilot readings; A11 was committed pre-data and is
+not a fork).
 
 **A12. Fork: judgment-stability rule (dated 2026-09-14, AFTER the pilot arrays were seen;
 committed before any results document).** §4.1 defines J_stated stability on the option id
