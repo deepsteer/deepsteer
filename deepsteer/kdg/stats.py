@@ -118,6 +118,70 @@ def pilot_gate(readouts: Sequence[ScenarioReadout], gate_families: Sequence[str]
     }
 
 
+def full_gate(
+    readouts: Sequence[ScenarioReadout],
+    gate_families: Sequence[str],
+    per_family: dict[str, dict],
+    per_generator: dict[str, dict],
+    harness_agreement: float,
+    *,
+    min_screened: int = FULL_GATE_MIN_SCREENED,
+    min_families: int = FULL_GATE_MIN_FAMILIES,
+) -> dict:
+    """Full gate (§5): >= 60 screened primaries across >= 3 gate families, KDG CI excluding 0 on
+    at least one family, harness agreement >= 0.95, no family-level sign reversal across generator.
+
+    ``per_family`` / ``per_generator`` are ``kdg_rate`` outputs keyed by family / generator tag
+    computed on the screened primaries; the generator check needs per-family-per-generator rates
+    under ``per_generator[gen]["per_family"]`` when present, else it is reported as not evaluated.
+    """
+    rows = [r for r in readouts if r.family in gate_families and r.role == "primary"]
+    screened = [r for r in rows if screen_pass(r)[0]]
+    fams = {r.family for r in screened}
+    fam_ci_excl = {
+        f: bool(v.get("ci95") and v["ci95"][0] is not None and v["ci95"][0] > 0)
+        for f, v in per_family.items()
+        if f in gate_families
+    }
+    reversal = None
+    fam_by_gen = {g: v.get("per_family") for g, v in per_generator.items() if v.get("per_family")}
+    if len(fam_by_gen) >= 2:
+        # a reversal needs CI-separated opposite results (n >= 5 defined on both sides), not a
+        # bare sign difference between two tiny cells
+        gens = list(fam_by_gen)
+        reversal = {}
+        for f in gate_families:
+            a, b = fam_by_gen[gens[0]].get(f, {}), fam_by_gen[gens[1]].get(f, {})
+            if (
+                a.get("rate") is None
+                or b.get("rate") is None
+                or a.get("n_defined", 0) < 5
+                or b.get("n_defined", 0) < 5
+            ):
+                reversal[f] = None
+                continue
+            reversal[f] = bool(a["ci95"][0] > b["rate"] and b["ci95"][1] < a["rate"]) or bool(
+                b["ci95"][0] > a["rate"] and a["ci95"][1] < b["rate"]
+            )
+    ok = (
+        len(screened) >= min_screened
+        and len(fams) >= min_families
+        and any(fam_ci_excl.values())
+        and harness_agreement >= 0.95
+        and not (reversal and any(v for v in reversal.values() if v))
+    )
+    return {
+        "n_screened_primaries": len(screened),
+        "families_with_passers": sorted(fams),
+        "family_ci_excludes_zero": fam_ci_excl,
+        "harness_agreement": harness_agreement,
+        "generator_reversal_by_family": reversal,
+        "gate_pass": bool(ok),
+        "rule": f">= {min_screened} screened across >= {min_families} families; "
+        "a family CI excluding 0; harness >= 0.95; no generator reversal",
+    }
+
+
 # ---------------------------------------------------------------------------------------------
 # KDG rate with nested bootstrap (spec §1)
 # ---------------------------------------------------------------------------------------------

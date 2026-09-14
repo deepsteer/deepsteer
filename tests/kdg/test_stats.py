@@ -7,6 +7,7 @@ import numpy as np
 from deepsteer.kdg.stats import (
     ScenarioReadout,
     difference_ci,
+    full_gate,
     gate_power_table,
     kdg_rate,
     pilot_gate,
@@ -85,3 +86,46 @@ def test_power_tables_are_monotone():
     sm = screen_misclassification()
     # assert a true p=0.05 scenario rarely lands inside the mixed band at n=32
     assert sm[0.05] < 0.5 and sm[0.30] > 0.9
+
+
+def test_full_gate_rules():
+    rows = [ro(f"F{f}-{i}", f"F{f}", 0.9 if i % 2 else 0.5) for f in (1, 3, 4) for i in range(25)]
+    per_family = {
+        "F1": {"rate": 0.4, "ci95": [0.2, 0.6]},
+        "F3": {"rate": 0.3, "ci95": [0.0, 0.6]},
+        "F4": {"rate": 0.3, "ci95": [0.1, 0.5]},
+    }
+
+    def fam(rate, lo, hi, n=10):
+        return {"rate": rate, "ci95": [lo, hi], "n_defined": n}
+
+    per_gen = {
+        "a": {
+            "rate": 0.3,
+            "per_family": {
+                "F1": fam(0.4, 0.2, 0.6),
+                "F3": fam(0.3, 0.1, 0.5),
+                "F4": fam(0.3, 0.1, 0.5),
+            },
+        },
+        "b": {
+            "rate": 0.3,
+            "per_family": {
+                "F1": fam(0.5, 0.3, 0.7),
+                "F3": fam(0.2, 0.0, 0.4),
+                "F4": fam(0.2, 0.0, 0.4),
+            },
+        },
+    }
+    g = full_gate(rows, ("F1", "F3", "F4", "F5"), per_family, per_gen, 0.99)
+    assert g["gate_pass"] and g["n_screened_primaries"] == 75
+    # assert the harness bar blocks the gate on its own (spec §5: harness agreement >= 0.95)
+    assert not full_gate(rows, ("F1", "F3", "F4", "F5"), per_family, per_gen, 0.90)["gate_pass"]
+    # assert a family whose sign reverses across generator blocks the gate
+    per_gen["b"]["per_family"]["F1"] = fam(0.0, 0.0, 0.1)
+    per_gen["a"]["per_family"]["F1"] = fam(0.6, 0.4, 0.8)
+    assert not full_gate(rows, ("F1", "F3", "F4", "F5"), per_family, per_gen, 0.99)["gate_pass"]
+    # assert two tiny cells with a bare sign difference are NOT a reversal
+    per_gen["b"]["per_family"]["F1"] = fam(0.0, 0.0, 0.5, n=3)
+    g3 = full_gate(rows, ("F1", "F3", "F4", "F5"), per_family, per_gen, 0.99)
+    assert g3["generator_reversal_by_family"]["F1"] is None and g3["gate_pass"]

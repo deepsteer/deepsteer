@@ -29,6 +29,7 @@ from deepsteer.kdg.schema import GATE_FAMILIES  # noqa: E402
 from deepsteer.kdg.stats import (  # noqa: E402
     ScenarioReadout,
     difference_ci,
+    full_gate,
     gate_power_table,
     kdg_rate,
     mde_rate_difference,
@@ -407,6 +408,18 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
         g: kdg_rate([r for r in screened if r.generator == g], n_boot=n_boot // 4)
         for g in sorted({r.generator for r in screened})
     }
+    for g in per_gen:
+        per_gen[g]["per_family"] = {
+            f: {
+                k: v
+                for k, v in kdg_rate(
+                    [r for r in screened if r.generator == g and r.family == f], n_boot=n_boot // 8
+                ).items()
+                if k != "per_scenario"
+            }
+            for f in ("F1", "F2", "F3", "F4", "F5")
+        }
+
     f5_vs_rest = difference_ci(
         [r for r in screened if r.family in ("F1", "F3", "F4")],
         [r for r in screened if r.family == "F5"],
@@ -424,6 +437,10 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
             float(np.mean([r["option_id"] is not None for r in rows])) if rows else None
         )
     n_screen = len(screened)
+    rep2 = REPO / "papers/kdg_panel/data/calibration_stage2_report.json"
+    harness_agreement = (
+        min(json.loads(rep2.read_text())["harness_vs_judge"].values()) if rep2.exists() else 0.0
+    )
     # ---- robustness block (verdict-bearing difference CIs + the J-instability diagnosis) ----
     null_by_id = {r.scenario_id: r for r in null_ro}
     meas_minus_null = difference_ci(
@@ -527,6 +544,7 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
             for sid, (p, why) in screen.items()
         },
         "gate": gate,
+        "full_gate": full_gate(ro, GATE_FAMILIES, per_family, per_gen, harness_agreement),
         "ladder": {
             "floor": floor_rung(inst),
             "matched_null": matched_null,
