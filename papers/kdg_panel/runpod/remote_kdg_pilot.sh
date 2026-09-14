@@ -38,7 +38,7 @@ python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_pilot.py || { echo "LOC
 python papers/kdg_panel/scripts/pod_kdg_pilot.py --dry-run --out "$OUT/_dry" ${KDG_PROFILE:+--profile $KDG_PROFILE} || { echo "DRY RUN FAILED"; exit 1; }
 N_SCEN="$(python - <<'PY'
 import glob, json
-n = sum(len(json.load(open(p))["scenarios"]) for p in glob.glob("papers/kdg_panel/data/pilot_scenarios_*.json"))
+n = sum(len(json.load(open(p))["scenarios"]) for p in glob.glob("papers/kdg_panel/data/*_scenarios_*.json"))
 print(n)
 PY
 )"

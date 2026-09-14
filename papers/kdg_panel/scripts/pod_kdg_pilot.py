@@ -140,7 +140,7 @@ def main() -> int:
         nargs="*",
         type=Path,
         default=None,
-        help="scenario JSON files (default: papers/kdg_panel/data/pilot_scenarios_*.json)",
+        help="scenario JSON files (default: data/*_scenarios_*.json, pilot + panel)",
     )
     ap.add_argument(
         "--scenario-ids-file", type=Path, default=None, help="JSON list of ids (screened set)"
@@ -157,7 +157,7 @@ def main() -> int:
         bad = verify_manifest(a.out / "manifest_kdg.json")
         print("\n".join(bad) if bad else "manifest OK")
         return 1 if bad else 0
-    files = a.scenarios or sorted((KDG_DIR / "data").glob("pilot_scenarios_*.json"))
+    files = a.scenarios or sorted((KDG_DIR / "data").glob("*_scenarios_*.json"))
     if not files:
         raise SystemExit("no scenario files found under papers/kdg_panel/data")
     ids = set(json.loads(a.scenario_ids_file.read_text())) if a.scenario_ids_file else None

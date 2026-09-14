@@ -59,9 +59,7 @@ def main() -> int:
         "--out", type=Path, default=REPO / "papers/kdg_panel/data/calibration_set_v2_real.json"
     )
     a = ap.parse_args()
-    scen, _ = load_scenario_dir(
-        sorted((REPO / "papers/kdg_panel/data").glob("pilot_scenarios_*.json"))
-    )
+    scen, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json")))
     by_id = {s.id: s for s in scen}
     rng = random.Random(a.seed)
     rows = []

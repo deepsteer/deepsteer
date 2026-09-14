@@ -472,7 +472,7 @@ def generate_slot(
     raise RuntimeError(f"{base_id}: no valid draft after {retries + 1} attempts: {errs}")
 
 
-def merge_parts(parts_dir: Path, out_dir: Path) -> int:
+def merge_parts(parts_dir: Path, out_dir: Path, prefix: str = "pilot") -> int:
     """Concatenate per-family part files (parallel generation) into the one file of record."""
     from deepsteer.kdg.schema import load_scenario_dir
 
@@ -496,7 +496,7 @@ def merge_parts(parts_dir: Path, out_dir: Path) -> int:
     for k in ("path", "scenario_set_sha256", "template_version"):
         meta.pop(k, None)
     safe = meta["generator"].replace("/", "_").replace(":", "_")
-    path = out_dir / f"pilot_scenarios_{meta['generator_half']}_{safe}.json"
+    path = out_dir / f"{prefix}_scenarios_{meta['generator_half']}_{safe}.json"
     save_scenarios(path, scen, meta)
     print(
         f"merged {len(files)} parts -> {path} "
@@ -529,6 +529,7 @@ def main() -> int:
     ap.add_argument(
         "--dry-run", action="store_true", help="print the plan + one prompt, no API call"
     )
+    ap.add_argument("--merge-prefix", default="pilot", help="output name prefix for --merge-parts")
     ap.add_argument(
         "--merge-parts",
         type=Path,
@@ -538,7 +539,7 @@ def main() -> int:
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     if a.merge_parts:
-        return merge_parts(a.merge_parts, a.out)
+        return merge_parts(a.merge_parts, a.out, a.merge_prefix)
 
     half = a.half or ("A" if a.generator.startswith("claude") else "B")
     fams = [f for f in a.families.split(",") if f]
