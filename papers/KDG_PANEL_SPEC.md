@@ -465,3 +465,15 @@ generator-by-rater offset (the GPT rater scores Claude's level-1 scenarios mostl
 Claude rater scores GPT's level-0 scenarios as 1), so harm level enters the F5-vs-rest
 stratification as the rater's label within generator, never pooled across generators; the
 norm-class tag agrees with the rater on 34/48 and 37/48 and is used as a coarse covariate only.
+
+**A12. Fork: judgment-stability rule (dated 2026-09-14, AFTER the pilot arrays were seen;
+committed before any results document).** §4.1 defines J_stated stability on the option id
+(greedy = sampled majority). A11 made the KDG *reference* binary (violating vs non-violating).
+The pilot shows 16/48 gate primaries fail the option-level rule; the decomposition is 4
+consistent-vs-neutral splits (binary-stable by construction) and 12 real consistent-vs-violating
+flips, of which 5 are binary-stable by majority. The construction argument for a binary rule is
+therefore real but small (4 of 16); the rest of the difference between the two rules is majority
+strength, not option type. Per §12 this is a fork: the pre-registered option-level rule stays
+PRIMARY; the binary rule is reported as fork B beside it in every table; no verdict is stated
+under one rule alone. The paraphrase-stable subset (greedy J agrees between the original and
+paraphrased third-person frames) is reported as the reference-noise robustness cell under both.
