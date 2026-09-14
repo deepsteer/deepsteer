@@ -37,3 +37,6 @@ phase_c4_comp_acts/
 # Logs / run sentinels
 *.log
 .session_done
+
+# Repo-root outputs (viz/logs/Zenodo deposit bundle, 2+ GB); pods only write papers/<paper>/outputs
+/outputs/
