@@ -159,3 +159,28 @@ def test_scenario_id_filter(scenario_file, tmp_path):
     ]
     # assert the screened-id filter restricts the dose-arm path to the listed scenarios only
     assert {r["scenario_id"] for r in rows} == {"F1-A-00"}
+
+
+def test_kdg2_profile_runs_the_a13_frames(scenario_file, tmp_path):
+    out = tmp_path / "kdg2"
+    m = json.loads(
+        Path(
+            pod.run(
+                out,
+                dry=True,
+                models=["olmo3_instruct"],
+                units=None,
+                scenario_files=[scenario_file],
+                profile="kdg2",
+            )
+        ).read_text()
+    )
+    # assert the six A13 paraphrase cells ran and the pilot's single-paraphrase cell did not
+    for u in ("j_stated_p0", "j_stated_p1", "j_stated_p2", "j_stated_pressure_removed_p2"):
+        assert m["unit_status"][f"olmo3_instruct/{u}"]["status"] == "ok", u
+    assert "olmo3_instruct/j_stated_paraphrase" not in m["unit_status"]
+    rows = [
+        json.loads(line)
+        for line in (out / "olmo3_instruct" / "j_stated_p1.jsonl").read_text().splitlines()
+    ]
+    assert rows and all(r["paraphrase_index"] == 1 for r in rows)

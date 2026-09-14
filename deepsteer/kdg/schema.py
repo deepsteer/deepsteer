@@ -67,6 +67,10 @@ class Scenario:
     f2_pushback: str | None = None  # F2 only: fixed pushback text (never model-generated)
     external_label: dict[str, Any] | None = None  # filled by the non-generator rater pass
     setting_hint: str | None = None
+    # A13: three paraphrases per frame (the first equals ``eval_text_paraphrase``); empty until the
+    # paraphrase pass has run. Index 0..2 selects the frame in ``render_eval_user_message``.
+    eval_text_paraphrases: list[str] = dataclasses.field(default_factory=list)
+    eval_text_pressure_removed_paraphrases: list[str] = dataclasses.field(default_factory=list)
 
     # ---- derived ---------------------------------------------------------------------------
     @property
@@ -171,6 +175,23 @@ def validate_scenario(s: Scenario, n_tokens=None, *, min_overlap: float = 0.55) 
         errs.append("pressure-removed agent twin diverges from the primary (overlap < min)")
     if overlap(s.eval_text, s.eval_text_paraphrase) > 0.9:
         errs.append("eval_text_paraphrase is not a paraphrase (overlap > 0.9)")
+    for name, base, paras in (
+        ("eval_text_paraphrases", s.eval_text, s.eval_text_paraphrases),
+        (
+            "eval_text_pressure_removed_paraphrases",
+            s.eval_text_pressure_removed,
+            s.eval_text_pressure_removed_paraphrases,
+        ),
+    ):
+        if paras and len(paras) != 3:
+            errs.append(f"{name} must have exactly 3 entries when present")
+        for i, q in enumerate(paras):
+            ov = overlap(base, q)
+            # bounds from the 96 pilot paraphrases (min 0.35, p5 0.41, max 0.75)
+            if not (0.3 <= ov <= 0.9):
+                errs.append(f"{name}[{i}] overlap {ov:.2f} outside [0.3, 0.9]")
+            if s.agent_name and s.agent_name.lower() not in q.lower():
+                errs.append(f"{name}[{i}] does not name the agent")
     if s.agent_name and s.agent_name.lower() not in s.eval_text.lower():
         errs.append("eval_text does not name the agent")
     if "you" not in s.agent_text.lower().split() and "your" not in s.agent_text.lower().split():
@@ -248,9 +269,25 @@ def render_eval_user_message(
     *,
     paraphrase: bool = False,
     pressure_removed: bool = False,
+    paraphrase_index: int | None = None,
 ) -> str:
-    """J_stated user turn (spec §4.1): third person, one shot, answer letter first, then why."""
-    if paraphrase:
+    """J_stated user turn (spec §4.1): third person, one shot, answer letter first, then why.
+
+    ``paraphrase_index`` (A13) selects one of the three paraphrases of the chosen frame;
+    ``paraphrase=True`` alone keeps the pilot behaviour (the single ``eval_text_paraphrase``).
+    """
+    if paraphrase_index is not None:
+        paras = (
+            s.eval_text_pressure_removed_paraphrases
+            if pressure_removed
+            else s.eval_text_paraphrases
+        )
+        if len(paras) != 3:
+            raise ValueError(
+                f"{s.id}: paraphrase_index needs 3 paraphrases (A13), have {len(paras)}"
+            )
+        body = paras[paraphrase_index]
+    elif paraphrase:
         body = s.eval_text_paraphrase
     elif pressure_removed:
         body = s.eval_text_pressure_removed

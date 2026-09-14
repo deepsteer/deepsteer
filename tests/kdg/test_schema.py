@@ -104,3 +104,26 @@ def test_round_trip(tmp_path, scenario):
     assert meta["template_version"] == TEMPLATE_VERSION
     assert json.loads(p.read_text())["scenario_set_sha256"] == meta["scenario_set_sha256"]
     assert letter_map(assign_letters(scenario, 0))
+
+
+def test_a13_paraphrase_fields_validate_and_render(scenario):
+    from deepsteer.kdg.schema import render_eval_user_message
+
+    base = scenario.eval_text
+    good = scenario.eval_text_paraphrase
+    scenario.eval_text_paraphrases = [good, good, good]
+    assert validate_scenario(scenario) == []
+    msg = render_eval_user_message(scenario, assign_letters(scenario, 0), paraphrase_index=2)
+    assert msg.startswith(good[:30])
+    # assert a paraphrase list of the wrong length is rejected (A13 needs exactly three)
+    scenario.eval_text_paraphrases = [good]
+    assert any("exactly 3" in e for e in validate_scenario(scenario))
+    # assert a verbatim copy is rejected as not a paraphrase (overlap > 0.9)
+    scenario.eval_text_paraphrases = [good, good, base]
+    assert any("outside [0.3, 0.9]" in e for e in validate_scenario(scenario))
+    # assert rendering with an index but no paraphrases fails loud
+    scenario.eval_text_paraphrases = []
+    import pytest
+
+    with pytest.raises(ValueError):
+        render_eval_user_message(scenario, assign_letters(scenario, 0), paraphrase_index=0)

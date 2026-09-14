@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import yaml  # noqa: E402
 from kdg_pod_lib import (  # noqa: E402
+    KDG2_UNITS_INSTRUCT,
     PILOT_UNITS_BASE,
     PILOT_UNITS_INSTRUCT,
     UNITS,
@@ -57,6 +58,7 @@ def run(
     units: list[str] | None,
     scenario_files: list[Path],
     scenario_ids: set[str] | None = None,
+    profile: str = "pilot",
 ) -> Path:
     cfg = yaml.safe_load((KDG_DIR / "models.yaml").read_text())
     scenarios, metas = load_scenario_dir(scenario_files)
@@ -79,7 +81,8 @@ def run(
         if models and key not in models:
             continue
         spec = cfg["tier1"][key]
-        default_units = PILOT_UNITS_INSTRUCT if spec["kind"] == "instruct" else PILOT_UNITS_BASE
+        inst_units = KDG2_UNITS_INSTRUCT if profile == "kdg2" else PILOT_UNITS_INSTRUCT
+        default_units = inst_units if spec["kind"] == "instruct" else PILOT_UNITS_BASE
         wanted = [u for u in (units or default_units) if spec["kind"] in UNITS[u][0]]
         if not wanted:
             continue
@@ -143,6 +146,12 @@ def main() -> int:
         "--scenario-ids-file", type=Path, default=None, help="JSON list of ids (screened set)"
     )
     ap.add_argument("--verify-manifest", action="store_true")
+    ap.add_argument(
+        "--profile",
+        choices=["pilot", "kdg2"],
+        default="pilot",
+        help="kdg2 = A13 four-frame J cells (needs 3 paraphrases per scenario)",
+    )
     a = ap.parse_args()
     if a.verify_manifest:
         bad = verify_manifest(a.out / "manifest_kdg.json")
@@ -159,6 +168,7 @@ def main() -> int:
         a.units.split(",") if a.units else None,
         files,
         ids,
+        profile=a.profile,
     )
     print(f"manifest: {p}")
     return 0

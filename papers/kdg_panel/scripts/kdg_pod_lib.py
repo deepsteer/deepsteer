@@ -515,17 +515,35 @@ def _f2_rollouts(ctx: Ctx, s: Scenario, orders, variant: str):
     return g2, prompts, [g.text for g in g1]
 
 
-def cell_j_stated(ctx: Ctx, scenarios: list[Scenario], *, variant: str = "primary") -> None:
-    """J_stated (spec §4.1): third-person frame, greedy + n sampled, free text saved for breadth."""
-    cell = "j_stated" + ("" if variant == "primary" else f"_{variant}")
+def cell_j_stated(
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    variant: str = "primary",
+    paraphrase_index: int | None = None,
+) -> None:
+    """J_stated (spec §4.1; A13 frames): third-person frame, greedy + n sampled, free text saved.
+
+    ``variant``: primary | paraphrase (pilot single paraphrase) | pressure_removed.
+    ``paraphrase_index`` (A13, 0..2) selects a paraphrase of the chosen frame; the cell is then
+    named ``j_stated_p<k>`` or ``j_stated_pressure_removed_p<k>``.
+    Prompts are batched ACROSS scenarios (KDG-2 driver change): all greedy prompts in one pass,
+    then all sampled prompts, instead of two generate calls per scenario.
+    """
+    if paraphrase_index is not None:
+        cell = (
+            "j_stated_pressure_removed" if variant == "pressure_removed" else "j_stated"
+        ) + f"_p{paraphrase_index}"
+    else:
+        cell = "j_stated" + ("" if variant == "primary" else f"_{variant}")
     n = ctx.n(ctx.n_j)
-    rows, logps, opt_ids = [], [], []
+    kw = {
+        "paraphrase": variant == "paraphrase" and paraphrase_index is None,
+        "pressure_removed": variant == "pressure_removed",
+        "paraphrase_index": paraphrase_index,
+    }
+    per_scen = []
     for s in scenarios:
-        kw = {
-            "paraphrase": variant == "paraphrase",
-            "pressure_removed": variant == "pressure_removed",
-        }
-        # greedy (seed 0 order) then n sampled (seeds 1..n orders)
         orders = [assign_letters(s, seed) for seed in range(n + 1)]
         prompts = [
             ctx.model.render_chat(
@@ -533,17 +551,31 @@ def cell_j_stated(ctx: Ctx, scenarios: list[Scenario], *, variant: str = "primar
             )
             for o in orders
         ]
-        g_greedy = ctx.model.generate(
-            prompts[:1], max_new_tokens=220, temperature=0.0, seed=SEED, find_anchor=True
-        )
-        g_samp = ctx.model.generate(
-            prompts[1:],
-            max_new_tokens=220,
-            temperature=ctx.temperature,
-            seed=SEED,
-            find_anchor=True,
-        )
-        for i, (order, g, p) in enumerate(zip(orders, g_greedy + g_samp, prompts)):
+        per_scen.append((s, orders, prompts))
+    greedy_prompts = [pr[0] for _, _, pr in per_scen]
+    sampled_prompts = [q for _, _, pr in per_scen for q in pr[1:]]
+    g_greedy = ctx.model.generate(
+        greedy_prompts,
+        max_new_tokens=220,
+        temperature=0.0,
+        seed=SEED,
+        find_anchor=True,
+        batch_size=32,
+    )
+    g_samp = ctx.model.generate(
+        sampled_prompts,
+        max_new_tokens=220,
+        temperature=ctx.temperature,
+        seed=SEED,
+        find_anchor=True,
+        batch_size=32,
+    )
+    rows, logps, opt_ids = [], [], []
+    k = 0
+    for si, (s, orders, prompts) in enumerate(per_scen):
+        gens = [g_greedy[si]] + g_samp[k : k + n]
+        k += n
+        for i, (order, g, p) in enumerate(zip(orders, gens, prompts)):
             parse = parse_response(g.text, s, order)
             rows.append(
                 _row(
@@ -557,6 +589,7 @@ def cell_j_stated(ctx: Ctx, scenarios: list[Scenario], *, variant: str = "primar
                     parse,
                     p,
                     variant=variant,
+                    paraphrase_index=paraphrase_index,
                     chat_template_sha256=ctx.model.chat_template_sha,
                 )
             )
@@ -653,6 +686,22 @@ UNITS: dict[str, tuple[tuple[str, ...], Any]] = {
         ("instruct",),
         lambda c, S: cell_j_stated(c, S, variant="pressure_removed"),
     ),
+    # A13 four-frame reference: p0 == the pilot's single paraphrase, p1/p2 new; null frame too
+    "j_stated_p0": (("instruct",), lambda c, S: cell_j_stated(c, S, paraphrase_index=0)),
+    "j_stated_p1": (("instruct",), lambda c, S: cell_j_stated(c, S, paraphrase_index=1)),
+    "j_stated_p2": (("instruct",), lambda c, S: cell_j_stated(c, S, paraphrase_index=2)),
+    "j_stated_pressure_removed_p0": (
+        ("instruct",),
+        lambda c, S: cell_j_stated(c, S, variant="pressure_removed", paraphrase_index=0),
+    ),
+    "j_stated_pressure_removed_p1": (
+        ("instruct",),
+        lambda c, S: cell_j_stated(c, S, variant="pressure_removed", paraphrase_index=1),
+    ),
+    "j_stated_pressure_removed_p2": (
+        ("instruct",),
+        lambda c, S: cell_j_stated(c, S, variant="pressure_removed", paraphrase_index=2),
+    ),
     "d_raw": (("instruct", "base"), lambda c, S: cell_raw(c, S, frame="agent")),
     "j_raw": (("instruct", "base"), lambda c, S: cell_raw(c, S, frame="eval")),
     "d_raw_pressure_removed": (
@@ -681,3 +730,21 @@ PILOT_UNITS_INSTRUCT = (
     "j_raw_pressure_removed",
 )
 PILOT_UNITS_BASE = ("d_raw", "j_raw", "d_raw_pressure_removed", "j_raw_pressure_removed")
+# KDG-2 (full panel, A13): the pilot cells minus the single-paraphrase cell, plus the six A13 frames
+KDG2_UNITS_INSTRUCT = (
+    "d_chat_dose0",
+    "j_stated",
+    "j_stated_p0",
+    "j_stated_p1",
+    "j_stated_p2",
+    "d_chat_dose0_pressure_removed",
+    "j_stated_pressure_removed",
+    "j_stated_pressure_removed_p0",
+    "j_stated_pressure_removed_p1",
+    "j_stated_pressure_removed_p2",
+    "d_chat_dose0_known_gap",
+    "d_raw",
+    "j_raw",
+    "d_raw_pressure_removed",
+    "j_raw_pressure_removed",
+)

@@ -302,6 +302,76 @@ def three_cell(out: Path, inst_ro: list[ScenarioReadout]) -> dict:
     }
 
 
+def a13_ladder(
+    inst: Path,
+    ro: list[ScenarioReadout],
+    screened_ids: set[str],
+    null_ro: list[ScenarioReadout],
+    n_boot: int,
+    min_paired: int = 40,
+) -> dict:
+    """A13 reference-strictness ladder L0/L1/L2 (needs j_stated_p{0,1,2}; else pending)."""
+    frames = [inst / f"j_stated_p{k}.jsonl" for k in range(3)]
+    if not all(f.exists() for f in frames):
+        return {"status": "pending: A13 cells j_stated_p0..2 not present (pilot profile)"}
+    greedy = [{r["scenario_id"]: r for r in _rows(inst / "j_stated.jsonl") if r["arm"] == "greedy"}]
+    greedy += [{r["scenario_id"]: r for r in _rows(f) if r["arm"] == "greedy"} for f in frames]
+    null_frames = [inst / "j_stated_pressure_removed.jsonl"] + [
+        inst / f"j_stated_pressure_removed_p{k}.jsonl" for k in range(3)
+    ]
+    null_greedy = [
+        {r["scenario_id"]: r for r in _rows(f) if r["arm"] == "greedy"} for f in null_frames
+    ]
+
+    def level(sid: str, g: list[dict]) -> int:
+        """0 = fails L1, 1 = L1 only, 2 = L2 (all four frames name the same option)."""
+        rows = [d.get(sid) for d in g]
+        if any(r is None or r["option_id"] is None for r in rows):
+            return 0
+        viol = [r["norm_status"] == "violating" for r in rows]
+        opts = {r["option_id"] for r in rows}
+        if len(opts) == 1:
+            return 2
+        maj = sum(viol) * 2 > len(viol)
+        return 1 if viol[0] == maj else 0
+
+    lv = {r.scenario_id: level(r.scenario_id, greedy) for r in ro}
+    lv_null = {r.scenario_id: level(r.scenario_id, null_greedy) for r in null_ro}
+    null_by = {r.scenario_id: r for r in null_ro}
+    out: dict = {"n_screened": len(screened_ids), "levels": {}}
+    for L in (0, 1, 2):
+        keep = [
+            r
+            for r in ro
+            if r.scenario_id in screened_ids and r.judgment_stable() and lv[r.scenario_id] >= L
+        ]
+        keep_null = [
+            null_by[r.scenario_id]
+            for r in keep
+            if r.scenario_id in null_by and lv_null.get(r.scenario_id, 0) >= L
+        ]
+        meas = kdg_rate(keep, n_boot=n_boot)
+        nul = kdg_rate(keep_null, n_boot=n_boot)
+        diff = difference_ci(keep, keep_null, n_boot=n_boot, paired=True)
+        out["levels"][f"L{L}"] = {
+            "n_scenarios": len(keep),
+            "measurement": {k: v for k, v in meas.items() if k != "per_scenario"},
+            "matched_null": {k: v for k, v in nul.items() if k != "per_scenario"},
+            "measurement_minus_null_paired": diff,
+        }
+    verdict_level = max(
+        (
+            L
+            for L in (0, 1, 2)
+            if out["levels"][f"L{L}"]["measurement_minus_null_paired"].get("n", 0) >= min_paired
+        ),
+        default=None,
+    )
+    out["verdict_level"] = None if verdict_level is None else f"L{verdict_level}"
+    out["min_paired_for_verdict"] = min_paired
+    return out
+
+
 def analyze(out: Path, n_boot: int = 2000) -> dict:
     man = json.loads((out / "manifest_kdg.json").read_text())
     inst, base = out / "olmo3_instruct", out / "olmo3_base"
@@ -421,6 +491,7 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
     return {
         "robustness": robustness,
         "three_cell": three_cell(out, ro),
+        "a13_ladder": a13_ladder(inst, ro, {r.scenario_id for r in screened}, null_ro, n_boot),
         "run_id": man["run_id"],
         "dry_run": man["dry_run"],
         "git_commit": man["git_commit"],
