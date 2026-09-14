@@ -54,7 +54,7 @@ def _by_scenario(rows: list[dict]) -> dict[str, list[dict]]:
 
 
 def flagged_ids() -> set[str]:
-    """Scenarios carrying covariates.construction_flag (e.g. labels inverted per the external rater)."""
+    """Scenarios carrying covariates.construction_flag (excluded from every analysis)."""
     out = set()
     for f in (REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json"):
         for s in json.loads(f.read_text())["scenarios"]:
