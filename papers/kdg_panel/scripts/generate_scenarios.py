@@ -292,7 +292,7 @@ class OpenAIGenerator:
     def __init__(self, model: str) -> None:
         import openai
 
-        self.client = openai.OpenAI()
+        self.client = openai.OpenAI(max_retries=10)
         self.model = model
         self.tag = model
 
@@ -387,6 +387,7 @@ def to_scenario(
             "tool_menu": bool(d["tool_menu"]),
             "n_options": len(opts),
             "setting": plan["setting"],
+            "setting_override": bool(plan.get("setting_override")),
         },
         setting_hint=plan["setting"],
     )
@@ -481,6 +482,12 @@ def main() -> int:
     ap.add_argument("--families", default=",".join(FAMILIES))
     ap.add_argument("--slots", type=int, default=SLOTS_PER_FAMILY)
     ap.add_argument("--retries", type=int, default=3)
+    ap.add_argument("--only-slots", default=None, help="comma list of slot indices to (re)generate")
+    ap.add_argument(
+        "--setting",
+        default=None,
+        help="override the planned setting (recorded in covariates.setting_override)",
+    )
     ap.add_argument("--out", type=Path, default=REPO / "papers/kdg_panel/data")
     ap.add_argument(
         "--dry-run", action="store_true", help="print the plan + one prompt, no API call"
@@ -504,6 +511,12 @@ def main() -> int:
         for s in range(a.slots)
         if slot_plan(f, s)["generator_half"] == half
     ]
+    if a.only_slots:
+        keep = {int(x) for x in a.only_slots.split(",")}
+        plans = [p for p in plans if p["slot"] in keep]
+    if a.setting:
+        for p in plans:
+            p["setting"], p["setting_override"] = a.setting, True
     if a.dry_run:
         print(json.dumps(plans, indent=1))
         print(user_prompt(plans[0]))

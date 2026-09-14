@@ -312,3 +312,29 @@ crystallizes 0.93 (step 1000) → 1.0 across the anneal while the proto→gate c
 and the Tier 3 verdict waits for it. Standing edit already licensed by the rung: "almost no
 pretraining precursor" is an unanchored adjective for 0.155 ≈ 2× the matched null; the W4-3
 rewrite is "a weak precursor (0.155; matched-null q95 0.07) against 0.999 for the moral subspace".
+
+## What the next result changes (KDG pilot, pre-registered 2026-09-13; `papers/KDG_PANEL_SPEC.md` v0.4)
+
+The execution program generalizes the decision variable from refusal to action selection. The
+knowing–doing gap (KDG) is prior art (Huang et al. 2026; Shen et al. 2025; Rakshit et al. 2026;
+`papers/kdg_panel/LIT_PASS.md`); the program's delta is the self-referenced per-scenario moral
+gap under typed pressure families with a harm vs non-harm contrast, and the base/instruct
+three-cell raw-frame comparison. Nothing downstream (action-position rank, persona lever,
+widening) is scheduled until the pilot gate (§5) passes. Per branch, the edit this file takes:
+
+| cell | branch | thesis edit |
+|---|---|---|
+| pilot gate (48 gate-family primaries, OLMo-3-Instruct, dose-0) | ≥ 14 pass, ≥ 2 families | the execution program opens; KDG becomes the outcome variable the action-position read is scored against |
+| | fail once | pressures revised (construction, not scoring); re-pilot; no thesis edit |
+| | fail twice | Branch B2 (panel misdesigned) or, with stable consistent judgments and `no_pressure` everywhere, B1: "current open 7–8B instruct models act consistently with their stated judgment on every family (no gap detectable above the ladder's bar)"; the shallow-read claim stays refusal-specific |
+| F5-vs-rest (harm-stratified, both generators agreeing) | KDG lower on F5 | Branch A: the action channel, like refusal, reads harm; FL's finding generalizes from refusal to action |
+| | no F5 difference, gap present | Branch C: the action read is not the harm sliver; anatomy before framing |
+| three-cell base/instruct (raw frame, mass floor 0.5) | gap in base ≈ gap in instruct D_raw | the knowing–doing structure is inherited from pretraining; persona is not the origin |
+| | no gap in base, gap in instruct D_raw | post-training installed it in the weights; strongest motivation for persona-as-lever |
+| | gap only in D_chat | the template/assistant role carries the gap; persona is the coupling, steering it is the first intervention |
+| generator split | any family result reverses across generator | anomaly by rule; the family is reported per generator and dropped from the pooled verdict |
+| cross-model D agreement (Tier 2, after the gate) | ≈ 1.0 (Huang et al. rival) | the model axis collapses; per-family structure is the only live quantity and the cross-model table is reported as agreement, not as a contrast |
+
+Positive voice, pre-data (move 7): *the program now has a behavioral target for execution, built
+on the same models and positions where it holds a typed moral subspace and a refusal-read result,
+so that the later action-position rank measurement inherits a calibrated outcome variable.*

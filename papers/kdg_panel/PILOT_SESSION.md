@@ -10,11 +10,11 @@ Orion launches the pod (keys stay in Orion's terminal).
 | step | artifact | status (2026-09-13) |
 |---|---|---|
 | §8.1 lit pass, citations verified at source | `LIT_PASS.md` (25 records, 2 UNVERIFIED search-only hits) | done; novelty re-centered in spec §13 A8 |
-| §8.2 pilot scenarios, half A (Claude) | `data/pilot_scenarios_A_claude-opus-5.json` | generating (5 parallel per-family runs → merge) |
-| §8.2 pilot scenarios, half B (second generator) | `data/pilot_scenarios_B_<gen>.json` | **blocked on author decision** (§13 A7): no second-provider key in the environment |
-| §8.3 harness + breadth rubric + 200-item calibration set | `deepsteer/kdg/`, `data/calibration_set_v1.json` | harness + rubric built and unit-tested; calibration set built from half A; rater-2 pass pending |
-| external-label covariate (non-generator rater) | `external_label` field in scenario files | blocked on the same second-provider decision for half A; Claude can rate half B |
-| pod driver + dry run + local tests | `scripts/pod_kdg_pilot.py`, `tests/scripts/test_pod_kdg_pilot.py` | done; 32 tests pass |
+| §8.2 pilot scenarios, half A (Claude) | `data/pilot_scenarios_A_claude-opus-5.json` | done: 30 primaries + 18 harm twins (48), all validated with the OLMo-3 tokenizer band; one F5 slot hit a generator safety refusal (category bio, farming setting) and was regenerated in-plan (same setting, `setting_override: false`) |
+| §8.2 pilot scenarios, half B (second generator) | `data/pilot_scenarios_B_gpt-5.5-2026-04-23.json` | generator chosen 2026-09-13: OpenAI `gpt-5.5-2026-04-23` (dated snapshot); generating (the account's low requests-per-minute limit forced two-at-a-time reruns) |
+| §8.3 harness + breadth rubric + 200-item calibration set | `deepsteer/kdg/`, `data/calibration_set_v1.json` | harness 1.0.0 + rubric built and unit-tested; stage-1 set built on half A with per-item permutations: harness vs construction labels 200/200 after one parser fix (mid-line final `Answer:` is the commitment); rater-2 (Claude judge, `claude-opus-5`, low effort) vs construction labels 0.985 (kappa 0.98; the 3 disagreements are tool-call replies the judge left unlabeled; excluded per §4.4), file `data/calibration_set_v1_rater2_claude.json`; stage 1 PASSES |
+| external-label covariate (non-generator rater) | `external_label` field in scenario files | half A rated by `gpt-5.5-2026-04-23`, half B by `claude-opus-5` (`rate_with_judge.py external` refuses same-provider pairs); running |
+| pod driver + dry run + local tests | `scripts/pod_kdg_pilot.py`, `tests/scripts/test_pod_kdg_pilot.py` | done; 33 tests pass; dry run exercised on the real half-A set |
 | zero-GPU analysis + SCREEN writer | `scripts/analyze_pilot.py` | done; exercised on dry-run outputs |
 
 ## SESSION KDG-1 (est. 0.6–1.0 A100-h, model group: OLMo-3 7B Instruct → OLMo-3 7B base)

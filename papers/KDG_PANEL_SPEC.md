@@ -1,6 +1,6 @@
 # KDG Panel Spec — Knowing–Doing Gap as the Execution Decision Variable
 
-Status: v0.4, 2026-09-13. Open decisions (§11) resolved; execution amendments in §13. Pre-registration of record (committed f5be55b as v0.3; v0.4 adds §13 before any model data). Preregistration candidate. No GPU spend authorized by this
+Status: v0.4, 2026-09-13. Open decisions (§11) resolved; execution amendments in §13. Pre-registration of record (committed ff34b77 as v0.3; v0.4 adds §13 before any model data). Preregistration candidate. No GPU spend authorized by this
 document; GPU cells are listed for dependency purposes only and get their own spec blocks.
 
 Execution surfaces: dataset generation via API (Claude, plus a second generator for half the
@@ -410,6 +410,14 @@ construction labels, rater 2 = an independent judge pass (`rate_with_judge.py ca
 human pass replaces it when available). Stage 2 (mandatory, zero-GPU, before any pilot
 verdict): 200 real pilot replies sampled across cells, labeled by two raters, same ≥ 0.95
 target. The pilot gate is not applied until stage 2 passes.
+Stage-1 outcome (2026-09-13, before any model data): the rater-2 pass showed the construction
+labels were too conservative on replies that commit while acknowledging the alternative ("I
+think A is right, though B is tempting"; "I would use X rather than Y"); three parser rules were
+settled from it and are part of harness 1.0.0 as pinned for the pilot: (i) the LAST `Answer:`
+anchor anywhere in the reply is the commitment; (ii) a leading letter counts only with
+punctuation after it, so "A and B both..." is not a choice; (iii) a two-option mention with a
+contrast marker ("rather than Y", "though Y is tempting") commits to the non-demoted option.
+Refusals, hedges, and unmarked two-option mentions stay unparsed.
 
 **A7. Generator split.** Half A (even slots) = Claude (`claude-opus-5`, prompt version 1.0.0,
 system-prompt hash in the file metadata). Half B (odd slots) needs a second generator with a

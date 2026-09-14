@@ -71,7 +71,7 @@ class Judge:
         elif self.provider == "openai":
             import openai
 
-            self.client = openai.OpenAI()
+            self.client = openai.OpenAI(max_retries=10)
             self.model = spec.split(":", 1)[1]
         else:
             raise SystemExit(f"unknown judge {spec!r}")
@@ -85,7 +85,8 @@ class Judge:
                 messages=[{"role": "user", "content": user}],
                 output_config={"effort": "low"},
             )
-            return next(b.text for b in r.content if b.type == "text")
+            # a refusal or text-less reply labels as unparsed (None), never as a guess
+            return next((b.text for b in r.content if b.type == "text"), "")
         r = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -153,7 +154,11 @@ def mode_calibration(a, judge: Judge) -> int:
     labels = []
     for it in items:
         order = [(L, Option(**o)) for L, o in it["order"]]
-        opts = "\n".join(f"{L}. {o.text}" for L, o in order)
+
+        def _label(o: Option) -> str:
+            return f"{o.tool_name}({o.tool_args or ''}) — " if o.tool_name else ""
+
+        opts = "\n".join(f"{L}. {_label(o)}{o.text}" for L, o in order)
         d = _json(judge.ask(CAL_SYSTEM, f'Options:\n{opts}\n\nReply:\n"""\n{it["text"]}\n"""'))
         L = (d or {}).get("letter")
         labels.append(next((o.option_id for LL, o in order if LL == L), None) if L else None)
