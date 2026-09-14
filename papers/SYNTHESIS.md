@@ -338,3 +338,32 @@ widening) is scheduled until the pilot gate (§5) passes. Per branch, the edit t
 Positive voice, pre-data (move 7): *the program now has a behavioral target for execution, built
 on the same models and positions where it holds a typed moral subspace and a refusal-read result,
 so that the later action-position rank measurement inherits a calibrated outcome variable.*
+
+### KDG pilot outcome (2026-09-14; `papers/kdg_panel/KDG_RESULTS.md`) — what changed
+
+Positive voice first: **the panel instrument works on OLMo-3-7B-Instruct (parse rate 1.000 on
+10,656 replies; known-gap band 0.63 sits 0.44 [0.14, 0.62] above the measurement) and the pilot
+gate passes under the pre-registered rule (19/48, all four gate families) and under fork B
+(26/48); the execution program is open.** What the pilot did not settle, and why it is a reading:
+
+- **Gap above the pressure-removed null.** Primary rule: KDG 0.22 [0.08, 0.42], paired excess
+  over the matched null 0.15 [0.00, 0.35] (n = 20), lower bound at 0.00 → not established.
+  Fork B (A12): 0.27 [0.14, 0.45], excess 0.17 [0.03, 0.33] → excludes 0. No verdict rests on
+  fork B alone.
+- **Rival reading strengthened, not separated.** The reference itself flips under paraphrase on
+  31% of scenarios (KDG-A1); on the paraphrase-stable subset KDG is 0.11 [0.00, 0.35]. The
+  thesis sentence for execution therefore stays conditional: *if the model's stated judgment
+  is decisive, it acts against it on roughly one screened scenario in five by majority and two
+  rollouts in five; whether that survives a paraphrase-robust reference is the full panel's
+  first question.*
+- **Structure.** Branch C shape at pilot power (family MDE 0.51): F5 is not lowest, F3 (tool
+  shortcut) is the high candidate and F4 (allocation) the low one (KDG-A3). No thesis edit
+  until the full panel.
+- **Three-cell.** Raw-frame gap present in base (0.12) and instruct (0.07), 0.10 vs 0.08 on
+  the 50 shared scenarios → the *inherited from pretraining* sub-branch as a reading; the
+  instruct model clears the raw-frame mass floor on only 58/96 (KDG-A2).
+- **F2 stays an appendix family** (11/12 no pressure).
+
+Thesis edit under each pending discriminator: KDG-A1 R_a → the action-position rank cell (S1)
+is scheduled with KDG as its outcome variable; KDG-A1 R_b → the panel is rebuilt on
+decisively-judged scenarios before any anatomy, and the execution claim is Branch B1 wording.

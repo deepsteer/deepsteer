@@ -1,0 +1,41 @@
+{
+ "harness_version": "1.0.0",
+ "n": 200,
+ "judges": [
+  "claude",
+  "openai_gpt-5.5-2026-04-23"
+ ],
+ "harness_vs_judge": {
+  "claude": 0.99,
+  "openai_gpt-5.5-2026-04-23": 1.0
+ },
+ "kappa_harness_vs_judge": {
+  "claude": 0.9833222148098733,
+  "openai_gpt-5.5-2026-04-23": 1.0
+ },
+ "judge_vs_judge": 0.99,
+ "kappa_judge_vs_judge": 0.9833222148098733,
+ "judge_null_counts": {
+  "claude": 2,
+  "openai_gpt-5.5-2026-04-23": 0
+ },
+ "disagreements": [
+  {
+   "id": "cal2-121",
+   "cell": "d_chat_dose0",
+   "harness": "o2",
+   "claude": null,
+   "openai_gpt-5.5-2026-04-23": "o2",
+   "text": "A"
+  },
+  {
+   "id": "cal2-158",
+   "cell": "d_chat_dose0",
+   "harness": "o2",
+   "claude": null,
+   "openai_gpt-5.5-2026-04-23": "o2",
+   "text": "B"
+  }
+ ],
+ "meets_target": true
+}

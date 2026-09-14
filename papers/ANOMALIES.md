@@ -419,6 +419,37 @@ load, ~0.2 A100-h). **Status.** open; MN §3.1 keeps the limitation with the mea
 **Thesis impact.** None on FL; MN §3.1's "specificity control missing" becomes "run and not passed at
 matched norm", a stronger statement of the same limitation.
 
+## KDG-A1 (ledger) — The stated-judgment reference is unstable: J_stated flips under paraphrase on 31% of scenarios, and the paraphrase-stable subset halves the knowing–doing gap
+
+**Date.** 2026-09-14 (KDG pilot, `papers/kdg_panel/KDG_RESULTS.md` §2–3; `outputs/pilot/analysis_pilot.json` `robustness`).
+**Observation.** OLMo-3-7B-Instruct greedy J_stated agrees with its own greedy J_stated on a paraphrased third-person frame on 66/96 scenarios by option id (0.69; 0.84 on the violating/non-violating binary). 16/48 gate primaries fail the option-level stability rule; 12 of those are consistent↔violating flips across 8 samples at T = 0.7, 4 are consistent/neutral splits. KDG on the screened panel 0.22 [0.08, 0.42]; on the paraphrase-stable screened subset 0.11 [0.00, 0.35] (n = 18).
+**Type.** near-miss + control-misbehavior (the floor rung is the reference's own noise).
+**Appears in.** KDG_RESULTS §2 floor rung, §3; spec A12.
+**Competing readings.** R_a: the model's judgment on these scenarios is genuinely indeterminate (mixed considerations; the neutral option splits the vote) and a paraphrase-majority reference would recover a stable J; the gap measured against it is the real quantity. R_b: the gap is manufactured by reference noise: J lands non-violating by chance on a scenario the model is ~50/50 about, D is ~50/50 too, and half of those count as KDG = 1; under a paraphrase-robust reference the gap is ≈ 0.
+**Discriminator.** Zero-GPU on saved text: score consideration breadth on the 864 J replies (`rate_with_judge.py breadth`) and test whether the 16 unstable scenarios are the low-breadth ones (R_a predicts high breadth = many considerations; R_b predicts nothing). Then a pod rider (~10 min on any OLMo-3 load): greedy J_stated on three further paraphrases per scenario → a paraphrase-majority reference; KDG under it, with the paired Δ vs the pressure-removed null. If Δ excludes 0 → R_a; if the rate collapses toward the null → R_b.
+**Status.** open; promoted to the next zero-GPU pass + the full-construction pod. `resolution_type`: experiment.
+**Thesis impact.** R_a: the execution program has its outcome variable and the F3-high candidate structure is real. R_b: KDG on 7B instruct is a reference artifact; the panel needs a stability-filtered construction (only scenarios the model judges decisively) before any anatomy cell, and Branch B1 wording applies.
+
+## KDG-A2 (ledger) — The instruct model puts less next-token mass on the option letters in a raw completion frame than the base model (58 vs 84 of 96 scenarios above the 0.5 floor)
+
+**Date.** 2026-09-14 (KDG_RESULTS §5).
+**Observation.** Raw frame (`Answer:` prefix, letters with leading space): base clears the 0.5 option-mass floor on 84/96 scenario-frame pairs (mean mass 0.76); instruct on 58/96. On the 50 shared scenarios the raw gap rates are 0.10 (base) vs 0.08 (instruct).
+**Type.** control-misbehavior (a floor designed for the base model bites the instruct model harder).
+**Competing readings.** R_a: the instruct model spends the next-token mass on chat-format tokens (a template/EOS/role token) because a raw frame is off-distribution for it, so the readout is format-invalid there, not a null. R_b: the instruct model spreads mass over refusal or hedge tokens on exactly the pressured scenarios, so the below-floor set is informative (an implicit refusal readout).
+**Discriminator.** Zero-GPU on the saved full log-prob vectors: top-5 next tokens on the 38 below-floor instruct rows (formatting tokens → R_a; refusal/hedge tokens → R_b) and whether the below-floor set is enriched for high pressure (violating fraction in D_chat).
+**Status.** open; scheduled into the next zero-GPU pass. `resolution_type`: calibration or experiment.
+**Thesis impact.** R_a: the §4.6 format contrast must be read on the shared-floor subset only (already done). R_b: the raw frame carries a second decision readout worth its own cell.
+
+## KDG-A3 (ledger) — Candidate family structure: the gap concentrates in the instrumental family (fork B F3 0.55 [0.27, 0.82]) and is lowest on loyalty/fairness allocation (F4 0.08 [0.00, 0.30]); third-party harm is not lowest
+
+**Date.** 2026-09-14 (KDG_RESULTS §4).
+**Observation.** Primary rule: F1 0.33 (6), F3 0.33 (6), F4 0.11 (9), F5 0.20 (5). Fork B: F1 0.25 (8), F3 0.55 (11), F4 0.08 (12), F5 0.20 (5). F1+F3+F4 − F5 = 0.04 [−0.41, 0.38]; family MDE 0.51 at pilot n.
+**Type.** family-exception candidate (Branch A predicted F5 lowest if the action read is harm-keyed; F4 is lowest).
+**Competing readings.** R_a: tool-call shortcuts are the surface where an instruct model's judgment and action decouple most (the action is a tool name, the judgment is prose), i.e. the gap is largest where the action surface is least verbal; allocation decisions (F4) are judged and acted on in the same register. R_b: noise at n = 6–12; F3's scenarios are simply more mixed at baseline (F3 had the highest mixed count, 9/12), and mixed D plus majority rule inflates KDG there.
+**Discriminator.** Full panel (n ≈ 40 per family), harm-stratified via the twins; zero-GPU now: the rollout-level violating fraction per family (already saved) compared with the majority-rule rate (R_b predicts the F3 excess vanishes at the rollout level).
+**Status.** open; the rollout-level per-family read is scheduled into the next zero-GPU pass; promotion to the full panel. `resolution_type`: experiment.
+**Thesis impact.** R_a: the action channel's read is surface-dependent, not harm-keyed (Branch C with a named mechanism); the anatomy cell goes to the F3 tool-call position first. R_b: no structure; the panel paper reports the pooled rate only.
+
 ---
 
 ## Process ledger
