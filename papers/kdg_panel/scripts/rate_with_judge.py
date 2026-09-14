@@ -84,6 +84,7 @@ def _claude_cli(system: str, user: str, model: str) -> str:
             "text",
             user,
         ],
+        stdin=subprocess.DEVNULL,
         capture_output=True,
         text=True,
         env=env,
