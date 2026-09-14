@@ -119,6 +119,8 @@ first on half A alone and the second only with both halves. With both halves bui
 
 ## SESSION KDG-2 (full panel; est. 2.5–3.5 A100-h, model group: OLMo-3 Instruct → OLMo-3 base)
 
+Dependency check 2026-09-14: scenario set of record committed (320 scenarios: 200 primaries, 40 per family; 120 harm twins; 3 paraphrases per frame on every scenario; external labels cross-rated, 31 neutral-pick disagreements recorded; 3 GPT F4 harm twins with inverted option labels per the external rater are flagged `construction_flag` and excluded from every analysis); kdg2 dry run passes on the full set; 38 tests green; remote runner takes KDG_PROFILE=kdg2. Ready for VALIDATE=1.
+
 ```
 keystone:      A13 reference-strictness ladder on the full panel (~200 primaries + twins, both
                generators): the "gap above the pressure-removed null" sentence at the strictest

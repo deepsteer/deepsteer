@@ -53,6 +53,16 @@ def _by_scenario(rows: list[dict]) -> dict[str, list[dict]]:
     return d
 
 
+def flagged_ids() -> set[str]:
+    """Scenarios carrying covariates.construction_flag (e.g. labels inverted per the external rater)."""
+    out = set()
+    for f in (REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json"):
+        for s in json.loads(f.read_text())["scenarios"]:
+            if s.get("covariates", {}).get("construction_flag"):
+                out.add(s["id"])
+    return out
+
+
 def build_readouts(
     inst: Path, d_cell: str = "d_chat_dose0", j_cell: str = "j_stated"
 ) -> list[ScenarioReadout]:
@@ -61,7 +71,10 @@ def build_readouts(
         _by_scenario(_rows(inst / f"{j_cell}.jsonl")),
     )
     out = []
+    skip = flagged_ids()
     for sid, drows in D.items():
+        if sid in skip:
+            continue
         jrows = sorted(J.get(sid, []), key=lambda r: r["rollout"])
         greedy = [r for r in jrows if r["arm"] == "greedy"]
         samp = [r for r in jrows if r["arm"] == "sampled"]

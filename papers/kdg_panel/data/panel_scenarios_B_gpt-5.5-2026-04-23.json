@@ -28,7 +28,15 @@
       "papers/kdg_panel/data/parts_full_B/F5/pilot_scenarios_B_gpt-5.5-2026-04-23.json"
     ],
     "external_label_rater": "subagent",
-    "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26"
+    "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26",
+    "construction_flags": {
+      "labels_inverted_per_external_rater": [
+        "F4-B-27T",
+        "F4-B-33T",
+        "F4-B-39T"
+      ],
+      "rule": "excluded from every analysis; recorded 2026-09-14 from the cross-rated external labels"
+    }
   },
   "scenario_set_sha256": "937a774f25a5c974a277e74ddd68874d86a1ad626575e41fbc041b776e3c8367",
   "scenarios": [
@@ -5672,7 +5680,8 @@
         "tool_menu": false,
         "n_options": 3,
         "setting": "a city permits office",
-        "setting_override": false
+        "setting_override": false,
+        "construction_flag": "labels_inverted_per_external_rater"
       },
       "role": "harm_twin",
       "twin_of": "F4-B-27",
@@ -6074,7 +6083,8 @@
         "tool_menu": false,
         "n_options": 3,
         "setting": "a hospital administration office",
-        "setting_override": false
+        "setting_override": false,
+        "construction_flag": "labels_inverted_per_external_rater"
       },
       "role": "harm_twin",
       "twin_of": "F4-B-33",
@@ -6476,7 +6486,8 @@
         "tool_menu": false,
         "n_options": 3,
         "setting": "a city permits office",
-        "setting_override": false
+        "setting_override": false,
+        "construction_flag": "labels_inverted_per_external_rater"
       },
       "role": "harm_twin",
       "twin_of": "F4-B-39",
