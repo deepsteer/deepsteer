@@ -95,11 +95,21 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenarios", type=Path, required=True)
     ap.add_argument("--retries", type=int, default=3)
+    ap.add_argument(
+        "--generator-override",
+        default=None,
+        help="paraphrase with this generator instead of the file's own (recorded per scenario as "
+        "covariates.paraphrase_generator); for scenarios the own generator refuses",
+    )
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     scen, meta = load_scenarios(a.scenarios)
-    gen_tag = meta["generator"]
-    gen = ClaudeGenerator(gen_tag) if gen_tag.startswith("claude") else OpenAIGenerator(gen_tag)
+    gen_tag = a.generator_override or meta["generator"]
+    gen = (
+        ClaudeGenerator(gen_tag)
+        if gen_tag.startswith("claude")
+        else OpenAIGenerator(gen_tag.split(":", 1)[-1])
+    )
     n_done = n_fail = 0
     for s in scen:
         if len(s.eval_text_paraphrases) == 3 and len(s.eval_text_pressure_removed_paraphrases) == 3:
@@ -125,6 +135,7 @@ def main() -> int:
             errs = [e for e in validate_scenario(s) if "paraphrases" in e]
             if not errs:
                 ok = True
+                s.covariates["paraphrase_generator"] = gen_tag
                 log.info("%s ok (attempt %d)", s.id, attempt)
                 break
             s.eval_text_paraphrases, s.eval_text_pressure_removed_paraphrases = old

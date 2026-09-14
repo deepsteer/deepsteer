@@ -66,7 +66,7 @@ class Judge:
         if self.provider == "anthropic":
             import anthropic
 
-            self.client = anthropic.Anthropic()
+            self.client = anthropic.Anthropic(timeout=120.0, max_retries=3)
             self.model = "claude-opus-5" if spec == "claude" else spec.split(":", 1)[1]
         elif self.provider == "openai":
             import openai
@@ -197,13 +197,32 @@ def mode_calibration(a, judge: Judge) -> int:
 
 
 def mode_breadth(a, judge: Judge) -> int:
+    """Breadth judge over a J_stated JSONL; checkpoints every 25 items and resumes from the file."""
     rows = [json.loads(line) for line in a.jsonl.read_text().splitlines() if line.strip()]
+    p = a.jsonl.with_name(a.jsonl.stem + "_breadth.json")
+    done: dict[tuple, dict] = {}
+    if p.exists():
+        prev = json.loads(p.read_text())
+        if prev.get("judge") == judge.spec:
+            done = {
+                (o["scenario_id"], o["rollout"]): o
+                for o in prev["items"]
+                if o.get("breadth") is not None
+            }
     out = []
-    for r in rows:
+    for i, r in enumerate(rows):
+        key = (r["scenario_id"], r["rollout"])
+        if key in done:
+            out.append(done[key])
+            continue
         if not r.get("text"):
             out.append({"scenario_id": r["scenario_id"], "rollout": r["rollout"], "breadth": None})
             continue
-        parts = parse_breadth(judge.ask(BREADTH_JUDGE_SYSTEM, breadth_judge_user(r["text"])))
+        try:
+            parts = parse_breadth(judge.ask(BREADTH_JUDGE_SYSTEM, breadth_judge_user(r["text"])))
+        except Exception as e:  # noqa: BLE001 — one failed call must not lose the pass
+            print(f"  {r['scenario_id']}/{r['rollout']}: {type(e).__name__}", flush=True)
+            parts = None
         out.append(
             {
                 "scenario_id": r["scenario_id"],
@@ -214,7 +233,15 @@ def mode_breadth(a, judge: Judge) -> int:
                 "breadth": breadth_score(parts) if parts else None,
             }
         )
-    p = a.jsonl.with_name(a.jsonl.stem + "_breadth.json")
+        if (i + 1) % 25 == 0:
+            _write_breadth(p, judge, out)
+            print(f"  checkpoint {i + 1}/{len(rows)}", flush=True)
+    _write_breadth(p, judge, out)
+    print(f"wrote {p} ({sum(o['breadth'] is not None for o in out)}/{len(out)} scored)")
+    return 0
+
+
+def _write_breadth(p: Path, judge: Judge, out: list[dict]) -> None:
     p.write_text(
         json.dumps(
             {
@@ -226,8 +253,6 @@ def mode_breadth(a, judge: Judge) -> int:
             indent=1,
         )
     )
-    print(f"wrote {p} ({sum(o['breadth'] is not None for o in out)}/{len(out)} scored)")
-    return 0
 
 
 def main() -> int:
