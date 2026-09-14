@@ -24,10 +24,17 @@ DATA = REPO / "papers/kdg_panel/data"
 
 
 def main() -> int:
-    items = json.loads((DATA / "calibration_set_v2_real.json").read_text())["items"]
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--set", default="calibration_set_v2_real", help="calibration set stem under data/"
+    )
+    a = ap.parse_args()
+    items = json.loads((DATA / f"{a.set}.json").read_text())["items"]
     judges = {
         p.stem.split("_rater2_", 1)[1]: json.loads(p.read_text())["labels"]
-        for p in sorted(DATA.glob("calibration_set_v2_real_rater2_*.json"))
+        for p in sorted(DATA.glob(f"{a.set}_rater2_*.json"))
     }
     if len(judges) < 2:
         raise SystemExit(f"need two judge files, have {list(judges)}")
@@ -57,7 +64,12 @@ def main() -> int:
     rep["meets_target"] = (
         all(v >= 0.95 for v in rep["harness_vs_judge"].values()) and rep["judge_vs_judge"] >= 0.95
     )
-    (DATA / "calibration_stage2_report.json").write_text(json.dumps(rep, indent=1))
+    out = DATA / (
+        "calibration_stage2_report.json"
+        if a.set == "calibration_set_v2_real"
+        else f"{a.set}_stage2_report.json"
+    )
+    out.write_text(json.dumps(rep, indent=1))
     print(json.dumps({k: v for k, v in rep.items() if k != "disagreements"}, indent=1))
     for d in rep["disagreements"][:20]:
         print("  DISAGREE", d)

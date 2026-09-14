@@ -437,7 +437,9 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
             float(np.mean([r["option_id"] is not None for r in rows])) if rows else None
         )
     n_screen = len(screened)
-    rep2 = REPO / "papers/kdg_panel/data/calibration_stage2_report.json"
+    rep2 = out / "calibration_stage2_report.json"  # per-run report copied in by the post-pod chain
+    if not rep2.exists():
+        rep2 = REPO / "papers/kdg_panel/data/calibration_stage2_report.json"
     harness_agreement = (
         min(json.loads(rep2.read_text())["harness_vs_judge"].values()) if rep2.exists() else 0.0
     )
