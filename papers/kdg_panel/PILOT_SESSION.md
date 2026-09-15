@@ -155,3 +155,25 @@ option); with ~120 screened scenarios expected at ~200 primaries (pilot pass rat
 Cost from pilot timings with J batching: D cells ~5 min per 96 → ~10 min per 200; J cells
 15.5 min per 96 unbatched → ~15 min per 200 batched (estimate; verify at VALIDATE on a 16-
 scenario subset); eight J cells ≈ 2 h; raw cells minutes; base ~10 min. Total ≈ 2.5–3.5 h.
+
+## SESSION KDG-3 (round 2 + F4 swap; est. 1.0–1.5 A100-h, model group: OLMo-3 Instruct → base)
+
+```
+keystone:      full gate (§5) re-applied on the KDG-2 + KDG-3 union (A14): 48 new F1/F3/F5
+               primaries (+ harm twins) lift the non-F4 screened count past 60; the F4
+               paraphrase-swap cell (40 swapped scenarios) separates construction (R_a) from
+               register (R_b) for KDG-A4
+riders:        the same cells as KDG-2 on every new scenario (kdg2 profile), so the A13 ladder,
+               the null, and the band extend to the union without a second harness
+pilot gates:   VALIDATE=1 on the pod; parse rate >= 0.95 on the first two cells
+depends on:    round2_scenarios_{A,B}_*.json (Pro-account CLI / Codex, prompt 1.1.0, validated,
+               external labels cross-rated) and swap_scenarios_F4.json committed;
+               KDG_SCENARIOS forwarded to the pod (launcher whitelist updated 2026-09-15)
+saves:         as KDG-2, under outputs/kdg3/
+gate after:    KDG-G3: full gate on the union; KDG-A4 branch (R_a / R_b / neither); Tier 2 +
+               dose arm are licensed only by a met gate
+```
+
+Launch (Orion): as KDG-2 with `RESULTS_SUBPATH=outputs/kdg3 KDG_OUT_SUBDIR=outputs/kdg3
+KDG_PROFILE=kdg2 KDG_SCENARIOS="<the round-2 and swap files>"`; analysis:
+`analyze_pilot.py --out outputs/kdg2 --also outputs/kdg3 --write-screen`.
