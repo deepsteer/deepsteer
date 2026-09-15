@@ -11,6 +11,7 @@
 #   VALIDATE=1 <same> ......  no-model dry run on the pod (plumbing), then exit — run this FIRST.
 #   KDG_MODELS=olmo3_instruct KDG_UNITS=d_chat_dose0,j_stated  subset the run.
 #   KDG_PROFILE=kdg2   A13 four-frame J cells (full panel; scenarios need 3 paraphrases per frame).
+#   KDG_SCENARIOS="papers/kdg_panel/data/round2_scenarios_A_x.json ..."  run only these files (KDG-3).
 #
 # Flow (compute-ordering + test-gates-before-GPU): local gates (pytest + dry run) -> VALIDATE
 # exit -> real run -> verify-manifest. Outputs rsync back to papers/kdg_panel/outputs/pilot/.
@@ -56,6 +57,7 @@ ARGS=""
 [ -n "${KDG_MODELS:-}" ] && ARGS="$ARGS --models $KDG_MODELS"
 [ -n "${KDG_UNITS:-}" ] && ARGS="$ARGS --units $KDG_UNITS"
 [ -n "${KDG_PROFILE:-}" ] && ARGS="$ARGS --profile $KDG_PROFILE"
+[ -n "${KDG_SCENARIOS:-}" ] && ARGS="$ARGS --scenarios $KDG_SCENARIOS"
 echo "==================== KDG pilot pod ($ARGS) ===================="
 python papers/kdg_panel/scripts/pod_kdg_pilot.py --out "$OUT" $ARGS
 RC=$?

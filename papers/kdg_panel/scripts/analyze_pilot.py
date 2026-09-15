@@ -41,10 +41,17 @@ from deepsteer.kdg.stats import (  # noqa: E402
 BASE_FLOOR = 0.5  # models.yaml readout.base_option_mass_floor (fixed; a change is a fork)
 
 
+EXTRA_DIRS: list[Path] = []  # further run dirs whose per-cell rows are unioned (A14: KDG-2 + KDG-3)
+
+
 def _rows(path: Path) -> list[dict]:
-    if not path.exists():
-        return []
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    """Rows of one cell file, unioned with the same cell in every EXTRA_DIRS run (same layout)."""
+    paths = [path] + [d / path.parent.name / path.name for d in EXTRA_DIRS]
+    rows: list[dict] = []
+    for p in paths:
+        if p.exists():
+            rows += [json.loads(line) for line in p.read_text().splitlines() if line.strip()]
+    return rows
 
 
 def _by_scenario(rows: list[dict]) -> dict[str, list[dict]]:
@@ -384,6 +391,39 @@ def a13_ladder(
     return out
 
 
+def swap_readout(ro: list[ScenarioReadout], n_boot: int) -> dict:
+    """A14 paraphrase-swap: KDG on swapped vs original scenarios, per origin generator."""
+    by_id = {r.scenario_id: r for r in ro}
+    swapped = [r for r in ro if r.scenario_id.endswith("S") and r.scenario_id[:-1] in by_id]
+    if not swapped:
+        return {"status": "pending: no swapped scenarios in the readouts"}
+    out = {}
+    for origin in sorted({by_id[r.scenario_id[:-1]].generator for r in swapped}):
+        sw = [r for r in swapped if by_id[r.scenario_id[:-1]].generator == origin]
+        orig = [by_id[r.scenario_id[:-1]] for r in sw]
+        scr_sw = [r for r in sw if screen_pass(r)[0]]
+        scr_or = [r for r in orig if screen_pass(r)[0]]
+        k_or = kdg_rate(scr_or, n_boot=n_boot)
+        k_sw = kdg_rate(scr_sw, n_boot=n_boot)
+        pairs_sw = [
+            r for r in sw if r.kdg() is not None and by_id[r.scenario_id[:-1]].kdg() is not None
+        ]
+        # paired by scenario: swapped − original (KDG defined on both), unscreened
+        import dataclasses as _dc
+
+        paired_sw = [_dc.replace(r, scenario_id=r.scenario_id[:-1]) for r in pairs_sw]
+        paired_or = [by_id[r.scenario_id[:-1]] for r in pairs_sw]
+        diff = difference_ci(paired_sw, paired_or, n_boot=n_boot, paired=True)
+        out[origin] = {
+            "n_swapped": len(sw),
+            "original_kdg_screened": {k: v for k, v in k_or.items() if k != "per_scenario"},
+            "swapped_kdg_screened": {k: v for k, v in k_sw.items() if k != "per_scenario"},
+            "swapped_minus_original_paired": diff,
+            "paraphraser": sw[0].generator if sw else None,
+        }
+    return out
+
+
 def analyze(out: Path, n_boot: int = 2000) -> dict:
     man = json.loads((out / "manifest_kdg.json").read_text())
     inst, base = out / "olmo3_instruct", out / "olmo3_base"
@@ -522,6 +562,8 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
         "robustness": robustness,
         "three_cell": three_cell(out, ro),
         "a13_ladder": a13_ladder(inst, ro, {r.scenario_id for r in screened}, null_ro, n_boot),
+        "swap_f4": swap_readout(ro, n_boot),
+        "extra_dirs": [str(d) for d in EXTRA_DIRS],
         "run_id": man["run_id"],
         "dry_run": man["dry_run"],
         "git_commit": man["git_commit"],
@@ -613,7 +655,15 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=REPO / "papers/kdg_panel/outputs/pilot")
     ap.add_argument("--n-boot", type=int, default=2000)
     ap.add_argument("--write-screen", action="store_true")
+    ap.add_argument(
+        "--also",
+        nargs="*",
+        type=Path,
+        default=[],
+        help="further run dirs unioned per cell (A14: KDG-3 with KDG-2)",
+    )
     a = ap.parse_args()
+    EXTRA_DIRS.extend(a.also)
     rep = analyze(a.out, a.n_boot)
     (a.out / "analysis_pilot.json").write_text(json.dumps(rep, indent=1, default=str))
     print(

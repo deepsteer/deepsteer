@@ -365,6 +365,56 @@ def codex_exec(
         return Path(d, "out.txt").read_text().strip()
 
 
+def claude_cli_exec(system: str, prompt: str, *, model: str = "opus", timeout: int = 900) -> str:
+    """One-shot `claude -p` on the Pro account (API key stripped; prompt on stdin). Returns text."""
+    import os
+    import subprocess
+
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
+    }
+    args = ["claude", "-p", "--model", model, "--system-prompt", system, "--output-format", "text"]
+    r = subprocess.run(args, input=prompt, capture_output=True, text=True, env=env, timeout=timeout)
+    if r.returncode != 0 or not r.stdout.strip():
+        raise RuntimeError(f"claude -p failed ({r.returncode}): {r.stderr[-300:]}")
+    return r.stdout.strip()
+
+
+def extract_json(text: str) -> dict:
+    """First top-level JSON object in a reply (no schema flag on the CLI; validator retries)."""
+    start = text.find("{")
+    if start < 0:
+        raise ValueError("no JSON object in reply")
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return json.loads(text[start : i + 1])
+    raise ValueError("unterminated JSON object in reply")
+
+
+class SubagentGenerator:
+    """Claude via the Pro-account CLI (no API spend). Same prompts as the API path; the JSON
+    schema is stated in the prompt and enforced by ``validate_scenario`` with retries."""
+
+    def __init__(self, model: str = "opus") -> None:
+        self.model = model
+        self.tag = f"subagent:{model}"
+
+    def __call__(self, plan: dict[str, Any], feedback: list[str] | None) -> dict[str, Any]:
+        prompt = (
+            user_prompt(plan, feedback) + "\n\nReturn ONLY a JSON object with keys `primary` and "
+            "`harm_twin` matching this JSON schema exactly (no prose, no code fence):\n"
+            + json.dumps(BUNDLE_SCHEMA)
+        )
+        return extract_json(claude_cli_exec(SYSTEM_PROMPT, prompt, model=self.model))
+
+
 class CodexGenerator:
     """GPT via the Codex CLI on the ChatGPT plan (spec §2 second generator; no API spend)."""
 
@@ -411,6 +461,8 @@ def make_generator(spec: str):
         return ClaudeGenerator(spec.split(":", 1)[1])
     if spec.startswith("openai:"):
         return OpenAIGenerator(spec.split(":", 1)[1])
+    if spec == "subagent" or spec.startswith("subagent:"):
+        return SubagentGenerator(spec.split(":", 1)[1] if ":" in spec else "opus")
     if spec == "codex" or spec.startswith("codex:"):
         return CodexGenerator(spec.split(":", 1)[1] if ":" in spec else None)
     raise SystemExit(f"unknown generator {spec!r} (use claude | claude:<model> | openai:<model>)")
@@ -574,7 +626,8 @@ def main() -> int:
     ap.add_argument(
         "--generator",
         required=True,
-        help="claude | claude:<model> | openai:<model> | codex[:<model>] (ChatGPT plan)",
+        help="subagent[:<alias>] (Pro account) | codex[:<model>] (ChatGPT plan) | "
+        "claude[:<model>] | openai:<model>",
     )
     ap.add_argument(
         "--half",
@@ -607,7 +660,7 @@ def main() -> int:
     if a.merge_parts:
         return merge_parts(a.merge_parts, a.out, a.merge_prefix)
 
-    half = a.half or ("A" if a.generator.startswith("claude") else "B")
+    half = a.half or ("A" if a.generator.startswith(("claude", "subagent")) else "B")
     fams = [f for f in a.families.split(",") if f]
     plans = [
         slot_plan(f, s)
