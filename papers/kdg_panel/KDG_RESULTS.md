@@ -319,3 +319,127 @@ Harness vs Codex judge (ChatGPT plan) **0.99** (kappa 0.98), harness vs Claude P
 
 Ship-blockers: SYNTHESIS updated in this commit; CLAIMS KDG-10..16; ANOMALIES KDG-A3 resolved,
 KDG-A4 opened; both A13 branches were written before data; stage 2 reported before the gate.
+
+---
+
+# 11. Round 2 and the F4 swap (Session KDG-3, pod 2026-09-15; union with KDG-2; gate KDG-G3)
+
+Numbers of record: `outputs/kdg3/analysis_union.json` (KDG-2 + KDG-3 rows unioned per cell;
+manifest verified, 3.6 GB); 440 scenarios in the union (248 primaries, 40 per family plus 16
+round-2 primaries each for F1/F3/F5; 152 harm twins; 40 swapped F4; 3 flagged twins excluded);
+harness 1.0.0, template 1.0.0; round-2 scenarios generated with no API spend (Pro-account CLI,
+Codex CLI), external labels cross-rated the same way.
+
+## 11.0 Positive voice first
+
+**On 248 pre-registered primaries the gap holds where the pilot and the full panel put it:
+0.19 [0.13, 0.28] on the screened panel, excess over the pressure-removed null 0.10 [0.02,
+0.18] (n = 100 paired), 0.38 of rollouts, band 0.58; the non-F4 panel meets every clause of
+the full gate, and its excess over the null is 0.16 [0.02, 0.28].** Two things the larger n
+sharpened rather than settled: the strictest paraphrase reference (all four frames agree) now
+carries enough scenarios to be the pre-registered verdict level, and there the excess is not
+resolved above 0; and the F4 swap cell was too small to separate construction from register.
+
+## 11.1 Gates
+
+| gate | result |
+|---|---|
+| screen on the union | 74/208 gate primaries pass (F1 25, F3 17, F4 11, F5 21); F2 6/40 |
+| full gate, by the letter (four gate families) | count 74 ≥ 60 ✓; four families ✓; every family CI excludes 0 ✓; harness 0.99 ✓; **generator reversal on F4 ✗** (Claude-side 0.00 [0.00, 0.27], n 11; GPT-side 0.38 [0.15, 0.62], n 13) → NOT MET |
+| full gate on the non-F4 panel (§2: F4 reported per generator, out of the pooled verdict) | 63 screened across F1/F3/F5 ✓; F1 and F5 CIs exclude 0 ✓; harness ✓; no reversal ✓ → **MET** |
+
+Provider-pooled rates on the screened union (API and CLI variants of one provider pooled):
+Claude-written 0.15 [0.08, 0.25] (n 66), GPT-written 0.23 [0.14, 0.38] (n 60); same sign;
+F4 is the only family that reverses. **Decision KDG-G3 (author):** whether the panel of record
+for Tier 2 is the non-F4 panel (gate met) with F4 as an appendix family pending KDG-A4, or the
+four-family panel (gate not met) pending an F4 rebuild. Both are consistent with the spec; the
+first is the §2 rule applied, the second is the stricter reading of §5.
+
+## 11.2 Ladder on the union (L0)
+
+| rung | value |
+|---|---|
+| floor | 0.70 option / 0.81 binary (n = 440) |
+| matched null | 0.10 [0.06, 0.17] (n = 108) |
+| measurement | **0.19 [0.13, 0.28]** (n = 126) |
+| positive band | 0.58 [0.51, 0.65] (n = 196) |
+| measurement − null, paired | **0.10 [0.02, 0.18]** (n = 100), excludes 0 |
+| band − measurement | 0.38 [0.24, 0.48] |
+| rollout-level second derivation | 0.38 (n = 103); agree |
+| paraphrase-stable subset | 0.17 [0.11, 0.28] (n = 90); holds |
+| non-F4 panel | 0.19 [0.09, 0.31] (n = 57); excess 0.16 [0.02, 0.28] (n = 44) |
+
+## 11.3 A13 ladder at the larger n
+
+| level | n | KDG | null | paired excess | role |
+|---|---|---|---|---|---|
+| L0 | 136 | 0.19 [0.13, 0.28] | 0.10 | 0.10 [0.02, 0.18] (n 100) | |
+| L1 | 127 | 0.20 [0.14, 0.29] | 0.11 | **0.11 [0.02, 0.19] (n 92)** | survives |
+| **L2** | 67 | 0.15 [0.08, 0.28] | 0.09 | **0.05 [−0.02, 0.19] (n 43)** | **verdict level** (n ≥ 40) |
+
+With 43 paired scenarios L2 is now the pre-registered verdict level, and there the excess over
+the null is not resolved above 0. The excess shrinks with strictness (0.10 → 0.11 → 0.05)
+while the rate sequence is not strictly monotone (0.19 → 0.20 → 0.15). By A13's branch text
+this is neither a clean "survives" (the verdict-level excess includes 0) nor a clean "decays"
+(the fall is not monotone across all three levels). Verdict sentences of record:
+- *At the pre-registered verdict level (all four judgment frames agree, n = 43 paired), the
+  knowing–doing gap exceeds the pressure-removed null by 0.05 [−0.02, 0.19]: not established
+  above 0 against the strictest reference; no gap detectable above 0.19 there.*
+- *One level down (four-frame binary majority, n = 92), the excess is 0.11 [0.02, 0.19].*
+The reference-noise rival (KDG-A1) is separated at L1 and not at L2. What separates them next
+is n at L2: the L2 half-width is 0.11 at 43 pairs; ~90 pairs would bring it to the 0.08 needed
+to resolve a 0.05 excess, i.e. roughly doubling the panel, or raising the L2 yield (currently
+half of L0) with scenarios whose judgment is decisive by construction.
+
+## 11.4 F4 paraphrase-swap (A14, KDG-A4 discriminator)
+
+| origin | paraphraser | original KDG (screened) | swapped KDG (screened) | swapped − original, paired |
+|---|---|---|---|---|
+| Claude-written (20) | Codex | 0.00 [0.00, 0.50] (n 4) | 0.10 [0.00, 0.33] (n 10) | 0.00 [−0.25, 0.00] (n 5) |
+| GPT-written (20) | Claude Pro | 0.33 [0.00, 0.80] (n 6) | 0.11 [0.00, 0.33] (n 9) | −0.09 [−0.27, 0.00] (n 11) |
+
+By the A14 verdict rule the containment criterion for "follows origin" (R_a) is met for both
+origins, but only because the CIs are wide enough to contain everything; the point estimates
+move toward the paraphraser in both directions (0.00 → 0.10, 0.33 → 0.11), the R_b signature.
+With 4–11 defined scenarios per cell the swap is **inconclusive** (A14's "neither" branch): F4
+stays per generator and out of the pooled verdict; KDG-A4 stays open with a priced next leg
+(§11.6). The cell was sized for 40 swapped primaries; only ~10 per origin survive the screen and
+the stability rule.
+
+## 11.5 Structure, generators, three-cell
+
+| family | union KDG (n) |
+|---|---|
+| F1 | 0.22 [0.08, 0.34] (41) |
+| F3 | 0.14 [0.03, 0.29] (37) |
+| F4 | 0.21 [0.08, 0.39] (24), per provider 0.00 / 0.38 |
+| F5 | 0.22 [0.06, 0.41] (18) |
+| F1+F3+F4 − F5 | −0.04 [−0.27, 0.16] |
+
+Branch C holds at n ≈ 130 screened: no harm-keyed structure. Three-cell raw frame on the
+union: base 0.154 (395 above floor), instruct 0.093 (269 above; 171 below, KDG-A2); on the 235
+shared scenarios 0.145 vs 0.094; format contrast on instruct (160 shared) chat 0.10 vs raw 0.08.
+The inherited-from-pretraining reading is stable across three pods.
+
+## 11.6 Calibration stage 2 (A6) on 200 KDG-3 replies
+
+Harness vs Codex judge **1.00**, harness vs Claude Pro-account judge **0.99** (kappa 0.98), judge vs judge 0.99; 200 replies drawn across the six generated cells (every reply in the KDG-3 pool parsed by a clean rule, so no hard-parse oversampling was possible). The two disagreements are the Pro judge returning no label on a bare letter and on a clean answer line. **Stage 2 passes; the gates in §11.1 are applied with harness = 0.99.** Report: `data/calibration_set_v4_real_stage2_report.json`.
+
+## 11.7 Referee pass
+
+1. *"Your pre-registered verdict level now says the gap is not established, and you keep the
+   L1 sentence."* Conceded and stated first: the L2 sentence is the sentence of record; L1 is
+   reported as the level below it with its own n. The write-up leads with L2.
+2. *"The swap cell is a null with no power and you call it 'inconclusive' to keep F4."*
+   Answered: the pre-registered rule returns R_a by containment, and the document says so; it
+   also says the containment is trivial at these CIs. F4 is not kept: it is out of the pooled
+   verdict either way. The gate decision (§11.1) is put to the author, not made here.
+3. *"You moved the goalposts to a non-F4 panel after seeing the gate fail."* Answered: the §2
+   rule ("a generator-dependent family result is an anomaly, not a finding", reported per
+   generator) was pre-registered in v0.3, before any data; applying it to the gate is the
+   letter of §2 meeting the letter of §5, and both readings are presented with the choice
+   escalated. Conceded: which reading governs Tier 2 is a scope decision and is not taken
+   here.
+
+Ship-blockers: SYNTHESIS updated in this commit; CLAIMS KDG-17..22; ANOMALIES KDG-A1 and A4
+updated; A14 branches applied as written; stage 2 reported before the gate.

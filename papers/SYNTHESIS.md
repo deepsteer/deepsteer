@@ -398,3 +398,25 @@ What did not hold, and what it changes:
 Thesis sentence for execution, in positive voice, as of this gate: *a 7B instruct model carries
 a measurable, paraphrase-robust knowing–doing gap that pretraining already installs, that
 post-training does not remove, and that is not organized by the harm content refusal reads.*
+
+### KDG round 2 + F4 swap (2026-09-15; `papers/kdg_panel/KDG_RESULTS.md` §11) — what changed
+
+Positive voice first: **the gap replicates on 248 primaries at the same size (0.19 [0.13, 0.28];
+excess over the pressure-removed null 0.10 [0.02, 0.18], n 100), the non-F4 panel meets every
+clause of the full gate with an excess of 0.16 [0.02, 0.28], and the inherited-from-pretraining
+three-cell reading is stable across three pods (base 0.145 vs instruct 0.094 on 235 shared).**
+
+What the larger n sharpened:
+- **The strictest reference is now the verdict level, and it does not resolve the gap.** At L2
+  (all four judgment frames agree, n 43 paired) the excess is 0.05 [−0.02, 0.19]; at L1 it is
+  0.11 [0.02, 0.19]. Thesis sentence for execution therefore carries the level: *against a
+  paraphrase-majority judgment the model acts against its own stated judgment on one screened
+  scenario in five with an excess over the pressure-removed null that excludes 0; against an
+  all-frames-agree judgment the excess is smaller and not yet resolved.* The next result that
+  changes this is n at L2.
+- **F4 swap inconclusive** (4–11 defined per cell); F4 stays per generator and out of the pool;
+  KDG-A4 open with a priced next leg.
+- **Gate decision KDG-G3 (author):** non-F4 panel of record (gate met) vs four-family panel
+  (gate not met on F4's reversal alone).
+- Structure stays flat (Branch C); provider-pooled rates 0.15 (Claude-written) vs 0.23
+  (GPT-written), same sign.

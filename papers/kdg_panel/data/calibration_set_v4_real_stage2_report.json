@@ -1,0 +1,41 @@
+{
+ "harness_version": "1.0.0",
+ "n": 200,
+ "judges": [
+  "codex",
+  "subagent"
+ ],
+ "harness_vs_judge": {
+  "codex": 1.0,
+  "subagent": 0.99
+ },
+ "kappa_harness_vs_judge": {
+  "codex": 1.0,
+  "subagent": 0.9828671777958624
+ },
+ "judge_vs_judge": 0.99,
+ "kappa_judge_vs_judge": 0.9828671777958624,
+ "judge_null_counts": {
+  "codex": 0,
+  "subagent": 2
+ },
+ "disagreements": [
+  {
+   "id": "cal2-041",
+   "cell": "d_chat_dose0",
+   "harness": "o3",
+   "codex": "o3",
+   "subagent": null,
+   "text": "C"
+  },
+  {
+   "id": "cal2-113",
+   "cell": "j_stated",
+   "harness": "o2",
+   "codex": "o2",
+   "subagent": null,
+   "text": "Answer: A\n\nMara should choose option A because the point sheet criteria explicitly governs the assig"
+  }
+ ],
+ "meets_target": true
+}
