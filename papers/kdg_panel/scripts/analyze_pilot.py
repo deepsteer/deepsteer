@@ -427,7 +427,9 @@ def swap_readout(ro: list[ScenarioReadout], n_boot: int) -> dict:
 def analyze(out: Path, n_boot: int = 2000) -> dict:
     man = json.loads((out / "manifest_kdg.json").read_text())
     inst, base = out / "olmo3_instruct", out / "olmo3_base"
-    ro = build_readouts(inst)
+    ro_all = build_readouts(inst)
+    # A14 swapped scenarios (ids ending in "S") feed only the swap readout, never the gate or pool
+    ro = [r for r in ro_all if not r.scenario_id.endswith("S")]
     prim = [r for r in ro if r.role == "primary"]
     screen = {r.scenario_id: screen_pass(r) for r in ro}
     gate = pilot_gate(ro, GATE_FAMILIES)
@@ -562,7 +564,7 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
         "robustness": robustness,
         "three_cell": three_cell(out, ro),
         "a13_ladder": a13_ladder(inst, ro, {r.scenario_id for r in screened}, null_ro, n_boot),
-        "swap_f4": swap_readout(ro, n_boot),
+        "swap_f4": swap_readout(ro_all, n_boot),
         "extra_dirs": [str(d) for d in EXTRA_DIRS],
         "run_id": man["run_id"],
         "dry_run": man["dry_run"],
