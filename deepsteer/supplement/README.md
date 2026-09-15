@@ -3,8 +3,8 @@
 Distilled, manifest-indexed artifacts behind the quantitative claims in the two
 papers of this series:
 
-- **Flagship** — *Refusal Reads Only a Slice of What the Model Knows*
-- **Methods note** — *Calibrating Interpretability Instruments Before Trusting Their Verdicts*
+- **Flagship** — *Refusal Reads Only a Slice of What the Model Knows* (arXiv:2609.14759, https://arxiv.org/abs/2609.14759)
+- **Methods note** — *Calibrating Interpretability Instruments Before Trusting Their Verdicts* (arXiv:2609.14754, https://arxiv.org/abs/2609.14754)
 
 Every figure and headline number in both papers resolves to a file here. Shared
 artifacts (used by both papers) live here once; the papers cite this supplement

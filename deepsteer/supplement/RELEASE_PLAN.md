@@ -87,7 +87,7 @@ papers, then the files are published.
 - **Title:** DeepSteer per-unit arrays: what refusal reads (flagship) and instruments before verdicts (methods note)
 - **Authors:** Reblitz-Richardson, Orion (Distiller Labs)
 - **License:** CC BY 4.0 for the deposited arrays and manifests (code stays under the repository license, by pointer)
-- **Related identifiers** (`isSupplementTo` / `cites`): arXiv:2606.11375 (Paper 1 v2), arXiv:2608.25231 (Paper 2), arXiv:2608.27402 (Paper 3); the FL and MN arXiv ids are added as a new Zenodo version once they exist
+- **Related identifiers** (`isSupplementTo` / `cites`): arXiv:2606.11375 (Paper 1 v2), arXiv:2608.25231 (Paper 2), arXiv:2608.27402 (Paper 3), arXiv:2609.14759 (FL), arXiv:2609.14754 (MN); the FL and MN ids were added once they existed
 - **Keywords:** language models, refusal, moral representations, interpretability, activation patching, participation ratio
 - **Version:** v1 = the W4 run of record; any later regeneration is a new Zenodo version with its own DOI and a changelog line
 - **Description:** two sentences stating what the arrays are, that every CI in both papers is re-derivable from them without a model, and the NC exclusion with its restricted-record pointer
