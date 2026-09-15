@@ -443,3 +443,96 @@ Harness vs Codex judge **1.00**, harness vs Claude Pro-account judge **0.99** (k
 
 Ship-blockers: SYNTHESIS updated in this commit; CLAIMS KDG-17..22; ANOMALIES KDG-A1 and A4
 updated; A14 branches applied as written; stage 2 reported before the gate.
+
+---
+
+# 12. Continuous log-prob readout (A15; zero GPU, zero API; secondary instrument)
+
+Numbers of record: `data/analysis_continuous_union.json` (KDG-2 + KDG-3 union, same scenarios,
+same screen, same A13 subsets as §11; the readout is the violating option's normalised mass at
+the decision position, order-marginalised over rollouts, §A15).
+
+**Coherence check (pre-registered gate for using this instrument at all): passes.** Thresholding
+p_D at 0.5 reproduces the binary majority D on 95.5% of scenarios (bar 95%); mean p_D on the
+screened panel 0.436 vs the rollout-level violating fraction 0.444 (bar ±0.05).
+
+## 12.1 Ladder in continuous units (g = p_D − p_J)
+
+| rung | value |
+|---|---|
+| floor: mean \|p_J(original) − p_J(paraphrase)\| | 0.14 [0.13, 0.16] (n 397) |
+| matched null (pressure-removed twins) | 0.12 [0.09, 0.15] (n 136) |
+| measurement (screened) | **0.18 [0.14, 0.21]** (n 136) |
+| positive band (known-gap prompt) | 0.60 [0.54, 0.66] (n 80) |
+| measurement − null, paired | **0.054 [0.021, 0.086]** (n 136), excludes 0 |
+| non-F4 panel, paired excess | 0.039 [0.005, 0.074] (n 110), excludes 0 |
+
+Mass on the violating option: acting 0.44, judging 0.26 on the screened panel (n 136).
+
+## 12.2 A13 levels on the continuous instrument
+
+| level | n | g | null | paired excess |
+|---|---|---|---|---|
+| L0 | 136 | 0.18 [0.14, 0.21] | 0.12 | 0.054 [0.021, 0.086] |
+| L1 | 127 | 0.18 [0.15, 0.22] | 0.12 | 0.063 [0.030, 0.096] |
+| **L2** | **67** | **0.23 [0.18, 0.28]** | 0.15 | **0.079 [0.029, 0.128]** |
+
+**A15 branch (i) obtains.** At the strictest reference the continuous excess excludes 0, and the
+excess *grows* with strictness (0.054 → 0.063 → 0.079) where the binary excess shrank (0.10 →
+0.11 → 0.05). Read together: the binary L2 shortfall in §11.3 was the majority rule discarding
+information at n = 43 paired, not the gap shrinking under a stricter reference. Sentence of
+record, as A15 requires it worded: *against the strictest judgment reference (all four frames
+agree), the gap exceeds the pressure-removed null by 0.079 [0.029, 0.128] on the log-prob
+readout (n = 67); on the majority readout at n = 43 paired it is not resolved (0.05 [−0.02,
+0.19]).* KDG-A1 (reference noise) is separated on the continuous instrument at every level.
+
+**Second derivation.** The continuous and binary instruments agree on the sign and rough size
+of every excess where the binary one has power (L0 0.054 vs 0.10 on different scales; the
+binary rate counts majority flips, the continuous one mass), and the continuous positive band
+(0.60) reproduces the binary band (0.58). Agree.
+
+## 12.3 Families, providers, F4
+
+| | g (screened) |
+|---|---|
+| F1 | 0.21 [0.17, 0.25] (43) |
+| F3 | 0.12 [0.06, 0.17] (40) |
+| F4 | 0.17 [0.09, 0.26] (26); Claude-written 0.13 [0.01, 0.22] (13), GPT-written 0.22 [0.11, 0.34] (13) |
+| F5 | 0.16 [0.05, 0.27] (21) |
+| provider-pooled | Claude-written 0.16 [0.11, 0.21] (70), GPT-written 0.19 [0.14, 0.24] (66) |
+
+F5 is not lowest on this instrument either (Branch C holds). **F4 on the continuous instrument
+is a graded provider difference, not a reversal**: both providers' F4 excesses are positive with
+overlapping CIs, and the decomposition puts the difference on both sides (acting mass 0.35 vs
+0.41, judging mass 0.20 vs 0.17). The binary reversal (0.00 vs 0.38) was majority-rule
+discreteness on 11 vs 13 scenarios. This does not by itself lift the §5 reversal clause, which
+is defined on the binary readout, but it changes what KDG-A4 is about: a difference in degree
+across generators, on the order of the provider-pooled difference, not a family that flips.
+
+F4 swap on p_D: Claude-written 0.385 → 0.354 after GPT paraphrase (−0.03 [−0.10, 0.03], n 20);
+GPT-written 0.327 → 0.259 after Claude paraphrase (−0.07 [−0.17, 0.02], n 20). Paraphrase by
+the other model lowers the acting mass slightly in both directions; not separated.
+
+## 12.4 What this changes (and does not)
+
+- The L2 sentence in §11.3 stays as the binary sentence of record; §12.2's sentence is reported
+  beside it, instrument named, as A15 requires. No sentence says "established" without naming
+  the instrument.
+- KDG-A1 → resolved on the continuous instrument (R_a: the gap is not reference noise); the
+  binary instrument's L2 remains under-powered and is reported as such.
+- KDG-A4 → re-typed from "reversal" to "graded generator difference"; the blind human read
+  (`F4_blind_read.md`) is the remaining leg on whether the difference is construction or
+  register.
+- The full gate by the letter (§11.1) is unchanged: it is defined on the binary readout and
+  still fails F4's reversal clause; the non-F4 panel meets it. Decision KDG-G3 is unchanged in
+  form and better informed.
+
+Referee riders: (1) *"You introduced a second instrument after the first one failed to resolve
+L2."* A15 was dated and committed before the vectors were read, with a coherence gate that
+could have voided it and three branches all written down; the binary instrument keeps primacy
+in every table. (2) *"Mass on a letter is not a decision."* The coherence check ties it to the
+sampled decisions (0.955 agreement, means within 0.01), and the band reproduces. (3) *"The
+floor rung (0.14) is close to the excess (0.05–0.08)."* The floor is the absolute shift of p_J
+under paraphrase, an unsigned noise scale; the excess is a signed paired difference against a
+twin that shares the judgment noise; the two are on different footings, stated here so the
+reader does not compare them.

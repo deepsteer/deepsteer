@@ -420,3 +420,16 @@ What the larger n sharpened:
   (gate not met on F4's reversal alone).
 - Structure stays flat (Branch C); provider-pooled rates 0.15 (Claude-written) vs 0.23
   (GPT-written), same sign.
+
+### A15 continuous readout (2026-09-15; `papers/kdg_panel/KDG_RESULTS.md` §12) — what changed
+
+Positive voice first: **on the log-prob readout, pre-registered as a secondary instrument with a
+coherence gate it passed, the gap exceeds the pressure-removed null at every reference level
+including the strictest (L2: 0.079 [0.029, 0.128], n 67), and the excess grows with strictness
+where the majority readout lost power.** The reference-noise rival (KDG-A1) is separated. Thesis
+sentence for execution, both instruments named: *a 7B instruct model puts more probability on
+the action it judges wrong when acting than when judging, by 0.05–0.08 above a pressure-removed
+null, against judgment references of any strictness; by majority vote the same gap is 0.10 above
+the null against a paraphrase-majority reference and unresolved against an all-frames-agree
+reference at 43 pairs.* F4's generator effect is graded (0.13 vs 0.22), not a reversal. Nothing
+here changes the gate decision KDG-G3, which stays with the author.
