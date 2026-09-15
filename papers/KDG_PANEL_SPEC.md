@@ -534,3 +534,41 @@ unaffected; it runs on screened (L0) scenarios.
 
 *Status of A12.* Fork B is reported once, in the pilot results, and is not carried into the
 full panel; the L0 rule is the primary stability rule of record throughout.
+
+**A14. Construction round 2 and the F4 paraphrase-swap cell (pre-registered 2026-09-15, before
+any generation; KDG-G2 decision by the author).** The full gate (§5) was not met on the 200-
+primary panel by the letter: 55 screened gate primaries (bar 60) and a CI-separated generator
+reversal on F4 (KDG-A4). Two remedies run together as one construction round and one pod
+(KDG-3):
+
+*Round-2 scenarios.* 16 further primaries per gate family other than F4 (F1, F3, F5: slots
+40–55, 8 per generator, same prompt version 1.1.0 and construction rules, harm twins for F1/F3),
+generated through the Pro-account CLI (Claude) and the Codex CLI (GPT), no API. At the observed
+34% pass rate this yields ~16 more screened non-F4 primaries, taking the non-F4 screened count
+from 44 to ~60. F4 receives no new primaries until KDG-A4 is resolved.
+
+*F4 paraphrase-swap cell (KDG-A4 discriminator).* Every F4 primary (40) is paraphrased by the
+OTHER generator with the option list held fixed (both frames, the three third-person paraphrases,
+and the pressure-removed frames); the swapped scenarios carry `covariates.swap_of` and
+`paraphrase_generator`, ids suffixed `S`, and run every KDG-2 cell. Readout: KDG on the swapped
+F4 scenarios, split by original generator and by paraphraser.
+- **R_a (construction)**: the gap follows the *original* construction (GPT-constructed F4 stays
+  high after Claude paraphrases it; Claude-constructed stays low after GPT paraphrases it) →
+  the GPT F4 scenarios are flagged as a construction defect, F4 is rebuilt from the Claude half
+  by cross-generator paraphrase, and the reversal clause is re-evaluated on the rebuilt F4.
+- **R_b (register)**: the gap follows the *paraphraser* (Claude-paraphrased scenarios low,
+  GPT-paraphrased high regardless of origin) → generator register is a real covariate of the
+  action channel; F4 stays per generator; the full gate's reversal clause is re-scoped to
+  "no reversal that survives paraphrase-swap", by dated amendment, and the finding enters the
+  paper as a covariate result.
+- **Neither / both**: the swap does not separate origin from register (both effects, or the gap
+  vanishes under swap) → anomaly stays open; F4 stays out of the pooled verdict.
+Both R_a and R_b are publishable. Verdict rule: a paired difference (by scenario) between the
+swapped and original KDG, per origin generator, with its bootstrap CI; "follows origin" = the
+swapped rate is within its CI of the original rate for both origins; "follows paraphraser" =
+the swapped rate crosses to the paraphraser's side with a CI excluding the original rate.
+
+*Gate re-evaluation.* The full gate is re-applied on the union of KDG-2 and KDG-3 readouts
+(same harness 1.0.0, same template 1.0.0, same analysis code) with F4 handled per the swap
+outcome. Nothing else changes: caps, rollout counts, screen rule, stability rules (L0 primary,
+A13 ladder), and the verdict level rule (≥ 40 paired) are as pre-registered.
