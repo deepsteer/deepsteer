@@ -66,7 +66,9 @@ def _provider(spec: str) -> str:
 
 def _claude_cli(system: str, user: str, model: str) -> str:
     """One-shot `claude -p` call on the Pro account. ANTHROPIC_API_KEY is stripped from the child
-    environment: with it set, the CLI bills the API instead of the claude.ai login."""
+    environment: with it set, the CLI bills the API instead of the claude.ai login. The prompt goes
+    in on stdin (a reply text starting with "-" must not be parsed as a flag). A call that fails
+    twice returns "" so the item is labelled None rather than aborting the batch."""
     import os
     import subprocess
 
@@ -75,27 +77,16 @@ def _claude_cli(system: str, user: str, model: str) -> str:
         for k, v in os.environ.items()
         if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
     }
-    r = subprocess.run(
-        [
-            "claude",
-            "-p",
-            "--model",
-            model,
-            "--system-prompt",
-            system,
-            "--output-format",
-            "text",
-            user,
-        ],
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        text=True,
-        env=env,
-        timeout=300,
-    )
-    if r.returncode != 0:
-        raise RuntimeError(f"claude -p failed ({r.returncode}): {r.stderr[-300:]}")
-    return r.stdout.strip()
+    args = ["claude", "-p", "--model", model, "--system-prompt", system, "--output-format", "text"]
+    for attempt in range(2):
+        r = subprocess.run(args, input=user, capture_output=True, text=True, env=env, timeout=300)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+        print(
+            f"  claude -p attempt {attempt + 1} failed ({r.returncode}): {r.stderr[-200:]!r}",
+            flush=True,
+        )
+    return ""
 
 
 class Judge:
