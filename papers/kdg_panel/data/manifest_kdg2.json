@@ -1,0 +1,531 @@
+{
+  "run_id": "kdg_20260914T232420",
+  "dry_run": false,
+  "git_commit": "unknown",
+  "versions": {
+    "python": "3.11.10",
+    "numpy": "2.4.6",
+    "torch": "2.4.1+cu124",
+    "transformers": "5.12.1"
+  },
+  "seed": 0,
+  "preregistration": "papers/KDG_PANEL_SPEC.md v0.4 (2026-09-13)",
+  "template_version": "1.0.0",
+  "harness_version": "1.0.0",
+  "scenario_sets": [
+    {
+      "generator": "claude-opus-5",
+      "generator_half": "A",
+      "prompt_version": "1.1.0",
+      "system_prompt_sha256": "924ae553921851ec8e66b4ff591240314c3eda4d27ce0e64eec8705f5f75511d",
+      "families": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "slots_per_family": 40,
+      "length_tokenizer": "allenai/Olmo-3-7B-Instruct",
+      "generated_at": "2026-09-14T20:58:52+00:00",
+      "repo_commit": "04faf30f2a773834c5cb2a01474804f57aa12ece",
+      "n_primary": 70,
+      "n_harm_twin": 42,
+      "failures": [],
+      "parts": [
+        "papers/kdg_panel/data/parts_full_A/F1/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/F2/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/F3/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/F4/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/F5/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/rerun1_F5/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts_full_A/rerun2_F5/pilot_scenarios_A_claude-opus-5.json"
+      ],
+      "external_label_rater": "codex",
+      "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26",
+      "scenario_set_sha256": "f0b2cb89626c661e89eb9927961973e652825a63917fb9c3b40b52fcd334b831",
+      "template_version": "1.0.0",
+      "path": "/workspace/deepsteer/papers/kdg_panel/data/panel_scenarios_A_claude-opus-5.json"
+    },
+    {
+      "generator": "gpt-5.5-2026-04-23",
+      "generator_half": "B",
+      "prompt_version": "1.1.0",
+      "system_prompt_sha256": "924ae553921851ec8e66b4ff591240314c3eda4d27ce0e64eec8705f5f75511d",
+      "families": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "slots_per_family": 40,
+      "length_tokenizer": "allenai/Olmo-3-7B-Instruct",
+      "generated_at": "2026-09-14T20:42:57+00:00",
+      "repo_commit": "621258755eff6129bffb7d7d77a82c169ef0c9c4",
+      "n_primary": 70,
+      "n_harm_twin": 42,
+      "failures": [],
+      "parts": [
+        "papers/kdg_panel/data/parts_full_B/F1/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_full_B/F2/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_full_B/F3/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_full_B/F4/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_full_B/F5/pilot_scenarios_B_gpt-5.5-2026-04-23.json"
+      ],
+      "external_label_rater": "subagent",
+      "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26",
+      "construction_flags": {
+        "labels_inverted_per_external_rater": [
+          "F4-B-27T",
+          "F4-B-33T",
+          "F4-B-39T"
+        ],
+        "rule": "excluded from every analysis; recorded 2026-09-14 from the cross-rated external labels"
+      },
+      "scenario_set_sha256": "937a774f25a5c974a277e74ddd68874d86a1ad626575e41fbc041b776e3c8367",
+      "template_version": "1.0.0",
+      "path": "/workspace/deepsteer/papers/kdg_panel/data/panel_scenarios_B_gpt-5.5-2026-04-23.json"
+    },
+    {
+      "generator": "claude-opus-5",
+      "generator_half": "A",
+      "prompt_version": "1.0.0",
+      "system_prompt_sha256": "924ae553921851ec8e66b4ff591240314c3eda4d27ce0e64eec8705f5f75511d",
+      "families": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "slots_per_family": 12,
+      "length_tokenizer": "allenai/Olmo-3-7B-Instruct",
+      "generated_at": "2026-09-14T00:34:34+00:00",
+      "repo_commit": "3c2b009 (rewritten from 6dd0e45: same tree, session trailer removed)",
+      "n_primary": 30,
+      "n_harm_twin": 18,
+      "failures": [],
+      "parts": [
+        "papers/kdg_panel/data/parts/F1/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts/F2/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts/F3/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts/F4/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts/F5/pilot_scenarios_A_claude-opus-5.json",
+        "papers/kdg_panel/data/parts/F5b/pilot_scenarios_A_claude-opus-5.json"
+      ],
+      "external_label_rater": "openai:gpt-5.5-2026-04-23",
+      "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26",
+      "paraphrase_pass": "A13, generator openai:gpt-5.5-2026-04-23",
+      "scenario_set_sha256": "e187248dcf4c51310a0af70560c334a132bd4a099cc240ae9c1fedf80fc66983",
+      "template_version": "1.0.0",
+      "path": "/workspace/deepsteer/papers/kdg_panel/data/pilot_scenarios_A_claude-opus-5.json"
+    },
+    {
+      "generator": "gpt-5.5-2026-04-23",
+      "generator_half": "B",
+      "prompt_version": "1.0.0",
+      "system_prompt_sha256": "924ae553921851ec8e66b4ff591240314c3eda4d27ce0e64eec8705f5f75511d",
+      "families": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "slots_per_family": 12,
+      "length_tokenizer": "allenai/Olmo-3-7B-Instruct",
+      "generated_at": "2026-09-14T00:53:27+00:00",
+      "repo_commit": "3c2b009b66bb70be971a5ea0d143af8ab800882e",
+      "n_primary": 30,
+      "n_harm_twin": 18,
+      "failures": [],
+      "parts": [
+        "papers/kdg_panel/data/parts_B/F1/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/F2/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/F3/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/F4/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/F5/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun2_F1/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun2_F2/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun2_F3/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun2_F4/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun2_F5/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun_F1/pilot_scenarios_B_gpt-5.5-2026-04-23.json",
+        "papers/kdg_panel/data/parts_B/rerun_F2/pilot_scenarios_B_gpt-5.5-2026-04-23.json"
+      ],
+      "external_label_rater": "claude",
+      "external_prompt_sha256": "076f05d0d8984052951bbdefcba7ef72bc126d2794d0ee42c0ab94b6339f9a26",
+      "paraphrase_pass": "A13, generator gpt-5.5-2026-04-23",
+      "scenario_set_sha256": "5edd6153c56c44218fce742e2e213b68db7708ef482b3822996f4b6ec1354546",
+      "template_version": "1.0.0",
+      "path": "/workspace/deepsteer/papers/kdg_panel/data/pilot_scenarios_B_gpt-5.5-2026-04-23.json"
+    }
+  ],
+  "loads": [
+    {
+      "key": "olmo3_instruct",
+      "repo": "allenai/Olmo-3-7B-Instruct",
+      "revision_requested": "main",
+      "commit_hash": "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
+      "chat_template_sha256": "f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b",
+      "vocab": 100278,
+      "dry_run": false
+    },
+    {
+      "key": "olmo3_base",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "revision_requested": "main",
+      "commit_hash": "a81bae42db3975be1671e27b9c9a56da1a9f980f",
+      "chat_template_sha256": null,
+      "vocab": 100278,
+      "dry_run": false
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "olmo3_instruct/d_chat_dose0.jsonl",
+      "bytes": 7345374,
+      "sha256": "355a1fec296f5680513a592d9727984c731c384da96e337358fc4eb3e939cc5a",
+      "unit": "d_chat_dose0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_chat_dose0.npz",
+      "bytes": 1422664012,
+      "sha256": "5a35fadde66a8872f675d51d93e5e0a6cc358e7b6f30a5845a67dc08a9f7b944",
+      "unit": "d_chat_dose0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated.jsonl",
+      "bytes": 3584665,
+      "sha256": "60ff088e6a1f7b226902a631e1cc06a0999531f6e26c4328e076d4c83ca69815",
+      "unit": "j_stated",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated.npz",
+      "bytes": 393037188,
+      "sha256": "20c70cd47b4f8ea83fe1c22b950d6a03ea0dd09f9872399455d53ccf37f31408",
+      "unit": "j_stated",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p0.jsonl",
+      "bytes": 3606189,
+      "sha256": "57df456fa92b3cbca6967102ce21d02e1925b7c118cce4d2c87b85870fe310a2",
+      "unit": "j_stated_p0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p0.npz",
+      "bytes": 393424381,
+      "sha256": "bdf94732cc0f89bca5737da50cb9dd55acec29dfba0c7dbcd31bfca1572199b6",
+      "unit": "j_stated_p0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p1.jsonl",
+      "bytes": 3587760,
+      "sha256": "941fbdbf42edd55f6a249cab7e53a4dba3e0cba9a6f390b9fed4eb18c678c634",
+      "unit": "j_stated_p1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p1.npz",
+      "bytes": 393136335,
+      "sha256": "15ab2331843763c80c3e9c47e0b07cb99f98b5472439367382bec911a2b8b486",
+      "unit": "j_stated_p1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p2.jsonl",
+      "bytes": 3604566,
+      "sha256": "8265aa520267cc94cd281ade66f108a204cfc4748ce88843e5bbb181f860c89c",
+      "unit": "j_stated_p2",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_p2.npz",
+      "bytes": 393468655,
+      "sha256": "34c4dccc5429a9272d34cb959dea933629cd01e2da3cdd7ade4d42a55d7cadf8",
+      "unit": "j_stated_p2",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_chat_dose0_pressure_removed.jsonl",
+      "bytes": 7597310,
+      "sha256": "55d5d76db5c232e928fa3aa3255a3408962626b2f7825913c4ef3f92df71e030",
+      "unit": "d_chat_dose0_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_chat_dose0_pressure_removed.npz",
+      "bytes": 1421680290,
+      "sha256": "e3aea3f4769efe1fda3e33e48080d36911df5cdb6261e14d10c9569c1c50591e",
+      "unit": "d_chat_dose0_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed.jsonl",
+      "bytes": 3594120,
+      "sha256": "9f0ebae008a9e50eccd753c53d41c89017647dd221029bce2c6c1648333b2eb6",
+      "unit": "j_stated_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed.npz",
+      "bytes": 391162038,
+      "sha256": "ce9ee0e49f0039de728ba888dc10d2ec5e8b8e45c6c2b26904a474c6be3acf0e",
+      "unit": "j_stated_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p0.jsonl",
+      "bytes": 3628040,
+      "sha256": "1b7e7be2d2078c63ccb0ee475908e6e4442c9052ad9d84a2d9bd2a634b36e67a",
+      "unit": "j_stated_pressure_removed_p0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p0.npz",
+      "bytes": 391907023,
+      "sha256": "d0caf0e630110c9def77d75e34d6fb3409c865734f51ca4f00aa19e77f314f17",
+      "unit": "j_stated_pressure_removed_p0",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p1.jsonl",
+      "bytes": 3614855,
+      "sha256": "13b14a8c3cfee8cc51bd54cca3db5441a0c5191117d0c295337c6fc40c016270",
+      "unit": "j_stated_pressure_removed_p1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p1.npz",
+      "bytes": 391825568,
+      "sha256": "a172f93fa9b0ee03a9319b77dc9721bd17d7fe7a93a16e40063722b5ac7a1759",
+      "unit": "j_stated_pressure_removed_p1",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p2.jsonl",
+      "bytes": 3620915,
+      "sha256": "705d4b42acff030991e1872157dd1b235535ccbac40836f52a5c9b8942b37498",
+      "unit": "j_stated_pressure_removed_p2",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_stated_pressure_removed_p2.npz",
+      "bytes": 391888239,
+      "sha256": "806dfe08ff4d7afa16b47ed13669a462b5638e08fa386ccabd5cabd61fd7a6df",
+      "unit": "j_stated_pressure_removed_p2",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_chat_dose0_known_gap.jsonl",
+      "bytes": 4919853,
+      "sha256": "e0f65a4c7c7e61c66530e75911abd6f808eab08bb5434c78df08ea4922b6bb51",
+      "unit": "d_chat_dose0_known_gap",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_chat_dose0_known_gap.npz",
+      "bytes": 891588424,
+      "sha256": "5ef99f222b39583e164d2a9180d35ad743985f581736c97a9d93d2553150691f",
+      "unit": "d_chat_dose0_known_gap",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_raw.jsonl",
+      "bytes": 1472513,
+      "sha256": "773a29a26d8b8976bb77bb6ac97cf8b1887b87f7c8a2a69cbb67f8213b62d744",
+      "unit": "d_raw",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_raw.npz",
+      "bytes": 364258780,
+      "sha256": "ebce06f59f49b999c80a56584ba4983c5e644ff3f7d43e7b0ca227c408b3d090",
+      "unit": "d_raw",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_raw.jsonl",
+      "bytes": 1470089,
+      "sha256": "28b7af4afbb663e89aea7e972db4afadbd8f4c14ba83cdfe3a8be070b97c50e9",
+      "unit": "j_raw",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_raw.npz",
+      "bytes": 367125512,
+      "sha256": "0c5037ce7172a9e055c2ed5c698b9053d55d46e66e7db88e2e360e2d338b99ae",
+      "unit": "j_raw",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_raw_pressure_removed.jsonl",
+      "bytes": 1539442,
+      "sha256": "e9eeee17b19861e7f560895af957e97b165c5596b4c5f2f7846e0f289536de63",
+      "unit": "d_raw_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/d_raw_pressure_removed.npz",
+      "bytes": 364037993,
+      "sha256": "03e79f467fc5e74f4406328e12e897e4659ed30a98f71ff21b93fd682f0cdfdd",
+      "unit": "d_raw_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_raw_pressure_removed.jsonl",
+      "bytes": 1536428,
+      "sha256": "def1af60c9025182844a735e6c458470b28e44dd8e2654b64d9dab1a7eddabd9",
+      "unit": "j_raw_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_instruct/j_raw_pressure_removed.npz",
+      "bytes": 367053863,
+      "sha256": "8c5b6a4f833142fbb93ee43335fb84c5bfe0d75121a6a368914b94c606560660",
+      "unit": "j_raw_pressure_removed",
+      "model": "olmo3_instruct"
+    },
+    {
+      "path": "olmo3_base/d_raw.jsonl",
+      "bytes": 1474957,
+      "sha256": "9ce91b6143b4a086b2f22ab67f4dfd482529fe65d0ac5190d51671aec1e308cb",
+      "unit": "d_raw",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/d_raw.npz",
+      "bytes": 379272640,
+      "sha256": "777db734cfe0a4a46e5622852359bdee174cf29ad409e83b14bc09f8bb23b0cc",
+      "unit": "d_raw",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/j_raw.jsonl",
+      "bytes": 1471408,
+      "sha256": "c21f99985d3722e0d5874d5817bf1e7a0b9d55e73e2c1e8b7d0a7b0a5019033e",
+      "unit": "j_raw",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/j_raw.npz",
+      "bytes": 380454107,
+      "sha256": "9b281a454cac0cd1ef09f80069677d57a46ba0ea02faa7ac94c30ec34dfff3ef",
+      "unit": "j_raw",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/d_raw_pressure_removed.jsonl",
+      "bytes": 1541829,
+      "sha256": "9b2919857a20256aecdb77ffa3d7fe6321f134e05e458175e6c0f6dcc91b4b05",
+      "unit": "d_raw_pressure_removed",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/d_raw_pressure_removed.npz",
+      "bytes": 379063246,
+      "sha256": "6207b95a0d78e1cca05ce79471f3a0094ec5e305caa1c3ab32832d3917ae0e46",
+      "unit": "d_raw_pressure_removed",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/j_raw_pressure_removed.jsonl",
+      "bytes": 1537450,
+      "sha256": "b96ae79f3850fd7fc38fe96d4a8d9841b2914a47a17dd582f73bce53a99c868c",
+      "unit": "j_raw_pressure_removed",
+      "model": "olmo3_base"
+    },
+    {
+      "path": "olmo3_base/j_raw_pressure_removed.npz",
+      "bytes": 380264068,
+      "sha256": "d2f24767308fd107f18d3d1d418b21ed72f100ce63cf0c509b96462106aad016",
+      "unit": "j_raw_pressure_removed",
+      "model": "olmo3_base"
+    }
+  ],
+  "unit_status": {
+    "olmo3_instruct/d_chat_dose0": {
+      "status": "ok",
+      "note": "989.3s"
+    },
+    "olmo3_instruct/j_stated": {
+      "status": "ok",
+      "note": "971.5s"
+    },
+    "olmo3_instruct/j_stated_p0": {
+      "status": "ok",
+      "note": "973.8s"
+    },
+    "olmo3_instruct/j_stated_p1": {
+      "status": "ok",
+      "note": "950.5s"
+    },
+    "olmo3_instruct/j_stated_p2": {
+      "status": "ok",
+      "note": "965.0s"
+    },
+    "olmo3_instruct/d_chat_dose0_pressure_removed": {
+      "status": "ok",
+      "note": "969.7s"
+    },
+    "olmo3_instruct/j_stated_pressure_removed": {
+      "status": "ok",
+      "note": "904.1s"
+    },
+    "olmo3_instruct/j_stated_pressure_removed_p0": {
+      "status": "ok",
+      "note": "938.3s"
+    },
+    "olmo3_instruct/j_stated_pressure_removed_p1": {
+      "status": "ok",
+      "note": "930.7s"
+    },
+    "olmo3_instruct/j_stated_pressure_removed_p2": {
+      "status": "ok",
+      "note": "925.4s"
+    },
+    "olmo3_instruct/d_chat_dose0_known_gap": {
+      "status": "ok",
+      "note": "813.8s"
+    },
+    "olmo3_instruct/d_raw": {
+      "status": "ok",
+      "note": "100.6s"
+    },
+    "olmo3_instruct/j_raw": {
+      "status": "ok",
+      "note": "100.0s"
+    },
+    "olmo3_instruct/d_raw_pressure_removed": {
+      "status": "ok",
+      "note": "99.9s"
+    },
+    "olmo3_instruct/j_raw_pressure_removed": {
+      "status": "ok",
+      "note": "99.0s"
+    },
+    "olmo3_base/d_raw": {
+      "status": "ok",
+      "note": "96.1s"
+    },
+    "olmo3_base/j_raw": {
+      "status": "ok",
+      "note": "96.6s"
+    },
+    "olmo3_base/d_raw_pressure_removed": {
+      "status": "ok",
+      "note": "94.7s"
+    },
+    "olmo3_base/j_raw_pressure_removed": {
+      "status": "ok",
+      "note": "95.3s"
+    }
+  }
+}

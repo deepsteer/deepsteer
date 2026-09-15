@@ -5,6 +5,8 @@ the pod-boundary checklist: session template, power table, bail condition, per-u
 dependency check, and the anticipated review. No GPU is spent until every line below is met and
 Orion launches the pod (keys stay in Orion's terminal).
 
+## Status 2026-09-15: pod KDG-2 ran (3 h 20 min: 15 instruct cells incl. the six A13 frames + 4 base raw cells, 9.4 GB, manifest verified); results in `KDG_RESULTS.md` §10; A13 SURVIVES at L1; full gate not met by the letter (55/60 screened, F4 generator reversal → KDG-A4); decision KDG-G2 with the author.
+
 ## Status 2026-09-14: pod KDG-1 ran (58 min instruct + base raw cells; manifest verified); results in `KDG_RESULTS.md`; gate PASS; verdict on the gap is a reading pending KDG-A1.
 
 ## Zero-GPU layer (done / pending, in order)

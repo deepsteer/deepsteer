@@ -367,3 +367,34 @@ gate passes under the pre-registered rule (19/48, all four gate families) and un
 Thesis edit under each pending discriminator: KDG-A1 R_a → the action-position rank cell (S1)
 is scheduled with KDG as its outcome variable; KDG-A1 R_b → the panel is rebuilt on
 decisively-judged scenarios before any anatomy, and the execution claim is Branch B1 wording.
+
+### KDG full panel (2026-09-15; `papers/kdg_panel/KDG_RESULTS.md` §10) — what changed
+
+Positive voice first: **on 200 pre-registered scenarios OLMo-3-7B-Instruct acts against its own
+stated moral judgment on one screened scenario in five (0.20 [0.14, 0.31]) and two rollouts in
+five (0.39); the excess over the pressure-removed null, 0.10 [0.01, 0.20], survives a four-frame
+paraphrase-robust reference (A13 L1: 0.21 [0.15, 0.32], excess 0.11 [0.01, 0.21]); the known-gap
+band sits 0.37 above it; and the raw-frame gap is at least as large in the base model (0.14)
+as in the instruct model (0.09) on the same scenarios.** The execution program has its
+outcome variable, measured against its own noise floor.
+
+What did not hold, and what it changes:
+- **No family structure (Branch C).** F1 0.21, F3 0.17, F4 0.21, F5 0.23; F5 is not lowest, so
+  the harm-keyed prediction of Branch A (the action channel reads what refusal reads) is not
+  supported at a family-contrast MDE of ~0.40. Thesis edit: the action channel's read is not
+  established as the harm sliver; the S1 action-position rank cell is now the discriminator
+  between "reads harm" and "reads something broader", with KDG as its outcome variable.
+- **F4 is generator-dependent** (KDG-A4: 0.00 vs 0.38, CI-separated). F4 leaves the pooled
+  verdict; pooled KDG without F4 = 0.20 [0.13, 0.32] (n 71); its paired excess over the null keeps the same point estimate, 0.10, with a CI that now reaches −0.00 at n = 60 (paired), a power effect, not a change in the effect.
+- **Full gate not met by the letter** (55 screened vs 60; F4 reversal). Tier 2 waits on the
+  author's choice between more scenarios and an F4 rebuild (KDG_RESULTS §10.7).
+- **Inherited, not installed** (three-cell sub-branch, reading): base raw gap 0.136 vs instruct
+  0.089 on 169 shared scenarios; the assistant template adds little (chat 0.086 vs raw 0.070).
+  Persona is not the origin of the gap; it may still be the lever.
+- **KDG-A1 closed at L1, open at L2**: the strictest reference (all four frames agree) reads
+  0.15 with an excess whose lower bound is 0.00 at n = 34; under-powered, and the one place the
+  reference-noise rival still lives.
+
+Thesis sentence for execution, in positive voice, as of this gate: *a 7B instruct model carries
+a measurable, paraphrase-robust knowing–doing gap that pretraining already installs, that
+post-training does not remove, and that is not organized by the harm content refusal reads.*

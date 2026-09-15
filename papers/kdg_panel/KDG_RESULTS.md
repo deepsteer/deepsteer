@@ -185,3 +185,137 @@ is applied.** Report: `data/calibration_stage2_report.json`.
 - [x] anomalies entered with priced discriminators
 - [x] stage-2 calibration ≥ 0.95 (two judges): 0.99 / 1.00 / 0.99
 - [x] SYNTHESIS.md updated in the same commit
+
+---
+
+# 10. Full panel (Session KDG-2, pod 2026-09-15; A13 ladder, gate KDG-G2)
+
+Numbers of record: `outputs/kdg2/analysis_pilot.json` (run `kdg_20260914T*`, manifest verified,
+9.4 GB per-rollout arrays); 320 scenarios (200 primaries, 40 per family; 120 harm twins; 3
+flagged twins excluded → 317 analysed); OLMo-3-7B-Instruct for every chat cell including the
+six A13 frames, OLMo-3 base + Instruct for the raw cells; harness 1.0.0, template 1.0.0.
+
+## 10.0 Positive voice first
+
+**On 200 pre-registered scenarios, OLMo-3-7B-Instruct takes the action it judged wrong on one
+screened scenario in five by majority (0.20 [0.14, 0.31]) and two rollouts in five (0.39), the
+excess over the pressure-removed null is 0.10 [0.01, 0.20] under the pre-registered rule and
+0.11 [0.01, 0.21] against a four-frame paraphrase-robust reference (A13 level L1, the verdict
+level), the known-gap band sits 0.37 [0.20, 0.46] above the measurement, and the gap is present
+in the base model's raw frame at least as strongly as in the instruct model's.** The gap has no
+family structure at this power, and one family (F4) depends on which model wrote it.
+
+## 10.1 Gates
+
+| gate | rule | result |
+|---|---|---|
+| pilot-rule screen on the full panel | ≥ 14/48-equivalent, ≥ 2 families | 55/160 gate primaries pass (F1 17, F3 12, F4 11, F5 15); PASS |
+| full gate (§5) | ≥ 60 screened across ≥ 3 gate families; a family CI excluding 0; harness ≥ 0.95; no generator reversal | **NOT MET by the letter**: 55 screened (bar 60); F1/F3/F4 CIs exclude 0; harness 0.98 (passes); F4 reverses across generator (KDG-A4) |
+| F2 promotion | ≥ 40% of F2 screened | 6/40 (15%); stays an appendix family |
+
+Screen reasons on gate primaries: mixed 55, judgment_unstable 60, no_pressure 29, judged-
+violating 16. Parse rates 0.9997 (D_chat, 10,240 rollouts), 1.000 (J_stated, 2,880 replies).
+The 55-vs-60 count is a near-miss at a pre-registered bar, reported as such; the remedy
+options are in §10.7. The full gate's "no generator reversal" clause is failed by F4 alone.
+
+## 10.2 Ladder (primary rule, L0)
+
+| rung | value |
+|---|---|
+| floor: paraphrase re-elicitation agreement | 0.70 option / 0.81 binary (n = 320) |
+| matched null (pressure-removed twins) | 0.11 [0.05, 0.19] (n = 85) |
+| measurement | **0.20 [0.14, 0.31]** (n = 95 defined, 9 undefined) |
+| positive band (known-gap system prompt) | 0.57 [0.48, 0.65] (n = 137) |
+| measurement − null, paired | **0.10 [0.01, 0.20]** (n = 78), excludes 0 |
+| band − measurement | 0.37 [0.20, 0.46], excludes 0 |
+
+Second derivation: rollout-level violating fraction on screened scenarios with a non-violating
+stable J = 0.39 (n = 79); the pilot gave 0.41 vs 0.22. Agree.
+
+**Bias-direction table.** Reference noise favors the claim (paraphrase flips 30% option /
+19% binary; the A13 ladder is the check); the mixed-D screen favors it (the paired null Δ
+removes the shared part); nested rollout resampling opposes it (wider CIs); A11 is neutral.
+
+## 10.3 A13 reference-strictness ladder (the pre-registered discriminator for KDG-A1)
+
+| level | reference | n | KDG | matched null | paired excess | verdict use |
+|---|---|---|---|---|---|---|
+| L0 | greedy J on the original frame + sampled stability | 104 | 0.20 [0.14, 0.31] | 0.11 | 0.10 [0.01, 0.20] (n 78) | not used |
+| **L1** | + four-frame binary majority | 99 | **0.21 [0.15, 0.32]** | 0.11 | **0.11 [0.01, 0.21] (n 73)** | **verdict level** (n ≥ 40) |
+| L2 | + all four frames name the same option | 52 | 0.15 [0.09, 0.31] | 0.08 | 0.06 [0.00, 0.24] (n 34) | below the 40 bar; reading only |
+
+**A13 branch: SURVIVES.** At the verdict level the excess over the null excludes 0 and the rate
+does not fall from L0 to L1 (0.20 → 0.21). The reference-noise rival (KDG-A1 R_b) is separated
+at the paraphrase-majority reference. L2, the strictest frame agreement, is under-powered
+(34 paired) and reads lower (0.15) with a paired excess whose lower bound is 0.00; it is reported
+as the strictest-level reading, not as a decay: the sequence 0.20 → 0.21 → 0.15 is not monotone.
+Verdict sentence: *against a four-frame paraphrase-robust judgment, the knowing–doing gap on
+this model is 0.21 [0.15, 0.32], exceeding the pressure-removed null by 0.11 [0.01, 0.21]; at
+the strictest all-frames-agree reference the excess is not resolvable above 0.00 at n = 34.*
+
+The pilot's robustness cell replicates in the other direction: on the subset whose greedy
+judgment agrees between the original and the first paraphrased frame (74 screened, 68 defined)
+KDG is 0.18 [0.11, 0.31] against 0.20 on the full screened panel; in the pilot it had halved
+(0.11 vs 0.22 at n = 18). The pilot's drop was noise at n = 18.
+
+Instability on gate primaries: 60/160 fail option-level stability; 48 are consistent↔violating
+flips, 12 non-violating splits; 27/60 are binary-stable. Same decomposition as the pilot.
+
+## 10.4 Structure (§7 branches)
+
+| family | KDG (n) | Claude-generated | GPT-generated |
+|---|---|---|---|
+| F1 task-completion | 0.21 [0.07, 0.38] (29) | 0.27 (15) | 0.14 (14) |
+| F3 instrumental | 0.17 [0.05, 0.38] (23) | 0.18 (11) | 0.17 (12) |
+| F4 loyalty/fairness | 0.21 [0.08, 0.39] (24) | **0.00 [0.00, 0.27] (11)** | **0.38 [0.15, 0.62] (13)** |
+| F5 third-party harm | 0.23 [0.00, 0.46] (13) | 0.12 (8) | 0.40 (5) |
+| F2 (appendix) | 0.17 [0.00, 0.67] (6) | | |
+
+F1+F3+F4 − F5 = −0.03 [−0.30, 0.21]. Per generator pooled: 0.17 [0.09, 0.30] (47) vs 0.23
+[0.13, 0.39] (48), same sign. **Branch C**: the gap is present and unstructured; F5 is not
+lowest, so the harm-keyed prediction of Branch A is not supported (MDE for a family contrast at
+n ≈ 25 per family: 0.40). KDG-A3 resolves to noise. **KDG-A4**: F4 is generator-dependent with
+CI-separated rates; by the §2 rule F4 is reported per generator and excluded from the pooled
+verdict. Pooled KDG without F4: 0.20 [0.13, 0.32] (n 71); its paired excess over the null keeps the same point estimate, 0.10, with a CI that now reaches −0.00 at n = 60 (paired), a power effect, not a change in the effect (estimator-traps rule 12).
+
+## 10.5 Three-cell base/instruct (raw frame, mass floor 0.5)
+
+| cell | above floor / 317 | raw gap rate |
+|---|---|---|
+| base | 287 | 0.146 (41/281) |
+| instruct | 190 (130 below: `<|im_end|>` mass, KDG-A2) | 0.086 (16/185) |
+| weights contrast, 169 shared | | base 0.136 vs instruct 0.089 |
+| format contrast on instruct, 128 shared | | D_chat 0.086 vs D_raw 0.070 |
+
+Reading (sub-branch of §7): the raw-frame gap is present in base weights and not larger after
+post-training; the knowing–doing structure is inherited from pretraining, and the assistant
+template adds little on the shared subset. Counts are now large enough to be readings, not
+verdicts; a paired Δ with CI on the 169 shared scenarios is the next zero-GPU item.
+
+## 10.6 Calibration stage 2 (A6) on 200 real KDG-2 replies (60 hard-parse cases oversampled)
+
+Harness vs Codex judge (ChatGPT plan) **0.99** (kappa 0.98), harness vs Claude Pro-account judge **0.98** (kappa 0.97), judge vs judge 0.99 (kappa 0.98); 200 items drawn across six generated cells with all 60 non-clean-parse replies in the pool included. Disagreements: 2 items where both judges assign an option to a content-only reply the harness leaves unparsed ("Hi Dana, you're right...", "$2.1 million"), 4 items where one judge returned no label on a bare letter. The harness is the conservative side in every case. **Stage 2 passes; the gate in §10.1 is applied with harness = 0.98.** Report: `data/calibration_set_v3_real_stage2_report.json`.
+
+## 10.7 Referee pass and the KDG-G2 decision
+
+1. *"You failed your own full gate and are still writing verdicts."* Conceded on the count:
+   55 screened vs 60, and F4's reversal. The verdict sentences in §10.3 are ladder-bearing
+   readings on the screened panel and are labelled as such; nothing here licenses Tier 2 until
+   the gate is met. Remedies, for the author: (a) ~45 more primaries at the observed 34% pass
+   rate to reach 60 screened (one API-free generation batch via subagents and Codex, plus a
+   ~1.5 h pod); (b) rebuild F4 by paraphrase-swap (KDG-A4) so the reversal clause can be
+   re-evaluated; (c) both. Not decided here.
+2. *"L2 shows the decay you pre-registered as the rival's signature."* Answered: A13 requires a
+   monotone fall and an excess including 0 at the verdict level; the verdict level is L1 by the
+   ≥ 40 rule, where the excess excludes 0, and L0 → L1 does not fall. Conceded: L2 is lower and
+   under-powered; the honest sentence carries both, and the next construction round raises L2's
+   n (it needs ~80 L2 scenarios for a 0.12 half-width).
+3. *"The gap is 0.2 on a 3-option forced choice; with a neutral option counted as
+   non-violating, 0.2 is close to what a model indifferent among non-violating options and
+   sometimes tempted would produce."* Answered by the ladder: the pressure-removed twins hold
+   the same options and the same neutral tag and produce 0.11; the paired excess is the number,
+   not the raw rate. Conceded: the absolute rate is not interpretable alone, and the write-up
+   never uses it without the null beside it.
+
+Ship-blockers: SYNTHESIS updated in this commit; CLAIMS KDG-10..16; ANOMALIES KDG-A3 resolved,
+KDG-A4 opened; both A13 branches were written before data; stage 2 reported before the gate.

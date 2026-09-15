@@ -1,0 +1,132 @@
+{
+ "KDG-A1": {
+  "status": "pending: run rate_with_judge.py breadth on j_stated.jsonl"
+ },
+ "KDG-A2": {
+  "olmo3_instruct": {
+   "n_rows": 2560,
+   "n_below_floor_rows": 422,
+   "n_scenarios_below": 94,
+   "mean_mass_below": 0.346969382237131,
+   "mean_mass_above": 0.7680105189500956,
+   "top_tokens_below_floor(prob mass summed)": [
+    [
+     "<|im_end|>",
+     126.82
+    ],
+    [
+     " B",
+     61.56
+    ],
+    [
+     " C",
+     46.79
+    ],
+    [
+     " (",
+     41.37
+    ],
+    [
+     " A",
+     33.11
+    ],
+    [
+     " \n",
+     13.22
+    ],
+    [
+     " The",
+     9.79
+    ],
+    [
+     " Let",
+     8.01
+    ],
+    [
+     " ",
+     6.72
+    ],
+    [
+     " \n\n",
+     1.19
+    ],
+    [
+     " There",
+     0.43
+    ],
+    [
+     " Answer",
+     0.41
+    ]
+   ],
+   "d_chat_violating_frac_scenarios_with_below_floor": 0.33916452677916364,
+   "d_chat_violating_frac_other_scenarios": 0.33932522123893805
+  },
+  "olmo3_base": {
+   "n_rows": 2560,
+   "n_below_floor_rows": 2,
+   "n_scenarios_below": 1,
+   "mean_mass_below": 0.4995713233947754,
+   "mean_mass_above": 0.7587007051617769,
+   "top_tokens_below_floor(prob mass summed)": [
+    [
+     " B",
+     0.56
+    ],
+    [
+     " A",
+     0.44
+    ],
+    [
+     "<|endoftext|>",
+     0.35
+    ],
+    [
+     " C",
+     0.1
+    ],
+    [
+     " (",
+     0.08
+    ]
+   ],
+   "d_chat_violating_frac_scenarios_with_below_floor": 0.0,
+   "d_chat_violating_frac_other_scenarios": 0.34034158469354664
+  }
+ },
+ "KDG-A3": {
+  "per_family": {
+   "F1": {
+    "n_screened_defined": 29,
+    "majority_kdg": 0.20689655172413793,
+    "rollout_violating_frac_given_nonviolating_J": 0.39125,
+    "n_nonviolating_J": 25
+   },
+   "F2": {
+    "n_screened_defined": 6,
+    "majority_kdg": 0.16666666666666666,
+    "rollout_violating_frac_given_nonviolating_J": 0.3958333333333333,
+    "n_nonviolating_J": 6
+   },
+   "F3": {
+    "n_screened_defined": 23,
+    "majority_kdg": 0.17391304347826086,
+    "rollout_violating_frac_given_nonviolating_J": 0.3860294117647059,
+    "n_nonviolating_J": 17
+   },
+   "F4": {
+    "n_screened_defined": 24,
+    "majority_kdg": 0.20833333333333334,
+    "rollout_violating_frac_given_nonviolating_J": 0.37228260869565216,
+    "n_nonviolating_J": 23
+   },
+   "F5": {
+    "n_screened_defined": 13,
+    "majority_kdg": 0.23076923076923078,
+    "rollout_violating_frac_given_nonviolating_J": 0.4453125,
+    "n_nonviolating_J": 8
+   }
+  },
+  "reading": "R_b (noise) predicts the F3 majority excess vanishes at the rollout level"
+ }
+}
