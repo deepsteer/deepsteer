@@ -34,6 +34,7 @@ from deepsteer.kdg.stats import (  # noqa: E402
     kdg_rate,
     mde_rate_difference,
     pilot_gate,
+    provider_of,
     screen_misclassification,
     screen_pass,
 )
@@ -448,6 +449,23 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
         g: kdg_rate([r for r in screened if r.generator == g], n_boot=n_boot // 4)
         for g in sorted({r.generator for r in screened})
     }
+    per_provider = {
+        pv: kdg_rate([r for r in screened if provider_of(r.generator) == pv], n_boot=n_boot // 4)
+        for pv in sorted({provider_of(r.generator) for r in screened})
+    }
+    for pv in per_provider:
+        per_provider[pv]["per_family"] = {
+            f: {
+                k: v
+                for k, v in kdg_rate(
+                    [r for r in screened if provider_of(r.generator) == pv and r.family == f],
+                    n_boot=n_boot // 8,
+                ).items()
+                if k != "per_scenario"
+            }
+            for f in ("F1", "F2", "F3", "F4", "F5")
+        }
+        per_provider[pv].pop("per_scenario", None)
     for g in per_gen:
         per_gen[g]["per_family"] = {
             f: {
@@ -588,7 +606,8 @@ def analyze(out: Path, n_boot: int = 2000) -> dict:
             for sid, (p, why) in screen.items()
         },
         "gate": gate,
-        "full_gate": full_gate(ro, GATE_FAMILIES, per_family, per_gen, harness_agreement),
+        "full_gate": full_gate(ro, GATE_FAMILIES, per_family, per_provider, harness_agreement),
+        "per_provider": per_provider,
         "ladder": {
             "floor": floor_rung(inst),
             "matched_null": matched_null,

@@ -129,3 +129,11 @@ def test_full_gate_rules():
     per_gen["b"]["per_family"]["F1"] = fam(0.0, 0.0, 0.5, n=3)
     g3 = full_gate(rows, ("F1", "F3", "F4", "F5"), per_family, per_gen, 0.99)
     assert g3["generator_reversal_by_family"]["F1"] is None and g3["gate_pass"]
+
+
+def test_full_gate_reversal_pools_generator_tags_by_provider():
+    from deepsteer.kdg.stats import provider_of
+
+    # assert API and CLI tags of one provider are one side of the reversal check
+    assert provider_of("claude-opus-5") == provider_of("subagent:opus") == "anthropic"
+    assert provider_of("gpt-5.5-2026-04-23") == provider_of("codex:gpt-5.5") == "openai"

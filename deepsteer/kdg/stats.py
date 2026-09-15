@@ -118,6 +118,16 @@ def pilot_gate(readouts: Sequence[ScenarioReadout], gate_families: Sequence[str]
     }
 
 
+def provider_of(generator_tag: str) -> str:
+    """Generator tag -> provider family (API and CLI variants of one provider pool together)."""
+    g = generator_tag.lower()
+    if g.startswith(("claude", "subagent")):
+        return "anthropic"
+    if g.startswith(("gpt", "openai", "codex")):
+        return "openai"
+    return g
+
+
 def full_gate(
     readouts: Sequence[ScenarioReadout],
     gate_families: Sequence[str],
@@ -144,7 +154,16 @@ def full_gate(
         if f in gate_families
     }
     reversal = None
-    fam_by_gen = {g: v.get("per_family") for g, v in per_generator.items() if v.get("per_family")}
+    # pool generator tags by provider so API and CLI variants of one provider are one side
+    fam_by_gen = {
+        provider_of(g): v.get("per_family")
+        for g, v in per_generator.items()
+        if v.get("per_family") and provider_of(g) == g.lower()
+    }
+    if not fam_by_gen:  # per_generator keyed by raw tags: caller passes provider-pooled rates
+        fam_by_gen = {
+            g: v.get("per_family") for g, v in per_generator.items() if v.get("per_family")
+        }
     if len(fam_by_gen) >= 2:
         # a reversal needs CI-separated opposite results (n >= 5 defined on both sides), not a
         # bare sign difference between two tiny cells
