@@ -412,7 +412,12 @@ class SubagentGenerator:
             "`harm_twin` matching this JSON schema exactly (no prose, no code fence):\n"
             + json.dumps(BUNDLE_SCHEMA)
         )
-        return extract_json(claude_cli_exec(SYSTEM_PROMPT, prompt, model=self.model))
+        for attempt in range(3):  # malformed JSON from the CLI is a retryable draft, not a failure
+            try:
+                return extract_json(claude_cli_exec(SYSTEM_PROMPT, prompt, model=self.model))
+            except (ValueError, json.JSONDecodeError) as e:
+                log.warning("subagent JSON parse failed (attempt %d): %s", attempt, str(e)[:80])
+        raise RuntimeError("subagent returned malformed JSON three times")
 
 
 class CodexGenerator:

@@ -86,6 +86,9 @@ def swap_one(s: Scenario, paraphraser: str, retries: int) -> Scenario | None:
     for attempt in range(retries + 1):
         try:
             d = _call(paraphraser, s, feedback)
+        except (ValueError, json.JSONDecodeError) as e:  # malformed JSON: retry the draft
+            log.warning("%s attempt %d malformed JSON: %s", s.id, attempt, str(e)[:80])
+            continue
         except Exception as e:  # noqa: BLE001
             log.error("%s: %s", s.id, e)
             return None
