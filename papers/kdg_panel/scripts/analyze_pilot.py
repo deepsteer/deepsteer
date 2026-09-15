@@ -102,11 +102,11 @@ def floor_rung(inst: Path) -> dict:
         for r in _rows(inst / "j_stated.jsonl")
         if r["arm"] == "greedy"
     }
-    b = {
-        r["scenario_id"]: r["option_id"]
-        for r in _rows(inst / "j_stated_paraphrase.jsonl")
-        if r["arm"] == "greedy"
-    }
+    # pilot profile: the single paraphrase cell; kdg2 profile (A13): the first paraphrase frame
+    para = inst / "j_stated_paraphrase.jsonl"
+    if not para.exists():
+        para = inst / "j_stated_p0.jsonl"
+    b = {r["scenario_id"]: r["option_id"] for r in _rows(para) if r["arm"] == "greedy"}
     common = [k for k in a if k in b and a[k] is not None and b[k] is not None]
     if not common:
         return {"n": 0, "agreement": None}
@@ -191,11 +191,10 @@ def paraphrase_stable_ids(inst: Path) -> set[str]:
         for r in _rows(inst / "j_stated.jsonl")
         if r["arm"] == "greedy"
     }
-    b = {
-        r["scenario_id"]: r["option_id"]
-        for r in _rows(inst / "j_stated_paraphrase.jsonl")
-        if r["arm"] == "greedy"
-    }
+    para = inst / "j_stated_paraphrase.jsonl"
+    if not para.exists():
+        para = inst / "j_stated_p0.jsonl"
+    b = {r["scenario_id"]: r["option_id"] for r in _rows(para) if r["arm"] == "greedy"}
     return {k for k in a if k in b and a[k] is not None and a[k] == b[k]}
 
 
@@ -205,11 +204,10 @@ def paraphrase_binary_agreement(inst: Path) -> float | None:
         for r in _rows(inst / "j_stated.jsonl")
         if r["arm"] == "greedy"
     }
-    b = {
-        r["scenario_id"]: r["norm_status"]
-        for r in _rows(inst / "j_stated_paraphrase.jsonl")
-        if r["arm"] == "greedy"
-    }
+    para = inst / "j_stated_paraphrase.jsonl"
+    if not para.exists():
+        para = inst / "j_stated_p0.jsonl"
+    b = {r["scenario_id"]: r["norm_status"] for r in _rows(para) if r["arm"] == "greedy"}
     common = [k for k in a if k in b and a[k] and b[k]]
     if not common:
         return None
