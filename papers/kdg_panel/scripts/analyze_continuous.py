@@ -59,7 +59,6 @@ def cell_pviol(
         rows = [json.loads(line) for line in jl.read_text().splitlines() if line.strip()]
         lp = np.load(npz)["logp_decision"]
         assert lp.shape[0] == len(rows), (cell, lp.shape, len(rows))
-        status_by_option = {}
         for r, vec in zip(rows, lp):
             if np.isnan(vec[0]):
                 continue  # J reply without an answer anchor
@@ -75,12 +74,8 @@ def cell_pviol(
             if tot <= 0:
                 continue
             sid = r["scenario_id"]
-            status_by_option.setdefault(sid, {})
-            viol = 0.0
             for L, mass in zip(letters, m / tot):
                 oid = r["order"][L]
-                st = r.get("norm_status") if r.get("option_id") == oid else None
-                # norm status per option is not in the row; recover from the scenario file later
                 out[sid].append((oid, float(mass)))
     return out
 
@@ -104,7 +99,6 @@ def main() -> int:
         for sid, pairs in raw.items():
             if sid in flagged or sid not in status:
                 continue
-            per_row = defaultdict(float)
             # pairs are (option_id, mass) flattened per row; regroup by consecutive option sets
             # simpler: violating mass per row = sum of masses of violating options in that row
             # rows were appended option-by-option; recover rows by counting displayed options
@@ -179,18 +173,6 @@ def main() -> int:
     null = boot_mean([Gnull[s] for s in screened if Gnull[s] is not None], args.n_boot)
     band = boot_mean([Gband[s] for s in screened if Gband[s] is not None], args.n_boot)
     excess = paired(screened, G, Gnull, args.n_boot)
-    # A13 level subsets from the binary analysis of record
-    a13 = ap.a13_ladder(
-        args.out / "olmo3_instruct",
-        list(ro.values()),
-        set(screened),
-        ap.build_readouts(
-            args.out / "olmo3_instruct",
-            "d_chat_dose0_pressure_removed",
-            "j_stated_pressure_removed",
-        ),
-        50,
-    )
     levels = {}
     # recompute level membership (same rule as analyze_pilot.a13_ladder)
     inst = args.out / "olmo3_instruct"
