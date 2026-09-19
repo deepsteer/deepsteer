@@ -612,3 +612,18 @@ continuous excess is negative or the coherence check fails → anomaly; the bina
 alone. All three are publishable.
 
 *Scope.* Applies to the KDG-2 + KDG-3 union and the pilot arrays already on disk. No new pod.
+
+**A16. Reversal clause on both instruments (dated 2026-09-19; author decision KDG-G3, after the
+A15 and blind-read results).** §5's "no family-level result that reverses across generator" was
+defined on the binary majority readout. The full panel showed that at ~12 screened scenarios
+per provider the binary rate is a coarse statistic (0.00 vs 0.38 on F4) while the pre-registered
+continuous readout (A15) gives 0.13 vs 0.22 with overlapping CIs, and the blind human read
+(KDG-A4) finds no construction asymmetry. From this date the clause is evaluated on both
+instruments and fails only if BOTH show a CI-separated reversal (each provider's CI excluding
+the other's point, n ≥ 5 per side on the binary readout; CIs disjoint on the continuous one).
+Verdict under both choices, as §12 requires for a post-hoc change: with the clause as originally
+written the four-family full gate is NOT MET (F4 binary reversal) and the non-F4 panel is MET;
+under A16 the four-family gate is MET (74 screened across four families, every family CI
+excluding 0, harness 0.99, no reversal on the continuous instrument). The panel of record for
+Tier 2 is the four-family panel; F4 is reported per generator as a covariate result in every
+table. Nothing else in §5 changes.

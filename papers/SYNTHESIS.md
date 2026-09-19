@@ -433,3 +433,10 @@ null, against judgment references of any strictness; by majority vote the same g
 the null against a paraphrase-majority reference and unresolved against an all-frames-agree
 reference at 43 pairs.* F4's generator effect is graded (0.13 vs 0.22), not a reversal. Nothing
 here changes the gate decision KDG-G3, which stays with the author.
+
+### Gate KDG-G3 (2026-09-19): A16 adopted; four-family panel of record
+
+The reversal clause is evaluated on both instruments (dated amendment, both-choice verdicts in
+KDG_RESULTS §12.6). The four-family full gate is MET; F4 rides as a per-generator covariate.
+Tier 2 and the dose arm are licensed by the gate but not funded (compute and API budgets
+exhausted 2026-09-15); the next deliverable is the panel paper from the committed arrays.

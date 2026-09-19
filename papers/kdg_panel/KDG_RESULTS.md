@@ -558,3 +558,13 @@ items) are the A11 pattern seen from the human side: the deferral option is ofte
 as the active consistent one. Consequence for the gate: the §5 reversal clause fails on the
 binary instrument and is met on the continuous one; the clause is doing what majority-rule
 discreteness does at n ≈ 12 per side. Re-scoping it is a dated amendment and the author's call.
+
+## 12.6 Gate KDG-G3 under Amendment A16 (author decision, 2026-09-19)
+
+| reading | four-family full gate | non-F4 gate |
+|---|---|---|
+| §5 clause as originally written (binary readout) | NOT MET (F4 reversal 0.00 vs 0.38) | MET |
+| A16: reversal must hold on both instruments | **MET**: 74 screened, four families, every family CI excludes 0, harness 0.99, continuous F4 0.13 [0.01, 0.22] vs 0.22 [0.11, 0.34] overlapping | MET |
+
+Panel of record for Tier 2: the four-family panel; F4 reported per generator in every table.
+Both readings stay in this document.
