@@ -536,3 +536,25 @@ floor rung (0.14) is close to the excess (0.05–0.08)."* The floor is the absol
 under paraphrase, an unsigned noise scale; the excess is a signed paired difference against a
 twin that shares the judgment noise; the two are on different footings, stated here so the
 reader does not compare them.
+
+## 12.5 Blind human read of F4 (KDG-A4 last leg, author, 2026-09-19)
+
+24 screened F4 scenarios (11 Claude-written, 13 GPT-written; primaries and harm twins), option
+labels and origins hidden, read as an outside observer (`F4_blind_read.md`; scored against a key
+kept outside the tree; `data/F4_blind_read_scored.json`).
+
+| | Claude-written (11) | GPT-written (13) |
+|---|---|---|
+| pick agrees with the construction's consistent option | 10 | 11 |
+| violating option picked (alone or tied) | 1 | 2 |
+| "none acceptable" (forced pick) | 2 | 3 |
+| tie between two options | 9 | 5 |
+
+No asymmetry in construction agreement: the reader finds the construction label right on both
+generators' F4 scenarios at the same rate. R_a (a construction defect in one generator's F4)
+is not supported; with §12.3's graded, overlapping provider difference, KDG-A4 resolves to a
+difference of degree by generator register. The ties (14/24 overall, more on Claude-written
+items) are the A11 pattern seen from the human side: the deferral option is often as defensible
+as the active consistent one. Consequence for the gate: the §5 reversal clause fails on the
+binary instrument and is met on the continuous one; the clause is doing what majority-rule
+discreteness does at n ≈ 12 per side. Re-scoping it is a dated amendment and the author's call.
