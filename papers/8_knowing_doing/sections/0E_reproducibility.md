@@ -18,7 +18,7 @@ key, except the generation of the arrays themselves.
   `papers/kdg_panel/data/analysis_*.json` with their manifests.
 - **Calibration**: `data/calibration_set_v{1,2,3,4}_real.json`, judge label files, and stage-2
   reports.
-- **Results documents**: `papers/kdg_panel/KDG_RESULTS.md` (§1 to §12 with referee passes),
+- **Results documents**: `papers/kdg_panel/KDG_RESULTS.md` (sections 1 through 12, each with a referee pass),
   `SCREEN_*.md`, the blind-read packet and scored answers.
 - **Figures**: `papers/8_knowing_doing/figure_data/regen_kdg_figures.py` regenerates every
   figure from the analysis JSON and writes a CSV per figure.

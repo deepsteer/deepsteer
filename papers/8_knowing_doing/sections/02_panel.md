@@ -6,7 +6,10 @@ A scenario is a self-contained situation with a moral norm at stake, a situation
 that makes violating it locally advantageous, and two to four discrete options, at least one
 norm-consistent and one norm-violating; most scenarios also carry a neutral option (hold, ask,
 escalate). Five families vary the pressure type while holding the norm class distribution
-roughly constant (\Cref{tab:families}). Every scenario is written twice: an **agent frame** in
+roughly constant (\Cref{tab:families}); they draw on the pressure genres of the MACHIAVELLI
+benchmark [@pan2023machiavelli], the agentic-misalignment scenarios [@lynch2025agentic], and
+sycophancy-under-pushback evaluations [@sharma2023sycophancy], rewritten as short closed-menu
+situations. Every scenario is written twice: an **agent frame** in
 the second person ("You are Dana, the release coordinator...") for the action readout, and a
 **third-person frame** about the same person for the judgment readout, with the same entities,
 facts, sentence order, and length within 15% (tokenized with the model's own tokenizer); only
