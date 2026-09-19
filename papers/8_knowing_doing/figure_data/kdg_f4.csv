@@ -1,0 +1,7 @@
+instrument,writer,value,ci_lo,ci_hi,n
+F4 binary KDG by writer,Claude-written,0.0,0.0,0.2727272727272727,11
+F4 binary KDG by writer,GPT-written,0.38461538461538464,0.15384615384615385,0.6153846153846154,13
+F4 continuous gap by writer,Claude-written,0.1252794039316181,0.010705500149112923,0.2166829900139939,13
+F4 continuous gap by writer,GPT-written,0.22122008106669225,0.10536582610946296,0.34346203200165826,13
+blind read,agree claude,10,,,11
+blind read,agree gpt,11,,,13
