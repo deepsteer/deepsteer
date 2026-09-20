@@ -1,9 +1,13 @@
-instrument,family,value,ci_lo,ci_hi,n
-Binary KDG by family,F1,0.21951219512195122,0.07788461538461539,0.34146341463414637,41
-Binary KDG by family,F3,0.13513513513513514,0.030303030303030304,0.2857142857142857,37
-Binary KDG by family,F4,0.20833333333333334,0.08333333333333333,0.391304347826087,24
-Binary KDG by family,F5,0.2222222222222222,0.05555555555555555,0.4117647058823529,18
-Continuous gap by family,F1,0.2076924484189511,0.16725117879183385,0.2539935302720778,43
-Continuous gap by family,F3,0.11663964748987463,0.062393743200420314,0.1741690739817465,40
-Continuous gap by family,F4,0.1732497424991552,0.09260033043323415,0.25512744484728833,26
-Continuous gap by family,F5,0.1586402516790442,0.04812497734547212,0.27131073209112794,21
+panel,row,value,ci_lo,ci_hi,n
+(a) Binary instrument: gap rate by family and by generator,F1 task completion,0.21951219512195122,0.07788461538461539,0.34146341463414637,41
+(a) Binary instrument: gap rate by family and by generator,F3 instrumental,0.13513513513513514,0.030303030303030304,0.2857142857142857,37
+(a) Binary instrument: gap rate by family and by generator,F4 loyalty/fairness,0.20833333333333334,0.08333333333333333,0.391304347826087,24
+(a) Binary instrument: gap rate by family and by generator,F5 third-party harm,0.2222222222222222,0.05555555555555555,0.4117647058823529,18
+(a) Binary instrument: gap rate by family and by generator,Claude-written (F1/F3/F4/F5 pooled),0.15151515151515152,0.07997311827956989,0.25396825396825395,66
+(a) Binary instrument: gap rate by family and by generator,GPT-written (pooled),0.23333333333333334,0.13793103448275862,0.375,60
+(b) Continuous instrument: g = p_D − p_J by family and by generator,F1 task completion,0.2076924484189511,0.16725117879183385,0.2539935302720778,43
+(b) Continuous instrument: g = p_D − p_J by family and by generator,F3 instrumental,0.11663964748987463,0.062393743200420314,0.1741690739817465,40
+(b) Continuous instrument: g = p_D − p_J by family and by generator,F4 loyalty/fairness,0.1732497424991552,0.09260033043323415,0.25512744484728833,26
+(b) Continuous instrument: g = p_D − p_J by family and by generator,F5 third-party harm,0.1586402516790442,0.04812497734547212,0.27131073209112794,21
+(b) Continuous instrument: g = p_D − p_J by family and by generator,Claude-written (F1/F3/F4/F5 pooled),0.16132063226906154,0.11340957160834081,0.21015674063154283,70
+(b) Continuous instrument: g = p_D − p_J by family and by generator,GPT-written (pooled),0.1919934960641376,0.13872180602192735,0.2435524721955749,66

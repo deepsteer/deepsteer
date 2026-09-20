@@ -1,4 +1,4 @@
-% main.tex — Knowing without doing: the stated-judgment vs action panel.
+% main.tex — A Language Model Acts Against Its Own Moral Judgment (the judgment–action panel).
 % arXiv-targeted; NeurIPS 2025 preprint style.
 %
 % Build:
@@ -77,10 +77,22 @@
             citecolor=blue!50!black,
             urlcolor=blue!50!black]{hyperref}
 \usepackage[capitalize, noabbrev]{cleveref}
+% Citation links are coloured but carry no link annotation: this TeX Live's pdfTeX
+% (2026basic, macOS) segfaults when a natbib citation link straddles a page break
+% ("\pdfendlink ended up in different nesting level than \pdfstartlink", then SIGSEGV;
+% bisected 2026-09-19, five crash reports). Cross-reference and URL links keep their
+% annotations. Recorded in P8_GATES.md.
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\hyper@natlinkstart}[1]{\Hy@colorlink\@citecolor}%
+  \renewcommand*{\hyper@natlinkend}{\Hy@endcolorlink}%
+  \renewcommand*{\hyper@natlinkbreak}[2]{#1}%
+}
+\makeatother
 
 % --- Title / authors ------------------------------------------------
-\title{Knowing Without Doing\\[0.4em]
-  {\large\mdseries A Pre-Registered Panel of the Gap Between a Language Model's Stated Moral Judgment and Its Action}}
+\title{A Language Model Acts Against Its Own Moral Judgment\\[0.4em]
+  {\large\mdseries A Pre-Registered, Calibrated Panel of the Judgment--Action Gap on OLMo-3, Base and Instruct}}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -146,31 +158,33 @@
 \maketitle
 
 \begin{abstract}
-A model can state that an action is wrong and take it anyway. We measure that gap directly,
-scenario by scenario, on an open 7B chat model, with the model's own stated judgment as the
-reference and a discrete, logged action as the outcome. The panel is pre-registered: 248
-scenarios across five pressure families (task completion, sycophancy under pushback, prohibited
-shortcuts, in-group favor, third-party harm), each written in a matched agent frame and a
-third-person judgment frame, each with a pressure-removed twin and three paraphrased judgment
-frames, half written by each of two generator models and cross-labeled by the other.
+A model can state that an action is wrong and take it anyway. We measure that gap scenario by
+scenario on an open 7B model, with the model's own stated judgment as the reference and a
+discrete, logged action as the outcome, so that no external ethics enters the measurement. The
+panel is pre-registered: 248 scenarios across five pressure families (task completion, sycophancy
+under pushback, prohibited shortcuts, in-group favor, third-party harm), each written in a matched
+agent frame and a third-person judgment frame, each with a pressure-removed twin and three
+paraphrased judgment frames, half written by each of two generator models and cross-labeled by
+the other.
 
 On OLMo-3-7B-Instruct the model takes the action it judged wrong on one screened scenario in
-five by majority vote (0.19, 95\% CI 0.13 to 0.28) and on two rollouts in five. The
-measurement sits inside a calibration ladder: it exceeds the same statistic on pressure-removed
-twins by 0.10 (0.02 to 0.18), and a known-gap control in which the system prompt orders the
-violating action reaches 0.58. The gap survives a paraphrase-majority judgment reference. On the
-majority readout it is not resolved against the strictest reference, where all four judgment
-frames must agree; on a pre-registered secondary readout that uses the saved next-token
-probabilities instead of majority votes, the excess over the null holds at every strictness
-level and is largest at the strictest (0.08, 0.03 to 0.13).
-
+five by majority vote (0.19, 95\% CI 0.13 to 0.28) and on two rollouts in five. Every number
+sits inside a calibration ladder: the gap exceeds the same statistic on pressure-removed twins by
+0.10 (0.02 to 0.18), and a known-gap control in which the system prompt orders the violating
+action reaches 0.58. A noisy judgment reference could manufacture such a gap, so the reference
+is elicited on four frames and the gap is read at three strictness levels. On a pre-registered
+log-probability readout the excess over the null holds at every level and is largest at the
+strictest, where all four frames agree (0.08, 0.03 to 0.13); on the majority readout it is not
+resolved there at 43 pairs, which is the majority rule losing information, not the gap shrinking.
 The gap has no family structure at this power: third-party harm is not the family where it is
-smallest, so the action channel is not organized by the harm content that refusal reads. The
-same gap appears in the base model's raw completion frame at least as strongly as in the
-instruct model's, on the same scenarios, so post-training does not install it. One family
-depends on which model wrote its scenarios; a blind human read finds no construction asymmetry,
-and the difference is graded rather than reversed. We release the panel, the harness, the
-pre-registration with its sixteen dated amendments, and the per-rollout arrays.
+smallest, so the action channel is not organized by the harm content that refusal reads.
+
+The base model already carries the gap. In a raw completion frame its acting-versus-judging mass
+gap exceeds its own pressure-removed null (0.017, 0.012 to 0.022), and post-training does not
+remove that pressure-attributable part: on the same scenarios it enlarges it (0.046, 0.025 to
+0.069), on the acting side, while lowering the model's baseline willingness to take the violating
+action. We release the panel, the harness, the pre-registration with its seventeen dated
+amendments, and the per-scenario arrays.
 \end{abstract}
 
 % =======================================================================
@@ -178,11 +192,12 @@ pre-registration with its sixteen dated amendments, and the per-rollout arrays.
 \input{sections/02_panel.tex}
 \input{sections/03_instruments.tex}
 \input{sections/04_gap.tex}
-\input{sections/05_structure.tex}
-\input{sections/06_base_instruct.tex}
-\input{sections/07_discussion.tex}
-\input{sections/08_limitations.tex}
-\input{sections/09_conclusion.tex}
+\input{sections/05_reference.tex}
+\input{sections/06_structure.tex}
+\input{sections/07_base_instruct.tex}
+\input{sections/08_discussion.tex}
+\input{sections/09_limitations.tex}
+\input{sections/10_conclusion.tex}
 
 % --- Acknowledgments / AI disclosure --------------------------------
 \begin{ack}
@@ -202,15 +217,16 @@ scientific claims, and final wording.
   \rule{0.5\linewidth}{0.4pt}\\[0.6em]
   {\Large\bfseries Appendices}\\[0.25em]
   {\small Supplementary material. Sections referenced from the main
-   paper as ``Appendix A''--``Appendix E''.}\\[0.4em]
+   paper as ``Appendix A''--``Appendix F''.}\\[0.4em]
   \rule{0.5\linewidth}{0.4pt}
 \end{center}
 \vspace{0.5em}
 
 \input{sections/0A_preregistration.tex}
 \input{sections/0B_calibration.tex}
-\input{sections/0C_pilot_and_full.tex}
-\input{sections/0D_scenarios.tex}
-\input{sections/0E_reproducibility.tex}
+\input{sections/0C_pods.tex}
+\input{sections/0D_three_cell.tex}
+\input{sections/0E_scenarios.tex}
+\input{sections/0F_reproducibility.tex}
 
 \end{document}

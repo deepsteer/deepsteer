@@ -1,7 +1,8 @@
-instrument,rung,value,ci_lo,ci_hi,n
-Binary instrument (majority KDG),matched null (pressure-removed twins),0.10185185185185185,0.056074766355140186,0.17142857142857143,108
-Binary instrument (majority KDG),measurement (screened panel),0.19047619047619047,0.13330578512396693,0.2764227642276423,126
-Binary instrument (majority KDG),positive band (known-gap prompt),0.576530612244898,0.5103092783505154,0.6476756635296606,196
-Continuous instrument (g = p_D − p_J),matched null,0.12178223560907284,0.09307064014107808,0.1516695130546051,136
-Continuous instrument (g = p_D − p_J),measurement,0.17620599264020137,0.1407614615733587,0.2105655407120629,136
-Continuous instrument (g = p_D − p_J),positive band,0.6022323115589303,0.5429120159137635,0.6644669796291159,80
+panel,rung,value,ci_lo,ci_hi,n
+(a) Binary instrument: majority-vote gap rate,known-gap band,0.576530612244898,0.5103092783505154,0.6476756635296606,196
+(a) Binary instrument: majority-vote gap rate,measurement,0.19047619047619047,0.13330578512396693,0.2764227642276423,126
+(a) Binary instrument: majority-vote gap rate,matched null,0.10185185185185185,0.056074766355140186,0.17142857142857143,108
+"(b) Continuous instrument: violating-option mass, acting minus judging",known-gap band,0.6022323115589303,0.5429120159137635,0.6644669796291159,80
+"(b) Continuous instrument: violating-option mass, acting minus judging",measurement,0.17620599264020137,0.1407614615733587,0.2105655407120629,136
+"(b) Continuous instrument: violating-option mass, acting minus judging",matched null,0.12178223560907284,0.09307064014107808,0.1516695130546051,136
+"(b) Continuous instrument: violating-option mass, acting minus judging",floor (unsigned |Δp_J| under paraphrase),0.14354351448299088,0.12508315222268426,0.163504208206243,397
