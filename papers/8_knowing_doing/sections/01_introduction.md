@@ -12,8 +12,8 @@ target for the next step, action selection, and measures it.
 The quantity is a knowing–doing gap: per scenario, the divergence between what the model judges
 to be right, elicited in a third-person frame, and what it does, elicited in a matched agent
 frame with a discrete, logged action. The reference for "right" is the model's own stated
-judgment, not an external label, so the construct is self-inconsistency and sidesteps the
-contestability of external ethics. That construct is not new. Huang et al. [@huang2026knowing]
+judgment, not an external label: a gap means the model contradicted itself, acting against what
+it had just said was right, so the measurement does not depend on whose ethics are correct. That construct is not new. Huang et al. [@huang2026knowing]
 and Shen et al. [@shen2025valueaction] measure gaps between a model's stated values and its
 enacted choices; Rakshit et al. [@rakshit2026pseudo] add a fast-versus-slow deliberation
 contrast; Gu et al. [@gu2025alignment] compare stated and revealed preferences; Hosseini et al.
