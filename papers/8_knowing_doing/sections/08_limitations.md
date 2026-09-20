@@ -9,7 +9,7 @@ cross-model agreement on enacted choices; if that holds, a cross-model table of 
 show little variance along the model axis, and the family structure, which is flat here, would
 be the only live quantity.
 
-**The reference is the model's own judgment.** The construct is self-inconsistency, not
+**The reference is the model's own judgment.** What is measured is the model contradicting its own judgment, not
 wrongness by an external standard. External labels are recorded as a covariate and agree with
 the construction on 262 of 288 primaries, with every disagreement but three a preference for the
 neutral option; the paper makes no claim about which option is right.
