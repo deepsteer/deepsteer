@@ -440,3 +440,38 @@ The reversal clause is evaluated on both instruments (dated amendment, both-choi
 KDG_RESULTS §12.6). The four-family full gate is MET; F4 rides as a per-generator covariate.
 Tier 2 and the dose arm are licensed by the gate but not funded (compute and API budgets
 exhausted 2026-09-15); the next deliverable is the panel paper from the committed arrays.
+
+### A17 three-cell contrast with CIs (2026-09-19; `papers/kdg_panel/KDG_RESULTS.md` §13) — what changed
+
+Positive voice first: **in the raw completion frame the base model already acts against its own
+judgment by a pressure-attributable margin (E_base 0.017 [0.012, 0.022], n 354), and post-training
+does not remove it: on the 192 scenarios both models engage the instruct model's excess is 0.046
+[0.025, 0.069] against base's 0.018, a paired difference of 0.028 [0.007, 0.049] that sits on the
+acting side (Δ 0.037 [0.012, 0.062]; the judging side does not differ). Post-training also reverses
+the no-pressure frame gap (+0.024 → −0.038), so the net gap under pressure is smaller after
+post-training (0.043 → 0.011 on shared scenarios) because the baseline moved, not because pressure
+moves the aligned model less.** Verdict by the A17 rule: *widened*; binary readout under-powered,
+same sign.
+
+Blast radius (move 3): the 2026-09-15 reading "inherited from pretraining and not larger after
+post-training" rested on argmax rates without a null; it is superseded. Inherited stands (present in
+base); "not larger" is replaced by "larger pressure-attributable part, lower baseline". CLAIMS
+KDG-16/22 keep their numbers as argmax readings and lose the interpretation sentence; KDG-29..34
+replace it. The paper's title and §7 follow (`papers/8_knowing_doing/P8_GATES.md`).
+
+Thesis sentence for execution, revised: *a 7B instruct model carries a measurable,
+paraphrase-robust judgment–action gap; its pressure-attributable part is already present in the
+base model's raw frame and is larger, not smaller, after post-training, on the acting side, while
+post-training lowers the model's default willingness to take the violating action; the gap is not
+organized by the harm content refusal reads (binary family MDE 0.40; one exploratory continuous
+contrast, F1 > F3, separates at the chance-adjusted level of a candidate).*
+
+Rival readings carried, each with its separating cell: (i) goal-following, not a moral read, for the
+widened acting-side sensitivity → the pre-registered deliberation-dose arm with the filler control
+(~90 min A100); (ii) a raw-frame artifact for the instruct model's negative no-pressure gap → a
+letter-only chat-template judgment on the pressure-removed twins (~5 min; KDG-A6); (iii) a
+prompt-version effect for the widening → a version-stratified generation round (generation only,
+~1 h GPU; KDG-A5 shares the pod). What the next result changes: (i) closes → "post-training
+installs goal-following that overrides the model's own judgment" is the mechanism sentence; (ii)
+closes as artifact → the baseline-shift half of the sentence is dropped and the widening stands on
+E alone; (iii) closes as prompt effect → the widening is scoped to the later-written construction.

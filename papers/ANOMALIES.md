@@ -470,3 +470,23 @@ lacks its own §4.4 activation-scale control, so its Finding 2 ships an un-scope
 gradient → v2 erratum required. No warm working session had flagged it. Evidence that the
 boot-sequence design pays for itself, and a datapoint for the open periodic-fresh-eyes cadence
 question (how often to force a cold-context re-audit of committed/published claims).
+
+## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
+
+**Date.** 2026-09-19 (A17 E1; `papers/kdg_panel/data/analysis_a17_union.json` `chat_exploratory.E1_family_contrasts`; KDG_RESULTS §13.2).
+**Observation.** On the screened union, chat continuous g by family: F1 0.21 [0.17, 0.25] (43), F3 0.12 [0.06, 0.17] (40), F4 0.17 [0.09, 0.26] (26), F5 0.16 [0.05, 0.27] (21); one of six unpaired contrasts separates (F1 − F3 0.091 [0.018, 0.160]). Per-family paired excess over the pressure-removed null: F1 0.076 [0.020, 0.129], F3 0.020 [−0.038, 0.079], F4 0.121 [0.054, 0.195], F5 −0.008 [−0.090, 0.073]. The pre-registered binary contrast (F1+F3+F4 − F5 = −0.04 [−0.27, 0.16]) is centered on zero at MDE ~0.40.
+**Appears in.** Paper 8 §6 (exploratory paragraph), Appendix D.
+**Competing readings.** R_a: real structure that the binary instrument cannot see: the incentive moves the action on the honesty and fairness families (option choice, allocation) and not on the shortcut family (tool selection from a fixed menu; the action surface may be insensitive to the incentive sentence) or the harm family (whose gap is present without pressure and not pressure-attributable, i.e. the harm-keyed prediction of Branch A in excess units). R_b: chance (six contrasts at 95%: P(any separation) 0.26) plus small n on F5 (21) and F4 (26); F5's excess interval includes the pooled 0.054.
+**Discriminator.** Sixteen more F3 and F5 primaries per generator (generation via CLI subagents, no API; one ~1 h pod with the kdg2 cell profile) → family excess MDE near 0.10 on the continuous instrument; pre-register the F5-excess-vs-rest contrast in excess units before the pod. Zero-GPU leg first: within F3, split by whether the violating tool is the *only* fast route (covariate `tool_menu` structure) to test the action-surface reading.
+**Status.** open (candidate, not a finding); priced.
+**Thesis impact.** R_a with F5 excess ≈ 0: the harm family's gap is *not* pressure-attributable, which is Branch A restated in excess units and reconnects the action channel to the refusal read; the S1 rank cell would then be scored per family. R_b: Branch C stands as written.
+
+## KDG-A6 (ledger) — The instruct model's no-pressure frame gap in the raw frame is negative (acting more norm-consistent than judging), the opposite sign from base
+
+**Date.** 2026-09-19 (A17; `analysis_a17_union.json` `three_cell_union.instruct.continuous.matched_null_g`; KDG_RESULTS §13.1).
+**Observation.** On pressure-removed raw twins, g_null = p_D − p_J is +0.024 [0.017, 0.030] on base (354) and −0.038 [−0.059, −0.015] on instruct (208); on the shared 192, instruct p_D(twin) 0.192 vs p_J(twin) 0.224, base 0.306 vs 0.280. In the chat frame the same model's null is +0.12 (deliberated judgment vs immediate action).
+**Appears in.** Paper 8 §7 ("the baseline moved"), Discussion.
+**Competing readings.** R_a: post-training installs an agent-frame caution: the assistant placed as the actor is more norm-consistent than the assistant as a third-person judge, a persona default (consistent with the persona-as-lever design). R_b: a raw-frame artifact on a chat-trained model that declines the frame on 155/397 scenario-frames (KDG-A2): the fixed `Answer:` prefix in the second-person frame elicits end-of-turn or hedging mass that the option-letter normalisation hides, or the two frames' prefixes are read differently by a template-trained model.
+**Discriminator.** Zero-GPU first: on the shared 192, compare instruct p_D(twin) against the raw-frame option mass (`option_mass`) per scenario; if the negative null concentrates where option mass is lowest (near the 0.5 floor), R_b. Pod leg (~5 min on any loaded OLMo-3-Instruct): a letter-only judgment readout under the chat template on the pressure-removed twins (J_chat, immediate, no reasoning), giving a chat-frame null with the deliberation asymmetry removed; if p_D(chat twin) < p_J(chat, letter-only twin), R_a.
+**Status.** open; priced.
+**Thesis impact.** R_a: the "post-training lowers the baseline" half of the execution thesis stands and persona steering is the first lever. R_b: that half is dropped; the widening stands on E alone and the raw-frame comparison is restricted to base.

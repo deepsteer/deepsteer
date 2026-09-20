@@ -568,3 +568,106 @@ discreteness does at n ≈ 12 per side. Re-scoping it is a dated amendment and t
 
 Panel of record for Tier 2: the four-family panel; F4 reported per generator in every table.
 Both readings stay in this document.
+
+---
+
+# 13. Amendment A17: the three-cell contrast with CIs, and the paper's exploratory items (2026-09-19; zero GPU, zero API)
+
+Numbers of record: `data/analysis_a17_union.json` (KDG-2 + KDG-3 union raw cells; pilot subset),
+`data/per_scenario_union.csv` (chat cells, per scenario), `data/per_scenario_raw_union.csv`
+(raw cells, both models); script `scripts/analyze_paper8.py`; amendment A17 committed as 250c8b5
+before any computation. Cross-check: the script's recomputation of the A15 L0 excess reproduces
+the record exactly (0.054 [0.021, 0.086], n 136), and the pilot's raw-frame values are
+bit-identical to the same scenarios in KDG-2 (max |Δp_D| = 0.0 over 192 model–scenario pairs),
+so the pilot block is a scenario-subset check, not an independent replication.
+
+## 13.0 Positive voice first
+
+**In the raw completion frame the base model already acts against its own judgment by a
+pressure-attributable margin (E_base 0.017 [0.012, 0.022], n 354), and post-training does not
+remove it: on the 192 scenarios both models engage, the instruct model's excess is 0.046 [0.025,
+0.069] against base's 0.018 [0.011, 0.025], a paired difference of 0.028 [0.007, 0.049] (MDE
+0.030), sitting on the acting side (Δ D-side 0.037 [0.012, 0.062]; Δ J-side −0.009 [−0.023,
+0.004]).** Post-training also reverses the no-pressure frame gap (base +0.024 [0.017, 0.030];
+instruct −0.038 [−0.059, −0.015]), so the net gap under pressure is smaller after post-training
+(Δ_g 0.033 [0.012, 0.054], n 225). Verdict by the A17 rule, continuous readout: **widened**.
+Binary readout: under-powered, same sign everywhere (Δ_E −0.012 [−0.076, 0.053], n 171).
+
+## 13.1 Three-cell contrast (raw frame, mass floor 0.5)
+
+| quantity | base | instruct | paired base − instruct |
+|---|---|---|---|
+| above floor on the primary (of 397) | 359 | 242 | 225 shared; 192 with twins |
+| g under pressure | 0.041 [0.034, 0.049] | 0.002 [−0.022, 0.024] | 0.033 [0.012, 0.054] |
+| g on the pressure-removed twin | 0.024 [0.017, 0.030] | −0.038 [−0.059, −0.015] | |
+| E (paired, all above floor) | 0.017 [0.012, 0.022] (354) | 0.039 [0.016, 0.061] (208) | |
+| E on the shared 192 | 0.018 [0.011, 0.025] | 0.046 [0.025, 0.069] | −0.028 [−0.049, −0.007]; MDE 0.030 |
+| acting side p_D − p_D(twin), shared | 0.049 [0.037, 0.059] | 0.085 [0.057, 0.114] | −0.037 [−0.062, −0.012] |
+| judging side p_J − p_J(twin), shared | 0.030 [0.022, 0.039] | 0.039 [0.024, 0.056] | −0.009 [−0.023, 0.004] |
+| means p_D twin → primary (shared) | 0.306 → 0.354 | 0.192 → 0.277 | |
+| means p_J twin → primary (shared) | 0.280 → 0.311 | 0.224 → 0.263 | |
+| binary gap rate (shared 213) | 0.146 [0.099, 0.192] | 0.099 [0.061, 0.136] | 0.047 [−0.009, 0.103] |
+| binary E (paired) | 0.024 [−0.021, 0.065] (338) | 0.051 [0.010, 0.097] (195) | −0.012 [−0.076, 0.053] (171) |
+
+Selection check: base E on all 354 above-floor scenarios 0.017 vs 0.018 on the shared 192;
+difference 0.001 against a half-width of 0.007 → not selection-dependent.
+
+Slices of Δ_E (shared, continuous): pilot-written scenarios (prompt 1.0.0; n 45) −0.003 [−0.032,
+0.027]; later-written (prompt 1.1.0; n 147) −0.036 [−0.063, −0.011]; primaries (105) −0.030
+[−0.060, 0.000]; harm twins (87) −0.026 [−0.056, 0.002]; F1 (62) −0.023 [−0.057, 0.009]; F3 (60)
+−0.029 [−0.068, 0.006]; F4 (33) −0.058 [−0.103, −0.015]; F5 (28) −0.005 [−0.080, 0.079]. Same
+sign in every slice; the pilot-written and later-written subsets are not CI-separated from each
+other (difference 0.033, about 1.6 bootstrap SE); the pooled number is the number of record and
+the prompt version is recorded as a covariate.
+
+## 13.2 Exploratory items (A17 E1–E3; labelled, not verdict-bearing)
+
+- **E1, chat continuous g by family (screened):** six unpaired contrasts; F1 − F3 = 0.091 [0.018,
+  0.160] separates; the other five include 0 (F1 − F4 0.034 [−0.061, 0.126]; F1 − F5 0.049
+  [−0.074, 0.178]; F3 − F4 −0.057 [−0.161, 0.049]; F3 − F5 −0.042 [−0.171, 0.076]; F4 − F5 0.015
+  [−0.136, 0.160]). With six 95% intervals P(any chance separation) = 0.26 → ANOMALIES KDG-A5
+  candidate, not a finding. Per-family paired excess over the null: F1 0.076 [0.020, 0.129] (43),
+  F3 0.020 [−0.038, 0.079] (40), F4 0.121 [0.054, 0.195] (26), F5 −0.008 [−0.090, 0.073] (21):
+  F5's interval includes 0 and the pooled 0.054.
+- **E2, second derivation across instruments:** binary excess predicted from per-scenario p_D
+  crossings of 0.5 (twin → primary, net) 0.136 [0.068, 0.216] (n 88) vs observed binary paired
+  excess 0.100 [0.030, 0.170] on the same 100 scenarios; 20 up-crossings, 1 down. Agree.
+- **E3, A13 decomposition (chat continuous):** L0 p_D 0.436 / p_J 0.260, twin 0.282 / 0.160; L1
+  0.426 / 0.244, twin 0.276 / 0.156; L2 0.413 / 0.182, twin 0.260 / 0.108. Tightening the
+  reference lowers p_J (more decisive non-violating judgments) while p_D barely moves; the
+  excess grows 0.054 → 0.063 → 0.079 because the action does not track the decisiveness of the
+  judgment. The rival "L2 selects the most tempting scenarios" is checked by p_D (0.436 → 0.413,
+  not rising).
+
+## 13.3 Referee pass (three damaging objections)
+
+1. *"You pre-registered inherited-vs-installed and report 'widened'; on the binary readout the
+   base gap does not even clear its own null."* Conceded on the binary readout (E_base 0.024
+   [−0.021, 0.065]) and stated in the paper beside the continuous number. A17 named the continuous
+   readout as verdict-bearing for the raw frame before computation, and its base excess excludes 0
+   at n 354; the 'widened' wording was written down before the numbers and ships verbatim.
+2. *"The instruct model's negative no-pressure gap is an artifact of running a chat model in a raw
+   frame it declines 39% of the time."* Answered in part: the selection check shows base is
+   unaffected by restricting to the instruct-engaged subset, and the sign of Δ_E is the same in
+   every family and role. Conceded: the discriminator (a letter-only chat-template judgment on the
+   pressure-removed twins, ~5 min on any loaded OLMo-3) is unrun → KDG-A6, priced.
+3. *"The widening is carried by the later-written scenarios; the 45 pilot-written scenarios show
+   nothing, so this is a prompt-version effect."* Answered: the subsets are not CI-separated (0.033
+   apart, about 1.6 SE), the pilot subset is under-powered for the effect (MDE 0.042 vs 0.028), and
+   every family has the same sign. Conceded: a prompt-version-stratified generation round is the
+   clean test and is generation-only (no GPU beyond ~1 h).
+
+## 13.4 What this changes
+
+- **Blast radius (move 3).** The 2026-09-15 reading "inherited from pretraining and not larger
+  after post-training" (SYNTHESIS full-panel and round-2 blocks; CLAIMS KDG-16, KDG-22) rested on
+  the argmax rates 0.145 vs 0.094 with no null and no CI. With the raw-frame null and CIs: the
+  pressure-attributable part is *larger* after post-training, and the argmax-rate difference is a
+  baseline shift (post-training lowers p_D with nothing at stake). KDG-16/22 keep their numbers
+  (argmax readings, no null) and lose their interpretation sentence; the replacement is KDG-30/31.
+- Thesis sentence for execution (SYNTHESIS) revised; CLAIMS KDG-29..34; ANOMALIES KDG-A5, KDG-A6.
+- The paper's §7 and title (`papers/8_knowing_doing/P8_GATES.md`).
+
+Ship-blockers: A17 committed before computation (250c8b5); both-branch wording pre-written;
+selection check stated in advance; second derivation (side decomposition) reported; SYNTHESIS,
+CLAIMS, ANOMALIES updated in the same commit as this section.
