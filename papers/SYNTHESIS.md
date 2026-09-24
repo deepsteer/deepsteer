@@ -457,7 +457,7 @@ Blast radius (move 3): the 2026-09-15 reading "inherited from pretraining and no
 post-training" rested on argmax rates without a null; it is superseded. Inherited stands (present in
 base); "not larger" is replaced by "larger pressure-attributable part, lower baseline". CLAIMS
 KDG-16/22 keep their numbers as argmax readings and lose the interpretation sentence; KDG-29..34
-replace it. The paper's title and §7 follow (`papers/8_knowing_doing/P8_GATES.md`).
+replace it. The paper's title and §7 follow (`papers/kdg_judgment_action/KDG_GATES.md`).
 
 Thesis sentence for execution, revised: *a 7B instruct model carries a measurable,
 paraphrase-robust judgment–action gap; its pressure-attributable part is already present in the

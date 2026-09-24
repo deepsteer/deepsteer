@@ -72,9 +72,9 @@ $(MAIN_PDF): $(MAIN_TEX) $(SECTION_TEX) references.bib
 	-$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN)
 	@if [ -f $(MAIN_PDF) ]; then \
 	  size=$$(wc -c < $(MAIN_PDF)); \
-	  cp $(MAIN_PDF) ../../8_knowing_doing.pdf; \
+	  cp $(MAIN_PDF) ../../kdg_judgment_action.pdf; \
 	  echo "==> $(MAIN_PDF) built ($$size bytes)"; \
-	  echo "==> copied to papers/8_knowing_doing.pdf"; \
+	  echo "==> copied to papers/kdg_judgment_action.pdf"; \
 	else \
 	  echo "ERROR: $(MAIN_PDF) not produced — see main.log"; exit 1; \
 	fi

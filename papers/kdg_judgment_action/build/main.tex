@@ -81,7 +81,7 @@
 % (2026basic, macOS) segfaults when a natbib citation link straddles a page break
 % ("\pdfendlink ended up in different nesting level than \pdfstartlink", then SIGSEGV;
 % bisected 2026-09-19, five crash reports). Cross-reference and URL links keep their
-% annotations. Recorded in P8_GATES.md.
+% annotations. Recorded in KDG_GATES.md.
 \makeatletter
 \AtBeginDocument{%
   \renewcommand*{\hyper@natlinkstart}[1]{\Hy@colorlink\@citecolor}%

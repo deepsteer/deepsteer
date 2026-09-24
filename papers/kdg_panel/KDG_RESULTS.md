@@ -666,7 +666,7 @@ the prompt version is recorded as a covariate.
   baseline shift (post-training lowers p_D with nothing at stake). KDG-16/22 keep their numbers
   (argmax readings, no null) and lose their interpretation sentence; the replacement is KDG-30/31.
 - Thesis sentence for execution (SYNTHESIS) revised; CLAIMS KDG-29..34; ANOMALIES KDG-A5, KDG-A6.
-- The paper's §7 and title (`papers/8_knowing_doing/P8_GATES.md`).
+- The paper's §7 and title (`papers/kdg_judgment_action/KDG_GATES.md`).
 
 Ship-blockers: A17 committed before computation (250c8b5); both-branch wording pre-written;
 selection check stated in advance; second derivation (side decomposition) reported; SYNTHESIS,

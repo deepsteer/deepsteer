@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate every figure of the judgment–action panel paper from committed data (zero GPU, zero API).
 
-    python3 papers/8_knowing_doing/figure_data/regen_kdg_figures.py
+    python3 papers/kdg_judgment_action/figure_data/regen_kdg_figures.py
 
 Inputs (all under papers/kdg_panel/data/): analysis_union_kdg3.json (binary instrument, panel of
 record), analysis_continuous_union.json (continuous instrument), analysis_a17_union.json (the raw-frame

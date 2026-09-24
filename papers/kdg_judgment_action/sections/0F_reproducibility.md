@@ -25,7 +25,7 @@ key, except the generation of the arrays themselves.
   reports.
 - **Results documents**: `papers/kdg_panel/KDG_RESULTS.md` (sections 1 through 13, each with a
   referee pass), `SCREEN_*.md`, the blind-read packet and scored answers.
-- **Figures**: `papers/8_knowing_doing/figure_data/regen_kdg_figures.py` regenerates every
+- **Figures**: `papers/kdg_judgment_action/figure_data/regen_kdg_figures.py` regenerates every
   figure from the analysis JSON and the per-scenario tables and writes a CSV per figure.
 - **Models**: `allenai/Olmo-3-7B-Instruct` and `allenai/Olmo-3-1025-7B` at the commits recorded in
   each pod manifest; `transformers` 5.12.1 on the pods; temperature 0.7 for sampled cells; seeds
