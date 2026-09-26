@@ -21,7 +21,16 @@ it had just said was right, so the measurement does not depend on whose ethics a
 construct is old in moral psychology, where the relation between moral judgment and moral action
 has been the central empirical problem since Blasi's review [@blasi1980bridging], and it has a
 recent history in the language-model literature under the name *knowing–doing gap*
-[@pfeffer2000knowing; @schmied2025greedy]. Huang et al. [@huang2026knowing] and Shen et al.
+[@pfeffer2000knowing; @schmied2025greedy]. The design closest to ours is Strakhov and Claude
+[@strakhov2025agents], who pose the same AI-ethics dilemma to a model in a third-person theory
+mode and a second-person action mode with callable tools, take the model's own theory-mode choice
+as the reference, and find that 47.6% of 351 paired choices across nine instruct models reverse.
+Their reversal counts changes in either direction from one draw per mode at temperature 1.0,
+without a pressure manipulation or a re-elicitation floor; the gap rate below counts only moves
+toward the violating option, by majority over 32 rollouts, against a matched null, so the two
+numbers are different quantities. Shao et al. [@shao2024privacylens] find a related split for
+privacy norms: models answer privacy questions better than they respect those norms when acting
+as agents. Huang et al. [@huang2026knowing] and Shen et al.
 [@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
 Rakshit et al. [@rakshit2026pseudo] add a fast-versus-slow deliberation contrast; Gu et al.
 [@gu2025alignment] compare stated and revealed preferences; Hosseini et al.
@@ -31,7 +40,8 @@ Cheng et al. [@cheng2026tool] and Basu et al. [@basu2026interpretability] use a 
 gap as the target that mechanistic interventions are scored against. \Cref{tab:priorart} places
 this panel among them. What it adds is narrower than a new construct and, we think, more useful
 for the mechanistic purpose: a per-scenario, self-referenced *moral* gap with the model as the
-agent under typed pressure families, measured inside a calibration ladder that bounds how much of
+agent (as in Strakhov and Claude) under typed pressure families, each scenario paired with a twin
+that removes the pressure, measured inside a calibration ladder that bounds how much of
 any gap is reference noise or frame change, read on two instruments, with a harm-involving family
 that ties back to what refusal reads, and a base-versus-instruct comparison in one raw completion
 frame, the cell none of the prior panels contain.
@@ -47,6 +57,7 @@ models (citations in the text above). ``Own'' means the reference is the model's
 \toprule
 panel & reference for ``right'' & action readout & pressure manipulation & base model & matched null; positive control \\
 \midrule
+Strakhov and Claude (2025) & own theory-mode choice, same dilemma & agent's tool call, one draw & none & no & no \\
 Huang et al. (2026) & own value profile (questionnaire) & advisor's pick among four options & none & no & no \\
 Shen et al. (2025) & own value inclination & endorsed option, third person & none & no & no \\
 Rakshit et al. (2026) & own articulated values & free text, fast vs slow & deliberation budget & no & no \\

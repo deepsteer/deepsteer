@@ -246,3 +246,61 @@ reference, where the two move in opposite directions.
   own-judgment reference and the base and stage cells, which is what the concession already names.
 - **Never use "first to"** without the qualifying clause from §1. No "first" claim survives without
   its qualifier.
+
+---
+
+## 8. Addendum 2026-09-25: full reads of the three closest sources (after the gate)
+
+Author decisions at the gate. E1: cite the repo as convergent evidence and lead the pitch with the
+instrument, not the pattern. E2: the KDG paper is held, not published, so add values.md to its
+prior art now. Riders 1 to 4 accepted. Full reads were done before any number enters prose:
+
+**values.md (Strakhov & Claude, 2025-11-27), full page read.** Authors printed as "George
+Strakhov¹ and Claude (Anthropic)²". Design: 10 AI-ethics dilemmas × 3–4 variations = 39 scenarios; 9
+instruct models; theory mode ("What should the AI do?", free text parsed by GPT-4.1-mini) vs action
+mode ("You are an AI system...", mock tools). Each model–scenario pair is **one draw at temperature
+1.0**; no re-ask floor and no pressure manipulation. 167/351 reversals = 47.6% (95% CI 42.4–52.8%),
+which the authors note is "statistically indistinguishable from 50% (p = .39)". Reversal direction,
+coded by GPT-4.1-mini: 48.5% conservative (less interventionist), 36.5% permissive, 15.0% lateral.
+Corrections to the gate discussion:
+- The reversals are a plurality toward less intervention, not "mostly toward caution". Their axis
+  is intervention level, not norm consistency (in the warehouse-robot dilemma the permissive
+  reversals refuse an unsafe order). It does not corroborate the KDG-A6 sign; see `ANOMALIES.md`
+  KDG-A6 update.
+- A reversal counts both directions and includes single-draw sampling noise; the KDG gap rate
+  counts only violation-ward moves of a 32-rollout majority against a re-elicitation floor. The
+  two numbers are different quantities. The KDG paper's prose should say so where it cites them.
+- values.md cites PrivacyLens (Shao, Li, Shi, Liu, Yang, arXiv:2409.00138, NeurIPS 2024 Datasets and
+  Benchmarks; spot-checked) as a judgment-action gap in privacy: models answer privacy questions
+  better than they act as agents; GPT-4 and Llama-3-70B leak in 25.68% and 38.69% of cases even with
+  privacy-enhancing instructions (abstract numbers; the 98.0% / 33.1% values.md quotes is not in the
+  abstract and is not to be cited from this pass).
+
+**tracing-sycophancy (github.com/sonnetx/tracing-sycophancy), README + repo metadata.** Author:
+Sonnet Xu (Stanford), per the commit author and GitHub profile; no paper on arXiv (search by title
+and author, 2026-09-25). The README states the dissociation but reports **no numbers**, and the
+commits of 2026-09-25 include "Correct challenge aggregation and sampling claims". Cite as a
+repository with a pinned commit and date, for its design and its stated direction only. No figure
+from it enters prose until a paper or results file is read. Its log-prob track is a no-challenge
+baseline log-odds vs a challenged log-odds (`delta_log_odds`), i.e. a twin-differenced sensitivity
+in the factual domain.
+
+**Blank et al., arXiv:2608.31079v1, full PDF read.** Stanford and Columbia. Sycophantic agreement =
+answer change on turn 2 after a user challenge, on 1,000 MMLU questions every model answers
+correctly at turn 1. OLMo-3-7B stages, Table 3 (± pooled Wilson 95% half-width):
+
+| Checkpoint | No-letter prompts (11) | Letter-naming prompts (6) | Mean (17) |
+|---|---|---|---|
+| OLMo-3-7B-Instruct-SFT | 12.5 ±0.6 | 97.5 ±0.4 | 42.5 ±0.8 |
+| OLMo-3-7B-Instruct-DPO | 31.6 ±0.9 | 96.7 ±0.5 | 54.6 ±0.8 |
+| OLMo-3-7B-Instruct | 33.0 ±0.9 | 94.5 ±0.6 | 54.7 ±0.8 |
+
+The "more than doubles after DPO" headline is the no-letter column. When the user names a specific
+wrong option, SFT is already at ceiling. The DPO effect is traced mainly to the delta-learning
+preference data (§3.2). No base model is evaluated. Rider 2 is sharpened accordingly: the
+pre-registered DPO branch should name *which* pressure subtype it expects to move, since in Blank et
+al. the DPO jump is confined to challenges that do not name an alternative.
+
+**New candidates surfaced during the reads (unverified; not citable from this pass).** arXiv:2602.01002
+*How RLHF Amplifies Sycophancy*; arXiv:2602.00707 *Self-Guard* (describes an "awareness-compliance
+gap"). Add to the pre-pitch re-run of this pass.
