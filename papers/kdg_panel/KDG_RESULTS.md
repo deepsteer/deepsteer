@@ -763,3 +763,45 @@ choices' verdicts (§14.4). → ANOMALIES KDG-A7.
 - **Convergence claim.** The tracing-sycophancy repo's log-prob dissociation is exposed to the same
   sharpening; the SYNTHESIS instrument claim is scoped accordingly.
 - **Z2.** KDG-A6 R_b loses its cheapest support; C1 in Session A separates R_a from R_c.
+
+## 14.5 Fork P1-A1: frame-specific normalization (amendment pushed d39deab before computing)
+
+Labelled as a fork; the averaged-σ verdict (`sharpening_explained`) stays the verdict of record.
+Script `scripts/analyze_phase1_fork.py`; `data/analysis_p1a1_fork.json`. Shared 192, 10,000
+draws, seed 0; every point inside its interval.
+
+| Per unit of its own frame's scale | Base | Instruct | Instruct − base |
+|---|---|---|---|
+| Acting side S_act/σ_D | 0.606 [0.443, 0.797] | 0.405 [0.280, 0.532] | −0.201 [−0.375, −0.046] |
+| Judging side S_judge/σ_J | 0.374 [0.263, 0.485] | 0.246 [0.149, 0.343] | −0.128 [−0.251, −0.010] |
+| Excess Ẽ_fs (act − judge) | 0.233 [0.114, 0.372] | 0.159 [0.052, 0.269] | −0.074 [−0.224, 0.065] |
+
+Fork verdict: **unresolved** (MDE 0.21); the point estimate is negative. Read with move 5
+(reframe before caveat): per unit of output scale, post-training makes *both* the action and the
+judgment less responsive to the incentive, and the gap between them stays present in both models
+with no resolvable change. The apparent widening on the probability and log-odds scales is the
+product of a sharper action output (about 3.5× on the agent frame) and a smaller per-unit pull.
+Positive voice: **the pressure-attributable gap is a property the base model already has and the
+aligned model keeps, on every readout we have; what post-training changes that we can resolve is
+the scale of the output, not the incentive's per-unit pull on the action.**
+
+Bias direction for the fork: the per-scenario ratios divide by the base model's smaller σ_D (base
+min 0.149), which inflates base's per-unit values and favors the negative differences; the
+acting-side and judging-side differences (both excluding 0) could shrink under a ratio-of-means
+estimator. A ratio-of-means second derivation from the §14 table: acting 0.700/1.827 = 0.383 vs
+0.241/0.521 = 0.462 (instruct lower); judging 0.264/1.073 = 0.246 vs 0.159/0.468 = 0.340 (instruct
+lower). Same sign on both sides. Agree.
+
+Referee objection added: *"You forked after seeing the data and the fork happens to overturn your
+headline."* The fork was dated and pushed before computation with all three outcomes written; the
+verdict of record is the pre-registered one, and the fork is only ever reported beside it. It
+does not overturn anything by itself (unresolved); what it adds is the per-side decomposition,
+which two estimators agree on in sign.
+
+Escalated (unchanged from §14.4, now sharper): the pitch's opening claim and the paper's "widened
+on the acting side" interpretation. The candidate replacement headline is a sharpening result:
+**post-training roughly triples the sharpness of the model's option distribution, more in the
+agent frame than the judge frame, while the incentive's per-unit pull on both falls; a twin-less
+evaluation sees a safer model at rest and a larger raw response to pressure, and neither is the
+per-unit change.** That keeps the instrument claim (a single-condition eval misreads post-training)
+with a different mechanism.

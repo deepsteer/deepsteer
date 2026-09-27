@@ -624,3 +624,13 @@ What the next result changes: the frame-specific normalization fork (amendment n
 difference: the headline becomes sharpening of the action channel, not widening; positive and
 resolved: widening survives with a frame-specific scale. C1's chat-frame σ (Session A) → separates
 KDG-A7 R_a (installed decisive agent frame, a persona lever) from R_b (raw-frame format).
+
+Fork P1-A1 (frame-specific normalization; pushed before computing; labelled): per unit of each
+frame's own scale, post-training lowers the pressure response on both sides (acting −0.201
+[−0.375, −0.046], judging −0.128 [−0.251, −0.010]); the excess difference is unresolved and negative
+(−0.074 [−0.224, 0.065], MDE 0.21); the gap stays present in both models (base 0.233, instruct
+0.159, both CIs above 0). Ratio-of-means second derivation agrees in sign on both sides. Candidate
+reframe for the author (not adopted): the execution program's post-training result is
+*sharpening*, not widening: a twin-less eval sees a safer model at rest and a larger raw pressure
+response, and neither is the per-unit change. The instrument claim survives with this mechanism;
+the "widened sensitivity" headline does not survive per unit of scale at this power.
