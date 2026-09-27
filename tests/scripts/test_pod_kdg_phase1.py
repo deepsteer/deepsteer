@@ -236,6 +236,9 @@ class TestSessionAAnalysis:
             ("final_c1", ["olmo3_instruct"], ["C1"]),
             ("stages_chat", ["olmo3_sft", "olmo3_dpo"], ["C3CHAT"]),
             ("final_dose", ["olmo3_instruct"], ["DOSE"]),
+            ("stages_chat_sft", ["olmo3_sft"], ["C3CHAT"]),
+            ("final_dose_bf", ["olmo3_instruct"], ["DOSE_BF"]),
+            ("dose_long", ["olmo3_instruct"], ["DOSE_LONG"]),
         ]
         for step, models, units in steps:
             pod.run(p1a / step, True, models, units, [scenario_file])
@@ -270,6 +273,9 @@ class TestSessionAAnalysis:
         }
         assert rep["C1"]["A7"]["n"] > 0
         assert rep["C2"]["n_scenarios"] > 0 and rep["C2"]["verdict"] != "no_data"
+        # P1-A5 / P1-A3 read the p1a_fix step directories
+        assert rep["C2_forced"]["n_scenarios"] > 0 and rep["C2_forced"]["verdict"] != "no_data"
+        assert rep["BRIDGE"]["n"] > 0 and rep["BRIDGE"]["verdict"].startswith("base_cell_")
 
 
 class TestDoseForced:

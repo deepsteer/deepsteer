@@ -279,7 +279,9 @@ def c1(status, c1_dir: list[Path], screened, raw208, raw_final_dirs: list[Path])
 
 
 # ------------------------------------------------------------------ C2
-def dose_p(d: Path, cell: str, status: dict, ids_chat, ids_sp) -> dict[str, list[float]]:
+def dose_p(
+    d: Path, cell: str, status: dict, ids_chat, ids_sp, require_anchor: bool = True
+) -> dict[str, list[float]]:
     rows = _rows(d / f"{cell}.jsonl")
     if not rows:
         return {}
@@ -290,7 +292,7 @@ def dose_p(d: Path, cell: str, status: dict, ids_chat, ids_sp) -> dict[str, list
     for k, r in enumerate(rows):
         sid = r["scenario_id"]
         ds = r.get("decision_step")
-        if sid not in status or ds is None or int(ds) < 0:
+        if sid not in status or (require_anchor and (ds is None or int(ds) < 0)):
             continue  # P1-A2 §4: no anchor -> stored vector is the first token, not the decision
         letters = sorted(r["order"])
         vec = lp[k].astype(np.float64)
@@ -342,6 +344,107 @@ def c2(status, dose_dir: Path, screened, ids_chat, ids_sp) -> dict:
             k: boot(np.array([np.mean(x[s]) for s in keep if s in x]))
             for k, x in (("dose2", a), ("filler", b), ("dose1", c))
         },
+    }
+
+
+def verdict4(r: dict) -> str:
+    lo, hi, mde = r["ci95"][0], r["ci95"][1], r.get("mde")
+    if lo is None:
+        return "no_data"
+    if hi < 0:
+        return "closes"
+    if lo > 0:
+        return "widens"
+    return "leaves" if (lo > -mde and hi < mde) else "unresolved"
+
+
+def c2_forced(status, dirs: dict[str, Path], screened, ids_chat, ids_sp) -> dict:
+    """P1-A5: budget-forced readout, every rollout counts; natural-anchor readout secondary;
+    the 2,048 rider descriptive. Prose label for the 512 arm: truncated reasoning."""
+    bf, long_ = dirs["bf"], dirs["long"]
+    F = {
+        a: dose_p(bf, f"d_chat_{a}_bf_forced", status, ids_chat, ids_sp, require_anchor=False)
+        for a in ("dose1", "dose2", "dose2_filler")
+    }
+    keep = [s for s in sorted(screened) if F["dose2"].get(s) and F["dose2_filler"].get(s)]
+    d = np.array([np.mean(F["dose2"][s]) - np.mean(F["dose2_filler"][s]) for s in keep])
+    prim = boot(d)
+    d1 = [s for s in keep if F["dose1"].get(s)]
+    sec1 = boot(np.array([np.mean(F["dose1"][s]) - np.mean(F["dose2_filler"][s]) for s in d1]))
+    N = {
+        a: dose_p(bf, f"d_chat_{a}_bf", status, ids_chat, ids_sp) for a in ("dose2", "dose2_filler")
+    }
+    kn = [
+        s
+        for s in sorted(screened)
+        if len(N["dose2"].get(s, [])) >= MIN_ANCHORED
+        and len(N["dose2_filler"].get(s, [])) >= MIN_ANCHORED
+    ]
+    nat = boot(np.array([np.mean(N["dose2"][s]) - np.mean(N["dose2_filler"][s]) for s in kn]))
+
+    def anchor_rate(cell):
+        rows = _rows(bf / f"{cell}_forced.jsonl") or _rows(long_ / f"{cell}_forced.jsonl")
+        return (
+            (sum(bool(r.get("forced_natural_anchor")) for r in rows) / len(rows)) if rows else None
+        )
+
+    L = {
+        a: dose_p(long_, f"d_chat_{a}_long", status, ids_chat, ids_sp)
+        for a in ("dose2", "dose2_filler")
+    }
+    Lf = {
+        a: dose_p(long_, f"d_chat_{a}_long_forced", status, ids_chat, ids_sp, require_anchor=False)
+        for a in ("dose2", "dose2_filler")
+    }
+    return {
+        "label": "truncated reasoning (512-token budget, forced Answer:)",
+        "n_scenarios": len(keep),
+        "delta_dose2_minus_filler_forced": prim,
+        "verdict": verdict4(prim),
+        "secondary_dose1_minus_filler_forced": sec1,
+        "secondary_natural_anchor": {"n_scenarios": len(kn), "delta": nat},
+        "natural_anchor_rate": {
+            a: anchor_rate(f"d_chat_{a}_bf") for a in ("dose1", "dose2", "dose2_filler")
+        },
+        "rider_2048_descriptive": {
+            "anchor_rate": {a: anchor_rate(f"d_chat_{a}_long") for a in ("dose2", "dose2_filler")},
+            "pD_natural": {a: boot(np.array([np.mean(v) for v in L[a].values()])) for a in L},
+            "pD_forced": {a: boot(np.array([np.mean(v) for v in Lf[a].values()])) for a in Lf},
+        },
+    }
+
+
+def bridge(status, raw_dirs: list[Path], chat_dirs: list[Path]) -> dict:
+    """P1-A3: SFT raw vs chat-template g_null on the twins; author's rule on the base cell."""
+    names_r = ("d_raw", "j_raw", "d_raw_pressure_removed", "j_raw_pressure_removed")
+    names_c = (
+        "dl_chat_neutral",
+        "jl_chat_neutral",
+        "dl_chat_neutral_pressure_removed",
+        "jl_chat_neutral_pressure_removed",
+    )
+    R, C = four_cells(raw_dirs, names_r, status), four_cells(chat_dirs, names_c, status)
+    ids = sorted(s for s in R if s in C and R[s]["mass_min"] >= FLOOR and C[s]["mass_min"] >= FLOOR)
+    sr = {s: scales(R[s]) for s in ids}
+    sc = {s: scales(C[s]) for s in ids}
+    prim = boot(np.array([sr[s]["g_null"] - sc[s]["g_null"] for s in ids]))
+    lo, hi = prim["ci95"]
+    valid = lo is not None and lo <= 0 <= hi and abs(prim["mean"]) < prim["mde"]
+    return {
+        "n": len(ids),
+        "delta_g_null_raw_minus_chat": prim,
+        "g_null_raw": boot(np.array([sr[s]["g_null"] for s in ids])),
+        "g_null_chat": boot(np.array([sc[s]["g_null"] for s in ids])),
+        "secondary_E_raw_minus_chat": boot(
+            np.array([sr[s]["E_prob"] - sc[s]["E_prob"] for s in ids])
+        ),
+        "secondary_sigma_logratio_raw_minus_chat": boot(
+            np.array(
+                [np.log(R[s]["sD"] / R[s]["sJ"]) - np.log(C[s]["sD"] / C[s]["sJ"]) for s in ids]
+            )
+        ),
+        "verdict": "base_cell_valid" if valid else "base_cell_descriptive_only",
+        "rule": "P1-A3: valid iff CI includes 0 and |delta| < realized MDE (power-dependent)",
     }
 
 
@@ -410,6 +513,14 @@ def main(argv=None) -> int:
     rep["C3"] = c3(status, dirs, chat_dirs, screened)
     rep["C1"] = c1(status, chat_dirs["final"], screened, raw208, dirs["final"])
     rep["C2"] = c2(status, p / "final_dose" / "olmo3_instruct", screened, ids_chat, ids_sp)
+    rep["C2_forced"] = c2_forced(
+        status,
+        {"bf": p / "final_dose_bf" / "olmo3_instruct", "long": p / "dose_long" / "olmo3_instruct"},
+        screened,
+        ids_chat,
+        ids_sp,
+    )
+    rep["BRIDGE"] = bridge(status, dirs["sft"], chat_dirs["sft"])
     per = rep["C3"].pop("_per_scenario")
     a.write.write_text(json.dumps(rep, indent=1))
     with open(a.write.with_name(a.write.stem + "_c3_per_scenario.csv"), "w", newline="") as f:
@@ -422,6 +533,8 @@ def main(argv=None) -> int:
     print("C3", rep["C3"]["n_shared"], rep["C3"]["gate"], rep["C3"]["verdict_primary_scale_E_norm"])
     print("C1", rep["C1"]["primary_screened_twins"]["verdict"], "A7", rep["C1"]["A7"]["verdict"])
     print("C2", rep["C2"]["verdict"], rep["C2"]["n_scenarios"])
+    print("C2_forced", rep["C2_forced"]["verdict"], rep["C2_forced"]["n_scenarios"])
+    print("BRIDGE", rep["BRIDGE"]["verdict"], rep["BRIDGE"]["n"])
     return 0
 
 
