@@ -382,8 +382,12 @@ def main(argv=None) -> int:
         "dpo": [p / "stages_raw" / "olmo3_dpo"],
         "final": [d / "olmo3_instruct" for d in a.old] + [p / "final_new" / "olmo3_instruct"],
     }
+    # SFT stage-chat cells were re-run into stages_chat_sft (KDG_RESULTS §15.4); path only
+    sft_chat = p / "stages_chat_sft" / "olmo3_sft"
+    if not sft_chat.exists():
+        sft_chat = p / "stages_chat" / "olmo3_sft"
     chat_dirs = {
-        "sft": [p / "stages_chat" / "olmo3_sft"],
+        "sft": [sft_chat],
         "dpo": [p / "stages_chat" / "olmo3_dpo"],
         "final": [p / "final_c1" / "olmo3_instruct"],
     }

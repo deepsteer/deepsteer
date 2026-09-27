@@ -3,6 +3,7 @@
 # Orion's terminal); KDG_PROFILE selects the session:
 #
 #   KDG_PROFILE=p1a  Session A (OLMo-3: stage raw cells, new rows, C1, stage chat, dose arm)
+#   KDG_PROFILE=p1a_fix  re-run of the p1a cells lost in the download (stages_raw, SFT stage chat)
 #   KDG_PROFILE=p1b  Session B (Llama-3.1 base + Meta instruct, Tulu-3 stages, Qwen2.5: raw cells)
 #
 #   GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe,NVIDIA H100 80GB HBM3,NVIDIA H100 PCIe" \
@@ -25,8 +26,9 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-case "$PROFILE" in p1a|p1b) ;; *) echo "FATAL: KDG_PROFILE must be p1a or p1b (got '$PROFILE')"; exit 1;; esac
-OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
+case "$PROFILE" in p1a|p1b|p1a_fix) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b or p1a_fix (got '$PROFILE')"; exit 1;; esac
+# p1a_fix writes into outputs/p1a (it re-runs Session A cells lost in the 2026-09-27 download)
+OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%_fix}"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
 D=papers/kdg_panel/data
 
@@ -50,7 +52,7 @@ echo ">> scenario rows on pod: $N_ROWS"
 [ "${N_ROWS:-0}" -ge 580 ] || { echo "FATAL: fewer than 580 scenario rows: the Z4 top-up (round 3) is not synced"; exit 1; }
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
-if [ "$PROFILE" = "p1a" ]; then
+if [ "$PROFILE" != "p1b" ]; then
   python $S --dry-run --models olmo3_instruct,olmo3_sft,olmo3_base --units RAW,C1,C3CHAT,VALIDATE,DOSE --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 else
   [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session B needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
@@ -73,7 +75,11 @@ step() {  # step <name> <driver args...>
 }
 R3="$(ls $D/round3_scenarios_*.json | tr '\n' ' ')"
 
-if [ "$PROFILE" = "p1a" ]; then
+if [ "$PROFILE" = "p1a_fix" ]; then
+  # re-run of the cells lost in the p1a download (KDG_RESULTS §15.4): stage raw cells + SFT chat
+  step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
+  step stages_chat_sft --models olmo3_sft --units C3CHAT
+elif [ "$PROFILE" = "p1a" ]; then
   # keystone: C3 stage raw cells on the enlarged union (pilot gate n_shared is computed at analysis)
   step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
   # new rows on the existing models: base raw; final raw + KDG-2 chat ladder
