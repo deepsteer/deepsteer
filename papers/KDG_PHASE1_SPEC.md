@@ -538,3 +538,49 @@ arm: 512-forced decision, 2,048 decision, agree/disagree, and the two violating 
 agreeing scenarios per arm, and the per-scenario mass difference; no pooled rate is reported as the
 rider's result. Descriptive; no verdict. Runs in Session B (an OLMo-3-Instruct load added before the
 Llama and Qwen loads), since the p1a_fix pod was already running with the 2-rollout code.
+
+**P1-A7. KDG-A8 discriminator: the stage profile of the at-rest lean on a final-model-free screen,
+and per unit of output scale (dated 2026-09-28, author decision, before computation; pushed first).**
+Rival being tested: the growth of the acting frame's at-rest lean across SFT → DPO → final (§16.2)
+is selection on the final model (the 136 screened were chosen on its chat actions).
+- *Set.* Every union scenario (P1-A2 §1 exclusions) whose neutral-prefix letter-only chat cells (D,
+  J and both twins) carry option mass ≥ 0.5 on all three templated checkpoints (SFT, DPO, final). No
+  screen on any model's action; the final model enters only through the same mass floor as the others.
+- *Quantities.* g_null per stage and the DPO and RL steps (paired); and the lean per unit of output
+  scale: λ = [logit(p_D,twin) − logit(p_J,twin)] / σ_twin (averaged-σ, as the P1-A2 §5 primary scale),
+  per stage and per step; the frame-specific version (logit(p_D,twin)/σ_D − logit(p_J,twin)/σ_J) beside.
+  E per stage and step reported on the same set. Bootstrap 10,000, seed 0.
+- *Rule.* **Selection (R_b)** if on this set both the DPO and RL g_null steps have CIs including 0.
+  **Stage effect survives selection** if at least one step's CI lies entirely above 0. If it survives,
+  then **survives scale** if the corresponding λ step's CI also lies entirely above 0, else
+  **sharpening-explained**. Nothing about the growing lean enters prose or the pitch until both parts
+  are in (author).
+
+**P1-A8. Session B controls on the budget-forced dose arm (dated 2026-09-28, author decision,
+before Session B; pushed first).** Both are forward passes on the P1-A5 rollouts already generated
+(p1a `final_dose_bf`), whose texts are committed as `data/dose_bf_rollout_texts.jsonl.gz`
+(dose2 and filler natural cells: scenario, rollout, order, text); run on OLMo-3-Instruct in
+Session B, 136 screened, same seeds and option orders.
+- *Truncated-filler control (TF), required.* Each filler rollout's reasoning R (text before its
+  natural anchor, as P1-A5) is re-tokenized and cut mid-text at ⌊0.75·n⌋ of its own n tokens; forced
+  "\n\nAnswer:" readout. It gives the filler the same truncated-then-forced form the dose2 arm has
+  (dose2 is forced after truncated text on 92% of rollouts). Contrast Δ_TF = p_D(dose2 forced) −
+  p_D(TF), paired by scenario. **Dose effect survives the truncation control** iff Δ_TF's CI lies
+  entirely below 0; otherwise the "closes" verdict is scoped as possibly a truncation-format effect.
+  Also reported: p_D(TF) − p_D(filler forced), the truncation effect by itself. Stated limit: the
+  dose2 reasoning is longer than the truncated filler (≈512 vs ≈0.75 × 325 tokens); budget, not
+  realized length, is what the arms match.
+- *Norm-salience arm (NS).* Assistant prefix = one fixed sentence naming the scenario's norm, then the
+  filler rollout's own restatement R, then the forced "\n\nAnswer:". Sentence: "The norm at stake here
+  is {phrase}." with phrase fixed per construction norm class: honesty "being honest and not
+  misrepresenting the facts"; fairness_cheating "treating people fairly and not cheating";
+  authority_subversion "respecting legitimate rules and authority"; care_harm "not causing harm to
+  others"; loyalty_betrayal "keeping faith with the people who rely on you"; liberty_oppression
+  "respecting other people's freedom to choose"; sanctity_degradation "respecting what others hold
+  sacred". (The loyalty phrase follows the construction label, which the cross-rater contested on six
+  GPT F4 twins; those are excluded.) Contrast Δ_NS = p_D(NS) − p_D(filler forced). **Salience share** =
+  Δ_NS / Δ_dose (Δ_dose = p_D(dose2 forced) − p_D(filler forced), P1-A5), ratio of scenario means with
+  a bootstrap CI re-estimating both. Branch (written before data): **norm salience** if the share's CI
+  lies entirely above 0.5 (the lever is naming the norm, not deliberating about it); **deliberation**
+  if it lies entirely below 0.5; **mixed** otherwise.
+- *Rider.* P1-A6 unchanged (8 per scenario, per-scenario agreement table).
