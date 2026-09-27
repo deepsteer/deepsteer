@@ -483,6 +483,17 @@ gap sits in the fairness primaries (screened rate 0.40, n 10), not the loyalty t
 Discriminator (zero GPU): re-score KDG-A4 with every F4 loyalty-norm twin excluded, both
 generators; and for any future F4 round, rotate twin norms across halves. Status: open, priced.
 
+**Process ledger 2026-09-27 — interrupted download lost a keystone step.** Session A (pod
+fcwecbba80z0hg, p1a) completed every step on the pod, but the launcher downloaded results with a
+single unchecked `rsync -az` pass. The pass was interrupted inside `stages_chat` (alphabetical
+order), so `stages_raw` (the C3 keystone: SFT/DPO raw cells) and two SFT chat cells never arrived,
+and the EXIT trap terminated the pod. Fix (commit 703c8cc): `rp_download` in
+`papers/runpod_common/session_lib.sh`, used by `run_session.sh`: up to 5 attempts
+(`DOWNLOAD_TRIES`, default 5) with `--partial`, 20 s apart; on persistent failure KEEP_POD=1 so the
+pod survives and the terminate command is printed. Tested with a fake rsync (recovers after 2
+failures; keeps the pod after 3 of 3). Cost of the incident: one re-run pod (p1a_fix, ~50 min).
+Lesson for every launcher in the repo: a teardown trap must be conditional on a verified download.
+
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 
 **Date.** 2026-09-19 (A17 E1; `papers/kdg_panel/data/analysis_a17_union.json` `chat_exploratory.E1_family_contrasts`; KDG_RESULTS §13.2).

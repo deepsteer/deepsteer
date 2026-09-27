@@ -482,3 +482,24 @@ open, fixed now:
    checkpoints (base, SFT, DPO, final), union of all rounds after exclusions.
 6. *C3 chat secondary.* E_chat per stage from the neutral-prefix letter cells on the 136 screened,
    same exclusion as item 2; adjacent-step Δ with CIs; descriptive, no verdict.
+
+**P1-A3. SFT bridge cell: raw vs chat-template readout at the first templated stage (dated
+2026-09-27, author decision, before the p1a_fix pod; pushed before it runs).** Purpose: bound the
+raw-frame format effect (KDG_RESULTS §15) at the checkpoint closest to base, so the base-raw cell's
+status is decided by a rule, not by argument. Cells: `stages_raw` (SFT raw D/J + twins) and
+`stages_chat_sft` (SFT neutral letter-only chat D/J + twins), both in p1a_fix; no new units.
+Set: SFT scenarios (union after P1-A2 §1 exclusions) whose four raw cells and four chat cells all
+carry option mass ≥ 0.5. Quantities, per scenario, paired: **primary** Δ_bridge = g_null,raw −
+g_null,chat on the pressure-removed twins (the quantity whose sign the format flipped on the final
+model); secondary, reported beside: E_raw − E_chat and the agent/judge σ-ratio log difference (as in
+P1-A2 §3). Bootstrap 10,000, seed 0; realized MDE = 2.8 × SE from the bootstrap interval.
+**Rule (author's, fixed now):** if Δ_bridge's 95% CI includes 0 and |Δ_bridge| is below its
+realized MDE, base-raw vs SFT-raw is a valid pretraining-boundary comparison and the base cell keeps
+its status; otherwise the base cell is descriptive only and the paper says so. Stated caveat
+(estimator-traps #12): "below the MDE" is power-dependent; the verdict sentence reports the CI and
+the MDE, never "no format effect" alone.
+
+**P1-A4. Session B instruct readout (dated 2026-09-27, author decision).** Every instruct model in
+Session B (Llama-3.1 Meta instruct, Tulu-3 SFT/DPO/final, Qwen2.5 instruct) also runs the neutral
+letter-only chat cells (C3CHAT: D, J and both twins). No raw-only instruct number from Session B is
+reported as a finding; raw instruct cells are reported only beside their chat counterparts, labelled.

@@ -118,5 +118,7 @@ PY
   fi
 else
   step raw_lineages --models llama31_base,llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_base,qwen25_instruct_p1 --units RAW
+  # P1-A4: every instruct model also gets the neutral letter-only chat cells (no raw-only instruct findings)
+  step chat_lineages --models llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_instruct_p1 --units C3CHAT
 fi
 echo ">> KDG Phase 1 $PROFILE done. rsync-back -> papers/kdg_panel/outputs/$PROFILE/ (one manifest per step)."
