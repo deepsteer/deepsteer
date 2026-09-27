@@ -33,6 +33,7 @@ sys.path.insert(0, str(REPO))
 from deepsteer.kdg.harness import KDG_HARNESS_VERSION, parse_response  # noqa: E402
 from deepsteer.kdg.phase1_frames import (  # noqa: E402
     PHASE1_TEMPLATE_VERSION,
+    norm_salience_sentence,
     render_letter_user_message,
 )
 from deepsteer.kdg.schema import (  # noqa: E402
@@ -253,6 +254,9 @@ class ModelWrapper:
     def decode(self, ids: list[int]) -> str:
         return self.tok.decode(ids, skip_special_tokens=True)
 
+    def encode(self, text: str) -> list[int]:
+        return self.tok.encode(text, add_special_tokens=False)
+
     def release(self) -> None:
         self.wb.release()
 
@@ -291,7 +295,10 @@ class StubModel:
         return outs
 
     def decode(self, ids):
-        return "stub reasoning " * max(1, len(ids) // 3)
+        return " ".join(f"w{i}" for i in ids)
+
+    def encode(self, text):
+        return list(range(len(text.split())))
 
     def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True):
         self.last_add_special_tokens = add_special_tokens
@@ -847,6 +854,94 @@ def cell_dose_forced(
     ctx.save_cell(cell + "_forced", fr_rows, forced, {"option_token_ids": ids})
 
 
+DOSE_TEXTS = REPO / "papers" / "kdg_panel" / "data" / "dose_bf_rollout_texts.jsonl.gz"
+_ANSWER_ANYWHERE = re.compile(r"answer\s*[:=\-]", re.I)
+
+
+def reasoning_before_answer(text: str) -> tuple[str, bool]:
+    """P1-A8: the saved rollout text before its last 'Answer:' line (natural anchor), else all."""
+    hits = list(_ANSWER_ANYWHERE.finditer(text))
+    if not hits:
+        return text.rstrip(), False
+    return text[: hits[-1].start()].rstrip(), True
+
+
+def cell_dose_control(ctx: Ctx, scenarios: list[Scenario], *, kind: str) -> None:
+    """P1-A8 forward-pass controls on the committed P1-A5 filler rollouts.
+
+    kind "tf": the filler reasoning cut mid-text at floor(0.75 n) of its own tokens, forced
+    "\n\nAnswer:". kind "ns": a fixed norm-naming sentence, then the filler reasoning, forced.
+    Prompts are the original filler prompts (order re-derived from the rollout seed and asserted
+    equal to the saved order). Cell ``d_chat_dose2_filler_{kind}_forced``.
+    """
+    import gzip
+
+    by_id = {s.id: s for s in scenarios if s.family != "F2"}
+    if ctx.dry:  # synthetic rows: stub scenarios reuse real ids with different options
+        rows_in = [
+            {
+                "scenario_id": s.id,
+                "rollout": i,
+                "order": letter_map(assign_letters(s, i)),
+                "text": "restated situation words here and more words\nAnswer: A",
+            }
+            for s in list(by_id.values())[:2]
+            for i in range(2)
+        ]
+    else:
+        rows_in = []
+        for line in gzip.open(DOSE_TEXTS, "rt"):
+            r = json.loads(line)
+            if r["arm"] == "dose2_filler" and r["scenario_id"] in by_id:
+                rows_in.append(r)
+    cell = f"d_chat_dose2_filler_{kind}_forced"
+    prompts, rows, opt_ids = [], [], []
+    for r in rows_in:
+        s = by_id[r["scenario_id"]]
+        order = assign_letters(s, int(r["rollout"]))
+        # "the control reads the rollout under its own option order": fail loudly on drift
+        assert letter_map(order) == r["order"], (s.id, r["rollout"], "order drift")
+        base = ctx.model.render_chat(
+            [{"role": "user", "content": render_agent_user_message(s, order, "dose2_filler")}]
+        )
+        text, natural = reasoning_before_answer(r["text"])
+        if kind == "tf":
+            ids = ctx.model.encode(text)
+            n_cut = int(np.floor(0.75 * len(ids)))
+            body = ctx.model.decode(ids[:n_cut]).rstrip()
+        elif kind == "ns":
+            n_cut = None
+            body = f"{norm_salience_sentence(s.norm_class)}\n\n{text}"
+        else:
+            raise ValueError(kind)
+        fp = base + body + "\n\nAnswer:"
+        prompts.append(fp)
+        opt_ids.append(_option_ids(ctx, order, chat=True))
+        rows.append(
+            {
+                "scenario_id": s.id,
+                "role": s.role,
+                "family": s.family,
+                "generator": s.generator,
+                "cell": cell,
+                "arm": "dose2_filler",
+                "control": kind,
+                "rollout": int(r["rollout"]),
+                "seed": int(r["rollout"]),
+                "order": letter_map(order),
+                "prompt_sha256": sha256_text(fp),
+                "natural_anchor_in_source": natural,
+                "tf_tokens": n_cut,
+                "norm_class": s.norm_class,
+                "harness_version": KDG_HARNESS_VERSION,
+                "template_version": PHASE1_TEMPLATE_VERSION,
+                "chat_template_sha256": ctx.model.chat_template_sha,
+            }
+        )
+    logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
+    ctx.save_cell(cell, rows, logp, {"option_token_ids": np.array(opt_ids, dtype=np.int64)})
+
+
 def rendered_identity_mismatches(
     model: ModelWrapper | StubModel, reference_render, scenarios: list[Scenario], n: int = 16
 ) -> list[str]:
@@ -976,6 +1071,9 @@ UNITS["d_chat_dose2_filler_long"] = (
     lambda c, S: cell_dose_forced(c, S, arm="dose2_filler", budget=2048, n_roll=8, suffix="_long8"),
 )
 DOSE_BF_UNITS = ("d_chat_dose1_bf", "d_chat_dose2_bf", "d_chat_dose2_filler_bf")
+UNITS["dose_ctrl_tf"] = (("instruct",), lambda c, S: cell_dose_control(c, S, kind="tf"))
+UNITS["dose_ctrl_ns"] = (("instruct",), lambda c, S: cell_dose_control(c, S, kind="ns"))
+DOSE_CTRL_UNITS = ("dose_ctrl_tf", "dose_ctrl_ns")
 DOSE_LONG_UNITS = ("d_chat_dose2_long", "d_chat_dose2_filler_long")
 
 # Phase 1 C1 / C3-secondary letter-only chat cells:

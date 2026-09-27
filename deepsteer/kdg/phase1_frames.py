@@ -67,3 +67,21 @@ def render_letter_user_message(
     else:
         raise ValueError(frame)
     return f"{framing_prefix(prefix)}\n\n{msg}"
+
+
+# P1-A8 norm-salience arm: one fixed sentence per construction norm class (pinned under
+# PHASE1_TEMPLATE_VERSION; any change is a fork amendment).
+NORM_SALIENCE_PHRASES: dict[str, str] = {
+    "honesty": "being honest and not misrepresenting the facts",
+    "fairness_cheating": "treating people fairly and not cheating",
+    "authority_subversion": "respecting legitimate rules and authority",
+    "care_harm": "not causing harm to others",
+    "loyalty_betrayal": "keeping faith with the people who rely on you",
+    "liberty_oppression": "respecting other people's freedom to choose",
+    "sanctity_degradation": "respecting what others hold sacred",
+}
+
+
+def norm_salience_sentence(norm_class: str) -> str:
+    """P1-A8: 'The norm at stake here is {phrase}.' for a construction norm class."""
+    return f"The norm at stake here is {NORM_SALIENCE_PHRASES[norm_class]}."

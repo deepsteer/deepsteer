@@ -53,11 +53,12 @@ echo ">> scenario rows on pod: $N_ROWS"
 [ "${N_ROWS:-0}" -ge 580 ] || { echo "FATAL: fewer than 580 scenario rows: the Z4 top-up (round 3) is not synced"; exit 1; }
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
+[ -f $D/dose_bf_rollout_texts.jsonl.gz ] || { echo "FATAL: dose rollout texts missing (P1-A8 input)"; exit 1; }
 if [ "$PROFILE" != "p1b" ]; then
   python $S --dry-run --models olmo3_instruct,olmo3_sft,olmo3_base --units RAW,C1,C3CHAT,VALIDATE,DOSE,DOSE_BF,DOSE_LONG --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 else
   [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session B needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
-  python $S --dry-run --models llama31_base,tulu3_sft,qwen25_base --units RAW --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  python $S --dry-run --models olmo3_instruct,llama31_base,tulu3_sft,qwen25_base --units RAW,C3CHAT,DOSE_LONG,DOSE_CTRL --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 fi
 if [ "$VALIDATE" = "1" ]; then
   echo ">> VALIDATE: gates + dry run OK on the pod. Launch without VALIDATE for the real run."; exit 0
@@ -139,6 +140,9 @@ ids = [i for f in ("F1", "F3", "F4", "F5") for i in [x for x in allids if x.star
 json.dump(ids, open("$OUT/dose_long8_ids.json", "w"))
 PY
   step dose_long8 --models olmo3_instruct --units DOSE_LONG --scenario-ids-file "$OUT/dose_long8_ids.json"
+  # P1-A8: truncated-filler control (required) and norm-salience arm, forward passes on the committed
+  # P1-A5 filler rollouts (data/dose_bf_rollout_texts.jsonl.gz), 136 screened
+  step dose_controls --models olmo3_instruct --units DOSE_CTRL --scenario-ids-file $D/screened_ids_a17_union.json
   step raw_lineages --models llama31_base,llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_base,qwen25_instruct_p1 --units RAW
   # P1-A4: every instruct model also gets the neutral letter-only chat cells (no raw-only instruct findings)
   step chat_lineages --models llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_instruct_p1 --units C3CHAT

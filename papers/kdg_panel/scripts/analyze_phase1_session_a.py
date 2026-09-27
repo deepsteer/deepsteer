@@ -505,6 +505,58 @@ def rider8(status, bf_dir: Path, long8_dir: Path, ids_chat, ids_sp) -> dict:
     return out
 
 
+def dose_controls(status, bf_dir: Path, ctrl_dir: Path, screened, ids_chat, ids_sp) -> dict:
+    """P1-A8: truncated-filler control (TF, required) and norm-salience arm (NS) against the P1-A5
+    forced readouts, paired by scenario on the screened set."""
+
+    def per_scen(d: Path, cell: str) -> dict[str, float]:
+        acc: dict[str, list] = {}
+        for sid, m, _ in row_masses(d, cell, status, ids_chat, ids_sp):
+            acc.setdefault(sid, []).append(m)
+        return {k: float(np.mean(v)) for k, v in acc.items()}
+
+    D2 = per_scen(bf_dir, "d_chat_dose2_bf_forced")
+    F = per_scen(bf_dir, "d_chat_dose2_filler_bf_forced")
+    TF = per_scen(ctrl_dir, "d_chat_dose2_filler_tf_forced")
+    NS = per_scen(ctrl_dir, "d_chat_dose2_filler_ns_forced")
+    ids = sorted(s for s in screened if s in D2 and s in F and s in TF and s in NS)
+    d2, f, tf, ns = (np.array([X[s] for s in ids]) for X in (D2, F, TF, NS))
+    d_tf = boot(d2 - tf)
+    trunc = boot(tf - f)
+    d_ns = boot(ns - f)
+    d_dose = boot(d2 - f)
+    n = len(ids)
+    if n:
+        idx = np.random.default_rng(SEED).integers(0, n, size=(N_BOOT, n))
+        num = (ns - f)[idx].mean(1)
+        den = (d2 - f)[idx].mean(1)
+        share_draws = num / den
+        pt = float((ns - f).mean() / (d2 - f).mean())
+        lo, hi = np.percentile(share_draws, [2.5, 97.5])
+        share = {
+            "mean": pt,
+            "ci95": [float(lo), float(hi)],
+            "n": n,
+            "point_in_ci": bool(lo <= pt <= hi),
+        }
+        branch = "norm_salience" if lo > 0.5 else ("deliberation" if hi < 0.5 else "mixed")
+    else:
+        share, branch = {"mean": None, "ci95": [None, None], "n": 0}, "no_data"
+    survives = d_tf["ci95"][1] is not None and d_tf["ci95"][1] < 0
+    return {
+        "n": n,
+        "delta_dose2_minus_TF": d_tf,
+        "verdict_truncation_control": (
+            "dose_effect_survives" if survives else "scoped_possible_truncation_format"
+        ),
+        "truncation_effect_TF_minus_filler": trunc,
+        "delta_NS_minus_filler": d_ns,
+        "delta_dose2_minus_filler_same_set": d_dose,
+        "salience_share": share,
+        "verdict_salience": branch,
+    }
+
+
 def bridge(status, raw_dirs: list[Path], chat_dirs: list[Path]) -> dict:
     """P1-A3: SFT raw vs chat-template g_null on the twins; author's rule on the base cell."""
     names_r = ("d_raw", "j_raw", "d_raw_pressure_removed", "j_raw_pressure_removed")
@@ -613,6 +665,11 @@ def main(argv=None) -> int:
         ids_sp,
     )
     rep["BRIDGE"] = bridge(status, dirs["sft"], chat_dirs["sft"])
+    ctrl = a.p1b / "dose_controls" / "olmo3_instruct"
+    if ctrl.exists():
+        rep["DOSE_CONTROLS"] = dose_controls(
+            status, p / "final_dose_bf" / "olmo3_instruct", ctrl, screened, ids_chat, ids_sp
+        )
     long8 = a.p1b / "dose_long8" / "olmo3_instruct"
     if long8.exists():
         rep["RIDER_2048"] = rider8(

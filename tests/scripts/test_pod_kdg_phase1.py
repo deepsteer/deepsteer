@@ -245,6 +245,7 @@ class TestSessionAAnalysis:
         pod.run(old / "kdg2", True, ["olmo3_base", "olmo3_instruct"], ["RAW"], [scenario_file])
         p1b = tmp_path / "p1b"
         pod.run(p1b / "dose_long8", True, ["olmo3_instruct"], ["DOSE_LONG"], [scenario_file])
+        pod.run(p1b / "dose_controls", True, ["olmo3_instruct"], ["DOSE_CTRL"], [scenario_file])
         out = tmp_path / "rep.json"
         rc = ana.main(
             [
@@ -283,6 +284,9 @@ class TestSessionAAnalysis:
         # P1-A6 rider: per-scenario table read from the Session B step dir
         r8 = rep["RIDER_2048"]["dose2"]
         assert r8["n"] > 0 and all("agree" in t for t in r8["per_scenario"])
+        # P1-A8 controls read the Session B dose_controls step dir
+        dc = rep["DOSE_CONTROLS"]
+        assert dc["n"] > 0 and dc["verdict_salience"] in {"norm_salience", "deliberation", "mixed"}
 
 
 class TestDoseForced:
@@ -348,3 +352,57 @@ class TestDoseForced:
         ]
         assert {r["budget"] for r in rows} == {2048}
         assert max(r["rollout"] for r in rows) == 7
+
+
+class TestDoseControls:
+    def test_reasoning_before_answer_drops_the_final_answer_line(self):
+        # most probable failure: the control prompt keeps the filler's own answer, so the forced
+        # readout re-reads a decision already written
+        text, nat = lib.reasoning_before_answer("I restate the case.\nMore detail.\nAnswer: B")
+        assert nat and text == "I restate the case.\nMore detail."
+        assert lib.reasoning_before_answer("no anchor here") == ("no anchor here", False)
+
+    def test_every_construction_norm_class_has_a_salience_sentence(self):
+        # most probable failure: a norm class in the scenario files has no fixed phrase (KeyError on
+        # the pod, or a silently skipped scenario)
+        import gzip  # noqa: F401
+
+        from deepsteer.kdg.phase1_frames import NORM_SALIENCE_PHRASES, norm_salience_sentence
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        scen, _ = load_scenario_dir(
+            sorted((REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json"))
+        )
+        classes = {s.norm_class for s in scen if s.family != "F2"}
+        assert classes <= set(NORM_SALIENCE_PHRASES)
+        assert norm_salience_sentence("honesty").startswith("The norm at stake here is ")
+
+    def test_tf_cuts_mid_text_and_ns_prepends_the_sentence(self, tmp_path, scen):
+        # most probable failure: TF does not truncate (control == filler) or NS drops the reasoning
+        m = lib.StubModel("instruct")
+        ctx = _Ctx.make(tmp_path, m)
+        lib.UNITS["dose_ctrl_tf"][1](ctx, scen[:2])
+        lib.UNITS["dose_ctrl_ns"][1](ctx, scen[:2])
+        d = tmp_path / "k"
+        tf = [
+            json.loads(x)
+            for x in (d / "d_chat_dose2_filler_tf_forced.jsonl").read_text().splitlines()
+        ]
+        ns = [
+            json.loads(x)
+            for x in (d / "d_chat_dose2_filler_ns_forced.jsonl").read_text().splitlines()
+        ]
+        n_words = len("restated situation words here and more words".split())
+        assert all(r["tf_tokens"] == int(0.75 * n_words) < n_words for r in tf)
+        assert all(r["control"] == "ns" and r["natural_anchor_in_source"] for r in ns)
+        assert m.last_add_special_tokens is False
+
+    def test_committed_rollout_texts_are_the_filler_arm_with_orders(self):
+        # most probable failure: the committed input file is missing an arm or the order field, so
+        # the pod builds prompts under different option orders than the rollouts were generated with
+        import gzip
+
+        rows = [json.loads(x) for x in gzip.open(lib.DOSE_TEXTS, "rt")]
+        arms = {r["arm"] for r in rows}
+        assert arms == {"dose2", "dose2_filler"}
+        assert all(isinstance(r["order"], dict) and r["text"] for r in rows)
