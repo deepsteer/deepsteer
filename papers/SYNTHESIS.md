@@ -11,6 +11,8 @@ RESULTS; this file states the throughline and is re-dated on each substantive ch
 the two-axis table's *interpretation* is reframed as a confound-named dimensionality hypothesis, not an
 n=3 claim.)
 
+**Latest (2026-09-26):** the execution program's three-reads thesis, the instrument-first pitch claim, and the pitch branch table are at the end of this file ("Execution program: three reads, pitch branch table, novelty gate").
+
 ## W4 verdicts (2026-09-13; `d3_decision_anatomy/W4_RESULTS.md`) — what changed
 
 Positive voice first (move 7): **the program now claims, with reliability-certified and replicated
@@ -475,3 +477,120 @@ prompt-version effect for the widening → a version-stratified generation round
 installs goal-following that overrides the model's own judgment" is the mechanism sentence; (ii)
 closes as artifact → the baseline-shift half of the sentence is dropped and the widening stands on
 E alone; (iii) closes as prompt effect → the widening is scoped to the later-written construction.
+
+## Execution program: three reads, pitch branch table, novelty gate (2026-09-26)
+
+Sources: `KDG_PITCH_PLAN.md` (export of the pitch doc, Phase 0 item 3), `INCIDENT_MAP.md`,
+`LIT_PASS_P9.md` (incl. §8 full reads), `ANOMALIES.md` KDG-A6 update of 2026-09-25. No new model
+data; this section restates the thesis and records the gate decisions.
+
+### Thesis, positive voice (OLMo-3-7B scope)
+
+**One model carries three different reads of its moral content.** Its *judgment* reads the moral
+subspace broadly: patching recovers more judgment coupling as moral rank grows (`R_judgment(k)`
+→ 0.66 at k = 16). Its *refusal* reads a harm slice: refusal coupling saturates at the harm rank-1
+level (`R_refusal` 0.31 → 0.27, `harm_saturating`, pooled n = 42). Its *action* departs from its own
+judgment under pressure by a margin that is present before alignment (raw-frame excess E_base 0.017
+[0.012, 0.022]) and larger after it (shared-192 E 0.046 [0.025, 0.069] vs 0.018; the incentive moves
+acting mass 0.085 [0.057, 0.114] on Instruct vs 0.049 [0.037, 0.059] on base, while the judging side
+does not differ), and that is not organized by the harm content refusal reads (third-party harm
+mid-pack; binary family MDE ≈ 0.40). What the action reads is the open question the execution
+program answers next.
+
+Scope: the three-reads sentence is OLMo-3 only. Refusal's harm read also holds on GPT-OSS; Llama's
+refusal reads broad moral content (`R_refusal ≈ R_judgment`) and Qwen's reads beyond harm rank-1 (0.54
+vs 0.38), so across families "refusal reads a harm slice" is a family property, not a law. The action
+read exists on one model.
+
+### The instrument claim (gate decision E1, 2026-09-25: lead with the instrument, not the pattern)
+
+Standing claim, as the pitch will state it: **evaluations that score behavior at a single
+operating point report post-training as an improvement; a matched pressure-removed twin separates a
+baseline shift from a change in pressure sensitivity; on OLMo-3-7B the two move in opposite
+directions for moral action** (no-pressure raw gap +0.024 → −0.038; pressure-attributable excess
+0.018 → 0.046 on the shared 192), so the net gap under pressure falls (0.043 → 0.011) while
+sensitivity rises.
+
+Convergent evidence, cited as such: an independent repository (Sonnet Xu, `sonnetx/tracing-sycophancy`,
+no paper; pushed 2026-09-25) reports the same direction for factual sycophancy on the same base and
+Instruct checkpoints: models "flip their stated answer less often, yet the log-probability shift
+toward the wrong answer ... grows." Cite by pinned commit, direction only; the README has no numbers
+and its claims were being revised on the day we read it (`LIT_PASS_P9.md` §8).
+
+Coincidence interrogation (move 4): two constructs, one recipe, same shape. The simplest model
+that predicts both is a property of the OLMo-3 Instruct recipe that lowers the default (at-rest)
+output and raises the gain on in-context pressure. The rival that fits both equally well is that
+**both results are log-probability readouts**, and log-prob sensitivity may grow under post-training
+for reasons unrelated to behavior (sharper distributions amplify any prompt-induced shift). The
+separating cell is behavioral: the binary (majority-action) readout at a power that can confirm the
+sign (A17: binary under-powered, same sign). This is a Phase 1 power-table item.
+
+| Standing claim | Strongest counter-reading | Separating experiment | Status |
+|---|---|---|---|
+| Pressure-attributable gap present in base, larger after post-training, on the acting side | Log-prob readouts share a sharpening artifact | Binary readout at adequate power (Phase 1 power table) | continuous readout: *widened*; binary: same sign, under-powered |
+| Post-training lowers the at-rest baseline (KDG-A6) | R_b raw-frame artifact; **R_c evaluation caution** (Burnat & Davidson 2605.06327: OLMo-3-Instruct refuses +0.118 more under eval framing, 20-item pilot) | Letter-only chat twins × eval/deploy/neutral prefixes (< 15 min, same pod leg); zero-GPU option-mass split first | open; priced; promoted to the Phase 1 pod |
+| Opposite movement is a property of post-training, not of OLMo-3 | OLMo-3-specific recipe | Second base/instruct lineage (~2 h) + tier 2 (~9 h) | open; Phase 1 |
+| The action does not read the harm slice refusal reads | Under-powered family contrast (MDE ≈ 0.40); KDG-A5 exploratory structure | Family top-up for F3/F5 (~1 h); S1 action-position rank cell | open |
+| Widened sensitivity is goal-following, not a moral read | Deliberation reaches the action (moral read present) | Dose arm with filler control (~90 min) | open; Phase 1 |
+
+Retired by this gate: the pitch framing that led with "post-training widens pressure sensitivity"
+as the headline finding. The finding stands as a construct-specific result; the lead is the
+instrument that shows it, because the shape is no longer uniquely ours (`LIT_PASS_P9.md` §1).
+
+### What each result does to the thesis (pitch branch table, with gate additions)
+
+Unmarked rows are the pitch doc's table ("What each result does to the moral-grounding thesis"),
+except that its "SFT or DPO widens it most" row is split into an SFT row and a DPO row; rows marked †
+were added or split at the 2026-09-25 gate. Both sides of each pending cell are written before
+data.
+
+| Result | Thesis edit |
+|---|---|
+| Gap present in base on a second lineage | The judgment–action discrepancy is pretraining-native; post-training patches cannot be the whole fix. Strengthened. |
+| Gap absent in base on a second lineage | The base-model gap is OLMo-3's; the pretraining claim narrows to comprehension only. |
+| RL stage widens pressure sensitivity most | Goal-following is installed late; the remedy is environment and reward design. |
+| † SFT widens it most | The cause is earlier than the labs are looking; the stage sweep leads the pitch. |
+| † DPO widens it most | Replicates the stage at which OLMo-3-7B sycophancy jumps (Blank et al. 2608.31079: 12.5 → 31.6 on challenges that name no alternative; letter-naming challenges at ceiling from SFT) on a new construct. The cause is preference data (their delta-learning finding), not RL; the pre-registration names which pressure subtype it expects DPO to move. |
+| Deliberation closes the gap | Moral reasoning reaches the action when given room; the lever is behavioral. |
+| Deliberation leaves the gap | More moral reasoning, same action: the strongest form of the knowing-but-not-doing reading. |
+| † Deliberation widens the gap | Matches the incident (OpenAI: "As agents used more reasoning effort, some pursued increasingly risky and out-of-bounds strategies"). Reasoning serves the goal, not the judgment; the dose arm becomes a risk measurement, and the monitor's dose-0 case gains weight. |
+| Action position reads the moral subspace at low rank | Widening that read is the intervention; grounding is the basis. |
+| Action position reads a goal direction and nothing moral | Grounding is necessary and not sufficient; value moves to measurement and monitoring; the intervention targets goal arbitration. |
+| † KDG-A6 closes as R_c (evaluation caution) | The "safer at rest" half becomes an evaluation-framing effect: itself an instance of the pitch's point that single-condition evals mislead, but the baseline-shift clause leaves the headline; sensitivity (a within-frame difference) is unaffected. |
+| † KDG-A6 closes as R_a (installed agent-frame caution) | Both halves stand; persona steering is the first Phase 3 lever. |
+
+### Conjunctions under watch
+
+- **Instrument claim × tracing-sycophancy × KDG-A6 R_c.** If R_c wins, the at-rest improvement in
+  both constructs may be an evaluation-framing default of the Instruct recipe, and the sensitivity
+  increase is the part that generalizes. The repo's "response selection rather than a change in
+  preference" (its instruction-following controls) is the behavioral prediction of the Phase 3
+  persona lever; cite it there.
+- **Incident × dose arm.** OpenAI attributes the incident's riskiest behavior to agents with the
+  largest reasoning effort; our dose arm pre-registers closes/leaves and now widens.
+- **Refusal family split × action read.** Refusal reads harm on OLMo/GPT-OSS and broadly on
+  Llama/Qwen. If the second-lineage action read differs the same way, the action read inherits
+  the family's refusal read; if not, action and refusal are separate channels on every family.
+
+### Novelty scope after the gate (`LIT_PASS_P9.md` §1)
+
+Owned: the pressure-removed twin with its calibration ladder on a self-referenced moral gap; the
+base-model cell in that form; the peer-GO attribution twin (F6, dated, closing fast); the
+grader-vs-human audience contrast for concealment. Not owned: the judgment–action construct
+(Huang, Shen, Strakhov & Claude now cited in the KDG paper), the model-as-agent role change
+(Strakhov & Claude), peer pressure in general, impossible tasks with an escalation exit (Troy
+Moment, ImpossibleBench, GAIN), stage sweeps on OLMo-3 checkpoints (Blank et al.; the repo;
+Cairns; Bharadwaj & Kirk). No "first to" without its qualifier.
+
+### Referee pass on the restated claim
+
+1. *"Your 'opposite directions' is two log-prob numbers, and so is the repo's; post-training
+   sharpens distributions, which inflates any log-prob shift."* Conceded as open. It is the first
+   row of the claims table; the binary readout has the same sign and is under-powered. The pitch
+   must state the readout and carry the Phase 1 power table.
+2. *"The at-rest improvement is OLMo-3-Instruct being eval-cautious, which is published."* Answered
+   by design, not yet by data: the sensitivity claim is a within-frame difference and survives R_c;
+   the baseline clause is scoped until the frame-prefix twin cell runs (< 15 min).
+3. *"One model family, and the precedent is on the same family."* Conceded. The instrument claim
+   is stated on OLMo-3; the lineage generalization is Phase 1's second pair and tier 2, and both
+   branches (present/absent in a second base) are written above.

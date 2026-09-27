@@ -140,7 +140,7 @@ New specs follow the same convention: kdg_ prefix, so KDG_PHASE1_SPEC.md and KDG
 First tasks, in order:
 - [x] Write INCIDENT_MAP.md: code the public incident excerpts into the pressure taxonomy, with source links.
 - [x] Write LIT_PASS_P9.md: novelty check on peer-pressure and multi-agent moral benchmarks, citations verified at source.
-- [ ] Add the three-reads thesis and this doc's branch table to SYNTHESIS.md.
+- [x] Add the three-reads thesis and this doc's branch table to SYNTHESIS.md.
 - [ ] Draft KDG_PHASE1_SPEC.md: dose arm, second base and instruct pair, tier 2, letter-only twin readout, stage sweep. One session plan per loaded model, per-rollout arrays and full next-token distributions saved.
 - [ ] Add OLMo-3 SFT, DPO and RL stage checkpoints to models.yaml, with chat-template hashes. Check that each stage shares the Instruct template, since template drift is a fork.
 - [ ] Draft KDG_F6_F8_SPEC.md: construction rules, twins, the split of hold from escalate, pilot gate criteria, both branches written before data.
