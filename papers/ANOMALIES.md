@@ -471,6 +471,18 @@ gradient → v2 erratum required. No warm working session had flagged it. Eviden
 boot-sequence design pays for itself, and a datapoint for the open periodic-fresh-eyes cadence
 question (how often to force a cold-context re-audit of committed/published claims).
 
+**KDG-A4 addendum (2026-09-26, round 3).** The cross-rated external labels flagged three more
+GPT-written F4 harm twins as label-inverted (F4-B-45T, -51T, -57T; excluded by the 2026-09-14
+rule). All six inverted cases across rounds share one cell: generator half B, role harm_twin,
+twin norm `loyalty_betrayal` (3 of 7 in round 1, 3 of 4 in round 3). Mechanism, read from
+F4-B-45T: with loyalty as the norm at stake, the generator labels favoring the teammate
+"consistent" and following the posted fairness rule "violating", which inverts F4's pressure
+direction. Slot parity routes the loyalty and sanctity twin norms to half B only, so in F4 the
+twin norm is confounded with the generator by construction. Bearing on KDG-A4: small; GPT's F4
+gap sits in the fairness primaries (screened rate 0.40, n 10), not the loyalty twins (n 2).
+Discriminator (zero GPU): re-score KDG-A4 with every F4 loyalty-norm twin excluded, both
+generators; and for any future F4 round, rotate twin norms across halves. Status: open, priced.
+
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 
 **Date.** 2026-09-19 (A17 E1; `papers/kdg_panel/data/analysis_a17_union.json` `chat_exploratory.E1_family_contrasts`; KDG_RESULTS §13.2).

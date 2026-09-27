@@ -361,8 +361,13 @@ scenario-set sha256, prefix strings, seed, git commit. Manifest per session with
   revision-match logging), `runpod/remote_kdg_phase1.sh` (KDG_PROFILE=p1a|p1b, per-step manifests,
   both §7 bails in-script). `tests/scripts/test_pod_kdg_phase1.py`: 13 tests, each naming its
   failure mode; full KDG suite 53/53.
-- Z4 generation running (round 3, CLI generators on plan quota; API keys stripped from the child
-  environments). Session A waits on its validation, cross-rated external labels and commit.
+- Z4 done (2026-09-26): round 3 = 112 primaries + 80 harm twins (192 rows; F1 24+24, F3 32+32,
+  F4 24+24, F5 32), zero slot failures, zero schema violations on the OLMo-3 tokenizer, three
+  paraphrases per frame on every row. Generators on plan quota only (Claude CLI on claude.ai auth,
+  Codex CLI on ChatGPT auth; API keys stripped from the child environments). External labels
+  cross-rated by the other provider: 178 agree, 11 neutral picks, 3 inverted (GPT F4 loyalty-norm
+  harm twins, flagged and excluded; ANOMALIES KDG-A4 addendum). Union: 632 rows (592 excluding
+  the F4 swap cell).
 - Dose arm scenario set committed as `data/screened_ids_a17_union.json` (136; equals the A17
   screened set).
 
