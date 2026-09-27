@@ -90,7 +90,9 @@ if [ "$PROFILE" = "p1a" ]; then
   # dose arm last, behind the anchor probe (spec C2 bail: anchor found in >= 80% of rollouts)
   python - <<PY
 import json
-ids = json.load(open("$D/screened_ids_a17_union.json"))["ids"][:16]
+# 4 per family (first by id), so a family-specific anchor failure (e.g. F3's tool menu) shows
+allids = json.load(open("$D/screened_ids_a17_union.json"))["ids"]
+ids = [i for f in ("F1", "F3", "F4", "F5") for i in [x for x in allids if x.startswith(f + "-")][:4]]
 json.dump(ids, open("$OUT/dose_probe_ids.json", "w"))
 PY
   step dose_probe --models olmo3_instruct --units d_chat_dose2,d_chat_dose2_filler --scenario-ids-file "$OUT/dose_probe_ids.json"
