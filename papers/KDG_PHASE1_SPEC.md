@@ -452,3 +452,33 @@ draws, seed 0, the shared 192. Also reported: each side alone per unit of its ow
 Both choices are reported side by side: the pre-registered averaged-σ verdict
 (`sharpening_explained`) stays the verdict of record for Z1b(ii); the fork is labelled as a fork in
 every sentence that uses it. The same pair is computed for C3 and C4 when those cells run.
+
+**P1-A2. Session A analysis details (dated 2026-09-26, while Session A runs and before any of its
+data has been synced or read; pushed before analysis).** Operational choices the §4 rules leave
+open, fixed now:
+1. *Common exclusions.* Every analysis drops the F4 swap cell (ids ending `S`) and every
+   `construction_flag` scenario. Bootstrap: 10,000 draws over scenarios, seed 0, percentile 95%.
+2. *C1 verdict set.* Primary: the pressure-removed twins of the 136 A17-screened scenarios, in the
+   chat letter-only cells. A scenario enters a prefix's contrasts only if all four of its cells
+   under that prefix (D, J × primary, twin) carry option mass ≥ 0.5 (the raw floor's number).
+   Secondary, labelled: the 208 raw-engaged twins of record (comparison with the raw null).
+   p is the violating mass renormalised over displayed letters, mean over the 8 permutations.
+3. *KDG-A7 discriminator from C1 (chat σ).* On the secondary set's neutral-prefix twins, compute
+   σ_D and σ_J as in Z1b (std of mean-centred renormalised option log-probs, mean over
+   permutations). Quantity: L = log(σ_D/σ_J)_chat − log(σ_D/σ_J)_raw per scenario, and the chat
+   ratio median. **R_b (raw-format effect)** if L's CI is entirely below 0 and the chat median
+   ratio's CI includes 1. **R_a (installed decisive agent frame)** if L's CI includes 0 and the chat
+   ratio's CI lies entirely above 1. Otherwise mixed, reported as such.
+4. *C2 anchored rollouts.* The dose cells store the first-token distribution when no `Answer:`
+   anchor is found, so a rollout counts only if its `decision_step` ≥ 0. A scenario enters Δ_dose if
+   it has ≥ 8 of 16 anchored rollouts in both dose2 and filler. p_D per arm = mean over anchored
+   rollouts of the violating mass at the anchor (`analyze_continuous.cell_pviol`, both letter
+   surface forms). Δ_dose = p_D(dose2) − p_D(filler) (the J reference cancels). Binary secondary:
+   majority of anchored rollouts violating, against the A17 stable J_stated.
+5. *C3 primary scale.* Per the §4 C3 scale rule and the Z1 outcomes (Z1a survives compression;
+   Z1b(ii) `sharpening_explained`), the stage verdict is scored on the averaged-σ normalized E
+   (Ẽ). The P1-A1 frame-specific Ẽ_fs, E_logit and E_prob are reported beside it, labelled.
+   n_shared = scenarios whose primary and twin are above the 0.5 floor on all four OLMo-3
+   checkpoints (base, SFT, DPO, final), union of all rounds after exclusions.
+6. *C3 chat secondary.* E_chat per stage from the neutral-prefix letter cells on the 136 screened,
+   same exclusion as item 2; adjacent-step Δ with CIs; descriptive, no verdict.
