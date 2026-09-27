@@ -661,3 +661,26 @@ CLAIMS wording on the baseline shift: escalated to the author.
 
 Open: C3 stage sweep (stages_raw lost in the download; re-run needed); dose arm (512-token budget too
 short for OLMo-3-Instruct's reasoning; fork decision with the author).
+
+
+### Session A, part 2: bridge, stage sweep, dose arm (2026-09-28; `kdg_panel/KDG_RESULTS.md` §16) — what changed
+
+Positive voice first: **on OLMo-3 the pressure-attributable judgment–action gap is present in every
+templated checkpoint under its own template (SFT 0.021, DPO 0.022, final 0.030) and no post-training
+stage changes its size at this precision; moral reasoning before acting, even truncated at 512 tokens,
+pulls the action toward the norm relative to matched non-moral text (−0.077 [−0.110, −0.047]).** The
+program now has a behavioral lever on the gap, and the gap's size is a pretraining-and-SFT property
+that preference optimization and RLVR leave where it was.
+
+Verdicts: SFT bridge → base cell **descriptive only** (raw − chat at-rest gap −0.052 [−0.070, −0.034]
+at SFT; KDG-39 dated to the first templated stage). Raw stage sweep descriptive only (n_shared 130 <
+150; raw frame invalid for templated stages). Dose arm **closes** (truncated reasoning). Open: KDG-A8
+(at-rest acting lean grows through DPO and RL under the template; rival = selection on the final
+model; zero-GPU discriminator priced).
+
+Thesis edit (move 7): the execution thesis is now "the judgment–action gap is pretraining-native in
+the only frame a base model has, present in every templated checkpoint, not resized by preference
+optimization or RL, and reduced by moral deliberation before acting". The "widened sensitivity" and
+"lowers the baseline" clauses are both gone; the SYNTHESIS branch rows "DPO/RL widens" do not obtain
+under the template, and "Deliberation closes the gap" obtains as truncated reasoning (the completed-
+reasoning check is the 2,048 rider). Pitch and paper wording: at the part-A gate with the author.

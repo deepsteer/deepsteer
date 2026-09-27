@@ -907,3 +907,106 @@ SFT and DPO raw cells (8, about 30 min) and the SFT neutral stage-chat cells (4,
   interpretation carries the raw-frame scope. The template-valid comparison across checkpoints is the
   C3 chat secondary (SFT/DPO/final), which the re-run completes.
 - KDG-A6 resolved (R_b primary; small R_c on the secondary set). KDG-A7 updated (mixed; near-miss).
+
+# 16. Session A, part 2: SFT bridge, stage sweep, budget-forced dose arm (2026-09-28)
+
+Pods p1a_fix (dose arm; stage cells lost to a full local disk) and p1a_fix2 (0wavqppb8c1hwt:
+`stages_raw`, `stages_chat_sft`). Every step's manifest verified locally. Script
+`scripts/analyze_phase1_session_a.py` (analysis code committed before each dataset existed:
+f00a997, e4cd5f0, a6b0f11; the C3 chat-secondary adjacent steps, pre-registered in P1-A2 §6, were
+missing from the first run's code and added before being read, 2026-09-28). Numbers of record
+`data/analysis_phase1_session_a.json` (+ `_c3_per_scenario.csv`). 10,000 draws, seed 0. C1 re-run
+reproduces §15 exactly (R_b; +0.055 [0.034, 0.076]).
+
+## 16.0 Positive voice first
+
+**The pressure-attributable judgment–action gap is present in every templated OLMo-3 checkpoint,
+read under the model's own template (SFT 0.021 [0.006, 0.036], DPO 0.022 [0.002, 0.043], final 0.030
+[0.006, 0.053]), and no post-training stage changes its size at the precision this panel reaches
+(DPO step 0.001 [−0.012, 0.014], RL step 0.007 [−0.001, 0.016]). Asking the model to reason about the
+stakes before acting, even when its reasoning is cut off at 512 tokens, moves its action away from the
+violating option relative to a length-matched non-moral restatement (−0.077 [−0.110, −0.047]).** The
+raw completion frame misreads the first templated checkpoint already, so the base-model cell is
+descriptive only by the pre-registered rule.
+
+## 16.1 SFT bridge (P1-A3): base cell → **descriptive only**
+
+On 310 scenarios (union after exclusions) where SFT clears the floor in all eight cells: at-rest gap
+raw −0.019 [−0.035, −0.003] vs chat +0.033 [0.021, 0.045]; Δ_bridge (raw − chat) **−0.052 [−0.070,
+−0.034]**, realized MDE 0.026. The CI excludes 0, so by the author's rule the base cell is descriptive
+only and the paper says so. Secondary: E_raw − E_chat 0.022 [0.005, 0.038] (the raw frame inflates the
+pressure-attributable excess at SFT by about 0.02); agent/judge σ log-ratio raw − chat 0.562 [0.502,
+0.622]. KDG-39 is therefore dated: the raw frame's agent-frame distortion is present at the first
+templated stage, not introduced later in post-training.
+
+## 16.2 Stage sweep (C3)
+
+**Raw frame (the pre-registered primary instrument): descriptive only.** n_shared = 130 (four
+checkpoints × primary and twin above the floor), below the pilot gate's 150, so no stage verdict is
+drawn; and by §16.1 the raw frame is not a valid readout for any templated stage. Descriptive values
+for the record: averaged-σ normalized E 0.254 (base) / 0.376 / 0.375 / 0.392; steps SFT 0.122 [−0.047,
+0.288], DPO −0.001 [−0.081, 0.081], RL 0.017 [−0.026, 0.062] (the pre-registered "primary" DPO step is
+unresolved and centred on 0); raw sharpening vs base k = 2.26 (SFT), 2.98 (DPO), 3.05 (final).
+
+**Chat template (P1-A2 §6; template-valid; descriptive by pre-registration), 136 screened, SFT → DPO →
+final:**
+
+| Quantity | SFT | DPO | final | DPO step | RL step |
+|---|---|---|---|---|---|
+| pressure-attributable excess E | 0.021 [0.006, 0.036] | 0.022 [0.002, 0.043] | 0.030 [0.006, 0.053] | 0.001 [−0.012, 0.014] | 0.007 [−0.001, 0.016] |
+| at-rest gap g_null | 0.026 [0.008, 0.044] | 0.044 [0.024, 0.064] | 0.055 [0.034, 0.076] | 0.018 [0.008, 0.029] | 0.010 [0.004, 0.017] |
+| option-spread ratio vs SFT (median) | 1 | 1.32 [1.28, 1.38] | 1.57 [1.52, 1.65] | | |
+
+Read against the SYNTHESIS branch table: no stage widens the pressure-attributable part under the
+template (so neither the "DPO widens" nor the "RL widens" row obtains, and the †† sharpening row is not
+needed to explain a widening that did not occur). What does change across stages is the at-rest lean
+of the acting frame toward the violating option (DPO and RL each add to it) and the sharpness of the
+output (monotone). → ANOMALIES KDG-A8.
+
+## 16.3 Budget-forced dose arm (P1-A5): **closes**, as truncated reasoning
+
+On 130 screened scenarios with forced readouts in both arms: Δ_dose = p_D,forced(dose2) −
+p_D,forced(filler) = **−0.077 [−0.110, −0.047]** (MDE 0.045): reasoning about the stakes, cut off at
+the 512-token budget, lowers the violating mass relative to a budget-matched non-moral restatement.
+Secondary: dose1 (64 tokens) − filler +0.024 [−0.011, 0.058], unresolved; natural-anchor readout on the
+9 scenarios with ≥ 8 anchored rollouts in both arms −0.216 [−0.302, −0.147]. Natural anchor-found
+rates: dose1 0.22, dose2 0.08, filler 0.94, so the dose2 readout is forced on 92% of rollouts. Label of
+record: **truncated reasoning**; on its own this does not say whether completed deliberation reaches
+the action (the 2,048 rider, Session B, gives the per-scenario comparison).
+
+## 16.4 Bias-direction table
+
+| Known bias | Mechanism | Direction |
+|---|---|---|
+| Selection on the final model's output | The 136 screened were selected on the final Instruct's own chat actions (mixed or violating) | Favors a larger gap at the final stage than at SFT/DPO (regression toward the mean for the others): **favors** the g_null growth DPO→RL and any E growth toward final; E is twin-differenced and less exposed |
+| Forced readout position | dose2 is forced on 92% of rollouts, filler on 6%; the forced prompt ends "\n\nAnswer:" after truncated text, the natural one after a completed restatement | Unknown sign; the natural-anchor secondary (n 9) has the same sign and a larger size |
+| Floor intersection (raw C3) | n_shared 130 is what all four checkpoints engage in raw | Moot: raw C3 is descriptive only |
+| Bridge set | 310 scenarios SFT engages in both frames | Neutral for the sign; the CI is far from 0 |
+
+## 16.5 Referee pass
+
+1. *"The stage sweep was pre-registered on the raw frame; you are now reporting a chat secondary as if
+   it were the result."* Conceded as to status: the chat table is descriptive by pre-registration (P1-A2
+   §6), and no stage verdict is drawn. What the raw primary could have said is voided by the bridge
+   (§16.1), itself pre-registered with its rule before the pod.
+2. *"The at-rest lean growing through DPO and RL is selection on the final model."* The strongest
+   rival, and unresolved here: the screened set was chosen on the final model's chat actions. The
+   discriminator is a screen defined on SFT (or on a model-free criterion) with the same stage read,
+   zero GPU on the existing arrays if the SFT chat cells cover the full union (they cover the screened
+   136 only for D/J neutral; the full union for the raw cells). → KDG-A8, priced.
+3. *"'Closes' at a forced readout is a formatting effect of the forced 'Answer:' after truncated text,
+   not deliberation."* Partly conceded: the arm is labelled truncated reasoning everywhere. Against a
+   pure format reading, the natural-anchor subset (completed dose2 answers, n 9) moves the same way and
+   further. The 2,048 rider's per-scenario table is the next check.
+
+## 16.6 What this changes (for the author at the part-A gate; nothing in the paper edited yet)
+
+- Base cell: **descriptive only** (P1-A3 rule). The paper's §7 "[pending]" markers resolve to that
+  wording; "present before post-training" stays as a descriptive statement about base-raw, and the
+  template-valid statements are about the templated checkpoints.
+- The pitch's third lead item (stage sweep under the template) now has content: the
+  pressure-attributable part is flat across SFT → DPO → final; the at-rest acting lean and output
+  sharpness grow.
+- The dose arm is the program's first positive behavioral lever on this gap: moral reasoning, even
+  truncated, pulls the action toward the norm relative to matched non-moral text.
+- KDG-39 dated to SFT; KDG-A8 opened.

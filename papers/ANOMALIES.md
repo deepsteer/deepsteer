@@ -551,3 +551,15 @@ pod survived the failed download (KEEP_POD path) is being checked with the autho
 (R_b's condition missed by a lower bound of 1.001: a near-miss, rule unchanged). Reading: about 88%
 of the raw-frame asymmetry (log scale) is format; a 7% template-valid residual remains. Status: open
 on the residual only; the stage chat secondary (re-run pending) dates it by checkpoint.
+
+
+## KDG-A8 (ledger) — Under the chat template the acting frame's at-rest lean toward the violating option grows across post-training stages (SFT 0.026 → DPO 0.044 → final 0.055) while the pressure-attributable part stays flat
+
+**Date.** 2026-09-28 (Session A part 2; KDG_RESULTS §16.2; `analysis_phase1_session_a.json` `C3.chat_secondary`).
+**Observation.** On the 136 screened, neutral-prefix letter-only chat cells: g_null SFT 0.026 [0.008, 0.044], DPO 0.044 [0.024, 0.064], final 0.055 [0.034, 0.076]; steps DPO +0.018 [0.008, 0.029], RL +0.010 [0.004, 0.017]. E flat (steps +0.001, +0.007, both CIs include 0). Option-spread ratio vs SFT 1.32 (DPO), 1.57 (final).
+**Type.** dose-dependence (monotone across stages where flat was the working expectation) + near the program's retracted claim (the old raw-frame reading said the opposite sign).
+**Appears in.** KDG_RESULTS §16; pitch lead item 3 (pending author).
+**Competing readings.** R_a: preference optimization and RLVR make the model, placed as the actor, lean more toward the locally advantageous option at rest, independent of the incentive (a default shift in the agent frame; the persona lever's target). R_b: selection on the final model's outputs: the 136 were screened on the final Instruct's chat actions (mixed or violating), so the final stage is selected to show a gap and earlier stages regress toward the mean; the monotone ordering follows the distance from the selecting model.
+**Discriminator.** Zero GPU where the arrays cover it: re-read the stage profile on a screen defined without the final model (the SFT model's own chat actions, or a model-free set such as all union primaries above the chat floor on all three checkpoints). SFT/DPO chat cells exist for D/J neutral on the full union (C3CHAT ran on all 632 rows), so the model-free set is computable now. R_b predicts the growth shrinks or vanishes; R_a predicts it persists. Pre-register the rule before computing (amendment).
+**Status.** open; priced (zero GPU).
+**Thesis impact.** R_a: post-training makes the agent more willing to take the advantageous action at rest (a baseline shift, template-valid, in the direction opposite to the withdrawn claim) while leaving the incentive's pull unchanged. R_b: no stage effect on either quantity at this precision.

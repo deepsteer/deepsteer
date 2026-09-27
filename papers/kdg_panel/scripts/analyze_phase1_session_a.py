@@ -183,9 +183,28 @@ def c3(status, dirs: dict[str, list[Path]], chat_dirs: dict[str, list[Path]], sc
     cs = sorted(
         s for s in screened if all(s in C[st] and C[st][s]["mass_min"] >= FLOOR for st in C)
     )
+    cs_sc = {st: [scales(C[st][s]) for s in cs] for st in C}
     rep["chat_secondary"] = {
         "n": len(cs),
-        "E_prob": {st: boot(np.array([scales(C[st][s])["E_prob"] for s in cs])) for st in C},
+        "E_prob": {st: boot(np.array([x["E_prob"] for x in cs_sc[st]])) for st in C},
+        "g_null": {st: boot(np.array([x["g_null"] for x in cs_sc[st]])) for st in C},
+        # P1-A2 §6: adjacent-step deltas with CIs (descriptive); added 2026-09-28 after the first
+        # run printed only per-stage values: an omission against the amendment, not a new choice
+        "steps_E_prob": {
+            name: boot(np.array([y["E_prob"] - x["E_prob"] for x, y in zip(cs_sc[a], cs_sc[b])]))
+            for a, b, name in (("sft", "dpo", "DPO"), ("dpo", "final", "RL"))
+        },
+        "steps_g_null": {
+            name: boot(np.array([y["g_null"] - x["g_null"] for x, y in zip(cs_sc[a], cs_sc[b])]))
+            for a, b, name in (("sft", "dpo", "DPO"), ("dpo", "final", "RL"))
+        },
+        "sigma_ratio_vs_sft": {
+            st: boot(
+                np.array([y["sigma"] / x["sigma"] for x, y in zip(cs_sc["sft"], cs_sc[st])]),
+                stat=np.median,
+            )
+            for st in C
+        },
     }
     rep["_per_scenario"] = {st: dict(zip(shared, S[st])) for st in STAGES}
     return rep
