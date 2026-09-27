@@ -671,3 +671,95 @@ the prompt version is recorded as a covariate.
 Ship-blockers: A17 committed before computation (250c8b5); both-branch wording pre-written;
 selection check stated in advance; second derivation (side decomposition) reported; SYNTHESIS,
 CLAIMS, ANOMALIES updated in the same commit as this section.
+
+# 14. Phase 1 zero-GPU scale checks Z1a, Z1b, Z2 (2026-09-26)
+
+Pre-registration: `papers/KDG_PHASE1_SPEC.md` v0.2 §2, committed and pushed as 090b55a before any
+of this ran. Script `scripts/analyze_phase1_z.py`; numbers of record `data/analysis_z1_scale.json`,
+`data/analysis_z2_a6_mass.json`, per-scenario arrays `data/per_scenario_phase1_z.csv`. Shared
+subset: the A17 192 (the script asserts n = 192). Bootstrap 10,000 draws over scenarios, seed 0;
+every point estimate sits inside its own interval.
+
+Second derivation (probability scale, recomputed by the new loader): E_base 0.018 [0.011, 0.025],
+E_instruct 0.046 [0.024, 0.068], Δ 0.028 [0.007, 0.049]; acting side 0.049 → 0.085 (Δ 0.037
+[0.013, 0.061]); judging side 0.030 → 0.039 (Δ 0.009 [−0.005, 0.023]). Agrees with §13 to the
+third decimal.
+
+## 14.0 Positive voice first
+
+**The pressure-attributable judgment–action gap is present in both models on all three readouts:
+probability (base 0.018, instruct 0.046), log-odds (base 0.081 [0.050, 0.113], instruct 0.436
+[0.261, 0.613]) and output-scale-normalized (base 0.215 [0.131, 0.302], instruct 0.337 [0.205,
+0.470]).** Post-training makes the model's option distribution about three times sharper where no
+incentive acts (twin logit spread 0.49 → 1.45, k_twin 3.02 [2.83, 3.24]; option entropy 0.95 →
+0.56 nats), and the growth of the acting side's pressure response on the log-odds scale (k_act
+2.91 [2.19, 3.71]) is the size that sharpening predicts. After normalizing by each model's own
+output scale, the instruct-minus-base difference is +0.12 [−0.017, 0.26]: not resolved (MDE ≈ 0.20
+at n 192). **By the pre-registered primary rule the widening is `sharpening_explained`.**
+
+## 14.1 Verdicts
+
+| Check | Quantity | Result | Verdict (rule fixed in the spec) |
+|---|---|---|---|
+| Z1a (baseline compression) | Δ E_logit | 0.355 [0.184, 0.524] | **survives_compression** |
+| Z1a | Δ S_act (log-odds) | 0.460 [0.275, 0.643] | |
+| Z1a | Δ S_judge (log-odds) | 0.105 [0.022, 0.190] | the judging side *does* move on this scale (it did not resolve on the probability scale) |
+| Z1b (i) (uniform sharpening) | D_judge = S_judge,inst − k_act·S_judge,base | −0.199 [−0.335, −0.069]; S_judge,base 0.159 [0.118, 0.200] (informative) | **not_explained_by_sharpening** (uniform) |
+| Z1b (ii) primary (twin-measured scale) | Δ Ẽ = Δ(E_logit/σ) | 0.122 [−0.017, 0.259] | **sharpening_explained** |
+| Z2 (KDG-A6 R_b) | g_null low-mass − high-mass half | −0.012 [−0.057, 0.034] (median mass 0.71; 0.5–0.7 band vs above −0.013 [−0.056, 0.032]) | **R_b loses its cheapest support**; C1 decides R_a vs R_c |
+
+How (i) and (ii) fit together (a reading, not a new verdict): (i) rejects *uniform* sharpening,
+and the twin data show why. Post-training sharpens the agent frame more than the judge frame
+(twin spread, instruct: agent 1.83, judge 1.07; base: 0.52 and 0.47). Frame-specific sharpening
+predicts exactly what (i) found (the judging side scales less than the acting side) and is what
+the averaged σ in (ii) cannot separate. Normalizing each side by its own frame's scale is an
+analysis choice made after seeing σ_D and σ_J, so it is a fork: amendment first, then both
+choices' verdicts (§14.4). → ANOMALIES KDG-A7.
+
+## 14.2 Bias-direction table (for the primary verdict)
+
+| Known bias | Mechanism | Direction relative to "widening survives sharpening" |
+|---|---|---|
+| Averaged σ over frames | Agent frame sharpened more than judge frame; averaging under-corrects the acting side and over-corrects the judging side | favors survival (the averaged rule is the lenient one) |
+| Mean of per-scenario ratios | Small-σ scenarios get large Ẽ; base σ min 0.149, instruct 0.520 | favors base (inflates base Ẽ); opposes survival |
+| σ measured on twins, applied to primaries | If pressure itself changes sharpness, twin σ mis-states it | unknown sign |
+| Floor selection (both models ≥ 0.5 mass) | Shared subset is what the instruct model engages | unknown sign; A17 selection check covers base |
+
+## 14.3 Referee pass (three damaging objections)
+
+1. *"Dividing by σ is an arbitrary normalization that erases a real effect."* The normalization
+   and its verdict rule were pre-registered before computation, with this outcome's pitch sentence
+   written in advance. Conceded that σ is one of several scale measures; entropy moves the same way
+   (0.95 → 0.56 nats). The log-odds result (Z1a) is reported beside it, so a reader who rejects the
+   normalization still has a verdict-bearing number with its caveat attached.
+2. *"Your two sharpening checks disagree, so you picked the one that hurts."* The spec named (ii) as
+   primary before data. They answer different questions: (i) tests uniform sharpening and rejects it;
+   (ii) tests whether the acting-minus-judging excess outgrows the model's own output scale and
+   does not resolve. The frame-specific reading reconciles them and is labelled as a fork.
+3. *"With MDE ≈ 0.20 the normalized test was never going to resolve a 0.12 effect; 'sharpening
+   explained' is an under-powered null."* Partly conceded: the wording carries the bar ("not
+   separable from output-scale sharpening at MDE ≈ 0.20"), not "no widening". The point estimate
+   stays positive. What the check does establish is the scale factor itself (k_twin ≈ 3), and that
+   the acting side's log-odds growth (2.9×) matches it.
+
+## 14.4 What this changes (escalated to the author; nothing below is edited yet)
+
+- **Blast radius (move 3), claims that rest on "post-training raises the action's sensitivity to
+  the incentive":** the pitch's opening claim ("raised the action's sensitivity to the incentive
+  by about three-quarters"; Numbers of Record row "Post-training widens the acting side"); the KDG
+  paper's abstract, §1 fourth step, §7 ("widened ... on the acting side") and discussion; CLAIMS
+  KDG-29..34 interpretations; SYNTHESIS execution thesis and instrument claim (scope note added in
+  this commit). The A17 *verdict* stands as pre-registered (continuous probability readout,
+  *widened*); what changes is its interpretation as increased sensitivity. Proposed replacement
+  sentence (spec wording): "post-training raises the output-scale response to pressure; at this
+  power it is not separable from a sharpening of the output distribution (k ≈ 3)".
+- **Fork to pre-register before computing (amendment, next commit):** frame-specific
+  normalization (acting side by σ_D-twin, judging side by σ_J-twin), with the same verdict rule,
+  both choices reported. If the frame-specific normalized difference is negative, the headline
+  becomes "post-training sharpens the action output more than the judgment output; per unit of
+  scale, pressure moves the action no more than before".
+- **C3 and C4 inherit Z1b as a required readout** (already in the spec); the stage sweep reports k
+  per stage, so "which stage sharpens" is answerable alongside "which stage widens".
+- **Convergence claim.** The tracing-sycophancy repo's log-prob dissociation is exposed to the same
+  sharpening; the SYNTHESIS instrument claim is scoped accordingly.
+- **Z2.** KDG-A6 R_b loses its cheapest support; C1 in Session A separates R_a from R_c.

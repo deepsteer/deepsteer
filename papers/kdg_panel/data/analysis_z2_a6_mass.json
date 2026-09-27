@@ -1,0 +1,40 @@
+{
+ "spec": "KDG_PHASE1_SPEC.md v0.2 \u00a72 (commit 090b55a, pushed before computation)",
+ "n_boot": 10000,
+ "seed": 0,
+ "Z2": {
+  "mass_definition": "min(D-twin, J-twin) raw option mass, instruct, shared 192",
+  "median_mass": 0.7143458835780621,
+  "n_low": 96,
+  "n_high": 96,
+  "g_null_low": -0.037885001605689486,
+  "g_null_high": -0.02615707486571665,
+  "delta_low_minus_high": {
+   "mean": -0.011727926739972836,
+   "ci95": [
+    -0.057276801742213564,
+    0.03367571301473111
+   ],
+   "point_in_ci": true
+  },
+  "n_band_0.5_0.7": 89,
+  "n_above_0.7": 103,
+  "delta_band_minus_above": {
+   "mean": -0.012715799754461962,
+   "ci95": [
+    -0.05619792757297423,
+    0.03196854224636948
+   ],
+   "point_in_ci": true
+  },
+  "g_null_all": {
+   "mean": -0.03202103823570306,
+   "ci95": [
+    -0.053870912098641574,
+    -0.008514935815749641
+   ],
+   "point_in_ci": true
+  },
+  "verdict": "R_b_loses_cheapest_support"
+ }
+}

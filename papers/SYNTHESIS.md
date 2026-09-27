@@ -599,3 +599,28 @@ Cairns; Bharadwaj & Kirk). No "first to" without its qualifier.
 3. *"One model family, and the precedent is on the same family."* Conceded. The instrument claim
    is stated on OLMo-3; the lineage generalization is Phase 1's second pair and tier 2, and both
    branches (present/absent in a second base) are written above.
+
+
+### Phase 1 zero-GPU scale checks (2026-09-26; `kdg_panel/KDG_RESULTS.md` §14) — what changed
+
+Positive voice first: **the pressure-attributable judgment–action gap is present in base and in
+instruct on the probability, log-odds and output-scale-normalized readouts; post-training triples
+the sharpness of the model's option distribution (k_twin 3.02 [2.83, 3.24]) and the acting side's
+log-odds pressure response grows by about that factor (2.91×).** Pre-registered verdicts: Z1a
+survives baseline compression (Δ E_logit 0.355 [0.184, 0.524]); Z1b(i) rejects *uniform*
+sharpening (the judging side scales less, D_judge −0.199 [−0.335, −0.069]); Z1b(ii), the primary,
+returns `sharpening_explained` (normalized Δ +0.12 [−0.017, 0.26], MDE ≈ 0.20). Z2: KDG-A6 R_b
+loses its cheapest support.
+
+Scope notes applied here (move 3): the claims-table row "pressure-attributable gap ... larger
+after post-training, on the acting side" now reads *larger on the probability and log-odds
+scales; not separable from output-scale sharpening at MDE ≈ 0.20*. The instrument claim ("baseline
+and sensitivity move in opposite directions") holds on the output scale and is unresolved per unit
+of scale. The execution thesis sentence's "larger, not smaller, after post-training" carries the
+same scope. The tracing-sycophancy convergence is exposed to the same rival. Paper and pitch
+wording are escalated (KDG_RESULTS §14.4); CLAIMS untouched pending the author.
+
+What the next result changes: the frame-specific normalization fork (amendment next) → negative
+difference: the headline becomes sharpening of the action channel, not widening; positive and
+resolved: widening survives with a frame-specific scale. C1's chat-frame σ (Session A) → separates
+KDG-A7 R_a (installed decisive agent frame, a persona lever) from R_b (raw-frame format).
