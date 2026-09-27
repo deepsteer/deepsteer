@@ -142,7 +142,7 @@ First tasks, in order:
 - [x] Write LIT_PASS_P9.md: novelty check on peer-pressure and multi-agent moral benchmarks, citations verified at source.
 - [x] Add the three-reads thesis and this doc's branch table to SYNTHESIS.md.
 - [x] Draft KDG_PHASE1_SPEC.md: dose arm, second base and instruct pair, tier 2, letter-only twin readout, stage sweep. One session plan per loaded model, per-rollout arrays and full next-token distributions saved.
-- [ ] Add OLMo-3 SFT, DPO and RL stage checkpoints to models.yaml, with chat-template hashes. Check that each stage shares the Instruct template, since template drift is a fork.
+- [x] Add OLMo-3 SFT, DPO and RL stage checkpoints to models.yaml, with chat-template hashes. Check that each stage shares the Instruct template, since template drift is a fork.
 - [ ] Draft KDG_F6_F8_SPEC.md: construction rules, twins, the split of hold from escalate, pilot gate criteria, both branches written before data.
 - [ ] Pre-register the Phase 3 action-position cell with a full intervention spec before any extraction.
 Human gates: after the novelty pass, after the Phase 1 pod, after the F6 to F8 pilot, and before any pitch text leaves the repo.

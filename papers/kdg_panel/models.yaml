@@ -46,3 +46,107 @@ rollouts:
   j_stated_greedy: 1
   dose_arms: 16
   temperature: 0.7
+
+# ---------------------------------------------------------------------------------------------
+# Phase 1 (KDG_PHASE1_SPEC.md §3; plan item 5, 2026-09-26). Revisions pinned to the HF sha read
+# 2026-09-26; the pod manifest records the resolved commit and a mismatch is logged (spec §7).
+# template_sha256 = sha256 of the chat-template TEXT (chat_template.jinja if present, else
+# tokenizer_config.chat_template), the same convention as the manifest's chat_template_sha256
+# (reproduces f5186d42... for olmo3_instruct at 6e5971d9). Gated repos: hash recorded at load.
+#
+# Fork criterion for stage checkpoints (fixed 2026-09-26, before any stage data): template TEXT
+# drift is a fork only if it changes the RENDERED prompt of a harness call. OLMo-3 SFT and DPO
+# share template edbb35ef... which differs from the final Instruct's f5186d42... in one condition
+# (`tools is none` vs `tools is none or (tools | length) == 0`). Rendered locally (jinja2, the
+# harness's call: tools=None, add_generation_prompt=True) on user-only, system+user and
+# three-turn F2 conversations: byte-identical across the three checkpoints. With tools=[] they
+# would differ; the harness never passes tools. The pod asserts per chat cell that the rendered
+# prompt sha equals the final Instruct's for the same messages (spec Z3 local test).
+# Option letters: " A".." D" (raw) and "A".."D" (chat) are single tokens on OLMo-3 SFT, Qwen2.5
+# base and instruct, and the Llama-3.1 tokenizer (checked on Tulu-3's public copy), 2026-09-26.
+phase1:
+  olmo3_sft:
+    repo: allenai/Olmo-3-7B-Instruct-SFT
+    revision: e1452fc572d51966ff4aaeb25118b891eb93e549
+    kind: instruct
+    stage: sft
+    lineage: olmo3
+    n_layers: 32
+    hidden: 4096
+    template_sha256: edbb35ef1219ad2273f716feed08f535a868e167be5b5518adc37ab2bcb8afe6
+    rendered_equals: olmo3_instruct     # asserted per chat cell at the pod
+  olmo3_dpo:
+    repo: allenai/Olmo-3-7B-Instruct-DPO
+    revision: b33130b7de49f0c2553b5c2b3bc8409ff3e627d1
+    kind: instruct
+    stage: dpo
+    lineage: olmo3
+    n_layers: 32
+    hidden: 4096
+    template_sha256: edbb35ef1219ad2273f716feed08f535a868e167be5b5518adc37ab2bcb8afe6
+    rendered_equals: olmo3_instruct
+  # stage "final" = tier1.olmo3_instruct (6e5971d9, template f5186d42); stage "base" = tier1.olmo3_base
+  llama31_base:
+    repo: meta-llama/Llama-3.1-8B
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b   # HF sha 2026-09-26; template hash at load (gated)
+    kind: base
+    stage: base
+    lineage: llama31
+    gated: true
+    n_layers: 32
+    hidden: 4096
+  llama31_instruct_meta:
+    repo: meta-llama/Llama-3.1-8B-Instruct
+    revision: 0e9e39f249a16976918f6564b8830bc894c89659   # HF sha 2026-09-26; template hash at load (gated)
+    kind: instruct
+    stage: final_meta
+    lineage: llama31
+    gated: true
+    n_layers: 32
+    hidden: 4096
+  tulu3_sft:
+    repo: allenai/Llama-3.1-Tulu-3-8B-SFT
+    revision: f2a0b46b0cfda21003c6141b1ff837b7e165524d
+    kind: instruct
+    stage: sft
+    lineage: llama31_tulu3
+    template_sha256: ac7498a36a719da630e99d48e6ebc4409de85a77556c2b6159eeb735bcbd11df   # shared by all three Tulu-3 stages; no default system prompt
+    n_layers: 32
+    hidden: 4096
+  tulu3_dpo:
+    repo: allenai/Llama-3.1-Tulu-3-8B-DPO
+    revision: a7beb67e33ffd01cc87ac3b46cadc1000985b8db
+    kind: instruct
+    stage: dpo
+    lineage: llama31_tulu3
+    template_sha256: ac7498a36a719da630e99d48e6ebc4409de85a77556c2b6159eeb735bcbd11df
+    n_layers: 32
+    hidden: 4096
+  tulu3_final:
+    repo: allenai/Llama-3.1-Tulu-3-8B
+    revision: 666943798adbde0b1aff34626007e26986a3c107
+    kind: instruct
+    stage: final
+    lineage: llama31_tulu3
+    template_sha256: ac7498a36a719da630e99d48e6ebc4409de85a77556c2b6159eeb735bcbd11df
+    n_layers: 32
+    hidden: 4096
+  qwen25_base:
+    repo: Qwen/Qwen2.5-7B
+    revision: d149729398750b98c0af14eb82c78cfe92750796
+    kind: base                # ships a ChatML template (44d5f08f...): raw cells only, pinned
+    stage: base
+    lineage: qwen25
+    raw_only: true
+    n_layers: 28
+    hidden: 3584
+  qwen25_instruct_p1:
+    repo: Qwen/Qwen2.5-7B-Instruct
+    revision: a09a35458c702b33eeacc393d103063234e8bc28
+    kind: instruct
+    stage: final
+    lineage: qwen25
+    template_sha256: cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f
+    n_layers: 28
+    hidden: 3584
+# Phase 1 stage map (C3/C3'): olmo3: base -> sft -> dpo -> final ; llama31_tulu3: llama31_base -> sft -> dpo -> final

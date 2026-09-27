@@ -360,6 +360,13 @@ scenario-set sha256, prefix strings, seed, git commit. Manifest per session with
   enlarged union.
 - **D3. Confirm the pattern first.** C5's two full ladders are deferred until the C4/C4′ scope
   result; Session C opens only at the gate after Session B.
+- **Framing after Z1b (author, 2026-09-26):** the choice between the sharpening reframe and a
+  scoped "widened on the output scale" headline waits for Session A (C1's chat-frame σ decides
+  KDG-A7; C3 reports k per stage). The pre-pod steps proceed unchanged.
+- **Template drift check (plan item 5, 2026-09-26):** OLMo-3 SFT/DPO template text differs from the
+  final Instruct's in the `tools` condition only; rendered harness prompts (tools=None) are
+  byte-identical, so SFT/DPO chat cells are not a fork provided the pod asserts rendered-prompt
+  identity per cell (`models.yaml` phase1 header).
 - **Correction (author, 2026-09-26, before computation):** the log-odds recompute addresses
   baseline compression, not sharpening; Z1 is split into Z1a (compression) and Z1b (sharpening:
   judging-side prediction and per-model scale normalization).
