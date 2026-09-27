@@ -404,3 +404,25 @@ it suffices is read at the Session A pilot gate, not assumed.
 3. *"Forward-pass letter-only readouts are not behavior."* Conceded as scope: C1 and the C3
    secondary are continuous readouts, like A15; the behavioral readout of record stays the 32-rollout
    D_chat on the final model and in C5. The pitch states which readout each number is on.
+
+---
+
+## Amendments
+
+**P1-A1. Fork: frame-specific scale normalization for Z1b(ii) (dated 2026-09-26, AFTER the Z1b
+arrays were seen; committed and pushed before this quantity is computed).** Construction reason:
+the pre-registered σ_s averages the agent-frame and judge-frame twin spreads, but the Z1b output
+shows post-training sharpens the two frames unequally (instruct twin spread 1.83 agent vs 1.07
+judge; base 0.52 vs 0.47; KDG_RESULTS §14.1, ANOMALIES KDG-A7). An average cannot rescale two
+sides that were scaled differently. Fork quantity, per scenario and model:
+`Ẽ_fs = S_act / σ_D,twin − S_judge / σ_J,twin`, with S_act = logit(p_D) − logit(p_D,null) and
+S_judge = logit(p_J) − logit(p_J,null) as in Z1a; Δ̃_fs = instruct − base, paired bootstrap, 10,000
+draws, seed 0, the shared 192. Also reported: each side alone per unit of its own scale
+(S_act/σ_D and S_judge/σ_J, instruct − base). Verdict rule, same form as Z1b(ii):
+- **widening survives frame-specific sharpening**: Δ̃_fs CI entirely above 0;
+- **reversed**: Δ̃_fs CI entirely below 0 (per unit of scale, post-training *narrows* the
+  pressure-attributable excess; the output-scale widening is sharpening of the action channel);
+- **unresolved**: CI includes 0 (wording carries the realized MDE).
+Both choices are reported side by side: the pre-registered averaged-σ verdict
+(`sharpening_explained`) stays the verdict of record for Z1b(ii); the fork is labelled as a fork in
+every sentence that uses it. The same pair is computed for C3 and C4 when those cells run.
