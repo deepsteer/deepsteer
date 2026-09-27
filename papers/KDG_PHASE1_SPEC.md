@@ -503,3 +503,24 @@ the MDE, never "no format effect" alone.
 Session B (Llama-3.1 Meta instruct, Tulu-3 SFT/DPO/final, Qwen2.5 instruct) also runs the neutral
 letter-only chat cells (C3CHAT: D, J and both twins). No raw-only instruct number from Session B is
 reported as a finding; raw instruct cells are reported only beside their chat counterparts, labelled.
+
+**P1-A5. Fork: dose arm with budget forcing (dated 2026-09-27, author decision, after the Session A
+probe bailed and before the arm runs; pushed first).** Reason: OLMo-3-Instruct's dose2 reasoning
+exceeds the 512-token budget (241/256 probe rollouts at the cap; KDG_RESULTS §15.3). The
+pre-registered budgets are kept (dose1 64, dose2 512, filler 512); the readout changes.
+- *Forced readout, uniform across arms.* For every rollout: R = the generated text before the
+  natural `Answer:` anchor if one occurs within the budget, else the first `budget` generated
+  tokens; forced prompt = rendered chat prompt + R (trailing whitespace stripped) + "\n\nAnswer:".
+  The decision is the next-token distribution over the option letters (both surface forms, as
+  `analyze_continuous.cell_pviol`). Every rollout counts (no anchored-rollout filter); the P1-A2 §4
+  rule applies only to the natural-anchor readout, which is reported beside as secondary.
+- *Primary contrast and verdict.* Δ_dose = p_D,forced(dose2) − p_D,forced(filler) on the 136
+  screened, paired; closes / widens / leaves / unresolved exactly as §4 C2. dose1 vs filler and
+  dose0 comparisons are secondary.
+- *Prose label.* The 512 arm is "truncated reasoning" in every sentence that reports it; it does not
+  answer the deliberation question on its own (author's rule).
+- *Descriptive rider (not a verdict cell).* dose2 and filler at a 2,048-token cap, natural anchor
+  readout (forced readout beside), 32 rollouts per arm: 2 per scenario on the 16-scenario probe set
+  (4 per family). Reported alongside the 512 arm with its anchor-found rate.
+- Harness: a new unit per arm generates exactly as `cell_d_chat` (instructions and budgets
+  unchanged) and adds the forced forward pass; artifacts save both readouts per rollout.
