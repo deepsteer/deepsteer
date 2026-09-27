@@ -31,6 +31,10 @@ REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
 from deepsteer.kdg.harness import KDG_HARNESS_VERSION, parse_response  # noqa: E402
+from deepsteer.kdg.phase1_frames import (  # noqa: E402
+    PHASE1_TEMPLATE_VERSION,
+    render_letter_user_message,
+)
 from deepsteer.kdg.schema import (  # noqa: E402
     DOSE_CAPS,
     TEMPLATE_VERSION,
@@ -226,13 +230,21 @@ class ModelWrapper:
             return -1, None
         return last, logps[last][b]
 
-    def raw_next_logprobs(self, prompts: list[str], batch_size: int = 16) -> np.ndarray:
+    def raw_next_logprobs(
+        self, prompts: list[str], batch_size: int = 16, add_special_tokens: bool = True
+    ) -> np.ndarray:
+        """Next-token log-probs after each prompt. Raw frames keep the tokenizer's special tokens
+        (BOS); chat-rendered prompts pass ``add_special_tokens=False`` so the tokens match the
+        generation path (``_generate_batch``), whose first-step distribution this reproduces."""
         torch = self.torch
         rows = []
         for i in range(0, len(prompts), batch_size):
-            enc = self.tok(prompts[i : i + batch_size], return_tensors="pt", padding=True).to(
-                self.device
-            )
+            enc = self.tok(
+                prompts[i : i + batch_size],
+                return_tensors="pt",
+                padding=True,
+                add_special_tokens=add_special_tokens,
+            ).to(self.device)
             with torch.no_grad():
                 logits = self.model(**enc).logits[:, -1, :].float()
             rows.append(torch.log_softmax(logits, dim=-1).cpu().numpy().astype(np.float16))
@@ -275,7 +287,8 @@ class StubModel:
             )
         return outs
 
-    def raw_next_logprobs(self, prompts, batch_size=16):
+    def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True):
+        self.last_add_special_tokens = add_special_tokens
         return np.log(self.rng.dirichlet(np.ones(self.vocab), size=len(prompts))).astype(np.float16)
 
     def release(self) -> None:
@@ -669,6 +682,136 @@ def cell_raw(ctx: Ctx, scenarios: list[Scenario], *, frame: str, variant: str = 
     )
 
 
+def cell_letter_chat(
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    frame: str,
+    prefix: str,
+    variant: str = "primary",
+) -> None:
+    """Phase 1 C1 / C3-secondary readout: letter-only J or D under the chat template, one forward
+    pass per option permutation (no sampling), next-token log-probs at the first assistant token.
+
+    Cell name ``{dl|jl}_chat_{prefix}[_pressure_removed]``. Same permutation seeds as the raw cells
+    (0..n_raw_perm-1), so orders match the raw frame and the first eight D_chat rollouts. Saves the
+    full next-token vector per permutation, option-token ids and mass, and the rendered-prompt
+    sha (the stage-identity check compares these across checkpoints).
+    """
+    cell = f"{'dl' if frame == 'agent' else 'jl'}_chat_{prefix}" + (
+        "" if variant == "primary" else f"_{variant}"
+    )
+    nperm = ctx.n(ctx.n_raw_perm)
+    prompts, orders_all, scen_all = [], [], []
+    for s in scenarios:
+        for seed in range(nperm):
+            order = assign_letters(s, seed)
+            user = render_letter_user_message(
+                s, order, frame, prefix, pressure_removed=(variant == "pressure_removed")
+            )
+            prompts.append(ctx.model.render_chat([{"role": "user", "content": user}]))
+            orders_all.append(order)
+            scen_all.append(s)
+    logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
+    rows, opt_ids = [], []
+    for k, (s, order, p) in enumerate(zip(scen_all, orders_all, prompts)):
+        ids = _option_ids(ctx, order, chat=True)
+        opt_ids.append(ids)
+        valid = [i for i in ids if i >= 0]
+        lp = logp[k].astype(np.float32)
+        best = int(np.argmax(lp[valid]))
+        L, o = order[best]
+        rows.append(
+            {
+                "scenario_id": s.id,
+                "role": s.role,
+                "family": s.family,
+                "generator": s.generator,
+                "cell": cell,
+                "arm": "letter_chat",
+                "rollout": k % nperm,
+                "seed": k % nperm,
+                "order": letter_map(order),
+                "prompt_sha256": sha256_text(p),
+                "option_mass": float(np.exp(lp[valid]).sum()),
+                "option_logps": {LL: float(lp[i]) for (LL, _), i in zip(order, valid)},
+                "option_id": o.option_id,
+                "letter": L,
+                "norm_status": o.norm_status,
+                "parse_method": "letter_chat_argmax",
+                "harness_version": KDG_HARNESS_VERSION,
+                "template_version": PHASE1_TEMPLATE_VERSION,
+                "chat_template_sha256": ctx.model.chat_template_sha,
+                "variant": variant,
+                "frame": frame,
+                "prefix": prefix,
+            }
+        )
+    ctx.save_cell(
+        cell,
+        rows,
+        logp,
+        {
+            "option_token_ids": np.array(opt_ids, dtype=np.int64),
+            "option_mass": np.array([r["option_mass"] for r in rows]),
+        },
+    )
+
+
+def rendered_identity_mismatches(
+    model: ModelWrapper | StubModel, reference_render, scenarios: list[Scenario], n: int = 16
+) -> list[str]:
+    """Stage-checkpoint fork check (models.yaml phase1 header): render the C1/C3 chat messages
+    with ``model`` and with ``reference_render`` (the final Instruct's template) and return the
+    scenario ids whose rendered prompts differ. Empty list = no fork."""
+    bad = []
+    for s in scenarios[:n]:
+        order = assign_letters(s, 0)
+        for frame in ("agent", "eval"):
+            user = render_letter_user_message(s, order, frame, "neutral")
+            msgs = [{"role": "user", "content": user}]
+            if model.render_chat(msgs) != reference_render(msgs):
+                bad.append(f"{s.id}/{frame}")
+    return bad
+
+
+def reference_renderer(repo: str, revision: str | None):
+    """Tokenizer-only chat renderer for the reference checkpoint (no weights loaded)."""
+    from transformers import AutoTokenizer
+
+    tok = AutoTokenizer.from_pretrained(repo, revision=revision)
+    return lambda msgs: tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+
+
+def cell_forward_matches_generate(ctx: Ctx, scenarios: list[Scenario], n: int = 8) -> None:
+    """VALIDATE-stage check for the letter-chat readout: the forward-pass next-token log-probs on
+    the dose-0 agent prompt must equal the generation path's first-step log-probs (same prompt,
+    greedy). Raises on a mismatch > 0.05 nats on the option tokens; saves both for the record."""
+    from deepsteer.kdg.schema import render_agent_user_message as _agent
+
+    prompts, orders = [], []
+    for s in scenarios[:n]:
+        order = assign_letters(s, 0)
+        prompts.append(ctx.model.render_chat([{"role": "user", "content": _agent(s, order)}]))
+        orders.append(order)
+    fwd = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False).astype(np.float32)
+    gen = ctx.model.generate(
+        prompts, max_new_tokens=1, temperature=0.0, seed=SEED, find_anchor=False
+    )
+    worst = 0.0
+    for k, (order, g) in enumerate(zip(orders, gen)):
+        ids = [i for i in _option_ids(ctx, order, chat=True) if i >= 0]
+        first = g.logp_first.astype(np.float32)[ids]
+        worst = max(worst, float(np.max(np.abs(fwd[k][ids] - first))))
+    ctx.out.mkdir(parents=True, exist_ok=True)
+    rec = {"max_abs_nats": worst, "n": len(prompts)}
+    (ctx.out / "forward_matches_generate.json").write_text(json.dumps(rec))
+    if not ctx.dry and worst > 0.05:
+        raise RuntimeError(
+            f"forward-pass readout differs from generation's first step by {worst:.3f} nats"
+        )
+
+
 # unit registry: name -> (kinds it runs on, callable(ctx, scenarios))
 UNITS: dict[str, tuple[tuple[str, ...], Any]] = {
     "d_chat_dose0": (("instruct",), lambda c, S: cell_d_chat(c, S)),
@@ -716,7 +859,36 @@ UNITS: dict[str, tuple[tuple[str, ...], Any]] = {
     "d_chat_dose1": (("instruct",), lambda c, S: cell_d_chat(c, S, arm="dose1")),
     "d_chat_dose2": (("instruct",), lambda c, S: cell_d_chat(c, S, arm="dose2")),
     "d_chat_dose2_filler": (("instruct",), lambda c, S: cell_d_chat(c, S, arm="dose2_filler")),
+    # Phase 1 (KDG_PHASE1_SPEC.md): VALIDATE check for the forward-pass chat readout
+    "validate_forward_matches_generate": (
+        ("instruct",),
+        lambda c, S: cell_forward_matches_generate(c, S),
+    ),
 }
+def _letter_unit(frame: str, prefix: str, variant: str):
+    return lambda c, S: cell_letter_chat(c, S, frame=frame, prefix=prefix, variant=variant)
+
+
+# Phase 1 C1 / C3-secondary letter-only chat cells:
+#   {dl|jl}_chat_{eval|deploy|neutral}[_pressure_removed]
+for _pre in ("eval", "deploy", "neutral"):
+    for _frame, _tag in (("agent", "dl"), ("eval", "jl")):
+        for _var in ("primary", "pressure_removed"):
+            _name = f"{_tag}_chat_{_pre}" + ("" if _var == "primary" else "_pressure_removed")
+            UNITS[_name] = (
+                ("instruct",),
+                _letter_unit(_frame, _pre, _var),
+            )
+C1_UNITS = tuple(
+    f"{t}_chat_{p}{v}"
+    for p in ("eval", "deploy", "neutral")
+    for t in ("dl", "jl")
+    for v in ("", "_pressure_removed")
+)
+C3_CHAT_UNITS = ("dl_chat_neutral", "jl_chat_neutral", "dl_chat_neutral_pressure_removed",
+                 "jl_chat_neutral_pressure_removed")
+RAW_UNITS = ("d_raw", "j_raw", "d_raw_pressure_removed", "j_raw_pressure_removed")
+DOSE_UNITS = ("d_chat_dose1", "d_chat_dose2", "d_chat_dose2_filler")
 PILOT_UNITS_INSTRUCT = (
     "d_chat_dose0",
     "j_stated",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 1 zero-GPU checks Z1a, Z1b, Z2 (KDG_PHASE1_SPEC.md v0.2 §2, pushed 090b55a before this ran).
+"""Phase 1 zero-GPU checks Z1a, Z1b, Z2 (KDG_PHASE1_SPEC.md v0.2 §2; pushed 090b55a first).
 
     python3 papers/kdg_panel/scripts/analyze_phase1_z.py
 
@@ -67,12 +67,22 @@ def read_cell(model: str, cell: str, status: dict) -> dict[str, dict]:
                 m = np.exp(raw)
                 m = m / m.sum()
                 logm = np.log(m)
-                pv.append(sum(mm for L, mm in zip(letters, m)
-                              if status[sid].get(r["order"][L]) == "violating"))
+                pv.append(
+                    sum(
+                        mm
+                        for L, mm in zip(letters, m)
+                        if status[sid].get(r["order"][L]) == "violating"
+                    )
+                )
                 sg.append(float(np.std(logm - logm.mean())))
                 en.append(float(-(m * logm).sum()))
-            out[sid] = {"mass": float(np.mean([r["option_mass"] for r in rs])), "p": float(np.mean(pv)),
-                        "sigma": float(np.mean(sg)), "entropy": float(np.mean(en)), "n": len(rs)}
+            out[sid] = {
+                "mass": float(np.mean([r["option_mass"] for r in rs])),
+                "p": float(np.mean(pv)),
+                "sigma": float(np.mean(sg)),
+                "entropy": float(np.mean(en)),
+                "n": len(rs),
+            }
     return out
 
 
@@ -80,15 +90,23 @@ def model_table(model: str, status: dict) -> dict[str, dict]:
     c = {k: read_cell(model, k, status) for k in CELLS}
     out = {}
     for sid, D in c["d_raw"].items():
-        J, Dn, Jn = c["j_raw"].get(sid), c["d_raw_pressure_removed"].get(sid), c["j_raw_pressure_removed"].get(sid)
+        J, Dn, Jn = (
+            c["j_raw"].get(sid),
+            c["d_raw_pressure_removed"].get(sid),
+            c["j_raw_pressure_removed"].get(sid),
+        )
         if J is None or Dn is None or Jn is None:
             continue
         out[sid] = {
             "above": min(D["mass"], J["mass"]) >= FLOOR,
             "above_null": min(Dn["mass"], Jn["mass"]) >= FLOOR,
             "twin_mass": min(Dn["mass"], Jn["mass"]),
-            "pD": D["p"], "pJ": J["p"], "pDn": Dn["p"], "pJn": Jn["p"],
-            "sigma_twin_D": Dn["sigma"], "sigma_twin_J": Jn["sigma"],
+            "pD": D["p"],
+            "pJ": J["p"],
+            "pDn": Dn["p"],
+            "pJn": Jn["p"],
+            "sigma_twin_D": Dn["sigma"],
+            "sigma_twin_J": Jn["sigma"],
             "sigma": 0.5 * (Dn["sigma"] + Jn["sigma"]),
             "entropy_twin": 0.5 * (Dn["entropy"] + Jn["entropy"]),
         }
@@ -106,11 +124,17 @@ def summarize(point: float, draws: np.ndarray) -> dict:
 
 def main() -> int:
     scen, _ = load_scenario_dir(sorted(DATA.glob("*_scenarios_*.json")))
-    status = {s.id: {o.option_id: o.norm_status for o in s.options} for s in scen
-              if not s.covariates.get("construction_flag")}
-    B, I = model_table("olmo3_base", status), model_table("olmo3_instruct", status)
-    shared = sorted(s for s in B if s in I and B[s]["above"] and I[s]["above"]
-                    and B[s]["above_null"] and I[s]["above_null"])
+    status = {
+        s.id: {o.option_id: o.norm_status for o in s.options}
+        for s in scen
+        if not s.covariates.get("construction_flag")
+    }
+    B, I = model_table("olmo3_base", status), model_table("olmo3_instruct", status)  # noqa: E741
+    shared = sorted(
+        s
+        for s in B
+        if s in I and B[s]["above"] and I[s]["above"] and B[s]["above_null"] and I[s]["above_null"]
+    )
     n = len(shared)
     # "the shared-192 subset is the A17 subset" (same floor, same cells): fail loudly otherwise
     assert n == 192, f"shared subset is {n}, not the A17 192: loader drifted from analyze_paper8"
@@ -126,8 +150,11 @@ def main() -> int:
             "E_logit": (logit(pD) - logit(pJ)) - (logit(pDn) - logit(pJn)),
             "S_act": logit(pD) - logit(pDn),
             "S_judge": logit(pJ) - logit(pJn),
-            "act_prob": pD - pDn, "judge_prob": pJ - pJn,
-            "sigma": arr(T, "sigma"), "sigma_D": arr(T, "sigma_twin_D"), "sigma_J": arr(T, "sigma_twin_J"),
+            "act_prob": pD - pDn,
+            "judge_prob": pJ - pJn,
+            "sigma": arr(T, "sigma"),
+            "sigma_D": arr(T, "sigma_twin_D"),
+            "sigma_J": arr(T, "sigma_twin_J"),
             "entropy": arr(T, "entropy_twin"),
         }
     for lab in pr:
@@ -139,13 +166,19 @@ def main() -> int:
 
     def paired(key):
         d = i[key] - b[key]
-        return {"base": summarize(b[key].mean(), b[key][idx].mean(1)),
-                "instruct": summarize(i[key].mean(), i[key][idx].mean(1)),
-                "diff_instruct_minus_base": summarize(d.mean(), d[idx].mean(1))}
+        return {
+            "base": summarize(b[key].mean(), b[key][idx].mean(1)),
+            "instruct": summarize(i[key].mean(), i[key][idx].mean(1)),
+            "diff_instruct_minus_base": summarize(d.mean(), d[idx].mean(1)),
+        }
 
     rep: dict = {
         "spec": "KDG_PHASE1_SPEC.md v0.2 §2 (commit 090b55a, pushed before computation)",
-        "n_shared": n, "n_boot": N_BOOT, "seed": SEED, "clip": CLIP, "floor": FLOOR,
+        "n_shared": n,
+        "n_boot": N_BOOT,
+        "seed": SEED,
+        "clip": CLIP,
+        "floor": FLOOR,
         "second_derivation_prob_scale": paired("E_prob"),
         "second_derivation_acting_prob": paired("act_prob"),
         "second_derivation_judging_prob": paired("judge_prob"),
@@ -174,23 +207,30 @@ def main() -> int:
         v1 = "not_explained_by_sharpening"
     else:
         v1 = "consistent_with_sharpening"
-    rep["Z1b_i"] = {"k_act": summarize(k_pt, k_bs), "S_judge_base": sjb,
-                    "D_judge": summarize(dj_pt, dj_bs), "verdict": v1}
+    rep["Z1b_i"] = {
+        "k_act": summarize(k_pt, k_bs),
+        "S_judge_base": sjb,
+        "D_judge": summarize(dj_pt, dj_bs),
+        "verdict": v1,
+    }
 
     # ---- Z1b (ii, primary): twin-measured scale normalization
     ratio = i["sigma"] / b["sigma"]
     k_twin_pt = float(np.median(ratio))
     k_twin_bs = np.median(ratio[idx], axis=1)
     z1b2 = {
-        "sigma": paired("sigma"), "sigma_D_twin": paired("sigma_D"), "sigma_J_twin": paired("sigma_J"),
+        "sigma": paired("sigma"),
+        "sigma_D_twin": paired("sigma_D"),
+        "sigma_J_twin": paired("sigma_J"),
         "entropy_twin": paired("entropy"),
         "k_twin_median_ratio": summarize(k_twin_pt, k_twin_bs),
         "E_norm": paired("E_norm"),
         "min_sigma": {"base": float(b["sigma"].min()), "instruct": float(i["sigma"].min())},
     }
     dn = z1b2["E_norm"]["diff_instruct_minus_base"]
-    z1b2["verdict"] = ("widening_survives_sharpening" if dn["ci95"][0] > 0
-                       else "sharpening_explained")
+    z1b2["verdict"] = (
+        "widening_survives_sharpening" if dn["ci95"][0] > 0 else "sharpening_explained"
+    )
     rep["Z1b_ii_primary"] = z1b2
 
     # ---- Z2: instruct twins' g_null by option mass (the A6 discriminator)
@@ -212,27 +252,49 @@ def main() -> int:
     r_b_support = split_med["ci95"][1] < 0
     rep["Z2"] = {
         "mass_definition": "min(D-twin, J-twin) raw option mass, instruct, shared 192",
-        "median_mass": med, "n_low": int(len(low)), "n_high": int(len(high)),
-        "g_null_low": float(low.mean()), "g_null_high": float(high.mean()),
+        "median_mass": med,
+        "n_low": int(len(low)),
+        "n_high": int(len(high)),
+        "g_null_low": float(low.mean()),
+        "g_null_high": float(high.mean()),
         "delta_low_minus_high": split_med,
-        "n_band_0.5_0.7": int(len(band)), "n_above_0.7": int(len(above)),
+        "n_band_0.5_0.7": int(len(band)),
+        "n_above_0.7": int(len(above)),
         "delta_band_minus_above": split_band,
         "g_null_all": summarize(gnull.mean(), gnull[idx].mean(1)),
         "verdict": ("R_b_supported" if r_b_support else "R_b_loses_cheapest_support"),
     }
 
-    (DATA / "analysis_z1_scale.json").write_text(json.dumps(
-        {k: rep[k] for k in rep if k != "Z2"}, indent=1))
-    (DATA / "analysis_z2_a6_mass.json").write_text(json.dumps(
-        {"spec": rep["spec"], "n_boot": N_BOOT, "seed": SEED, "Z2": rep["Z2"]}, indent=1))
+    (DATA / "analysis_z1_scale.json").write_text(
+        json.dumps({k: rep[k] for k in rep if k != "Z2"}, indent=1)
+    )
+    (DATA / "analysis_z2_a6_mass.json").write_text(
+        json.dumps({"spec": rep["spec"], "n_boot": N_BOOT, "seed": SEED, "Z2": rep["Z2"]}, indent=1)
+    )
     with open(DATA / "per_scenario_phase1_z.csv", "w", newline="") as f:
         w = csv.writer(f)
-        keys = ["E_prob", "E_logit", "S_act", "S_judge", "sigma", "sigma_D", "sigma_J", "entropy", "E_norm"]
-        w.writerow(["scenario_id"] + [f"{k}_{m}" for m in ("base", "instruct") for k in keys]
-                   + ["instruct_twin_mass", "instruct_g_null"])
+        keys = [
+            "E_prob",
+            "E_logit",
+            "S_act",
+            "S_judge",
+            "sigma",
+            "sigma_D",
+            "sigma_J",
+            "entropy",
+            "E_norm",
+        ]
+        w.writerow(
+            ["scenario_id"]
+            + [f"{k}_{m}" for m in ("base", "instruct") for k in keys]
+            + ["instruct_twin_mass", "instruct_g_null"]
+        )
         for j, s in enumerate(shared):
-            w.writerow([s] + [pr[m][k][j] for m in ("base", "instruct") for k in keys]
-                       + [mass[j], gnull[j]])
+            w.writerow(
+                [s]
+                + [pr[m][k][j] for m in ("base", "instruct") for k in keys]
+                + [mass[j], gnull[j]]
+            )
     print(json.dumps(rep, indent=1))
     return 0
 

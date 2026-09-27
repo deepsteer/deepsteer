@@ -27,26 +27,39 @@ def main() -> int:
 
     def summ(x):
         lo, hi = np.percentile(x[idx].mean(1), [2.5, 97.5])
-        return {"mean": float(x.mean()), "ci95": [float(lo), float(hi)],
-                "point_in_ci": bool(lo <= x.mean() <= hi)}
+        return {
+            "mean": float(x.mean()),
+            "ci95": [float(lo), float(hi)],
+            "point_in_ci": bool(lo <= x.mean() <= hi),
+        }
 
     out = {"amendment": "P1-A1 (d39deab)", "n": 192, "n_boot": N_BOOT, "seed": SEED}
     for m in ("base", "instruct"):
         out[m] = {
             "act_per_scale": summ(g[f"S_act_{m}"] / g[f"sigma_D_{m}"]),
             "judge_per_scale": summ(g[f"S_judge_{m}"] / g[f"sigma_J_{m}"]),
-            "E_fs": summ(g[f"S_act_{m}"] / g[f"sigma_D_{m}"] - g[f"S_judge_{m}"] / g[f"sigma_J_{m}"]),
+            "E_fs": summ(
+                g[f"S_act_{m}"] / g[f"sigma_D_{m}"] - g[f"S_judge_{m}"] / g[f"sigma_J_{m}"]
+            ),
         }
     d_act = g["S_act_instruct"] / g["sigma_D_instruct"] - g["S_act_base"] / g["sigma_D_base"]
     d_jud = g["S_judge_instruct"] / g["sigma_J_instruct"] - g["S_judge_base"] / g["sigma_J_base"]
     d_fs = d_act - d_jud
-    out["diff_instruct_minus_base"] = {"act_per_scale": summ(d_act), "judge_per_scale": summ(d_jud),
-                                       "E_fs": summ(d_fs)}
+    out["diff_instruct_minus_base"] = {
+        "act_per_scale": summ(d_act),
+        "judge_per_scale": summ(d_jud),
+        "E_fs": summ(d_fs),
+    }
     lo, hi = out["diff_instruct_minus_base"]["E_fs"]["ci95"]
     se = (hi - lo) / (2 * 1.96)
     out["mde_E_fs"] = 2.8 * se
-    out["verdict"] = ("widening_survives_frame_specific_sharpening" if lo > 0
-                      else "reversed" if hi < 0 else "unresolved")
+    out["verdict"] = (
+        "widening_survives_frame_specific_sharpening"
+        if lo > 0
+        else "reversed"
+        if hi < 0
+        else "unresolved"
+    )
     (DATA / "analysis_p1a1_fork.json").write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))
     return 0

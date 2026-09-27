@@ -352,6 +352,20 @@ scenario-set sha256, prefix strings, seed, git commit. Manifest per session with
   cells if the template hash also differs (chat cells fork).
 - Any unit's parse failure > 10% (chat cells) → stop that unit, keep the session's other units.
 
+## 7a. Build status (2026-09-26)
+
+- Z3 harness built: `deepsteer/kdg/phase1_frames.py` (letter-only J, framing prefixes; template
+  p1-1.0.0, v1.0.0 strings untouched), `cell_letter_chat`, `rendered_identity_mismatches` +
+  `reference_renderer`, `cell_forward_matches_generate` in `kdg_pod_lib.py`,
+  `pod_kdg_phase1.py` (any registry key, unit groups RAW/C1/C3CHAT/DOSE/KDG2/VALIDATE, fork skip,
+  revision-match logging), `runpod/remote_kdg_phase1.sh` (KDG_PROFILE=p1a|p1b, per-step manifests,
+  both §7 bails in-script). `tests/scripts/test_pod_kdg_phase1.py`: 13 tests, each naming its
+  failure mode; full KDG suite 53/53.
+- Z4 generation running (round 3, CLI generators on plan quota; API keys stripped from the child
+  environments). Session A waits on its validation, cross-rated external labels and commit.
+- Dose arm scenario set committed as `data/screened_ids_a17_union.json` (136; equals the A17
+  screened set).
+
 ## 8. Author decisions (2026-09-26)
 
 - **D1. Second lineage: Llama-3.1-8B** (base + Meta instruct + Tulu-3 stages); Orion's token has
