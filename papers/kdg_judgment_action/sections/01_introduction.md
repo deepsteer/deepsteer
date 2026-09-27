@@ -96,9 +96,12 @@ excess over the null holds at every strictness level and is largest where all fo
 is the majority rule discarding information, not the gap shrinking. Third, the gap has no family
 structure at this power: third-party harm is not where it is smallest, so the action channel is
 not organized by the harm content refusal reads. Fourth, the gap is present before post-training and
-survives it. In a raw completion frame the base model's acting-versus-judging mass gap exceeds its
-own pressure-removed null (0.017, 0.012 to 0.022); read under its own chat template, the instruct
-model's gap has the same sign at rest and a pressure-attributable excess of 0.030 (0.006 to 0.053).
+survives it. In a raw completion frame, the only frame a base model has, the base model's
+acting-versus-judging mass gap exceeds its own pressure-removed null (0.017, 0.012 to 0.022), a
+descriptive reading since the same frame misreads templated checkpoints; read under its own chat
+template, every templated checkpoint carries a pressure-attributable excess (0.021 after SFT, 0.030
+after RLVR), and post-training does not resize it (no stage change detectable above about 0.013 at
+$n = 136$).
 The same design withdrew one of our own claims by its pre-registered rule: a raw-frame reading that
 post-training lowers the model's baseline willingness to take the violating action is a property of
 reading a chat model without its template, and we report it as such. One family's rate depends on which

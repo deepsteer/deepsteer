@@ -60,9 +60,12 @@ acting than when judging, 0.041 (0.034 to 0.049) on 359 scenarios, and 0.024 (0.
 the pressure-removed twins: a second-person frame alone moves the base model toward the violating
 option. The pressure-attributable excess, 0.017 (0.012 to 0.022), excludes zero. The binary shadow
 of the same quantity does not resolve (0.024, $-0.021$ to 0.065), which is the majority rule on a
-small mass effect, not a disagreement in sign. [Status pending the SFT bridge cell, P1-A3: the base
-cell stays a valid pretraining-boundary comparison only if the first templated checkpoint reads the
-same in the raw frame as under its template; otherwise it is reported as descriptive.]
+small mass effect, not a disagreement in sign. This cell is descriptive. The raw frame is the only frame
+a base model has, and the pre-registered bridge test shows it already misreads the first templated
+checkpoint: at rest, SFT's gap is $-0.019$ ($-0.035$ to $-0.003$) in the raw frame and $+0.033$ (0.021
+to 0.045) under its template, a difference of $-0.052$ ($-0.070$ to $-0.034$) on 310 scenarios. We
+therefore report the base number as the raw frame's reading of the base model, not as a validated
+comparison with the aligned model.
 
 **Survives post-training, under the model's own template.** Read under its chat template on the 136
 screened scenarios, the instruct model's acting-versus-judging gap is 0.055 (0.034 to 0.076) with
@@ -93,8 +96,11 @@ the rule's word and demote the reading. The instruct side of that comparison is 
 carrying the format effect above; on the log-odds scale the difference survives, but divided by
 each model's own output scale it does not resolve (0.12, $-0.02$ to 0.26), and the scale factor is
 itself partly a raw-frame property of the instruct model. The comparison that is template-valid on
-every side runs across post-training stages (SFT, DPO, final) under one template; it is reported
-[pending, Phase 1 C3] rather than inferred from this cell.
+every side runs across post-training stages under one template. On the 136 screened scenarios the
+pressure-attributable excess is 0.021 (0.006 to 0.036) after SFT, 0.022 (0.002 to 0.043) after DPO and
+0.030 (0.006 to 0.053) after RLVR; the DPO and RL steps are 0.001 ($-0.012$ to 0.014) and 0.007
+($-0.001$ to 0.016). Post-training does not resize the pressure-attributable part (no stage change
+detectable above about 0.013 at $n = 136$).
 
 **Robustness of the base cell.** The selection check passed: base's excess on all 354 of its
 above-floor scenarios (0.017) matches its excess on the 192 shared with instruct (0.018). The pilot
@@ -106,5 +112,8 @@ than anything moral: the incentive sentence hands the actor a goal, and the judg
 same sentence, does not hold it. The deliberation-dose arm with a filler-matched budget control
 separates the two. At the pre-registered budget of 512 tokens the instruct model's careful reasoning
 does not finish, so the arm is read with a forced answer at the end of the budget and reported as
-truncated reasoning [pending, Phase 1 P1-A5]; on its own it does not answer whether deliberation
-reaches the action.
+truncated reasoning: against the length-matched non-moral restatement, it lowers the violating mass by
+0.077 (0.047 to 0.110) on 130 scenarios. That is the first lever on the gap this panel has found, and
+it is reported as pending two checks: a control that gives the restatement the same truncated form,
+and a per-scenario comparison with reasoning allowed to finish at 2,048 tokens. On its own it does not
+answer whether completed deliberation reaches the action.

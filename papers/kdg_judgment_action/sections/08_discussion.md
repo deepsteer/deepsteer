@@ -23,10 +23,10 @@ incentive adds is still there (0.030, 0.006 to 0.053). The gap is not a product 
 alignment does not remove it. Combined with our earlier finding that moral comprehension is
 pretraining-native while the refusal gate is a post-training construction, the picture is of a model
 whose judgment and action are both pretraining-shaped and already discrepant before alignment, with
-refusal added on top as a narrow control that reads neither broadly. What post-training does to the
-size of the pressure-attributable part is the open question: the raw-frame comparison says it grows,
-the same comparison divided by each model's output scale does not resolve, and the stage-resolved
-comparison under one template is the cell that decides it.
+refusal added on top as a narrow control that reads neither broadly. Post-training does not resize the
+pressure-attributable part: under one template it is 0.021, 0.022 and 0.030 after SFT, DPO and RLVR,
+with no stage change detectable above about 0.013 at $n = 136$. The raw-frame comparison that seemed
+to show it growing is not a valid readout of any templated checkpoint.
 
 **The instrument corrected us, by its own rule.** An earlier reading of this panel said that
 post-training lowers the baseline, so that a behavioral evaluation without the twin would record an
