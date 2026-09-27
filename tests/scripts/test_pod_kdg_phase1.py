@@ -210,3 +210,63 @@ class TestRegistryAndDriver:
             pod.expand_units(["C1", "dl_chat_evl"])
         with pytest.raises(SystemExit):
             pod.run(tmp_path / "x", True, ["olmo3_sfft"], ["RAW"], [scenario_file])
+
+
+class TestSessionAAnalysis:
+    def test_end_to_end_on_stub_session(self, tmp_path, scen, scenario_file):
+        # most probable failure: the analysis reads a step directory the session script never
+        # writes (path drift between remote_kdg_phase1.sh and the analysis), so a verdict is empty
+        import csv as _csv
+
+        ana = _load("analyze_phase1_session_a")
+        p1a, old, data = tmp_path / "p1a", tmp_path / "old", tmp_path / "data"
+        data.mkdir()
+        (data / scenario_file.name).write_text(scenario_file.read_text())
+        ids = [s.id for s in scen]
+        (data / "screened_ids_a17_union.json").write_text(json.dumps({"ids": ids}))
+        with open(data / "per_scenario_raw_union.csv", "w", newline="") as f:
+            w = _csv.writer(f)
+            w.writerow(["run", "model", "scenario_id", "above_floor", "above_floor_null"])
+            for i in ids:
+                w.writerow(["three_cell_union", "instruct", i, "True", "True"])
+        steps = [  # (step dir as in remote_kdg_phase1.sh, models, units)
+            ("stages_raw", ["olmo3_sft", "olmo3_dpo"], ["RAW"]),
+            ("base_new", ["olmo3_base"], ["RAW"]),
+            ("final_new", ["olmo3_instruct"], ["RAW"]),
+            ("final_c1", ["olmo3_instruct"], ["C1"]),
+            ("stages_chat", ["olmo3_sft", "olmo3_dpo"], ["C3CHAT"]),
+            ("final_dose", ["olmo3_instruct"], ["DOSE"]),
+        ]
+        for step, models, units in steps:
+            pod.run(p1a / step, True, models, units, [scenario_file])
+        pod.run(old / "kdg2", True, ["olmo3_base", "olmo3_instruct"], ["RAW"], [scenario_file])
+        out = tmp_path / "rep.json"
+        rc = ana.main(
+            [
+                "--p1a",
+                str(p1a),
+                "--old",
+                str(old / "kdg2"),
+                "--data",
+                str(data),
+                "--dry",
+                "--write",
+                str(out),
+                "--floor",
+                "0",
+                "--min-anchored",
+                "1",
+            ]
+        )
+        rep = json.loads(out.read_text())
+        assert rc == 0 and rep["spec_values"] is False  # stub run is marked non-spec
+        assert rep["C3"]["n_shared"] > 0 and rep["C3"]["verdict_primary_scale_E_norm"]
+        assert rep["C1"]["primary_screened_twins"]["verdict"] in {
+            "R_a",
+            "R_b",
+            "R_c",
+            "mixed_Ra_Rc",
+            "unresolved",
+        }
+        assert rep["C1"]["A7"]["n"] > 0
+        assert rep["C2"]["n_scenarios"] > 0 and rep["C2"]["verdict"] != "no_data"
