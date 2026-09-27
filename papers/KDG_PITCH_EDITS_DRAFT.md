@@ -1,50 +1,62 @@
-# Draft edits for the pitch Google Doc (2026-09-27)
+# Draft edits for the pitch Google Doc (updated 2026-09-28, part-A gate)
 
-For pasting into the pitch doc (the source of record; `KDG_PITCH_PLAN.md` is its export). Rule of
-record (author, 2026-09-27): the "post-training lowers the baseline" half is dropped; the
-base-vs-instruct comparison is demoted from headline to cell, pending the SFT bridge cell (P1-A3).
-Items marked [pending] wait for the p1a_fix results and the Phase 1 gate.
+For pasting into the pitch doc (the source of record; `KDG_PITCH_PLAN.md` is its export). Rules of
+record (author): the "post-training lowers the baseline" half is dropped; the base-vs-instruct
+comparison is a cell, and after the SFT bridge the base cell is **descriptive**; "not resized by
+post-training" always carries its bar; nothing about the growing at-rest lean (KDG-A8) enters the
+pitch until the author decides. Two versions of the lead follow; Version 1 is in force now.
 
-## The claim (replacement)
+## The claim: Version 1 (provisional, in force)
 
-On OLMo-3-7B, an open model acts against its own stated moral judgment, and the part of that gap
-that comes from the incentive is there before post-training and still there after it, read under
-the model's own chat template (pressure-attributable excess 0.030, 95% CI 0.006 to 0.053). The
-instrument that shows this also withdrew one of our own headline claims by its pre-registered rule:
-an apparent "safer at rest" effect of post-training came from reading a chat model without its
-template. [pending: the stage sweep SFT → DPO → final under one template, which says where in
-post-training the pressure-attributable part changes, if it does.]
+1. **The gap is pretraining-native and not resized by post-training.** On OLMo-3-7B the model acts
+   against its own stated moral judgment by a margin the incentive adds. That margin is present in the
+   only frame a base model has, and read under the model's own chat template it is present after SFT,
+   after DPO and after RLVR (0.021, 0.022, 0.030). Post-training does not resize it: no stage change
+   detectable above about 0.013 at n = 136.
+2. **The instrument withdrew one of our own claims.** An apparent "safer at rest" effect of
+   post-training came from reading a chat model without its template. A pre-registered control
+   removed it, and the same check shows the raw frame misreads every templated checkpoint from SFT on.
+   Evaluations that score instruct checkpoints without their template, including recent log-prob
+   studies of the same OLMo-3 checkpoints, inherit this.
+3. **Moral deliberation before acting reduces the gap (pending).** Asking the model to reason about the
+   stakes, even when its reasoning is cut off at 512 tokens, lowers the violating choice by 0.077
+   (0.047 to 0.110) against a length-matched non-moral restatement. Pending two checks in Session B: a
+   control giving the restatement the same truncated form, and a per-scenario comparison with
+   reasoning allowed to finish.
 
-Why it matters for evaluation [wording waits for the SFT bridge, which dates the effect to a stage
-or shows it is general to templated checkpoints]: a chat model read in a raw completion frame
-acquires agent-frame effects that belong to the frame. Any evaluation or interpretability result that scores instruct
-checkpoints without their template, as several recent post-training studies do, inherits them.
+## The claim: Version 2 (if item 3 survives Session B)
+
+1. **The gap is pretraining-native and not resized by post-training.** (as Version 1, item 1)
+2. **Moral deliberation before acting reduces it.** Reasoning about the stakes lowers the violating
+   choice against a matched non-moral control, and the effect survives a truncation-matched control
+   [and holds when reasoning is allowed to finish: fill from the 2,048 table]. [If the norm-salience
+   arm reproduces most of the effect: "Naming the norm at stake reduces it; deliberating adds (little /
+   something) beyond that." Fill from the P1-A8 salience share.]
+3. **The instrument withdrew one of our own claims.** (as Version 1, item 2)
 
 ## Evidence in hand, points 4 to 6 (replacement)
 
-4. **The gap was there before safety training, and it is still there after.** The base model shows a
-   small pressure-driven gap; the trained model, read in its own chat format, shows one too.
+4. **The gap is there before safety training and after every stage of it.** The base model shows a
+   small pressure-driven gap in the only format it can be read in; the trained model, read in its own
+   chat format, shows one after each training stage, and the stages do not change its size.
 5. **One of our earlier findings did not hold up, and the test that removed it was written in
    advance.** We had reported that safety training makes the model more cautious at rest. That came
-   from reading the trained model in a format it was not built for. In its own format it is not more
-   cautious at rest.
-6. **Whether safety training makes the action more sensitive to pressure is open.** On one scale
-   it does; adjusted for how much more decisive the trained model's outputs are, it does not
-   resolve. [pending: the stage sweep answers this under one format.]
+   from reading the trained model in a format it was not built for.
+6. **Thinking about the stakes first helps (pending checks).** When the model reasons about what is at
+   stake before acting, it picks the option it judged wrong less often than when it restates the
+   situation at the same length.
 
 ## Numbers of Record (rows that change)
 
 | Finding | Number of record | Scope limit |
 |---|---|---|
-| The gap exists before alignment | Base excess 0.017 [0.012, 0.022] in the raw frame | Continuous readout; [pending: base-cell status by the SFT bridge rule] |
-| The gap survives alignment | Instruct excess 0.030 [0.006, 0.053] under the chat template; at rest 0.055 [0.034, 0.076], under pressure 0.084 [0.059, 0.110] | 136 screened, selected on this model's chat actions |
-| ~~Post-training lowers the baseline~~ | Withdrawn: raw-frame −0.038 does not reproduce under the template (+0.055); pre-registered artifact branch | KDG-A6 → R_b |
-| Post-training and pressure sensitivity | Raw frame 0.018 → 0.046 (Δ 0.028 [0.007, 0.049]); per unit of output scale 0.12 [−0.02, 0.26], not resolved | Instruct side is a raw-frame cell; [pending: stage sweep under the template] |
-| ~~Net gap under pressure looks smaller~~ | Withdrawn with the baseline row | — |
-| The raw frame distorts templated models | At-rest sign −0.038 raw vs +0.055 chat; agent/judge sharpness ratio 1.79 raw vs 1.07 chat | One model; SFT bridge pending |
-
-Rows removed: "Post-training widens the acting side" (becomes the scoped row above), "Post-training
-lowers the baseline", "Net gap under pressure looks smaller".
+| The gap exists before alignment | Base excess 0.017 [0.012, 0.022], raw frame | Descriptive: the raw frame is the base model's only frame and misreads SFT (−0.052 [−0.070, −0.034]) |
+| The gap survives every post-training stage | Excess under the template: SFT 0.021 [0.006, 0.036], DPO 0.022 [0.002, 0.043], final 0.030 [0.006, 0.053] | 136 screened, selected on the final model's chat actions |
+| Post-training does not resize it | DPO step 0.001 [−0.012, 0.014], RL step 0.007 [−0.001, 0.016] | No stage change detectable above ~0.013 at n = 136 |
+| Truncated moral reasoning reduces it | dose2 − filler −0.077 [−0.110, −0.047] (130) | Truncated at 512 tokens; pending the truncated-filler control and the 2,048 table |
+| ~~Post-training lowers the baseline~~ | Withdrawn: raw −0.038 vs template +0.055 | Pre-registered artifact branch |
+| ~~Post-training widens the acting side~~ | Withdrawn as a headline: raw-frame cell, not separable from output-scale sharpening, raw frame invalid for templated models | KDG-30 scoped |
+| The raw frame distorts templated models | At-rest sign −0.038 raw vs +0.055 chat (final); −0.019 vs +0.033 (SFT) | Dated to the first templated stage |
 
 ## Related work line (replacement)
 
