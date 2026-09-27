@@ -684,3 +684,10 @@ optimization or RL, and reduced by moral deliberation before acting". The "widen
 "lowers the baseline" clauses are both gone; the SYNTHESIS branch rows "DPO/RL widens" do not obtain
 under the template, and "Deliberation closes the gap" obtains as truncated reasoning (the completed-
 reasoning check is the 2,048 rider). Pitch and paper wording: at the part-A gate with the author.
+
+KDG-A8 resolved (2026-09-28; KDG_RESULTS §17; P1-A7 pushed before computation): on a final-model-free
+set (n 586) the acting frame's at-rest lean toward the violating option grows at the DPO step on the
+probability scale (+0.011 [0.007, 0.016]) and per unit of output scale (+0.058 [0.027, 0.090]); the RL
+step is sharpening. The pressure-attributable excess stays flat (no stage change detectable above
+about 0.005 at n 586). Standing claim candidate (author's gate): preference optimization shifts the
+agent frame's default toward the advantageous option without changing the incentive's pull.

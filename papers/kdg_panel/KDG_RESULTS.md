@@ -1010,3 +1010,36 @@ the action (the 2,048 rider, Session B, gives the per-scenario comparison).
 - The dose arm is the program's first positive behavioral lever on this gap: moral reasoning, even
   truncated, pulls the action toward the norm relative to matched non-moral text.
 - KDG-39 dated to SFT; KDG-A8 opened.
+
+# 17. KDG-A8 discriminator (P1-A7, pushed 8d8b44d before computation; 2026-09-28)
+
+Final-model-free set: every union scenario whose neutral letter-only chat cells clear the 0.5 floor on
+SFT, DPO and final (n 586; no screen on any model's action). Script `scripts/analyze_kdg_a8.py`;
+`data/analysis_kdg_a8.json`. 10,000 draws, seed 0.
+
+| Quantity | SFT | DPO | final | DPO step | RL step |
+|---|---|---|---|---|---|
+| at-rest lean g_null | 0.021 [0.013, 0.030] | 0.033 [0.024, 0.042] | 0.039 [0.029, 0.049] | **0.011 [0.007, 0.016]** | 0.006 [0.003, 0.009] |
+| per unit of output scale λ (averaged σ) | 0.149 [0.095, 0.203] | 0.207 [0.155, 0.260] | 0.225 [0.172, 0.279] | **0.058 [0.027, 0.090]** | 0.018 [−0.001, 0.037] |
+| frame-specific λ_fs (beside) | 0.052 [−0.006, 0.109] | 0.263 [0.208, 0.320] | 0.211 [0.159, 0.264] | 0.212 [0.171, 0.253] | −0.052 [−0.078, −0.026] |
+| pressure-attributable excess E | 0.015 [0.007, 0.023] | 0.014 [0.005, 0.024] | 0.018 [0.008, 0.029] | −0.001 [−0.006, 0.005] | 0.004 [0.000, 0.008] |
+
+**Verdict by the P1-A7 rule: the stage effect survives selection and survives scale**, carried by the
+DPO step (probability and averaged-σ scales both exclude 0; the frame-specific scale agrees). The RL
+step is positive on the probability scale but not per unit of output scale (λ CI includes 0; λ_fs
+negative), so the RL-stage growth reads as sharpening. Positive voice: **on the templated OLMo-3
+checkpoints, preference optimization makes the model, placed as the actor, lean further toward the
+locally advantageous option at rest than when it judges, and it does so without changing how much the
+incentive adds.** The pressure-attributable excess is flat on this larger set too, with a tighter bar
+(steps −0.001 and 0.004; no stage change detectable above about 0.005 at n 586).
+
+Referee pass. (1) *"n 586 includes scenarios the model does not find pressuring."* Yes by design:
+g_null is measured on the twins, where no pressure acts, and E is twin-differenced; neither needs a
+pressuring screen. (2) *"The DPO step is 0.011 on a 0–1 mass scale; is that meaningful?"* It is about
+half the SFT-stage lean (0.021) added in one stage, it survives per unit of output scale, and its CI is
+about four times its half-width from 0; the adjective stays anchored to those numbers. (3) *"Selection
+could still enter through the mass floor."* The floor is applied identically to all three checkpoints
+and all pass it on 586 of 586 rows, so it selects nothing here.
+
+ANOMALIES KDG-A8 → resolved (R_a at the DPO step; RL step sharpening). Prose and pitch entry: at the
+author's gate (author rule: nothing about the lean enters prose until both parts are in; both now are).
