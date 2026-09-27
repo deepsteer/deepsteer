@@ -75,7 +75,8 @@ of it the incentive adds does not disappear with alignment. The screened set was
 model's own chat actions, which inflates the raw gap; the twin-differenced excess is less exposed to
 that selection, and it is the number we lean on. Framing the same prompts as an internal safety
 evaluation lowers the at-rest gap by about 0.01 (0.010, 0.001 to 0.021 on the 208 raw-engaged
-scenarios; not resolved on the 136) and leaves the excess unchanged.
+scenarios; not resolved on the 136) and does not detectably move the excess ($-0.008$, $-0.026$ to
+0.012).
 
 **A claim the instrument dropped.** The raw frame had shown the opposite at rest: the instruct
 model's no-pressure gap was $-0.038$ ($-0.059$ to $-0.015$), so that with nothing at stake it looked
