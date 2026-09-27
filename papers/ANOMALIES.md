@@ -493,6 +493,15 @@ and the EXIT trap terminated the pod. Fix (commit 703c8cc): `rp_download` in
 pod survives and the terminate command is printed. Tested with a fake rsync (recovers after 2
 failures; keeps the pod after 3 of 3). Cost of the incident: one re-run pod (p1a_fix, ~50 min).
 Lesson for every launcher in the repo: a teardown trap must be conditional on a verified download.
+**Correction 2026-09-27 (second occurrence, p1a_fix pod 1ljufh6voenl17).** The same steps were lost
+again at the same point, with `rp_download` in place. Root cause, found locally: the Mac's data
+volume was at 100% (120 MB free), so every rsync pass died writing into `stages_chat_sft`, and
+`stages_raw` (next alphabetically) never started. The first incident almost certainly had the same
+cause; "network interruption" above was a guess, now withdrawn. Retries cannot fix a full disk.
+Fixes: 155 GB freed (the local OLMoE-1B-7B Hugging Face cache, 12 checkpoint snapshots, deleted
+with the author's approval); `rp_require_disk` refuses to provision a pod with < 50 GB free under
+the results path (`MIN_FREE_GB`); `rp_download` stops retrying below 5 GB free. Whether the second
+pod survived the failed download (KEEP_POD path) is being checked with the author.
 
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 

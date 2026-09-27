@@ -67,6 +67,7 @@ RSYNC_EXCLUDE="$REPO_ROOT/papers/runpod_common/rsync_exclude.txt"
 source "$REPO_ROOT/papers/runpod_common/session_lib.sh"
 rp_require_bins
 trap cleanup EXIT            # arm teardown before any pod exists
+rp_require_disk "$REPO_ROOT/$SELF_PAPER/${RESULTS_SUBPATH:-outputs}"   # before any pod exists
 rp_provision_pod
 rp_wait_for_ssh
 rp_sync_up

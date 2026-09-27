@@ -51,10 +51,32 @@ cleanup() {
 # interrupted pass). If every attempt fails, KEEP_POD=1 is set so the EXIT trap leaves the pod
 # running instead of destroying results that never arrived (2026-09-27: a single failed pass
 # lost a whole step's outputs to the terminate trap).
+rp_free_gb() {  # free GB on the filesystem holding $1
+  df -Pk "$1" | awk 'NR==2 {print int($4 / 1048576)}'
+}
+
+# rp_require_disk <dir> [min_gb]: refuse to provision when the local results filesystem is short.
+# (2026-09-27: two downloads failed with the Mac's disk at 100%; retries cannot fix a full disk.)
+rp_require_disk() {
+  local dir="$1" min="${2:-${MIN_FREE_GB:-50}}" free
+  mkdir -p "$dir"
+  free="$(rp_free_gb "$dir")"
+  if [ "${free:-0}" -lt "$min" ]; then
+    echo "ERROR: only ${free} GB free under $dir (need >= ${min} GB for results). Free space first."
+    exit 1
+  fi
+  echo ">> local disk: ${free} GB free under $dir (min ${min})"
+}
+
 rp_download() {
-  local src="$1" dst="$2" tries="${DOWNLOAD_TRIES:-5}" k rc=1
+  local src="$1" dst="$2" tries="${DOWNLOAD_TRIES:-5}" k rc=1 free
   mkdir -p "$dst"
   for ((k = 1; k <= tries; k++)); do
+    free="$(rp_free_gb "$dst")"
+    if [ "${free:-0}" -lt 5 ]; then
+      echo "ERROR: local disk has ${free} GB free; not retrying into a full disk."
+      break
+    fi
     rsync -az --partial \
       --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
       -e "ssh ${SSH_OPTS[*]}" "root@$SSH_HOST:$src" "$dst"
