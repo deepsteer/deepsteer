@@ -521,13 +521,17 @@ Coincidence interrogation (move 4): two constructs, one recipe, same shape. The 
 that predicts both is a property of the OLMo-3 Instruct recipe that lowers the default (at-rest)
 output and raises the gain on in-context pressure. The rival that fits both equally well is that
 **both results are log-probability readouts**, and log-prob sensitivity may grow under post-training
-for reasons unrelated to behavior (sharper distributions amplify any prompt-induced shift). The
-separating cell is behavioral: the binary (majority-action) readout at a power that can confirm the
-sign (A17: binary under-powered, same sign). This is a Phase 1 power-table item.
+for reasons unrelated to behavior (sharper distributions amplify any prompt-induced shift, on the
+probability and the log-odds scale alike). The first plan was a behavioral cell (the binary readout at
+adequate power); the Phase 1 power table (2026-09-26) found it needs ~1,900 shared scenarios, so the
+rival is split and tested at zero GPU: log-odds for baseline compression, and a judging-side
+prediction plus a scale measured on the pressure-removed twins for sharpening (`KDG_PHASE1_SPEC.md`
+Z1a/Z1b). The repo's result is exposed to the same sharpening rival, so a Z1b outcome bears on the
+convergence claim too.
 
 | Standing claim | Strongest counter-reading | Separating experiment | Status |
 |---|---|---|---|
-| Pressure-attributable gap present in base, larger after post-training, on the acting side | Log-prob readouts share a sharpening artifact | Binary readout at adequate power (Phase 1 power table) | continuous readout: *widened*; binary: same sign, under-powered |
+| Pressure-attributable gap present in base, larger after post-training, on the acting side | Two scale rivals: baseline compression (probability scale) and uniform logit sharpening (any log-prob scale) | Z1a log-odds recompute (compression); Z1b judging-side prediction + twin-measured scale normalization (sharpening); both zero GPU, `KDG_PHASE1_SPEC.md` §2. The binary readout cannot separate them at feasible n (MDE 0.088 at 192; ~1,900 needed for 0.028) | continuous readout: *widened*; binary: same sign, under-powered; Z1a/Z1b pre-registered 2026-09-26 |
 | Post-training lowers the at-rest baseline (KDG-A6) | R_b raw-frame artifact; **R_c evaluation caution** (Burnat & Davidson 2605.06327: OLMo-3-Instruct refuses +0.118 more under eval framing, 20-item pilot) | Letter-only chat twins × eval/deploy/neutral prefixes (< 15 min, same pod leg); zero-GPU option-mass split first | open; priced; promoted to the Phase 1 pod |
 | Opposite movement is a property of post-training, not of OLMo-3 | OLMo-3-specific recipe | Second base/instruct lineage (~2 h) + tier 2 (~9 h) | open; Phase 1 |
 | The action does not read the harm slice refusal reads | Under-powered family contrast (MDE ≈ 0.40); KDG-A5 exploratory structure | Family top-up for F3/F5 (~1 h); S1 action-position rank cell | open |
@@ -585,9 +589,10 @@ Cairns; Bharadwaj & Kirk). No "first to" without its qualifier.
 ### Referee pass on the restated claim
 
 1. *"Your 'opposite directions' is two log-prob numbers, and so is the repo's; post-training
-   sharpens distributions, which inflates any log-prob shift."* Conceded as open. It is the first
-   row of the claims table; the binary readout has the same sign and is under-powered. The pitch
-   must state the readout and carry the Phase 1 power table.
+   sharpens distributions, which inflates any log-prob shift."* Open, with a pre-registered zero-GPU
+   test (Z1b): if the judging side does not scale with the acting side and the twin-normalized Δ
+   stays positive, sharpening does not explain it; otherwise the pitch sentence is rewritten as the
+   spec writes it. The binary readout cannot decide it at feasible n.
 2. *"The at-rest improvement is OLMo-3-Instruct being eval-cautious, which is published."* Answered
    by design, not yet by data: the sensitivity claim is a within-frame difference and survives R_c;
    the baseline clause is scoped until the frame-prefix twin cell runs (< 15 min).
