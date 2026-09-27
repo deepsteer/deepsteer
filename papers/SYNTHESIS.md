@@ -511,11 +511,13 @@ directions for moral action** (no-pressure raw gap +0.024 → −0.038; pressure
 0.018 → 0.046 on the shared 192), so the net gap under pressure falls (0.043 → 0.011) while
 sensitivity rises.
 
-Convergent evidence, cited as such: an independent repository (Sonnet Xu, `sonnetx/tracing-sycophancy`,
-no paper; pushed 2026-09-25) reports the same direction for factual sycophancy on the same base and
-Instruct checkpoints: models "flip their stated answer less often, yet the log-probability shift
-toward the wrong answer ... grows." Cite by pinned commit, direction only; the README has no numbers
-and its claims were being revised on the day we read it (`LIT_PASS_P9.md` §8).
+Related work, downgraded 2026-09-27: `sonnetx/tracing-sycophancy` (Sonnet Xu; no paper) reports a
+related behavior–probability dissociation on the same OLMo-3 checkpoints. Its log-prob track scores
+every checkpoint, instruct included, on a raw `Question: …\nAnswer:` prefix without the chat template
+(`src/utils.py` `format_logprob_*`, commit 6bcbc1c172), while its behavioral track uses the template.
+That is the format confound §15 of KDG_RESULTS found on our instruct model (KDG-39), so the
+citation reads "related behavior–probability dissociation on the same checkpoints; readout
+comparability unverified", not convergent evidence.
 
 Coincidence interrogation (move 4): two constructs, one recipe, same shape. The simplest model
 that predicts both is a property of the OLMo-3 Instruct recipe that lowers the default (at-rest)
@@ -526,8 +528,9 @@ probability and the log-odds scale alike). The first plan was a behavioral cell 
 adequate power); the Phase 1 power table (2026-09-26) found it needs ~1,900 shared scenarios, so the
 rival is split and tested at zero GPU: log-odds for baseline compression, and a judging-side
 prediction plus a scale measured on the pressure-removed twins for sharpening (`KDG_PHASE1_SPEC.md`
-Z1a/Z1b). The repo's result is exposed to the same sharpening rival, so a Z1b outcome bears on the
-convergence claim too.
+Z1a/Z1b). The repo's result is exposed to the same sharpening rival and, since 2026-09-27, to the format
+confound (its log-prob track reads chat models without their template); it is no longer cited as
+convergent.
 
 | Standing claim | Strongest counter-reading | Separating experiment | Status |
 |---|---|---|---|
@@ -565,11 +568,9 @@ data.
 
 ### Conjunctions under watch
 
-- **Instrument claim × tracing-sycophancy × KDG-A6 R_c.** If R_c wins, the at-rest improvement in
-  both constructs may be an evaluation-framing default of the Instruct recipe, and the sensitivity
-  increase is the part that generalizes. The repo's "response selection rather than a change in
-  preference" (its instruction-following controls) is the behavioral prediction of the Phase 3
-  persona lever; cite it there.
+- **Instrument claim × tracing-sycophancy × KDG-A6 (closed 2026-09-27).** KDG-A6 resolved as R_b
+  (raw-frame artifact), and the repo's log-prob track uses the same raw-frame reading on chat models;
+  the conjunction now reads as a shared format confound (KDG-39), not a shared recipe property.
 - **Incident × dose arm.** OpenAI attributes the incident's riskiest behavior to agents with the
   largest reasoning effort; our dose arm pre-registers closes/leaves and now widens.
 - **Refusal family split × action read.** Refusal reads harm on OLMo/GPT-OSS and broadly on

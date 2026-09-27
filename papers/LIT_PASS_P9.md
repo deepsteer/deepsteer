@@ -304,3 +304,21 @@ al. the DPO jump is confined to challenges that do not name an alternative.
 **New candidates surfaced during the reads (unverified; not citable from this pass).** arXiv:2602.01002
 *How RLHF Amplifies Sycophancy*; arXiv:2602.00707 *Self-Guard* (describes an "awareness-compliance
 gap"). Add to the pre-pitch re-run of this pass.
+
+## 9. Addendum 2026-09-27 (author decisions after Session A part 1)
+
+- **tracing-sycophancy, downgraded.** Code read at commit 6bcbc1c172: the log-prob track builds its
+  scoring prefix as raw text (`src/utils.py`: `format_logprob_baseline_prompt` returns
+  `"Question: {question}\nAnswer:"`; the challenge prefix adds `User:` / `Answer:` lines) for every
+  checkpoint, including instruct and SFT/DPO chat models; only the generative track applies the chat
+  template (`src/backends/hf_transformers.py` `chat()`). Its "behavior improves while log-prob shift
+  grows" therefore compares a templated behavioral readout with a raw-frame probability readout on
+  chat models, the confound KDG_RESULTS §15 found on OLMo-3-Instruct (at-rest sign reversed, agent-frame
+  sharpness inflated in the raw frame). Citation wording: "related behavior–probability dissociation
+  on the same checkpoints; readout comparability unverified".
+- **values.md discrepancy.** Strakhov & Claude's action-mode reversals were coded more often as less
+  interventionist (48.5%) than bolder (36.5%); our template-valid at-rest gap on OLMo-3-Instruct is
+  +0.055 toward the violating option. The axes differ (intervention level vs norm consistency) and
+  their reversals are single draws at T = 1.0, so this is a difference in construct and sampling, not
+  a contradiction; the KDG paper's prior-art paragraph states it (§1).
+

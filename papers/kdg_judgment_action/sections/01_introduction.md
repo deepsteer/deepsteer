@@ -28,7 +28,10 @@ as the reference, and find that 47.6% of 351 paired choices across nine instruct
 Their reversal counts changes in either direction from one draw per mode at temperature 1.0,
 without a pressure manipulation or a re-elicitation floor; the gap rate below counts only moves
 toward the violating option, by majority over 32 rollouts, against a matched null, so the two
-numbers are different quantities. Shao et al. [@shao2024privacylens] find a related split for
+numbers are different quantities. Their action-mode reversals were coded more often as less
+interventionist than as bolder (48.5% against 36.5%); in our panel, read under the chat template with
+nothing at stake, the gap leans toward the violating option (0.055), so the two designs do not agree
+on the at-rest direction, and their axis (intervention level) is not ours (norm consistency). Shao et al. [@shao2024privacylens] find a related split for
 privacy norms: models answer privacy questions better than they respect those norms when acting
 as agents. Huang et al. [@huang2026knowing] and Shen et al.
 [@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
@@ -92,11 +95,13 @@ excess over the null holds at every strictness level and is largest where all fo
 (0.08, 0.03 to 0.13); on the majority readout it is not resolved there at 43 pairs, which we show
 is the majority rule discarding information, not the gap shrinking. Third, the gap has no family
 structure at this power: third-party harm is not where it is smallest, so the action channel is
-not organized by the harm content refusal reads. Fourth, the base model already carries the gap.
-In a raw completion frame its acting-versus-judging mass gap exceeds its own pressure-removed
-null (0.017, 0.012 to 0.022), and post-training does not remove that pressure-attributable part;
-it enlarges it (0.046, 0.025 to 0.069, on the same scenarios), on the acting side, while lowering
-the model's baseline willingness to take the violating action. One family's rate depends on which
+not organized by the harm content refusal reads. Fourth, the gap is present before post-training and
+survives it. In a raw completion frame the base model's acting-versus-judging mass gap exceeds its
+own pressure-removed null (0.017, 0.012 to 0.022); read under its own chat template, the instruct
+model's gap has the same sign at rest and a pressure-attributable excess of 0.030 (0.006 to 0.053).
+The same design withdrew one of our own claims by its pre-registered rule: a raw-frame reading that
+post-training lowers the model's baseline willingness to take the violating action is a property of
+reading a chat model without its template, and we report it as such. One family's rate depends on which
 model wrote its scenarios; a blind human read finds no construction asymmetry, and on the
 continuous readout the difference is graded, not reversed.
 

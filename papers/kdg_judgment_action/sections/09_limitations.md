@@ -7,8 +7,10 @@ families or moves under deliberation. Huang et al. [@huang2026knowing] report ne
 cross-model agreement on enacted choices; if that holds, a cross-model table of this gap would
 show little variance along the model axis, and the family structure, which is flat here, would be
 the only live quantity. The base-versus-instruct result is likewise one lineage's post-training
-recipe; a second base-and-instruct pair is the cheapest test of whether "lowers the baseline,
-raises the pressure sensitivity" is a property of alignment or of OLMo-3's.
+recipe, and its instruct side is a raw-frame cell that carries a format effect (\Cref{base}); a
+second base-and-instruct pair and the stage-resolved comparison under one template are the tests of
+whether any post-training change in the pressure-attributable part is a property of alignment or of
+OLMo-3's recipe.
 
 **The reference is the model's own judgment.** What is measured is the model contradicting its
 own judgment, not wrongness by an external standard. External labels are recorded as a covariate

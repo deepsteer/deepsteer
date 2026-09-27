@@ -6,8 +6,9 @@ a pressure-removed null that survives a paraphrase-majority reference on the maj
 every reference up to the strictest on a log-prob readout, where it is largest. The gap has no
 harm-keyed structure at this power, so whatever the action channel reads, it is not the slice
 refusal reads. And it is not a product of alignment: in a raw completion frame the base model
-already carries a pressure-attributable gap, and post-training enlarges that part on the acting
-side while lowering the model's default willingness to take the violating action. The panel, the
+already carries a pressure-attributable gap, and under its own chat template the aligned model
+still does. One claim did not survive: the appearance that post-training lowers the default
+willingness to take the violating action came from reading a chat model without its template. The panel, the
 harness, the calibration record, the pre-registration with its seventeen dated amendments, and
 the per-scenario arrays are released so that the next cell, what the action position reads, has a
 calibrated outcome to be scored against.

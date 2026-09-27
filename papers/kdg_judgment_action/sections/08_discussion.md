@@ -16,20 +16,28 @@ read of \Cref{structure} (F1 above F3; a pressure-attributable excess present on
 fairness families and unresolved on the shortcut and harm families) is the first candidate for
 that structure, and it is cheap to test.
 
-**Where the gap comes from.** The raw-frame cell answers the origin question the prior panels
-could not ask. The base model already acts more violating than it judges; a second-person frame
-alone moves it in that direction, and the incentive adds to it. Post-training does not remove
-this. It changes two things at once: it lowers the baseline, so that the instruct model placed as
-the actor is, with nothing at stake, more norm-consistent than the same model as a judge; and it
-raises the action's sensitivity to the incentive by about three-quarters, while leaving the
-judgment's sensitivity where base had it. The net effect under pressure is a smaller gap, which
-is what a behavioral evaluation without the twin would report as an improvement; the
-decomposition says the improvement is a baseline shift, and that the pressure sensitivity went
-the other way. Combined with our earlier finding that moral comprehension is pretraining-native
-while the refusal gate is a post-training construction, the picture is of a model whose judgment
-and action are both pretraining-shaped and already discrepant before alignment, with alignment
-adding a cautious default and a stronger pull toward the in-context goal, and refusal added on
-top as a narrow control that reads neither broadly.
+**Where the gap comes from.** The base model already acts more violating than it judges; a
+second-person frame alone moves it in that direction, and the incentive adds to it. Read under its
+own chat template, the aligned model does the same, at rest and under pressure, and the part the
+incentive adds is still there (0.030, 0.006 to 0.053). The gap is not a product of alignment, and
+alignment does not remove it. Combined with our earlier finding that moral comprehension is
+pretraining-native while the refusal gate is a post-training construction, the picture is of a model
+whose judgment and action are both pretraining-shaped and already discrepant before alignment, with
+refusal added on top as a narrow control that reads neither broadly. What post-training does to the
+size of the pressure-attributable part is the open question: the raw-frame comparison says it grows,
+the same comparison divided by each model's output scale does not resolve, and the stage-resolved
+comparison under one template is the cell that decides it.
+
+**The instrument corrected us, by its own rule.** An earlier reading of this panel said that
+post-training lowers the baseline, so that a behavioral evaluation without the twin would record an
+improvement where the pressure sensitivity went the other way. The pre-registered cell that separates
+an installed caution from a frame artifact returned the artifact branch: under the model's template
+the at-rest gap is positive, not negative. We state this as a result because it generalizes. A chat
+model read in a raw completion frame acquires agent-frame effects that belong to the frame, and any
+base-versus-instruct contrast run in such a frame, including log-probability sycophancy measurements
+that score instruct checkpoints without their template, inherits them. The twin design caught the
+problem only because the frame itself was put under test; the lesson for evaluations is to read every
+templated model in its template, and to treat a raw-frame instruct number as a format cell.
 
 **Goal-following is the parsimonious mechanism, and it is testable.** The simplest account of the
 widened acting-side sensitivity is not moral at all: post-training teaches a model to pursue the
@@ -43,8 +51,8 @@ deliberation-dose arm, with a filler-matched budget control, is the cell that se
 goal-following from a moral read: if reasoning before acting closes the gap where filler does
 not, deliberation reaches the action; if neither does, the action is set before the reasoning
 starts, and the mechanistic cell should look at the decision token, not the trace. Persona
-steering [@chen2025persona] is the second lever the design anticipates, since the baseline shift
-is the signature of an installed assistant default.
+steering [@chen2025persona] remains the second lever the design anticipates; with the baseline shift
+withdrawn, its target is the pressure-attributable excess itself, not an installed cautious default.
 
 **Two instruments, one gap.** The majority-vote gap and the log-prob gap agree on sign and rough
 size wherever the first has power, reproduce the same positive band, pass a coherence check the
