@@ -634,3 +634,23 @@ reframe for the author (not adopted): the execution program's post-training resu
 *sharpening*, not widening: a twin-less eval sees a safer model at rest and a larger raw pressure
 response, and neither is the per-unit change. The instrument claim survives with this mechanism;
 the "widened sensitivity" headline does not survive per unit of scale at this power.
+
+
+### Session A, part 1: C1 and KDG-A7 (2026-09-27; `kdg_panel/KDG_RESULTS.md` §15) — what changed
+
+Positive voice first: **under its own chat template OLMo-3-Instruct acts more toward the violating
+option at rest than its letter-only judgment does (+0.055 [0.034, 0.076], n 136), as the base model
+does in the raw frame (+0.024); the judgment–action gap is present at rest and under pressure, before
+and after post-training.** The "safer at rest" reading (raw-frame −0.038) is a format artifact
+(KDG-A6 → R_b, pre-registered). Most of the raw-frame agent-frame sharpening is format too (KDG-A7:
+ratio 1.79 raw → 1.07 chat; mixed by the rule, near-miss).
+
+Scope notes applied here (move 3): the instrument claim "baseline and sensitivity move in opposite
+directions" loses its baseline half; what the twin instrument now shows on OLMo-3 is a
+pressure-attributable excess in base (0.018) and a larger one after post-training on the
+probability and log-odds scales (0.046), with the per-unit-of-scale comparison unresolved (§14) and
+the raw-frame scale factor partly a format property of the instruct model (§15.2). Pitch, paper and
+CLAIMS wording on the baseline shift: escalated to the author.
+
+Open: C3 stage sweep (stages_raw lost in the download; re-run needed); dose arm (512-token budget too
+short for OLMo-3-Instruct's reasoning; fork decision with the author).

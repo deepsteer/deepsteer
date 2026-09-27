@@ -46,6 +46,29 @@ cleanup() {
     echo "WARN: terminate call failed; verify in the RunPod console!"
 }
 
+# --------------------------------- download ----------------------------------
+# rp_download <remote_path/> <local_path/>: rsync results back with retries (--partial resumes an
+# interrupted pass). If every attempt fails, KEEP_POD=1 is set so the EXIT trap leaves the pod
+# running instead of destroying results that never arrived (2026-09-27: a single failed pass
+# lost a whole step's outputs to the terminate trap).
+rp_download() {
+  local src="$1" dst="$2" tries="${DOWNLOAD_TRIES:-5}" k rc=1
+  mkdir -p "$dst"
+  for ((k = 1; k <= tries; k++)); do
+    rsync -az --partial \
+      --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
+      -e "ssh ${SSH_OPTS[*]}" "root@$SSH_HOST:$src" "$dst"
+    rc=$?
+    [ $rc -eq 0 ] && { echo ">> download complete (attempt $k)"; return 0; }
+    echo "WARN: download attempt $k/$tries failed (rsync exit $rc); retrying in 20s"
+    sleep 20
+  done
+  echo "ERROR: download failed $tries times; KEEPING the pod so nothing is lost."
+  echo "  Re-run the rsync by hand, then terminate the pod with the command printed below."
+  KEEP_POD=1
+  return $rc
+}
+
 # ---------------------------------- create -----------------------------------
 rp_provision_pod() {
   POD_ID="${REUSE_POD_ID:-}"

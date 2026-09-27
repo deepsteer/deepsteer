@@ -126,12 +126,7 @@ echo ">> Phase 2 finished (sentinel detected)."
 
 # --------------------------------- download ----------------------------------
 echo ">> Downloading results ($SELF_PAPER/$RESULTS_SUBPATH; npz/json only, no model weights)"
-mkdir -p "$REPO_ROOT/$SELF_PAPER/$RESULTS_SUBPATH"
-rsync -az \
-  --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
-  -e "ssh ${SSH_OPTS[*]}" \
-  "root@$SSH_HOST:$REMOTE_DIR/$SELF_PAPER/$RESULTS_SUBPATH/" \
-  "$REPO_ROOT/$SELF_PAPER/$RESULTS_SUBPATH/"
+rp_download "$REMOTE_DIR/$SELF_PAPER/$RESULTS_SUBPATH/" "$REPO_ROOT/$SELF_PAPER/$RESULTS_SUBPATH/"
 
 echo ">> Done. Results under $SELF_PAPER/$RESULTS_SUBPATH/ (see the remote runner's log for the file list)."
 # pod terminated by the EXIT trap

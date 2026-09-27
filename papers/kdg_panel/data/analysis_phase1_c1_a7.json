@@ -1,0 +1,158 @@
+{
+ "note": "Session A partial analysis: C1 and A7 only (their inputs final_c1 + base/final raw arrived complete). C3 and C2 fields are EMPTY here because stages_raw and the SFT stage-chat cells were lost in the download and the dose arm bailed; they are not results.",
+ "spec": "KDG_PHASE1_SPEC.md \u00a74 + P1-A1 (d39deab) + P1-A2 (078cb70)",
+ "n_boot": 10000,
+ "seed": 0,
+ "floor": 0.5,
+ "min_anchored": 8,
+ "spec_values": true,
+ "n_status": 586,
+ "n_screened": 136,
+ "n_raw208": 208,
+ "C1": {
+  "primary_screened_twins": {
+   "g_null": {
+    "eval": {
+     "mean": 0.042527463679131274,
+     "ci95": [
+      0.024276817917355628,
+      0.06102968744313862
+     ],
+     "n": 136,
+     "point_in_ci": true,
+     "mde": 0.026252049661273567
+    },
+    "deploy": {
+     "mean": 0.054024730285973425,
+     "ci95": [
+      0.03343672292144243,
+      0.07524063081343986
+     ],
+     "n": 136,
+     "point_in_ci": true,
+     "mde": 0.02985993420856959
+    },
+    "neutral": {
+     "mean": 0.05455403104660661,
+     "ci95": [
+      0.03367638623451201,
+      0.07599423279750239
+     ],
+     "n": 136,
+     "point_in_ci": true,
+     "mde": 0.030227033259278842
+    }
+   },
+   "I_eval_minus_deploy": {
+    "mean": -0.011497266606842152,
+    "ci95": [
+     -0.025540106336124097,
+     0.002346722042793657
+    ],
+    "n": 136,
+    "point_in_ci": true,
+    "mde": 0.019919163127798394
+   },
+   "E_eval_minus_deploy_secondary": {
+    "mean": -0.007533696238877511,
+    "ci95": [
+     -0.02610991044251715,
+     0.011848723608821774
+    ],
+    "n": 136,
+    "point_in_ci": true,
+    "mde": 0.027113310036670658
+   },
+   "verdict": "R_b"
+  },
+  "secondary_raw_engaged_208": {
+   "g_null": {
+    "eval": {
+     "mean": 0.037737953367377015,
+     "ci95": [
+      0.022388693298808545,
+      0.05391680029699073
+     ],
+     "n": 208,
+     "point_in_ci": true,
+     "mde": 0.02252007642727299
+    },
+    "deploy": {
+     "mean": 0.04821941801538958,
+     "ci95": [
+      0.032157595203025816,
+      0.0654190234329149
+     ],
+     "n": 208,
+     "point_in_ci": true,
+     "mde": 0.023758163021349348
+    },
+    "neutral": {
+     "mean": 0.04479840807053186,
+     "ci95": [
+      0.028237450958742423,
+      0.06229185927257295
+     ],
+     "n": 208,
+     "point_in_ci": true,
+     "mde": 0.024324577367021802
+    }
+   },
+   "I_eval_minus_deploy": {
+    "mean": -0.01048146464801256,
+    "ci95": [
+     -0.02065756489767074,
+     -0.0006060491092176773
+    ],
+    "n": 208,
+    "point_in_ci": true,
+    "mde": 0.014322511277466473
+   },
+   "E_eval_minus_deploy_secondary": {
+    "mean": 0.0024251662172787318,
+    "ci95": [
+     -0.009400214651458112,
+     0.014644001734644444
+    ],
+    "n": 208,
+    "point_in_ci": true,
+    "mde": 0.017174440275787538
+   },
+   "verdict": "R_c"
+  },
+  "A7": {
+   "n": 208,
+   "L_chat_minus_raw_logratio": {
+    "mean": -0.47460575366242974,
+    "ci95": [
+     -0.5460313061939969,
+     -0.4024266382822916
+    ],
+    "n": 208,
+    "point_in_ci": true,
+    "mde": 0.10257476279407521
+   },
+   "ratio_chat_median": {
+    "mean": 1.0695589868839726,
+    "ci95": [
+     1.0011874984798252,
+     1.1318611813413095
+    ],
+    "n": 208,
+    "point_in_ci": true,
+    "mde": 0.0933383449010602
+   },
+   "ratio_raw_median": {
+    "mean": 1.7904915095071265,
+    "ci95": [
+     1.6749894659731481,
+     1.8558294533945503
+    ],
+    "n": 208,
+    "point_in_ci": true,
+    "mde": 0.12917141958671582
+   },
+   "verdict": "mixed"
+  }
+ }
+}

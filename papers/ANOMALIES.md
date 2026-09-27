@@ -509,6 +509,11 @@ generators; and for any future F4 round, rotate twin norms across halves. Status
 - **Adjacent evidence, not a discriminator.** Strakhov & Claude, *When Agents Act* (values.md, 2025-11-27) report that 48.5% of 167 theory-to-action reversals across 9 instruct models were coded "conservative" (less interventionist) and 36.5% "permissive". Their "conservative" is intervention level, not norm consistency (in their warehouse-robot dilemma the permissive reversals are the refusals of an unsafe order), and their samples are single draws at T = 1.0. So it does not corroborate the KDG-A6 sign.
 - **Thesis impact of R_c.** The pitch's opening claim changes from "post-training lowers the baseline and raises sensitivity" to "post-training raises sensitivity; the lower baseline is at least partly evaluation framing". The instrument claim (twin-differenced sensitivity) is unaffected, since E is a within-frame difference.
 - **Status.** open; priced; candidate for the Phase 1 pod (promotion rule: well under 2 GPU-hours).
+- **Resolution 2026-09-27 (Session A C1; KDG_RESULTS §15.1).** Primary set: **R_b** (raw-frame
+  artifact): under the chat template with a letter-only J, the instruct no-pressure null is +0.055
+  [0.034, 0.076] (n 136), the base model's sign. Secondary set: a small R_c (evaluation framing
+  −0.010 [−0.021, −0.001]). Status: **resolved (R_b)**; thesis-impact line for R_b applies (the
+  "lowers the baseline" half is dropped; wording changes escalated).
 
 
 ## KDG-A7 (ledger) — Post-training sharpens the agent frame more than the judge frame (twin logit spread: instruct 1.83 vs 1.07; base 0.52 vs 0.47), and the acting side's log-odds pressure response grows by about the sharpening factor
@@ -521,3 +526,8 @@ generators; and for any future F4 round, rotate twin norms across halves. Status
 **Discriminator.** Zero-GPU first: the frame-specific normalization fork (amendment before computing) gives the per-side, per-unit-scale sensitivities. Then Session A's C1 cells (letter-only chat J and D on twins, three prefixes) give σ_D and σ_J under the model's own template (≈ 40 min, already scheduled): R_b predicts the agent/judge σ ratio shrinks toward 1 in the chat frame; R_a predicts it persists. C3 reports σ by stage, which dates the sharpening.
 **Status.** open; priced (zero GPU + an already-scheduled cell).
 **Thesis impact.** R_a: the execution thesis becomes "post-training makes the action channel decisive; the incentive's per-unit pull is unchanged or smaller", and the widening headline is retired for a sharpening headline. R_b: the frame asymmetry is a raw-frame property and the averaged-σ verdict stands as the scoped reading.
+**Update 2026-09-27 (Session A; KDG_RESULTS §15.2).** Chat-vs-raw log ratio L −0.475 [−0.546,
+−0.402]; chat agent/judge σ ratio 1.070 [1.001, 1.132] vs raw 1.790. Verdict by rule: **mixed**
+(R_b's condition missed by a lower bound of 1.001: a near-miss, rule unchanged). Reading: about 88%
+of the raw-frame asymmetry (log scale) is format; a 7% template-valid residual remains. Status: open
+on the residual only; the stage chat secondary (re-run pending) dates it by checkpoint.

@@ -805,3 +805,105 @@ agent frame than the judge frame, while the incentive's per-unit pull on both fa
 evaluation sees a safer model at rest and a larger raw response to pressure, and neither is the
 per-unit change.** That keeps the instrument claim (a single-condition eval misreads post-training)
 with a different mechanism.
+
+# 15. Session A, part 1: C1 (KDG-A6) and KDG-A7 (2026-09-27)
+
+Pod p1a (A100-80GB, 2026-09-26/27). Steps verified: `base_new`, `final_new` (15/15 units),
+`final_validate` (forward pass vs generation max 0.031 nats over 8 prompts, under the 0.05 bail),
+`final_c1` (12/12), `dose_probe`. The stage identity check held on the pod's real tokenizers (SFT and
+DPO rendered prompts identical to the final Instruct's, 0 mismatches). **Lost in the download:**
+`stages_raw` (the C3 keystone) and two SFT stage-chat cells: a single rsync pass was interrupted
+and the launcher's exit trap terminated the pod (§15.4). **Dose arm bailed** by its pre-registered
+rule (§15.3). Script `scripts/analyze_phase1_session_a.py` (committed f00a997 before the data);
+numbers of record `data/analysis_phase1_c1_a7.json`. 10,000 draws, seed 0; every point inside its
+interval.
+
+## 15.0 Positive voice first
+
+**Under its own chat template, OLMo-3-Instruct's action at rest leans toward the violating option
+more than its letter-only judgment does (no-pressure gap +0.055 [0.034, 0.076], n 136), the same
+sign as the base model in the raw frame (+0.024).** The negative value that made post-training look
+"safer at rest" (−0.038 in the raw frame) is a property of reading a chat model without its
+template, not of the model. Most of the agent-frame sharpening seen in the raw frame goes the same
+way: the agent/judge sharpness ratio falls from 1.79 raw to 1.07 under the template.
+
+## 15.1 C1: letter-only chat judgment × framing prefix (KDG-A6)
+
+| Set | g_null eval | g_null deploy | g_null neutral | I = eval − deploy | E(eval) − E(deploy) | Verdict |
+|---|---|---|---|---|---|---|
+| **Primary**: twins of the 136 screened | 0.043 [0.024, 0.061] | 0.054 [0.033, 0.075] | 0.055 [0.034, 0.076] | −0.011 [−0.026, 0.002] | −0.008 [−0.026, 0.012] | **R_b** |
+| Secondary: 208 raw-engaged twins | 0.038 [0.022, 0.054] | 0.048 [0.032, 0.065] | 0.045 [0.028, 0.062] | −0.010 [−0.021, −0.001] | 0.002 [−0.009, 0.015] | R_c (small) |
+
+All 136 primary scenarios passed the four-cell mass floor under every prefix. Verdict of record
+(primary set, rule fixed in the spec): **R_b, raw-frame artifact**. On the secondary set, evaluation
+framing lowers the null by 0.010 (CI excludes 0), which meets the R_c letter there. That shift is
+about a quarter of the raw-frame null it was proposed to explain and does not change its sign.
+Second derivation: the A15 chat null (deliberated J_stated vs immediate D) was +0.12; removing the
+deliberation asymmetry with a letter-only J gives +0.055. Same sign; agree. The sensitivity
+quantity is flat across framing (E(eval) − E(deploy) includes 0 on both sets), as the spec predicted
+for a within-frame difference.
+
+## 15.2 KDG-A7: frame sharpness under the template
+
+On the 208 raw-engaged twins, neutral prefix: L = log(σ_D/σ_J)_chat − log(σ_D/σ_J)_raw = −0.475
+[−0.546, −0.402]; chat median ratio 1.070 [1.001, 1.132]; raw median ratio 1.790 [1.675, 1.856]. By
+the P1-A2 §3 rule: **mixed**. R_b required the chat ratio's CI to include 1, and its lower bound is
+1.001; R_a required L's CI to include 0, and it does not. Read with estimator-traps #5 (near-miss):
+on the log scale about 88% of the raw-frame asymmetry disappears under the template, and a residual
+of about 7% (ratio 1.07) remains. The verdict stays "mixed" by the letter; the reading is "mostly
+format, a small template-valid residual".
+
+## 15.3 Dose arm: bail, and why
+
+Anchor-found rates in the 16-scenario probe (4 per family): dose2 0.059 (15/256), filler 0.934
+(239/256). 241 of 256 dose2 rollouts hit the 536-token generation cap mid-reasoning; F1, F4 and F5
+reached the anchor on 0/64 each, F3 on 15/64. The filler finishes at a median of 325 tokens (p90
+423). OLMo-3-Instruct's "reason carefully" output runs past the pre-registered 512-token budget.
+The arm stopped as the spec requires; any cap change is a fork amendment (author decision).
+
+## 15.4 Lost cells and the launcher fix
+
+The download was one unchecked `rsync -az` pass. It was interrupted partway through `stages_chat`
+(alphabetical order), so `stages_raw` never started, and the EXIT trap terminated the pod.
+`papers/runpod_common/session_lib.sh` gains `rp_download` (up to 5 attempts with `--partial`; on
+persistent failure it sets KEEP_POD=1 so the pod survives); `run_session.sh` uses it. Tested with a
+fake rsync (recovers after two failures; keeps the pod after three). The lost cells need a re-run:
+SFT and DPO raw cells (8, about 30 min) and the SFT neutral stage-chat cells (4, about 16 min).
+
+## 15.5 Bias-direction table (C1 primary verdict)
+
+| Known bias | Mechanism | Direction relative to R_b |
+|---|---|---|
+| Letter-only J vs deliberated J | Letter-only J is less considered; could make J noisier, not systematically lower | neutral in sign; the A15 deliberated null is also positive |
+| Chat framing prefix added to every prompt | All three prefixes add a line; no un-prefixed chat cell | neutral across prefixes; the neutral prefix is the closest to no prefix |
+| Mass floor | All 136 pass; no selection | neutral |
+
+## 15.6 Referee pass
+
+1. *"You changed the readout (letter-only chat) and the sign flipped; pick the frame you like."* The
+   cell and its three-way rule were pre-registered before the pod (spec v0.2 C1, P1-A2), with R_b
+   written as a publishable branch. The chat template is the model's own format; the raw frame was
+   always the co-location cell for base, with KDG-A2 documenting that the instruct model declines it
+   on 39% of scenario-frames.
+2. *"R_c holds on the 208 set; evaluation framing matters."* Conceded as a small effect (−0.010), the
+   same sign as Burnat & Davidson's pilot. It does not produce a negative null anywhere.
+3. *"A7 is 'mixed' by your own rule, so the sharpening story stands."* The rule's letter is kept.
+   What the numbers establish: under the template the instruct model's agent frame is 7% sharper than
+   its judge frame, not 79%. The raw-frame k ≈ 3 of §14 is therefore partly a format property of
+   running a chat model raw, and every raw-frame instruct-vs-base contrast carries that scope.
+
+## 15.7 What this changes (escalated where marked)
+
+- **Blast radius (move 3).** Claims resting on "post-training lowers the baseline / acts more
+  cautiously than it judges at rest": A17's no-pressure flip (§13), the pitch's "safer at rest"
+  clause and Numbers of Record row "Post-training lowers the baseline", the KDG paper's §1 fourth step
+  ("while lowering the model's baseline willingness"), §7 ("the baseline moved") and discussion,
+  SYNTHESIS instrument claim ("baseline and sensitivity move oppositely"), CLAIMS covering the
+  baseline shift. By the KDG-A6 thesis-impact line written before data (R_b): **that half is dropped;
+  the widening stands on E alone and the raw-frame comparison is restricted to base.** Paper, pitch
+  and CLAIMS wording: escalated to the author, not edited.
+- **§14's sharpening read is scoped.** k_twin ≈ 3 was measured in the raw frame, where the instruct
+  model's agent frame is inflated by format; the averaged-σ verdict stands as computed, and its
+  interpretation carries the raw-frame scope. The template-valid comparison across checkpoints is the
+  C3 chat secondary (SFT/DPO/final), which the re-run completes.
+- KDG-A6 resolved (R_b primary; small R_c on the secondary set). KDG-A7 updated (mixed; near-miss).
