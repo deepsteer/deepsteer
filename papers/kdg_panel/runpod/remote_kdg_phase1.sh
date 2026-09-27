@@ -53,7 +53,7 @@ echo ">> scenario rows on pod: $N_ROWS"
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
 if [ "$PROFILE" != "p1b" ]; then
-  python $S --dry-run --models olmo3_instruct,olmo3_sft,olmo3_base --units RAW,C1,C3CHAT,VALIDATE,DOSE --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  python $S --dry-run --models olmo3_instruct,olmo3_sft,olmo3_base --units RAW,C1,C3CHAT,VALIDATE,DOSE,DOSE_BF,DOSE_LONG --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 else
   [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session B needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
   python $S --dry-run --models llama31_base,tulu3_sft,qwen25_base --units RAW --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
@@ -79,6 +79,15 @@ if [ "$PROFILE" = "p1a_fix" ]; then
   # re-run of the cells lost in the p1a download (KDG_RESULTS §15.4): stage raw cells + SFT chat
   step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
   step stages_chat_sft --models olmo3_sft --units C3CHAT
+  # P1-A5 budget-forced dose arm (no probe gate: the forced readout always yields a decision)
+  step final_dose_bf --models olmo3_instruct --units DOSE_BF --scenario-ids-file $D/screened_ids_a17_union.json
+  python - <<PY
+import json
+allids = json.load(open("$D/screened_ids_a17_union.json"))["ids"]
+ids = [i for f in ("F1", "F3", "F4", "F5") for i in [x for x in allids if x.startswith(f + "-")][:4]]
+json.dump(ids, open("$OUT/dose_long_ids.json", "w"))
+PY
+  step dose_long --models olmo3_instruct --units DOSE_LONG --scenario-ids-file "$OUT/dose_long_ids.json"
 elif [ "$PROFILE" = "p1a" ]; then
   # keystone: C3 stage raw cells on the enlarged union (pilot gate n_shared is computed at analysis)
   step stages_raw --models olmo3_sft,olmo3_dpo --units RAW

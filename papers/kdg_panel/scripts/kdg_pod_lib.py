@@ -250,6 +250,9 @@ class ModelWrapper:
             rows.append(torch.log_softmax(logits, dim=-1).cpu().numpy().astype(np.float16))
         return np.concatenate(rows, axis=0)
 
+    def decode(self, ids: list[int]) -> str:
+        return self.tok.decode(ids, skip_special_tokens=True)
+
     def release(self) -> None:
         self.wb.release()
 
@@ -286,6 +289,9 @@ class StubModel:
                 )
             )
         return outs
+
+    def decode(self, ids):
+        return "stub reasoning " * max(1, len(ids) // 3)
 
     def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True):
         self.last_add_special_tokens = add_special_tokens
@@ -758,6 +764,89 @@ def cell_letter_chat(
     )
 
 
+def forced_reasoning_text(model, g: GenOut, budget: int) -> tuple[str, bool, int]:
+    """P1-A5: reasoning R before the natural ``Answer:`` anchor if it occurs within ``budget``
+    generated tokens, else the first ``budget`` tokens. Returns (R, natural_anchor, n_tokens)."""
+    if g.decision_step is not None and 0 < g.decision_step <= budget:
+        text = model.decode(g.token_ids[: g.decision_step])
+        text = _ANSWER_ANCHOR.sub("", text.rstrip())
+        return text.rstrip(), True, g.decision_step
+    n = min(budget, len(g.token_ids))
+    return model.decode(g.token_ids[:n]).rstrip(), False, n
+
+
+def cell_dose_forced(
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    arm: str,
+    budget: int | None = None,
+    n_roll: int | None = None,
+    suffix: str = "_bf",
+) -> None:
+    """P1-A5 budget-forced dose arm. Generation exactly as ``cell_d_chat`` (same instruction, T,
+    seeds, per-rollout order) with generation cap ``budget + 24``; then, per rollout, a forced
+    forward pass on prompt + R + "\n\nAnswer:" (``forced_reasoning_text``). Saves the natural
+    cell ``d_chat_{arm}{suffix}`` (as ``cell_d_chat``) and ``d_chat_{arm}{suffix}_forced`` (full
+    next-token vector at the forced anchor, per rollout). F2 is skipped (no gate family)."""
+    budget = budget or DOSE_CAPS[arm]
+    n = ctx.n(n_roll or ctx.n_dose)
+    cell = f"d_chat_{arm}{suffix}"
+    rows, logp_nat, fr_rows, fr_prompts, opt_ids = [], [], [], [], []
+    for s in [x for x in scenarios if x.family != "F2"]:
+        orders = [assign_letters(s, seed) for seed in range(n)]
+        prompts = [
+            ctx.model.render_chat(
+                [{"role": "user", "content": render_agent_user_message(s, o, arm)}]
+            )
+            for o in orders
+        ]
+        gens = ctx.model.generate(
+            prompts,
+            max_new_tokens=budget + 24,
+            temperature=ctx.temperature,
+            seed=SEED,
+            find_anchor=True,
+        )
+        for i, (order, g, p) in enumerate(zip(orders, gens, prompts)):
+            parse = parse_response(g.text, s, order)
+            base = _row(
+                s,
+                cell,
+                arm,
+                i,
+                i,
+                order,
+                g,
+                parse,
+                p,
+                variant="primary",
+                chat_template_sha256=ctx.model.chat_template_sha,
+                budget=budget,
+            )
+            rows.append(base)
+            logp_nat.append(g.logp_decision if g.logp_decision is not None else g.logp_first)
+            opt_ids.append(_option_ids(ctx, order, chat=True))
+            text, natural, n_tok = forced_reasoning_text(ctx.model, g, budget)
+            fp = p + text + "\n\nAnswer:"
+            fr_prompts.append(fp)
+            fr_rows.append(
+                {
+                    **base,
+                    "cell": cell + "_forced",
+                    "prompt_sha256": sha256_text(fp),
+                    "forced_natural_anchor": natural,
+                    "forced_reasoning_tokens": n_tok,
+                    "forced_truncated": not natural,
+                    "parse_method": "forced_anchor",
+                }
+            )
+    ids = np.array(opt_ids, dtype=np.int64)
+    ctx.save_cell(cell, rows, np.stack(logp_nat), {"option_token_ids": ids})
+    forced = ctx.model.raw_next_logprobs(fr_prompts, add_special_tokens=False)
+    ctx.save_cell(cell + "_forced", fr_rows, forced, {"option_token_ids": ids})
+
+
 def rendered_identity_mismatches(
     model: ModelWrapper | StubModel, reference_render, scenarios: list[Scenario], n: int = 16
 ) -> list[str]:
@@ -865,9 +954,29 @@ UNITS: dict[str, tuple[tuple[str, ...], Any]] = {
         lambda c, S: cell_forward_matches_generate(c, S),
     ),
 }
+
+
 def _letter_unit(frame: str, prefix: str, variant: str):
     return lambda c, S: cell_letter_chat(c, S, frame=frame, prefix=prefix, variant=variant)
 
+
+# Phase 1 P1-A5 budget-forced dose arms and the 2,048-token descriptive rider
+UNITS["d_chat_dose1_bf"] = (("instruct",), lambda c, S: cell_dose_forced(c, S, arm="dose1"))
+UNITS["d_chat_dose2_bf"] = (("instruct",), lambda c, S: cell_dose_forced(c, S, arm="dose2"))
+UNITS["d_chat_dose2_filler_bf"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2_filler"),
+)
+UNITS["d_chat_dose2_long"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2", budget=2048, n_roll=2, suffix="_long"),
+)
+UNITS["d_chat_dose2_filler_long"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2_filler", budget=2048, n_roll=2, suffix="_long"),
+)
+DOSE_BF_UNITS = ("d_chat_dose1_bf", "d_chat_dose2_bf", "d_chat_dose2_filler_bf")
+DOSE_LONG_UNITS = ("d_chat_dose2_long", "d_chat_dose2_filler_long")
 
 # Phase 1 C1 / C3-secondary letter-only chat cells:
 #   {dl|jl}_chat_{eval|deploy|neutral}[_pressure_removed]
@@ -885,8 +994,12 @@ C1_UNITS = tuple(
     for t in ("dl", "jl")
     for v in ("", "_pressure_removed")
 )
-C3_CHAT_UNITS = ("dl_chat_neutral", "jl_chat_neutral", "dl_chat_neutral_pressure_removed",
-                 "jl_chat_neutral_pressure_removed")
+C3_CHAT_UNITS = (
+    "dl_chat_neutral",
+    "jl_chat_neutral",
+    "dl_chat_neutral_pressure_removed",
+    "jl_chat_neutral_pressure_removed",
+)
 RAW_UNITS = ("d_raw", "j_raw", "d_raw_pressure_removed", "j_raw_pressure_removed")
 DOSE_UNITS = ("d_chat_dose1", "d_chat_dose2", "d_chat_dose2_filler")
 PILOT_UNITS_INSTRUCT = (

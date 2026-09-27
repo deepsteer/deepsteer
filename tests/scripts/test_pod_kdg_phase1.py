@@ -270,3 +270,68 @@ class TestSessionAAnalysis:
         }
         assert rep["C1"]["A7"]["n"] > 0
         assert rep["C2"]["n_scenarios"] > 0 and rep["C2"]["verdict"] != "no_data"
+
+
+class TestDoseForced:
+    class _G:
+        def __init__(self, ids, step):
+            self.token_ids, self.decision_step = ids, step
+
+    class _Tok:
+        # decode = join of token strings, so truncation is visible
+        def __init__(self, toks):
+            self.toks = toks
+
+        def decode(self, ids):
+            return "".join(self.toks[i] for i in ids)
+
+    def test_forced_text_strips_the_natural_anchor(self):
+        # most probable failure: the forced prompt keeps the model's own "Answer:" and appends a
+        # second one, so the read position is not the decision position
+        toks = ["Weigh ", "the ", "stakes.\n", "Answer:", " B"]
+        m = self._Tok(toks)
+        text, natural, n = lib.forced_reasoning_text(m, self._G([0, 1, 2, 3, 4], 4), 512)
+        assert natural and n == 4 and "Answer" not in text and text.endswith("stakes.")
+
+    def test_forced_text_truncates_at_the_budget_when_no_anchor(self):
+        # most probable failure: reasoning past the budget leaks into the forced prompt
+        toks = [f"t{i} " for i in range(40)]
+        m = self._Tok(toks)
+        text, natural, n = lib.forced_reasoning_text(m, self._G(list(range(40)), -1), 10)
+        assert not natural and n == 10 and text == "".join(toks[:10]).rstrip()
+
+    def test_anchor_beyond_budget_counts_as_truncated(self):
+        # most probable failure: a natural answer found after the budget is read as if in budget
+        toks = [f"t{i} " for i in range(30)] + ["Answer:", " A"]
+        m = self._Tok(toks)
+        text, natural, n = lib.forced_reasoning_text(m, self._G(list(range(32)), 31), 16)
+        assert not natural and n == 16
+
+    def test_unit_saves_natural_and_forced_rows_one_to_one(self, tmp_path, scen):
+        # most probable failure: forced rows misalign with natural rows (different counts or
+        # orders), or the forced pass re-adds BOS
+        m = lib.StubModel("instruct")
+        ctx = _Ctx.make(tmp_path, m)
+        lib.UNITS["d_chat_dose2_bf"][1](ctx, scen[:3])
+        assert m.last_add_special_tokens is False
+        d = tmp_path / "k"
+        nat = [json.loads(x) for x in (d / "d_chat_dose2_bf.jsonl").read_text().splitlines()]
+        frc = [json.loads(x) for x in (d / "d_chat_dose2_bf_forced.jsonl").read_text().splitlines()]
+        assert len(nat) == len(frc) > 0
+        assert [(r["scenario_id"], r["rollout"], r["order"]) for r in nat] == [
+            (r["scenario_id"], r["rollout"], r["order"]) for r in frc
+        ]
+        assert all(r["budget"] == 512 and "forced_natural_anchor" in r for r in frc)
+        assert not any(r["family"] == "F2" for r in nat)
+
+    def test_long_rider_uses_2048_and_two_rollouts(self, tmp_path, scen):
+        # most probable failure: the descriptive rider silently runs at 512 tokens or 16 rollouts
+        ctx = _Ctx.make(tmp_path, lib.StubModel("instruct"))
+        ctx.dry = False  # count rollouts as on the pod
+        lib.UNITS["d_chat_dose2_long"][1](ctx, scen[:2])
+        rows = [
+            json.loads(x)
+            for x in (tmp_path / "k" / "d_chat_dose2_long_forced.jsonl").read_text().splitlines()
+        ]
+        assert {r["budget"] for r in rows} == {2048}
+        assert max(r["rollout"] for r in rows) == 1

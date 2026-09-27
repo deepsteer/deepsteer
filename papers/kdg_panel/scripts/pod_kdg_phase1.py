@@ -35,6 +35,8 @@ import yaml  # noqa: E402
 from kdg_pod_lib import (  # noqa: E402
     C1_UNITS,
     C3_CHAT_UNITS,
+    DOSE_BF_UNITS,
+    DOSE_LONG_UNITS,
     DOSE_UNITS,
     KDG2_UNITS_INSTRUCT,
     RAW_UNITS,
@@ -56,6 +58,8 @@ GROUPS = {
     "C1": C1_UNITS,
     "C3CHAT": C3_CHAT_UNITS,
     "DOSE": DOSE_UNITS,
+    "DOSE_BF": DOSE_BF_UNITS,
+    "DOSE_LONG": DOSE_LONG_UNITS,
     "KDG2": KDG2_UNITS_INSTRUCT,
     "VALIDATE": ("validate_forward_matches_generate",),
 }
