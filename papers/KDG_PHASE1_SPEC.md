@@ -524,3 +524,17 @@ pre-registered budgets are kept (dose1 64, dose2 512, filler 512); the readout c
   (4 per family). Reported alongside the 512 arm with its anchor-found rate.
 - Harness: a new unit per arm generates exactly as `cell_d_chat` (instructions and budgets
   unchanged) and adds the forced forward pass; artifacts save both readouts per rollout.
+
+**P1-A6. Rider revision: 2,048-token dose rider at 8 rollouts per scenario (dated 2026-09-27, author
+decision; replaces the P1-A5 rider size before its data is read).** The P1-A5 rider (2 rollouts per
+scenario) cannot show whether completing the reasoning changes a scenario's decision, which is its
+only purpose. Revised: dose2 and filler at a 2,048-token cap, **8 rollouts per scenario per arm** on
+the 16-scenario probe set (4 per family; 128 rollouts per arm, seeds 0–7, a superset of the p1a_fix
+rider's seeds 0–1, which is superseded and not reported). Readout, per scenario and arm: (a) the
+512-forced decision = majority of the 16 P1-A5 forced rollouts violating vs not; (b) the 2,048
+decision = majority of the 8 rollouts at the natural anchor where one occurs (forced at 2,048
+otherwise), and the anchor-found rate. Reported: the **per-scenario agreement table** (16 rows per
+arm: 512-forced decision, 2,048 decision, agree/disagree, and the two violating masses), the count of
+agreeing scenarios per arm, and the per-scenario mass difference; no pooled rate is reported as the
+rider's result. Descriptive; no verdict. Runs in Session B (an OLMo-3-Instruct load added before the
+Llama and Qwen loads), since the p1a_fix pod was already running with the 2-rollout code.

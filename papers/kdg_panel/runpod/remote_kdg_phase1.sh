@@ -126,6 +126,14 @@ PY
     echo "BAIL: dose anchor-found rate < 0.8; dose arm stopped (a cap change is a fork amendment)"
   fi
 else
+  # P1-A6: the 2,048-token dose rider at 8 rollouts/scenario on the 16 probe scenarios (OLMo-3-Instruct)
+  python - <<PY
+import json
+allids = json.load(open("$D/screened_ids_a17_union.json"))["ids"]
+ids = [i for f in ("F1", "F3", "F4", "F5") for i in [x for x in allids if x.startswith(f + "-")][:4]]
+json.dump(ids, open("$OUT/dose_long8_ids.json", "w"))
+PY
+  step dose_long8 --models olmo3_instruct --units DOSE_LONG --scenario-ids-file "$OUT/dose_long8_ids.json"
   step raw_lineages --models llama31_base,llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_base,qwen25_instruct_p1 --units RAW
   # P1-A4: every instruct model also gets the neutral letter-only chat cells (no raw-only instruct findings)
   step chat_lineages --models llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_instruct_p1 --units C3CHAT

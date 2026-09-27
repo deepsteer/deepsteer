@@ -969,11 +969,11 @@ UNITS["d_chat_dose2_filler_bf"] = (
 )
 UNITS["d_chat_dose2_long"] = (
     ("instruct",),
-    lambda c, S: cell_dose_forced(c, S, arm="dose2", budget=2048, n_roll=2, suffix="_long"),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2", budget=2048, n_roll=8, suffix="_long8"),
 )
 UNITS["d_chat_dose2_filler_long"] = (
     ("instruct",),
-    lambda c, S: cell_dose_forced(c, S, arm="dose2_filler", budget=2048, n_roll=2, suffix="_long"),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2_filler", budget=2048, n_roll=8, suffix="_long8"),
 )
 DOSE_BF_UNITS = ("d_chat_dose1_bf", "d_chat_dose2_bf", "d_chat_dose2_filler_bf")
 DOSE_LONG_UNITS = ("d_chat_dose2_long", "d_chat_dose2_filler_long")

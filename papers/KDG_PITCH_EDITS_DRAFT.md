@@ -15,8 +15,9 @@ an apparent "safer at rest" effect of post-training came from reading a chat mod
 template. [pending: the stage sweep SFT → DPO → final under one template, which says where in
 post-training the pressure-attributable part changes, if it does.]
 
-Why it matters for evaluation: a chat model read in a raw completion frame acquires agent-frame
-effects that belong to the frame. Any evaluation or interpretability result that scores instruct
+Why it matters for evaluation [wording waits for the SFT bridge, which dates the effect to a stage
+or shows it is general to templated checkpoints]: a chat model read in a raw completion frame
+acquires agent-frame effects that belong to the frame. Any evaluation or interpretability result that scores instruct
 checkpoints without their template, as several recent post-training studies do, inherits them.
 
 ## Evidence in hand, points 4 to 6 (replacement)

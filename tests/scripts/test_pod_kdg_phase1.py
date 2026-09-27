@@ -243,6 +243,8 @@ class TestSessionAAnalysis:
         for step, models, units in steps:
             pod.run(p1a / step, True, models, units, [scenario_file])
         pod.run(old / "kdg2", True, ["olmo3_base", "olmo3_instruct"], ["RAW"], [scenario_file])
+        p1b = tmp_path / "p1b"
+        pod.run(p1b / "dose_long8", True, ["olmo3_instruct"], ["DOSE_LONG"], [scenario_file])
         out = tmp_path / "rep.json"
         rc = ana.main(
             [
@@ -252,6 +254,8 @@ class TestSessionAAnalysis:
                 str(old / "kdg2"),
                 "--data",
                 str(data),
+                "--p1b",
+                str(p1b),
                 "--dry",
                 "--write",
                 str(out),
@@ -276,6 +280,9 @@ class TestSessionAAnalysis:
         # P1-A5 / P1-A3 read the p1a_fix step directories
         assert rep["C2_forced"]["n_scenarios"] > 0 and rep["C2_forced"]["verdict"] != "no_data"
         assert rep["BRIDGE"]["n"] > 0 and rep["BRIDGE"]["verdict"].startswith("base_cell_")
+        # P1-A6 rider: per-scenario table read from the Session B step dir
+        r8 = rep["RIDER_2048"]["dose2"]
+        assert r8["n"] > 0 and all("agree" in t for t in r8["per_scenario"])
 
 
 class TestDoseForced:
@@ -330,14 +337,14 @@ class TestDoseForced:
         assert all(r["budget"] == 512 and "forced_natural_anchor" in r for r in frc)
         assert not any(r["family"] == "F2" for r in nat)
 
-    def test_long_rider_uses_2048_and_two_rollouts(self, tmp_path, scen):
-        # most probable failure: the descriptive rider silently runs at 512 tokens or 16 rollouts
+    def test_long_rider_uses_2048_and_eight_rollouts(self, tmp_path, scen):
+        # most probable failure: the rider silently runs at 512 tokens or the old 2 rollouts
         ctx = _Ctx.make(tmp_path, lib.StubModel("instruct"))
         ctx.dry = False  # count rollouts as on the pod
-        lib.UNITS["d_chat_dose2_long"][1](ctx, scen[:2])
+        lib.UNITS["d_chat_dose2_long"][1](ctx, scen[:2])  # P1-A6: 8 per scenario
         rows = [
             json.loads(x)
-            for x in (tmp_path / "k" / "d_chat_dose2_long_forced.jsonl").read_text().splitlines()
+            for x in (tmp_path / "k" / "d_chat_dose2_long8_forced.jsonl").read_text().splitlines()
         ]
         assert {r["budget"] for r in rows} == {2048}
-        assert max(r["rollout"] for r in rows) == 1
+        assert max(r["rollout"] for r in rows) == 7

@@ -565,6 +565,12 @@ data.
 | Action position reads a goal direction and nothing moral | Grounding is necessary and not sufficient; value moves to measurement and monitoring; the intervention targets goal arbitration. |
 | † KDG-A6 closes as R_c (evaluation caution) | The "safer at rest" half becomes an evaluation-framing effect: itself an instance of the pitch's point that single-condition evals mislead, but the baseline-shift clause leaves the headline; sensitivity (a within-frame difference) is unaffected. |
 | † KDG-A6 closes as R_a (installed agent-frame caution) | Both halves stand; persona steering is the first Phase 3 lever. |
+| †† Any stage "widens" on the output scale but not per unit of that stage's own output scale (Z1b/P1-A1 per stage) | Sharpening, not widening: the stage makes the output more decisive and the incentive's per-unit pull does not grow. The live rival for every "widens" row; reported beside each stage verdict. |
+
+†† Added 2026-09-27 (author). The SFT/DPO/RL "widens" rows above were written for the raw-frame
+construct; once the template-valid stage sweep reports (C3 chat secondary and the SFT bridge,
+P1-A3), they are re-scoped to the template readout at that gate. KDG-A6 closed as R_b
+(KDG_RESULTS §15), so the † R_c and R_a rows are resolved: the at-rest baseline half is dropped.
 
 ### Conjunctions under watch
 
