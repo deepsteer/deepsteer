@@ -3,6 +3,7 @@
 # Orion's terminal); KDG_PROFILE selects the session:
 #
 #   KDG_PROFILE=p1a  Session A (OLMo-3: stage raw cells, new rows, C1, stage chat, dose arm)
+#   KDG_PROFILE=p1a_fix2 re-run of stages_raw + stages_chat_sft only (lost twice to a full local disk)
 #   KDG_PROFILE=p1a_fix  re-run of the p1a cells lost in the download (stages_raw, SFT stage chat)
 #   KDG_PROFILE=p1b  Session B (Llama-3.1 base + Meta instruct, Tulu-3 stages, Qwen2.5: raw cells)
 #
@@ -26,9 +27,9 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-case "$PROFILE" in p1a|p1b|p1a_fix) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b or p1a_fix (got '$PROFILE')"; exit 1;; esac
+case "$PROFILE" in p1a|p1b|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
 # p1a_fix writes into outputs/p1a (it re-runs Session A cells lost in the 2026-09-27 download)
-OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%_fix}"; mkdir -p "$OUT"
+OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%%_fix*}"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
 D=papers/kdg_panel/data
 
@@ -75,7 +76,11 @@ step() {  # step <name> <driver args...>
 }
 R3="$(ls $D/round3_scenarios_*.json | tr '\n' ' ')"
 
-if [ "$PROFILE" = "p1a_fix" ]; then
+if [ "$PROFILE" = "p1a_fix2" ]; then
+  # second re-run of the two steps lost when the local disk was full (ANOMALIES process ledger)
+  step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
+  step stages_chat_sft --models olmo3_sft --units C3CHAT
+elif [ "$PROFILE" = "p1a_fix" ]; then
   # re-run of the cells lost in the p1a download (KDG_RESULTS §15.4): stage raw cells + SFT chat
   step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
   step stages_chat_sft --models olmo3_sft --units C3CHAT
@@ -138,4 +143,4 @@ PY
   # P1-A4: every instruct model also gets the neutral letter-only chat cells (no raw-only instruct findings)
   step chat_lineages --models llama31_instruct_meta,tulu3_sft,tulu3_dpo,tulu3_final,qwen25_instruct_p1 --units C3CHAT
 fi
-echo ">> KDG Phase 1 $PROFILE done. rsync-back -> papers/kdg_panel/outputs/$PROFILE/ (one manifest per step)."
+echo ">> KDG Phase 1 $PROFILE done. rsync-back -> papers/kdg_panel/outputs/${PROFILE%%_fix*}/ (one manifest per step)."
