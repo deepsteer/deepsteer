@@ -127,3 +127,28 @@ priced for the day they are funded; the two zero-GPU legs can run now.
 - Typewriter text (`\texttt`, `\path`) is set from bitmap PK fonts (`ectt*`) on this install
   because `cm-super` is absent; the flagship has the same property. Installing `cm-super` gives
   Type 1 outlines for arXiv.
+
+
+## 2026-09-28 — Session C gate: paper restructured to four claims; hold lifted
+
+**Hold on the KDG paper: lifted** (author, 2026-09-28), with the restructured draft below.
+
+Arc (author): (1) the gap exists, template-valid, on OLMo-3 (§4–§6); (2) the instrument withdrew our own
+claim, and post-training stages do not resize the gap within OLMo-3 (§7); (3) the gap follows the
+post-training recipe: four models, positive controls, the same-base Meta vs Tulu contrast (§8, new);
+(4) moral deliberation reduces the gap on both recipes that carry it, with the salience share (§9, new).
+Discussion, limitations and conclusion renumbered to §10–§12 and rewritten to the arc; abstract and §1
+follow. Prose rules applied: "carries", never "installs"; no size comparison between the OLMo-3
+(truncated) and Llama-3.1 (mostly completed) dose effects; Llama base's zero descriptive; every null
+carries its positive-control number and detection bar. Builds clean, 27 pp.
+
+**Title: two options (author picks); the working title no longer fits a four-model paper.**
+- *Whether a Language Model Acts Against Its Own Moral Judgment Depends on How It Was Post-Trained*
+  (claim-forward; leads with finding 3; long).
+- *Acting Against One's Own Moral Judgment: A Calibrated Panel Across Four Post-Training Recipes*
+  (descriptive; keeps the construct in front and states the scope).
+
+Open, deferred (not gates): like-for-like dose run on a shared scenario set with a completion budget
+(~3 GPU-h), required before any slide shows both dose numbers together; salience-control extension
+(~2 GPU-h) behind it. The DPO-stage at-rest lean (KDG-A8, replicated on Tulu 3) is not in the paper
+pending the author's decision on it.

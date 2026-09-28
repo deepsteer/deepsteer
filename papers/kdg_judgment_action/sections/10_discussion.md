@@ -1,4 +1,4 @@
-# 8. Discussion {#discussion}
+# 10. Discussion {#discussion}
 
 **Three decisions, three reads.** Our earlier work found that on OLMo-3 the refusal decision
 reads a rank-1 harm slice of a broad moral subspace of which the judgment decision reads
@@ -16,43 +16,46 @@ read of \Cref{structure} (F1 above F3; a pressure-attributable excess present on
 fairness families and unresolved on the shortcut and harm families) is the first candidate for
 that structure, and it is cheap to test.
 
-**Where the gap comes from.** The base model already acts more violating than it judges; a
-second-person frame alone moves it in that direction, and the incentive adds to it. Read under its
-own chat template, the aligned model does the same, at rest and under pressure, and the part the
-incentive adds is still there (0.030, 0.006 to 0.053). The gap is not a product of alignment, and
-alignment does not remove it. Combined with our earlier finding that moral comprehension is
-pretraining-native while the refusal gate is a post-training construction, the picture is of a model
-whose judgment and action are both pretraining-shaped and already discrepant before alignment, with
-refusal added on top as a narrow control that reads neither broadly. Post-training does not resize the
-pressure-attributable part: under one template it is 0.021, 0.022 and 0.030 after SFT, DPO and RLVR,
-with no stage change detectable above about 0.013 at $n = 136$. The raw-frame comparison that seemed
-to show it growing is not a valid readout of any templated checkpoint.
+**Where the gap comes from.** On OLMo-3 the base model already acts more violating than it judges in
+the only frame a base model has, and under its own template the aligned model does the same at rest
+and under pressure; post-training does not resize the pressure-attributable part (0.021, 0.022 and 0.030
+after SFT, DPO and RLVR, with no stage change detectable above about 0.013 at $n = 136$). Across
+lineages the picture is not one of a pretraining property that survives every alignment. Two of four
+instruct models carry the gap and two do not, with a validated instrument on each, and on the same
+Llama-3.1 base Meta's recipe carries it while Ai2's Tulu 3 does not (\Cref{recipe}). The defensible
+account is that post-training recipes differ in whether the aligned model acts on the incentive against
+its own judgment, and that within a recipe that carries the gap, later stages leave its size alone.
+Combined with our earlier finding that the refusal gate is a thin post-training construction over a
+broad pretrained moral representation [@reblitzrichardson2026refusal], the action decision looks like
+the refusal decision in one respect: both are shaped by post-training choices, and neither simply
+inherits what the model comprehends.
 
 **The instrument corrected us, by its own rule.** An earlier reading of this panel said that
 post-training lowers the baseline, so that a behavioral evaluation without the twin would record an
 improvement where the pressure sensitivity went the other way. The pre-registered cell that separates
-an installed caution from a frame artifact returned the artifact branch: under the model's template
-the at-rest gap is positive, not negative. We state this as a result because it generalizes. A chat
-model read in a raw completion frame acquires agent-frame effects that belong to the frame, and any
-base-versus-instruct contrast run in such a frame, including log-probability sycophancy measurements
-that score instruct checkpoints without their template, inherits them. The twin design caught the
-problem only because the frame itself was put under test; the lesson for evaluations is to read every
-templated model in its template, and to treat a raw-frame instruct number as a format cell.
+a post-training caution from a frame artifact returned the artifact branch: under the model's template
+the at-rest gap is positive, not negative. We state this as a result because it generalizes, though not
+everywhere. A chat model read in a raw completion frame acquires agent-frame effects that belong to the
+frame on both Ai2 recipes we read, at every checkpoint, and not on Meta's instruct model from the same
+base. Any base-versus-instruct contrast run in such a frame, including log-probability sycophancy
+measurements that score instruct checkpoints without their template, inherits whichever effect its
+recipe has. The twin design caught the problem only because the frame itself was put under test; the
+lesson for evaluations is to read every templated model in its template, and to treat a raw-frame
+instruct number as a format cell.
 
-**Goal-following is the parsimonious mechanism, and it is testable.** The simplest account of the
-widened acting-side sensitivity is not moral at all: post-training teaches a model to pursue the
-goal it is handed in context, the incentive sentence hands the actor a goal, and the judge, who
-reads the same sentence, does not hold it. On that account the judgment–action gap of an
-instruct model is instruction-following extended to a bad instruction, which is consistent with
-the Schmied et al. [@schmied2025greedy] observation that fine-tuned agents act greedily on the
-goal in front of them, and with Rakshit et al.'s [@rakshit2026pseudo] finding that asking a model
-to reason before acting does not by itself close the gap. The panel's pre-registered
-deliberation-dose arm, with a filler-matched budget control, is the cell that separates
-goal-following from a moral read: if reasoning before acting closes the gap where filler does
-not, deliberation reaches the action; if neither does, the action is set before the reasoning
-starts, and the mechanistic cell should look at the decision token, not the trace. Persona
-steering [@chen2025persona] remains the second lever the design anticipates; with the baseline shift
-withdrawn, its target is the pressure-attributable excess itself, not an installed cautious default.
+**Goal-following is the parsimonious mechanism, and deliberation loosens it.** The simplest account of
+the gap is not moral at all: post-training teaches a model to pursue the goal it is handed in context,
+the incentive sentence hands the actor a goal, and the judge, who reads the same sentence, does not hold
+it. That is consistent with the Schmied et al. [@schmied2025greedy] observation that fine-tuned agents
+act greedily on the goal in front of them. The dose arm shows the goal is not fixed once read: on both
+recipes that carry the gap, reasoning about the stakes before acting moves the action toward the
+model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the norm alone
+does about a third of that on OLMo-3. This differs from Rakshit et al.'s [@rakshit2026pseudo] finding
+that reasoning before acting does not by itself align action with stated values, in a different
+construct (value profiles, free-text actions) and without a filler control; the filler control is what
+lets us attribute the change to the content of the reasoning rather than to its length. Persona steering
+[@chen2025persona] remains the second lever the design anticipates; with the baseline shift withdrawn,
+its target is the pressure-attributable excess itself.
 
 **Two instruments, one gap.** The majority-vote gap and the log-prob gap agree on sign and rough
 size wherever the first has power, reproduce the same positive band, pass a coherence check the

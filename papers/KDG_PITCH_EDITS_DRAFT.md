@@ -85,3 +85,15 @@ Cross-lineage table (wording pending the Session C positive controls; every zero
 
 Ai2 ask, add: the raw-frame distortion appears on both Ai2 recipes tested (OLMo-3, Tulu 3) and not on
 Meta's; Ai2's intermediate checkpoints can locate the step that installs it.
+
+
+## Update 2026-09-28 (Session C gate): ask table hooks
+
+| Lab | Hook (replacement) |
+|---|---|
+| Ai2 | **The two-recipe puzzle.** OLMo-3 carries the judgment–action gap and Tulu 3 (Ai2's recipe on Llama-3.1) does not, with the instrument validated on both; and both Ai2 recipes show the raw-frame distortion that Meta's does not. Ai2's intermediate checkpoints and recipe data can locate which step decides both. |
+| Meta | **The Llama-3.1-Instruct dose result.** On Meta's Llama-3.1-8B-Instruct, reasoning about the stakes before acting lowers the violating choice by 0.350 [0.314, 0.387] against a length-matched control (mostly completed reasoning); Meta's recipe carries the gap on a base where Tulu 3's does not. |
+
+Pitch rule (author): no slide shows the OLMo-3 and Llama-3.1 dose numbers together until the
+like-for-like run (shared scenario set, completion budget, ~3 GPU-hours) reports. The paper's hold is
+lifted.

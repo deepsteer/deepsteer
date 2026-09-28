@@ -591,3 +591,14 @@ on the residual only; the stage chat secondary (re-run pending) dates it by chec
 OLMo-3 and Tulu 3, both Ai2 recipes; absent on Meta's Llama-3.1-Instruct on the same base as Tulu;
 KDG-49). Carried into the Ai2 ask in the pitch: Ai2 can test which recipe step installs it with its own
 checkpoints.
+
+
+## KDG-A11 (ledger) — The dose effect on Llama-3.1-8B-Instruct is about 4.5 times OLMo-3's (−0.350 vs −0.077 against filler; about 3 times against the truncation-matched controls, −0.320 vs −0.112)
+
+**Date.** 2026-09-28 (KDG_RESULTS §19.3; §16.3; §18.1). (Author's note gave "~10x"; the measured ratios are 4.5x against filler and 2.9x against the truncated filler.)
+**Observation.** OLMo-3 reasoning finishes within the 512-token budget on 8% of rollouts, Llama-3.1 on 90%; the two arms ran on different scenario sets (each model's own screen: 130 vs 114, overlap 23 of the underlying screens).
+**Type.** cross-model magnitude difference.
+**Competing readings.** R_a: completion: finished reasoning moves the action more than truncated reasoning (OLMo-3's rider supports a partial effect: 12/16 decisions unchanged from 512 to 2,048). R_b: model: Llama-3.1's action follows its own reasoning more closely at any length (its 64-token arm already moves −0.205, where OLMo-3's does not resolve). R_c: scenario set: each model's screen selects scenarios where it acts badly, and the two screens barely overlap.
+**Discriminator.** The like-for-like run: both models on one scenario set (the union of both screens, or the overlap) with a completion budget long enough for both to finish (e.g. 2,048 tokens with natural-anchor readout), ~3 GPU-hours. R_a predicts OLMo-3's effect grows toward Llama's when its reasoning completes; R_b predicts the gap persists at matched completion; R_c predicts it shrinks on a common set.
+**Status.** open; priced; deferred (author), required before any slide shows both dose numbers together.
+**Thesis impact.** R_a: completion is the lever's dose; budgets must fit the model. R_b: models differ in how much their action follows their reasoning, itself a recipe property worth the recipe paper. R_c: the sizes are panel-relative and only the direction generalizes.

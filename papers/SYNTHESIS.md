@@ -733,3 +733,22 @@ deliberation before acting reduces the gap on both recipes that carry it (OLMo-3
 Llama-3.1 −0.350 largely completed; both survive the truncation-matched control).** Framing (ii) meets
 its own condition: on the same Llama-3.1 base, Meta's recipe carries the gap and Ai2's Tulu 3 does not,
 with a validated instrument on both. Thesis choice between (i) and (ii): author, at this gate.
+
+
+### Session C gate (2026-09-28): paper restructured; recipe paper seeded with a design
+
+Author decisions: the recipe contrast is a full section of the KDG paper (not a scope limit), and the
+paper's hold is lifted. The KDG paper's four claims: the gap exists (template-valid, OLMo-3); the
+instrument withdrew our own claim; the gap follows the post-training recipe (four models, validated
+nulls, same-base Meta vs Tulu); moral deliberation reduces it on both recipes that carry it (about a
+third is naming the norm on OLMo-3).
+
+**Recipe paper (seeded; not part of the KDG paper): which part of a post-training recipe decides whether
+the gap survives.** Design: one base (Llama-3.1-8B, where the same-base contrast lives), recipes that
+differ in one component at a time: (a) Tulu 3 SFT data vs a Meta-like SFT mixture at matched size, (b)
+with vs without the DPO stage on each, (c) template held fixed vs swapped (the raw-frame distortion
+tracks Ai2 recipes; the template may be part of it). Readout: this panel's letter-only chat cells with
+the known-gap positive control per checkpoint, the pressure-removed twins, and the dose arm on the
+carrying checkpoints. The Tulu 3 intermediate checkpoints (public) give leg (b) for free; legs (a) and
+(c) need short fine-tunes at 8B. Both branches publishable: a single component decides (a lever for
+post-training) or the effect is distributed across components (a reason to measure it, not engineer it).

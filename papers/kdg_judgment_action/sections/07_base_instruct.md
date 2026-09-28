@@ -1,7 +1,7 @@
-# 7. The gap is present before post-training and survives it {#base}
+# 7. Before and after post-training, and a claim the instrument withdrew {#base}
 
 Base-versus-instruct is the question of origin: a gap present in base weights is inherited from
-pretraining; a gap absent in base and present in instruct was installed by post-training. A base
+pretraining; a gap absent in base and present in instruct would point to post-training. A base
 model has no chat template, so the only frame both models share is a raw completion frame
 (scenario, option list, fixed prefix ending before the option token; the readout is the
 option-letter probability mass, eight option orders). Each model's pressure-removed twins give it a
@@ -82,7 +82,7 @@ scenarios; not resolved on the 136) and does not detectably move the excess ($-0
 model's no-pressure gap was $-0.038$ ($-0.059$ to $-0.015$), so that with nothing at stake it looked
 more cautious acting than judging, and post-training appeared to lower the baseline while raising
 the action's sensitivity to the incentive. We pre-registered the cell that would separate an
-installed agent-frame caution from a raw-frame artifact, with the artifact branch written down as
+agent-frame caution from post-training from a raw-frame artifact, with the artifact branch written down as
 dropping the baseline half of that sentence. Under the template the sign is positive, and the
 artifact branch holds. The raw frame also exaggerates how much sharper the instruct model's
 agent-frame output is than its judge-frame output (a ratio of 1.79 raw against 1.07 under the
@@ -107,14 +107,3 @@ detectable above about 0.013 at $n = 136$).
 above-floor scenarios (0.017) matches its excess on the 192 shared with instruct (0.018). The pilot
 pod re-ran the same raw-frame forward passes and returned identical values, so the pilot is a subset
 check, not an independent replication.
-
-**The rival reading that remains.** The pressure-attributable excess may be goal-following rather
-than anything moral: the incentive sentence hands the actor a goal, and the judge, who reads the
-same sentence, does not hold it. The deliberation-dose arm with a filler-matched budget control
-separates the two. At the pre-registered budget of 512 tokens the instruct model's careful reasoning
-does not finish, so the arm is read with a forced answer at the end of the budget and reported as
-truncated reasoning: against the length-matched non-moral restatement, it lowers the violating mass by
-0.077 (0.047 to 0.110) on 130 scenarios. That is the first lever on the gap this panel has found, and
-it is reported as pending two checks: a control that gives the restatement the same truncated form,
-and a per-scenario comparison with reasoning allowed to finish at 2,048 tokens. On its own it does not
-answer whether completed deliberation reaches the action.

@@ -1,0 +1,67 @@
+# 9. Moral deliberation before acting reduces the gap {#deliberation}
+
+If the pressure-attributable gap is the action following a goal the incentive supplies, asking the model
+to think about what is at stake before it acts should reduce it, and a matched request to think about
+something else should not. The dose arm asks the acting model to reason about the stakes before choosing
+(the dose-2 instruction, a 512-token budget) and compares it with a filler arm of the same budget that
+asks for a detailed restatement of the situation without evaluation. Both arms end with the model's
+answer, and every rollout is read at a forced "Answer:" placed after its reasoning, so the two arms share
+a readout position. We ran the arm on the two recipes that carry the gap, each on its own screened
+scenarios, and report the two results separately: the arms differ in how often the reasoning finishes
+within the budget, so their sizes are not compared.
+
+\begin{table}[tbp]
+\centering
+\caption{The dose arm on the two models that carry the gap, each on its own screened scenarios. Values
+are paired differences in the violating option's mass at the forced answer (reasoning arm minus control),
+95\% bootstrap CIs over scenarios. The truncated-filler control gives the restatement the same cut-off,
+forced form the reasoning has. The two columns are not a size comparison.}
+\label{tab:deliberation}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.40\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+contrast & OLMo-3-7B-Instruct (truncated reasoning) & Llama-3.1-8B-Instruct (mostly completed) \\
+\midrule
+scenarios & 130 & 114 \\
+reasoning finishes within 512 tokens & 8\% of rollouts & 90\% of rollouts \\
+reasoning $-$ filler & $-$0.077 [$-$0.110, $-$0.047] & $-$0.350 [$-$0.387, $-$0.314] \\
+reasoning $-$ truncated filler & $-$0.112 [$-$0.145, $-$0.078] & $-$0.320 [$-$0.356, $-$0.284] \\
+truncated filler $-$ filler & +0.034 [0.017, 0.052] & $-$0.030 [$-$0.063, 0.002] \\
+brief reasoning (64 tokens) $-$ filler & +0.024 [$-$0.011, 0.058] & $-$0.205 [$-$0.244, $-$0.168] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+**On OLMo-3, as truncated reasoning.** OLMo-3-Instruct's careful reasoning rarely finishes within the
+512-token budget (8% of rollouts), so its arm reads a decision forced after reasoning that was cut off.
+Even so, reasoning about the stakes lowers the violating mass relative to the filler ($-0.077$, $-0.110$
+to $-0.047$). The reduction is not an artifact of the cut-off: truncating the filler the same way raises
+its violating mass (+0.034), and the reasoning arm stays lower than the truncated filler by more
+($-0.112$). A 64-token budget does not resolve.
+
+**On Llama-3.1, mostly completed.** Meta's Llama-3.1-8B-Instruct finishes its reasoning within the budget
+on 90% of rollouts, so its arm reads largely completed deliberation. Reasoning about the stakes lowers the
+violating mass relative to the filler ($-0.350$, $-0.387$ to $-0.314$) and relative to its own truncated
+filler ($-0.320$), and on this model even 64 tokens of reasoning lower it ($-0.205$). Truncating the filler
+does not move it ($-0.030$, $-0.063$ to 0.002).
+
+**How much of it is naming the norm.** A third arm on OLMo-3 gives the filler restatement a single
+leading sentence that names the scenario's norm ("The norm at stake here is ..."), with no reasoning. It
+lowers the violating mass by 0.025 ($-0.031$ to $-0.019$), a share of 0.32 (0.22 to 0.53) of the reasoning
+arm's effect. About a third of what reasoning does on OLMo-3 is done by naming the norm; the rest comes
+with the reasoning. The pre-registered rule reads that share as mixed: its interval does not exclude 0.5.
+
+**Letting the reasoning finish.** On sixteen OLMo-3 scenarios we also let the reasoning run to 2,048
+tokens. The decision at 2,048 tokens agrees with the forced decision at 512 on twelve of the sixteen
+scenarios; three of the four that change are third-party-harm scenarios, and they change in both
+directions. That is a descriptive check at small $n$, and it is why the OLMo-3 result carries the label
+"truncated reasoning" everywhere it appears.
+
+**What this says.** The gap is not fixed at the moment the incentive is read. On both recipes that carry
+it, reasoning about the stakes before acting moves the action back toward what the model judged right,
+measured against a non-moral task of the same budget and against that task in the same truncated form.
+The incentive supplies a goal the action follows; content about the norm and the stakes, about a third of
+it carried by naming the norm on OLMo-3, loosens that hold. Whether completed reasoning does more than
+truncated reasoning on the same model and scenarios is not answered here; that comparison needs both
+models on one scenario set with a budget long enough for both to finish.

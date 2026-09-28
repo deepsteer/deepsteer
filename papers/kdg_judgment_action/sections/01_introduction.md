@@ -85,31 +85,30 @@ were written half by Claude and half by GPT and cross-labeled by the other; neit
 the model evaluated. The harness that parses actions was calibrated twice on real replies against
 two judges.
 
-The argument runs in four steps, each carrying its ladder. First, on the screened panel the model
-takes the action it judged wrong on one scenario in five by majority vote (0.19, 95% CI 0.13 to
-0.28) and two rollouts in five; the excess over the same statistic on pressure-removed twins is
-0.10 (0.02 to 0.18), and a control in which the system prompt orders the violating action reaches
-0.58, so the instrument has room above the measurement. Second, the gap is not reference noise:
-the judgment is elicited on four frames, and on a pre-registered log-probability readout the
-excess over the null holds at every strictness level and is largest where all four frames agree
-(0.08, 0.03 to 0.13); on the majority readout it is not resolved there at 43 pairs, which we show
-is the majority rule discarding information, not the gap shrinking. Third, the gap has no family
-structure at this power: third-party harm is not where it is smallest, so the action channel is
-not organized by the harm content refusal reads. Fourth, the gap is present before post-training and
-survives it. In a raw completion frame, the only frame a base model has, the base model's
-acting-versus-judging mass gap exceeds its own pressure-removed null (0.017, 0.012 to 0.022), a
-descriptive reading since the same frame misreads templated checkpoints; read under its own chat
-template, every templated checkpoint carries a pressure-attributable excess (0.021 after SFT, 0.030
-after RLVR), and post-training does not resize it (no stage change detectable above about 0.013 at
-$n = 136$).
-The same design withdrew one of our own claims by its pre-registered rule: a raw-frame reading that
-post-training lowers the model's baseline willingness to take the violating action is a property of
-reading a chat model without its template, and we report it as such. One family's rate depends on which
-model wrote its scenarios; a blind human read finds no construction asymmetry, and on the
-continuous readout the difference is graded, not reversed.
+The argument runs in five steps, each carrying its ladder. First, on OLMo-3-7B-Instruct, read under its
+own chat template, the model takes the action it judged wrong on one screened scenario in five by
+majority vote (0.19, 95% CI 0.13 to 0.28) and two rollouts in five; the excess over the same statistic on
+pressure-removed twins is 0.10 (0.02 to 0.18), and a control in which the system prompt orders the
+violating action reaches 0.58, so the instrument has room above the measurement. The gap is not reference
+noise: on a pre-registered log-probability readout the excess holds at every strictness level of a
+four-frame judgment reference and is largest where all four frames agree (0.08, 0.03 to 0.13). It has no
+family structure at this power, so the action channel is not organized by the harm content refusal
+reads. Second, the design withdrew one of our own claims by its pre-registered rule: a raw-frame reading
+that post-training makes the model more cautious at rest is a property of reading a chat model without
+its template. Within OLMo-3, the pressure-attributable excess is present at every templated checkpoint and
+post-training stages do not resize it (no stage change detectable above about 0.013 at $n = 136$); the
+base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame misreads templated
+checkpoints. Third, the gap follows the post-training recipe. With a positive control validating the
+instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct carry the gap and
+Tulu 3 and Qwen2.5-7B-Instruct do not, and on the same Llama-3.1 base Meta's recipe carries it while Ai2's
+Tulu 3 does not. Fourth, moral deliberation before acting reduces the gap on both recipes that carry it,
+against a length-matched non-moral control and the same control in truncated form; on OLMo-3, where the
+reasoning is truncated at the budget, about a third of the effect comes from naming the norm. Fifth, the
+raw-frame distortion that withdrew our claim follows the recipe as well: it appears on both Ai2 recipes
+and not on Meta's.
 
 \Cref{panel} describes the panel and its readouts; \Cref{instruments} the harness, the screen,
 the ladder, and the two readouts; \Cref{gap} the gap; \Cref{reference} its robustness to the
 judgment reference; \Cref{structure} the families and the generator effect; \Cref{base} the
-base-versus-instruct cells; \Cref{discussion} what the result does and does not say about the
-action channel.
+post-training stages and the withdrawn claim; \Cref{recipe} the four recipes; \Cref{deliberation}
+the dose arm; \Cref{discussion} what the result does and does not say about the action channel.
