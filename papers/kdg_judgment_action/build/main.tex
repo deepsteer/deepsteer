@@ -160,40 +160,37 @@
 \maketitle
 
 \begin{abstract}
-A model can state that an action is wrong and take it anyway. We measure that gap scenario by
-scenario on an open 7B model, with the model's own stated judgment as the reference and a
-discrete, logged action as the outcome, so that no external ethics enters the measurement. The
-panel is pre-registered: 248 scenarios across five pressure families (task completion, sycophancy
-under pushback, prohibited shortcuts, in-group favor, third-party harm), each written in a matched
-agent frame and a third-person judgment frame, each with a pressure-removed twin and three
-paraphrased judgment frames, half written by each of two generator models and cross-labeled by
-the other.
+Language models increasingly act as agents: they choose and take actions rather than only answer
+questions. An agent that can say an action is wrong and then take it anyway is a different failure
+from one that does not know better, and evaluations of stated values cannot see it. We ask how often
+open models act against their own moral judgment when something pressures them to, what decides
+whether they do, and what reduces it.
 
-On OLMo-3-7B-Instruct the model takes the action it judged wrong on one screened scenario in
-five by majority vote (0.19, 95\% CI 0.13 to 0.28) and on two rollouts in five. Every number
-sits inside a calibration ladder: the gap exceeds the same statistic on pressure-removed twins by
-0.10 (0.02 to 0.18), and a known-gap control in which the system prompt orders the violating
-action reaches 0.58. A noisy judgment reference could manufacture such a gap, so the reference
-is elicited on four frames and the gap is read at three strictness levels. On a pre-registered
-log-probability readout the excess over the null holds at every level and is largest at the
-strictest, where all four frames agree (0.08, 0.03 to 0.13); on the majority readout it is not
-resolved there at 43 pairs, which is the majority rule losing information, not the gap shrinking.
-The gap has no family structure at this power: third-party harm is not the family where it is
-smallest, so the action channel is not organized by the harm content that refusal reads.
+We build a pre-registered panel of 248 scenarios across five kinds of pressure: finishing a task,
+pushback from a user, a prohibited shortcut, favor to one's own group, and harm to a third party.
+Each scenario is posed twice to the same model, once as the agent choosing what to do and once in
+the third person, asking which option is right. The model's own judgment is the reference, so no
+outside ethics enters the measurement. Every scenario has a twin with the pressure removed, and
+every model gets a positive control in which its operator orders the violating action, so that a
+missing gap can be told apart from an instrument that cannot see one.
 
-Reading the aligned model in its own chat template withdrew one of our own claims, that post-training
-makes the model more cautious at rest; within OLMo-3, post-training stages do not resize the
-pressure-attributable part. Across four instruct models, with a positive control validating the
-instrument on each, the gap follows the post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct
-carry it (whole-panel excesses 0.018, 0.008 to 0.029, and 0.028, 0.020 to 0.036; OLMo-3's is 0.030 on the
-scenarios screened on its own actions, and its majority-vote rate there is the 0.19 above), Tulu 3 and
-Qwen2.5-7B-Instruct do not (no
-gap detectable above about 0.01 and 0.02), and on the same Llama-3.1 base Meta's recipe carries it while
-Ai2's Tulu 3 does not. On both recipes that carry it, reasoning about the stakes before acting moves the
-action back toward the model's judgment against matched non-moral controls; on OLMo-3, where the
-reasoning is truncated, naming the norm does about a third of that. We release the panel, the harness,
-the pre-registration with its seventeen panel amendments and nine Phase 1 amendments, and the
-per-scenario arrays.
+On OLMo-3-7B-Instruct, the model takes the action it judged wrong on about one in five of the
+scenarios that pressure it, more often than on the same scenarios with the pressure removed.
+Reading the model in its own chat template also withdrew one of our earlier claims, that
+post-training makes it more cautious at rest. Across four instruct models the gap depends on the
+post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it, while Tulu 3 and
+Qwen2.5-7B-Instruct show none that the validated instrument detects (above about
+0.01 to 0.02 in probability). Meta's recipe and Ai2's Tulu 3
+start from the same Llama-3.1 weights, and only Meta's carries the gap. On both models that carry
+it, asking the model to reason about the stakes before it acts moves its choice back toward its own
+judgment, compared with a non-moral task of the same length; on OLMo-3, simply naming the norm at
+stake does about a third of that.
+
+Whether a model acts on its own moral judgment is therefore not settled by pretraining. The same
+pretrained weights can yield a model that carries the gap or one that does not, and a short
+deliberation before acting narrows it. That makes the gap a measurable target for post-training
+recipes, not a fixed property of the model. We release the panel, the harness, the
+pre-registration with its amendments, and the per-scenario arrays.
 \end{abstract}
 
 % =======================================================================
