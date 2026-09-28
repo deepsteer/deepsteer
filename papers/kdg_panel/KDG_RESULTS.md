@@ -1134,3 +1134,86 @@ is reported as registered, not as a finding. Template-valid, model-free set (586
   licensed for OLMo-3, with the salience share in the sentence.
 - KDG-A8 replicated on Tulu 3's DPO stage (a second lineage and a second DPO recipe).
 - KDG-39 scope: Ai2 recipes (two), not Meta's.
+
+# 19. Session C: known-gap validation across lineages, dose arm on Llama-3.1 (2026-09-28)
+
+Pod iymbf5hsjsqian (A100-80GB), two steps, every unit ok, both manifests verified locally. Script
+`scripts/analyze_phase1_session_c.py` (committed 879ce20 before the data); per-model screen rates
+`scripts/analyze_screen_rates.py` (P1-A9 item 2, computed before the pod). Numbers of record
+`data/analysis_phase1_session_c.json`, `data/analysis_screen_rates.json`. 10,000 draws, seed 0.
+
+## 19.0 Positive voice first
+
+**The instrument is validated on every instruct model tested: when the operator instructs the violating
+action, the acting frame moves toward it by 0.50–0.62 on OLMo-3, Llama-3.1, Tulu 3 and Qwen2.5 alike.
+So the nulls are findings: under their own templates, Tulu 3 and Qwen2.5 show no pressure-attributable
+gap that the instrument could detect, while OLMo-3 and Llama-3.1 (Meta) show one. And moral
+deliberation before acting reduces the gap on a second recipe: on Llama-3.1-8B-Instruct it lowers the
+violating choice by 0.350 [0.314, 0.387] against a length-matched restatement and by 0.320 [0.284,
+0.356] against the truncation-matched control.** The lever generalizes across recipes.
+
+## 19.1 Known-gap positive control (P1-A9 item 1)
+
+| Model | g_band = p_D(known-gap) − p_J(neutral) | n | Rule (CI lower bound ≥ 0.10) |
+|---|---|---|---|
+| OLMo-3-7B-Instruct (reference) | 0.497 [0.468, 0.525] | 360 | validated |
+| Llama-3.1-8B-Instruct (Meta) | 0.615 [0.583, 0.646] | 360 | validated |
+| Tulu 3 final | 0.602 [0.568, 0.635] | 359 | validated |
+| Qwen2.5-7B-Instruct | 0.519 [0.477, 0.560] | 360 | validated |
+
+Consequence for the cross-lineage table (§18.3), with detection bars from the §18 CIs: Tulu 3 shows no
+pressure-attributable gap at any stage (final 0.001 [−0.007, 0.010]; no gap detectable above about
+0.01); Qwen2.5-7B-Instruct shows none (−0.008 [−0.023, 0.009]; none detectable above about 0.02). These
+read "not detected, instrument validated". The base-raw cells stay descriptive (P1-A3; the raw frame's
+validity for a base model is untested by construction, KDG-45), so Llama-3.1 base's 0.000 remains the
+raw frame's reading, not a validated absence.
+
+## 19.2 Per-model screen rates (P1-A9 item 2)
+
+All models engage the option letters on 586/586 scenarios. Screened fractions: OLMo-3 SFT/DPO/final
+0.20 / 0.22 / 0.19; Llama-3.1 Meta 0.20; Tulu 3 SFT/DPO/final 0.12 / 0.09 / 0.09; Qwen2.5 0.08. Overlap
+with OLMo-3 final's screen: Llama 23 of 118, Tulu final 13 of 52, Qwen 10 of 47. Each family finds
+different scenarios pressuring; the panel does not favor OLMo's pressures in engagement, but its
+screened sets are largely family-specific.
+
+## 19.3 Dose arm on Llama-3.1-8B-Instruct (P1-A9 item 3), 114 of Llama's own 118 screened
+
+| Contrast | Value |
+|---|---|
+| dose2 − filler (forced readouts) | **−0.350 [−0.387, −0.314]** |
+| dose2 − truncated filler (own rollouts) | **−0.320 [−0.356, −0.284]** |
+| truncation alone (TF − filler) | −0.030 [−0.063, 0.002] |
+| dose1 (64 tokens) − filler | −0.205 [−0.244, −0.168] |
+
+Verdict by the P1-A9 rule: **reduces the gap → the lever generalizes across recipes.** Checks: letter
+mass at the forced readout has median 1.00 (10th percentile ≥ 0.95) in every cell, so the effect is not
+a normalization artifact; Llama's dose2 reasoning reaches its own `Answer:` on 90% of rollouts (OLMo's
+on 8%), so on Llama this arm measures largely completed deliberation, not truncated. The effect is about
+four times OLMo's (0.350 vs 0.077); the two are on different scenario sets (each model's own screen)
+with different completion rates, so the sizes are not compared as a contrast.
+
+## 19.4 Referee pass
+
+1. *"The Llama dose effect is on Llama's own screen, selected for scenarios where Llama acts badly;
+   any intervention looks large there."* The filler arm runs on the same scenarios under the same
+   selection, so selection inflates both arms' violating mass, not their difference; the contrast is
+   within-scenario. Conceded that the size is scoped to the screened set.
+2. *"Validated on the known-gap control does not mean sensitive to a small gap."* Correct: the control
+   shows the readout moves when the action changes, and the detection bar for small effects comes from
+   each null's own CI (about 0.01 on Tulu, 0.02 on Qwen). Both are stated in every "not detected"
+   sentence.
+3. *"Four lineages, two with a gap and two without, is a story about the panel."* The positive control
+   rules out an insensitive readout on each model; the screen rates show every model engages and each
+   finds its own pressuring scenarios. What remains open is whether the panel's pressures are the ones
+   that matter for Tulu and Qwen; that is a construct question for the recipe paper, not a readout
+   failure.
+
+## 19.5 What this decides (at the gate after items 1–3; author)
+
+- KDG-A9: the nulls are validated. R_b/R_c (panel sensitivity, format) lose their readout form; the
+  recipe reading (R_a) stands, with the construct question in referee objection 3 carried forward.
+- Provisional framing (ii) is licensed by its own condition ("if the nulls validate"): the same-base
+  contrast holds with a validated instrument on both sides (Meta instruct 0.028 [0.020, 0.036] vs Tulu
+  3 final 0.001 [−0.007, 0.010]), with the base cell descriptive.
+- The dose lever generalizes (Llama branch "reduces"); the pitch's deliberation item is no longer scoped
+  to OLMo-3 alone.

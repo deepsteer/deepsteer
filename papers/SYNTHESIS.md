@@ -722,3 +722,14 @@ sensitivity vs format).
 **Next paper's thesis (seeded, not added to the KDG paper):** which post-training recipe choices install
 or remove the judgment–action gap, and whether the same choices produce the DPO-stage at-rest lean
 (replicated on OLMo-3 and Tulu 3) and the raw-frame distortion (both Ai2 recipes, not Meta's).
+
+
+### Session C (2026-09-28; `kdg_panel/KDG_RESULTS.md` §19) — what changed
+
+Positive voice first: **the instrument is validated on OLMo-3, Llama-3.1, Tulu 3 and Qwen2.5 (known-gap
+band 0.50–0.62); under their own templates OLMo-3 and Llama-3.1 (Meta) carry a pressure-attributable
+judgment–action gap and Tulu 3 and Qwen2.5 do not (not detected above ~0.01 / ~0.02); and moral
+deliberation before acting reduces the gap on both recipes that carry it (OLMo-3 −0.077 truncated,
+Llama-3.1 −0.350 largely completed; both survive the truncation-matched control).** Framing (ii) meets
+its own condition: on the same Llama-3.1 base, Meta's recipe carries the gap and Ai2's Tulu 3 does not,
+with a validated instrument on both. Thesis choice between (i) and (ii): author, at this gate.
