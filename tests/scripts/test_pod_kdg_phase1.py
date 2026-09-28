@@ -406,3 +406,56 @@ class TestDoseControls:
         arms = {r["arm"] for r in rows}
         assert arms == {"dose2", "dose2_filler"}
         assert all(isinstance(r["order"], dict) and r["text"] for r in rows)
+
+
+class TestSessionC:
+    def test_known_gap_cell_has_the_operator_prompt_and_primaries_only(self, tmp_path):
+        # most probable failure: the positive control omits the system prompt (so it measures
+        # nothing beyond the plain acting frame) or includes twins
+        from tests.kdg.conftest import make_scenario as ms
+
+        class Spy(lib.StubModel):
+            seen = []
+
+            def render_chat(self, messages):
+                Spy.seen.append(messages)
+                return super().render_chat(messages)
+
+        scen = [
+            ms("F1", id="F1-A-00"),
+            ms("F1", id="F1-A-00T", role="harm_twin", twin_of="F1-A-00"),
+        ]
+        ctx = _Ctx.make(tmp_path, Spy("instruct"))
+        lib.UNITS["dl_chat_known_gap"][1](ctx, scen)
+        rows = [
+            json.loads(x)
+            for x in (tmp_path / "k" / "dl_chat_known_gap.jsonl").read_text().splitlines()
+        ]
+        assert {r["scenario_id"] for r in rows} == {"F1-A-00"}
+        assert all(
+            m[0]["role"] == "system" and "must take this action" in m[0]["content"]
+            for m in Spy.seen
+        )
+
+    def test_tf_own_reads_this_models_rollouts_and_fails_without_them(self, tmp_path, scen):
+        # most probable failure: the Llama control silently reads OLMo's committed rollouts
+        ctx = _Ctx.make(tmp_path, lib.StubModel("instruct"))
+        ctx.dry = False
+        with pytest.raises(FileNotFoundError):
+            lib.UNITS["dose_ctrl_tf_own"][1](ctx, scen[:2])
+        ctx.dry = True
+        lib.UNITS["d_chat_dose2_filler_bf"][1](ctx, scen[:2])
+        ctx.dry = False
+        # own filler rollouts now exist in ctx.out; the control must read them, not the committed
+        lib.UNITS["dose_ctrl_tf_own"][1](ctx, scen[:2])
+        own = {
+            (json.loads(x)["scenario_id"], json.loads(x)["rollout"])
+            for x in (tmp_path / "k" / "d_chat_dose2_filler_bf.jsonl").read_text().splitlines()
+        }
+        tf = {
+            (json.loads(x)["scenario_id"], json.loads(x)["rollout"])
+            for x in (tmp_path / "k" / "d_chat_dose2_filler_tf_forced.jsonl")
+            .read_text()
+            .splitlines()
+        }
+        assert tf == own

@@ -1,0 +1,71 @@
+{
+ "amendment": "P1-A9 item 2 (eda98b0)",
+ "models": {
+  "olmo3_sft": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 118,
+   "screen_rate_of_engaged": 0.20136518771331058
+  },
+  "olmo3_dpo": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 129,
+   "screen_rate_of_engaged": 0.22013651877133106
+  },
+  "olmo3_final": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 110,
+   "screen_rate_of_engaged": 0.18771331058020477
+  },
+  "llama31_instruct_meta": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 118,
+   "screen_rate_of_engaged": 0.20136518771331058
+  },
+  "tulu3_sft": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 72,
+   "screen_rate_of_engaged": 0.12286689419795221
+  },
+  "tulu3_dpo": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 52,
+   "screen_rate_of_engaged": 0.08873720136518772
+  },
+  "tulu3_final": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 52,
+   "screen_rate_of_engaged": 0.08873720136518772
+  },
+  "qwen25_instruct": {
+   "n_union": 586,
+   "n_engaged": 586,
+   "engagement_rate": 1.0,
+   "n_screened": 47,
+   "screen_rate_of_engaged": 0.08020477815699659
+  }
+ },
+ "overlap_with_olmo3_final_screen": {
+  "olmo3_sft": 65,
+  "olmo3_dpo": 94,
+  "olmo3_final": 110,
+  "llama31_instruct_meta": 23,
+  "tulu3_sft": 19,
+  "tulu3_dpo": 12,
+  "tulu3_final": 13,
+  "qwen25_instruct": 10
+ }
+}

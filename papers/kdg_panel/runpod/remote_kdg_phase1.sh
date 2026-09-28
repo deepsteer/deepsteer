@@ -27,7 +27,7 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-case "$PROFILE" in p1a|p1b|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
+case "$PROFILE" in p1a|p1b|p1c|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1c, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
 # p1a_fix writes into outputs/p1a (it re-runs Session A cells lost in the 2026-09-27 download)
 OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%%_fix*}"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -54,10 +54,14 @@ echo ">> scenario rows on pod: $N_ROWS"
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
 [ -f $D/dose_bf_rollout_texts.jsonl.gz ] || { echo "FATAL: dose rollout texts missing (P1-A8 input)"; exit 1; }
-if [ "$PROFILE" != "p1b" ]; then
+if [ "$PROFILE" = "p1c" ]; then
+  [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session C needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
+  [ -f $D/screened_ids_llama31_meta.json ] || { echo "FATAL: Llama screen list missing (P1-A9)"; exit 1; }
+  python $S --dry-run --models olmo3_instruct,llama31_instruct_meta --units dl_chat_known_gap,DOSE_BF,dose_ctrl_tf_own --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+elif [ "$PROFILE" != "p1b" ]; then
   python $S --dry-run --models olmo3_instruct,olmo3_sft,olmo3_base --units RAW,C1,C3CHAT,VALIDATE,DOSE,DOSE_BF,DOSE_LONG --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 else
-  [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session B needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
+  [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Sessions B/C need HF_TOKEN (gated Llama-3.1)"; exit 1; }
   python $S --dry-run --models olmo3_instruct,llama31_base,tulu3_sft,qwen25_base --units RAW,C3CHAT,DOSE_LONG,DOSE_CTRL --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
 fi
 if [ "$VALIDATE" = "1" ]; then
@@ -77,7 +81,12 @@ step() {  # step <name> <driver args...>
 }
 R3="$(ls $D/round3_scenarios_*.json | tr '\n' ' ')"
 
-if [ "$PROFILE" = "p1a_fix2" ]; then
+if [ "$PROFILE" = "p1c" ]; then
+  # P1-A9 Session C: known-gap positive control on every instruct model (OLMo-3 reference first),
+  # then the Llama-3.1 Meta dose arm with the truncated-filler control from its own rollouts
+  step known_gap --models olmo3_instruct,llama31_instruct_meta,tulu3_final,qwen25_instruct_p1 --units dl_chat_known_gap
+  step llama_dose --models llama31_instruct_meta --units DOSE_BF,dose_ctrl_tf_own --scenario-ids-file $D/screened_ids_llama31_meta.json
+elif [ "$PROFILE" = "p1a_fix2" ]; then
   # second re-run of the two steps lost when the local disk was full (ANOMALIES process ledger)
   step stages_raw --models olmo3_sft,olmo3_dpo --units RAW
   step stages_chat_sft --models olmo3_sft --units C3CHAT

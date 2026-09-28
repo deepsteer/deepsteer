@@ -711,9 +711,15 @@ def cell_letter_chat(
     full next-token vector per permutation, option-token ids and mass, and the rendered-prompt
     sha (the stage-identity check compares these across checkpoints).
     """
-    cell = f"{'dl' if frame == 'agent' else 'jl'}_chat_{prefix}" + (
-        "" if variant == "primary" else f"_{variant}"
-    )
+    known_gap = variant == "known_gap"  # P1-A9 positive control: operator orders the violation
+    if known_gap:
+        assert frame == "agent", "the known-gap control is an acting-frame cell"
+        cell = "dl_chat_known_gap"
+        scenarios = [s for s in scenarios if s.role == "primary"]
+    else:
+        cell = f"{'dl' if frame == 'agent' else 'jl'}_chat_{prefix}" + (
+            "" if variant == "primary" else f"_{variant}"
+        )
     nperm = ctx.n(ctx.n_raw_perm)
     prompts, orders_all, scen_all = [], [], []
     for s in scenarios:
@@ -722,7 +728,10 @@ def cell_letter_chat(
             user = render_letter_user_message(
                 s, order, frame, prefix, pressure_removed=(variant == "pressure_removed")
             )
-            prompts.append(ctx.model.render_chat([{"role": "user", "content": user}]))
+            msgs = [{"role": "user", "content": user}]
+            if known_gap:
+                msgs.insert(0, {"role": "system", "content": render_known_gap_system_prompt(s)})
+            prompts.append(ctx.model.render_chat(msgs))
             orders_all.append(order)
             scen_all.append(s)
     logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
@@ -866,7 +875,9 @@ def reasoning_before_answer(text: str) -> tuple[str, bool]:
     return text[: hits[-1].start()].rstrip(), True
 
 
-def cell_dose_control(ctx: Ctx, scenarios: list[Scenario], *, kind: str) -> None:
+def cell_dose_control(
+    ctx: Ctx, scenarios: list[Scenario], *, kind: str, source: str = "committed"
+) -> None:
     """P1-A8 forward-pass controls on the committed P1-A5 filler rollouts.
 
     kind "tf": the filler reasoning cut mid-text at floor(0.75 n) of its own tokens, forced
@@ -888,6 +899,12 @@ def cell_dose_control(ctx: Ctx, scenarios: list[Scenario], *, kind: str) -> None
             for s in list(by_id.values())[:2]
             for i in range(2)
         ]
+    elif source == "own":  # P1-A9: this model's own filler rollouts, written earlier in the step
+        src = ctx.out / "d_chat_dose2_filler_bf.jsonl"
+        if not src.exists():
+            raise FileNotFoundError(f"{src}: run d_chat_dose2_filler_bf before the own-rollout TF")
+        rows_in = [json.loads(x) for x in src.read_text().splitlines() if x.strip()]
+        rows_in = [r for r in rows_in if r["scenario_id"] in by_id]
     else:
         rows_in = []
         for line in gzip.open(DOSE_TEXTS, "rt"):
@@ -1074,6 +1091,14 @@ DOSE_BF_UNITS = ("d_chat_dose1_bf", "d_chat_dose2_bf", "d_chat_dose2_filler_bf")
 UNITS["dose_ctrl_tf"] = (("instruct",), lambda c, S: cell_dose_control(c, S, kind="tf"))
 UNITS["dose_ctrl_ns"] = (("instruct",), lambda c, S: cell_dose_control(c, S, kind="ns"))
 DOSE_CTRL_UNITS = ("dose_ctrl_tf", "dose_ctrl_ns")
+UNITS["dose_ctrl_tf_own"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_control(c, S, kind="tf", source="own"),
+)
+UNITS["dl_chat_known_gap"] = (
+    ("instruct",),
+    lambda c, S: cell_letter_chat(c, S, frame="agent", prefix="neutral", variant="known_gap"),
+)
 DOSE_LONG_UNITS = ("d_chat_dose2_long", "d_chat_dose2_filler_long")
 
 # Phase 1 C1 / C3-secondary letter-only chat cells:
