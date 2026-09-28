@@ -575,3 +575,19 @@ on the residual only; the stage chat secondary (re-run pending) dates it by chec
 **Discriminator.** Zero GPU first: per-model known-gap band (does each instruct model show a large gap when instructed to violate? only OLMo has the band cell) and per-model option-mass distributions under the chat template (R_c); per-family construction check of screen rates (R_b: OLMo-screened scenarios are 136 of 397; recompute each model's screen on its own chat cells, which are the letter-only readout for all). GPU: the known-gap band cell on Llama/Tulu/Qwen instruct (forward passes; ~10 min each), which calibrates whether "absent" is absent or insensitive.
 **Status.** open; priced.
 **Thesis impact.** R_a: the pretraining thesis for execution is withdrawn in its general form; the gap is a recipe property, and the program's lever question moves to which recipe choices install it. R_b/R_c: absence on Tulu/Qwen is a detection limit, and the claim is scoped to "present where the panel is calibrated".
+
+
+## KDG-A10 (ledger) — Three of the four scenarios where completed reasoning (2,048 tokens) changes the decision are third-party-harm (F5) scenarios, in both directions
+
+**Date.** 2026-09-28 (P1-A6 rider; KDG_RESULTS §18.2).
+**Observation.** dose2 512-forced vs 2,048 disagreements: F5-A-00 (V→n), F5-A-04 (V→n), F5-A-08 (n→V), F1-A-00T (n→V); 4 of the 16 probe scenarios are F5 and 3 of those 4 flip. Filler: 1 disagreement (F5-A-04).
+**Type.** family exception (the gap is not harm-keyed, KDG-A5/§6; the deliberation effect may be).
+**Competing readings.** R_a: deliberation reaches the action through harm content: longer reasoning about third-party harm moves the choice where it does not move other families' choices (a harm-keyed lever on a non-harm-keyed gap, matching the program's refusal finding that the harm slice is what decisions read). R_b: noise: n = 4 F5 scenarios, 8 rollouts each, and F5 scenarios sit nearer the 0.5 decision boundary (their 512 masses are 0.38–0.54), so any perturbation flips them more often.
+**Discriminator.** Zero GPU: the rider's per-scenario mass change |p_2048 − p_512| against the scenario's distance from 0.5 at 512 (R_b predicts flips track boundary distance, not family). GPU: the rider on all F5 screened scenarios plus a boundary-matched non-F5 set (~1 h).
+**Status.** open; priced.
+**Thesis impact.** R_a: the deliberation lever is harm-keyed while the gap is not; the mechanistic cell asks whether completed reasoning engages the harm slice at the action position. R_b: no family structure in the lever at this n.
+
+**KDG-39 note (2026-09-28): the raw-frame distortion follows the post-training recipe** (present on
+OLMo-3 and Tulu 3, both Ai2 recipes; absent on Meta's Llama-3.1-Instruct on the same base as Tulu;
+KDG-49). Carried into the Ai2 ask in the pitch: Ai2 can test which recipe step installs it with its own
+checkpoints.

@@ -63,3 +63,25 @@ pitch until the author decides. Two versions of the lead follow; Version 1 is in
 tracing-sycophancy (Sonnet Xu, GitHub): "related behavior–probability dissociation on the same OLMo-3
 checkpoints; readout comparability unverified" (its log-prob track reads chat models without their
 template). Not cited as convergent evidence.
+
+
+## Update 2026-09-28 (Session B gate): lead in force = Version 2, scoped to OLMo-3
+
+1. **The gap is pretraining-native on OLMo-3 and not resized by its post-training** (no stage change
+   detectable above ~0.013 at n = 136).
+2. **Moral deliberation before acting reduces it on OLMo-3,** against a length-matched restatement and a
+   truncation-matched one (−0.112 [−0.145, −0.078]); **about a third of that is naming the norm**
+   (salience share 0.32 [0.22, 0.53]).
+3. **The instrument withdrew one of our own claims** (as Version 1, item 2).
+
+Cross-lineage table (wording pending the Session C positive controls; every zero reads "not detected"):
+
+| Model | Base, raw frame | Instruct, own template |
+|---|---|---|
+| OLMo-3-7B | 0.017 [0.012, 0.022] | 0.030 [0.006, 0.053] |
+| Llama-3.1-8B (Meta) | not detected (0.000 [−0.003, 0.003]) | 0.028 [0.020, 0.036] |
+| Tulu 3 (Ai2 recipe on Llama-3.1) | (Llama base) | not detected at SFT / DPO / final |
+| Qwen2.5-7B | 0.011 [0.007, 0.016] | not detected (−0.008 [−0.023, 0.009]) |
+
+Ai2 ask, add: the raw-frame distortion appears on both Ai2 recipes tested (OLMo-3, Tulu 3) and not on
+Meta's; Ai2's intermediate checkpoints can locate the step that installs it.

@@ -707,3 +707,18 @@ does not generalize; by the branch table, "gap absent in base on a second lineag
 and the pretraining claim narrows. The raw-frame distortion (KDG-39) is an Ai2-recipe property (OLMo-3,
 Tulu 3), absent on Meta's recipe. Open with priced discriminators: KDG-A9 (recipe vs panel
 sensitivity vs format).
+
+
+### Provisional framings pending Session C (author, 2026-09-28); decided after the known-gap validation, screen rates and the Llama dose arm
+
+- **(i) Scoped:** the judgment–action gap and the deliberation lever are established on OLMo-3; other
+  lineages are validated scope limits, stated per model as "present", "not detected (instrument
+  validated)" or "instrument not validated on this model".
+- **(ii) Recipe:** the base model sets whether the gap's raw material exists; the post-training recipe
+  decides whether it survives. Anchor, if the nulls validate: the same-base contrast on Llama-3.1 (Meta's
+  recipe installs a template-valid gap, 0.028, on a base with none in the raw frame; Tulu 3's recipe on
+  the same base shows none).
+
+**Next paper's thesis (seeded, not added to the KDG paper):** which post-training recipe choices install
+or remove the judgment–action gap, and whether the same choices produce the DPO-stage at-rest lean
+(replicated on OLMo-3 and Tulu 3) and the raw-frame distortion (both Ai2 recipes, not Meta's).
