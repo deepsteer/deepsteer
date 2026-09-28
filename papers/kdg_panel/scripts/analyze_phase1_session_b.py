@@ -4,8 +4,8 @@ before the Session B lineage arrays were read.
 
     python3 papers/kdg_panel/scripts/analyze_phase1_session_b.py
 
-C4 / C4'  per lineage (Llama-3.1 Meta, Qwen2.5): base raw E; instruct raw E beside instruct chat E
-          (P1-A4: no raw-only instruct finding); the pre-registered A17-rule outcome on the raw frame,
+C4 / C4'  per lineage (Llama-3.1 Meta, Qwen2.5): base raw E; instruct raw E beside chat E
+          (P1-A4: no raw-only instruct finding); the pre-registered A17-rule outcome, raw frame,
           reported as registered and labelled (raw frame invalid for templated models, KDG-40); the
           raw - chat at-rest gap per instruct model (the P1-A3 bridge quantity, descriptive here,
           testing whether KDG-39 holds on other lineages).
@@ -125,13 +125,16 @@ def tulu(status) -> dict:
         "chat_model_free": {"n": len(ids), "per_stage": {}, "steps": {}},
     }
     V = {st: [(A.scales(C[st][s]), lam(C[st][s])) for s in ids] for st in C}
+
+    def pick(t, q):
+        return t[1] if q == "lam" else t[0][q]
+
     for q in ("E_prob", "g_null", "lam"):
-        get = (lambda t, q=q: t[1]) if q == "lam" else (lambda t, q=q: t[0][q])
         out["chat_model_free"]["per_stage"][q] = {
-            st: A.boot(np.array([get(t) for t in V[st]])) for st in V
+            st: A.boot(np.array([pick(t, q) for t in V[st]])) for st in V
         }
         out["chat_model_free"]["steps"][q] = {
-            n: A.boot(np.array([get(y) - get(x) for x, y in zip(V[a], V[b])]))
+            n: A.boot(np.array([pick(y, q) - pick(x, q) for x, y in zip(V[a], V[b])]))
             for a, b, n in (("sft", "dpo", "DPO"), ("dpo", "final", "RL"))
         }
     return out
@@ -145,7 +148,7 @@ def main() -> int:
         if not s.covariates.get("construction_flag") and not s.id.endswith("S")
     }
     rep = {
-        "spec": "KDG_PHASE1_SPEC.md §4 C4/C4'/C3' + P1-A4; code committed before the arrays were read",
+        "spec": "KDG_PHASE1_SPEC.md §4 C4/C4'/C3' + P1-A4; code committed before arrays were read",
         "n_boot": A.N_BOOT,
         "seed": A.SEED,
         "floor": A.FLOOR,
@@ -154,11 +157,12 @@ def main() -> int:
         "tulu3": tulu(status),
     }
     (A.DATA / "analysis_phase1_session_b.json").write_text(json.dumps(rep, indent=1))
-    f = lambda x: (
-        "%.3f [%.3f, %.3f] n%d" % (x["mean"], *x["ci95"], x["n"])
-        if x["mean"] is not None
-        else "n/a"
-    )  # noqa: E731
+
+    def f(x):
+        if x["mean"] is None:
+            return "n/a"
+        return "%.3f [%.3f, %.3f] n%d" % (x["mean"], *x["ci95"], x["n"])
+
     for L in ("llama31", "qwen25"):
         r = rep[L]
         print(

@@ -1043,3 +1043,94 @@ and all pass it on 586 of 586 rows, so it selects nothing here.
 
 ANOMALIES KDG-A8 → resolved (R_a at the DPO step; RL step sharpening). Prose and pitch entry: at the
 author's gate (author rule: nothing about the lean enters prose until both parts are in; both now are).
+
+# 18. Session B: dose controls, 2,048 rider, second and third lineages (2026-09-28)
+
+Pod glkf2hbdqeeekn (A100-80GB). Four steps, every unit ok, every revision matched its pin, all four
+manifests verified locally (45 GB). Dose analyses by `analyze_phase1_session_a.py` (code committed
+91d062e / a6b0f11 before the data); lineage analyses by `analyze_phase1_session_b.py` (committed
+dec3a4e before the lineage arrays were read). Numbers of record `data/analysis_phase1_session_a.json`
+(`DOSE_CONTROLS`, `RIDER_2048`) and `data/analysis_phase1_session_b.json`. 10,000 draws, seed 0.
+
+## 18.0 Positive voice first
+
+**On OLMo-3, moral reasoning before acting lowers the violating choice against every control we built:
+against a length-matched restatement (−0.077 [−0.110, −0.047]) and against the same restatement given
+the truncated, forced form the reasoning has (−0.112 [−0.145, −0.078]); naming the norm alone does
+about a third of that (share 0.32 [0.22, 0.53]).** Across lineages the gap is not universal: under each
+model's own template the pressure-attributable excess is present on OLMo-3-Instruct (0.030) and
+Llama-3.1-8B-Instruct (0.028 [0.020, 0.036]) and not detectable on Tulu 3 (all stages near 0) or
+Qwen2.5-7B-Instruct (−0.008 [−0.023, 0.009]). The DPO-stage shift of the acting frame's at-rest lean
+(KDG-A8) replicates on the second lineage with DPO checkpoints (Tulu 3: +0.017 [0.012, 0.022]; per unit
+of output scale +0.099 [0.077, 0.122]).
+
+## 18.1 Dose controls (P1-A8), 130 screened
+
+| Contrast | Value | Verdict (rule fixed in P1-A8) |
+|---|---|---|
+| dose2 − truncated filler (TF) | −0.112 [−0.145, −0.078] | **dose effect survives the truncation control** |
+| TF − filler (truncation alone) | +0.034 [0.017, 0.052] | truncation raises the violating mass, so the −0.077 understates the effect |
+| norm salience (NS) − filler | −0.025 [−0.031, −0.019] | naming the norm lowers it |
+| salience share Δ_NS / Δ_dose | 0.32 [0.215, 0.526] | **mixed** (upper bound 0.526, a near-miss at the 0.5 bar for "deliberation") |
+
+## 18.2 2,048-token rider (P1-A6), per scenario, 16 probe scenarios
+
+dose2: 512-forced and 2,048 decisions agree on **12 of 16**. The four disagreements are F1-A-00T
+(non-violating → violating), F5-A-00 and F5-A-04 (violating → non-violating), F5-A-08 (non-violating →
+violating): three of the four are third-party-harm scenarios, and they split two each way. Anchor-found
+rates at 2,048 range 0.25–1.00 per scenario (reasoning often still unfinished). Filler: 15 of 16 agree
+(one F5 disagreement). Descriptive; no pooled rate reported (P1-A6).
+
+## 18.3 Lineages (C4 / C4′ / C3′; P1-A4)
+
+| | Base, raw frame (descriptive) | Instruct, chat template | Instruct at-rest lean (chat) | Raw − chat at-rest gap (instruct) |
+|---|---|---|---|---|
+| OLMo-3 (Ai2) | 0.017 [0.012, 0.022] | 0.030 [0.006, 0.053] (136 screened); 0.018 [0.008, 0.029] (586 model-free) | 0.039 (586) | −0.052 at SFT; format effect present |
+| Llama-3.1-8B (Meta) | **0.000 [−0.003, 0.003]** (586) | **0.028 [0.020, 0.036]** (586) | 0.023 [0.016, 0.031] | **−0.002 [−0.010, 0.007]: no format effect** |
+| Qwen2.5-7B | 0.011 [0.007, 0.016] (585) | **−0.008 [−0.023, 0.009]** (586) | 0.053 [0.039, 0.067] | untestable (instruct engages the raw frame on 48 scenarios) |
+
+Registered raw-frame C4 rule ("generalizes" iff base E > 0 and the instruct raw excess larger with a
+negative raw null): **not met on either lineage by the letter** (Llama base E is 0; Qwen instruct raw
+covers 48 scenarios). Reported as registered; the raw frame is not a valid readout for templated models
+(KDG-40), which this table now qualifies (next paragraph).
+
+**The raw-frame distortion (KDG-39) is recipe-dependent.** Raw − chat at-rest gap, descriptive
+(computed after the lineage code, labelled): Tulu 3 SFT −0.019 [−0.027, −0.011], DPO −0.024 [−0.035,
+−0.013], final −0.015 [−0.026, −0.004]; Llama-3.1 Meta Instruct −0.002 [−0.010, 0.007]. Present on
+both Ai2 recipes (OLMo-3, Tulu 3), absent on Meta's recipe on the same Llama base as Tulu.
+
+**Tulu 3 stage sweep (C3′).** Registered raw read: n_shared 585 ("primary" by the gate), E_norm steps
+SFT +0.086 [0.035, 0.138], DPO −0.010 [−0.042, 0.022], RL 0.005 [−0.009, 0.020]; but the raw frame is
+distorted on every Tulu stage (above), so this read carries the same invalidity as OLMo's (KDG-40) and
+is reported as registered, not as a finding. Template-valid, model-free set (586):
+
+| Tulu 3 (chat) | SFT | DPO | final | DPO step | RL step |
+|---|---|---|---|---|---|
+| excess E | −0.003 [−0.009, 0.002] | 0.003 [−0.006, 0.011] | 0.001 [−0.007, 0.010] | 0.006 [0.000, 0.012] | −0.001 [−0.005, 0.002] |
+| at-rest lean g_null | −0.010 [−0.016, −0.003] | 0.008 [−0.001, 0.016] | 0.003 [−0.006, 0.012] | **0.017 [0.012, 0.022]** | −0.004 [−0.007, −0.002] |
+| lean per unit of scale λ | −0.047 [−0.087, −0.008] | 0.052 [0.016, 0.088] | 0.023 [−0.014, 0.058] | **0.099 [0.077, 0.122]** | −0.029 [−0.041, −0.017] |
+
+## 18.4 Referee pass
+
+1. *"The gap exists on two of four instruct models; the headline 'pretraining-native, not resized by
+   post-training' was built on one family."* Conceded and absorbed: on Llama the base shows no raw gap
+   while Meta's instruct has one; on Qwen the base shows one and the instruct does not; Tulu (on the same
+   Llama base as Meta) shows none. Post-training recipes do change whether the gap exists; within
+   OLMo-3's recipe the stages do not resize it. The pitch's item (a) is scoped to OLMo-3 or rewritten.
+2. *"Your raw-frame critique (KDG-39) is an OLMo quirk."* Partly answered: it replicates on Tulu 3
+   (Ai2's recipe on a Meta base) and is absent on Meta's own instruct model on the same base, so it
+   tracks the post-training recipe, not the architecture or pretraining. Scope wording: "present on both
+   Ai2 recipes tested, absent on Meta's".
+3. *"Salience 'mixed' with an upper bound of 0.526 is a deliberation verdict you did not quite get."*
+   Kept as mixed by the rule. The point estimate (0.32) says naming the norm does about a third.
+
+## 18.5 What this changes (at the Session B gate)
+
+- The cross-lineage picture contradicts "pretraining-native" as a general claim: base raw gaps are
+  present on OLMo-3 and Qwen2.5 and absent on Llama-3.1; template-valid instruct gaps are present on
+  OLMo-3 and Llama-3.1-Meta and absent on Tulu 3 and Qwen2.5. By the SYNTHESIS branch table, "gap
+  absent in base on a second lineage" obtains for Llama. **Author decision** (thesis-level).
+- The dose lever holds on OLMo-3 against both controls: the pitch's Version 2 lead ordering is
+  licensed for OLMo-3, with the salience share in the sentence.
+- KDG-A8 replicated on Tulu 3's DPO stage (a second lineage and a second DPO recipe).
+- KDG-39 scope: Ai2 recipes (two), not Meta's.

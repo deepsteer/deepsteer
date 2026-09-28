@@ -691,3 +691,19 @@ probability scale (+0.011 [0.007, 0.016]) and per unit of output scale (+0.058 [
 step is sharpening. The pressure-attributable excess stays flat (no stage change detectable above
 about 0.005 at n 586). Standing claim candidate (author's gate): preference optimization shifts the
 agent frame's default toward the advantageous option without changing the incentive's pull.
+
+
+### Session B: dose controls, rider, lineages (2026-09-28; `kdg_panel/KDG_RESULTS.md` §18) — what changed
+
+Positive voice first: **on OLMo-3 moral reasoning before acting lowers the violating choice against a
+length-matched restatement and against a truncation-matched one (−0.112 [−0.145, −0.078]), and naming
+the norm does about a third of it; the DPO-stage shift of the acting frame toward the advantageous
+option at rest replicates on a second lineage (Tulu 3, +0.017 per stage, +0.099 per unit of scale).**
+
+What changed for the thesis (author decision pending): the gap is lineage- and recipe-dependent
+(KDG-A9). Present under the template on OLMo-3 and Llama-3.1-Meta instruct, absent on Tulu 3 and
+Qwen2.5 instruct; base-raw present on OLMo-3 and Qwen2.5, absent on Llama-3.1. "Pretraining-native"
+does not generalize; by the branch table, "gap absent in base on a second lineage" obtains (Llama),
+and the pretraining claim narrows. The raw-frame distortion (KDG-39) is an Ai2-recipe property (OLMo-3,
+Tulu 3), absent on Meta's recipe. Open with priced discriminators: KDG-A9 (recipe vs panel
+sensitivity vs format).
