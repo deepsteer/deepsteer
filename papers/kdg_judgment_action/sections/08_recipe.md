@@ -78,9 +78,10 @@ on one base, not for this panel.
 **The DPO-stage lean replicates.** The at-rest change that \Cref{base} finds at OLMo-3's DPO step appears at
 Tulu 3's DPO step too, on the same model-free construction (586 scenarios): +0.017 (0.012 to 0.022), and
 +0.099 (0.077 to 0.122) per unit of output scale, with the RL step small and negative ($-0.004$, $-0.007$ to
-$-0.002$). The pressure-attributable part does not resolve a change at either Tulu 3 step (DPO 0.006, 0.000
-to 0.012; RL $-0.001$). Two DPO recipes on two bases move the acting frame's default the same way while
-leaving the incentive's pull where it was.
+$-0.002$). For the pressure-attributable part, the Tulu 3 DPO step is 0.006 with an interval that touches
+zero (0.000 to 0.012), below its detection bar of about 0.008 at $n = 586$; the RL step is $-0.001$
+($-0.005$ to 0.002; bar about 0.005). Two DPO recipes on two bases move the acting frame's default the same
+way, with no change in the incentive's pull detectable above those bars.
 
 **The raw-frame distortion follows the recipe too.** The frame effect that withdrew our baseline claim
 (\Cref{base}) is present on every templated checkpoint of both Ai2 recipes (OLMo-3 SFT: $-0.052$; Tulu 3

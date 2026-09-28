@@ -4,7 +4,10 @@ The panel specification (`papers/KDG_PANEL_SPEC.md`) was committed as the pre-re
 record before any scenario was generated. Every construction or analysis decision taken after
 that is a dated amendment in the same file; a change made after data were seen is a fork and
 carries verdicts under both choices. \Cref{tab:amendments} lists the seventeen amendments in one
-line each, split by whether any model data existed when they were committed.
+line each, split by whether any model data existed when they were committed. Verdict rules and branch
+names are quoted as registered ("installed", "widened", "inherited, not installed"); where the body
+describes a model on its own terms it says the model "carries" the gap, which claims presence and not
+the step that produced it.
 
 | id | date (2026) | committed | content |
 |---|---|---|---|

@@ -22,7 +22,7 @@ construct is old in moral psychology, where the relation between moral judgment 
 has been the central empirical problem since Blasi's review [@blasi1980bridging], and it has a
 recent history in the language-model literature under the name *knowing–doing gap*
 [@pfeffer2000knowing; @schmied2025greedy]. The design closest to ours is Strakhov and Claude
-[@strakhov2025agents], who pose the same AI-ethics dilemma to a model in a third-person theory
+[-@strakhov2025agents], who pose the same AI-ethics dilemma to a model in a third-person theory
 mode and a second-person action mode with callable tools, take the model's own theory-mode choice
 as the reference, and find that 47.6% of 351 paired choices across nine instruct models reverse.
 Their reversal counts changes in either direction from one draw per mode at temperature 1.0,
@@ -46,8 +46,10 @@ for the mechanistic purpose: a per-scenario, self-referenced *moral* gap with th
 agent (as in Strakhov and Claude) under typed pressure families, each scenario paired with a twin
 that removes the pressure, measured inside a calibration ladder that bounds how much of
 any gap is reference noise or frame change, read on two instruments, with a harm-involving family
-that ties back to what refusal reads, and a base-versus-instruct comparison in one raw completion
-frame, the cell none of the prior panels contain.
+that ties back to what refusal reads. Beyond the panels in \Cref{tab:priorart} it adds three things:
+a positive control on every model read (an operator instruction to take the violating action), so that
+each null carries a detection bar; a same-base contrast of two post-training recipes on one set of
+Llama-3.1 weights; and a deliberation arm with truncation and norm-salience controls.
 
 \begin{table}[tbp]
 \centering
@@ -69,7 +71,7 @@ Hosseini et al. (2026) & own responsibility judgment & allocation decision & non
 Backmann et al. (2025) & external (cooperation) & game move & framing, survival & no & no \\
 Cheng et al. (2026); Basu et al. (2026) & external (capability; physician labels) & tool call; hazard flag & none & no & no \\
 \addlinespace
-this panel & own per-scenario judgment on four frames & agent's option, letter only, 32 rollouts & five typed families; a twin with the pressure removed & yes, raw frame & pressure-removed twins; known-gap band \\
+this panel & own per-scenario judgment on four frames & agent's option, letter only, 32 rollouts & five typed families; a twin with the pressure removed; a deliberation arm & yes, three (raw); one same-base pair & pressure-removed twins; a known-gap control on every model \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -78,9 +80,14 @@ The panel was pre-registered before any scenario existed, and every construction
 decision taken afterwards is a dated amendment in the same document (\Cref{app:prereg}): eleven
 construction decisions before any model data, and six analysis decisions after, four of them
 committed before the computation they license and two post-hoc forks that carry verdicts under
-both choices. We report three pods on one model, OLMo-3-7B-Instruct with its base checkpoint
-[@olmo3_2025]: a 96-scenario pilot that tested the instrument, a 320-scenario full panel, and a
-120-scenario second round that lifted the screened count past the pre-registered gate. Scenarios
+both choices. Nine further amendments govern the Phase 1 sessions. We report three pods on
+OLMo-3-7B-Instruct with its base checkpoint [@olmo3_2025]: a 96-scenario pilot that tested the
+instrument, a 320-scenario full panel, and a 120-scenario second round that lifted the screened count
+past the pre-registered gate. Three Phase 1 sessions then read the OLMo-3 post-training stages under
+their chat template, Meta's Llama-3.1-8B-Instruct and its base [@grattafiori2024llama3], Tulu 3 at its
+SFT, DPO and final checkpoints [@lambert2024tulu3], and Qwen2.5-7B-Instruct and its base
+[@qwen2024qwen25], with the positive control on every instruct model and the deliberation arm on
+OLMo-3 and Llama-3.1-8B-Instruct. Scenarios
 were written half by Claude and half by GPT and cross-labeled by the other; neither generator is
 the model evaluated. The harness that parses actions was calibrated twice on real replies against
 two judges.

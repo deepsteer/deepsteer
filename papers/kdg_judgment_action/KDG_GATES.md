@@ -173,3 +173,16 @@ draft gate (below).
   pressure-attributable part unchanged; mechanism deferred to the recipe paper's ablation.
 - Build: 30 pp., zero undefined references, zero overfull boxes, no pdfTeX crash reports.
   **Next gate: author reads the PDF.**
+
+## PDF review (2026-09-28, author via Fable, executed)
+
+- §1: the "base-versus-instruct cell none of the prior panels contain" sentence is replaced by the three
+  additions beyond Table 1 (per-model positive control, same-base two-recipe contrast, deliberation arm
+  with truncation and norm-salience controls); Table 1's "this panel" row matches; the pods paragraph
+  names the OLMo-3 pods plus the Phase 1 sessions (OLMo-3 stages, Llama-3.1 Meta, Tulu 3 at three stages,
+  Qwen2.5).
+- §8: Tulu 3 DPO E step reported as touching zero (0.006, 0.000 to 0.012) below its bar of ~0.008 at
+  n = 586; RL step bar ~0.005.
+- PDF metadata title and author set; Strakhov and Claude cited as "Strakhov and Claude (2025)" (bib second
+  author "Claude", with the printed byline in the note); Appendix A notes that verdict rules are quoted as
+  registered and the body says "carries". Build clean, 30 pp. **Next gate: author.**
