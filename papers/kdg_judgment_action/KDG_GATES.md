@@ -150,5 +150,26 @@ carries its positive-control number and detection bar. Builds clean, 27 pp.
 
 Open, deferred (not gates): like-for-like dose run on a shared scenario set with a completion budget
 (~3 GPU-h), required before any slide shows both dose numbers together; salience-control extension
-(~2 GPU-h) behind it. The DPO-stage at-rest lean (KDG-A8, replicated on Tulu 3) is not in the paper
-pending the author's decision on it.
+(~2 GPU-h) behind it. The DPO-stage at-rest lean (KDG-A8, replicated on Tulu 3) entered the paper at the
+draft gate (below).
+
+## Draft gate (2026-09-28, author decisions, executed)
+
+- **Title chosen:** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own
+  Moral Judgment* (no subtitle).
+- **Review item 1:** Tulu 3 (arXiv:2411.15124), Llama 3 (arXiv:2407.21783) and Qwen2.5
+  (arXiv:2412.15115) entered the bibliography only after each was fetched at its primary source
+  (arXiv API: title, authors as printed, id); cited in §8.
+- **Review item 2:** Appendix A carries the Phase 1 amendments table (P1-A1..A9, commit timing, forks
+  P1-A1 and P1-A5); the abstract cites seventeen panel and nine Phase 1 amendments.
+- **Review item 3:** Figure 7 (§8) puts the known-gap positive control and the four gaps on one axis
+  with the 0.10 validation bar, plus a zoomed panel with the bases (descriptive); Figure 8 (§9) shows the
+  dose contrasts on separate scales (sizes not compared). CVD-validated palette (indigo/red, gray for
+  controls and bases); data in `figure_data/kdg_recipe.csv`, `kdg_deliberation.csv`.
+- **Review item 4:** the clarifying sentence (0.018 whole-panel vs 0.030 screened vs 0.19 majority-vote
+  readout) is in §8 and the abstract.
+- **KDG-A8 in:** §7 "What post-training does change" (DPO at-rest lean, model-free n = 586; RL step is
+  sharpening) and §8 "The DPO-stage lean replicates" (Tulu 3). Scoped: at-rest only; the
+  pressure-attributable part unchanged; mechanism deferred to the recipe paper's ablation.
+- Build: 30 pp., zero undefined references, zero overfull boxes, no pdfTeX crash reports.
+  **Next gate: author reads the PDF.**

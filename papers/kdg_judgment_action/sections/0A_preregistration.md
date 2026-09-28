@@ -29,6 +29,26 @@ line each, split by whether any model data existed when they were committed.
 Table: Amendments to the pre-registration. "Before computation" means the amendment was
 committed before the analysis it licenses was run on data already on disk. {#tab:amendments}
 
+The multi-model work of \Cref{base}, \Cref{recipe} and \Cref{deliberation} ran under a second specification
+(`papers/KDG_PHASE1_SPEC.md`), pre-registered and pushed before its first computation, with nine dated
+amendments of its own (\Cref{tab:phase1}). Two of them are forks made after data were seen (P1-A1, P1-A5),
+each reported beside the choice it forks; the others were committed before the data they govern existed or
+before those data were read.
+
+| id | date (2026) | committed | content |
+|---|---|---|---|
+| P1-A1 | 09-26 | after the scale-check arrays were seen (fork) | frame-specific output-scale normalization beside the averaged-scale verdict of record |
+| P1-A2 | 09-26 | during the first pod, before its data were read | verdict sets, mass floors and anchored-rollout rule for the chat twin cell, the stage sweep and the dose arm |
+| P1-A3 | 09-27 | before the pod | bridge cell at the first templated checkpoint (raw vs chat), with the rule for the base cell's status |
+| P1-A4 | 09-27 | before the pod | every instruct model in the second session also read under its template; no raw-only instruct finding |
+| P1-A5 | 09-27 | after the dose probe failed its bail (fork) | forced-answer readout at the pre-registered budgets; "truncated reasoning" label |
+| P1-A6 | 09-27 | before the rider's data were read | 2,048-token rider at 8 rollouts per scenario, per-scenario agreement as its readout |
+| P1-A7 | 09-28 | before computation | at-rest lean on a model-free set, and per unit of output scale |
+| P1-A8 | 09-28 | before the pod | truncated-filler control and norm-salience arm, with branch rules |
+| P1-A9 | 09-28 | before computation | known-gap positive control per model with its validation rule; per-model screens; dose arm on a second recipe |
+
+Table: Amendments to the Phase 1 specification. {#tab:phase1}
+
 Every result document carries a referee pass (three damaging objections, answered or conceded)
 and updates the program's synthesis file in the same commit; anomalies live in a ledger with a
 priced discriminator each. Six anomalies were opened by this panel: reference instability

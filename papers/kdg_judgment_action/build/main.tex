@@ -91,8 +91,7 @@
 \makeatother
 
 % --- Title / authors ------------------------------------------------
-\title{A Language Model Acts Against Its Own Moral Judgment\\[0.4em]
-  {\large\mdseries A Pre-Registered, Calibrated Panel of the Judgment--Action Gap on OLMo-3, Base and Instruct}}
+\title{Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment}
 
 \author{%
   Orion Reblitz-Richardson\thanks{%
@@ -183,7 +182,9 @@ Reading the aligned model in its own chat template withdrew one of our own claim
 makes the model more cautious at rest; within OLMo-3, post-training stages do not resize the
 pressure-attributable part. Across four instruct models, with a positive control validating the
 instrument on each, the gap follows the post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct
-carry it (0.018, 0.008 to 0.029, and 0.028, 0.020 to 0.036), Tulu 3 and Qwen2.5-7B-Instruct do not (no
+carry it (whole-panel excesses 0.018, 0.008 to 0.029, and 0.028, 0.020 to 0.036; OLMo-3's is 0.030 on the
+scenarios screened on its own actions, and its majority-vote rate there is the 0.19 above), Tulu 3 and
+Qwen2.5-7B-Instruct do not (no
 gap detectable above about 0.01 and 0.02), and on the same Llama-3.1 base Meta's recipe carries it while
 Ai2's Tulu 3 does not. On both recipes that carry it, reasoning about the stakes before acting moves the
 action back toward the model's judgment against matched non-moral controls; on OLMo-3, where the

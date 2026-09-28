@@ -103,6 +103,19 @@ pressure-attributable excess is 0.021 (0.006 to 0.036) after SFT, 0.022 (0.002 t
 ($-0.001$ to 0.016). Post-training does not resize the pressure-attributable part (no stage change
 detectable above about 0.013 at $n = 136$).
 
+**What post-training does change.** Read on a set screened by no model's actions (all 586 union
+scenarios, each checkpoint under its own template), the acting frame's lean toward the violating option
+at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after RLVR. The DPO step, +0.011
+(0.007 to 0.016), survives division by each checkpoint's output scale (+0.058, 0.027 to 0.090), so it is
+not the sharpening that post-training also brings. The RL step is positive on the probability scale
+(+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
+sharpening. The change is at rest only: the pressure-attributable part does not move at either step
+($-0.001$ and +0.004; no change detectable above about 0.005 at $n = 586$). Preference optimization makes
+the model, placed as the actor, lean further toward the locally advantageous option than it does as a
+judge, without changing how much the incentive adds. That is the opposite direction from the claim this
+section withdraws, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
+produces it is left to a recipe ablation on one base.
+
 **Robustness of the base cell.** The selection check passed: base's excess on all 354 of its
 above-floor scenarios (0.017) matches its excess on the 192 shared with instruct (0.018). The pilot
 pod re-ran the same raw-frame forward passes and returned identical values, so the pilot is a subset

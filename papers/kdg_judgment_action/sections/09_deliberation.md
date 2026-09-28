@@ -8,7 +8,7 @@ asks for a detailed restatement of the situation without evaluation. Both arms e
 answer, and every rollout is read at a forced "Answer:" placed after its reasoning, so the two arms share
 a readout position. We ran the arm on the two recipes that carry the gap, each on its own screened
 scenarios, and report the two results separately: the arms differ in how often the reasoning finishes
-within the budget, so their sizes are not compared.
+within the budget, so their sizes are not compared (\Cref{tab:deliberation}, \Cref{fig:deliberation}).
 
 \begin{table}[tbp]
 \centering
@@ -32,6 +32,17 @@ brief reasoning (64 tokens) $-$ filler & +0.024 [$-$0.011, 0.058] & $-$0.205 [$-
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{kdg_deliberation.pdf}
+\caption{The dose arm on the two recipes that carry the gap: paired differences in the violating option's
+mass at the forced answer, 95\% bootstrap CIs over scenarios. Indigo circles are reasoning contrasts
+(and, on OLMo-3, the norm-naming arm); gray squares are the truncation control. The panels use separate
+scales because OLMo-3's reasoning is truncated (8\% finish within 512 tokens) and Llama-3.1's mostly
+completes (90\%); their sizes are not compared.}
+\label{fig:deliberation}
+\end{figure}
 
 **On OLMo-3, as truncated reasoning.** OLMo-3-Instruct's careful reasoning rarely finishes within the
 512-token budget (8% of rollouts), so its arm reads a decision forced after reasoning that was cut off.

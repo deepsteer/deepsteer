@@ -318,13 +318,131 @@ def fig_three_cell():
     ax.set_xlabel("paired difference in mass, 95% CI")
     ax.set_title("(b) Excess E and its sides (n 192; binary 171)", fontsize=10, loc="left")
     ax.grid(True, axis="x", alpha=0.25); ax.set_axisbelow(True)
-    fig.suptitle("Raw frame: the pressure-attributable gap is present in base and larger after post-training, on the acting side",
+    fig.suptitle("Raw frame (base: descriptive; instruct: a format-affected cell): the pressure-attributable excess and its sides",
                  fontsize=10.5)
     fig.subplots_adjust(left=0.19, right=0.99, top=0.86, bottom=0.13)
     save(fig, "kdg_three_cell", out, ["panel", "row", "value_or_twin", "ci_lo_or_primary", "ci_hi", "n"])
 
 
+# Recipe and deliberation figures (Phase 1). Palette validated with the dataviz validator
+# (light surface): indigo #3F51B5 (instruct gap, reasoning contrasts) vs red #F44336 (known-gap
+# control) passes every check (CVD dE 23.7). Base-model readings are hollow gray (descriptive, not a
+# category); identity is also carried by marker shape and direct labels.
+MODELS_R = [("OLMo-3-7B-Instruct\n(Ai2)", "olmo"), ("Llama-3.1-8B-Instruct\n(Meta)", "llama"),
+            ("Tulu 3, final\n(Ai2, Llama-3.1 base)", "tulu"), ("Qwen2.5-7B-Instruct", "qwen")]
+
+
+def _recipe_data():
+    a8, b, c = load("analysis_kdg_a8.json"), load("analysis_phase1_session_b.json"), load(
+        "analysis_phase1_session_c.json")
+    a17 = load("analysis_a17_union.json")["three_cell_union"]["base"]["continuous"]["excess_paired"]
+    inst = {"olmo": a8["per_stage"]["E"]["final"], "llama": b["llama31"]["instruct_chat"]["E_prob"],
+            "tulu": b["tulu3"]["chat_model_free"]["per_stage"]["E_prob"]["final"],
+            "qwen": b["qwen25"]["instruct_chat"]["E_prob"]}
+    kg = {"olmo": c["known_gap"]["olmo3_instruct"]["g_band"],
+          "llama": c["known_gap"]["llama31_instruct_meta"]["g_band"],
+          "tulu": c["known_gap"]["tulu3_final"]["g_band"],
+          "qwen": c["known_gap"]["qwen25_instruct_p1"]["g_band"]}
+    base = {"olmo": a17, "llama": b["llama31"]["base_raw"]["E_prob"], "qwen": b["qwen25"]["base_raw"]["E_prob"]}
+    return inst, kg, base
+
+
+def fig_recipe():
+    inst, kg, base = _recipe_data()
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.2, 4.3), gridspec_kw={"width_ratios": [1.15, 1]})
+    ys = [3, 2, 1, 0]
+    out = []
+    for y, (lab, k) in zip(ys, MODELS_R):
+        g = kg[k]; e = inst[k]
+        ax1.barh(y + 0.17, g["mean"], height=0.3, color=RED, edgecolor="black", linewidth=0.5, zorder=3)
+        ax1.plot(g["ci95"], [y + 0.17] * 2, color=INK, lw=1.2, zorder=4)
+        ax1.text(g["ci95"][1] + 0.012, y + 0.17, f"{g['mean']:.2f}", va="center", fontsize=8, fontweight="bold", color=INK)
+        ax1.plot(e["ci95"], [y - 0.17] * 2, color=INDIGO, lw=2.2, zorder=3)
+        ax1.plot(e["mean"], y - 0.17, "o", color=INDIGO, ms=7.5, mec="black", mew=0.6, zorder=4)
+        ax1.text(max(e["ci95"][1], 0) + 0.012, y - 0.17, f"{e['mean']:+.3f}", va="center", fontsize=8,
+                 fontweight="bold", color=INK)
+        out.append(("(a)", k, "known_gap_control", g["mean"], *g["ci95"], g["n"]))
+        out.append(("(a)", k, "instruct_excess_template", e["mean"], *e["ci95"], e["n"]))
+    ax1.axvline(0, color=INK, lw=0.9, zorder=2)
+    ax1.axvline(0.10, color=GRAY_EC, lw=0.9, ls=":", zorder=2)
+    ax1.text(0.103, 3.62, "validation bar 0.10", fontsize=7.5, color=GRAY_EC, va="center")
+    ax1.set_yticks(ys); ax1.set_yticklabels([m[0] for m in MODELS_R], fontsize=8.5)
+    ax1.set_xlim(-0.04, 0.72); ax1.set_ylim(-0.6, 3.85)
+    ax1.set_xlabel("acting minus judging violating mass, 95% CI")
+    ax1.set_title("(a) Positive control and gap on one axis", fontsize=10, loc="left")
+    ax1.grid(True, axis="x", alpha=0.25); ax1.set_axisbelow(True)
+    ax1.legend(handles=[
+        Line2D([0], [0], marker="s", ls="", color=RED, mec="black", ms=8, label="known-gap control (operator orders the violation)"),
+        Line2D([0], [0], marker="o", ls="-", color=INDIGO, mec="black", ms=7, label="pressure-attributable excess, own template")],
+        loc="lower right", fontsize=7.5, frameon=True, framealpha=0.95)
+    for y, (lab, k) in zip(ys, MODELS_R):
+        e = inst[k]
+        ax2.plot(e["ci95"], [y + 0.12] * 2, color=INDIGO, lw=2.2, zorder=3)
+        ax2.plot(e["mean"], y + 0.12, "o", color=INDIGO, ms=7.5, mec="black", mew=0.6, zorder=4)
+        ax2.text(e["ci95"][1] + 0.0015, y + 0.12, f"{e['mean']:+.3f} [{e['ci95'][0]:+.3f}, {e['ci95'][1]:+.3f}]",
+                 va="center", fontsize=7.5, color=INK)
+        if k in base:
+            bb = base[k]
+            ax2.plot(bb["ci95"], [y - 0.2] * 2, color=GRAY, lw=1.6, zorder=3)
+            ax2.plot(bb["mean"], y - 0.2, "D", mfc="white", mec=GRAY_EC, mew=1.2, ms=6.5, zorder=4)
+            ax2.text(bb["ci95"][1] + 0.0015, y - 0.2, f"base, raw: {bb['mean']:+.3f}", va="center", fontsize=7,
+                     color=GRAY_EC)
+            out.append(("(b)", k, "base_raw_descriptive", bb["mean"], *bb["ci95"], bb["n"]))
+    ax2.annotate("", xy=(-0.022, 2.12), xytext=(-0.022, 1.12),
+                 arrowprops=dict(arrowstyle="-", color=INK, lw=1.0, connectionstyle="bar,fraction=-0.25"))
+    ax2.text(-0.0285, 1.62, "same\nbase", fontsize=7.5, ha="right", va="center", color=INK)
+    ax2.axvline(0, color=INK, lw=0.9, zorder=2)
+    ax2.set_yticks(ys); ax2.set_yticklabels([])
+    ax2.set_xlim(-0.035, 0.075); ax2.set_ylim(-0.6, 3.85)
+    ax2.set_xlabel("pressure-attributable excess, 95% CI")
+    ax2.set_title("(b) The gaps, zoomed; bases in the raw frame (descriptive)", fontsize=10, loc="left")
+    ax2.grid(True, axis="x", alpha=0.25); ax2.set_axisbelow(True)
+    fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 and Qwen2.5 do not",
+                 fontsize=10.5)
+    fig.subplots_adjust(left=0.16, right=0.985, top=0.86, bottom=0.14, wspace=0.08)
+    save(fig, "kdg_recipe", out, ["panel", "model", "quantity", "mean", "ci_lo", "ci_hi", "n"])
+
+
+def fig_deliberation():
+    a, c = load("analysis_phase1_session_a.json"), load("analysis_phase1_session_c.json")
+    dc, cf, ld = a["DOSE_CONTROLS"], a["C2_forced"], c["llama_dose"]
+    olmo = [("reasoning - filler", cf["delta_dose2_minus_filler_forced"], INDIGO),
+            ("reasoning - truncated filler", dc["delta_dose2_minus_TF"], INDIGO),
+            ("brief reasoning - filler", cf["secondary_dose1_minus_filler_forced"], INDIGO),
+            ("truncated filler - filler", dc["truncation_effect_TF_minus_filler"], GRAY),
+            ("norm named - filler", dc["delta_NS_minus_filler"], INDIGO)]
+    llama = [("reasoning - filler", ld["delta_dose2_minus_filler"], INDIGO),
+             ("reasoning - truncated filler", ld["delta_dose2_minus_TF"], INDIGO),
+             ("brief reasoning - filler", ld["secondary_dose1_minus_filler"], INDIGO),
+             ("truncated filler - filler", ld["truncation_effect_TF_minus_filler"], GRAY)]
+    fig, axes = plt.subplots(1, 2, figsize=(11.2, 3.9))
+    out = []
+    panels = ((axes[0], olmo, "(a) OLMo-3-7B-Instruct: truncated reasoning (8% finish)", "olmo", (-0.16, 0.09)),
+              (axes[1], llama, "(b) Llama-3.1-8B-Instruct: mostly completed (90% finish)", "llama", (-0.45, 0.06)))
+    for ax, rows, title, key, xl in panels:
+        n = len(rows)
+        for i, (lab, d, col) in enumerate(rows):
+            y = n - 1 - i
+            mk = "s" if col == GRAY else "o"
+            ax.plot(d["ci95"], [y, y], color=col, lw=2.2, zorder=3)
+            ax.plot(d["mean"], y, mk, color=col, ms=7.5, mec="black", mew=0.6, zorder=4)
+            ax.text(d["mean"], y + 0.3, f"{d['mean']:+.3f}", ha="center", va="center", fontsize=8,
+                    fontweight="bold", color=INK)
+            out.append((key, lab, d["mean"], *d["ci95"], d["n"]))
+        ax.axvline(0, color=INK, lw=0.9, zorder=2)
+        ax.set_yticks(range(n)); ax.set_yticklabels([r[0] for r in rows][::-1], fontsize=8.5)
+        ax.set_xlim(*xl); ax.set_ylim(-0.6, n - 0.4)
+        ax.set_xlabel("difference in violating mass at the forced answer, 95% CI")
+        ax.set_title(title, fontsize=9.5, loc="left")
+        ax.grid(True, axis="x", alpha=0.25); ax.set_axisbelow(True)
+    fig.suptitle("Reasoning about the stakes before acting lowers the violating choice on both recipes that carry the gap "
+                 "(separate scales; sizes not compared)", fontsize=10.5)
+    fig.subplots_adjust(left=0.15, right=0.985, top=0.84, bottom=0.16, wspace=0.55)
+    save(fig, "kdg_deliberation", out, ["model", "contrast", "mean", "ci_lo", "ci_hi", "n"])
+
+
 if __name__ == "__main__":
-    for f in (fig_ladder, fig_scatter, fig_strictness, fig_families, fig_f4, fig_three_cell):
+    for f in (fig_ladder, fig_scatter, fig_strictness, fig_families, fig_f4, fig_three_cell, fig_recipe,
+              fig_deliberation):
         f()
         print("ok", f.__name__)
