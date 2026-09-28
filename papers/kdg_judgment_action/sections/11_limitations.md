@@ -8,7 +8,7 @@ each null's own interval (about 0.01 on Tulu 3, 0.02 on Qwen2.5). The base cells
 descriptive by the bridge rule, so the same-base contrast says that the recipe decides whether the aligned
 model carries the gap, not what either recipe did to the base. A recipe is a bundle of data, method and
 template; which part decides is an ablation on one base, not a question this panel can answer. Huang et
-al. [@huang2026knowing] report near-perfect cross-model agreement on enacted choices; on this panel the
+al. [-@huang2026knowing] report near-perfect cross-model agreement on enacted choices; on this panel the
 models disagree about whether the gap exists at all, which is a difference in construct (a self-referenced
 gap under pressure, not a value profile) worth stating rather than resolving here.
 

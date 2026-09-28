@@ -10,8 +10,8 @@ pre-registered contrast is centered on zero at a family-contrast MDE near 0.40. 
 power the action channel is not organized by what refusal reads. That is a negative result with
 a bar attached, and it changes what the next mechanistic cell should test: not "does the action
 position load on the harm direction" but "what does it load on at all", with this gap as the
-behavioral outcome the cell is scored against, the role Cheng et al. [@cheng2026tool] and Basu
-et al. [@basu2026interpretability] give the gap in non-moral domains. The exploratory continuous
+behavioral outcome the cell is scored against, the role Cheng et al. [-@cheng2026tool] and Basu
+et al. [-@basu2026interpretability] give the gap in non-moral domains. The exploratory continuous
 read of \Cref{structure} (F1 above F3; a pressure-attributable excess present on the honesty and
 fairness families and unresolved on the shortcut and harm families) is the first candidate for
 that structure, and it is cheap to test.
@@ -46,11 +46,11 @@ instruct number as a format cell.
 **Goal-following is the parsimonious mechanism, and deliberation loosens it.** The simplest account of
 the gap is not moral at all: post-training teaches a model to pursue the goal it is handed in context,
 the incentive sentence hands the actor a goal, and the judge, who reads the same sentence, does not hold
-it. That is consistent with the Schmied et al. [@schmied2025greedy] observation that fine-tuned agents
+it. That is consistent with the Schmied et al. [-@schmied2025greedy] observation that fine-tuned agents
 act greedily on the goal in front of them. The dose arm shows the goal is not fixed once read: on both
 recipes that carry the gap, reasoning about the stakes before acting moves the action toward the
 model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the norm alone
-does about a third of that on OLMo-3. This differs from Rakshit et al.'s [@rakshit2026pseudo] finding
+does about a third of that on OLMo-3. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering

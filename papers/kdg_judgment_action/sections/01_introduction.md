@@ -19,7 +19,7 @@ agent frame with a discrete, logged action. The reference for "right" is the mod
 judgment, not an external label. A gap means the model contradicted itself, acting against what
 it had just said was right, so the measurement does not depend on whose ethics are correct. The
 construct is old in moral psychology, where the relation between moral judgment and moral action
-has been the central empirical problem since Blasi's review [@blasi1980bridging], and it has a
+has been the central empirical problem since Blasi's review [-@blasi1980bridging], and it has a
 recent history in the language-model literature under the name *knowing–doing gap*
 [@pfeffer2000knowing; @schmied2025greedy]. The design closest to ours is Strakhov and Claude
 [-@strakhov2025agents], who pose the same AI-ethics dilemma to a model in a third-person theory
@@ -31,15 +31,15 @@ toward the violating option, by majority over 32 rollouts, against a matched nul
 numbers are different quantities. Their action-mode reversals were coded more often as less
 interventionist than as bolder (48.5% against 36.5%); in our panel, read under the chat template with
 nothing at stake, the gap leans toward the violating option (0.055), so the two designs do not agree
-on the at-rest direction, and their axis (intervention level) is not ours (norm consistency). Shao et al. [@shao2024privacylens] find a related split for
+on the at-rest direction, and their axis (intervention level) is not ours (norm consistency). Shao et al. [-@shao2024privacylens] find a related split for
 privacy norms: models answer privacy questions better than they respect those norms when acting
-as agents. Huang et al. [@huang2026knowing] and Shen et al.
-[@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
-Rakshit et al. [@rakshit2026pseudo] add a fast-versus-slow deliberation contrast; Gu et al.
-[@gu2025alignment] compare stated and revealed preferences; Hosseini et al.
-[@hosseini2026judgment] find a judgment–consequence gap in clinical allocation; Backmann et al.
-[@backmann2025ethics] vary the pressure on agents in social dilemmas; and in non-moral domains
-Cheng et al. [@cheng2026tool] and Basu et al. [@basu2026interpretability] use a knowing–doing
+as agents. Huang et al. [-@huang2026knowing] and Shen et al.
+[-@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
+Rakshit et al. [-@rakshit2026pseudo] add a fast-versus-slow deliberation contrast; Gu et al.
+[-@gu2025alignment] compare stated and revealed preferences; Hosseini et al.
+[-@hosseini2026judgment] find a judgment–consequence gap in clinical allocation; Backmann et al.
+[-@backmann2025ethics] vary the pressure on agents in social dilemmas; and in non-moral domains
+Cheng et al. [-@cheng2026tool] and Basu et al. [-@basu2026interpretability] use a knowing–doing
 gap as the target that mechanistic interventions are scored against. \Cref{tab:priorart} places
 this panel among them. What it adds is narrower than a new construct and, we think, more useful
 for the mechanistic purpose: a per-scenario, self-referenced *moral* gap with the model as the
