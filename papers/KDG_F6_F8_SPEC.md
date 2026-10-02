@@ -489,6 +489,13 @@ worded as escape-clause effects, never as "pressure removed".
   attribution message (F6 `none`, F7 `ai_collective`, F8 `penalty`). G2: the null condition's original
   third-person frame and its three paraphrases.
 - *B7, turns-since-norm floor.* Screened scenarios whose mean option mass is ≥ 0.5 in all 16 cells.
+- *B10, F7 construct.* Generated F7 templates can carry social pressure outside the slot (for example
+  a board thread urging contributions); it is held fixed across levels, so the identity contrast
+  (AI collective vs human team) stays one-span, and ΔD(level − `none`) is worded as the effect of the
+  beneficiary, never as "pressure removed". Same treatment as B9.
+- *B11, coherence exclusion.* The external rater also returns `coherent` for the null-condition text;
+  items rated incoherent (a sentence contradicts another, for example "no one asked" beside "people
+  keep asking") are excluded and counted, with the B5 exclusions. Added before any rating ran.
 - *B8, generation.* `scripts/generate_phase2.py` (prompt version p2-1.0.0): norm classes rotate on
   slot // 2 so each norm appears on both halves; low-nudge on slots 0–5 per family (3 per half); F6
   norms care_harm / authority_subversion / honesty, F7 loyalty_betrayal ×2 / fairness_cheating, F8

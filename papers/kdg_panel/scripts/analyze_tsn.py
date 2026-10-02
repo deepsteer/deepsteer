@@ -126,9 +126,20 @@ def analyze_model(d: Path, ids: set[str], status: dict) -> dict:
     return rep
 
 
+def model_dir(outs: list[Path], m: str) -> Path | None:
+    """outputs/p2a/<step>/<model>: the first --out directory that holds this model."""
+    return next((o / m for o in outs if (o / m).is_dir()), None)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument(
+        "--out",
+        type=Path,
+        nargs="+",
+        required=True,
+        help="session output dirs; each model is read from the first that holds it",
+    )
     ap.add_argument("--scenarios", nargs="*", type=Path, default=None)
     ap.add_argument("--report", type=Path, default=None)
     a = ap.parse_args(argv)
@@ -143,8 +154,8 @@ def main(argv=None) -> int:
         "models": {},
     }
     for m, screen in SCREENS.items():
-        d = a.out / m
-        if not (d / f"{cell('reminder', 0, False)}.jsonl").exists():
+        d = model_dir(a.out, m)
+        if d is None or not (d / f"{cell('reminder', 0, False)}.jsonl").exists():
             continue
         raw = json.loads(screen.read_text())
         ids = set(raw["ids"] if isinstance(raw, dict) else raw)

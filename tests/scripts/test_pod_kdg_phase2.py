@@ -145,7 +145,9 @@ def test_pilot_gate_and_tsn_analyses_read_what_the_driver_writes(tmp_path, p1_fi
     ana = _load("analyze_p2_pilot")
     ana.FLOOR = 0.0  # stub masses are random over a 64-token vocab
     rep_path = tmp_path / "gate.json"
-    ana.main(["--out", str(out), "--items", str(ip), "--report", str(rep_path)])
+    ana.main(
+        ["--out", str(tmp_path / "nope"), str(out), "--items", str(ip), "--report", str(rep_path)]
+    )
     rep = json.loads(rep_path.read_text())
     assert rep["excluded"]["principal_waivable"] == ["F6-B-01"]
     fams = rep["models"]["olmo3_instruct"]["families"]

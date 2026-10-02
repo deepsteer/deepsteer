@@ -234,15 +234,29 @@ def _json_default(o):
     return bool(o) if isinstance(o, np.bool_) else str(o)
 
 
+def model_dir(outs: list[Path], m: str) -> Path | None:
+    """outputs/p2a/<step>/<model>: the first --out directory that holds this model."""
+    return next((o / m for o in outs if (o / m).is_dir()), None)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument(
+        "--out",
+        type=Path,
+        nargs="+",
+        required=True,
+        help="session output dirs; each model is read from the first that holds it",
+    )
     ap.add_argument("--items", nargs="+", type=Path, required=True)
     ap.add_argument("--report", type=Path, default=None)
     a = ap.parse_args(argv)
     from deepsteer.kdg.phase2 import expand
 
-    items, excluded = [], {"external_disagrees": [], "principal_waivable": [], "unrated": []}
+    items: list = []
+    excluded: dict[str, list] = {
+        k: [] for k in ("external_disagrees", "principal_waivable", "unrated", "incoherent")
+    }
     for p in a.items:
         its, _ = load_items(p)
         for it in its:
@@ -251,12 +265,18 @@ def main(argv=None) -> int:
                 excluded["unrated"].append(it.id)
             elif el.get("agrees_with_construction") is False:
                 excluded["external_disagrees"].append(it.id)
+            elif el.get("coherent") is False:
+                excluded["incoherent"].append(it.id)
             elif it.family == "F6" and el.get("principal_waivable") is True:
                 excluded["principal_waivable"].append(it.id)
             else:
                 items.append(it)
     scen = {s.id: s for it in items for s in expand(it)}
-    reports = {m: model_report(a.out / m, items, scen) for m in MODELS if (a.out / m).exists()}
+    reports = {
+        m: model_report(model_dir(a.out, m), items, scen)
+        for m in MODELS
+        if model_dir(a.out, m) is not None
+    }
     gate = {}
     for m, rep in reports.items():
         fams = rep["families"]

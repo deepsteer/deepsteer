@@ -631,3 +631,24 @@ checkpoints.
 ## KDG-A14 (ledger) — Two near-misses with lower bounds just above zero, both in the direction of every known bias: OLMo-3's RL step (+0.00041) and Tulu 3's DPO step (+0.00004) on E_prob
 
 **Date.** 2026-10-01 (KDG_RESULTS §20). **Rule for readers:** these are not two "excludes zero" results and are not convergent evidence. Both lower bounds sit within 0.0005 of zero (at the bar by the P1-A10 margin), both quantities are exposed to the same positive-favoring biases (output sharpening at the step; two steps tested per lineage without correction), and they are different steps on different recipes. Neither survives division by output scale as a resolved positive under every scale (OLMo-3 RL: E_norm includes 0; Tulu 3 DPO: E_fs includes 0). Any combined-evidence line must be labelled exploratory and computed from per-step bootstrap draws, never by counting. **Status.** standing note.
+
+
+**Process ledger 2026-10-01 — FL interchange: three method-vs-text discrepancies found while porting
+the rank sweep to the action position (escalated; nothing in `fl_what_refusal_reads/` edited).**
+Verified in code: (1) `d3_decision_anatomy/scripts/causal_cells.py` `interchange` patches the
+mean-pooled source flipped span at the **content positions** at layer L (residual pre-hook) and reads
+the decision-token projection at the output of the same layer; FL §7 (`07_reads_harm.md` l.27) and
+App C (`0C_causal_tables.md` l.7, l.62) say "we patch the decision channel". (2) The random rank-k
+control (`random_ortho_basis`) is an isotropic Gaussian draw orthogonalized against the rank-3 basis,
+not covariance-matched (estimator-traps trap 7: isotropic draws understate chance alignment in
+anisotropic spaces), so "restricting the patch to V_moral moves refusal more than random" is gated on
+the weaker null. (3) `c1_session.py` drops twins whose flipped span is empty with a bare
+`except (ValueError, RuntimeError, IndexError): continue`, uncounted. Also from the same read: RESULTS
+l.325 calls `d_harm` a request-twin harmful−harmless direction while the code builds it from the
+Heretic harmful/harmless `mean_content` diff. **Blast radius:** FL §7 method sentence and App C (1);
+every FL/MN sentence that cites the random rank-k control as the specificity evidence (2); the n per
+cell in FL's causal tables (3, if any twin was dropped). **Discriminator:** (2) is a pod rider on the
+Phase 3 action-position session (same harness, same models; `KDG_PHASE3_SPEC.md` R1): re-run the FL
+request-twin sweep with covariance-matched random rank-k bases beside the isotropic ones; (3) is zero
+GPU if the saved per-twin deltas carry ids (count them against the screened 23/42). **Status:** open;
+to the author (published-claim wording; CLAUDE.md escalation list).
