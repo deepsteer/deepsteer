@@ -83,6 +83,8 @@ def read_cell(d: Path, cell: str) -> dict[str, dict]:
 def summarize(raw: dict[str, dict], scen: dict) -> dict[str, dict]:
     out = {}
     for sid, a in raw.items():
+        if sid not in scen:  # rows of an excluded item (B5/B11): skipped, counted in "excluded"
+            continue
         s = scen[sid]
         status = {o.option_id: o.norm_status for o in s.options}
         atype = {o.option_id: o.action_type for o in s.options}
