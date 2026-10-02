@@ -258,3 +258,34 @@ re-run; (5) a design partner and a second person; (6) an eval-firm channel with 
 - [ ] Contact Andon Labs (founders at andonlabs dot com) about running an open model on Vending-Bench 2
       with a white-box monitor; ask whether the harness or trajectories can be shared.
 - [ ] Human gate before any pitch text leaves the repo.
+
+
+## Update 2026-10-01 (KDG-A12 / P1-A10): stage wording, for pasting into the pitch doc
+
+Rule of record (author, 2026-10-01): the 586 set screened by no model is the number of record for stage
+claims; the 136 screened set is the secondary with its own bars (DPO 0.019, RL 0.012). "Not resized" is
+retired (false per unit of output scale, where DPO's step is a decrease); the claim is one-sided:
+"does not enlarge", on either readout. "Adds" is not written for the RL step.
+
+- **Evidence item 5** (replaces the current item): **Post-training does not enlarge the gap on OLMo-3.**
+  Under the model's own format, on 586 scenarios screened by no model, no stage (SFT, DPO, final)
+  enlarges the pressure-attributable part, on the probability scale or per unit of output scale. The
+  RL step's +0.004 sits at its detection bar (0.005) and is not separated from output sharpening. What
+  does change is how the model leans at rest and how decisive its outputs are.
+- **Phase 1 outcome**, first clause (replaces "Under the template the pressure-attributable excess is
+  flat across stages on OLMo-3"): "Under the template no stage enlarges the pressure-attributable
+  excess on OLMo-3 (586 scenarios screened by no model; the RL step sits at its bar, not separated from
+  sharpening)".
+- **Branch table, "RL stage widens pressure sensitivity most"** (replaces "Did not obtain: flat under
+  the template (no stage change above about 0.013)"): "Did not obtain. The RL step reads +0.004 at its
+  0.005 bar on the probability scale and +0.005 (−0.016 to 0.026) per unit of output scale; the
+  within-RL sweep over Ai2's eight RL checkpoints (about 2.5 A100-hours) is the discriminator, priced."
+- **Numbers of Record, "Post-training and pressure sensitivity (scoped)", scope column** (replaces the
+  "Superseded" sentence): "Superseded: under the template, on 586 scenarios screened by no model, the DPO
+  step is −0.001 (bar 0.008) and the RL step +0.004 (0.000 to 0.008; bar 0.005; +0.005 per unit of
+  output scale, −0.016 to 0.026); no stage enlarges it on either readout."
+- **Phase 1 rider bullet**, add a sentence: "Ai2 publishes eight intermediate RL checkpoints for
+  OLMo-3-7B-Instruct (step_050 to step_400); they share the final template and are registered, so the
+  sweep can run inside RL as well as across stages."
+- Do not pair OLMo-3's RL step with Tulu 3's (−0.001) on one slide; they are different recipes on
+  different bases at bars that resolve neither.

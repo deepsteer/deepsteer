@@ -100,8 +100,9 @@ itself partly a raw-frame property of the instruct model. The comparison that is
 every side runs across post-training stages under one template. On the 136 screened scenarios the
 pressure-attributable excess is 0.021 (0.006 to 0.036) after SFT, 0.022 (0.002 to 0.043) after DPO and
 0.030 (0.006 to 0.053) after RLVR; the DPO and RL steps are 0.001 ($-0.012$ to 0.014) and 0.007
-($-0.001$ to 0.016). Post-training does not resize the pressure-attributable part (no stage change
-detectable above about 0.013 at $n = 136$).
+($-0.001$ to 0.016). On this screened set neither step's interval excludes zero (bars 0.019 for the
+DPO step and 0.012 for the RL step, $n = 136$); the stage contrast of record is the unscreened set
+below.
 
 **What post-training does change.** Read on a set screened by no model's actions (all 586 union
 scenarios, each checkpoint under its own template), the acting frame's lean toward the violating option
@@ -109,10 +110,16 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 (0.007 to 0.016), survives division by each checkpoint's output scale (+0.058, 0.027 to 0.090), so it is
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
-sharpening. The change is at rest only: the pressure-attributable part does not move at either step
-($-0.001$ and +0.004; no change detectable above about 0.005 at $n = 586$). Preference optimization makes
-the model, placed as the actor, lean further toward the locally advantageous option than it does as a
-judge, without changing how much the incentive adds. That is the opposite direction from the claim this
+sharpening. No step enlarges the pressure-attributable part on either readout. On the probability
+scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
+scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
+The RL step reads +0.004 on the probability scale (0.000 to 0.008; bar 0.005), at the bar, with every
+known bias favoring a positive step and the same sign as the screened set; on the primary
+per-unit-of-output-scale readout it is +0.005 ($-0.016$ to 0.026; bar 0.030). Log-odds also excludes
+zero, so baseline compression is ruled out and the remaining rival is the output sharpening the RL step
+also brings. Preference optimization makes the model, placed as the actor, lean further toward the
+locally advantageous option than it does as a judge, without enlarging how much the incentive adds on
+either readout. That is the opposite direction from the claim this
 section withdraws, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
 produces it is left to a recipe ablation on one base.
 

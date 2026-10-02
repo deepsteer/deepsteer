@@ -781,5 +781,6 @@ scale DPO's step is negative, so "not resized" is probability-scale wording. Hel
 the §20.4 two-scale sentence (author). Ledger:
 KDG-A13 (DPO per-scale step opposite in sign on the two Ai2 recipes; base and recipe confounded;
 recipe-paper candidate beside RL-Zero, no prose), KDG-A14 (two near-misses at their bars are not
-convergent evidence). Open: P1-A10's "weaker" ambiguity decides only whether the within-RL sweep is
-scheduled (author).
+convergent evidence). Author (2026-10-01): the reading is **unresolved**; the within-RL sweep is priced into the F6–F8 pod
+plan as an optional OLMo-3 extra. Paper wording: "no post-training stage enlarges the
+pressure-attributable part on either readout" replaces "not resized".

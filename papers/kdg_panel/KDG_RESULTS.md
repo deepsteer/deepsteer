@@ -1244,7 +1244,8 @@ E_norm lower bound is −0.0156 to −0.0166.
 **scale-dependent** and takes "the weaker of the two". The amendment does not say weaker in which
 sense: weaker support for an RL increment (→ sharpening-explained, sweep not scheduled on this ground)
 or weaker conclusion (→ unresolved, sweep to the author, priced). The ambiguity was found at
-computation and is not resolved here; **author decision pending.** Under both, "adds" is not written
+computation and is not resolved here. **Author decision (2026-10-01): weaker = weaker conclusion →
+unresolved;** the within-RL sweep is priced into the F6–F8 pod plan as an optional OLMo-3 extra. Under both, "adds" is not written
 and the paper sentence is the same (§20.4).
 
 Log-odds also excludes 0 (lower bound +0.0026), so baseline compression (the Z1a rival) does not
@@ -1300,4 +1301,6 @@ output scale the DPO step has opposite signs on the two Ai2 recipes on E_norm (O
   primary per-unit-of-output-scale readout it is +0.005 (−0.016 to 0.026; bar 0.030). Log-odds also
   excludes zero, so baseline compression is ruled out and the remaining rival is the output sharpening
   the RL step also brings."*
-- The within-RL sweep: author decision (§20.1 ambiguity).
+- The within-RL sweep: priced into the F6–F8 pod plan as an optional OLMo-3 extra with its own
+  pre-registration (author, 2026-10-01), decided at the pod gate. Paper wording applied 2026-10-01:
+  "does not enlarge, on either readout" (KDG_GATES).

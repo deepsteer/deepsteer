@@ -103,7 +103,8 @@ family structure at this power, so the action channel is not organized by the ha
 reads. Second, the design withdrew one of our own claims by its pre-registered rule: a raw-frame reading
 that post-training makes the model more cautious at rest is a property of reading a chat model without
 its template. Within OLMo-3, the pressure-attributable excess is present at every templated checkpoint and
-post-training stages do not resize it (no stage change detectable above about 0.013 at $n = 136$); the
+no post-training stage enlarges it on either readout, the probability scale or per unit of output
+scale (586 scenarios screened by no model; the RL step's +0.004 sits at its 0.005 bar); the
 base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame misreads templated
 checkpoints. Third, the gap follows the post-training recipe. With a positive control validating the
 instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct carry the gap and

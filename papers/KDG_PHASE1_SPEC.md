@@ -654,3 +654,5 @@ an increment in the incentive's pull (R_a).
 (sharpening-explained vs unresolved). "The weaker of the two" admits two senses (weaker support for
 R_a, or weaker conclusion); the rule did not fix which. Recorded as an ambiguity, not resolved after
 seeing data; the author decides, and only the within-RL sweep decision depends on it (KDG_RESULTS §20.1).
+**Author decision (2026-10-01):** weaker = weaker conclusion → **unresolved**. The within-RL sweep is
+priced into the F6–F8 pod plan as an optional OLMo-3 extra with its own pre-registration.

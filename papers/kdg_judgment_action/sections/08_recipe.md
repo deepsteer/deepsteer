@@ -81,7 +81,7 @@ Tulu 3's DPO step too, on the same model-free construction (586 scenarios): +0.0
 $-0.002$). For the pressure-attributable part, the Tulu 3 DPO step is 0.006 with an interval that touches
 zero (0.000 to 0.012), below its detection bar of about 0.008 at $n = 586$; the RL step is $-0.001$
 ($-0.005$ to 0.002; bar about 0.005). Two DPO recipes on two bases move the acting frame's default the same
-way, with no change in the incentive's pull detectable above those bars.
+way, with no change in the incentive's pull detectable above those bars on the probability scale.
 
 **The raw-frame distortion follows the recipe too.** The frame effect that withdrew our baseline claim
 (\Cref{base}) is present on every templated checkpoint of both Ai2 recipes (OLMo-3 SFT: $-0.052$; Tulu 3

@@ -186,3 +186,21 @@ draft gate (below).
 - PDF metadata title and author set; Strakhov and Claude cited as "Strakhov and Claude (2025)" (bib second
   author "Claude", with the printed byline in the note); Appendix A notes that verdict rules are quoted as
   registered and the body says "carries". Build clean, 30 pp. **Next gate: author.**
+
+## 2026-10-01: stage-claim wording (KDG-A12, P1-A10; author)
+
+- **Number of record for stage claims:** the 586 set screened by no model (same diluted set at every
+  stage; fair, conservative stage contrast). The 136 screened set is the secondary with its own per-step
+  bars (DPO 0.019, RL 0.012; the earlier single "about 0.013" was the RL-step bar applied to both).
+- **"Not resized" retired for "does not enlarge, on either readout"** (§1, §7, §10). Per unit of output
+  scale DPO's step is a decrease (−0.039, −0.069 to −0.008), which §7 explains as arithmetic (sharpening
+  without added pull); "on either readout" keeps §1/§10 from reading as a mechanism claim about DPO.
+  The KDG-A8 sentence carries the same qualifier (required, else §7 contradicts it); §8's Tulu sentence
+  is scoped to the probability scale. Rebuilt clean, 30 pp; new sentences checked in the PDF text.
+- **RL step:** +0.004 at its 0.005 bar on probability (lower bound +0.00041, 10,000 resamples), +0.005
+  (−0.016 to 0.026) per unit of scale; "adds" not written. P1-A10 reading: **unresolved** ("weaker" =
+  weaker conclusion; author, 2026-10-01). The within-RL sweep (eight registered RL checkpoints, ~2.5
+  A100-h, 586 set only) is priced into the F6–F8 pod plan as an optional OLMo-3 extra with its own
+  pre-registration; decided at the pod gate.
+- KDG-A13 (DPO per-scale sign opposite on OLMo-3 and Tulu 3; base and recipe confounded): ledger only, no
+  prose; recipe-paper candidate beside RL-Zero.

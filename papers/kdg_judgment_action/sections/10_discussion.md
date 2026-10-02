@@ -18,8 +18,9 @@ that structure, and it is cheap to test.
 
 **Where the gap comes from.** On OLMo-3 the base model already acts more violating than it judges in
 the only frame a base model has, and under its own template the aligned model does the same at rest
-and under pressure; post-training does not resize the pressure-attributable part (0.021, 0.022 and 0.030
-after SFT, DPO and RLVR, with no stage change detectable above about 0.013 at $n = 136$). Across
+and under pressure; no post-training stage enlarges the pressure-attributable part on either readout,
+the probability scale or per unit of output scale (586 scenarios screened by no model; the RL step's
++0.004 sits at its 0.005 bar, and per unit of scale it is +0.005, $-0.016$ to 0.026). Across
 lineages the picture is not one of a pretraining property that survives every alignment. Two of four
 instruct models carry the gap and two do not, with a validated instrument on each, and on the same
 Llama-3.1 base Meta's recipe carries it while Ai2's Tulu 3 does not (\Cref{recipe}). The defensible
