@@ -253,7 +253,9 @@ the author sets the pod after the Phase 2 pilot gate.
    then the 200-twin set; cost statement before any API fallback (CLI paths have no API spend).
 3. Harness port: `causal_cells.interchange` reused unchanged for the patch; a letter-only behavioral
    readout wrapper (patched forward pass, option-letter mass at the output); covariance-matched random
-   bases; the empty-span counter; local tests naming their failure modes ("most probable failure: the
+   bases; the empty-span counter; an opt-in residual save (decision-token residuals at every layer
+   for every unpatched cell, float16, per scenario and permutation) so later direction reads are zero
+   GPU (author, 2026-10-02); local tests naming their failure modes ("most probable failure: the
    span mapping patches the template suffix, not the flipped span"; "the random control is isotropic").
 4. Analysis script (C1 shape rule, ratio-of-ratios, complement, C2 shares, geometry with channel chance)
    committed before data.

@@ -171,3 +171,14 @@ def test_pilot_gate_and_tsn_analyses_read_what_the_driver_writes(tmp_path, p1_fi
     r = tsn.analyze_model(out / "olmo3_instruct", set(status), status)
     assert r["n"] == len(status) and set(r["delta"]) == {0, 1, 3, 6}
     assert r["verdict"] in ("no_reminder_effect", "decays", "no_decay_detectable")
+
+
+def test_tsn_floor_drop_flags_one_model_dropping_and_not_the_other():
+    # most probable failure: an asymmetric usable-count drop between models is read as a model
+    # difference instead of being flagged as a floor artifact (author rule 2026-10-02)
+    tsn = _load("analyze_tsn")
+    same = tsn.floor_drop({"a": {"n": 100, "n_screen": 136}, "b": {"n": 85, "n_screen": 118}})
+    assert same["floor_artifact_flag"] is False
+    skew = tsn.floor_drop({"a": {"n": 130, "n_screen": 136}, "b": {"n": 40, "n_screen": 118}})
+    assert skew["floor_artifact_flag"] is True
+    assert tsn.floor_drop({"a": {"n": 1, "n_screen": 2}}) is None

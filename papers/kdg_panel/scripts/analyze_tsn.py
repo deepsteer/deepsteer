@@ -131,6 +131,26 @@ def model_dir(outs: list[Path], m: str) -> Path | None:
     return next((o / m for o in outs if (o / m).is_dir()), None)
 
 
+def floor_drop(models: dict) -> dict | None:
+    """Usable fraction n / n_screen per model and the difference between the two models (author
+    rule, 2026-10-02, before data): the multi-turn conversation may lower option mass, and a drop
+    on one model but not the other is a floor artifact to log in ANOMALIES, never a model
+    difference. Flag iff the 95% CI of the difference in usable fractions (normal approximation
+    for two independent proportions) excludes 0. A small usable count is never read as a null."""
+    if len(models) != 2:
+        return None
+    (m1, r1), (m2, r2) = models.items()
+    f1, f2 = r1["n"] / r1["n_screen"], r2["n"] / r2["n_screen"]
+    se = np.sqrt(f1 * (1 - f1) / r1["n_screen"] + f2 * (1 - f2) / r2["n_screen"])
+    lo, hi = (f1 - f2) - 1.96 * se, (f1 - f2) + 1.96 * se
+    return {
+        "usable_fraction": {m1: f1, m2: f2},
+        "difference": f1 - f2,
+        "ci95": [float(lo), float(hi)],
+        "floor_artifact_flag": bool(lo > 0 or hi < 0),
+    }
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument(
@@ -160,9 +180,18 @@ def main(argv=None) -> int:
         raw = json.loads(screen.read_text())
         ids = set(raw["ids"] if isinstance(raw, dict) else raw)
         out["models"][m] = analyze_model(d, ids & set(status), status)
+    out["floor_drop"] = floor_drop(out["models"])
     path = a.report or (DATA / "analysis_tsn.json")
     path.write_text(json.dumps(out, indent=1))
-    print(json.dumps({m: r["verdict"] for m, r in out["models"].items()}, indent=1))
+    print(
+        json.dumps(
+            {
+                "verdicts": {m: r["verdict"] for m, r in out["models"].items()},
+                "floor_drop": out["floor_drop"],
+            },
+            indent=1,
+        )
+    )
     return 0
 
 

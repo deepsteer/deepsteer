@@ -516,6 +516,14 @@ worded as escape-clause effects, never as "pressure removed".
   regenerated F7 items coherent at every level (F7-A-04 excluded: its `ai_collective` level rated
   incoherent); pilot set entering the pod: 47 of 48 items (F6 24, F7 11, F8 12), every item's external
   right option non-violating, none rated principal-waivable.
+- *B14, turns-since-norm floor drop (author, 2026-10-02, before data).* The multi-turn conversation may
+  lower option mass, so the usable count is expected to fall below the screens (136 / 118); a small
+  count is never read as a null. `analyze_tsn.py` reports the usable fraction per model and the
+  difference between models with a 95% CI (two independent proportions); if that CI excludes 0, the
+  asymmetric drop is logged in ANOMALIES as a floor artifact, not read as a model difference. p2a saves
+  no residuals (the harness has no option for it, and neither Phase 3 cell reads p2a's cells: C1 needs
+  the action twins, C2 the single-turn Phase 1 screen cells); residual saving goes into the Phase 3
+  harness port.
 - *B8, generation.* `scripts/generate_phase2.py` (prompt version p2-1.0.0): norm classes rotate on
   slot // 2 so each norm appears on both halves; low-nudge on slots 0–5 per family (3 per half); F6
   norms care_harm / authority_subversion / honesty, F7 loyalty_betrayal ×2 / fairness_cheating, F8
