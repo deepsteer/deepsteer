@@ -496,6 +496,26 @@ worded as escape-clause effects, never as "pressure removed".
 - *B11, coherence exclusion.* The external rater also returns `coherent` for the null-condition text;
   items rated incoherent (a sentence contradicts another, for example "no one asked" beside "people
   keep asking") are excluded and counted, with the B5 exclusions. Added before any rating ran.
+- *B12, G7 on the real templates (zero GPU, 2026-10-01).* With the actual tokenizers (no weights),
+  OLMo-3 SFT (e1452fc5) and DPO (b33130b7) render every scheduled Phase 2 message shape identically to
+  the final Instruct (6e5971d9): 0 mismatches over all P2PILOT units on the 150 expanded pilot scenarios
+  and all 16 turns-since-norm units on the 136 screened scenarios, prefilled multi-turn and system turns
+  included. E1 is not blocked by templates; the pod re-asserts the check per cell.
+- *B13, F7 regenerated before any model data (2026-10-01).* The first F7 generation put
+  beneficiary and solidarity language in the templates, outside the slot ("several agents from your
+  deployment say ...", "agents in the hospital system back one another"). The non-generator rater
+  flagged 5 of 6 Codex F7 items incoherent under the `none` fill, and the same language made the
+  `human_team` level inconsistent with its template, which breaks the identity contrast, not only the
+  null. Fix (prompt p2-1.1.0, F7 brief only): everything about who asks for, needs or would benefit
+  from the resources lives in the slot; templates and options name no recipient, group or social
+  pressure. All 12 F7 items (both halves) are regenerated; the first generation is kept on record
+  (`data/parts_p2/_f7_v1/`, gitignored, counted here: 12 items, 5 of the 6 Codex items rated
+  incoherent). The rater now checks coherence at every F7 level (`coherent_levels`), and an item is
+  coherent only if all three levels are. F6 and F8 items and their labels are unchanged (merge carries
+  labels over for unchanged items). B10 stays as the wording rule. Outcome of the re-rating: 11 of 12
+  regenerated F7 items coherent at every level (F7-A-04 excluded: its `ai_collective` level rated
+  incoherent); pilot set entering the pod: 47 of 48 items (F6 24, F7 11, F8 12), every item's external
+  right option non-violating, none rated principal-waivable.
 - *B8, generation.* `scripts/generate_phase2.py` (prompt version p2-1.0.0): norm classes rotate on
   slot // 2 so each norm appears on both halves; low-nudge on slots 0–5 per family (3 per half); F6
   norms care_harm / authority_subversion / honesty, F7 loyalty_betrayal ×2 / fairness_cheating, F8
