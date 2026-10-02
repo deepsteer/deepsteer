@@ -170,6 +170,23 @@ class TestRegistryAndDriver:
         for k in ("olmo3_sft", "olmo3_dpo"):
             assert cfg["phase1"][k]["rendered_equals"] == "olmo3_instruct"
 
+    def test_rl_steps_are_distinct_commits_in_step_order_on_the_final_template(self):
+        # most probable failure: a copy-pasted revision makes two "steps" load the same weights
+        # (a fake flat segment in the RL trajectory), or a step is pinned to a branch name
+        cfg, reg = pod.registry()
+        rl = sorted(
+            (v for v in cfg["phase1"].values() if v.get("stage") == "rl"),
+            key=lambda v: v["rl_step"],
+        )
+        assert [v["rl_step"] for v in rl] == list(range(50, 401, 50))
+        revs = [v["revision"] for v in rl] + [reg["olmo3_instruct"]["revision"]]
+        assert len(set(revs)) == len(revs)
+        final_tpl = reg["olmo3_instruct"]["template_sha256"]
+        for v in rl:
+            assert v["repo"] == reg["olmo3_instruct"]["repo"]
+            assert v["template_sha256"] == final_tpl
+            assert v["rendered_equals"] == "olmo3_instruct"
+
     def test_c1_has_twelve_distinct_cells(self):
         # most probable failure:
         #   the prefix x frame x variant grid collapses (closure captured the loop var)

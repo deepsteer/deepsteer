@@ -4,8 +4,11 @@
 tier1:
   olmo3_instruct:
     repo: allenai/Olmo-3-7B-Instruct
-    revision: null            # main at pilot time; the manifest records the resolved commit
+    revision: 6e5971d9eba42665f5bd5a0fcf047f299ce1dccc   # main; the commit every pilot/Phase 1 manifest resolved (pinned 2026-10-01)
     kind: instruct
+    stage: final              # end of RLVR; the phase1 olmo3_rl_s* branches precede it on the same run
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
     n_layers: 32
     hidden: 4096
     chat_template_note: >
@@ -86,22 +89,129 @@ phase1:
     template_sha256: edbb35ef1219ad2273f716feed08f535a868e167be5b5518adc37ab2bcb8afe6
     rendered_equals: olmo3_instruct
   # stage "final" = tier1.olmo3_instruct (6e5971d9, template f5186d42); stage "base" = tier1.olmo3_base
+  #
+  # RLVR step checkpoints (registered 2026-10-01; no data yet). Ai2 publishes them as branches
+  # step_050..step_400 of allenai/Olmo-3-7B-Instruct (model card: "for post-training, the naming
+  # convention is step_XXXX"); there is no separate -RL repo. Revisions below are the branch head
+  # commits read 2026-10-01 (pinned as shas, never branch names). Template: every branch ships
+  # chat_template.jinja byte-identical to main's (f5186d42) and the same tokenizer.json, so the RL
+  # stage has no template fork; rendered_equals keeps the per-cell assertion anyway.
+  # Trajectory check (zero GPU, 2026-10-01, outputs/registry/olmo3_rl_steps_check.json, untracked;
+  # range-fetched L16 q_proj and L28 down_proj from every checkpoint): distance from DPO rises and
+  # distance to main falls monotonically across step_050..step_400 on both tensors, and
+  # step_400 -> main (0.093 / 0.164) is about one more
+  # 50-step increment on the adjacent-step trend (0.058 -> 0.089 / 0.094 -> 0.153). Reading:
+  # DPO -> step_050..step_400 -> main is one RL run with main about one block past step_400. main
+  # equals no listed step (shard oids differ), and the card does not state main's step: treat
+  # "main is the endpoint of this run" as consistent with the weights, not documented.
+  # Not registered: Olmo-3-7B-RL-Zero-* (RL from base without SFT/DPO; different template 6d549883,
+  # a different default system prompt, so a fork) -- a recipe-paper candidate, not a stage here.
+  olmo3_rl_s050:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: 79da5cf97ea7535c7a2ef2d622da648572f41512   # branch step_050
+    kind: instruct
+    stage: rl
+    rl_step: 50
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s100:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: b705ea628af06279a4ed2b7de53cabcb855e55a4   # branch step_100
+    kind: instruct
+    stage: rl
+    rl_step: 100
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s150:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: 0b285ee1d502d9ba836740489a499eaf18339513   # branch step_150
+    kind: instruct
+    stage: rl
+    rl_step: 150
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s200:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: 71e18f5221e2fb6c58b84d05c2dd9dea6bd51684   # branch step_200
+    kind: instruct
+    stage: rl
+    rl_step: 200
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s250:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: b143ad4cc631059084e337d62380217af5265ece   # branch step_250
+    kind: instruct
+    stage: rl
+    rl_step: 250
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s300:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: aa8dffc0678efd641bcb988eccfc7d04ba5c0dbf   # branch step_300
+    kind: instruct
+    stage: rl
+    rl_step: 300
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s350:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: 94b6fb299685e71314966d7a30e28cb066098b2d   # branch step_350
+    kind: instruct
+    stage: rl
+    rl_step: 350
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
+  olmo3_rl_s400:
+    repo: allenai/Olmo-3-7B-Instruct
+    revision: 2c2cf7cefa2302213b6177befdf1a096785690fc   # branch step_400
+    kind: instruct
+    stage: rl
+    rl_step: 400
+    lineage: olmo3
+    template_sha256: f5186d42d99c8a0445d37fd8a6c7ccf07fe3e24a29ce622d8bd245da9507b12b
+    rendered_equals: olmo3_instruct
+    n_layers: 32
+    hidden: 4096
   llama31_base:
     repo: meta-llama/Llama-3.1-8B
-    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b   # HF sha 2026-09-26; template hash at load (gated)
+    revision: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b   # HF sha 2026-09-26
     kind: base
     stage: base
     lineage: llama31
     gated: true
+    template_sha256: null     # ships no chat template (manifest p1b/raw_lineages, recorded at load)
     n_layers: 32
     hidden: 4096
   llama31_instruct_meta:
     repo: meta-llama/Llama-3.1-8B-Instruct
-    revision: 0e9e39f249a16976918f6564b8830bc894c89659   # HF sha 2026-09-26; template hash at load (gated)
+    revision: 0e9e39f249a16976918f6564b8830bc894c89659   # HF sha 2026-09-26
     kind: instruct
     stage: final_meta
     lineage: llama31
     gated: true
+    template_sha256: e10ca381b1ccc5cf9db52e371f3b6651576caee0a630b452e2816b2d404d4b65   # recorded at load, p1b + p1c manifests (4 loads, one hash)
     n_layers: 32
     hidden: 4096
   tulu3_sft:
@@ -149,4 +259,4 @@ phase1:
     template_sha256: cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f
     n_layers: 28
     hidden: 3584
-# Phase 1 stage map (C3/C3'): olmo3: base -> sft -> dpo -> final ; llama31_tulu3: llama31_base -> sft -> dpo -> final
+# Phase 1 stage map (C3/C3'): olmo3: base -> sft -> dpo -> [rl_s050 .. rl_s400] -> final ; llama31_tulu3: llama31_base -> sft -> dpo -> final
