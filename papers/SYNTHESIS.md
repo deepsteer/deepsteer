@@ -784,3 +784,29 @@ recipe-paper candidate beside RL-Zero, no prose), KDG-A14 (two near-misses at th
 convergent evidence). Author (2026-10-01): the reading is **unresolved**; the within-RL sweep is priced into the F6–F8 pod
 plan as an optional OLMo-3 extra. Paper wording: "no post-training stage enlarges the
 pressure-attributable part on either readout" replaces "not resized".
+
+
+### Phase 2 pilot (2026-10-02; `kdg_panel/KDG_RESULTS.md` §21) — what changed
+
+Positive voice first: **a principal's one-sentence reminder lowers the violating choice on both recipes
+that carry the gap (−0.072 on OLMo-3, −0.184 on Llama-3.1), and over six scripted turns its effect does
+not fade detectably (no decay above a third of its size on OLMo-3, a sixth on Llama); the incident
+families F6–F8 work as instruments on both models (full engagement including five options, positive
+control 0.40–0.66, a positive incentive effect in every family).** The norm-salience lever the KDG paper
+found in the assistant prefix (a third of the deliberation effect on OLMo-3) is larger when the
+principal states the norm in a user turn (−0.072 vs −0.025), and it persists across short conversations.
+
+What did not pass: the pre-registered decisiveness gate G2 fails on every family, and the same rule
+fails the Phase 1 panel of record at the same rate (KDG-A15): the letter-only judge readout at 7–8B
+carries about a quarter of its mass on the violating option at rest on old and new scenarios alike.
+Re-stating G2 against the panel is a fork with the author. The F6 pilot shows the unattributed GO text
+moving the action as much as the peer-attributed text (KDG-A17, descriptive at n 24), which points the
+full panel toward the "text, not speaker" branch and raises a construct question about the
+no-speaker level before generation.
+
+Standing-claim edits: "The turns-since-norm decay seen at frontier scale" now reads, for this panel, "no
+decay detectable over six scripted turns (138 tokens), bars 0.33 / 0.16", with the token-distance dose as
+the separating cell for the long-trajectory rival. Conjunction under watch, added: the F8 judge frame puts
+a third or more of its mass on the prohibited route under the penalty (0.34 / 0.44), so the penalty moves
+judgment as well as action on both models; if the full panel keeps this, F8's gap is small because the
+judgment follows the pressure, the persuasion branch of §9 for a non-peer pressure.

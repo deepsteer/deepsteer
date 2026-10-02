@@ -1304,3 +1304,105 @@ output scale the DPO step has opposite signs on the two Ai2 recipes on E_norm (O
 - The within-RL sweep: priced into the F6–F8 pod plan as an optional OLMo-3 extra with its own
   pre-registration (author, 2026-10-01), decided at the pod gate. Paper wording applied 2026-10-01:
   "does not enlarge, on either readout" (KDG_GATES).
+
+## 21. Phase 2 pilot (p2a, 2026-10-02): gate G1–G6, F6 directional read, turns-since-norm verdict
+
+Spec `KDG_F6_F8_SPEC.md` v0.1 (da672b9) + P2-B notes B1–B14; Phase 3 pre-registration pushed first
+(4c5ffaf). Pod m1s9w25aaifov3 (A100-SXM4-80GB), one load per model; manifests verified locally
+(`outputs/p2a/{olmo3_instruct,llama31_instruct_meta}/manifest_kdg.json`, 25/25 units ok each).
+Resolved commits equal the pins (OLMo-3 6e5971d9, template f5186d42; Llama-3.1 Meta 0e9e39f2, template
+e10ca381). Analyses `scripts/analyze_p2_pilot.py` and `analyze_tsn.py`, committed before data; one
+implementation fix after download and before any gate number was read (6468cfc: rows of the excluded
+item F7-A-04 were not skipped). Bootstrap 10,000, seed 0. Items: 47 of 48 (F7-A-04 excluded, incoherent).
+
+### 21.1 Gate table (per model; G2 gate model OLMo-3)
+
+| Gate | OLMo-3-Instruct | Llama-3.1-8B-Instruct (Meta) |
+|---|---|---|
+| G1 engagement (≥ 5/6 items) | F6 24/24, F7 11/11, F8 12/12: pass | 24/24, 11/11, 12/12: pass |
+| G2 decisive reference, as registered (≥ 2/3) | F6 9/24, F7 3/11, F8 4/12: **fail** | 6/24, 4/11, 2/12: fail |
+| G3 known-gap band (lower CI ≥ 0.10) | F6 0.402 [0.311, 0.497], F7 0.498 [0.336, 0.644], F8 0.540 [0.410, 0.668]: pass | 0.658 [0.558, 0.760], 0.655 [0.543, 0.760], 0.549 [0.402, 0.701]: pass |
+| G4 condition effect ΔD, pooled (n 47) | +0.113 [+0.068, +0.163]; families F6 +0.140, F7 +0.093 [+0.0004, +0.203] (at the bar), F8 +0.077, all positive: pass | +0.103 [+0.061, +0.146]; +0.068, +0.137, +0.144: pass |
+| G5 low-nudge ratio (n 5–6 per family) | intervals span −10 to +290: uninformative at pilot n; no family entirely below 0.5 | F7 1.82 [1.13, 4.44] (low-nudge effect larger), others span 0.5 |
+| G6 forward = generate (≤ 0.05 nats) | 0.020 over 11 prompts incl. F6 board, F8 five-option, TSN k = 6 | 0.043 (passes; nearer the bar) |
+
+F8's five-option menu engages fully on both models (G1), the first engagement evidence for more than
+three options on this readout.
+
+**G2 calibration (instrument-calibration; ANOMALIES KDG-A15).** The rule fails as registered. On the
+same readout, the Phase 1 panel of record passes the single-frame ≥ 7/8 rule on 0.66 (OLMo-3, n 586) /
+0.60 (Llama, n 586) of scenarios, 0.64 / 0.69 on each model's own screen, with mean violating mass at
+rest 0.22 / 0.23; the new families' single original frame reaches 0.42–0.82 by family with mean about
+0.25. Ladder for the original frame, OLMo-3: Phase 1 panel 0.66 (positive control, the reference the KDG
+paper rests on) · F6 0.63 · F7 0.55 · F8 0.58. Four partly correlated frames at ≈ 0.6 each predict a
+conjunction near 0.3–0.4, the observed 0.17–0.38. Reading: the registered G2 measures the letter-only
+judge readout's softness at 7–8B, which the panel shares; it does not separate the new items from the
+panel. Re-stating G2 against the panel is a post-data fork and goes to the author (§21.5); the registered
+verdict stays "fail".
+
+### 21.2 F6 directional read and the size-up rule (spec §7)
+
+p_D by level, OLMo-3: none 0.467, no-speaker 0.576, peer 0.526, principal 0.595; Llama: 0.357, 0.584,
+0.590, 0.688. ΔD(peer) = +0.059 [+0.010, +0.111] (OLMo-3), +0.232 [+0.155, +0.316] (Llama). Size-up rule
+(interval-keyed, pilot SDs 0.130 / 0.207): U = 0.111 / 0.316 against MDE(48) = 0.052 / 0.084 → **keep 48**
+on both models. Descriptive, no verdict at pilot n (§7): the unattributed GO text moves the action as
+much as the peer-attributed text on both models (ANOMALIES KDG-A17).
+
+**F8 profile (penalty condition, descriptive).** Mean option mass, judge vs act, OLMo-3: stop-report
+0.25 / 0.25, escalate-human 0.24 / 0.24, escalate-peer 0.10 / 0.07, hold 0.07 / 0.04, violate 0.34 /
+0.41; Llama: 0.31 / 0.29, 0.16 / 0.20, 0.07 / 0.07, 0.03 / 0.02, 0.44 / 0.43. Under the penalty the
+third-person judgment itself puts a third or more of its mass on the prohibited route, so F8's gap is
+small at rest on this readout; escalation to the peer board is the smallest non-hold option in both
+frames. No escalation-gap or board-substitution verdict at pilot n.
+
+### 21.3 Turns-since-norm arm (spec §4; pre-registered verdict)
+
+Population: each model's Phase 1 screen; usable after the 16-cell floor 135/136 (OLMo-3) and 118/118
+(Llama). Floor-drop rule (B14): difference in usable fractions −0.007 [−0.022, +0.007], not flagged.
+
+| | Δ(0) | Δ(1) | Δ(3) | Δ(6) | R(6) | bar on 1 − R(6) | verdict |
+|---|---|---|---|---|---|---|---|
+| OLMo-3 | −0.072 [−0.087, −0.059] | −0.072 | −0.074 | −0.088 [−0.105, −0.073] | 1.219 [0.986, 1.509] | 0.33 | **no decay detectable** |
+| Llama-3.1 | −0.184 [−0.208, −0.162] | −0.183 | −0.126 | −0.175 [−0.202, −0.149] | 0.949 [0.839, 1.064] | 0.16 | **no decay detectable** |
+
+Precondition met on both (Δ(0) CI below 0). Positive voice: **a principal's one-sentence reminder in a
+user turn lowers the violating choice on both recipes, by 0.072 on OLMo-3 and 0.184 on Llama-3.1, and
+across six scripted turns its effect does not fade by more than a third (OLMo-3) or a sixth (Llama) of
+its size.** Second derivation (twin-differenced, the pressure-attributable part of the reminder effect):
+Δ_E(6)/Δ_E(0) = −0.030/−0.016 = 1.9 on OLMo-3 and −0.077/−0.062 = 1.24 on Llama, the same direction
+(no decay). Beside: OLMo-3's user-turn reminder (−0.072) is about three times the assistant-prefix
+norm-salience effect (−0.025, P1-A8), same phrase, different speaker and position.
+Secondary anchor (descriptive, Anthropic's 90% → 40% at three turns translated as R(3) ≈ 0.44 assuming a
+near-zero no-reminder ceasing rate): R(3) = 1.021 [0.827, 1.262] (OLMo-3) and 0.684 [0.603, 0.771]
+(Llama); neither interval includes 0.44. Llama's k = 3 dip with recovery at k = 6 is ANOMALIES KDG-A16
+(distance is confounded with which fixed filler turn carries the reminder).
+Rival reading: six scripted formatting turns are 138 tokens of text (plus turn markers); the frontier decay was measured over
+long agentic trajectories, so "no decay detectable" is a statement about short scripted distance. The
+cell that separates them is a token-distance dose (longer fillers at matched turn count).
+
+### 21.4 Referee pass
+
+1. *"You moved the goalposts: G2 failed, so you calibrated it away."* The registered verdict is
+   recorded as a fail and stays. The calibration is the instrument-calibration requirement (a
+   positive control on the same instrument and model before a failure verdict), and it shows the
+   rule fails the panel of record. Re-stating G2 is a dated fork with both verdicts reported, and the
+   decision is the author's.
+2. *"No decay over six turns of formatting chatter is not the frontier finding."* Conceded as stated
+   in §21.3: the verdict is about short scripted distance, and the separating cell (token-distance
+   dose) is named. What survives is that the reminder effect is large on both recipes and does not
+   fade within the conversation lengths tested.
+3. *"The F6 read already says peers don't matter; you are scaling a null."* The F6 pilot is
+   descriptive by pre-registration; ΔD(peer) is positive on both models (Llama +0.232) and the size-up
+   rule keeps 48 on both. The no-speaker result threatens the attribution reading, not the effect, and
+   KDG-A17 names the construct check (does an unattributed post read as the operator's?) to run before
+   the full panel.
+
+### 21.5 What this decides (pilot human gate; author)
+
+- G2: registered fail; fork G2′ (panel-relative decisiveness) proposed, not computed (KDG-A15).
+- Full construction for F6–F8 at 48 decisive per family, conditional on the G2 decision; F6 size
+  kept at 48 by the interval rule.
+- KDG-A17 construct check before F6 generation (anonymous-speaker level or a rater question).
+- Turns-since-norm: verdict "no decay detectable" on both models; KDG-A16's counterbalanced-filler
+  cell (~20 GPU-min) and a token-distance dose are the follow-ups.
+- Extras E1 and E2 remain unscheduled.
