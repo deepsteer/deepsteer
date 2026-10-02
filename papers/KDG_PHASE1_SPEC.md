@@ -649,3 +649,8 @@ an increment in the incentive's pull (R_a).
   written without R_a.
 - *Not separated here:* R_c (chance across two uncorrected steps). Only the within-RL trend separates
   it.
+
+*P1-A10 note (2026-10-01, at computation; no rule change).* The E_norm and E_fs verdicts disagreed
+(sharpening-explained vs unresolved). "The weaker of the two" admits two senses (weaker support for
+R_a, or weaker conclusion); the rule did not fix which. Recorded as an ambiguity, not resolved after
+seeing data; the author decides, and only the within-RL sweep decision depends on it (KDG_RESULTS §20.1).

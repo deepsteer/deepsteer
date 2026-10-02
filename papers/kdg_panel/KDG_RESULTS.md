@@ -1217,3 +1217,87 @@ with different completion rates, so the sizes are not compared as a contrast.
   3 final 0.001 [−0.007, 0.010]), with the base cell descriptive.
 - The dose lever generalizes (Llama branch "reduces"); the pitch's deliberation item is no longer scoped
   to OLMo-3 alone.
+
+## 20. KDG-A12: the stage steps of the pressure-attributable excess per unit of output scale (P1-A10, 2026-10-01)
+
+Amendment P1-A10 pushed (04d604f) before computation. `data/analysis_kdg_a12.json`
+(`scripts/analyze_kdg_a12.py`); percentile bootstrap, 10,000 resamples, seed 0; bounds unrounded.
+Set: the P1-A7 final-model-free set, rebuilt by the same code; asserted n = 586 and the probability-scale
+RL step equal to P1-A7's to 1e-12. The 586 set is the number of record for stage claims (author,
+2026-10-01); it is screened by no model's actions, so it is the same diluted set at every stage.
+
+### 20.1 OLMo-3, SFT → DPO → final, steps (586)
+
+| Scale | DPO step | RL step | RL z |
+|---|---|---|---|
+| E_prob (probability) | −0.00092 [−0.00650, +0.00468], bar 0.0080 | +0.00406 [+0.00041, +0.00776], bar 0.0053 | 2.16 |
+| E_logit (log-odds) | −0.0255 [−0.0686, +0.0168], bar 0.061 | +0.0397 [+0.0026, +0.0780], bar 0.054 | 2.06 |
+| **E_norm (per unit of output scale; primary)** | −0.0389 [−0.0690, −0.0083], bar 0.043 | **+0.0052 [−0.0156, +0.0260]**, bar 0.030 | **0.49** |
+| E_fs (frame-specific, beside) | −0.1101 [−0.1510, −0.0700], bar 0.058 | +0.0173 [−0.0109, +0.0446], bar 0.040 | 1.22 |
+
+Stability (descriptive): the RL step's E_prob lower bound under seeds 0–9 is +0.00029 to +0.00043, at
+the bar under every seed (within 0.001 of 0 by the P1-A10 margin; "excludes 0" is not written); the
+E_norm lower bound is −0.0156 to −0.0166.
+
+**Rule outcome (RL step).** E_norm: **sharpening-explained** (CI includes 0; z 0.49 < half of E_prob's
+2.16). E_fs: **unresolved** (CI includes 0; z 1.22 ≥ 1.08). The two disagree, so the reading is
+**scale-dependent** and takes "the weaker of the two". The amendment does not say weaker in which
+sense: weaker support for an RL increment (→ sharpening-explained, sweep not scheduled on this ground)
+or weaker conclusion (→ unresolved, sweep to the author, priced). The ambiguity was found at
+computation and is not resolved here; **author decision pending.** Under both, "adds" is not written
+and the paper sentence is the same (§20.4).
+
+Log-odds also excludes 0 (lower bound +0.0026), so baseline compression (the Z1a rival) does not
+explain the probability-scale step; dividing by the output scale removes most of it (z 2.16 → 0.49 on
+the primary). The remaining rival is sharpening specifically.
+
+**DPO step, reported, no verdict (P1-A10).** On the probability scale it is null (bar 0.008); per unit
+of output scale it is negative on both scales (E_norm −0.039, E_fs −0.110, both CIs below 0). That is
+arithmetic, not a separate mechanism: DPO sharpens the output (spread ratio ×1.32 on the 136) while
+the probability-scale excess stays flat, so the per-scale excess falls, the same pattern as the P1-A1
+fork (§14).
+
+### 20.2 Tulu 3 beside (descriptive, no verdict; model-free 586)
+
+| Scale | DPO step | RL step |
+|---|---|---|
+| E_prob | +0.00593 [+0.00004, +0.01193], bar 0.0085 | −0.00144 [−0.00510, +0.00222], bar 0.0052 |
+| E_logit | +0.0360 [−0.0121, +0.0844] | −0.0076 [−0.0376, +0.0229] |
+| E_norm | +0.0310 [+0.0108, +0.0517] | +0.0020 [−0.0109, +0.0151] |
+| E_fs | +0.0068 [−0.0177, +0.0309] | −0.0031 [−0.0178, +0.0122] |
+
+Tulu 3's DPO-step E_prob lower bound (+0.00004) sits at the bar, like OLMo-3's RL step: two
+near-misses at their bars, both in the direction of every known bias (ANOMALIES KDG-A14). Per unit of
+output scale the DPO step has opposite signs on the two Ai2 recipes on E_norm (OLMo-3 −0.039, Tulu 3
++0.031); on E_fs Tulu's includes 0. Ledger only (KDG-A13); no sentence until pre-registered.
+
+### 20.3 Referee pass
+
+1. *"Your primary and secondary scales disagree; the instrument cannot resolve the RL step."*
+   Conceded for the RL step. Neither per-scale z (0.49, 1.22) is near the probability-scale 2.16, so
+   neither scale supports "adds"; the disagreement only bears on whether the within-RL sweep is worth
+   2.5 A100-h, which is the author's call.
+2. *"A per-scale null is what you get by dividing by a noisy σ; you've manufactured a null."* The σ is
+   the twin-measured scale of record (P1-A2 §5, KDG-44's λ), fixed before data; the same division keeps
+   the DPO-step at-rest lean positive (+0.058 [0.027, 0.090], KDG-44), so it is not a null-generator.
+   The rule compares standardized sizes (z 0.49 vs 2.16), so it does not depend on the two scales'
+   units. Conceded: per-scenario σ noise could attenuate the per-scale step; the seed-stable E_norm
+   interval does not test that, and the within-RL sweep (σ measured at eight more checkpoints) would.
+3. *"OLMo-3's RL step and Tulu 3's DPO step both exclude zero; that is two independent positives."*
+   No: both lower bounds sit within 0.0005 of zero, both quantities are exposed to the same
+   positive-favoring biases (sharpening at the step, two steps tested per lineage), and they are
+   different steps on different recipes. Recorded as a pattern of near-misses (KDG-A14), not
+   convergent evidence.
+
+### 20.4 What this decides
+
+- Stage claims: the 586 set is the number of record, the 136 set the screened secondary with its own
+  bars (DPO 0.019, RL 0.012).
+- The paper and pitch sentence (to the author before editing; separate commit): *"On the 586 scenarios
+  screened by no model, the DPO step does not move the pressure-attributable part (−0.001, −0.006 to
+  0.005; bar 0.008). The RL step reads +0.004 on the probability scale (0.000 to 0.008; bar 0.005), at
+  the bar, with every known bias favoring a positive step and the same sign as the screened set; on the
+  primary per-unit-of-output-scale readout it is +0.005 (−0.016 to 0.026; bar 0.030). Log-odds also
+  excludes zero, so baseline compression is ruled out and the remaining rival is the output sharpening
+  the RL step also brings."*
+- The within-RL sweep: author decision (§20.1 ambiguity).
