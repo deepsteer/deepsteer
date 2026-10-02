@@ -768,14 +768,17 @@ test (P1-A10, pushed before computing). Recipe datum: the RL-step sign differs b
 that resolve neither (OLMo-3 +0.004 at its 0.005 bar; Tulu 3 −0.001 [−0.005, 0.002]), the Ai2 ask
 row's question in miniature. No paired slide.
 
-**P1-A10 result (2026-10-01; KDG_RESULTS §20).** Positive voice first: **on OLMo-3, preference
-optimization and RLVR leave the incentive's pull on the action where SFT put it, per unit of output
-scale; what post-training changes is how decisive the output is and, at the DPO step, the at-rest
-lean.** The RL step's probability-scale +0.004 survives log-odds (compression is out) and does not
+**P1-A10 result (2026-10-01; KDG_RESULTS §20).** Positive voice first: **on OLMo-3, no post-training
+step after SFT adds to the incentive's pull on the action once output decisiveness is accounted for
+(per unit of output scale DPO lowers it, descriptively, and RL's probability-scale +0.004 is
+sharpening on the primary readout); what post-training changes is how decisive the output is and, at
+the DPO step, the at-rest lean.** The RL step's probability-scale +0.004 survives log-odds (compression is out) and does not
 survive division by the output scale on the primary readout (E_norm +0.005 [−0.016, +0.026], z 0.49);
 the frame-specific scale reads unresolved (z 1.22), so the verdict is scale-dependent and "adds" is
-not licensed on either. The thesis sentence "not resized by preference optimization or RL" stands on
-the per-scale readout and is held for the paper as the §20.4 two-scale sentence (author). Ledger:
+not licensed on either. The thesis sentence "not resized by preference optimization or RL" holds on the
+probability scale for DPO (null, bar 0.008) and not as "enlarged" for RL on any scale; per unit of
+scale DPO's step is negative, so "not resized" is probability-scale wording. Held for the paper as
+the §20.4 two-scale sentence (author). Ledger:
 KDG-A13 (DPO per-scale step opposite in sign on the two Ai2 recipes; base and recipe confounded;
 recipe-paper candidate beside RL-Zero, no prose), KDG-A14 (two near-misses at their bars are not
 convergent evidence). Open: P1-A10's "weaker" ambiguity decides only whether the within-RL sweep is
