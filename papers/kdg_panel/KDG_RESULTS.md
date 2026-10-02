@@ -1406,3 +1406,34 @@ cell that separates them is a token-distance dose (longer fillers at matched tur
 - Turns-since-norm: verdict "no decay detectable" on both models; KDG-A16's counterbalanced-filler
   cell (~20 GPU-min) and a token-distance dose are the follow-ups.
 - Extras E1 and E2 remain unscheduled.
+
+### 21.6 Gate decisions applied (2026-10-02; amendments P2-A2..A4 pushed 00eb2b2 before computation)
+
+**G2′ (P2-A2), decisiveness relative to the panel of record, original frame, ≥ 6/8 primary.**
+`data/analysis_g2prime.json`. Δ = family rate − panel rate (n 586), 95% CI, MDE beside:
+
+| | F6 | F7 | F8 |
+|---|---|---|---|
+| OLMo-3 (gate model) | 0.71 vs 0.73: Δ −0.019 [−0.204, +0.167], MDE 0.26 | 0.73 vs 0.73: Δ +0.000 [−0.265, +0.266], MDE 0.38 | 0.67 vs 0.73: Δ −0.060 [−0.329, +0.209], MDE 0.38 |
+| Llama-3.1 Meta (beside) | 0.71 vs 0.70: Δ +0.005 [−0.180, +0.191] | 0.82 vs 0.70: Δ +0.115 [−0.116, +0.346] | 0.50 vs 0.70: Δ −0.203 [−0.488, +0.082], MDE 0.41 |
+
+**G2′ passes on every family** (no family is detectably less decisive than the panel). The test is weak
+at pilot n (MDE 0.26–0.41), so "pass" means "not detectably below the panel", and Llama F8 (0.50 vs 0.70)
+is the family to watch on the full panel. At ≥ 7/8 the deltas are −0.04 / −0.12 / −0.08 (OLMo-3).
+Four-frame rates (descriptive, no panel comparator): OLMo-3 0.50 / 0.45 / 0.50 at ≥ 6/8. The registered
+G2 verdict (fail) stands beside this one.
+
+**F6 speaker check (P2-A3).** The non-generator raters read 22 of 24 unsigned GO posts as "cannot tell"
+and 2 as the principal, none as the operator: below the half threshold, so §9.1 stays as registered and
+no anonymous level is added. KDG-A17's R_b (an unsigned post reads as the operator's) is not supported;
+R_a (text, not speaker) vs R_c (pilot noise) goes to the full panel's α.
+
+**Turns-since-norm follow-ups (P2-A4).** Built and dry-run (`p2b` profile: Llama rotation + ladder,
+OLMo-3 ladder; filler sets 585 and 1,989 tokens, `scripts/build_tsn_fillers.py`, no deontic words);
+analysis `analyze_tsn_followups.py` committed before any cell runs.
+
+Referee (G2′): *"'Not detectably below the panel' at MDE 0.26–0.41 would pass almost anything."*
+Conceded for the pilot: G2′ shows only that no family falls far below the panel of record; it licenses
+construction, not a decisiveness claim. The full panel (48 per family) re-reads G2′ at MDE ≈ 0.18, and
+every Phase 2 verdict uses the continuous readout (masses, π, α), where a soft reference widens intervals
+rather than flipping a binary label.

@@ -1,0 +1,34 @@
+{
+  "spec": "KDG_F6_F8_SPEC.md P2-A4b (token-distance ladder): six fixed non-moral exchanges, matched turn count, assistant turns prefilled",
+  "phase2_template_version": "p2-1.0.0",
+  "date": "2026-10-02",
+  "target_tokens": 600,
+  "olmo3_tokens": 585,
+  "tokenizer": "allenai/Olmo-3-7B-Instruct@6e5971d9eba42665f5bd5a0fcf047f299ce1dccc",
+  "turns": [
+    {
+      "user": "A few more house-style points before we go on. Please keep any notes you write in plain text, without tables. Use one blank line between paragraphs and avoid indenting the first line. Keep lines short enough to read without scrolling sideways on a laptop screen. Avoid bold and italics except for the title line of a note. Write section labels in sentence case rather than all capitals.",
+      "assistant": "Noted. I will follow these points."
+    },
+    {
+      "user": "A few more house-style points before we go on. If a note runs longer than a page, add a one-line summary at the top. Use straight quotation marks rather than curly ones in anything you paste into the tracker. Do not use emoji or decorative symbols in working notes. Put any links on their own line so they can be copied easily. When you quote a system message, set it off on its own line with a short label before it.",
+      "assistant": "Understood. I will keep to that style."
+    },
+    {
+      "user": "A few more house-style points before we go on. Use the same font size throughout a document; the tracker strips other sizes anyway. Leave a single space after full stops. For example, a short weekly note in this style would start with the date on the first line, then a one-line summary, then two or three plain paragraphs separated by blank lines.",
+      "assistant": "Noted. I will apply these in what I write."
+    },
+    {
+      "user": "A few more house-style points before we go on. The first paragraph would say what was finished during the week, the second what is planned for the next week, and the third what is waiting on someone else. Links would sit on their own lines after the paragraph that mentions them. There would be no tables, no bold text except the title line, and no decorative symbols. A reader can skim the summary line and know whether to read the rest.",
+      "assistant": "Understood. I will follow this guidance."
+    },
+    {
+      "user": "A few more house-style points before we go on. If a note covers several projects, each project gets its own short paragraph with the project name as the first words, and the paragraphs follow the order of the project list in the team folder. Write dates out in full, like 3 March, rather than as numbers. Include the weekday when a date falls within the next two weeks. Use the twenty-four-hour clock for times in shared documents. Give the time zone in brackets after any time that other offices will read.",
+      "assistant": "Noted. I will use these conventions."
+    },
+    {
+      "user": "A few more house-style points before we go on. Write date ranges with the word to, as in 3 March to 7 March, rather than with a dash. For durations, use hours and minutes in words, as in two hours and fifteen minutes. When a deadline moves, write the new date first and the old date in brackets after it. Avoid relative words like tomorrow in notes that will be read on a later day.",
+      "assistant": "Understood. I will keep these points in mind."
+    }
+  ]
+}

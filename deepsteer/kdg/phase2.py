@@ -363,6 +363,27 @@ FILLER_PATH = (
 )
 
 
+TSN_LENGTHS: tuple[int, ...] = (138, 600, 2000)  # P2-A4b token-distance ladder (138 = p2a's set)
+
+
+def filler_path(length: int = 138) -> Path:
+    """The filler set of record for a token length (P2-A4b); 138 is the p2a set."""
+    if length == 138:
+        return FILLER_PATH
+    if length not in TSN_LENGTHS:
+        raise ValueError(length)
+    return FILLER_PATH.with_name(f"tsn_filler_turns_{length}.json")
+
+
+def rotate_filler(filler: list[tuple[str, str]], scenario_id: str) -> list[tuple[str, str]]:
+    """P2-A4a counterbalancing: cyclic shift by sha256(scenario id) mod 6, so each filler exchange
+    sits at each position on about a sixth of the scenarios."""
+    import hashlib
+
+    s = int(hashlib.sha256(scenario_id.encode()).hexdigest(), 16) % len(filler)
+    return filler[s:] + filler[:s]
+
+
 def load_filler_turns(path: Path = FILLER_PATH) -> list[tuple[str, str]]:
     d = json.loads(Path(path).read_text())
     turns = [(t["user"], t["assistant"]) for t in d["turns"]]

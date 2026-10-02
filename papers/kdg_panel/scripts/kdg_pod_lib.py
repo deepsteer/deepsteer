@@ -40,8 +40,10 @@ from deepsteer.kdg.phase1_frames import (  # noqa: E402
 from deepsteer.kdg.phase2 import (  # noqa: E402
     PHASE2_TEMPLATE_VERSION,
     TSN_DISTANCES,
+    filler_path,
     load_filler_turns,
     render_eval_letter_paraphrase,
+    rotate_filler,
     tsn_messages,
 )
 from deepsteer.kdg.schema import (  # noqa: E402
@@ -831,28 +833,52 @@ def cell_letter_chat(
     )
 
 
-def tsn_cell_name(kind: str, k: int, pressure_removed: bool) -> str:
-    return f"dl_tsn_{kind}_k{k}" + ("_pressure_removed" if pressure_removed else "")
+def tsn_cell_name(
+    kind: str, k: int, pressure_removed: bool, length: int = 138, rotate: bool = False
+) -> str:
+    tag = "dl_tsn" + ("" if length == 138 else str(length)) + ("rot" if rotate else "")
+    return f"{tag}_{kind}_k{k}" + ("_pressure_removed" if pressure_removed else "")
+
+
+def tsn_build(kind: str, k: int, pressure_removed: bool, length: int = 138, rotate: bool = False):
+    """Message builder for a turns-since-norm unit (P2-A4: filler length and rotation)."""
+    filler = load_filler_turns(filler_path(length))
+
+    def build(s: Scenario, order) -> list[dict[str, str]]:
+        f = rotate_filler(filler, s.id) if rotate else filler
+        return tsn_messages(s, order, k, kind, f, pressure_removed=pressure_removed)
+
+    return build
 
 
 def cell_tsn(
-    ctx: Ctx, scenarios: list[Scenario], *, kind: str, k: int, pressure_removed: bool
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    kind: str,
+    k: int,
+    pressure_removed: bool,
+    length: int = 138,
+    rotate: bool = False,
 ) -> None:
-    """KDG_F6_F8_SPEC §4 turns-since-norm arm: letter-only D after a fixed multi-turn conversation
-    with the norm reminder (``kind='reminder'``) or its matched neutral sentence (``'neutral'``)
-    k user turns before the decision. Assistant turns are prefilled, never generated."""
-    filler = load_filler_turns()
+    """KDG_F6_F8_SPEC §4 turns-since-norm arm (+ P2-A4 follow-ups): letter-only D after a fixed
+    multi-turn conversation with the norm reminder (``kind='reminder'``) or its matched neutral
+    sentence (``'neutral'``) k user turns before the decision. Assistant turns are prefilled, never
+    generated. ``length`` picks the filler set (138 / 600 / 2,000 tokens); ``rotate`` applies the
+    per-scenario cyclic filler order."""
     _letter_cell(
         ctx,
         scenarios,
-        tsn_cell_name(kind, k, pressure_removed),
-        lambda s, order: tsn_messages(s, order, k, kind, filler, pressure_removed=pressure_removed),
+        tsn_cell_name(kind, k, pressure_removed, length, rotate),
+        tsn_build(kind, k, pressure_removed, length, rotate),
         {
             "variant": "tsn",
             "frame": "agent",
             "tsn_kind": kind,
             "tsn_k": k,
             "pressure_removed": pressure_removed,
+            "tsn_filler_tokens": length,
+            "tsn_rotated": rotate,
         },
         PHASE2_TEMPLATE_VERSION,
     )
@@ -1107,9 +1133,10 @@ def cell_forward_matches_generate(ctx: Ctx, scenarios: list[Scenario], n: int = 
     if scenarios:
         s = scenarios[0]
         order = assign_letters(s, 0)
-        msgs = tsn_messages(s, order, 6, "reminder", load_filler_turns())
-        prompts.append(ctx.model.render_chat(msgs))
-        orders.append(order)
+        for length in (138, 2000):  # G6 also on the longest P2-A4b context
+            msgs = tsn_messages(s, order, 6, "reminder", load_filler_turns(filler_path(length)))
+            prompts.append(ctx.model.render_chat(msgs))
+            orders.append(order)
     fwd = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False).astype(np.float32)
     gen = ctx.model.generate(
         prompts, max_new_tokens=1, temperature=0.0, seed=SEED, find_anchor=False
@@ -1299,6 +1326,41 @@ for _kind in ("reminder", "neutral"):
         for _pr in (False, True):
             UNITS[tsn_cell_name(_kind, _k, _pr)] = (("instruct",), _tsn_unit(_kind, _k, _pr))
 
+
+# P2-A4a: counterbalanced filler order (Llama, k 0/3/6) and P2-A4b: token-distance ladder (k 0/6)
+def _tsn_unit2(kind: str, k: int, pr: bool, length: int, rotate: bool):
+    return lambda c, S: cell_tsn(
+        c, S, kind=kind, k=k, pressure_removed=pr, length=length, rotate=rotate
+    )
+
+
+TSN_ROT_UNITS = tuple(
+    tsn_cell_name(kd, k, pr, 138, True)
+    for kd in ("reminder", "neutral")
+    for k in (0, 3, 6)
+    for pr in (False, True)
+)
+TSN_LEN_UNITS = tuple(
+    tsn_cell_name(kd, k, pr, L, False)
+    for L in (600, 2000)
+    for kd in ("reminder", "neutral")
+    for k in (0, 6)
+    for pr in (False, True)
+)
+for _kd in ("reminder", "neutral"):
+    for _pr in (False, True):
+        for _k in (0, 3, 6):
+            UNITS[tsn_cell_name(_kd, _k, _pr, 138, True)] = (
+                ("instruct",),
+                _tsn_unit2(_kd, _k, _pr, 138, True),
+            )
+        for _L in (600, 2000):
+            for _k in (0, 6):
+                UNITS[tsn_cell_name(_kd, _k, _pr, _L, False)] = (
+                    ("instruct",),
+                    _tsn_unit2(_kd, _k, _pr, _L, False),
+                )
+
 # P2 pilot keystone (§10): J and D on every level, the null twins, G2 paraphrase frames, known-gap
 P2_PILOT_UNITS = C3_CHAT_UNITS + P2_PARA_UNITS + ("dl_chat_known_gap",)
 
@@ -1330,6 +1392,19 @@ for _i in range(3):
         ),
         lambda s: len(s.eval_text_pressure_removed_paraphrases) == 3,
     )
+for _kd in ("reminder", "neutral"):
+    for _pr in (False, True):
+        for _k in (0, 3, 6):
+            UNIT_MESSAGES[tsn_cell_name(_kd, _k, _pr, 138, True)] = (
+                tsn_build(_kd, _k, _pr, 138, True),
+                _all,
+            )
+        for _L in (600, 2000):
+            for _k in (0, 6):
+                UNIT_MESSAGES[tsn_cell_name(_kd, _k, _pr, _L, False)] = (
+                    tsn_build(_kd, _k, _pr, _L, False),
+                    _all,
+                )
 for _kind in ("reminder", "neutral"):
     for _k in TSN_DISTANCES:
         for _pr in (False, True):

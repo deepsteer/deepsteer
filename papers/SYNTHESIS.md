@@ -810,3 +810,9 @@ the separating cell for the long-trajectory rival. Conjunction under watch, adde
 a third or more of its mass on the prohibited route under the penalty (0.34 / 0.44), so the penalty moves
 judgment as well as action on both models; if the full panel keeps this, F8's gap is small because the
 judgment follows the pressure, the persuasion branch of §9 for a non-peer pressure.
+
+**Pilot gate applied (2026-10-02).** G2′ (decisiveness relative to the panel of record) passes every
+family on both models at pilot MDE 0.26–0.41, with Llama F8 the weakest (0.50 vs the panel's 0.70); the
+F6 no-speaker level reads as "cannot tell" for 22 of 24 items, so the registered ladder stands. Full
+construction is licensed at 48 decisive primaries per family. The turns-since-norm "does not fade" claim
+stays at short scripted distance until the token ladder (P2-A4b) reports.

@@ -19,7 +19,9 @@
     "n_expanded": 75,
     "external_label_rater": "subagent:opus",
     "coherence_prompt_sha256": "f899f824412c2a95408d22f961c663a4c2ae433ef69ce412d933ef3041338f92",
-    "external_prompt_sha256": "447d7e54c88f6b88bf3598de3ba1e28513db678a9467523cfaab6ea0dde60f92"
+    "external_prompt_sha256": "447d7e54c88f6b88bf3598de3ba1e28513db678a9467523cfaab6ea0dde60f92",
+    "speaker_rater": "subagent:opus",
+    "speaker_prompt_sha256": "fda81ab45df2ca7aeb2d4ef9be4f2992405454d6fa0dd7b02cb10b390a2598fc"
   },
   "items": [
     {
@@ -95,7 +97,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -171,7 +174,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -247,7 +251,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -323,7 +328,8 @@
         "decisive": true,
         "harm_level": 3,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -399,7 +405,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -475,7 +482,8 @@
         "decisive": true,
         "harm_level": 3,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -551,7 +559,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -627,7 +636,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -703,7 +713,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -779,7 +790,8 @@
         "decisive": true,
         "harm_level": 3,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -855,7 +867,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {
@@ -931,7 +944,8 @@
         "decisive": true,
         "harm_level": 2,
         "principal_waivable": false,
-        "coherent": true
+        "coherent": true,
+        "nospk_source": "cannot_tell"
       }
     },
     {

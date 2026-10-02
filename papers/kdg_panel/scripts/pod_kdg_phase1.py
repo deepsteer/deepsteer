@@ -42,6 +42,8 @@ from kdg_pod_lib import (  # noqa: E402
     KDG2_UNITS_INSTRUCT,
     P2_PILOT_UNITS,
     RAW_UNITS,
+    TSN_LEN_UNITS,
+    TSN_ROT_UNITS,
     TSN_UNITS,
     UNITS,
     Ctx,
@@ -71,6 +73,8 @@ GROUPS = {
     # turns-since-norm rider always runs on the Phase 1 scenario set (--scenarios/--scenario-ids)
     "P2PILOT": P2_PILOT_UNITS,
     "TSN": TSN_UNITS,
+    "TSN_ROT": TSN_ROT_UNITS,  # P2-A4a
+    "TSN_LEN": TSN_LEN_UNITS,  # P2-A4b
 }
 
 
@@ -121,7 +125,8 @@ def run(
         metas = metas + p2_metas
     # which set each unit reads: TSN always the Phase 1 set; everything else the Phase 2 items
     # when given, else the Phase 1 set
-    needs_classic = any(u in TSN_UNITS for u in wanted_all) or not item_files
+    tsn_all = set(TSN_UNITS) | set(TSN_ROT_UNITS) | set(TSN_LEN_UNITS)
+    needs_classic = any(u in tsn_all for u in wanted_all) or not item_files
     for name, S, needed in (
         ("Phase 1", scenarios, needs_classic),
         ("Phase 2", expanded, bool(item_files)),
@@ -138,7 +143,7 @@ def run(
         expanded = [s for s in expanded if s.item_id == first[s.family]]
 
     def unit_set(u: str) -> list:
-        return expanded if (item_files and u not in TSN_UNITS) else scenarios
+        return expanded if (item_files and u not in tsn_all) else scenarios
 
     out.mkdir(parents=True, exist_ok=True)
     manifest = Manifest(out, dry, metas)

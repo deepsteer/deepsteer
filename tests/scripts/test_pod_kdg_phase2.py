@@ -182,3 +182,40 @@ def test_tsn_floor_drop_flags_one_model_dropping_and_not_the_other():
     skew = tsn.floor_drop({"a": {"n": 130, "n_screen": 136}, "b": {"n": 40, "n_screen": 118}})
     assert skew["floor_artifact_flag"] is True
     assert tsn.floor_drop({"a": {"n": 1, "n_screen": 2}}) is None
+
+
+def test_filler_rotation_covers_every_position_and_lengths_hit_their_targets():
+    # most probable failure (P2-A4): the rotation is a no-op (every scenario gets the fixed order,
+    # so the KDG-A16 discriminator re-measures the confound), or a ladder set misses its target
+    from collections import Counter
+
+    from deepsteer.kdg.phase2 import TSN_LENGTHS, filler_path, load_filler_turns, rotate_filler
+
+    base = load_filler_turns()
+    first = Counter(rotate_filler(base, f"S-{i:03d}")[0] for i in range(600))
+    assert len(first) == 6 and min(first.values()) > 60  # each exchange leads for ~1/6 of ids
+    assert rotate_filler(base, "x") == rotate_filler(base, "x")  # deterministic per id
+    for L in TSN_LENGTHS[1:]:
+        d = json.loads(filler_path(L).read_text())
+        assert len(d["turns"]) == 6 and abs(d["olmo3_tokens"] - L) <= 0.1 * L
+
+
+def test_followup_units_dry_run_and_analysis(tmp_path, p1_file):
+    # most probable failure: the follow-up analysis reads cell names the driver does not write
+    out = tmp_path / "p2b"
+    pod.run(out, True, ["olmo3_instruct"], ["TSN_ROT", "TSN_LEN"], [p1_file])
+    d = out / "olmo3_instruct"
+    for u in lib.TSN_ROT_UNITS + lib.TSN_LEN_UNITS:
+        assert (d / f"{u}.jsonl").exists(), u
+    rows = [json.loads(x) for x in (d / "dl_tsn2000_reminder_k6.jsonl").read_text().splitlines()]
+    assert rows and all(r["tsn_filler_tokens"] == 2000 for r in rows)
+    fu = _load("analyze_tsn_followups")
+    fu.T.FLOOR = 0.0
+    from deepsteer.kdg.schema import load_scenarios
+
+    scen, _ = load_scenarios(p1_file)
+    status = {s.id: {o.option_id: o.norm_status for o in s.options} for s in scen}
+    ra = fu.a4a(d, set(status), status)
+    rb = fu.a4b(d, set(status), status, 2000)
+    assert ra["n"] == len(status) and rb["n"] == len(status)
+    assert ra["verdict"] in ("filler_confound_R_a", "position_effect_R_b", "unresolved")
