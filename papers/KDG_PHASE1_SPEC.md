@@ -613,3 +613,39 @@ author decisions at the Session B gate, before any computation; pushed first).**
    entirely below 0 → the lever generalizes across recipes; **does not** otherwise → the lever is
    scoped to OLMo-3. Both publishable. The norm-salience arm is not run here (deferred with the
    extended salience controls, author).
+
+**P1-A10. KDG-A12 discriminator: the stage steps of the pressure-attributable excess per unit of
+output scale, on the final-model-free set (dated 2026-10-01, author decision, before computation;
+pushed first).** Rival being tested: the RL step's probability-scale excess on the 586 set (+0.0041,
+95% lower bound +0.00041, bar 0.005; KDG-A12) is output sharpening at the RL step (R_b) rather than
+an increment in the incentive's pull (R_a).
+- *Set.* The P1-A7 set, rebuilt by the same code (`analyze_kdg_a8.py` construction); the run asserts
+  n = 586 and that the ids equal P1-A7's. No new screen.
+- *Quantities.* Per stage and per step (paired, SFT → DPO → final): E_norm = E_logit / σ_twin, the
+  averaged-σ scale of P1-A2 §5 and of KDG-44's λ (primary); E_fs (frame-specific) and E_logit beside;
+  E_prob re-reported. Percentile bootstrap, 10,000 resamples, seed 0; every bound reported unrounded
+  with the resample count. Stability line (descriptive): the RL step's E_prob and E_norm lower bounds
+  under seeds 0–9.
+- *Rule (RL step, primary).* **Survives scale (R_a)** iff the RL step's E_norm CI lies entirely above 0.
+  **Sharpening-explained (R_b)** iff it includes 0 and its point estimate is below half the
+  probability-scale step's ratio-to-SE (i.e., the per-scale step loses at least half its
+  standardized size); **unresolved** otherwise (includes 0 but keeps more than half its standardized
+  size). If E_norm and E_fs disagree in verdict, the reading is the weaker of the two, labelled
+  scale-dependent. A lower bound within 0.001 of 0 (on E_prob's scale, or the same fraction of the bar on
+  E_norm's) is reported as at-the-bar whatever its sign; "excludes 0" is not written on that margin.
+- *DPO step.* Reported, no verdict (its probability-scale step is null, bar 0.008).
+- *Beside, descriptive (no verdict).* Tulu 3 SFT → DPO → final, same quantities on its model-free 586
+  (`p1b/chat_lineages`): its DPO step is a near-miss of the same kind (0.006 [0.000, 0.012], bar 0.008).
+- *Branches (both written before data).* **R_a:** the paper's stage sentence becomes "preference
+  optimization does not resize the pressure-attributable part; the RL step adds +0.004 at its bar,
+  and the increment survives division by the output scale"; the within-RL sweep (eight registered
+  step checkpoints, `olmo3_rl_s050`..`s400`, ~2.5 A100-h, 586 set only) is priced into the next
+  OLMo-3 pod with its own pre-registration (R_a predicts E_norm rising across steps; R_c chance
+  predicts no trend). **R_b:** the sentence reads "the RL step reads +0.004 at its bar; per unit of
+  output scale it is [value], the sharpening the RL step also brings to the at-rest lean (KDG-44)";
+  the sweep is not scheduled on this ground. **Unresolved:** the sentence carries the probability-scale
+  near-miss and the per-scale value side by side, without "adds"; the sweep goes to the author as the
+  discriminator, priced. Under every branch the 586 set stays the number of record and "adds" is not
+  written without R_a.
+- *Not separated here:* R_c (chance across two uncorrected steps). Only the within-RL trend separates
+  it.

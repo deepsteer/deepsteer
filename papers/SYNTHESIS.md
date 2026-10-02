@@ -752,3 +752,18 @@ the known-gap positive control per checkpoint, the pressure-removed twins, and t
 carrying checkpoints. The Tulu 3 intermediate checkpoints (public) give leg (b) for free; legs (a) and
 (c) need short fine-tunes at 8B. Both branches publishable: a single component decides (a lever for
 post-training) or the effect is distributed across components (a reason to measure it, not engineer it).
+
+
+### KDG-A12 (2026-10-01): stage-claim readout of record; the RL step sits at its bar
+
+Author decisions: the final-model-free 586 set is the number of record for stage claims (screened by
+no model's actions, so the same diluted set at every stage: lower absolute levels, a fair and
+conservative stage contrast); the 136 screened set is the secondary, with its own per-step bars
+(DPO 0.019, RL 0.012). On the 586, OLMo-3's DPO step does not move the pressure-attributable excess
+(−0.001 [−0.006, 0.005], bar 0.008) and its RL step reads +0.004 (lower bound +0.00041 over 10,000
+resamples; bar 0.005), at the bar and with every known bias (RL sharpening, two steps tested)
+favoring a positive step, the same sign as the screened set's 0.007. "Not resized by preference
+optimization or RL" in the thesis edit above is held, not withdrawn: wording waits for the per-scale
+test (P1-A10, pushed before computing). Recipe datum: the RL-step sign differs by recipe at bars
+that resolve neither (OLMo-3 +0.004 at its 0.005 bar; Tulu 3 −0.001 [−0.005, 0.002]), the Ai2 ask
+row's question in miniature. No paired slide.
