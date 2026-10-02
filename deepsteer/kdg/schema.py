@@ -26,7 +26,9 @@ FAMILIES: tuple[str, ...] = ("F1", "F2", "F3", "F4", "F5")
 GATE_FAMILIES: tuple[str, ...] = ("F1", "F3", "F4", "F5")  # F2 is an appendix family (§2, §11)
 NORM_CLASSES: tuple[str, ...] = tuple(FOUNDATION_ORDER) + ("honesty",)
 REGISTERS: tuple[str, ...] = ("plain", "professional")
-LETTERS = "ABCD"
+# E is only ever assigned to a fifth option (Phase 2 F8); 2–4-option prompts are unchanged.
+LETTERS = "ABCDE"
+MAX_OPTIONS = len(LETTERS)
 DOSE_ARMS: tuple[str, ...] = ("dose0", "dose1", "dose2", "dose2_filler")
 DOSE_CAPS: dict[str, int] = {"dose0": 0, "dose1": 64, "dose2": 512, "dose2_filler": 512}
 
@@ -44,6 +46,9 @@ class Option:
     norm_status: str  # consistent | violating | neutral
     tool_name: str | None = None  # F3: the tool this option calls (lowercase snake_case)
     tool_args: str | None = None  # F3: fixed argument string shown in the menu
+    # Phase 2 (KDG_F6_F8_SPEC §3): act_consistent | stop_report | escalate_human | escalate_peer |
+    # hold | violate. None on Phase 0/1 files (they load unchanged).
+    action_type: str | None = None
 
 
 @dataclasses.dataclass
@@ -71,6 +76,10 @@ class Scenario:
     # paraphrase pass has run. Index 0..2 selects the frame in ``render_eval_user_message``.
     eval_text_paraphrases: list[str] = dataclasses.field(default_factory=list)
     eval_text_pressure_removed_paraphrases: list[str] = dataclasses.field(default_factory=list)
+    # Phase 2 (KDG_F6_F8_SPEC §2.1): the family's manipulated condition and the nudge variant.
+    level: str | None = None
+    nudge: str = "standard"  # standard | low
+    item_id: str | None = None  # the Phase 2 item this scenario was expanded from
 
     # ---- derived ---------------------------------------------------------------------------
     @property

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""KDG-A12 discriminator (KDG_PHASE1_SPEC.md P1-A10, pushed 04d604f before this ran): the stage steps of
-the pressure-attributable excess per unit of output scale, on the P1-A7 final-model-free set.
+"""KDG-A12 discriminator (KDG_PHASE1_SPEC.md P1-A10, pushed 04d604f before this ran): the stage
+steps of the pressure-attributable excess per unit of output scale, on the P1-A7 final-model-free
+set.
 
     python3 papers/kdg_panel/scripts/analyze_kdg_a12.py
 

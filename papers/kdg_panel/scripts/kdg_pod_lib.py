@@ -33,11 +33,20 @@ sys.path.insert(0, str(REPO))
 from deepsteer.kdg.harness import KDG_HARNESS_VERSION, parse_response  # noqa: E402
 from deepsteer.kdg.phase1_frames import (  # noqa: E402
     PHASE1_TEMPLATE_VERSION,
+    framing_prefix,
     norm_salience_sentence,
     render_letter_user_message,
 )
+from deepsteer.kdg.phase2 import (  # noqa: E402
+    PHASE2_TEMPLATE_VERSION,
+    TSN_DISTANCES,
+    load_filler_turns,
+    render_eval_letter_paraphrase,
+    tsn_messages,
+)
 from deepsteer.kdg.schema import (  # noqa: E402
     DOSE_CAPS,
+    MAX_OPTIONS,
     TEMPLATE_VERSION,
     Scenario,
     assign_letters,
@@ -270,8 +279,8 @@ class StubModel:
         self.vocab = 64
         self.has_chat_template = kind != "base"
         self.chat_template_sha = "stub"
-        self._ids = {L: i for i, L in enumerate("ABCD")}
-        self._ids.update({f" {L}": 10 + i for i, L in enumerate("ABCD")})
+        self._ids = {L: i for i, L in enumerate("ABCDE")}
+        self._ids.update({f" {L}": 10 + i for i, L in enumerate("ABCDE")})
 
     def token_id(self, surface: str) -> int:
         return self._ids[surface]
@@ -440,7 +449,7 @@ def _row(
 
 def _option_ids(ctx: Ctx, order, chat: bool) -> list[int]:
     ids = [ctx.model.token_id(L if chat else f" {L}") for L, _ in order]
-    return ids + [-1] * (4 - len(ids))
+    return ids + [-1] * (MAX_OPTIONS - len(ids))
 
 
 def cell_d_chat(
@@ -695,43 +704,44 @@ def cell_raw(ctx: Ctx, scenarios: list[Scenario], *, frame: str, variant: str = 
     )
 
 
-def cell_letter_chat(
+def letter_chat_messages(
+    s: Scenario, order, frame: str, prefix: str, variant: str = "primary"
+) -> list[dict[str, str]]:
+    """The exact message list a letter-only chat unit renders (also what the stage identity check
+    renders, so the check covers every scheduled unit's shapes; KDG_F6_F8_SPEC §8 G7).
+
+    variant: primary | pressure_removed | known_gap (system + user) | pressure_removed_p{0,1,2}
+    (Phase 2 G2: letter-only J on a paraphrase of the no-pressure third-person text)."""
+    if variant.startswith("pressure_removed_p"):
+        assert frame == "eval", "paraphrase frames are judgment (eval) frames"
+        idx = int(variant[-1])
+        user = f"{framing_prefix(prefix)}\n\n{render_eval_letter_paraphrase(s, order, idx)}"
+        return [{"role": "user", "content": user}]
+    user = render_letter_user_message(
+        s, order, frame, prefix, pressure_removed=(variant == "pressure_removed")
+    )
+    msgs = [{"role": "user", "content": user}]
+    if variant == "known_gap":
+        msgs.insert(0, {"role": "system", "content": render_known_gap_system_prompt(s)})
+    return msgs
+
+
+def _letter_cell(
     ctx: Ctx,
     scenarios: list[Scenario],
-    *,
-    frame: str,
-    prefix: str,
-    variant: str = "primary",
+    cell: str,
+    build,
+    row_extra: dict,
+    template_version: str = PHASE1_TEMPLATE_VERSION,
 ) -> None:
-    """Phase 1 C1 / C3-secondary readout: letter-only J or D under the chat template, one forward
-    pass per option permutation (no sampling), next-token log-probs at the first assistant token.
-
-    Cell name ``{dl|jl}_chat_{prefix}[_pressure_removed]``. Same permutation seeds as the raw cells
-    (0..n_raw_perm-1), so orders match the raw frame and the first eight D_chat rollouts. Saves the
-    full next-token vector per permutation, option-token ids and mass, and the rendered-prompt
-    sha (the stage-identity check compares these across checkpoints).
-    """
-    known_gap = variant == "known_gap"  # P1-A9 positive control: operator orders the violation
-    if known_gap:
-        assert frame == "agent", "the known-gap control is an acting-frame cell"
-        cell = "dl_chat_known_gap"
-        scenarios = [s for s in scenarios if s.role == "primary"]
-    else:
-        cell = f"{'dl' if frame == 'agent' else 'jl'}_chat_{prefix}" + (
-            "" if variant == "primary" else f"_{variant}"
-        )
+    """Shared letter-only readout: one forward pass per option permutation, next-token log-probs
+    at the first assistant token; full vector, option ids and mass, rendered-prompt sha saved."""
     nperm = ctx.n(ctx.n_raw_perm)
     prompts, orders_all, scen_all = [], [], []
     for s in scenarios:
         for seed in range(nperm):
             order = assign_letters(s, seed)
-            user = render_letter_user_message(
-                s, order, frame, prefix, pressure_removed=(variant == "pressure_removed")
-            )
-            msgs = [{"role": "user", "content": user}]
-            if known_gap:
-                msgs.insert(0, {"role": "system", "content": render_known_gap_system_prompt(s)})
-            prompts.append(ctx.model.render_chat(msgs))
+            prompts.append(ctx.model.render_chat(build(s, order)))
             orders_all.append(order)
             scen_all.append(s)
     logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
@@ -760,13 +770,15 @@ def cell_letter_chat(
                 "option_id": o.option_id,
                 "letter": L,
                 "norm_status": o.norm_status,
+                "action_type": o.action_type,
+                "level": s.level,
+                "nudge": s.nudge,
+                "item_id": s.item_id,
                 "parse_method": "letter_chat_argmax",
                 "harness_version": KDG_HARNESS_VERSION,
-                "template_version": PHASE1_TEMPLATE_VERSION,
+                "template_version": template_version,
                 "chat_template_sha256": ctx.model.chat_template_sha,
-                "variant": variant,
-                "frame": frame,
-                "prefix": prefix,
+                **row_extra,
             }
         )
     ctx.save_cell(
@@ -777,6 +789,72 @@ def cell_letter_chat(
             "option_token_ids": np.array(opt_ids, dtype=np.int64),
             "option_mass": np.array([r["option_mass"] for r in rows]),
         },
+    )
+
+
+def cell_letter_chat(
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    frame: str,
+    prefix: str,
+    variant: str = "primary",
+) -> None:
+    """Phase 1 C1 / C3-secondary readout: letter-only J or D under the chat template, one forward
+    pass per option permutation (no sampling), next-token log-probs at the first assistant token.
+
+    Cell name ``{dl|jl}_chat_{prefix}[_variant]``. Same permutation seeds as the raw cells
+    (0..n_raw_perm-1), so orders match the raw frame and the first eight D_chat rollouts. Saves the
+    full next-token vector per permutation, option-token ids and mass, and the rendered-prompt
+    sha (the stage-identity check compares these across checkpoints).
+    """
+    known_gap = variant == "known_gap"  # P1-A9 positive control: operator orders the violation
+    if known_gap:
+        assert frame == "agent", "the known-gap control is an acting-frame cell"
+        cell = "dl_chat_known_gap"
+        scenarios = [s for s in scenarios if s.role == "primary"]
+    else:
+        cell = f"{'dl' if frame == 'agent' else 'jl'}_chat_{prefix}" + (
+            "" if variant == "primary" else f"_{variant}"
+        )
+    if variant.startswith("pressure_removed_p"):
+        scenarios = [s for s in scenarios if len(s.eval_text_pressure_removed_paraphrases) == 3]
+    _letter_cell(
+        ctx,
+        scenarios,
+        cell,
+        lambda s, order: letter_chat_messages(s, order, frame, prefix, variant),
+        {"variant": variant, "frame": frame, "prefix": prefix},
+        PHASE2_TEMPLATE_VERSION
+        if variant.startswith("pressure_removed_p")
+        else PHASE1_TEMPLATE_VERSION,
+    )
+
+
+def tsn_cell_name(kind: str, k: int, pressure_removed: bool) -> str:
+    return f"dl_tsn_{kind}_k{k}" + ("_pressure_removed" if pressure_removed else "")
+
+
+def cell_tsn(
+    ctx: Ctx, scenarios: list[Scenario], *, kind: str, k: int, pressure_removed: bool
+) -> None:
+    """KDG_F6_F8_SPEC §4 turns-since-norm arm: letter-only D after a fixed multi-turn conversation
+    with the norm reminder (``kind='reminder'``) or its matched neutral sentence (``'neutral'``)
+    k user turns before the decision. Assistant turns are prefilled, never generated."""
+    filler = load_filler_turns()
+    _letter_cell(
+        ctx,
+        scenarios,
+        tsn_cell_name(kind, k, pressure_removed),
+        lambda s, order: tsn_messages(s, order, k, kind, filler, pressure_removed=pressure_removed),
+        {
+            "variant": "tsn",
+            "frame": "agent",
+            "tsn_kind": kind,
+            "tsn_k": k,
+            "pressure_removed": pressure_removed,
+        },
+        PHASE2_TEMPLATE_VERSION,
     )
 
 
@@ -960,19 +1038,42 @@ def cell_dose_control(
 
 
 def rendered_identity_mismatches(
-    model: ModelWrapper | StubModel, reference_render, scenarios: list[Scenario], n: int = 16
+    model: ModelWrapper | StubModel,
+    reference_render,
+    scenarios: list[Scenario],
+    n: int = 16,
+    *,
+    units: list[str] | None = None,
 ) -> list[str]:
-    """Stage-checkpoint fork check (models.yaml phase1 header): render the C1/C3 chat messages
-    with ``model`` and with ``reference_render`` (the final Instruct's template) and return the
-    scenario ids whose rendered prompts differ. Empty list = no fork."""
+    """Stage-checkpoint fork check (models.yaml phase1 header; KDG_F6_F8_SPEC §8 G7).
+
+    ``units=None`` keeps the Phase 1 check (single user turn, agent and eval frames; ids
+    ``{scenario}/{frame}``). With ``units``, every scheduled chat unit's own message lists are
+    rendered by ``model`` and by ``reference_render`` (system turns, prefilled multi-turn
+    conversations included) and mismatches are returned as ``{unit}/{scenario}``. A scheduled chat
+    unit with no registered message builder raises: the check never skips a shape silently."""
     bad = []
-    for s in scenarios[:n]:
-        order = assign_letters(s, 0)
-        for frame in ("agent", "eval"):
-            user = render_letter_user_message(s, order, frame, "neutral")
-            msgs = [{"role": "user", "content": user}]
+    if units is None:
+        for s in scenarios[:n]:
+            order = assign_letters(s, 0)
+            for frame in ("agent", "eval"):
+                user = render_letter_user_message(s, order, frame, "neutral")
+                msgs = [{"role": "user", "content": user}]
+                if model.render_chat(msgs) != reference_render(msgs):
+                    bad.append(f"{s.id}/{frame}")
+        return bad
+    for u in units:
+        if u in RAW_UNITS or u == "validate_forward_matches_generate":
+            continue
+        if u not in UNIT_MESSAGES:
+            raise KeyError(
+                f"no message builder for chat unit {u!r}; the identity check cannot cover it"
+            )
+        build, keep = UNIT_MESSAGES[u]
+        for s in [s for s in scenarios if keep(s)][:n]:
+            msgs = build(s, assign_letters(s, 0))
             if model.render_chat(msgs) != reference_render(msgs):
-                bad.append(f"{s.id}/{frame}")
+                bad.append(f"{u}/{s.id}")
     return bad
 
 
@@ -994,6 +1095,20 @@ def cell_forward_matches_generate(ctx: Ctx, scenarios: list[Scenario], n: int = 
     for s in scenarios[:n]:
         order = assign_letters(s, 0)
         prompts.append(ctx.model.render_chat([{"role": "user", "content": _agent(s, order)}]))
+        orders.append(order)
+    # KDG_F6_F8_SPEC §8 G6: one F6 message-board prompt, one F8 five-option prompt and one
+    # turns-since-norm k = 6 conversation, when the loaded set carries them
+    extra = [x for x in scenarios if x.family == "F6" and x.level == "peer"][:1]
+    extra += [x for x in scenarios if x.family == "F8"][:1]
+    for s in extra:
+        order = assign_letters(s, 0)
+        prompts.append(ctx.model.render_chat([{"role": "user", "content": _agent(s, order)}]))
+        orders.append(order)
+    if scenarios:
+        s = scenarios[0]
+        order = assign_letters(s, 0)
+        msgs = tsn_messages(s, order, 6, "reminder", load_filler_turns())
+        prompts.append(ctx.model.render_chat(msgs))
         orders.append(order)
     fwd = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False).astype(np.float32)
     gen = ctx.model.generate(
@@ -1156,3 +1271,75 @@ KDG2_UNITS_INSTRUCT = (
     "d_raw_pressure_removed",
     "j_raw_pressure_removed",
 )
+
+
+# ---------------------------------------------------------------------------------------------
+# Phase 2 (KDG_F6_F8_SPEC.md): G2 paraphrase-J units, turns-since-norm units, message builders
+# ---------------------------------------------------------------------------------------------
+P2_PARA_UNITS = tuple(f"jl_chat_neutral_pressure_removed_p{i}" for i in range(3))
+for _i in range(3):
+    UNITS[P2_PARA_UNITS[_i]] = (
+        ("instruct",),
+        _letter_unit("eval", "neutral", f"pressure_removed_p{_i}"),
+    )
+
+
+def _tsn_unit(kind: str, k: int, pr: bool):
+    return lambda c, S: cell_tsn(c, S, kind=kind, k=k, pressure_removed=pr)
+
+
+TSN_UNITS = tuple(
+    tsn_cell_name(kind, k, pr)
+    for kind in ("reminder", "neutral")
+    for k in TSN_DISTANCES
+    for pr in (False, True)
+)
+for _kind in ("reminder", "neutral"):
+    for _k in TSN_DISTANCES:
+        for _pr in (False, True):
+            UNITS[tsn_cell_name(_kind, _k, _pr)] = (("instruct",), _tsn_unit(_kind, _k, _pr))
+
+# P2 pilot keystone (§10): J and D on every level, the null twins, G2 paraphrase frames, known-gap
+P2_PILOT_UNITS = C3_CHAT_UNITS + P2_PARA_UNITS + ("dl_chat_known_gap",)
+
+
+def _all(s: Scenario) -> bool:
+    return True
+
+
+# unit -> (message builder(scenario, order), scenario filter); the G7 identity check renders these
+UNIT_MESSAGES: dict[str, tuple[Any, Any]] = {}
+for _pre in ("eval", "deploy", "neutral"):
+    for _frame, _tag in (("agent", "dl"), ("eval", "jl")):
+        for _var in ("primary", "pressure_removed"):
+            _name = f"{_tag}_chat_{_pre}" + ("" if _var == "primary" else "_pressure_removed")
+            UNIT_MESSAGES[_name] = (
+                (lambda f, p, v: lambda s, o: letter_chat_messages(s, o, f, p, v))(
+                    _frame, _pre, _var
+                ),
+                _all,
+            )
+UNIT_MESSAGES["dl_chat_known_gap"] = (
+    lambda s, o: letter_chat_messages(s, o, "agent", "neutral", "known_gap"),
+    lambda s: s.role == "primary",
+)
+for _i in range(3):
+    UNIT_MESSAGES[P2_PARA_UNITS[_i]] = (
+        (lambda v: lambda s, o: letter_chat_messages(s, o, "eval", "neutral", v))(
+            f"pressure_removed_p{_i}"
+        ),
+        lambda s: len(s.eval_text_pressure_removed_paraphrases) == 3,
+    )
+for _kind in ("reminder", "neutral"):
+    for _k in TSN_DISTANCES:
+        for _pr in (False, True):
+            UNIT_MESSAGES[tsn_cell_name(_kind, _k, _pr)] = (
+                (
+                    lambda kd, kk, pr: (
+                        lambda s, o: tsn_messages(
+                            s, o, kk, kd, load_filler_turns(), pressure_removed=pr
+                        )
+                    )
+                )(_kind, _k, _pr),
+                _all,
+            )

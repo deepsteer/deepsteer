@@ -40,7 +40,9 @@ from kdg_pod_lib import (  # noqa: E402
     DOSE_LONG_UNITS,
     DOSE_UNITS,
     KDG2_UNITS_INSTRUCT,
+    P2_PILOT_UNITS,
     RAW_UNITS,
+    TSN_UNITS,
     UNITS,
     Ctx,
     Manifest,
@@ -51,6 +53,7 @@ from kdg_pod_lib import (  # noqa: E402
     verify_manifest,
 )
 
+from deepsteer.kdg.phase2 import load_expanded  # noqa: E402
 from deepsteer.kdg.schema import load_scenario_dir  # noqa: E402
 
 KDG_DIR = REPO / "papers" / "kdg_panel"
@@ -64,6 +67,10 @@ GROUPS = {
     "DOSE_LONG": DOSE_LONG_UNITS,
     "KDG2": KDG2_UNITS_INSTRUCT,
     "VALIDATE": ("validate_forward_matches_generate",),
+    # Phase 2 (KDG_F6_F8_SPEC.md §10): pilot keystone on the expanded F6–F8 items; the
+    # turns-since-norm rider always runs on the Phase 1 scenario set (--scenarios/--scenario-ids)
+    "P2PILOT": P2_PILOT_UNITS,
+    "TSN": TSN_UNITS,
 }
 
 
@@ -101,21 +108,46 @@ def run(
     units: list[str],
     scenario_files: list[Path],
     scenario_ids: set[str] | None = None,
+    item_files: list[Path] | None = None,
 ) -> Path:
     cfg, reg = registry()
+    wanted_all = expand_units(units)
     scenarios, metas = load_scenario_dir(scenario_files)
     if scenario_ids is not None:
         scenarios = [s for s in scenarios if s.id in scenario_ids]
-    if not scenarios:
-        raise SystemExit(
-            "no scenarios loaded (empty scenario set: refuse to start a pod on nothing)"
-        )
+    expanded: list = []
+    if item_files:
+        expanded, p2_metas = load_expanded(item_files)
+        metas = metas + p2_metas
+    # which set each unit reads: TSN always the Phase 1 set; everything else the Phase 2 items
+    # when given, else the Phase 1 set
+    needs_classic = any(u in TSN_UNITS for u in wanted_all) or not item_files
+    for name, S, needed in (
+        ("Phase 1", scenarios, needs_classic),
+        ("Phase 2", expanded, bool(item_files)),
+    ):
+        if needed and not S:
+            raise SystemExit(
+                f"no {name} scenarios loaded (empty scenario set: refuse to start a pod on nothing)"
+            )
     if dry:
         scenarios = scenarios[:6] + [s for s in scenarios if s.family == "F3"][:1]
-    wanted_all = expand_units(units)
+        first: dict[str, str | None] = {}
+        for s in expanded:  # one whole item (all its levels) per family
+            first.setdefault(s.family, s.item_id)
+        expanded = [s for s in expanded if s.item_id == first[s.family]]
+
+    def unit_set(u: str) -> list:
+        return expanded if (item_files and u not in TSN_UNITS) else scenarios
+
     out.mkdir(parents=True, exist_ok=True)
     manifest = Manifest(out, dry, metas)
     manifest.data["phase1"] = {"spec": "KDG_PHASE1_SPEC.md", "models": models, "units": wanted_all}
+    if item_files:
+        manifest.data["phase2"] = {
+            "spec": "KDG_F6_F8_SPEC.md",
+            "items": [str(p) for p in item_files],
+        }
     ro = cfg["rollouts"]
     for key in models:
         if key not in reg:
@@ -128,7 +160,11 @@ def run(
         if not wanted:
             print(f"==== {key}: no applicable units, skipped", flush=True)
             continue
-        print(f"==== {key} ({spec['repo']}) units={wanted} n_scen={len(scenarios)}", flush=True)
+        print(
+            f"==== {key} ({spec['repo']}) units={wanted} n_p1={len(scenarios)} "
+            f"n_p2={len(expanded)}",
+            flush=True,
+        )
         model = StubModel(kind) if dry else ModelWrapper(spec["repo"], spec.get("revision"))
         try:
             resolved = "dry-run" if dry else _resolved_commit(model.wb)
@@ -153,8 +189,19 @@ def run(
                     if dry
                     else reference_renderer(ref["repo"], ref.get("revision"))
                 )
-                bad = rendered_identity_mismatches(model, render, scenarios)
-                load["rendered_identity"] = {"reference": ref_key, "mismatches": bad}
+                # G7 (KDG_F6_F8_SPEC §8): every scheduled chat unit's own message shapes,
+                # system and prefilled multi-turn included, on the set that unit reads
+                chat_units = [u for u in wanted if u not in RAW_UNITS]
+                bad = []
+                for S in (expanded, scenarios):
+                    us = [u for u in chat_units if unit_set(u) is S]
+                    if us:
+                        bad += rendered_identity_mismatches(model, render, S, units=us)
+                load["rendered_identity"] = {
+                    "reference": ref_key,
+                    "units": chat_units,
+                    "mismatches": bad,
+                }
                 chat_forked = bool(bad)
             manifest.data["loads"].append(load)
             ctx = Ctx(
@@ -178,7 +225,7 @@ def run(
                     continue
                 t0 = time.time()
                 try:
-                    UNITS[u][1](ctx, scenarios)
+                    UNITS[u][1](ctx, unit_set(u))
                     manifest.status(f"{key}/{u}", "ok", f"{time.time() - t0:.1f}s")
                 except Exception as e:  # one failed unit never kills the pod; it is recorded
                     manifest.status(f"{key}/{u}", "failed", f"{type(e).__name__}: {e}")
@@ -199,6 +246,9 @@ def main() -> int:
     ap.add_argument("--units", default="", help="comma list of unit names or groups")
     ap.add_argument("--scenarios", nargs="*", type=Path, default=None)
     ap.add_argument("--scenario-ids-file", type=Path, default=None)
+    ap.add_argument(
+        "--items", nargs="*", type=Path, default=None, help="Phase 2 item files (F6–F8)"
+    )
     ap.add_argument("--verify-manifest", action="store_true")
     a = ap.parse_args()
     if a.verify_manifest:
@@ -214,7 +264,7 @@ def main() -> int:
     if a.scenario_ids_file:
         raw = json.loads(a.scenario_ids_file.read_text())
         ids = set(raw["ids"] if isinstance(raw, dict) else raw)
-    p = run(a.out, a.dry_run, a.models.split(","), a.units.split(","), files, ids)
+    p = run(a.out, a.dry_run, a.models.split(","), a.units.split(","), files, ids, a.items)
     print(f"manifest: {p}")
     return 0
 
