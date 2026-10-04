@@ -16,6 +16,14 @@ Prices are rough A100-hour estimates for the parked pods.
 
 ---
 
+## 0. FL v2: first item (author, 2026-10-04; not this week)
+
+| thread | disposition | what v2 does |
+|---|---|---|
+| FL interchange method vs text (ANOMALIES process ledger 2026-10-01): (1) §7 l.27 and App C l.7/l.62 say "we patch the decision channel" while `causal_cells.interchange` patches the mean-pooled flipped span at the content positions and reads the decision-token projection at the same layer; (2) the random rank-k control is an isotropic draw, not covariance-matched; (3) empty-span twins dropped uncounted by `c1_session.py`; (4) RESULTS l.325 describes `d_harm` as a request-twin direction, the code builds it from Heretic harmful/harmless `mean_content` | **ESCALATE → FL v2** | (1) method sentences say "content positions, read at the decision token"; (2) the covariance-matched rerun (KDG_PHASE3_SPEC R1 rider) gives the null of record, with the isotropic one beside; (3) per-cell n counts the dropped twins; (4) the `d_harm` description matches the code. arXiv:2609.14759 v2 |
+
+---
+
 ## A. Closed (verified this session)
 
 | thread | disposition | evidence |

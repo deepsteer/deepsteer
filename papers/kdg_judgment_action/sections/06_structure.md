@@ -36,8 +36,8 @@ discriminator is more F3 and F5 scenarios, and it is priced in \Cref{limitations
 low F3 excess, that the incentive moves the action only where the prohibited tool is the sole fast
 route, was tested at no compute cost under a rule fixed in advance: a rater from the other model
 provider judged the prohibited tool the only fast route in 36 of 40 screened F3 scenarios, and the
-excess difference between the two groups is $-0.05$ ($-0.15$ to 0.09), not resolved at a detection
-bar of 0.17. The F3 scenarios almost never offer a quick permitted alternative, so that is not why
+excess difference between those 36 and the other 4 is $-0.05$ ($-0.15$ to 0.09), not resolved at a
+detection bar of 0.17. The F3 scenarios almost never offer a quick permitted alternative, so that is not why
 their excess is small.
 
 ## 6.1 Generators

@@ -110,7 +110,9 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 (0.007 to 0.016), survives division by each checkpoint's output scale (+0.058, 0.027 to 0.090), so it is
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
-sharpening. No step enlarges the pressure-attributable part on either readout. On the probability
+sharpening. No step enlarges the pressure-attributable part on either readout (positive control on the
+final checkpoint: known-gap band 0.50, 0.47 to 0.53; the cell was not run on the SFT and DPO
+checkpoints). On the probability
 scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
 scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
 The RL step reads +0.004 on the probability scale (0.000 to 0.008; bar 0.005), at the bar, with every
