@@ -1307,6 +1307,10 @@ output scale the DPO step has opposite signs on the two Ai2 recipes on E_norm (O
 
 ## 21. Phase 2 pilot (p2a, 2026-10-02): gate G1–G6, F6 directional read, turns-since-norm verdict
 
+*Label (P2-A5, 2026-10-04): the pilot items are a held-out calibration set; every pilot number in
+this section (gate, F6 directional read, F8 profile) is exploratory. The turns-since-norm verdict (§21.3)
+runs on the Phase 1 screens, not on pilot items, and is the pre-registered verdict of record.*
+
 Spec `KDG_F6_F8_SPEC.md` v0.1 (da672b9) + P2-B notes B1–B14; Phase 3 pre-registration pushed first
 (4c5ffaf). Pod m1s9w25aaifov3 (A100-SXM4-80GB), one load per model; manifests verified locally
 (`outputs/p2a/{olmo3_instruct,llama31_instruct_meta}/manifest_kdg.json`, 25/25 units ok each).

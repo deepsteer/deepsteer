@@ -584,3 +584,33 @@ Both ride the next pod; neither changes the KDG-55 verdict of record.
   dilution that affects both sentences alike, and nothing else.
 - *Wording rule.* Until A4b reports, no document places the KDG-55 "does not fade" sentence next to
   Anthropic's 90 / 40 figure.
+
+**P2-A5. Full-panel construction and the p2b estimate (dated 2026-10-04, author decisions at the gate
+after p2a; before any full-panel generation and before p2b runs).**
+- *p2b estimate (supersedes the ~80 min in the gate discussion).* About 2¼ A100-hours: filler length
+  raises prompt length to about 1,050 tokens (600 set) and 2,450 tokens (2,000 set); scaled from p2a's
+  measured 80 s per 138-token unit, about 145 s and 335 s per unit, so about 60 min of ladder per model,
+  about 15 min of rotation on Llama, plus loads. The full ladder (138 / 600 / 2,000) runs; the 600 rung
+  stays because the dilution rival named in A4b reads better on three points than two. p2b results feed
+  KDG-A16 and the A4b wording rule only; no document pairs KDG-55 with the 90 / 40 figure until A4b
+  reports.
+- *Item screen (primary).* The G2′ item rule: an item enters the primary analysis iff, on OLMo-3, the
+  no-pressure original third-person letter argmax is non-violating in ≥ 6 of 8 permutations (P1-A9's
+  rule). Every family is generated at 72 items (OLMo-3 pilot pass rates 0.67–0.73 → 48 expected); a
+  family below 48 after screening is reported at its realized n with the MDE restated, and any top-up is
+  a dated amendment before generation.
+- *Pre-registered additions.* (a) Rejected items are kept, with screen status as a column in every
+  per-item output; the no-screen analysis (all engaged, rated items; decisiveness as a stratum on the
+  continuous readout) is a named **sensitivity**, not a second primary. (b) Per-model screen rates
+  (OLMo-3 and Llama-3.1 Meta, same rule) are reported beside every table; the Llama read carries the
+  note that items were selected on OLMo-3's output.
+- *§7 restated at n = 48 under the single-frame rule (pilot-measured SDs; the four-frame sizing no
+  longer applies).* MDE for ΔD(peer): 0.052 (OLMo-3, SD 0.130), 0.084 (Llama, SD 0.207). For the
+  incentive effect ΔD: F6 0.078 / 0.060, F7 0.073 / 0.055, F8 0.041 / 0.060 (OLMo-3 / Llama). For G2′
+  against the panel (n 586): 0.17–0.21. The excess MDEs of §7 (0.039–0.055, Phase 1 SDs) are unchanged.
+- *Pilot items held out.* The 47 pilot items are a calibration set; the full panel is all new items and
+  is the confirmatory read. Wherever a pilot number appears (KDG_RESULTS §21, CLAIMS KDG-56,
+  KDG-A17), it is labelled exploratory.
+- *Generation order.* F8, then F7, then F6 (F8 maps to the 2026-09-20 DNS escape, F7 to the Hugging
+  Face swarm; F6 already has a directional read). No construction rule changes (prompt p2-1.1.0).
+- *Sequencing (author).* No full-panel generation starts until the KDG paper is on arXiv.

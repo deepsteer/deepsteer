@@ -674,7 +674,7 @@ to the author (published-claim wording; CLAUDE.md escalation list).
 **Status.** open; priced. Does not change the pre-registered verdict (R(6) decides; no decay detectable).
 **Thesis impact.** R_a: a design confound in the arm (fixed filler order) to fix before any dose–response curve is shown. R_b: Llama's norm read depends on where the reminder sits in a non-monotone way.
 
-## KDG-A17 (ledger, pilot descriptive) — On the F6 pilot the unattributed GO text moves the action as much as the peer-attributed one on both models
+## KDG-A17 (ledger, pilot descriptive; exploratory, pilot held out per P2-A5) — On the F6 pilot the unattributed GO text moves the action as much as the peer-attributed one on both models
 
 **Date.** 2026-10-02 (p2a pilot, n 24 per model; descriptive by spec §7: no family verdict at pilot n).
 **Observation.** p_D by level, OLMo-3: none 0.467, no-speaker 0.576, peer 0.526, principal 0.595; Llama-3.1 Meta: 0.357, 0.584, 0.590, 0.688. ΔD(peer) +0.059 [+0.010, +0.111] (OLMo-3), +0.232 [+0.155, +0.316] (Llama). The no-speaker step is the largest single step on both models; on Llama it is about three times the incentive effect (ΔD 0.068).
