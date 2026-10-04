@@ -204,3 +204,20 @@ draft gate (below).
   pre-registration; decided at the pod gate.
 - KDG-A13 (DPO per-scale sign opposite on OLMo-3 and Tulu 3; base and recipe confounded): ledger only, no
   prose; recipe-paper candidate beside RL-Zero.
+
+## 2026-10-04: arXiv preparation (author sequencing: paper on arXiv before any Phase 2 generation)
+
+- **Fonts:** `cm-super` installed in tlmgr user mode (`~/Library/texmf`; `updmap-user` map enabled), so
+  typewriter text now embeds as Type 1 outlines. `pdffonts`: 17 Type 1 + 27 CID TrueType (matplotlib
+  figures), **no Type 3**. The pdfTeX citation-link workaround stays. Clean build: 0 errors, 0 undefined
+  references, 30 pp., no crash reports. Caveat for this machine: the user-level font map shadows the
+  system one; after a system TeX Live update, run `updmap-user` again.
+- **KDG-A6 zero-GPU leg:** already run as Z2 (KDG_RESULTS §14: no concentration at low option mass) and
+  the claim was resolved R_b by the Session A pod; the paper withdraws the "lowers the baseline" reading
+  (§7, §10). Nothing further to run.
+- **KDG-A5 zero-GPU leg** (pre-registered 0b69263, run 2026-10-04): unresolved (Δ −0.05, −0.15 to 0.09,
+  MDE 0.17; the prohibited tool is the only fast route in 36 of 40 screened F3 scenarios). §6 gains one
+  sentence saying so; no verdict changes.
+- **App F:** keeps "available on request"; the Zenodo deposit is a v2 item, not a v1 gate (author).
+- **Scope fence:** nothing from Phase 2 (the 2026-10-02 commits: p2a, G2′, A4a/A4b) is in the paper
+  (checked by grep over the sections).

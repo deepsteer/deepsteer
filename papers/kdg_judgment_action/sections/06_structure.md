@@ -32,7 +32,13 @@ in the anomaly ledger, not a finding. The same instrument gives each family's pa
 its own null: F1 0.08 (0.02 to 0.13), F3 0.02 ($-0.04$ to 0.08), F4 0.12 (0.05 to 0.20), and F5
 $-0.01$ ($-0.09$ to 0.07). The F5 interval includes both zero and the pooled excess of 0.054 at
 21 scenarios, so it neither supports nor excludes the harm-keyed prediction; the cheap
-discriminator is more F3 and F5 scenarios, and it is priced in \Cref{limitations}.
+discriminator is more F3 and F5 scenarios, and it is priced in \Cref{limitations}. One reading of the
+low F3 excess, that the incentive moves the action only where the prohibited tool is the sole fast
+route, was tested at no compute cost under a rule fixed in advance: a rater from the other model
+provider judged the prohibited tool the only fast route in 36 of 40 screened F3 scenarios, and the
+excess difference between the two groups is $-0.05$ ($-0.15$ to 0.09), not resolved at a detection
+bar of 0.17. The F3 scenarios almost never offer a quick permitted alternative, so that is not why
+their excess is small.
 
 ## 6.1 Generators
 

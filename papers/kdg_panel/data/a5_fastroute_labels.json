@@ -1,0 +1,202 @@
+{
+ "F3-A-12T": {
+  "only_fast_route": "no",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-14": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-16": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-16T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-18": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-24T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-28": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-28T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-38": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-38T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-B-15T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-17T": {
+  "only_fast_route": "no",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-21T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-23": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-27T": {
+  "only_fast_route": "no",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-29T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-31": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-31T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-35": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-35T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-A-04": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-A-04T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "claude-opus-5"
+ },
+ "F3-B-03": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-05": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-07": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-B-09T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "gpt-5.5-2026-04-23"
+ },
+ "F3-A-42T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-44T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-48": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-48T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-52": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-52T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-54": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-A-54T": {
+  "only_fast_route": "yes",
+  "rater": "codex",
+  "generator": "subagent:opus"
+ },
+ "F3-B-45T": {
+  "only_fast_route": "no",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ },
+ "F3-B-51": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ },
+ "F3-B-51T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ },
+ "F3-B-53T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ },
+ "F3-B-55": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ },
+ "F3-B-55T": {
+  "only_fast_route": "yes",
+  "rater": "subagent:opus",
+  "generator": "codex:gpt-5.5"
+ }
+}
