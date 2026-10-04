@@ -1441,3 +1441,70 @@ Conceded for the pilot: G2′ shows only that no family falls far below the pane
 construction, not a decisiveness claim. The full panel (48 per family) re-reads G2′ at MDE ≈ 0.18, and
 every Phase 2 verdict uses the continuous readout (masses, π, α), where a soft reference widens intervals
 rather than flipping a binary label.
+
+## 22. Turns-since-norm follow-ups (p2b, 2026-10-04; P2-A4, pushed 00eb2b2; P2-A5 estimate)
+
+Pod yhcc5rokjc7uou (A100-SXM4-80GB), about 2.1 h from provisioning to teardown (steps 19:58–21:47 UTC,
+download verified 21:52 UTC); manifests verified locally (Llama 29/29, OLMo-3 17/17 units ok). VALIDATE:
+0.031 nats (Llama, incl. a 2,000-token prompt). `data/analysis_tsn_followups.json`
+(`scripts/analyze_tsn_followups.py`, committed before data; one labelled implementation fix after data:
+an empty usable set reports `not_engaged` instead of falling through to a verdict). Bootstrap 10,000,
+seed 0. Nothing here enters the KDG paper (author).
+
+### 22.1 A4a, counterbalanced filler order (Llama, KDG-A16 discriminator)
+
+Rotated (n 118): Δ(0) −0.186 [−0.212, −0.161], Δ(3) −0.135, Δ(6) −0.166; R(3) 0.727 [0.643, 0.818],
+R(6) 0.892 [0.784, 1.010]. Fixed order of record: R(3) 0.684 [0.603, 0.771]. Rule: R_a (filler confound)
+needs the rotated R(3) above 0.771 and covering R(6)'s point; it does neither. R_b (position effect) needs
+the rotated R(3) entirely below R(6)'s CI; the intervals touch (0.818 vs 0.784). **Verdict: unresolved.**
+Descriptive: rotating the fillers leaves the k = 3 dip in place (0.73 vs 0.68), so the fixed filler that
+carried the reminder at k = 3 does not explain it.
+
+### 22.2 A4b, token-distance ladder at matched turn count (six turns; 138 / 600 / 2,000 tokens)
+
+| | 138 (p2a) | 600 | 2,000 |
+|---|---|---|---|
+| Llama-3.1 Meta, R(6) | 0.949 [0.839, 1.064] | 0.842 [0.742, 0.945] | **0.502 [0.429, 0.575]** |
+| Llama Δ(0) | −0.184 | −0.208 [−0.239, −0.179] | −0.146 [−0.171, −0.122] |
+| Llama, bar on 1 − R(6) | 0.16 | 0.15 | 0.16 |
+| OLMo-3, R(6) | 1.219 [0.986, 1.509] | 0.840 [0.626, 1.171] (bar 0.42) | **not engaged** |
+
+**Verdict (primary, Llama): decays with token distance**: R_2000(6) = 0.502 [0.429, 0.575]. With six
+turns held fixed, a principal's reminder six turns back keeps about half its effect on the action when
+the intervening turns carry 2,000 tokens, and nearly all of it at 138 tokens. Second derivations at 2,000:
+the twin-differenced (pressure-attributable) ratio 0.645 [0.476, 0.822] and the ratio of medians 0.42,
+both below 1. At 600 the two estimators split: the primary reads 0.84 [0.74, 0.95], the twin-differenced
+part 1.01 [0.83, 1.22], so the 600-token loss sits in the part of the reminder effect that does not depend
+on pressure.
+
+**OLMo-3 at 2,000 tokens: not engaged, no verdict.** Option-letter mass collapses (median 0.013 against
+0.998 at 600; 0 of 136 scenarios clear the 0.5 floor in any 2,000-token cell), and the most likely first
+tokens are conversational ("I", "Thank", "Not", "Under", "Thanks", "Okay"): the model answers the long
+style-guidance turns instead of choosing. By the author's floor rule (B14) this is a floor artifact
+(Llama engages fully at every length, median mass 1.000), logged as ANOMALIES KDG-A18, not a model
+difference. OLMo-3 at 600: no decay detectable (bar 0.42).
+
+Dilution rival (named in A4b): Δ(0) itself shrinks at 2,000 tokens on Llama (−0.146 vs −0.184 at 138),
+so longer contexts weaken the reminder at any position; R(6) divides that out within each length, and the
+neutral(k) control matches length at every k. What remains is distance within a fixed context.
+
+**Wording rule (P2-A4).** A4b's verdict is now recorded. What the data license: on Llama-3.1, a
+reminder's effect on the choice halves across 2,000 tokens of intervening conversation at six turns, and
+does not detectably fade across 138; the same direction as Anthropic's 90% → 40% over three turns, with a
+different construct (a single choice after scripted turns, not ceasing an ongoing behavior over a long
+trajectory) and on one of the two models (OLMo-3 cannot be read at 2,000 tokens). Whether and how any
+document pairs this with the 90 / 40 figure is the author's call.
+
+### 22.3 Referee pass
+
+1. *"Your 'decay' is just a longer prompt washing everything out."* Δ(0) does shrink with length, and
+   R(6) is computed within each length against a length-matched neutral sentence at the same position;
+   the twin-differenced ratio agrees at 2,000. Conceded: the rung's content (house-style guidance) is one
+   kind of filler; another kind could decay differently.
+2. *"Two models, and the one that decays is the only one you can read at 2,000 tokens."* Conceded and
+   stated: the cross-model claim stops at 600 tokens, where neither decays detectably (Llama's primary
+   0.84 does, its pressure-attributable part does not). OLMo-3's disengagement is logged with a
+   discriminator.
+3. *"KDG-A16 was supposed to be closed by the rotation and it wasn't."* Correct: the pre-registered rule
+   returns unresolved. The descriptive read (the dip survives rotation) moves the reading away from the
+   filler confound, without licensing R_b.

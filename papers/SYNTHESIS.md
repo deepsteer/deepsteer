@@ -816,3 +816,14 @@ family on both models at pilot MDE 0.26–0.41, with Llama F8 the weakest (0.50 
 F6 no-speaker level reads as "cannot tell" for 22 of 24 items, so the registered ladder stands. Full
 construction is licensed at 48 decisive primaries per family. The turns-since-norm "does not fade" claim
 stays at short scripted distance until the token ladder (P2-A4b) reports.
+
+### Turns-since-norm follow-ups (2026-10-04; `kdg_panel/KDG_RESULTS.md` §22) — what changed
+
+Positive voice first: **on Llama-3.1, a principal's reminder holds its effect across six short turns and
+loses about half of it when the same six turns carry 2,000 tokens; the decay follows token distance, not
+turn count (R(6) 0.95 → 0.84 → 0.50 at 138 / 600 / 2,000 tokens).** The KDG-55 "does not fade" sentence
+is now scoped to short scripted distance on both models; at 2,000 tokens the reminder fades on Llama and
+OLMo-3 cannot be read (KDG-A18, a floor artifact). The A4b wording rule's condition is met: the verdict is
+recorded; pairing it with Anthropic's 90 / 40 figure (same direction, different construct, one model) is
+the author's decision. KDG-A16 stays unresolved after counterbalancing, with the filler-confound reading
+weakened.

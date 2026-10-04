@@ -75,6 +75,8 @@ def a4a(d: Path, ids, status) -> dict:
 
 def a4b(d: Path, ids, status, length: int) -> dict:
     use, dl = deltas(d, ids, status, (0, 6), length, False)
+    if not use:  # every scenario below the option-mass floor: readout not engaged, no verdict
+        return {"n": 0, "verdict": "not_engaged", "delta": {}}
     rep: dict = {"n": len(use), "delta": {k: T.boot(x) for k, x in dl.items()}}
     if not rep["delta"][0]["ci95"][1] < 0:
         rep["verdict"] = "no_reminder_effect"
