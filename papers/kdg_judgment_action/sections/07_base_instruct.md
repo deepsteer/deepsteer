@@ -6,7 +6,7 @@ this as a description, because that format misreads chat models. In the aligned 
 chat format on all 586 scenarios, the gap is already present after supervised fine-tuning (0.015, 0.007
 to 0.023), and no later stage makes it detectably larger (0.014 after DPO and 0.018 after RL; detection
 bars of 0.008 and 0.005 for the two steps, with the RL step's +0.004 at its bar; \Cref{fig:stages}), while the same test
-registers a large gap on the final model when its operator orders the violation (0.50, 0.47 to 0.52).
+registers a large gap on the final model when its operator orders the violation (0.497, 0.468 to 0.525).
 What post-training does change is the model's default lean when it acts: preference optimization nudges
 it toward the advantageous option even when nothing is at stake (+0.011, 0.007 to 0.016).
 
@@ -120,7 +120,7 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
 sharpening. No step enlarges the pressure-attributable part on either readout (positive control on the
-final checkpoint: known-gap band 0.50, 0.47 to 0.52; the cell was not run on the SFT and DPO
+final checkpoint: known-gap band 0.497, 0.468 to 0.525; the cell was not run on the SFT and DPO
 checkpoints). On the probability
 scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
 scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
@@ -134,7 +134,7 @@ either readout. That is the opposite direction from the raw frame's
 at-rest reading, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
 produces it is left to a recipe ablation on one base.
 
-**Robustness of the base cell.** The selection check passed: base's excess on all 354 of its
-above-floor scenarios (0.017) matches its excess on the 192 shared with instruct (0.018). The pilot
+**Robustness of the base cell.** The selection check passed: base's excess on its 354
+above-floor primary–twin pairs (0.017) matches its excess on the 192 shared with instruct (0.018). The pilot
 pod re-ran the same raw-frame forward passes and returned identical values, so the pilot is a subset
 check, not an independent replication.

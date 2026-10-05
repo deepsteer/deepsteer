@@ -47,14 +47,16 @@ recipe has. The twin design caught the problem only because the frame itself was
 lesson for evaluations is to read every templated model in its template, and to treat a raw-frame
 instruct number as a format cell.
 
-**Goal-following is the parsimonious mechanism, and deliberation loosens it.** The simplest account of
+**Goal-following is the parsimonious mechanism; whether deliberation loosens it is open.** The simplest account of
 the gap is not moral at all: post-training teaches a model to pursue the goal it is handed in context,
 the incentive sentence hands the actor a goal, and the judge, who reads the same sentence, does not hold
 it. That is consistent with the Schmied et al. [-@schmied2025greedy] observation that fine-tuned agents
-act greedily on the goal in front of them. The dose arm shows the goal is not fixed once read: on both
-recipes that carry the gap, reasoning about the stakes before acting moves the action toward the
-model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the norm alone
-does about a third of that on OLMo-3. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
+act greedily on the goal in front of them. The dose arm shows the action is not fixed once the incentive
+is read: on both recipes that carry the gap, reasoning about the stakes before acting moves the action
+toward the model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the
+norm alone does about a third of that on OLMo-3 (0.22 to 0.53). Whether that loosens the incentive's
+pull, or closes the at-rest asymmetry between a deliberated judgment and an immediate action, waits on
+running the pressure-removed twins under deliberation (\Cref{limitations}). This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering

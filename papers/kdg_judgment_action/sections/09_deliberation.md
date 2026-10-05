@@ -1,4 +1,9 @@
-# 9. Moral deliberation before acting reduces the gap {#deliberation}
+# 9. Moral deliberation before acting moves the action toward the model's judgment {#deliberation}
+
+**In short.** Asking the model to think about what is at stake before it acts moves its choice back toward
+its own judgment on both models that carry the gap, further than a same-length non-moral task does; on
+OLMo-3, whose reasoning is truncated at the budget, naming the norm does about a third of it (0.22 to
+0.53).
 
 If the pressure-attributable gap is the action following a goal the incentive supplies, asking the model
 to think about what is at stake before it acts should reduce it, and a matched request to think about
@@ -69,10 +74,13 @@ scenarios; three of the four that change are third-party-harm scenarios, and the
 directions. That is a descriptive check at small $n$, and it is why the OLMo-3 result carries the label
 "truncated reasoning" everywhere it appears.
 
-**What this says.** The gap is not fixed at the moment the incentive is read. On both recipes that carry
+**What this says.** The action is not fixed at the moment the incentive is read. On both recipes that carry
 it, reasoning about the stakes before acting moves the action back toward what the model judged right,
 measured against a non-moral task of the same budget and against that task in the same truncated form.
-The incentive supplies a goal the action follows; content about the norm and the stakes, about a third of
-it carried by naming the norm on OLMo-3, loosens that hold. Whether completed reasoning does more than
+If the incentive supplies a goal the action follows, content about the norm and the stakes loosens that
+hold, about a third of it carried by naming the norm on OLMo-3. The pressure-removed twins were not run
+under deliberation, so whether reasoning reduces the pressure-attributable part of the gap or closes the
+at-rest asymmetry between a deliberated judgment and an immediate action is open; the cell that separates
+them is priced in \Cref{limitations}. Whether completed reasoning does more than
 truncated reasoning on the same model and scenarios is not answered here; that comparison needs both
 models on one scenario set with a budget long enough for both to finish.

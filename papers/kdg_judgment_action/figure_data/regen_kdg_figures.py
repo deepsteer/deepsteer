@@ -122,8 +122,8 @@ def fig_ladder():
         ax.set_title(title, fontsize=10, loc="left")
         ax.grid(True, axis="x", alpha=0.25)
         ax.set_axisbelow(True)
-    fig.suptitle("The gap sits above its pressure-removed null and below the known-gap band on both instruments",
-                 fontsize=10.5)
+    fig.suptitle("The model acts against its own judgment more often with the pressure in than out, and far "
+                 "below what an explicit order produces", fontsize=10.5)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     save(fig, "kdg_ladder", out, ["panel", "rung", "value", "ci_lo", "ci_hi", "n"])
 
@@ -397,7 +397,8 @@ def fig_recipe():
     ax2.set_xlabel("pressure-attributable excess, 95% CI")
     ax2.set_title("(b) The gaps, zoomed; bases in the raw frame (descriptive)", fontsize=10, loc="left")
     ax2.grid(True, axis="x", alpha=0.25); ax2.set_axisbelow(True)
-    fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 and Qwen2.5 do not",
+    fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 and Qwen2.5 "
+                 "do not on the whole panel",
                  fontsize=10.5)
     fig.subplots_adjust(left=0.16, right=0.985, top=0.86, bottom=0.14, wspace=0.08)
     save(fig, "kdg_recipe", out, ["panel", "model", "quantity", "mean", "ci_lo", "ci_hi", "n"])
@@ -451,7 +452,7 @@ def fig_stages():
     fin = s586["final"]
     ax2.barh(1, kg["mean"], height=0.42, color=RED, edgecolor="black", linewidth=0.5, zorder=3)
     ax2.plot(kg["ci95"], [1, 1], color=INK, lw=1.2, zorder=4)
-    ax2.text(kg["ci95"][1] + 0.012, 1, f"{kg['mean']:.2f} [{kg['ci95'][0]:.2f}, {kg['ci95'][1]:.2f}]",
+    ax2.text(kg["ci95"][1] + 0.012, 1, f"{kg['mean']:.3f} [{kg['ci95'][0]:.3f}, {kg['ci95'][1]:.3f}]",
              va="center", fontsize=8, fontweight="bold", color=INK)
     ax2.plot(fin["ci95"], [0, 0], color=INDIGO, lw=2.2, zorder=3)
     ax2.plot(fin["mean"], 0, "o", color=INDIGO, ms=7.5, mec="black", mew=0.6, zorder=4)
@@ -507,8 +508,9 @@ def fig_deliberation():
         ax.set_xlabel("difference in violating mass at the forced answer, 95% CI")
         ax.set_title(title, fontsize=9.5, loc="left")
         ax.grid(True, axis="x", alpha=0.25); ax.set_axisbelow(True)
-    fig.suptitle("Reasoning about the stakes before acting lowers the violating choice on both recipes that carry the gap "
-                 "(separate scales; sizes not compared)", fontsize=10.5)
+    fig.suptitle("Reasoning about the stakes before acting lowers the violating choice more than a same-length "
+                 "non-moral task does, on both models that carry the gap (separate scales; sizes not compared)",
+                 fontsize=10.5)
     fig.subplots_adjust(left=0.15, right=0.985, top=0.84, bottom=0.16, wspace=0.55)
     save(fig, "kdg_deliberation", out, ["model", "contrast", "mean", "ci_lo", "ci_hi", "n"])
 

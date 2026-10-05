@@ -246,3 +246,32 @@ draft gate (below).
 - **Build and bundle:** clean (0 errors, 0 undefined, 0 overfull), 30 pp., no Type 3; tarball rebuilt (9
   figures, 33 entries, 291 KB) and compiled from a fresh extraction (0 errors, 0 missing). arXiv abstract
   1,896 characters after the swap (limit 1,920); `ARXIV_SUBMISSION.md` regenerated.
+
+## 2026-10-05: adversarial review of 538d535 (Fable; R1–R8, P1–P5, GPU-1), executed
+
+- **R1 (deliberation arm undifferenced):** §9 retitled "Moral deliberation before acting moves the action
+  toward the model's judgment"; "What this says" states that the pressure-removed twins were not run under
+  deliberation; §10's goal-following paragraph is conditional ("whether deliberation loosens it is open");
+  §11 prices the twin cell (P1-A12, about three GPU-hours, not scheduled). Wording note: the suggested
+  "a same-length non-moral task does not" was not adopted, because only reasoning minus filler was measured;
+  §9 and Figure 8 say "further than" / "more than a same-length non-moral task does".
+- **R2 (own-screen excess):** P1-A11 (c263eb2) and P1-A13 (1d2616d) pushed before each computation. Table 3
+  gains a column, own screen: excess (n; bar); minus selection null. OLMo-3 0.084 (110; 0.04), 0.073;
+  Llama 0.100 (118; 0.03), 0.143; Tulu 3 0.051 (52; 0.04), −0.004; Qwen2.5 0.187 (47; 0.10), 0.083
+  (−0.028 to 0.195). Reading (ii) triggered: "show none on the whole panel" everywhere the split is stated.
+- **R3:** §8 sentence that a recipe carrying the gap has one measured property, not a rank among recipes;
+  abstract's chat-template sentence names no lab.
+- **R4/R5/R8:** "about a third (0.22 to 0.53)" in §10 and §12; §11 7–8B scale sentence; "mechanism" →
+  "dissociation" in §1.
+- **R6 (number hygiene):** known-gap 0.497 (0.468 to 0.525) in every place (three decimals, avoiding the
+  double-rounding risk); "354 above-floor primary–twin pairs". One rounding error found and fixed during
+  the final check: Qwen2.5's own-screen mean is 0.18745, printed as 0.188 in §8, Table 3, KDG_RESULTS §23,
+  CLAIMS KDG-58 and ANOMALIES; now 0.187. No other mismatches; two naming risks listed for the author
+  (OLMo-3's positive control as 0.58 binary / 0.60 continuous / 0.497 letter-only; screened sets of 136 /
+  110 / 130).
+- **R7:** Table 1 caption says "to our reading"; the "no" entries were not re-verified paper by paper.
+- **P1–P5:** abstract order (chat-template sentence after the same-base sentence; "with nothing at stake");
+  §1 five steps as an enumerated list, Strakhov details in the Table 1 caption; "In short" for §4 and §9;
+  in-figure headlines for Figures 1 and 8; "pressure-attributable excess" glossed at first use.
+- **GPU-1:** P1-A12 pre-registered and priced (about 3.1 A100-h); waits for the author's go. **GPU-2:** none.
+- **Build and bundle:** see ARXIV_SUBMISSION.md (31 pp., abstract counts there).

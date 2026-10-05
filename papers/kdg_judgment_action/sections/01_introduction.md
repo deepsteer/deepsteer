@@ -5,7 +5,7 @@ that action when placed inside the situation as the agent. Reports of agentic mi
 frontier models acknowledging an ethical violation in their own reasoning and proceeding with it
 [@lynch2025agentic]; models trained to behave can conceal a triggered policy through the training
 itself [@hubinger2024sleeper] and can fake alignment when they infer they are monitored
-[@greenblatt2024faking]. Our earlier work located one mechanism behind divergence of this kind.
+[@greenblatt2024faking]. Our earlier work located one dissociation behind divergence of this kind.
 On the models studied here, moral comprehension is a broad representation that forms during
 pretraining, while the refusal decision is a thin post-training control that reads only a narrow
 harm slice of it [@reblitzrichardson2026refusal]: the model knows more than its refusal uses.
@@ -24,14 +24,7 @@ recent history in the language-model literature under the name *knowing–doing 
 [@pfeffer2000knowing; @schmied2025greedy]. The design closest to ours is Strakhov and Claude
 [-@strakhov2025agents], who pose the same AI-ethics dilemma to a model in a third-person theory
 mode and a second-person action mode with callable tools, take the model's own theory-mode choice
-as the reference, and find that 47.6% of 351 paired choices across nine instruct models reverse.
-Their reversal counts changes in either direction from one draw per mode at temperature 1.0,
-without a pressure manipulation or a re-elicitation floor; the gap rate below counts only moves
-toward the violating option, by majority over 32 rollouts, against a matched null, so the two
-numbers are different quantities. Their action-mode reversals were coded more often as less
-interventionist than as bolder (48.5% against 36.5%); in our panel, read under the chat template with
-nothing at stake, the gap leans toward the violating option (0.055), so the two designs do not agree
-on the at-rest direction, and their axis (intervention level) is not ours (norm consistency). Shao et al. [-@shao2024privacylens] find a related split for
+as the reference (\Cref{tab:priorart} compares their numbers with ours). Shao et al. [-@shao2024privacylens] find a related split for
 privacy norms: models answer privacy questions better than they respect those norms when acting
 as agents. Huang et al. [-@huang2026knowing] and Shen et al.
 [-@shen2025valueaction] measure gaps between a model's stated values and its enacted choices;
@@ -54,7 +47,15 @@ Llama-3.1 weights; and a deliberation arm with truncation and norm-salience cont
 \begin{table}[tbp]
 \centering
 \caption{Where this panel sits among measured judgment--action and knowing--doing gaps in language
-models (citations in the text above). ``Own'' means the reference is the model's own statement.}
+models (citations in the text above). ``Own'' means the reference is the model's own statement. The
+``no'' entries in the last column are to our reading of each paper. Strakhov and Claude find that 47.6\%
+of 351 paired choices across nine instruct models reverse; their reversal counts changes in either
+direction from one draw per mode at temperature 1.0, without a pressure manipulation or a re-elicitation
+floor, while the gap rate here counts only moves toward the violating option, by majority over 32
+rollouts, against a matched null, so the two numbers are different quantities. Their action-mode
+reversals were coded more often as less interventionist than as bolder (48.5\% against 36.5\%); here,
+read under the chat template with nothing at stake, the gap leans toward the violating option (0.055), on
+a different axis (norm consistency, not intervention level).}
 \label{tab:priorart}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -92,28 +93,35 @@ were written half by Claude and half by GPT and cross-labeled by the other; neit
 the model evaluated. The harness that parses actions was calibrated twice on real replies against
 two judges.
 
-The argument runs in five steps, each carrying its ladder. First, on OLMo-3-7B-Instruct, read under its
-own chat template, the model takes the action it judged wrong on one screened scenario in five by
-majority vote (0.19, 95% CI 0.13 to 0.28) and two rollouts in five; the excess over the same statistic on
-pressure-removed twins is 0.10 (0.02 to 0.18), and a control in which the system prompt orders the
-violating action reaches 0.58, so the instrument has room above the measurement. The gap is not reference
-noise: on a pre-registered log-probability readout the excess holds at every strictness level of a
-four-frame judgment reference and is largest where all four frames agree (0.08, 0.03 to 0.13). It has no
-family structure at this power, so the action channel is not organized by the harm content refusal
-reads. Second, a pre-registered format check shows that reading a chat model outside its chat template
-reverses the sign of its at-rest gap ($-0.038$ raw against $+0.055$ under the template on OLMo-3), so a
-raw-frame reading would credit post-training with a caution the model does not have. Within OLMo-3, the pressure-attributable excess is present at every templated checkpoint and
-no post-training stage enlarges it on either readout, the probability scale or per unit of output
-scale (586 scenarios screened by no model; the RL step's +0.004 sits at its 0.005 bar); the
-base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame misreads templated
-checkpoints. Third, the gap follows the post-training recipe. With a positive control validating the
-instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct carry the gap and
-Tulu 3 and Qwen2.5-7B-Instruct do not, and on the same Llama-3.1 base Meta's recipe carries it while Ai2's
-Tulu 3 does not. Fourth, moral deliberation before acting reduces the gap on both recipes that carry it,
-against a length-matched non-moral control and the same control in truncated form; on OLMo-3, where the
-reasoning is truncated at the budget, about a third of the effect comes from naming the norm. Fifth, the
-raw-frame distortion follows the recipe as well: it appears on both Ai2 recipes
-and not on Meta's.
+The argument runs in five steps, each carrying its ladder.
+
+1. First, the gap is real: on OLMo-3-7B-Instruct, read under its own chat template, the model takes the
+   action it judged wrong on one screened scenario in five by majority vote (0.19, 95% CI 0.13 to 0.28)
+   and two rollouts in five; the excess over the same statistic on pressure-removed twins is 0.10 (0.02
+   to 0.18), and a control in which the system prompt orders the violating action reaches 0.58, so the
+   instrument has room above the measurement. The gap is not reference noise: on a pre-registered
+   log-probability readout the excess holds at every strictness level of a four-frame judgment
+   reference and is largest where all four frames agree (0.08, 0.03 to 0.13). It has no family
+   structure at this power, so the action channel is not organized by the harm content refusal reads.
+2. Second, post-training stages do not enlarge it once each checkpoint is read in its own format: a
+   pre-registered format check shows that reading a chat model outside its chat template reverses the
+   sign of its gap with nothing at stake ($-0.038$ raw against $+0.055$ under the template on OLMo-3), so
+   a raw-frame reading would credit post-training with a caution the model does not have. Within OLMo-3,
+   the pressure-attributable excess (the part of the gap the incentive adds) is present at every
+   templated checkpoint and no post-training stage enlarges it on either readout, the probability scale
+   or per unit of output scale (586 scenarios screened by no model; the RL step's +0.004 sits at its
+   0.005 bar); the base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame
+   misreads templated checkpoints.
+3. Third, whether the gap survives depends on the post-training recipe: with a positive control
+   validating the instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct
+   carry the gap and Tulu 3 and Qwen2.5-7B-Instruct do not on the whole panel, and on the same Llama-3.1
+   base Meta's recipe carries it while Ai2's Tulu 3 does not.
+4. Fourth, thinking about the stakes before acting moves the action toward the model's judgment: on both
+   recipes that carry the gap, moral deliberation before acting lowers the violating choice against a
+   length-matched non-moral control and the same control in truncated form; on OLMo-3, where the
+   reasoning is truncated at the budget, about a third of the effect comes from naming the norm.
+5. Fifth, the format distortion follows the recipe too: it appears on both Ai2 recipes and not on
+   Meta's.
 
 \Cref{panel} describes the panel and its readouts; \Cref{instruments} the harness, the screen,
 the ladder, and the two readouts; \Cref{gap} the gap; \Cref{reference} its robustness to the

@@ -1,5 +1,10 @@
 # 4. The model acts against its own judgment, above its null {#gap}
 
+**In short.** On OLMo-3, the model takes the action it judged wrong on about one screened scenario in five
+(0.19, 0.13 to 0.28), more often than on the same scenarios with the pressure removed (an excess of 0.10,
+0.02 to 0.18), and far below what an explicit operator order produces (0.58); the log-probability readout
+shows the same picture.
+
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{kdg_ladder.pdf}

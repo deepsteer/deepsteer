@@ -827,3 +827,13 @@ OLMo-3 cannot be read (KDG-A18, a floor artifact). The A4b wording rule's condit
 recorded; pairing it with Anthropic's 90 / 40 figure (same direction, different construct, one model) is
 the author's decision. KDG-A16 stays unresolved after counterbalancing, with the filler-confound reading
 weakened.
+
+### Adversarial review applied to the KDG paper (2026-10-05)
+
+Positive voice first: **the recipe split survives the check designed to break it: on each model's own most-
+pressuring scenarios, against a null built by the same screen on the pressure-removed twins, OLMo-3 (0.073)
+and Meta's Llama-3.1 (0.143) carry a gap and Tulu 3 (−0.004) does not; Qwen2.5 is unresolved at that
+resolution (0.083, −0.028 to 0.195) and null on the whole panel.** The deliberation claim is re-scoped: the
+dose arm moves the action toward the model's judgment (measured on primaries); whether it reduces the
+pressure-attributable part or the at-rest asymmetry needs the twins under deliberation (P1-A12, priced,
+author's go). Paper wording follows: §9 retitled, §10 conditional, "two do not on the whole panel".

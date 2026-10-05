@@ -178,13 +178,13 @@ missing gap can be told apart from an instrument that cannot see one.
 
 On OLMo-3-7B-Instruct, the model takes the action it judged wrong on about one in five of the
 scenarios that pressure it, more often than on the same scenarios with the pressure removed.
-Reading a chat model outside its chat template reverses the sign of its at-rest gap ($-0.038$
-against $+0.055$ under the template on OLMo-3), a distortion present on both Ai2 recipes and not on
-Meta's. Across four instruct models the gap depends on the
+Across four instruct models the gap depends on the
 post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it, while Tulu 3 and
-Qwen2.5-7B-Instruct show none that the validated instrument detects (above about
+Qwen2.5-7B-Instruct show none on the whole panel that the validated instrument detects (above about
 0.01 to 0.02 in probability). Meta's recipe and Ai2's Tulu 3
-start from the same Llama-3.1 weights, and only Meta's carries the gap. On both models that carry
+start from the same Llama-3.1 weights, and only Meta's carries the gap. Reading a chat model outside its chat template
+reverses the sign of its gap with nothing at stake ($-0.038$ against $+0.055$ under the template on
+OLMo-3), a distortion present on two of the three recipes read and not on the third. On both models that carry
 it, asking the model to reason about the stakes before it acts moves its choice back toward its own
 judgment, compared with a non-moral task of the same length; on OLMo-3, simply naming the norm at
 stake does about a third of that.

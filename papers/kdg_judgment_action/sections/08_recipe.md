@@ -2,8 +2,12 @@
 
 **In short.** We read four aligned models the same way, after first checking with a positive control that
 the test can see a large gap on each (0.50 to 0.62). Two carry the gap: OLMo-3 (0.018) and Meta's
-Llama-3.1-8B-Instruct (0.028). Two do not, as far as the test can see: Ai2's Tulu 3 (0.001, nothing above
-about 0.01) and Qwen2.5 ($-0.008$, nothing above about 0.02). The clearest comparison is Meta's and Tulu
+Llama-3.1-8B-Instruct (0.028). Two do not on the whole panel, as far as the test can see: Ai2's Tulu 3
+(0.001, nothing above about 0.01) and Qwen2.5 ($-0.008$, nothing above about 0.02). Read only on each
+model's own most-pressuring scenarios, all four show an excess (Tulu 3 0.05, Qwen2.5 0.19), but that
+screen favors a positive value by construction; against the same screen applied to the pressure-removed
+twins, OLMo-3 (0.073) and Llama-3.1 (0.143) keep a gap, Tulu 3 does not ($-0.004$), and Qwen2.5 is not
+resolved (0.083, $-0.028$ to 0.195). The clearest comparison is Meta's and Tulu
 3's: both start from the same Llama-3.1 weights, and only Meta's carries the gap. Tulu 3 shows none
 already after its first stage, so whatever differs happens early in its recipe.
 
@@ -23,21 +27,24 @@ known-gap acting-versus-judging mass difference has a 95% lower bound of at leas
 \centering
 \caption{The pressure-attributable excess across post-training recipes, each instruct model read under
 its own chat template on the 586 union scenarios; bases in the raw frame (descriptive, \Cref{base}). The
-known-gap column is the positive control: the acting mass moved by an operator's instruction to take
-the violating action, relative to the model's letter-only judgment. Bracketed values are 95\% bootstrap
-CIs over scenarios.}
+own-screen column (a post-review addition, amendments P1-A11 and P1-A13) gives the excess on each model's
+own screened scenarios, with $n$ and the per-model detection bar, and below it the excess minus the same
+statistic on the twin-screened set (the selection-matched null), since that screen selects on the acting
+mass and so favors a positive value. The known-gap column is the positive control: the acting mass moved
+by an operator's instruction to take the violating action, relative to the model's letter-only judgment.
+Bracketed values are 95\% bootstrap CIs over scenarios.}
 \label{tab:recipe}
 \small
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}@{}}
 \toprule
-model (recipe) & base, raw frame & instruct excess, own template & known-gap control \\
+model (recipe) & base, raw frame & instruct excess, own template (586) & own screen: excess ($n$; bar); minus selection null & known-gap control \\
 \midrule
-OLMo-3-7B (Ai2) & 0.017 [0.012, 0.022] & 0.018 [0.008, 0.029] & 0.497 [0.468, 0.525] \\
-Llama-3.1-8B-Instruct (Meta) & 0.000 [$-$0.003, 0.003] & 0.028 [0.020, 0.036] & 0.615 [0.583, 0.646] \\
-Tulu 3 on Llama-3.1-8B (Ai2), final & (Llama base) & 0.001 [$-$0.007, 0.010] & 0.602 [0.568, 0.635] \\
-\quad Tulu 3 SFT / DPO & & $-$0.003 / 0.003 & \\
-Qwen2.5-7B-Instruct (Alibaba) & 0.011 [0.007, 0.016] & $-$0.008 [$-$0.023, 0.009] & 0.519 [0.477, 0.560] \\
+OLMo-3-7B (Ai2) & 0.017 [0.012, 0.022] & 0.018 [0.008, 0.029] & 0.084 [0.056, 0.115] (110; 0.04); 0.073 [0.033, 0.114] & 0.497 [0.468, 0.525] \\
+Llama-3.1-8B-Instruct (Meta) & 0.000 [$-$0.003, 0.003] & 0.028 [0.020, 0.036] & 0.100 [0.081, 0.119] (118; 0.03); 0.143 [0.112, 0.173] & 0.615 [0.583, 0.646] \\
+Tulu 3 on Llama-3.1-8B (Ai2), final & (Llama base) & 0.001 [$-$0.007, 0.010] & 0.051 [0.023, 0.079] (52; 0.04); $-$0.004 [$-$0.054, 0.042] & 0.602 [0.568, 0.635] \\
+\quad Tulu 3 SFT / DPO & & $-$0.003 / 0.003 & & \\
+Qwen2.5-7B-Instruct (Alibaba) & 0.011 [0.007, 0.016] & $-$0.008 [$-$0.023, 0.009] & 0.187 [0.116, 0.259] (47; 0.10); 0.083 [$-$0.028, 0.195] & 0.519 [0.477, 0.560] \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -67,7 +74,14 @@ bound at or above 0.47; \Cref{fig:recipe}), so each readout can register a chang
 Llama-3.1-8B-Instruct each carry a pressure-attributable excess (0.018 and 0.028, both intervals above
 zero). Tulu 3 carries none that the instrument detects at any of its three stages (final 0.001, $-0.007$
 to 0.010; not detectable above about 0.01), and neither does Qwen2.5-7B-Instruct ($-0.008$, $-0.023$ to
-0.009; not detectable above about 0.02). The panel does not favor one family's pressures in engagement:
+0.009; not detectable above about 0.02). These are whole-panel numbers. On each model's own screened
+scenarios (a post-review addition, P1-A11) every model shows an excess, Tulu 3 (0.051, 0.023 to 0.079)
+and Qwen2.5 (0.187, 0.116 to 0.259) included; the screen selects on the acting mass, which is part of the
+excess, so it favors a positive value by construction. Applying the identical screen to the
+pressure-removed twins gives the selection-matched null (P1-A13): against it OLMo-3 (0.073, 0.033 to
+0.114) and Llama-3.1 (0.143, 0.112 to 0.173) keep their gap, Tulu 3's own-screen excess is what the
+selection produces ($-0.004$, $-0.054$ to 0.042), and Qwen2.5's is not resolved (0.083, $-0.028$ to
+0.195). The panel does not favor one family's pressures in engagement:
 every model engages every scenario, and each finds its own set of pressuring scenarios (the screened
 fraction is 0.19 to 0.22 for OLMo-3, 0.20 for Llama-3.1, 0.09 to 0.12 for Tulu 3 and 0.08 for Qwen2.5,
 and Llama's screened set overlaps OLMo-3's on 23 of 118 scenarios).
@@ -80,7 +94,9 @@ and not a validated absence, so we do not say which recipe added or removed anyt
 establishes is narrower and firm: on one set of pretrained weights, whether the aligned model carries
 the gap depends on the post-training recipe. Tulu 3's SFT checkpoint already shows none, which places
 the difference early in that recipe; which part of a recipe decides it is a question for an ablation
-on one base, not for this panel.
+on one base, not for this panel. A recipe that carries the gap on this panel has one measured property,
+not a rank among recipes: Meta's and Ai2's recipes differ in data, method and template, and in what else
+they optimize.
 
 **The DPO-stage lean replicates.** The at-rest change that \Cref{base} finds at OLMo-3's DPO step appears at
 Tulu 3's DPO step too, on the same model-free construction (586 scenarios): +0.017 (0.012 to 0.022), and

@@ -1508,3 +1508,33 @@ document pairs this with the 90 / 40 figure is the author's call.
 3. *"KDG-A16 was supposed to be closed by the rotation and it wasn't."* Correct: the pre-registered rule
    returns unresolved. The descriptive read (the dip survives rotation) moves the reading away from the
    filler confound, without licensing R_b.
+
+## 23. Own-screen excess per instruct model and its selection-matched null (P1-A11, P1-A13; 2026-10-05)
+
+Post-review additions (adversarial review R2). P1-A11 pushed c263eb2 before computation; P1-A13 pushed
+1d2616d after P1-A11's result and before its own computation (a labelled post-hoc fork). Zero GPU, from the
+saved Phase 1 letter-only chat arrays. `data/analysis_own_screen.json`; bootstrap 10,000, seed 0.
+
+| Model | own screen n | own-screen E (bar) | twin-screen n | E_rev | E_sel = E_own − E_rev | P1-A13 |
+|---|---|---|---|---|---|---|
+| OLMo-3-Instruct | 110 | 0.084 [0.056, 0.115] (0.042) | 98 | 0.012 | **0.073 [0.033, 0.114]** | survives selection |
+| Llama-3.1 Meta | 118 | 0.100 [0.081, 0.119] (0.027) | 99 | −0.043 | **0.143 [0.112, 0.173]** | survives selection |
+| Tulu 3 final | 52 | 0.051 [0.023, 0.079] (0.040) | 43 | 0.055 | **−0.004 [−0.054, 0.042]** | within selection |
+| Qwen2.5-Instruct | 47 | 0.187 [0.116, 0.259] (0.103) | 54 | 0.104 | **0.083 [−0.028, 0.195]** | within selection (not resolved) |
+
+P1-A11's registered reading (ii) obtains (Tulu 3's and Qwen2.5's own-screen intervals lie above zero): the
+paper's "two do not" reads "two do not on the whole panel", with the own-screen numbers beside it. P1-A13:
+the P1-A9 screen selects on the primary's acting mass, which is part of E, and applying the identical screen
+to the twins reproduces Tulu 3's own-screen excess exactly (0.055 vs 0.051), so Tulu 3's own-screen excess
+is what the selection produces; OLMo-3 and Llama-3.1 keep a gap above the selection-matched null; Qwen2.5's
+interval is wide and the own-screen read does not resolve it (the whole-panel null, bar about 0.02, remains
+its number of record). The recipe split of KDG-48 holds on the selection-matched own-screen read.
+
+Referee pass. (1) *"You added a null after the result disappointed you."* P1-A13 is labelled a post-hoc
+fork and was pushed before computing; P1-A11's reading (ii) stands in the paper beside it, so a reader sees
+both. The construction reason (selection on part of the outcome) is the estimator-traps trap the program has
+named since July. (2) *"OLMo-3's own-screen E (0.084) is almost three times its 136-set E (0.030)."* Two
+different screens on one model; the size difference is itself the selection effect P1-A13 measures (E_rev
+0.012 on OLMo-3's twins). Only the selection-matched number is comparable across models. (3) *"Qwen2.5 might
+carry a gap the panel misses."* Conceded at the own-screen resolution (CI to 0.195); the whole-panel bar
+(about 0.02) and the positive control (0.519) are what the null rests on.

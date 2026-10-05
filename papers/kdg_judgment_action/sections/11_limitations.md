@@ -1,10 +1,13 @@
 # 11. Limitations {#limitations}
 
 **Four models, one panel.** The panel was written and screened on OLMo-3, and each model finds its own
-pressuring scenarios (\Cref{recipe}); whether the pressures in this panel are the ones that matter for the
+pressuring scenarios (\Cref{recipe}). All four are 7--8B models and scale is not varied; nothing here
+says what holds at larger sizes. Whether the pressures in this panel are the ones that matter for the
 recipes that show no gap is a construct question the positive control does not answer. The positive
 control shows each readout moves when the action changes; the detection bar for a small gap comes from
-each null's own interval (about 0.01 on Tulu 3, 0.02 on Qwen2.5). The base cells are raw-frame readings,
+each null's own interval (about 0.01 on Tulu 3, 0.02 on Qwen2.5). On their own screened scenarios the two recipes without a
+whole-panel gap show an excess no larger than the same screen produces on their pressure-removed twins
+(Tulu 3) or not resolved against it (Qwen2.5). The base cells are raw-frame readings,
 descriptive by the bridge rule, so the same-base contrast says that the recipe decides whether the aligned
 model carries the gap, not what either recipe did to the base. A recipe is a bundle of data, method and
 template; which part decides is an ablation on one base, not a question this panel can answer. Huang et
@@ -59,6 +62,9 @@ at the action position; persona steering as a lever) are what this gap exists to
 are not in this paper.
 
 **What would change these results, and what it costs.** Each open reading has a priced discriminator.
+Running the pressure-removed twins under the reasoning and filler arms (the 130 OLMo-3 and 114 Llama-3.1
+twins of the dose sets, about three GPU-hours, pre-registered as P1-A12) says whether deliberation
+reduces the pressure-attributable part of the gap or the at-rest asymmetry between judging and acting.
 A like-for-like dose run, both carrying models on one scenario set with a budget long enough for both to
 finish (about three GPU-hours), says whether completed reasoning does more than truncated reasoning and
 licenses any side-by-side statement of the two dose effects. Extending the salience and truncation controls
