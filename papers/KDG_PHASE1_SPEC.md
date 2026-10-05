@@ -697,3 +697,17 @@ loosening.
   before any pod).
 - If run, §9, §10, §11 and the abstract's last paragraph are updated from whichever branch holds, with the
   cell labelled a post-review addition in the amendment record.
+
+**P1-A13. Selection-matched null for the own-screen excess (dated 2026-10-05, after P1-A11's result and
+before this computation; a post-hoc fork labelled as such; pushed first).** P1-A11 returned a positive
+own-screen excess on every model, Tulu 3 and Qwen2.5 included. Construction reason for a further check: the
+P1-A9 screen selects on the primary's acting mass, which is part of E, so under heterogeneous scenario
+effects it yields a positive E even when pressure has no systematic effect (estimator-traps trap 4).
+- *Null.* Apply the identical rule to each model's **pressure-removed** cells (twin judgment non-violating
+  by argmax in ≥ 6 of 8 permutations; twin acting violating mass in [0.15, 0.85] or ≥ 0.85) and compute
+  the reversed contrast E_rev = (p_D,twin − p_J,twin) − (p_D − p_J) on that twin-screened set. If pressure
+  and twin are exchangeable, E_rev has the same distribution as the own-screen E.
+- *Quantity and rule.* E_sel = E_own − E_rev (independent bootstrap of the two sets, 10,000, seed 0).
+  **Own-screen gap survives selection** iff E_sel's CI lies entirely above 0; otherwise the own-screen
+  excess is **within what selection on the acting mass produces** on that model. Reported for all four
+  models; P1-A11's numbers and reading (ii) stand as registered beside this one.

@@ -1,0 +1,71 @@
+{
+ "amendment": "P1-A11 (c263eb2)",
+ "n_boot": 10000,
+ "seed": 0,
+ "models": {
+  "olmo3_final": {
+   "n_screened": 110,
+   "n_used": 110,
+   "dropped_below_floor": 0,
+   "E_own_screen": {
+    "mean": 0.08442934426818997,
+    "ci95": [
+     0.05596122898538678,
+     0.11477182046127703
+    ],
+    "n": 110,
+    "point_in_ci": true,
+    "mde": 0.0420075653399216
+   },
+   "bar": 0.0420075653399216
+  },
+  "llama31_instruct_meta": {
+   "n_screened": 118,
+   "n_used": 118,
+   "dropped_below_floor": 0,
+   "E_own_screen": {
+    "mean": 0.09958875935497827,
+    "ci95": [
+     0.08117006012067579,
+     0.11854458889598335
+    ],
+    "n": 118,
+    "point_in_ci": true,
+    "mde": 0.02669609198236254
+   },
+   "bar": 0.02669609198236254
+  },
+  "tulu3_final": {
+   "n_screened": 52,
+   "n_used": 52,
+   "dropped_below_floor": 0,
+   "E_own_screen": {
+    "mean": 0.05061765040983912,
+    "ci95": [
+     0.022724230231968262,
+     0.07919237234325496
+    ],
+    "n": 52,
+    "point_in_ci": true,
+    "mde": 0.04033438722234765
+   },
+   "bar": 0.04033438722234764
+  },
+  "qwen25_instruct": {
+   "n_screened": 47,
+   "n_used": 47,
+   "dropped_below_floor": 0,
+   "E_own_screen": {
+    "mean": 0.18745379635539622,
+    "ci95": [
+     0.11566906066354714,
+     0.2593334424021583
+    ],
+    "n": 47,
+    "point_in_ci": true,
+    "mde": 0.10261741552757937
+   },
+   "bar": 0.10261741552757937
+  }
+ }
+}
