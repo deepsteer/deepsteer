@@ -6,6 +6,9 @@
 #   KDG_PROFILE=p1a_fix2 re-run of stages_raw + stages_chat_sft only (lost twice to a full local disk)
 #   KDG_PROFILE=p1a_fix  re-run of the p1a cells lost in the download (stages_raw, SFT stage chat)
 #   KDG_PROFILE=p1b  Session B (Llama-3.1 base + Meta instruct, Tulu-3 stages, Qwen2.5: raw cells)
+#   KDG_PROFILE=p1d  P1-A12 / GPU-1 (2026-10-05): dose2 + filler forced arms and the own truncated
+#                    filler on the pressure-removed twins of the dose sets of record (OLMo-3 136
+#                    screened, Llama-3.1 Meta its own screen), same seeds and orders as the primaries
 #
 #   GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe,NVIDIA H100 80GB HBM3,NVIDIA H100 PCIe" \
 #   DISK_GB=200 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase1.sh KDG_PROFILE=p1a \
@@ -27,7 +30,7 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-case "$PROFILE" in p1a|p1b|p1c|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1c, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
+case "$PROFILE" in p1a|p1b|p1c|p1d|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1c, p1d, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
 # p1a_fix writes into outputs/p1a (it re-runs Session A cells lost in the 2026-09-27 download)
 OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%%_fix*}"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -54,7 +57,11 @@ echo ">> scenario rows on pod: $N_ROWS"
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
 [ -f $D/dose_bf_rollout_texts.jsonl.gz ] || { echo "FATAL: dose rollout texts missing (P1-A8 input)"; exit 1; }
-if [ "$PROFILE" = "p1c" ]; then
+if [ "$PROFILE" = "p1d" ]; then
+  [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: p1d needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
+  [ -f $D/screened_ids_llama31_meta.json ] || { echo "FATAL: Llama screen list missing (P1-A9)"; exit 1; }
+  python $S --dry-run --models olmo3_instruct,llama31_instruct_meta --units DOSE_TWIN --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+elif [ "$PROFILE" = "p1c" ]; then
   [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: Session C needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
   [ -f $D/screened_ids_llama31_meta.json ] || { echo "FATAL: Llama screen list missing (P1-A9)"; exit 1; }
   python $S --dry-run --models olmo3_instruct,llama31_instruct_meta --units dl_chat_known_gap,DOSE_BF,dose_ctrl_tf_own --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
@@ -81,7 +88,22 @@ step() {  # step <name> <driver args...>
 }
 R3="$(ls $D/round3_scenarios_*.json | tr '\n' ' ')"
 
-if [ "$PROFILE" = "p1c" ]; then
+if [ "$PROFILE" = "p1d" ]; then
+  # P1-A12 (KDG_PHASE1_SPEC, pushed c263eb2): the twin cells, OLMo-3 first (no gated download)
+  rows_check() {  # P1-A12 bail line: 16 rows per scenario in every twin cell, else "not run"
+    python - "$1" <<'PY'
+import collections, glob, json, sys
+for f in sorted(glob.glob(sys.argv[1] + "/*/*pressure_removed*.jsonl")):
+    c = collections.Counter(json.loads(l)["scenario_id"] for l in open(f) if l.strip())
+    bad = {k: v for k, v in c.items() if v != 16}
+    print(("ROWS OK " if not bad else "ROWS BAD ") + f, len(c), "scenarios", dict(list(bad.items())[:3]))
+PY
+  }
+  step olmo_dose_twin --models olmo3_instruct --units DOSE_TWIN --scenario-ids-file $D/screened_ids_a17_union.json
+  rows_check "$OUT/olmo_dose_twin"
+  step llama_dose_twin --models llama31_instruct_meta --units DOSE_TWIN --scenario-ids-file $D/screened_ids_llama31_meta.json
+  rows_check "$OUT/llama_dose_twin"
+elif [ "$PROFILE" = "p1c" ]; then
   # P1-A9 Session C: known-gap positive control on every instruct model (OLMo-3 reference first),
   # then the Llama-3.1 Meta dose arm with the truncated-filler control from its own rollouts
   step known_gap --models olmo3_instruct,llama31_instruct_meta,tulu3_final,qwen25_instruct_p1 --units dl_chat_known_gap

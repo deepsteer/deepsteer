@@ -476,3 +476,67 @@ class TestSessionC:
             .splitlines()
         }
         assert tf == own
+
+
+class TestDoseTwin:
+    """P1-A12 (GPU-1): dose2 / filler forced arms and the own TF on the pressure-removed twins."""
+
+    def test_twin_arm_renders_twin_text_with_primary_seeds_and_orders(self, tmp_path, scen):
+        # most probable failure: the twin unit renders the pressured text (Δ_T == Δ_P by
+        # construction), or draws different option orders than the primaries it is paired with
+        ctx = _Ctx.make(tmp_path, lib.StubModel("instruct"))
+        for u in ("d_chat_dose2_bf", "d_chat_dose2_bf_pressure_removed"):
+            lib.UNITS[u][1](ctx, scen[:3])
+        d = tmp_path / "k"
+
+        def rows(c):
+            return [json.loads(x) for x in (d / f"{c}.jsonl").read_text().splitlines()]
+
+        prim, twin = rows("d_chat_dose2_bf"), rows("d_chat_dose2_bf_pressure_removed")
+        assert [(r["scenario_id"], r["rollout"], r["order"]) for r in prim] == [
+            (r["scenario_id"], r["rollout"], r["order"]) for r in twin
+        ]
+        by_id = {s.id: s for s in scen}
+        for r in twin:
+            s = by_id[r["scenario_id"]]
+            o = assign_letters(s, r["rollout"])
+            want = ctx.model.render_chat(
+                [
+                    {
+                        "role": "user",
+                        "content": lib.render_agent_user_message(
+                            s, o, "dose2", pressure_removed=True
+                        ),
+                    }
+                ]
+            )
+            assert r["prompt_sha256"] == lib.sha256_text(want)
+            assert r["variant"] == "pressure_removed"
+        assert {r["prompt_sha256"] for r in prim}.isdisjoint({r["prompt_sha256"] for r in twin})
+        assert (d / "d_chat_dose2_bf_pressure_removed_forced.jsonl").exists()
+
+    def test_twin_tf_reads_twin_filler_rollouts_not_primary(self, tmp_path, scen):
+        # most probable failure: the twin truncated filler silently reads the primary filler
+        # rollouts (the file the primary control reads sits in the same directory)
+        ctx = _Ctx.make(tmp_path, lib.StubModel("instruct"))
+        lib.UNITS["d_chat_dose2_filler_bf"][1](ctx, scen[:2])
+        ctx.dry = False
+        with pytest.raises(FileNotFoundError):
+            lib.UNITS["dose_ctrl_tf_own_pressure_removed"][1](ctx, scen[:2])
+        ctx.dry = True
+        lib.UNITS["d_chat_dose2_filler_bf_pressure_removed"][1](ctx, scen[:2])
+        ctx.dry = False
+        lib.UNITS["dose_ctrl_tf_own_pressure_removed"][1](ctx, scen[:2])
+        d = tmp_path / "k"
+        tf = [
+            json.loads(x)
+            for x in (d / "d_chat_dose2_filler_tf_pressure_removed_forced.jsonl")
+            .read_text()
+            .splitlines()
+        ]
+        assert tf and all(r["variant"] == "pressure_removed" for r in tf)
+        with pytest.raises(ValueError):
+            lib.cell_dose_control(ctx, scen[:2], kind="tf", variant="pressure_removed")
+
+    def test_group_registered(self):
+        assert pod.GROUPS["DOSE_TWIN"] == lib.DOSE_TWIN_UNITS

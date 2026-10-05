@@ -903,21 +903,30 @@ def cell_dose_forced(
     budget: int | None = None,
     n_roll: int | None = None,
     suffix: str = "_bf",
+    variant: str = "primary",
 ) -> None:
     """P1-A5 budget-forced dose arm. Generation exactly as ``cell_d_chat`` (same instruction, T,
     seeds, per-rollout order) with generation cap ``budget + 24``; then, per rollout, a forced
     forward pass on prompt + R + "\n\nAnswer:" (``forced_reasoning_text``). Saves the natural
     cell ``d_chat_{arm}{suffix}`` (as ``cell_d_chat``) and ``d_chat_{arm}{suffix}_forced`` (full
-    next-token vector at the forced anchor, per rollout). F2 is skipped (no gate family)."""
+    next-token vector at the forced anchor, per rollout). F2 is skipped (no gate family).
+    ``variant="pressure_removed"`` (P1-A12) runs the same arm on the twins: same seeds and orders,
+    cells ``d_chat_{arm}{suffix}_pressure_removed`` and ``..._pressure_removed_forced``."""
     budget = budget or DOSE_CAPS[arm]
     n = ctx.n(n_roll or ctx.n_dose)
-    cell = f"d_chat_{arm}{suffix}"
+    pr = variant == "pressure_removed"
+    cell = f"d_chat_{arm}{suffix}" + ("_pressure_removed" if pr else "")
     rows, logp_nat, fr_rows, fr_prompts, opt_ids = [], [], [], [], []
     for s in [x for x in scenarios if x.family != "F2"]:
         orders = [assign_letters(s, seed) for seed in range(n)]
         prompts = [
             ctx.model.render_chat(
-                [{"role": "user", "content": render_agent_user_message(s, o, arm)}]
+                [
+                    {
+                        "role": "user",
+                        "content": render_agent_user_message(s, o, arm, pressure_removed=pr),
+                    }
+                ]
             )
             for o in orders
         ]
@@ -940,7 +949,7 @@ def cell_dose_forced(
                 g,
                 parse,
                 p,
-                variant="primary",
+                variant=variant,
                 chat_template_sha256=ctx.model.chat_template_sha,
                 budget=budget,
             )
@@ -980,15 +989,26 @@ def reasoning_before_answer(text: str) -> tuple[str, bool]:
 
 
 def cell_dose_control(
-    ctx: Ctx, scenarios: list[Scenario], *, kind: str, source: str = "committed"
+    ctx: Ctx,
+    scenarios: list[Scenario],
+    *,
+    kind: str,
+    source: str = "committed",
+    variant: str = "primary",
 ) -> None:
     """P1-A8 forward-pass controls on the committed P1-A5 filler rollouts.
 
     kind "tf": the filler reasoning cut mid-text at floor(0.75 n) of its own tokens, forced
     "\n\nAnswer:". kind "ns": a fixed norm-naming sentence, then the filler reasoning, forced.
     Prompts are the original filler prompts (order re-derived from the rollout seed and asserted
-    equal to the saved order). Cell ``d_chat_dose2_filler_{kind}_forced``.
+    equal to the saved order). Cell ``d_chat_dose2_filler_{kind}_forced``. ``variant=
+    "pressure_removed"`` (P1-A12, ``source="own"`` only) reads the twin filler rollouts and renders
+    the twin prompts; cell ``d_chat_dose2_filler_{kind}_pressure_removed_forced``.
     """
+    pr = variant == "pressure_removed"
+    if pr and source != "own":
+        raise ValueError("pressure_removed controls read the model's own twin filler rollouts")
+    sfx = "_pressure_removed" if pr else ""
     import gzip
 
     by_id = {s.id: s for s in scenarios if s.family != "F2"}
@@ -999,12 +1019,13 @@ def cell_dose_control(
                 "rollout": i,
                 "order": letter_map(assign_letters(s, i)),
                 "text": "restated situation words here and more words\nAnswer: A",
+                "variant": variant,
             }
             for s in list(by_id.values())[:2]
             for i in range(2)
         ]
     elif source == "own":  # P1-A9: this model's own filler rollouts, written earlier in the step
-        src = ctx.out / "d_chat_dose2_filler_bf.jsonl"
+        src = ctx.out / f"d_chat_dose2_filler_bf{sfx}.jsonl"
         if not src.exists():
             raise FileNotFoundError(f"{src}: run d_chat_dose2_filler_bf before the own-rollout TF")
         rows_in = [json.loads(x) for x in src.read_text().splitlines() if x.strip()]
@@ -1015,16 +1036,17 @@ def cell_dose_control(
             r = json.loads(line)
             if r["arm"] == "dose2_filler" and r["scenario_id"] in by_id:
                 rows_in.append(r)
-    cell = f"d_chat_dose2_filler_{kind}_forced"
+    cell = f"d_chat_dose2_filler_{kind}{sfx}_forced"
     prompts, rows, opt_ids = [], [], []
     for r in rows_in:
         s = by_id[r["scenario_id"]]
         order = assign_letters(s, int(r["rollout"]))
         # "the control reads the rollout under its own option order": fail loudly on drift
         assert letter_map(order) == r["order"], (s.id, r["rollout"], "order drift")
-        base = ctx.model.render_chat(
-            [{"role": "user", "content": render_agent_user_message(s, order, "dose2_filler")}]
-        )
+        user = render_agent_user_message(s, order, "dose2_filler", pressure_removed=pr)
+        base = ctx.model.render_chat([{"role": "user", "content": user}])
+        # "the twin control reads twin rollouts": the source row must carry the same variant
+        assert not pr or r.get("variant") == "pressure_removed", (s.id, "primary rollout read")
         text, natural = reasoning_before_answer(r["text"])
         if kind == "tf":
             ids = ctx.model.encode(text)
@@ -1047,6 +1069,7 @@ def cell_dose_control(
                 "cell": cell,
                 "arm": "dose2_filler",
                 "control": kind,
+                "variant": variant,
                 "rollout": int(r["rollout"]),
                 "seed": int(r["rollout"]),
                 "order": letter_map(order),
@@ -1236,6 +1259,24 @@ DOSE_CTRL_UNITS = ("dose_ctrl_tf", "dose_ctrl_ns")
 UNITS["dose_ctrl_tf_own"] = (
     ("instruct",),
     lambda c, S: cell_dose_control(c, S, kind="tf", source="own"),
+)
+# P1-A12 (GPU-1): the dose2 / filler forced arms and the own truncated filler on the twins
+UNITS["d_chat_dose2_bf_pressure_removed"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2", variant="pressure_removed"),
+)
+UNITS["d_chat_dose2_filler_bf_pressure_removed"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_forced(c, S, arm="dose2_filler", variant="pressure_removed"),
+)
+UNITS["dose_ctrl_tf_own_pressure_removed"] = (
+    ("instruct",),
+    lambda c, S: cell_dose_control(c, S, kind="tf", source="own", variant="pressure_removed"),
+)
+DOSE_TWIN_UNITS = (
+    "d_chat_dose2_bf_pressure_removed",
+    "d_chat_dose2_filler_bf_pressure_removed",
+    "dose_ctrl_tf_own_pressure_removed",
 )
 UNITS["dl_chat_known_gap"] = (
     ("instruct",),

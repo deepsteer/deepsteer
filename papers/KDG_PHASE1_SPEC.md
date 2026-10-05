@@ -697,6 +697,23 @@ loosening.
   before any pod).
 - If run, §9, §10, §11 and the abstract's last paragraph are updated from whichever branch holds, with the
   cell labelled a post-review addition in the amendment record.
+- *Execution note (dated 2026-10-05, author go; written and pushed before the pod, no rule changed).*
+  Harness: units `d_chat_dose2_bf_pressure_removed`, `d_chat_dose2_filler_bf_pressure_removed`,
+  `dose_ctrl_tf_own_pressure_removed` (group `DOSE_TWIN`), profile `p1d` of `remote_kdg_phase1.sh`;
+  analysis `analyze_dose_twin.py`, committed with this note. OLMo-3's primary TF of record is the P1-A8
+  control on its committed filler rollouts (its own), so "own TF" holds on both models. Local tests assert
+  the twin unit renders the twin text under the primaries' seeds and orders, and that the twin TF reads
+  twin rollouts. **Power from measured variance** (MDE = 2.8 × SE; ΔE's SE taken as √2 × Δ_P's, i.e.
+  uncorrelated primary and twin changes, conservative if they correlate positively): OLMo-3 Δ_P −0.077
+  (MDE 0.045, n 130) gives a ΔE bar of about 0.064, so branch (a) is detectable only if reasoning moves
+  the twin by less than about 0.013 and **unresolved is a likely OLMo-3 outcome**; Llama Δ_P −0.350 (MDE
+  0.052, n 114) gives a bar of about 0.073, and either branch is decidable. Both branches and unresolved
+  are written above. **Bail:** VALIDATE (local gates + dry run on the pod) first; per step, the manifest
+  must verify and the twin cells must hold 16 rows per scenario, else that model is reported not run.
+  **Saves:** natural and forced rows plus full next-token vectors per rollout (`.jsonl` + `.npz`), the
+  rollout texts inside the natural rows. **Depends on:** `screened_ids_a17_union.json`,
+  `screened_ids_llama31_meta.json`, the primary dose cells under `outputs/p1a`, `p1b`, `p1c` (all present
+  locally).
 
 **P1-A13. Selection-matched null for the own-screen excess (dated 2026-10-05, after P1-A11's result and
 before this computation; a post-hoc fork labelled as such; pushed first).** P1-A11 returned a positive

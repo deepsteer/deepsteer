@@ -11,7 +11,8 @@ runs the requested units on each, saves per-unit artifacts plus a manifest.
     python3 papers/kdg_panel/scripts/pod_kdg_phase1.py --dry-run --models olmo3_instruct,olmo3_sft \
         --units RAW,C1 --out /tmp/p1dry
 
-Unit groups: RAW, C1, C3CHAT, DOSE, KDG2 (the KDG-2 instruct ladder), VALIDATE; or unit names.
+Unit groups: RAW, C1, C3CHAT, DOSE, DOSE_TWIN (P1-A12), KDG2 (the KDG-2 instruct ladder), VALIDATE;
+or unit names.
 Registry: models.yaml tier1 + tier2 + phase1. Stage checkpoints with ``rendered_equals`` get the
 rendered-prompt identity check before any chat unit; a mismatch skips their chat units as a fork
 (raw units still run). A resolved commit different from the registry revision is logged in the
@@ -38,6 +39,7 @@ from kdg_pod_lib import (  # noqa: E402
     DOSE_BF_UNITS,
     DOSE_CTRL_UNITS,
     DOSE_LONG_UNITS,
+    DOSE_TWIN_UNITS,
     DOSE_UNITS,
     KDG2_UNITS_INSTRUCT,
     P2_PILOT_UNITS,
@@ -67,6 +69,7 @@ GROUPS = {
     "DOSE_BF": DOSE_BF_UNITS,
     "DOSE_CTRL": DOSE_CTRL_UNITS,
     "DOSE_LONG": DOSE_LONG_UNITS,
+    "DOSE_TWIN": DOSE_TWIN_UNITS,  # P1-A12 (GPU-1)
     "KDG2": KDG2_UNITS_INSTRUCT,
     "VALIDATE": ("validate_forward_matches_generate",),
     # Phase 2 (KDG_F6_F8_SPEC.md §10): pilot keystone on the expanded F6–F8 items; the
