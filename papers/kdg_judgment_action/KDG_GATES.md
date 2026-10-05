@@ -221,3 +221,28 @@ draft gate (below).
 - **App F:** keeps "available on request"; the Zenodo deposit is a v2 item, not a v1 gate (author).
 - **Scope fence:** nothing from Phase 2 (the 2026-10-02 commits: p2a, G2′, A4a/A4b) is in the paper
   (checked by grep over the sections).
+
+## 2026-10-05: pre-submit decisions (author), executed
+
+- **Withdrawn-claim framing removed everywhere** (abstract, §1 claims 2 and 5 and roadmap, §7 title and
+  paragraph, §8, §10 heading and the persona sentence, §12): the finding stays as a methods result with its
+  pre-registered test (reading a chat model outside its template reverses its at-rest sign, −0.038 raw
+  against +0.055 under the template on OLMo-3; present on both Ai2 recipes, not on Meta's). §7 is titled
+  "Before and after post-training, and a format check that changed a reading"; the §10 paragraph heading is
+  "A format check that changed a reading". Grep of the PDF text and the source for "earlier claim",
+  "withdr", "corrected", "demot": 0 (the parser-appendix "non-demoted option" reworded as "the option
+  other than Y").
+- **"In short." paragraphs** at the top of §7 (stage null with its bars in the same sentence and the
+  positive-control clause; values from the 586 set of record: 0.015 / 0.014 / 0.018, step bars 0.008 and
+  0.005) and §8 (as drafted).
+- **Figure 6 replaced** by the template-valid stage profile (`kdg_stages`: 586 and 136 sets with CIs, the
+  base as a gray raw-frame description, the final checkpoint's positive control beside on one axis); the
+  raw-frame three-cell figure moved to Appendix D (now Figure 9) with a caption that opens with what it does
+  not show. Figure data `figure_data/kdg_stages.csv`; zero GPU.
+- **§10:** one sentence naming the direct test of the pretraining thesis (one recipe applied to bases that
+  differ only in pretraining; a training experiment) as the recipe paper's experiment.
+- **Correction found while drawing Figure 6:** the known-gap CI is 0.47 to 0.52 (0.4679, 0.5248), not
+  "0.47 to 0.53" as first written on 2026-10-04 (0.525 rounded twice); fixed in §7.
+- **Build and bundle:** clean (0 errors, 0 undefined, 0 overfull), 30 pp., no Type 3; tarball rebuilt (9
+  figures, 33 entries, 291 KB) and compiled from a fresh extraction (0 errors, 0 missing). arXiv abstract
+  1,896 characters after the swap (limit 1,920); `ARXIV_SUBMISSION.md` regenerated.

@@ -29,11 +29,14 @@ its own judgment, and that within a recipe that carries the gap, later stages le
 Combined with our earlier finding that the refusal gate is a thin post-training construction over a
 broad pretrained moral representation [@reblitzrichardson2026refusal], the action decision looks like
 the refusal decision in one respect: both are shaped by post-training choices, and neither simply
-inherits what the model comprehends.
+inherits what the model comprehends. The direct test of whether pretraining sets the gap is a training experiment, not
+a readout: one post-training recipe applied to bases that differ only in their pretraining, which is the
+experiment of our planned recipe paper.
 
-**The instrument corrected us, by its own rule.** An earlier reading of this panel said that
-post-training lowers the baseline, so that a behavioral evaluation without the twin would record an
-improvement where the pressure sensitivity went the other way. The pre-registered cell that separates
+**A format check that changed a reading.** Read in a raw completion frame, the instruct model looks
+more cautious acting than judging at rest, which an evaluation without the twin would record as
+post-training lowering the baseline while the pressure sensitivity went the other way. The pre-registered
+cell that separates
 a post-training caution from a frame artifact returned the artifact branch: under the model's template
 the at-rest gap is positive, not negative. We state this as a result because it generalizes, though not
 everywhere. A chat model read in a raw completion frame acquires agent-frame effects that belong to the
@@ -55,8 +58,8 @@ does about a third of that on OLMo-3. This differs from Rakshit et al.'s [-@raks
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering
-[@chen2025persona] remains the second lever the design anticipates; with the baseline shift withdrawn,
-its target is the pressure-attributable excess itself.
+[@chen2025persona] remains the second lever the design anticipates; with the raw frame's at-rest caution
+shown to be a format effect, its target is the pressure-attributable excess itself.
 
 **Two instruments, one gap.** The majority-vote gap and the log-prob gap agree on sign and rough
 size wherever the first has power, reproduce the same positive band, pass a coherence check the

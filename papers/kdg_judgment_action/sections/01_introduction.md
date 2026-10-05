@@ -100,9 +100,9 @@ violating action reaches 0.58, so the instrument has room above the measurement.
 noise: on a pre-registered log-probability readout the excess holds at every strictness level of a
 four-frame judgment reference and is largest where all four frames agree (0.08, 0.03 to 0.13). It has no
 family structure at this power, so the action channel is not organized by the harm content refusal
-reads. Second, the design withdrew one of our own claims by its pre-registered rule: a raw-frame reading
-that post-training makes the model more cautious at rest is a property of reading a chat model without
-its template. Within OLMo-3, the pressure-attributable excess is present at every templated checkpoint and
+reads. Second, a pre-registered format check shows that reading a chat model outside its chat template
+reverses the sign of its at-rest gap ($-0.038$ raw against $+0.055$ under the template on OLMo-3), so a
+raw-frame reading would credit post-training with a caution the model does not have. Within OLMo-3, the pressure-attributable excess is present at every templated checkpoint and
 no post-training stage enlarges it on either readout, the probability scale or per unit of output
 scale (586 scenarios screened by no model; the RL step's +0.004 sits at its 0.005 bar); the
 base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame misreads templated
@@ -112,11 +112,11 @@ Tulu 3 and Qwen2.5-7B-Instruct do not, and on the same Llama-3.1 base Meta's rec
 Tulu 3 does not. Fourth, moral deliberation before acting reduces the gap on both recipes that carry it,
 against a length-matched non-moral control and the same control in truncated form; on OLMo-3, where the
 reasoning is truncated at the budget, about a third of the effect comes from naming the norm. Fifth, the
-raw-frame distortion that withdrew our claim follows the recipe as well: it appears on both Ai2 recipes
+raw-frame distortion follows the recipe as well: it appears on both Ai2 recipes
 and not on Meta's.
 
 \Cref{panel} describes the panel and its readouts; \Cref{instruments} the harness, the screen,
 the ladder, and the two readouts; \Cref{gap} the gap; \Cref{reference} its robustness to the
 judgment reference; \Cref{structure} the families and the generator effect; \Cref{base} the
-post-training stages and the withdrawn claim; \Cref{recipe} the four recipes; \Cref{deliberation}
+post-training stages and the format check; \Cref{recipe} the four recipes; \Cref{deliberation}
 the dose arm; \Cref{discussion} what the result does and does not say about the action channel.

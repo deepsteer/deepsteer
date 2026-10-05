@@ -1,4 +1,14 @@
-# 7. Before and after post-training, and a claim the instrument withdrew {#base}
+# 7. Before and after post-training, and a format check that changed a reading {#base}
+
+**In short.** On OLMo-3 the gap shows up before and after post-training. In the base model, which can
+only be read as plain text completion, the part the incentive adds is 0.017 (0.012 to 0.022); we report
+this as a description, because that format misreads chat models. In the aligned model, read in its own
+chat format on all 586 scenarios, the gap is already present after supervised fine-tuning (0.015, 0.007
+to 0.023), and no later stage makes it detectably larger (0.014 after DPO and 0.018 after RL; detection
+bars of 0.008 and 0.005 for the two steps, with the RL step's +0.004 at its bar; \Cref{fig:stages}), while the same test
+registers a large gap on the final model when its operator orders the violation (0.50, 0.47 to 0.52).
+What post-training does change is the model's default lean when it acts: preference optimization nudges
+it toward the advantageous option even when nothing is at stake (+0.011, 0.007 to 0.016).
 
 Base-versus-instruct is the question of origin: a gap present in base weights is inherited from
 pretraining; a gap absent in base and present in instruct would point to post-training. A base
@@ -14,18 +24,18 @@ That second readout changed what this section can claim, and we report the chang
 
 \begin{figure}[tbp]
 \centering
-\includegraphics[width=\linewidth]{kdg_three_cell.pdf}
-\caption{\textbf{Base versus instruct in the raw completion frame}, on the 192 scenarios where
-both models clear the mass floor on the primary and on the twin. (a) Violating-option mass when
-acting and when judging, on the pressure-removed twin (open markers) and under pressure (filled),
-per model. (b) The paired quantities with 95\% CIs: each model's pressure-attributable excess
-$E$, its acting-side and judging-side components, and the base-minus-instruct differences. The
-excess is present in both models. The instruct model's raw-frame values carry a format effect
-(\Cref{base}): its negative no-pressure gap does not reproduce under its own chat template, and
-its raw-frame agent frame is sharper than its judge frame by a factor that mostly disappears under
-the template. The instruct columns are therefore a raw-frame cell, not the model's
-template-valid behavior.}
-\label{fig:three-cell}
+\includegraphics[width=\linewidth]{kdg_stages.pdf}
+\caption{\textbf{OLMo-3 across post-training, each checkpoint read in its own chat template.} (a) The
+pressure-attributable excess $E$ after SFT, after DPO and after RL (the final model), on the 586 scenarios
+screened by no model (filled; the number of record for stage claims) and on the 136 scenarios screened on
+the final model's actions (hollow); the gap is present at every stage and no later stage makes it
+detectably larger (step detection bars 0.008 for DPO and 0.005 for RL on the 586). The base model, which
+has no chat template, is shown in the raw completion frame (gray diamond) as a description only: that
+frame misreads templated checkpoints, so the base value is not a validated before-and-after comparison.
+(b) On the final checkpoint, the positive control (red: the acting frame's move when the operator orders
+the violating action; it was not run on the SFT and DPO checkpoints) and the excess on one axis, with the
+pre-registered validation bar dotted. 95\% bootstrap CIs over scenarios.}
+\label{fig:stages}
 \end{figure}
 
 \begin{table}[tbp]
@@ -78,13 +88,12 @@ evaluation lowers the at-rest gap by about 0.01 (0.010, 0.001 to 0.021 on the 20
 scenarios; not resolved on the 136) and does not detectably move the excess ($-0.008$, $-0.026$ to
 0.012).
 
-**A claim the instrument dropped.** The raw frame had shown the opposite at rest: the instruct
-model's no-pressure gap was $-0.038$ ($-0.059$ to $-0.015$), so that with nothing at stake it looked
-more cautious acting than judging, and post-training appeared to lower the baseline while raising
-the action's sensitivity to the incentive. We pre-registered the cell that would separate an
-agent-frame caution from post-training from a raw-frame artifact, with the artifact branch written down as
-dropping the baseline half of that sentence. Under the template the sign is positive, and the
-artifact branch holds. The raw frame also exaggerates how much sharper the instruct model's
+**A format check that changed a reading.** In the raw frame the instruct model's no-pressure gap is
+$-0.038$ ($-0.059$ to $-0.015$): with nothing at stake it looks more cautious acting than judging,
+which would read as post-training lowering the baseline while raising the action's sensitivity to the
+incentive. A pre-registered cell separates an agent-frame caution installed by post-training from a
+raw-frame artifact, with both branches fixed in advance. Under the template the sign is positive
+(+0.055, 0.034 to 0.076), and the artifact branch holds. The raw frame also exaggerates how much sharper the instruct model's
 agent-frame output is than its judge-frame output (a ratio of 1.79 raw against 1.07 under the
 template). A chat-trained model read without its template is not a neutral instrument, and a raw
 completion frame manufactures agent-frame effects on it that a base-versus-instruct comparison would
@@ -92,8 +101,8 @@ attribute to post-training.
 
 **What remains of the raw-frame comparison.** On the 192 scenarios both models engage in the raw
 frame, the instruct model's excess is 0.046 against base's 0.018 (paired difference 0.028, 0.007 to
-0.049; MDE 0.030), and the pre-registered rule names that branch *widened*. We keep the number and
-the rule's word and demote the reading. The instruct side of that comparison is a raw-frame cell
+0.049; MDE 0.030), and the pre-registered rule names that branch *widened*. We report the number under the
+rule's word and do not rest a claim on it. The instruct side of that comparison is a raw-frame cell
 carrying the format effect above; on the log-odds scale the difference survives, but divided by
 each model's own output scale it does not resolve (0.12, $-0.02$ to 0.26), and the scale factor is
 itself partly a raw-frame property of the instruct model. The comparison that is template-valid on
@@ -111,7 +120,7 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
 sharpening. No step enlarges the pressure-attributable part on either readout (positive control on the
-final checkpoint: known-gap band 0.50, 0.47 to 0.53; the cell was not run on the SFT and DPO
+final checkpoint: known-gap band 0.50, 0.47 to 0.52; the cell was not run on the SFT and DPO
 checkpoints). On the probability
 scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
 scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
@@ -121,8 +130,8 @@ per-unit-of-output-scale readout it is +0.005 ($-0.016$ to 0.026; bar 0.030). Lo
 zero, so baseline compression is ruled out and the remaining rival is the output sharpening the RL step
 also brings. Preference optimization makes the model, placed as the actor, lean further toward the
 locally advantageous option than it does as a judge, without enlarging how much the incentive adds on
-either readout. That is the opposite direction from the claim this
-section withdraws, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
+either readout. That is the opposite direction from the raw frame's
+at-rest reading, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
 produces it is left to a recipe ablation on one base.
 
 **Robustness of the base cell.** The selection check passed: base's excess on all 354 of its

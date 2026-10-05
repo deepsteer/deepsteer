@@ -16,6 +16,22 @@ zero while the chat excess does; otherwise under-powered, with the MDE stated. S
 base's $E$ on all its above-floor scenarios against its $E$ on the shared subset, flagged if they
 differ by more than the shared CI half-width.
 
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{kdg_three_cell.pdf}
+\caption{\textbf{This figure does not show the instruct model's behavior in its own chat template}: both
+models are read in the raw completion frame, which reverses the instruct model's at-rest sign ($-0.038$
+raw against $+0.055$ under its template) and exaggerates the sharpness of its agent frame (\Cref{base});
+the template-valid comparison across post-training is \Cref{fig:stages}. What it shows: on the 192
+scenarios where both models clear the mass floor on the primary and on the twin, (a) violating-option mass
+when acting and when judging, on the pressure-removed twin (open markers) and under pressure (filled), per
+model; (b) the paired quantities with 95\% CIs: each model's pressure-attributable excess $E$, its
+acting-side and judging-side components, and the base-minus-instruct differences, the comparison the
+pre-registered three-cell rules (above) are written for.}
+\label{fig:three-cell}
+\end{figure}
+
+
 | quantity | base | instruct |
 |---|---|---|
 | scenarios above the floor on the primary (of 397) | 359 | 242 |

@@ -6,7 +6,7 @@ tool calls, hedges, refusals, two-option mentions, trailing reconsiderations). A
 construction labels the harness scored 200/200 after three parser rules were settled from an
 independent judge pass: the last `Answer:` anchor anywhere in a reply is the commitment; a
 leading letter counts only with punctuation after it; a two-option mention with a contrast
-marker ("rather than Y", "though Y is tempting") commits to the non-demoted option. Against the
+marker ("rather than Y", "though Y is tempting") commits to the option other than Y. Against the
 independent judge: 0.985 (kappa 0.98).
 
 Stage 2 (before each gate): 200 real replies per pod, drawn across the six generated cells and

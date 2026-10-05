@@ -1,5 +1,12 @@
 # 8. The gap follows the post-training recipe {#recipe}
 
+**In short.** We read four aligned models the same way, after first checking with a positive control that
+the test can see a large gap on each (0.50 to 0.62). Two carry the gap: OLMo-3 (0.018) and Meta's
+Llama-3.1-8B-Instruct (0.028). Two do not, as far as the test can see: Ai2's Tulu 3 (0.001, nothing above
+about 0.01) and Qwen2.5 ($-0.008$, nothing above about 0.02). The clearest comparison is Meta's and Tulu
+3's: both start from the same Llama-3.1 weights, and only Meta's carries the gap. Tulu 3 shows none
+already after its first stage, so whatever differs happens early in its recipe.
+
 A gap measured on one model could be a property of that model, of its lineage, or of the panel. We
 read four instruct models with the same instrument under their own chat templates: OLMo-3-7B-Instruct
 [@olmo3_2025], Llama-3.1-8B-Instruct (Meta's post-training) [@grattafiori2024llama3], Tulu 3 (Ai2's
@@ -83,8 +90,8 @@ zero (0.000 to 0.012), below its detection bar of about 0.008 at $n = 586$; the 
 ($-0.005$ to 0.002; bar about 0.005). Two DPO recipes on two bases move the acting frame's default the same
 way, with no change in the incentive's pull detectable above those bars on the probability scale.
 
-**The raw-frame distortion follows the recipe too.** The frame effect that withdrew our baseline claim
-(\Cref{base}) is present on every templated checkpoint of both Ai2 recipes (OLMo-3 SFT: $-0.052$; Tulu 3
+**The raw-frame distortion follows the recipe too.** The frame effect of \Cref{base}
+is present on every templated checkpoint of both Ai2 recipes (OLMo-3 SFT: $-0.052$; Tulu 3
 SFT, DPO and final: $-0.019$, $-0.024$, $-0.015$, each interval excluding zero) and absent on Meta's
 instruct model on the same base ($-0.002$, $-0.010$ to 0.007). A raw-frame reading of an instruct model
 is therefore not wrong everywhere; it is wrong on some recipes and not others, which is the stronger

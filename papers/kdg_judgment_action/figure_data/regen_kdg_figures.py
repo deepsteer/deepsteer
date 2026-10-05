@@ -403,6 +403,78 @@ def fig_recipe():
     save(fig, "kdg_recipe", out, ["panel", "model", "quantity", "mean", "ci_lo", "ci_hi", "n"])
 
 
+def fig_stages():
+    """Figure 6 (2026-10-05): the template-valid stage profile on OLMo-3 (SFT, DPO, final under each
+    checkpoint's own template) on the 586 model-free set (number of record) and the 136 screened set,
+    the base as a raw-frame description, and the final checkpoint's positive control beside."""
+    s586 = load("analysis_kdg_a8.json")["per_stage"]["E"]
+    s136 = load("analysis_phase1_session_a.json")["C3"]["chat_secondary"]["E_prob"]
+    base = load("analysis_a17_union.json")["three_cell_union"]["base"]["continuous"]["excess_paired"]
+    kg = load("analysis_phase1_session_c.json")["known_gap"]["olmo3_instruct"]["g_band"]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.2, 4.1), gridspec_kw={"width_ratios": [1.45, 1]})
+    out = []
+    stages = [("sft", "after SFT"), ("dpo", "after DPO"), ("final", "after RL (final)")]
+    # base: raw-frame description, set apart by a divider
+    ax1.plot([0, 0], base["ci95"], color=GRAY, lw=1.6, zorder=3)
+    ax1.plot(0, base["mean"], "D", mfc="white", mec=GRAY_EC, mew=1.3, ms=7.5, zorder=4)
+    ax1.text(0.09, base["mean"], f"{base['mean']:.3f}", va="center", fontsize=8, color=GRAY_EC)
+    out.append(("(a)", "base", "raw_frame_description", base["mean"], *base["ci95"], base["n"]))
+    ax1.axvline(0.55, color=GRAY_EC, lw=0.9, ls=":", zorder=2)
+    for i, (k, lab) in enumerate(stages, start=1):
+        for dx, S, filled, name in ((-0.13, s586, True, "586_model_free"), (0.13, s136, False, "136_screened")):
+            b = S[k]
+            ax1.plot([i + dx] * 2, b["ci95"], color=INDIGO, lw=2.2, zorder=3)
+            ax1.plot(i + dx, b["mean"], "o" if filled else "s", color=INDIGO,
+                     mfc=INDIGO if filled else "white", mec="black" if filled else INDIGO,
+                     mew=0.6 if filled else 1.5, ms=7.5, zorder=4)
+            out.append(("(a)", k, name, b["mean"], *b["ci95"], b["n"]))
+        ax1.text(i - 0.13, s586[k]["ci95"][1] + 0.002, f"{s586[k]['mean']:.3f}", ha="center",
+                 va="bottom", fontsize=7.5, fontweight="bold", color=INK)
+    ax1.axhline(0, color=INK, lw=0.9, zorder=2)
+    ax1.set_xticks([0, 1, 2, 3])
+    ax1.set_xticklabels(["base\n(raw frame,\ndescription)", "after SFT", "after DPO", "after RL\n(final)"],
+                        fontsize=8.5)
+    ax1.set_xlim(-0.5, 3.5)
+    ax1.set_ylabel("pressure-attributable excess E, 95% CI")
+    ax1.set_title("(a) OLMo-3 across post-training, each checkpoint in its own template", fontsize=10,
+                  loc="left")
+    ax1.grid(True, axis="y", alpha=0.25); ax1.set_axisbelow(True)
+    ax1.legend(handles=[
+        Line2D([0], [0], marker="o", ls="-", color=INDIGO, mec="black", ms=7,
+               label="586 scenarios screened by no model (of record)"),
+        Line2D([0], [0], marker="s", ls="-", color=INDIGO, mfc="white", mec=INDIGO, mew=1.5, ms=7,
+               label="136 scenarios screened on the final model"),
+        Line2D([0], [0], marker="D", ls="-", color=GRAY, mfc="white", mec=GRAY_EC, mew=1.3, ms=7,
+               label="base, raw frame (description, not validated)")],
+        loc="upper left", fontsize=7.5, frameon=True, framealpha=0.95)
+    # (b) positive control and the gap on one axis (final checkpoint)
+    fin = s586["final"]
+    ax2.barh(1, kg["mean"], height=0.42, color=RED, edgecolor="black", linewidth=0.5, zorder=3)
+    ax2.plot(kg["ci95"], [1, 1], color=INK, lw=1.2, zorder=4)
+    ax2.text(kg["ci95"][1] + 0.012, 1, f"{kg['mean']:.2f} [{kg['ci95'][0]:.2f}, {kg['ci95'][1]:.2f}]",
+             va="center", fontsize=8, fontweight="bold", color=INK)
+    ax2.plot(fin["ci95"], [0, 0], color=INDIGO, lw=2.2, zorder=3)
+    ax2.plot(fin["mean"], 0, "o", color=INDIGO, ms=7.5, mec="black", mew=0.6, zorder=4)
+    ax2.text(fin["ci95"][1] + 0.012, 0, f"{fin['mean']:.3f} [{fin['ci95'][0]:.3f}, {fin['ci95'][1]:.3f}]",
+             va="center", fontsize=8, fontweight="bold", color=INK)
+    out.append(("(b)", "final", "known_gap_control", kg["mean"], *kg["ci95"], kg["n"]))
+    out.append(("(b)", "final", "excess_586_model_free", fin["mean"], *fin["ci95"], fin["n"]))
+    ax2.axvline(0, color=INK, lw=0.9, zorder=2)
+    ax2.axvline(0.10, color=GRAY_EC, lw=0.9, ls=":", zorder=2)
+    ax2.text(0.105, 1.55, "validation bar 0.10", fontsize=7.5, color=GRAY_EC, va="center")
+    ax2.set_yticks([1, 0])
+    ax2.set_yticklabels(["known-gap control\n(operator orders\nthe violation)", "pressure-attributable\nexcess (586)"],
+                        fontsize=8.5)
+    ax2.set_xlim(-0.03, 0.72); ax2.set_ylim(-0.6, 1.8)
+    ax2.set_xlabel("acting minus judging violating mass, 95% CI")
+    ax2.set_title("(b) The final checkpoint: the test sees 0.5; the gap is 0.02", fontsize=10, loc="left")
+    ax2.grid(True, axis="x", alpha=0.25); ax2.set_axisbelow(True)
+    fig.suptitle("On OLMo-3 the gap is present after SFT and no later post-training stage makes it detectably larger",
+                 fontsize=10.5)
+    fig.subplots_adjust(left=0.07, right=0.985, top=0.85, bottom=0.2, wspace=0.42)
+    save(fig, "kdg_stages", out, ["panel", "stage", "quantity", "mean", "ci_lo", "ci_hi", "n"])
+
+
 def fig_deliberation():
     a, c = load("analysis_phase1_session_a.json"), load("analysis_phase1_session_c.json")
     dc, cf, ld = a["DOSE_CONTROLS"], a["C2_forced"], c["llama_dose"]
@@ -442,7 +514,7 @@ def fig_deliberation():
 
 
 if __name__ == "__main__":
-    for f in (fig_ladder, fig_scatter, fig_strictness, fig_families, fig_f4, fig_three_cell, fig_recipe,
-              fig_deliberation):
+    for f in (fig_ladder, fig_scatter, fig_strictness, fig_families, fig_f4, fig_three_cell, fig_stages,
+              fig_recipe, fig_deliberation):
         f()
         print("ok", f.__name__)
