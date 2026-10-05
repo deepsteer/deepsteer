@@ -656,3 +656,44 @@ R_a, or weaker conclusion); the rule did not fix which. Recorded as an ambiguity
 seeing data; the author decides, and only the within-RL sweep decision depends on it (KDG_RESULTS §20.1).
 **Author decision (2026-10-01):** weaker = weaker conclusion → **unresolved**. The within-RL sweep is
 priced into the F6–F8 pod plan as an optional OLMo-3 extra with its own pre-registration.
+
+**P1-A11. Own-screen excess per instruct model (dated 2026-10-05, post-review addition (adversarial review
+R2, author); written and pushed before computation).** Rival: the Tulu 3 and Qwen2.5 nulls on the 586
+whole-panel set are dilution by scenarios that do not pressure those models (their screen rates, 0.09 and
+0.08, are about half the carrying models').
+- *Set per model.* Each instruct model's own screen under the P1-A9 item 2 rule (letter-only judgment
+  non-violating by argmax in ≥ 6 of 8 permutations; acting violating mass in [0.15, 0.85] or ≥ 0.85), on
+  its own neutral-prefix letter-only chat cells, recomputed from the saved arrays by the same function as
+  `analyze_screen_rates.py`; scenarios with any of the four cells below the 0.5 floor are dropped and
+  counted. OLMo-3's own screen under this rule (110) differs from the 136 of §7 (the earlier
+  majority-vote screen); both are reported, the rule-matched one in the table.
+- *Quantity.* E on the own screen (paired, the 586 analysis's definition), percentile bootstrap 10,000,
+  seed 0; the per-model detection bar is 2.8 times the bootstrap standard error of that E (the MDE of the
+  own-screen excess against zero).
+- *Readings (written before data).* If Tulu 3's and Qwen2.5's own-screen E intervals include zero, the §8
+  In short says they show none on their own screened scenarios either, with the bars. If either interval
+  lies above zero, the "two do not" sentence becomes "two do not on the whole panel", and that model's
+  own-screen number is reported beside it. Carrying models' own-screen E reported in the same column.
+
+**P1-A12. Twin under deliberation (dated 2026-10-05, post-review addition (adversarial review R1/GPU-1);
+pre-registered before any cell; not scheduled: the author decides).** Rival: the dose arm compared reasoning
+with filler on primaries only, so its effect may be the at-rest judging-acting asymmetry closing (the
+reasoning arm makes the action a deliberated readout, like the judgment) rather than the incentive's pull
+loosening.
+- *Cells.* The P1-A5 budget-forced reasoning (dose2, 512 tokens) and filler arms, 16 rollouts, forced
+  "\n\nAnswer:" readout, and the P1-A8 truncated filler built from the model's own filler rollouts, all on
+  the **pressure-removed twins** of the dose sets of record (OLMo-3-Instruct 130, Llama-3.1-8B-Instruct Meta
+  114), same seeds and option orders as the primaries.
+- *Quantities per model.* Δ_P = p_D(reasoning) − p_D(filler) on primaries (the result of record); Δ_T the
+  same on twins; ΔE_delib = Δ_P − Δ_T paired by scenario (reasoning's change in the pressure-attributable
+  part), with the truncated-filler versions beside; bootstrap 10,000, seed 0; bar = 2.8 × SE of ΔE_delib.
+- *Rule and branches.* **(a) Reasoning reduces the pressure-attributable part** iff ΔE_delib's CI lies
+  entirely below 0. **(b) Reasoning removes the at-rest asymmetry** iff ΔE_delib's CI includes 0 and Δ_T's
+  CI lies entirely below 0 (reasoning lowers the twin as it lowers the primary); §10 is then rewritten
+  around that. **Unresolved** otherwise, with the bar. Per model; no cross-model size comparison.
+- *Price.* From the Phase 1 timings (OLMo-3 reasoning 54 min and filler 42 min on its dose set; Llama 41
+  and 35 min; own truncated filler about 3 min each), about 3.1 A100-hours with loads; Llama gated. Harness:
+  the dose units run on the pressure-removed variant (a variant flag on the existing units; local test
+  before any pod).
+- If run, §9, §10, §11 and the abstract's last paragraph are updated from whichever branch holds, with the
+  cell labelled a post-review addition in the amendment record.
