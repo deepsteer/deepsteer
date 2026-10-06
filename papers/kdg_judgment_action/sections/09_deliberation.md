@@ -3,9 +3,12 @@
 **In short.** Asking the model to think about what is at stake before it acts moves its choice back toward
 its own judgment on both models that carry the gap, further than a same-length non-moral task does; on
 OLMo-3, whose reasoning is truncated at the budget, naming the norm does about a third of it (0.22 to
-0.53). Run on the same scenarios with the pressure removed, reasoning cuts the violating choice by the same
-fraction there (to 0.73 and 0.32 of the non-moral task's level, against 0.72 and 0.30 under pressure), so
-it brakes the violating action wherever its pull comes from, not the incentive specifically.
+0.53). Run on the same scenarios with the pressure removed, reasoning lowers the violating choice there
+too. By the pre-registered rule this reduces the pressure-attributable part on Llama-3.1 and closes the
+at-rest asymmetry on OLMo-3; a post-hoc ratio reading is consistent with one proportional cut on both
+models (reasoning leaves 0.72 and 0.73 of the non-moral task's level on OLMo-3's pressured and
+pressure-removed scenarios, 0.30 and 0.32 on Llama-3.1's) and does not separate a pressure-specific part
+smaller than about a fifth (OLMo-3) or a quarter (Llama-3.1) of the brake.
 
 If the pressure-attributable gap is the action following a goal the incentive supplies, asking the model
 to think about what is at stake before it acts should reduce it, and a matched request to think about
@@ -95,18 +98,20 @@ $-0.100$) on Llama-3.1, which the rule reads as reducing the pressure-attributab
 pattern whenever the pressured baseline is higher, so after seeing the result we added a ratio reading
 (P1-A14, post-hoc and labelled, pushed before its interval was computed). Reasoning leaves 0.72 of the
 filler's violating mass on OLMo-3's primaries and 0.73 on its twins, and 0.30 and 0.32 on Llama-3.1's; the
-difference of log ratios is $-0.011$ ($-0.158$ to 0.135) and $-0.059$ ($-0.257$ to 0.158), proportional on
-both models against both controls, and one common ratio predicts the probability-scale difference on both
+difference of log ratios is $-0.011$ ($-0.158$ to 0.135) and $-0.059$ ($-0.257$ to 0.158), consistent with
+one proportional cut on both models against both controls, and one common ratio predicts the
+probability-scale difference on both
 ($-0.024$ against $-0.025$ observed on OLMo-3, $-0.136$ against $-0.143$ on Llama-3.1).
 
 **What this says.** The action is not fixed at the moment the incentive is read. On both recipes that carry
 it, reasoning about the stakes before acting moves the action back toward what the model judged right,
 measured against a non-moral task of the same budget and against that task in the same truncated form,
-about a third of it carried by naming the norm on OLMo-3. The twins say what kind of change it is:
-reasoning lowers the violating choice by about the same fraction with and without the pressure, so it
-brakes the action's lean toward the violating option wherever that lean comes from, and the
-pressure-attributable part shrinks in absolute terms because the lean is larger under pressure. No
-pressure-specific effect is detectable beyond a difference of about a fifth in the ratio on OLMo-3 or a
-quarter on Llama-3.1. Whether completed reasoning does more than
+about a third of it carried by naming the norm on OLMo-3. Reasoning brakes the violating action with or
+without the incentive. By the pre-registered rule, the brake reduces the pressure-attributable part on
+Llama-3.1 (branch (a), $-0.143$) and closes the at-rest asymmetry on OLMo-3 (branch (b)). The post-hoc
+ratio reading (P1-A14) is consistent with one proportional cut on both models, under which the
+pressure-attributable part shrinks in absolute terms because the lean it cuts is larger under pressure;
+it does not separate a pressure-specific part smaller than about a fifth (OLMo-3) or a quarter
+(Llama-3.1) of the brake. Whether completed reasoning does more than
 truncated reasoning on the same model and scenarios is not answered here; that comparison needs both
 models on one scenario set with a budget long enough for both to finish.

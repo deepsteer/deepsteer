@@ -1600,12 +1600,13 @@ detectable beyond a ratio difference of about a fifth (OLMo-3, bar 0.21 on L) or
 The OLMo-3 disagreement between the two references on the probability scale is the same effect: the truncated
 filler sits higher on both arms, so the same fractional cut is a larger absolute difference.
 
-Positive voice: **thinking about the stakes before acting lowers the violating choice by a large, stable
-fraction on both models that carry the gap (about 28% on OLMo-3 and 70% on Llama-3.1 against a same-length
-non-moral task), and it does so whether or not the incentive is present.** Deliberation is a general brake on
-the violating action, proportional to how strongly the model leans toward it, not a lever on the incentive
-specifically; the pressure-attributable part shrinks in absolute terms because the brake applies to a larger
-lean under pressure.
+Positive voice: **thinking about the stakes before acting brakes the violating action on both models that
+carry the gap, with or without the incentive (about 28% on OLMo-3 and 70% on Llama-3.1 against a same-length
+non-moral task).** By the pre-registered rule the brake reduces the pressure-attributable part on Llama-3.1
+(a) and closes the at-rest asymmetry on OLMo-3 (b); the post-hoc ratio reading is consistent with one
+proportional cut on both and does not separate a pressure-specific part smaller than about a fifth (OLMo-3)
+or a quarter (Llama) of the brake. (Wording rule, author 2026-10-05: the registered branch is stated first;
+"not the goal" / "not the incentive specifically" is not asserted.)
 
 **Bias directions.** (i) R is a ratio of means, weighted toward high-baseline scenarios; a pressure-specific
 effect concentrated in low-baseline scenarios would be under-weighted: opposes "pressure-specific" (favors
@@ -1629,13 +1630,14 @@ the same way as the ratio fork (no pressure-specific excess), and a log-odds eff
 anything, strengthen the conclusion that reasoning does not target the incentive. It is not used as a
 verdict. (3) *"Proportional is the null you can never reject at n ≈ 120."* Conceded in part: the bars on L
 (0.21, 0.30) exclude only large pressure-specific fractions. What the data do settle is the probability-scale
-reading: the registered branch (a) on Llama is fully accounted for by a common ratio, so the paper may not say
-that deliberation loosens the incentive's pull.
+reading: the registered branch (a) on Llama is fully accounted for by a common ratio, so the paper states the
+registered branch with the ratio reading and its bounds beside it, and asserts neither "loosens the
+incentive's pull" nor its negation.
 
 ### 24.2 What this changes
 
 The KDG paper's §9, §10, §11 and abstract (author's instruction: update from the branch that holds): the
-dose arm's effect is stated as a proportional reduction of the violating choice with and without the pressure
-(both scales reported, the probability-scale branches beside), and §10's "whether deliberation loosens it is
-open" becomes "deliberation lowers the action's lean in proportion, not the incentive's pull specifically, at
-these bars". R1 (the deliberation arm was undifferenced) is closed.
+dose arm's effect is stated as a brake on the violating action with or without the pressure, the registered
+branch per model first and the post-hoc ratio reading with its bounds beside it; §10's heading reads
+"deliberation brakes the action, with or without the incentive" (author wording, 2026-10-05). R1 (the
+deliberation arm was undifferenced) is closed.

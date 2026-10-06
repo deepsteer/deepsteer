@@ -123,9 +123,11 @@ The argument runs in five steps, each carrying its ladder.
    it while Ai2's Tulu 3 does not.
 4. Fourth, thinking about the stakes before acting moves the action toward the model's judgment: on both
    recipes that carry the gap, moral deliberation before acting lowers the violating choice against a
-   length-matched non-moral control and the same control in truncated form, and by the same fraction on
-   the scenarios with the pressure removed; on OLMo-3, where the reasoning is truncated at the budget,
-   about a third of the effect comes from naming the norm.
+   length-matched non-moral control and the same control in truncated form, with or without the
+   pressure (by the pre-registered rule, it reduces the pressure-attributable part on Llama-3.1 and closes
+   the at-rest asymmetry on OLMo-3; a post-hoc ratio reading is consistent with one proportional cut on
+   both, to within about a fifth and a quarter of the brake); on OLMo-3, where the reasoning is truncated
+   at the budget, about a third of the effect comes from naming the norm.
 5. Fifth, the format distortion follows the recipe too: it appears on both Ai2 recipes and not on
    Meta's.
 

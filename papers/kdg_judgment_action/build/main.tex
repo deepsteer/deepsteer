@@ -186,13 +186,12 @@ start from the same Llama-3.1 weights, and only Meta's carries the gap. Reading 
 reverses the sign of its gap with nothing at stake ($-0.038$ against $+0.055$ under the template on
 OLMo-3), a distortion present on two of the three recipes read and not on the third. On both models that carry
 it, asking the model to reason about the stakes before it acts moves its choice back toward its own
-judgment, compared with a non-moral task of the same length; on OLMo-3, simply naming the norm at
-stake does about a third of that.
+judgment, against a same-length non-moral task, with or without the pressure; on OLMo-3, naming the
+norm at stake does about a third of that.
 
 Whether a model acts on its own moral judgment is therefore not settled by pretraining. The same
 pretrained weights can yield a model that carries the gap or one that does not, and a short
-deliberation before acting brakes the violating action by the same fraction with or without the
-incentive. That makes the gap a measurable target for post-training
+deliberation before acting brakes the violating action with or without the incentive. That makes the gap a measurable target for post-training
 recipes, not a fixed property of the model. We release the panel, the harness, the
 pre-registration with its amendments, and the per-scenario arrays.
 \end{abstract}

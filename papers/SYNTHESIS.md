@@ -856,17 +856,19 @@ Nothing from p2b enters the KDG paper.
 
 ### Twin under deliberation (2026-10-05; `kdg_panel/KDG_RESULTS.md` §24) — what changed
 
-Positive voice first: **thinking about the stakes before acting is a general brake on the violating action:
-it cuts the violating choice to about 0.72 (OLMo-3) and 0.30 (Llama-3.1) of its level under a same-length
-non-moral task, by the same fraction whether or not the incentive is present (twins 0.73 and 0.32).** The
-pressure-attributable part shrinks in absolute terms only because the brake applies to a larger lean under
-pressure; a single common ratio predicts the observed difference on both models (−0.136 vs −0.143 on Llama).
+Positive voice first: **thinking about the stakes before acting brakes the violating action with or without
+the incentive: it leaves about 0.72 (OLMo-3) and 0.30 (Llama-3.1) of the violating choice of a same-length
+non-moral task under pressure, and 0.73 and 0.32 with the pressure removed.** A single common ratio predicts
+the observed probability-scale difference on both models (−0.136 vs −0.143 on Llama), so the post-hoc ratio
+reading is consistent with one proportional cut; it does not separate a pressure-specific part smaller than
+about a fifth (OLMo-3) or a quarter (Llama) of the brake.
 Registered verdict (P1-A12, probability scale) beside it: Llama branch (a), OLMo-3 branch (b); the ratio fork
 (P1-A14, post-hoc, labelled) reads proportional on both models and both references (bars on the log ratio
 0.21 and 0.30). Standing-claim edit: "moral deliberation reduces it on both recipes that carry it" (the
 2026-09-28 four-claim line above) now reads "moral deliberation lowers the violating action on both recipes
-that carry it, in proportion, with and without the pressure; no pressure-specific effect detectable beyond
-about a fifth / a quarter of the ratio". The goal-following account of the gap is unaffected: the brake does
-not discriminate the goal the incentive supplies from the model's at-rest lean. Separating cell, if wanted:
+that carry it, with or without the pressure (registered: Llama (a), OLMo-3 (b); post-hoc ratio reading
+consistent with one proportional cut, bounds a fifth / a quarter)". The goal-following account of the gap is
+unaffected; whether the brake acts on the goal the incentive supplies below those bounds is open (author
+wording rule 2026-10-05: "not the goal" is not asserted). Separating cell, if wanted:
 more scenarios per model (the bars on L shrink as 1/√n) or a dose that names the incentive explicitly. R1
 closed; KDG-42 and KDG-53 carry scope notes (CLAIMS KDG-59).

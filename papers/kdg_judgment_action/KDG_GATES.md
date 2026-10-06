@@ -304,3 +304,16 @@ draft gate (below).
   before data, four before computation, three post-hoc forks, one post-hoc addition; four post-review).
 - **p2b:** nothing in the paper; SYNTHESIS and the pitch-edits draft carry the token-ladder state of record and
   no "does not fade" line; KDG-A16 logged unresolved.
+
+## 2026-10-05: pre-submit deliberation wording fix (author, on c1516d3), executed
+
+- §10 heading: "Goal-following is the parsimonious mechanism; deliberation brakes the action, with or
+  without the incentive." Body, §9 In short and "What this says", §1 step four and §12: the pre-registered
+  branch per model first (Llama (a), OLMo-3 (b)), then the post-hoc ratio reading (P1-A14) as consistent with
+  one proportional cut on both, not separating a pressure-specific part smaller than about a fifth (OLMo-3) or
+  a quarter (Llama) of the brake. "Not the goal" / "not the incentive specifically" / "by the same fraction"
+  removed from the paper (supersedes the c1516d3 wording recorded above); RESULTS §24, SYNTHESIS and CLAIMS
+  follow the same rule.
+- Abstract, both versions: "...with or without the pressure"; PDF last paragraph "...brakes the violating
+  action with or without the incentive." "The gap is a measurable target..." stays as the closing sentence;
+  the release is stated in the paper.
