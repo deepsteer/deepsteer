@@ -317,3 +317,25 @@ draft gate (below).
 - Abstract, both versions: "...with or without the pressure"; PDF last paragraph "...brakes the violating
   action with or without the incentive." "The gap is a measurable target..." stays as the closing sentence;
   the release is stated in the paper.
+
+## 2026-10-06: abstract release sentence removed; references verified (author request)
+
+- "We release the panel, the harness, the pre-registration with its amendments, and the per-scenario
+  arrays." removed from the PDF abstract (the arXiv version already lacked it). The paper had no repository
+  URL anywhere; Appendix F now gives <https://github.com/deepsteer/deepsteer/> (public, HTTP 200), as FL and
+  the methods note do. Appendix F also brought up to date: round-3 scenario files, the multi-model driver,
+  runner, spec (P1-A1 to P1-A14) and analysis scripts, every model read with `models.yaml` pinning, the
+  calibration v1 filename, KDG_RESULTS sections 1 to 24, and bootstrap draws (2,000 panel; 10,000 Phase 1).
+  Every file named there is tracked.
+- **References, all 24 checked against primary sources** (arXiv API, ACL Anthology, PMLR, Crossref, NeurIPS
+  proceedings, Hugging Face model card, Open Library, the values.md page): no fabricated or misordered author
+  lists. Fixed: `pan2023machiavelli` cited ICML with arXiv's 10-author list; now the PMLR record (9 authors,
+  no Jonathan Ng; vol. 202, pp. 26837–26867; PMLR URL; arXiv ID in the note), both lists confirmed directly;
+  `olmo3_2025` corporate author "Team OLMo" → "Team Olmo" with Allyson Ettinger, per the official citation on
+  the Olmo-3-7B-Instruct model card. Added: DOIs for Shen et al. (ACL), Shao et al. (NeurIPS, with vol. 37,
+  pp. 89373–89407) and Blasi (APA). Every URL and DOI loads (HTTP 200; the APA DOI returns 403 to scripts
+  and 200 to a browser). Left as they are (correct as cited): arXiv citations for Sharma et al. (also ICLR 2024)
+  and Tulu 3 (also COLM 2025); "and others" truncations for Greenblatt, Hubinger, Llama 3 and Qwen2.5.
+- Not changed (other papers): FL and Paper 1 also cite Olmo 3 as "Team OLMo".
+- Build 33 pp., no Type 3; bundle rebuilt and fresh-compiled (33 entries, 296 KB); PDF abstract 2,610
+  characters, arXiv abstract 1,887 (unchanged).
