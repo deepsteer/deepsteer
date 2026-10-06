@@ -48,7 +48,9 @@ Llama-3.1 weights; and a deliberation arm with truncation and norm-salience cont
 \centering
 \caption{Where this panel sits among measured judgment--action and knowing--doing gaps in language
 models (citations in the text above). ``Own'' means the reference is the model's own statement. The
-``no'' entries in the last column are to our reading of each paper. Strakhov and Claude find that 47.6\%
+last column is to our reading of each paper: where a paper has something that works as a null or a
+check (a control condition, an instruction-following check), the cell names it, and ``no'' means we found
+nothing that does; chance-level floors are not counted. Strakhov and Claude find that 47.6\%
 of 351 paired choices across nine instruct models reverse; their reversal counts changes in either
 direction from one draw per mode at temperature 1.0, without a pressure manipulation or a re-elicitation
 floor, while the gap rate here counts only moves toward the violating option, by majority over 32
@@ -64,13 +66,13 @@ a different axis (norm consistency, not intervention level).}
 panel & reference for ``right'' & action readout & pressure manipulation & base model & matched null; positive control \\
 \midrule
 Strakhov and Claude (2025) & own theory-mode choice, same dilemma & agent's tool call, one draw & none & no & no \\
-Huang et al. (2026) & own value profile (questionnaire) & advisor's pick among four options & none & no & no \\
+Huang et al. (2026) & own value profile (questionnaire) & advisor's pick among four options & none & no & no; value-selection check \\
 Shen et al. (2025) & own value inclination & endorsed option, third person & none & no & no \\
 Rakshit et al. (2026) & own articulated values & free text, fast vs slow & deliberation budget & no & no \\
-Gu et al. (2025) & own stated principle & forced binary, third person & prompt format & no & no \\
+Gu et al. (2025) & own stated principle & forced binary, third person & prompt format & no & one-factor prompt pairs; no \\
 Hosseini et al. (2026) & own responsibility judgment & allocation decision & none & no & no \\
-Backmann et al. (2025) & external (cooperation) & game move & framing, survival & no & no \\
-Cheng et al. (2026); Basu et al. (2026) & external (capability; physician labels) & tool call; hazard flag & none & no & no \\
+Backmann et al. (2025) & external (cooperation) & game move & framing, survival & no & neutral base game; no \\
+Cheng et al. (2026); Basu et al. (2026) & external (capability; physician labels) & tool call; hazard flag & none & no & random-steering controls (Basu); no \\
 \addlinespace
 this panel & own per-scenario judgment on four frames & agent's option, letter only, 32 rollouts & five typed families; a twin with the pressure removed; a deliberation arm & yes, three (raw); one same-base pair & pressure-removed twins; a known-gap control on every model \\
 \bottomrule
@@ -81,7 +83,8 @@ The panel was pre-registered before any scenario existed, and every construction
 decision taken afterwards is a dated amendment in the same document (\Cref{app:prereg}): eleven
 construction decisions before any model data, and six analysis decisions after, four of them
 committed before the computation they license and two post-hoc forks that carry verdicts under
-both choices. Nine further amendments govern the Phase 1 sessions. We report three pods on
+both choices. Fourteen further amendments govern the Phase 1 sessions: three are post-hoc forks, one is a post-hoc
+addition (P1-A13), and four are post-review additions (P1-A11 to P1-A14). We report three pods on
 OLMo-3-7B-Instruct with its base checkpoint [@olmo3_2025]: a 96-scenario pilot that tested the
 instrument, a 320-scenario full panel, and a 120-scenario second round that lifted the screened count
 past the pre-registered gate. Three Phase 1 sessions then read the OLMo-3 post-training stages under
@@ -114,12 +117,15 @@ The argument runs in five steps, each carrying its ladder.
    misreads templated checkpoints.
 3. Third, whether the gap survives depends on the post-training recipe: with a positive control
    validating the instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct
-   carry the gap and Tulu 3 and Qwen2.5-7B-Instruct do not on the whole panel, and on the same Llama-3.1
-   base Meta's recipe carries it while Ai2's Tulu 3 does not.
+   carry the gap; Tulu 3 shows none on either read (the whole panel, and its own screened scenarios
+   against a selection-matched null); Qwen2.5-7B-Instruct shows none on the whole panel and is
+   unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16); and on the same Llama-3.1 base Meta's recipe carries
+   it while Ai2's Tulu 3 does not.
 4. Fourth, thinking about the stakes before acting moves the action toward the model's judgment: on both
    recipes that carry the gap, moral deliberation before acting lowers the violating choice against a
-   length-matched non-moral control and the same control in truncated form; on OLMo-3, where the
-   reasoning is truncated at the budget, about a third of the effect comes from naming the norm.
+   length-matched non-moral control and the same control in truncated form, and by the same fraction on
+   the scenarios with the pressure removed; on OLMo-3, where the reasoning is truncated at the budget,
+   about a third of the effect comes from naming the norm.
 5. Fifth, the format distortion follows the recipe too: it appears on both Ai2 recipes and not on
    Meta's.
 

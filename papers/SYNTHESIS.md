@@ -789,8 +789,9 @@ pressure-attributable part on either readout" replaces "not resized".
 ### Phase 2 pilot (2026-10-02; `kdg_panel/KDG_RESULTS.md` §21) — what changed
 
 Positive voice first: **a principal's one-sentence reminder lowers the violating choice on both recipes
-that carry the gap (−0.072 on OLMo-3, −0.184 on Llama-3.1), and over six scripted turns its effect does
-not fade detectably (no decay above a third of its size on OLMo-3, a sixth on Llama); the incident
+that carry the gap (−0.072 on OLMo-3, −0.184 on Llama-3.1), and over six short scripted turns (138 tokens)
+no decay is detectable above a third of its size on OLMo-3 or a sixth on Llama (superseded at longer
+distance by the 2026-10-04 token ladder below: Llama R(6) 0.50 at 2,000 tokens); the incident
 families F6–F8 work as instruments on both models (full engagement including five options, positive
 control 0.40–0.66, a positive incentive effect in every family).** The norm-salience lever the KDG paper
 found in the assistant prefix (a third of the deliberation effect on OLMo-3) is larger when the
@@ -814,15 +815,15 @@ judgment follows the pressure, the persuasion branch of §9 for a non-peer press
 **Pilot gate applied (2026-10-02).** G2′ (decisiveness relative to the panel of record) passes every
 family on both models at pilot MDE 0.26–0.41, with Llama F8 the weakest (0.50 vs the panel's 0.70); the
 F6 no-speaker level reads as "cannot tell" for 22 of 24 items, so the registered ladder stands. Full
-construction is licensed at 48 decisive primaries per family. The turns-since-norm "does not fade" claim
-stays at short scripted distance until the token ladder (P2-A4b) reports.
+construction is licensed at 48 decisive primaries per family. The turns-since-norm short-distance claim
+(no decay detectable at 138 tokens) stays at that distance until the token ladder (P2-A4b) reports.
 
 ### Turns-since-norm follow-ups (2026-10-04; `kdg_panel/KDG_RESULTS.md` §22) — what changed
 
 Positive voice first: **on Llama-3.1, a principal's reminder holds its effect across six short turns and
 loses about half of it when the same six turns carry 2,000 tokens; the decay follows token distance, not
-turn count (R(6) 0.95 → 0.84 → 0.50 at 138 / 600 / 2,000 tokens).** The KDG-55 "does not fade" sentence
-is now scoped to short scripted distance on both models; at 2,000 tokens the reminder fades on Llama and
+turn count (R(6) 0.95 → 0.84 → 0.50 at 138 / 600 / 2,000 tokens).** The KDG-55 short-distance sentence
+(no decay detectable over six turns at 138 tokens) is scoped to that distance on both models; at 2,000 tokens the reminder fades on Llama and
 OLMo-3 cannot be read (KDG-A18, a floor artifact). The A4b wording rule's condition is met: the verdict is
 recorded; pairing it with Anthropic's 90 / 40 figure (same direction, different construct, one model) is
 the author's decision. KDG-A16 stays unresolved after counterbalancing, with the filler-confound reading
@@ -836,4 +837,36 @@ and Meta's Llama-3.1 (0.143) carry a gap and Tulu 3 (−0.004) does not; Qwen2.5
 resolution (0.083, −0.028 to 0.195) and null on the whole panel.** The deliberation claim is re-scoped: the
 dose arm moves the action toward the model's judgment (measured on primaries); whether it reduces the
 pressure-attributable part or the at-rest asymmetry needs the twins under deliberation (P1-A12, priced,
-author's go). Paper wording follows: §9 retitled, §10 conditional, "two do not on the whole panel".
+author's go). Paper wording follows: §9 retitled, §10 conditional. **Split wording of record (author, 2026-10-05):**
+"Tulu 3 shows none on either read; Qwen2.5 shows none on the whole panel and is unresolved on its own
+screened scenarios (0.083, −0.028 to 0.195; n 47, E_sel bar about 0.16)", replacing "two do not on the
+whole panel"; Qwen's own-screen read is KDG-A19 (open, priced).
+
+### Turns-since-norm, state of record (2026-10-05, author)
+
+No line in this file or the pitch drafts says the gap or the reminder "does not fade" with turns. The
+state of record is the A4b token ladder (KDG_RESULTS §22): on Llama-3.1 Meta the reminder's effect
+decays with token distance, R(6) 0.949 / 0.842 / 0.502 [0.429, 0.575] at 138 / 600 / 2,000 tokens;
+OLMo-3 shows no decay at 600 tokens and cannot be read at 2,000 (option mass 0.013, KDG-A18). The KDG-55
+wording rule stays in force: "no decay detectable" is stated only with its distance (138 tokens) and
+bars, and pairing the Llama ladder with Anthropic's 90 / 40 figure (same direction, different construct,
+one model) is the author's call. KDG-A16 (the Llama k = 3 dip) is logged as unresolved, not resolved.
+Nothing from p2b enters the KDG paper.
+
+
+### Twin under deliberation (2026-10-05; `kdg_panel/KDG_RESULTS.md` §24) — what changed
+
+Positive voice first: **thinking about the stakes before acting is a general brake on the violating action:
+it cuts the violating choice to about 0.72 (OLMo-3) and 0.30 (Llama-3.1) of its level under a same-length
+non-moral task, by the same fraction whether or not the incentive is present (twins 0.73 and 0.32).** The
+pressure-attributable part shrinks in absolute terms only because the brake applies to a larger lean under
+pressure; a single common ratio predicts the observed difference on both models (−0.136 vs −0.143 on Llama).
+Registered verdict (P1-A12, probability scale) beside it: Llama branch (a), OLMo-3 branch (b); the ratio fork
+(P1-A14, post-hoc, labelled) reads proportional on both models and both references (bars on the log ratio
+0.21 and 0.30). Standing-claim edit: "moral deliberation reduces it on both recipes that carry it" (the
+2026-09-28 four-claim line above) now reads "moral deliberation lowers the violating action on both recipes
+that carry it, in proportion, with and without the pressure; no pressure-specific effect detectable beyond
+about a fifth / a quarter of the ratio". The goal-following account of the gap is unaffected: the brake does
+not discriminate the goal the incentive supplies from the model's at-rest lean. Separating cell, if wanted:
+more scenarios per model (the bars on L shrink as 1/√n) or a dose that names the incentive explicitly. R1
+closed; KDG-42 and KDG-53 carry scope notes (CLAIMS KDG-59).

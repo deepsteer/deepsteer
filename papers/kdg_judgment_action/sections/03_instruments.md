@@ -30,7 +30,9 @@ at least 60 screened primaries across at least three gate families, a family who
 excludes zero, harness agreement of at least 0.95, and no family whose result reverses across
 generator. The screen's binomial properties at 32 rollouts (a true 0.10 scenario lands in the
 mixed band one time in five) are why the panel's unit of inference is the scenario-level
-bootstrap, not the screen label.
+bootstrap, not the screen label. On OLMo-3 the screened set is 136 scenarios on this sampled-rollout
+screen, 110 on the letter-only screen of \Cref{recipe}, and 130 in the dose arm (the 136 less the six
+multi-turn F2 scenarios, which have no dose arm); each table names which.
 
 ## 3.3 The calibration ladder
 

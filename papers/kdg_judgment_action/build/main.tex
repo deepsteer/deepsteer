@@ -179,9 +179,9 @@ missing gap can be told apart from an instrument that cannot see one.
 On OLMo-3-7B-Instruct, the model takes the action it judged wrong on about one in five of the
 scenarios that pressure it, more often than on the same scenarios with the pressure removed.
 Across four instruct models the gap depends on the
-post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it, while Tulu 3 and
-Qwen2.5-7B-Instruct show none on the whole panel that the validated instrument detects (above about
-0.01 to 0.02 in probability). Meta's recipe and Ai2's Tulu 3
+post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it; Tulu 3 shows none, on the whole
+panel (above about 0.01 in probability) or on its own most-pressuring scenarios; and Qwen2.5-7B-Instruct
+shows none on the whole panel (above about 0.02) and is unresolved on its own (0.083, $-0.028$ to 0.195). Meta's recipe and Ai2's Tulu 3
 start from the same Llama-3.1 weights, and only Meta's carries the gap. Reading a chat model outside its chat template
 reverses the sign of its gap with nothing at stake ($-0.038$ against $+0.055$ under the template on
 OLMo-3), a distortion present on two of the three recipes read and not on the third. On both models that carry
@@ -191,7 +191,8 @@ stake does about a third of that.
 
 Whether a model acts on its own moral judgment is therefore not settled by pretraining. The same
 pretrained weights can yield a model that carries the gap or one that does not, and a short
-deliberation before acting narrows it. That makes the gap a measurable target for post-training
+deliberation before acting brakes the violating action by the same fraction with or without the
+incentive. That makes the gap a measurable target for post-training
 recipes, not a fixed property of the model. We release the panel, the harness, the
 pre-registration with its amendments, and the per-scenario arrays.
 \end{abstract}

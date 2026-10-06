@@ -275,3 +275,32 @@ draft gate (below).
   in-figure headlines for Figures 1 and 8; "pressure-attributable excess" glossed at first use.
 - **GPU-1:** P1-A12 pre-registered and priced (about 3.1 A100-h); waits for the author's go. **GPU-2:** none.
 - **Build and bundle:** see ARXIV_SUBMISSION.md (31 pp., abstract counts there).
+
+## 2026-10-05: decisions on 6a4a957 (author), executed
+
+- **§9 wording:** "further than" / "more than a same-length non-moral task does" accepted.
+- **Table 1, paper by paper** (full text of all nine read; caption keeps "to our reading" and now says
+  chance-level floors are not counted): Huang "no; value-selection check"; Gu "one-factor prompt pairs; no";
+  Backmann "neutral base game; no"; Cheng/Basu "random-steering controls (Basu); no"; Strakhov, Shen,
+  Rakshit, Hosseini stay "no; no". Base-model column unchanged (Basu's Steerling-8B is a base model, but the
+  gap is measured on Qwen2.5-7B-Instruct only).
+- **GPU-1 (P1-A12) run** on pod p1d (A100-SXM4-80GB, 21:19–00:14 UTC, about 3.25 pod-hours; one aborted
+  mis-launch pod before it, terminated during sync). Registered verdict: Llama branch (a), OLMo-3 branch (b)
+  (vs the truncated filler: (a)). Post-hoc ratio fork P1-A14 (pushed 3500a2e before its CI; disclosure of the
+  descriptive numbers seen first): **proportional on both models and both references**; one common ratio
+  predicts the probability-scale ΔE on both. §9, §10, §11, §12, §1 step four and the abstract's last
+  paragraph (PDF) and deliberation sentence (arXiv) updated: deliberation brakes the violating action by the
+  same fraction with and without the pressure; not the incentive's pull specifically, at bars 0.21 / 0.30 on
+  the log ratio. KDG_RESULTS §24 with referee pass; CLAIMS KDG-59 and scope notes on KDG-42 / KDG-53.
+- **R2 propagation:** "Tulu 3 shows none on either read; Qwen2.5 shows none on the whole panel and is
+  unresolved on its own screened scenarios (0.083, −0.028 to 0.195; n = 47, bar about 0.16)" in the abstract
+  (PDF and arXiv), §1, §8, §10, §11, §12 and the Figure 7 headline; §8 says what the selection-matched null is
+  and why; KDG-A19 open with its price (about 1,700 scenarios and one A100-hour), price in §11. Author
+  confirmed: bar 0.16 (the 0.083's own), 0.497 on 360 union primaries, 130 = 136 less six F2.
+- **Two sentences, no number changes:** §8 (the control on three readouts: 0.58 / 0.60 / 0.497) and §3.2
+  (136 / 110 / 130).
+- **Amendment record:** Appendix A's Phase 1 table gains P1-A10 to P1-A13 with push hashes (A13 labelled
+  post-hoc); P1-A14 added after the GPU-1 result; counts recounted in §1, §11 and Appendix A (fourteen Phase 1: six
+  before data, four before computation, three post-hoc forks, one post-hoc addition; four post-review).
+- **p2b:** nothing in the paper; SYNTHESIS and the pitch-edits draft carry the token-ladder state of record and
+  no "does not fade" line; KDG-A16 logged unresolved.

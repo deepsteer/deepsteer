@@ -397,8 +397,8 @@ def fig_recipe():
     ax2.set_xlabel("pressure-attributable excess, 95% CI")
     ax2.set_title("(b) The gaps, zoomed; bases in the raw frame (descriptive)", fontsize=10, loc="left")
     ax2.grid(True, axis="x", alpha=0.25); ax2.set_axisbelow(True)
-    fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 and Qwen2.5 "
-                 "do not on the whole panel",
+    fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 does not; "
+                 "Qwen2.5 does not on the whole panel",
                  fontsize=10.5)
     fig.subplots_adjust(left=0.16, right=0.985, top=0.86, bottom=0.14, wspace=0.08)
     save(fig, "kdg_recipe", out, ["panel", "model", "quantity", "mean", "ci_lo", "ci_hi", "n"])

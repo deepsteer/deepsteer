@@ -2,12 +2,13 @@
 
 **In short.** We read four aligned models the same way, after first checking with a positive control that
 the test can see a large gap on each (0.50 to 0.62). Two carry the gap: OLMo-3 (0.018) and Meta's
-Llama-3.1-8B-Instruct (0.028). Two do not on the whole panel, as far as the test can see: Ai2's Tulu 3
+Llama-3.1-8B-Instruct (0.028). On the whole panel two show none the test can see: Ai2's Tulu 3
 (0.001, nothing above about 0.01) and Qwen2.5 ($-0.008$, nothing above about 0.02). Read only on each
 model's own most-pressuring scenarios, all four show an excess (Tulu 3 0.05, Qwen2.5 0.19), but that
 screen favors a positive value by construction; against the same screen applied to the pressure-removed
-twins, OLMo-3 (0.073) and Llama-3.1 (0.143) keep a gap, Tulu 3 does not ($-0.004$), and Qwen2.5 is not
-resolved (0.083, $-0.028$ to 0.195). The clearest comparison is Meta's and Tulu
+twins, OLMo-3 (0.073) and Llama-3.1 (0.143) keep a gap, Tulu 3 does not ($-0.004$), and Qwen2.5 is
+unresolved (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16). So Tulu 3 shows none on either read, and Qwen2.5 shows none on the whole panel and is
+unresolved on its own screened scenarios. The clearest comparison is Meta's and Tulu
 3's: both start from the same Llama-3.1 weights, and only Meta's carries the gap. Tulu 3 shows none
 already after its first stage, so whatever differs happens early in its recipe.
 
@@ -52,7 +53,9 @@ Qwen2.5-7B-Instruct (Alibaba) & 0.011 [0.007, 0.016] & $-$0.008 [$-$0.023, 0.009
 The OLMo-3 value in \Cref{tab:recipe} (0.018) is the whole-panel excess on the letter-only readout. It is
 not the 0.030 of \Cref{base}, which is the same readout on the 136 scenarios screened on this model's own
 actions, nor the one-in-five of \Cref{gap} (0.19), which is a majority-vote rate over sampled rollouts on
-those scenarios; the three answer different questions about one gap.
+those scenarios; the three answer different questions about one gap. The positive control likewise
+appears as 0.58 (majority readout, \Cref{gap}), 0.60 (continuous readout) and 0.497 (letter-only, on the
+360 union primaries the known-gap cell reads): the same control on three readouts.
 
 \begin{figure}[tbp]
 \centering
@@ -70,18 +73,20 @@ Meta's Llama-3.1-8B-Instruct and Tulu 3 share a base. 95\% bootstrap CIs over sc
 model's acting frame moves toward it by half a unit of probability or more (0.50 to 0.62; every lower
 bound at or above 0.47; \Cref{fig:recipe}), so each readout can register a change of action when one happens.
 
-**Two recipes carry the gap and two do not.** Under their own templates, OLMo-3-Instruct and Meta's
+**Two recipes carry the gap; Tulu 3 shows none on either read; Qwen2.5 shows none on the whole panel.** Under their own templates, OLMo-3-Instruct and Meta's
 Llama-3.1-8B-Instruct each carry a pressure-attributable excess (0.018 and 0.028, both intervals above
 zero). Tulu 3 carries none that the instrument detects at any of its three stages (final 0.001, $-0.007$
 to 0.010; not detectable above about 0.01), and neither does Qwen2.5-7B-Instruct ($-0.008$, $-0.023$ to
 0.009; not detectable above about 0.02). These are whole-panel numbers. On each model's own screened
 scenarios (a post-review addition, P1-A11) every model shows an excess, Tulu 3 (0.051, 0.023 to 0.079)
-and Qwen2.5 (0.187, 0.116 to 0.259) included; the screen selects on the acting mass, which is part of the
-excess, so it favors a positive value by construction. Applying the identical screen to the
-pressure-removed twins gives the selection-matched null (P1-A13): against it OLMo-3 (0.073, 0.033 to
-0.114) and Llama-3.1 (0.143, 0.112 to 0.173) keep their gap, Tulu 3's own-screen excess is what the
-selection produces ($-0.004$, $-0.054$ to 0.042), and Qwen2.5's is not resolved (0.083, $-0.028$ to
-0.195). The panel does not favor one family's pressures in engagement:
+and Qwen2.5 (0.187, 0.116 to 0.259) included. That read needs its own null. The screen keeps a scenario
+by the acting mass that feeds the excess, so a screened set shows some excess even where the pressure
+does nothing. The selection-matched null (P1-A13; post-hoc, pre-registered and pushed before it was
+computed) measures how much: it applies the identical screen to the pressure-removed twins and reverses
+the contrast. Against it OLMo-3 (0.073, 0.033 to 0.114) and Llama-3.1 (0.143, 0.112 to 0.173) keep their
+gap, Tulu 3's own-screen excess is what the selection produces ($-0.004$, $-0.054$ to 0.042), and
+Qwen2.5's is unresolved (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16). Tulu 3 therefore shows none on either read, and Qwen2.5 shows none on
+the whole panel and is unresolved on its own screened scenarios (KDG-A19). The panel does not favor one family's pressures in engagement:
 every model engages every scenario, and each finds its own set of pressuring scenarios (the screened
 fraction is 0.19 to 0.22 for OLMo-3, 0.20 for Llama-3.1, 0.09 to 0.12 for Tulu 3 and 0.08 for Qwen2.5,
 and Llama's screened set overlaps OLMo-3's on 23 of 118 scenarios).

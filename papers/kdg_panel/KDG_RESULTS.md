@@ -1523,7 +1523,9 @@ saved Phase 1 letter-only chat arrays. `data/analysis_own_screen.json`; bootstra
 | Qwen2.5-Instruct | 47 | 0.187 [0.116, 0.259] (0.103) | 54 | 0.104 | **0.083 [−0.028, 0.195]** | within selection (not resolved) |
 
 P1-A11's registered reading (ii) obtains (Tulu 3's and Qwen2.5's own-screen intervals lie above zero): the
-paper's "two do not" reads "two do not on the whole panel", with the own-screen numbers beside it. P1-A13:
+paper's "two do not" reads "two do not on the whole panel", with the own-screen numbers beside it. (Superseded 2026-10-05 by the author's wording: "Tulu 3 shows none on either read;
+Qwen2.5 shows none on the whole panel and is unresolved on its own screened scenarios"; Qwen's E_sel bar is
+about 0.16 (2.8 × SE 0.057), the 0.10 in the table being the own-screen excess's bar; KDG-A19.) P1-A13:
 the P1-A9 screen selects on the primary's acting mass, which is part of E, and applying the identical screen
 to the twins reproduces Tulu 3's own-screen excess exactly (0.055 vs 0.051), so Tulu 3's own-screen excess
 is what the selection produces; OLMo-3 and Llama-3.1 keep a gap above the selection-matched null; Qwen2.5's
@@ -1538,3 +1540,102 @@ different screens on one model; the size difference is itself the selection effe
 0.012 on OLMo-3's twins). Only the selection-matched number is comparable across models. (3) *"Qwen2.5 might
 carry a gap the panel misses."* Conceded at the own-screen resolution (CI to 0.195); the whole-panel bar
 (about 0.02) and the positive control (0.519) are what the null rests on.
+
+## 24. Twin under deliberation (P1-A12, GPU-1) and the proportional-reduction fork (P1-A14; 2026-10-05)
+
+Post-review addition (adversarial review R1/GPU-1; author go 2026-10-05). P1-A12 pushed c263eb2 with its
+execution note and analysis code in 4d6b020, before the pod. P1-A14 (a post-hoc fork on the scale, written
+after P1-A12's result) pushed 3500a2e before its verdict was computed; its disclosure records that pooled
+ratios and a descriptive log-odds ΔE were seen before it was written. Pod p1d (A100-SXM4-80GB, run
+`kdg_20261005T211905`, 21:19–00:14 UTC; units 98 min OLMo-3, 75 min Llama): every unit ok, both manifests
+verify, registered revisions loaded, 16 rows per scenario in every twin cell (OLMo-3 130 scenarios, Llama
+114: the dose sets of record). `data/analysis_dose_twin.json`; bootstrap 10,000, seed 0.
+
+**Construct constancy.** Reasoning finishes within the 512-token budget on 7.7% of OLMo-3 primary rollouts
+and 7.3% of twin rollouts (truncated on both), and on 90% / 94% for Llama (mostly completed on both): the
+twin arm reads the same construct as the primary arm on each model.
+
+**Second derivation.** Δ_P on the paired set reproduces the dose results of record exactly (OLMo-3 −0.0774,
+n 130; Llama −0.3502, n 114).
+
+Mean violating mass at the forced answer (paired set):
+
+| model | arm | primaries | twins |
+|---|---|---|---|
+| OLMo-3 | filler | 0.279 | 0.193 |
+| OLMo-3 | truncated filler | 0.313 | 0.214 |
+| OLMo-3 | reasoning | 0.202 | 0.141 |
+| Llama-3.1 Meta | filler | 0.501 | 0.305 |
+| Llama-3.1 Meta | truncated filler | 0.471 | 0.339 |
+| Llama-3.1 Meta | reasoning | 0.151 | 0.098 |
+
+**P1-A12 (registered, probability scale; filler of record, truncated filler beside):**
+
+| model | ref | Δ_P | Δ_T | ΔE_delib = Δ_P − Δ_T | bar | branch |
+|---|---|---|---|---|---|---|
+| OLMo-3 | filler | −0.077 [−0.110, −0.047] | −0.052 [−0.080, −0.025] | **−0.025 [−0.052, +0.002]** | 0.039 | (b) removes the at-rest asymmetry |
+| OLMo-3 | trunc. filler | −0.112 | −0.072 [−0.103, −0.043] | −0.039 [−0.071, −0.009] | 0.044 | (a) |
+| Llama-3.1 | filler | −0.350 [−0.387, −0.314] | −0.208 [−0.244, −0.173] | **−0.143 [−0.185, −0.100]** | 0.061 | (a) reduces the pressure part |
+| Llama-3.1 | trunc. filler | −0.320 | −0.241 [−0.273, −0.210] | −0.079 [−0.116, −0.042] | 0.053 | (a) |
+
+**P1-A14 (post-hoc fork, ratio scale):** R = mean p_D(reasoning) / mean p_D(ref); L = log R_P − log R_T.
+
+| model | ref | R_P | R_T | L | bar on L | ΔE predicted by a common ratio / observed | branch |
+|---|---|---|---|---|---|---|---|
+| OLMo-3 | filler | 0.723 | 0.731 | **−0.011 [−0.158, +0.135]** | 0.21 | −0.024 / −0.025 | proportional |
+| OLMo-3 | trunc. filler | 0.644 | 0.661 | −0.026 [−0.188, +0.130] | 0.23 | −0.035 / −0.039 | proportional |
+| Llama-3.1 | filler | 0.301 | 0.320 | **−0.059 [−0.257, +0.158]** | 0.30 | −0.136 / −0.143 | proportional |
+| Llama-3.1 | trunc. filler | 0.321 | 0.288 | +0.108 [−0.106, +0.350] | 0.33 | −0.092 / −0.079 | proportional |
+
+**Verdict, under both choices.** On the registered probability scale, reasoning reduces the
+pressure-attributable part on Llama-3.1 (branch (a), −0.143) and, on OLMo-3, removes the at-rest asymmetry
+by the rule (branch (b): the twins fall, −0.052, and the extra fall under pressure, −0.025, is not resolved
+against the filler; it is resolved against the truncated filler, −0.039). On the ratio scale (P1-A14), both
+models read **proportional** with both references: reasoning cuts the violating choice by about the same
+fraction with and without the pressure (OLMo-3 to 0.72 of the filler level on primaries and 0.73 on twins;
+Llama to 0.30 and 0.32), and a single common ratio predicts the observed probability-scale ΔE on both models
+(−0.136 vs −0.143; −0.024 vs −0.025). The probability-scale branch (a) on Llama is what a uniform fractional
+cut produces on a pressured baseline that starts higher (0.50 against 0.31). No pressure-specific fraction is
+detectable beyond a ratio difference of about a fifth (OLMo-3, bar 0.21 on L) or a quarter (Llama, 0.30).
+The OLMo-3 disagreement between the two references on the probability scale is the same effect: the truncated
+filler sits higher on both arms, so the same fractional cut is a larger absolute difference.
+
+Positive voice: **thinking about the stakes before acting lowers the violating choice by a large, stable
+fraction on both models that carry the gap (about 28% on OLMo-3 and 70% on Llama-3.1 against a same-length
+non-moral task), and it does so whether or not the incentive is present.** Deliberation is a general brake on
+the violating action, proportional to how strongly the model leans toward it, not a lever on the incentive
+specifically; the pressure-attributable part shrinks in absolute terms because the brake applies to a larger
+lean under pressure.
+
+**Bias directions.** (i) R is a ratio of means, weighted toward high-baseline scenarios; a pressure-specific
+effect concentrated in low-baseline scenarios would be under-weighted: opposes "pressure-specific" (favors
+proportional). (ii) Proportional and pressure-specific are separated only to the bars above; a fractional
+difference smaller than about a fifth / a quarter is not excluded: the proportional verdict is "no
+pressure-specific fraction detectable at those bars", not "none". (iii) The scale fork was chosen after the
+probability-scale result (labelled; both verdicts reported). (iv) Primaries and twins share seeds and option
+orders, and the construct is constant across arms (completion rates above), so arm-level drift does not
+favor either reading.
+
+### 24.1 Referee pass
+
+(1) *"You changed the scale after the registered rule gave a result you liked less."* The registered
+verdict stands in every document beside the fork (Llama (a), OLMo-3 (b)); P1-A14 is dated, labelled post-hoc,
+discloses the descriptive numbers seen before it, and was pushed before its CI. The construction reason is
+a named rival (a constant fractional cut makes ΔE < 0 on any higher baseline), and the second derivation (the
+common-ratio prediction matching the observed ΔE on both models) is a closed-form check of that rival, not a
+choice of scale. (2) *"Log-odds is the natural scale for a probability effect, and on it the twins fall
+more."* A per-scenario log-odds ΔE was seen descriptively (Llama +0.51, −0.05 to 1.08 vs filler); it points
+the same way as the ratio fork (no pressure-specific excess), and a log-odds effect larger on twins would, if
+anything, strengthen the conclusion that reasoning does not target the incentive. It is not used as a
+verdict. (3) *"Proportional is the null you can never reject at n ≈ 120."* Conceded in part: the bars on L
+(0.21, 0.30) exclude only large pressure-specific fractions. What the data do settle is the probability-scale
+reading: the registered branch (a) on Llama is fully accounted for by a common ratio, so the paper may not say
+that deliberation loosens the incentive's pull.
+
+### 24.2 What this changes
+
+The KDG paper's §9, §10, §11 and abstract (author's instruction: update from the branch that holds): the
+dose arm's effect is stated as a proportional reduction of the violating choice with and without the pressure
+(both scales reported, the probability-scale branches beside), and §10's "whether deliberation loosens it is
+open" becomes "deliberation lowers the action's lean in proportion, not the incentive's pull specifically, at
+these bars". R1 (the deliberation arm was undifferenced) is closed.

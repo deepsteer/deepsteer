@@ -162,6 +162,11 @@ moved three turns back; the panel can turn that into a dose–response curve wit
 - **Turns-since-norm dose arm.** Norm statement at 0, 1, 3, 6 turns before the action, with the twin.
   Branches: effect decays with distance (momentum is a context effect, remedy is placement and
   re-statement) or holds (salience is read once and kept, remedy is training).
+  *State of record (2026-10-05):* run (p2a, p2b; KDG_RESULTS §21–§22). On Llama-3.1 Meta the reminder's
+  effect decays with token distance (R(6) 0.50, 0.43 to 0.58, at 2,000 tokens; 0.95 at 138); OLMo-3
+  cannot be read at 2,000 tokens (KDG-A18). Do not write that the effect "does not fade" with turns;
+  "no decay detectable" is stated only at 138 tokens with its bars (KDG-55 wording rule), and pairing
+  with the 90/40 figure is the author's call. KDG-A16 (Llama k = 3 dip) is unresolved. Not in the paper.
 - **F6 attribution levels.** principal / peer / no speaker / no message, per `LIT_PASS_P9.md` safe wording.
 - **F9 realism twin.** Logged as a candidate family only. It changes the construct (belief about
   consequences, not about norms) and needs its own type block before it is scheduled.

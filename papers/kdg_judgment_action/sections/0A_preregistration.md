@@ -33,9 +33,10 @@ Table: Amendments to the pre-registration. "Before computation" means the amendm
 committed before the analysis it licenses was run on data already on disk. {#tab:amendments}
 
 The multi-model work of \Cref{base}, \Cref{recipe} and \Cref{deliberation} ran under a second specification
-(`papers/KDG_PHASE1_SPEC.md`), pre-registered and pushed before its first computation, with nine dated
-amendments of its own (\Cref{tab:phase1}). Two of them are forks made after data were seen (P1-A1, P1-A5),
-each reported beside the choice it forks; the others were committed before the data they govern existed or
+(`papers/KDG_PHASE1_SPEC.md`), pre-registered and pushed before its first computation, with fourteen dated
+amendments of its own (\Cref{tab:phase1}). Three of them are forks made after data were seen (P1-A1, P1-A5,
+P1-A14), each reported beside the choice it forks; P1-A13 was added after P1-A11's result and is labelled post-hoc
+where it is used; the others were committed before the data they govern existed or
 before those data were read.
 
 | id | date (2026) | committed | content |
@@ -49,6 +50,11 @@ before those data were read.
 | P1-A7 | 09-28 | before computation | at-rest lean on a model-free set, and per unit of output scale |
 | P1-A8 | 09-28 | before the pod | truncated-filler control and norm-salience arm, with branch rules |
 | P1-A9 | 09-28 | before computation | known-gap positive control per model with its validation rule; per-model screens; dose arm on a second recipe |
+| P1-A10 | 10-01 | before computation (04d604f) | stage steps of the excess per unit of output scale on the model-free set (RL-step sharpening rival) |
+| P1-A11 | 10-05 | before computation (c263eb2); post-review addition | each instruct model's excess on its own letter-only screen, with its bar |
+| P1-A12 | 10-05 | before the pod (c263eb2; execution note 4d6b020); post-review addition | dose arm on the pressure-removed twins: reasoning's change in the pressure-attributable part, with branch rules |
+| P1-A13 | 10-05 | after P1-A11's result, before computation (1d2616d); post-hoc, post-review addition | selection-matched null for the own-screen excess: the same screen on the twins, contrast reversed |
+| P1-A14 | 10-05 | after P1-A12's result, before its interval (3500a2e); post-hoc fork, post-review addition | ratio reading of the deliberation twins (proportional-reduction rival), reported beside the registered probability-scale verdict |
 
 Table: Amendments to the Phase 1 specification. {#tab:phase1}
 

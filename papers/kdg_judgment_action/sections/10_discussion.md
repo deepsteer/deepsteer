@@ -22,7 +22,8 @@ and under pressure; no post-training stage enlarges the pressure-attributable pa
 the probability scale or per unit of output scale (586 scenarios screened by no model; the RL step's
 +0.004 sits at its 0.005 bar, and per unit of scale it is +0.005, $-0.016$ to 0.026). Across
 lineages the picture is not one of a pretraining property that survives every alignment. Two of four
-instruct models carry the gap and two do not, with a validated instrument on each, and on the same
+instruct models carry the gap; Tulu 3 shows none on either read, and Qwen2.5 shows none on the whole
+panel and is unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16); the instrument is validated on each; and on the same
 Llama-3.1 base Meta's recipe carries it while Ai2's Tulu 3 does not (\Cref{recipe}). The defensible
 account is that post-training recipes differ in whether the aligned model acts on the incentive against
 its own judgment, and that within a recipe that carries the gap, later stages leave its size alone.
@@ -47,16 +48,18 @@ recipe has. The twin design caught the problem only because the frame itself was
 lesson for evaluations is to read every templated model in its template, and to treat a raw-frame
 instruct number as a format cell.
 
-**Goal-following is the parsimonious mechanism; whether deliberation loosens it is open.** The simplest account of
+**Goal-following is the parsimonious mechanism; deliberation brakes the action, not the goal.** The simplest account of
 the gap is not moral at all: post-training teaches a model to pursue the goal it is handed in context,
 the incentive sentence hands the actor a goal, and the judge, who reads the same sentence, does not hold
 it. That is consistent with the Schmied et al. [-@schmied2025greedy] observation that fine-tuned agents
 act greedily on the goal in front of them. The dose arm shows the action is not fixed once the incentive
 is read: on both recipes that carry the gap, reasoning about the stakes before acting moves the action
 toward the model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the
-norm alone does about a third of that on OLMo-3 (0.22 to 0.53). Whether that loosens the incentive's
-pull, or closes the at-rest asymmetry between a deliberated judgment and an immediate action, waits on
-running the pressure-removed twins under deliberation (\Cref{limitations}). This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
+norm alone does about a third of that on OLMo-3 (0.22 to 0.53). Run on the pressure-removed twins, the same
+reasoning cuts the violating choice by the same fraction there (\Cref{deliberation}), so it does not loosen
+the incentive's pull specifically: it brakes the action's lean toward the violating option in proportion,
+whatever supplies that lean (no pressure-specific effect detectable beyond about a fifth of the ratio on
+OLMo-3 or a quarter on Llama-3.1). This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering
