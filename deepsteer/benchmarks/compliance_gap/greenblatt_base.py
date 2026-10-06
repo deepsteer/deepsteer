@@ -20,12 +20,11 @@ from collections import defaultdict
 import torch
 
 from deepsteer.benchmarks.compliance_gap.greenblatt import (
-    ComplianceScenario,
     _SCENARIOS,
-    get_compliance_scenarios,
+    ComplianceScenario,
 )
 from deepsteer.core.benchmark_suite import Benchmark
-from deepsteer.core.model_interface import ModelInterface, WhiteBoxModel
+from deepsteer.core.model_interface import ModelInterface
 from deepsteer.core.types import (
     AccessTier,
     BenchmarkResult,

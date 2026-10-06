@@ -8,8 +8,6 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/behavioral_ben
 
 from __future__ import annotations
 
-from collections import defaultdict
-
 import numpy as np
 import torch
 
@@ -67,14 +65,14 @@ def projection_classify(
         predicted = max(mean_proj, key=mean_proj.get)  # type: ignore[arg-type]
         classified.append(predicted)
 
-    correct = sum(1 for p, l in zip(classified, labels) if p == l)
+    correct = sum(1 for p, lbl in zip(classified, labels) if p == lbl)
     accuracy = correct / n_items if n_items > 0 else 0.0
 
     per_group: dict[str, dict] = {}
     for group in groups:
-        group_items = [(p, l) for p, l in zip(classified, labels) if l == group]
+        group_items = [(p, lbl) for p, lbl in zip(classified, labels) if lbl == group]
         if group_items:
-            g_correct = sum(1 for p, l in group_items if p == l)
+            g_correct = sum(1 for p, lbl in group_items if p == lbl)
             per_group[group] = {
                 "correct": g_correct,
                 "total": len(group_items),
@@ -119,7 +117,7 @@ def classify_by_projection(
         groups = sorted(proj.keys())
         mean_proj: dict[str, float] = {}
         for group in groups:
-            vals = [proj[group].get(l, 0) for l in layers]
+            vals = [proj[group].get(layer, 0) for layer in layers]
             mean_proj[group] = float(np.mean(vals))
 
         if debias:

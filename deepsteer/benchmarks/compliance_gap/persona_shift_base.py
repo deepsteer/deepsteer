@@ -28,7 +28,7 @@ from deepsteer.benchmarks.compliance_gap.greenblatt import (
     get_compliance_scenarios,
 )
 from deepsteer.core.benchmark_suite import Benchmark
-from deepsteer.core.model_interface import ModelInterface, WhiteBoxModel
+from deepsteer.core.model_interface import ModelInterface
 from deepsteer.core.types import (
     AccessTier,
     BenchmarkResult,

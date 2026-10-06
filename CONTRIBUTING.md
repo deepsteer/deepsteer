@@ -23,7 +23,7 @@ Welcome! We appreciate your interest in contributing to DeepSteer.
 Run the linter before submitting:
 
 ```bash
-ruff check deepsteer/ tests/
+ruff check .    # same command and scope as CI (papers/ is excluded in pyproject.toml)
 ```
 
 ## Contributor License Agreement

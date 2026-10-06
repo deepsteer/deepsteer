@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 import torch
 
 from deepsteer.benchmarks.moral_reasoning.foundations import (
-    MoralScenario,
     _SCENARIOS as MORAL_SCENARIOS,
+)
+from deepsteer.benchmarks.moral_reasoning.foundations import (
+    MoralScenario,
 )
 from deepsteer.benchmarks.moral_reasoning.foundations_base import (
     MoralFoundationsProbeBase,
@@ -24,7 +25,6 @@ from deepsteer.core.types import (
     MoralFoundation,
     MoralFoundationsBaseResult,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model for base-model (score-based) benchmarks

@@ -235,8 +235,8 @@ def phased_schedule(
         method="phased",
         metadata={
             "phase_configs": [
-                {"fraction": f, "ratio": r, "label": l}
-                for f, r, l in phase_configs
+                {"fraction": f, "ratio": r, "label": lbl}
+                for f, r, lbl in phase_configs
             ],
             "foundation_weights": weights,
         },

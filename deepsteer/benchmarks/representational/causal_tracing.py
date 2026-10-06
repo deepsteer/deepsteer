@@ -16,7 +16,6 @@ from collections import defaultdict
 from typing import Any
 
 import torch
-from torch import Tensor
 
 from deepsteer.core.benchmark_suite import Benchmark
 from deepsteer.core.model_interface import WhiteBoxModel

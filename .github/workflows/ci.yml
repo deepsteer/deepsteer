@@ -1,0 +1,63 @@
+# Lint, fast tests, and an installed-wheel smoke test on every push and PR to main.
+# LIBRARY_RELEASE_PLAN §B. The wheel job is the one that catches package-data regressions.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff==0.16.7
+      - run: ruff check .
+      # §C3 adds: lint-imports (import-linter contracts in pyproject.toml)
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install (CPU torch first so the CUDA build is never pulled)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
+      - run: pytest tests/ -m "not slow and not regression" -q
+
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist and wheel
+        run: |
+          pip install build
+          python -m build
+          ls -l dist/
+      - name: Install the wheel in a clean venv with core deps only
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
+          /tmp/smoke/bin/pip install dist/*.whl
+      - name: Smoke test (run outside the checkout so the source tree cannot shadow the wheel)
+        run: cd /tmp && /tmp/smoke/bin/python -I "$GITHUB_WORKSPACE/scripts/wheel_smoke.py"

@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 
-import pytest
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -15,8 +13,8 @@ from deepsteer.benchmarks.representational.causal_tracing import MoralCausalTrac
 from deepsteer.core.types import (
     AccessTier,
     CausalTracingResult,
-    MoralFoundation,
     ModelInfo,
+    MoralFoundation,
 )
 from deepsteer.datasets.types import (
     DatasetMetadata,
@@ -25,7 +23,6 @@ from deepsteer.datasets.types import (
     ProbingDataset,
     ProbingPair,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model for causal tracing

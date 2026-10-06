@@ -12,7 +12,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-PROBE_ENG_DIR = Path(__file__).resolve().parents[2] / "papers" / "3_moral_geometry" / "outputs" / "probe_engineering"
+PROBE_ENG_DIR = (
+    Path(__file__).resolve().parents[2]
+    / "papers" / "3_moral_geometry" / "outputs" / "probe_engineering"
+)
 
 
 class TestDirectionOutputSchema:
@@ -45,7 +48,10 @@ class TestDirectionOutputSchema:
 
     def test_probe_directions_npz_loadable(self):
         """Verify library can load paper's .npz probe direction files."""
-        npz_path = Path(__file__).resolve().parents[2] / "papers" / "3_moral_geometry" / "outputs" / "exp1_2_3" / "exp1_probe_directions.npz"
+        npz_path = (
+            Path(__file__).resolve().parents[2]
+            / "papers" / "3_moral_geometry" / "outputs" / "exp1_2_3" / "exp1_probe_directions.npz"
+        )
         if not npz_path.exists():
             pytest.skip("Probe direction .npz not found")
 
@@ -67,10 +73,15 @@ class TestDirectionReproduction:
     def test_mean_diff_matches_shared_py(self):
         """Verify library mean_diff produces same directions as shared.py."""
         import sys
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "papers" / "3_moral_geometry" / "scripts" / "probe_engineering"))
+        sys.path.insert(0, str(
+            Path(__file__).resolve().parents[2]
+            / "papers" / "3_moral_geometry" / "scripts" / "probe_engineering"
+        ))
 
         from shared import (
             compute_mean_diff_directions as shared_mean_diff,
+        )
+        from shared import (
             load_model_and_collect_activations,
         )
 

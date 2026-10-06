@@ -13,7 +13,6 @@ import numpy as np
 from deepsteer.foundations import (
     BINDING_IDX,
     FOUNDATION_ORDER,
-    FOUNDATION_SHORT,
     INDIVIDUALIZING_IDX,
 )
 from deepsteer.geometry.clustering import hierarchical_cluster, permutation_test

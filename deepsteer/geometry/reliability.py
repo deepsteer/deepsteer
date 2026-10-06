@@ -131,7 +131,9 @@ def disattenuate_bootstrap(
             vals.append(v)
     if not vals:
         return {"point": float("nan"), "ci95": [float("nan"), float("nan")], "n_dropped": dropped}
-    point = disattenuate(cos_observed, spearman_brown(float(A.mean())), spearman_brown(float(B.mean())))
+    point = disattenuate(
+        cos_observed, spearman_brown(float(A.mean())), spearman_brown(float(B.mean()))
+    )
     lo, hi = (float(x) for x in np.percentile(vals, [2.5, 97.5]))
     return {"point": point, "ci95": [lo, hi], "n_dropped": int(dropped), "n_boot": int(n_boot)}
 

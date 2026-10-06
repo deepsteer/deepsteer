@@ -39,7 +39,6 @@ import argparse
 import gc
 import json
 import logging
-import sys
 import time
 from pathlib import Path
 
@@ -136,7 +135,6 @@ def run_a2(
     device: str | None = None,
 ) -> dict:
     """A2: Mini trajectory — CheckpointTrajectoryProbe across checkpoints."""
-    import torch
 
     from deepsteer.benchmarks.representational.trajectory import (
         CheckpointTrajectoryProbe,

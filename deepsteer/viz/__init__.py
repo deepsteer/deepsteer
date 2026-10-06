@@ -160,7 +160,7 @@ def plot_model_comparison(
         # Normalize x-axis to [0, 1] so models with different layer counts
         # can be compared on the same relative depth scale
         n_layers = len(layers)
-        x_norm = [l / (n_layers - 1) if n_layers > 1 else 0.5 for l in layers]
+        x_norm = [layer / (n_layers - 1) if n_layers > 1 else 0.5 for layer in layers]
 
         ax.plot(x_norm, accuracies, "o-", color=color, linewidth=2, markersize=4,
                 label=f"{model_name} (peak={result.peak_accuracy:.0%})")
@@ -492,7 +492,7 @@ def plot_persona_shift(
 
     ax.set_xlabel("Persona")
     ax.set_ylabel("Compliance Rate")
-    display_labels = [l.replace("_", " ").title() for l in labels]
+    display_labels = [lbl.replace("_", " ").title() for lbl in labels]
     ax.set_xticks(x)
     ax.set_xticklabels(display_labels, fontsize=8, rotation=15, ha="right")
     model_name = result.model_info.name if result.model_info else "Unknown"
@@ -614,11 +614,11 @@ def plot_causal_tracing(
     prefix = filename_prefix or _make_prefix(result)
 
     layers = sorted(result.mean_indirect_effect_by_layer.keys())
-    effects = [result.mean_indirect_effect_by_layer[l] for l in layers]
+    effects = [result.mean_indirect_effect_by_layer[layer] for layer in layers]
 
     # Highlight peak layer
     peak = result.peak_causal_layer
-    bar_colors = ["#F44336" if l == peak else "#2196F3" for l in layers]
+    bar_colors = ["#F44336" if layer == peak else "#2196F3" for layer in layers]
 
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.bar(layers, effects, color=bar_colors)
@@ -880,7 +880,6 @@ def plot_training_monitoring(
     steps = [s.step for s in session.snapshots]
     peak_accs = [s.peak_accuracy or 0.0 for s in session.snapshots]
     breadths = [s.moral_encoding_breadth or 0.0 for s in session.snapshots]
-    depths = [s.moral_encoding_depth or 1.0 for s in session.snapshots]
     onset_layers = [s.onset_layer for s in session.snapshots]
     peak_layers = [s.peak_layer for s in session.snapshots]
 
@@ -898,8 +897,8 @@ def plot_training_monitoring(
     ax_top.set_title(f"Training Monitoring — {session.model_name}")
 
     # Bottom: layer positions
-    onset_valid = [(s, l) for s, l in zip(steps, onset_layers) if l is not None]
-    peak_valid = [(s, l) for s, l in zip(steps, peak_layers) if l is not None]
+    onset_valid = [(s, layer) for s, layer in zip(steps, onset_layers) if layer is not None]
+    peak_valid = [(s, layer) for s, layer in zip(steps, peak_layers) if layer is not None]
     if onset_valid:
         ax_bot.plot(*zip(*onset_valid), "D-", color="#FF9800", linewidth=2,
                     markersize=5, label="Onset Layer")

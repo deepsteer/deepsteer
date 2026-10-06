@@ -2,6 +2,18 @@
 
 The API is alpha and will change between minor versions.
 
+## [Unreleased]
+
+### Added
+- CI (`.github/workflows/ci.yml`): ruff, fast tests on Python 3.10 and 3.12, and the
+  installed-wheel smoke test on every push and PR to `main` (LIBRARY_RELEASE_PLAN §B).
+
+### Changed
+- Lint scope is `ruff check .` with `papers/`, the frozen W4 harness, and
+  `deepsteer/supplement` excluded; prose-data modules exempt from E501. Ruff pinned to
+  0.16.7 in the `dev` extra. Unused imports removed from library modules (none was imported
+  elsewhere in the repository).
+
 ## [0.1.1]
 
 First working release on PyPI (LIBRARY_RELEASE_PLAN §A). Supersedes 0.1.0, which is yanked.

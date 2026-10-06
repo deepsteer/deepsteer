@@ -264,7 +264,7 @@ class PersonaActivationScorer:
     def score_response_in_context(
         self, model: WhiteBoxModel, prompt: str, response: str
     ) -> float:
-        """Score a response by mean-pooling over its token positions in a prompt+response forward pass.
+        """Score a response by mean-pooling its token positions in a prompt+response forward pass.
 
         Re-tokenizes the prompt alone to find the prompt's token length, then
         slices activations from that offset onward.  Concatenated tokenization

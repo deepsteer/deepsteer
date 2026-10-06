@@ -17,7 +17,6 @@ import itertools
 import logging
 import math
 import time
-from dataclasses import asdict
 
 import torch
 from torch.utils.data import DataLoader, TensorDataset

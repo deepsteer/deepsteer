@@ -13,7 +13,6 @@ from deepsteer.core.model_interface import (
     UnsupportedArchitectureError,
     WhiteBoxModel,
 )
-from deepsteer.core.types import AccessTier
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +79,7 @@ class MoEWhiteBoxModel(WhiteBoxModel):
         Returns:
             dict[layer, Tensor of shape (n_texts, n_experts, hidden_dim)]
         """
-        all_expert_acts: dict[int, list[Tensor]] = {l: [] for l in layers}
+        all_expert_acts: dict[int, list[Tensor]] = {layer: [] for layer in layers}
 
         for i, text in enumerate(texts):
             if (i + 1) % 50 == 0 or i == 0:
@@ -122,7 +121,7 @@ class MoEWhiteBoxModel(WhiteBoxModel):
                 expert_mean = expert_out.mean(dim=1)  # (n_experts, hidden_dim)
                 all_expert_acts[layer_idx].append(expert_mean.cpu())
 
-        return {l: torch.stack(acts) for l, acts in all_expert_acts.items()}
+        return {layer: torch.stack(acts) for layer, acts in all_expert_acts.items()}
 
     @torch.no_grad()
     def get_router_logits(
@@ -135,7 +134,7 @@ class MoEWhiteBoxModel(WhiteBoxModel):
         Returns:
             dict[layer, list of Tensors of shape (seq_len, n_experts)]
         """
-        all_router: dict[int, list[Tensor]] = {l: [] for l in layers}
+        all_router: dict[int, list[Tensor]] = {layer: [] for layer in layers}
 
         for text in texts:
             router_logits: dict[int, Tensor] = {}
@@ -156,7 +155,7 @@ class MoEWhiteBoxModel(WhiteBoxModel):
                 for h in hooks:
                     h.remove()
 
-            for l in layers:
-                all_router[l].append(router_logits[l])
+            for layer in layers:
+                all_router[layer].append(router_logits[layer])
 
         return all_router

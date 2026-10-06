@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceScenario
 from deepsteer.benchmarks.compliance_gap.persona_shift import (
     PERSONAS,
@@ -17,7 +15,6 @@ from deepsteer.core.types import (
     PersonaShiftResult,
 )
 from tests.benchmarks.test_behavioral import MockAPIModel
-
 
 # ---------------------------------------------------------------------------
 # Benchmark property tests

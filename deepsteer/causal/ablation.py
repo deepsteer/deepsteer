@@ -10,7 +10,6 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/direction_abla
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 import numpy as np
 import torch
@@ -94,7 +93,8 @@ def ablation_sweep(
         continuation_key: Key in prompt dicts for continuations.
 
     Returns:
-        ``results[ablated_group][layer] = {on_target_mean_delta, off_target_mean_delta, specificity}``.
+        ``results[ablated_group][layer]`` = dict with ``on_target_mean_delta``,
+        ``off_target_mean_delta``, ``specificity``.
     """
     results: dict[str, dict[int, dict]] = {}
 

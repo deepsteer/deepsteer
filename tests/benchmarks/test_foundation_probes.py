@@ -5,15 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-import torch
-
 from deepsteer.benchmarks.representational.foundation_probes import FoundationSpecificProbe
 from deepsteer.core.types import (
     AccessTier,
     FoundationProbingResult,
     MoralFoundation,
-    ModelInfo,
 )
 from deepsteer.datasets.types import (
     DatasetMetadata,
@@ -23,7 +19,6 @@ from deepsteer.datasets.types import (
     ProbingPair,
 )
 from tests.benchmarks.test_probing import MockWhiteBoxModel
-
 
 # ---------------------------------------------------------------------------
 # Helpers

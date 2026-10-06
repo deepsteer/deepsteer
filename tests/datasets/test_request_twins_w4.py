@@ -47,7 +47,8 @@ class TestRequestTwinsW4:
             assert a not in orig and b not in orig, (a, b)
 
     def test_union_and_tags_align(self):
-        # assert union = original (60) then w4 (48) with aligned set tags (the pooled/alone split key)
+        # assert union = original (60) then w4 (48) with aligned set tags
+        # (the pooled/alone split key)
         u = get_request_twins_union()
         tags = w4_set_tags()
         assert len(u) == len(tags) == len(get_request_twins()) + 48
@@ -56,8 +57,11 @@ class TestRequestTwinsW4:
         assert u[len(get_request_twins()):] == get_request_twins_w4()
 
     def test_no_alarming_surface_lexicon(self):
-        # assert harm is carried by intent, not by an alarming keyword register (XSTest-safe rule)
-        banned = ("kill", "bomb", "weapon", "drug", "hack", "murder", "rape", "suicide", "explosive")
+        # assert harm is carried by intent, not by an alarming keyword register
+        # (XSTest-safe rule)
+        banned = (
+            "kill", "bomb", "weapon", "drug", "hack", "murder", "rape", "suicide", "explosive",
+        )
         for _f, _a, b in get_request_twins_w4():
             low = b.lower()
             assert not any(w in low for w in banned), b

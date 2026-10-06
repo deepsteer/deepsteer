@@ -49,9 +49,9 @@ def bootstrap_pr(
 
     Returns the point estimate, percentile 95% CI, and the bootstrap array. Bias direction: rows
     resampled with replacement contain duplicates, which lowers the effective sample rank and
-    biases the bootstrap PR slightly **downward** (favors "bottleneck" readings); the CI is therefore
-    conservative for a ``PR >= floor`` claim and anti-conservative for a ``PR < floor`` claim — stated
-    in ``bias_note``.
+    biases the bootstrap PR slightly **downward** (favors "bottleneck" readings); the CI is
+    therefore conservative for a ``PR >= floor`` claim and anti-conservative for a
+    ``PR < floor`` claim — stated in ``bias_note``.
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)
@@ -103,9 +103,10 @@ def pr_gaussian_null(
         Z = rng.standard_normal((n, S.size))
         draws[k] = participation_ratio(Z * scale @ Vt)
     pr = participation_ratio(Xa)
-    return {"pr": pr, "null_q05": float(np.percentile(draws, 5)), "null_q50": float(np.median(draws)),
-            "null_q95": float(np.percentile(draws, 95)),
-            "quantile_of_measured": float((draws < pr).mean()), "n_draws": int(n_draws), "per_draw": draws}
+    return {"pr": pr, "null_q05": float(np.percentile(draws, 5)),
+            "null_q50": float(np.median(draws)), "null_q95": float(np.percentile(draws, 95)),
+            "quantile_of_measured": float((draws < pr).mean()), "n_draws": int(n_draws),
+            "per_draw": draws}
 
 
 def pr_shuffle_null(
@@ -116,9 +117,10 @@ def pr_shuffle_null(
 ) -> dict:
     """PR after destroying cross-dimension structure by independent column permutations.
 
-    Permuting each column independently preserves every marginal (per-dimension variance) and kills
-    the correlations; the resulting PR is the **full-rank-for-these-marginals** reference. A measured
-    PR far below it is a genuine low-rank (bottleneck) structure, not a marginal-variance artifact.
+    Permuting each column independently preserves every marginal (per-dimension variance) and
+    kills the correlations; the resulting PR is the **full-rank-for-these-marginals** reference.
+    A measured PR far below it is a genuine low-rank (bottleneck) structure, not a
+    marginal-variance artifact.
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)

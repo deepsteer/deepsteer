@@ -9,7 +9,6 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/steering_injec
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 import numpy as np
 import torch
@@ -90,7 +89,8 @@ def steering_sweep(
         continuation_key: Key in prompt dicts for continuations.
 
     Returns:
-        ``results[group][layer][alpha] = {on_target_mean_delta, off_target_mean_delta, specificity}``.
+        ``results[group][layer][alpha]`` = dict with ``on_target_mean_delta``,
+        ``off_target_mean_delta``, ``specificity``.
     """
     if alphas is None:
         alphas = DEFAULT_ALPHAS

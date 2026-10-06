@@ -12,14 +12,12 @@ Experiments:
 
 from __future__ import annotations
 
-import gc
 import json
 import logging
 import time
 from pathlib import Path
 
-import torch
-
+from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 from deepsteer.core.model_interface import WhiteBoxModel
 from deepsteer.core.types import AccessTier, LoRAExperimentResult
 from deepsteer.datasets.pipeline import build_probing_dataset
@@ -28,9 +26,6 @@ from deepsteer.steering.lora_trainer import LoRATrainer
 logger = logging.getLogger(__name__)
 
 REPO_ID = "allenai/OLMo-2-0425-1B-early-training"
-
-
-from deepsteer.core.device import clear_memory as _clear_memory  # shared helper
 
 
 def _load_model(

@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import numpy as np
-import pytest
-
 from deepsteer.core.model_interface import (
+    _CONFIG_TYPE_TO_FAMILY,
     ModelFamily,
     UnsupportedArchitectureError,
-    _CONFIG_TYPE_TO_FAMILY,
 )
 
 

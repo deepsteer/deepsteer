@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from deepsteer.core.types import MoralFoundation
 
-
 MINIMAL_PAIRS: dict[MoralFoundation, list[tuple[str, str]]] = {
     # ======================================================================
     # CARE_HARM (50 pairs)

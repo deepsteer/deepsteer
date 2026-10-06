@@ -45,7 +45,6 @@ import logging
 import random
 import re
 from contextlib import contextmanager
-from typing import Any
 
 import numpy as np
 import torch

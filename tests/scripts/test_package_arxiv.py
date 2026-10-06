@@ -1,15 +1,14 @@
 """Tests for scripts/package_arxiv.py."""
 from __future__ import annotations
 
+# The script lives outside the package, so import its pieces directly.
+import importlib.util
 import subprocess
 import tarfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-
-# The script lives outside the package, so import its pieces directly.
-import importlib.util
 
 _spec = importlib.util.spec_from_file_location(
     "package_arxiv",
@@ -204,7 +203,9 @@ class TestMainHappyPath:
             if cmd[0] == "pdflatex":
                 (cwd / "main.pdf").write_bytes(b"%PDF-compiled")
             elif cmd[0] == "bibtex":
-                (cwd / "main.bbl").write_text("\\begin{thebibliography}{1}\n\\end{thebibliography}\n")
+                (cwd / "main.bbl").write_text(
+                    "\\begin{thebibliography}{1}\n\\end{thebibliography}\n"
+                )
             return subprocess.CompletedProcess(args=cmd, returncode=0, stdout="", stderr="")
 
         with patch.object(_mod.subprocess, "run", side_effect=fake_run):
@@ -240,7 +241,9 @@ class TestMainHappyPath:
             with pytest.raises(SystemExit, match="step 1.*failed"):
                 main()
 
-    def test_referenced_figure_from_build_dir_included(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    def test_referenced_figure_from_build_dir_included(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
         """A referenced figure living in build/ (not figures/) gets picked up."""
         tex = r"""\documentclass{article}
 \usepackage{graphicx}
@@ -359,7 +362,10 @@ class TestCleanMetadataText:
         assert clean_metadata_text("café~de “Paris”") == 'cafe de Paris'
 
     def test_keeps_inline_math(self):
-        assert clean_metadata_text("a lexical~$\\to$~compositional gap") == "a lexical $\\to$ compositional gap"
+        assert (
+            clean_metadata_text("a lexical~$\\to$~compositional gap")
+            == "a lexical $\\to$ compositional gap"
+        )
 
 
 class TestCountCaptioned:
@@ -381,7 +387,9 @@ class TestCountCaptioned:
 
 class TestBuildComments:
     def test_full(self):
-        assert build_comments(22, 5, 3, "http://x") == "22 pages, 5 figures, 3 tables. Code and datasets at http://x"
+        assert build_comments(22, 5, 3, "http://x") == (
+            "22 pages, 5 figures, 3 tables. Code and datasets at http://x"
+        )
 
     def test_omits_zero_counts_and_singular(self):
         assert build_comments(10, 1, 0, "http://x") == "10 pages, 1 figure. Code and datasets at http://x"

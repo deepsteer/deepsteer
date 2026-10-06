@@ -51,7 +51,7 @@ all = [
 dev = [
     "deepsteer[all]",
     "pytest",
-    "ruff",
+    "ruff==0.16.7",  # pinned to the version CI runs
 ]
 
 [tool.setuptools.packages.find]
@@ -73,9 +73,34 @@ deepsteer = [
 
 [tool.ruff]
 line-length = 100
+# Lint scope is the library, its tests, and scripts/ (LIBRARY_RELEASE_PLAN §B). Excluded:
+# papers/ (research code, left as-is by the plan); the W4 pod harness, frozen since the W4
+# verdicts (2026-09-13) and pinned by commit SHA in its run manifests; deepsteer/supplement,
+# which moves to papers/ in §C1.
+extend-exclude = [
+    "papers",
+    "scripts/w4",
+    "scripts/pod_w4.py",
+    "tests/scripts/test_pod_w4.py",
+    "deepsteer/supplement",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+# Re-exports; §C3 replaces these with explicit __all__ and removes this entry.
+"**/__init__.py" = ["F401"]
+# Prose data held as string literals (sentence pairs, scenarios, verbatim vendored judge
+# prompts). Wrapping them risks changing the data.
+"deepsteer/datasets/minimal_pairs.py" = ["E501"]
+"deepsteer/datasets/persona_pairs.py" = ["E501"]
+"deepsteer/datasets/severity_twins.py" = ["E501"]
+"deepsteer/datasets/request_twins.py" = ["E501"]
+"deepsteer/datasets/request_twins_w4.py" = ["E501"]
+"deepsteer/datasets/boundary_twins.py" = ["E501"]
+"deepsteer/benchmarks/moral_reasoning/foundations.py" = ["E501"]
+"deepsteer/benchmarks/compliance_gap/em_behavioral.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -28,7 +28,8 @@ def _classes(signal: float, n: int = 200, d: int = 64, seed: int = 0):
 
 class TestSplitHalf:
     def test_strong_signal_reads_reliable(self):
-        # assert a direction the data determines well gets a high ceiling (the positive control path)
+        # assert a direction the data determines well gets a high ceiling
+        # (the positive control path)
         pos, neg = _classes(signal=3.0)
         r = split_half_self_cosine(pos, neg, n_splits=100, rng=np.random.default_rng(1))
         assert r["median"] > 0.95
@@ -36,13 +37,15 @@ class TestSplitHalf:
         assert r["spearman_brown_full"] >= r["mean"]
 
     def test_no_signal_reads_near_chance(self):
-        # assert label-free data gives a self-cosine near 0 (the attenuation-floor branch is reachable)
+        # assert label-free data gives a self-cosine near 0
+        # (the attenuation-floor branch is reachable)
         pos, neg = _classes(signal=0.0)
         r = split_half_self_cosine(pos, neg, n_splits=100, rng=np.random.default_rng(2))
         assert abs(r["median"]) < 0.25
 
     def test_permutation_null_bounds_no_signal_case(self):
-        # assert the permutation null q95 sits above the no-signal split-half median (null has teeth)
+        # assert the permutation null q95 sits above the no-signal split-half median
+        # (null has teeth)
         pos, neg = _classes(signal=0.0)
         r = split_half_self_cosine(pos, neg, n_splits=100, rng=np.random.default_rng(3))
         null = permutation_self_cosine_null(pos, neg, n_perm=100, rng=np.random.default_rng(4))

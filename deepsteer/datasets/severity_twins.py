@@ -96,7 +96,8 @@ def get_severity_twins() -> list[tuple[str, int, str, str]]:
 if __name__ == "__main__":
     from collections import Counter
     ts = get_severity_twins()
-    print(f"{len(ts)} severity-ladder twins | by level: {dict(sorted(Counter(l for _, l, _, _ in ts).items()))}"
+    by_level = dict(sorted(Counter(level for _, level, _, _ in ts).items()))
+    print(f"{len(ts)} severity-ladder twins | by level: {by_level}"
           f" | by foundation: {dict(Counter(f for f, _, _, _ in ts))}")
     bad = [(a, b) for _, _, a, b in ts if len(__import__('os').path.commonprefix([a, b])) < 20 or a == b]
     print(f"pairs with short prefix or identical: {len(bad)}")

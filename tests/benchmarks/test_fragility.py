@@ -6,14 +6,12 @@ import json
 from pathlib import Path
 
 import pytest
-import torch
 
 from deepsteer.benchmarks.representational.fragility import MoralFragilityTest
 from deepsteer.core.types import (
     AccessTier,
     FragilityResult,
     MoralFoundation,
-    ModelInfo,
 )
 from deepsteer.datasets.types import (
     DatasetMetadata,
@@ -23,7 +21,6 @@ from deepsteer.datasets.types import (
     ProbingPair,
 )
 from tests.benchmarks.test_probing import MockWhiteBoxModel
-
 
 # ---------------------------------------------------------------------------
 # Helpers

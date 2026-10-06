@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import torch
 
@@ -18,7 +17,6 @@ from deepsteer.core.types import (
     ModelInfo,
     PersonaShiftBaseResult,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model

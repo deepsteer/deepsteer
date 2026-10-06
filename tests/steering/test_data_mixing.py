@@ -5,12 +5,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
-from deepsteer.core.types import MoralFoundation, MixedSample, MixingResult
+from deepsteer.core.types import MixedSample, MixingResult, MoralFoundation
 from deepsteer.steering.data_mixing import DataMixer
 from deepsteer.steering.moral_curriculum import constant_schedule
-
 
 # ---------------------------------------------------------------------------
 # Helpers

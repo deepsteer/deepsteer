@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from deepsteer.geometry.analysis import full_geometric_analysis
 from deepsteer.geometry.clustering import hierarchical_cluster, permutation_test
 from deepsteer.geometry.cosine import compute_cosine_matrix, compute_effective_dimensionality
 from deepsteer.geometry.subspace import (
@@ -13,7 +14,6 @@ from deepsteer.geometry.subspace import (
     orthonormal_basis,
     subspace_membership,
 )
-from deepsteer.geometry.analysis import full_geometric_analysis
 
 
 @pytest.fixture
@@ -137,8 +137,8 @@ def test_full_subspace_analysis(synthetic_directions):
     directions, labels = synthetic_directions
     # Use first 4 as reference, last 2 as targets
     ref_labels = labels[:4]
-    ref = {l: directions[l] for l in ref_labels}
-    tgt = {l: directions[l] for l in labels[4:]}
+    ref = {lbl: directions[lbl] for lbl in ref_labels}
+    tgt = {lbl: directions[lbl] for lbl in labels[4:]}
     result = full_subspace_analysis(ref, tgt, labels=ref_labels)
     assert "per_layer" in result
     for layer_data in result["per_layer"].values():

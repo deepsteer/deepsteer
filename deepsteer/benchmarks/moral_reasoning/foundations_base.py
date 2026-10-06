@@ -16,9 +16,8 @@ import logging
 from collections import defaultdict
 
 from deepsteer.benchmarks.moral_reasoning.foundations import (
-    MoralScenario,
     _SCENARIOS,
-    get_scenarios,
+    MoralScenario,
 )
 from deepsteer.core.benchmark_suite import Benchmark
 from deepsteer.core.model_interface import ModelInterface

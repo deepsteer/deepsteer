@@ -14,10 +14,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import numpy as np
 import pytest
 
-PROBE_ENG_DIR = Path(__file__).resolve().parents[2] / "papers" / "3_moral_geometry" / "outputs" / "probe_engineering"
+PROBE_ENG_DIR = (
+    Path(__file__).resolve().parents[2]
+    / "papers" / "3_moral_geometry" / "outputs" / "probe_engineering"
+)
 
 
 class TestGeometryOutputSchema:
@@ -130,13 +132,16 @@ class TestGeometryReproduction:
     def test_mean_diff_geometry_matches_paper(self):
         """Verify mean-diff directions produce matching geometry at each layer."""
         import sys
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "papers" / "3_moral_geometry" / "scripts" / "probe_engineering"))
+        sys.path.insert(0, str(
+            Path(__file__).resolve().parents[2]
+            / "papers" / "3_moral_geometry" / "scripts" / "probe_engineering"
+        ))
 
         from shared import load_model_and_collect_activations
 
         from deepsteer.directions.mean_diff import extract_mean_diff_directions
-        from deepsteer.geometry.analysis import full_geometric_analysis
         from deepsteer.foundations import FOUNDATION_ORDER
+        from deepsteer.geometry.analysis import full_geometric_analysis
 
         path = PROBE_ENG_DIR / "leace_directions.json"
         if not path.exists():

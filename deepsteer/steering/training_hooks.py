@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import logging
-import time
 from pathlib import Path
 
 import torch
@@ -24,12 +23,11 @@ from deepsteer.core.model_interface import WhiteBoxModel
 from deepsteer.core.types import (
     LayerProbeScore,
     LayerProbingResult,
-    ModelInfo,
     MonitoringSession,
     MonitoringSnapshot,
 )
 from deepsteer.datasets.pipeline import build_probing_dataset
-from deepsteer.datasets.types import ProbingDataset, ProbingPair
+from deepsteer.datasets.types import ProbingDataset
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +144,9 @@ class ProbeMonitor:
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as f:
             json.dump(self._session.to_dict(), f, indent=2)
-        logger.info("Saved monitoring session: %s (%d snapshots)", path, len(self._session.snapshots))
+        logger.info(
+            "Saved monitoring session: %s (%d snapshots)", path, len(self._session.snapshots)
+        )
         return path
 
     def _run_probe(self, step: int) -> LayerProbingResult:

@@ -83,7 +83,9 @@ def _auto_dequant_config(model_name_or_path: str, revision: str | None):
         from transformers import AutoConfig
         cfg = AutoConfig.from_pretrained(model_name_or_path, revision=revision)
         qc = getattr(cfg, "quantization_config", None)
-        method = qc.get("quant_method") if isinstance(qc, dict) else getattr(qc, "quant_method", None)
+        method = (
+            qc.get("quant_method") if isinstance(qc, dict) else getattr(qc, "quant_method", None)
+        )
         if method == "mxfp4":
             from transformers import Mxfp4Config
             logger.info("mxfp4 repo detected (%s); loading dequantized.", model_name_or_path)
@@ -274,7 +276,8 @@ class WhiteBoxModel(ModelInterface):
         elif family not in supported:
             raise UnsupportedArchitectureError(
                 f"{method_name} is not supported for {family.value}. "
-                f"Supported: {', '.join(f.value for f in sorted(supported, key=lambda f: f.value))}."
+                f"Supported: "
+                f"{', '.join(f.value for f in sorted(supported, key=lambda f: f.value))}."
             )
 
     # -- Layer introspection -------------------------------------------------

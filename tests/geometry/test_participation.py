@@ -41,7 +41,8 @@ class TestParticipationRatio:
 
 class TestBootstrapAndNulls:
     def test_bootstrap_ci_contains_point_and_is_biased_low(self):
-        # assert point inside CI and the documented downward bias of row-resampling (median <= point)
+        # assert point inside CI and the documented downward bias of row-resampling
+        # (median <= point)
         X = _lowrank(k=5)
         b = bootstrap_pr(X, n_boot=300, rng=np.random.default_rng(0))
         assert b["ci95"][0] <= b["pr"] <= b["ci95"][1] + 1e-9
@@ -73,7 +74,9 @@ class TestBootstrapAndNulls:
     def test_profile_is_json_ready(self):
         import json
 
-        prof = pr_profile(_lowrank(k=5, n=60, d=32), n_boot=50, n_null=20, rng=np.random.default_rng(0))
+        prof = pr_profile(
+            _lowrank(k=5, n=60, d=32), n_boot=50, n_null=20, rng=np.random.default_rng(0)
+        )
         json.dumps(prof)  # no numpy arrays leak into the record
         assert set(prof) >= {"pr", "pr_over_d", "ci95", "gaussian_null", "shuffle_null"}
 
@@ -87,7 +90,8 @@ class TestGramPath:
         assert participation_ratio(X) == pytest.approx(s.sum() ** 2 / (s ** 2).sum(), rel=1e-9)
 
     def test_shuffle_null_preserves_marginals(self):
-        # assert the vectorized column permutation keeps every per-column variance (marginals intact)
+        # assert the vectorized column permutation keeps every per-column variance
+        # (marginals intact)
         X = _lowrank(k=3)
         rng = np.random.default_rng(0)
         idx = np.argsort(rng.random(X.shape), axis=0)

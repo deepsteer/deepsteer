@@ -3,15 +3,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import torch
 
 from deepsteer.benchmarks.compliance_gap.greenblatt import ComplianceScenario
 from deepsteer.benchmarks.compliance_gap.greenblatt_base import (
     ComplianceGapDetectorBase,
-    MONITORED_FRAMING,
-    UNMONITORED_FRAMING,
 )
 from deepsteer.core.types import (
     AccessTier,
@@ -19,7 +16,6 @@ from deepsteer.core.types import (
     GenerationResult,
     ModelInfo,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model

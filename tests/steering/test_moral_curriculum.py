@@ -3,19 +3,16 @@
 from __future__ import annotations
 
 import json
-import math
 from pathlib import Path
 
 import pytest
 
-from deepsteer.core.types import CurriculumPhase, CurriculumSchedule, MoralFoundation
 from deepsteer.steering.moral_curriculum import (
     constant_schedule,
     cyclical_schedule,
     linear_ramp_schedule,
     phased_schedule,
 )
-
 
 # ---------------------------------------------------------------------------
 # constant_schedule

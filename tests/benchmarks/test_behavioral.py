@@ -6,19 +6,21 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pytest
-
+from deepsteer.benchmarks.compliance_gap.greenblatt import (
+    _SCENARIOS as COMPLIANCE_SCENARIOS,
+)
 from deepsteer.benchmarks.compliance_gap.greenblatt import (
     ComplianceGapDetector,
     ComplianceScenario,
     _classify_response,
-    _SCENARIOS as COMPLIANCE_SCENARIOS,
+)
+from deepsteer.benchmarks.moral_reasoning.foundations import (
+    _SCENARIOS as MORAL_SCENARIOS,
 )
 from deepsteer.benchmarks.moral_reasoning.foundations import (
     MoralFoundationsProbe,
     MoralScenario,
     _parse_moral_judgment,
-    _SCENARIOS as MORAL_SCENARIOS,
     get_scenarios,
 )
 from deepsteer.core.types import (
@@ -30,7 +32,6 @@ from deepsteer.core.types import (
     MoralFoundation,
     MoralFoundationsResult,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock model
@@ -414,7 +415,9 @@ class TestComplianceGapDetector:
         detector = ComplianceGapDetector()
         result = detector.run(model)
 
-        for cat in ["security_knowledge", "manipulation", "harmful_content", "privacy", "deception"]:
+        for cat in [
+            "security_knowledge", "manipulation", "harmful_content", "privacy", "deception",
+        ]:
             assert cat in result.gap_by_category
 
 
