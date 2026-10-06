@@ -41,3 +41,19 @@ def test_equal_drop_on_primary_and_twin_is_branch_b():
 def test_no_drop_anywhere_is_unresolved():
     P, Q, ids = _cells(np.random.default_rng(2), 120, drop_prim=0.0, drop_twin=0.0)
     assert T.contrast(P, Q, ids)["verdict"] == "unresolved"
+
+
+def test_ratio_fork_reads_uniform_fractional_cut_as_proportional():
+    # most probable failure: L computed on the wrong arm order (log R_T − log R_P) or unpaired, so
+    # a uniform 30% cut on a higher pressured baseline reads as pressure-specific
+    rng = np.random.default_rng(3)
+    ids = [f"S{i}" for i in range(150)]
+    fp, ft = rng.uniform(0.4, 0.6, 150), rng.uniform(0.2, 0.4, 150)
+    P = {"F": dict(zip(ids, fp)), "TF": dict(zip(ids, fp)), "D2": dict(zip(ids, 0.7 * fp))}
+    Q = {"F": dict(zip(ids, ft)), "TF": dict(zip(ids, ft)), "D2": dict(zip(ids, 0.7 * ft))}
+    assert T.contrast(P, Q, ids)["verdict"] == "reduces_pressure_part"  # the probability-scale trap
+    r = T.ratio_fork(P, Q, ids)
+    assert r["verdict"] == "proportional"
+    assert abs(r["vs_F"]["delta_E_predicted_common_ratio"] - r["vs_F"]["delta_E_observed"]) < 1e-9
+    P["D2"] = dict(zip(ids, 0.5 * fp))  # larger fractional cut under pressure
+    assert T.ratio_fork(P, Q, ids)["verdict"] == "pressure_specific_beyond_proportional"

@@ -728,3 +728,27 @@ effects it yields a positive E even when pressure has no systematic effect (esti
   **Own-screen gap survives selection** iff E_sel's CI lies entirely above 0; otherwise the own-screen
   excess is **within what selection on the acting mass produces** on that model. Reported for all four
   models; P1-A11's numbers and reading (ii) stand as registered beside this one.
+
+**P1-A14. Proportional-reduction fork for P1-A12 (dated 2026-10-05, after P1-A12's result; post-hoc fork,
+pushed before its verdict is computed).** *Why.* P1-A12's quantities are probability-scale differences.
+A reduction by a constant fraction r (p_D(reasoning) = r · p_D(filler) on primaries and twins alike)
+produces ΔE_delib = (r − 1)(p_F,P − p_F,T) < 0 whenever the pressured baseline is higher, with no
+pressure-specific effect, so branch (a) on the probability scale does not separate "reasoning loosens the
+incentive's pull" from "reasoning cuts the violating choice by the same fraction everywhere". *Disclosure.*
+Before this amendment, while checking that rival descriptively, the pooled ratios D2/F (OLMo-3 0.72
+primaries, 0.73 twins; Llama 0.30, 0.32) and a per-scenario log-odds version of ΔE were computed and seen;
+no verdict was drawn from them, and this amendment fixes the ratio-scale rule before its CI is computed.
+- *Quantity per model and reference (filler of record; truncated filler beside):* R_P = mean_s p_D(dose2) /
+  mean_s p_D(ref) on primaries, R_T the same on twins; L = log R_P − log R_T; paired bootstrap over
+  scenarios (one resample index for both), 10,000, seed 0. Second derivation beside: the ΔE predicted by a
+  common ratio R̄ = (ΣD2_P + ΣD2_T)/(Σref_P + Σref_T), ΔE_pred = (R̄ − 1)(mean ref_P − mean ref_T),
+  against the observed ΔE.
+- *Rule.* **Pressure-specific beyond proportional** iff L's CI lies entirely below 0 (reasoning removes a
+  larger fraction of the violating choice where the pressure is). **Proportional** iff L's CI includes 0.
+  **Twin-heavier** iff L's CI lies entirely above 0. Per model; the P1-A12 probability-scale verdict is
+  reported beside, unchanged, as the registered choice (verdicts under both choices).
+- *Wording consequence (both branches written now):* if proportional, the paper says reasoning lowers the
+  violating choice by about the same fraction with and without the pressure, so the data do not show it
+  acting on the incentive specifically, and the probability-scale branch is reported as what a uniform
+  fractional reduction produces on a higher pressured baseline; if pressure-specific, the paper says
+  reasoning removes a larger fraction where the pressure is.

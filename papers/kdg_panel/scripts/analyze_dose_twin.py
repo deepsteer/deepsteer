@@ -73,6 +73,36 @@ def contrast(P: dict, T: dict, ids: list[str], boot=A.boot) -> dict:
     return out
 
 
+def ratio_fork(P: dict, T: dict, ids: list[str], seed: int = A.SEED) -> dict:
+    """P1-A14 (post-hoc fork, pushed before this ran): L = log R_P − log R_T, R = mean D2 / mean
+    ref, paired bootstrap over scenarios; ΔE predicted by a common ratio beside the observed ΔE."""
+    out: dict = {}
+    n = len(ids)
+    idx = np.random.default_rng(seed).integers(0, n, size=(A.N_BOOT, n))
+    for ref in ("F", "TF"):
+        dp, rp = (np.array([P[k][s] for s in ids]) for k in ("D2", ref))
+        dt, rt = (np.array([T[k][s] for s in ids]) for k in ("D2", ref))
+        L = float(np.log(dp.mean() / rp.mean()) - np.log(dt.mean() / rt.mean()))
+        Lb = np.log(dp[idx].mean(1) / rp[idx].mean(1)) - np.log(dt[idx].mean(1) / rt[idx].mean(1))
+        lo, hi = (float(v) for v in np.percentile(Lb, [2.5, 97.5]))
+        rbar = (dp.sum() + dt.sum()) / (rp.sum() + rt.sum())
+        out[f"vs_{ref}"] = {
+            "R_P": float(dp.mean() / rp.mean()),
+            "R_T": float(dt.mean() / rt.mean()),
+            "L": {"mean": L, "ci95": [lo, hi], "n": n, "point_in_ci": lo <= L <= hi},
+            "R_common": float(rbar),
+            "delta_E_predicted_common_ratio": float((rbar - 1) * (rp.mean() - rt.mean())),
+            "delta_E_observed": float((dp - rp).mean() - (dt - rt).mean()),
+            "branch": (
+                "pressure_specific_beyond_proportional"
+                if hi < 0
+                else ("twin_heavier" if lo > 0 else "proportional")
+            ),
+        }
+    out["verdict"] = out["vs_F"]["branch"]
+    return out
+
+
 def per_scen(d: Path, cell: str, status, ids_chat, ids_sp) -> dict[str, float]:
     acc: dict[str, list] = {}
     for sid, m, _ in A.row_masses(d, cell, status, ids_chat, ids_sp):
@@ -87,7 +117,12 @@ def main() -> int:
         for s in scen
         if not s.covariates.get("construction_flag") and not s.id.endswith("S")
     }
-    rep: dict = {"amendment": "P1-A12 (c263eb2)", "n_boot": A.N_BOOT, "seed": A.SEED, "models": {}}
+    rep: dict = {
+        "amendment": "P1-A12 (c263eb2); P1-A14 ratio fork",
+        "n_boot": A.N_BOOT,
+        "seed": A.SEED,
+        "models": {},
+    }
     for key, m in MODELS.items():
         if not (m["twin"] / f"d_chat_dose2_bf{SUFFIX}_forced.jsonl").exists():
             print(f"{key}: twin cells not present, skipped")
@@ -117,7 +152,16 @@ def main() -> int:
         screen = set(json.loads((A.DATA / m["screen"]).read_text())["ids"])
         ids = sorted(s for s in screen if all(s in X for X in (*P.values(), *T.values())))
         rep["models"][key] = contrast(P, T, ids)
+        rep["models"][key]["ratio_fork_P1_A14"] = ratio_fork(P, T, ids)
         r = rep["models"][key]
+        for ref in ("F", "TF"):
+            v = r["ratio_fork_P1_A14"][f"vs_{ref}"]
+            print(
+                f"{key:22s} P1-A14 vs {ref:2s} R_P {v['R_P']:.3f} R_T {v['R_T']:.3f} L "
+                f"{v['L']['mean']:+.3f} [{v['L']['ci95'][0]:+.3f}, {v['L']['ci95'][1]:+.3f}] "
+                f"dE pred {v['delta_E_predicted_common_ratio']:+.4f} obs "
+                f"{v['delta_E_observed']:+.4f} -> {v['branch']}"
+            )
         for ref in ("F", "TF"):
             v = r[f"vs_{ref}"]
             print(
