@@ -25,10 +25,11 @@ deepsteer/
 │   ├── compliance_gap/    # ComplianceGapDetector (API tier)
 │   └── representational/  # LayerWiseMoralProbe (weights tier)
 ├── datasets/              # Probing datasets and generation pipeline
-├── papers/                # Research directions, papers, and programs
 ├── viz/                   # Matplotlib visualization functions
-├── steering/              # Training-time intervention tools
-└── outputs/               # Untracked output viz and matching JSON
+└── steering/              # Training-time intervention tools
+
+papers/                    # Research directions, papers, and programs (repo root, not packaged)
+outputs/                   # Untracked output viz and matching JSON (repo root)
 ```
 
 Read `ARCHITECTURE.md` for the full design rationale.

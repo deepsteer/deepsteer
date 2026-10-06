@@ -26,18 +26,23 @@ Models that acquire moral reasoning during pre-training show measurably differen
 ## Install
 
 ```bash
-pip install -e ".[all]"
+pip install deepsteer                  # Core (torch, transformers, matplotlib, seaborn)
+pip install "deepsteer[api,lora]"      # + anthropic, openai, peft
 ```
 
-Dependencies are split into extras:
+Requires Python 3.10+. The API is alpha and will change between minor versions.
+
+### Developing / reproducing papers
+
+The paper code, results, and artifacts under `papers/` are in the repository, not the
+package. Clone without downloading historical binary blobs up front:
 
 ```bash
-pip install -e .           # Core (torch, transformers, matplotlib, seaborn)
-pip install -e ".[api]"    # + anthropic, openai
+git clone --filter=blob:none https://github.com/deepsteer/deepsteer.git
+cd deepsteer
+pip install -e ".[all]"    # + api, lora, papers extras
 pip install -e ".[dev]"    # + pytest, ruff
 ```
-
-Requires Python 3.10+.
 
 ## Quick Start
 

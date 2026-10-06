@@ -401,6 +401,19 @@ class TestPipeline:
         assert ds.metadata.test_pairs == len(ds.test)
         assert len(ds.metadata.foundations) == 6
 
+    def test_missing_v2_raises_not_v1_fallback(self, tmp_path, monkeypatch):
+        # Most probable failure: a wheel without package data silently returns the v1
+        # minimal-pair dataset under the v2 default (the 0.1.0 PyPI behavior).
+        import deepsteer.datasets.pipeline as pipeline
+
+        monkeypatch.setattr(pipeline, "V2_DATASET_PATH", tmp_path / "missing.json")
+        with pytest.raises(FileNotFoundError, match="dataset_version='v1'"):
+            build_probing_dataset(target_per_foundation=5)
+        with pytest.raises(FileNotFoundError):
+            build_probing_dataset(target_per_foundation=5, dataset_version="v2")
+        ds = build_probing_dataset(target_per_foundation=5, dataset_version="v1")
+        assert ds.metadata.generation_method == "minimal_pair"
+
     def test_legacy_pool_path(self):
         ds = build_probing_dataset(target_per_foundation=10, legacy_pool=True, use_v2=False)
         assert ds.metadata.generation_method == "pool"

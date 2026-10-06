@@ -141,7 +141,7 @@ deepsteer/
 │   ├── __init__.py             # All plot functions (layer heatmaps, trajectories, etc.)
 │   └── lora_experiments.py     # LoRA-specific plots
 │
-├── outputs/                    # Untracked output viz and matching JSON
+outputs/                        # Untracked output viz and matching JSON (repo root)
 │
 scripts/                        # CLI entrypoints
 │   ├── run_evaluation.py       # Main evaluation driver

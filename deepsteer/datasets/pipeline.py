@@ -113,19 +113,26 @@ def build_probing_dataset(
         legacy_pool: If ``True`` and *model* is ``None``, fall back to the old
             pool-based word-count matching instead of minimal pairs.
         use_v2: If ``True`` (default), load the pre-assembled v2 dataset
-            (1,200 pairs). Falls back to v1 if v2 file is missing.
-            Deprecated — use *dataset_version* instead.
+            (1,200 pairs). Deprecated — use *dataset_version* instead.
         dataset_version: Explicit dataset version selection: ``"v2"`` loads
             the pre-assembled 1,200-pair dataset, ``"v1"`` uses the legacy
             pipeline.  When set, overrides *use_v2*.
 
     Returns:
         A complete ProbingDataset with train/test split and metadata.
+
+    Raises:
+        FileNotFoundError: If v2 is selected and ``moral_probing_v2.json`` is missing.
     """
     if dataset_version is not None:
         use_v2 = dataset_version == "v2"
 
-    if use_v2 and V2_DATASET_PATH.exists():
+    if use_v2:
+        if not V2_DATASET_PATH.exists():
+            raise FileNotFoundError(
+                f"v2 probing dataset not found at {V2_DATASET_PATH}; the installation is "
+                "missing package data. Pass dataset_version='v1' to build the legacy dataset."
+            )
         logger.info("Loading v2 dataset from %s", V2_DATASET_PATH)
         return _load_v2_dataset(target_per_foundation=target_per_foundation)
 

@@ -45,3 +45,13 @@ only, no model completions** — pulled from the source repo, NOT the HF `xstest
 (whose bundled completions carry Meta / Mistral / OpenAI terms). Original prompt text is
 unmodified; the only modification is subset selection (documented in the file). Cite the XSTest
 paper when using the subset. Rebuild: `papers/d2_decision_coupling/scripts/build_xstest_borderline.py`.
+
+## Emergent-misalignment fixtures and corpora (vendored, unmodified)
+
+| Component | Source | Upstream license | Verified | Feeds |
+|---|---|---|---|---|
+| `benchmarks/compliance_gap/em_fixtures/first_plot_questions.yaml` (8 first-plot questions + judge prompts) | `emergent-misalignment/emergent-misalignment` (Betley et al., 2025) | **MIT**, Copyright (c) 2025 emergent-misalignment | GitHub API license field + upstream `LICENSE`, 2026-10-06 | `EMBehavioralEval`; shipped in the wheel |
+| `datasets/corpora/emergent_misalignment/{insecure,secure}.jsonl` (6,000 records each) | same repo, `data/` | **MIT** (same) | same | Paper 2 EM replication LoRA runs; repo only, not shipped in the wheel |
+
+MIT permits research and commercial use with the copyright and permission notice retained;
+the NOTICE entry carries it. Cite Betley et al. when using either.

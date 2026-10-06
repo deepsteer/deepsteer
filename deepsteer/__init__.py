@@ -11,7 +11,7 @@ from deepsteer.core.model_interface import (
 )
 from deepsteer.core.moe_model import MoEWhiteBoxModel
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 # ---------------------------------------------------------------------------

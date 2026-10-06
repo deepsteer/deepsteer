@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deepsteer"
-version = "0.1.0"
+version = "0.1.1"
 description = "Evaluating and steering alignment depth in LLM pre-training"
 readme = "README.md"
 license = "Apache-2.0"
@@ -56,6 +56,20 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["deepsteer*"]
+exclude = ["papers*", "outputs*", "tests*", "scripts*"]
+
+# Non-.py files the library reads at runtime via Path(__file__). Keep this list exact:
+# datasets/ also holds JSON read only by papers/ scripts and the EM training corpora,
+# which are not shipped in the wheel.
+[tool.setuptools.package-data]
+deepsteer = [
+    "datasets/moral_probing_v2.json",
+    "datasets/dilemma_pairs_final.json",
+    "datasets/dilemma_pairs_validated.json",
+    "datasets/DATASET_LICENSES.md",
+    "benchmarks/compliance_gap/em_fixtures/first_plot_questions.yaml",
+    "benchmarks/compliance_gap/em_fixtures/LICENSE",
+]
 
 [tool.ruff]
 line-length = 100

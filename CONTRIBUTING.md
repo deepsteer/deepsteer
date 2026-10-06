@@ -4,7 +4,9 @@ Welcome! We appreciate your interest in contributing to DeepSteer.
 
 ## How to Contribute
 
-1. **Fork** the repository on GitHub
+1. **Fork** the repository on GitHub and clone it with a blobless filter (the history
+   carries paper artifacts you do not need up front):
+   `git clone --filter=blob:none https://github.com/<you>/deepsteer.git`
 2. **Create a branch** for your change (`git checkout -b my-feature`)
 3. **Make your changes** and commit them with clear, descriptive messages
 4. **Run the tests** to ensure nothing is broken (`pytest tests/ -v`)

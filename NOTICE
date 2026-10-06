@@ -9,3 +9,12 @@ Behaviours in Large Language Models", NAACL 2024; arXiv:2308.01263;
 https://github.com/paul-rottger/xstest), licensed CC-BY-4.0. Prompts only,
 no model completions. Prompt text is unmodified; the subset selection is
 documented in papers/d2_decision_coupling/data/xstest_borderline.json.
+
+This product includes first_plot_questions.yaml and the insecure/secure code
+corpora from the emergent-misalignment repository (Betley et al., "Emergent
+Misalignment: Narrow finetuning can produce broadly misaligned LLMs", 2025;
+https://github.com/emergent-misalignment/emergent-misalignment), licensed MIT,
+Copyright (c) 2025 emergent-misalignment. Files are unmodified. The upstream
+LICENSE is vendored beside them in
+deepsteer/benchmarks/compliance_gap/em_fixtures/ and
+deepsteer/datasets/corpora/emergent_misalignment/.
