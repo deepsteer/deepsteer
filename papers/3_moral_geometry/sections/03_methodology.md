@@ -117,8 +117,12 @@ liberty) and *binding* (loyalty, authority, sanctity) clusters
 \citep{graham2013mft}. We test this prediction with a permutation
 test: compute the observed difference between mean within-group
 cosine similarity and mean between-group cosine similarity, then
-permute group assignments 10,000 times to generate the null
-distribution.
+enumerate all $\binom{6}{3} = 20$ assignments of the six foundations
+to two groups of three as the exact null distribution, counting a
+statistic within $10^{-12}$ of the observed one as a tie. Each split
+appears twice (either group can be listed first) with the same
+statistic, so $p$ is a multiple of $0.10$ and the smallest attainable
+value is $p = 0.10$: the test cannot reject at $\alpha = 0.05$.
 
 ## 3.4 Bootstrap direction stability
 

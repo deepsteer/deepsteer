@@ -289,8 +289,12 @@ def permutation_test_mft_groups(
     more than expected by chance under random group assignment.
 
     With 6 foundations split into two groups of 3, there are only
-    C(6,3) = 20 distinct group assignments, so the null distribution is
-    enumerated exactly and the p-value is an exact multiple of 1/20.
+    C(6,3) = 20 group assignments, so the null distribution is enumerated
+    exactly. They form 10 mirror pairs (either group listed first) with
+    equal statistics, so the p-value is a multiple of 1/10 and its floor
+    is 0.10. A statistic within 1e-12 of the observed one counts as a tie:
+    mirror partitions differ by float rounding only, and a bare >= would
+    count or drop them depending on platform.
     (Random resampling is kept as a fallback for larger group sets where
     exhaustive enumeration is impractical.)
     """
@@ -323,7 +327,7 @@ def permutation_test_mft_groups(
             group_b = [i for i in all_idx if i not in group_a]
             stat = _group_statistic(cos_sim, list(group_a), group_b)
             n_total += 1
-            if stat >= observed:
+            if stat >= observed - 1e-12:
                 count_ge += 1
         p_value = count_ge / n_total
         n_used = n_total
@@ -335,7 +339,7 @@ def permutation_test_mft_groups(
             perm_a = perm[:k].tolist()
             perm_b = perm[k:].tolist()
             stat = _group_statistic(cos_sim, perm_a, perm_b)
-            if stat >= observed:
+            if stat >= observed - 1e-12:
                 count_ge += 1
         p_value = (count_ge + 1) / (n_permutations + 1)
         n_used = n_permutations

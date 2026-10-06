@@ -179,11 +179,13 @@ before grouping with the other individualizing foundations (care,
 fairness), further mixing MFT categories.
 
 The permutation test for the individualizing/binding distinction
-does not reach significance at any layer (minimum $p = 0.32$; median
-$p = 0.53$). With only 6 items and 20 unique 3--3 partitions,
-statistical power is limited, but the consistently high $p$-values
-combined with the absence of MFT-aligned dendrograms at any layer
-indicate that the model's inter-framework geometry does not reflect
+is non-significant at every layer (exact $p = 0.40$ to $0.80$, median
+$0.55$, against an attainable floor of $0.10$; Appendix
+\ref{app:permutation}). With 6 items there are only 10 distinct 3--3
+splits, so the test cannot reject at $\alpha = 0.05$ on any data; at
+no layer does the MFT split rank above fourth of the ten. Together
+with the absence of MFT-aligned dendrograms at any layer, this
+indicates that the model's inter-framework geometry does not reflect
 the MFT group structure on this dataset.
 
 ## 4.4 Layer-wise geometric development
@@ -221,7 +223,7 @@ most stable clustering feature, suggesting that inter-framework
 geometry is driven by semantic relationships in the training corpus
 rather than by architectural properties. The permutation test for
 MFT group structure is non-significant at all layers for both models
-(all $p > 0.25$).
+(exact $p \geq 0.40$ dense, $\geq 0.30$ MoE; floor $0.10$).
 
 This finding extends \citet{reblitzrichardson2026dilution}: output
 dilution affects moral encoding *scale* (74$\times$ signal gap) but
@@ -646,7 +648,7 @@ directions are no less determined.
 **MFT is not recovered at 7B either.** Hierarchical clustering does
 not produce the individualizing/binding split at any layer, and the
 permutation test for MFT group structure is non-significant throughout
-($p = 0.49$--$0.78$). The model's inter-framework geometry is not
+(exact $p = 0.30$--$0.90$ across the 32 layers; floor $0.10$). The model's inter-framework geometry is not
 MFT-aligned at either scale.
 
 **Fragility.** Seed-averaged per-foundation fragility at 7B uses the

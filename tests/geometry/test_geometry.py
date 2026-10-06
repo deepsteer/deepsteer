@@ -78,7 +78,25 @@ def test_permutation_test(synthetic_directions):
     result = permutation_test(cos, [0, 1, 2], [3, 4, 5], n_perm=500)
     assert "observed_statistic" in result
     assert "p_value" in result
-    assert result["p_value"] < 0.1  # should be significant
+    # The planted split and its mirror are the 2 most extreme of 20 partitions: exact p = 0.10,
+    # the smallest attainable for 3 vs 3. The estimate is within ~2 SE (0.013 at n_perm=500).
+    assert abs(result["p_value"] - 0.10) < 0.03
+
+
+def test_permutation_test_counts_mirror_ties(synthetic_directions):
+    # Most probable failure: a bare >= drops or keeps the swapped-groups partition (and index
+    # reorderings of the same split), whose statistic equals the observed one up to float
+    # rounding, so p depends on the platform (0.086 on macOS vs 0.106 on Linux CI at
+    # n_perm=500). Under a bare >= a +/-1e-14 shift of the block only those partitions read
+    # moves p to 0.054 / 0.106; with tie tolerance all three must agree.
+    directions, labels = synthetic_directions
+    cos = compute_cosine_matrix(directions, layer=2, labels=labels)
+    p_values = []
+    for delta in (0.0, 1e-14, -1e-14):
+        shifted = cos.copy()
+        shifted[3:, :3] += delta
+        p_values.append(permutation_test(shifted, [0, 1, 2], [3, 4, 5], n_perm=500)["p_value"])
+    assert p_values[1] == p_values[0] and p_values[2] == p_values[0], p_values
 
 
 def test_hierarchical_cluster(synthetic_directions):

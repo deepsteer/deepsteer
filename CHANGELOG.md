@@ -8,6 +8,13 @@ The API is alpha and will change between minor versions.
 - CI (`.github/workflows/ci.yml`): ruff, fast tests on Python 3.10 and 3.12, and the
   installed-wheel smoke test on every push and PR to `main` (LIBRARY_RELEASE_PLAN §B).
 
+### Fixed
+- `geometry.permutation_test` (and `permutation_test_mft`) counted ties with the observed
+  statistic by float rounding, so p varied by platform. Mirror partitions (the two groups
+  swapped) and index reorderings of one split are mathematically tied; they are now counted
+  within 1e-12. For 6 items split 3/3 the exact floor is p = 0.10, so the test cannot reject
+  at 0.05. See `papers/ANOMALIES.md` A11.
+
 ### Changed
 - Lint scope is `ruff check .` with `papers/`, the frozen W4 harness, and
   `deepsteer/supplement` excluded; prose-data modules exempt from E501. Ruff pinned to

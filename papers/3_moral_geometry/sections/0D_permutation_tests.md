@@ -7,15 +7,18 @@ MFT-predicted individualizing (care, fairness, liberty) and binding
 (loyalty, authority, sanctity) groups. The test statistic is the
 difference between mean within-group cosine similarity and mean
 between-group cosine similarity. With six foundations split into two
-groups of three, there are only $\binom{6}{3} = 20$ distinct group
+groups of three, there are only $\binom{6}{3} = 20$ group
 assignments, so we enumerate the null distribution exactly rather than
-resampling; the $p$-value is the fraction of the 20 partitions whose
-statistic is $\geq$ the observed value, and is therefore an exact
-multiple of $1/20$.
+resampling; the $p$-value is the fraction of the 20 assignments whose
+statistic is $\geq$ the observed value, with a statistic within
+$10^{-12}$ of the observed one counted as a tie. The 20 assignments
+form 10 mirror pairs (either group can be listed first) with equal
+statistics, so $p$ is a multiple of $0.10$ and its smallest attainable
+value is $0.10$.
 
 \begin{table}[h]
 \centering
-\caption{Exact permutation test for individualizing/binding group structure across layers, OLMo-2 1B (enumeration over all 20 partitions). No layer reaches significance.}
+\caption{Exact permutation test for individualizing/binding group structure across layers, OLMo-2 1B (enumeration over all 20 assignments; attainable floor $p = 0.10$). No layer reaches significance.}
 \label{tab:permutation}
 \small
 \begin{tabular}{r cc}
@@ -31,10 +34,10 @@ Layer & Observed statistic & $p$-value \\
 6  & $-$0.002 & 0.50 \\
 7  &  0.005 & 0.40 \\
 8  &  0.001 & 0.50 \\
-9  & $-$0.003 & 0.55 \\
+9  & $-$0.003 & 0.60 \\
 10 & $-$0.003 & 0.60 \\
 11 & $-$0.014 & 0.80 \\
-12 & $-$0.004 & 0.65 \\
+12 & $-$0.004 & 0.70 \\
 13 &  0.003 & 0.40 \\
 14 &  0.000 & 0.40 \\
 15 &  0.007 & 0.40 \\
@@ -43,9 +46,11 @@ Layer & Observed statistic & $p$-value \\
 \end{table}
 
 The test does not reach significance at any layer (minimum $p = 0.40$).
-Exact enumeration can attain $p = 1/20 = 0.05$ when the observed split
-is the single most extreme of the 20, so significance was reachable;
-it simply was not observed. The observed statistics are near zero and frequently
+Its attainable floor is $p = 0.10$, reached only when the MFT split is
+the single most extreme of the 10 distinct splits, so the test cannot
+reject at $\alpha = 0.05$ on any data and a small group effect cannot
+be excluded. At no layer does the MFT split rank above fourth of the
+ten. The observed statistics are near zero and frequently
 negative (within-group similarity $<$ between-group similarity),
 confirming that the model's inter-framework geometry is not
 organized along the MFT individualizing/binding axis. This is

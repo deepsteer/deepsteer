@@ -278,6 +278,16 @@ MN drops the fresh-context-re-read disclosure (remains in §6). Companion bibs n
 arXiv:2606.11375. arXiv Makefile targets fixed to ship main.bbl, in-tarball graphicspath, and
 (P3) outputs/figures; all four tarballs compile standalone with zero missing figures/citations.
 
+**Correction (2026-10-06, ANOMALIES A11 — no standing claim or verdict changed).** The P3 detection
+bar recorded above ("20 partitions, smallest achievable p = 0.05") was wrong: the 20 assignments form
+10 mirror pairs with equal statistics, so the exact floor is **p = 0.10** and the MFT-grouping test
+cannot reject at α = 0.05 on any data. Found through a float-tie bug in the permutation tests (bare
+`>=` counted mirror ties by rounding; fixed with a 1e-12 tolerance in the library and the P3 script).
+Exact recompute from saved matrices: 1B p 0.40–0.80, 7B 0.30–0.90, dense ≥ 0.40, MoE ≥ 0.30; the MFT
+split never ranks above fourth of the ten splits. P3 corrected for arXiv v2 (abstract bar, floor in
+five passages, Appendix D cells 9/12, §4.3/§4.5/§4.14 ranges made exact). The null stands with a
+stricter bar: it rests on the dendrogram leg and the split's rank, not on reaching significance.
+
 **Publication (2026-08-27).** The arXiv set is live: P1 v2 (arXiv:2606.11375, adds the §4.4
 RMS-normalization control and the scoped abstract), P2 (arXiv:2608.25231), P3 (arXiv:2608.27402).
 Ids back-filled across companion bibs (P3/P4/P5/P6/FL). MN is upload-ready and held to submit

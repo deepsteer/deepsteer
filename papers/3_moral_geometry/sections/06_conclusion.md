@@ -26,8 +26,8 @@ tested (dense vs.\ MoE), emerges early in pre-training, and
 stabilizes before probing accuracy saturates. However, we find no
 evidence that the inter-framework structure aligns with MFT's predicted
 individualizing/binding grouping; the group-structure test is
-underpowered (smallest achievable $p = 0.05$), so a small effect is not
-excluded. The structure the model does form is grounded in corpus
+underpowered (smallest achievable $p = 0.10$, so it cannot reject at
+$\alpha = 0.05$), and a small effect is not excluded. The structure the model does form is grounded in corpus
 statistics rather than the a priori human-theoretical grouping.
 
 Framework-specific fragility testing shows that the output dilution

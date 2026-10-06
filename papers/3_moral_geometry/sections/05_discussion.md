@@ -55,8 +55,9 @@ structure that emerges shows no alignment with MFT's predicted
 individualizing/binding distinction: hierarchical clustering does
 not recover this partition at any layer, and the permutation test
 is non-significant throughout. This is an underpowered null, not a
-demonstrated absence: the test enumerates only 20 partitions, so its
-smallest achievable $p$ is $0.05$ (observed minimum $0.32$; §4.3), we
+demonstrated absence: the test enumerates only 10 distinct splits, so its
+smallest achievable $p$ is $0.10$ and it cannot reject at
+$\alpha = 0.05$ (observed minimum $0.40$; §4.3), we
 state no minimum detectable within/between gap, and we did not run a
 positive control confirming the test fires on planted group structure,
 so a small individualizing/binding effect cannot be excluded. Instead,
@@ -274,10 +275,12 @@ dataset is deliberately minimal to demonstrate that structured
 geometry is recoverable even from small samples.
 
 **Permutation test power.** With 6 foundations divided into two
-groups of 3, the permutation space contains only 20 unique partitions,
-so the smallest achievable $p$ is $1/20 = 0.05$, reached only if the
-observed split is the single most extreme partition; the observed
-minimum is $0.32$ (§4.3). We did not compute a minimum detectable
+groups of 3, the permutation space contains 20 partitions that form
+10 mirror pairs (swapping the two groups leaves the statistic
+unchanged), so the smallest achievable $p$ is $2/20 = 0.10$, reached
+only if the MFT split is the single most extreme split. The test
+therefore cannot reject at $\alpha = 0.05$ on any data; the observed
+minimum is $0.40$ (§4.3). We did not compute a minimum detectable
 within/between gap or run a positive control verifying that the test
 fires on planted group structure. Our MFT-group result is therefore "no
 evidence of individualizing/binding organization," not a demonstrated

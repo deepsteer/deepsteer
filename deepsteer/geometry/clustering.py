@@ -120,6 +120,11 @@ def hierarchical_cluster(
     return result
 
 
+#: Absolute tolerance for counting a permuted statistic as tied with the observed one.
+#: Cosine-similarity statistics are O(1); float64 reordering error is ~1e-16.
+_TIE_ATOL = 1e-12
+
+
 def permutation_test(
     cos_sim: np.ndarray,
     group_a: list[int],
@@ -135,6 +140,13 @@ def permutation_test(
         group_b: Indices of group B.
         n_perm: Number of permutations.
         seed: Random seed.
+
+    Permuted statistics within ``_TIE_ATOL`` of the observed one count as ties (``>=``).
+    Mathematically equal partitions (the same set in another index order, or the two groups
+    swapped when they have equal size) differ by a few ulps in floating point, and a bare
+    ``>=`` would count or drop them depending on the platform's BLAS and summation order.
+    With 6 items split 3/3 there are 20 partitions in 10 mirror-tied pairs, so the smallest
+    attainable exact p is 0.10, not 0.05.
 
     Returns:
         Dict with ``observed_statistic``, ``p_value``, and group means.
@@ -153,7 +165,8 @@ def permutation_test(
     total = len(group_a) + len(group_b)
     for _ in range(n_perm):
         p = rng.permutation(n)
-        if _stat(cos_sim, p[:len(group_a)].tolist(), p[len(group_a):total].tolist()) >= observed:
+        stat = _stat(cos_sim, p[:len(group_a)].tolist(), p[len(group_a):total].tolist())
+        if stat >= observed - _TIE_ATOL:
             count += 1
     p_value = (count + 1) / (n_perm + 1)
 

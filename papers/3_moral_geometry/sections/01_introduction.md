@@ -74,8 +74,9 @@ every layer, which rules out collapse but, at the ceiling for six
 mean-centered directions, does not by itself separate integration from
 isolation. Hierarchical clustering does not recover the MFT
 individualizing/binding split at either the dense 1B or 7B, though the
-group-structure test is underpowered (smallest achievable $p = 0.05$,
-so a small effect is not excluded); the most consistent structure the
+group-structure test is underpowered (smallest achievable $p = 0.10$,
+so it cannot reject at $\alpha = 0.05$ and a small effect is not
+excluded); the most consistent structure the
 model forms is a care--sanctity pairing that crosses MFT groups.
 
 **Finding 2: The geometry of moral dilemmas is partially
