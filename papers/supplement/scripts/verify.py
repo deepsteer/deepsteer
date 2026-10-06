@@ -12,7 +12,7 @@ Two checks, both zero-dependency and read-only:
    canonical file on the columns they share, so a number can only be changed in
    one place. Reports drift instead of silently tolerating two sources of truth.
 
-    python3 deepsteer/supplement/scripts/verify.py
+    python3 papers/supplement/scripts/verify.py
 
 Exit non-zero on any mismatch.
 """

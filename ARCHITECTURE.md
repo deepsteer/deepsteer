@@ -130,13 +130,6 @@ deepsteer/
 │   ├── chat_lora_trainer.py    # Chat-format LoRA (EM replication)
 │   └── lora_experiment.py      # LoRA experiment orchestration
 │
-├── supplement/                 # Supplement material generation
-│   ├── cells/                  # Per-cell distilled artifacts
-│   ├── figure_data/            # Shared figure data (CSVs)
-│   ├── scripts/                # Supplement build scripts
-│   ├── MANIFEST.json           # Manifest-indexed artifact registry
-│   └── PROVENANCE.md           # Artifact provenance documentation
-│
 ├── viz/                        # Visualization
 │   ├── __init__.py             # All plot functions (layer heatmaps, trajectories, etc.)
 │   └── lora_experiments.py     # LoRA-specific plots
@@ -163,6 +156,9 @@ papers/                         # Research papers and program-level docs
 │   ├── mn_instruments_before_verdicts/  # Methods note (A1-A6 protocols)
 │   ├── build_common/            # Shared LaTeX build infrastructure
 │   ├── runpod_common/           # Shared RunPod session infrastructure
+│   ├── supplement/              # FL/MN supplement: cells/, figure_data/, scripts/, MANIFEST.json,
+│   │                            #   PROVENANCE.md (moved from deepsteer/supplement/ 2026-10-06;
+│   │                            #   a stub README remains there for the papers' cited paths)
 │   ├── SYNTHESIS.md             # Program thesis + standing claims
 │   ├── ANOMALIES.md             # Open anomaly ledger
 │   ├── CLAIMS.md                # Master claim ledger (anchored numbers)

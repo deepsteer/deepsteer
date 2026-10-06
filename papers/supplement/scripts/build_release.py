@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the Zenodo deposit for the FL + MN per-unit arrays (supplement/RELEASE_PLAN.md).
 
-    python3 deepsteer/supplement/scripts/build_release.py [--out outputs/zenodo_v1] [--dry-run]
+    python3 papers/supplement/scripts/build_release.py [--out outputs/zenodo_v1] [--dry-run]
 
 Stages every array named in RELEASE_PLAN §1 from the (gitignored) run outputs, applies the §2
 exclusions (MORABLES-derived files, datasets, smoke/dry/pilot trees, model weights), writes one
@@ -66,8 +66,8 @@ GROUPS: list[dict] = [
      "cited_by": ["FL §8, App G", "MN §3.1", "CLAIMS P7-*"]},
     {"id": "distilled", "tarball": "fl",
      "description": "The in-repo distilled supplement (figure_data CSVs, cell JSONs, W4 summaries) at the deposit commit.",
-     "globs": ["deepsteer/supplement/figure_data/*.csv", "deepsteer/supplement/cells/**/*.json",
-               "deepsteer/supplement/MANIFEST.json"],
+     "globs": ["papers/supplement/figure_data/*.csv", "papers/supplement/cells/**/*.json",
+               "papers/supplement/MANIFEST.json"],
      "cited_by": ["FL App E", "MN §9"]},
 ]
 # Files the MN cites that are NOT in the FL groups above get their own tarball; everything MN cites
@@ -195,7 +195,7 @@ def main() -> int:
     else:
         manifest["tarballs"]["mn"] = {"note": "every array the methods note cites lives in the FL tarball (shared-arrays-live-once); see mn_references for the path + sha256 list"}
     (out / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, sort_keys=False))
-    shutil.copy2(REPO / "deepsteer/supplement/PROVENANCE.md", out / "PROVENANCE.md")
+    shutil.copy2(REPO / "papers/supplement/PROVENANCE.md", out / "PROVENANCE.md")
     (out / "LICENSE").write_text("Creative Commons Attribution 4.0 International (CC BY 4.0) applies to every array and manifest in this deposit.\nhttps://creativecommons.org/licenses/by/4.0/\nThe code that produced them is in the DeepSteer repository under its own license (commit " + git + ").\n")
     (out / "REGENERATE.md").write_text(REGENERATE.format(commit=git, run=w4_meta["run_id"]))
     print("wrote", out, "tarballs:", json.dumps(manifest["tarballs"], indent=1))
@@ -216,7 +216,7 @@ recorded in MANIFEST.json (`hf_models`). Llama-3.1 is gated: accept Meta's licen
 | d2_decision_coupling | `papers/d2_decision_coupling/scripts/informat_ladder.py`, `b1_judgment_direction.py`, `b3_*` control extractions per model key |
 | proto_refusal_caches | `papers/5_moral_alignment/scripts/coupling_measurement.py` over the 14 stage-3 checkpoints (`checkpoint_inventory.json`) |
 | reasoning_p7 | `papers/7_reasoning/scripts/` position extraction, two-site decomposition, `reply_inversion_control.py` |
-| distilled | `python3 deepsteer/supplement/scripts/build.py`; verify with `scripts/verify.py` |
+| distilled | `python3 papers/supplement/scripts/build.py`; verify with `scripts/verify.py` |
 
 MORABLES-derived caches (excluded, CC-BY-NC): `papers/d1_moral_subspace/scripts/generate_morables.py`
 under the MORABLES license, then the D1 phase-2 extraction at layer 16.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build MANIFEST.json for the DeepSteer paper supplement.
 
-Scans deepsteer/supplement/{figure_data,cells} and writes a manifest that
+Scans papers/supplement/{figure_data,cells} and writes a manifest that
 indexes every distilled artifact with a content hash and its metadata
 (description, provenance, which paper figures/tables cite it, and schema for
 CSVs). The manifest is the single index both papers cite.
@@ -10,7 +10,7 @@ This script does not touch raw activations. The distilled cell JSONs are copied
 in once by the author from the (gitignored) run outputs; see PROVENANCE.md. Run
 from anywhere:
 
-    python3 deepsteer/supplement/scripts/build.py
+    python3 papers/supplement/scripts/build.py
 
 Deterministic: no timestamps, no randomness, sorted keys, so re-running on an
 unchanged tree reproduces byte-identical MANIFEST.json.

@@ -653,13 +653,13 @@ deepsteer/
     moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
     data_mixing.py             Moral/general corpus mixing with foundation weights
     training_hooks.py          ProbeMonitor for live training metric tracking
-  supplement/       Supplement material generation (manifest-indexed artifacts)
 scripts/
   run_evaluation.py            Single-model CLI
   compare_models.py            Cross-model comparison CLI
   moral_emergence.py           Dense checkpoint trajectory driver
 papers/            Research papers, directions, and program docs
-                   (see papers/README.md)
+                   (see papers/README.md); papers/supplement/ holds the FL/MN
+                   supplement (manifest-indexed artifacts)
 tests/            Mirrors source structure
   directions/         Direction extraction unit tests
   geometry/           Geometric analysis unit tests

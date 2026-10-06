@@ -75,14 +75,12 @@ deepsteer = [
 line-length = 100
 # Lint scope is the library, its tests, and scripts/ (LIBRARY_RELEASE_PLAN §B). Excluded:
 # papers/ (research code, left as-is by the plan); the W4 pod harness, frozen since the W4
-# verdicts (2026-09-13) and pinned by commit SHA in its run manifests; deepsteer/supplement,
-# which moves to papers/ in §C1.
+# verdicts (2026-09-13) and pinned by commit SHA in its run manifests.
 extend-exclude = [
     "papers",
     "scripts/w4",
     "scripts/pod_w4.py",
     "tests/scripts/test_pod_w4.py",
-    "deepsteer/supplement",
 ]
 
 [tool.ruff.lint]
