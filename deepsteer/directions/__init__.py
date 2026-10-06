@@ -3,8 +3,10 @@
 Tier: Validated (Papers 3, 4).
 
 This module provides training-free methods to extract concept directions
-from pre-collected activations. All functions operate on numpy arrays
-and are model-agnostic by design.
+from pre-collected activations. The algorithms (mean-diff, LEACE, probe-weight,
+compare) take numpy arrays or CPU torch tensors, return numpy, and do not import
+torch (import-linter contract in pyproject.toml). ``extraction`` collects
+activations through model hooks and is the torch side.
 
 Methods:
     - **Mean-diff**: baseline direction (mu_moral - mu_neutral), normalized.
@@ -15,7 +17,7 @@ Methods:
 Usage::
 
     from deepsteer.directions import extract_mean_diff_directions
-    dirs = extract_mean_diff_directions(activations, labels, groups)
+    dirs = extract_mean_diff_directions(activations, groups)
 """
 
 from __future__ import annotations

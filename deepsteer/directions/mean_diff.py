@@ -12,11 +12,11 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/shared.py
 from __future__ import annotations
 
 import numpy as np
-import torch
+from numpy.typing import ArrayLike
 
 
 def extract_mean_diff_directions(
-    activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
+    activations: dict[int, tuple[ArrayLike, ArrayLike]],
     groups: dict[str, list[int]],
     n_layers: int | None = None,
 ) -> dict[str, dict[int, np.ndarray]]:
@@ -24,7 +24,8 @@ def extract_mean_diff_directions(
 
     Args:
         activations: Mapping from layer index to ``(X, y)`` where
-            ``X`` has shape ``(2*n_pairs, hidden_dim)`` interleaved as
+            ``X`` (any array-like: numpy array or CPU torch tensor) has shape
+            ``(2*n_pairs, hidden_dim)`` interleaved as
             ``[class1_0, class0_0, class1_1, class0_1, ...]`` and
             ``y`` has shape ``(2*n_pairs,)`` with 1=class1, 0=class0.
         groups: Mapping from group label to list of pair indices
@@ -48,8 +49,8 @@ def extract_mean_diff_directions(
             class1_rows = [pi * 2 for pi in pair_indices]
             class0_rows = [pi * 2 + 1 for pi in pair_indices]
             mean_diff = (
-                X[class1_rows].numpy().astype(np.float64).mean(axis=0)
-                - X[class0_rows].numpy().astype(np.float64).mean(axis=0)
+                np.asarray(X)[class1_rows].astype(np.float64).mean(axis=0)
+                - np.asarray(X)[class0_rows].astype(np.float64).mean(axis=0)
             )
             norm = np.linalg.norm(mean_diff)
             if norm > 1e-12:

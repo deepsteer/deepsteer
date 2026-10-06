@@ -2,11 +2,37 @@
 
 The API is alpha and will change between minor versions.
 
-## [Unreleased]
+## [0.2.0]
+
+Namespace hygiene and CI (LIBRARY_RELEASE_PLAN §B, §C).
+
+### Moved
+- `deepsteer.supplement` → `papers/supplement/` in the repository (paper data, provenance and
+  build scripts, never library API). `import deepsteer.supplement` now raises `ImportError`
+  naming the new location. A stub `deepsteer/supplement/README.md` maps the paths that the
+  FL/MN papers cite to their new locations.
 
 ### Added
-- CI (`.github/workflows/ci.yml`): ruff, fast tests on Python 3.10 and 3.12, and the
-  installed-wheel smoke test on every push and PR to `main` (LIBRARY_RELEASE_PLAN §B).
+- `__all__` on `deepsteer` and `deepsteer.viz` (the other subpackages already had one).
+  Names not in `__all__` are private by convention.
+- Import contracts (import-linter, checked in CI): `deepsteer` imports nothing from
+  `papers`, `scripts` or `tests`; `deepsteer.geometry` and the direction algorithms
+  (`mean_diff`, `leace`, `compare`, `probe_weight`) import neither torch nor transformers.
+- Experimental markers: `deepsteer.kdg`, `EMBehavioralEval`, `PersonaFeatureProbe`,
+  `PersonaActivationScorer` and `CompositionalMoralProbe` serve one paper each and are not
+  stable API (ARCHITECTURE.md, Experimental).
+- CI (`.github/workflows/ci.yml`): ruff, import contracts, fast tests on Python 3.10 and
+  3.12, and the installed-wheel smoke test on every push and PR to `main`.
+
+### Changed
+- `extract_mean_diff_directions` and `extract_leace_directions` accept any array-like
+  (numpy arrays or CPU torch tensors). They previously required torch tensors (they called
+  `.numpy()`), although the package documented numpy inputs. Results are bit-identical
+  for torch input.
+- Lint scope is `ruff check .` with `papers/` and the frozen W4 harness excluded;
+  prose-data modules exempt from E501. Ruff pinned to 0.16.7 and import-linter to 2.15 in
+  the `dev` extra. Unused imports removed from library modules (none was imported elsewhere
+  in the repository).
 
 ### Fixed
 - `geometry.permutation_test` (and `permutation_test_mft`) counted ties with the observed
@@ -14,12 +40,13 @@ The API is alpha and will change between minor versions.
   swapped) and index reorderings of one split are mathematically tied; they are now counted
   within 1e-12. For 6 items split 3/3 the exact floor is p = 0.10, so the test cannot reject
   at 0.05. See `papers/ANOMALIES.md` A11.
-
-### Changed
-- Lint scope is `ruff check .` with `papers/`, the frozen W4 harness, and
-  `deepsteer/supplement` excluded; prose-data modules exempt from E501. Ruff pinned to
-  0.16.7 in the `dev` extra. Unused imports removed from library modules (none was imported
-  elsewhere in the repository).
+- `full_geometric_analysis(directions, labels=...)` with labels other than the six MFT
+  foundations and no `groups` raised `IndexError` (it applied the MFT index split to any
+  label set). The MFT default now applies only to `FOUNDATION_ORDER`; other label sets get
+  no permutation test.
+- README Library API example: it passed `collect_batch_activations` output straight to
+  `extract_mean_diff_directions` with the wrong arguments; it now builds the `{layer: (X, y)}`
+  mapping the function takes.
 
 ## [0.1.1]
 

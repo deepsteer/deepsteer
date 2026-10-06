@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deepsteer"
-version = "0.1.1"
+version = "0.2.0"
 description = "Evaluating and steering alignment depth in LLM pre-training"
 readme = "README.md"
 license = "Apache-2.0"
@@ -52,6 +52,7 @@ dev = [
     "deepsteer[all]",
     "pytest",
     "ruff==0.16.7",  # pinned to the version CI runs
+    "import-linter==2.15",
 ]
 
 [tool.setuptools.packages.find]
@@ -71,6 +72,31 @@ deepsteer = [
     "benchmarks/compliance_gap/em_fixtures/LICENSE",
 ]
 
+# Import contracts, checked by `lint-imports` in CI (LIBRARY_RELEASE_PLAN §C3). They see Python
+# imports only: a repo-relative file read (deepsteer/kdg/phase2.py reads papers/kdg_panel/data)
+# is invisible to them; ARCHITECTURE.md (Experimental) tracks that one.
+[tool.importlinter]
+root_packages = ["deepsteer"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "library does not import papers, scripts or tests"
+type = "forbidden"
+source_modules = ["deepsteer"]
+forbidden_modules = ["papers", "scripts", "tests"]
+
+[[tool.importlinter.contracts]]
+name = "geometry and direction algorithms do not import torch or transformers"
+type = "forbidden"
+source_modules = [
+    "deepsteer.geometry",
+    "deepsteer.directions.mean_diff",
+    "deepsteer.directions.leace",
+    "deepsteer.directions.compare",
+    "deepsteer.directions.probe_weight",
+]
+forbidden_modules = ["torch", "transformers"]
+
 [tool.ruff]
 line-length = 100
 # Lint scope is the library, its tests, and scripts/ (LIBRARY_RELEASE_PLAN §B). Excluded:
@@ -87,8 +113,6 @@ extend-exclude = [
 select = ["E", "F", "I", "W"]
 
 [tool.ruff.lint.per-file-ignores]
-# Re-exports; §C3 replaces these with explicit __all__ and removes this entry.
-"**/__init__.py" = ["F401"]
 # Prose data held as string literals (sentence pairs, scenarios, verbatim vendored judge
 # prompts). Wrapping them risks changing the data.
 "deepsteer/datasets/minimal_pairs.py" = ["E501"]

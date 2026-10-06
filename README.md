@@ -76,23 +76,29 @@ Beyond the benchmark suite, DeepSteer has composable building blocks
 for representation analysis:
 
 ```python
+import numpy as np
 import deepsteer as ds
 
 # Load any HuggingFace transformer
 model = ds.olmo("allenai/OLMo-2-0425-1B")
 
-# Collect activations at specific layers
-acts = model.collect_batch_activations(texts, layers=[4, 8, 12])
+# Collect activations for interleaved (concept, neutral) pairs at specific layers
+texts = [t for concept, neutral in pairs for t in (concept, neutral)]
+acts = model.collect_batch_activations(texts, layers=[4, 8, 12])  # {layer: (2*n_pairs, d)}
+labels = np.tile([1, 0], len(pairs))
+activations = {layer: (X, labels) for layer, X in acts.items()}
 
-# Extract concept directions (training-free)
+# Extract concept directions (training-free); groups maps a label to pair indices
 from deepsteer.directions import extract_mean_diff_directions
-dirs = extract_mean_diff_directions(acts, labels, groups)
+groups = {"care": care_pair_ids, "fairness": fairness_pair_ids}
+dirs = extract_mean_diff_directions(activations, groups)  # {label: {layer: unit vector}}
 
 # Measure geometric structure
 from deepsteer.geometry import full_geometric_analysis
 geo = full_geometric_analysis(dirs, layer=8, labels=list(dirs.keys()))
 
 # Causal validation: does ablating a direction change behavior?
+# eval_prompts: list of dicts with "target_foundation" and "continuations" keys
 from deepsteer.causal import ablation_sweep
 abl = ablation_sweep(model, dirs, layers=[8, 12], prompts=eval_prompts)
 
@@ -102,7 +108,11 @@ steer = steering_sweep(model, dirs, layers=[8], prompts=eval_prompts,
                         alphas=[1.0, 5.0, 20.0])
 ```
 
-All direction/geometry functions are pure numpy, model-agnostic by design.
+The direction algorithms (`extract_mean_diff_directions`, `extract_leace_directions`,
+`compare_directions`, probe-weight extraction) and everything in `deepsteer.geometry` take
+numpy arrays or CPU torch tensors, return numpy, and do not import torch; an import-linter
+contract in `pyproject.toml` checks this in CI. `deepsteer.directions.extraction` (activation
+collection with model hooks) is the torch side.
 Causal functions use `WhiteBoxModel`'s hook-based context managers:
 
 ```python

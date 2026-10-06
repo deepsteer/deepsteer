@@ -1,5 +1,8 @@
 """Persona-feature probing: linear probe for the toxic-persona direction.
 
+Experimental: serves one paper (Paper 5); not part of the stable library API
+(see ARCHITECTURE.md, Experimental).
+
 Parallel in structure to :class:`LayerWiseMoralProbe`, but trained on
 ``(persona_voice, neutral_voice)`` minimal pairs from
 :mod:`deepsteer.datasets.persona_pairs`.

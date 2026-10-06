@@ -1,5 +1,8 @@
 """EMBehavioralEval: Betley et al.'s first-plot behavioral misalignment fixture.
 
+Experimental: serves one paper (the Paper 2 EM replication); not part of the stable library API
+(see ARCHITECTURE.md, Experimental).
+
 Reproduces the eight-question evaluation protocol from Betley et al. (2025),
 "Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs."
 arXiv:2502.17424.  Each question is asked ``samples_per_paraphrase`` times at

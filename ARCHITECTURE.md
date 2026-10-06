@@ -170,6 +170,22 @@ papers/                         # Research papers and program-level docs
 tests/                          # pytest suite mirroring source structure
 ```
 
+## Experimental
+
+Modules that ship in the package but are research-program code, not stable library API. They
+may change or move without a deprecation cycle. The test for membership: no caller outside
+`papers/` other than its own tests (checked 2026-10-06, LIBRARY_RELEASE_PLAN §C2).
+
+| Module / class | Serves | Callers outside `papers/` | Plan |
+|---|---|---|---|
+| `deepsteer.kdg` | KDG panel (`papers/kdg_panel`, `papers/kdg_judgment_action`) | `tests/kdg/`, `scripts/pod_kdg_*` | Relocate to `papers/kdg_panel/` or `deepsteer.research` after the KDG paper is published. `kdg/phase2.py` reads `papers/kdg_panel/data/tsn_filler_turns.json` by repo-relative path, which fails from an installed wheel. |
+| `EMBehavioralEval` (`benchmarks/compliance_gap/em_behavioral.py`) | Paper 2 EM replication | none (a type reference in `core/types.py`) | Keep; no test yet. |
+| `PersonaFeatureProbe` (`benchmarks/representational/persona_probe.py`) | Paper 5 | `tests/benchmarks/test_persona_probe.py` | Keep. |
+| `PersonaActivationScorer` (`benchmarks/representational/persona_activation.py`) | Paper 5 | none | Keep. |
+| `CompositionalMoralProbe` (`benchmarks/representational/compositional_moral_probe.py`) | Paper 1 | none; no test | Keep. |
+
+Everything else exported from `deepsteer` (see each subpackage's `__all__`) is the library.
+
 ## Model Access Tiers
 
 | Capability | OLMo | Llama | Claude/GPT API | Requires Instruct? |

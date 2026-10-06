@@ -13,11 +13,11 @@ Extracted from: papers/3_moral_geometry/scripts/probe_engineering/leace_directio
 from __future__ import annotations
 
 import numpy as np
-import torch
+from numpy.typing import ArrayLike
 
 
 def extract_leace_directions(
-    activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
+    activations: dict[int, tuple[ArrayLike, ArrayLike]],
     groups: dict[str, list[int]],
     n_layers: int | None = None,
     reg_scale: float = 1e-4,
@@ -26,7 +26,8 @@ def extract_leace_directions(
 
     Args:
         activations: Mapping from layer index to ``(X, y)`` where
-            ``X`` has shape ``(2*n_pairs, hidden_dim)`` interleaved as
+            ``X`` (any array-like: numpy array or CPU torch tensor) has shape
+            ``(2*n_pairs, hidden_dim)`` interleaved as
             ``[class1_0, class0_0, class1_1, class0_1, ...]``.
         groups: Mapping from group label to list of pair indices.
         n_layers: Number of layers. If ``None``, inferred from activations.
@@ -49,8 +50,8 @@ def extract_leace_directions(
             class1_rows = [pi * 2 for pi in pair_indices]
             class0_rows = [pi * 2 + 1 for pi in pair_indices]
 
-            class1_acts = X[class1_rows].numpy().astype(np.float64)
-            class0_acts = X[class0_rows].numpy().astype(np.float64)
+            class1_acts = np.asarray(X)[class1_rows].astype(np.float64)
+            class0_acts = np.asarray(X)[class0_rows].astype(np.float64)
 
             mu_1 = class1_acts.mean(axis=0)
             mu_0 = class0_acts.mean(axis=0)

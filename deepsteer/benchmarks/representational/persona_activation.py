@@ -1,5 +1,8 @@
 """Persona-probe activation on free-form response text.
 
+Experimental: serves one paper (Paper 5); not part of the stable library API
+(see ARCHITECTURE.md, Experimental).
+
 Companion to :class:`PersonaFeatureProbe`, which reports layer-wise probe
 *accuracy* on held-out minimal pairs.  This module trains a single-layer
 linear probe at a chosen layer and then exposes it as a scalar scoring

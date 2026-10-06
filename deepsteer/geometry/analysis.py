@@ -35,8 +35,9 @@ def full_geometric_analysis(
         directions: ``group → layer → unit direction vector``.
         layer: Layer index. If ``None``, uses the first available layer.
         labels: Group labels (in order). Defaults to ``FOUNDATION_ORDER``.
-        groups: Named groups for clustering and permutation testing.
-            Defaults to ``{"individualizing": [0,1,2], "binding": [3,4,5]}``.
+        groups: Named groups for clustering and permutation testing. Defaults to
+            ``{"individualizing": [0,1,2], "binding": [3,4,5]}`` when ``labels`` is
+            ``FOUNDATION_ORDER``, otherwise to no groups (no permutation test).
 
     Returns:
         Dict with ``mean_cosine_similarity``, ``effective_dimensionality``,
@@ -46,10 +47,13 @@ def full_geometric_analysis(
     if labels is None:
         labels = FOUNDATION_ORDER
     if groups is None:
-        groups = {
-            "individualizing": INDIVIDUALIZING_IDX,
-            "binding": BINDING_IDX,
-        }
+        # The MFT split indexes FOUNDATION_ORDER positions; it is meaningless (and out of range)
+        # for any other label set, which then gets no permutation test or group match.
+        groups = (
+            {"individualizing": INDIVIDUALIZING_IDX, "binding": BINDING_IDX}
+            if list(labels) == list(FOUNDATION_ORDER)
+            else {}
+        )
     if layer is None:
         common_layers = None
         for label in labels:

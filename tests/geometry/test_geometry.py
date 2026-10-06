@@ -162,3 +162,14 @@ def test_full_subspace_analysis(synthetic_directions):
     for layer_data in result["per_layer"].values():
         assert "subspace_dim" in layer_data
         assert "memberships" in layer_data
+
+
+def test_full_geometric_analysis_custom_labels_without_groups(synthetic_directions):
+    # Most probable failure: the MFT default groups (indices 0-5) are applied to a label set of
+    # another size, raising IndexError for the documented call
+    # full_geometric_analysis(directions, labels=list(directions.keys())).
+    directions, labels = synthetic_directions
+    two = {label: directions[label] for label in labels[:2]}
+    result = full_geometric_analysis(two, layer=2, labels=list(two))
+    assert result["permutation_test"] == {}
+    assert len(result["cosine_matrix"]) == 2

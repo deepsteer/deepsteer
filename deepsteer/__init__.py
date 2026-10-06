@@ -11,7 +11,23 @@ from deepsteer.core.model_interface import (
 )
 from deepsteer.core.moe_model import MoEWhiteBoxModel
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
+
+__all__ = [
+    "APIModel",
+    "BenchmarkSuite",
+    "ModelFamily",
+    "MoEWhiteBoxModel",
+    "UnsupportedArchitectureError",
+    "WhiteBoxModel",
+    "behavioral_suite",
+    "claude",
+    "default_suite",
+    "full_suite",
+    "gpt",
+    "llama",
+    "olmo",
+]
 
 
 # ---------------------------------------------------------------------------

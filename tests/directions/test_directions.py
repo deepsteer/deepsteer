@@ -128,3 +128,16 @@ def test_compare_directions(synthetic_activations):
     assert "group_a" in alignment
     assert "mean_cosine" in alignment["group_a"]
     assert 0 <= alignment["group_a"]["mean_cosine"] <= 1
+
+
+@pytest.mark.parametrize("extract", [extract_mean_diff_directions, extract_leace_directions])
+def test_numpy_and_torch_inputs_agree(synthetic_activations, extract):
+    # Most probable failure: the extractors call X.numpy(), so plain numpy activations raise
+    # AttributeError although the package documents numpy-in/numpy-out (LIBRARY_RELEASE_PLAN §C3).
+    activations, groups = synthetic_activations
+    as_numpy = {layer: (X.numpy(), y.numpy()) for layer, (X, y) in activations.items()}
+    from_torch = extract(activations, groups)
+    from_numpy = extract(as_numpy, groups)
+    for group in groups:
+        for layer in from_torch[group]:
+            np.testing.assert_array_equal(from_numpy[group][layer], from_torch[group][layer])

@@ -2,6 +2,10 @@
 
 Spec of record: ``papers/KDG_PANEL_SPEC.md``. Nothing in this package loads a model; the pod
 driver in ``papers/kdg_panel/scripts`` does, and saves per-rollout arrays these functions read.
+
+Experimental. Research-program code for the knowing–doing gap panel. Not part of the stable
+library API; expect it to move to ``papers/kdg_panel/`` or a ``deepsteer.research`` namespace
+once the KDG paper is published.
 """
 
 from __future__ import annotations

@@ -1,5 +1,8 @@
 """Compositional moral probe (Phase C4).
 
+Experimental: serves one paper (Paper 1); not part of the stable library API
+(see ARCHITECTURE.md, Experimental).
+
 Identical methodology to :class:`LayerWiseMoralProbe`, but uses the
 compositional minimal-pair dataset from
 :mod:`deepsteer.datasets.compositional_moral_pairs` whose pairs share most of
