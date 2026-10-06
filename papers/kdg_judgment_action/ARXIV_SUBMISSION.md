@@ -1,6 +1,6 @@
 # arXiv submission: KDG paper (v1)
 
-Prepared 2026-10-04, updated 2026-10-05 (pre-submit decisions; adversarial-review edits R1-R8, P1-P5) for the author's submission (author submits; this file is the metadata of record).
+Prepared 2026-10-04, updated through 2026-10-06 (pre-submit decisions, adversarial review, GPU-1, references) for the author's submission (author submits; this file is the metadata of record).
 Source: commit of record at submission time; tarball `build/arxiv.tar.gz` (gitignored, rebuilt below).
 
 ## Fields
@@ -30,7 +30,7 @@ read from the arXiv API 2026-10-04); no reason to differ: same program, same aud
 - `\pdfoutput=1` on line 1 of `main.tex`; `main.bbl` included (no BibTeX run needed on arXiv); the nine
   figures as PDF under `figures/`, `\graphicspath{{figures/}}`; `neurips_2025.sty`; `sections/*.tex`.
 - Built once from scratch from the extracted tarball (three pdflatex passes, no BibTeX): 0 errors,
-  0 missing files, 0 undefined references, 33 pages, no Type 3 fonts. 33 entries, 295 KB (rebuilt 2026-10-05, after the author decisions on 6a4a957).
+  0 missing files, 0 undefined references, 33 pages, no Type 3 fonts. 33 entries, 296 KB (rebuilt 2026-10-06 at 9659446).
 - Rebuild: stage as in that check (the Makefile's `arxiv` target copies every file in `figures/` and
   runs latexmk, which is crash-prone on this machine; see KDG_GATES build notes).
 
