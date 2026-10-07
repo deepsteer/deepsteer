@@ -112,3 +112,14 @@ papers/kdg_panel/data/parts*/
 
 # Paper artifacts fetched from Zenodo or staged for upload (LIBRARY_RELEASE_PLAN §D)
 papers/_artifacts/
+
+# Paper binary artifacts live on Zenodo, resolved by papers/build_common/artifacts.py
+# (LIBRARY_RELEASE_PLAN §D; last in tree at tag artifacts-last-in-tree). New pod outputs stay local
+# or go into a new Zenodo version; never commit them.
+papers/**/*.npz
+papers/**/*.npy
+papers/**/*.pt
+papers/**/*.bin
+papers/**/*.safetensors
+papers/**/*.ckpt
+papers/**/adapter/tokenizer.json

@@ -2,6 +2,7 @@
 
     python3 papers/build_common/build_artifact_bundle.py inventory  # manifest core fields
     python3 papers/build_common/build_artifact_bundle.py bundle     # tars + bundle hashes
+    python3 papers/build_common/build_artifact_bundle.py stubs SHA  # per-directory stub READMEs
 
 ``inventory`` lists every git-tracked binary under papers/ (.npz/.npy/.pt/.bin/.safetensors/.ckpt
 and adapter tokenizer.json) with bytes and sha256, assigns each to its paper's bundle, and keeps any
@@ -168,10 +169,65 @@ def bundle(manifest: dict) -> dict:
     return manifest
 
 
+STUB = """# Binary artifacts moved to Zenodo
+
+The arrays listed below were removed from this directory at the tip of `main` (LIBRARY_RELEASE_PLAN
+§D). They stay in git history: the last commit that contains them is
+[`{short}`](https://github.com/deepsteer/deepsteer/tree/{sha}/{dir}) (tag `artifacts-last-in-tree`).
+
+Fetch and verify from a clone:
+
+```bash
+python3 papers/build_common/artifacts.py fetch {dir}/<file>
+```
+
+Scripts that read these arrays without loading a model resolve them automatically
+(`papers/build_common/artifacts.py`). Records: public {public_doi} (CC BY 4.0); restricted
+{restricted_doi} (CC BY-NC 4.0, access on request).
+
+| File | Bytes | sha256 | Where |
+|---|---|---|---|
+{rows}
+"""
+
+
+def stubs(manifest: dict, sha: str) -> list[Path]:
+    """Write one stub per directory that loses binaries; ARTIFACTS.md where a README exists."""
+    recs = manifest["records"]
+    where = {
+        "public": f"[public](https://doi.org/{recs['public']['doi']})",
+        "restricted": f"[restricted](https://doi.org/{recs['restricted']['doi']})",
+    }
+    by_dir: dict[str, list[dict]] = {}
+    for a in manifest["artifacts"]:
+        by_dir.setdefault(a["path"].rsplit("/", 1)[0], []).append(a)
+    written = []
+    for d, entries in sorted(by_dir.items()):
+        rows = []
+        for a in sorted(entries, key=lambda e: e["path"]):
+            loc = (where[manifest["bundles"][a["bundle"]]["record"]] if a["bundle"]
+                   else f"not deposited; regenerate: {a.get('regeneration', '')[:120]}")
+            name = a["path"].rsplit("/", 1)[1]
+            rows.append(f"| `{name}` | {a['bytes']} | `{a['sha256'][:16]}…` | {loc} |")
+        target = REPO / d / ("ARTIFACTS.md" if (REPO / d / "README.md").exists() else "README.md")
+        target.write_text(STUB.format(short=sha[:7], sha=sha, dir=d, rows="\n".join(rows),
+                                      public_doi=recs["public"]["doi"],
+                                      restricted_doi=recs["restricted"]["doi"]))
+        written.append(target)
+    return written
+
+
 def main(argv: list[str]) -> int:
-    if not argv or argv[0] not in ("inventory", "bundle"):
+    if not argv or argv[0] not in ("inventory", "bundle", "stubs"):
         print(__doc__)
         return 2
+    if argv[0] == "stubs":
+        manifest = json.loads(MANIFEST.read_text())
+        manifest["last_in_tree"] = argv[1]
+        MANIFEST.write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n")
+        written = stubs(manifest, argv[1])
+        print(f"wrote {len(written)} stubs; last_in_tree = {argv[1]}")
+        return 0
     if argv[0] == "inventory":
         dep = Path(argv[1]) if len(argv) > 1 else None
         manifest = inventory(dep)

@@ -13,7 +13,7 @@
    "access": "restricted; request access on the record page"
   }
  },
- "last_in_tree": null,
+ "last_in_tree": "341487e4a7b67046fb0e4ecf7dede893c52a3012",
  "bundles": {
   "deepsteer_papers_1_accuracy_vs_fragility_v1.tar": {
    "record": "public",
