@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "deepsteer"
 version = "0.2.0"
-description = "Measuring how language models represent moral content and whether their decisions and actions follow it"
+description = "Monitor, measure, and steer alignment from LLM pretraining through post-training"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"

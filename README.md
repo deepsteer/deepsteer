@@ -5,8 +5,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/downloads/)
 
 PyTorch tools for measuring how language models represent moral content, and whether their
-decisions and actions follow it, from pretraining checkpoints through post-training. Hooks on
-real HuggingFace models; every result is saved as JSON next to its plot.
+decisions and actions follow it, from pretraining checkpoints through post-training.
 
 *Alpha: the API will change between minor versions.*
 
@@ -14,7 +13,7 @@ real HuggingFace models; every result is saved as JSON next to its plot.
 
 The program started with pretraining: how deeply models learn moral content there. Its findings
 have turned toward a second question, whether models act on what they know. Knowing is largely
-built in pretraining; whether refusal and action follow it is shaped in post-training.
+built in pretraining. Whether refusal and action follow it is shaped in post-training.
 
 - **Knowing forms in pretraining.** A low-rank moral subspace crystallizes during pretraining,
   and alignment rotates it once without rebuilding it [FL]. Probe accuracy saturates within the
@@ -118,7 +117,7 @@ Cite the papers above for findings, and the software as:
 
 ```bibtex
 @misc{reblitzrichardson2026deepsteer,
-  title={DeepSteer: Evaluating and Steering Alignment Depth in LLM Pre-Training},
+  title={{DeepSteer}: Monitor, measure, and steer alignment from {LLM} pretraining through post-training},
   author={Reblitz-Richardson, Orion},
   year={2026},
   url={https://github.com/deepsteer/deepsteer},

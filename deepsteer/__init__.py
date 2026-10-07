@@ -1,4 +1,4 @@
-"""DeepSteer: Evaluating and steering alignment depth in LLM pre-training."""
+"""DeepSteer: Monitor, measure, and steer alignment from LLM pretraining through post-training."""
 
 from __future__ import annotations
 

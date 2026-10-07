@@ -47,6 +47,9 @@ Namespace hygiene and CI (LIBRARY_RELEASE_PLAN §B, §C).
   foundations and no `groups` raised `IndexError` (it applied the MFT index split to any
   label set). The MFT default now applies only to `FOUNDATION_ORDER`; other label sets get
   no permutation test.
+- Software title, citation and PyPI summary: "DeepSteer: Monitor, measure, and steer alignment
+  from LLM pretraining through post-training" (was "Evaluating and Steering Alignment Depth in
+  LLM Pre-Training").
 - README rewritten and cut from about 700 to about 130 lines: findings and papers first,
   one working quick-start example, a module table; benchmark walkthroughs live in docstrings
   and testing commands in CONTRIBUTING. Its old API example passed the wrong arguments.

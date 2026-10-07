@@ -2,7 +2,7 @@
 
 ## What This Project Is
 
-DeepSteer is a PyTorch-native toolkit for evaluating and steering alignment depth in LLM pre-training. It measures how deeply moral reasoning is embedded in language models, distinguishing shallow post-hoc alignment (RLHF, Constitutional AI) from deep pre-training alignment. The primary focus is **base (non-instruct) models** — representational probing reveals what models learn during pre-training, before instruction tuning modifies their representations.
+DeepSteer is a PyTorch-native toolkit to monitor, measure, and steer alignment from LLM pretraining through post-training. It measures how deeply moral reasoning is embedded in language models, distinguishing shallow post-hoc alignment (RLHF, Constitutional AI) from deep pre-training alignment. The primary focus is **base (non-instruct) models** — representational probing reveals what models learn during pre-training, before instruction tuning modifies their representations.
 
 The library targets three model access tiers:
 - **API** (Claude, GPT): behavioral evaluations only (requires instruction-tuned models)

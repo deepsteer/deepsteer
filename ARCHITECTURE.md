@@ -1,4 +1,4 @@
-# DeepSteer: Evaluating and Steering Alignment Depth in LLM Pre-Training
+# DeepSteer: Monitor, measure, and steer alignment from LLM pretraining through post-training
 
 ## Vision
 
