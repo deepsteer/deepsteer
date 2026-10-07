@@ -63,6 +63,9 @@ from moral_dependency import build_subspace_basis  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 logger = logging.getLogger(__name__)
 
 # Defaults relative to the paper root (parent of scripts/).
@@ -183,9 +186,9 @@ def main() -> None:
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
-    refusal = du.load_directions(args.refusal_npz)[args.refusal_key]
-    moral = du.load_directions(args.moral_npz)
-    persona_all = du.load_directions(args.persona_npz)
+    refusal = du.load_directions(resolve_artifact(args.refusal_npz))[args.refusal_key]
+    moral = du.load_directions(resolve_artifact(args.moral_npz))
+    persona_all = du.load_directions(resolve_artifact(args.persona_npz))
     if args.persona_key not in persona_all:
         raise KeyError(f"{args.persona_key!r} not in {args.persona_npz} "
                        f"(have {list(persona_all)})")
@@ -270,7 +273,7 @@ def main() -> None:
 
     # --- base-persona sensitivity ---
     if args.persona_base_npz:
-        pb = du.load_directions(args.persona_base_npz).get(args.persona_key)
+        pb = du.load_directions(resolve_artifact(args.persona_base_npz)).get(args.persona_key)
         if pb is not None:
             base_pl = run(pb)
             payload["persona_base_sensitivity"] = {

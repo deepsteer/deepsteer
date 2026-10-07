@@ -17,10 +17,16 @@ in the trace: prompt→trace consistent. This is the correlational cross-model c
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import json
 import os
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
 
 G = "papers/d1_moral_subspace/outputs/phase2/gpt_oss/"
 POS = "papers/7_reasoning/outputs/gpt_oss_20b/position_directions.npz"
@@ -37,7 +43,7 @@ def _nearest(layers: list[int], L: int) -> int:
 
 def decompose() -> dict:
     mor = np.load(G + "moral_directions.npz")
-    pos = np.load(POS)
+    pos = np.load(resolve_artifact(POS))
     ml = [int(k.split("layer")[1]) for k in mor.files if "moral_stories" in k]
     hl = [int(k.split("layer")[1]) for k in pos.files if "harmfulness_t_inst" in k]
     az = np.load(G + "act_sample.npz", allow_pickle=True)

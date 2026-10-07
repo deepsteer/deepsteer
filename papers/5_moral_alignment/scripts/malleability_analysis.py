@@ -52,6 +52,9 @@ from moral_dependency import build_subspace_basis  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 logger = logging.getLogger(__name__)
 
 _PAPER_ROOT = Path(__file__).resolve().parent.parent
@@ -80,6 +83,7 @@ def analyse_state(label, stage3_dir, pipeline_dir, persona_bt, band, headline):
     """Per-state M2/M3 numbers, or None if the proto-refusal npz is missing."""
     proto_path = Path(stage3_dir) / label / "proto_refusal_directions.npz"
     pipe_path = Path(pipeline_dir) / label / "probe_directions.npz"
+    proto_path = Path(resolve_artifact(proto_path, missing_ok=True))
     if not proto_path.exists():
         logger.warning("[%s] no proto_refusal_directions.npz; skipping", label)
         return None
@@ -186,8 +190,8 @@ def main() -> None:
               if "pretrain_stage3" in g["label"] or g["label"] == "olmo3_base"]
 
     persona_bt = None
-    if Path(args.instruct_persona_npz).exists():
-        persona_bt = du.load_directions(args.instruct_persona_npz).get("persona")
+    if Path(resolve_artifact(args.instruct_persona_npz, missing_ok=True)).exists():
+        persona_bt = du.load_directions(resolve_artifact(args.instruct_persona_npz)).get("persona")
     else:
         logger.warning("instruct persona npz missing (%s); back-transfer skipped",
                        args.instruct_persona_npz)

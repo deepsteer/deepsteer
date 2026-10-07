@@ -40,10 +40,15 @@ from heretic_ablation import subspace_projection_fraction  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 
 def analyze(out_dir: Path, key: str) -> dict | None:
     moral_npz = out_dir / key / "exp1_probe_directions.npz"
     pos_npz = out_dir / key / "position_directions.npz"
+    moral_npz = Path(resolve_artifact(moral_npz, missing_ok=True))
+    pos_npz = Path(resolve_artifact(pos_npz, missing_ok=True))
     if not (moral_npz.exists() and pos_npz.exists()):
         return None
     spec = reg.get(key)

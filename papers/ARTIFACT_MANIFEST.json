@@ -2,13 +2,13 @@
  "description": "Binary artifacts removed from the papers/ tree; resolve with papers/build_common/artifacts.py get(path).",
  "records": {
   "public": {
-   "doi": null,
-   "zenodo_record": null,
+   "doi": "10.5281/zenodo.23202782",
+   "zenodo_record": "23202782",
    "license": "CC-BY-4.0"
   },
   "restricted": {
-   "doi": null,
-   "zenodo_record": null,
+   "doi": "10.5281/zenodo.23203126",
+   "zenodo_record": "23203126",
    "license": "CC-BY-NC-4.0",
    "access": "restricted; request access on the record page"
   }

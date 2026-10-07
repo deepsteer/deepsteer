@@ -14,6 +14,8 @@ Usage:
 
 from __future__ import annotations
 
+import sys
+
 import argparse
 import json
 from pathlib import Path
@@ -29,6 +31,9 @@ from shared import (
     orthonormal_basis,
     subspace_membership,
 )
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
 
 
 def null_subspace_membership(hidden_dim: int, subspace_dim: int, n_samples: int = 10000, seed: int = 42) -> dict:
@@ -68,8 +73,8 @@ def main() -> None:
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    foundation_npz = np.load(args.foundation_directions)
-    dilemma_npz = np.load(args.dilemma_directions)
+    foundation_npz = np.load(resolve_artifact(args.foundation_directions))
+    dilemma_npz = np.load(resolve_artifact(args.dilemma_directions))
 
     with open(args.probing_results) as f:
         probing_data = json.load(f)

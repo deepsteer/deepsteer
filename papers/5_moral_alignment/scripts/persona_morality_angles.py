@@ -30,6 +30,9 @@ from deepsteer.directions import extraction as du  # noqa: E402
 
 from deepsteer.foundations import FOUNDATION_ORDER, FOUNDATION_SHORT  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 
 def compute_angles(
     moral: dict[str, dict[int, np.ndarray]],
@@ -61,8 +64,8 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
     label = args.label or out.name
 
-    moral = du.load_directions(args.moral_npz)
-    persona_all = du.load_directions(args.persona_npz)
+    moral = du.load_directions(resolve_artifact(args.moral_npz))
+    persona_all = du.load_directions(resolve_artifact(args.persona_npz))
     if args.persona_key not in persona_all:
         raise KeyError(
             f"{args.persona_key!r} not in {args.persona_npz} (have {list(persona_all)})"

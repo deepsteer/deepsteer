@@ -38,6 +38,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deepsteer.directions import extraction as du  # noqa: E402
 from moral_dependency import build_subspace_basis  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 
 _unit = du.unit_vector  # shared: deepsteer.directions.extraction.unit_vector
 
@@ -68,14 +71,14 @@ def main() -> None:
     ap.add_argument("--output", required=True)
     args = ap.parse_args()
 
-    z = np.load(args.vectors)
+    z = np.load(resolve_artifact(args.vectors))
     headline = int(z["headline"])
     sites = {}
     for site in ("eop", "cot_last", "cot_mean"):
         if f"{site}_H" in z.files and f"{site}_S" in z.files:
             sites[site] = (z[f"{site}_H"].astype(np.float64), z[f"{site}_S"].astype(np.float64))
 
-    moral = du.load_directions(args.moral_npz)
+    moral = du.load_directions(resolve_artifact(args.moral_npz))
     n_layers = 1 + max(L for d in moral.values() for L in d)
     basis_by_layer, _rank, _names = build_subspace_basis(
         moral, kind=args.moral_kind, n_layers=n_layers)

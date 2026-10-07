@@ -13,6 +13,8 @@ compatibility. New code should import directly from:
 
 from __future__ import annotations
 
+import sys
+
 import gc
 import time
 from collections import defaultdict
@@ -135,6 +137,9 @@ from deepsteer.directions.probe_weight import (  # noqa: E402
     extract_from_npz as _generic_from_npz,
 )
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 
 def compute_mean_diff_directions(
     all_activations: dict[int, tuple[torch.Tensor, torch.Tensor]],
@@ -149,7 +154,7 @@ def load_probe_directions(
     path: str | Path,
 ) -> dict[str, dict[int, np.ndarray]]:
     """Load and normalize probe-weight directions from an .npz file."""
-    return _generic_from_npz(path, groups=FOUNDATION_ORDER)
+    return _generic_from_npz(resolve_artifact(path), groups=FOUNDATION_ORDER)
 
 
 # ---------------------------------------------------------------------------

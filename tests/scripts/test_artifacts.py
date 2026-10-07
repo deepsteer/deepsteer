@@ -117,3 +117,21 @@ def test_restricted_bundle_needs_access_then_uses_placed_copy(repo):
     placed.parent.mkdir(parents=True, exist_ok=True)
     placed.write_bytes((zenodo / "b.tar").read_bytes())
     assert artifacts.get(REL).read_bytes() == payload
+
+
+def test_resolve_passes_non_artifacts_and_honours_missing_ok(repo, tmp_path, monkeypatch):
+    # Most probable failure: resolve() swallows a fresh output path or raises where a caller
+    # expects its own exists()/skip branch to run.
+    root, _zenodo, payload = repo
+    monkeypatch.chdir(root)
+    assert artifacts.resolve("papers/x/outputs/new_run.npz") == "papers/x/outputs/new_run.npz"
+    assert artifacts.resolve(tmp_path / "elsewhere.npz") == tmp_path / "elsewhere.npz"
+    assert Path(artifacts.resolve(REL)).read_bytes() == payload
+    manifest = json.loads(artifacts.MANIFEST.read_text())
+    manifest["bundles"]["b.tar"]["record"] = "restricted"
+    artifacts.MANIFEST.write_text(json.dumps(manifest))
+    for f in (root / "papers" / "_artifacts").rglob("a.npz"):
+        f.unlink()
+    assert artifacts.resolve(REL, missing_ok=True) == REL
+    with pytest.raises(FileNotFoundError):
+        artifacts.resolve(REL)

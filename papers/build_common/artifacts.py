@@ -71,6 +71,31 @@ def fetch_command(path: str | os.PathLike) -> str:
     return f"python3 papers/build_common/artifacts.py fetch {_rel(path)}"
 
 
+def resolve(path: str | os.PathLike, missing_ok: bool = False) -> str | os.PathLike:
+    """``get(path)`` if ``path`` is a manifest artifact, else ``path`` unchanged.
+
+    For load sites that receive paths from argv or constants: a relative path is taken relative
+    to the current directory (scripts run from the repo root), and any path outside the
+    manifest, such as a fresh output directory, passes through untouched. With
+    ``missing_ok=True`` an artifact that cannot be obtained (restricted, unpublished) is reported
+    on stderr and the original path is returned, so a caller's own exists()/skip logic applies.
+    """
+    p = Path(path).resolve()
+    try:
+        rel = p.relative_to(REPO).as_posix()
+    except ValueError:
+        return path
+    if rel not in {a["path"] for a in load_manifest()["artifacts"]}:
+        return path
+    try:
+        return get(rel)
+    except FileNotFoundError as exc:
+        if not missing_ok:
+            raise
+        print(f"[artifacts] {exc}", file=sys.stderr)
+        return path
+
+
 def get(path: str | os.PathLike) -> Path:
     """Return a local copy of the artifact at repo-relative ``path``, verified against the manifest.
 

@@ -40,6 +40,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from deepsteer.directions import extraction as du  # noqa: E402
 from moral_dependency import build_subspace_basis  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
+
 _MIN_N = 8  # minimum prompts/class to report a matched-length or bin estimate
 
 
@@ -188,7 +191,7 @@ def main() -> None:
     results = {}
     for k in keys:
         prof = root / k / "trace_profile.npz"
-        moral = root / k / "exp1_probe_directions.npz"
+        moral = Path(resolve_artifact(root / k / "exp1_probe_directions.npz", missing_ok=True))
         if not prof.exists() or not moral.exists():
             print(f"[skip] {k}: missing {prof.name if not prof.exists() else moral.name}")
             continue

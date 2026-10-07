@@ -22,11 +22,16 @@ Two analyses:
 
 from __future__ import annotations
 
+import sys
+
 import json
 from itertools import combinations
 from pathlib import Path
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
 
 FOUNDATIONS = ["care", "fairness", "liberty", "loyalty", "authority", "sanctity"]
 FULL = {
@@ -63,8 +68,8 @@ def subspace_membership(w: np.ndarray, a: np.ndarray, b: np.ndarray) -> float:
 
 
 def load_directions():
-    dil = np.load(DILEMMA_NPZ)
-    fnd = np.load(FOUNDATION_NPZ)
+    dil = np.load(resolve_artifact(DILEMMA_NPZ))
+    fnd = np.load(resolve_artifact(FOUNDATION_NPZ))
     dilemma_pairs = sorted(
         {k.replace("dilemma_", "").rsplit("_layer", 1)[0] for k in dil.keys()}
     )

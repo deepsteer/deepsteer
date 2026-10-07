@@ -11,6 +11,8 @@ Usage:
 
 from __future__ import annotations
 
+import sys
+
 import argparse
 import json
 import logging
@@ -18,6 +20,9 @@ from pathlib import Path
 
 import numpy as np
 from scipy.cluster.hierarchy import linkage
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "build_common"))
+from artifacts import resolve as resolve_artifact  # noqa: E402  (LIBRARY_RELEASE_PLAN §D)
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +117,8 @@ def main() -> None:
     dilemma_dir_path = Path(args.dilemma_directions)
     foundation_dir_path = Path(args.foundation_directions)
 
+    dilemma_dir_path = Path(resolve_artifact(dilemma_dir_path, missing_ok=True))
+    foundation_dir_path = Path(resolve_artifact(foundation_dir_path, missing_ok=True))
     if not dilemma_dir_path.exists():
         print(f"ERROR: {dilemma_dir_path} not found. Run dilemma_probing.py first.")
         return
