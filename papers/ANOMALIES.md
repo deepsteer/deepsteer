@@ -480,6 +480,24 @@ matched norm", a stronger statement of the same limitation.
 
 **Thesis impact.** None on the thesis or any verdict. Paper 3's MFT-grouping null now carries the correct detection bar (attainable floor 0.10, cannot reject at α = 0.05; MFT split never above fourth of ten splits).
 
+## A12 (ledger) — The Heretic prompt set's harmless half is Alpaca (CC BY-NC 4.0), so refusal-derived arrays in the public FL/MN deposit fall under the program's own NC exclusion rule; and one Paper 3 output labels its MoE run with the dense model's id
+
+**Date:** 2026-10-06 · **Found in:** LIBRARY_RELEASE_PLAN §D artifact tracing (four tracing agents; license checked against the HF and GitHub APIs).
+
+**Observation 1 (licensing).** `refusal_prompts.json` takes its harmless prompts from `mlabonne/harmless_alpaca`, whose rows are verbatim Stanford Alpaca instructions (`tatsu-lab/alpaca`, CC BY-NC 4.0; the mlabonne card states no license). The supplement's RELEASE_PLAN calls the set "MIT-licensed upstream"; MIT holds for the harmful half (AdvBench), not the harmless half, and Heretic's code is AGPL-3.0. Its §2 rule treats any array whose stimuli are NC as NC-derived. Applied consistently: 36 in-tree arrays (Papers 5–7) went to the restricted record 10.5281/zenodo.23203126; the public FL/MN deposit 10.5281/zenodo.22731361 (CC BY 4.0) holds further arrays computed from the same prompts (proto-refusal caches, refusal directions in the D1–D3, W4 and P7 groups).
+
+**Observation 2 (provenance label).** `papers/3_moral_geometry/outputs/exp5_dense_vs_moe/olmoe/exp1_foundation_probing.json` records `"model": "allenai/OLMo-2-0425-1B"`, while `exp5_summary.json` names OLMoE-1B-7B-0924 for that arm and its accuracies and npz sha256 differ from the dense copy.
+
+**Type.** control-misbehavior (a provenance claim about a stimulus set is wrong) + cross-doc conjunction (label vs summary).
+
+**Competing readings.** Licensing: R_a, derived statistics (directions, activations) inherit the NC term, as the program's own rule says, so the FL/MN deposit needs a new version with those arrays restricted; R_b, aggregate derived arrays do not reproduce the licensed text and are not NC-bound, so the rule is narrowed and documented. Label: R_a, the JSON's model field is a stale default written by `exp1_2_3_framework_geometry.py` when called from exp5 (the arrays are OLMoE's); R_b, the olmoe directory holds a dense run.
+
+**Discriminator.** Licensing: an author (or counsel) decision; no experiment separates them. Label: zero-GPU — compare the olmoe npz's hidden size and layer count and the JSON's per-layer accuracies with the exp5 summary's OLMoE arm.
+
+**Status.** Licensing: open; author decision pending on the FL/MN deposit (the new deposits already apply R_a). Label: **resolved (R_a), 2026-10-06, zero-GPU.** At the commit that wrote the file (a20ffc3, rerun a818bbf) `exp1_2_3_framework_geometry.py:198` wrote `"model": OLMO_REPO`, a hard-coded constant, whatever model it was given, while `exp5_dense_vs_moe_geometry.py:318-330` loaded `OLMOE_REPO` for this arm; the code now writes `model.info.name`. The arrays are OLMoE's; only the JSON label is stale. `resolution_type`: calibration (code archaeology).
+
+**Thesis impact.** None on any verdict. Licensing scopes what may be redistributed publicly; the label affects provenance of one exp5 arm only.
+
 ## Process ledger
 
 **2026-07-03 — the cold-boot W0 audit caught a live erratum that warm sessions had missed.**

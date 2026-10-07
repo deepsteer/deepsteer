@@ -55,3 +55,19 @@ paper when using the subset. Rebuild: `papers/d2_decision_coupling/scripts/build
 
 MIT permits research and commercial use with the copyright and permission notice retained;
 the NOTICE entry carries it. Cite Betley et al. when using either.
+
+## `papers/5_moral_alignment/refusal_prompts.json`: the Heretic refusal prompt set
+
+| Component | Source | Upstream license | Verified | Feeds |
+|---|---|---|---|---|
+| 400 + 100 harmful prompts | `mlabonne/harmful_behaviors` (from AdvBench, `llm-attacks/llm-attacks`) | **MIT** (AdvBench repo); the HF card states no license | GitHub API license field, 2026-10-06 | refusal, proto-refusal, position and two-site directions (Papers 5–7, D1–D3, W4) |
+| 400 + 100 harmless prompts | `mlabonne/harmless_alpaca` (Stanford Alpaca instructions) | **CC BY-NC 4.0** (`tatsu-lab/alpaca`); the HF card states no license | rows checked verbatim against `tatsu-lab/alpaca`, 2026-10-06 | same |
+
+The selection follows Heretic's `config.default.toml` (Heretic's code is AGPL-3.0; only the
+dataset names are taken from it, not code). The harmless half carries the NonCommercial term, so
+arrays computed from this set are treated as NC-derived under the supplement's exclusion rule:
+the 36 that left the `papers/` tree are in the restricted record 10.5281/zenodo.23203126 (CC
+BY-NC 4.0, access on request), not the public one. The earlier FL/MN deposit
+(10.5281/zenodo.22731361) describes this set as "MIT-licensed upstream"; that is incorrect for
+the harmless half, and how to treat the Alpaca-derived arrays in that deposit is an open author
+decision (`papers/ANOMALIES.md` A12).
