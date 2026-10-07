@@ -1,0 +1,1834 @@
+{
+ "description": "Binary artifacts removed from the papers/ tree; resolve with papers/build_common/artifacts.py get(path).",
+ "record": {
+  "doi": null,
+  "zenodo_record": null,
+  "license": "CC-BY-4.0"
+ },
+ "last_in_tree": null,
+ "bundles": {
+  "deepsteer_papers_1_accuracy_vs_fragility_v1.tar": {
+   "sha256": "9022a25fe63a084bbd83620ba01f5c193656ee3e7ca74b23a3aa69fb02bad400",
+   "bytes": 92160,
+   "files": 2
+  },
+  "deepsteer_papers_3_moral_geometry_v1.tar": {
+   "sha256": "74e80d57b5fb853b1c9356b7869900ca51adb93d07d945cc6c84cb5f495d1696",
+   "bytes": 48670720,
+   "files": 51
+  },
+  "deepsteer_papers_5_moral_alignment_v1.tar": {
+   "sha256": "1aa841e02fdf6cd23540e3b856af46bf22ea130a3433c5b46c90a61a02aae08a",
+   "bytes": 74168320,
+   "files": 31
+  },
+  "deepsteer_papers_6_cross_model_v1.tar": {
+   "sha256": "650bd6d9fb8bc94fd6c1f42785ff67c69d597cbe3637b1726a97b694b9b5ecf5",
+   "bytes": 59064320,
+   "files": 21
+  },
+  "deepsteer_papers_7_reasoning_v1.tar": {
+   "sha256": "de3a6d34870c122ee339833963c6cfaa249442e799a43825d4aee97390184192",
+   "bytes": 41267200,
+   "files": 17
+  }
+ },
+ "artifacts": [
+  {
+   "path": "papers/1_accuracy_vs_fragility/outputs/phase_c_tier2/c3/confound_analytic/margins_analytic1000.npz",
+   "bytes": 65446,
+   "sha256": "a303d672ee7b3e0e39e39e530acc04cc943edbdfbd80e9f60c52f4de6d794c54",
+   "bundle": "deepsteer_papers_1_accuracy_vs_fragility_v1.tar",
+   "producer": "papers/1_accuracy_vs_fragility/scripts/confound_analytic.py:220 (OUT const :40, --tag default 'analytic1000' :153)",
+   "readers": [],
+   "holds": "signed per-test-example probe margins y*(w.x+b), float64, 96 test examples x 16 layers x {base, declarative, narrative, general} (keys {cond}_L{L})",
+   "cell": "Paper 1 sec 4.3 scale-confound check (ANOMALIES A7), OLMo-2-0425-1B-early-training step1000 base + 1000-step LoRA per corpus",
+   "stimulus_source": "probes: deepsteer moral_probing_v2 (build_probing_dataset default use_v2, 40/foundation); LoRA corpora: declarative = MORAL_SEEDS templates (project), narrative = Gutenberg fairy tales/fables (PD), general = Gutenberg science texts (PD)",
+   "regeneration": "python papers/1_accuracy_vs_fragility/scripts/confound_analytic.py (defaults: --steps 1000 --conditions declarative,narrative,general --tag analytic1000 --boot 2000), run from repo root; needs model weights (allenai/OLMo-2-0425-1B-early-training rev stage1-step1000-tokens3B) + GPU/MPS for 3 LoRA runs"
+  },
+  {
+   "path": "papers/1_accuracy_vs_fragility/outputs/phase_c_tier2/c3/confound_analytic/margins_smoke_analytic.npz",
+   "bytes": 16258,
+   "sha256": "86303883e4656bb44b975afc496675e07db5fa558dc24c744fdda83943e35696",
+   "bundle": "deepsteer_papers_1_accuracy_vs_fragility_v1.tar",
+   "producer": "papers/1_accuracy_vs_fragility/scripts/confound_analytic.py:220 (run with --tag smoke_analytic)",
+   "readers": [],
+   "holds": "signed per-test-example probe margins, float64, 96 examples x 16 layers, base condition only (smoke run)",
+   "cell": "Paper 1 sec 4.3 confound check smoke test (no LoRA conditions), OLMo-2 1B early-training step1000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "python papers/1_accuracy_vs_fragility/scripts/confound_analytic.py --tag smoke_analytic --boot 5 --conditions '' (? inferred from companion json: n_boot=5, keys only config/base/ordering); needs model weights, MPS/GPU (forward passes only, no LoRA)"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/dilemma_moe/dilemma_probe_directions_olmoe.npz",
+   "bytes": 2036522,
+   "sha256": "a32ecf28393fe3cd0445020f3e0e9242a02ae74a28f4efe227f756c4bb44a94d",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/dilemma_moe.py:346 (--output-dir default :155)",
+   "readers": [],
+   "holds": "unit-norm dilemma probe-weight directions, 15 foundation-pair dilemmas x 16 layers x 2048 float32",
+   "cell": "Paper 3 dilemma extension, dense-vs-MoE, OLMoE-1B-7B-0924",
+   "stimulus_source": "deepsteer dilemma_pairs_final.json (project: 267 Claude-generated via generate_dilemma_dataset.py + 33 handwritten)",
+   "regeneration": "python papers/3_moral_geometry/scripts/dilemma_moe.py (optionally --skip-fragility; npz still saved); requires exp5_dense_vs_moe/olmoe/exp1_probe_directions.npz as input (:154, loaded :186); needs OLMoE-1B-7B-0924 weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/dilemma_probing/dilemma_probe_directions.npz",
+   "bytes": 2036522,
+   "sha256": "87fbd4856e40f7092b6e21a3cfb6fee41b5d2cc8545584713d10c609ce52386e",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/dilemma_probing.py:425 (--output-dir default :227)",
+   "readers": [
+    "papers/3_moral_geometry/scripts/dilemma_geometry.py:125 (default --dilemma-directions :98)",
+    "papers/3_moral_geometry/scripts/dilemma_compositionality_baselines.py:66 (DILEMMA_NPZ :45)",
+    "papers/3_moral_geometry/scripts/task_a_cis.py:62 (DILEMMA_NPZ :35)",
+    "papers/3_moral_geometry/scripts/probe_engineering/full_subspace_projection.py:72 (default --dilemma-directions :57)"
+   ],
+   "holds": "unit-norm dilemma probe-weight directions, 15 foundation-pair dilemmas x 16 layers x 2048 float32",
+   "cell": "Paper 3 dilemma extension (compositionality / subspace membership), OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer dilemma_pairs_final.json (project-generated, Claude + handwritten)",
+   "regeneration": "python papers/3_moral_geometry/scripts/dilemma_probing.py (defaults: OLMo-2-0425-1B, --directions exp1_2_3 npz loaded :259 for membership only); needs model weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/dilemma_probing_7B/dilemma_probe_directions.npz",
+   "bytes": 8005482,
+   "sha256": "2964fd79c6e9ad7508769d175fe885648cdcc8c24ea62414a46f04cca2b5be89",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/dilemma_probing.py:425 via runpod/remote_experiments.sh:102-105 (--output-dir dilemma_probing_7B)",
+   "readers": [
+    "papers/3_moral_geometry/scripts/dilemma_geometry.py:125 (via runpod/remote_experiments.sh:108 --dilemma-directions)"
+   ],
+   "holds": "unit-norm dilemma probe-weight directions, 15 dilemmas x 32 layers x 4096 float32",
+   "cell": "Paper 3 dilemma extension at 7B, OLMo-2-1124-7B",
+   "stimulus_source": "deepsteer dilemma_pairs_final.json (project-generated)",
+   "regeneration": "RUN_DILEMMA=1 (default 0) papers/3_moral_geometry/runpod/run_session.sh -> python dilemma_probing.py --model allenai/OLMo-2-1124-7B --directions papers/3_moral_geometry/outputs/exp1_2_3_7B/exp1_probe_directions.npz --output-dir papers/3_moral_geometry/outputs/dilemma_probing_7B --device cuda; needs 7B weights + A100"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp1_2_3/exp1_probe_directions.npz",
+   "bytes": 813342,
+   "sha256": "8278e32322401ac43fda08fe2b0d577683ee0304cae6c02ba99a5a4fe4975f95",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (--output-dir default :904)",
+   "readers": [
+    "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:877 (--bootstrap-only)",
+    "papers/3_moral_geometry/scripts/exp5_dense_vs_moe_geometry.py:249 (--quick; path hard-coded :240-241)",
+    "papers/3_moral_geometry/scripts/dilemma_probing.py:259 (default --directions :226)",
+    "papers/3_moral_geometry/scripts/dilemma_geometry.py:126 (default --foundation-directions :100)",
+    "papers/3_moral_geometry/scripts/dilemma_compositionality_baselines.py:67 (FOUNDATION_NPZ :46)",
+    "papers/3_moral_geometry/scripts/task_a_cis.py:63 (FOUNDATION_NPZ :36)",
+    "papers/3_moral_geometry/scripts/data_driven_taxonomy.py:65 (called :300, default :241)",
+    "papers/3_moral_geometry/scripts/external_dataset_robustness.py:127 (called :250, default :143)",
+    "papers/3_moral_geometry/scripts/verify_dilemma_dataset.py:66 (load_probes called :315)",
+    "papers/3_moral_geometry/scripts/verify_dilemma_dataset.py:310",
+    "papers/3_moral_geometry/scripts/verify_dilemma_dataset.py:311",
+    "papers/3_moral_geometry/scripts/probe_engineering/direction_ablation.py:200 (default :164)",
+    "papers/3_moral_geometry/scripts/probe_engineering/steering_injection.py:165 (default :127)",
+    "papers/3_moral_geometry/scripts/probe_engineering/behavioral_benchmarking.py:295 (default :268)",
+    "papers/3_moral_geometry/scripts/probe_engineering/mean_diff_directions.py:100 (default :44)",
+    "papers/3_moral_geometry/scripts/probe_engineering/multi_method_directions.py:114 (default :90)",
+    "papers/3_moral_geometry/scripts/probe_engineering/leace_directions.py:88 (default :58)",
+    "papers/3_moral_geometry/scripts/probe_engineering/concept_directions.py:195 (default :103)",
+    "papers/3_moral_geometry/scripts/probe_engineering/register_transfer.py:143 (default :45)",
+    "papers/3_moral_geometry/scripts/probe_engineering/sae_moral_features.py:332 (default :295)",
+    "papers/3_moral_geometry/scripts/probe_engineering/random_baseline_membership.py:75 (hard-coded :74)",
+    "papers/3_moral_geometry/scripts/probe_engineering/full_subspace_projection.py:71 (default :55)",
+    "tests/regression/test_directions.py:66 (working tree, already via get(); :61 at HEAD)"
+   ],
+   "holds": "unit-norm per-foundation probe-weight directions, 6 MFT foundations x 16 layers x 2048 float32 (keys {foundation}_layer{L})",
+   "cell": "Paper 3 exp1 framework geometry (feeds exp2/exp3 + all probe_engineering causal/direction work), OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer moral_probing_v2 (project-generated; 40/foundation -> 32 train/8 test)",
+   "regeneration": "python papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py (add --skip-bootstrap for npz only, ~15 min); needs OLMo-2-0425-1B weights, MPS/GPU",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp1_2_3_7B/exp1_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "8494172f09b9909835fe6ef879b8bc351f2f967cafff8d92864d806ba9e9f4bb",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 via runpod/remote_experiments.sh:63-66 (--output-dir exp1_2_3_7B)",
+   "readers": [
+    "papers/3_moral_geometry/scripts/probe_engineering/direction_ablation.py:200 (remote_experiments.sh:85)",
+    "papers/3_moral_geometry/scripts/probe_engineering/steering_injection.py:165 (remote_experiments.sh:90)",
+    "papers/3_moral_geometry/scripts/dilemma_probing.py:259 (remote_experiments.sh:104)",
+    "papers/3_moral_geometry/scripts/dilemma_geometry.py:126 (remote_experiments.sh:109)",
+    "papers/3_moral_geometry/scripts/data_driven_taxonomy.py:65 (remote_experiments.sh:119 via DIRECTIONS_NPZ :15 / run_session.sh:41)",
+    "papers/3_moral_geometry/scripts/external_dataset_robustness.py:127 (remote_experiments.sh:131 via DIRECTIONS_NPZ)",
+    "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:877 (? only if run --bootstrap-only --output-dir exp1_2_3_7B; runpod no longer does)"
+   ],
+   "holds": "unit-norm per-foundation probe-weight directions, 6 foundations x 32 layers x 4096 float32",
+   "cell": "Paper 3 exp1 framework geometry at 7B, OLMo-2-1124-7B",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "papers/3_moral_geometry/runpod/run_session.sh (RUN_BOOTSTRAP=1) -> python exp1_2_3_framework_geometry.py --model allenai/OLMo-2-1124-7B --output-dir papers/3_moral_geometry/outputs/exp1_2_3_7B --n-bootstrap 200 --device cuda; needs 7B weights + A100",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp5_dense_vs_moe/olmo/exp1_probe_directions.npz",
+   "bytes": 813342,
+   "sha256": "27a783cf277c8d6f22191780ef410f76a1f464bc8993b0a7aa97a21f574a529e",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 called from exp5_dense_vs_moe_geometry.py:296 (olmo_dir = output_dir/'olmo', default :207)",
+   "readers": [],
+   "holds": "unit-norm per-foundation probe-weight directions, 6 x 16 layers x 2048 float32 (dense re-run, differs from exp1_2_3 copy)",
+   "cell": "Paper 3 exp5 dense vs MoE geometry, dense arm OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "python papers/3_moral_geometry/scripts/exp5_dense_vs_moe_geometry.py (WITHOUT --quick; --quick skips writing olmo/); needs OLMo-2-0425-1B + OLMoE-1B-7B weights, MPS/GPU",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp5_dense_vs_moe/olmoe/exp1_probe_directions.npz",
+   "bytes": 813342,
+   "sha256": "2e352d1c8cd1016ad13428994aa1c768011554e9b31b288ff8eaa73fd89b034c",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 called from exp5_dense_vs_moe_geometry.py:319 (olmoe_dir)",
+   "readers": [
+    "papers/3_moral_geometry/scripts/dilemma_moe.py:186 (default --olmoe-foundation-directions :154)"
+   ],
+   "holds": "unit-norm per-foundation probe-weight directions, 6 x 16 layers x 2048 float32",
+   "cell": "Paper 3 exp5 dense vs MoE geometry, MoE arm OLMoE-1B-7B-0924",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "python papers/3_moral_geometry/scripts/exp5_dense_vs_moe_geometry.py (--quick also writes olmoe/); needs OLMoE-1B-7B-0924 weights, MPS/GPU",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0000000.npz",
+   "bytes": 813342,
+   "sha256": "310e8a313923f44bff8c09ab37d283f1b41af9d34dc92a1981875bb2db629d31",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 foundations x 16 layers x 2048 (float32) at checkpoint step 0",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 0",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "python papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py --output-dir <fresh dir> (an existing exp6_trajectory_summary.json makes cached steps skip without writing npz); needs early-training checkpoint weights (stage1-step0-*), MPS/GPU",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0001000.npz",
+   "bytes": 813342,
+   "sha256": "ac44c3f58a8b98a26533a703ce6a684fcc3d16fae00c131b68cc7e13f525f9c1",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 1000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 1000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step1000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0002000.npz",
+   "bytes": 813342,
+   "sha256": "204666f7553bfa81d2913e70800223dfd52016551997fc80920236b9860e115c",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 2000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 2000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step2000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0003000.npz",
+   "bytes": 813342,
+   "sha256": "ef8f537d98d7a2c2f09b6d2484c6303cd46f5a79d1814887f1282f64fa0d753c",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 3000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 3000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step3000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0004000.npz",
+   "bytes": 813342,
+   "sha256": "15fb3433ddd7028a25141a51a708798d57f55f039ba476bab66d3a3426e469c7",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 4000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 4000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step4000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0005000.npz",
+   "bytes": 813342,
+   "sha256": "f223df3ae8ed62501af928f3ace698a9adf1d25816d633242f429e87c43636cc",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 5000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 5000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step5000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0006000.npz",
+   "bytes": 813342,
+   "sha256": "1042ee3b40aee01df9ff9980ce5ae76efd930984b2793883de0ba0898e66f7d9",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 6000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 6000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step6000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0007000.npz",
+   "bytes": 813342,
+   "sha256": "e1c0c0c678917aefc8ccde16701bcd30b5818038e65e7f7a071728082aff3fba",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 7000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 7000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step7000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0008000.npz",
+   "bytes": 813342,
+   "sha256": "8617e6fabedc15c95538f3759e3a690e5d713f947fcdbcee7d264d40f72e8c7b",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 8000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 8000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step8000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0009000.npz",
+   "bytes": 813342,
+   "sha256": "5c69e029a854a74bd0784491d8508e30dfc81f308f1c09e62e3b4345b590f3d6",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 9000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 9000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step9000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0010000.npz",
+   "bytes": 813342,
+   "sha256": "38486ceafeb9b43f11e78032461f0def36bed6c5d238edab02a2134a3395ae60",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 10000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 10000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step10000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0011000.npz",
+   "bytes": 813342,
+   "sha256": "863ecc8a84b4f9fa260f1cd268de3fff86d9f00dd43e93e31893834caa4dc529",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 11000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 11000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step11000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0012000.npz",
+   "bytes": 813342,
+   "sha256": "a9b539c4f47eda4dca5580c71f7b0dac67657d0a021cf8903003e59b4ec8c639",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 12000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 12000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step12000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0013000.npz",
+   "bytes": 813342,
+   "sha256": "7616c5ee78a855949d5bcdf5ee6200cf0f762e74d41a19bd1096a03099d5e396",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 13000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 13000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step13000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0014000.npz",
+   "bytes": 813342,
+   "sha256": "d2f651d3de262a988b7c01273242ff0cb5dc3dc0cafc3fcb1363a542fa0fafcc",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 14000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 14000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step14000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0015000.npz",
+   "bytes": 813342,
+   "sha256": "99ecfe6a58b0955bf8f22cc9216097f288a7f0c1c8ab7d2d205ac3e2602209b4",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 15000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 15000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step15000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0016000.npz",
+   "bytes": 813342,
+   "sha256": "fb4837b3580b65f3acbda066d7bfc3932fc8c56520ce21aaccb88a4d629172ed",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 16000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 16000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step16000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0017000.npz",
+   "bytes": 813342,
+   "sha256": "35e0b56929bbc862b67b393e091c55623a58b15de35e1e880ae4a8ee1745fc91",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 17000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 17000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step17000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0018000.npz",
+   "bytes": 813342,
+   "sha256": "9b9c875f1d09ea8be46b2ac730dec7322eb86761b45a1e40bb068bdbb021c1b7",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 18000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 18000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step18000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0019000.npz",
+   "bytes": 813342,
+   "sha256": "c7e4e5a0a2d206d453ba99df230862b23aec2d07f3c379dfdb551dda859d2620",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 19000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 19000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step19000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0020000.npz",
+   "bytes": 813342,
+   "sha256": "411c686aff015cc4fd599351bf9d5d286f9038baa36bb353780520a9f0dad7e2",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 20000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 20000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step20000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0021000.npz",
+   "bytes": 813342,
+   "sha256": "539d1918bcf0433e47d3c44751f2d1d46633f0b5debee15b69f1acfd9b5f1879",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 21000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 21000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step21000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0022000.npz",
+   "bytes": 813342,
+   "sha256": "0f252eac7e96667f13df09db5983050ec7ce3ca144a16de072ba833ddb0af871",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 22000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 22000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step22000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0023000.npz",
+   "bytes": 813342,
+   "sha256": "adbbdf758e400f9922934e64b9eaae0f1b1829bb93d9a050dcf782ae17582523",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 23000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 23000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step23000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0024000.npz",
+   "bytes": 813342,
+   "sha256": "e777be80156f02503b6d3e80da4e14acb154f4bf87b6a9fc4d2397c73dcd3e80",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 24000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 24000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step24000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0025000.npz",
+   "bytes": 813342,
+   "sha256": "78761daf77aaeed25510673c2cf66e66ccaa2fcfd6e1485263e331a02385ce9c",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 25000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 25000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step25000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0026000.npz",
+   "bytes": 813342,
+   "sha256": "aa8491da55595b243d16f846b04379b97685c670da1b97a05643189bcf88d2a9",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 26000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 26000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step26000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0027000.npz",
+   "bytes": 813342,
+   "sha256": "6982a2c9f7d9502d94601bbd715274c17356fb1ae35cd3cc7b01b86a5609e80b",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 27000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 27000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step27000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0028000.npz",
+   "bytes": 813342,
+   "sha256": "ee74a29295fb3ca055ca0cd06d3ae13b12a0c4a23098724f2952be97514d4ae6",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 28000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 28000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step28000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0029000.npz",
+   "bytes": 813342,
+   "sha256": "826eac24777d32b5895b04b0d5e26abdfcd90dfe917923b0d7f47461ca7e5d00",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 29000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 29000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step29000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0030000.npz",
+   "bytes": 813342,
+   "sha256": "7240a8c8baca464f749fab8bf669b8862ce08dd1e05fd186a065c4dd0d63bde0",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 30000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 30000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step30000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0031000.npz",
+   "bytes": 813342,
+   "sha256": "2d88408b11f4c465637efe66620a1885477251d56dcbf4c704097a3eaa063dc2",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 31000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 31000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step31000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0032000.npz",
+   "bytes": 813342,
+   "sha256": "b7610e7820523656dfef5469434ae4741a96f10ed8560f22f5ffca4e1661003c",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 32000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 32000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step32000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0033000.npz",
+   "bytes": 813342,
+   "sha256": "ae04e59b48170c57ea4e73314e33ae5d9ebe4240872bcd9cf44851a1dbd38b57",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 33000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 33000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step33000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0034000.npz",
+   "bytes": 813342,
+   "sha256": "52f230d9f77fe967d06e0b5fa9ece29a55fff9c989c1a36c667542cd7f488c88",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 34000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 34000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step34000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0035000.npz",
+   "bytes": 813342,
+   "sha256": "d0da8e9b31867f73232ff955d7f4476bdb69513ba078b7aa83db8187a074b5d4",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 35000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 35000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step35000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/exp6_trajectory/directions_step0036000.npz",
+   "bytes": 813342,
+   "sha256": "143b98f6863bccc3bfa855ebee3a4304c6913620155cbe8258a6a41771a973cb",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp6_geometric_trajectory.py:458",
+   "readers": [],
+   "holds": "unit-norm probe-weight directions, 6 x 16 x 2048 float32 at step 36000",
+   "cell": "Paper 3 exp6 geometric trajectory, OLMo-2-0425-1B-early-training step 36000",
+   "stimulus_source": "deepsteer moral_probing_v2",
+   "regeneration": "same as step0000000 (checkpoint stage1-step36000-*)",
+   "byte_reproducible": false
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_grammaticality_wellformed_vs_illformed.npz",
+   "bytes": 135010,
+   "sha256": "05a2f4550cfc755ae898027edff4ee1c9deec78fc4f2377b6b317c620119ccd7",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319 (OUT_DIR const :43)",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, grammatical vs ungrammatical twins, 16 layers x 2048 float32 (keys layer{L})",
+   "cell": "Paper 3 Task B non-moral positive control (geometry ladder), OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer syntax_pairs.py (project-authored minimal pairs)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py (defaults --n-boot 200 --boot-layer 7; run from repo root; one run writes all 6 dir_*.npz + task_b_boot_arrays.npz); needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_number_singular_vs_plural.npz",
+   "bytes": 135010,
+   "sha256": "b6388867b46e6b46f3b1e5cf2233dfc300dc94c6407195559f9327c9b70c2fe5",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, singular vs plural subject twins, 16 layers x 2048 float32",
+   "cell": "Paper 3 Task B non-moral positive control, OLMo-2-0425-1B",
+   "stimulus_source": "inline templates in task_b_control.py:81-97 (project)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py; needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_register_formal_vs_informal.npz",
+   "bytes": 135010,
+   "sha256": "63c0986a73ccfd2292cc339d100c3c277902d895c54689e0c417cea39485ddb2",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, formal vs informal register twins, 16 layers x 2048 float32",
+   "cell": "Paper 3 Task B non-moral positive control, OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer register_pairs.py (project original compositions)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py; needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_sentiment_pos_vs_neg.npz",
+   "bytes": 135010,
+   "sha256": "5fbf30e4a2997af5a79474dfed5e7ca6b078211b2df49b55130bd90be38a4c3b",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, positive vs negative sentiment twins, 16 layers x 2048 float32",
+   "cell": "Paper 3 Task B non-moral positive control, OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer sentiment_pairs.py (project-authored minimal pairs)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py; needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_tense_past_vs_present.npz",
+   "bytes": 135010,
+   "sha256": "aeacac43fb38328a99d5d6ef7e5611f9b65884e3d0db886d8bf099fa11195116",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, past vs present tense twins, 16 layers x 2048 float32",
+   "cell": "Paper 3 Task B non-moral positive control, OLMo-2-0425-1B",
+   "stimulus_source": "inline templates in task_b_control.py:65-78 (project)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py; needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/dir_topic_sports_vs_cooking.npz",
+   "bytes": 135010,
+   "sha256": "7a80ea0ebf0d9a378d44458dfcf342568af2b22019d3d779af7581ec62198b47",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:319",
+   "readers": [],
+   "holds": "unit-norm probe-weight direction, sports vs cooking sentences, 16 layers x 2048 float32",
+   "cell": "Paper 3 Task B non-moral positive control, OLMo-2-0425-1B",
+   "stimulus_source": "inline templates in task_b_control.py:100-115 (project)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py; needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/3_moral_geometry/outputs/nonmoral_control/task_b_boot_arrays.npz",
+   "bytes": 9272,
+   "sha256": "1b09143cfe3036d2d7126be5c9b312a4f95641ecbd44194c72f8a52176773293",
+   "bundle": "deepsteer_papers_3_moral_geometry_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/task_b_control.py:315",
+   "readers": [],
+   "holds": "bootstrap draws (200, float64) at layer 7: moral_mc, moral_pc1, nonmoral_mc, nonmoral_pc1, delta (moral minus nonmoral mean pairwise cosine)",
+   "cell": "Paper 3 Task B ladder + Task A CI remainder (moral 0.26 / PC1 0.379 CIs, delta-CI), OLMo-2-0425-1B",
+   "stimulus_source": "deepsteer moral_probing_v2 (moral arm) + sentiment_pairs/register_pairs/syntax_pairs + inline task_b_control templates (non-moral arm)",
+   "regeneration": "python papers/3_moral_geometry/scripts/task_b_control.py (--n-boot 200 --boot-layer 7 defaults); needs OLMo-2-0425-1B weights, MPS/GPU"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/art_sft/adapter/tokenizer.json",
+   "bytes": 7137655,
+   "sha256": "b0f3aa904e89b491b1688a20bb07ddd303e846b6cd58efe272f522072392b372",
+   "bundle": null,
+   "deposit": "excluded: LoRA adapter files are never deposited",
+   "producer": "papers/5_moral_alignment/scripts/art_sft.py:182 (model.tokenizer.save_pretrained(adapter_dir)); launched by runpod/remote_phase3.sh:162-167 (RUN_ART_SFT=1, --output-dir $OUT/art_sft)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/eval_pipeline.py:97 (AutoTokenizer.from_pretrained(adapter); --art-adapter passed by runpod/remote_phase3.sh:177)"
+   ],
+   "holds": "tokenizer of the ART-SFT LoRA adapter (BPE, 100,278 vocab, eos <|endoftext|>, pad <|pad|>)",
+   "cell": "Sprint 6 ART-SFT (lambda=0.01 calibrated, final 1.0), section 6",
+   "stimulus_source": "n/a (tokenizer). The adapter was trained on the Tulu 3 SFT mix via prepare_sft_data.py (per-subset licenses not checked?); no MORABLES",
+   "regeneration": "The tokenizer is the stock allenai/Olmo-3-1025-7B (base) tokenizer; the sibling chat_template.jinja is borrowed from allenai/Olmo-3-7B-Instruct. Full: python papers/5_moral_alignment/scripts/art_sft.py --model allenai/Olmo-3-1025-7B --chat-template-from allenai/Olmo-3-7B-Instruct --data papers/5_moral_alignment/data/sft_mix.jsonl --moral-directions papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz --direction-kind probe --art-lambda 0.01 --art-calibrate --max-steps 400 --no-merge --output-dir papers/5_moral_alignment/outputs/art_sft --device cuda (GPU plus 7B weights). Tokenizer alone: no GPU, just AutoTokenizer.from_pretrained('allenai/Olmo-3-1025-7B').save_pretrained, but that drops the persisted truncation max_length=64 (see notes)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/control_sft/adapter/tokenizer.json",
+   "bytes": 7137558,
+   "sha256": "18e309ad7f9c60037eaf26aca401a96128187cad2bdfa01a508dca7526bf6300",
+   "bundle": null,
+   "deposit": "excluded: LoRA adapter files are never deposited",
+   "producer": "papers/5_moral_alignment/scripts/art_sft.py:182; launched by runpod/remote_phase3.sh:153-157 (--art-lambda 0.0, --output-dir $OUT/control_sft)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/eval_pipeline.py:97 (via --control-adapter, runpod/remote_phase3.sh:178)"
+   ],
+   "holds": "tokenizer of the control-SFT LoRA adapter",
+   "cell": "Sprint 6 control-SFT (lambda=0), section 6",
+   "stimulus_source": "n/a (tokenizer); same Tulu 3 SFT mix (per-subset licenses not checked?)",
+   "regeneration": "Stock allenai/Olmo-3-1025-7B tokenizer (chat_template.jinja from allenai/Olmo-3-7B-Instruct). Full: same art_sft.py command with --art-lambda 0.0, no --moral-directions/--art-calibrate, --output-dir papers/5_moral_alignment/outputs/control_sft (GPU plus 7B weights). Tokenizer alone: no GPU, save_pretrained of the base tokenizer"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/art/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "de81e4a3f4318ff034e6d7b3a2d47ab422ace5554bc26a079b28ab394eddc5fb",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (out=<output-dir>/<label>, :95); called by eval_pipeline.py:119-122 battery('art'), launched by runpod/remote_phase3.sh:175-182 (RUN_EVAL=1)",
+   "readers": [],
+   "holds": "fresh per-layer probe and meandiff directions for 6 MFT foundations, plus persona/persona_meandiff, on the merged ART-SFT model (raw)",
+   "cell": "Sprint 7 post-ART eval battery, 4-cell (art)",
+   "stimulus_source": "deepsteer/datasets/moral_probing_v2.json (project-generated, v2, target 40/foundation) + deepsteer/datasets/persona_pairs.py (hand-written); no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/eval_pipeline.py --art-adapter papers/5_moral_alignment/outputs/art_sft/adapter --control-adapter papers/5_moral_alignment/outputs/control_sft/adapter --base-model allenai/Olmo-3-1025-7B --base-dir papers/5_moral_alignment/outputs/olmo3_base --output-dir papers/5_moral_alignment/outputs/eval --device cuda (GPU, 7B weights + untracked adapter_model.safetensors)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/art_ablated/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "0e7296454a7c1ff52051dcc5348a7ac723128a64311ec4c9582ae4044124a1a7",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169; via eval_pipeline.py:290 battery('art_ablated') on heretic_art/ablated_model; runpod/remote_phase3.sh:175-182",
+   "readers": [],
+   "holds": "fresh MFT probe/meandiff + persona directions on the Heretic-ablated ART-SFT model",
+   "cell": "Sprint 7 eval battery (art + Heretic)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "same eval_pipeline.py command (GPU; the ablated model is ephemeral and is rebuilt by heretic_ablation.py in the same run)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/control/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "48082cecf53ca9b3fa2b0902e1daccbc76e0b8b01dd1fe257c5b6356b1f8e9f4",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169; via eval_pipeline.py:119-122 battery('control'); runpod/remote_phase3.sh:175-182",
+   "readers": [],
+   "holds": "fresh MFT probe/meandiff + persona directions on the merged control-SFT model",
+   "cell": "Sprint 7 eval battery (control)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "same eval_pipeline.py command (GPU + weights + adapters)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/control_ablated/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "41dea94d8a881ef64f0b4b8a8cc4c00ab016a6d2e5f2ae6e6b0df0a0e46e9982",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169; via eval_pipeline.py:290 battery('control_ablated'); runpod/remote_phase3.sh:175-182",
+   "readers": [],
+   "holds": "fresh MFT probe/meandiff + persona directions on the Heretic-ablated control-SFT model",
+   "cell": "Sprint 7 eval battery (control + Heretic)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "same eval_pipeline.py command (GPU)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/heretic_art/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "de5701b06c080c0ee2990e0c882a6949d65e30a708b564ba45500b09b7a15d10",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; via eval_pipeline.py:139-149 heretic('art'); runpod/remote_phase3.sh:175-182",
+   "readers": [],
+   "holds": "per-layer unit refusal direction (harmful minus harmless last-token mean diff, chat), key refusal_layer{L}, ART-SFT model",
+   "cell": "Sprint 7 Heretic ablation on ART-SFT (7.4 refusal-to-moral projection)",
+   "stimulus_source": "papers/5_moral_alignment/refusal_prompts.json = mlabonne/harmful_behaviors (AdvBench-derived) + mlabonne/harmless_alpaca (Alpaca-derived; upstream CC-BY-NC-4.0? FLAG)",
+   "regeneration": "same eval_pipeline.py command (GPU), or heretic_ablation.py --model <merged art> --prompts papers/5_moral_alignment/refusal_prompts.json --moral-npz .../olmo3_base/exp1_probe_directions.npz --refusal-layer 16 --input-format chat --output-dir papers/5_moral_alignment/outputs/eval/heretic_art",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/eval/heretic_control/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "74a05c3243dd9f7c3001a896c753537ffd84c2958131cf84720c35902f0f63d8",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; via eval_pipeline.py:139-149 heretic('control'); runpod/remote_phase3.sh:175-182",
+   "readers": [],
+   "holds": "per-layer refusal direction, control-SFT model",
+   "cell": "Sprint 7 Heretic ablation on control-SFT",
+   "stimulus_source": "refusal_prompts.json (harmful_behaviors + harmless_alpaca; Alpaca NC? FLAG)",
+   "regeneration": "same eval_pipeline.py command (GPU + weights + adapters)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/heretic/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "921717342f1dd0a544f3717ccabe2d53a5b3908eb3da66b402471233a6101034",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; launched by runpod/remote_experiments.sh:159-164 (RUN_HERETIC=1, --model allenai/Olmo-3-7B-Instruct, --output-dir $OUT/heretic)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (default :70)",
+    "papers/5_moral_alignment/scripts/assistant_axis_agreement.py:331 (default :70)"
+   ],
+   "holds": "per-layer Arditi refusal direction for OLMo-3-7B-Instruct (layer 16 is used for the ablation)",
+   "cell": "Sprint 3.1/3.4 Heretic refusal ablation on Instruct (section 4.4)",
+   "stimulus_source": "refusal_prompts.json 400/400 (harmful_behaviors + harmless_alpaca; Alpaca NC? FLAG)",
+   "regeneration": "python papers/5_moral_alignment/scripts/heretic_ablation.py --model allenai/Olmo-3-7B-Instruct --prompts papers/5_moral_alignment/refusal_prompts.json --moral-npz papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz --refusal-layer 16 --input-format chat --output-dir papers/5_moral_alignment/outputs/heretic --device cuda (GPU + 7B weights; or ONLY=heretic runpod/run_session.sh)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/intervention_stage2/heretic_control/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "4e0ae3b5b9aab3d1917690a1700fb0749df23ef50334a56a7f92c7a9fabddd45",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; launched by runpod/remote_phase3.sh:345-351 (RUN_STAGE2=1, --no-save-model, --moral-npz pipeline/olmo3_pretrain_stage3_step11921/probe_directions.npz)",
+   "readers": [],
+   "holds": "per-layer refusal direction of the post-SFT control arm (forced-coupling Stage 2)",
+   "cell": "Forced-coupling Stage 2, S3a refusal-to-V geometry (control arm)",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "RUN_SETUP=1 RUN_DEPENDENCY=0 RUN_STAGE2=1 runpod/run_session_phase3.sh (GPU; re-runs forced_coupling_stage1 + merge_adapter + art_sft SFT, then heretic_ablation; needs Olmo-3-1025-7B@stage3-step11921 + the untracked pipeline step11921 npz)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/intervention_stage2/heretic_coupled/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "b9e2188373c3d6f029eb611ed7ba2d23f02a3de3e76d3a0069b4519ddf038c1b",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; runpod/remote_phase3.sh:345-351 (arm=coupled)",
+   "readers": [],
+   "holds": "per-layer refusal direction of the post-SFT coupled arm",
+   "cell": "Forced-coupling Stage 2, S3a (coupled arm)",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "same RUN_STAGE2=1 session (GPU, heavy)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/assistant_axis_directions.npz",
+   "bytes": 1066798,
+   "sha256": "25f68e0c1644d0c3f10e628b98c803c37154a641751d9f2a5e3e261691f1cbd5",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/assistant_axis_agreement.py:305; launched by runpod/remote_experiments.sh:208-212 (RUN_ASSISTANT_AXIS=1)",
+   "readers": [],
+   "holds": "Assistant-Axis directions (assistant_axis probe + assistant_axis_meandiff per layer) on OLMo-3-7B-Instruct, raw",
+   "cell": "Measurement 1b / deferred Task 1.2 (Assistant Axis vs refusal/MFT)",
+   "stimulus_source": "hard-coded ASSISTANT_PAIRS in assistant_axis_agreement.py:82 (project-written); no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/assistant_axis_agreement.py --model allenai/Olmo-3-7B-Instruct --input-format raw --output-dir papers/5_moral_alignment/outputs/measurement --device cuda (GPU + 7B weights; ONLY=assistant_axis run_session.sh)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_base/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "401df653b0e6cfc34f1b345720e8cf3c6529eae74e85c61ee562ad6bbbaed870",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135 (out=<output-dir>/<label>, :113); launched by runpod/remote_experiments.sh:191-195 (RUN_MALLEABILITY=1)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90 (path :81, default dir :58)",
+    "scripts/w4/zero_gpu.py:33 (path :30, as 'main'; via scripts/pod_w4.py:82/:146, non-dry)"
+   ],
+   "holds": "proto-refusal per-layer contrast + harmful_mean/harmless_mean (raw last-token)",
+   "cell": "Tier 2 / Task 2.1 malleability scan; reused by W4 14.1 zero-GPU arm",
+   "stimulus_source": "refusal_prompts.json 400/400 (harmful_behaviors + harmless_alpaca; Alpaca NC? FLAG)",
+   "regeneration": "python papers/5_moral_alignment/scripts/extract_proto_refusal.py --only olmo3_base --prompts papers/5_moral_alignment/refusal_prompts.json --input-format raw --output-dir papers/5_moral_alignment/outputs/measurement/stage3 --device cuda (GPU + allenai/Olmo-3-1025-7B@main)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step1000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "909830b895fe362011e28dfcc4ddf60391c907fd3ecf3ee80103cdf793f0a2c3",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, stage-3 step1000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step1000 (same flags; GPU + Olmo-3-1025-7B@stage3-step1000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step10000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "5a8d4091afe305e3c6583eaa69db10c21d48256d4365d0d412fe40497643366f",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step10000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step10000 (GPU + @stage3-step10000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "e589b2c8c248252312fc1a929c5fcb0b1ccf7a12a7325c68d0ac5e7e3fd96c2e",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step11000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step11000 (GPU + @stage3-step11000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11900/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "6216124b4cafdc3b53fd0d01c22011002f3a0a4a5d7d801626ae8f8bd108d488",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step11900",
+   "cell": "Tier 2 malleability; W4 14.1 (rel_adj)",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step11900 (GPU + @stage3-step11900)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11921/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "401df653b0e6cfc34f1b345720e8cf3c6529eae74e85c61ee562ad6bbbaed870",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step11921 (final)",
+   "cell": "Tier 2 malleability; W4 14.1 (final reference)",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step11921 (GPU + @stage3-step11921)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step2000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "5765d0446893dd2e67ab8ebb8700101e0cf370be5bb3eb7948ce6bb16f84c8a1",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step2000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step2000 (GPU + @stage3-step2000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step3000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "7805b1cb29eb3e34a4079d78cc0e27a5cd3ad0916ceb28c483b4ff3a4bf01e31",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step3000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step3000 (GPU + @stage3-step3000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step4000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "2f53ebc45901e5e6f31c97f5cd52b7428d84fb47915e6e21b1fb10365c8fba52",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step4000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step4000 (GPU + @stage3-step4000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step5000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "3127ce551e3d505fe782f5c1daad2659e7cb68eda9ea4520498708b9f695eb5d",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step5000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step5000 (GPU + @stage3-step5000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step6000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "3b8071b45c69bf7dcfc274aa5838abcfc062ee975c465878f3689c36ef22d0b6",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step6000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step6000 (GPU + @stage3-step6000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step7000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "3236abf0103348b022f151c0220d754f7e39279b5b370d13b65f5303e4163956",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step7000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step7000 (GPU + @stage3-step7000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step8000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "6bda37c6e10614a07cbeccba5428480c7425cafa358dd56c31a4a547931fd2e5",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step8000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step8000 (GPU + @stage3-step8000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step9000/proto_refusal_directions.npz",
+   "bytes": 1599066,
+   "sha256": "fe307f9ed45041a4faa2b18c66aeb2de3cdb52131c9d4b7d668e35ddae3ce1e8",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
+   "readers": [
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:90",
+    "scripts/w4/zero_gpu.py:33"
+   ],
+   "holds": "proto-refusal contrast + class means, step9000",
+   "cell": "Tier 2 malleability; W4 14.1",
+   "stimulus_source": "refusal_prompts.json (Alpaca NC? FLAG)",
+   "regeneration": "extract_proto_refusal.py --only olmo3_pretrain_stage3_step9000 (GPU + @stage3-step9000)",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_base/exp1_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "6c1d5a07e790a5ed78f970af8fefd0b8b7e09f25d8e68f95235878fb62bb5b2f",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (np.savez), run locally with --model allenai/Olmo-3-1025-7B --output-dir papers/5_moral_alignment/outputs/olmo3_base (runpod/README.md:33; model confirmed by sibling exp1_foundation_probing.json)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/probe_transfer.py:82 (via --probe-dir; remote_experiments.sh:75,98,102)",
+    "papers/5_moral_alignment/scripts/pipeline_study.py:209 (remote_experiments.sh:79,129,171; eval_pipeline.py:120)",
+    "papers/5_moral_alignment/scripts/coupling_measurement.py:112 (remote_experiments.sh:139,175; eval_pipeline.py:124)",
+    "papers/5_moral_alignment/scripts/heretic_ablation.py:183 (remote_experiments.sh:162; eval_pipeline.py:144)",
+    "papers/5_moral_alignment/scripts/moral_dependency.py:397 (eval_pipeline.py:134, path from :269)",
+    "papers/5_moral_alignment/scripts/moral_dependency_pipeline.py:153 (default :48; remote_phase3.sh:15,103,128)",
+    "papers/5_moral_alignment/scripts/art_sft.py:147 -> deepsteer/steering/ablation_resistance.py:73 (default :40; remote_phase3.sh:165)",
+    "papers/5_moral_alignment/scripts/persona_morality_angles.py:64 (olmo3_base angles run)",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:187 (default :71)",
+    "papers/5_moral_alignment/scripts/assistant_axis_agreement.py:332 (default :71)",
+    "papers/5_moral_alignment/scripts/local_test.py:54 and :135 (default :36; runpod/local_test_phase3.sh:24,27)",
+    "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:877 (only with --bootstrap-only --output-dir .../olmo3_base)"
+   ],
+   "holds": "base-model MFT 6-foundation linear-probe directions per layer, keys {foundation}_layer{L} (the fixed base V)",
+   "cell": "Paper 5 Phase 2 local pre-flight / OLMo-3 base baseline (Sprint 0); reference for transfer, dependency, ART and Heretic geometry",
+   "stimulus_source": "deepsteer/datasets/moral_probing_v2.json (project-generated v2, target 40/foundation); no MORABLES",
+   "regeneration": "python papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py --model allenai/Olmo-3-1025-7B --output-dir papers/5_moral_alignment/outputs/olmo3_base (needs 7B weights; was run on MPS, CUDA not required)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_base/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "0f027ae75241921322bf20d945dc11634fbb456b99b1f2ccc35fb22e404423ea",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (defaults --model allenai/Olmo-3-1025-7B :53, --output-dir olmo3_base :55, raw :57)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/persona_morality_angles.py:65 (olmo3_base angles run)",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:273 (default :73, base-persona sensitivity)"
+   ],
+   "holds": "persona probe + persona_meandiff directions per layer, base model, raw",
+   "cell": "Sprint 0.5 base persona baseline",
+   "stimulus_source": "deepsteer/datasets/persona_pairs.py (hand-written; stratified split, seed 42); no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/persona_probe_base.py --model allenai/Olmo-3-1025-7B --output-dir papers/5_moral_alignment/outputs/olmo3_base (7B weights; MPS ok)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_instruct/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "dd83a51015ea91411607f83cc01c6d3614b0b2e2b553c8d7f7b9dfadccb567d3",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111; launched by runpod/remote_experiments.sh:107-110 (--model allenai/Olmo-3-7B-Instruct --input-format chat --output-dir $OUT/olmo3_instruct)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/persona_morality_angles.py:65 (remote_experiments.sh:114)",
+    "papers/5_moral_alignment/scripts/malleability_analysis.py:190 (default :60; remote_experiments.sh:199)",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:188 (default :72)",
+    "papers/5_moral_alignment/scripts/assistant_axis_agreement.py:311 (default :69)"
+   ],
+   "holds": "persona probe + meandiff directions per layer on OLMo-3-7B-Instruct (chat)",
+   "cell": "Sprint 1.4 persona probe on Instruct",
+   "stimulus_source": "persona_pairs.py (hand-written); no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/persona_probe_base.py --model allenai/Olmo-3-7B-Instruct --input-format chat --output-dir papers/5_moral_alignment/outputs/olmo3_instruct --device cuda (GPU + 7B; ONLY=persona run_session.sh)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_instruct_chat/fresh_meandiff_directions.npz",
+   "bytes": 3199646,
+   "sha256": "bc5b572deb1a5245b5a3c13eae2ff3b5d6418d2ff6ab34ebbb54596ac6ef873d",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/probe_transfer.py:170; launched by runpod/remote_experiments.sh:101-104 (--input-format chat)",
+   "readers": [],
+   "holds": "fresh per-layer MFT mean-diff directions on Instruct (chat)",
+   "cell": "Sprint 1.2 probe transfer (Instruct, chat)",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/probe_transfer.py --model allenai/Olmo-3-7B-Instruct --probe-dir papers/5_moral_alignment/outputs/olmo3_base --input-format chat --output-dir papers/5_moral_alignment/outputs/olmo3_instruct_chat --device cuda (GPU + 7B)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_instruct_chat/fresh_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "d0ad2332bdc0bcb6ee5f38fc419fe9fe1eb0b975215411ff7fb9d53d33fa0ee5",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/probe_transfer.py:169; runpod/remote_experiments.sh:101-104",
+   "readers": [
+    "papers/5_moral_alignment/scripts/persona_morality_angles.py:64 (remote_experiments.sh:113)"
+   ],
+   "holds": "fresh per-layer MFT probe directions on Instruct (chat)",
+   "cell": "Sprint 1.2 probe transfer (Instruct, chat)",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "same probe_transfer.py chat command (GPU + 7B)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_instruct_raw/fresh_meandiff_directions.npz",
+   "bytes": 3199646,
+   "sha256": "4f7d90c7ea6fa4847f9563780859d412e6c751e97cbbc4b36afe889af19de18b",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/probe_transfer.py:170; runpod/remote_experiments.sh:97-100 (--input-format raw)",
+   "readers": [],
+   "holds": "fresh per-layer MFT mean-diff directions on Instruct (raw)",
+   "cell": "Sprint 1.1 probe transfer (Instruct, raw)",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "python papers/5_moral_alignment/scripts/probe_transfer.py --model allenai/Olmo-3-7B-Instruct --probe-dir papers/5_moral_alignment/outputs/olmo3_base --input-format raw --output-dir papers/5_moral_alignment/outputs/olmo3_instruct_raw --device cuda (GPU + 7B)"
+  },
+  {
+   "path": "papers/5_moral_alignment/outputs/olmo3_instruct_raw/fresh_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "3a419b06ed947623490072b6a67cbd828b0f33e9fde3c90d451e6eeac9e770b0",
+   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/probe_transfer.py:169; runpod/remote_experiments.sh:97-100",
+   "readers": [],
+   "holds": "fresh per-layer MFT probe directions on Instruct (raw)",
+   "cell": "Sprint 1.1 probe transfer (Instruct, raw)",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "same probe_transfer.py raw command (GPU + 7B)"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31/battery/ablated/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "9f1689868fc06fda786cdd3eaec08f02f8ed7821af0abadd757ad955f21bd49e",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (out=<--output-dir>/<grid label>; launched by run_phase2.py:131-135 with --output-dir outputs/llama31/battery, label 'ablated' from grid.json written at run_phase2.py:68-77)",
+   "readers": [],
+   "holds": "fresh 6 MFT probe + meandiff dirs + persona probe/meandiff, all 32 layers, on the Heretic-ablated Llama-Instruct",
+   "cell": "Phase 2 comprehension-dissociation battery (2-probe-effdim, ablated state; ablated at sweep-chosen L13)",
+   "stimulus_source": "deepsteer/datasets/moral_probing_v2.json (project LLM-generated, Apache) + deepsteer/datasets/persona_pairs.py (hand-written); no MORABLES",
+   "regeneration": "MODELS=llama31 run_phase2.py (needs heretic_ablation --save-model first to rebuild ablated_model/, which was deleted). Direct: pipeline_study.py --grid outputs/llama31/battery/grid.json --base-dir outputs/llama31_base --input-format raw --output-dir outputs/llama31/battery --dataset-target 40 --only ablated. GPU; GATED meta-llama/Llama-3.1-8B-Instruct"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31/battery/instruct/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "dd2dd77b9256d35266367e6311d0aa61365cb6b3fe853c2127adae883f63a3ba",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (via run_phase2.py:131-135, label 'instruct')",
+   "readers": [],
+   "holds": "fresh 6 MFT probe+meandiff + persona dirs, 32 layers, un-ablated Llama-Instruct",
+   "cell": "Phase 2 battery (instruct state)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "pipeline_study.py --grid outputs/llama31/battery/grid.json --base-dir outputs/llama31_base --input-format raw --output-dir outputs/llama31/battery --dataset-target 40 --only instruct (or run_phase2.py --models llama31). GPU; GATED Llama-3.1-8B-Instruct"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31/heretic/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "fb1e4cf8a9abf355bb1dcbb61a807ca6fc17b17b110afa63285b881f5ae1fb22",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130, --output-dir outputs/llama31/heretic)",
+   "readers": [],
+   "holds": "per-layer refusal diff-of-means (last-token, chat), 32 layers, key 'refusal'",
+   "cell": "Phase 2 Heretic ablation step (1-ablate-L13)",
+   "stimulus_source": "papers/5_moral_alignment/refusal_prompts.json = mlabonne/harmful_behaviors (AdvBench-derived) + mlabonne/harmless_alpaca (Alpaca-derived; FLAG ? Alpaca is CC-BY-NC-4.0, not documented in DATASET_LICENSES.md)",
+   "regeneration": "heretic_ablation.py --model meta-llama/Llama-3.1-8B-Instruct --prompts papers/5_moral_alignment/refusal_prompts.json --moral-npz outputs/llama31_base/exp1_probe_directions.npz --refusal-layer 13 --input-format chat --output-dir outputs/llama31/heretic [--no-save-model to skip 16GB weights]. GPU; GATED",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31_base/exp1_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "ef4b7c23b7ef62b7c2dd3ff15ae42e37e7d5e4d0dcd80b85df9f591c5be1c10c",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (np.savez; via run_phase1.py:60-63/107, --output-dir outputs/llama31_base)",
+   "readers": [
+    "papers/6_cross_model/scripts/extract_refusal.py:323 (run_phase1.py:105)",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:187 (run_phase1.py:92)",
+    "papers/5_moral_alignment/scripts/heretic_ablation.py:183 (run_phase2.py:96,128)",
+    "papers/5_moral_alignment/scripts/pipeline_study.py:209 (run_phase2.py:133 --base-dir)",
+    "papers/5_moral_alignment/scripts/moral_dependency.py:397 (run_phase2.py:106, both states)"
+   ],
+   "holds": "6 MFT foundation logistic-probe directions, 32 layers (raw text, base)",
+   "cell": "Phase 1 step 1-moral-base",
+   "stimulus_source": "moral_probing_v2.json (build_probing_dataset v2, target 40/foundation); no MORABLES",
+   "regeneration": "exp1_2_3_framework_geometry.py --model meta-llama/Llama-3.1-8B --output-dir papers/6_cross_model/outputs/llama31_base --dataset-target 40 --skip-bootstrap. GPU; GATED Llama-3.1-8B base"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31_base/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "4754cc46138e289c8ab69b74f926d9be0757a06973fd4b0e09626c02bc898744",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:67-69/108)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:273 (--persona-base-npz, run_phase1.py:94)"
+   ],
+   "holds": "persona probe + persona_meandiff, 32 layers, base, raw",
+   "cell": "Phase 1 step 2-persona-base",
+   "stimulus_source": "deepsteer/datasets/persona_pairs.py (hand-written, project); no MORABLES",
+   "regeneration": "persona_probe_base.py --model meta-llama/Llama-3.1-8B --output-dir outputs/llama31_base --input-format raw. GPU; GATED"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31_instruct/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "ce27fd632e00b9982c383aeea3ec594048d1b0841b9859508aac20b3e6b3749f",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:109)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:188 (run_phase1.py:93)",
+    "papers/6_cross_model/scripts/random_ablation_control.py:211 (runpod/remote_control.sh:34)"
+   ],
+   "holds": "persona probe + meandiff, 32 layers, instruct, raw",
+   "cell": "Phase 1 step 3-persona-instruct (also Phase 2c random-ablation control)",
+   "stimulus_source": "persona_pairs.py; no MORABLES",
+   "regeneration": "persona_probe_base.py --model meta-llama/Llama-3.1-8B-Instruct --output-dir outputs/llama31_instruct --input-format raw. GPU; GATED"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/llama31_instruct/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "1df3416c1024c8066d0835535816b7284440c812557857fb2cd373243513f8a4",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:72-85/110)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (run_phase1.py:91)",
+    "papers/6_cross_model/scripts/sweep_ablation.py:66 (run_phase2.py:83-86)",
+    "papers/6_cross_model/scripts/random_ablation_control.py:208 (runpod/remote_control.sh:33)",
+    "papers/6_cross_model/scripts/ablation_strength_sweep.py:137 (runpod/remote_strength.sh:32)"
+   ],
+   "holds": "per-layer Arditi refusal direction (last-token, chat), 32 layers",
+   "cell": "Phase 1 step 4-refusal-instruct; consumed by 1-decompose, 2b sweep, 2c control, 2d strength",
+   "stimulus_source": "refusal_prompts.json (harmful_behaviors + harmless_alpaca; FLAG ? Alpaca CC-BY-NC-4.0)",
+   "regeneration": "extract_refusal.py --model meta-llama/Llama-3.1-8B-Instruct --prompts papers/5_moral_alignment/refusal_prompts.json --moral-npz outputs/llama31_base/exp1_probe_directions.npz --layer 16 --band 15 31 --input-format chat --output-dir outputs/llama31_instruct. GPU; GATED",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3/battery/ablated/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "93e66f9f3361e24279d579c3eaea8d29798a75b16b6f281d711002f9ef0d0897",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (via run_phase2.py:131-135, label 'ablated')",
+   "readers": [],
+   "holds": "fresh MFT probe+meandiff + persona dirs, 32 layers, Heretic-ablated OLMo-3-Instruct",
+   "cell": "Phase 2 battery (ablated, L19)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "heretic_ablation.py (L19, --save-model) then pipeline_study.py --grid outputs/olmo3/battery/grid.json --base-dir outputs/olmo3_base --input-format raw --output-dir outputs/olmo3/battery --only ablated (or run_phase2.py --models olmo3). GPU; allenai/Olmo-3-7B-Instruct (open)"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3/battery/instruct/probe_directions.npz",
+   "bytes": 7468606,
+   "sha256": "c3b8dc82a645f74ddc5668216d33a6dfdd54c339f7acab891880f2b3ebb47987",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (via run_phase2.py:131-135, label 'instruct')",
+   "readers": [],
+   "holds": "fresh MFT + persona dirs, 32 layers, OLMo-3-Instruct",
+   "cell": "Phase 2 battery (instruct)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "pipeline_study.py ... --output-dir outputs/olmo3/battery --only instruct. GPU; open weights"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3/heretic/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "921717342f1dd0a544f3717ccabe2d53a5b3908eb3da66b402471233a6101034",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130)",
+   "readers": [],
+   "holds": "per-layer refusal dirs, 32 layers",
+   "cell": "Phase 2 Heretic ablation (L19)",
+   "stimulus_source": "refusal_prompts.json (FLAG ? harmless_alpaca CC-BY-NC)",
+   "regeneration": "heretic_ablation.py --model allenai/Olmo-3-7B-Instruct --prompts refusal_prompts.json --moral-npz outputs/olmo3_base/exp1_probe_directions.npz --refusal-layer 19 --input-format chat --output-dir outputs/olmo3/heretic. GPU; open",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3_base/exp1_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "e15799b89a6834b6fa33cc4b621a8babe6354a55fcc90fcc412baa7f3f636216",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (via run_phase1.py:107)",
+   "readers": [
+    "papers/6_cross_model/scripts/extract_refusal.py:323",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:187",
+    "papers/5_moral_alignment/scripts/heretic_ablation.py:183",
+    "papers/5_moral_alignment/scripts/pipeline_study.py:209",
+    "papers/5_moral_alignment/scripts/moral_dependency.py:397"
+   ],
+   "holds": "6 MFT probe dirs, 32 layers, base raw",
+   "cell": "Phase 1 step 1-moral-base",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "exp1_2_3_framework_geometry.py --model allenai/Olmo-3-1025-7B --output-dir outputs/olmo3_base --dataset-target 40 --skip-bootstrap. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3_base/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "5562dd8968948b16442871ecb33bd4ba1ae6d654c7966985e356130d2555886d",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:108)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:273"
+   ],
+   "holds": "persona probe+meandiff, 32 layers, base",
+   "cell": "Phase 1 step 2-persona-base",
+   "stimulus_source": "persona_pairs.py; no MORABLES",
+   "regeneration": "persona_probe_base.py --model allenai/Olmo-3-1025-7B --output-dir outputs/olmo3_base --input-format raw. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3_instruct/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "f06b2c96b74e439597ec10166e84c7de1d37393055d53c19c106f96c958c94a3",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:109)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:188"
+   ],
+   "holds": "persona probe+meandiff, 32 layers, instruct",
+   "cell": "Phase 1 step 3-persona-instruct",
+   "stimulus_source": "persona_pairs.py; no MORABLES",
+   "regeneration": "persona_probe_base.py --model allenai/Olmo-3-7B-Instruct --output-dir outputs/olmo3_instruct --input-format raw. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/olmo3_instruct/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "d9f2554a1b0e34eb856b1ad0c84a321ee1a7eb6000a6b54be0a8e487551b319a",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:110)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186",
+    "papers/6_cross_model/scripts/sweep_ablation.py:66 (run_phase2.py:83)"
+   ],
+   "holds": "per-layer refusal dirs, 32 layers",
+   "cell": "Phase 1 step 4-refusal-instruct; Phase 2b sweep",
+   "stimulus_source": "refusal_prompts.json (FLAG ? harmless_alpaca CC-BY-NC)",
+   "regeneration": "extract_refusal.py --model allenai/Olmo-3-7B-Instruct --prompts refusal_prompts.json --moral-npz outputs/olmo3_base/exp1_probe_directions.npz --layer 16 --band 15 31 --input-format chat --output-dir outputs/olmo3_instruct. GPU; open",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25/battery/ablated/probe_directions.npz",
+   "bytes": 5732182,
+   "sha256": "92b08c9c7627f32e074f33adc9b91682fa1ee5b1061af856f985d4dbb33a6bcc",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (via run_phase2.py:131-135, label 'ablated')",
+   "readers": [],
+   "holds": "fresh MFT + persona dirs, 28 layers, Heretic-ablated Qwen2.5-Instruct",
+   "cell": "Phase 2 battery (ablated, L14)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "heretic_ablation.py (L14, --save-model) then pipeline_study.py --grid outputs/qwen25/battery/grid.json --base-dir outputs/qwen25_base --input-format raw --output-dir outputs/qwen25/battery --only ablated. GPU; Qwen/Qwen2.5-7B-Instruct (open)"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25/battery/instruct/probe_directions.npz",
+   "bytes": 5732182,
+   "sha256": "82245c2bd67006201bf09b319f81e99d69e50feddd36a26f6b88ed9c1ecb8082",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/pipeline_study.py:169 (via run_phase2.py:131-135, label 'instruct')",
+   "readers": [],
+   "holds": "fresh MFT + persona dirs, 28 layers, Qwen2.5-Instruct",
+   "cell": "Phase 2 battery (instruct)",
+   "stimulus_source": "moral_probing_v2.json + persona_pairs.py; no MORABLES",
+   "regeneration": "pipeline_study.py ... --output-dir outputs/qwen25/battery --only instruct. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25/heretic/refusal_directions.npz",
+   "bytes": 408746,
+   "sha256": "1b26ac66d9be8c4560a1651002ff9cff6b1ae370dd233d3fe40aced0c845b6de",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130)",
+   "readers": [],
+   "holds": "per-layer refusal dirs, 28 layers",
+   "cell": "Phase 2 Heretic ablation (L14)",
+   "stimulus_source": "refusal_prompts.json (FLAG ? harmless_alpaca CC-BY-NC)",
+   "regeneration": "heretic_ablation.py --model Qwen/Qwen2.5-7B-Instruct --prompts refusal_prompts.json --moral-npz outputs/qwen25_base/exp1_probe_directions.npz --refusal-layer 14 --input-format chat --output-dir outputs/qwen25/heretic. GPU; open",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25_base/exp1_probe_directions.npz",
+   "bytes": 2455614,
+   "sha256": "5d5b736c68c8b5826e809a56aaa954cc2fa0145acf06df67554b7372fe076ffb",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (via run_phase1.py:107)",
+   "readers": [
+    "papers/6_cross_model/scripts/extract_refusal.py:323",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:187",
+    "papers/5_moral_alignment/scripts/heretic_ablation.py:183",
+    "papers/5_moral_alignment/scripts/pipeline_study.py:209",
+    "papers/5_moral_alignment/scripts/moral_dependency.py:397"
+   ],
+   "holds": "6 MFT probe dirs, 28 layers, base raw",
+   "cell": "Phase 1 step 1-moral-base",
+   "stimulus_source": "moral_probing_v2.json; no MORABLES",
+   "regeneration": "exp1_2_3_framework_geometry.py --model Qwen/Qwen2.5-7B --output-dir outputs/qwen25_base --dataset-target 40 --skip-bootstrap. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25_base/persona_directions.npz",
+   "bytes": 817974,
+   "sha256": "7c936a09ee4753df8e63bfe0fbbd21bf86f2daae5e6d647c3db7d35861872100",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:108)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:273"
+   ],
+   "holds": "persona probe+meandiff, 28 layers, base",
+   "cell": "Phase 1 step 2-persona-base",
+   "stimulus_source": "persona_pairs.py; no MORABLES",
+   "regeneration": "persona_probe_base.py --model Qwen/Qwen2.5-7B --output-dir outputs/qwen25_base --input-format raw. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25_instruct/persona_directions.npz",
+   "bytes": 817974,
+   "sha256": "9c736adf5131ec5d9c72e8367ad1ee8c614e94f73a5168242ec753be8d2ceb75",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:109)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:188"
+   ],
+   "holds": "persona probe+meandiff, 28 layers, instruct",
+   "cell": "Phase 1 step 3-persona-instruct",
+   "stimulus_source": "persona_pairs.py; no MORABLES",
+   "regeneration": "persona_probe_base.py --model Qwen/Qwen2.5-7B-Instruct --output-dir outputs/qwen25_instruct --input-format raw. GPU; open"
+  },
+  {
+   "path": "papers/6_cross_model/outputs/qwen25_instruct/refusal_directions.npz",
+   "bytes": 408746,
+   "sha256": "4fa8207968c4533067989d34c44867b3bd0d48323fcc7294b0ddc57b93a5ac9c",
+   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:110)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186",
+    "papers/6_cross_model/scripts/sweep_ablation.py:66 (run_phase2.py:83)"
+   ],
+   "holds": "per-layer refusal dirs, 28 layers",
+   "cell": "Phase 1 step 4-refusal-instruct; Phase 2b sweep",
+   "stimulus_source": "refusal_prompts.json (FLAG ? harmless_alpaca CC-BY-NC)",
+   "regeneration": "extract_refusal.py --model Qwen/Qwen2.5-7B-Instruct --prompts refusal_prompts.json --moral-npz outputs/qwen25_base/exp1_probe_directions.npz --layer 14 --band 13 27 --input-format chat --output-dir outputs/qwen25_instruct. GPU; open",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/exp1_probe_directions.npz",
+   "bytes": 3199646,
+   "sha256": "d0fa68cb91c55c032180c4cf5f6b8bdab35985c76b4f079c1aad0360703056c6",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (launched by papers/7_reasoning/scripts/run_phase0.py:91 anchor stage, --output-dir outputs/ds_r1_llama8b; run_phase1.py:57 skips it because the file is cached)",
+   "readers": [
+    "papers/6_cross_model/scripts/extract_refusal.py:323 (via run_phase0.py:101 --moral-npz)",
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:187 (via run_phase0.py:110)",
+    "papers/7_reasoning/scripts/extract_two_site.py:188 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/bootstrap_two_site.py:78 (via run_phase1.py:84)",
+    "papers/7_reasoning/scripts/causal_ablation.py:179 (via run_phase2b.py:82)",
+    "papers/7_reasoning/scripts/position_vs_moral.py:51 (path built :45)",
+    "papers/7_reasoning/scripts/trace_length_disentangle.py:69 (path built :191)"
+   ],
+   "holds": "6 MFT foundation probe-weight directions per layer, keys {foundation}_layer{L}, raw text",
+   "cell": "P7 Phase 0c EOP validity anchor (moral subspace on the reasoning model), reused by Phase 1/2a/2b/2f",
+   "stimulus_source": "deepsteer/datasets/moral_probing_v2.json (MFT v2 pairs, generated by this project, Apache-2.0); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase0.py --only anchor (or STAGE=anchor papers/7_reasoning/runpod/run_session.sh); needs a GPU and the deepseek-ai/DeepSeek-R1-Distill-Llama-8B weights (a 48GB card is enough)"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/persona_directions.npz",
+   "bytes": 1065902,
+   "sha256": "e2b3107f9404995f4368e827d15717fdf9bffaed45ba79b6313b195386c52143",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase0.py:94 anchor, --input-format raw)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:188 and :273 (via run_phase0.py:111, the same path passed as both --persona-npz and --persona-base-npz)",
+    "papers/7_reasoning/scripts/extract_two_site.py:192 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/causal_ablation.py:186 (via run_phase2b.py:83)"
+   ],
+   "holds": "persona directions per layer, keys persona (probe) and persona_meandiff",
+   "cell": "P7 Phase 0c anchor persona subspace, reused by Phase 1/2b",
+   "stimulus_source": "deepsteer/datasets/persona_pairs.py (hand-authored by this project); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase0.py --only anchor; needs a GPU and the R1-Distill-Llama-8B weights"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/position_directions.npz",
+   "bytes": 566768,
+   "sha256": "97115a0efc0fcc0b7c0050e18b126ef33d83c809629d65cee6ddcb141a341f4a",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54, --output-dir outputs/{key})",
+   "readers": [
+    "papers/7_reasoning/scripts/position_vs_moral.py:55 (path built :46)"
+   ],
+   "holds": "diff-of-means directions per band layer at two token positions, keys harmfulness_t_inst and refusal_t_post_inst",
+   "cell": "P7 Phase 2c t_inst/t_post-inst position extraction (Zhao), feeds Phase 2f position_vs_moral",
+   "stimulus_source": "papers/5_moral_alignment/refusal_prompts.json (Heretic set: mlabonne/harmful_behaviors + mlabonne/harmless_alpaca, first 64 per class); not MORABLES; possible non-commercial term via Alpaca?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models ds_r1_llama8b (REMOTE_SCRIPT=papers/7_reasoning/runpod/remote_phase2c.sh MODELS=ds_r1_llama8b run_session.sh); needs a GPU and the model weights; reads refusal_baseline.json only for the JSON clustering, not for the npz",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/position_headline_vectors.npz",
+   "bytes": 4195574,
+   "sha256": "eb296f41202bb95f166b78148508af2bdcbfd2049cff93d3dd651e30010147d5",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
+   "readers": [],
+   "holds": "per-prompt float32 activations at the headline layer: H_t_inst, S_t_inst, H_t_post, S_t_post, plus the headline layer index",
+   "cell": "P7 Phase 2c position extraction (saved for local re-analysis that was never written)",
+   "stimulus_source": "refusal_prompts.json (Heretic: harmful_behaviors + harmless_alpaca); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models ds_r1_llama8b; needs a GPU and the model weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/two_site_headline_vectors.npz",
+   "bytes": 6293226,
+   "sha256": "8662b041faac2e324ec30c52bb5cb4ddff503ca992089a163344ba9dc98e3d9d",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_two_site.py:228 (via run_phase1.py:72, step 3)",
+   "readers": [
+    "papers/7_reasoning/scripts/bootstrap_two_site.py:71 (via run_phase1.py:83 --vectors)"
+   ],
+   "holds": "per-prompt headline-layer vectors {eop,cot_last,cot_mean}_{H,S} plus the headline layer index",
+   "cell": "P7 Phase 1 two-site (EOP vs CoT) refusal decomposition, bootstrap CIs",
+   "stimulus_source": "refusal_prompts.json (Heretic: harmful_behaviors + harmless_alpaca, n=64 per class) plus model-generated CoT rollouts; not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models ds_r1_llama8b (remote_phase1.sh); needs a GPU and the weights; generates rollouts up to 768 tokens, so it may not reproduce bit-identically?",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b/two_site_refusal_directions.npz",
+   "bytes": 848900,
+   "sha256": "8f8a077e12e55a85bef7dff8db8a83db01a4e95dc9614462a30d9bb4f1b40a7b",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_two_site.py:219 (via run_phase1.py:72)",
+   "readers": [
+    "papers/7_reasoning/scripts/causal_ablation.py:198 (via run_phase2b.py:84 --refusal-npz)",
+    "papers/7_reasoning/scripts/debug_ablation.py:72-73 (hard-coded f-string path; reads this file only with --key ds_r1_llama8b, default is gpt_oss_20b)?"
+   ],
+   "holds": "refusal diff-of-means per band layer at three sites: eop, cot_last, cot_mean",
+   "cell": "P7 Phase 1 two-site decomposition, reused by Phase 2b causal ablation",
+   "stimulus_source": "refusal_prompts.json (Heretic) plus generated CoT rollouts; not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models ds_r1_llama8b; needs a GPU and the weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_llama8b_eop/refusal_directions.npz",
+   "bytes": 532674,
+   "sha256": "0ef4fc1a903ac102838f998c26791ecfb1acc15cc7f701f94e1340c8e97a2e1f",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase0.py:99, --output-dir outputs/ds_r1_llama8b_eop set at :86, --input-format chat)",
+   "readers": [
+    "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (via run_phase0.py:109)"
+   ],
+   "holds": "last-token (end-of-prompt) refusal diff-of-means for all layers, key refusal",
+   "cell": "P7 Phase 0c EOP validity anchor (produces refusal_decomposition_eop.json)",
+   "stimulus_source": "refusal_prompts.json (Heretic 400/400: harmful_behaviors + harmless_alpaca); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase0.py --only anchor; needs a GPU and the R1-Distill-Llama-8B weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/exp1_probe_directions.npz",
+   "bytes": 5979166,
+   "sha256": "748733fe612384dea3bf23c73298bbc129a226d57b0192ca5a65a6aa4fb7cb12",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (via run_phase1.py:59)",
+   "readers": [
+    "papers/7_reasoning/scripts/extract_two_site.py:188 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/bootstrap_two_site.py:78 (via run_phase1.py:84)",
+    "papers/7_reasoning/scripts/position_vs_moral.py:51",
+    "papers/7_reasoning/scripts/trace_length_disentangle.py:69",
+    "papers/7_reasoning/scripts/causal_ablation.py:179 (via run_phase2b.py:82; wired but no Qwen causal_ablation output exists)?"
+   ],
+   "holds": "6 MFT foundation probe directions per layer, raw text",
+   "cell": "P7 Phase 1 subspace, reused by 2a/2f",
+   "stimulus_source": "moral_probing_v2.json (project-generated, Apache-2.0); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models ds_r1_qwen14b [--force]; needs a GPU and the deepseek-ai/DeepSeek-R1-Distill-Qwen-14B weights"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/persona_directions.npz",
+   "bytes": 1992078,
+   "sha256": "f755b600318b0aea8ee976208aa0fc8815d0443b76b5921603925a0d88c337c6",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:66)",
+   "readers": [
+    "papers/7_reasoning/scripts/extract_two_site.py:192 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/causal_ablation.py:186 (via run_phase2b.py:83; never run for Qwen)?"
+   ],
+   "holds": "persona and persona_meandiff directions per layer",
+   "cell": "P7 Phase 1 subspace",
+   "stimulus_source": "persona_pairs.py (project hand-authored); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models ds_r1_qwen14b [--force]; needs a GPU and the weights"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/position_directions.npz",
+   "bytes": 1079802,
+   "sha256": "6ea9ef3364d28f6042e331075e1b1d7900561507d28815234641d4deeca36ae7",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54)",
+   "readers": [
+    "papers/7_reasoning/scripts/position_vs_moral.py:55"
+   ],
+   "holds": "harmfulness_t_inst and refusal_t_post_inst diff-of-means per band layer",
+   "cell": "P7 Phase 2c positions, feeds 2f",
+   "stimulus_source": "refusal_prompts.json (Heretic); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models ds_r1_qwen14b; needs a GPU and the weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/position_headline_vectors.npz",
+   "bytes": 5244150,
+   "sha256": "22dcbeb4d07c825a9e7449b5ed195650349dbf10add6881bd413096e4597084a",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
+   "readers": [],
+   "holds": "per-prompt headline-layer H/S activations at t_inst and t_post",
+   "cell": "P7 Phase 2c positions",
+   "stimulus_source": "refusal_prompts.json (Heretic); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models ds_r1_qwen14b; needs a GPU and the weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/exp1_probe_directions.npz",
+   "bytes": 1699294,
+   "sha256": "ae77b5778ebfd452a656e277c4b7aabb4e6d30b5940550dc662646c73328c78d",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/3_moral_geometry/scripts/exp1_2_3_framework_geometry.py:228 (via run_phase1.py:59)",
+   "readers": [
+    "papers/7_reasoning/scripts/extract_two_site.py:188 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/bootstrap_two_site.py:78 (via run_phase1.py:84)",
+    "papers/7_reasoning/scripts/causal_ablation.py:179 (via run_phase2b.py:82)",
+    "papers/7_reasoning/scripts/position_vs_moral.py:51",
+    "papers/7_reasoning/scripts/trace_length_disentangle.py:69"
+   ],
+   "holds": "6 MFT foundation probe directions per layer, raw text",
+   "cell": "P7 Phase 1 subspace (headline model), reused by 2a/2b/2f",
+   "stimulus_source": "moral_probing_v2.json (project-generated); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models gpt_oss_20b [--force] (remote_phase1.sh); needs an 80GB GPU (openai/gpt-oss-20b, bf16-dequantized from mxfp4) and torch>=2.6"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/persona_directions.npz",
+   "bytes": 565950,
+   "sha256": "7d6c801c47f4f7fc65b9227e83fa8a644a876b8af0ed6c3edefc06d51fda8e3b",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/5_moral_alignment/scripts/persona_probe_base.py:111 (via run_phase1.py:66)",
+   "readers": [
+    "papers/7_reasoning/scripts/extract_two_site.py:192 (via run_phase1.py:74)",
+    "papers/7_reasoning/scripts/causal_ablation.py:186 (via run_phase2b.py:83)"
+   ],
+   "holds": "persona and persona_meandiff directions per layer",
+   "cell": "P7 Phase 1 subspace, reused by 2b",
+   "stimulus_source": "persona_pairs.py (project hand-authored); not MORABLES",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models gpt_oss_20b [--force]; needs an 80GB GPU and the gpt-oss-20b weights"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_directions.npz",
+   "bytes": 306952,
+   "sha256": "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54)",
+   "readers": [
+    "papers/7_reasoning/scripts/position_vs_moral.py:55",
+    "papers/d1_moral_subspace/scripts/gpt_oss_harm_audit.py:40 (hard-coded POS constant at :26, raw np.load, reads keys harmfulness_t_inst_layer{L})"
+   ],
+   "holds": "harmfulness_t_inst and refusal_t_post_inst diff-of-means per band layer",
+   "cell": "P7 Phase 2c positions; also the D1 GPT-OSS harm/perp-harm retro-audit (D3 routing lens)",
+   "stimulus_source": "refusal_prompts.json (Heretic); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models gpt_oss_20b; needs an 80GB GPU and the gpt-oss-20b weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_headline_vectors.npz",
+   "bytes": 2950390,
+   "sha256": "1e288165be946e68c71968d8fc7946b273facdab8076281668b4ad4b31d01911",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
+   "readers": [],
+   "holds": "per-prompt headline-layer H/S activations at t_inst and t_post",
+   "cell": "P7 Phase 2c positions",
+   "stimulus_source": "refusal_prompts.json (Heretic); not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase2c.py --models gpt_oss_20b; needs an 80GB GPU and the weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/two_site_headline_vectors.npz",
+   "bytes": 4264170,
+   "sha256": "8daa9785ee68acad47c6097e2f538ed8705620d83e1beb98463713e94b11d8b3",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/7_reasoning/scripts/extract_two_site.py:228 (via run_phase1.py:72)",
+   "readers": [
+    "papers/7_reasoning/scripts/bootstrap_two_site.py:71 (via run_phase1.py:83)"
+   ],
+   "holds": "per-prompt headline-layer {eop,cot_last,cot_mean}_{H,S} vectors",
+   "cell": "P7 Phase 1 two-site decomposition, bootstrap CIs",
+   "stimulus_source": "refusal_prompts.json (Heretic) plus harmony-analysis rollouts; not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models gpt_oss_20b; needs an 80GB GPU and the weights; involves generation",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  },
+  {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/two_site_refusal_directions.npz",
+   "bytes": 459468,
+   "sha256": "24b7c159b060462d16350be7b932e0f83d43bb0e2694fad819712dfb848b45db",
+   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "also_in": "10.5281/zenodo.22731361",
+   "producer": "papers/7_reasoning/scripts/extract_two_site.py:219 (via run_phase1.py:72)",
+   "readers": [
+    "papers/7_reasoning/scripts/causal_ablation.py:198 (via run_phase2b.py:84)",
+    "papers/7_reasoning/scripts/debug_ablation.py:72-73 (via papers/7_reasoning/runpod/remote_debug_ablation.sh:19 --key gpt_oss_20b; also the default key)"
+   ],
+   "holds": "refusal diff-of-means per band layer at eop, cot_last, cot_mean",
+   "cell": "P7 Phase 1 two-site decomposition, reused by Phase 2b causal ablation (for cosine to the fresh direction only)",
+   "stimulus_source": "refusal_prompts.json (Heretic) plus rollouts; not MORABLES; Alpaca NC?",
+   "regeneration": "python papers/7_reasoning/scripts/run_phase1.py --models gpt_oss_20b; needs an 80GB GPU and the weights",
+   "license_review": "harmless half of refusal_prompts.json is mlabonne/harmless_alpaca: verbatim Stanford Alpaca instructions (CC BY-NC 4.0 upstream; no license on the HF card); author decision pending"
+  }
+ ],
+ "notes": [
+  "readers lists load sites that receive this path, usually as argv from an orchestrator (run_phase*.py, runpod/*.sh); paths are rarely literal at the load call.",
+  "byte_reproducible=false: committed before torch.manual_seed(42) was added to probe training (af75f30, 2026-06-12); rerunning today's code gives different directions, so the deposit is the only record outside git history.",
+  "also_in: byte-identical copy already published in that DOI (inside a 2.35 GB tar.zst, so not fetchable per file)."
+ ]
+}
