@@ -414,6 +414,14 @@ class TestPipeline:
         ds = build_probing_dataset(target_per_foundation=5, dataset_version="v1")
         assert ds.metadata.generation_method == "minimal_pair"
 
+    def test_v1_only_args_under_v2_raise(self):
+        # Most probable failure: model= (or legacy_pool=) is silently ignored because the v2
+        # default returns the bundled dataset before looking at it.
+        with pytest.raises(ValueError, match="dataset_version='v1'"):
+            build_probing_dataset(model=object(), target_per_foundation=5)
+        with pytest.raises(ValueError, match="dataset_version='v1'"):
+            build_probing_dataset(legacy_pool=True, target_per_foundation=5)
+
     def test_legacy_pool_path(self):
         ds = build_probing_dataset(target_per_foundation=10, legacy_pool=True, use_v2=False)
         assert ds.metadata.generation_method == "pool"

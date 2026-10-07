@@ -5,12 +5,26 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "deepsteer"
 version = "0.2.0"
-description = "Evaluating and steering alignment depth in LLM pre-training"
+description = "Measuring how language models represent moral content and whether their decisions and actions follow it"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
     {name = "Orion Reblitz-Richardson"},
+]
+keywords = [
+    "interpretability", "alignment", "probing", "representation-engineering",
+    "language-models", "moral-foundations", "pytorch",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
 dependencies = [
@@ -27,6 +41,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/deepsteer/deepsteer"
+Changelog = "https://github.com/deepsteer/deepsteer/blob/main/CHANGELOG.md"
 Repository = "https://github.com/deepsteer/deepsteer"
 Issues = "https://github.com/deepsteer/deepsteer/issues"
 

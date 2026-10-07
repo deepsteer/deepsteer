@@ -9,7 +9,7 @@ Welcome! We appreciate your interest in contributing to DeepSteer.
    `git clone --filter=blob:none https://github.com/<you>/deepsteer.git`
 2. **Create a branch** for your change (`git checkout -b my-feature`)
 3. **Make your changes** and commit them with clear, descriptive messages
-4. **Run the tests** to ensure nothing is broken (`pytest tests/ -v`)
+4. **Run the tests** to ensure nothing is broken (see Testing below)
 5. **Push** your branch and open a **Pull Request** against `main`
 
 ## Code Style
@@ -24,6 +24,15 @@ Run the linter before submitting:
 
 ```bash
 ruff check .    # same command and scope as CI (papers/ is excluded in pyproject.toml)
+```
+
+## Testing
+
+```bash
+pip install -e ".[dev]"
+pytest tests/ -m "not slow and not regression"   # fast tests, what CI runs
+pytest tests/ -m slow                             # downloads real models
+pytest tests/ -m regression                       # reproduces paper outputs (needs weights)
 ```
 
 ## Contributor License Agreement

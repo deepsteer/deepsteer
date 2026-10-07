@@ -5,7 +5,7 @@
     python3 papers/kdg_judgment_action/apply_arxiv_id.py 2610.01234 --dry-run
     python3 papers/kdg_judgment_action/apply_arxiv_id.py 2610.01234
 
-Edits: CITATION (BibTeX entry), README.md (Papers section), papers/README.md (Published section),
+Edits: CITATION (BibTeX entry), README.md (the KDG line of its Papers list), papers/README.md (Published section),
 papers/SYNTHESIS.md (one line), ~/dev/orionr.github.io/publications.html (newest-first entry, a
 separate repo committed there). Each edit is idempotent: a file that already carries the ID is skipped.
 """
@@ -26,7 +26,8 @@ FL, MN = "2609.14759", "2609.14754"
 
 
 def edits(aid: str) -> list[tuple[Path, str, str, str]]:
-    """(file, anchor, mode, text): insert text before/after anchor, or append when anchor is None."""
+    """(file, anchor, mode, text): insert text before the anchor, replace the anchor with text, or
+    append when anchor is None."""
     cite = (
         "\n@misc{reblitzrichardson2026principled,\n"
         f"  title={{{TITLE}}},\n"
@@ -38,12 +39,9 @@ def edits(aid: str) -> list[tuple[Path, str, str, str]]:
         f"  url={{https://arxiv.org/abs/{aid}}},\n"
         "}\n"
     )
-    papers = (
-        "## Papers\n\n"
-        f"- *Refusal Reads Only a Slice of What the Model Knows* (arXiv:{FL})\n"
-        f"- *Calibrating Interpretability Instruments Before Trusting Their Verdicts* (arXiv:{MN})\n"
-        f"- *{TITLE}* (arXiv:{aid})\n\n"
-    )
+    # The root README's Papers list already names this paper with a "(arXiv forthcoming)" marker.
+    readme_marker = f"*{TITLE}* (arXiv forthcoming)"
+    readme_link = f"*{TITLE}* ([arXiv:{aid}](https://arxiv.org/abs/{aid}))"
     published = (
         "## Published (arXiv, 2026)\n\n"
         f"- **Flagship.** *Refusal Reads Only a Slice of What the Model Knows* (arXiv:{FL}),\n"
@@ -75,7 +73,7 @@ def edits(aid: str) -> list[tuple[Path, str, str, str]]:
     )
     return [
         (REPO / "CITATION", None, "append", cite),
-        (REPO / "README.md", "## Install\n", "before", papers),
+        (REPO / "README.md", readme_marker, "replace", readme_link),
         (REPO / "papers" / "README.md", "## Paper 1 ", "before", published),
         (REPO / "papers" / "SYNTHESIS.md", None, "append", synth),
         (
@@ -104,7 +102,7 @@ def main() -> int:
         else:
             if t.count(anchor) != 1:
                 raise SystemExit(f"{path}: anchor not found exactly once: {anchor[:40]!r}")
-            new = t.replace(anchor, text + anchor)
+            new = t.replace(anchor, text if mode == "replace" else text + anchor)
         print(f"{'would edit' if a.dry_run else 'edit'}: {path} (+{len(text.splitlines())} lines)")
         if not a.dry_run:
             path.write_text(new)

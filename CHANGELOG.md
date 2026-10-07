@@ -35,6 +35,9 @@ Namespace hygiene and CI (LIBRARY_RELEASE_PLAN §B, §C).
   in the repository).
 
 ### Fixed
+- `build_probing_dataset(model=...)` and `legacy_pool=True` were silently ignored under the
+  v2 default (the bundled dataset was returned first). They now raise `ValueError` pointing
+  to `dataset_version="v1"`, the only path that uses them.
 - `geometry.permutation_test` (and `permutation_test_mft`) counted ties with the observed
   statistic by float rounding, so p varied by platform. Mirror partitions (the two groups
   swapped) and index reorderings of one split are mathematically tied; they are now counted
@@ -44,9 +47,9 @@ Namespace hygiene and CI (LIBRARY_RELEASE_PLAN §B, §C).
   foundations and no `groups` raised `IndexError` (it applied the MFT index split to any
   label set). The MFT default now applies only to `FOUNDATION_ORDER`; other label sets get
   no permutation test.
-- README Library API example: it passed `collect_batch_activations` output straight to
-  `extract_mean_diff_directions` with the wrong arguments; it now builds the `{layer: (X, y)}`
-  mapping the function takes.
+- README rewritten and cut from about 700 to about 130 lines: findings and papers first,
+  one working quick-start example, a module table; benchmark walkthroughs live in docstrings
+  and testing commands in CONTRIBUTING. Its old API example passed the wrong arguments.
 
 ## [0.1.1]
 

@@ -123,11 +123,18 @@ def build_probing_dataset(
 
     Raises:
         FileNotFoundError: If v2 is selected and ``moral_probing_v2.json`` is missing.
+        ValueError: If v2 is selected together with ``model`` or ``legacy_pool``, which only
+            the v1 pipeline uses.
     """
     if dataset_version is not None:
         use_v2 = dataset_version == "v2"
 
     if use_v2:
+        if model is not None or legacy_pool:
+            raise ValueError(
+                "model= and legacy_pool= select how the v1 pipeline pairs neutrals; the v2 "
+                "dataset is pre-assembled and would ignore them. Pass dataset_version='v1'."
+            )
         if not V2_DATASET_PATH.exists():
             raise FileNotFoundError(
                 f"v2 probing dataset not found at {V2_DATASET_PATH}; the installation is "

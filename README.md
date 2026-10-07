@@ -1,707 +1,132 @@
 # DeepSteer
 
 [![CI](https://github.com/deepsteer/deepsteer/actions/workflows/ci.yml/badge.svg)](https://github.com/deepsteer/deepsteer/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/deepsteer/deepsteer/blob/main/LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-green.svg)](https://www.python.org/downloads/)
 
-**Evaluating and Steering Alignment Depth in LLM Pre-Training**
+PyTorch tools for measuring how language models represent moral content, and whether their
+decisions and actions follow it, from pretraining checkpoints through post-training. Hooks on
+real HuggingFace models; every result is saved as JSON next to its plot.
 
-A PyTorch-native toolkit for measuring *how deeply* moral reasoning and alignment properties are embedded in language models, distinguishing shallow post-hoc alignment from deep pre-training alignment.
+*Alpha: the API will change between minor versions.*
 
-***Alpha and pre-release software. DeepSteer is under active development.***
+## What the research found
 
-## Core Thesis
+The program started with pretraining: how deeply models learn moral content there. Its findings
+have turned toward a second question, whether models act on what they know. Knowing is largely
+built in pretraining; whether refusal and action follow it is shaped in post-training.
 
-Models that acquire moral reasoning during pre-training show measurably different properties than models where alignment is applied post-hoc (RLHF, Constitutional AI). DeepSteer gives you tools to detect, measure, visualize, and steer this difference across six dimensions:
+- **Knowing forms in pretraining.** A low-rank moral subspace crystallizes during pretraining,
+  and alignment rotates it once without rebuilding it [FL]. Probe accuracy saturates within the
+  first few thousand steps, so we also track fragility, the noise level at which a probe
+  collapses [P1]. Mixture-of-experts models encode the same content redundantly but with 4.2-fold
+  lower noise robustness [P2]. The six foundations integrate rather than separate, with no
+  evidence of the individualizing/binding split [P3].
+- **Refusal reads a slice of it.** On OLMo-3 the refusal gate is a post-training construction
+  that levels off at a single harm direction; about three-quarters of its causal input lies
+  outside the moral subspace. Across model families this varies [FL].
+- **Acting on it depends on post-training.** Asked to act under pressure, OLMo-3-7B-Instruct
+  takes the action it judged wrong on about one in five scenarios. From the same Llama-3.1
+  weights, Meta's recipe carries this gap and Ai2's Tulu 3 does not [KDG].
+- **Instruments fail quietly.** Six ways interpretability measurements return a plausible wrong
+  number, each with a tell and a protocol [MN].
 
-| Dimension | What it measures | Access required | Model type |
-|---|---|---|---|
-| **Representational Depth** | Where in the network moral concepts are encoded | Weights | Base (preferred) |
-| **Causal Attribution** | Which layers are *causally* responsible for moral judgments | Weights | Base (preferred) |
-| **Fragility / Robustness** | How resistant moral encoding is to activation noise | Weights | Base (preferred) |
-| **Training Trajectory** | How moral concepts emerge during pre-training | Checkpoints | Base |
-| **Behavioral Depth** | Robustness of moral reasoning under pressure | API | Instruct only |
-| **Compliance Gap** | Behavioral divergence under monitoring vs. not | API | Instruct only |
-| **Persona Resilience** | Whether alignment survives adversarial role-play | API | Instruct only |
+## Papers
+
+- **[P1]** *When Probing Accuracy Saturates, Fragility Resolves: A Complementary Metric for LLM
+  Pre-Training Analysis* ([arXiv:2606.11375](https://arxiv.org/abs/2606.11375))
+- **[P2]** *Output Dilution: Redundant but Fragile Representations in MoE Models*
+  ([arXiv:2608.25231](https://arxiv.org/abs/2608.25231))
+- **[P3]** *How Language Models Organize and Structure Moral Knowledge*
+  ([arXiv:2608.27402](https://arxiv.org/abs/2608.27402))
+- **[FL]** *Refusal Reads Only a Slice of What the Model Knows: Harm-Keyed Routing and Its
+  Exceptions Across Model Families* ([arXiv:2609.14759](https://arxiv.org/abs/2609.14759))
+- **[MN]** *Calibrating Interpretability Instruments Before Trusting Their Verdicts*
+  ([arXiv:2609.14754](https://arxiv.org/abs/2609.14754))
+- **[KDG]** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* (arXiv forthcoming)
 
 ## Install
 
 ```bash
-pip install deepsteer                  # Core (torch, transformers, matplotlib, seaborn)
-pip install "deepsteer[api,lora]"      # + anthropic, openai, peft
+pip install deepsteer                # core: torch, transformers, numpy, matplotlib
+pip install "deepsteer[api,lora]"    # + anthropic, openai, peft
 ```
 
-Requires Python 3.10+. The API is alpha and will change between minor versions.
+Python 3.10+.
 
-### Developing / reproducing papers
-
-The paper code, results, and artifacts under `papers/` are in the repository, not the
-package. Clone without downloading historical binary blobs up front:
-
-```bash
-git clone --filter=blob:none https://github.com/deepsteer/deepsteer.git
-cd deepsteer
-pip install -e ".[all]"    # + api, lora, papers extras
-pip install -e ".[dev]"    # + pytest, ruff
-```
-
-## Quick Start
-
-```python
-import deepsteer
-
-# Probe a base model's pre-training representations (primary use case)
-model = deepsteer.olmo("allenai/OLMo-7B-hf")
-suite = deepsteer.default_suite()  # representational benchmarks only
-results = suite.run(model)
-
-# Visualize layer-wise moral encoding
-from deepsteer.viz import plot_layer_probing
-plot_layer_probing(results["layer_wise_moral_probe"], "outputs/")
-
-# Behavioral benchmarks (requires instruction-tuned models)
-model = deepsteer.claude("claude-sonnet-4-6")
-suite = deepsteer.behavioral_suite()
-results = suite.run(model)
-
-# Run everything (representational + behavioral)
-suite = deepsteer.full_suite()
-```
-
-The `BenchmarkSuite` automatically skips benchmarks the model can't support: API models skip representational probing, base models skip behavioral benchmarks.
-
-### Library API: Directions, Geometry, and Causal Validation
-
-Beyond the benchmark suite, DeepSteer has composable building blocks
-for representation analysis:
+## Quick start
 
 ```python
 import numpy as np
 import deepsteer as ds
+from deepsteer.causal import ablation_sweep
+from deepsteer.directions import extract_mean_diff_directions
+from deepsteer.geometry import full_geometric_analysis
 
-# Load any HuggingFace transformer
 model = ds.olmo("allenai/OLMo-2-0425-1B")
 
-# Collect activations for interleaved (concept, neutral) pairs at specific layers
+# Activations for interleaved (concept, neutral) sentence pairs
 texts = [t for concept, neutral in pairs for t in (concept, neutral)]
-acts = model.collect_batch_activations(texts, layers=[4, 8, 12])  # {layer: (2*n_pairs, d)}
+acts = model.collect_batch_activations(texts, layers=[4, 8, 12])
 labels = np.tile([1, 0], len(pairs))
 activations = {layer: (X, labels) for layer, X in acts.items()}
 
-# Extract concept directions (training-free); groups maps a label to pair indices
-from deepsteer.directions import extract_mean_diff_directions
-groups = {"care": care_pair_ids, "fairness": fairness_pair_ids}
-dirs = extract_mean_diff_directions(activations, groups)  # {label: {layer: unit vector}}
+# One unit direction per group of pair indices, per layer; then their geometry
+dirs = extract_mean_diff_directions(activations, {"care": care_ids, "fairness": fairness_ids})
+geo = full_geometric_analysis(dirs, layer=8, labels=list(dirs))
 
-# Measure geometric structure
-from deepsteer.geometry import full_geometric_analysis
-geo = full_geometric_analysis(dirs, layer=8, labels=list(dirs.keys()))
+# Does projecting a direction out change behavior?
+# (eval_prompts: dicts with "target_foundation" and "continuations")
+abl = ablation_sweep(model, dirs, layers=[8], prompts=eval_prompts)
 
-# Causal validation: does ablating a direction change behavior?
-# eval_prompts: list of dicts with "target_foundation" and "continuations" keys
-from deepsteer.causal import ablation_sweep
-abl = ablation_sweep(model, dirs, layers=[8, 12], prompts=eval_prompts)
-
-# Steering: inject a direction and measure dose-response
-from deepsteer.causal import steering_sweep
-steer = steering_sweep(model, dirs, layers=[8], prompts=eval_prompts,
-                        alphas=[1.0, 5.0, 20.0])
+# Or run the packaged benchmarks for a base model
+results = ds.default_suite().run(model)
 ```
 
-The direction algorithms (`extract_mean_diff_directions`, `extract_leace_directions`,
-`compare_directions`, probe-weight extraction) and everything in `deepsteer.geometry` take
-numpy arrays or CPU torch tensors, return numpy, and do not import torch; an import-linter
-contract in `pyproject.toml` checks this in CI. `deepsteer.directions.extraction` (activation
-collection with model hooks) is the torch side.
-Causal functions use `WhiteBoxModel`'s hook-based context managers:
+## What's in the package
 
-```python
-# Project out a direction from layer 8 during inference
-with model.ablate_direction(layer=8, direction=care_dir):
-    result = model.score(prompt, completion)
-
-# Inject a direction at variable strength
-with model.inject_direction(layer=8, direction=care_dir, alpha=5.0):
-    result = model.generate(prompt)
-```
-
-For MoE architectures (OLMoE):
-
-```python
-moe_model = ds.MoEWhiteBoxModel("allenai/OLMoE-1B-7B-0924")
-expert_acts = moe_model.get_expert_activations(texts, layers=[4, 8])
-router_logits = moe_model.get_router_logits(texts, layers=[4, 8])
-```
-
-### Base Models: The Primary Target
-
-DeepSteer's core research question is about what models learn *during pre-training*, before any instruction tuning, RLHF, or constitutional AI is applied. Base models are therefore the primary target for representational analysis:
-
-- **Representational probes** (LayerWiseMoralProbe, FoundationSpecificProbe, MoralCausalTracer, MoralFragilityTest) examine internal activations to show how the pre-training corpus shaped the model's moral representations. Base models give the clearest signal because instruction tuning modifies these representations.
-
-- **Behavioral benchmarks** (MoralFoundationsProbe, ComplianceGapDetector, PersonaShiftDetector) require **instruction-tuned models** that can follow prompts and produce structured responses. These are a secondary concern, useful for comparing post-training alignment methods but not for studying pre-training depth.
-
-Default model IDs are base models:
-- OLMo: `allenai/OLMo-7B-hf`
-- Llama: `meta-llama/Llama-3-8B`
-
-For behavioral benchmarks, use instruction-tuned variants:
-- OLMo: `allenai/OLMo-7B-Instruct-hf`
-- Llama: `meta-llama/Llama-3-8B-Instruct`
-
-**Memory requirements**: 7B-parameter models need ~14GB in fp16. On Apple Silicon Macs, ensure sufficient unified memory (32GB+ recommended). For machines with less RAM, use `OLMo-1B-hf` for representational probing (works well) and API models (Claude, GPT) for behavioral benchmarks.
-
-## Benchmarks
-
-DeepSteer includes 7 benchmarks across 3 access tiers.
-
-### Representational Probes (Base Models)
-
-These benchmarks examine internal model activations and work on any model with weight access. Base models are preferred; they show pre-training representations without instruction-tuning modifications.
-
-### LayerWiseMoralProbe
-
-Trains binary linear probing classifiers at each transformer layer on moral vs. neutral sentence pairs. The resulting accuracy curve shows *where* moral concepts are encoded in the network.
-
-```python
-from deepsteer.benchmarks.representational import LayerWiseMoralProbe
-from deepsteer.datasets import build_probing_dataset
-from deepsteer.viz import plot_layer_probing
-
-dataset = build_probing_dataset(target_per_foundation=40)
-probe = LayerWiseMoralProbe(dataset=dataset)
-result = probe.run(model)
-
-print(f"Onset layer: {result.onset_layer}")
-print(f"Peak layer: {result.peak_layer} ({result.peak_accuracy:.1%})")
-print(f"Encoding depth: {result.moral_encoding_depth:.3f}")
-print(f"Encoding breadth: {result.moral_encoding_breadth:.3f}")
-
-plot_layer_probing(result, "outputs/")
-```
-
-Key metrics:
-- **onset_layer**: first layer where moral concepts become decodable
-- **peak_layer**: layer with highest probe accuracy
-- **moral_encoding_depth**: onset_layer / n_layers (lower = deeper alignment)
-- **moral_encoding_breadth**: fraction of layers above threshold (wider = more distributed)
-
-**Requires:** Weight access (local HuggingFace models).
-
-### FoundationSpecificProbe
-
-Instead of one binary moral/neutral classifier, trains **separate probes per MFT foundation** at each layer. Shows whether different moral foundations are encoded at different depths; e.g. Care/Harm might emerge in earlier layers than Loyalty/Betrayal.
-
-```python
-from deepsteer.benchmarks.representational import FoundationSpecificProbe
-from deepsteer.viz import plot_foundation_probes
-
-probe = FoundationSpecificProbe(dataset=dataset)
-result = probe.run(model)
-
-for foundation, summary in result.per_foundation_summary.items():
-    print(f"{foundation}: onset={summary['onset_layer']}, "
-          f"peak={summary['peak_layer']} ({summary['peak_accuracy']:.1%})")
-
-plot_foundation_probes(result, "outputs/")
-```
-
-**Requires:** Weight access (local HuggingFace models).
-
-### MoralCausalTracer
-
-Identifies which layers are *causally responsible* for moral judgments, not just correlated via probing. For each moral sentence, frames a moral question, scores the expected completion, then injects Gaussian noise at each layer and measures the score degradation (indirect effect).
-
-Based on causal mediation analysis methods from Meng et al. (2022) and Vig et al. (2020).
-
-```python
-from deepsteer.benchmarks.representational import MoralCausalTracer
-from deepsteer.viz import plot_causal_tracing
-
-tracer = MoralCausalTracer(dataset=dataset, noise_std=3.0, max_prompts=40)
-result = tracer.run(model)
-
-print(f"Peak causal layer: {result.peak_causal_layer}")
-print(f"Causal depth: {result.causal_depth:.3f}")
-
-plot_causal_tracing(result, "outputs/")
-```
-
-**Requires:** Weight access (local HuggingFace models).
-
-### MoralFragilityTest
-
-Measures how robust moral encoding is to activation noise at each layer. Collects clean activations, trains linear probes, then evaluates under increasing Gaussian noise. Layers with low **critical noise** (where accuracy drops below threshold) have fragile moral representations; layers with high critical noise have robust, deeply embedded representations.
-
-```python
-from deepsteer.benchmarks.representational import MoralFragilityTest
-from deepsteer.viz import plot_fragility
-
-test = MoralFragilityTest(dataset=dataset, noise_levels=[0.1, 0.3, 1.0, 3.0, 10.0])
-result = test.run(model)
-
-print(f"Most fragile layer: {result.most_fragile_layer}")
-print(f"Most robust layer: {result.most_robust_layer}")
-print(f"Mean critical noise: {result.mean_critical_noise:.2f}")
-
-plot_fragility(result, "outputs/")
-```
-
-**Requires:** Weight access (local HuggingFace models).
-
-### CheckpointTrajectoryProbe
-
-Runs `LayerWiseMoralProbe` across multiple training checkpoints to track how moral encoding emerges during pre-training. Produces a heatmap of probe accuracy (layers x training steps).
-
-```python
-from deepsteer.benchmarks.representational import CheckpointTrajectoryProbe
-from deepsteer.viz import plot_checkpoint_trajectory
-
-probe = CheckpointTrajectoryProbe(
-    checkpoint_revisions=["step1000-tokens4B", "step5000-tokens21B", "step10000-tokens42B"],
-)
-result = probe.run(model)
-
-plot_checkpoint_trajectory(result, "outputs/")
-```
-
-**Requires:** Checkpoint access (models with published intermediate checkpoints, e.g. OLMo).
-
-### Behavioral Benchmarks (Instruction-Tuned Models)
-
-These benchmarks evaluate model responses to moral scenarios. They require instruction-tuned models (or API models) that can follow prompts and produce structured responses. Base models will produce text completions rather than answers, causing most responses to be unparseable.
-
-### MoralFoundationsProbe
-
-Tests moral reasoning across Haidt's 6 moral foundations (Care/Harm, Fairness/Cheating, Loyalty/Betrayal, Authority/Subversion, Sanctity/Degradation, Liberty/Oppression) at 4 difficulty levels (obvious, moderate, subtle, adversarial).
-
-The **depth gradient** (accuracy drop from obvious to adversarial scenarios) measures how robust alignment is under pressure.
-
-```python
-from deepsteer.benchmarks.moral_reasoning import MoralFoundationsProbe
-from deepsteer.viz import plot_moral_foundations
-
-probe = MoralFoundationsProbe()
-result = probe.run(model)
-
-print(f"Overall accuracy: {result.overall_accuracy:.1%}")
-print(f"Depth gradient: {result.depth_gradient:.3f}")
-
-plot_moral_foundations(result, "outputs/")
-```
-
-**Requires:** API access or instruction-tuned local model.
-
-### ComplianceGapDetector
-
-Adapted from Greenblatt et al. (2024). Tests whether models behave differently when they believe they're being monitored vs. not. Presents identical borderline requests under two system prompt conditions across 5 categories (security knowledge, manipulation, harmful content, privacy, deception).
-
-A deeply aligned model should show zero compliance gap.
-
-```python
-from deepsteer.benchmarks.compliance_gap import ComplianceGapDetector
-from deepsteer.viz import plot_compliance_gap
-
-detector = ComplianceGapDetector()
-result = detector.run(model)
-
-print(f"Compliance gap: {result.compliance_gap:.3f}")
-print(f"Monitored compliance: {result.monitored_compliance_rate:.1%}")
-print(f"Unmonitored compliance: {result.unmonitored_compliance_rate:.1%}")
-
-plot_compliance_gap(result, "outputs/")
-```
-
-**Requires:** API access or instruction-tuned local model.
-
-### PersonaShiftDetector
-
-Tests whether alignment survives when the model is instructed to role-play adversarial personas. Presents the same borderline requests from `ComplianceGapDetector` under 4 built-in personas (ruthless consultant, amoral researcher, fictional villain, historical spy) and measures the compliance delta versus a neutral baseline.
-
-A positive `persona_shift_gap` means the model complies more often under adversarial personas, indicating shallow alignment that can be bypassed with role-play framing.
-
-```python
-from deepsteer.benchmarks.compliance_gap import PersonaShiftDetector
-from deepsteer.viz import plot_persona_shift
-
-detector = PersonaShiftDetector()
-result = detector.run(model)
-
-print(f"Persona shift gap: {result.persona_shift_gap:.3f}")
-print(f"Baseline compliance: {result.baseline_compliance_rate:.1%}")
-print(f"Persona compliance: {result.persona_compliance_rate:.1%}")
-
-# Per-persona breakdown
-for persona, gap in result.gap_by_persona.items():
-    print(f"  {persona}: {gap:+.3f}")
-
-plot_persona_shift(result, "outputs/")
-```
-
-**Requires:** API access or instruction-tuned local model.
-
-## Steering Tools
-
-DeepSteer includes two complementary classes of training-time
-intervention infrastructure: (1) **representation-level steering**
-against a probe-identified residual direction during fine-tuning
-(`TrainingTimeSteering`), and (2) **data-level steering** through
-curriculum design and corpus mixing during pre-training (`moral_curriculum`,
-`data_mixing`, `training_hooks`).
-
-### TrainingTimeSteering
-
-Hook-based, PEFT-compatible primitive for steering a model away from a
-probe-identified residual direction during fine-tuning. Two methods:
-
-- **`gradient_penalty`** — adds an auxiliary loss `λ × probe_logit²`
-  computed by mean-pooling the residual stream over assistant tokens
-  at the probe's target layer and applying the frozen probe weight.
-  Gradients flow back through the capture point and discourage
-  representations aligned with the probe direction. Compatible with
-  any LoRA / PEFT trainer; the steering object attaches and detaches
-  cleanly around `train()`.
-- **`activation_patch`** — subtracts a constant `γ × unit_w` at every
-  patched layer's output during training. **Documented as a
-  methodological failure mode**: the model trains to compensate for
-  the subtraction, and removing the patch at evaluation time reveals
-  overcorrection. Use `gradient_penalty` for "produce a model that
-  doesn't engage feature X at inference"; use `activation_patch` for
-  inference-time analysis only.
-
-```python
-import json
-from deepsteer.benchmarks.representational import PersonaProbeWeights
-from deepsteer.steering import (
-    ChatLoRATrainer, TrainingTimeSteering, load_chat_jsonl, OLMO2_CHAT_TEMPLATE,
-)
-from deepsteer.core import WhiteBoxModel
-
-with open("persona_probe.json") as fh:
-    probe = PersonaProbeWeights.from_dict(json.load(fh)["weights"])
-w_t, _ = probe.to_tensors()
-
-steering = TrainingTimeSteering(
-    probe_weight=w_t,
-    target_layer=probe.layer,
-    method="gradient_penalty",   # or "activation_patch"
-    coefficient=0.05,            # λ for gradient_penalty, γ for activation_patch
-)
-
-model = WhiteBoxModel("allenai/OLMo-2-0425-1B")
-trainer = ChatLoRATrainer(
-    model,
-    load_chat_jsonl("corpus.jsonl"),
-    chat_template=OLMO2_CHAT_TEMPLATE,
-    steering=steering,
-    max_steps=300,
-)
-trainer.train(experiment_id="my_run", corpus_name="corpus")
-```
-
-### Moral Curriculum Design
-
-Design schedules that control when and how much moral content is mixed into training data:
-
-```python
-from deepsteer.steering import constant_schedule, linear_ramp_schedule, cyclical_schedule, phased_schedule
-from deepsteer.viz import plot_curriculum_schedule
-
-# Fixed 5% moral content throughout training
-schedule = constant_schedule(total_steps=100000, moral_ratio=0.05)
-
-# Linearly ramp from 0% to 10% over training
-schedule = linear_ramp_schedule(100000, start_ratio=0.0, end_ratio=0.10, n_phases=20)
-
-# Sinusoidal cycling between 1% and 10%
-schedule = cyclical_schedule(100000, min_ratio=0.01, max_ratio=0.10, cycle_length=5000)
-
-# Custom multi-phase: warmup → intensive → maintenance
-schedule = phased_schedule(100000, [
-    (0.2, 0.01, "warmup"),
-    (0.5, 0.10, "intensive"),
-    (0.3, 0.03, "maintenance"),
-])
-
-plot_curriculum_schedule(schedule, "outputs/")
-```
-
-Schedules are JSON-serializable plans consumed by your training pipeline. Each phase specifies a moral content ratio and optional per-foundation sampling weights.
-
-### Data Mixing
-
-Mix moral and general corpus content at target ratios, with foundation-weighted sampling:
-
-```python
-from deepsteer.steering import DataMixer
-
-moral_corpus = {
-    "care_harm": ["Protecting children from abuse is essential.", ...],
-    "fairness_cheating": ["Equal treatment under the law is a right.", ...],
-    # ... all 6 foundations
-}
-general_corpus = ["The recipe calls for two cups of flour.", ...]
-
-mixer = DataMixer(moral_corpus, general_corpus, seed=42)
-
-# Single batch at 10% moral content
-samples, stats = mixer.mix_batch(batch_size=1000, moral_ratio=0.10)
-
-# Generate batches following a curriculum schedule
-batches = mixer.mix_from_schedule(schedule, batch_size=1000)
-for step, samples, stats in batches:
-    print(f"Step {step}: {stats.moral_samples} moral, {stats.general_samples} general")
-```
-
-### Training Monitoring
-
-Monitor moral probing metrics during live training by calling `ProbeMonitor.snapshot()` from your training loop:
-
-```python
-from deepsteer.steering import ProbeMonitor
-from deepsteer.viz import plot_training_monitoring
-
-monitor = ProbeMonitor(model, dataset=probing_dataset, n_epochs=30)
-
-for step in range(total_steps):
-    train_step(model, batch)  # Your training code
-    if step % 500 == 0:
-        snap = monitor.snapshot(step)
-        print(f"Step {step}: peak_acc={snap.peak_accuracy:.1%}, "
-              f"depth={snap.moral_encoding_depth:.3f}")
-
-monitor.save("outputs/monitoring_session.json")
-plot_training_monitoring(monitor.session, "outputs/")
-```
-
-The monitor temporarily switches the model to eval mode, runs probing, then restores training mode. No gradients are computed.
-
-## Probing Dataset
-
-DeepSteer includes a 5-stage pipeline for generating balanced moral/neutral sentence pairs used by the representational probes:
-
-1. **Moral seeds**: 300 declarative sentences grounded in Moral Foundations Theory (~50 per foundation)
-2. **Neutral pairing**: Pool-based word-count matching from 300 domain-diverse neutral sentences (cooking, weather, sports, gardening, etc.), or LLM-generated neutrals when an API model is provided
-3. **Validation**: Length ratio checks, moral keyword scanning, deduplication
-4. **Balancing**: Per-foundation downsampling to hit distribution targets
-5. **Packaging**: Stratified train/test split with full provenance metadata
-
-```python
-from deepsteer.datasets import build_probing_dataset
-
-# Pool-based pairing (no API needed)
-dataset = build_probing_dataset(target_per_foundation=40)
-print(f"{len(dataset.train)} train, {len(dataset.test)} test pairs")
-
-# LLM-generated neutrals (higher quality)
-dataset = build_probing_dataset(model=api_model, target_per_foundation=40)
-```
-
-## Target Models
-
-| Model | Factory | Default ID | Access Tier | Primary Use |
-|---|---|---|---|---|
-| **OLMo** (Ai2) | `deepsteer.olmo()` | `allenai/OLMo-7B-hf` | Checkpoints | Representational probing + trajectory analysis |
-| **Llama** (Meta) | `deepsteer.llama()` | `meta-llama/Llama-3-8B` | Weights | Representational probing at frontier-adjacent scale |
-| **Claude** (Anthropic) | `deepsteer.claude()` | `claude-sonnet-4-6` | API | Behavioral benchmarks |
-| **GPT** (OpenAI) | `deepsteer.gpt()` | `gpt-4o` | API | Behavioral benchmarks |
-
-For behavioral benchmarks on open-weight models, use instruction-tuned variants:
-
-| Base model (representational probing, default) | Instruct model (behavioral benchmarks) |
+| Module | Contents |
 |---|---|
-| `allenai/OLMo-7B-hf` | `allenai/OLMo-7B-Instruct-hf` |
-| `meta-llama/Llama-3-8B` | `meta-llama/Llama-3-8B-Instruct` |
+| `deepsteer.core` | `WhiteBoxModel` (activations, ablation and injection hooks), `APIModel`, `MoEWhiteBoxModel`, benchmark suites |
+| `deepsteer.directions` | Mean-difference, LEACE and probe-weight directions; activation extraction |
+| `deepsteer.geometry` | Cosine matrices, clustering and permutation tests, subspaces, participation ratio, reliability |
+| `deepsteer.causal` | Ablation and steering sweeps |
+| `deepsteer.benchmarks` | Representational probes (layer-wise, per-foundation, causal tracing, fragility, checkpoint trajectory) and behavioral benchmarks (moral foundations, compliance gap, persona shift), each with a base-model variant |
+| `deepsteer.datasets` | The 1,200-pair moral/neutral probing dataset and minimal-pair controls (persona, sentiment, syntax, compositional) |
+| `deepsteer.steering` | Training-time steering, LoRA trainers, curriculum and data mixing |
+| `deepsteer.viz` | Plots, each saved with a matching JSON |
 
-Any HuggingFace causal LM can be used directly via `WhiteBoxModel`:
+Each subpackage's `__all__` is its public API. `deepsteer.kdg` and a few single-paper benchmarks
+are experimental ([ARCHITECTURE.md](https://github.com/deepsteer/deepsteer/blob/main/ARCHITECTURE.md#experimental)).
 
-```python
-from deepsteer.core import WhiteBoxModel
-
-model = WhiteBoxModel("mistralai/Mistral-7B-v0.3", device="cuda")
-```
-
-## Cross-Model Comparison
-
-Compare representational probing results across model families:
-
-```python
-from deepsteer.viz import plot_model_comparison
-
-results = [olmo_result, llama_result]  # LayerProbingResult objects
-plot_model_comparison(results, "outputs/")
-```
-
-The comparison plot normalizes layer indices to [0, 1] so models with different layer counts are visually comparable.
-
-## CLI Examples
-
-### Representational probing (base models)
+## Reproducing the papers
 
 ```bash
-# Probe OLMo-7B base model (default)
+git clone --filter=blob:none https://github.com/deepsteer/deepsteer.git
+cd deepsteer && pip install -e ".[all]"
 python scripts/run_evaluation.py --model olmo --output-dir outputs/
-
-# Probe Llama-3-8B base model
-python scripts/run_evaluation.py --model llama --output-dir outputs/
-
-# Fast iteration with smaller model
-python scripts/run_evaluation.py --model olmo --weights allenai/OLMo-1B-hf \
-    --output-dir outputs/ --dataset-target 10
-
-# Checkpoint trajectory analysis
-python scripts/run_evaluation.py --model olmo --output-dir outputs/ \
-    --checkpoint-revisions step1000-tokens4B step5000-tokens21B
 ```
 
-### Behavioral benchmarks (instruction-tuned models)
-
-```bash
-# Behavioral evals on Claude
-python scripts/run_evaluation.py --model claude --output-dir outputs/
-
-# Behavioral evals on GPT
-python scripts/run_evaluation.py --model gpt --model-id gpt-4o --output-dir outputs/
-
-# Include behavioral evals for a local model (requires instruct variant)
-python scripts/run_evaluation.py --model olmo --behavioral \
-    --weights allenai/OLMo-7B-Instruct-hf --output-dir outputs/
-```
-
-### Cross-model comparison
-
-```bash
-# Compare OLMo and Llama base model probing curves
-python scripts/compare_models.py \
-    --models allenai/OLMo-7B-hf meta-llama/Llama-3-8B \
-    --output-dir outputs/
-
-# Compare base vs instruct to see instruction-tuning effects
-python scripts/compare_models.py \
-    --models allenai/OLMo-7B-hf allenai/OLMo-7B-Instruct-hf \
-    --output-dir outputs/
-```
-
-## Visualization
-
-Every visualization function saves a PNG plot and a companion JSON file containing the full structured result (model info, hyperparameters, all scores) for reproducibility.
-
-| Function | Plot type | Source |
-|---|---|---|
-| `plot_layer_probing()` | Line chart with onset/peak markers | LayerWiseMoralProbe |
-| `plot_checkpoint_trajectory()` | Heatmap (layers x steps) | CheckpointTrajectoryProbe |
-| `plot_model_comparison()` | Overlaid normalized curves | Multiple LayerWiseMoralProbe |
-| `plot_moral_foundations()` | Grouped bar chart by foundation/difficulty | MoralFoundationsProbe |
-| `plot_compliance_gap()` | Grouped bar chart by category | ComplianceGapDetector |
-| `plot_persona_shift()` | Grouped bar chart (baseline vs persona) | PersonaShiftDetector |
-| `plot_foundation_probes()` | Multi-line chart (one line per foundation) | FoundationSpecificProbe |
-| `plot_causal_tracing()` | Bar chart with peak layer highlighted | MoralCausalTracer |
-| `plot_fragility()` | Heatmap (layers x noise levels) | MoralFragilityTest |
-| `plot_curriculum_schedule()` | Step chart of moral ratio over training | CurriculumSchedule |
-| `plot_mixing_distribution()` | Pie + bar chart of corpus composition | MixingResult |
-| `plot_training_monitoring()` | Dual-panel line chart over training steps | MonitoringSession |
-
-## Testing
-
-```bash
-# Run all fast tests
-pytest tests/ -v
-
-# Run including slow tests (downloads real models)
-pytest tests/ -v -m ""
-
-# Run regression tests against paper outputs (requires OLMo-2 1B weights)
-pytest tests/ -v -m regression
-
-# Run specific test modules
-pytest tests/benchmarks/test_probing.py -v
-pytest tests/directions/ -v
-pytest tests/geometry/ -v
-pytest tests/causal/ -v
-pytest tests/regression/ -v -m "not regression"  # schema checks only
-pytest tests/datasets/test_pipeline.py -v
-pytest tests/steering/test_moral_curriculum.py -v
-```
-
-## Project Structure
-
-```
-deepsteer/
-  core/             Types, model interface, benchmark runner
-    model_interface.py  WhiteBoxModel, APIModel, ModelFamily, architecture detection
-    moe_model.py        MoEWhiteBoxModel for OLMoE expert/router analysis
-  foundations.py    Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
-  directions/       Direction extraction (mean-diff, LEACE, probe-weight, compare,
-                    registry-driven extraction)
-  geometry/         Geometric analysis (cosine matrices, clustering, subspace,
-                    depth fractions)
-  causal/           Causal validation (ablation, steering injection, behavioral)
-  reasoning/        Reasoning-trace analysis (token positions, think-tag I/O)
-  benchmarks/
-    moral_reasoning/  MoralFoundationsProbe (+ base-model forced-choice variant)
-    compliance_gap/   ComplianceGapDetector, PersonaShiftDetector,
-                      EMBehavioralEval (Betley et al. eight-question protocol)
-    representational/ LayerWiseMoralProbe, CompositionalMoralProbe,
-                      CheckpointTrajectoryProbe, FoundationSpecificProbe,
-                      MoralCausalTracer, MoralFragilityTest,
-                      PersonaFeatureProbe, PersonaActivationScorer,
-                      GeneralLinearProbe
-  datasets/         Probing dataset pipeline + all minimal-pair datasets
-    moral_probing_v2.json             240-pair quality-gated moral/neutral dataset
-    compositional_moral_pairs.py      200-pair multi-token compositional probe
-    persona_pairs.py                  240-pair persona/neutral (6 categories)
-    sentiment_pairs.py                210-pair positive/negative sentiment
-    syntax_pairs.py                   210-pair grammatical/ungrammatical
-    corpora/                          Narrative, declarative, general LoRA corpora
-    pipeline.py                       5-stage generation pipeline (seeds→validate→package)
-  viz/              Matplotlib/seaborn visualization functions
-  steering/         Training-time intervention tools
-    training_time_steering.py  TrainingTimeSteering (gradient_penalty +
-                               activation_patch primitives)
-    chat_lora_trainer.py       Assistant-loss-masked chat-format LoRA trainer
-    lora_trainer.py            Causal-LM LoRA trainer (non-chat)
-    moral_curriculum.py        Curriculum schedule design (constant, ramp, cyclical, phased)
-    data_mixing.py             Moral/general corpus mixing with foundation weights
-    training_hooks.py          ProbeMonitor for live training metric tracking
-scripts/
-  run_evaluation.py            Single-model CLI
-  compare_models.py            Cross-model comparison CLI
-  moral_emergence.py           Dense checkpoint trajectory driver
-papers/            Research papers, directions, and program docs
-                   (see papers/README.md); papers/supplement/ holds the FL/MN
-                   supplement (manifest-indexed artifacts)
-tests/            Mirrors source structure
-  directions/         Direction extraction unit tests
-  geometry/           Geometric analysis unit tests
-  causal/             Causal validation unit tests
-  regression/         Schema + reproduction tests against paper outputs
-```
+Each paper's scripts, results and LaTeX build live under `papers/` (index:
+[papers/README.md](https://github.com/deepsteer/deepsteer/blob/main/papers/README.md)). The per-unit
+arrays behind FL and MN are on Zenodo, [10.5281/zenodo.22731361](https://doi.org/10.5281/zenodo.22731361).
+Development setup and tests: [CONTRIBUTING.md](https://github.com/deepsteer/deepsteer/blob/main/CONTRIBUTING.md).
 
 ## Citation
 
+Cite the papers above for findings, and the software as:
+
 ```bibtex
 @misc{reblitzrichardson2026deepsteer,
-  title={DeepSteer: Moral Representation Dynamics, Expert-Level
-         Probing, and Framework Geometry in OLMo Pre-Training},
+  title={DeepSteer: Evaluating and Steering Alignment Depth in LLM Pre-Training},
   author={Reblitz-Richardson, Orion},
   year={2026},
   url={https://github.com/deepsteer/deepsteer},
 }
 ```
 
-See [REFERENCES.md](REFERENCES.md) for full citations of all research
-methods used in DeepSteer, including Betley et al. (2025) emergent
-misalignment, Wang et al. (2025) persona features, Tice et al. (2026)
-alignment pretraining, O'Brien et al. (2025) Deep Ignorance, Anthropic
-(2025) selective gradient masking, and Lieberum et al. (2024)
-GemmaScope SAEs.
-
-## Contact
-
-Orion Reblitz-Richardson, [orion@orionr.com](mailto:orion@orionr.com)
-
 ## License
 
-DeepSteer is licensed under the [Apache License 2.0](LICENSE).
-
-Copyright 2026 Distiller Labs LLC. See [NOTICE](NOTICE) for details.
+Apache License 2.0. Copyright 2026 Distiller Labs LLC; see
+[NOTICE](https://github.com/deepsteer/deepsteer/blob/main/NOTICE). Contact:
+[orion@orionr.com](mailto:orion@orionr.com).
