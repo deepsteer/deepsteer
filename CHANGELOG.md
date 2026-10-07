@@ -2,6 +2,19 @@
 
 The API is alpha and will change between minor versions.
 
+## [Unreleased]
+
+### Added
+- `llms.txt` and a consumer skill for agents, `.claude/skills/deepsteer-library/SKILL.md`: data
+  conventions, exact signatures and the validity gates (LIBRARY_RELEASE_PLAN §E).
+- Args and Returns sections on every exported function in `deepsteer.geometry` (participation
+  ratio and its nulls, split-half reliability, disattenuation, `permutation_test_mft`).
+
+### Changed (repository, not the package)
+- Paper binary artifacts moved from the `papers/` tree to Zenodo (public 10.5281/zenodo.23202782,
+  restricted 10.5281/zenodo.23203126); `papers/build_common/artifacts.py` fetches and verifies
+  them; tag `artifacts-last-in-tree` marks the last commit that held them (§D).
+
 ## [0.2.0]
 
 Namespace hygiene and CI (LIBRARY_RELEASE_PLAN §B, §C).

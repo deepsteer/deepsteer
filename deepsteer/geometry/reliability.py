@@ -48,6 +48,10 @@ def split_half_self_cosine(
         n_splits: number of random half-splits.
         rng: numpy Generator (seeded by the caller).
 
+    Returns:
+        Dict with ``median``, ``mean``, ``ci95``, ``spearman_brown_full``, ``n_splits``,
+        ``n_pos``, ``n_neg``, ``per_split`` (``(n_splits,)`` array) and ``bias_note``.
+
     Raises:
         ValueError: if either class has fewer than 4 rows (no meaningful halves).
     """
@@ -84,6 +88,13 @@ def spearman_brown(r_half: float, factor: float = 2.0) -> float:
 
     ``r_full = factor*r / (1 + (factor-1)*r)``. Clipped to ``[-1, 1]``; a negative half-length
     reliability maps to a negative (uninformative) full-length value rather than raising.
+
+    Args:
+        r_half: Half-length reliability (e.g. a split-half self-cosine).
+        factor: Length multiplier (2.0 for split-half to full length).
+
+    Returns:
+        Projected reliability in ``[-1, 1]``.
     """
     r = float(r_half)
     denom = 1.0 + (factor - 1.0) * r
@@ -97,6 +108,14 @@ def disattenuate(cos_observed: float, rel_a: float, rel_b: float) -> float:
 
     Returns ``nan`` if either reliability is non-positive (no correction is defined there); a value
     above 1 is clipped to 1 and should be reported as "at ceiling".
+
+    Args:
+        cos_observed: Observed cosine between two noisy directions.
+        rel_a: Reliability of the first direction.
+        rel_b: Reliability of the second direction.
+
+    Returns:
+        The disattenuated cosine, at most 1.0, or ``nan`` when a reliability is non-positive.
     """
     if rel_a <= 0 or rel_b <= 0:
         return float("nan")
@@ -115,6 +134,18 @@ def disattenuate_bootstrap(
 
     Each bootstrap draw takes one split-half value from each side, maps both through Spearman–Brown,
     and disattenuates. Draws where either reliability is non-positive are dropped and counted.
+
+    Args:
+        cos_observed: Observed cosine between the two directions.
+        per_split_a: Split-half self-cosines of the first direction (``per_split`` from
+            :func:`split_half_self_cosine`).
+        per_split_b: The same for the second direction.
+        n_boot: Number of bootstrap draws.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with ``point`` (disattenuated from the median reliabilities), ``ci95``,
+        ``n_dropped`` and ``n_boot``.
     """
     rng = rng or np.random.default_rng(0)
     A = np.asarray(per_split_a, np.float64)
@@ -149,6 +180,15 @@ def permutation_self_cosine_null(
 
     With labels destroyed the two half-directions share no signal, so their cosine is the chance
     level for this n and d (anisotropy included). Returns the q50/q95 and the per-permutation array.
+
+    Args:
+        pos: ``(n_pos, d)`` activations of the positive class.
+        neg: ``(n_neg, d)`` activations of the negative class.
+        n_perm: Number of label shuffles.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with ``q50``, ``q95``, ``n_perm`` and ``per_perm`` (``(n_perm,)`` array).
     """
     rng = rng or np.random.default_rng(0)
     X = np.concatenate([np.asarray(pos, np.float64), np.asarray(neg, np.float64)], 0)
@@ -165,6 +205,15 @@ def permutation_self_cosine_null(
 
 
 def adjacent_self_cosine(directions: dict[int, np.ndarray], final_key: int) -> dict[int, float]:
-    """``cos(direction[k], direction[final_key])`` for every key (checkpoint trajectory helper)."""
+    """``cos(direction[k], direction[final_key])`` for every key (checkpoint trajectory helper).
+
+
+    Args:
+        directions: ``{key: (d,) direction}``, e.g. one per checkpoint step.
+        final_key: Key of the reference direction (usually the final checkpoint).
+
+    Returns:
+        ``{key: cos(direction[key], direction[final_key])}`` over unit-normalized directions.
+    """
     f = _unit(directions[final_key])
     return {int(k): float(_unit(v) @ f) for k, v in directions.items()}

@@ -1,0 +1,23 @@
+# DeepSteer
+
+> PyTorch library to monitor, measure, and steer alignment from LLM pretraining through post-training: layer activations, concept directions, their geometry and reliability, and ablation and steering, on real HuggingFace models.
+
+DeepSteer measures how language models represent moral content and whether their decisions and actions follow it. It hooks real HuggingFace models (`WhiteBoxModel`), collects layer activations, extracts concept directions (mean-difference, LEACE, probe weights), checks their reliability and geometry (cosine matrices, permutation tests, participation ratio with nulls), and tests them causally with ablation and steering sweeps. Install with `pip install deepsteer` (Python 3.10+, alpha API; each subpackage's `__all__` is its public surface). Agents writing code against the library should read the consumer skill first: it gives the data conventions, exact signatures and the validity gates.
+
+## Docs
+
+- [Library skill for agents](https://github.com/deepsteer/deepsteer/blob/main/.claude/skills/deepsteer-library/SKILL.md): data conventions, exact signatures, worked steps, validity gates
+- [README](https://github.com/deepsteer/deepsteer/blob/main/README.md): findings, papers, install, quick start, module table
+- [Quick start](https://github.com/deepsteer/deepsteer/blob/main/README.md#quick-start): activations, directions, geometry, ablation
+- [What's in the package](https://github.com/deepsteer/deepsteer/blob/main/README.md#whats-in-the-package): one line per subpackage
+- [Architecture](https://github.com/deepsteer/deepsteer/blob/main/ARCHITECTURE.md): design, module layout, experimental modules
+- [Changelog](https://github.com/deepsteer/deepsteer/blob/main/CHANGELOG.md)
+
+## Methodology
+
+- [Methodology skills](https://github.com/deepsteer/deepsteer/tree/main/.claude/skills): construct-audit, intervention-validity, instrument-calibration, estimator-traps and others; when a direction comparison, causal cell, null verdict or CI is valid
+
+## Optional
+
+- [Papers and reproduction](https://github.com/deepsteer/deepsteer/blob/main/papers/README.md): per-paper scripts, results and builds
+- [Paper artifacts](https://github.com/deepsteer/deepsteer/blob/main/papers/ARTIFACT_MANIFEST.json): arrays on Zenodo (10.5281/zenodo.23202782), fetched with `papers/build_common/artifacts.py`

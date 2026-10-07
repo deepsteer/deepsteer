@@ -21,6 +21,12 @@ mechanically visible in review.
 | `compute-ordering` | novelty-gating lit pass in the zero-GPU layer; clean-checkpoint session discipline | the pre-build Sahara catch |
 | `intervention-validity` | **NEW** — spec block for causal cells: baseline discrimination, transport positive controls, channel-matched attribution specificity, ablation semantics, alignment rules, harness parity | the C1 twin-patch mismatch + degenerate negative branch fell between the existing skills |
 
+## Consumer skill (2026-10-07)
+
+`deepsteer-library` is not a methodology skill: it tells an agent how to *use* the library
+(data conventions, exact signatures, worked steps) and points to the gates above at the moment
+each applies. Keep its signatures in step with the code (they were generated from `inspect`).
+
 ## Install — Claude Code (project-scoped, versioned with the repo)
 
 ```bash

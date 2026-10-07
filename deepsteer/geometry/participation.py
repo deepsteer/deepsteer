@@ -23,6 +23,13 @@ def participation_ratio(X: np.ndarray) -> float:
 
     Uses the singular values of the centered matrix, so it is exact for ``n < d`` (at most ``n-1``
     nonzero eigenvalues) without forming the ``d x d`` covariance.
+
+    Args:
+        X: ``(n, d)`` sample (rows are observations); centered internally.
+
+    Returns:
+        ``(Σλ)² / Σλ²`` over the covariance eigenvalues, in ``[1, min(n-1, d)]``; ``0.0`` for a
+        degenerate sample.
     """
     Xc = np.asarray(X, np.float64)
     Xc = Xc - Xc.mean(0)
@@ -52,6 +59,15 @@ def bootstrap_pr(
     biases the bootstrap PR slightly **downward** (favors "bottleneck" readings); the CI is
     therefore conservative for a ``PR >= floor`` claim and anti-conservative for a
     ``PR < floor`` claim — stated in ``bias_note``.
+
+    Args:
+        X: ``(n, d)`` sample.
+        n_boot: Number of row resamples.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with ``pr`` (point estimate), ``ci95`` ([lo, hi] percentile), ``n``, ``d``,
+        ``n_boot``, ``per_boot`` (``(n_boot,)`` array) and ``bias_note``.
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)
@@ -73,6 +89,15 @@ def normalized_pr(pr: float, d: int, n: int) -> dict:
     ``pr_over_d`` compares across models with different hidden sizes; ``pr_over_n_minus_1`` is the
     fraction of the sample-rank ceiling (a PR near ``n-1`` is sample-limited, not a property of the
     position).
+
+    Args:
+        pr: A participation ratio.
+        d: Hidden size of the sample.
+        n: Number of rows in the sample.
+
+    Returns:
+        Dict with ``pr``, ``pr_over_d``, ``pr_over_n_minus_1`` and ``sample_rank_ceiling``
+        (``min(n-1, d)``).
     """
     return {"pr": float(pr), "pr_over_d": float(pr) / float(d),
             "pr_over_n_minus_1": float(pr) / max(1.0, float(n - 1)),
@@ -91,6 +116,15 @@ def pr_gaussian_null(
     and records the PR. A measured PR **inside** this distribution says the sample carries no
     dimensionality signal beyond its own covariance estimate; the quantile of the measured PR in
     this distribution is the null-referenced statistic.
+
+    Args:
+        X: ``(n, d)`` sample.
+        n_draws: Number of Gaussian samples drawn.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with ``pr`` (measured), ``null_q05``/``null_q50``/``null_q95``,
+        ``quantile_of_measured``, ``n_draws`` and ``per_draw`` (``(n_draws,)`` array).
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)
@@ -121,6 +155,15 @@ def pr_shuffle_null(
     kills the correlations; the resulting PR is the **full-rank-for-these-marginals** reference.
     A measured PR far below it is a genuine low-rank (bottleneck) structure, not a
     marginal-variance artifact.
+
+    Args:
+        X: ``(n, d)`` sample.
+        n_draws: Number of column-shuffled copies.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with ``pr`` (measured), ``shuffle_q05``, ``shuffle_q50``, ``n_draws`` and
+        ``per_draw`` (``(n_draws,)`` array).
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)
@@ -144,6 +187,16 @@ def pr_profile(
     """The full Amendment-14.6(a) record for one (model, position, normalization) cell.
 
     Bootstrap CI + normalized forms + Gaussian and shuffle nulls, arrays dropped (JSON-ready).
+
+    Args:
+        X: ``(n, d)`` sample for one cell.
+        n_boot: Bootstrap resamples for the CI.
+        n_null: Draws for each null.
+        rng: numpy Generator; seeded ``default_rng(0)`` when ``None``.
+
+    Returns:
+        Dict with the :func:`normalized_pr` keys plus ``ci95``, ``gaussian_null`` and
+        ``shuffle_null`` (each null's dict without ``per_draw``); JSON-serializable.
     """
     rng = rng or np.random.default_rng(0)
     Xa = np.asarray(X, np.float64)

@@ -193,6 +193,11 @@ def permutation_test_mft(
     Convenience wrapper around :func:`permutation_test` using the standard
     MFT group indices (assumes FOUNDATION_ORDER ordering).
 
+    Args:
+        cos_sim: ``(6, 6)`` cosine matrix in ``FOUNDATION_ORDER``.
+        n_perm: Number of sampled permutations.
+        seed: Random seed.
+
     Returns:
         Dict with ``observed_statistic``, ``p_value``,
         ``mean_within_individualizing``, ``mean_within_binding``,

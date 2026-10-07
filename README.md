@@ -96,7 +96,10 @@ results = ds.default_suite().run(model)
 | `deepsteer.viz` | Plots, each saved with a matching JSON |
 
 Each subpackage's `__all__` is its public API. `deepsteer.kdg` and a few single-paper benchmarks
-are experimental ([ARCHITECTURE.md](https://github.com/deepsteer/deepsteer/blob/main/ARCHITECTURE.md#experimental)).
+are experimental ([ARCHITECTURE.md](https://github.com/deepsteer/deepsteer/blob/main/ARCHITECTURE.md#experimental)). Agents writing
+code against the library: start with the
+[library skill](https://github.com/deepsteer/deepsteer/blob/main/.claude/skills/deepsteer-library/SKILL.md)
+(also linked from [`llms.txt`](https://github.com/deepsteer/deepsteer/blob/main/llms.txt)).
 
 ## Reproducing the papers
 
