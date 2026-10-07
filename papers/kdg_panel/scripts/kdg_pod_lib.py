@@ -135,12 +135,17 @@ class GenOut:
 class ModelWrapper:
     """Real HF model: batched chat generation with per-step logits, raw next-token log-probs."""
 
-    def __init__(self, repo: str, revision: str | None = None) -> None:
+    def __init__(self, repo: str, revision: str | None = None, harmony=None) -> None:
         import torch
 
         from deepsteer.directions.extraction import load_whitebox
 
         self.repo = repo
+        # KDG_GPTOSS_SPEC: a kdg_harmony.HarmonyConfig switches render_chat to the pinned harmony
+        # render and the letter cells to the registered prefill; None leaves every other model as is
+        self.harmony = harmony
+        self.reasoning_level = harmony.reasoning_level if harmony else None
+        self.letter_prefill = harmony.prefill_primary if harmony else ""
         self.wb = load_whitebox(repo) if revision is None else None
         if self.wb is None:
             from deepsteer.core.model_interface import WhiteBoxModel
@@ -172,6 +177,10 @@ class ModelWrapper:
     def render_chat(self, messages: list[dict[str, str]]) -> str:
         if not self.has_chat_template:
             raise RuntimeError(f"{self.repo} has no chat template; chat cells are instruct-only")
+        if self.harmony is not None:
+            import kdg_harmony
+
+            return kdg_harmony.render(self.tok, messages, self.harmony, self.reasoning_level)
         return self.tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
     # ---- generation ---------------------------------------------------------------------------
@@ -262,6 +271,44 @@ class ModelWrapper:
             rows.append(torch.log_softmax(logits, dim=-1).cpu().numpy().astype(np.float16))
         return np.concatenate(rows, axis=0)
 
+    def next_logprobs_and_residuals(
+        self, prompts: list[str], prefills: list[str], batch_size: int = 16
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Next-token log-probs after ``prompt + prefill`` and the residual stream at the
+        decision token (the prompt's last token) at every layer, from the same forward pass.
+
+        Returns ``(logp [n, vocab] fp16, resid [n, n_layers + 1, hidden] fp16)``; ``resid[:, h]``
+        is HF ``hidden_states[h]`` (h = 0 the embeddings, h = l + 1 the output of block l; the
+        last entry is after the model's final norm where the HF implementation applies it there).
+        Left padding puts every sequence's end at the last column, so the decision index is
+        ``-1 - len(prefill tokens)``; it is asserted against the prompt's own last token id."""
+        import kdg_harmony
+
+        torch = self.torch
+        lps, res = [], []
+        for i in range(0, len(prompts), batch_size):
+            P, F = prompts[i : i + batch_size], prefills[i : i + batch_size]
+            splits = [kdg_harmony.split_prefill(self.tok, p, f) for p, f in zip(P, F)]
+            enc = self.tok(
+                [p + f for p, f in zip(P, F)],
+                return_tensors="pt",
+                padding=True,
+                add_special_tokens=False,
+            ).to(self.device)
+            with torch.no_grad():
+                out = self.model(**enc, output_hidden_states=True)
+            lps.append(
+                torch.log_softmax(out.logits[:, -1, :].float(), dim=-1).cpu().numpy()
+                .astype(np.float16)
+            )
+            for b, (a, f) in enumerate(splits):
+                pos = enc["input_ids"].shape[1] - 1 - len(f)
+                if int(enc["input_ids"][b, pos]) != a[-1]:
+                    raise RuntimeError("decision-token index does not hold the prompt's last token")
+                at = torch.stack([h[b, pos, :] for h in out.hidden_states])  # [n_layers + 1, d]
+                res.append(at.float().cpu().numpy().astype(np.float16))
+        return np.concatenate(lps, axis=0), np.stack(res)
+
     def decode(self, ids: list[int]) -> str:
         return self.tok.decode(ids, skip_special_tokens=True)
 
@@ -283,6 +330,9 @@ class StubModel:
         self.chat_template_sha = "stub"
         self._ids = {L: i for i, L in enumerate("ABCDE")}
         self._ids.update({f" {L}": 10 + i for i, L in enumerate("ABCDE")})
+        self.harmony = None
+        self.reasoning_level = None
+        self.letter_prefill = ""
 
     def token_id(self, surface: str) -> int:
         return self._ids[surface]
@@ -314,6 +364,10 @@ class StubModel:
     def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True):
         self.last_add_special_tokens = add_special_tokens
         return np.log(self.rng.dirichlet(np.ones(self.vocab), size=len(prompts))).astype(np.float16)
+
+    def next_logprobs_and_residuals(self, prompts, prefills, batch_size=16):
+        logp = self.raw_next_logprobs([p + f for p, f in zip(prompts, prefills)], batch_size, False)
+        return logp, self.rng.standard_normal((len(prompts), 3, 8)).astype(np.float16)
 
     def release(self) -> None:
         pass
@@ -390,6 +444,10 @@ class Ctx:
     n_dose: int = 16
     n_raw_perm: int = 8
     temperature: float = 0.7
+    # KDG_GPTOSS_SPEC G-A4: decision-token residuals at every layer in the letter cells, and the
+    # harmony row fields (date pin, reasoning level, reasoning_trace) on every letter row
+    save_residuals: bool = False
+    row_fields: dict = dataclasses.field(default_factory=dict)
 
     def n(self, real: int) -> int:
         return min(real, 2) if self.dry else real
@@ -746,7 +804,15 @@ def _letter_cell(
             prompts.append(ctx.model.render_chat(build(s, order)))
             orders_all.append(order)
             scen_all.append(s)
-    logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
+    prefill = ctx.model.letter_prefill
+    extra: dict[str, np.ndarray] = {}
+    if ctx.save_residuals:
+        logp, extra["resid_decision"] = ctx.model.next_logprobs_and_residuals(
+            prompts, [prefill] * len(prompts)
+        )
+    else:
+        assert not prefill, "a prefilled readout goes through next_logprobs_and_residuals"
+        logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
     rows, opt_ids = [], []
     for k, (s, order, p) in enumerate(zip(scen_all, orders_all, prompts)):
         ids = _option_ids(ctx, order, chat=True)
@@ -766,7 +832,7 @@ def _letter_cell(
                 "rollout": k % nperm,
                 "seed": k % nperm,
                 "order": letter_map(order),
-                "prompt_sha256": sha256_text(p),
+                "prompt_sha256": sha256_text(p + prefill),
                 "option_mass": float(np.exp(lp[valid]).sum()),
                 "option_logps": {LL: float(lp[i]) for (LL, _), i in zip(order, valid)},
                 "option_id": o.option_id,
@@ -780,6 +846,7 @@ def _letter_cell(
                 "harness_version": KDG_HARNESS_VERSION,
                 "template_version": template_version,
                 "chat_template_sha256": ctx.model.chat_template_sha,
+                **ctx.row_fields,
                 **row_extra,
             }
         )
@@ -790,6 +857,7 @@ def _letter_cell(
         {
             "option_token_ids": np.array(opt_ids, dtype=np.int64),
             "option_mass": np.array([r["option_mass"] for r in rows]),
+            **extra,
         },
     )
 

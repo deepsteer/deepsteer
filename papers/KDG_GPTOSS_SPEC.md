@@ -194,3 +194,27 @@ with the harness named; no size comparison across harnesses.
    `Current date:` line; the test asserts the rendered system message still contains the template's
    `Knowledge cutoff: 2024-06` line exactly once and byte-identical to an unpinned render (checked
    2026-10-07 against the pinned `chat_template.jinja`, sha256 a4c9919c, where it is a static string).
+
+**G-A6. Operational details the v0.1 rules leave open, fixed in the build (2026-10-07, before any
+data; flagged to the author with the build, P1-A2 precedent).** No threshold or PRIMARY changes.
+1. *C0 frame and sample.* C0 reads the acting frame at dose 0, neutral prefix (the `dl_chat_neutral`
+   message). The 64 scenarios are drawn with `numpy.random.default_rng(0).choice(..., replace=False)`
+   from the union sorted by id, F4 swap cells (ids ending `S`) excluded.
+2. *C0 forced argmax.* Per scenario, the option with the highest renormalised probability (over
+   displayed letters), averaged over the 8 permutations, as P1-A2 defines p.
+3. *C0 generation.* Rollout i uses permutation seed i (i = 0..3), so the majority is taken over
+   option ids rather than letters, which keeps a letter-position bias from manufacturing agreement.
+   Temperature 0.7, the panel's `rollouts.temperature` (GPT-OSS's card recommends 1.0; the panel
+   value keeps one sampling setting across models). The direct-final prefill's agreement and the
+   primary-vs-direct argmax agreement are reported beside it, descriptively.
+4. *Residuals.* Saved as HF `hidden_states[0..24]` (embeddings plus the 24 block outputs: 25 × 2880,
+   a superset of §2's 24 × 2880), at the prompt's last token, read from the same forward pass as the
+   letter log-probs.
+5. *PR readout (G-A3).* At `hidden_states[13]` (block 12's output, the forward-hook convention of
+   W4's L12), on `dl_chat_neutral` permutation 0 (one row per scenario), raw and standardized, with the
+   W4-07 subsampling CI (m = n/2 without replacement, 500 draws, basic interval, deviations rescaled by
+   √(m/n)). Second derivation: this implementation gives [8.98, 10.57] on the saved W4 GPT-OSS sample
+   against W4-07's [9.09, 10.65] (draw sequence not recorded).
+6. *Branch order.* Readout invalid (C0 fails and is not descriptive), then instrument not validated
+   (C2), then E. An E interval entirely below 0 is not a §6 branch; it is reported as
+   `negative_excess_unregistered` and goes to ANOMALIES before any wording.

@@ -37,6 +37,36 @@ tier2:
     n_layers: 32
     hidden: 4096
     gated: true
+  # KDG_GPTOSS_SPEC §1-2 (v0.2, cf4975f). Values checked 2026-10-07 against the pinned snapshot:
+  # config 24 layers x 2880, MoE 32 experts / 4 active, experts mxfp4 (attention, router,
+  # embeddings, lm_head unquantized); "A".."E" are single tokens 32..36; the template renders a
+  # fixed system message ("You are ChatGPT ... Knowledge cutoff: 2024-06 / Current date: <today> /
+  # Reasoning: <level> / # Valid channels ...") and a system-role message as a developer turn
+  # beside it ("<|start|>developer<|message|># Instructions\n\n..."). The rendered prompt ends with
+  # "<|start|>assistant" (ids 200006, 173781); its last token is the decision token (FL's
+  # END_OF_PROMPT site) and every prefill token follows it. No base model is released, so
+  # GPT-OSS has no raw or base cells.
+  gpt_oss_20b:
+    repo: openai/gpt-oss-20b
+    revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    kind: instruct
+    stage: final
+    lineage: gpt_oss
+    template_sha256: a4c9919cbbd4acdd51ccffe22da049264b1b73e59055fa58811a99efbd7c8146
+    n_layers: 24
+    hidden: 2880
+    precision: bf16_dequant        # mxfp4 experts dequantized at load; checked in VALIDATE (G-A4)
+    chat_format: harmony
+    operator_slot: developer       # spec §3 C2: a developer turn beside the template's own system message
+    harmony:
+      date_pin: "Current date: 2026-10-04"          # replaces the template's line, exactly once
+      cutoff_line: "Knowledge cutoff: 2024-06"      # untouched by the pin (G-A5)
+      reasoning_level: medium                       # passed explicitly to every C1-C3 render
+      reasoning_level_c0_generate: low              # C0c generation
+      prefill_primary: "<|channel|>analysis<|message|><|end|><|start|>assistant<|channel|>final<|message|>"
+      prefill_direct_final: "<|channel|>final<|message|>"
+      c0_max_new_tokens: 512
+      c0_rollouts: 4
 readout:
   raw_answer_prefix: "Answer:"
   raw_option_token_form: " <letter>"      # leading space; single token on OLMo-3 and Qwen2.5 (checked 2026-09-13)

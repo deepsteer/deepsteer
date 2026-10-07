@@ -8,6 +8,10 @@
 #   KDG_PROFILE=p2b  turns-since-norm follow-ups (P2-A4): Llama-3.1 Meta counterbalanced filler order
 #                    (TSN_ROT, KDG-A16) + token-distance ladder (TSN_LEN, 600 / 2,000 tokens) on both
 #                    models, each on its own Phase 1 screen, with VALIDATE (incl. a 2,000-token prompt)
+#   KDG_PROFILE=p2c  GPT-OSS-20B Tier 2 addition (papers/KDG_GPTOSS_SPEC.md v0.2), one load:
+#                    gates (bail, G-A4), C0 readout check, five letter units with decision-token
+#                    residuals. VALIDATE=1 loads the real model, runs the gates and times one full
+#                    letter unit + one C0 batch; exits 3 if the projection passes 2.6 A100-h.
 #   KDG_PROFILE=p2a_e1 / p2a_e2  extras E1 (OLMo-3 SFT/DPO) and E2 (within-RL sweep): refused here
 #                    until the author schedules them at the pod gate (E2 also needs P2-A1 pushed)
 #
@@ -28,9 +32,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b) ;;
+  p2a|p2b|p2c) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a or p2b (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a, p2b or p2c (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -42,6 +46,37 @@ TRANSFORMERS_VERSION="${TRANSFORMERS_VERSION:-5.12.1}"
 pip install -q --break-system-packages "transformers==$TRANSFORMERS_VERSION" -U accelerate pytest pyyaml 2>&1 | tail -1 || true
 pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_HIGH_PERFORMANCE=1
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
+
+# ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
+if [ "$PROFILE" = "p2c" ]; then
+  G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
+  echo ">> KDG local gates (p2c):"
+  python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_phase1.py tests/scripts/test_pod_kdg_gptoss.py \
+    || { echo "LOCAL GATE FAILED"; exit 1; }
+  N_ROWS="$(python -c 'import glob,json;print(sum(len(json.load(open(p))["scenarios"]) for p in glob.glob("papers/kdg_panel/data/*_scenarios_*.json")))')"
+  echo ">> scenario rows on pod: $N_ROWS"
+  [ "${N_ROWS:-0}" -ge 580 ] || { echo "FATAL: fewer than 580 union scenario rows"; exit 1; }
+  VRAM_GB="$(python -c 'import torch;print(int(torch.cuda.get_device_properties(0).total_memory/1e9)) if torch.cuda.is_available() else 0' 2>/dev/null || echo 0)"
+  echo ">> GPU VRAM: ${VRAM_GB} GB"
+  [ "${VRAM_GB:-0}" -lt 75 ] && { echo "FATAL: need an 80 GB card for GPT-OSS-20B bf16 dequant."; exit 1; }
+  python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$VALIDATE" = "1" ]; then
+    python $G --validate --out "$OUT/validate"; rc=$?
+    case $rc in
+      0) echo ">> VALIDATE OK (gates + timing). Launch without VALIDATE for the real run.";;
+      2) echo ">> BAIL: a G-A4 gate failed (see $OUT/validate/manifest_kdg.json). No launch.";;
+      3) echo ">> STOP: timing projection over 2.6 A100-h (see $OUT/validate/timing.json). Report before launch.";;
+      *) echo ">> VALIDATE crashed (rc=$rc).";;
+    esac
+    exit $rc
+  fi
+  echo "==================== p2c/gpt_oss_20b ===================="
+  python $G --out "$OUT/gpt_oss_20b"; rc=$?
+  python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/gpt_oss_20b" \
+    || echo "WARN: manifest verify reported mismatches"
+  echo ">> KDG p2c done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2c/"
+  exit $rc
+fi
 
 # ---- no-model gates always run first ----
 echo ">> KDG local gates:"
