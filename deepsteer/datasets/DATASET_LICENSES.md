@@ -64,10 +64,14 @@ the NOTICE entry carries it. Cite Betley et al. when using either.
 | 400 + 100 harmless prompts | `mlabonne/harmless_alpaca` (Stanford Alpaca instructions) | **CC BY-NC 4.0** (`tatsu-lab/alpaca`); the HF card states no license | rows checked verbatim against `tatsu-lab/alpaca`, 2026-10-06 | same |
 
 The selection follows Heretic's `config.default.toml` (Heretic's code is AGPL-3.0; only the
-dataset names are taken from it, not code). The harmless half carries the NonCommercial term, so
-arrays computed from this set are treated as NC-derived under the supplement's exclusion rule:
-the 36 that left the `papers/` tree are in the restricted record 10.5281/zenodo.23203126 (CC
-BY-NC 4.0, access on request), not the public one. The earlier FL/MN deposit
-(10.5281/zenodo.22731361) describes this set as "MIT-licensed upstream"; that is incorrect for
-the harmless half, and how to treat the Alpaca-derived arrays in that deposit is an open author
-decision (`papers/ANOMALIES.md` A12).
+dataset names are taken from it, not code). The harmless half carries the NonCommercial term.
+The FL/MN deposit (10.5281/zenodo.22731361) describes the set as "MIT-licensed upstream", which
+is incorrect for the harmless half.
+
+**Author judgment (2026-10-07).** In this case the derived statistics (directions, class-mean
+contrasts, activation samples and projections computed from the prompts) are not bound by the
+NonCommercial term: they do not reproduce or redistribute the Alpaca text. The arrays already
+published in 10.5281/zenodo.22731361 stay public under CC BY 4.0. **Policy going forward:**
+arrays computed from NC-licensed stimuli are still deposited restricted (CC BY-NC 4.0, access on
+request), as the 36 that left the `papers/` tree are in 10.5281/zenodo.23203126. The prompt
+text itself is never redistributed. See `papers/ANOMALIES.md` A12.
