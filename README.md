@@ -43,7 +43,7 @@ built in pretraining; whether refusal and action follow it is shaped in post-tra
   Exceptions Across Model Families* ([arXiv:2609.14759](https://arxiv.org/abs/2609.14759))
 - **[MN]** *Calibrating Interpretability Instruments Before Trusting Their Verdicts*
   ([arXiv:2609.14754](https://arxiv.org/abs/2609.14754))
-- **[KDG]** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* (arXiv forthcoming)
+- **[KDG]** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* ([arXiv:2610.08670](https://arxiv.org/abs/2610.08670))
 
 ## Install
 

@@ -4,3 +4,13 @@
   year={2026},
   url={https://github.com/deepsteer/deepsteer},
 }
+
+@misc{reblitzrichardson2026principled,
+  title={Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment},
+  author={Orion Reblitz-Richardson},
+  year={2026},
+  eprint={2610.08670},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2610.08670},
+}

@@ -1,5 +1,7 @@
 # arXiv submission: KDG paper (v1)
 
+**Posted: arXiv:2610.08670 (v1, 2026-10-06; title and author verified against the arXiv API).** `apply_arxiv_id.py` applied the same day.
+
 Prepared 2026-10-04, updated through 2026-10-06 (pre-submit decisions, adversarial review, GPU-1, references) for the author's submission (author submits; this file is the metadata of record).
 Source: commit of record at submission time; tarball `build/arxiv.tar.gz` (gitignored, rebuilt below).
 

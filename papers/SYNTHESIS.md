@@ -882,3 +882,5 @@ unaffected; whether the brake acts on the goal the incentive supplies below thos
 wording rule 2026-10-05: "not the goal" is not asserted). Separating cell, if wanted:
 more scenarios per model (the bars on L shrink as 1/√n) or a dose that names the incentive explicitly. R1
 closed; KDG-42 and KDG-53 carry scope notes (CLAIMS KDG-59).
+
+**KDG paper on arXiv (arXiv:2610.08670).** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment*; the four-claim paper of the Session C gate, with the 2026-10-01 stage wording and the 2026-10-04 submit-gate edits.

@@ -4,6 +4,16 @@ DeepSteer's results span four distinct contributions (full narrative
 in **[RESEARCH_BRIEF.md](../RESEARCH_BRIEF.md)**; experimental record
 in **[RESEARCH_PLAN.md](../RESEARCH_PLAN.md)**).
 
+## Published (arXiv, 2026)
+
+- **Flagship.** *Refusal Reads Only a Slice of What the Model Knows* (arXiv:2609.14759),
+  `fl_what_refusal_reads/`.
+- **Methods note.** *Calibrating Interpretability Instruments Before Trusting Their Verdicts*
+  (arXiv:2609.14754), `mn_instruments_before_verdicts/`.
+- **Judgment–action gap.** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* (arXiv:2610.08670), `kdg_judgment_action/`: open models act
+  against their own stated moral judgment under pressure, and whether they do follows the
+  post-training recipe (same Llama-3.1 base: Meta's carries the gap, Tulu 3's does not).
+
 ## Paper 1 — *The Moral Emergence Curve* (OLMo-2 1B and OLMo-3 7B)
 
 - **Moral concepts emerge early and fast** — linearly decodable within
