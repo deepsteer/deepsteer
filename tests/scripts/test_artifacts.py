@@ -41,8 +41,8 @@ def repo(tmp_path, monkeypatch):
     bundle = _tar({REL: payload, "../escape.npz": b"x"})
     (zenodo / "b.tar").write_bytes(bundle)
     manifest = {
-        "record": {"zenodo_record": "123"},
-        "bundles": {"b.tar": {"sha256": _sha(bundle)}},
+        "records": {"public": {"zenodo_record": "123"}, "restricted": {"zenodo_record": "456"}},
+        "bundles": {"b.tar": {"record": "public", "sha256": _sha(bundle)}},
         "artifacts": [
             {"path": REL, "sha256": _sha(payload), "bundle": "b.tar"},
             {"path": "papers/x/adapter/tokenizer.json", "sha256": "0", "bundle": None,
@@ -93,7 +93,7 @@ def test_tree_copy_wins_and_unpublished_record_is_explicit(repo):
     assert artifacts.get(REL) == root / REL
     (root / REL).unlink()
     manifest = json.loads(artifacts.MANIFEST.read_text())
-    manifest["record"]["zenodo_record"] = None
+    manifest["records"]["public"]["zenodo_record"] = None
     artifacts.MANIFEST.write_text(json.dumps(manifest))
     with pytest.raises(FileNotFoundError, match="artifacts-last-in-tree"):
         artifacts.get(REL)
@@ -102,3 +102,18 @@ def test_tree_copy_wins_and_unpublished_record_is_explicit(repo):
 def test_excluded_artifact_names_its_regeneration(repo):
     with pytest.raises(FileNotFoundError, match="AutoTokenizer"):
         artifacts.get("papers/x/adapter/tokenizer.json")
+
+
+def test_restricted_bundle_needs_access_then_uses_placed_copy(repo):
+    # Most probable failure: a restricted bundle is fetched anonymously (fails opaquely) instead
+    # of pointing to the access request, or a hand-placed copy is ignored.
+    root, zenodo, payload = repo
+    manifest = json.loads(artifacts.MANIFEST.read_text())
+    manifest["bundles"]["b.tar"]["record"] = "restricted"
+    artifacts.MANIFEST.write_text(json.dumps(manifest))
+    with pytest.raises(FileNotFoundError, match="request access at https://zenodo.org/records/456"):
+        artifacts.get(REL)
+    placed = root / "papers" / "_artifacts" / "b.tar"
+    placed.parent.mkdir(parents=True, exist_ok=True)
+    placed.write_bytes((zenodo / "b.tar").read_bytes())
+    assert artifacts.get(REL).read_bytes() == payload

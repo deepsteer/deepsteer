@@ -1,36 +1,61 @@
 {
  "description": "Binary artifacts removed from the papers/ tree; resolve with papers/build_common/artifacts.py get(path).",
- "record": {
-  "doi": null,
-  "zenodo_record": null,
-  "license": "CC-BY-4.0"
+ "records": {
+  "public": {
+   "doi": null,
+   "zenodo_record": null,
+   "license": "CC-BY-4.0"
+  },
+  "restricted": {
+   "doi": null,
+   "zenodo_record": null,
+   "license": "CC-BY-NC-4.0",
+   "access": "restricted; request access on the record page"
+  }
  },
  "last_in_tree": null,
  "bundles": {
   "deepsteer_papers_1_accuracy_vs_fragility_v1.tar": {
+   "record": "public",
    "sha256": "9022a25fe63a084bbd83620ba01f5c193656ee3e7ca74b23a3aa69fb02bad400",
    "bytes": 92160,
-   "files": 2
+   "files": 2,
+   "md5": "ce02a719d2605910388c422f943d6602"
   },
   "deepsteer_papers_3_moral_geometry_v1.tar": {
+   "record": "public",
    "sha256": "74e80d57b5fb853b1c9356b7869900ca51adb93d07d945cc6c84cb5f495d1696",
    "bytes": 48670720,
-   "files": 51
+   "files": 51,
+   "md5": "dc2408dbc003cd93951c3b399cc48f45"
   },
   "deepsteer_papers_5_moral_alignment_v1.tar": {
-   "sha256": "1aa841e02fdf6cd23540e3b856af46bf22ea130a3433c5b46c90a61a02aae08a",
-   "bytes": 74168320,
-   "files": 31
+   "record": "public",
+   "sha256": "50ed02d97262b3b3eb180d57aeabf24aec9470cbcdd941f2f0bc15ce2808d6bb",
+   "bytes": 49090560,
+   "files": 12,
+   "md5": "0b26eb201e86bd1d93081704a2534d0f"
   },
   "deepsteer_papers_6_cross_model_v1.tar": {
-   "sha256": "650bd6d9fb8bc94fd6c1f42785ff67c69d597cbe3637b1726a97b694b9b5ecf5",
-   "bytes": 59064320,
-   "files": 21
+   "record": "public",
+   "sha256": "26dc958b6dab9435b39ce3a513169271ad346d2e0056c6cb626542d778bf42a5",
+   "bytes": 56115200,
+   "files": 15,
+   "md5": "afb932a76b0bf63f80fe9ed0c7a09add"
   },
   "deepsteer_papers_7_reasoning_v1.tar": {
-   "sha256": "de3a6d34870c122ee339833963c6cfaa249442e799a43825d4aee97390184192",
-   "bytes": 41267200,
-   "files": 17
+   "record": "public",
+   "sha256": "8a7dcf498e79851ee275a264e04ebe58108e5fcf710621b84c9d16ae3c8cd72e",
+   "bytes": 14510080,
+   "files": 6,
+   "md5": "db0876716cb5d311fb0671ff52c13797"
+  },
+  "deepsteer_papers_alpaca_derived_v1.tar": {
+   "record": "restricted",
+   "sha256": "e0a090290220a82ff10be44a32da3ebd9c29504a62f0ccec6cd36c2c3622b3b5",
+   "bytes": 54794240,
+   "files": 36,
+   "md5": "f540e60fbc8819e3cbba0dde01e28e05"
   }
  },
  "artifacts": [
@@ -834,7 +859,7 @@
    "path": "papers/5_moral_alignment/outputs/eval/heretic_art/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "de5701b06c080c0ee2990e0c882a6949d65e30a708b564ba45500b09b7a15d10",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; via eval_pipeline.py:139-149 heretic('art'); runpod/remote_phase3.sh:175-182",
    "readers": [],
    "holds": "per-layer unit refusal direction (harmful minus harmless last-token mean diff, chat), key refusal_layer{L}, ART-SFT model",
@@ -847,7 +872,7 @@
    "path": "papers/5_moral_alignment/outputs/eval/heretic_control/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "74a05c3243dd9f7c3001a896c753537ffd84c2958131cf84720c35902f0f63d8",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; via eval_pipeline.py:139-149 heretic('control'); runpod/remote_phase3.sh:175-182",
    "readers": [],
    "holds": "per-layer refusal direction, control-SFT model",
@@ -860,7 +885,7 @@
    "path": "papers/5_moral_alignment/outputs/heretic/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "921717342f1dd0a544f3717ccabe2d53a5b3908eb3da66b402471233a6101034",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; launched by runpod/remote_experiments.sh:159-164 (RUN_HERETIC=1, --model allenai/Olmo-3-7B-Instruct, --output-dir $OUT/heretic)",
    "readers": [
     "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (default :70)",
@@ -876,7 +901,7 @@
    "path": "papers/5_moral_alignment/outputs/intervention_stage2/heretic_control/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "4e0ae3b5b9aab3d1917690a1700fb0749df23ef50334a56a7f92c7a9fabddd45",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; launched by runpod/remote_phase3.sh:345-351 (RUN_STAGE2=1, --no-save-model, --moral-npz pipeline/olmo3_pretrain_stage3_step11921/probe_directions.npz)",
    "readers": [],
    "holds": "per-layer refusal direction of the post-SFT control arm (forced-coupling Stage 2)",
@@ -889,7 +914,7 @@
    "path": "papers/5_moral_alignment/outputs/intervention_stage2/heretic_coupled/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "b9e2188373c3d6f029eb611ed7ba2d23f02a3de3e76d3a0069b4519ddf038c1b",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177; runpod/remote_phase3.sh:345-351 (arm=coupled)",
    "readers": [],
    "holds": "per-layer refusal direction of the post-SFT coupled arm",
@@ -914,7 +939,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_base/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "401df653b0e6cfc34f1b345720e8cf3c6529eae74e85c61ee562ad6bbbaed870",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135 (out=<output-dir>/<label>, :113); launched by runpod/remote_experiments.sh:191-195 (RUN_MALLEABILITY=1)",
    "readers": [
@@ -931,7 +956,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step1000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "909830b895fe362011e28dfcc4ddf60391c907fd3ecf3ee80103cdf793f0a2c3",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -948,7 +973,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step10000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "5a8d4091afe305e3c6583eaa69db10c21d48256d4365d0d412fe40497643366f",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -965,7 +990,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "e589b2c8c248252312fc1a929c5fcb0b1ccf7a12a7325c68d0ac5e7e3fd96c2e",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -982,7 +1007,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11900/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "6216124b4cafdc3b53fd0d01c22011002f3a0a4a5d7d801626ae8f8bd108d488",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -999,7 +1024,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step11921/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "401df653b0e6cfc34f1b345720e8cf3c6529eae74e85c61ee562ad6bbbaed870",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1016,7 +1041,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step2000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "5765d0446893dd2e67ab8ebb8700101e0cf370be5bb3eb7948ce6bb16f84c8a1",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1033,7 +1058,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step3000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "7805b1cb29eb3e34a4079d78cc0e27a5cd3ad0916ceb28c483b4ff3a4bf01e31",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1050,7 +1075,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step4000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "2f53ebc45901e5e6f31c97f5cd52b7428d84fb47915e6e21b1fb10365c8fba52",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1067,7 +1092,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step5000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "3127ce551e3d505fe782f5c1daad2659e7cb68eda9ea4520498708b9f695eb5d",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1084,7 +1109,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step6000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "3b8071b45c69bf7dcfc274aa5838abcfc062ee975c465878f3689c36ef22d0b6",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1101,7 +1126,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step7000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "3236abf0103348b022f151c0220d754f7e39279b5b370d13b65f5303e4163956",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1118,7 +1143,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step8000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "6bda37c6e10614a07cbeccba5428480c7425cafa358dd56c31a4a547931fd2e5",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1135,7 +1160,7 @@
    "path": "papers/5_moral_alignment/outputs/measurement/stage3/olmo3_pretrain_stage3_step9000/proto_refusal_directions.npz",
    "bytes": 1599066,
    "sha256": "fe307f9ed45041a4faa2b18c66aeb2de3cdb52131c9d4b7d668e35ddae3ce1e8",
-   "bundle": "deepsteer_papers_5_moral_alignment_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/5_moral_alignment/scripts/extract_proto_refusal.py:135; runpod/remote_experiments.sh:191-195",
    "readers": [
@@ -1283,7 +1308,7 @@
    "path": "papers/6_cross_model/outputs/llama31/heretic/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "fb1e4cf8a9abf355bb1dcbb61a807ca6fc17b17b110afa63285b881f5ae1fb22",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130, --output-dir outputs/llama31/heretic)",
    "readers": [],
    "holds": "per-layer refusal diff-of-means (last-token, chat), 32 layers, key 'refusal'",
@@ -1343,7 +1368,7 @@
    "path": "papers/6_cross_model/outputs/llama31_instruct/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "1df3416c1024c8066d0835535816b7284440c812557857fb2cd373243513f8a4",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:72-85/110)",
    "readers": [
     "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (run_phase1.py:91)",
@@ -1385,7 +1410,7 @@
    "path": "papers/6_cross_model/outputs/olmo3/heretic/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "921717342f1dd0a544f3717ccabe2d53a5b3908eb3da66b402471233a6101034",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130)",
    "readers": [],
    "holds": "per-layer refusal dirs, 32 layers",
@@ -1444,7 +1469,7 @@
    "path": "papers/6_cross_model/outputs/olmo3_instruct/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "d9f2554a1b0e34eb856b1ad0c84a321ee1a7eb6000a6b54be0a8e487551b319a",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:110)",
    "readers": [
     "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186",
@@ -1484,7 +1509,7 @@
    "path": "papers/6_cross_model/outputs/qwen25/heretic/refusal_directions.npz",
    "bytes": 408746,
    "sha256": "1b26ac66d9be8c4560a1651002ff9cff6b1ae370dd233d3fe40aced0c845b6de",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/5_moral_alignment/scripts/heretic_ablation.py:177 (via run_phase2.py:125-130)",
    "readers": [],
    "holds": "per-layer refusal dirs, 28 layers",
@@ -1543,7 +1568,7 @@
    "path": "papers/6_cross_model/outputs/qwen25_instruct/refusal_directions.npz",
    "bytes": 408746,
    "sha256": "4fa8207968c4533067989d34c44867b3bd0d48323fcc7294b0ddc57b93a5ac9c",
-   "bundle": "deepsteer_papers_6_cross_model_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase1.py:110)",
    "readers": [
     "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186",
@@ -1595,7 +1620,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_llama8b/position_directions.npz",
    "bytes": 566768,
    "sha256": "97115a0efc0fcc0b7c0050e18b126ef33d83c809629d65cee6ddcb141a341f4a",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54, --output-dir outputs/{key})",
    "readers": [
     "papers/7_reasoning/scripts/position_vs_moral.py:55 (path built :46)"
@@ -1610,7 +1635,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_llama8b/position_headline_vectors.npz",
    "bytes": 4195574,
    "sha256": "eb296f41202bb95f166b78148508af2bdcbfd2049cff93d3dd651e30010147d5",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
    "readers": [],
    "holds": "per-prompt float32 activations at the headline layer: H_t_inst, S_t_inst, H_t_post, S_t_post, plus the headline layer index",
@@ -1623,7 +1648,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_llama8b/two_site_headline_vectors.npz",
    "bytes": 6293226,
    "sha256": "8662b041faac2e324ec30c52bb5cb4ddff503ca992089a163344ba9dc98e3d9d",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_two_site.py:228 (via run_phase1.py:72, step 3)",
    "readers": [
     "papers/7_reasoning/scripts/bootstrap_two_site.py:71 (via run_phase1.py:83 --vectors)"
@@ -1638,7 +1663,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_llama8b/two_site_refusal_directions.npz",
    "bytes": 848900,
    "sha256": "8f8a077e12e55a85bef7dff8db8a83db01a4e95dc9614462a30d9bb4f1b40a7b",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_two_site.py:219 (via run_phase1.py:72)",
    "readers": [
     "papers/7_reasoning/scripts/causal_ablation.py:198 (via run_phase2b.py:84 --refusal-npz)",
@@ -1654,7 +1679,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_llama8b_eop/refusal_directions.npz",
    "bytes": 532674,
    "sha256": "0ef4fc1a903ac102838f998c26791ecfb1acc15cc7f701f94e1340c8e97a2e1f",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/6_cross_model/scripts/extract_refusal.py:289 (via run_phase0.py:99, --output-dir outputs/ds_r1_llama8b_eop set at :86, --input-format chat)",
    "readers": [
     "papers/5_moral_alignment/scripts/measure_refusal_decomposition.py:186 (via run_phase0.py:109)"
@@ -1702,7 +1727,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/position_directions.npz",
    "bytes": 1079802,
    "sha256": "6ea9ef3364d28f6042e331075e1b1d7900561507d28815234641d4deeca36ae7",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54)",
    "readers": [
     "papers/7_reasoning/scripts/position_vs_moral.py:55"
@@ -1717,7 +1742,7 @@
    "path": "papers/7_reasoning/outputs/ds_r1_qwen14b/position_headline_vectors.npz",
    "bytes": 5244150,
    "sha256": "22dcbeb4d07c825a9e7449b5ed195650349dbf10add6881bd413096e4597084a",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
    "readers": [],
    "holds": "per-prompt headline-layer H/S activations at t_inst and t_post",
@@ -1765,7 +1790,7 @@
    "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_directions.npz",
    "bytes": 306952,
    "sha256": "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:115 (via run_phase2c.py:54)",
    "readers": [
@@ -1782,7 +1807,7 @@
    "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_headline_vectors.npz",
    "bytes": 2950390,
    "sha256": "1e288165be946e68c71968d8fc7946b273facdab8076281668b4ad4b31d01911",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/7_reasoning/scripts/extract_positions.py:118 (via run_phase2c.py:54)",
    "readers": [],
@@ -1796,7 +1821,7 @@
    "path": "papers/7_reasoning/outputs/gpt_oss_20b/two_site_headline_vectors.npz",
    "bytes": 4264170,
    "sha256": "8daa9785ee68acad47c6097e2f538ed8705620d83e1beb98463713e94b11d8b3",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/7_reasoning/scripts/extract_two_site.py:228 (via run_phase1.py:72)",
    "readers": [
@@ -1812,7 +1837,7 @@
    "path": "papers/7_reasoning/outputs/gpt_oss_20b/two_site_refusal_directions.npz",
    "bytes": 459468,
    "sha256": "24b7c159b060462d16350be7b932e0f83d43bb0e2694fad819712dfb848b45db",
-   "bundle": "deepsteer_papers_7_reasoning_v1.tar",
+   "bundle": "deepsteer_papers_alpaca_derived_v1.tar",
    "also_in": "10.5281/zenodo.22731361",
    "producer": "papers/7_reasoning/scripts/extract_two_site.py:219 (via run_phase1.py:72)",
    "readers": [
@@ -1829,6 +1854,7 @@
  "notes": [
   "readers lists load sites that receive this path, usually as argv from an orchestrator (run_phase*.py, runpod/*.sh); paths are rarely literal at the load call.",
   "byte_reproducible=false: committed before torch.manual_seed(42) was added to probe training (af75f30, 2026-06-12); rerunning today's code gives different directions, so the deposit is the only record outside git history.",
-  "also_in: byte-identical copy already published in that DOI (inside a 2.35 GB tar.zst, so not fetchable per file)."
+  "also_in: byte-identical copy already published in that DOI (inside a 2.35 GB tar.zst, so not fetchable per file).",
+  "license_review: stimuli include mlabonne/harmless_alpaca (verbatim Stanford Alpaca instructions, CC BY-NC 4.0 upstream); these arrays are bundled for the restricted record."
  ]
 }

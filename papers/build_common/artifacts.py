@@ -8,7 +8,8 @@ with their sha256. ``get(path)`` returns a local file whose hash matches the man
 1. the file in the working tree (present at or before the commit tagged ``artifacts-last-in-tree``);
 2. otherwise a verified copy in the cache, ``papers/_artifacts/`` (gitignored; override with
    ``DEEPSTEER_ARTIFACT_CACHE``);
-3. otherwise the path's bundle is downloaded from the Zenodo record named in the manifest, the
+3. otherwise the path's bundle is taken from ``<cache>/<bundle>`` if placed there by hand, or
+   downloaded from its public Zenodo record (restricted bundles need an access request), the
    bundle's sha256 is checked, and only the files the manifest assigns to that bundle are extracted
    (tar member names are matched against the manifest, never trusted as
    paths).
@@ -95,35 +96,50 @@ def get(path: str | os.PathLike) -> Path:
             f"{rel} is not deposited ({entry.get('deposit', 'excluded')}); regenerate it: "
             f"{entry.get('regeneration', 'see the manifest entry')}"
         )
-    record = manifest["record"].get("zenodo_record")
-    if not record:
-        raise FileNotFoundError(
-            f"{rel} is not in the working tree and its Zenodo record is not published yet. "
-            "Check out the commit tagged artifacts-last-in-tree to read it from git."
-        )
-    _fetch_bundle(manifest, entry["bundle"], record)
+    _fetch_bundle(manifest, entry["bundle"])
     cached = _cache_dir() / rel
     if not cached.is_file() or _sha256(cached) != entry["sha256"]:
         raise ValueError(f"{rel}: extracted file does not match the manifest sha256")
     return cached
 
 
-def _fetch_bundle(manifest: dict, bundle: str, record: str) -> None:
-    """Download ``bundle`` from the Zenodo record, verify it, extract its manifest members."""
-    expected = manifest["bundles"][bundle]["sha256"]
+def _fetch_bundle(manifest: dict, bundle: str) -> None:
+    """Find or download ``bundle``, verify it, and extract its manifest members.
+
+    A bundle already placed at ``<cache>/<bundle>`` (for example a restricted bundle obtained
+    through a Zenodo access request) is used instead of downloading.
+    """
+    meta = manifest["bundles"][bundle]
+    record_name = meta.get("record", "public")
+    record = manifest["records"][record_name]
     members = {a["path"]: a["sha256"] for a in manifest["artifacts"] if a["bundle"] == bundle}
     cache = _cache_dir()
     cache.mkdir(parents=True, exist_ok=True)
-    url = ZENODO_FILE_URL.format(record=record, name=bundle)
-    with tempfile.NamedTemporaryFile(dir=cache, suffix=".tar", delete=False) as tmp:
-        tmp_path = Path(tmp.name)
-    try:
+    placed = cache / bundle
+    downloaded = None
+    if placed.is_file():
+        source = placed
+    elif not record.get("zenodo_record"):
+        raise FileNotFoundError(
+            f"{bundle} is not cached and its Zenodo record ({record_name}) is not published yet. "
+            "Check out the commit tagged artifacts-last-in-tree to read it from git."
+        )
+    elif record_name == "restricted":
+        raise FileNotFoundError(
+            f"{bundle} is in a restricted Zenodo record: request access at "
+            f"https://zenodo.org/records/{record['zenodo_record']}, then save the file as {placed}"
+        )
+    else:
+        url = ZENODO_FILE_URL.format(record=record["zenodo_record"], name=bundle)
+        with tempfile.NamedTemporaryFile(dir=cache, suffix=".tar", delete=False) as tmp:
+            downloaded = source = Path(tmp.name)
         print(f"downloading {url}", file=sys.stderr)
-        with urllib.request.urlopen(url) as response, open(tmp_path, "wb") as out:
+        with urllib.request.urlopen(url) as response, open(source, "wb") as out:
             shutil.copyfileobj(response, out)
-        if _sha256(tmp_path) != expected:
+    try:
+        if _sha256(source) != meta["sha256"]:
             raise ValueError(f"{bundle}: download does not match the manifest sha256")
-        with tarfile.open(tmp_path) as tar:
+        with tarfile.open(source) as tar:
             for member in tar.getmembers():
                 if member.name not in members or not member.isfile():
                     continue
@@ -132,7 +148,8 @@ def _fetch_bundle(manifest: dict, bundle: str, record: str) -> None:
                 with tar.extractfile(member) as src, open(target, "wb") as dst:
                     shutil.copyfileobj(src, dst)
     finally:
-        tmp_path.unlink(missing_ok=True)
+        if downloaded is not None:
+            downloaded.unlink(missing_ok=True)
 
 
 def _main(argv: list[str]) -> int:
