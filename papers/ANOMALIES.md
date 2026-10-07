@@ -539,6 +539,18 @@ with the author's approval); `rp_require_disk` refuses to provision a pod with <
 the results path (`MIN_FREE_GB`); `rp_download` stops retrying below 5 GB free. Whether the second
 pod survived the failed download (KEEP_POD path) is being checked with the author.
 
+**Process ledger 2026-10-07 — a bootstrap PR interval quoted without its bias note.** Writing
+KDG_GPTOSS_SPEC G-A3 found two CIs for one number: GPT-OSS's raw decision-token PR 9.40 carries the
+subsampling CI [9.09, 10.65] of record (CLAIMS W4-07) and, in `W4_RESULTS.md` §14.3, the row-resampled
+bootstrap CI [7.70, 9.96] from `deepsteer.geometry.participation.bootstrap_pr`. The library already states
+the direction (duplicated rows lower the PR; `bias_note`), but calls it "slight"; at n = 64–128 it is
+not: in `supplement/cells/w4/gpt_oss_20b/pr_audit.json` the P0 window reads 22.09 with bootstrap CI
+[13.88, 18.91], which excludes its own point estimate. Blast radius: the bootstrap interval gates no
+verdict (the A5 band half uses band_min against the null q95; the W4-05 hedge uses the PR point and the
+covariance null), and every PR CI quoted in CLAIMS is the subsampling one. Open, zero GPU, author's call:
+label the §14.3 interval "bootstrap, biased low" or replace it with the subsampling CI; and change the
+docstring's "slightly" to a size statement.
+
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 
 **Date.** 2026-09-19 (A17 E1; `papers/kdg_panel/data/analysis_a17_union.json` `chat_exploratory.E1_family_contrasts`; KDG_RESULTS §13.2).

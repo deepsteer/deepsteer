@@ -1,6 +1,7 @@
 # KDG Tier 2 addition: GPT-OSS-20B (pre-registration draft)
 
-Status: v0.1, 2026-10-04. Approved by the author for commit with items (a)–(b) and the slot rival added;
+Status: v0.2, 2026-10-07 (amendments G-A1..G-A5 below, author sign-off 2026-10-07, pushed before
+any build output or cell). v0.1, 2026-10-04: approved by the author for commit with items (a)–(b) and the slot rival added;
 pushed before any cell runs. 1.3 A100-hours authorized after the KDG paper's arXiv submission, not before.
 Zero GPU this week; the cells run after the KDG paper's arXiv submission and gate neither the paper nor
 the outreach email (author, 2026-10-04). Builds on `KDG_PANEL_SPEC.md`, `KDG_PHASE1_SPEC.md` (P1-A2
@@ -68,7 +69,7 @@ object: letter-only chat option distribution | position: first final-channel tok
   empty-analysis prefill | format: harmony, pinned template (a4c9919c) and date (Current date:
   2026-10-04) | reasoning_level: medium (passed explicitly) | reasoning_trace: none (empty closed
   analysis turn; dose 0) | permutations: 8 | outcome_variable: KDG excess E (continuous) | PR: recorded
-  at the decision token (FL's 12.79 the reference) | provenance: P1-A2, validated per model by C2
+  at the decision token (references with harness labels: G-A3) | provenance: P1-A2, validated per model by C2
 ```
 
 ## 3. Cells (one model load; forward passes except C0c)
@@ -76,7 +77,7 @@ object: letter-only chat option distribution | position: first final-channel tok
 - **C0, readout construct check (first).** On 64 union scenarios (seed 0): the primary prefill, the
   direct-final prefill, and low-effort generation (4 rollouts, max 512 tokens, final channel parsed).
   **Pass** iff the per-scenario argmax of the primary readout agrees with the majority of the generated
-  final answers on ≥ 0.80 of scenarios with a parsed final answer. Fail → every later GPT-OSS number is
+  final answers on ≥ 0.80 of scenarios with a parsed final answer. Ties and the CI beside the rule: G-A1, G-A2. Fail → every later GPT-OSS number is
   descriptive (the forced readout does not track what the model answers).
 - **C1, screen** (P1-A9 item 2 rule) on GPT-OSS's own letter-only chat cells over the union (586):
   `dl/jl_chat_neutral` and their pressure-removed twins, which are also the dose-0 pressure cells.
@@ -102,7 +103,7 @@ About 1.3 A100-hours: download and bf16 dequant about 10 min; five letter-readou
 permutations at an estimated 2× a dense 7B's cost (MoE routing in the HF implementation), about 8 min
 each; C0's 64 × 4 generations about 15 min; VALIDATE (forward = generate on the prefilled final channel,
 ≤ 0.05 nats) and the decision-token residual saves. Profile `p2c` on the Phase 2 remote script, after the
-arXiv submission.
+arXiv submission. Bail conditions and the save list: G-A4.
 
 ## 6. Both branches (written before data)
 
@@ -133,3 +134,63 @@ arXiv submission.
    for later.
 3. *"Your scenarios were tuned on OLMo-3."* As for every Tier 2 model: per-model engagement, screen rate
    and positive control are reported; the model-free set is the number of record.
+
+## Amendments
+
+All five dated 2026-10-07, signed off by the author the same day, committed and pushed before any harness
+code for this spec exists and before any cell runs. None changes a verdict rule's threshold or a
+pre-registered PRIMARY; G-A1 fills a gap the v0.1 rule left open.
+
+**G-A1. C0 ties.** With 4 generated rollouts per scenario a 2–2 split has no majority. The majority
+letter is one held by **more than half of the completed rollouts**; a scenario with no such letter (a 2–2
+or 1–1 split, or 1–1–1–1) counts as **non-agreement**. This is conservative: it can only lower the
+agreement rate. Zero completed rollouts means no parsed final answer, so the scenario leaves the
+denominator as in v0.1.
+
+**G-A2. C0's estimate is printed with its Wilson CI.** The 0.80 rule is unchanged and still applies to the
+point estimate. Beside it: the Wilson 95% interval of the agreement rate and its standard error
+√(p̂(1−p̂)/n). A point estimate within one SE of 0.80 on either side is labelled **near-miss** (pass or
+fail as the rule reads, with the label carried into every sentence that uses C0). Reason: at n = 64 a true
+agreement of 0.75 or 0.85 lands on the other side of 0.80 in about 16% of samples (exact binomial: 0.156 and 0.155) (estimator-traps,
+near-miss at a pre-registered bar).
+
+**G-A3. Decision-token PR references, with harness labels.** v0.1 cited "FL's 12.79". The saved values
+at GPT-OSS's harmony decision token are:
+- **12.79, post-standardization**, Tier-1 harness (`gptoss_tier1.py`, `tier1_session_gpt_oss_20b.json`);
+  the value of record in FL and SYNTHESIS.
+- **9.40 raw**, W4 in-format sample (L12, n = 128), subsampling 95% CI **[9.09, 10.65]**
+  (`supplement/cells/w4/pr_subsampling_ci.json`; CLAIMS W4-07).
+The same raw 9.40 also carries a with-replacement bootstrap CI [7.70, 9.96] in
+`supplement/cells/w4/gpt_oss_20b/pr_profiles.json` and `decision_token_reread.json`, quoted in
+`W4_RESULTS.md` §14.3. That interval sits almost entirely below its own point estimate, as expected when
+duplicated rows shrink a participation ratio (resampling attenuation); the subsampling CI is the one of
+record and the bootstrap one is not used here (ANOMALIES process ledger, 2026-10-07). This spec's PR is
+computed on its own decision-token residuals, raw and standardized, and printed beside both references
+with the harness named; no size comparison across harnesses.
+
+**G-A4. Bail conditions, timing gate, and save list.**
+- **Bail (stop the pod, report, no cells):** VALIDATE fails (forward ≠ generate on the prefilled final
+  channel by more than 0.05 nats, an option letter not a single token, or the date-pin / cutoff-line
+  assertions below), or the dequant check fails (mxfp4 experts not dequantized to bf16).
+- **Timing bail (before launch):** VALIDATE times one full letter-readout unit on the pod. If that timing
+  projects the whole run past **2.6 A100-hours** (2× the 1.3-hour estimate), the run stops after VALIDATE
+  and the projection is reported to the author before any real launch.
+- **No bail on C0 or C2.** A C0 failure (readout invalid) or a C2 failure (instrument not validated) does
+  not stop the session: C1–C3 still run, bank their decision-token residuals, and are reported as
+  descriptive under §6's branch for that outcome.
+- **Save list (per unit, enforced by the manifest):** per-permutation letter log-prob rows (every cell);
+  C0 per-rollout generated text, token ids, parsed letter and `reasoning_trace` label; **decision-token
+  residuals at every layer** (24 × 2880, fp16) for every scenario × cell × permutation, saved once per
+  (scenario, cell, permutation) since both prefills share the prefix up to `<|start|>assistant`,
+  about 3.2 GB in all; the rendered-prompt sha256 per row; manifest with the resolved revision,
+  template sha256, date pin, reasoning level, timing projection and dequant check.
+
+**G-A5. Local-test assertions added (the build's tests name these failure modes).**
+1. **No prefill token precedes the residual position.** The saved residual index is the position of
+   `<|start|>assistant` at the end of the rendered prompt, and every prefill token (analysis/final
+   channel markers) lies strictly after it; the residual is therefore identical under the primary and
+   direct-final prefills, and the test asserts that equality on a tiny model.
+2. **The template's `Knowledge cutoff:` line is untouched.** The date pin replaces only the
+   `Current date:` line; the test asserts the rendered system message still contains the template's
+   `Knowledge cutoff: 2024-06` line exactly once and byte-identical to an unpinned render (checked
+   2026-10-07 against the pinned `chat_template.jinja`, sha256 a4c9919c, where it is a static string).
