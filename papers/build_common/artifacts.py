@@ -96,8 +96,11 @@ def resolve(path: str | os.PathLike, missing_ok: bool = False) -> str | os.PathL
         return path
 
 
-def get(path: str | os.PathLike) -> Path:
+def get(path: str | os.PathLike, download: bool = True) -> Path:
     """Return a local copy of the artifact at repo-relative ``path``, verified against the manifest.
+
+    With ``download=False`` only the tree and the cache are consulted (for tests that must not
+    touch the network).
 
     Raises:
         KeyError: if ``path`` is not in the manifest.
@@ -121,6 +124,8 @@ def get(path: str | os.PathLike) -> Path:
             f"{rel} is not deposited ({entry.get('deposit', 'excluded')}); regenerate it: "
             f"{entry.get('regeneration', 'see the manifest entry')}"
         )
+    if not download:
+        raise FileNotFoundError(f"{rel} is not available locally; fetch it with: {fetch_command(rel)}")
     _fetch_bundle(manifest, entry["bundle"])
     cached = _cache_dir() / rel
     if not cached.is_file() or _sha256(cached) != entry["sha256"]:

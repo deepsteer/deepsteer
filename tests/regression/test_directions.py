@@ -49,14 +49,14 @@ class TestDirectionOutputSchema:
 
     def test_probe_directions_npz_loadable(self):
         """Verify library can load paper's .npz probe direction files."""
-        # Binary artifacts leave the tree (LIBRARY_RELEASE_PLAN §D): resolve through the artifact
-        # helper, and skip with the fetch command, never fail, when the array is unavailable.
+        # Binary artifacts left the tree (LIBRARY_RELEASE_PLAN §D): use a local copy (tree or
+        # fetched cache) and skip with the fetch command otherwise; never download in CI.
         sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "papers" / "build_common"))
         from artifacts import fetch_command, get
 
         rel = "papers/3_moral_geometry/outputs/exp1_2_3/exp1_probe_directions.npz"
         try:
-            npz_path = get(rel)
+            npz_path = get(rel, download=False)
         except FileNotFoundError:
             pytest.skip(f"artifact not available locally; fetch it with: {fetch_command(rel)}")
 

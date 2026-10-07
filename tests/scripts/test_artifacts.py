@@ -135,3 +135,9 @@ def test_resolve_passes_non_artifacts_and_honours_missing_ok(repo, tmp_path, mon
     assert artifacts.resolve(REL, missing_ok=True) == REL
     with pytest.raises(FileNotFoundError):
         artifacts.resolve(REL)
+
+
+def test_download_false_never_fetches(repo):
+    # Most probable failure: a test path that silently downloads from Zenodo on every CI run.
+    with pytest.raises(FileNotFoundError, match="fetch it with"):
+        artifacts.get(REL, download=False)
