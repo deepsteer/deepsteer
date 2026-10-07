@@ -5,6 +5,8 @@ The API is alpha and will change between minor versions.
 ## [Unreleased]
 
 ### Added
+- `CITATION.cff`, so GitHub's "Cite this repository" renders APA and BibTeX (it only links a
+  plain `CITATION` file). The release workflow fails if its `version` differs from the tag.
 - `llms.txt` and a consumer skill for agents, `.claude/skills/deepsteer-library/SKILL.md`: data
   conventions, exact signatures and the validity gates (LIBRARY_RELEASE_PLAN §E).
 - Args and Returns sections on every exported function in `deepsteer.geometry` (participation

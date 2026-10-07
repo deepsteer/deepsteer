@@ -1,0 +1,72 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it as below. For the research findings, cite the
+  papers listed under references.
+type: software
+title: "DeepSteer: Monitor, measure, and steer alignment from LLM pretraining through post-training"
+authors:
+  - family-names: Reblitz-Richardson
+    given-names: Orion
+    orcid: "https://orcid.org/0000-0002-3618-8936"
+    affiliation: Distiller Labs
+repository-code: "https://github.com/deepsteer/deepsteer"
+url: "https://github.com/deepsteer/deepsteer"
+license: Apache-2.0
+version: 0.2.0
+date-released: "2026-10-06"
+keywords:
+  - interpretability
+  - alignment
+  - probing
+  - representation engineering
+  - language models
+  - moral foundations
+references:
+  - type: article
+    title: "When Probing Accuracy Saturates, Fragility Resolves: A Complementary Metric for LLM Pre-Training Analysis"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2606.11375
+    url: "https://arxiv.org/abs/2606.11375"
+  - type: article
+    title: "Output Dilution: Redundant but Fragile Representations in MoE Models"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2608.25231
+    url: "https://arxiv.org/abs/2608.25231"
+  - type: article
+    title: "How Language Models Organize and Structure Moral Knowledge"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2608.27402
+    url: "https://arxiv.org/abs/2608.27402"
+  - type: article
+    title: "Refusal Reads Only a Slice of What the Model Knows: Harm-Keyed Routing and Its Exceptions Across Model Families"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2609.14759
+    url: "https://arxiv.org/abs/2609.14759"
+  - type: article
+    title: "Calibrating Interpretability Instruments Before Trusting Their Verdicts"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2609.14754
+    url: "https://arxiv.org/abs/2609.14754"
+  - type: article
+    title: "Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment"
+    authors:
+      - family-names: Reblitz-Richardson
+        given-names: Orion
+    year: 2026
+    doi: 10.48550/arXiv.2610.08670
+    url: "https://arxiv.org/abs/2610.08670"
