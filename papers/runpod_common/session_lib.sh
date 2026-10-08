@@ -174,13 +174,75 @@ rp_sync_up() {
      { apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq rsync; } || \
      { command -v apk >/dev/null 2>&1 && apk add --no-cache rsync; })"
 
-  # Filter order matters: shared universal excludes (blobs/caches) win first, then
-  # keep THIS paper's outputs, then drop every other paper's outputs.
-  echo ">> Syncing repo -> pod:$REMOTE_DIR (this paper's outputs + package only; blobs/other papers excluded)"
+  # Filter order matters: explicitly named output FILES (SYNC_OUTPUTS) first, then the shared
+  # universal excludes (blobs/caches, and trees no pod needs such as the KDG outputs), then THIS
+  # paper's outputs, then drop every other paper's outputs.
+  rp_output_filters
+  rp_check_sync_size || exit 1
+  echo ">> Syncing repo -> pod:$REMOTE_DIR (${SYNC_OUTPUTS:+outputs: $SYNC_OUTPUTS; }blobs/other papers excluded)"
   rsync -az --delete \
+    ${RP_PRE_FILTERS[@]+"${RP_PRE_FILTERS[@]}"} \
     --exclude-from "$RSYNC_EXCLUDE" \
-    --include "/$SELF_PAPER/outputs/***" \
-    --exclude '/papers/*/outputs/' \
+    "${RP_OUT_FILTERS[@]}" \
     -e "ssh ${SSH_OPTS[*]}" \
     "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
+}
+
+# rp_output_filters: sets RP_PRE_FILTERS and RP_OUT_FILTERS (global arrays, not namerefs: the
+# launcher runs under macOS's bash 3.2).
+#   SYNC_OUTPUTS unset   the whole $SELF_PAPER/outputs tree, still subject to rsync_exclude.txt
+#                        (historical default).
+#   SYNC_OUTPUTS=none    no outputs.
+#   SYNC_OUTPUTS=a,b/    only these paths, relative to $SELF_PAPER. A FILE entry is placed before
+#                        rsync_exclude.txt, so one named file can cross a universal exclude (the
+#                        p2c VALIDATE timing record lives under the excluded KDG outputs); a
+#                        DIRECTORY entry (trailing /) stays behind it, so no blob or excluded tree
+#                        ever ships by directory. Ancestors are included so rsync can descend.
+rp_output_filters() {
+  RP_PRE_FILTERS=()
+  RP_OUT_FILTERS=()
+  if [ -z "${SYNC_OUTPUTS:-}" ]; then
+    RP_OUT_FILTERS=(--include "/$SELF_PAPER/outputs/***")
+  elif [ "$SYNC_OUTPUTS" != "none" ]; then
+    local item anc part n
+    IFS=',' read -ra _items <<< "$SYNC_OUTPUTS"
+    for item in "${_items[@]}"; do
+      anc="/$SELF_PAPER"
+      IFS='/' read -ra _parts <<< "${item%/}"
+      n=$(( ${#_parts[@]} - 1 ))
+      for part in "${_parts[@]:0:$n}"; do
+        anc="$anc/$part"
+        if [ "${item: -1}" = "/" ]; then RP_OUT_FILTERS+=(--include "$anc/")
+        else RP_PRE_FILTERS+=(--include "$anc/"); fi
+      done
+      if [ "${item: -1}" = "/" ]; then RP_OUT_FILTERS+=(--include "/$SELF_PAPER/${item}***")
+      else RP_PRE_FILTERS+=(--include "/$SELF_PAPER/$item"); fi
+    done
+    RP_OUT_FILTERS+=(--exclude "/$SELF_PAPER/outputs/**")
+  fi
+  RP_OUT_FILTERS+=(--exclude '/papers/*/outputs/')
+}
+
+# rp_check_sync_size: with MAX_SYNC_GB set, list what the sync would ship (rsync -n with the same
+# filters; excluded trees are pruned, not walked), sum the file sizes locally, and refuse before
+# any upload if the total is larger. Sizes come from stat, not rsync's --stats text, because the
+# macOS openrsync and GNU rsync print different stats.
+rp_check_sync_size() {
+  [ -n "${MAX_SYNC_GB:-}" ] || return 0
+  local tmp list bytes
+  tmp="$(mktemp -d)"
+  # fail closed: a listing error must never read as a small sync
+  list="$(cd "$REPO_ROOT" && rsync -an --out-format='%n' ${RP_PRE_FILTERS[@]+"${RP_PRE_FILTERS[@]}"} \
+      --exclude-from "$RSYNC_EXCLUDE" "${RP_OUT_FILTERS[@]}" ./ "$tmp/")" || {
+    rm -rf "$tmp"; echo "ERROR: could not list the sync (rsync -n failed); refusing."; return 1; }
+  rm -rf "$tmp"
+  bytes="$(cd "$REPO_ROOT" && printf '%s\n' "$list" | while IFS= read -r f; do
+        [ -f "$f" ] && { stat -c %s "$f" 2>/dev/null || stat -f %z "$f"; }  # GNU, then BSD
+      done | awk '{s += $1} END {printf "%.0f", s}')"
+  [ "${bytes:-0}" -gt 0 ] || { echo "ERROR: sync listing is empty; refusing."; return 1; }
+  echo ">> Sync size: $(awk -v b="${bytes:-0}" 'BEGIN {printf "%.2f", b / 1e9}') GB (limit $MAX_SYNC_GB GB)"
+  awk -v b="${bytes:-0}" -v m="$MAX_SYNC_GB" 'BEGIN {exit !(b <= m * 1e9)}' || {
+    echo "ERROR: sync would upload more than MAX_SYNC_GB=$MAX_SYNC_GB GB; narrow SYNC_OUTPUTS."
+    return 1
+  }
 }

@@ -143,7 +143,7 @@ escalation is answered.
 
 **A5 band half.** Held-one-out moral-family band at the harmony decision token: moral_stories 0.531
 (null q95 0.482), fables 0.541 (0.471), ethics 0.540 (0.345); band_min 0.531 > null_q95_max 0.482 →
-**band above null**. Post-standardization PR of record 12.79 (raw 9.40, CI [7.7, 10.0]). GPT-OSS's
+**band above null**. Post-standardization PR of record 12.79 (raw 9.40; subsampling CI of record [9.09, 10.65], §14.6. The row-resampling bootstrap interval [7.7, 10.0] in `decision_token_reread.json` is biased low and not of record: duplicated rows lower the PR, so the interval sits below its own point estimate. Relabelled 2026-10-07, ANOMALIES process ledger). GPT-OSS's
 decision token is the one panel position where the moral band survives the covariance null; D3-20's
 "position-valid" is scoped to decision-direction reads (NI-3), and the note enters FL App D.
 

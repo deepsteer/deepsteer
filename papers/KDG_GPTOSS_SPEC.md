@@ -218,3 +218,24 @@ data; flagged to the author with the build, P1-A2 precedent).** No threshold or 
 6. *Branch order.* Readout invalid (C0 fails and is not descriptive), then instrument not validated
    (C2), then E. An E interval entirely below 0 is not a §6 branch; it is reported as
    `negative_excess_unregistered` and goes to ANOMALIES before any wording.
+
+**G-A7. C0 near-miss discriminator, and timing parity (author, 2026-10-07; G-A6 signed off as
+written, temperature stays 0.7).** Pushed before any data.
+1. *Trigger.* If the primary C0 result at T = 0.7 lies inside the G-A2 near-miss band
+   (|agreement − 0.80| ≤ SE) and C0 is not descriptive (truncation ≤ 1/4), the pod runs **one
+   additional C0 generation batch at temperature 1.0** (GPT-OSS's card value): the same 64 scenarios,
+   4 rollouts each at permutation seeds 0..3, low effort, 512 tokens, generation seed 0, saved as
+   `c0_generate_low_t1`. The trigger is computed on the pod from the saved C0 cells by the committed
+   analysis function (`analyze_gptoss.c0`). Outside the band there is no second arm.
+2. *What it decides.* The rival it separates: the near-miss is a property of the sampling
+   temperature (0.7 sharpens rollouts toward the mode and so toward the forced argmax) rather than
+   of the readout. The T = 0.7 rule stays the verdict of record. Agreement at T = 1.0 is scored against
+   the same forced argmax with the same G-A1 majority, and printed with its Wilson CI.
+   **Same side of 0.80 at both temperatures → `temperature_robust`**: C0's verdict carries the
+   near-miss label only. **Opposite sides → `temperature_dependent`**: the T = 0.7 verdict stands, and
+   every sentence that uses C0 states both temperatures' agreement.
+3. *Timing.* The VALIDATE projection counts the T = 1.0 batch as if triggered (worst case).
+4. *Timing parity (G-A4 addendum).* p2c runs on A100 80GB only (SXM4 or PCIe; the remote script
+   refuses any other card). VALIDATE records the GPU name and class in `timing.json`; the real run
+   receives that file (the launcher's `SYNC_OUTPUTS` ships it and no other output) and refuses with
+   exit 4 if it is missing, says stop, or was measured on another GPU class.

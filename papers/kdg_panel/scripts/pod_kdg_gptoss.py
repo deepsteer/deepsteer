@@ -201,7 +201,7 @@ def run_c0(ctx: Ctx, cfg: kh.HarmonyConfig, scenarios, temperature: float) -> No
     """Forced readouts (both prefills, 8 permutations) and low-effort generation (permutation seeds
     0..3, one rollout each). Every row carries the harmony fields; no verdict here."""
     m, S = ctx.model, c0_scenarios(scenarios)
-    nperm, nroll = ctx.n(ctx.n_raw_perm), ctx.n(cfg.c0_rollouts)
+    nperm = ctx.n(ctx.n_raw_perm)
     for name in ("primary", "direct_final"):
         prompts, rows = [], []
         for s in S:
@@ -217,6 +217,12 @@ def run_c0(ctx: Ctx, cfg: kh.HarmonyConfig, scenarios, temperature: float) -> No
         ctx.save_cell(f"c0_forced_{name}", rows, logp, {
             "option_token_ids": np.array([[m.token_id(L) for L in OPTION_LETTERS]] * len(rows)),
         })
+    c0_generate(ctx, cfg, S, temperature, "c0_generate_low")
+
+
+def c0_generate(ctx: Ctx, cfg: kh.HarmonyConfig, S, temperature: float, cell: str) -> None:
+    """Low-effort generation on the C0 sample: rollout i at permutation seed i (G-A6 item 3)."""
+    m, nroll = ctx.model, ctx.n(cfg.c0_rollouts)
     level, m.reasoning_level = m.reasoning_level, cfg.reasoning_level_c0_generate
     try:
         prompts, meta = [], []
@@ -241,12 +247,46 @@ def run_c0(ctx: Ctx, cfg: kh.HarmonyConfig, scenarios, temperature: float) -> No
             "final_text": fa.final_text, "letter": fa.letter, "parse_method": fa.parse_method,
             "option_id": None if opt is None else opt.option_id,
             "norm_status": None if opt is None else opt.norm_status,
-            "temperature": temperature, "harmony_date_pin": cfg.date_pin,
+            "temperature": temperature, "generation_seed": SEED, "harmony_date_pin": cfg.date_pin,
             "harmony_reasoning_level": cfg.reasoning_level_c0_generate,
         })
-    ctx.save_cell("c0_generate_low", rows, np.stack([g.logp_first for g in gen]), {})
+    ctx.save_cell(cell, rows, np.stack([g.logp_first for g in gen]), {})
     trunc = sum(r["reasoning_trace"] == "truncated" for r in rows) / max(len(rows), 1)
-    print(f">> C0 generation: {len(rows)} rollouts, truncated {trunc:.2%}", flush=True)
+    print(f">> {cell} (T={temperature}): {len(rows)} rollouts, truncated {trunc:.2%}", flush=True)
+
+
+def needs_t1(c0_rep: dict) -> bool:
+    """G-A7 trigger: the T=0.7 primary C0 result lies inside the near-miss band (|p - 0.80| <= SE)
+    and C0 is not descriptive. Computed on the pod from the saved C0 cells by the committed
+    analysis function, so the trigger cannot drift from the verdict rule."""
+    return bool(c0_rep["primary"]["near_miss"] and not c0_rep["descriptive"])
+
+
+def gpu_class(name: str) -> str:
+    """G-A4 timing parity: the GPU class the VALIDATE projection and the real run must share."""
+    return "A100-80GB" if ("A100" in name and "80GB" in name) else name
+
+
+def gpu_name(dry: bool) -> str:
+    if dry:
+        return "NVIDIA A100-SXM4-80GB (dry-run)"
+    import torch
+
+    return torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
+
+
+def check_timing_record(path: Path, dry: bool) -> str | None:
+    """Refuse the real run unless VALIDATE's timing record exists, did not stop, and was measured
+    on the same GPU class as this pod. Returns the refusal reason, or None."""
+    if not path.exists():
+        return f"no VALIDATE timing record at {path}: run VALIDATE=1 first"
+    rec = json.loads(path.read_text())
+    if rec.get("stop"):
+        return f"VALIDATE projected {rec['projected_hours']:.2f} h > {rec['max_hours']} h"
+    here = gpu_class(gpu_name(dry))
+    if rec.get("gpu_class") != here:
+        return f"GPU class mismatch: VALIDATE timed {rec.get('gpu_class')!r}, this pod is {here!r}"
+    return None
 
 
 def run_letter_units(ctx: Ctx, scenarios, units=LETTER_UNITS) -> dict[str, float]:
@@ -272,6 +312,10 @@ def main() -> int:
     ap.add_argument("--validate", action="store_true", help="gates + timing projection, then exit")
     ap.add_argument("--max-hours", type=float, default=2.6)
     ap.add_argument("--scenarios", nargs="*", type=Path, default=None)
+    ap.add_argument("--require-timing", type=Path, default=None,
+                    help="real run: VALIDATE's timing.json; refuse (exit 4) if missing, stopped, "
+                         "or measured on another GPU class")
+    ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
     a = ap.parse_args()
 
     cfg_all, reg = registry()
@@ -287,6 +331,11 @@ def main() -> int:
     manifest = Manifest(a.out, a.dry_run, metas)
     manifest.data["gptoss"] = {"spec": "KDG_GPTOSS_SPEC.md v0.2", "units": list(LETTER_UNITS),
                                "harmony": dataclasses.asdict(hcfg)}
+    if a.require_timing is not None and not a.validate:
+        why = check_timing_record(a.require_timing, a.dry_run)
+        if why:
+            print(f">> REFUSE (G-A4 timing parity): {why}", flush=True)
+            return 4
     t_load = time.time()
     model = (HarmonyStub(spec["repo"], spec["revision"], hcfg) if a.dry_run
              else ModelWrapper(spec["repo"], spec["revision"], harmony=hcfg))
@@ -323,9 +372,12 @@ def main() -> int:
             # five letter units at the timed unit's size (known_gap is smaller: conservative)
             # plus C0's two forced readouts, 64 x 8 rows each, in units of one letter unit
             c0_forced = 2 * N_C0 / len(scenarios)
-            hours = kh.project_hours(t_unit, len(LETTER_UNITS) + c0_forced, t_batch, n_batches,
-                                     t_load)
-            rec = {"unit_seconds": t_unit, "c0_batch_seconds": t_batch, "c0_batches": n_batches,
+            # C0 generation counted twice: the G-A7 T=1.0 batch may be triggered (worst case)
+            hours = kh.project_hours(t_unit, len(LETTER_UNITS) + c0_forced, t_batch,
+                                     2 * n_batches, t_load)
+            rec = {"gpu_name": gpu_name(a.dry_run), "gpu_class": gpu_class(gpu_name(a.dry_run)),
+                   "c0_batches_counted": 2 * n_batches, "unit_seconds": t_unit,
+                   "c0_batch_seconds": t_batch, "c0_batches": n_batches,
                    "load_seconds": t_load, "projected_hours": hours, "max_hours": a.max_hours,
                    "stop": hours > a.max_hours}
             (a.out / "timing.json").write_text(json.dumps(rec, indent=1))
@@ -341,7 +393,21 @@ def main() -> int:
         t0 = time.time()
         run_c0(ctx, hcfg, scenarios, ctx.temperature)
         manifest.status(f"{KEY}/c0", "ok", f"{time.time() - t0:.1f}s")
+        import analyze_gptoss
+
+        c0_rep = analyze_gptoss.c0(ctx.out)
+        trigger = needs_t1(c0_rep) or a.force_c0_t1
+        manifest.data["gptoss"]["g_a7"] = {
+            "c0_primary_t07": c0_rep["primary"], "descriptive": c0_rep["descriptive"],
+            "triggered": trigger, "forced_for_test": a.force_c0_t1,
+        }
         manifest.write()
+        if trigger:
+            print(">> G-A7: C0 inside the near-miss band; one C0 batch at T=1.0", flush=True)
+            t0 = time.time()
+            c0_generate(ctx, hcfg, c0_scenarios(scenarios), 1.0, "c0_generate_low_t1")
+            manifest.status(f"{KEY}/c0_t1", "ok", f"{time.time() - t0:.1f}s")
+            manifest.write()
         run_letter_units(ctx, scenarios)
     finally:
         model.release()

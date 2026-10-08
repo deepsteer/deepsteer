@@ -74,12 +74,17 @@ def forced_argmax(d: Path, cell: str) -> dict[str, str]:
     return {s: max(o, key=lambda x: np.mean(o[x])) for s, o in acc.items()}
 
 
-def c0(d: Path) -> dict:
-    gen = A._rows(d / "c0_generate_low.jsonl")
+def _majorities(gen: list[dict]) -> dict[str, list]:
     by: dict[str, list] = defaultdict(list)
     for r in gen:
         if r["reasoning_trace"] == "completed":
             by[r["scenario_id"]].append(r["option_id"])
+    return by
+
+
+def c0(d: Path) -> dict:
+    gen = A._rows(d / "c0_generate_low.jsonl")
+    by = _majorities(gen)
     trunc = sum(r["reasoning_trace"] == "truncated" for r in gen) / len(gen)
     out = {"n_rollouts": len(gen), "truncation_rate": trunc, "descriptive": trunc > 0.25,
            "parse_methods": dict(sorted(_count(r["parse_method"] for r in gen).items()))}
@@ -89,6 +94,18 @@ def c0(d: Path) -> dict:
         out[name] = kh.c0_verdict(agree)
     P, Q = forced_argmax(d, "c0_forced_primary"), forced_argmax(d, "c0_forced_direct_final")
     out["primary_vs_direct_final_argmax_agreement"] = float(np.mean([P[s] == Q[s] for s in P]))
+    # G-A7: the T=1.0 discriminating batch, present only when the T=0.7 result was a near-miss
+    t1 = d / "c0_generate_low_t1.jsonl"
+    if t1.exists():
+        by1 = _majorities(A._rows(t1))
+        v1 = kh.c0_verdict([kh.strict_majority(by1[s]) == P[s] for s in sorted(by1) if s in P])
+        same = v1["pass"] == out["primary"]["pass"]
+        out["t1"] = {
+            **v1,
+            "label": "temperature_robust" if same else "temperature_dependent",
+            "note": "verdict of record is the T=0.7 rule; a temperature_dependent result is "
+                    "stated at both temperatures in every sentence that uses C0",
+        }
     return out
 
 
@@ -99,7 +116,7 @@ def _count(xs) -> dict:
     return c
 
 
-def subsample_ci(X: np.ndarray, draws: int = 500, seed: int = 0) -> list[float]:
+def subsample_ci(X: np.ndarray, draws: int = 500, seed: int = 0) -> dict:
     """m-out-of-n subsampling CI for the PR, m = n/2, basic form, deviations rescaled by sqrt(m/n).
     Reproduces W4's GPT-OSS [9.09, 10.65] as [8.98, 10.57] on the saved W4 sample (draws differ)."""
     n = X.shape[0]
@@ -109,7 +126,10 @@ def subsample_ci(X: np.ndarray, draws: int = 500, seed: int = 0) -> list[float]:
     dev = np.array([participation_ratio(X[rng.choice(n, m, replace=False)]) - th
                     for _ in range(draws)])
     s = np.sqrt(m / n)
-    return [float(th - s * np.percentile(dev, 97.5)), float(th - s * np.percentile(dev, 2.5))]
+    return {"ci95": [float(th - s * np.percentile(dev, 97.5)),
+                     float(th - s * np.percentile(dev, 2.5))],
+            "method": "m-out-of-n subsampling, basic interval", "m": m, "draws": draws,
+            "seed": seed, "rng": "numpy default_rng(seed).choice(n, m, replace=False) per draw"}
 
 
 def decision_pr(d: Path, index: int = PR_INDEX) -> dict:
@@ -121,7 +141,9 @@ def decision_pr(d: Path, index: int = PR_INDEX) -> dict:
     Xs = (X - X.mean(0)) / np.where(sd > 0, sd, 1.0)
     rec = {"hidden_states_index": index, "n": len(keep), "references": PR_REFERENCES}
     for name, Y in (("raw", X), ("standardized", Xs)):
-        rec[name] = {"pr": participation_ratio(Y), "subsampling_ci95": subsample_ci(Y)}
+        sub = subsample_ci(Y)
+        rec[name] = {"pr": participation_ratio(Y), "subsampling_ci95": sub["ci95"],
+                     "subsampling": sub}
     return rec
 
 
@@ -203,6 +225,7 @@ def main(argv=None) -> int:
     rep["branch_notes"] = {
         "c0_descriptive": rep["c0"]["descriptive"],
         "c0_near_miss": c0p["near_miss"],
+        "c0_t1_label": rep["c0"].get("t1", {}).get("label"),
         "wording_not_detected": f"no pressure-attributable gap detectable above "
                                 f"{2.8 * se:.3f} on GPT-OSS-20B" if branch == "not_detected"
         else None,
@@ -212,6 +235,9 @@ def main(argv=None) -> int:
         x["mean"], *x["ci95"], x["n"])
     print(f"C0 primary: {c0p['agreement']:.3f} Wilson {c0p['wilson_ci95']} -> {c0p['verdict']}; "
           f"truncated {rep['c0']['truncation_rate']:.2%}")
+    if "t1" in rep["c0"]:
+        t1 = rep["c0"]["t1"]
+        print(f"C0 at T=1.0 (G-A7): {t1['agreement']:.3f} -> {t1['verdict']}; {t1['label']}")
     print(f"C1: engaged {len(eng)}/{len(status)}, screened {len(scr)}")
     print(f"C2: g_band {f(g)} -> {rep['c2']['verdict']}")
     print(f"C3: E model-free {f(E)}  MDE {2.8 * se:.4f}")

@@ -250,3 +250,63 @@ class TestAnalysis:
         assert rep["branch"] in {"readout_invalid", "instrument_not_validated", "carries_gap",
                                  "not_detected", "negative_excess_unregistered"}
         assert rep["c0"]["primary"]["n_scenarios"] > 0
+
+
+class TestGA7AndTimingParity:
+    def test_t1_trigger_is_the_near_miss_band_only(self):
+        # G-A7. most probable failure: the T=1.0 arm fires on every result (a second arm by
+        # default) or on a descriptive C0, instead of only inside the near-miss band
+        near = {"primary": kh.c0_verdict([True] * 52 + [False] * 12), "descriptive": False}
+        clear = {"primary": kh.c0_verdict([True] * 60 + [False] * 4), "descriptive": False}
+        assert pod.needs_t1(near) and not pod.needs_t1(clear)
+        assert not pod.needs_t1({**near, "descriptive": True})
+
+    def test_forced_t1_arm_is_saved_at_t1_and_labelled_by_the_analysis(self, tok, tmp_path,
+                                                                      monkeypatch):
+        # most probable failure: the T=1.0 batch reuses the T=0.7 cell name (overwriting the
+        # verdict of record) or the analysis never reads it
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--force-c0-t1", "--out", str(tmp_path)],
+                            capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        d = tmp_path / "gpt_oss_20b"
+        t07 = [json.loads(x) for x in (d / "c0_generate_low.jsonl").read_text().splitlines()]
+        t1 = [json.loads(x) for x in (d / "c0_generate_low_t1.jsonl").read_text().splitlines()]
+        assert {r["temperature"] for r in t07} == {0.7} and {r["temperature"] for r in t1} == {1.0}
+        an = _load("analyze_gptoss")
+        monkeypatch.setattr(an.A, "FLOOR", 0.0)
+        out = tmp_path / "a.json"
+        an.main(["--dir", str(d), "--out", str(out), "--pr-index", "1"])
+        rep = json.loads(out.read_text())
+        assert rep["c0"]["t1"]["label"] in {"temperature_robust", "temperature_dependent"}
+        assert rep["decision_token_pr"]["raw"]["subsampling"]["seed"] == 0
+
+    def test_real_run_refuses_without_a_matching_validate_record(self, tmp_path):
+        # G-A4 timing parity. most probable failure: the real run launches on a GPU class the
+        # VALIDATE projection never measured, or with no projection at all
+        p = tmp_path / "timing.json"
+        assert "run VALIDATE=1 first" in pod.check_timing_record(p, dry=True)
+        p.write_text(json.dumps({"stop": True, "projected_hours": 3.0, "max_hours": 2.6,
+                                 "gpu_class": "A100-80GB"}))
+        assert "projected" in pod.check_timing_record(p, dry=True)
+        p.write_text(json.dumps({"stop": False, "gpu_class": "NVIDIA H100 80GB HBM3"}))
+        assert "mismatch" in pod.check_timing_record(p, dry=True)
+        p.write_text(json.dumps({"stop": False, "gpu_class": "A100-80GB"}))
+        assert pod.check_timing_record(p, dry=True) is None
+        assert pod.gpu_class("NVIDIA A100 80GB PCIe") == pod.gpu_class("NVIDIA A100-SXM4-80GB")
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--out", str(tmp_path / "r"), "--require-timing",
+                             str(tmp_path / "absent.json")], capture_output=True, text=True,
+                            cwd=REPO)
+        assert rc.returncode == 4
+
+    def test_validate_records_gpu_class_and_counts_the_t1_batch(self, tok, tmp_path):
+        # most probable failure: timing.json lacks the GPU class the real run compares against,
+        # or the projection omits the conditional T=1.0 batch
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--validate", "--out", str(tmp_path)], capture_output=True,
+                            text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        rec = json.loads((tmp_path / "timing.json").read_text())
+        assert rec["gpu_class"] == "A100-80GB"
+        assert rec["c0_batches_counted"] == 2 * rec["c0_batches"]

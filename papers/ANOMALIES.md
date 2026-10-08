@@ -547,9 +547,15 @@ the direction (duplicated rows lower the PR; `bias_note`), but calls it "slight"
 not: in `supplement/cells/w4/gpt_oss_20b/pr_audit.json` the P0 window reads 22.09 with bootstrap CI
 [13.88, 18.91], which excludes its own point estimate. Blast radius: the bootstrap interval gates no
 verdict (the A5 band half uses band_min against the null q95; the W4-05 hedge uses the PR point and the
-covariance null), and every PR CI quoted in CLAIMS is the subsampling one. Open, zero GPU, author's call:
-label the §14.3 interval "bootstrap, biased low" or replace it with the subsampling CI; and change the
-docstring's "slightly" to a size statement.
+covariance null), and every PR CI quoted in CLAIMS is the subsampling one. **Resolved (author,
+2026-10-07):** `W4_RESULTS.md` §14.3 now labels the bootstrap interval biased low and not of record,
+beside the subsampling CI of record. Still open, zero GPU: the `bootstrap_pr` docstring's "slightly"
+should become a size statement. **Process note (author, 2026-10-07): CI draw seeds are saved going
+forward.** The W4-07 subsampling interval could be reproduced only to about 0.1 ([8.98, 10.57] vs
+[9.09, 10.65]) because its draw sequence was not recorded. Every new CI records its method, draw
+count, seed and RNG call beside the interval (first instance: `analyze_gptoss.py`, whose PR record
+carries `subsampling: {method, m, draws, seed, rng}`; the bootstrap helpers already take a fixed
+seed, now written into each report).
 
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 

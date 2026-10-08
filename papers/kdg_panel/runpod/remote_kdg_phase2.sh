@@ -12,6 +12,17 @@
 #                    gates (bail, G-A4), C0 readout check, five letter units with decision-token
 #                    residuals. VALIDATE=1 loads the real model, runs the gates and times one full
 #                    letter unit + one C0 batch; exits 3 if the projection passes 2.6 A100-h.
+#                    A100 80GB only (SXM4 or PCIe), so VALIDATE's timing and the real run share a
+#                    GPU class; the real run refuses (exit 4) without a VALIDATE timing.json from
+#                    the same class (it is synced up from papers/kdg_panel/outputs/p2c/validate/):
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2c/validate/timing.json MAX_SYNC_GB=1 \
+#     REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2c \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2c VALIDATE=1 \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh      (then the same without VALIDATE=1)
+#   SYNC_OUTPUTS ships that one file and no other output (the KDG outputs tree, ~108 GB locally,
+#   is excluded in rsync_exclude.txt); MAX_SYNC_GB refuses the launch if the upload would exceed
+#   1 GB (the repo without outputs measures 0.28 GB, 2026-10-07).
 #   KDG_PROFILE=p2a_e1 / p2a_e2  extras E1 (OLMo-3 SFT/DPO) and E2 (within-RL sweep): refused here
 #                    until the author schedules them at the pod gate (E2 also needs P2-A1 pushed)
 #
@@ -59,6 +70,12 @@ if [ "$PROFILE" = "p2c" ]; then
   VRAM_GB="$(python -c 'import torch;print(int(torch.cuda.get_device_properties(0).total_memory/1e9)) if torch.cuda.is_available() else 0' 2>/dev/null || echo 0)"
   echo ">> GPU VRAM: ${VRAM_GB} GB"
   [ "${VRAM_GB:-0}" -lt 75 ] && { echo "FATAL: need an 80 GB card for GPT-OSS-20B bf16 dequant."; exit 1; }
+  GPU_NAME="$(python -c 'import torch;print(torch.cuda.get_device_name(0))' 2>/dev/null || echo none)"
+  echo ">> GPU: $GPU_NAME"
+  case "$GPU_NAME" in
+    *A100*80GB*) ;;
+    *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
+  esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
   if [ "$VALIDATE" = "1" ]; then
     python $G --validate --out "$OUT/validate"; rc=$?
@@ -71,7 +88,8 @@ if [ "$PROFILE" = "p2c" ]; then
     exit $rc
   fi
   echo "==================== p2c/gpt_oss_20b ===================="
-  python $G --out "$OUT/gpt_oss_20b"; rc=$?
+  python $G --out "$OUT/gpt_oss_20b" --require-timing "$OUT/validate/timing.json"; rc=$?
+  [ $rc -eq 4 ] && echo ">> REFUSED: no matching VALIDATE timing record (see log above)."
   python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/gpt_oss_20b" \
     || echo "WARN: manifest verify reported mismatches"
   echo ">> KDG p2c done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2c/"
