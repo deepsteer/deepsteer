@@ -364,3 +364,32 @@ of the mean over 8, and batch noise. Descriptive (post-hoc, already computed): A
   **residual beyond sampling** (format or batch noise). Above it → reported as such.
 - Both verdicts are reported side by side. The wording rule stays until the author decides how the
   fork bears on "C0 clears".
+
+**G-A13. Author decision on C0, and a model-relative C0 bar (author, 2026-10-08; pushed before any
+ceiling below is computed).**
+1. **Decision (a).** C0 clears for GPT-OSS-20B's **dose-0** readout through the token identity and the
+   G-A12 fork. Wherever C0 is cited, the registered results come first: C0 0.688 [0.566, 0.788] fail;
+   C0-dm 0.766 [0.649, 0.853] fail (near-miss); then the fork (sampling-limited) and the identity.
+2. **Wording rule, revised.** It lifts for the dose-0 C1–C3 cells (pod 3xlqmdx2mo3niz), read under §6
+   and always scoped "at dose 0 (forced letter, no reasoning trace)". No statement about GPT-OSS's
+   deployed (reasoning) mode until a dose-stated run clears its own C0.
+3. **Model-relative C0 bar, protocol-wide and prospective.** Applies to every future C0 on any model
+   and at any dose, including the dose-stated run; past C0 results keep their registered 0.80 verdicts,
+   with the new bar printed beside them as a descriptive only.
+   - **Exact-readout ceiling κ\*.** The expected C0 agreement of a readout that is exactly the model's
+     answer distribution. Take the reference readout's per-permutation letter distributions for the
+     C0 scenarios at the C0 permutation seeds (renormalised over displayed letters), temper them to the
+     C0 generation temperature (p^(1/T), renormalised), draw one letter per rollout's permutation, take
+     the strict majority with the G-A1 tie rule, and score it against the readout's argmax of the mean
+     over all its permutations; 10,000 simulations, seed 0; κ\* is the mean. It falls as the answer
+     distributions' entropy rises.
+   - **Bar.** Pass iff observed agreement ≥ 0.9 × κ\*. The G-A2 Wilson CI, SE and near-miss label are
+     taken relative to this bar.
+4. **Zero-GPU items under this amendment (descriptive).** κ\* for OLMo-3, Llama-3.1 Meta, Tulu 3 and
+   Qwen2.5 from their saved dose-0 letter distributions (`dl_chat_neutral`, the C0 design: 64
+   scenarios drawn as GPT-OSS's C0 sample, 4 rollouts at seeds 0..3, T 0.7), and on all engaged
+   scenarios; an observed C0 analog for OLMo-3 only, the one panel model with saved dose-0 generated
+   rollouts (`d_chat_dose0`: first-token distribution and sampled letter on the same prompt; rollouts
+   0..3 as C0's four, argmax of the mean over rollouts 0..7). Llama, Tulu 3 and Qwen2.5 have no C0 run,
+   so they get a ceiling and no verdict. Beside the GPT-OSS direction counts: the dose-0 undecided rate
+   (share of C0-dm scenarios with no strict majority).
