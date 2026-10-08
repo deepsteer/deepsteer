@@ -534,3 +534,8 @@ changes (author, 2026-10-08; pushed before the pilot launches).**
      restricted, and the dose-0 null on GPT-OSS gets a reading in which reasoning adds violation.
 6. **Multiplicity.** Two primaries, each at its stated level (95% CI for primary 1, α 0.01 for primary
    2); no further correction.
+   *Computed after G-A17 was pushed (f631187), before the pilot (it uses only the dose-0 readout of
+   record):* q0 = 0.391, central 95% [0.278, 0.512] over 10,000 simulations on the 586 scenarios (dose-0
+   argmax violating on 141, consistent on 445; about 40 sampling-only norm-crossings per run). The
+   interval includes 0.5, so item 3's q0 test is not required. Sampling noise alone leans toward *away*
+   crossings here, so the sign test against 0.5 is conservative for a "toward" verdict.
