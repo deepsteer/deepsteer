@@ -927,3 +927,14 @@ timing are what the redesign needs. Fixed for every later pilot: per-batch banki
 value set by the next amendment from this pilot's measured lengths); prompts never launched are
 `not_run` and excluded from every count. Lesson: price long-generation stages from a measured length
 distribution, not an assumed one, and never run a generation stage without incremental saves.
+
+## KDG-A25 (ledger) — The dose-stated pilot's VALIDATE at the post-reasoning position fails (0.375 nats against 0.05), with the two sides read under different batch shapes
+
+**Date.** 2026-10-08 (pilot pod h0r9bhqn370p5d, p2h; `outputs/p2h/pilot/gpt_oss_20b/sizing.json`).
+**Observation.** Stage A: 256 medium-effort traces, completion 1.0 within 4,096 tokens (generated tokens median 303, p99 1,315, max 2,143), token identity 1.0 in all four cells. VALIDATE compared the forward readout of 16 identity rows with a one-token generation from the same ids: max 0.375 nats → `bail_validate`; stage B skipped by the envelope rule (stage A took 6,036 s), so no dose-stated C0. Only the maximum was saved.
+**Type.** control misbehavior (a validity gate fails) with a design confound.
+**Competing readings.** R_a (batch shape): `forward_readout` read the 16 rows in batches of 8 while the one-token generation read them in one batch of 16, so the comparison crossed batch compositions; GPT-OSS in bf16 moves by up to 0.49 nats between batch compositions at dose 0 (KDG-A21), and the dose-0 gate passed exactly only because both sides shared one batch. R_b (readout): the forward pass over the generated ids does not reproduce the distribution the model sampled the letter from (a position, cache or header defect at the post-reasoning position).
+**Discriminator.** Re-run VALIDATE on the banked sequences (no new generation) with identical batching on both sides (one batch of 16 for both, and one-at-a-time for both); R_a predicts ≤ 0.05 under matched batching and a residual spread of KDG-A21's size between batch shapes; R_b predicts the mismatch persists under matched batching. Minutes of GPU after model load; rides the next pod.
+**Harness fix (applied with the discriminator).** VALIDATE reads both sides under one batch composition and saves per-row differences; the batched-vs-alone spread is recorded as a descriptive.
+**Status.** open; discriminator priced, rides the next pod.
+**Thesis impact.** R_a: the forward readout stands and the pilot's banked distributions are usable. R_b: the dose-stated readout is redesigned before any main stage.

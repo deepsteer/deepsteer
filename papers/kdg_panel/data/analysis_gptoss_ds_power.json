@@ -1,0 +1,16 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A17 item 4 (f631187)",
+ "n_pilot_rows": 64,
+ "identity_rate": 1.0,
+ "crossing_rate": 0.109375,
+ "crossing_rate_wilson_low": 0.05400113344416797,
+ "N_min": 27,
+ "critical_count_at_N_min": 20,
+ "expected_main_crossings_low": 31.64466419828243,
+ "adequately_powered": true,
+ "pilot_descriptive_counts": {
+  "toward": 6,
+  "away": 1,
+  "lateral": 14
+ }
+}
