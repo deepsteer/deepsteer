@@ -56,9 +56,17 @@ def bootstrap_pr(
 
     Returns the point estimate, percentile 95% CI, and the bootstrap array. Bias direction: rows
     resampled with replacement contain duplicates, which lowers the effective sample rank and
-    biases the bootstrap PR slightly **downward** (favors "bottleneck" readings); the CI is
-    therefore conservative for a ``PR >= floor`` claim and anti-conservative for a
-    ``PR < floor`` claim — stated in ``bias_note``.
+    biases the bootstrap PR **downward** (favors "bottleneck" readings); the CI is therefore
+    conservative for a ``PR >= floor`` claim and anti-conservative for a ``PR < floor`` claim,
+    as stated in ``bias_note``.
+
+    Size: the bias is not small at the sample sizes this program uses. On W4's GPT-OSS
+    decision-token sample (n = 128, PR 9.40) the bootstrap median is 8.76 (7% low) and the 95%
+    interval [7.70, 10.01] sits mostly below the point estimate; at n = 64 (W4's GPT-OSS P0 trace
+    window, PR 22.1) the interval [13.9, 18.9] excludes the point estimate. Report this interval
+    labelled as biased low; for an interval of record use m-out-of-n subsampling without
+    replacement (W4-07: m = n/2, 500 draws, basic interval, deviations rescaled by sqrt(m/n),
+    seed recorded), which gives [9.09, 10.65] on the same n = 128 sample.
 
     Args:
         X: ``(n, d)`` sample.

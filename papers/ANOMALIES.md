@@ -549,8 +549,9 @@ not: in `supplement/cells/w4/gpt_oss_20b/pr_audit.json` the P0 window reads 22.0
 verdict (the A5 band half uses band_min against the null q95; the W4-05 hedge uses the PR point and the
 covariance null), and every PR CI quoted in CLAIMS is the subsampling one. **Resolved (author,
 2026-10-07):** `W4_RESULTS.md` §14.3 now labels the bootstrap interval biased low and not of record,
-beside the subsampling CI of record. Still open, zero GPU: the `bootstrap_pr` docstring's "slightly"
-should become a size statement. **Process note (author, 2026-10-07): CI draw seeds are saved going
+beside the subsampling CI of record. The `bootstrap_pr` docstring now states the size (resolved
+2026-10-07): bootstrap median 7% low at n = 128, and at n = 64 an interval that excludes its point
+estimate; it points to the subsampling interval for anything of record. **Process note (author, 2026-10-07): CI draw seeds are saved going
 forward.** The W4-07 subsampling interval could be reproduced only to about 0.1 ([8.98, 10.57] vs
 [9.09, 10.65]) because its draw sequence was not recorded. Every new CI records its method, draw
 count, seed and RNG call beside the interval (first instance: `analyze_gptoss.py`, whose PR record
