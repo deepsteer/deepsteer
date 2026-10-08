@@ -1819,9 +1819,8 @@ readout, empty closed analysis turn, no reasoning trace; pod 3xlqmdx2mo3niz.
 
 Verdict sentence: **at dose 0 (forced letter, no reasoning trace), no pressure-attributable gap is
 detectable on GPT-OSS-20B above 0.013 (E −0.001 [−0.011, 0.008], n 586), with the known-gap positive
-control on the same readout at 0.501 [0.469, 0.534].** [HELD 2026-10-08, KDG-A24 partial, author rule: "At dose 0 the recipe split gains a reasoning-RL-trained
-model measured without reasoning, beside Tulu 3 and Qwen2.5 on the not-detected side." Entropy-matched
-contrasts in §29; wording pending the author.] Rival reading: dose 0 is not the mode GPT-OSS
+control on the same readout at 0.501 [0.469, 0.534].** The carrier/non-carrier contrast is not explained by dose-0 answer sharpness. Within every model, dose-0 entropy does not predict E (all five slopes include 0), and the Llama−Tulu 3, Llama−GPT-OSS and OLMo-3−GPT-OSS contrasts survive entropy matching. The OLMo-3−Tulu 3 and both Qwen2.5 contrasts lose resolution under matching, because Qwen2.5's sharper distributions share 6 of 10 entropy bins with the carriers; those three rest on the unmatched estimates only.
+(Author wording, 2026-10-08, replacing the held line. Factual note from the KDG-A24 record: the 6-of-10 bin overlap applies to the two Qwen2.5 contrasts; OLMo-3 − Tulu 3 shares all 10 bins and loses resolution through attenuation, +0.017 → +0.009 [−0.005, 0.024].) Rival reading: dose 0 is not the mode GPT-OSS
 runs in by default, and reasoning moves its answers (dose-0 and low-effort generation agree on only 0.56
 of scenarios); the separating cell is the dose-stated run, under design.
 
