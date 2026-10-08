@@ -112,6 +112,9 @@ class HarmonyStub:
         for k, r in enumerate(rendered):
             if r.endswith(kh.FINAL_OPEN):  # forward-vs-generate check: one token after a prefill
                 ids = [int(np.argmax(lp[k]))]
+            elif r.endswith(self.harmony.prefill_dose_matched):  # C0-dm: header + letter
+                L = self.rng.choice(list("ABC"))
+                ids = self.tok.encode(f"{kh.FINAL_OPEN}{L}<|return|>", add_special_tokens=False)
             else:
                 L = self.rng.choice(list("ABC"))
                 ids = self.tok.encode(
@@ -338,6 +341,42 @@ def run_batch_invariance(ctx: Ctx, scenarios) -> float:
     return dt
 
 
+def run_c0_dose_matched(ctx: Ctx, cfg: kh.HarmonyConfig, scenarios) -> None:
+    """G-A11 C0-dm: generation after the empty closed analysis turn, at the forced readouts' level
+    (medium), rollout i at permutation seed i, the C0 sample; no verdict here."""
+    m, S = ctx.model, c0_scenarios(scenarios)
+    pre = cfg.prefill("dose_matched")
+    prompts, meta = [], []
+    for s in S:
+        for i in range(ctx.n(cfg.c0_rollouts)):
+            o = assign_letters(s, i)
+            prompts.append(m.render_chat(letter_chat_messages(s, o, "agent", "neutral")))
+            meta.append((s, i, o))
+    gen = m.generate([p + pre for p in prompts], max_new_tokens=cfg.c0_max_new_tokens,
+                     temperature=ctx.temperature, seed=SEED, find_anchor=False)
+    rows = []
+    for (s, i, o), p, g in zip(meta, prompts, gen):
+        full = m.tok.decode(g.token_ids, skip_special_tokens=False)
+        fa, redelib = kh.parse_dose_matched(full, len(g.token_ids) >= cfg.c0_max_new_tokens)
+        opt = dict(o).get(fa.letter) if fa.letter else None
+        rows.append({
+            "scenario_id": s.id, "rollout": i, "seed": i, "order": letter_map(o),
+            "prompt_sha256": sha256_text(p + pre), "prefill": "dose_matched", "text": full,
+            "token_ids": g.token_ids, "n_gen_tokens": len(g.token_ids),
+            "reasoning_trace": fa.reasoning_trace, "redeliberated": redelib,
+            "final_text": fa.final_text, "letter": fa.letter, "parse_method": fa.parse_method,
+            "option_id": None if opt is None else opt.option_id,
+            "norm_status": None if opt is None else opt.norm_status,
+            "temperature": ctx.temperature, "generation_seed": SEED,
+            "harmony_date_pin": cfg.date_pin, "harmony_reasoning_level": m.reasoning_level,
+        })
+    ctx.save_cell("c0dm_generate", rows, np.stack([g.logp_first for g in gen]), {})
+    re_rate = sum(r["redeliberated"] for r in rows) / max(len(rows), 1)
+    tr_rate = sum(r["reasoning_trace"] == "truncated" for r in rows) / max(len(rows), 1)
+    print(f">> c0dm_generate: {len(rows)} rollouts, re-deliberated {re_rate:.2%}, "
+          f"truncated {tr_rate:.2%}", flush=True)
+
+
 def run_letter_units(ctx: Ctx, scenarios, units=LETTER_UNITS) -> dict[str, float]:
     t = {}
     for u in units:
@@ -365,6 +404,8 @@ def main() -> int:
                     help="real run: VALIDATE's timing.json; refuse (exit 4) if missing, stopped, "
                          "or measured on another GPU class")
     ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
+    ap.add_argument("--c0-dm", action="store_true",
+                    help="G-A11: gates, then the dose-matched C0 generation only; no other cell")
     ap.add_argument("--batch-invariance", action="store_true",
                     help="G-A9 arm: re-read the C3 cells on the C0 sample in a shuffled row order")
     a = ap.parse_args()
@@ -423,6 +464,12 @@ def main() -> int:
                   row_fields={"harmony_date_pin": hcfg.date_pin,
                               "harmony_reasoning_level": hcfg.reasoning_level,
                               "reasoning_trace": "none", "prefill": "primary"})
+        if a.c0_dm:
+            t0 = time.time()
+            run_c0_dose_matched(ctx, hcfg, scenarios)
+            manifest.status(f"{KEY}/c0dm", "ok", f"{time.time() - t0:.1f}s")
+            print(f"manifest: {manifest.write()}")
+            return 0
         if a.validate:
             vctx = dataclasses.replace(ctx, out=a.out / "_validate" / KEY)
             t_unit = run_letter_units(vctx, scenarios, ("dl_chat_neutral",))["dl_chat_neutral"]

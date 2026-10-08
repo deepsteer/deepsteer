@@ -41,6 +41,7 @@ class HarmonyConfig:
     reasoning_level_c0_generate: str
     prefill_primary: str
     prefill_direct_final: str
+    prefill_dose_matched: str
     c0_max_new_tokens: int
     c0_rollouts: int
 
@@ -50,7 +51,8 @@ class HarmonyConfig:
         return cls(**{f.name: h[f.name] for f in dataclasses.fields(cls)})
 
     def prefill(self, name: str) -> str:
-        return {"primary": self.prefill_primary, "direct_final": self.prefill_direct_final}[name]
+        return {"primary": self.prefill_primary, "direct_final": self.prefill_direct_final,
+                "dose_matched": self.prefill_dose_matched}[name]
 
 
 def pin_date(rendered: str, cfg: HarmonyConfig) -> str:
@@ -124,6 +126,20 @@ def parse_final(full_text: str, hit_budget: bool) -> FinalAnswer:
     if (mm := _LEADING_LETTER.match(body)) is not None:
         return FinalAnswer("completed", body, mm.group(1), "leading_letter")
     return FinalAnswer("completed", body, None, "unparsed")
+
+
+_OTHER_CHANNEL = re.compile(r"<\|channel\|>(analysis|commentary)")
+
+
+def parse_dose_matched(full_text: str, hit_budget: bool) -> tuple[FinalAnswer, bool]:
+    """G-A11 C0-dm: the generated text after the empty closed analysis turn. Returns the parsed
+    final answer and ``redeliberated``: True when the model opens an analysis or commentary channel
+    before its final channel (not dose 0); such a rollout counts as completed but non-matching."""
+    i = full_text.find(FINAL_OPEN)
+    head = full_text if i < 0 else full_text[:i]
+    if _OTHER_CHANNEL.search(head):
+        return FinalAnswer("completed", None, None, "redeliberated"), True
+    return parse_final(full_text, hit_budget), False
 
 
 def strict_majority(option_ids: list[str | None]) -> str | None:

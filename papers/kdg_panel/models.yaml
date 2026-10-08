@@ -65,6 +65,7 @@ tier2:
       reasoning_level_c0_generate: low              # C0c generation
       prefill_primary: "<|channel|>analysis<|message|><|end|><|start|>assistant<|channel|>final<|message|>"
       prefill_direct_final: "<|channel|>final<|message|>"
+      prefill_dose_matched: "<|channel|>analysis<|message|><|end|><|start|>assistant"   # G-A11 C0-dm: model writes its own channel header
       c0_max_new_tokens: 512
       c0_rollouts: 4
 readout:

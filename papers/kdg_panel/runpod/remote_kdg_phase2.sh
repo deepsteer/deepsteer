@@ -23,6 +23,13 @@
 #   SYNC_OUTPUTS ships that one file and no other output (the KDG outputs tree, ~108 GB locally,
 #   is excluded in rsync_exclude.txt); MAX_SYNC_GB refuses the launch if the upload would exceed
 #   1 GB (the repo without outputs measures 0.28 GB, 2026-10-07).
+#   KDG_PROFILE=p2f  GPT-OSS-20B dose-matched C0 only (KDG_GPTOSS_SPEC G-A11): the p2c gates, then
+#                    64 x 4 generations after the empty closed analysis turn; no other cell, no
+#                    timing record needed (about 0.3 A100-h with setup):
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
+#     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2d  KDG-A20 VALIDATE-only record (no cells) on OLMo-3, Llama-3.1 Meta, Tulu 3 and
 #                    Qwen2.5 on the stack of record (torch 2.4.1, transformers 5.12.1; no torch
 #                    upgrade): per prompt, readout v1 (the cells of record) and v2 vs generation,
@@ -51,9 +58,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d) ;;
+  p2a|p2b|p2c|p2d|p2f) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a, p2b, p2c or p2d (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a, p2b, p2c, p2d or p2f (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -67,7 +74,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -96,6 +103,17 @@ if [ "$PROFILE" = "p2c" ]; then
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2f" ]; then  # G-A11: dose-matched C0 only
+    python $G --dry-run --c0-dm --out "$OUT/_dry_c0dm" || { echo "DRY RUN (C0-dm) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2f/c0dm ===================="
+    python $G --c0-dm --out "$OUT/c0dm"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/c0dm" \
+      || echo "WARN: manifest verify reported mismatches"
+    echo ">> KDG p2f done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2f/; then"
+    echo "   python3 papers/kdg_panel/scripts/analyze_gptoss_c0dm.py"
+    exit $rc
+  fi
   if [ "$VALIDATE" = "1" ]; then
     python $G --validate --batch-invariance --out "$OUT/validate"; rc=$?
     case $rc in

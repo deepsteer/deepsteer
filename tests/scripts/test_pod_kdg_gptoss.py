@@ -316,7 +316,7 @@ def test_p2c_upgrades_torch_before_any_gptoss_call():
     # most probable failure (VALIDATE pod g85xxpdraotqfw, 2026-10-07): p2c loads GPT-OSS on the
     # image's torch 2.4, whose missing torch.accelerator crashes the mxfp4 quantizer at load
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    block = sh[sh.index('if [ "$PROFILE" = "p2c" ]; then'):]
+    block = sh[sh.index('if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]; then'):]
     up = block.index('"torch==2.6.0"')
     assert up < block.index("python -m pytest") < block.index("python $G")
     assert "FATAL: torch.accelerator missing" in block
@@ -451,3 +451,60 @@ def test_p2c_real_run_enables_the_g_a9_arm():
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
     real = [ln for ln in sh.splitlines() if "--require-timing" in ln and "python $G" in ln]
     assert real and all("--batch-invariance" in ln for ln in real)
+
+
+class TestC0DoseMatched:
+    def test_redeliberation_is_detected_and_never_matches(self):
+        # G-A11. most probable failure: a rollout that writes a new analysis turn before its final
+        # answer (not dose 0) is parsed as a clean dose-0 letter and counted as agreement
+        fa, re_ = kh.parse_dose_matched(f"{kh.FINAL_OPEN}B<|return|>", hit_budget=False)
+        assert (fa.letter, re_) == ("B", False)
+        for ch in ("analysis", "commentary"):
+            fa, re_ = kh.parse_dose_matched(
+                f"<|channel|>{ch}<|message|>Let me think.<|end|><|start|>assistant"
+                f"{kh.FINAL_OPEN}B<|return|>", hit_budget=False)
+            assert re_ and fa.letter is None and fa.reasoning_trace == "completed"
+
+    def test_dose_matched_prefill_keeps_the_decision_token_boundary(self, tok):
+        # most probable failure: the C0-dm prefill merges into the prompt's last token
+        p = kh.render(tok, _msgs(), CFG, "medium")
+        a, b = kh.split_prefill(tok, p, CFG.prefill("dose_matched"))
+        assert CFG.prefill_dose_matched.endswith("<|start|>assistant")
+        assert b[0] == tok.convert_tokens_to_ids("<|channel|>")
+
+    def test_c0dm_scores_against_the_forced_argmax_and_flags_descriptive(self, tok, tmp_path):
+        # most probable failure: the analysis scores C0-dm against the low-effort majority (C0's
+        # reference) instead of the forced readout, or re-deliberated rollouts count as matches
+        ref, dm = tmp_path / "ref", tmp_path / "dm"
+        for args, out in ((["--dry-run"], ref), (["--dry-run", "--c0-dm"], dm)):
+            rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), *args,
+                                 "--out", str(out)], capture_output=True, text=True, cwd=REPO)
+            assert rc.returncode == 0, rc.stderr[-2000:]
+        an = _load("analyze_gptoss_c0dm")
+        g = _load("analyze_gptoss")
+        refd, dmd = ref / "gpt_oss_20b", dm / "gpt_oss_20b"
+        F = g.forced_argmax(refd, "c0_forced_primary")
+        # rewrite the dm rows: every rollout answers the forced argmax -> agreement 1.0, pass
+        rows = [json.loads(x) for x in (dmd / "c0dm_generate.jsonl").read_text().splitlines()]
+        for r in rows:
+            r["option_id"] = F[r["scenario_id"]]
+        (dmd / "c0dm_generate.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+        out = tmp_path / "a.json"
+        an.main(["--dm-dir", str(dmd), "--ref-dir", str(refd), "--out", str(out)])
+        rep = json.loads(out.read_text())
+        assert rep["c0_dm"]["agreement"] == 1.0 and rep["branch"] == "pass"
+        for r in rows:  # now every rollout re-deliberated -> no matches and descriptive
+            r.update(redeliberated=True, option_id=None, parse_method="redeliberated")
+        (dmd / "c0dm_generate.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+        an.main(["--dm-dir", str(dmd), "--ref-dir", str(refd), "--out", str(out)])
+        rep = json.loads(out.read_text())
+        assert rep["c0_dm"]["agreement"] == 0.0 and rep["branch"] == "descriptive"
+
+
+def test_p2f_runs_c0dm_only():
+    # most probable failure: the p2f profile falls through to the p2c real run (all cells)
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2f" ]; then  # G-A11'):]
+    block = block[: block.index("exit $rc") + len("exit $rc")]
+    assert 'python $G --c0-dm --out "$OUT/c0dm"' in block
+    assert "--batch-invariance" not in block and "--require-timing" not in block
