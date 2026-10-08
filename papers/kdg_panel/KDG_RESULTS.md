@@ -1761,3 +1761,74 @@ the forced letter is GPT-OSS's own dose-0 output distribution. Whether this clea
 wording rule and admits the C1–C3 cells of pod 3xlqmdx2mo3niz under §6) is the author's decision. Either
 way, C0's original failure stands as a dose effect: low-effort reasoning moves norm-crossing answers
 toward the norm (6 vs 0 forced-vs-generated, 5 vs 0 generated-vs-generated).
+
+## 27. Author decision on C0, model-relative C0 ceilings, and GPT-OSS-20B read at dose 0 (G-A13; 2026-10-08)
+
+G-A13 pushed 9eed208 before any ceiling was computed. `data/analysis_c0_ceiling.json`;
+`scripts/analyze_c0_ceiling.py`.
+
+**C0 on GPT-OSS-20B, registered results first.** C0 (low-effort reference) 0.688 [0.566, 0.788]
+**fail**; C0-dm (dose-matched) 0.766 [0.649, 0.853] **fail (near-miss)**. Then: the token identity
+(every dose-0 rollout writes the forced prefill's own header) and the G-A12 fork (sampling-limited;
+predicted 0.743 [0.672, 0.813]). **Author decision (a): C0 clears for the dose-0 readout.** No statement
+about GPT-OSS's deployed (reasoning) mode until a dose-stated run clears its own C0.
+
+**Exact-readout ceilings κ\* (primary numbers; T 0.7, 4 rollouts at seeds 0..3, 10,000 simulations).**
+
+| model | κ\*, C0 sample (64) | 0.9 κ\* | κ\*, all engaged (586) | 0.9 κ\* | C0 observed |
+|---|---|---|---|---|---|
+| GPT-OSS-20B | 0.742 | 0.668 | — | — | C0 0.688 (registered fail; model-relative pass, descriptive); C0-dm 0.766 (registered fail near-miss; model-relative pass, descriptive) |
+| OLMo-3 | 0.612 | 0.551 | 0.666 | 0.599 | none of record (D_chat analog not admissible, below) |
+| Llama-3.1 Meta | 0.752 | 0.676 | 0.708 | 0.638 | none |
+| Tulu 3 | 0.786 | 0.707 | 0.736 | 0.662 | none |
+| Qwen2.5-7B | 0.820 | 0.738 | 0.873 | 0.786 | none |
+
+Second derivation: GPT-OSS's κ\* (0.742) reproduces the G-A12 fork's predicted mean (0.743) from an
+independent random stream, and exact enumeration on OLMo-3's D_chat rows (0.6615) matches the
+simulation (0.6616). Reading: a fixed 0.80 bar sits above the exact-readout ceiling on four of the five
+models on the C0 sample (all but Qwen2.5), so the registered 0.80 rule could not have validated a perfect
+readout on most of the panel; the model-relative bar (G-A13, prospective) is what future C0 runs use.
+
+**Retrospective C0 analog from D_chat rollouts: not admissible.** Author's conditions (2026-10-08):
+same rendering, position, letter-only format and temperature as the forced readout, with the rollouts'
+actual k. OLMo-3 is the only panel model with dose-0 D_chat rollouts (32 per scenario). Position and
+format hold (first generated token is the letter on 99.8% of rows; letter mass median 1.000). Rendering
+fails: `d_chat_dose0` renders the agent message without the neutral framing line that `dl_chat_neutral`
+carries ("Note: this message is a standalone request."); the rows' `prompt_sha256` match the no-prefix
+render. Temperature holds only nominally: the harness passed T 0.7 and OLMo-3's generation config added
+`top_p` 0.95. Checking the analog also found that sampled cells shared one random stream per rollout
+index across scenarios (KDG-A23). No analog is reported for any model.
+
+**Dose-0 undecided rate (descriptive, beside the direction counts).** Share of the 64 C0 scenarios with
+no strict majority: 11 of 64 (17.2%) at dose 0 (C0-dm), 6 of 64 (9.4%) after low-effort reasoning
+(C0). C0-dm's 15 non-agreements are those 11 undecided plus 4 decided differently (15 / 64 = 23.4%).
+Direction counts: 6 vs 0 (forced dose 0 vs low-effort generation) and 5 vs 0 (dose-0 vs low-effort
+generation), both toward the norm.
+
+**GPT-OSS-20B at dose 0, read under §6 (wording rule lifted for these cells only).** Forced letter
+readout, empty closed analysis turn, no reasoning trace; pod 3xlqmdx2mo3niz.
+
+| rung | value |
+|---|---|
+| floor | E = 0 (no pressure-attributable excess) |
+| measurement, model-free set | E −0.001 [−0.011, 0.008], n 586; MDE 0.013 |
+| positive control, same readout, model and dose | known-gap g_band 0.501 [0.469, 0.534] (validated: lower bound ≥ 0.10) |
+| own screen (secondary) | 0.052 [0.023, 0.081], n 71; selection-matched null E_sel −0.001 [−0.050, 0.049]: within selection |
+| references, same readout at dose 0 | OLMo-3 0.018 [0.008, 0.029]; Llama-3.1 Meta 0.028 [0.020, 0.036]; Tulu 3 0.001; Qwen2.5 −0.008 [−0.023, 0.009] (all n 586) |
+| position | decision-token PR raw 7.51 / std 11.62 at hidden_states[13]; E is an output-probability readout, so the band-below-null tell for projections does not apply |
+
+Verdict sentence: **at dose 0 (forced letter, no reasoning trace), no pressure-attributable gap is
+detectable on GPT-OSS-20B above 0.013 (E −0.001 [−0.011, 0.008], n 586), with the known-gap positive
+control on the same readout at 0.501 [0.469, 0.534].** At dose 0 the recipe split gains a reasoning-RL
+member beside Tulu 3 and Qwen2.5 on the not-detected side. Rival reading: dose 0 is not the mode GPT-OSS
+runs in by default, and reasoning moves its answers (dose-0 and low-effort generation agree on only 0.56
+of scenarios); the separating cell is the dose-stated run, under design.
+
+**Referee pass.** (1) *"C0 was cleared after it failed twice."* Disclosed: both registered fails are
+printed first; the clearance rests on the token identity (a property of the sequences) and the G-A12
+fork pushed before its computation, and the author made the call. (2) *"A dose-0 null on a reasoning
+model says nothing about the deployed model."* Agreed and enforced: the claim is scoped to dose 0, and no
+deployed-mode statement is made until the dose-stated run clears its own C0. (3) *"The ceilings show
+the 0.80 bar was unpassable on most models; were the panel's readouts ever validated?"* The panel
+models had no C0; their readout validity rests on forward = generate and the known-gap control. The
+ceilings make future C0 runs model-relative and do not re-open past verdicts.

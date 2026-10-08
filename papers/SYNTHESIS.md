@@ -915,3 +915,18 @@ gap statement in either direction) holds until then. Rival to the positive sente
 are small (6 and 5 norm-crossing scenarios of 64; sign test p 0.031 for 6 vs 0); separating cell, more
 scenarios at both doses.
 
+### Author decision on C0; GPT-OSS-20B at dose 0; KDG-A23 (2026-10-08; `kdg_panel/KDG_RESULTS.md` §27)
+
+Positive voice first: **at dose 0 the instrument reads OpenAI's open reasoning model and finds no
+pressure-attributable gap detectable above 0.013 (E −0.001 [−0.011, 0.008], n 586), with its known-gap
+positive control responding at 0.50; at dose 0 the recipe split gains a reasoning-RL member on the
+not-detected side, beside Tulu 3 and Qwen2.5.** This rests on the author's decision that C0 clears for the
+dose-0 readout (registered C0 0.688 and C0-dm 0.766 both fail at 0.80; the token identity and the G-A12
+fork carry the clearance). Scope: dose 0 only; reasoning moves GPT-OSS's answers (dose-0 and low-effort
+generation agree on 0.56 of scenarios), so nothing is claimed about its deployed mode until the
+dose-stated run clears its own C0. C0 bars become model-relative (0.9 × the exact-readout ceiling; κ\*
+0.61–0.82 across the panel on the C0 sample, so 0.80 was above the ceiling on four of five models).
+Standing-claim scope note (KDG-A23, open, escalated): the sampled traces behind the dose claims
+(KDG-42/53/59, the KDG paper's deliberation brake) shared one random stream per rollout index across
+scenarios; point estimates are not in question yet, and the two-way CIs that would size the effect on
+their intervals are a zero-GPU fork awaiting the author's go.
