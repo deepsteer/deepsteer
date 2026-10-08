@@ -468,3 +468,23 @@ uncommitted design draft of 2026-10-08.
     (completed or truncated), `token_identity`, letter-step log-prob vector, option ids and mass,
     sampled letter, date pin, level, readout and sampler versions; residual arrays per §4; pilot
     decomposition and sizing decision written to the manifest before the main stage starts.
+
+**G-A16. Dose-stated amendments (author, 2026-10-08; before any dose-stated code or pod).**
+1. **Approved:** stage B, the in-pilot dose-stated C0, and C2 on 200 primaries (G-A15 §§5, 6, 8).
+2. **Sizing rule, replacing G-A15 §7 (ii)–(iii):** (i) the full model-free union with the smallest
+   k ≤ 8 reaching MDE ≤ 0.015 within 8.0 A100-h → confirmatory main stage; (ii) otherwise the full
+   union at **k = 1**, its achieved MDE reported and the stage **labelled descriptive**, if that fits
+   within 8.0 A100-h; (iii) otherwise stop and report. The 300-subset fallback is dropped.
+3. **Dose-stated C0's κ\*** is computed per (scenario, trace): each of a scenario's 4 traces contributes
+   its own letter-step distribution, one letter is drawn from each, the strict majority is scored
+   against the argmax of the mean of the 4 distributions; 10,000 simulations, seed 0, pure T 0.7.
+4. **A dose-stated C0 failure stops the main stage, but the pilot banks** its traces, letter-step
+   distributions, residuals and timing in full.
+5. **Readout implementation (clarifies G-A15 §3).** Long generations cannot keep per-step logits
+   (4,096 steps × batch × 201k vocabulary), so the letter-step distribution is read by one forward pass
+   over prompt + the generated tokens up to and including the canonical final header, built from the
+   generated token ids (no re-tokenisation), with mask-derived positions; that same pass yields the
+   residuals of G-A15 §4. Token identity guarantees the input is the sequence the model generated, so
+   this is the distribution the sampled letter was drawn from up to batch-shape noise (KDG-A21);
+   VALIDATE checks it on 16 rows against a one-token generation from the same ids (≤ 0.05 nats).
+

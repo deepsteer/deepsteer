@@ -919,8 +919,10 @@ scenarios at both doses.
 
 Positive voice first: **at dose 0 the instrument reads OpenAI's open reasoning model and finds no
 pressure-attributable gap detectable above 0.013 (E −0.001 [−0.011, 0.008], n 586), with its known-gap
-positive control responding at 0.50; at dose 0 the recipe split gains a reasoning-RL-trained model
-measured without reasoning, on the not-detected side beside Tulu 3 and Qwen2.5.** This rests on the author's decision that C0 clears for the
+positive control responding at 0.50.** [Recipe-split placement held, 2026-10-08: KDG-A24 is
+partial. GPT-OSS at dose 0 has the carriers' letter entropy and its contrast with both carriers survives
+entropy matching; the carriers' contrasts with Tulu 3 and Qwen2.5 lose resolution under matching. The
+author words the split.] This rests on the author's decision that C0 clears for the
 dose-0 readout (registered C0 0.688 and C0-dm 0.766 both fail at 0.80; the token identity and the G-A12
 fork carry the clearance). Scope: dose 0 only; reasoning moves GPT-OSS's answers (dose-0 and low-effort
 generation agree on 0.56 of scenarios), so nothing is claimed about its deployed mode until the

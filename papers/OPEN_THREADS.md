@@ -24,6 +24,14 @@ Prices are rough A100-hour estimates for the parked pods.
 
 ---
 
+## 0b. KDG paper v2 (arXiv:2610.08670; author, 2026-10-08)
+
+| item | source | what v2 does |
+|---|---|---|
+| §9 l.97 "(against the truncated filler it resolves, −0.039)" | P1-A15/A16, KDG-A23 | under the two-way estimator of record it does not resolve (−0.039 [−0.082, +0.004]); OLMo-3 reads branch (b) on both references |
+| Harness-corrections methods paragraph | KDG-A20 + KDG-A23 | one paragraph, drafted in KDG_RESULTS §29 |
+| Two-way CIs beside every sampled-cell CI | P1-A16 | registered first, two-way beside, in tables and text |
+
 ## A. Closed (verified this session)
 
 | thread | disposition | evidence |

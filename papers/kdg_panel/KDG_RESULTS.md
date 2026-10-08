@@ -1819,8 +1819,9 @@ readout, empty closed analysis turn, no reasoning trace; pod 3xlqmdx2mo3niz.
 
 Verdict sentence: **at dose 0 (forced letter, no reasoning trace), no pressure-attributable gap is
 detectable on GPT-OSS-20B above 0.013 (E −0.001 [−0.011, 0.008], n 586), with the known-gap positive
-control on the same readout at 0.501 [0.469, 0.534].** At dose 0 the recipe split gains a reasoning-RL-trained
-model measured without reasoning, beside Tulu 3 and Qwen2.5 on the not-detected side. Rival reading: dose 0 is not the mode GPT-OSS
+control on the same readout at 0.501 [0.469, 0.534].** [HELD 2026-10-08, KDG-A24 partial, author rule: "At dose 0 the recipe split gains a reasoning-RL-trained
+model measured without reasoning, beside Tulu 3 and Qwen2.5 on the not-detected side." Entropy-matched
+contrasts in §29; wording pending the author.] Rival reading: dose 0 is not the mode GPT-OSS
 runs in by default, and reasoning moves its answers (dose-0 and low-effort generation agree on only 0.56
 of scenarios); the separating cell is the dose-stated run, under design.
 
@@ -1880,4 +1881,37 @@ escalated. (2) *"Resampling rollout indices assumes the shared stream is the onl
 dependence."* It is the dependence the code creates; other dependence (shared scenario templates)
 would widen intervals further and is not modelled. (3) *"Repetition penalty as a temperature factor is
 a guess."* Labelled approximate; it moves Qwen2.5's κ\* by 0.003–0.004 and no reading depends on it.
+
+## 29. Estimator of record for sampled cells, KDG-A24 result, harness-corrections paragraph (2026-10-08)
+
+**Estimator of record (author, P1-A16).** The two-way bootstrap (scenarios × rollout indices) is the
+estimator of record for every claim computed from sampled cells; registered scenario-bootstrap verdicts
+are printed first, the two-way beside. Computed so far: KDG-42, KDG-53, KDG-59 (§28). Scheduled (zero
+GPU): the remaining sampled-cell claims listed in P1-A16.
+
+**KDG-A24 (entropy and gap detection): partial.** Within-model slopes of E on dose-0 letter entropy all
+include 0. Entropy-matched contrasts: Llama − Tulu 3 (+0.020 [0.009, 0.036]), OLMo-3 − GPT-OSS (+0.015
+[0.004, 0.027]) and Llama − GPT-OSS (+0.027 [0.017, 0.036]) survive; OLMo-3 − Tulu 3 (+0.009 [−0.005,
+0.024]), OLMo-3 − Qwen2.5 and Llama − Qwen2.5 lose resolution (Qwen2.5 shares only 6 of 10 entropy bins
+with the carriers). GPT-OSS at dose 0 has the carriers' entropy (0.52 vs 0.53–0.56) and differs from
+both. The §27 recipe-split line is held for the author's wording.
+
+**Harness-corrections paragraph (draft for v2, one paragraph for KDG-A20 and KDG-A23).**
+
+> *Harness corrections.* Two defects in the panel harness were found after posting and corrected;
+> neither changes a verdict of record. First, the batched forward pass that reads the letter
+> distribution did not pass position ids, so a left-padded prompt was read at positions shifted by its
+> pad count. Rotary embeddings cancel the shift in exact arithmetic but not at 16-bit precision. With
+> positions derived from the attention mask (readout version 2, which matches generation exactly on all
+> four panel models), the original readout's per-row error stayed within the 0.05-nat validation bar on
+> OLMo-3, Llama-3.1 and Tulu 3 (0.016 to 0.031) and reached 0.094 on Qwen2.5, whose re-read left the
+> excess unchanged (paired difference +0.0002 [−0.0001, +0.0004]); no padding contrast aligned with the
+> twin design on any model. Second, the cells that sample (the reasoning traces of the dose arms and
+> free replies) were generated one scenario at a time with a single seed, so rollout k of every scenario
+> drew from the same random stream, and sampling applied each model's default nucleus on top of the
+> stated temperature. For every claim from sampled cells we report a two-way bootstrap over scenarios
+> and rollout indices beside the scenario bootstrap: intervals widen by 16 to 47%, point estimates are
+> unchanged, and the dose verdicts hold, except that OLMo-3 against its own truncated filler moves from
+> branch (a) to branch (b). The harness now seeds each scenario separately and samples at pure
+> temperature.
 

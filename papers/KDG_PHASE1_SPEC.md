@@ -772,3 +772,13 @@ registered scenario bootstrap treats scenarios as the only unit of resampling.
   under the fork).
 - **Reporting.** The registered scenario-bootstrap verdicts stay the verdicts of record; the two-way
   verdicts are printed beside them, and any verdict that changes under the fork is escalated.
+
+**P1-A16. Two-way bootstrap is the estimator of record for sampled-cell claims (author, 2026-10-08).**
+For every claim computed from sampled cells (sampler version 1), the two-way bootstrap of P1-A15
+(scenarios × rollout indices, the index set shared across arms and cells, 10,000 draws, seed 0) is the
+estimator of record; the registered scenario-bootstrap verdict is printed first and the two-way beside
+it. Done: KDG-42, KDG-53, KDG-59 (KDG_RESULTS §28). Scheduled, zero GPU: KDG-42's secondaries (dose1 −
+filler, natural-anchor subset), KDG-53's secondaries (dose1 − filler, truncation alone), KDG-A10 and
+KDG-A11, and the pilot-era D_chat claims (KDG-A1, KDG-A3, KDG-A4). Correction scheduled for the paper's
+v2: §9's "(against the truncated filler it resolves, −0.039)" does not resolve under the two-way
+estimator (−0.039 [−0.082, +0.004]); OLMo-3 reads branch (b) on both references.
