@@ -239,3 +239,18 @@ written, temperature stays 0.7).** Pushed before any data.
    refuses any other card). VALIDATE records the GPU name and class in `timing.json`; the real run
    receives that file (the launcher's `SYNC_OUTPUTS` ships it and no other output) and refuses with
    exit 4 if it is missing, says stop, or was measured on another GPU class.
+
+**G-A8. GPT-OSS rerun branches after the VALIDATE gate failure (author, 2026-10-07; pushed before
+the rerun).** The first VALIDATE pod (tlsh5rtjq2kgyh) failed forward-vs-generate at 0.46 / 0.38 nats;
+cause and fix in ANOMALIES KDG-A20 (mask-derived `position_ids`). The bar stays 0.05. On the rerun, in
+this order:
+1. **Padded-corrected passes** (batched forward with mask-derived positions vs generate ≤ 0.05 on
+   both prefills) → proceed as specified.
+2. **Padded misses, unpadded passes** (the same prompts one at a time vs generate ≤ 0.05) → every
+   GPT-OSS readout switches to length-bucketed batching (a batch holds rows of equal token length
+   only, so no row is padded), bar unchanged. The gate is re-run on the bucketed path in the same
+   pod and must pass before any cell; the VALIDATE timing is measured on the bucketed path.
+3. **Unpadded misses** → bail (exit 2): the forced readout does not reproduce generation even with no
+   padding, so no GPT-OSS number is produced on this harness.
+The per-prompt record (pad count, padded vs generate, unpadded vs generate, padded vs unpadded) is
+saved in every case.

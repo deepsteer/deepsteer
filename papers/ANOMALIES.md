@@ -786,3 +786,39 @@ to the author (published-claim wording; CLAUDE.md escalation list).
 **Fix.** `next_logprobs_and_residuals` (GPT-OSS path) passes `position_ids = cumsum(attention_mask) − 1`; test `test_left_padded_bf16_readout_equals_the_unpadded_one` fails at 0.1406 without it. `raw_next_logprobs` is left unchanged and documented, so new panel cells stay comparable with the cells of record until the author decides (fix and re-read, or keep and scope).
 **Status.** open; escalated (it touches a published claim's instrument). GPT-OSS p2c proceeds on the fixed path; its gate stays at 0.05.
 **Thesis impact.** R_a: none; the paper's numbers stand, with a methods note that the readout's position handling was within its gate. R_b: the affected E values are re-read and the paper takes a v2 correction (sized by the discriminator).
+**Pre-registration (author, 2026-10-07; pushed before the pad table or any re-read is computed).**
+1. *Pad check (zero GPU).* Models: OLMo-3 final, Llama-3.1 Meta, Tulu 3 final, Qwen2.5-7B-Instruct;
+   cells: the four C3 letter cells of record (`dl/jl_chat_neutral` and `_pressure_removed`, the
+   directories in `analyze_screen_rates.MODELS`). Batches are reconstructed as 16 consecutive rows in
+   file order (`raw_next_logprobs` default `batch_size=16` since 8b115d6, 2026-09-26, before every cell
+   of record); each row's prompt is re-rendered with the model's pinned tokenizer and template and
+   must match the row's `prompt_sha256`, on every row, or that model's reconstruction is invalid and
+   reports nothing. Pad = longest prompt in the batch − the row's own length (tokens).
+   Reported per model: pad in primary cells vs pressure-removed twin cells (mean, median, p90, max);
+   per-batch distribution (quantiles of each batch's max pad; share of rows with pad 0); the
+   VALIDATE batches' pads, reconstructed the same way, beside each saved VALIDATE maximum.
+   Contrast: per scenario on the model-free set of record (all four cells at option mass ≥ 0.5),
+   Δpad_s = mean over permutations of (pad_D − pad_J) − (pad_Dtwin − pad_Jtwin), the pad analogue of
+   E; mean Δpad with a 10,000-draw bootstrap CI (seed 0); Pearson corr(E_s, Δpad_s) with a bootstrap
+   CI (same draws). Rule, per model:
+   - **bounded, no aligned channel**: every row's pad ≤ the largest pad in that model's saved VALIDATE
+     batches, and both the mean-Δpad CI and the corr CI include 0. The paper's numbers stand with a
+     methods note; no re-read is needed for that model.
+   - **aligned channel**: either CI excludes 0. The model's C3 cells are re-read under item 2.
+   - **bound does not transfer**: some row's pad exceeds the VALIDATE pads, or the model has no saved
+     VALIDATE record (Tulu 3, Qwen2.5). The VALIDATE-only gate run with the per-prompt record
+     supplies the bound.
+   The OLMo-3 re-read is held for the author after the table whatever the rule says.
+2. *E-of-record comparison for any re-read (written before any re-read).* Same four cells, same
+   scenario order, same batch size, readout version 2 (mask-derived positions). Quantity: per-scenario
+   paired ΔE_s = E_s(re-read) − E_s(record) on the model-free set of record (the record's scenario ids,
+   not re-screened); paired bootstrap, 10,000 draws, seed 0; per-row |Δ log p| on the option tokens
+   (max and p99) beside it. E of record: OLMo-3 0.018 [0.008, 0.029] (n 586); the other models' values
+   are read from `analysis_continuous_union.json` at re-read time. Branches:
+   - **stands**: the ΔE CI lies inside ±0.005 (the 586-set stage bar of record). Numbers stand; v2
+     carries a methods sentence.
+   - **correction**: the ΔE CI excludes 0. v2 carries the re-read values for every cell that model's
+     readout produced, and the model's gap verdict is recomputed; a flipped verdict is escalated as
+     thesis-level.
+   - **unresolved**: the CI includes 0 but extends past ±0.005. v2 prints both values, with the
+     re-read as the number of record.
