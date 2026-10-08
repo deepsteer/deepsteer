@@ -336,6 +336,16 @@ def main() -> int:
         if why:
             print(f">> REFUSE (G-A4 timing parity): {why}", flush=True)
             return 4
+    if not a.dry_run:
+        import torch
+
+        if not hasattr(torch, "accelerator"):  # mxfp4 dequant path needs torch >= 2.6 (W4 stack)
+            manifest.data["gptoss"]["gates"] = {"ok": False, "checks": {"torch_accelerator": {
+                "ok": False, "detail": torch.__version__}}}
+            manifest.write()
+            print(f">> BAIL (G-A4): torch {torch.__version__} lacks torch.accelerator; the mxfp4 "
+                  "quantizer needs torch >= 2.6. No model loaded.", flush=True)
+            return 2
     t_load = time.time()
     model = (HarmonyStub(spec["repo"], spec["revision"], hcfg) if a.dry_run
              else ModelWrapper(spec["repo"], spec["revision"], harmony=hcfg))

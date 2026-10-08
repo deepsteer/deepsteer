@@ -61,6 +61,17 @@ echo ">> transformers: $(python -c 'import transformers;print(transformers.__ver
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
 if [ "$PROFILE" = "p2c" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
+  # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
+  # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
+  # 5.12.1) and stop before any model download if it did not take.
+  if ! python -c 'import torch; torch.accelerator' 2>/dev/null; then
+    echo ">> torch $(python -c 'import torch;print(torch.__version__)') lacks torch.accelerator; upgrading the trio to 2.6.0+cu124 (W4 stack)..."
+    pip install -q --break-system-packages "torch==2.6.0" "torchvision==0.21.0" "torchaudio==2.6.0" \
+      --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
+  fi
+  python -c 'import torch; torch.accelerator; assert torch.cuda.is_available()' \
+    || { echo "FATAL: torch.accelerator missing or CUDA unavailable after the upgrade; GPT-OSS cannot load."; exit 1; }
+  echo ">> torch: $(python -c 'import torch;print(torch.__version__)')  transformers: $(python -c 'import transformers;print(transformers.__version__)')"
   echo ">> KDG local gates (p2c):"
   python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_phase1.py tests/scripts/test_pod_kdg_gptoss.py \
     || { echo "LOCAL GATE FAILED"; exit 1; }

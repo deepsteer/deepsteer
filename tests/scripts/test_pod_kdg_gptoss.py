@@ -310,3 +310,13 @@ class TestGA7AndTimingParity:
         rec = json.loads((tmp_path / "timing.json").read_text())
         assert rec["gpu_class"] == "A100-80GB"
         assert rec["c0_batches_counted"] == 2 * rec["c0_batches"]
+
+
+def test_p2c_upgrades_torch_before_any_gptoss_call():
+    # most probable failure (VALIDATE pod g85xxpdraotqfw, 2026-10-07): p2c loads GPT-OSS on the
+    # image's torch 2.4, whose missing torch.accelerator crashes the mxfp4 quantizer at load
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2c" ]; then'):]
+    up = block.index('"torch==2.6.0"')
+    assert up < block.index("python -m pytest") < block.index("python $G")
+    assert "FATAL: torch.accelerator missing" in block
