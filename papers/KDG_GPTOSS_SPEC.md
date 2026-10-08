@@ -406,3 +406,65 @@ letter appears in the prompt, so all are penalised, and it is modelled as an ext
 Reported beside the pure-T κ\* for all five models, on the C0 sample and on all engaged scenarios, and
 GPT-OSS's C0-dm 0.766 is re-checked against 0.9 × κ\*_eff (unchanged by construction, since its
 effective sampler is pure T).
+
+**G-A15. Dose-stated readout of GPT-OSS-20B: pre-registration (author decisions 2026-10-08; committed
+after P1-A15 and G-A14 were in, before any dose-stated code or pod).** The first GPT-OSS statement about
+its deployed (reasoning) mode is licensed only if this run clears its own C0 (G-A13). Supersedes the
+uncommitted design draft of 2026-10-08.
+
+1. **Construct.** The letter distribution at the final-channel answer position after the model's own
+   sampled reasoning trace at the template default level, `medium` (pinned `chat_template.jinja`
+   a4c9919c, lines 203–204; passed explicitly and recorded per row). One sampled trace per scenario,
+   cell and permutation, trace saved (text, ids, batch seed, batch composition).
+2. **Generation.** Harmony render at `Reasoning: medium`, date pin, no prefill. Sampler version 2:
+   T 0.7 with `top_p=1.0`, `top_k=0`, `repetition_penalty=1.0` explicit. All prompts of a stage in one
+   `generate` sequence, order shuffled with a recorded seed so each batch mixes scenarios, cells and
+   permutations, with a distinct seed per batch (no stream shared by rollout index, KDG-A23).
+3. **Readout and token identity.** The step logits at the letter in the same generation (full vector,
+   option ids, option mass, sampled letter). A row is admissible iff its continuation after the trace
+   is exactly `<|end|><|start|>assistant<|channel|>final<|message|>` (ids 200007 200006 173781 200005
+   17196 200008) followed by the letter. **Gate: identity ≥ 0.95 of completed rows per cell**, else
+   that cell is descriptive. VALIDATE: on 16 completed rows, a forward pass over prompt + trace +
+   header (mask-derived positions) reproduces the generation-step letter log-probs within 0.05 nats.
+4. **Residuals (author).** Decision-token residuals at every layer (HF `hidden_states[0..24]`) at the
+   post-reasoning decision token, the `assistant` token of `<|end|><|start|>assistant` closing the
+   trace (the same token type as the dose-0 decision token), plus the letter-step position
+   (`<|message|>`), from one forward pass per completed main-run row. Its cost is measured in VALIDATE
+   and included in the projection.
+5. **Pilot (stage A, author): 4 C3 cells × 64 C0 scenarios × 1 permutation (seed 0) at medium, cap
+   4,096; pilot envelope 1.0 A100-h.** Proceed iff ≥ 99% of traces complete within 4,096 tokens; main
+   cap = the smallest multiple of 256 ≥ the p99 of completed lengths (minimum 1,024); bail and report if
+   completion is below 95%. *Added by Claude (2026-10-08), because one trace per scenario-cell cannot
+   separate within- from between-scenario variance:* **stage B** within the same pilot envelope:
+   `dl_chat_neutral` at seeds 1–3 on the 64 scenarios (192 traces; these complete the dose-stated C0's
+   four traces), and, only if stage A's measured throughput projects the whole pilot within 1.0 A100-h,
+   the three other C3 cells at seed 1 (192 traces). Without the latter, the other cells' within-scenario
+   variance is taken as equal to `dl_chat_neutral`'s (stated with every MDE).
+6. **Dose-stated C0 (G-A13 bar).** The 64 scenarios, `dl_chat_neutral`, 4 traces (seeds 0–3).
+   Reference: the readout argmax (mean over the 4 post-trace distributions); observed: the strict
+   majority of the 4 sampled letters; **pass iff observed ≥ 0.9 × κ\***, κ\* simulated from those rows'
+   own post-trace distributions under the run's effective sampler (pure T 0.7). Wilson CI and near-miss
+   label (G-A2). Computed on the pod after stage B; **C0 failure stops the run before the main stage**
+   (no deployed-mode statement is possible without it).
+7. **Main-stage sizing rule (author).** From the pilot: σ_b² (between-scenario variance of E_s) and
+   σ_w² (within-scenario variance per trace and permutation, summed over the four cells), giving
+   MDE(n, k) = 2.8 · √((σ_b² + σ_w²/k) / n). Choose, in order: (i) the full model-free union (n = 586)
+   with the smallest k ≤ 8 such that MDE ≤ 0.015 and the projected main stage (C1/C3 at n × 4 cells × k,
+   C2 below, residual passes, measured per-trace throughput) is ≤ **8.0 A100-h**; (ii) fallback only if
+   (i) is infeasible: a 300-scenario subset (the first 300 of the union in seeded random order, seed 0)
+   with the smallest k meeting the same MDE and envelope; (iii) otherwise **stop and report the options
+   to the author** (no main stage). Arithmetic noted now: at σ_b = 0.116 (the dose-0 per-scenario SD),
+   n = 300 cannot reach MDE 0.015 at any k (it needs a per-scenario SD ≤ 0.093), so (ii) is reachable only
+   if reasoning lowers σ_b.
+8. **C2 at this dose.** `dl_chat_known_gap` on 200 union primaries (seeded random order, seed 0), one
+   permutation; validated iff the 95% lower bound of g_band ≥ 0.10.
+9. **Branches (written before data).** **Clears** (identity ≥ 0.95 in every cell, C0 ≥ 0.9 κ\*, C2
+   validated): E at `medium` is GPT-OSS's deployed-mode readout, read under §6 at that dose (carries a
+   gap if E's CI lies above 0, else "not detectable above [realized MDE]"), with the paired dose
+   contrast against dose 0 beside it. **C0 or identity fails:** stop or descriptive; the result is the
+   instrument's limit in reasoning mode, and no deployed-mode statement is made. **C2 fails:**
+   instrument not validated at this dose; no gap statement either way.
+10. **Saves.** Per row: trace, ids, batch seed and composition, row-order seed, `reasoning_trace`
+    (completed or truncated), `token_identity`, letter-step log-prob vector, option ids and mass,
+    sampled letter, date pin, level, readout and sampler versions; residual arrays per §4; pilot
+    decomposition and sizing decision written to the manifest before the main stage starts.
