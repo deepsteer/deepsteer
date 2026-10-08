@@ -317,7 +317,8 @@ def test_p2c_upgrades_torch_before_any_gptoss_call():
     # most probable failure (VALIDATE pod g85xxpdraotqfw, 2026-10-07): p2c loads GPT-OSS on the
     # image's torch 2.4, whose missing torch.accelerator crashes the mxfp4 quantizer at load
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    head = 'if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]; then'
+    head = ('if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]'
+            ' || [ "$PROFILE" = "p2i" ]; then')
     block = sh[sh.index(head):]
     up = block.index('"torch==2.6.0"')
     assert up < block.index("python -m pytest") < block.index("python $G")
@@ -706,3 +707,80 @@ class TestPilotBanking:
         assert lines and all({"stage", "batch", "jobs", "gen_ids"} <= set(json.loads(x))
                              for x in lines)
         assert ">> stage A batch 1/" in rc.stdout
+
+
+PILOT_ROWS = REPO / "papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl"
+
+
+class TestMainStage:
+    def _run(self, tmp_path, *extra):
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        return subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                               "--dose-stated-main", "--pilot-rows", str(PILOT_ROWS),
+                               "--out", str(tmp_path), *extra],
+                              capture_output=True, text=True, cwd=REPO)
+
+    def test_dry_main_stage_records_readout_batch_shape(self, tok, tmp_path):
+        # G-A18 item 3a. most probable failure: readout rows lose the batch shape VALIDATE was
+        # checked under, so a later re-read cannot reproduce them
+        rc = self._run(tmp_path)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        d = tmp_path / "gpt_oss_20b"
+        rec = json.loads((d / "main_record.json").read_text())
+        assert rec["outcome"] == "main_complete" and rec["validate"]["n"] == 16
+        rows = [json.loads(x) for x in (d / "ds_main.jsonl").read_text().splitlines()]
+        ident = [r for r in rows if r.get("token_identity")]
+        assert ident and all(r["readout_batch_size"] == 16 for r in ident)
+        assert {r["stage"] for r in rows} == {"main", "B1"}
+        assert (d / "ds_main_partial.jsonl").exists()
+
+    def test_timing_projection_over_envelope_stops_and_banks(self, tok, tmp_path):
+        # G-A18 item 3b. most probable failure: the main stage proceeds past the 5.0 A100-h
+        # envelope, or the timing batch is thrown away on a stop
+        rc = self._run(tmp_path, "--envelope-hours", "0.01")
+        assert rc.returncode == 3, rc.stdout[-2000:]
+        d = tmp_path / "gpt_oss_20b"
+        assert json.loads((d / "main_record.json").read_text())["outcome"] == "stop_report"
+        assert (d / "ds_main.jsonl").read_text().strip()  # the first batch is banked
+
+    def test_validate_rebuild_refuses_a_tampered_pilot_row(self, tok, tmp_path):
+        # most probable failure: the re-check reads sequences that are not the pilot's (a prompt
+        # render drifted), so a pass says nothing about the pilot's readout
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        kds = _load("kdg_dose_stated")
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+        rows = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        seqs, pos = kds.rebuild_validate_seqs(stub, CFG, rows, {s.id: s for s in S})
+        assert len(seqs) == 16 and all(p[1] == len(q) - 1 for p, q in zip(pos, seqs))
+        bad = [dict(r) for r in rows]
+        first = next(i for i, r in enumerate(bad) if r["token_identity"])
+        bad[first]["prompt_sha256"] = "0" * 64
+        with pytest.raises(RuntimeError, match="does not re-render"):
+            kds.rebuild_validate_seqs(stub, CFG, bad, {s.id: s for s in S})
+
+
+def test_primary2_verdict_exact_tests():
+    # most probable failure: the sign test is two-sided or counts lateral changes, so the
+    # registered alpha 0.01 one-sided rule is not what runs
+    an = _load("analyze_gptoss_primary2")
+    v = an.verdict(20, 7)  # P(X >= 20 | 27, 0.5) = 0.0096
+    assert v["branch"] == "toward" and abs(v["p_toward_one_sided"] - 0.0096) < 1e-3
+    assert an.verdict(5, 0)["branch"] == "not_detected"  # 1/32 = 0.031 > 0.01
+    assert an.verdict(2, 12)["branch"] == "away"
+    assert an.verdict(0, 0)["m"] == 0
+
+
+def test_p2i_runs_the_main_stage_only():
+    # most probable failure: p2i falls through to the pilot or the p2c real run
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2i" ]; then'):]
+    block = block[: block.index("exit $rc") + len("exit $rc")]
+    assert block.index("--dry-run --dose-stated-main") < block.index(
+        'python $G --dose-stated-main --pilot-rows "$PILOT_ROWS" --envelope-hours 5.0')
+    assert "--dose-stated-pilot" not in block and "--c0-dm" not in block

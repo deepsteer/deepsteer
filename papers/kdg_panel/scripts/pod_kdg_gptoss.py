@@ -447,6 +447,11 @@ def main() -> int:
     ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
     ap.add_argument("--dose-stated-pilot", action="store_true",
                     help="G-A15/G-A16: gates, then the dose-stated pilot only (sizing.json)")
+    ap.add_argument("--dose-stated-main", action="store_true",
+                    help="G-A18: VALIDATE re-check, timing step, primary-2 main stage, then B1")
+    ap.add_argument("--pilot-rows", type=Path, default=None,
+                    help="G-A18 VALIDATE re-check: the banked pilot ds_pilot.jsonl")
+    ap.add_argument("--envelope-hours", type=float, default=5.0)
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
                     help="dose-stated pilot: no new stage-A batch past this (set by amendment)")
     ap.add_argument("--c0-dm", action="store_true",
@@ -455,6 +460,7 @@ def main() -> int:
                     help="G-A9 arm: re-read the C3 cells on the C0 sample in a shuffled row order")
     a = ap.parse_args()
 
+    t_start = time.time()
     cfg_all, reg = registry()
     spec = reg[KEY]
     hcfg = kh.HarmonyConfig.from_registry(spec)
@@ -509,6 +515,29 @@ def main() -> int:
                   row_fields={"harmony_date_pin": hcfg.date_pin,
                               "harmony_reasoning_level": hcfg.reasoning_level,
                               "reasoning_trace": "none", "prefill": "primary"})
+        if a.dose_stated_main:
+            import kdg_dose_stated as kds
+
+            full, _ = load_scenario_dir(files)
+            scen = {s.id: s for s in full}
+            main_ids = json.loads((KDG_DIR / "data" / "gptoss_dose0_model_free_586.json")
+                                  .read_text())["ids"]
+            c0_ids = [s.id for s in c0_scenarios(full)]
+            if a.dry_run:
+                main_ids, c0_ids = main_ids[:12], c0_ids[:4]
+            pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            mr = kds.run_main(model, hcfg, scen, main_ids, c0_ids, pilot, a.out / KEY, t_start,
+                              a.dry_run, envelope_h=a.envelope_hours)
+            manifest.data["gptoss"]["dose_stated_main"] = {
+                k: mr.get(k) for k in ("outcome", "timing", "main", "b1")}
+            manifest.data["gptoss"]["dose_stated_main"]["validate"] = {
+                k: v for k, v in mr["validate"].items() if k != "per_row"}
+            for f in ("ds_main.jsonl", "ds_main.npz", "main_record.json", "ds_main_partial.jsonl"):
+                if (a.out / KEY / f).exists():
+                    manifest.add(a.out / KEY / f, "dose_stated_main", KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> dose-stated main outcome: {mr['outcome']}", flush=True)
+            return {"bail_validate": 2, "stop_report": 3}.get(mr["outcome"], 0)
         if a.dose_stated_pilot:
             import kdg_dose_stated as kds
 

@@ -112,14 +112,15 @@ def run_stage(model, cfg, S, stage: str, cap: int, gen_seed: int, letter_ids: se
     return rows, prompt_ids, timing
 
 
-def readout(model, rows, prompt_ids, letter_ids_ordered: dict[str, int]):
+def readout(model, rows, prompt_ids, letter_ids_ordered: dict[str, int], batch_size: int = 8):
     """Forward readout for every identity row; attaches option log-probs and the violating mass."""
     ok = [i for i, r in enumerate(rows) if r["token_identity"]]
     seqs = [prompt_ids[i] + rows[i]["gen_ids"][: rows[i]["header_end"]] for i in ok]
     pos = [[len(prompt_ids[i]) + rows[i]["assistant_idx"], len(seqs[j]) - 1]
            for j, i in enumerate(ok)]
     t0 = time.time()
-    logp, resid = model.forward_readout(seqs, pos) if ok else (np.zeros((0, 1)), np.zeros((0,)))
+    logp, resid = (model.forward_readout(seqs, pos, batch_size=batch_size) if ok
+                   else (np.zeros((0, 1)), np.zeros((0,))))
     secs = time.time() - t0
     for j, i in enumerate(ok):
         r = rows[i]
@@ -309,3 +310,180 @@ def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: 
                         resid_post_reasoning=resid, readout_rows=np.array(ok))
     (out / "sizing.json").write_text(json.dumps(rec, indent=1, default=float))
     return rec
+
+
+# ---- primary-2 main stage (KDG_GPTOSS_SPEC G-A18) ---------------------------------------------
+
+MAIN_CAP, MAIN_BATCH, POD_ENVELOPE_H, SETUP_H, FWD_S_PER_ROW = 1536, 64, 5.0, 0.3, 0.2
+READOUT_BATCH = 16  # the batch shape VALIDATE checks; recorded on every readout row
+
+
+def rebuild_validate_seqs(model, cfg, pilot_rows: list[dict], scen: dict) -> tuple[list, list]:
+    """The pilot's 16 VALIDATE rows (the first 16 identity rows in file order, as run_pilot chose
+    them), rebuilt from their prompt render and generated ids; each prompt hash must match."""
+    seqs, pos = [], []
+    for r in [x for x in pilot_rows if x["token_identity"]][:VALIDATE_ROWS]:
+        frame, variant = CELLS[r["cell"]]
+        s = scen[r["scenario_id"]]
+        o = assign_letters(s, r["seed"])
+        assert letter_map(o) == r["order"], (s.id, "order drift")
+        p = model.render_chat(letter_chat_messages(s, o, frame, "neutral", variant))
+        if sha256_text(p) != r["prompt_sha256"]:
+            raise RuntimeError(f"{s.id}: pilot prompt does not re-render to its hash")
+        pid = model.tok.encode(p, add_special_tokens=False)
+        seq = pid + r["gen_ids"][: r["header_end"]]
+        seqs.append(seq)
+        pos.append([len(pid) + r["assistant_idx"], len(seq) - 1])
+    return seqs, pos
+
+
+def validate_matched(model, seqs, pos, letter_ids: list[int], dry: bool) -> dict:
+    """KDG-A25 discriminator: forward readout vs one-token generation under identical batching
+    (one batch of all 16 on both sides; one at a time on both sides). Pass iff both <= 0.05."""
+    def diff(a, b):
+        return [float(np.abs(a[i][letter_ids].astype(np.float32)
+                             - b[i][letter_ids].astype(np.float32)).max()) for i in range(len(a))]
+
+    fb, _ = model.forward_readout(seqs, pos, batch_size=len(seqs))
+    gb = model.first_step_logp(seqs)
+    fa, _ = model.forward_readout(seqs, pos, batch_size=1)
+    ga = np.concatenate([model.first_step_logp([s]) for s in seqs])
+    d_batch, d_alone, spread = diff(fb, gb), diff(fa, ga), diff(fb, fa)
+    ok = dry or (max(d_batch) <= VALIDATE_NATS and max(d_alone) <= VALIDATE_NATS)
+    return {"n": len(seqs), "matched_batch16_max": max(d_batch), "matched_alone_max": max(d_alone),
+            "batched_vs_alone_spread_max": max(spread), "per_row": {"batch16": d_batch,
+                                                                     "alone": d_alone,
+                                                                     "spread": spread},
+            "pass": bool(ok)}
+
+
+def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadline=None):
+    """Sampler-v2 generation of an ordered job list at MAIN_BATCH, banked per batch."""
+    prompts, orders = [], []
+    for s, c, k in jobs:
+        frame, variant = CELLS[c]
+        o = assign_letters(s, k)
+        prompts.append(model.render_chat(letter_chat_messages(s, o, frame, "neutral", variant)))
+        orders.append(o)
+
+    def bank(b, nb, start, got, seed, secs_b):
+        lens = [len(g) for g in got]
+        print(f">> {stage} batch {b + 1}/{nb}: {secs_b:.0f}s, gen tokens mean {np.mean(lens):.0f} "
+              f"max {max(lens)}", flush=True)
+        with open(partial, "a") as f:
+            f.write(json.dumps({"stage": stage, "batch": b, "seed": seed, "seconds": secs_b,
+                                "jobs": [[jobs[start + j][0].id, jobs[start + j][2]]
+                                         for j in range(len(got))], "gen_ids": got}) + "\n")
+
+    ids, seeds, secs = model.sample_ids(prompts, max_new_tokens=cap, temperature=T,
+                                        seed=gen_seed, batch_size=MAIN_BATCH, on_batch=bank,
+                                        deadline=deadline)
+    rows, pids = [], []
+    for (s, c, k), o, p, g, bs in zip(jobs, orders, prompts, ids, seeds):
+        if g is None:
+            rows.append({"scenario_id": s.id, "cell": c, "seed": k, "stage": stage,
+                         "order": letter_map(o), "status": "not_run", "token_identity": False,
+                         "gen_ids": [], "n_gen_tokens": 0, "option_id": None})
+            pids.append([])
+            continue
+        ds = kh.parse_dose_stated(g, len(g) >= cap, letter_ids)
+        letter = None if ds.letter_id is None else model.tok.decode([ds.letter_id])
+        opt = dict(o).get(letter) if letter else None
+        rows.append({
+            "scenario_id": s.id, "cell": c, "seed": k, "stage": stage, "order": letter_map(o),
+            "prompt_sha256": sha256_text(p), "gen_ids": g, "n_gen_tokens": len(g),
+            "status": ds.status, "token_identity": ds.token_identity, "trace_len": ds.trace_len,
+            "header_end": ds.header_end, "assistant_idx": ds.assistant_idx,
+            "reasoning_trace": "truncated" if ds.status == "truncated" else "completed",
+            "letter": letter, "option_id": None if opt is None else opt.option_id,
+            "norm_status": None if opt is None else opt.norm_status,
+            "batch_seed": bs, "temperature": T, "cap": cap,
+            "harmony_date_pin": cfg.date_pin, "harmony_reasoning_level": model.reasoning_level,
+            "readout_version": KDG_READOUT_VERSION, "sampler_version": KDG_SAMPLER_VERSION,
+        })
+        pids.append(model.tok.encode(p, add_special_tokens=False))
+    return rows, pids, secs
+
+
+def _readout_batched(model, rows, pids, lid):
+    ok, seqs, logp, resid, secs = readout(model, rows, pids, lid, batch_size=READOUT_BATCH)
+    for j, i in enumerate(ok):
+        rows[i]["readout_batch_size"] = READOUT_BATCH
+        rows[i]["readout_batch_index"] = j // READOUT_BATCH
+    return ok, logp, resid, secs
+
+
+def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pilot_rows: list[dict],
+             out: Path, t_start: float, dry: bool, envelope_h: float = POD_ENVELOPE_H) -> dict:
+    out.mkdir(parents=True, exist_ok=True)
+    lid = {x: model.token_id(x) for x in "ABCDE"}
+    letter_ids = set(lid.values())
+    model.reasoning_level = cfg.reasoning_level
+    cap = 64 if dry else MAIN_CAP
+    partial = out / "ds_main_partial.jsonl"
+    partial.unlink(missing_ok=True)
+    rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A18", "cap": cap, "batch": MAIN_BATCH,
+                 "envelope_h": envelope_h}
+
+    def elapsed_h():
+        return SETUP_H + (time.time() - t_start) / 3600
+
+    def finish(outcome, rows, logp=None, resid=None, ok=()):
+        rec["outcome"] = outcome
+        with open(out / "ds_main.jsonl", "w") as f:
+            for r in rows:
+                f.write(json.dumps(r) + "\n")
+        np.savez_compressed(out / "ds_main.npz",
+                            logp_letter_step=(np.zeros((0, 1)) if logp is None else logp)
+                            .astype(np.float16),
+                            resid_post_reasoning=np.zeros((0,)) if resid is None else resid,
+                            readout_rows=np.array(list(ok)))
+        (out / "main_record.json").write_text(json.dumps(rec, indent=1, default=float))
+        return rec
+
+    # (a) VALIDATE re-check under identical batching (gates everything)
+    seqs, pos = rebuild_validate_seqs(model, cfg, pilot_rows, scen)
+    rec["validate"] = validate_matched(model, seqs, pos, list(lid.values()), dry)
+    if not rec["validate"]["pass"]:
+        return finish("bail_validate", [])
+    # (b) timing step: the first main-stage batch, banked
+    order = np.random.default_rng(ORDER_SEED + 3).permutation(len(main_ids))
+    jobs = [(scen[main_ids[i]], "dl_chat_neutral", 0) for i in order]
+    first, rest = jobs[:MAIN_BATCH], jobs[MAIN_BATCH:]
+    rows, pids, secs = _generate(model, cfg, first, cap, SEED + 50_000, letter_ids, partial, "main")
+    n_rest_batches = math.ceil(len(rest) / MAIN_BATCH)
+    proj = elapsed_h() + (secs[0] * n_rest_batches + FWD_S_PER_ROW * len(jobs)) / 3600
+    rec["timing"] = {"first_batch_seconds": secs[0], "remaining_batches": n_rest_batches,
+                     "projected_hours_at_main_end": proj, "elapsed_h": elapsed_h()}
+    if proj > envelope_h:
+        ok, logp, resid, _ = _readout_batched(model, rows, pids, lid)
+        return finish("stop_report", rows, logp, resid, ok)
+    # (c) the rest of the main stage, deadline at the envelope
+    deadline = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * len(jobs)
+    r2, p2, s2 = _generate(model, cfg, rest, cap, SEED + 50_001, letter_ids, partial, "main",
+                           deadline)
+    rows += r2
+    pids += p2
+    rec["main"] = {"n": len(rows), "run": sum(r["status"] != "not_run" for r in rows),
+                   "identity": sum(r["token_identity"] for r in rows),
+                   "truncated": sum(r["status"] == "truncated" for r in rows),
+                   "gen_seconds": float(secs[0] + sum(s2))}
+    # (d) stage B1 last, within the remaining envelope
+    b1 = [(scen[s], "dl_chat_neutral", k) for s in c0_ids for k in (1, 2, 3)]
+    deadline_b1 = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * (len(jobs) + len(b1))
+    if time.time() < deadline_b1:
+        rb, pb, sb = _generate(model, cfg, b1, cap, SEED + 60_000, letter_ids, partial, "B1",
+                               deadline_b1)
+        rows += rb
+        pids += pb
+        rec["b1"] = {"run": sum(r["status"] != "not_run" for r in rb), "n": len(b1),
+                     "gen_seconds": float(sum(sb))}
+    else:
+        rec["b1"] = {"run": 0, "n": len(b1), "skipped": "envelope"}
+    ok, logp, resid, fsecs = _readout_batched(model, rows, pids, lid)
+    rec["forward_seconds"] = fsecs
+    c0_rows = [r for r in rows if r["scenario_id"] in set(c0_ids)]
+    rec["c0_descriptive"] = (c0_dose_stated(c0_rows) if rec["b1"]["run"] else
+                             {"verdict": "not_run"})
+    rec["elapsed_h_at_end"] = elapsed_h()
+    return finish("main_complete", rows, logp, resid, ok)

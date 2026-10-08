@@ -30,6 +30,15 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2i  GPT-OSS-20B primary-2 main stage (KDG_GPTOSS_SPEC G-A18): VALIDATE re-check on
+#                    the pilot's 16 banked sequences under identical batching (gates everything),
+#                    timing step at cap 1,536 / batch 64 within a 5.0 A100-h envelope, the main stage
+#                    (dl_chat_neutral, permutation 0, 586 scenarios), then B1. Needs the pilot rows:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl MAX_SYNC_GB=1 MIN_FREE_GB=20 \
+#     REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2i \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2i \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2h  GPT-OSS-20B dose-stated pilot (KDG_GPTOSS_SPEC G-A15 + G-A16): the p2c gates,
 #                    then stage A (4 C3 cells x 64 x 1 permutation at medium, cap 4,096), stage B
 #                    within the 1.0 A100-h pilot envelope, forward readout + residuals, VALIDATE,
@@ -80,9 +89,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2h (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2i (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -96,7 +105,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -125,6 +134,26 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]; t
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2i" ]; then  # G-A18: primary-2 main stage
+    PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
+    [ -f "$PILOT_ROWS" ] || { echo "FATAL: $PILOT_ROWS missing (SYNC_OUTPUTS must ship it)"; exit 1; }
+    python $G --dry-run --dose-stated-main --pilot-rows "$PILOT_ROWS" --out "$OUT/_dry_main" \
+      || { echo "DRY RUN (main) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2i/main ===================="
+    python $G --dose-stated-main --pilot-rows "$PILOT_ROWS" --envelope-hours 5.0 --out "$OUT/main"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/main" \
+      || echo "WARN: manifest verify reported mismatches"
+    case $rc in
+      0) echo ">> main stage complete";;
+      2) echo ">> BAIL: VALIDATE re-check failed under identical batching (KDG-A25); nothing else ran";;
+      3) echo ">> STOP: timing projection over 5.0 A100-h; the first batch is banked; report";;
+      *) echo ">> main stage crashed (rc=$rc); per-batch bank in $OUT/main/gpt_oss_20b/ds_main_partial.jsonl";;
+    esac
+    echo ">> KDG p2i done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2i/; then"
+    echo "   python3 papers/kdg_panel/scripts/analyze_gptoss_primary2.py"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2h" ]; then  # G-A15/G-A16: dose-stated pilot only
     python $G --dry-run --dose-stated-pilot --out "$OUT/_dry_ds" || { echo "DRY RUN (pilot) FAILED"; exit 1; }
     [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
