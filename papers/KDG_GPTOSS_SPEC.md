@@ -276,3 +276,32 @@ measures what the dependence does to E.
    above 0.5 means batch composition dominates GPT-OSS's per-scenario E variance, and every GPT-OSS
    E statement names it beside the realized MDE. Otherwise the arm is reported as a bound on the
    readout's batch dependence. No C0–C3 rule changes.
+
+**G-A10. C0 failure diagnosis tree (2026-10-07; post-hoc, written after the C0 verdict and before
+any diagnostic number is computed; pushed first).** The real run (pod 3xlqmdx2mo3niz) returned
+C0 agreement 0.688, Wilson [0.566, 0.788], n 64, outside the near-miss band (SE 0.058): §6's
+**readout-invalid** branch is the verdict of record and stays so under every outcome below. The
+tree only says why, and so which amendment the author is offered. Quantities from the saved
+`c0_forced_primary` and `c0_generate_low` rows; per scenario, over completed rollouts (unparsed
+ones count as non-matching); paired bootstrap over the 64 scenarios, 10,000 draws, seed 0.
+- **Root: Δκ = A_fr − A_rr.** A_fr = share of a scenario's rollouts whose option equals the forced
+  primary argmax; A_rr = share of agreeing pairs among its rollouts (the generation's
+  self-consistency at T = 0.7, the ceiling any fixed readout faces).
+  - **Ceiling-limited** (Δκ CI includes 0 or lies above 0): the forced readout agrees with the
+    model's sampled answers as often as they agree with each other. The 0.80 bar sat above the
+    generation's own consistency, so C0 had no positive control for its ceiling. Offered: a
+    fork amendment re-stating C0 against the self-consistency ceiling (author's decision).
+  - **Departs** (Δκ CI entirely below 0): go to the direction split.
+- **Direction split: D** over scenarios whose strict generated majority differs from the forced
+  argmax, both labelled: D = share (forced violating, generated consistent) − share (forced
+  consistent, generated violating).
+  - **Deliberation brake** (D CI above 0): low-effort reasoning moves the answer toward the
+    norm, the KDG paper's dose effect; the forced readout measures a dose-0 decision GPT-OSS does
+    not make when it reasons. Offered: the generated answer as GPT-OSS's readout of record, with
+    the dose stated (spec §6's named candidate).
+  - **Reverse** (D CI below 0): reasoning moves the answer toward violation; anomaly entry and
+    escalation.
+  - **Undirected** (D CI includes 0): the forced readout departs from the answer without a
+    direction; readout invalid as such, generated answer offered as above.
+Second derivation printed beside: the agreement a readout equal to each scenario's modal answer
+would reach against the strict majority of 4 draws, from the same rollouts.
