@@ -608,3 +608,35 @@ def test_identity_failure_blocks_a_confirmatory_outcome(tok, tmp_path):
     i_id = src.index('rec["outcome"] = "identity_fail_descriptive"')
     i_conf = src.index('rec["outcome"] = rec["sizing"]["decision"]')
     assert src.index('elif min(rec["identity_by_cell"].values()) < IDENTITY_GATE:') < i_id < i_conf
+
+
+def test_forward_readout_padded_batch_equals_unpadded_at_post_reasoning_positions(tok):
+    # G-A16 item 5. most probable failure: the dose-stated forward readout reads left-padded rows
+    # at shifted positions (the KDG-A20 defect), so a trace's letter-step distribution and its
+    # post-reasoning residuals depend on its batch-mates' lengths
+    import types
+
+    import torch
+    from transformers import GptOssConfig, GptOssForCausalLM
+
+    cfg = GptOssConfig(num_hidden_layers=4, hidden_size=64, intermediate_size=64,
+                       num_local_experts=8, num_experts_per_tok=2, num_attention_heads=4,
+                       num_key_value_heads=2, head_dim=16, vocab_size=len(tok), sliding_window=128,
+                       layer_types=["sliding_attention", "full_attention"] * 2)
+    torch.manual_seed(0)
+    m = types.SimpleNamespace(tok=tok, model=GptOssForCausalLM(cfg).to(torch.bfloat16).eval(),
+                              device=torch.device("cpu"), torch=torch)
+    p = tok.encode(kh.render(tok, _msgs(), CFG, "medium"), add_special_tokens=False)
+    rng = np.random.default_rng(0)
+    seqs, pos = [], []
+    for n in (5, 40, 120):  # traces of different lengths -> different left padding in one batch
+        trace = list(kh.ANALYSIS_OPEN) + [int(x) for x in rng.integers(1000, 5000, n)]
+        s = p + trace + list(kh.CANON_HEADER)
+        seqs.append(s)
+        pos.append([len(p) + len(trace) + 2, len(s) - 1])  # 'assistant' token, letter position
+    read = lib.ModelWrapper.forward_readout
+    lb, rb = read(m, seqs, pos, batch_size=3)
+    la, ra = read(m, seqs, pos, batch_size=1)
+    np.testing.assert_array_equal(lb, la)
+    np.testing.assert_array_equal(rb, ra)
+    assert rb.shape == (3, 2, 5, 64)
