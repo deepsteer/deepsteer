@@ -1673,8 +1673,8 @@ priced dose-matched C0′.
 |---|---|---|
 | C1 engagement / screen | 586 of 586 engaged (option mass median 0.9999); 71 screened (12.1%) | OLMo-3 110 (18.8%), Llama-3.1 Meta 118 (20.1%) |
 | C2 known-gap g_band | 0.501 [0.469, 0.534], n 360; p_D(known gap) 0.720 | developer-turn slot; not size-compared (spec §7 iii) |
-| C3 E, model-free set | −0.001 [−0.011, 0.008], n 586, MDE 0.013 | |
-| C3 E, own screen | 0.052 [0.023, 0.081], n 71; selection-matched null E_sel −0.001 [−0.050, 0.049] (n 67 twin-screened): within selection | |
+| C3 E, model-free set | −0.001 [−0.011, 0.008], n 586 (descriptive, no reading while C0 is uncleared) | |
+| C3 E, own screen | 0.052 [0.023, 0.081], n 71; selection-matched null E_sel −0.001 [−0.050, 0.049] (n 67 twin-screened); descriptive, no reading while C0 is uncleared | |
 | decision-token PR, hidden_states[13] | raw 7.51 [7.07, 7.95], standardized 11.62 [11.08, 12.32] (n 632, KDG letter prompts; subsampling CI, seed recorded) | Tier-1 12.79 post-std; W4 raw 9.40 [9.09, 10.65] (n 128, Heretic prompts): different harnesses and prompt sets, no size comparison |
 | G-A9 batch invariance | 62 scenarios, 2,048 rows: per-row \|Δ log p\| median 0.16, p90 0.42, max 1.37; ΔE −0.004 [−0.010, 0.003]; batch share of var(E_s) 0.039 | KDG-A21 → R_a |
 
@@ -1703,3 +1703,10 @@ generated low-effort answer as the candidate readout under a new amendment. Pric
 dose-matched C0′ alone (~0.3 A100-h); a dose-stated readout of record for C1–C3 (low-effort analysis,
 then the forced letter distribution at the final channel, 586 × 4 cells × 2 permutations ≈ 4,700
 generations at the measured 44 s per 16, about 3.6 A100-h), which exceeds the 1.3 A100-h authorization.
+
+**Addendum (author, 2026-10-07): wording rule and format discriminator.** No GPT-OSS gap statement in
+either direction until C0 clears, in documents and commit messages (G-A11); the table's E rows above are
+descriptives of the forced dose-0 readout only. Format discriminator (zero GPU): the two forced readouts
+agree per scenario on 59 of 64 (0.922 [0.830, 0.966]), so the empty analysis turn does not drive C0's
+failure; the dose-matched C0 (G-A11) tests the remaining format reading.
+

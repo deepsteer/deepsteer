@@ -305,3 +305,39 @@ ones count as non-matching); paired bootstrap over the 64 scenarios, 10,000 draw
     direction; readout invalid as such, generated answer offered as above.
 Second derivation printed beside: the agreement a readout equal to each scenario's modal answer
 would reach against the strict majority of 4 draws, from the same rollouts.
+
+**G-A11. Dose-matched C0 (C0-dm) and the wording rule (author, 2026-10-07; pushed before any C0-dm
+code or pod).** Envelope: 1.5 A100-h for C0-dm and the Qwen2.5 re-read (KDG-A20); the 3.6 A100-h
+dose-stated C1–C3 run is held until C0-dm is in.
+- **Wording rule (author).** No GPT-OSS gap statement in either direction until C0 clears, in every
+  document and in every commit message: no "carries / does not carry / not detected / within
+  selection" reading of any GPT-OSS E. GPT-OSS E values are printed only as labelled descriptives.
+- **Format discriminator, zero GPU (reported before this amendment, so not blind).** The two dose-0
+  forced readouts agree per scenario on 59 of 64 (0.922, Wilson [0.830, 0.966]; per row 482 of 512,
+  0.941 [0.918, 0.959]); 2 of the 5 disagreeing scenarios are among C0's 20 non-agreements. The empty
+  analysis turn does not drive C0's failure; the broader format reading (a forced final letter at
+  dose 0 vs the model's own output) is what C0-dm tests.
+- **Cell.** The 64 C0 scenarios, acting frame, neutral prefix, rendered at `Reasoning: medium` (the
+  forced readouts' level), date pin as everywhere. Prefill: the empty closed analysis turn and the next
+  assistant header, `<|channel|>analysis<|message|><|end|><|start|>assistant`; the model writes its
+  channel header and final-channel output itself. 4 rollouts per scenario at permutation seeds 0..3,
+  temperature 0.7, generation seed 0, budget 512 tokens; saved as `c0dm_generate` with
+  `reasoning_trace` and the new `redeliberated` field.
+- **Parsing.** The C0 parser on the final channel. A rollout that opens an analysis or commentary
+  channel before its final channel has re-deliberated (not dose 0): it counts as completed but
+  non-matching, the G-A1 convention, and the rate is reported. If more than a quarter of rollouts
+  re-deliberate or truncate, C0-dm is descriptive (the dose match failed by construction).
+- **Rule.** Reference: the forced primary argmax of the real run (`c0_forced_primary`, pod
+  3xlqmdx2mo3niz; same revision, stack and readout version). Strict majority of 4 with the tie rule
+  (G-A1); **pass iff agreement ≥ 0.80**; Wilson CI, SE and the near-miss label (G-A2). G-A7's T = 1.0
+  batch is not part of C0-dm.
+- **Pass →** C0 clears through the dose-matched check: the dose-0 forced readout is GPT-OSS's readout
+  of record, the C1–C3 cells of pod 3xlqmdx2mo3niz stand and are read under §6, the wording rule lifts,
+  and the 6-vs-0 low-effort direction is reported as a scoped descriptive. Whether to run the
+  dose-stated arm becomes a separate decision.
+- **Fail →** the format reading stands: the forced letter does not reproduce GPT-OSS's own dose-0
+  output. The instrument-limits write-up is the result, the wording rule stays, and no C1–C3 cell of
+  pod 3xlqmdx2mo3niz is read.
+- **Descriptive beside it.** C0-dm majority vs the low-effort majority (C0's reference) on the same
+  scenarios: generation-vs-generation agreement and the norm-crossing direction, a second derivation of
+  the 6-vs-0 that does not involve the forced readout.

@@ -887,17 +887,16 @@ closed; KDG-42 and KDG-53 carry scope notes (CLAIMS KDG-59).
 
 ### GPT-OSS-20B Tier 2 and the readout's position handling (2026-10-07; `kdg_panel/KDG_RESULTS.md` §25, ANOMALIES KDG-A20..A22) — what changed
 
-Positive voice first: **on OpenAI's open reasoning model the panel's instrument localizes its own limit:
-the forced dose-0 letter readout does not track what GPT-OSS-20B answers (C0 0.69 vs 0.80), and every
-departure that crosses the norm goes toward it once the model reasons at low effort (6 vs 0), so its
-default mode applies the deliberation brake the KDG paper measured on instruct models.** The verdict of
-record is the pre-registered "readout invalid": no GPT-OSS gap statement in either direction, and the
-dose-0 E (−0.001, MDE 0.013) describes a decision GPT-OSS does not make when it reasons. Standing-claim
-edits: the instrument claim's scope gains "validated on instruct models read at dose 0; on a harmony
-reasoning model the dose-0 readout departs from the model's own answer" (rival: a format artifact of the
-empty analysis turn; separating cell the dose-matched C0′, ~0.3 A100-h, KDG-A22). The recipe split does
-not gain a reasoning-RL member yet. GPT-OSS's readout is batch-dependent per row (up to 1.37 nats) but
-zero-mean in E (KDG-A21, R_a).
+Positive voice first: **on OpenAI's open reasoning model the panel's instrument locates its own limit:
+the forced dose-0 letter departs from GPT-OSS-20B's own low-effort answers (C0 0.69 vs 0.80), and the
+departures that cross the norm all go toward it (6 vs 0, a scoped descriptive).** The verdict of record
+is the pre-registered "readout invalid". Whether the forced letter is a valid dose-0 readout (the
+departure is dose) or a format artifact is open; the two dose-0 prefills agree on 0.92 of scenarios,
+which rules out the empty analysis turn but not forcing as such, and the dose-matched C0 (G-A11, about
+0.3 A100-h) separates them. Author wording rule: no GPT-OSS gap statement in either direction until C0
+clears. Standing-claim edit: the instrument claim's scope reads "validated at dose 0 on instruct models;
+on a harmony reasoning model the dose-0 readout's validity is open". The recipe split is unchanged.
+GPT-OSS's readout is batch-dependent per row but zero-mean in E (KDG-A21, R_a).
 Readout position handling (KDG-A20): the letter readout of record read left-padded rows at shifted
 positions. Measured on the stack of record it stays within the 0.05-nat gate on OLMo-3, Llama-3.1 Meta
 and Tulu 3, with no pad contrast aligned to E on any model, so their numbers (including the KDG paper's)
