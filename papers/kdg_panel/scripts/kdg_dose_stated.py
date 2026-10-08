@@ -55,7 +55,8 @@ def _jobs(S, stage: str) -> list[tuple]:
     return [(s, c, 1) for s in S for c in CELLS if c != "dl_chat_neutral"]  # B2
 
 
-def run_stage(model, cfg, S, stage: str, cap: int, gen_seed: int, letter_ids: set[int]):
+def run_stage(model, cfg, S, stage: str, cap: int, gen_seed: int, letter_ids: set[int],
+              partial: Path | None = None, deadline: float | None = None):
     jobs = _jobs(S, stage)
     prompts, orders = [], []
     for s, c, k in jobs:
@@ -64,12 +65,31 @@ def run_stage(model, cfg, S, stage: str, cap: int, gen_seed: int, letter_ids: se
         prompts.append(model.render_chat(letter_chat_messages(s, o, frame, "neutral", variant)))
         orders.append(o)
     perm = np.random.default_rng(ORDER_SEED + STAGE_INDEX[stage]).permutation(len(jobs))
+
+    def bank(b, nb, start, got, seed, secs_b):
+        """Append this batch's raw generations (job index, ids) and log progress."""
+        lens = [len(g) for g in got]
+        print(f">> stage {stage} batch {b + 1}/{nb}: {secs_b:.0f}s, gen tokens mean "
+              f"{np.mean(lens):.0f} max {max(lens)}", flush=True)
+        if partial is not None:
+            with open(partial, "a") as f:
+                f.write(json.dumps({"stage": stage, "batch": b, "seed": seed, "seconds": secs_b,
+                                    "jobs": [int(perm[start + j]) for j in range(len(got))],
+                                    "gen_ids": got}) + "\n")
+
     ids, seeds, secs = model.sample_ids([prompts[i] for i in perm], max_new_tokens=cap,
-                                        temperature=T, seed=gen_seed)
+                                        temperature=T, seed=gen_seed, on_batch=bank,
+                                        deadline=deadline)
     inv = np.argsort(perm)
     ids, seeds = [ids[i] for i in inv], [seeds[i] for i in inv]
     rows, prompt_ids = [], []
     for (s, c, k), o, p, g, bs in zip(jobs, orders, prompts, ids, seeds):
+        if g is None:  # never launched: the stage-A time guard stopped before its batch
+            rows.append({"scenario_id": s.id, "cell": c, "seed": k, "stage": stage,
+                         "order": letter_map(o), "status": "not_run", "token_identity": False,
+                         "gen_ids": [], "n_gen_tokens": 0, "option_id": None})
+            prompt_ids.append([])
+            continue
         ds = kh.parse_dose_stated(g, len(g) >= cap, letter_ids)
         letter = None if ds.letter_id is None else model.tok.decode([ds.letter_id])
         opt = dict(o).get(letter) if letter else None
@@ -86,8 +106,9 @@ def run_stage(model, cfg, S, stage: str, cap: int, gen_seed: int, letter_ids: se
             "readout_version": KDG_READOUT_VERSION, "sampler_version": KDG_SAMPLER_VERSION,
         })
         prompt_ids.append(model.tok.encode(p, add_special_tokens=False))
-    timing = {"stage": stage, "n": len(jobs), "gen_seconds": float(sum(secs)),
-              "gen_tokens": int(sum(len(g) for g in ids))}
+    timing = {"stage": stage, "n": len(jobs), "n_run": int(sum(g is not None for g in ids)),
+              "gen_seconds": float(sum(secs)),
+              "gen_tokens": int(sum(len(g) for g in ids if g is not None))}
     return rows, prompt_ids, timing
 
 
@@ -128,7 +149,7 @@ def c0_dose_stated(rows: list[dict], sims: int = 10_000) -> dict:
     T 0.7, 10,000 simulations, seed 0."""
     by: dict[str, list] = {}
     for r in rows:
-        if r["cell"] == "dl_chat_neutral" and r["status"] != "truncated":
+        if r["cell"] == "dl_chat_neutral" and r["status"] not in ("truncated", "not_run"):
             by.setdefault(r["scenario_id"], []).append(r)
     rng = np.random.default_rng(0)
     agree, kap = [], []
@@ -212,16 +233,21 @@ def size(dec: dict, s_per_row: float, load_h: float) -> dict:
             "mde_by_k": {k: mde(dec, N_MAIN, k) for k in range(1, K_MAX + 1)}}
 
 
-def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: bool) -> dict:
+def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: bool,
+              stage_a_max_hours: float | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     letter_ids = {model.token_id(x) for x in "ABCDE"}
     lid = {x: model.token_id(x) for x in "ABCDE"}
     model.reasoning_level = cfg.reasoning_level  # "medium", passed explicitly (G-A15 item 1)
     cap = 64 if dry else PILOT_CAP
     rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A15 + G-A16", "cap": cap, "stages": []}
-    rows, pids, timing = run_stage(model, cfg, S, "A", cap, SEED, letter_ids)
+    partial = out / "ds_pilot_partial.jsonl"
+    partial.unlink(missing_ok=True)
+    deadline = None if stage_a_max_hours is None else time.time() + stage_a_max_hours * 3600
+    rec["stage_a_max_hours"] = stage_a_max_hours
+    rows, pids, timing = run_stage(model, cfg, S, "A", cap, SEED, letter_ids, partial, deadline)
     rec["stages"].append(timing)
-    s_tr = timing["gen_seconds"] / max(timing["n"], 1)
+    s_tr = timing["gen_seconds"] / max(timing["n_run"], 1)
     nA, nB1, nB2 = (len(_jobs(S, st)) for st in ("A", "B1", "B2"))
     pj = (load_seconds + s_tr * (nA + nB1 + nB2) * FWD_ALLOWANCE) / 3600
     pj_b1 = (load_seconds + s_tr * (nA + nB1) * FWD_ALLOWANCE) / 3600
@@ -230,18 +256,20 @@ def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: 
     rec["stage_b_run"] = stages
     for st in stages:
         r2, p2, t2 = run_stage(model, cfg, S, st, cap, SEED + 10_000 * (1 + len(rec["stages"])),
-                               letter_ids)
+                               letter_ids, partial)
         rows += r2
         pids += p2
         rec["stages"].append(t2)
-    lens = [r["n_gen_tokens"] for r in rows if r["status"] != "truncated"]
-    done = 1 - sum(r["status"] == "truncated" for r in rows) / len(rows)
+    ran = [r for r in rows if r["status"] != "not_run"]
+    rec["not_run"] = len(rows) - len(ran)
+    lens = [r["n_gen_tokens"] for r in ran if r["status"] != "truncated"]
+    done = 1 - sum(r["status"] == "truncated" for r in ran) / max(len(ran), 1)
     rec["completion_within_cap"] = done
     rec["main_cap"] = (max(1024, int(math.ceil(np.percentile(lens, 99) / 256) * 256))
                        if lens else None)
     rec["identity_by_cell"] = {
-        c: (sum(r["token_identity"] for r in rows if r["cell"] == c and r["status"] != "truncated")
-            / max(1, sum(r["cell"] == c and r["status"] != "truncated" for r in rows)))
+        c: (sum(r["token_identity"] for r in ran if r["cell"] == c and r["status"] != "truncated")
+            / max(1, sum(r["cell"] == c and r["status"] != "truncated" for r in ran)))
         for c in CELLS}
     ok, seqs, logp, resid, fsecs = readout(model, rows, pids, lid)
     rec["forward_seconds"] = fsecs
@@ -258,7 +286,7 @@ def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: 
     rec["validate_ok"] = bool(dry or worst <= VALIDATE_NATS)
     rec["c0"] = c0_dose_stated(rows) if "B1" in stages else {"verdict": "not_run"}
     rec["decomposition"] = decompose(rows, status)
-    gen_s = sum(t["gen_seconds"] for t in rec["stages"]) / len(rows)
+    gen_s = sum(t["gen_seconds"] for t in rec["stages"]) / max(len(ran), 1)
     s_row = gen_s + fsecs / max(len(ok), 1)
     rec["seconds_per_row"] = {"generation": gen_s, "forward": fsecs / max(len(ok), 1)}
     rec["sizing"] = size(rec["decomposition"], s_row, load_seconds / 3600)  # recorded always

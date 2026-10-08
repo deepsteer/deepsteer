@@ -914,3 +914,16 @@ if every such contrast's adjusted CI includes 0; **partial** otherwise.
 **Status.** resolved → partial (author rule 2026-10-08: the §27 recipe-split line is held until the entropy-matched contrast is in; the contrast is now in and the line's wording is the author's).
 **Thesis impact.** R_a: the recipe split is restated on an entropy-matched scale (or as a sharpness
 finding). R_b: the split stands with the entropy control beside it.
+
+**Process ledger 2026-10-08 — the dose-stated pilot's stage A outran its envelope, and the harness could not show it.**
+Pilot pod h0r9bhqn370p5d (p2h) was still in stage A after about 88 minutes against a 1.0 A100-h pilot
+envelope. My estimate for stage A (30–40 minutes) assumed shorter medium-effort traces; at the
+low-effort C0's measured ~0.2 s per decode step (batch 16), a batch of 32 running to the 4,096-token cap
+takes about 17 minutes, so stage A alone can approach 2.3 hours. Three harness gaps made it worse: the
+envelope rule guarded only stage B, nothing was written until the pilot ended, and nothing was logged
+per batch (py-spy cannot attach inside the container). The author let the pod run, since its lengths and
+timing are what the redesign needs. Fixed for every later pilot: per-batch banking to
+`ds_pilot_partial.jsonl`, per-batch progress lines, and a stage-A deadline (`--stage-a-max-hours`, its
+value set by the next amendment from this pilot's measured lengths); prompts never launched are
+`not_run` and excluded from every count. Lesson: price long-generation stages from a measured length
+distribution, not an assumed one, and never run a generation stage without incremental saves.

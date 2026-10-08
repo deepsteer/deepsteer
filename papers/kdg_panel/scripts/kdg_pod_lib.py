@@ -378,14 +378,23 @@ class ModelWrapper:
     # ---- dose-stated readout (KDG_GPTOSS_SPEC G-A15 / G-A16) ----------------------------------
     def sample_ids(
         self, rendered: list[str], *, max_new_tokens: int, temperature: float, seed: int,
-        batch_size: int = 32,
-    ) -> tuple[list[list[int]], list[int], list[float]]:
+        batch_size: int = 32, on_batch=None, deadline: float | None = None,
+    ) -> tuple[list[list[int] | None], list[int | None], list[float]]:
         """Sampler v2 generation that keeps no per-step logits (long reasoning traces cannot):
         returns the generated ids per prompt, the seed of each prompt's batch (batch b is seeded
-        ``seed + b``) and the seconds each batch took."""
+        ``seed + b``) and the seconds each batch took.
+
+        ``on_batch(b, n_batches, start, ids, seed, seconds)`` is called after every batch (bank and
+        log as you go). With ``deadline`` (a ``time.time()`` value), no new batch starts if the mean
+        batch time so far would carry it past the deadline; prompts never run come back as None."""
         torch = self.torch
-        ids_out, seeds, secs = [], [], []
+        ids_out: list = [None] * len(rendered)
+        seeds: list = [None] * len(rendered)
+        secs: list[float] = []
+        n_batches = (len(rendered) + batch_size - 1) // batch_size
         for b, i in enumerate(range(0, len(rendered), batch_size)):
+            if deadline is not None and secs and time.time() + np.mean(secs) > deadline:
+                break
             chunk = rendered[i : i + batch_size]
             enc = self.tok(chunk, return_tensors="pt", padding=True, add_special_tokens=False).to(
                 self.device
@@ -400,9 +409,12 @@ class ModelWrapper:
                 seq = self.model.generate(**enc, **kw)
             secs.append(time.time() - t0)
             plen = enc["input_ids"].shape[1]
-            for row in seq[:, plen:].cpu():
-                ids_out.append([int(t) for t in row if int(t) != self.tok.pad_token_id])
-            seeds += [seed + b] * len(chunk)
+            got = [[int(t) for t in row if int(t) != self.tok.pad_token_id]
+                   for row in seq[:, plen:].cpu()]
+            ids_out[i : i + len(chunk)] = got
+            seeds[i : i + len(chunk)] = [seed + b] * len(chunk)
+            if on_batch is not None:
+                on_batch(b, n_batches, i, got, seed + b, secs[-1])
         return ids_out, seeds, secs
 
     def forward_readout(

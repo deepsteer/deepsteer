@@ -640,3 +640,69 @@ def test_forward_readout_padded_batch_equals_unpadded_at_post_reasoning_position
     np.testing.assert_array_equal(lb, la)
     np.testing.assert_array_equal(rb, ra)
     assert rb.shape == (3, 2, 5, 64)
+
+
+class TestPilotBanking:
+    @staticmethod
+    def _fake_wrapper():
+        import types
+
+        import torch
+
+        class FakeHF:
+            def generate(self, input_ids, attention_mask, **kw):
+                # each row's "generation" encodes its own first prompt id, so alignment is checkable
+                gen = input_ids[:, :1].repeat(1, 3)
+                return torch.cat([input_ids, gen], 1)
+
+        class Tok:
+            pad_token_id = 0
+
+            def __call__(self, texts, **kw):
+                ids = torch.tensor([[int(t)] for t in texts], dtype=torch.long)
+                return types.SimpleNamespace(to=lambda d: {"input_ids": ids,
+                                                           "attention_mask": torch.ones_like(ids)})
+
+        m = object.__new__(lib.ModelWrapper)
+        m.tok, m.model, m.device, m.torch = Tok(), FakeHF(), "cpu", torch
+        return m
+
+    def test_deadline_stops_new_batches_and_banks_each_batch(self):
+        # most probable failure: the time guard is ignored (stage A overruns its envelope again)
+        # or banked batches are misaligned with their prompts
+        import time
+
+        m = self._fake_wrapper()
+        calls = []
+        prompts = [str(i + 1) for i in range(20)]
+        ids, seeds, secs = m.sample_ids(prompts, max_new_tokens=3, temperature=0.0, seed=7,
+                                        batch_size=8, on_batch=lambda *a: calls.append(a),
+                                        deadline=time.time() - 1)
+        assert len(calls) == 1 and len(secs) == 1  # the first batch runs; no new batch after
+        assert ids[:8] == [[i + 1] * 3 for i in range(8)] and ids[8:] == [None] * 12
+        assert seeds[:8] == [7] * 8 and seeds[8:] == [None] * 12
+        ids2, _, _ = m.sample_ids(prompts, max_new_tokens=3, temperature=0.0, seed=7,
+                                  batch_size=8)
+        assert ids2 == [[i + 1] * 3 for i in range(20)]  # no deadline: every batch, in order
+
+    def test_not_run_rows_never_count_in_c0(self):
+        # most probable failure: a prompt the guard never launched counts as a completed
+        # non-identity trace and drags the dose-stated C0 down
+        kds = _load("kdg_dose_stated")
+        rows = [{"scenario_id": "s1", "cell": "dl_chat_neutral", "status": "completed",
+                 "token_identity": True, "option_id": "o1", "order": {"A": "o1", "B": "o2"},
+                 "option_logps": {"A": math.log(0.98), "B": math.log(0.02)}} for _ in range(2)]
+        rows += [{"scenario_id": "s1", "cell": "dl_chat_neutral", "status": "not_run",
+                  "token_identity": False, "option_id": None, "order": {}} for _ in range(2)]
+        v = kds.c0_dose_stated(rows)
+        assert v["agreement"] == 1.0 and v["kappa_star"] > 0.99
+
+    def test_dry_pilot_writes_the_partial_bank(self, tok, tmp_path):
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--dose-stated-pilot", "--out", str(tmp_path)],
+                            capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        lines = (tmp_path / "gpt_oss_20b" / "ds_pilot_partial.jsonl").read_text().splitlines()
+        assert lines and all({"stage", "batch", "jobs", "gen_ids"} <= set(json.loads(x))
+                             for x in lines)
+        assert ">> stage A batch 1/" in rc.stdout

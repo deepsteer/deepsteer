@@ -128,7 +128,8 @@ class HarmonyStub:
 
     # dose-stated stubs (G-A15/G-A16): synthetic harmony traces, every 7th truncated and every 11th
     # closing into a commentary channel (non-identity), so the parser and gates are exercised
-    def sample_ids(self, rendered, *, max_new_tokens, temperature, seed, batch_size=32):
+    def sample_ids(self, rendered, *, max_new_tokens, temperature, seed, batch_size=32,
+                   on_batch=None, deadline=None):
         ids, seeds = [], []
         body = self.tok.encode("Weighing the options.", add_special_tokens=False)
         for n, _ in enumerate(rendered):
@@ -142,7 +143,18 @@ class HarmonyStub:
                 g = list(kh.ANALYSIS_OPEN) + body + list(kh.CANON_HEADER) + [L, 200002]
             ids.append(g[:max_new_tokens])
             seeds.append(seed + n // batch_size)
-        return ids, seeds, [0.01] * max(1, len(rendered) // batch_size)
+        nb = (len(rendered) + batch_size - 1) // batch_size
+        secs = []
+        for b in range(nb):  # deadline honoured per batch, as in ModelWrapper.sample_ids
+            if deadline is not None and secs and time.time() + 0.01 > deadline:
+                for j in range(b * batch_size, len(rendered)):
+                    ids[j], seeds[j] = None, None
+                break
+            secs.append(0.01)
+            if on_batch is not None:
+                on_batch(b, nb, b * batch_size, ids[b * batch_size:(b + 1) * batch_size],
+                         seed + b, 0.01)
+        return ids, seeds, secs
 
     def forward_readout(self, id_lists, positions, batch_size=8):
         lp = self._lp(len(id_lists))
@@ -435,6 +447,8 @@ def main() -> int:
     ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
     ap.add_argument("--dose-stated-pilot", action="store_true",
                     help="G-A15/G-A16: gates, then the dose-stated pilot only (sizing.json)")
+    ap.add_argument("--stage-a-max-hours", type=float, default=None,
+                    help="dose-stated pilot: no new stage-A batch past this (set by amendment)")
     ap.add_argument("--c0-dm", action="store_true",
                     help="G-A11: gates, then the dose-matched C0 generation only; no other cell")
     ap.add_argument("--batch-invariance", action="store_true",
@@ -502,13 +516,13 @@ def main() -> int:
                       if not s.covariates.get("construction_flag") and not s.id.endswith("S")}
             t0 = time.time()
             pr = kds.run_pilot(model, hcfg, c0_scenarios(scenarios), status, a.out / KEY, t_load,
-                               a.dry_run)
+                               a.dry_run, stage_a_max_hours=a.stage_a_max_hours)
             manifest.data["gptoss"]["dose_stated_pilot"] = {
                 k: pr.get(k) for k in ("outcome", "stage_b_run", "completion_within_cap",
                                        "main_cap", "identity_by_cell",
                                        "validate_post_reasoning_max_nats")}
             manifest.status(f"{KEY}/dose_stated_pilot", "ok", f"{time.time() - t0:.1f}s")
-            for f in ("ds_pilot.jsonl", "ds_pilot.npz", "sizing.json"):
+            for f in ("ds_pilot.jsonl", "ds_pilot.npz", "sizing.json", "ds_pilot_partial.jsonl"):
                 manifest.add(a.out / KEY / f, "dose_stated_pilot", KEY)
             print(f"manifest: {manifest.write()}")
             print(f">> dose-stated pilot outcome: {pr['outcome']}", flush=True)
