@@ -164,8 +164,10 @@ def gates(model, spec: dict, cfg: kh.HarmonyConfig, scenarios, dry: bool) -> dic
         blocks = [n for n in names if n.endswith(("_blocks", "_scales"))]
         check("dequant_bf16", "torch.bfloat16" in dts and "torch.uint8" not in dts and not blocks,
               {"param_dtypes": dts, "mxfp4_block_params": blocks[:4]})
-    # forward == generate on both prefilled final channels
-    worst = {}
+    # forward == generate on both prefilled final channels. Per-prompt diagnostics ride along so a
+    # failure is diagnosable from the saved record (KDG-A20): the padded batched forward, the same
+    # prompts one at a time (no padding), and each prompt's pad count. The gate itself is unchanged.
+    worst, diag = {}, {}
     for name in ("primary", "direct_final"):
         P, opt = [], []
         for sc in scenarios[:8]:
@@ -174,15 +176,21 @@ def gates(model, spec: dict, cfg: kh.HarmonyConfig, scenarios, dry: bool) -> dic
             opt.append([ids[L] for L, _ in o] if ids else [])
         pre = cfg.prefill(name)
         fwd, _ = model.next_logprobs_and_residuals(P, [pre] * len(P))
+        one, _ = model.next_logprobs_and_residuals(P, [pre] * len(P), batch_size=1)
         gen = model.generate([p + pre for p in P], max_new_tokens=1, temperature=0.0, seed=SEED,
                              find_anchor=False)
-        w = 0.0
+        n_tok = [len(model.tok.encode(p + pre, add_special_tokens=False)) for p in P]
+        rows = []
         for k, g in enumerate(gen):
-            if opt[k]:
-                f32, g32 = fwd[k].astype(np.float32), g.logp_first.astype(np.float32)
-                d = np.abs(f32[opt[k]] - g32[opt[k]])
-                w = max(w, float(d.max()))
-        worst[name] = w
+            if not opt[k]:
+                continue
+            f, u, gg = (x.astype(np.float32)[opt[k]] for x in (fwd[k], one[k], g.logp_first))
+            rows.append({"pad": max(n_tok) - n_tok[k], "fwd_vs_gen": float(np.abs(f - gg).max()),
+                         "unpadded_vs_gen": float(np.abs(u - gg).max()),
+                         "fwd_vs_unpadded": float(np.abs(f - u).max())})
+        worst[name] = max((r["fwd_vs_gen"] for r in rows), default=0.0)
+        diag[name] = rows
+    rec["forward_generate_per_prompt"] = diag
     check("forward_matches_generate", dry or max(worst.values()) <= MAX_NATS, worst)
     rec["ok"] = all(c["ok"] for c in rec["checks"].values())
     return rec
