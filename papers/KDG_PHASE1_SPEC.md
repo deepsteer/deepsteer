@@ -752,3 +752,23 @@ no verdict was drawn from them, and this amendment fixes the ratio-scale rule be
   acting on the incentive specifically, and the probability-scale branch is reported as what a uniform
   fractional reduction produces on a higher pressured baseline; if pressure-specific, the paper says
   reasoning removes a larger fraction where the pressure is.
+
+**P1-A15. Two-way bootstrap for the sampled dose arms (ANOMALIES KDG-A23; dated 2026-10-08, after
+KDG-A23 was found and before any re-analysis; post-hoc fork, both reported; author order 2026-10-08).**
+The budget-forced arms behind KDG-42, KDG-53 and KDG-59 sampled their reasoning traces per scenario
+with one seed, so rollout k of every scenario (and of every arm) used the same random stream. The
+registered scenario bootstrap treats scenarios as the only unit of resampling.
+- **Fork quantity.** On the paired sets of record (`analyze_dose_twin.py`: OLMo-3 n 130, Llama-3.1 Meta
+  n 114), each of Δ_P (dose2 − filler and dose2 − own TF, primaries), Δ_T (twins) and ΔE_delib is
+  re-bootstrapped two-way: scenarios and rollout indices resampled independently, the same resampled
+  index set applied to every arm and cell (rollout k stays paired across arms, as the shared stream
+  paired it), per-scenario means over the resampled indices; 10,000 draws, seed 0. Beside it: the
+  delete-one-rollout-index jackknife range of each paired point estimate.
+- **Predicted effect (author, written before running).** The two-way CIs are wider than the scenario
+  CIs (width ratio > 1 for every quantity); the paired point estimates move little (every jackknife
+  range within ±0.5 scenario-bootstrap SE of the estimate of record). Registered verdicts expected to
+  hold: KDG-42 (OLMo-3 Δ_P below 0), KDG-53 (Llama Δ_P below 0, both references), KDG-59 branch (a) on
+  Llama; OLMo-3's branch (b) needs Δ_T's CI below 0, and a widened CI could reach 0 (then "unresolved"
+  under the fork).
+- **Reporting.** The registered scenario-bootstrap verdicts stay the verdicts of record; the two-way
+  verdicts are printed beside them, and any verdict that changes under the fork is escalated.

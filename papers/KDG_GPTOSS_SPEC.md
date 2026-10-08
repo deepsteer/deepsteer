@@ -393,3 +393,16 @@ ceiling below is computed).**
    0..3 as C0's four, argmax of the mean over rollouts 0..7). Llama, Tulu 3 and Qwen2.5 have no C0 run,
    so they get a ceiling and no verdict. Beside the GPT-OSS direction counts: the dose-0 undecided rate
    (share of C0-dm scenarios with no strict majority).
+
+**G-A14. κ\* under each model's effective sampler (author item 2, 2026-10-08; definition fixed before
+computing).** The harness passed `temperature` only, so sampling also applied each model's generation
+config: OLMo-3 top_p 0.95; Llama-3.1 Meta and Tulu 3 top_p 0.9; Qwen2.5 top_p 0.8, top_k 20,
+repetition_penalty 1.05; GPT-OSS none (pure T). κ\*_eff is G-A13's κ\* with the sampler applied in HF's
+order: temperature, then top_k (no effect at ≤ 5 letters), then nucleus truncation over the letter
+distribution (keep the smallest set of letters by tempered probability whose mass reaches top_p,
+renormalise). Qwen2.5's repetition penalty acts on raw logits, which are not saved; every displayed
+letter appears in the prompt, so all are penalised, and it is modelled as an extra temperature factor
+1.05 on the letter logits (exact when the letter logits share a sign; labelled an approximation).
+Reported beside the pure-T κ\* for all five models, on the C0 sample and on all engaged scenarios, and
+GPT-OSS's C0-dm 0.766 is re-checked against 0.9 × κ\*_eff (unchanged by construction, since its
+effective sampler is pure T).

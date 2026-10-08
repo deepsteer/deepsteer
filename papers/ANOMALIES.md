@@ -886,3 +886,28 @@ Not affected: the letter-only forced readouts behind C1–C3 and the stage claim
 **Harness fix (proposed, not applied).** Seed per scenario and rollout (for example `SEED + crc32(scenario_id)`), pass `top_p=1.0` explicitly, and record a sampler version per row (`sampler_version`), as readout version 2 did; cells of record keep their label. Applying it changes the panel harness, so it is the author's call; the GPT-OSS dose-stated design uses one-call generation with distinct per-batch seeds and pure temperature in any case.
 **Status.** open; escalated (it touches the instrument behind published dose claims).
 **Thesis impact.** R_a: methods note; KDG-42/53/59 stand with two-way CIs printed beside. R_b: the deliberation-brake claims are re-scoped by the two-way CIs, and the affected arms are re-run with the fixed sampler.
+
+## KDG-A24 (ledger) — The exact-readout ceiling κ\* tracks gap detection across models
+
+**Date.** 2026-10-08 (author; from KDG_RESULTS §27).
+**Observation.** κ\* on the 586 engaged scenarios orders the four panel models as gap detection does:
+OLMo-3 0.666 and Llama-3.1 Meta 0.708 carry a pressure-attributable gap, Tulu 3 0.736 and Qwen2.5 0.873
+do not. On the 64-scenario C0 sample the order is near-monotone across five models (OLMo-3 0.612 carries,
+GPT-OSS 0.742 not detected at dose 0, Llama 0.752 carries, Tulu 3 0.786 and Qwen2.5 0.820 not).
+**Type.** cross-doc conjunction (a calibration quantity lining up with a headline verdict).
+**Competing readings.** R_a (scale): E is a difference of probabilities, so models whose letter
+distributions are sharp (low entropy, high κ\*) have less room to move and show smaller E whatever their
+pressure sensitivity; the recipe split would partly be a sharpness split. R_b (substance): sharpness and
+pressure sensitivity are both outcomes of the recipe, and the gap contrast holds at matched entropy.
+**Discriminator (zero GPU; rule fixed now, before computing).** Per scenario, H_s = mean entropy (nats)
+of the dose-0 letter distribution over the four C3 cells and 8 permutations; E_s the probability-scale
+excess; the 586 model-free set per model. (i) Within each model, the slope of E_s on H_s with a 10,000-draw
+bootstrap CI (seed 0). (ii) Across the five models, the model contrasts carriers vs non-carriers
+(OLMo-3 − Tulu 3, Llama − Tulu 3, OLMo-3 − Qwen2.5, Llama − Qwen2.5, and each carrier − GPT-OSS at dose 0)
+before and after conditioning on entropy: entropy-matched by reweighting each model's scenarios to the
+pooled H_s distribution over 10 quantile bins (common support only), bootstrap over scenarios within
+model. **Survives** if every adjusted contrast that excluded 0 unadjusted still excludes 0; **explained**
+if every such contrast's adjusted CI includes 0; **partial** otherwise.
+**Status.** scheduled (zero GPU; runs after P1-A15 and G-A14).
+**Thesis impact.** R_a: the recipe split is restated on an entropy-matched scale (or as a sharpness
+finding). R_b: the split stands with the entropy control beside it.
