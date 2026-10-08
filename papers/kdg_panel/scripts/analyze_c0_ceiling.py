@@ -38,7 +38,29 @@ T, SIMS, N_ROLL, FACTOR = 0.7, 10_000, 4, 0.9
 OLMO_DCHAT = ("p1a/final_new", "kdg3", "kdg2", "pilot")  # first dir holding a scenario wins
 
 
-def kappa_star(perm: dict[str, dict[int, tuple[list[str], np.ndarray]]], ids: list[str]) -> dict:
+# G-A14 effective samplers: (top_p, extra temperature factor for Qwen's repetition penalty, approx.)
+SAMPLERS = {
+    "gpt_oss_20b": (1.0, 1.0),
+    "olmo3_final": (0.95, 1.0),
+    "llama31_instruct_meta": (0.9, 1.0),
+    "tulu3_final": (0.9, 1.0),
+    "qwen25_instruct": (0.8, 1.05),
+}
+
+
+def nucleus(q: np.ndarray, top_p: float) -> np.ndarray:
+    """HF top-p after temperature: keep the smallest set by probability reaching top_p."""
+    if top_p >= 1.0:
+        return q
+    order = np.argsort(-q)
+    keep = np.cumsum(q[order]) - q[order] < top_p  # a token is kept if the mass before it < top_p
+    out = np.zeros_like(q)
+    out[order[keep]] = q[order[keep]]
+    return out / out.sum()
+
+
+def kappa_star(perm: dict[str, dict[int, tuple[list[str], np.ndarray]]], ids: list[str],
+               top_p: float = 1.0, t_extra: float = 1.0) -> dict:
     """perm[sid][seed] = (option ids in letter order, probabilities over displayed letters)."""
     rng = np.random.default_rng(0)
     hits = np.zeros(SIMS)
@@ -57,8 +79,8 @@ def kappa_star(perm: dict[str, dict[int, tuple[list[str], np.ndarray]]], ids: li
         draws = np.empty((SIMS, N_ROLL), int)
         for k in range(N_ROLL):
             o, p = P[k]
-            q = p ** (1 / T)
-            q = q / q.sum()
+            q = p ** (1 / (T * t_extra))
+            q = nucleus(q / q.sum(), top_p)
             pick = (rng.random(SIMS)[:, None] > np.cumsum(q)[None, :]).sum(1)
             draws[:, k] = np.array([idx[x] for x in o])[np.minimum(pick, len(o) - 1)]
         counts = np.stack([(draws == i).sum(1) for i in range(len(opts))], 1)
@@ -100,6 +122,7 @@ def main() -> int:
     lp, tid = z["logp_decision"].astype(np.float64), z["option_token_ids"]
     P = from_rows(rows, lambda i, r, L: lp[i, [int(tid[i]["ABCDE".index(x)]) for x in L]])
     k = kappa_star(P, c0_ids)
+    k["kappa_star_eff"] = kappa_star(P, c0_ids, *SAMPLERS["gpt_oss_20b"])["kappa_star"]
     c0 = json.loads((A.DATA / "analysis_gptoss.json").read_text())["c0"]["primary"]
     dm = json.loads((A.DATA / "analysis_gptoss_c0dm.json").read_text())["c0_dm"]
     rep["models"]["gpt_oss_20b"] = {
@@ -119,7 +142,11 @@ def main() -> int:
         M = A.option_cell([md], "dl_chat_neutral", status)
         engaged = sorted(s for s in M if M[s]["mass"] >= A.FLOOR and s in P)
         rep["models"][key] = {"c0_sample": kappa_star(P, c0_ids),
-                              "all_engaged": kappa_star(P, engaged)}
+                              "all_engaged": kappa_star(P, engaged),
+                              "c0_sample_eff": kappa_star(P, c0_ids, *SAMPLERS[key]),
+                              "all_engaged_eff": kappa_star(P, engaged, *SAMPLERS[key]),
+                              "effective_sampler": {"T": T, "top_p": SAMPLERS[key][0],
+                                                    "rep_penalty_as_T_factor": SAMPLERS[key][1]}}
 
     # OLMo-3 C0 analog on d_chat_dose0
     ref: dict[str, dict[int, tuple]] = {}

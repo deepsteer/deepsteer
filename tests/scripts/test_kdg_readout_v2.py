@@ -190,3 +190,78 @@ def test_p2g_runs_the_reread_on_the_stack_of_record_before_the_torch_upgrade():
     assert stack < dry < reread < upgrade < c0dm
     assert "rc_q=$?" in b and "rc_g=$?" in b and "exit 1" in b[c0dm:]
     assert "--batch-invariance" not in b and "--require-timing" not in b
+
+
+class TestSamplerV2:
+    def test_scenario_seeds_are_distinct_and_stable(self):
+        # most probable failure: two scenarios share a seed, so their rollout k share a stream
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        files = sorted((REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json"))
+        S, _ = load_scenario_dir(files)
+        seeds = [lib.scenario_seed(s.id) for s in S]
+        assert len(set(seeds)) == len(seeds)
+        assert lib.scenario_seed("F1-A-12") == lib.scenario_seed("F1-A-12")
+
+    def test_per_scenario_call_sites_seed_by_scenario(self, tmp_path):
+        # KDG-A23. most probable failure: a sampled cell still passes the shared SEED to every
+        # scenario's generate call (common random numbers across scenarios)
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        S, metas = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                            .glob("*_scenarios_*.json")))
+        S = [s for s in S if s.family != "F2"][:4]
+        seen = []
+
+        class Rec(lib.StubModel):
+            def generate(self, rendered, *, seed, **kw):
+                seen.append(seed)
+                return super().generate(rendered, seed=seed, **kw)
+
+        ctx = lib.Ctx("k", "instruct", Rec(), tmp_path, lib.Manifest(tmp_path, True, metas),
+                      True, n_d=2, n_dose=2)
+        lib.cell_d_chat(ctx, S)
+        d_chat = list(seen)
+        lib.cell_dose_forced(ctx, S, arm="dose2")
+        forced = seen[len(d_chat):]
+        # distinct across scenarios within each cell; the same scenario keeps its seed across
+        # arms, so rollout k stays paired across arms within a scenario (the P1-A15 pairing)
+        assert len(set(d_chat)) == len(S) and len(set(forced)) == len(S)
+        assert d_chat == forced and lib.SEED not in d_chat
+        row = json.loads((tmp_path / "d_chat_dose0.jsonl").read_text().splitlines()[0])
+        assert row["sampler_version"] == lib.KDG_SAMPLER_VERSION == 2
+        assert lib.sampler_version({}) == 1
+
+    def test_sampling_disables_config_warpers_and_greedy_passes_none(self):
+        # most probable failure: the model's generation config (top_p 0.9/0.95, Qwen's top_k 20 and
+        # repetition penalty 1.05) rides along on top of the passed temperature
+        import torch
+
+        captured = []
+
+        class FakeHF:
+            def generate(self, input_ids, attention_mask, **kw):
+                captured.append(kw)
+                n = input_ids.shape[0]
+                return types.SimpleNamespace(
+                    sequences=torch.cat([input_ids, torch.ones(n, 1, dtype=torch.long)], 1),
+                    logits=(torch.zeros(n, 8),))
+
+        class Tok:
+            pad_token_id = 0
+
+            def __call__(self, texts, **kw):
+                ids = torch.ones(len(texts), 3, dtype=torch.long)
+                return types.SimpleNamespace(to=lambda d: {"input_ids": ids,
+                                                           "attention_mask": torch.ones_like(ids)})
+
+            def decode(self, ids, skip_special_tokens=True):
+                return "A"
+
+        m = object.__new__(lib.ModelWrapper)
+        m.tok, m.model, m.device, m.torch = Tok(), FakeHF(), "cpu", torch
+        m._generate_batch(["x", "y"], 2, 0.7, 5, False)
+        m._generate_batch(["x"], 2, 0.0, 5, False)
+        assert captured[0]["top_p"] == 1.0 and captured[0]["top_k"] == 0
+        assert captured[0]["repetition_penalty"] == 1.0 and captured[0]["temperature"] == 0.7
+        assert "top_p" not in captured[1] and captured[1]["do_sample"] is False

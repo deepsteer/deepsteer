@@ -22,6 +22,7 @@ import re
 import subprocess
 import sys
 import time
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -66,12 +67,29 @@ SEED = 0
 # 2026-10-07, whose rows carry no field (read as 1, see ``readout_version``). 2 = positions derived
 # from the attention mask, as generate() does.
 KDG_READOUT_VERSION = 2
+# Sampler version, recorded on every row (ANOMALIES KDG-A23). 1 = per-scenario generate calls all
+# seeded with SEED (rollout k of every scenario drew from one random stream) and the model's
+# generation-config warpers (top_p, top_k, repetition_penalty) applied on top of the passed
+# temperature: every sampled cell of record up to 2026-10-08, whose rows carry no field. 2 = a seed
+# per scenario (``scenario_seed``) and pure temperature sampling (warpers disabled explicitly).
+KDG_SAMPLER_VERSION = 2
 _ANSWER_ANCHOR = re.compile(r"answer\s*[:=\-]\s*\**\s*\(?$", re.I)
 
 
 # ---------------------------------------------------------------------------------------------
 # small helpers (kept local so the KDG driver has no W4 coupling)
 # ---------------------------------------------------------------------------------------------
+
+
+def scenario_seed(scenario_id: str) -> int:
+    """Sampler v2: a seed per scenario, stable across runs (crc32 of the id), so no two scenarios
+    share a random stream by rollout index."""
+    return SEED + zlib.crc32(scenario_id.encode()) % (2**31)
+
+
+def sampler_version(row: dict) -> int:
+    """A row's sampler version; rows written before the field existed are version 1."""
+    return int(row.get("sampler_version", 1))
 
 
 def readout_version(row: dict) -> int:
@@ -232,7 +250,9 @@ class ModelWrapper:
             pad_token_id=self.tok.pad_token_id,
         )
         if temperature > 0:
-            kw["temperature"] = temperature
+            # sampler v2: pure temperature; the model's generation-config warpers (top_p, top_k,
+            # repetition_penalty) are disabled explicitly so they cannot ride along (KDG-A23)
+            kw.update(temperature=temperature, top_p=1.0, top_k=0, repetition_penalty=1.0)
         with torch.no_grad():
             out = self.model.generate(**enc, **kw)
         plen = enc["input_ids"].shape[1]
@@ -438,6 +458,7 @@ class Manifest:
             "template_version": TEMPLATE_VERSION,
             "harness_version": KDG_HARNESS_VERSION,
             "readout_version": KDG_READOUT_VERSION,
+            "sampler_version": KDG_SAMPLER_VERSION,
             "scenario_sets": scenario_meta,
             "loads": [],
             "artifacts": [],
@@ -551,6 +572,7 @@ def _row(
         "norm_status": parse.norm_status,
         "harness_version": KDG_HARNESS_VERSION,
         "readout_version": KDG_READOUT_VERSION,
+        "sampler_version": KDG_SAMPLER_VERSION,
         "template_version": TEMPLATE_VERSION,
         **extra,
     }
@@ -597,7 +619,7 @@ def cell_d_chat(
                 prompts,
                 max_new_tokens=cap,
                 temperature=ctx.temperature,
-                seed=SEED,
+                seed=scenario_seed(s.id),
                 find_anchor=(arm != "dose0"),
             )
         for i, (order, g, p) in enumerate(zip(orders, gens, prompts)):
@@ -643,7 +665,7 @@ def _f2_rollouts(ctx: Ctx, s: Scenario, orders, variant: str):
         [r1] * len(orders),
         max_new_tokens=160,
         temperature=ctx.temperature,
-        seed=SEED,
+        seed=scenario_seed(s.id),
         find_anchor=False,
     )
     prompts = []
@@ -654,7 +676,8 @@ def _f2_rollouts(ctx: Ctx, s: Scenario, orders, variant: str):
         ]
         prompts.append(ctx.model.render_chat(msgs))
     g2 = ctx.model.generate(
-        prompts, max_new_tokens=6, temperature=ctx.temperature, seed=SEED + 1, find_anchor=False
+        prompts, max_new_tokens=6, temperature=ctx.temperature, seed=scenario_seed(s.id) + 1,
+        find_anchor=False,
     )
     return g2, prompts, [g.text for g in g1]
 
@@ -798,6 +821,7 @@ def cell_raw(ctx: Ctx, scenarios: list[Scenario], *, frame: str, variant: str = 
                 "parse_method": "raw_argmax",
                 "harness_version": KDG_HARNESS_VERSION,
                 "readout_version": KDG_READOUT_VERSION,
+                "sampler_version": KDG_SAMPLER_VERSION,
                 "template_version": TEMPLATE_VERSION,
                 "variant": variant,
                 "frame": frame,
@@ -903,6 +927,7 @@ def _letter_cell(
                 "parse_method": "letter_chat_argmax",
                 "harness_version": KDG_HARNESS_VERSION,
                 "readout_version": KDG_READOUT_VERSION,
+                "sampler_version": KDG_SAMPLER_VERSION,
                 "template_version": template_version,
                 "chat_template_sha256": ctx.model.chat_template_sha,
                 "row_order_seed": row_order_seed,
@@ -1065,7 +1090,7 @@ def cell_dose_forced(
             prompts,
             max_new_tokens=budget + 24,
             temperature=ctx.temperature,
-            seed=SEED,
+            seed=scenario_seed(s.id),
             find_anchor=True,
         )
         for i, (order, g, p) in enumerate(zip(orders, gens, prompts)):
@@ -1210,6 +1235,7 @@ def cell_dose_control(
                 "norm_class": s.norm_class,
                 "harness_version": KDG_HARNESS_VERSION,
                 "readout_version": KDG_READOUT_VERSION,
+                "sampler_version": KDG_SAMPLER_VERSION,
                 "template_version": PHASE1_TEMPLATE_VERSION,
                 "chat_template_sha256": ctx.model.chat_template_sha,
             }

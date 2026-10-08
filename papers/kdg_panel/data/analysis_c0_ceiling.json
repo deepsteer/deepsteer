@@ -9,6 +9,7 @@
    "n_scenarios": 64,
    "kappa_star": 0.7421984375,
    "bar": 0.66797859375,
+   "kappa_star_eff": 0.7421984375,
    "C0_low_effort": {
     "agreement": 0.6875,
     "registered": "fail",
@@ -40,6 +41,21 @@
     "n_scenarios": 586,
     "kappa_star": 0.6656773037542661,
     "bar": 0.5991095733788395
+   },
+   "c0_sample_eff": {
+    "n_scenarios": 64,
+    "kappa_star": 0.6219125,
+    "bar": 0.55972125
+   },
+   "all_engaged_eff": {
+    "n_scenarios": 586,
+    "kappa_star": 0.6751800341296929,
+    "bar": 0.6076620307167235
+   },
+   "effective_sampler": {
+    "T": 0.7,
+    "top_p": 0.95,
+    "rep_penalty_as_T_factor": 1.0
    },
    "c0_analog_c0_sample": {
     "n_scenarios": 64,
@@ -76,6 +92,21 @@
     "n_scenarios": 586,
     "kappa_star": 0.7084356655290103,
     "bar": 0.6375920989761092
+   },
+   "c0_sample_eff": {
+    "n_scenarios": 64,
+    "kappa_star": 0.7826609375,
+    "bar": 0.70439484375
+   },
+   "all_engaged_eff": {
+    "n_scenarios": 586,
+    "kappa_star": 0.7306383959044369,
+    "bar": 0.6575745563139932
+   },
+   "effective_sampler": {
+    "T": 0.7,
+    "top_p": 0.9,
+    "rep_penalty_as_T_factor": 1.0
    }
   },
   "tulu3_final": {
@@ -88,6 +119,21 @@
     "n_scenarios": 586,
     "kappa_star": 0.7355177474402731,
     "bar": 0.6619659726962458
+   },
+   "c0_sample_eff": {
+    "n_scenarios": 64,
+    "kappa_star": 0.7998984375,
+    "bar": 0.71990859375
+   },
+   "all_engaged_eff": {
+    "n_scenarios": 586,
+    "kappa_star": 0.7458331058020478,
+    "bar": 0.671249795221843
+   },
+   "effective_sampler": {
+    "T": 0.7,
+    "top_p": 0.9,
+    "rep_penalty_as_T_factor": 1.0
    }
   },
   "qwen25_instruct": {
@@ -100,6 +146,21 @@
     "n_scenarios": 586,
     "kappa_star": 0.8731709897610921,
     "bar": 0.7858538907849829
+   },
+   "c0_sample_eff": {
+    "n_scenarios": 64,
+    "kappa_star": 0.8228734375,
+    "bar": 0.74058609375
+   },
+   "all_engaged_eff": {
+    "n_scenarios": 586,
+    "kappa_star": 0.8765984641638225,
+    "bar": 0.7889386177474402
+   },
+   "effective_sampler": {
+    "T": 0.7,
+    "top_p": 0.8,
+    "rep_penalty_as_T_factor": 1.05
    }
   }
  }

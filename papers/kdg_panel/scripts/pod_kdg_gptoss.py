@@ -36,6 +36,7 @@ sys.path.insert(0, str(HERE))
 
 import kdg_harmony as kh  # noqa: E402
 from kdg_pod_lib import (  # noqa: E402
+    KDG_SAMPLER_VERSION,
     SEED,
     UNITS,
     Ctx,
@@ -269,7 +270,8 @@ def c0_generate(ctx: Ctx, cfg: kh.HarmonyConfig, S, temperature: float, cell: st
             "final_text": fa.final_text, "letter": fa.letter, "parse_method": fa.parse_method,
             "option_id": None if opt is None else opt.option_id,
             "norm_status": None if opt is None else opt.norm_status,
-            "temperature": temperature, "generation_seed": SEED, "harmony_date_pin": cfg.date_pin,
+            "temperature": temperature, "generation_seed": SEED,
+            "sampler_version": KDG_SAMPLER_VERSION, "harmony_date_pin": cfg.date_pin,
             "harmony_reasoning_level": cfg.reasoning_level_c0_generate,
         })
     ctx.save_cell(cell, rows, np.stack([g.logp_first for g in gen]), {})
@@ -368,6 +370,7 @@ def run_c0_dose_matched(ctx: Ctx, cfg: kh.HarmonyConfig, scenarios) -> None:
             "option_id": None if opt is None else opt.option_id,
             "norm_status": None if opt is None else opt.norm_status,
             "temperature": ctx.temperature, "generation_seed": SEED,
+            "sampler_version": KDG_SAMPLER_VERSION,
             "harmony_date_pin": cfg.date_pin, "harmony_reasoning_level": m.reasoning_level,
         })
     ctx.save_cell("c0dm_generate", rows, np.stack([g.logp_first for g in gen]), {})

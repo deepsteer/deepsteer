@@ -1819,8 +1819,8 @@ readout, empty closed analysis turn, no reasoning trace; pod 3xlqmdx2mo3niz.
 
 Verdict sentence: **at dose 0 (forced letter, no reasoning trace), no pressure-attributable gap is
 detectable on GPT-OSS-20B above 0.013 (E −0.001 [−0.011, 0.008], n 586), with the known-gap positive
-control on the same readout at 0.501 [0.469, 0.534].** At dose 0 the recipe split gains a reasoning-RL
-member beside Tulu 3 and Qwen2.5 on the not-detected side. Rival reading: dose 0 is not the mode GPT-OSS
+control on the same readout at 0.501 [0.469, 0.534].** At dose 0 the recipe split gains a reasoning-RL-trained
+model measured without reasoning, beside Tulu 3 and Qwen2.5 on the not-detected side. Rival reading: dose 0 is not the mode GPT-OSS
 runs in by default, and reasoning moves its answers (dose-0 and low-effort generation agree on only 0.56
 of scenarios); the separating cell is the dose-stated run, under design.
 
@@ -1832,3 +1832,52 @@ deployed-mode statement is made until the dose-stated run clears its own C0. (3)
 the 0.80 bar was unpassable on most models; were the panel's readouts ever validated?"* The panel
 models had no C0; their readout validity rests on forward = generate and the known-gap control. The
 ceilings make future C0 runs model-relative and do not re-open past verdicts.
+
+## 28. KDG-A23 two-way bootstrap (P1-A15) and κ\* under each model's effective sampler (G-A14); 2026-10-08
+
+P1-A15 and G-A14 pushed bf74c88 before computing. `data/analysis_kdg_a23_twoway.json`,
+`data/analysis_c0_ceiling.json` (`*_eff` keys).
+
+**Two-way bootstrap of the dose arms (scenarios × rollout indices; registered scenario bootstrap
+beside).** Predicted before running: CIs widen; paired point estimates move little.
+
+| model, reference | quantity | point (of record) | scenario CI | two-way CI | width ratio | jackknife max shift |
+|---|---|---|---|---|---|---|
+| OLMo-3, filler | Δ_P | −0.0774 | [−0.110, −0.047] | [−0.117, −0.037] | 1.25 | 0.21 SE |
+| OLMo-3, filler | Δ_T | −0.0521 | [−0.080, −0.025] | [−0.089, −0.017] | 1.34 | 0.37 SE |
+| OLMo-3, filler | ΔE_delib | −0.0253 | [−0.052, +0.002] | [−0.065, +0.014] | 1.47 | 0.51 SE |
+| OLMo-3, own TF | ΔE_delib | −0.0391 | [−0.071, −0.009] | [−0.082, +0.004] | 1.39 | 0.36 SE |
+| Llama-3.1 Meta, filler | Δ_P | −0.3502 | [−0.387, −0.314] | [−0.395, −0.307] | 1.22 | 0.24 SE |
+| Llama-3.1 Meta, filler | ΔE_delib | −0.1426 | [−0.185, −0.100] | [−0.195, −0.090] | 1.24 | 0.28 SE |
+| Llama-3.1 Meta, own TF | Δ_P | −0.3199 | [−0.356, −0.284] | [−0.367, −0.273] | 1.30 | 0.36 SE |
+| Llama-3.1 Meta, own TF | ΔE_delib | −0.0786 | [−0.116, −0.042] | [−0.131, −0.026] | 1.44 | 0.42 SE |
+
+(All 12 quantities in the JSON; width ratios 1.16–1.47.) The prediction holds on widening and on
+stability for 11 of 12 quantities; OLMo-3's ΔE_delib vs filler moves 0.51 SE against a predicted 0.5.
+Verdicts of record (scenario bootstrap) and under the fork: KDG-42, KDG-53 and KDG-59's Llama (a) and
+OLMo-3 (b, filler of record) hold under both. **OLMo-3 against its own truncated filler changes from
+(a) to (b) under the fork** (escalated): §24's parenthetical "(vs truncated filler: (a))" does not
+survive the shared random stream, and OLMo-3 reads (b) on both references under the two-way bootstrap.
+
+**κ\* under each model's effective sampler** (T 0.7 plus config top_p; Qwen2.5's top_k 20 inert at ≤ 5
+letters, repetition penalty 1.05 modelled as a temperature factor, approximate):
+
+| model | sampler | κ\*, C0 sample: pure T → effective | κ\*, 586 engaged: pure T → effective |
+|---|---|---|---|
+| GPT-OSS-20B | T 0.7 | 0.742 → 0.742 | — |
+| OLMo-3 | T 0.7, top_p 0.95 | 0.612 → 0.622 | 0.666 → 0.675 |
+| Llama-3.1 Meta | T 0.7, top_p 0.9 | 0.752 → 0.783 | 0.708 → 0.731 |
+| Tulu 3 | T 0.7, top_p 0.9 | 0.786 → 0.800 | 0.736 → 0.746 |
+| Qwen2.5-7B | T 0.7, top_p 0.8, rep. penalty 1.05 | 0.820 → 0.823 | 0.873 → 0.877 |
+
+GPT-OSS's effective sampler is pure T, so its bar stays 0.668 and C0-dm (0.766, registered fail
+near-miss) clears it under the effective sampler as under pure T. Nucleus truncation raises every panel
+ceiling slightly; the KDG-A24 ordering is unchanged.
+
+**Referee pass.** (1) *"The two-way bootstrap is post hoc."* Yes; it was pushed as a fork with its
+predicted effect before running, the registered verdicts stay of record, and the one change is
+escalated. (2) *"Resampling rollout indices assumes the shared stream is the only cross-scenario
+dependence."* It is the dependence the code creates; other dependence (shared scenario templates)
+would widen intervals further and is not modelled. (3) *"Repetition penalty as a temperature factor is
+a guess."* Labelled approximate; it moves Qwen2.5's κ\* by 0.003–0.004 and no reading depends on it.
+
