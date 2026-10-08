@@ -919,7 +919,7 @@ scenarios at both doses.
 
 Positive voice first: **at dose 0 the instrument reads OpenAI's open reasoning model and finds no
 pressure-attributable gap detectable above 0.013 (E −0.001 [−0.011, 0.008], n 586), with its known-gap
-positive control responding at 0.50.** The carrier/non-carrier contrast is not explained by dose-0 answer sharpness. Within every model, dose-0 entropy does not predict E (all five slopes include 0), and the Llama−Tulu 3, Llama−GPT-OSS and OLMo-3−GPT-OSS contrasts survive entropy matching. The OLMo-3−Tulu 3 and both Qwen2.5 contrasts lose resolution under matching, because Qwen2.5's sharper distributions share 6 of 10 entropy bins with the carriers; those three rest on the unmatched estimates only. This rests on the author's decision that C0 clears for the
+positive control responding at 0.50.** The carrier/non-carrier contrast is not explained by dose-0 answer sharpness. Within every model, dose-0 entropy does not predict E (all five slopes include 0), and the Llama−Tulu 3, Llama−GPT-OSS and OLMo-3−GPT-OSS contrasts survive entropy matching. Three contrasts lose resolution under matching: both Qwen2.5 contrasts because Qwen2.5's sharper distributions share only 6 of 10 entropy bins with the carriers, and OLMo-3−Tulu 3 through attenuation (+0.017 → +0.009) despite full bin overlap; those three rest on the unmatched estimates only. This rests on the author's decision that C0 clears for the
 dose-0 readout (registered C0 0.688 and C0-dm 0.766 both fail at 0.80; the token identity and the G-A12
 fork carry the clearance). Scope: dose 0 only; reasoning moves GPT-OSS's answers (dose-0 and low-effort
 generation agree on 0.56 of scenarios), so nothing is claimed about its deployed mode until the
