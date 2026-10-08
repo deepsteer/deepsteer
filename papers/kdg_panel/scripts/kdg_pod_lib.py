@@ -256,7 +256,12 @@ class ModelWrapper:
     ) -> np.ndarray:
         """Next-token log-probs after each prompt. Raw frames keep the tokenizer's special tokens
         (BOS); chat-rendered prompts pass ``add_special_tokens=False`` so the tokens match the
-        generation path (``_generate_batch``), whose first-step distribution this reproduces."""
+        generation path (``_generate_batch``), whose first-step distribution this reproduces.
+
+        Known deviation (ANOMALIES KDG-A20, 2026-10-07): no ``position_ids`` are passed, so a
+        left-padded row is read at positions shifted by its pad count. Kept unchanged so new panel
+        cells stay comparable with the cells of record; ``next_logprobs_and_residuals`` (GPT-OSS)
+        passes mask-derived positions."""
         torch = self.torch
         rows = []
         for i in range(0, len(prompts), batch_size):
@@ -295,8 +300,12 @@ class ModelWrapper:
                 padding=True,
                 add_special_tokens=False,
             ).to(self.device)
+            # positions from the attention mask, as generate() derives them: without this a
+            # left-padded row is read at positions shifted by its pad count, which bf16 RoPE does
+            # not cancel (0.46 nats on GPT-OSS's VALIDATE gate, pod tlsh5rtjq2kgyh, 2026-10-07)
+            pos = (enc["attention_mask"].long().cumsum(-1) - 1).clamp(min=0)
             with torch.no_grad():
-                out = self.model(**enc, output_hidden_states=True)
+                out = self.model(**enc, position_ids=pos, output_hidden_states=True)
             lps.append(
                 torch.log_softmax(out.logits[:, -1, :].float(), dim=-1).cpu().numpy()
                 .astype(np.float16)

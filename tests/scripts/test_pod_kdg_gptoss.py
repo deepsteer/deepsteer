@@ -320,3 +320,34 @@ def test_p2c_upgrades_torch_before_any_gptoss_call():
     up = block.index('"torch==2.6.0"')
     assert up < block.index("python -m pytest") < block.index("python $G")
     assert "FATAL: torch.accelerator missing" in block
+
+
+def test_left_padded_bf16_readout_equals_the_unpadded_one(tok):
+    # most probable failure (VALIDATE pod tlsh5rtjq2kgyh, 2026-10-07: forward vs generate 0.46
+    # nats): the batched forward reads left-padded rows at positions shifted by their pad count,
+    # which bf16 RoPE does not cancel; generate() derives positions from the mask and is unaffected
+    import types
+
+    import torch
+    from transformers import GptOssConfig, GptOssForCausalLM
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    tok.padding_side = "left"
+    S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data").glob("*_scenarios_*.json")))
+    P = [kh.render(tok, lib.letter_chat_messages(s, assign_letters(s, 0), "agent", "neutral"), CFG,
+                   "medium") for s in S[:8]]
+    assert len({len(tok.encode(p, add_special_tokens=False)) for p in P}) > 1  # padding happens
+    cfg = GptOssConfig(num_hidden_layers=4, hidden_size=64, intermediate_size=64,
+                       num_local_experts=8, num_experts_per_tok=2, num_attention_heads=4,
+                       num_key_value_heads=2, head_dim=16, vocab_size=len(tok), sliding_window=128,
+                       layer_types=["sliding_attention", "full_attention"] * 2)
+    torch.manual_seed(0)
+    m = types.SimpleNamespace(tok=tok, model=GptOssForCausalLM(cfg).to(torch.bfloat16).eval(),
+                              device=torch.device("cpu"), torch=torch)
+    read = lib.ModelWrapper.next_logprobs_and_residuals
+    pre = [CFG.prefill_primary] * len(P)
+    batched, rb = read(m, P, pre, 16)
+    alone, ra = read(m, P, pre, 1)
+    np.testing.assert_array_equal(batched[:, 32:37], alone[:, 32:37])
+    np.testing.assert_array_equal(rb, ra)
