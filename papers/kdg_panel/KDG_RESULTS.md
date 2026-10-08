@@ -1710,3 +1710,54 @@ descriptives of the forced dose-0 readout only. Format discriminator (zero GPU):
 agree per scenario on 59 of 64 (0.922 [0.830, 0.966]), so the empty analysis turn does not drive C0's
 failure; the dose-matched C0 (G-A11) tests the remaining format reading.
 
+
+## 26. Dose-matched C0 on GPT-OSS-20B (G-A11, G-A12) and the Qwen2.5 re-read (KDG-A20 item 2); 2026-10-08
+
+One pod, profile p2g (ogbthjvr3j4s7x, A100-SXM4-80GB): the Qwen2.5 re-read first on the stack of record
+(torch 2.4.1+cu124, transformers 5.12.1; pin matched), then the torch 2.6 upgrade and C0-dm. Both jobs
+rc 0, both manifests verify. Rules pushed before the pod (G-A11 2d6057e; KDG-A20 item 2 3db23c8, pre-data
+notes 7806986); the G-A12 fork pushed 699d541 after C0-dm's registered verdict and before its prediction.
+Author wording rule in force: no GPT-OSS gap statement in either direction until C0 clears.
+
+**C0-dm, registered verdict (G-A11).** 0.766, Wilson [0.649, 0.853], n 64, SE 0.053 → **fail
+(near-miss)**; 256 rollouts, all `letter_only`, 0% re-deliberated, 0% truncated. G-A11's fail branch
+reads "format reading stands".
+
+**Structure, observed after the verdict.** Every rollout writes `<|channel|>final<|message|>` (ids 200005
+17196 200008), one letter and `<|return|>`; the dose-matched prefill plus that header is token-for-token
+the forced primary prefill. The model's own dose-0 output passes through the identical sequence the
+forced readout reads, so the forced letter distribution is the one C0-dm samples from, up to batch noise.
+
+**Fork (G-A12).** A valid readout sampled at T = 0.7 (forced per-permutation distributions, seeds 0..3,
+strict majority, scored as C0-dm; 10,000 simulations, seed 0) predicts agreement 0.743, 95% [0.672,
+0.813]; observed 0.766 → **sampling-limited**. A valid readout passes the 0.80 bar in 5.05% of
+simulations: as specified, C0-dm could not validate even an exact readout. Descriptive: A(forced,
+rollout) 0.781 vs A(rollout, rollout) 0.714, Δκ +0.068 [0.017, 0.112]; modal ceiling 0.828.
+
+**Second derivation of C0's direction without the forced readout.** Dose-0 generation vs low-effort
+generation: agreement 0.56 [0.44, 0.68]; norm-crossing differences 5 dose-0-violating → low-effort-
+consistent, 0 the reverse. C0's forced-vs-generated 6 vs 0 replicates generation against generation.
+
+**Qwen2.5 re-read (KDG-A20 item 2): stands.** VALIDATE on this pod reproduces p2d (v1 0.094, v2 0.0).
+On the record's 586 model-free ids: E record −0.0076 [−0.0235, 0.0088], re-read −0.0075 [−0.0234,
+0.0090], paired ΔE +0.0002 [−0.0001, +0.0004] (inside ±0.005, includes 0). Per-row |Δ log p| max 0.375,
+p99 0.125. KDG-A19 descriptives unchanged (own-screen 0.187 → 0.188; E_sel 0.083 at the point; the lower
+CI bound prints −0.031 here vs −0.028 in KDG-A19, from the published code's shared RNG stream). KDG-A20
+resolves R_a on all four panel models.
+
+**Referee pass.** (1) *"G-A12 was written after the fail; the fork is motivated."* Disclosed: it was
+written after the registered verdict and after the post-hoc Δκ, and pushed before its prediction. The
+structural identity is a property of the token sequences, fixed before any outcome. The registered
+"fail" is reported first and stays the verdict of record until the author rules. (2) *"The prediction
+leaves out batch noise."* Conceded, and that makes it optimistic (batch noise lowers predicted
+agreement); the observation sits above the predicted mean anyway. (3) *"A gate with 5% power against a
+valid readout cannot refute the format reading either."* Agreed: the bar separates nothing here. The
+token identity does the work, and it excludes the format reading in the form G-A11 stated ("the forced
+final letter is not the model's own dose-0 output").
+
+**Escalated to the author.** Registered: C0-dm fail (near-miss), so the format reading stands and the
+instrument-limits write-up is the result. Fork: sampling-limited, with the structural identity showing
+the forced letter is GPT-OSS's own dose-0 output distribution. Whether this clears C0 (and so lifts the
+wording rule and admits the C1–C3 cells of pod 3xlqmdx2mo3niz under §6) is the author's decision. Either
+way, C0's original failure stands as a dose effect: low-effort reasoning moves norm-crossing answers
+toward the norm (6 vs 0 forced-vs-generated, 5 vs 0 generated-vs-generated).

@@ -1,0 +1,13 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A12 (699d541)",
+ "n_scenarios": 64,
+ "predicted_mean": 0.742571875,
+ "predicted_95": [
+  0.671875,
+  0.8125
+ ],
+ "p_valid_readout_passes_0_80": 0.0505,
+ "observed": 0.765625,
+ "registered_verdict": "fail (near-miss)",
+ "fork_verdict": "sampling_limited"
+}

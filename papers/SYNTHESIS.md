@@ -897,9 +897,21 @@ which rules out the empty analysis turn but not forcing as such, and the dose-ma
 clears. Standing-claim edit: the instrument claim's scope reads "validated at dose 0 on instruct models;
 on a harmony reasoning model the dose-0 readout's validity is open". The recipe split is unchanged.
 GPT-OSS's readout is batch-dependent per row but zero-mean in E (KDG-A21, R_a).
-Readout position handling (KDG-A20): the letter readout of record read left-padded rows at shifted
-positions. Measured on the stack of record it stays within the 0.05-nat gate on OLMo-3, Llama-3.1 Meta
-and Tulu 3, with no pad contrast aligned to E on any model, so their numbers (including the KDG paper's)
-stand with a methods note; Qwen2.5's per-row error reaches 0.094, its C3 re-read is owed (deferred by the
-author), and its "none on the whole panel" carries an unmeasured-readout note until then. Readout
-version 2 is exact and is the harness going forward.
+Readout position handling (KDG-A20, resolved 2026-10-08): the letter readout of record read left-padded
+rows at shifted positions. On the stack of record it stays within the 0.05-nat gate on OLMo-3, Llama-3.1
+Meta and Tulu 3, no pad contrast aligns with E on any model, and Qwen2.5's re-read with exact positions
+leaves E unchanged (ΔE +0.0002 [−0.0001, +0.0004]). Every panel number, including the KDG paper's, stands
+with a methods note; readout version 2 is exact and is the harness going forward.
+
+### Dose-matched C0 and the Qwen2.5 re-read (2026-10-08; `kdg_panel/KDG_RESULTS.md` §26) — what changed
+
+Positive voice first: **the panel's numbers stand on an exact readout (KDG-A20 resolved on all four
+models), and on GPT-OSS-20B the forced dose-0 letter is, token for token, the distribution the model's
+own dose-0 answer is sampled from; what separates it from GPT-OSS's low-effort answer is reasoning, which
+moves norm-crossing answers toward the norm (6 vs 0 forced-vs-generated, 5 vs 0 generated-vs-generated).**
+Registered: the dose-matched C0 fails as a near-miss (0.766 vs 0.80); fork: sampling-limited (a valid
+readout passes that bar 5% of the time). Whether C0 clears is the author's; the wording rule (no GPT-OSS
+gap statement in either direction) holds until then. Rival to the positive sentence: the 6/5-vs-0 counts
+are small (6 and 5 norm-crossing scenarios of 64; sign test p 0.031 for 6 vs 0); separating cell, more
+scenarios at both doses.
+
