@@ -597,3 +597,14 @@ def test_p2h_runs_the_pilot_only_after_the_torch_upgrade():
     head = 'if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]'
     outer = sh[sh.index(head):]
     assert outer.index('"torch==2.6.0"') < outer.index('if [ "$PROFILE" = "p2h" ]; then')
+
+
+def test_identity_failure_blocks_a_confirmatory_outcome(tok, tmp_path):
+    # G-A15 item 3. most probable failure: a cell below the 0.95 identity gate still lets the
+    # sizing rule return "confirmatory" (the stub closes every 11th trace into commentary)
+    kds = _load("kdg_dose_stated")
+    assert kds.IDENTITY_GATE == 0.95
+    src = (SCRIPTS / "kdg_dose_stated.py").read_text()
+    i_id = src.index('rec["outcome"] = "identity_fail_descriptive"')
+    i_conf = src.index('rec["outcome"] = rec["sizing"]["decision"]')
+    assert src.index('elif min(rec["identity_by_cell"].values()) < IDENTITY_GATE:') < i_id < i_conf

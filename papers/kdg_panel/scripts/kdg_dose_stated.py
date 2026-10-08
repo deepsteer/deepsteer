@@ -44,6 +44,7 @@ ORDER_SEED = 0
 STAGE_INDEX = {"A": 0, "B1": 1, "B2": 2}  # fixed offsets: Python's str hash is salted per process
 FWD_ALLOWANCE = 1.15  # forward readout + residual pass, as a share of generation time (projection)
 VALIDATE_ROWS, VALIDATE_NATS = 16, 0.05
+IDENTITY_GATE = 0.95
 
 
 def _jobs(S, stage: str) -> list[tuple]:
@@ -269,6 +270,8 @@ def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: 
         rec["outcome"] = "bail_validate"
     elif rec["c0"].get("verdict", "not_run") == "not_run" or not rec["c0"].get("pass"):
         rec["outcome"] = "stop_c0"  # the main stage needs the dose-stated C0 (G-A16 item 4)
+    elif min(rec["identity_by_cell"].values()) < IDENTITY_GATE:
+        rec["outcome"] = "identity_fail_descriptive"  # G-A15 item 3: no confirmatory main stage
     else:
         rec["outcome"] = rec["sizing"]["decision"]
     with open(out / "ds_pilot.jsonl", "w") as f:
