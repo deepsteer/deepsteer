@@ -938,3 +938,4 @@ distribution, not an assumed one, and never run a generation stage without incre
 **Harness fix (applied with the discriminator).** VALIDATE reads both sides under one batch composition and saves per-row differences; the batched-vs-alone spread is recorded as a descriptive.
 **Status.** open; discriminator priced, rides the next pod.
 **Thesis impact.** R_a: the forward readout stands and the pilot's banked distributions are usable. R_b: the dose-stated readout is redesigned before any main stage.
+**Note (author, 2026-10-08):** the pilot's direction counts (6 toward, 1 away, 14 lateral; stage A, `dl_chat_neutral` permutation 0 against the dose-0 readout) are non-primary. The 1 away is the first non-zero count against the direction across the program's dose comparisons (C0 6 vs 0, C0-dm 5 vs 0); it carries no framing weight. The discriminator runs first in the G-A18 pod and gates it.

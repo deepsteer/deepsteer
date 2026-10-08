@@ -539,3 +539,38 @@ changes (author, 2026-10-08; pushed before the pilot launches).**
    argmax violating on 141, consistent on 445; about 40 sampling-only norm-crossings per run). The
    interval includes 0.5, so item 3's q0 test is not required. Sampling noise alone leans toward *away*
    crossings here, so the sign test against 0.5 is conservative for a "toward" verdict.
+
+**G-A18. Primary-2 main stage after the pilot (author, 2026-10-08; option 1; pushed before any code or
+pod).** Supersedes the conflicting parts of G-A15–G-A17.
+1. **Primary 2 does not depend on the dose-stated C0.** It compares the dose-0 readout of record with
+   the sampled medium-effort action (G-A17 items 2–5 unchanged: one-sided exact sign test, α 0.01; the
+   q0 interval includes 0.5, so the sign test against 0.5 is the test).
+2. **Primary 1 is withdrawn.** E at `medium` is not computable from the one-cell main stage. Descriptive
+   line from the pilot (stage A, 62 scenarios, one trace per cell): the per-scenario SD of E is 0.307 with
+   one sampled medium-effort trace, against 0.116 at dose 0 (about 2.6×); sampled reasoning adds
+   within-scenario variance on that scale, so no k ≤ 8 reaches MDE 0.015 if the between-scenario part
+   stays at its dose-0 size.
+3. **Pod order and gates (profile p2i), pod envelope 5.0 A100-h:**
+   a. **VALIDATE re-check (gates everything; KDG-A25 discriminator).** The pilot's 16 VALIDATE rows are
+      rebuilt from the banked `ds_pilot.jsonl` (prompt render + generated ids up to the canonical
+      header; prompt hashes must match) and read by the forward readout and by a one-token generation
+      **under identical batching**: one batch of 16 on both sides, and one at a time on both sides.
+      **Pass iff both max differences ≤ 0.05 nats** on the option letters; the batched-vs-alone spread
+      is recorded as a descriptive. **Fail → bail** (exit 2, nothing else runs). On pass, every readout
+      row records its batch shape (`readout_batch_size`, `readout_batch_index`) as part of its readout
+      version.
+   b. **Timing step.** The first main-stage batch runs at cap **1,536** (the pilot's p99 1,315 rounded
+      up) and batch size **64**; it is real main-stage work and is banked. Projection = elapsed pod time
+      (setup counted at 0.3 h) + that batch's seconds × the remaining main-stage batches + the forward
+      readout allowance. **Above 5.0 A100-h: stop and report** (exit 3); what ran is banked.
+   c. **Primary-2 main stage:** `dl_chat_neutral`, permutation 0, all 586 scenarios of the model-free
+      union (`data/gptoss_dose0_model_free_586.json`, from the dose-0 record), `Reasoning: medium`,
+      sampler v2, shuffled order, per-batch banking, deadline at the envelope. Identity rows are read by
+      the forward readout (letter-step distribution and post-reasoning residuals, banked).
+   d. **Stage B1 last,** within the remaining envelope (deadline): `dl_chat_neutral` permutations 1–3
+      on the 64 C0 scenarios. With the main stage's permutation-0 traces for those scenarios, it gives
+      the dose-stated C0 (G-A16 item 3), descriptive of the readout and no longer gating primary 2.
+4. **Pilot direction counts (KDG-A25 note).** The pilot's 6 toward vs 1 away is non-primary. It is the
+   first non-zero count against the direction across the program's dose comparisons (C0 6 vs 0, C0-dm
+   5 vs 0), and it carries no framing weight.
+5. **Option 3 (throughput engineering) deferred.**
