@@ -28,7 +28,7 @@ import kdg_harmony as kh  # noqa: E402
 
 from deepsteer.kdg.schema import load_scenario_dir  # noqa: E402
 
-DM_DIR = A.OUT / "p2f" / "c0dm" / "gpt_oss_20b"
+DM_DIR = A.OUT / "p2g" / "c0dm" / "gpt_oss_20b"  # p2g (combined); p2f: pass --dm-dir
 
 
 def majorities(rows: list[dict], key=lambda r: r["reasoning_trace"] == "completed") -> dict:

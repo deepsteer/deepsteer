@@ -93,7 +93,8 @@ def test_p2d_measures_on_the_stack_of_record_without_a_torch_upgrade():
     # most probable failure: the p2d block inherits p2c's torch 2.6 upgrade (or runs on whatever the
     # image ships), so the v1 bound is measured on a stack the cells of record never ran on
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    block = sh[sh.index('if [ "$PROFILE" = "p2d" ]; then'):sh.index("# ---- no-model gates always")]
+    start = sh.index('if [ "$PROFILE" = "p2d" ]; then')
+    block = sh[start:sh.index("\nfi\n", start)]  # the p2d block only
     assert '"2.4.1+cu124 5.12.1") ;;' in block and "torch==2.6.0" not in block
     assert "olmo3_instruct,llama31_instruct_meta,tulu3_final,qwen25_instruct_p1" in block
     assert block.index("--dry-run") < block.index('--out "$OUT/validate"')
@@ -168,8 +169,24 @@ def test_p2e_rereads_the_four_c3_cells_on_the_stack_of_record():
     # most probable failure: the re-read runs on a different stack or a different cell set, so
     # dE mixes the readout fix with other changes
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    block = sh[sh.index('if [ "$PROFILE" = "p2e" ]; then'):sh.index("# ---- no-model gates always")]
+    start = sh.index('if [ "$PROFILE" = "p2e" ]; then')
+    block = sh[start:sh.index("\nfi\n", start)]  # the p2e block only
     assert '"2.4.1+cu124 5.12.1") ;;' in block and "torch==2.6.0" not in block
     assert ("P2E_UNITS=validate_forward_matches_generate,dl_chat_neutral,jl_chat_neutral,"
             "dl_chat_neutral_pressure_removed,jl_chat_neutral_pressure_removed") in block
     assert "--models qwen25_instruct_p1" in block and "--scenario-ids-file" not in block
+
+
+def test_p2g_runs_the_reread_on_the_stack_of_record_before_the_torch_upgrade():
+    # most probable failure: the combined profile upgrades torch (for GPT-OSS) before the Qwen2.5
+    # re-read, so the re-read runs off the stack of record; or one failure skips the other run
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    b = sh[sh.index('if [ "$PROFILE" = "p2g" ]; then'):sh.index("# ---- p2e: KDG-A20 item 2")]
+    stack = b.index('"2.4.1+cu124 5.12.1") ;;')
+    dry = b.index("--dry-run --c0-dm")
+    reread = b.index('python $S --out "$OUT/reread"')
+    upgrade = b.index('"torch==2.6.0"')
+    c0dm = b.index('python $G --c0-dm --out "$OUT/c0dm"')
+    assert stack < dry < reread < upgrade < c0dm
+    assert "rc_q=$?" in b and "rc_g=$?" in b and "exit 1" in b[c0dm:]
+    assert "--batch-invariance" not in b and "--require-timing" not in b

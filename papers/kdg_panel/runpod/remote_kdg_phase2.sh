@@ -30,6 +30,14 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2g  p2e then p2f in one pod (author, 2026-10-08): the Qwen2.5 C3 re-read on the
+#                    image's stack of record (torch 2.4.1) first, then the torch 2.6 upgrade and the
+#                    GPT-OSS dose-matched C0. Independent: a failure in one does not skip the other;
+#                    the exit code is non-zero if either failed. About 0.8 A100-h; ~6.5 GB download:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
+#     MAX_SYNC_GB=1 MIN_FREE_GB=20 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh \
+#     KDG_PROFILE=p2g SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2g \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2e  KDG-A20 item 2: Qwen2.5-7B-Instruct C3 re-read (four letter cells, readout v2,
 #                    same order and batch size) on the stack of record, VALIDATE unit first:
 #     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
@@ -64,9 +72,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2f (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2g (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -170,6 +178,53 @@ if [ "$PROFILE" = "p2d" ]; then
   echo ">> KDG p2d done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2d/; then"
   echo "   python3 papers/kdg_panel/scripts/analyze_kdg_a20_validate.py"
   exit $rc
+fi
+
+# ---- p2g: p2e (Qwen2.5 re-read, stack of record) then p2f (GPT-OSS C0-dm, torch 2.6) ----
+if [ "$PROFILE" = "p2g" ]; then
+  G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
+  P2E_UNITS=validate_forward_matches_generate,dl_chat_neutral,jl_chat_neutral,dl_chat_neutral_pressure_removed,jl_chat_neutral_pressure_removed
+  # every check that can fail runs before either model is downloaded
+  STACK="$(python -c 'import torch,transformers;print(torch.__version__, transformers.__version__)')"
+  echo ">> stack: $STACK"
+  case "$STACK" in
+    "2.4.1+cu124 5.12.1") ;;
+    *) echo "FATAL: the Qwen2.5 re-read needs the stack of record (torch 2.4.1+cu124, transformers 5.12.1)"; exit 1;;
+  esac
+  echo ">> KDG local gates (p2g):"
+  python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_phase1.py tests/scripts/test_kdg_readout_v2.py \
+    tests/scripts/test_pod_kdg_gptoss.py || { echo "LOCAL GATE FAILED"; exit 1; }
+  GPU_NAME="$(python -c 'import torch;print(torch.cuda.get_device_name(0))' 2>/dev/null || echo none)"
+  VRAM_GB="$(python -c 'import torch;print(int(torch.cuda.get_device_properties(0).total_memory/1e9))' 2>/dev/null || echo 0)"
+  echo ">> GPU: $GPU_NAME ($VRAM_GB GB)"
+  case "$GPU_NAME" in *A100*80GB*) ;; *) echo "FATAL: p2g runs on A100 80GB only; got '$GPU_NAME'"; exit 1;; esac
+  N_ROWS="$(python -c 'import glob,json;print(sum(len(json.load(open(p))["scenarios"]) for p in glob.glob("papers/kdg_panel/data/*_scenarios_*.json")))')"
+  [ "${N_ROWS:-0}" -ge 580 ] || { echo "FATAL: fewer than 580 union scenario rows"; exit 1; }
+  python $S --dry-run --models qwen25_instruct_p1 --units $P2E_UNITS --out "$OUT/_dry_reread" \
+    || { echo "DRY RUN (re-read) FAILED"; exit 1; }
+  python $G --dry-run --c0-dm --out "$OUT/_dry_c0dm" || { echo "DRY RUN (C0-dm) FAILED"; exit 1; }
+  [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+
+  echo "==================== p2g 1/2: Qwen2.5 re-read (KDG-A20 item 2) ===================="
+  python $S --out "$OUT/reread" --models qwen25_instruct_p1 --units $P2E_UNITS; rc_q=$?
+  python $S --verify-manifest --out "$OUT/reread" || echo "WARN: re-read manifest verify reported mismatches"
+
+  echo "==================== p2g 2/2: GPT-OSS dose-matched C0 (G-A11) ===================="
+  rc_g=1
+  echo ">> upgrading the torch trio to 2.6.0+cu124 for GPT-OSS (W4 stack)..."
+  pip install -q --break-system-packages "torch==2.6.0" "torchvision==0.21.0" "torchaudio==2.6.0" \
+    --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
+  if python -c 'import torch; torch.accelerator; assert torch.cuda.is_available()'; then
+    echo ">> torch: $(python -c 'import torch;print(torch.__version__)')"
+    python $G --c0-dm --out "$OUT/c0dm"; rc_g=$?
+    python $S --verify-manifest --out "$OUT/c0dm" || echo "WARN: C0-dm manifest verify reported mismatches"
+  else
+    echo "FATAL (C0-dm skipped): torch.accelerator missing after the upgrade"
+  fi
+  echo ">> KDG p2g done (re-read rc=$rc_q, C0-dm rc=$rc_g). rsync-back -> papers/kdg_panel/outputs/p2g/; then"
+  echo "   python3 papers/kdg_panel/scripts/analyze_kdg_a20_qwen_reread.py"
+  echo "   python3 papers/kdg_panel/scripts/analyze_gptoss_c0dm.py"
+  [ $rc_q -eq 0 ] && [ $rc_g -eq 0 ] && exit 0 || exit 1
 fi
 
 # ---- p2e: KDG-A20 item 2, Qwen2.5 C3 re-read on the stack of record ----

@@ -35,7 +35,7 @@ import analyze_screen_rates as SR  # noqa: E402
 
 from deepsteer.kdg.schema import load_scenario_dir  # noqa: E402
 
-REREAD = A.OUT / "p2e" / "reread" / "qwen25_instruct_p1"
+REREAD = A.OUT / "p2g" / "reread" / "qwen25_instruct_p1"  # p2g (combined); p2e: pass --reread
 MARGIN = 0.005
 
 
