@@ -23,6 +23,14 @@
 #   SYNC_OUTPUTS ships that one file and no other output (the KDG outputs tree, ~108 GB locally,
 #   is excluded in rsync_exclude.txt); MAX_SYNC_GB refuses the launch if the upload would exceed
 #   1 GB (the repo without outputs measures 0.28 GB, 2026-10-07).
+#   KDG_PROFILE=p2d  KDG-A20 VALIDATE-only record (no cells) on OLMo-3, Llama-3.1 Meta, Tulu 3 and
+#                    Qwen2.5 on the stack of record (torch 2.4.1, transformers 5.12.1; no torch
+#                    upgrade): per prompt, readout v1 (the cells of record) and v2 vs generation,
+#                    the unpadded read and pad counts on the G6 batch and a 0-70-token pad ladder.
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
+#     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2d \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2d \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh      (HF_TOKEN with Llama-3.1 access)
 #   KDG_PROFILE=p2a_e1 / p2a_e2  extras E1 (OLMo-3 SFT/DPO) and E2 (within-RL sweep): refused here
 #                    until the author schedules them at the pod gate (E2 also needs P2-A1 pushed)
 #
@@ -43,9 +51,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c) ;;
+  p2a|p2b|p2c|p2d) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a, p2b or p2c (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a, p2b, p2c or p2d (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -104,6 +112,39 @@ if [ "$PROFILE" = "p2c" ]; then
   python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/gpt_oss_20b" \
     || echo "WARN: manifest verify reported mismatches"
   echo ">> KDG p2c done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2c/"
+  exit $rc
+fi
+
+# ---- p2d: KDG-A20 VALIDATE-only record on the four panel models (no cells) ----
+if [ "$PROFILE" = "p2d" ]; then
+  # the bound is for the cells of record, so it is measured on their stack (p1a/p1b/p2a manifests)
+  STACK="$(python -c 'import torch,transformers;print(torch.__version__, transformers.__version__)')"
+  echo ">> stack: $STACK"
+  case "$STACK" in
+    "2.4.1+cu124 5.12.1") ;;
+    *) echo "FATAL: p2d must run on the stack of record (torch 2.4.1+cu124, transformers 5.12.1)"; exit 1;;
+  esac
+  [ -n "${HF_TOKEN:-}${HUGGING_FACE_HUB_TOKEN:-}" ] || { echo "FATAL: HF_TOKEN unset (Llama-3.1 is gated)"; exit 1; }
+  echo ">> KDG local gates (p2d):"
+  python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_phase1.py tests/scripts/test_kdg_readout_v2.py \
+    || { echo "LOCAL GATE FAILED"; exit 1; }
+  GPU_NAME="$(python -c 'import torch;print(torch.cuda.get_device_name(0))' 2>/dev/null || echo none)"
+  echo ">> GPU: $GPU_NAME"
+  case "$GPU_NAME" in *A100*80GB*) ;; *) echo "FATAL: p2d runs on A100 80GB only; got '$GPU_NAME'"; exit 1;; esac
+  P2D_MODELS=olmo3_instruct,llama31_instruct_meta,tulu3_final,qwen25_instruct_p1
+  python $S --dry-run --models $P2D_MODELS --units VALIDATE --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$VALIDATE" = "1" ]; then
+    echo ">> VALIDATE=1: gates + dry run OK. Launch without VALIDATE=1 for the record."; exit 0
+  fi
+  echo "==================== p2d/validate ===================="
+  # one load per model; a v2 gate miss is recorded (the record is written before the unit raises)
+  python $S --out "$OUT/validate" --models $P2D_MODELS --units VALIDATE; rc=$?
+  python $S --verify-manifest --out "$OUT/validate" || echo "WARN: manifest verify reported mismatches"
+  for k in olmo3_instruct llama31_instruct_meta tulu3_final qwen25_instruct_p1; do
+    [ -f "$OUT/validate/$k/forward_matches_generate.json" ] || echo "WARN: no VALIDATE record for $k"
+  done
+  echo ">> KDG p2d done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2d/; then"
+  echo "   python3 papers/kdg_panel/scripts/analyze_kdg_a20_validate.py"
   exit $rc
 fi
 

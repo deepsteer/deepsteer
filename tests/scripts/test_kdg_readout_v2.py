@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -86,3 +87,38 @@ def test_e_refuses_to_mix_readout_versions(tmp_path):
         (tmp_path / f"{n}.jsonl").write_text(json.dumps(r) + "\n")
     with pytest.raises(ValueError, match="mix readout versions"):
         A.four_cells([tmp_path], names, {"s1": {"o1": "violating", "o2": "consistent"}})
+
+
+def test_p2d_measures_on_the_stack_of_record_without_a_torch_upgrade():
+    # most probable failure: the p2d block inherits p2c's torch 2.6 upgrade (or runs on whatever the
+    # image ships), so the v1 bound is measured on a stack the cells of record never ran on
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2d" ]; then'):sh.index("# ---- no-model gates always")]
+    assert '"2.4.1+cu124 5.12.1") ;;' in block and "torch==2.6.0" not in block
+    assert "olmo3_instruct,llama31_instruct_meta,tulu3_final,qwen25_instruct_p1" in block
+    assert block.index("--dry-run") < block.index('--out "$OUT/validate"')
+
+
+def test_validate_reading_takes_the_v1_bound_over_the_panel_pad_range(tmp_path):
+    # most probable failure: the bound is taken over the 2,000-token TSN rows (or v2), not over
+    # pads the panel actually had, so a large in-range v1 error hides or a far one dominates
+    spec = importlib.util.spec_from_file_location(
+        "an", SCRIPTS / "analyze_kdg_a20_validate.py")
+    an = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(an)
+    d = tmp_path / "validate"
+    for key in an.MODELS:
+        (d / key).mkdir(parents=True)
+        rows = [{"pad": 0, "v1_vs_gen": 0.0, "v2_vs_gen": 0.0, "unpadded_vs_gen": 0.0},
+                {"pad": 40, "v1_vs_gen": 0.07 if key == "qwen25_instruct_p1" else 0.02,
+                 "v2_vs_gen": 0.01, "unpadded_vs_gen": 0.01},
+                {"pad": 2000, "v1_vs_gen": 0.9, "v2_vs_gen": 0.02, "unpadded_vs_gen": 0.01}]
+        (d / key / "forward_matches_generate.json").write_text(json.dumps(
+            {"batches": {"g6": rows[2:], "pad_ladder": rows[:2]}}))
+    out = tmp_path / "a.json"
+    assert an.main(["--dir", str(d), "--out", str(out)]) == 0
+    m = json.loads(out.read_text())["models"]
+    assert m["olmo3_instruct"]["v1_bound_in_range"] == 0.02
+    assert m["olmo3_instruct"]["v1_outcome"] == "bounded"
+    assert m["qwen25_instruct_p1"]["v1_outcome"] == "re-read (item 2)"
+    assert m["olmo3_instruct"]["v2_outcome"] == "passes"
