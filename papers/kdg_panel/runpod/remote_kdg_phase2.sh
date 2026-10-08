@@ -30,6 +30,12 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2e  KDG-A20 item 2: Qwen2.5-7B-Instruct C3 re-read (four letter cells, readout v2,
+#                    same order and batch size) on the stack of record, VALIDATE unit first:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
+#     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2e \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2e \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2d  KDG-A20 VALIDATE-only record (no cells) on OLMo-3, Llama-3.1 Meta, Tulu 3 and
 #                    Qwen2.5 on the stack of record (torch 2.4.1, transformers 5.12.1; no torch
 #                    upgrade): per prompt, readout v1 (the cells of record) and v2 vs generation,
@@ -58,9 +64,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2f) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a, p2b, p2c, p2d or p2f (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2f (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -163,6 +169,32 @@ if [ "$PROFILE" = "p2d" ]; then
   done
   echo ">> KDG p2d done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2d/; then"
   echo "   python3 papers/kdg_panel/scripts/analyze_kdg_a20_validate.py"
+  exit $rc
+fi
+
+# ---- p2e: KDG-A20 item 2, Qwen2.5 C3 re-read on the stack of record ----
+if [ "$PROFILE" = "p2e" ]; then
+  STACK="$(python -c 'import torch,transformers;print(torch.__version__, transformers.__version__)')"
+  echo ">> stack: $STACK"
+  case "$STACK" in
+    "2.4.1+cu124 5.12.1") ;;
+    *) echo "FATAL: p2e must run on the stack of record (torch 2.4.1+cu124, transformers 5.12.1)"; exit 1;;
+  esac
+  echo ">> KDG local gates (p2e):"
+  python -m pytest -q tests/kdg tests/scripts/test_pod_kdg_phase1.py tests/scripts/test_kdg_readout_v2.py \
+    || { echo "LOCAL GATE FAILED"; exit 1; }
+  GPU_NAME="$(python -c 'import torch;print(torch.cuda.get_device_name(0))' 2>/dev/null || echo none)"
+  echo ">> GPU: $GPU_NAME"
+  case "$GPU_NAME" in *A100*80GB*) ;; *) echo "FATAL: p2e runs on A100 80GB only; got '$GPU_NAME'"; exit 1;; esac
+  P2E_UNITS=validate_forward_matches_generate,dl_chat_neutral,jl_chat_neutral,dl_chat_neutral_pressure_removed,jl_chat_neutral_pressure_removed
+  python $S --dry-run --models qwen25_instruct_p1 --units $P2E_UNITS --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry run OK. Launch without VALIDATE=1."; exit 0; }
+  echo "==================== p2e/reread ===================="
+  # default scenario set and order = the record's (checked 2026-10-07: rows in load order, seeds 0..7)
+  python $S --out "$OUT/reread" --models qwen25_instruct_p1 --units $P2E_UNITS; rc=$?
+  python $S --verify-manifest --out "$OUT/reread" || echo "WARN: manifest verify reported mismatches"
+  echo ">> KDG p2e done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2e/; then"
+  echo "   python3 papers/kdg_panel/scripts/analyze_kdg_a20_qwen_reread.py"
   exit $rc
 fi
 

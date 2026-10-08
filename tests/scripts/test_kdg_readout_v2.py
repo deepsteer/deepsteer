@@ -122,3 +122,54 @@ def test_validate_reading_takes_the_v1_bound_over_the_panel_pad_range(tmp_path):
     assert m["olmo3_instruct"]["v1_outcome"] == "bounded"
     assert m["qwen25_instruct_p1"]["v1_outcome"] == "re-read (item 2)"
     assert m["olmo3_instruct"]["v2_outcome"] == "passes"
+
+
+def _an_reread():
+    spec = importlib.util.spec_from_file_location(
+        "rr", SCRIPTS / "analyze_kdg_a20_qwen_reread.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_reread_branch_order_is_the_registered_one():
+    # most probable failure: a CI inside +/-0.005 that excludes 0 reads "correction" (the
+    # overlap resolved against the listed order fixed before data)
+    rr = _an_reread()
+    assert rr.branch([0.001, 0.004]) == "stands"
+    assert rr.branch([-0.004, 0.004]) == "stands"
+    assert rr.branch([0.002, 0.012]) == "correction"
+    assert rr.branch([-0.009, 0.006]) == "unresolved"
+
+
+def test_reread_of_identical_cells_stands(tmp_path):
+    # most probable failure: the paired comparison misaligns scenarios or rows, so identical
+    # readouts produce a nonzero dE; uses the local cells of record, skips without them
+    import analyze_screen_rates as SR
+
+    rec = SR.MODELS["qwen25_instruct"]
+    if not (rec / "dl_chat_neutral.jsonl").exists():
+        pytest.skip("Qwen2.5 cells of record not on disk")
+    new = tmp_path / "reread"
+    new.mkdir()
+    for c in ("dl_chat_neutral", "jl_chat_neutral", "dl_chat_neutral_pressure_removed",
+              "jl_chat_neutral_pressure_removed"):
+        rows = [dict(json.loads(x), readout_version=2)
+                for x in (rec / f"{c}.jsonl").read_text().splitlines() if x.strip()]
+        (new / f"{c}.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
+    out = tmp_path / "a.json"
+    assert _an_reread().main(["--reread", str(new), "--out", str(out)]) == 0
+    rep = json.loads(out.read_text())
+    assert rep["dE"]["mean"] == 0.0 and rep["branch"] == "stands"
+    assert rep["row_abs_dlogp"]["max"] == 0.0 and rep["n"] == 586
+
+
+def test_p2e_rereads_the_four_c3_cells_on_the_stack_of_record():
+    # most probable failure: the re-read runs on a different stack or a different cell set, so
+    # dE mixes the readout fix with other changes
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2e" ]; then'):sh.index("# ---- no-model gates always")]
+    assert '"2.4.1+cu124 5.12.1") ;;' in block and "torch==2.6.0" not in block
+    assert ("P2E_UNITS=validate_forward_matches_generate,dl_chat_neutral,jl_chat_neutral,"
+            "dl_chat_neutral_pressure_removed,jl_chat_neutral_pressure_removed") in block
+    assert "--models qwen25_instruct_p1" in block and "--scenario-ids-file" not in block
