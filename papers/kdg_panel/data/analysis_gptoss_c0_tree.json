@@ -1,0 +1,29 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A10 (7b7ce85)",
+ "root": {
+  "n": 64,
+  "A_fr": 0.69921875,
+  "A_rr": 0.8203125,
+  "dkappa": -0.12109375,
+  "dkappa_ci95": [
+   -0.22526041666666669,
+   -0.026041666666666657
+  ]
+ },
+ "second_derivation": {
+  "modal_readout_agreement": 0.90625,
+  "forced_readout_agreement": 0.6875
+ },
+ "direction": {
+  "n_disagreeing": 14,
+  "forced_violating_gen_consistent": 6,
+  "forced_consistent_gen_violating": 0,
+  "other_pairs": 8,
+  "D": 0.42857142857142855,
+  "D_ci95": [
+   0.21428571428571427,
+   0.7142857142857143
+  ]
+ },
+ "branch": "deliberation_brake"
+}

@@ -1641,3 +1641,65 @@ dose arm's effect is stated as a brake on the violating action with or without t
 branch per model first and the post-hoc ratio reading with its bounds beside it; §10's heading reads
 "deliberation brakes the action, with or without the incentive" (author wording, 2026-10-05). R1 (the
 deliberation arm was undifferenced) is closed.
+
+## 25. GPT-OSS-20B Tier 2 addition (KDG_GPTOSS_SPEC v0.2 + G-A1..G-A10; 2026-10-07)
+
+Spec v0.1 pushed f9d8ca8 (2026-10-04); amendments G-A1..G-A9 pushed before the real run, G-A10
+(post-hoc diagnosis tree) pushed 7b7ce85 before its numbers. Pods: VALIDATE g85xxpdraotqfw (crashed at
+load, torch 2.4 lacks `torch.accelerator`; fixed 7a43807), VALIDATE tlsh5rtjq2kgyh (gate failed
+0.46 / 0.38 nats, cause KDG-A20, fixed 33ea8ef), VALIDATE rurugzdsg3g0s4 (gates pass, forward =
+generate 0.0; projection 0.93 A100-h), real run 3xlqmdx2mo3niz (A100-SXM4-80GB; torch 2.6.0+cu124,
+transformers 5.12.1; revision 6cee5e81, template a4c9919c, bf16 dequant verified; every unit ok,
+manifest verifies). `data/analysis_gptoss.json`, `data/analysis_gptoss_c0_tree.json`; bootstrap 10,000,
+seed 0. Readout version 2 (mask-derived positions) throughout.
+
+**Verdict of record: §6 readout invalid.** C0 agreement 0.688, Wilson [0.566, 0.788], n 64, SE 0.058
+(not a near-miss; G-A7's T = 1.0 batch did not trigger); 0% of 256 low-effort rollouts truncated, 253
+parsed. Every GPT-OSS number below is descriptive, and no gap statement is made either way.
+
+**Why C0 failed (G-A10).** Root Δκ = A(forced, rollout) − A(rollout, rollout) = 0.699 − 0.820 =
+−0.121 [−0.225, −0.026]: the forced readout departs from the model's sampled answers by more than they
+depart from each other (a readout equal to each scenario's modal answer would score 0.906, so the bar
+was reachable). Direction over the 14 scenarios whose strict generated majority differs from the
+forced argmax: 6 forced-violating → generated-consistent, 0 the reverse, 8 between same-label options;
+D 0.43 [0.21, 0.71] → **deliberation brake** (exact sign test p = 0.031). Both forced readouts (primary
+and direct-final prefill) agree with each other on 0.92 and with generation on 0.69 / 0.67, so the
+departure is not the empty analysis turn. KDG-A22 carries the two readings (dose vs format) and the
+priced dose-matched C0′.
+
+**Descriptive cells (forced dose-0 readout).**
+
+| cell | GPT-OSS-20B | beside |
+|---|---|---|
+| C1 engagement / screen | 586 of 586 engaged (option mass median 0.9999); 71 screened (12.1%) | OLMo-3 110 (18.8%), Llama-3.1 Meta 118 (20.1%) |
+| C2 known-gap g_band | 0.501 [0.469, 0.534], n 360; p_D(known gap) 0.720 | developer-turn slot; not size-compared (spec §7 iii) |
+| C3 E, model-free set | −0.001 [−0.011, 0.008], n 586, MDE 0.013 | |
+| C3 E, own screen | 0.052 [0.023, 0.081], n 71; selection-matched null E_sel −0.001 [−0.050, 0.049] (n 67 twin-screened): within selection | |
+| decision-token PR, hidden_states[13] | raw 7.51 [7.07, 7.95], standardized 11.62 [11.08, 12.32] (n 632, KDG letter prompts; subsampling CI, seed recorded) | Tier-1 12.79 post-std; W4 raw 9.40 [9.09, 10.65] (n 128, Heretic prompts): different harnesses and prompt sets, no size comparison |
+| G-A9 batch invariance | 62 scenarios, 2,048 rows: per-row \|Δ log p\| median 0.16, p90 0.42, max 1.37; ΔE −0.004 [−0.010, 0.003]; batch share of var(E_s) 0.039 | KDG-A21 → R_a |
+
+The decision-token residuals at every layer are saved for all five letter cells (25 × 2880 per row), so
+later direction reads are zero GPU.
+
+**Second derivation.** C0's failure rate decomposes from the saved rows: 20 non-agreements = 6 with no
+strict majority (ties or unparsed, non-agreement under G-A1) + 6 norm-crossing brakes + 8 lateral moves;
+20 / 64 = 0.3125 = 1 − 0.6875. Coincidence noted, not interpreted: g_band 0.501 sits beside OLMo-3's
+0.497; the spec forbids a cross-model size comparison and the readout is invalid in any case.
+
+**Referee pass.** (1) *"C0 compared a dose-0 readout with answers produced after reasoning, so the gate
+was confounded by design and its failure says nothing about the readout."* Partly conceded: the
+6-vs-0 direction is what dose predicts, and the spec's rival list (§7) did not name dose. But Δκ shows
+departure beyond the generation's own spread, and 8 of 14 disagreements are lateral, which dose does not
+predict; the pre-registered verdict stands, and the dose-matched C0′ (KDG-A22, ~0.3 A100-h) separates the
+readings. Lesson recorded for the instrument: a construct check on a reasoning model must match dose.
+(2) *"D rests on 6 vs 0 among 14."* Yes; the exact sign test (p = 0.031) and the bootstrap CI agree,
+and the claim is scoped to the direction of norm-crossing departures in a 64-scenario sample. (3) *"E ≈ 0
+at dose 0 will be read as 'GPT-OSS has no judgment–action gap'."* Wording rule: no GPT-OSS gap statement
+in either direction; E is printed only as a property of the forced dose-0 decision, which C0 shows is
+not the decision GPT-OSS makes when it reasons.
+
+**What it means for the pitch (author's decision).** The spec's §6 branch for this outcome names the
+generated low-effort answer as the candidate readout under a new amendment. Priced options: the
+dose-matched C0′ alone (~0.3 A100-h); a dose-stated readout of record for C1–C3 (low-effort analysis,
+then the forced letter distribution at the final channel, 586 × 4 cells × 2 permutations ≈ 4,700
+generations at the measured 44 s per 16, about 3.6 A100-h), which exceeds the 1.3 A100-h authorization.

@@ -1,0 +1,209 @@
+{
+ "spec": "KDG_GPTOSS_SPEC.md v0.2",
+ "n_boot": 10000,
+ "seed": 0,
+ "floor": 0.5,
+ "dir": "/Users/orionr/dev/deepsteer/papers/kdg_panel/outputs/p2c/gpt_oss_20b/gpt_oss_20b",
+ "c0": {
+  "n_rollouts": 256,
+  "truncation_rate": 0.0,
+  "descriptive": false,
+  "parse_methods": {
+   "letter_only": 253,
+   "unparsed": 3
+  },
+  "primary": {
+   "n_scenarios": 64,
+   "agreement": 0.6875,
+   "wilson_ci95": [
+    0.5660766429725185,
+    0.7876893346051795
+   ],
+   "se": 0.05793905068043487,
+   "bar": 0.8,
+   "pass": false,
+   "near_miss": false,
+   "verdict": "fail"
+  },
+  "direct_final": {
+   "n_scenarios": 64,
+   "agreement": 0.671875,
+   "wilson_ci95": [
+    0.549991058490915,
+    0.7742944209553081
+   ],
+   "se": 0.05869132500514344,
+   "bar": 0.8,
+   "pass": false,
+   "near_miss": false,
+   "verdict": "fail"
+  },
+  "primary_vs_direct_final_argmax_agreement": 0.921875
+ },
+ "c1": {
+  "n_union": 586,
+  "n_engaged": 586,
+  "engagement_rate": 1.0,
+  "n_screened": 71,
+  "screen_rate_of_engaged": 0.12116040955631399,
+  "beside": {
+   "olmo3_final": {
+    "n_union": 586,
+    "n_engaged": 586,
+    "engagement_rate": 1.0,
+    "n_screened": 110,
+    "screen_rate_of_engaged": 0.18771331058020477
+   },
+   "llama31_instruct_meta": {
+    "n_union": 586,
+    "n_engaged": 586,
+    "engagement_rate": 1.0,
+    "n_screened": 118,
+    "screen_rate_of_engaged": 0.20136518771331058
+   }
+  }
+ },
+ "c2": {
+  "g_band": {
+   "mean": 0.501353651451906,
+   "ci95": [
+    0.46895939141148224,
+    0.5338797915952216
+   ],
+   "n": 360,
+   "point_in_ci": true,
+   "mde": 0.04637171441695667
+  },
+  "p_D_known_gap": {
+   "mean": 0.7198126843711784,
+   "ci95": [
+    0.6856858079608432,
+    0.7522018375840254
+   ],
+   "n": 360,
+   "point_in_ci": true,
+   "mde": 0.04751144973084439
+  },
+  "verdict": "validated",
+  "slot": "harmony developer turn beside the model's own system message (OLMo-3: the operator prompt replaces the default system prompt); not size-compared"
+ },
+ "c3": {
+  "model_free": {
+   "n": 586,
+   "E_prob": {
+    "mean": -0.0012560932448085985,
+    "ci95": [
+     -0.010557273323781976,
+     0.008127794414787
+    ],
+    "n": 586,
+    "point_in_ci": true,
+    "mde": 0.013346476956120698
+   },
+   "mde": 0.013346476956120696
+  },
+  "own_screen": {
+   "n": 71,
+   "E_prob": {
+    "mean": 0.051651658732708834,
+    "ci95": [
+     0.023167519149426954,
+     0.08116928693815205
+    ],
+    "n": 71,
+    "point_in_ci": true,
+    "mde": 0.04142983413480364
+   },
+   "selection_null": {
+    "E_sel": -0.001104414572116269,
+    "ci95": [
+     -0.05013827431979857,
+     0.048778622531518344
+    ],
+    "n_twin_screen": 67
+   }
+  }
+ },
+ "decision_token_pr": {
+  "hidden_states_index": 13,
+  "n": 632,
+  "references": {
+   "tier1_post_std": {
+    "pr": 12.79,
+    "harness": "gptoss_tier1.py, post-standardization"
+   },
+   "w4_raw": {
+    "pr": 9.4,
+    "ci95": [
+     9.09,
+     10.65
+    ],
+    "harness": "W4 in-format sample, L12, n = 128"
+   }
+  },
+  "raw": {
+   "pr": 7.513878405477294,
+   "subsampling_ci95": [
+    7.065994667281512,
+    7.949296054688687
+   ],
+   "subsampling": {
+    "ci95": [
+     7.065994667281512,
+     7.949296054688687
+    ],
+    "method": "m-out-of-n subsampling, basic interval",
+    "m": 316,
+    "draws": 500,
+    "seed": 0,
+    "rng": "numpy default_rng(seed).choice(n, m, replace=False) per draw"
+   }
+  },
+  "standardized": {
+   "pr": 11.620263278759074,
+   "subsampling_ci95": [
+    11.081524640456315,
+    12.319821380653929
+   ],
+   "subsampling": {
+    "ci95": [
+     11.081524640456315,
+     12.319821380653929
+    ],
+    "method": "m-out-of-n subsampling, basic interval",
+    "m": 316,
+    "draws": 500,
+    "seed": 0,
+    "rng": "numpy default_rng(seed).choice(n, m, replace=False) per draw"
+   }
+  }
+ },
+ "batch_invariance": {
+  "n_rows": 2048,
+  "n_scenarios": 62,
+  "row_abs_dlogp": {
+   "median": 0.163818359375,
+   "p90": 0.4185546874999999,
+   "max": 1.3671875
+  },
+  "dE": {
+   "mean": -0.0038421354025972632,
+   "ci95": [
+    -0.010349444275321973,
+    0.0027809249795739087
+   ],
+   "n": 62,
+   "point_in_ci": true,
+   "mde": 0.009378835182068486
+  },
+  "sd_dE": 0.02645713453719728,
+  "batch_share_of_var_E": 0.038963188795768676
+ },
+ "branch": "readout_invalid",
+ "branch_notes": {
+  "c0_descriptive": false,
+  "c0_near_miss": false,
+  "c0_t1_label": null,
+  "wording_not_detected": null
+ }
+}
