@@ -61,12 +61,27 @@ from deepsteer.kdg.schema import (  # noqa: E402
 )
 
 SEED = 0
+# Forward-pass readout version, recorded on every row (ANOMALIES KDG-A20). 1 = HF default positions,
+# so a left-padded row was read at positions shifted by its pad count: every cell of record up to
+# 2026-10-07, whose rows carry no field (read as 1, see ``readout_version``). 2 = positions derived
+# from the attention mask, as generate() does.
+KDG_READOUT_VERSION = 2
 _ANSWER_ANCHOR = re.compile(r"answer\s*[:=\-]\s*\**\s*\(?$", re.I)
 
 
 # ---------------------------------------------------------------------------------------------
 # small helpers (kept local so the KDG driver has no W4 coupling)
 # ---------------------------------------------------------------------------------------------
+
+
+def readout_version(row: dict) -> int:
+    """A row's forward-readout version; rows written before the field existed are version 1."""
+    return int(row.get("readout_version", 1))
+
+
+def mask_positions(attention_mask):
+    """Position ids from a (left-padded) attention mask, the way generate() derives them."""
+    return (attention_mask.long().cumsum(-1) - 1).clamp(min=0)
 
 
 def sha256_file(path: Path) -> str:
@@ -146,6 +161,8 @@ class ModelWrapper:
         self.harmony = harmony
         self.reasoning_level = harmony.reasoning_level if harmony else None
         self.letter_prefill = harmony.prefill_primary if harmony else ""
+        # KDG_GPTOSS_SPEC G-A8 branch 2: batches hold rows of equal token length only (no padding)
+        self.bucket_by_length = False
         self.wb = load_whitebox(repo) if revision is None else None
         if self.wb is None:
             from deepsteer.core.model_interface import WhiteBoxModel
@@ -252,16 +269,19 @@ class ModelWrapper:
         return last, logps[last][b]
 
     def raw_next_logprobs(
-        self, prompts: list[str], batch_size: int = 16, add_special_tokens: bool = True
+        self,
+        prompts: list[str],
+        batch_size: int = 16,
+        add_special_tokens: bool = True,
+        readout_version: int = KDG_READOUT_VERSION,
     ) -> np.ndarray:
         """Next-token log-probs after each prompt. Raw frames keep the tokenizer's special tokens
         (BOS); chat-rendered prompts pass ``add_special_tokens=False`` so the tokens match the
         generation path (``_generate_batch``), whose first-step distribution this reproduces.
 
-        Known deviation (ANOMALIES KDG-A20, 2026-10-07): no ``position_ids`` are passed, so a
-        left-padded row is read at positions shifted by its pad count. Kept unchanged so new panel
-        cells stay comparable with the cells of record; ``next_logprobs_and_residuals`` (GPT-OSS)
-        passes mask-derived positions."""
+        ``readout_version`` 2 (default) passes mask-derived ``position_ids``; 1 reproduces the
+        cells of record (HF default positions, shifted under left padding; ANOMALIES KDG-A20) and
+        exists for the VALIDATE record that bounds them."""
         torch = self.torch
         rows = []
         for i in range(0, len(prompts), batch_size):
@@ -271,8 +291,11 @@ class ModelWrapper:
                 padding=True,
                 add_special_tokens=add_special_tokens,
             ).to(self.device)
+            kw = {}
+            if readout_version == 2:
+                kw["position_ids"] = mask_positions(enc["attention_mask"])
             with torch.no_grad():
-                logits = self.model(**enc).logits[:, -1, :].float()
+                logits = self.model(**enc, **kw).logits[:, -1, :].float()
             rows.append(torch.log_softmax(logits, dim=-1).cpu().numpy().astype(np.float16))
         return np.concatenate(rows, axis=0)
 
@@ -286,13 +309,26 @@ class ModelWrapper:
         is HF ``hidden_states[h]`` (h = 0 the embeddings, h = l + 1 the output of block l; the
         last entry is after the model's final norm where the HF implementation applies it there).
         Left padding puts every sequence's end at the last column, so the decision index is
-        ``-1 - len(prefill tokens)``; it is asserted against the prompt's own last token id."""
+        ``-1 - len(prefill tokens)``; it is asserted against the prompt's own last token id.
+        With ``bucket_by_length`` set (G-A8 branch 2) each batch holds rows of one token length,
+        so no row is padded; results come back in input order either way."""
         import kdg_harmony
 
         torch = self.torch
-        lps, res = [], []
-        for i in range(0, len(prompts), batch_size):
-            P, F = prompts[i : i + batch_size], prefills[i : i + batch_size]
+        idx = list(range(len(prompts)))
+        chunks = [idx[i : i + batch_size] for i in range(0, len(idx), batch_size)]
+        if getattr(self, "bucket_by_length", False):
+            by: dict[int, list[int]] = {}
+            for k in idx:
+                n = len(self.tok.encode(prompts[k] + prefills[k], add_special_tokens=False))
+                by.setdefault(n, []).append(k)
+            chunks = [
+                g[i : i + batch_size] for g in by.values() for i in range(0, len(g), batch_size)
+            ]
+        lps, res, order = [], [], []
+        for ch in chunks:
+            order += ch
+            P, F = [prompts[k] for k in ch], [prefills[k] for k in ch]
             splits = [kdg_harmony.split_prefill(self.tok, p, f) for p, f in zip(P, F)]
             enc = self.tok(
                 [p + f for p, f in zip(P, F)],
@@ -303,7 +339,7 @@ class ModelWrapper:
             # positions from the attention mask, as generate() derives them: without this a
             # left-padded row is read at positions shifted by its pad count, which bf16 RoPE does
             # not cancel (0.46 nats on GPT-OSS's VALIDATE gate, pod tlsh5rtjq2kgyh, 2026-10-07)
-            pos = (enc["attention_mask"].long().cumsum(-1) - 1).clamp(min=0)
+            pos = mask_positions(enc["attention_mask"])
             with torch.no_grad():
                 out = self.model(**enc, position_ids=pos, output_hidden_states=True)
             lps.append(
@@ -316,7 +352,8 @@ class ModelWrapper:
                     raise RuntimeError("decision-token index does not hold the prompt's last token")
                 at = torch.stack([h[b, pos, :] for h in out.hidden_states])  # [n_layers + 1, d]
                 res.append(at.float().cpu().numpy().astype(np.float16))
-        return np.concatenate(lps, axis=0), np.stack(res)
+        inv = np.argsort(order)
+        return np.concatenate(lps, axis=0)[inv], np.stack(res)[inv]
 
     def decode(self, ids: list[int]) -> str:
         return self.tok.decode(ids, skip_special_tokens=True)
@@ -370,7 +407,8 @@ class StubModel:
     def encode(self, text):
         return list(range(len(text.split())))
 
-    def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True):
+    def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True,
+                          readout_version=KDG_READOUT_VERSION):
         self.last_add_special_tokens = add_special_tokens
         return np.log(self.rng.dirichlet(np.ones(self.vocab), size=len(prompts))).astype(np.float16)
 
@@ -399,6 +437,7 @@ class Manifest:
             "preregistration": "papers/KDG_PANEL_SPEC.md v0.4 (2026-09-13)",
             "template_version": TEMPLATE_VERSION,
             "harness_version": KDG_HARNESS_VERSION,
+            "readout_version": KDG_READOUT_VERSION,
             "scenario_sets": scenario_meta,
             "loads": [],
             "artifacts": [],
@@ -511,6 +550,7 @@ def _row(
         "parse_method": parse.method,
         "norm_status": parse.norm_status,
         "harness_version": KDG_HARNESS_VERSION,
+        "readout_version": KDG_READOUT_VERSION,
         "template_version": TEMPLATE_VERSION,
         **extra,
     }
@@ -757,6 +797,7 @@ def cell_raw(ctx: Ctx, scenarios: list[Scenario], *, frame: str, variant: str = 
                 "norm_status": o.norm_status,
                 "parse_method": "raw_argmax",
                 "harness_version": KDG_HARNESS_VERSION,
+                "readout_version": KDG_READOUT_VERSION,
                 "template_version": TEMPLATE_VERSION,
                 "variant": variant,
                 "frame": frame,
@@ -853,6 +894,7 @@ def _letter_cell(
                 "item_id": s.item_id,
                 "parse_method": "letter_chat_argmax",
                 "harness_version": KDG_HARNESS_VERSION,
+                "readout_version": KDG_READOUT_VERSION,
                 "template_version": template_version,
                 "chat_template_sha256": ctx.model.chat_template_sha,
                 **ctx.row_fields,
@@ -1155,6 +1197,7 @@ def cell_dose_control(
                 "tf_tokens": n_cut,
                 "norm_class": s.norm_class,
                 "harness_version": KDG_HARNESS_VERSION,
+                "readout_version": KDG_READOUT_VERSION,
                 "template_version": PHASE1_TEMPLATE_VERSION,
                 "chat_template_sha256": ctx.model.chat_template_sha,
             }
@@ -1237,22 +1280,63 @@ def cell_forward_matches_generate(ctx: Ctx, scenarios: list[Scenario], n: int = 
             msgs = tsn_messages(s, order, 6, "reminder", load_filler_turns(filler_path(length)))
             prompts.append(ctx.model.render_chat(msgs))
             orders.append(order)
-    fwd = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False).astype(np.float32)
-    gen = ctx.model.generate(
-        prompts, max_new_tokens=1, temperature=0.0, seed=SEED, find_anchor=False
-    )
+    # pad ladder (KDG-A20): agent prompts chosen so their pads in one batch run 0..70 tokens, the
+    # range of the panel's letter batches, which the G6 batch above does not cover (its pads are
+    # ~0-30 without the long turns-since-norm prompt and ~1,850+ with it)
+    lad, lad_orders = _pad_ladder(ctx, scenarios[:300])
+    rec: dict = {"n": len(prompts), "readout_version": KDG_READOUT_VERSION, "batches": {}}
     worst = 0.0
-    for k, (order, g) in enumerate(zip(orders, gen)):
-        ids = [i for i in _option_ids(ctx, order, chat=True) if i >= 0]
-        first = g.logp_first.astype(np.float32)[ids]
-        worst = max(worst, float(np.max(np.abs(fwd[k][ids] - first))))
+    for name, P, ords in (("g6", prompts, orders), ("pad_ladder", lad, lad_orders)):
+        if not P:
+            continue
+        v2 = ctx.model.raw_next_logprobs(P, add_special_tokens=False).astype(np.float32)
+        v1 = ctx.model.raw_next_logprobs(P, add_special_tokens=False, readout_version=1)
+        one = ctx.model.raw_next_logprobs(P, batch_size=1, add_special_tokens=False)
+        gen = ctx.model.generate(P, max_new_tokens=1, temperature=0.0, seed=SEED, find_anchor=False)
+        lens = [len(ctx.model.encode(x)) for x in P]
+        rows = []
+        for k, (order, g) in enumerate(zip(ords, gen)):
+            ids = [i for i in _option_ids(ctx, order, chat=True) if i >= 0]
+            first = g.logp_first.astype(np.float32)[ids]
+            rows.append({
+                "pad": max(lens) - lens[k],
+                "v2_vs_gen": float(np.max(np.abs(v2[k][ids] - first))),
+                "v1_vs_gen": float(np.max(np.abs(v1[k].astype(np.float32)[ids] - first))),
+                "unpadded_vs_gen": float(np.max(np.abs(one[k].astype(np.float32)[ids] - first))),
+            })
+        rec["batches"][name] = rows
+        worst = max([worst] + [r["v2_vs_gen"] for r in rows])
+    rec["max_abs_nats"] = worst  # the gate: the current readout (version 2) vs generation
+    rec["max_abs_nats_v1"] = max(r["v1_vs_gen"] for b in rec["batches"].values() for r in b)
     ctx.out.mkdir(parents=True, exist_ok=True)
-    rec = {"max_abs_nats": worst, "n": len(prompts)}
     (ctx.out / "forward_matches_generate.json").write_text(json.dumps(rec))
     if not ctx.dry and worst > 0.05:
         raise RuntimeError(
             f"forward-pass readout differs from generation's first step by {worst:.3f} nats"
         )
+
+
+def _pad_ladder(ctx: Ctx, scenarios: list[Scenario], step: int = 10, top: int = 70):
+    """Agent prompts whose lengths sit about 0, 10, ..., 70 tokens below the longest candidate,
+    so one batch of them carries pads across the panel's range; at most one per target."""
+    from deepsteer.kdg.schema import render_agent_user_message as _agent
+
+    cand = []
+    for s in scenarios:
+        order = assign_letters(s, 0)
+        p = ctx.model.render_chat([{"role": "user", "content": _agent(s, order)}])
+        cand.append((len(ctx.model.encode(p)), p, order))
+    if not cand:
+        return [], []
+    longest = max(c[0] for c in cand)
+    picked, used = [], set()
+    for t in range(0, top + 1, step):
+        best = min((c for c in cand if id(c) not in used), key=lambda c: abs(longest - t - c[0]),
+                   default=None)
+        if best is not None:
+            used.add(id(best))
+            picked.append(best)
+    return [c[1] for c in picked], [c[2] for c in picked]
 
 
 # unit registry: name -> (kinds it runs on, callable(ctx, scenarios))

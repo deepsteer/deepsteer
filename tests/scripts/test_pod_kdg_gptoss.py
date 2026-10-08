@@ -351,3 +351,50 @@ def test_left_padded_bf16_readout_equals_the_unpadded_one(tok):
     alone, ra = read(m, P, pre, 1)
     np.testing.assert_array_equal(batched[:, 32:37], alone[:, 32:37])
     np.testing.assert_array_equal(rb, ra)
+
+
+class TestGA8:
+    @staticmethod
+    def _g(padded_ok: bool, unpadded: float, other_ok: bool = True) -> dict:
+        return {"checks": {"forward_matches_generate": {"ok": padded_ok},
+                           "dequant_bf16": {"ok": other_ok}},
+                "unpadded_worst": {"primary": unpadded, "direct_final": unpadded / 2}}
+
+    def test_branch_order_follows_the_registration(self):
+        # most probable failure: a padded miss with a clean unpadded read bails (or proceeds on the
+        # padded path) instead of switching to length-bucketed batching
+        assert pod.g8_branch(self._g(True, 0.9), dry=False) == "proceed"
+        assert pod.g8_branch(self._g(False, 0.01), dry=False) == "bucketed"
+        assert pod.g8_branch(self._g(False, 0.2), dry=False) == "bail_unpadded"
+        assert pod.g8_branch(self._g(False, 0.01, other_ok=False), dry=False) == "bail_other"
+
+    def test_bucketed_readout_is_unpadded_and_in_input_order(self, tok):
+        # most probable failure: bucketing regroups rows and returns them in bucket order, so
+        # every row's log-probs and residuals land on another scenario
+        import types
+
+        import torch
+        from transformers import GptOssConfig, GptOssForCausalLM
+
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        tok.padding_side = "left"
+        S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+        P = [kh.render(tok, lib.letter_chat_messages(s, assign_letters(s, i % 2), "agent",
+                                                     "neutral"), CFG, "medium")
+             for i, s in enumerate(S[:6] + S[:6])]
+        cfg = GptOssConfig(num_hidden_layers=2, hidden_size=64, intermediate_size=64,
+                           num_local_experts=4, num_experts_per_tok=2, num_attention_heads=4,
+                           num_key_value_heads=2, head_dim=16, vocab_size=len(tok),
+                           sliding_window=128, layer_types=["sliding_attention", "full_attention"])
+        torch.manual_seed(0)
+        m = types.SimpleNamespace(tok=tok, model=GptOssForCausalLM(cfg).to(torch.bfloat16).eval(),
+                                  device=torch.device("cpu"), torch=torch, bucket_by_length=True)
+        read = lib.ModelWrapper.next_logprobs_and_residuals
+        pre = [CFG.prefill_primary] * len(P)
+        lb, rb = read(m, P, pre, 16)
+        m.bucket_by_length = False
+        la, ra = read(m, P, pre, 1)
+        np.testing.assert_array_equal(lb, la)
+        np.testing.assert_array_equal(rb, ra)

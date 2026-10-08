@@ -71,8 +71,20 @@ def option_cell(dirs: list[Path], cell: str, status: dict) -> dict[str, dict]:
     return {s: {k: float(np.mean(v)) for k, v in a.items()} for s, a in acc.items()}
 
 
+def readout_versions(dirs: list[Path], cell: str) -> set[int]:
+    """Forward-readout versions in a cell's rows (no field = 1, the cells of record; KDG-A20)."""
+    return {int(r.get("readout_version", 1)) for d in dirs for r in _rows(d / f"{cell}.jsonl")}
+
+
 def four_cells(dirs: list[Path], names: tuple[str, str, str, str], status: dict) -> dict:
-    """names = (D, J, D_twin, J_twin) cell names -> per-scenario merged record."""
+    """names = (D, J, D_twin, J_twin) cell names -> per-scenario merged record.
+
+    Refuses to combine cells read with different forward-readout versions (ANOMALIES KDG-A20):
+    version 1 reads left-padded rows at shifted positions, version 2 does not, so an E built
+    across the two would carry the readout difference."""
+    vers = set().union(*(readout_versions(dirs, n) for n in names))
+    if len(vers) > 1:
+        raise ValueError(f"cells {names} mix readout versions {sorted(vers)} (KDG-A20)")
     D, J, Dn, Jn = (option_cell(dirs, n, status) for n in names)
     out = {}
     for sid in D:

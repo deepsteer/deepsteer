@@ -73,6 +73,7 @@ class HarmonyStub:
         self.repo, self.harmony = repo, cfg
         self.reasoning_level = cfg.reasoning_level
         self.letter_prefill = cfg.prefill_primary
+        self.bucket_by_length = False
         self.rng = np.random.default_rng(0)
         self.vocab = len(self.tok)
         self.chat_template_sha = sha256_text(self.tok.chat_template)
@@ -167,7 +168,7 @@ def gates(model, spec: dict, cfg: kh.HarmonyConfig, scenarios, dry: bool) -> dic
     # forward == generate on both prefilled final channels. Per-prompt diagnostics ride along so a
     # failure is diagnosable from the saved record (KDG-A20): the padded batched forward, the same
     # prompts one at a time (no padding), and each prompt's pad count. The gate itself is unchanged.
-    worst, diag = {}, {}
+    worst, diag, unpadded = {}, {}, {}
     for name in ("primary", "direct_final"):
         P, opt = [], []
         for sc in scenarios[:8]:
@@ -189,8 +190,11 @@ def gates(model, spec: dict, cfg: kh.HarmonyConfig, scenarios, dry: bool) -> dic
                          "unpadded_vs_gen": float(np.abs(u - gg).max()),
                          "fwd_vs_unpadded": float(np.abs(f - u).max())})
         worst[name] = max((r["fwd_vs_gen"] for r in rows), default=0.0)
+        unpadded[name] = max((r["unpadded_vs_gen"] for r in rows), default=0.0)
         diag[name] = rows
     rec["forward_generate_per_prompt"] = diag
+    rec["unpadded_worst"] = unpadded
+    rec["bucket_by_length"] = bool(getattr(model, "bucket_by_length", False))
     check("forward_matches_generate", dry or max(worst.values()) <= MAX_NATS, worst)
     rec["ok"] = all(c["ok"] for c in rec["checks"].values())
     return rec
@@ -268,6 +272,20 @@ def needs_t1(c0_rep: dict) -> bool:
     and C0 is not descriptive. Computed on the pod from the saved C0 cells by the committed
     analysis function, so the trigger cannot drift from the verdict rule."""
     return bool(c0_rep["primary"]["near_miss"] and not c0_rep["descriptive"])
+
+
+def g8_branch(g: dict, dry: bool) -> str:
+    """KDG_GPTOSS_SPEC G-A8, in order: padded passes -> proceed; padded misses and unpadded passes
+    -> bucketed (re-gate on the bucketed path); unpadded misses -> bail. Only the forward-vs-
+    generate check selects a branch; any other failed check is a G-A4 bail regardless."""
+    if dry:
+        return "proceed"
+    others_ok = all(c["ok"] for k, c in g["checks"].items() if k != "forward_matches_generate")
+    if g["checks"]["forward_matches_generate"]["ok"]:
+        return "proceed" if others_ok else "bail_other"
+    if max(g["unpadded_worst"].values()) <= MAX_NATS and others_ok:
+        return "bucketed"
+    return "bail_unpadded" if others_ok else "bail_other"
 
 
 def gpu_class(name: str) -> str:
@@ -361,11 +379,18 @@ def main() -> int:
     try:
         g = gates(model, spec, hcfg, scenarios, a.dry_run)
         g["load_seconds"] = t_load
+        branch = g8_branch(g, a.dry_run)
+        g["g_a8_branch"] = branch
+        if branch == "bucketed":  # G-A8 branch 2: re-gate on the bucketed path before any cell
+            model.bucket_by_length = True
+            g2 = gates(model, spec, hcfg, scenarios, a.dry_run)
+            g["bucketed_regate"] = g2
+            g["ok"] = g2["ok"]
         manifest.data["gptoss"]["gates"] = g
         manifest.write()
         print(json.dumps(g, indent=1, default=str), flush=True)
-        if not g["ok"]:
-            print(">> BAIL (G-A4): a gate failed; no cells run.", flush=True)
+        if branch == "bail_unpadded" or not g["ok"]:
+            print(f">> BAIL (G-A4/G-A8, {branch}): a gate failed; no cells run.", flush=True)
             return 2
         ctx = Ctx(KEY, "instruct", model, a.out / KEY, manifest, a.dry_run,
                   n_raw_perm=cfg_all["readout"]["raw_permutations"],

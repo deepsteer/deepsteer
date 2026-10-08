@@ -1,0 +1,229 @@
+{
+ "rule": "ANOMALIES KDG-A20 pre-registration (3db23c8)",
+ "batch": 16,
+ "n_boot": 10000,
+ "seed": 0,
+ "models": {
+  "olmo3_final": {
+   "rows": 20224,
+   "sha_verified_rows": 20224,
+   "pad_primary": {
+    "mean": 6.424841772151899,
+    "median": 0.0,
+    "p90": 21.0,
+    "max": 64.0
+   },
+   "pad_twin": {
+    "mean": 6.606803797468355,
+    "median": 0.0,
+    "p90": 22.0,
+    "max": 66.0
+   },
+   "share_rows_pad0": 0.5130537974683544,
+   "batch_max_pad": {
+    "mean": 13.031645569620252,
+    "median": 10.0,
+    "p90": 27.0,
+    "max": 66.0,
+    "q25": 5.0,
+    "q75": 19.0,
+    "n_batches": 1264
+   },
+   "validate_batches": [
+    {
+     "run": "p1a",
+     "n": 8,
+     "max_pad": 28,
+     "pads": [
+      8,
+      10,
+      6,
+      7,
+      0,
+      1,
+      19,
+      28
+     ],
+     "max_abs_nats": 0.03125,
+     "n_recorded": 8
+    },
+    {
+     "run": "p2b",
+     "n": 10,
+     "max_pad": 2104,
+     "pads": [
+      2089,
+      2091,
+      2104,
+      2095,
+      2093,
+      2060,
+      2097,
+      2062,
+      1851,
+      0
+     ],
+     "max_abs_nats": 0.046875,
+     "n_recorded": 10
+    }
+   ],
+   "validate_max_pad": 2104,
+   "rows_above_validate_max_pad": 0,
+   "n_model_free": 586,
+   "dpad_mean": -0.010238907849829351,
+   "dpad_ci95": [
+    -0.07337883959044368,
+    0.05460750853242321
+   ],
+   "corr_E_dpad": 0.0019133785595033567,
+   "corr_ci95": [
+    -0.06571428270952756,
+    0.06552795012380051
+   ],
+   "verdict": "bounded_no_aligned_channel"
+  },
+  "llama31_instruct_meta": {
+   "rows": 20224,
+   "sha_verified_rows": 20224,
+   "pad_primary": {
+    "mean": 6.4280063291139244,
+    "median": 0.0,
+    "p90": 21.0,
+    "max": 64.0
+   },
+   "pad_twin": {
+    "mean": 6.606803797468355,
+    "median": 0.0,
+    "p90": 21.0,
+    "max": 66.0
+   },
+   "share_rows_pad0": 0.5126582278481012,
+   "batch_max_pad": {
+    "mean": 13.034810126582279,
+    "median": 10.0,
+    "p90": 27.0,
+    "max": 66.0,
+    "q25": 5.0,
+    "q75": 19.0,
+    "n_batches": 1264
+   },
+   "validate_batches": [
+    {
+     "run": "p2b",
+     "n": 10,
+     "max_pad": 2106,
+     "pads": [
+      2089,
+      2098,
+      2102,
+      2106,
+      2095,
+      2066,
+      2106,
+      2091,
+      1851,
+      0
+     ],
+     "max_abs_nats": 0.03125,
+     "n_recorded": 10
+    }
+   ],
+   "validate_max_pad": 2106,
+   "rows_above_validate_max_pad": 0,
+   "n_model_free": 586,
+   "dpad_mean": -0.010238907849829351,
+   "dpad_ci95": [
+    -0.07508532423208192,
+    0.05460750853242321
+   ],
+   "corr_E_dpad": -0.04111349696683499,
+   "corr_ci95": [
+    -0.12172496551275279,
+    0.0373822722852048
+   ],
+   "verdict": "bounded_no_aligned_channel"
+  },
+  "tulu3_final": {
+   "rows": 20224,
+   "sha_verified_rows": 20224,
+   "pad_primary": {
+    "mean": 6.4280063291139244,
+    "median": 0.0,
+    "p90": 21.0,
+    "max": 64.0
+   },
+   "pad_twin": {
+    "mean": 6.606803797468355,
+    "median": 0.0,
+    "p90": 21.0,
+    "max": 66.0
+   },
+   "share_rows_pad0": 0.5126582278481012,
+   "batch_max_pad": {
+    "mean": 13.034810126582279,
+    "median": 10.0,
+    "p90": 27.0,
+    "max": 66.0,
+    "q25": 5.0,
+    "q75": 19.0,
+    "n_batches": 1264
+   },
+   "validate_batches": [],
+   "validate_max_pad": null,
+   "rows_above_validate_max_pad": null,
+   "n_model_free": 586,
+   "dpad_mean": -0.010238907849829351,
+   "dpad_ci95": [
+    -0.07508532423208192,
+    0.05460750853242321
+   ],
+   "corr_E_dpad": 0.010971169863340848,
+   "corr_ci95": [
+    -0.06935440319643801,
+    0.08908311749025961
+   ],
+   "verdict": "bound_does_not_transfer"
+  },
+  "qwen25_instruct": {
+   "rows": 20224,
+   "sha_verified_rows": 20224,
+   "pad_primary": {
+    "mean": 7.11629746835443,
+    "median": 0.0,
+    "p90": 23.0,
+    "max": 70.0
+   },
+   "pad_twin": {
+    "mean": 7.11629746835443,
+    "median": 0.0,
+    "p90": 23.0,
+    "max": 71.0
+   },
+   "share_rows_pad0": 0.5106803797468354,
+   "batch_max_pad": {
+    "mean": 14.23259493670886,
+    "median": 11.0,
+    "p90": 30.0,
+    "max": 71.0,
+    "q25": 5.0,
+    "q75": 21.0,
+    "n_batches": 1264
+   },
+   "validate_batches": [],
+   "validate_max_pad": null,
+   "rows_above_validate_max_pad": null,
+   "n_model_free": 586,
+   "dpad_mean": 0.0034129692832764505,
+   "dpad_ci95": [
+    -0.06313993174061433,
+    0.06996587030716724
+   ],
+   "corr_E_dpad": 0.046729103649284225,
+   "corr_ci95": [
+    -0.011256443383809607,
+    0.10836007727125094
+   ],
+   "verdict": "bound_does_not_transfer"
+  }
+ }
+}
