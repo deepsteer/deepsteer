@@ -846,3 +846,13 @@ Referee pass. (1) *"0.094 is one prompt; the bound is an extremum over 16."* Yes
      thesis-level.
    - **unresolved**: the CI includes 0 but extends past ±0.005. v2 prints both values, with the
      re-read as the number of record.
+
+## KDG-A21 (ledger) — GPT-OSS-20B's forced readout depends on its batch-mates: up to 0.49 nats between a prompt read alone and the same prompt read in a batch, with forward = generate exact
+
+**Date.** 2026-10-07 (p2c VALIDATE pod rurugzdsg3g0s4; `outputs/p2c/validate/manifest_kdg.json`, gate record `forward_generate_per_prompt`).
+**Observation.** With mask-derived positions (KDG-A20 fix) the batched forward equals batched generation exactly (0.0 nats on all 16 gate prompts, both prefills), so G-A8 branch 1 (proceed) applies. The same prompts read one at a time differ from their batched reads by 0.07–0.29 nats (primary prefill) and 0.15–0.49 (direct-final), including the unpadded row of the batch (0.29 / 0.19). Not padding: the pad-0 row moves as much as padded rows. Dense panel models in fp16 show 0.03–0.06 on the same comparison (KDG-A20 p2d).
+**Type.** instrument property (readout variance from batch composition) on the one bf16 MoE model; generation has it too, so it is not a forward-vs-generate defect.
+**Competing readings.** R_a: bf16 rounding that depends on batch shape flips some top-4 expert choices, giving zero-mean per-row noise that inflates E's variance (and so the realized MDE) without biasing it. R_b: batch composition shifts the readout systematically (for example through padding-dependent attention-sink behaviour in the sliding-window layers), and since primary and twin cells are batched separately, E can carry a component that is batching, not pressure.
+**Discriminator.** KDG_GPTOSS_SPEC G-A9 (pushed f436d34 before the real run): the four C3 cells re-read on the 64-scenario C0 sample in a seeded shuffled row order. R_a predicts a mean ΔE whose CI includes 0; R_b predicts it excludes 0. The batch share of var(E_s) sizes the cost under R_a. About +2.5 min on the real run.
+**Status.** scheduled (runs inside the p2c real run).
+**Thesis impact.** R_a: GPT-OSS's E is stated with its realized MDE and, if the share exceeds 0.5, with the batch share named beside it. R_b: escalation before any GPT-OSS gap sentence (G-A9 item 3); the readout would need batch-invariant reading (one prompt per pass, about 4–8× the forward cost) before a verdict.
