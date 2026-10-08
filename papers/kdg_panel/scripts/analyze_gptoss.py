@@ -147,6 +147,37 @@ def decision_pr(d: Path, index: int = PR_INDEX) -> dict:
     return rec
 
 
+def batch_invariance(d: Path, status: dict) -> dict | None:
+    """G-A9 (descriptive): the C3 cells re-read on the C0 sample with different batch-mates.
+    Per-row |Δ log p| on the option tokens; per-scenario E from both reads; the mean ΔE with a
+    bootstrap CI (a CI excluding 0 means batch composition shifts E, not only its noise); the
+    share of var(E_s) attributable to batch composition, var(ΔE_s) / 2 / var(E_s)."""
+    names = tuple(f"{c}_reshuffled" for c in OS.CHAT)
+    if not (d / f"{names[0]}.jsonl").exists():
+        return None
+    dlp = []
+    for c in OS.CHAT:
+        a = {(r["scenario_id"], r["seed"]): r["option_logps"] for r in A._rows(d / f"{c}.jsonl")}
+        for r in A._rows(d / f"{c}_reshuffled.jsonl"):
+            o = a[(r["scenario_id"], r["seed"])]
+            dlp.append(max(abs(o[L] - r["option_logps"][L]) for L in o))
+    T1 = A.four_cells([d], OS.CHAT, status)
+    T2 = A.four_cells([d], names, status)
+    ids = sorted(s for s in T2 if s in T1 and min(T1[s]["mass_min"], T2[s]["mass_min"]) >= A.FLOOR)
+    e1 = np.array([A.scales(T1[s])["E_prob"] for s in ids])
+    e2 = np.array([A.scales(T2[s])["E_prob"] for s in ids])
+    dE = e2 - e1
+    v = float(np.var(e1, ddof=1)) if len(ids) > 1 else float("nan")
+    return {
+        "n_rows": len(dlp), "n_scenarios": len(ids),
+        "row_abs_dlogp": {"median": float(np.median(dlp)), "p90": float(np.percentile(dlp, 90)),
+                          "max": float(np.max(dlp))},
+        "dE": A.boot(dE),
+        "sd_dE": float(np.std(dE, ddof=1)) if len(ids) > 1 else None,
+        "batch_share_of_var_E": float(np.var(dE, ddof=1) / 2 / v) if v and v > 0 else None,
+    }
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", type=Path, default=DEFAULT_DIR)
@@ -209,6 +240,7 @@ def main(argv=None) -> int:
     }
 
     rep["decision_token_pr"] = decision_pr(d, a.pr_index)
+    rep["batch_invariance"] = batch_invariance(d, status)
 
     c0p = rep["c0"]["primary"]
     if not c0p["pass"] and not rep["c0"]["descriptive"]:

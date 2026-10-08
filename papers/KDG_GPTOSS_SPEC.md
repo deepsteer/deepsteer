@@ -254,3 +254,25 @@ this order:
    padding, so no GPT-OSS number is produced on this harness.
 The per-prompt record (pad count, padded vs generate, unpadded vs generate, padded vs unpadded) is
 saved in every case.
+
+**G-A9. Batch-invariance arm (author, 2026-10-07; pushed before the real run, after VALIDATE pod
+rurugzdsg3g0s4's gate).** The rerun gate passed (forward = generate, 0.0 on every prompt; G-A8
+branch 1, proceed), but a GPT-OSS row's readout depends on its batch-mates: the same prompt read
+alone differs from its batched read by up to 0.29 nats (primary prefill) and 0.49 (direct-final),
+including a row with no padding (0.29). Generation shares this, so the gate cannot see it; on the
+dense panel models in fp16 the same spread was 0.03–0.06 (KDG-A20). G-A8's proceed stands; this arm
+measures what the dependence does to E.
+1. *Cells.* The four C3 cells (`dl/jl_chat_neutral` and `_pressure_removed`) on the 64-scenario C0
+   sample, 8 permutations, readout version 2, read in a seeded random row order
+   (`numpy.random.default_rng(1).permutation`) so each row gets different batch-mates, then
+   restored to file order; saved as `<cell>_reshuffled` with `row_order_seed` on every row.
+   About +4 min.
+2. *Quantities (descriptive, `analyze_gptoss.batch_invariance`).* Per-row |Δ log p| on the option
+   tokens (median, p90, max); per-scenario E from the original and reshuffled reads on scenarios
+   engaged in both; mean ΔE with a 10,000-draw bootstrap CI (seed 0); the share of the per-scenario
+   variance of E attributable to batch composition, var(ΔE_s) / 2 / var(E_s).
+3. *Reading, fixed now.* A mean-ΔE CI that excludes 0 means batch composition shifts E, not only
+   its noise; that is an anomaly entry and an escalation before any GPT-OSS gap sentence. A share
+   above 0.5 means batch composition dominates GPT-OSS's per-scenario E variance, and every GPT-OSS
+   E statement names it beside the realized MDE. Otherwise the arm is reported as a bound on the
+   readout's batch dependence. No C0–C3 rule changes.

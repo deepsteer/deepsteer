@@ -398,3 +398,56 @@ class TestGA8:
         la, ra = read(m, P, pre, 1)
         np.testing.assert_array_equal(lb, la)
         np.testing.assert_array_equal(rb, ra)
+
+
+def test_reshuffled_rows_are_restored_to_file_order(tmp_path):
+    # G-A9. most probable failure: rows read in the shuffled order are saved unpermuted, so each
+    # row's log-probs land on another scenario and the arm reports a spurious batch effect
+    import hashlib
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    class Fake(lib.StubModel):
+        def raw_next_logprobs(self, prompts, batch_size=16, add_special_tokens=True,
+                              readout_version=2):
+            out = []
+            for p in prompts:  # a pure function of the prompt: batch-invariant by construction
+                seed = int(hashlib.sha256(p.encode()).hexdigest()[:8], 16)
+                out.append(np.log(np.random.default_rng(seed).dirichlet(np.ones(self.vocab))))
+            return np.array(out, dtype=np.float16)
+
+    S, metas = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+    S = S[:5]
+    ctx = lib.Ctx("k", "instruct", Fake(), tmp_path, lib.Manifest(tmp_path, True, metas), False,
+                  n_raw_perm=8)
+    lib.cell_letter_chat(ctx, S, frame="agent", prefix="neutral")
+    lib.cell_letter_chat(ctx, S, frame="agent", prefix="neutral", cell_suffix="_reshuffled",
+                         row_order_seed=1)
+    a = np.load(tmp_path / "dl_chat_neutral.npz")["logp_decision"]
+    b = np.load(tmp_path / "dl_chat_neutral_reshuffled.npz")["logp_decision"]
+    np.testing.assert_array_equal(a, b)
+    rows = [json.loads(x) for x in (tmp_path / "dl_chat_neutral_reshuffled.jsonl")
+            .read_text().splitlines()]
+    assert {r["row_order_seed"] for r in rows} == {1}
+
+
+def test_dry_run_batch_invariance_arm_reaches_the_analysis(tok, tmp_path, monkeypatch):
+    # most probable failure: the arm runs but the analysis never reads it (cell-name mismatch)
+    rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                         "--batch-invariance", "--out", str(tmp_path)],
+                        capture_output=True, text=True, cwd=REPO)
+    assert rc.returncode == 0, rc.stderr[-2000:]
+    an = _load("analyze_gptoss")
+    monkeypatch.setattr(an.A, "FLOOR", 0.0)
+    out = tmp_path / "a.json"
+    an.main(["--dir", str(tmp_path / "gpt_oss_20b"), "--out", str(out), "--pr-index", "1"])
+    bi = json.loads(out.read_text())["batch_invariance"]
+    assert bi is not None and bi["n_rows"] > 0
+
+
+def test_p2c_real_run_enables_the_g_a9_arm():
+    # most probable failure: G-A9 is pushed but the launcher never passes the flag
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    real = [ln for ln in sh.splitlines() if "--require-timing" in ln and "python $G" in ln]
+    assert real and all("--batch-invariance" in ln for ln in real)

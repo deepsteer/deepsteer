@@ -58,6 +58,13 @@ LETTER_UNITS = (
     "dl_chat_known_gap",
 )
 N_C0 = 64
+# G-A9 batch-invariance arm: the four C3 cells re-read on the C0 sample in a seeded random row
+# order, so every row gets different batch-mates; saved as <cell>_reshuffled
+BATCH_INV_CELLS = (
+    ("agent", "primary"), ("eval", "primary"),
+    ("agent", "pressure_removed"), ("eval", "pressure_removed"),
+)
+BATCH_INV_SEED = 1
 MAX_NATS = 0.05
 OPTION_LETTERS = "ABCDE"
 
@@ -315,6 +322,22 @@ def check_timing_record(path: Path, dry: bool) -> str | None:
     return None
 
 
+def run_batch_invariance(ctx: Ctx, scenarios) -> float:
+    """G-A9: the C3 cells on the C0 sample, rows read in a seeded shuffled order."""
+    from kdg_pod_lib import cell_letter_chat
+
+    t0 = time.time()
+    S = c0_scenarios(scenarios)
+    for frame, variant in BATCH_INV_CELLS:
+        cell_letter_chat(ctx, S, frame=frame, prefix="neutral", variant=variant,
+                         cell_suffix="_reshuffled", row_order_seed=BATCH_INV_SEED)
+    dt = time.time() - t0
+    ctx.manifest.status(f"{KEY}/batch_invariance", "ok", f"{dt:.1f}s")
+    ctx.manifest.write()
+    print(f">> batch invariance (G-A9): {dt:.1f}s", flush=True)
+    return dt
+
+
 def run_letter_units(ctx: Ctx, scenarios, units=LETTER_UNITS) -> dict[str, float]:
     t = {}
     for u in units:
@@ -342,6 +365,8 @@ def main() -> int:
                     help="real run: VALIDATE's timing.json; refuse (exit 4) if missing, stopped, "
                          "or measured on another GPU class")
     ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
+    ap.add_argument("--batch-invariance", action="store_true",
+                    help="G-A9 arm: re-read the C3 cells on the C0 sample in a shuffled row order")
     a = ap.parse_args()
 
     cfg_all, reg = registry()
@@ -415,6 +440,8 @@ def main() -> int:
             # five letter units at the timed unit's size (known_gap is smaller: conservative)
             # plus C0's two forced readouts, 64 x 8 rows each, in units of one letter unit
             c0_forced = 2 * N_C0 / len(scenarios)
+            if a.batch_invariance:  # G-A9: four C3 cells on the 64-scenario sample
+                c0_forced += 4 * N_C0 / len(scenarios)
             # C0 generation counted twice: the G-A7 T=1.0 batch may be triggered (worst case)
             hours = kh.project_hours(t_unit, len(LETTER_UNITS) + c0_forced, t_batch,
                                      2 * n_batches, t_load)
@@ -452,6 +479,8 @@ def main() -> int:
             manifest.status(f"{KEY}/c0_t1", "ok", f"{time.time() - t0:.1f}s")
             manifest.write()
         run_letter_units(ctx, scenarios)
+        if a.batch_invariance:
+            run_batch_invariance(ctx, scenarios)
     finally:
         model.release()
     print(f"manifest: {manifest.write()}")

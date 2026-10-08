@@ -97,7 +97,7 @@ if [ "$PROFILE" = "p2c" ]; then
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
   if [ "$VALIDATE" = "1" ]; then
-    python $G --validate --out "$OUT/validate"; rc=$?
+    python $G --validate --batch-invariance --out "$OUT/validate"; rc=$?
     case $rc in
       0) echo ">> VALIDATE OK (gates + timing). Launch without VALIDATE for the real run.";;
       2) echo ">> BAIL: a G-A4 gate failed (see $OUT/validate/manifest_kdg.json). No launch.";;
@@ -107,7 +107,7 @@ if [ "$PROFILE" = "p2c" ]; then
     exit $rc
   fi
   echo "==================== p2c/gpt_oss_20b ===================="
-  python $G --out "$OUT/gpt_oss_20b" --require-timing "$OUT/validate/timing.json"; rc=$?
+  python $G --out "$OUT/gpt_oss_20b" --require-timing "$OUT/validate/timing.json" --batch-invariance; rc=$?
   [ $rc -eq 4 ] && echo ">> REFUSED: no matching VALIDATE timing record (see log above)."
   python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/gpt_oss_20b" \
     || echo "WARN: manifest verify reported mismatches"

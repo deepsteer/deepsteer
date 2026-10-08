@@ -843,9 +843,13 @@ def _letter_cell(
     build,
     row_extra: dict,
     template_version: str = PHASE1_TEMPLATE_VERSION,
+    row_order_seed: int | None = None,
 ) -> None:
     """Shared letter-only readout: one forward pass per option permutation, next-token log-probs
-    at the first assistant token; full vector, option ids and mass, rendered-prompt sha saved."""
+    at the first assistant token; full vector, option ids and mass, rendered-prompt sha saved.
+
+    ``row_order_seed`` reads the rows in a seeded random order (so each row gets different
+    batch-mates) and restores file order before saving: the batch-invariance arm (G-A9)."""
     nperm = ctx.n(ctx.n_raw_perm)
     prompts, orders_all, scen_all = [], [], []
     for s in scenarios:
@@ -855,14 +859,18 @@ def _letter_cell(
             orders_all.append(order)
             scen_all.append(s)
     prefill = ctx.model.letter_prefill
+    perm = np.arange(len(prompts))
+    if row_order_seed is not None:
+        perm = np.random.default_rng(row_order_seed).permutation(len(prompts))
+    inv = np.argsort(perm)
+    read = [prompts[k] for k in perm]
     extra: dict[str, np.ndarray] = {}
     if ctx.save_residuals:
-        logp, extra["resid_decision"] = ctx.model.next_logprobs_and_residuals(
-            prompts, [prefill] * len(prompts)
-        )
+        logp, resid = ctx.model.next_logprobs_and_residuals(read, [prefill] * len(read))
+        logp, extra["resid_decision"] = logp[inv], resid[inv]
     else:
         assert not prefill, "a prefilled readout goes through next_logprobs_and_residuals"
-        logp = ctx.model.raw_next_logprobs(prompts, add_special_tokens=False)
+        logp = ctx.model.raw_next_logprobs(read, add_special_tokens=False)[inv]
     rows, opt_ids = [], []
     for k, (s, order, p) in enumerate(zip(scen_all, orders_all, prompts)):
         ids = _option_ids(ctx, order, chat=True)
@@ -897,6 +905,7 @@ def _letter_cell(
                 "readout_version": KDG_READOUT_VERSION,
                 "template_version": template_version,
                 "chat_template_sha256": ctx.model.chat_template_sha,
+                "row_order_seed": row_order_seed,
                 **ctx.row_fields,
                 **row_extra,
             }
@@ -920,6 +929,8 @@ def cell_letter_chat(
     frame: str,
     prefix: str,
     variant: str = "primary",
+    cell_suffix: str = "",
+    row_order_seed: int | None = None,
 ) -> None:
     """Phase 1 C1 / C3-secondary readout: letter-only J or D under the chat template, one forward
     pass per option permutation (no sampling), next-token log-probs at the first assistant token.
@@ -943,12 +954,13 @@ def cell_letter_chat(
     _letter_cell(
         ctx,
         scenarios,
-        cell,
+        cell + cell_suffix,
         lambda s, order: letter_chat_messages(s, order, frame, prefix, variant),
         {"variant": variant, "frame": frame, "prefix": prefix},
         PHASE2_TEMPLATE_VERSION
         if variant.startswith("pressure_removed_p")
         else PHASE1_TEMPLATE_VERSION,
+        row_order_seed,
     )
 
 
