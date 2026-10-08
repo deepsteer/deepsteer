@@ -375,6 +375,87 @@ class ModelWrapper:
         inv = np.argsort(order)
         return np.concatenate(lps, axis=0)[inv], np.stack(res)[inv]
 
+    # ---- dose-stated readout (KDG_GPTOSS_SPEC G-A15 / G-A16) ----------------------------------
+    def sample_ids(
+        self, rendered: list[str], *, max_new_tokens: int, temperature: float, seed: int,
+        batch_size: int = 32,
+    ) -> tuple[list[list[int]], list[int], list[float]]:
+        """Sampler v2 generation that keeps no per-step logits (long reasoning traces cannot):
+        returns the generated ids per prompt, the seed of each prompt's batch (batch b is seeded
+        ``seed + b``) and the seconds each batch took."""
+        torch = self.torch
+        ids_out, seeds, secs = [], [], []
+        for b, i in enumerate(range(0, len(rendered), batch_size)):
+            chunk = rendered[i : i + batch_size]
+            enc = self.tok(chunk, return_tensors="pt", padding=True, add_special_tokens=False).to(
+                self.device
+            )
+            torch.manual_seed(seed + b)
+            kw: dict[str, Any] = dict(max_new_tokens=max_new_tokens, do_sample=temperature > 0,
+                                      pad_token_id=self.tok.pad_token_id)
+            if temperature > 0:
+                kw.update(temperature=temperature, top_p=1.0, top_k=0, repetition_penalty=1.0)
+            t0 = time.time()
+            with torch.no_grad():
+                seq = self.model.generate(**enc, **kw)
+            secs.append(time.time() - t0)
+            plen = enc["input_ids"].shape[1]
+            for row in seq[:, plen:].cpu():
+                ids_out.append([int(t) for t in row if int(t) != self.tok.pad_token_id])
+            seeds += [seed + b] * len(chunk)
+        return ids_out, seeds, secs
+
+    def forward_readout(
+        self, id_lists: list[list[int]], positions: list[list[int]], batch_size: int = 8
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """One forward pass per token-id sequence (left-padded, mask-derived positions): the
+        next-token log-probs at the last position (full vocabulary, fp16) and the residual stream at
+        the given positions (indices into each unpadded sequence) at every layer, shaped
+        ``[n, n_positions, n_layers + 1, hidden]``. Logits are computed for the last position
+        only."""
+        torch = self.torch
+        pad = self.tok.pad_token_id
+        lps, res = [], []
+        for i in range(0, len(id_lists), batch_size):
+            chunk, pos = id_lists[i : i + batch_size], positions[i : i + batch_size]
+            L = max(len(x) for x in chunk)
+            ids = torch.full((len(chunk), L), pad, dtype=torch.long)
+            mask = torch.zeros((len(chunk), L), dtype=torch.long)
+            for b, x in enumerate(chunk):
+                ids[b, L - len(x) :] = torch.tensor(x)
+                mask[b, L - len(x) :] = 1
+            ids, mask = ids.to(self.device), mask.to(self.device)
+            with torch.no_grad():
+                out = self.model(input_ids=ids, attention_mask=mask,
+                                 position_ids=mask_positions(mask), output_hidden_states=True,
+                                 logits_to_keep=1)
+            lps.append(torch.log_softmax(out.logits[:, -1, :].float(), dim=-1).cpu().numpy()
+                       .astype(np.float16))
+            for b, (x, ps) in enumerate(zip(chunk, pos)):
+                off = L - len(x)
+                at = torch.stack([torch.stack([h[b, off + p, :] for h in out.hidden_states])
+                                  for p in ps])
+                res.append(at.float().cpu().numpy().astype(np.float16))
+        return np.concatenate(lps), np.stack(res)
+
+    def first_step_logp(self, id_lists: list[list[int]]) -> np.ndarray:
+        """VALIDATE at the post-reasoning position: generation's first-step log-probs (greedy, one
+        token) from the same token ids, for comparison with ``forward_readout``."""
+        torch = self.torch
+        pad = self.tok.pad_token_id
+        L = max(len(x) for x in id_lists)
+        ids = torch.full((len(id_lists), L), pad, dtype=torch.long)
+        mask = torch.zeros((len(id_lists), L), dtype=torch.long)
+        for b, x in enumerate(id_lists):
+            ids[b, L - len(x) :] = torch.tensor(x)
+            mask[b, L - len(x) :] = 1
+        with torch.no_grad():
+            out = self.model.generate(input_ids=ids.to(self.device),
+                                      attention_mask=mask.to(self.device), max_new_tokens=1,
+                                      do_sample=False, output_logits=True,
+                                      return_dict_in_generate=True, pad_token_id=pad)
+        return torch.log_softmax(out.logits[0].float(), dim=-1).cpu().numpy().astype(np.float16)
+
     def decode(self, ids: list[int]) -> str:
         return self.tok.decode(ids, skip_special_tokens=True)
 

@@ -190,3 +190,52 @@ def project_hours(unit_seconds: float, n_letter_units: float, c0_batch_seconds: 
                   c0_batches: int, load_seconds: float) -> float:
     """G-A4 timing projection for the whole run, in hours."""
     return (load_seconds + unit_seconds * n_letter_units + c0_batch_seconds * c0_batches) / 3600.0
+
+
+# ---- dose-stated readout (KDG_GPTOSS_SPEC G-A15 / G-A16) -------------------------------------
+
+ANALYSIS_OPEN = (200005, 35644, 200008)  # <|channel|>analysis<|message|>
+# <|end|><|start|>assistant<|channel|>final<|message|>
+CANON_HEADER = (200007, 200006, 173781, 200005, 17196, 200008)
+DIRECT_FINAL = (200005, 17196, 200008)  # <|channel|>final<|message|>, no analysis turn
+END = 200007
+
+
+@dataclasses.dataclass(frozen=True)
+class DoseStated:
+    """One dose-stated rollout, read off its generated token ids.
+
+    ``status``: completed (the trace closed and a final channel followed) | truncated (no
+    ``<|end|>`` before the budget) | no_trace (the model answered without an analysis turn) | other
+    (anything else after the trace). ``token_identity``: the continuation after the trace is exactly
+    the canonical final header followed by an option letter. ``header_end``: index just past
+    ``<|message|>`` (the forward readout's input ends there). ``assistant_idx``: index of the
+    header's ``assistant`` token (the post-reasoning decision token)."""
+
+    status: str
+    token_identity: bool
+    trace_len: int
+    header_end: int | None
+    assistant_idx: int | None
+    letter_id: int | None
+
+
+def parse_dose_stated(gen: list[int], hit_budget: bool, letter_ids: set[int]) -> DoseStated:
+    g = list(gen)
+    if tuple(g[:3]) == DIRECT_FINAL:
+        return DoseStated("no_trace", False, 0, None, None, None)
+    if tuple(g[:3]) != ANALYSIS_OPEN:
+        return DoseStated("other", False, 0, None, None, None)
+    try:
+        e = g.index(END, 3)
+    except ValueError:
+        return DoseStated("truncated" if hit_budget else "other", False, len(g) - 3, None, None,
+                          None)
+    trace_len = e - 3
+    head = tuple(g[e : e + len(CANON_HEADER)])
+    if head != CANON_HEADER:
+        return DoseStated("other", False, trace_len, None, None, None)
+    end = e + len(CANON_HEADER)
+    letter = g[end] if end < len(g) else None
+    ok = letter is not None and letter in letter_ids
+    return DoseStated("completed", ok, trace_len, end, e + 2, letter if ok else None)

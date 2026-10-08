@@ -126,6 +126,32 @@ class HarmonyStub:
             outs.append(GenOut(self.tok.decode(ids), ids, lp[k], None, 0))
         return outs
 
+    # dose-stated stubs (G-A15/G-A16): synthetic harmony traces, every 7th truncated and every 11th
+    # closing into a commentary channel (non-identity), so the parser and gates are exercised
+    def sample_ids(self, rendered, *, max_new_tokens, temperature, seed, batch_size=32):
+        ids, seeds = [], []
+        body = self.tok.encode("Weighing the options.", add_special_tokens=False)
+        for n, _ in enumerate(rendered):
+            L = int(self.rng.choice([32, 33, 34]))
+            if n % 7 == 3:
+                g = list(kh.ANALYSIS_OPEN) + body * 200
+            elif n % 11 == 5:
+                g = list(kh.ANALYSIS_OPEN) + body + [200007, 200006, 173781, 200005]
+                g += self.tok.encode("commentary", add_special_tokens=False) + [200008, L]
+            else:
+                g = list(kh.ANALYSIS_OPEN) + body + list(kh.CANON_HEADER) + [L, 200002]
+            ids.append(g[:max_new_tokens])
+            seeds.append(seed + n // batch_size)
+        return ids, seeds, [0.01] * max(1, len(rendered) // batch_size)
+
+    def forward_readout(self, id_lists, positions, batch_size=8):
+        lp = self._lp(len(id_lists))
+        return lp, self.rng.standard_normal((len(id_lists), len(positions[0]), 3, 8)).astype(
+            np.float16)
+
+    def first_step_logp(self, id_lists):
+        return self._lp(len(id_lists))
+
     def release(self) -> None:
         pass
 
@@ -407,6 +433,8 @@ def main() -> int:
                     help="real run: VALIDATE's timing.json; refuse (exit 4) if missing, stopped, "
                          "or measured on another GPU class")
     ap.add_argument("--force-c0-t1", action="store_true", help="stub tests only (G-A7 path)")
+    ap.add_argument("--dose-stated-pilot", action="store_true",
+                    help="G-A15/G-A16: gates, then the dose-stated pilot only (sizing.json)")
     ap.add_argument("--c0-dm", action="store_true",
                     help="G-A11: gates, then the dose-matched C0 generation only; no other cell")
     ap.add_argument("--batch-invariance", action="store_true",
@@ -467,6 +495,24 @@ def main() -> int:
                   row_fields={"harmony_date_pin": hcfg.date_pin,
                               "harmony_reasoning_level": hcfg.reasoning_level,
                               "reasoning_trace": "none", "prefill": "primary"})
+        if a.dose_stated_pilot:
+            import kdg_dose_stated as kds
+
+            status = {s.id: {o.option_id: o.norm_status for o in s.options} for s in scenarios
+                      if not s.covariates.get("construction_flag") and not s.id.endswith("S")}
+            t0 = time.time()
+            pr = kds.run_pilot(model, hcfg, c0_scenarios(scenarios), status, a.out / KEY, t_load,
+                               a.dry_run)
+            manifest.data["gptoss"]["dose_stated_pilot"] = {
+                k: pr.get(k) for k in ("outcome", "stage_b_run", "completion_within_cap",
+                                       "main_cap", "identity_by_cell",
+                                       "validate_post_reasoning_max_nats")}
+            manifest.status(f"{KEY}/dose_stated_pilot", "ok", f"{time.time() - t0:.1f}s")
+            for f in ("ds_pilot.jsonl", "ds_pilot.npz", "sizing.json"):
+                manifest.add(a.out / KEY / f, "dose_stated_pilot", KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> dose-stated pilot outcome: {pr['outcome']}", flush=True)
+            return 0
         if a.c0_dm:
             t0 = time.time()
             run_c0_dose_matched(ctx, hcfg, scenarios)

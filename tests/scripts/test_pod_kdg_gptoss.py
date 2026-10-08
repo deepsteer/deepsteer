@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -316,7 +317,8 @@ def test_p2c_upgrades_torch_before_any_gptoss_call():
     # most probable failure (VALIDATE pod g85xxpdraotqfw, 2026-10-07): p2c loads GPT-OSS on the
     # image's torch 2.4, whose missing torch.accelerator crashes the mxfp4 quantizer at load
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    block = sh[sh.index('if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]; then'):]
+    head = 'if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]; then'
+    block = sh[sh.index(head):]
     up = block.index('"torch==2.6.0"')
     assert up < block.index("python -m pytest") < block.index("python $G")
     assert "FATAL: torch.accelerator missing" in block
@@ -508,3 +510,90 @@ def test_p2f_runs_c0dm_only():
     block = block[: block.index("exit $rc") + len("exit $rc")]
     assert 'python $G --c0-dm --out "$OUT/c0dm"' in block
     assert "--batch-invariance" not in block and "--require-timing" not in block
+
+
+class TestDoseStated:
+    L = {32, 33, 34, 35, 36}
+
+    def test_token_identity_parser(self):
+        # most probable failure: a trace that closes into a commentary channel, or a final header
+        # followed by text, is read as an admissible post-reasoning letter
+        body = [1000, 1001]
+        ok = kh.parse_dose_stated(list(kh.ANALYSIS_OPEN) + body + list(kh.CANON_HEADER) + [33],
+                                  False, self.L)
+        assert ok.status == "completed" and ok.token_identity and ok.letter_id == 33
+        assert ok.header_end == 3 + len(body) + len(kh.CANON_HEADER)
+        assert ok.assistant_idx == 3 + len(body) + 2  # the header's 'assistant' token
+        comm = list(kh.ANALYSIS_OPEN) + body + [200007, 200006, 173781, 200005, 999, 200008, 33]
+        assert not kh.parse_dose_stated(comm, False, self.L).token_identity
+        txt = list(kh.ANALYSIS_OPEN) + body + list(kh.CANON_HEADER) + [5000]
+        assert not kh.parse_dose_stated(txt, False, self.L).token_identity
+        trunc = kh.parse_dose_stated(list(kh.ANALYSIS_OPEN) + body, True, self.L)
+        assert trunc.status == "truncated"
+        direct = kh.parse_dose_stated(list(kh.DIRECT_FINAL) + [33], False, self.L)
+        assert direct.status == "no_trace"
+
+    def test_sizing_rule_order(self):
+        # G-A16. most probable failure: the k = 1 descriptive branch is taken while a confirmatory
+        # k within the envelope exists, or a run past 8 A100-h proceeds
+        kds = _load("kdg_dose_stated")
+        dec = {"sigma_b2": 0.116 ** 2, "sigma_w2": 0.02}
+        s = kds.size(dec, s_per_row=1.0, load_h=0.0)
+        assert s["decision"] == "confirmatory" and s["mde"] <= 0.015
+        assert all(kds.mde(dec, 586, k) > 0.015 for k in range(1, s["k"]))
+        assert kds.size({"sigma_b2": 0.2 ** 2, "sigma_w2": 0.02}, 1.0, 0.0)["decision"] == \
+            "descriptive_k1"
+        assert kds.size(dec, s_per_row=20.0, load_h=0.0)["decision"] == "stop_report"
+
+    def test_c0_kappa_star_per_trace(self):
+        # G-A16 item 3. most probable failure: kappa* is drawn from a pooled distribution instead
+        # of each trace's own, or non-identity traces count as matches
+        kds = _load("kdg_dose_stated")
+        rows = []
+        for sid in ("s1", "s2"):
+            for k in range(4):
+                rows.append({"scenario_id": sid, "cell": "dl_chat_neutral", "status": "completed",
+                             "token_identity": True, "option_id": "o1",
+                             "order": {"A": "o1", "B": "o2"},
+                             "option_logps": {"A": math.log(0.98), "B": math.log(0.02)}})
+        v = kds.c0_dose_stated(rows)
+        assert v["agreement"] == 1.0 and v["kappa_star"] > 0.99 and v["pass"]
+        for r in rows[:4]:
+            r["token_identity"] = False
+            r["option_id"] = None
+        v = kds.c0_dose_stated(rows)
+        assert v["agreement"] == 0.5 and abs(v["kappa_star"] - 0.5) < 0.01
+
+    def test_dry_pilot_is_reproducible_across_hash_seeds(self, tok, tmp_path):
+        # most probable failure: stage order derived from Python's salted str hash, so the
+        # shuffled batch composition differs between processes (the pilot is not reproducible)
+        outs = []
+        for hs in ("1", "2"):
+            env = {**__import__("os").environ, "PYTHONHASHSEED": hs}
+            rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                                 "--dose-stated-pilot", "--out", str(tmp_path / hs)],
+                                capture_output=True, text=True, cwd=REPO, env=env)
+            assert rc.returncode == 0, rc.stderr[-2000:]
+            rows = [json.loads(x) for x in
+                    (tmp_path / hs / "gpt_oss_20b" / "ds_pilot.jsonl").read_text().splitlines()]
+            outs.append([r["batch_seed"] for r in rows])
+            assert {r["harmony_reasoning_level"] for r in rows} == {"medium"}
+            assert {r["sampler_version"] for r in rows} == {2}
+            rec = json.loads((tmp_path / hs / "gpt_oss_20b" / "sizing.json").read_text())
+            assert {"outcome", "c0", "decomposition", "sizing", "identity_by_cell"} <= set(rec)
+            z = np.load(tmp_path / hs / "gpt_oss_20b" / "ds_pilot.npz")
+            assert len(z["readout_rows"]) == sum(r["token_identity"] for r in rows)
+        assert outs[0] == outs[1]
+
+
+def test_p2h_runs_the_pilot_only_after_the_torch_upgrade():
+    # most probable failure: p2h falls through to the p2c real run, or skips its dry run
+    sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+    block = sh[sh.index('if [ "$PROFILE" = "p2h" ]; then'):]
+    block = block[: block.index("exit $rc") + len("exit $rc")]
+    assert block.index("--dry-run --dose-stated-pilot") < block.index(
+        'python $G --dose-stated-pilot --out "$OUT/pilot"')
+    assert "--batch-invariance" not in block and "--c0-dm" not in block
+    head = 'if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]'
+    outer = sh[sh.index(head):]
+    assert outer.index('"torch==2.6.0"') < outer.index('if [ "$PROFILE" = "p2h" ]; then')

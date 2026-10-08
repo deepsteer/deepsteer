@@ -30,6 +30,14 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2h  GPT-OSS-20B dose-stated pilot (KDG_GPTOSS_SPEC G-A15 + G-A16): the p2c gates,
+#                    then stage A (4 C3 cells x 64 x 1 permutation at medium, cap 4,096), stage B
+#                    within the 1.0 A100-h pilot envelope, forward readout + residuals, VALIDATE,
+#                    dose-stated C0, variance decomposition and sizing (sizing.json). No main stage:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 SYNC_OUTPUTS=none \
+#     MAX_SYNC_GB=1 MIN_FREE_GB=20 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh \
+#     KDG_PROFILE=p2h SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2h \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2g  p2e then p2f in one pod (author, 2026-10-08): the Qwen2.5 C3 re-read on the
 #                    image's stack of record (torch 2.4.1) first, then the torch 2.6 upgrade and the
 #                    GPT-OSS dose-matched C0. Independent: a failure in one does not skip the other;
@@ -72,9 +80,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2g (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2h (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -88,7 +96,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -117,6 +125,17 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]; then
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2h" ]; then  # G-A15/G-A16: dose-stated pilot only
+    python $G --dry-run --dose-stated-pilot --out "$OUT/_dry_ds" || { echo "DRY RUN (pilot) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2h/pilot ===================="
+    python $G --dose-stated-pilot --out "$OUT/pilot"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/pilot" \
+      || echo "WARN: manifest verify reported mismatches"
+    python -c "import json;r=json.load(open('$OUT/pilot/gpt_oss_20b/sizing.json'));print('>> pilot outcome:', r['outcome'], '| stage B:', r['stage_b_run'], '| completion', round(r['completion_within_cap'],3))" || true
+    echo ">> KDG p2h done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2h/ (sizing.json is the decision record)"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2f" ]; then  # G-A11: dose-matched C0 only
     python $G --dry-run --c0-dm --out "$OUT/_dry_c0dm" || { echo "DRY RUN (C0-dm) FAILED"; exit 1; }
     [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
