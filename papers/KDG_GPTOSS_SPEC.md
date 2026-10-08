@@ -341,3 +341,26 @@ dose-stated C1–C3 run is held until C0-dm is in.
 - **Descriptive beside it.** C0-dm majority vs the low-effort majority (C0's reference) on the same
   scenarios: generation-vs-generation agreement and the norm-crossing direction, a second derivation of
   the 6-vs-0 that does not involve the forced readout.
+
+**G-A12. Fork after the C0-dm verdict: sampling-noise prediction (2026-10-08; post-hoc, written after
+C0-dm's registered verdict and before the prediction is computed; pushed first). Escalated: the
+reading it licenses is the author's.** Registered verdict, unchanged and reported first: C0-dm
+0.766, Wilson [0.649, 0.853], n 64 → **fail (near-miss)**; under G-A11 that reads "format reading
+stands". Observed after the verdict (structural, not statistical): all 256 dose-matched rollouts
+write `<|channel|>final<|message|>` (ids 200005 17196 200008), one letter and `<|return|>`, and the
+dose-matched prefill plus that header is token-for-token the forced primary prefill. The model's own
+dose-0 output therefore passes through the identical token sequence the forced readout reads; the
+forced letter distribution is the distribution C0-dm samples from, up to batch-shape noise (KDG-A21).
+What remains between them is T = 0.7 sampling, a strict majority of 4 permutations against an argmax
+of the mean over 8, and batch noise. Descriptive (post-hoc, already computed): A(forced, rollout)
+0.781 vs A(rollout, rollout) 0.714, Δκ +0.068 [0.017, 0.112]; modal ceiling 0.828.
+- **Prediction.** For each of the 64 scenarios, take the forced primary readout's per-permutation
+  letter distribution (seeds 0..3, renormalised over displayed letters), temper it to T = 0.7
+  (p^(1/0.7), renormalised), draw one letter per permutation, map to options, take the strict majority
+  (G-A1), and score it against the forced argmax (mean over 8 permutations) as C0-dm does; repeat
+  10,000 times (seed 0). Batch noise is not modelled, so the prediction is optimistic.
+- **Fork verdict.** Observed 0.766 inside the central 95% of the simulated agreement → **sampling-
+  limited**: C0-dm's miss is what a valid dose-0 readout under T = 0.7 sampling produces. Below it →
+  **residual beyond sampling** (format or batch noise). Above it → reported as such.
+- Both verdicts are reported side by side. The wording rule stays until the author decides how the
+  fork bears on "C0 clears".
