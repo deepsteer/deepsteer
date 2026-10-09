@@ -1771,7 +1771,7 @@ G-A13 pushed 9eed208 before any ceiling was computed. `data/analysis_c0_ceiling.
 **fail**; C0-dm (dose-matched) 0.766 [0.649, 0.853] **fail (near-miss)**. Then: the token identity
 (every dose-0 rollout writes the forced prefill's own header) and the G-A12 fork (sampling-limited;
 predicted 0.743 [0.672, 0.813]). **Author decision (a): C0 clears for the dose-0 readout.** No statement
-about GPT-OSS's deployed (reasoning) mode until a dose-stated run clears its own C0.
+about GPT-OSS at its default reasoning level (medium) until a dose-stated run clears its own C0.
 
 **Exact-readout ceilings κ\* (primary numbers; T 0.7, 4 rollouts at seeds 0..3, 10,000 simulations).**
 
@@ -1826,8 +1826,8 @@ of scenarios); the separating cell is the dose-stated run, under design.
 **Referee pass.** (1) *"C0 was cleared after it failed twice."* Disclosed: both registered fails are
 printed first; the clearance rests on the token identity (a property of the sequences) and the G-A12
 fork pushed before its computation, and the author made the call. (2) *"A dose-0 null on a reasoning
-model says nothing about the deployed model."* Agreed and enforced: the claim is scoped to dose 0, and no
-deployed-mode statement is made until the dose-stated run clears its own C0. (3) *"The ceilings show
+model says nothing about the model as it runs by default."* Agreed and enforced: the claim is scoped to dose 0, and no
+statement about the default reasoning level (medium) is made until the dose-stated run clears its own C0. (3) *"The ceilings show
 the 0.80 bar was unpassable on most models; were the panel's readouts ever validated?"* The panel
 models had no C0; their readout validity rests on forward = generate and the known-gap control. The
 ceilings make future C0 runs model-relative and do not re-open past verdicts.
@@ -1914,7 +1914,7 @@ both. The §27 recipe-split line is held for the author's wording.
 > temperature.
 
 
-## 30. Primary 2: direction of norm-crossing changes in GPT-OSS-20B's default reasoning mode (G-A17, G-A18; 2026-10-08)
+## 30. Primary 2: direction of norm-crossing changes in GPT-OSS-20B at its default reasoning level (medium) (G-A17, G-A18; 2026-10-08)
 
 Rules pushed before the pod (G-A17 f631187, G-A18 9d34251, analysis acfffa7). Pod q5bnihxwoootif (p2i,
 A100-SXM4-80GB, torch 2.6.0+cu124, transformers 5.12.1). The VALIDATE re-check under identical batching
@@ -1937,10 +1937,10 @@ banked per batch, and rows were rebuilt with the pod's own parser (`reconstruct_
 test p = 3.9 × 10⁻²⁰ against 0.5 (α 0.01); the reverse test p = 1.0. Calibration beside it: with no
 reasoning, T 0.7 sampling of the dose-0 distribution produces about 40 norm-crossings per run with a
 toward share of 0.391 [0.278, 0.512] (q0, G-A17 note), that is about 16 toward and 25 away; observed 74
-and 2. **Reasoning at GPT-OSS-20B's default effort moves its action toward the scenario's norm-consistent
+and 2. **Reasoning at GPT-OSS-20B's default reasoning level (medium) moves its action toward the scenario's norm-consistent
 option on 74 of the 76 scenarios where the dose-0 choice and the medium-effort choice differ in norm
 label.** As registered, this extends the KDG paper's deliberation brake (OLMo-3 and Llama-3.1 under forced
-dose arms) to a reasoning-RL-trained model's default mode, as a claim about direction, not size. It also
+dose arms) to a reasoning-RL-trained model at its default reasoning level (medium), as a claim about direction, not size. It also
 resolves KDG-A22 toward its dose reading: C0's failure was reasoning changing the answer.
 
 Descriptive beside it: 117 of 576 scenarios (20%) change option within the same norm label, so reasoning
@@ -1959,7 +1959,18 @@ come from a crashed run."* Every generation was banked per batch before the cras
 with the parser the pod would have run (script committed before the analysis); primary 2 uses only the
 sampled letters, so the lost forward readout does not enter it. What the crash cost (the VALIDATE
 numbers, the letter-step distributions and post-reasoning residuals, the descriptive dose-stated C0) is
-re-derivable from the banked ids in one short pod.
+re-derivable from the banked ids in one short pod. (4) *"The norm-consistent option may sit at letters
+GPT-OSS already favours at dose 0, so the toward count could be a letter effect."* Checked under G-A21
+(3ce9327, pushed before computing; `data/analysis_gptoss_letter_balance.json`). At permutation 0 the
+norm-consistent option's letter is spread across positions as chance predicts: 3-option scenarios A 162,
+B 187, C 197 against 182 each, 2-option A 17, B 23 against 20 each (chi-square 4.47, df 3, p = 0.21). Under
+GPT-OSS's dose-0 letter marginals over the 8 permutations (3-option A 0.290, B 0.357, C 0.352; 2-option
+A 0.505, B 0.495), the letter-prior advantage of the norm-consistent over the violating option averages
++0.003 [−0.001, +0.007] (586 scenarios, 10,000 draws). Balanced on both pre-registered criteria (p ≥ 0.01;
+CI includes 0 and |mean| < 0.02), so primary 2 stands as computed and no permutation-1 cell runs. The
+largest dose-0 letter preference (A disfavoured by about 0.06 on 3-option items) meets a norm-consistent
+option placed at A 20 times fewer than chance; with a uniform violating letter that alone predicts
++0.002 (0.335 − 0.333), against the observed +0.003.
 
 ## 31. Re-derivation of the p2i losses (G-A19, G-A20; 2026-10-08)
 

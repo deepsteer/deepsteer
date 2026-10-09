@@ -922,7 +922,7 @@ pressure-attributable gap detectable above 0.013 (E −0.001 [−0.011, 0.008], 
 positive control responding at 0.50.** The carrier/non-carrier contrast is not explained by dose-0 answer sharpness. Within every model, dose-0 entropy does not predict E (all five slopes include 0), and the Llama−Tulu 3, Llama−GPT-OSS and OLMo-3−GPT-OSS contrasts survive entropy matching. Three contrasts lose resolution under matching: both Qwen2.5 contrasts because Qwen2.5's sharper distributions share only 6 of 10 entropy bins with the carriers, and OLMo-3−Tulu 3 through attenuation (+0.017 → +0.009) despite full bin overlap; those three rest on the unmatched estimates only. This rests on the author's decision that C0 clears for the
 dose-0 readout (registered C0 0.688 and C0-dm 0.766 both fail at 0.80; the token identity and the G-A12
 fork carry the clearance). Scope: dose 0 only; reasoning moves GPT-OSS's answers (dose-0 and low-effort
-generation agree on 0.56 of scenarios), so nothing is claimed about its deployed mode until the
+generation agree on 0.56 of scenarios), so nothing is claimed about its default reasoning level (medium) until the
 dose-stated run clears its own C0. C0 bars become model-relative (0.9 × the exact-readout ceiling; κ\*
 0.61–0.82 across the panel on the C0 sample, so 0.80 was above the ceiling on four of five models).
 Standing-claim scope note (KDG-A23, updated 2026-10-08): the sampled traces behind the dose claims
@@ -932,15 +932,15 @@ estimates hold; the deliberation brake stands on both models. One parenthetical 
 its own truncated filler reads (b), not (a) (escalated). The harness now seeds per scenario with pure
 temperature sampling (sampler version 2).
 
-### Primary 2: GPT-OSS-20B's default reasoning mode moves norm-crossing actions toward the norm (2026-10-08; `kdg_panel/KDG_RESULTS.md` §30)
+### Primary 2: GPT-OSS-20B at its default reasoning level (medium) moves norm-crossing actions toward the norm (2026-10-08; `kdg_panel/KDG_RESULTS.md` §30)
 
-Positive voice first: **reasoning at GPT-OSS-20B's default effort moves its action toward the norm. Of
+Positive voice first: **reasoning at GPT-OSS-20B's default reasoning level (medium) moves its action toward the norm. Of
 the 76 scenarios (of 576) whose dose-0 choice and medium-effort choice differ in norm label, 74 move
 toward the norm-consistent option and 2 away (one-sided exact p = 3.9 × 10⁻²⁰); sampling alone, with no
 reasoning, would give about 39% toward.** The deliberation brake the KDG paper measured on OLMo-3 and
-Llama-3.1 under forced dose arms holds, as a direction claim, in the default mode of a
+Llama-3.1 under forced dose arms holds, as a direction claim, at the default reasoning level (medium) of a
 reasoning-RL-trained model from another lab. Standing claim: "deliberation brakes the violating action"
-now spans three recipes (two instruct models under forced reasoning, one reasoning model at its default).
+now spans three recipes (two instruct models under forced reasoning, one reasoning model at its default reasoning level, medium).
 Strongest counter-reading: generic caution (reasoning picks the safer, rule-following option whatever the
 moral content). Separating experiment: a non-moral reasoning control at matched length, or scenarios whose
 norm-consistent option is the riskier one (priced, not run). Not claimed: the size of the effect, or a
@@ -950,3 +950,9 @@ VALIDATE numbers, lost in a post-generation crash and re-derivable in one short 
 2026-10-08, KDG_RESULTS §31: VALIDATE exact under identical batching on two pods; 625 readout rows and
 post-reasoning residuals banked; after reasoning GPT-OSS's letter is decided (top-letter probability
 ≥ 0.99 on every row), so its medium-effort variation lives in the trace, not the answer step.]
+At medium effort the decision is made inside the trace (top letter ≥ 0.99 after every trace; 12 of 22
+scenarios flip across traces), so deliberation-stage residuals, not decision-token residuals, are where a
+moral reference would have to be present. Letter balance (G-A21, 2026-10-09): the norm-consistent
+option's letter at permutation 0 is balanced against GPT-OSS's dose-0 letter marginals (chi-square
+p = 0.21; letter-prior advantage +0.003 [−0.001, +0.007]), so the letter channel does not carry the 74 vs 2.
+The generic-caution rival is under test on the risk-reversed scenarios (G-A21 items 2–4).
