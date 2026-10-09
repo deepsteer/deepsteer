@@ -53,3 +53,29 @@ def test_branch_order(toward, away, want):
     import analyze_gptoss_risk_reversed as RV
 
     assert RV.branch(toward, away) == want
+
+
+def test_own_judgment_subsets_and_moves():
+    # most probable failure: a move to J's option is also counted toward the norm (or the reverse)
+    # when J's option is norm-consistent, double-counting the concordant rows
+    from collections import Counter
+
+    import analyze_own_judgment_moves as OJ
+
+    lab = {"o1": "consistent", "o2": "violating", "o3": "neutral"}
+    status = {s: lab for s in ("s1", "s2", "s3", "s4")}
+    J = {"s1": Counter(o2=7, o1=1), "s2": Counter(o3=6, o1=2), "s3": Counter(o1=4, o2=4),
+         "s4": Counter(o1=8)}
+    groups = {s: OJ.subset(s, set(), J[s], lab) for s in status}
+    assert [groups[s][0] for s in ("s1", "s2", "s3", "s4")] == [
+        "divergent_violating", "divergent_neutral", "uncertain", "concordant_gap_leg"]
+    pairs = {"s1": ("o2", "o1"), "s2": ("o1", "o3"), "s3": ("o2", "o1"), "s4": ("o2", "o1")}
+    m = OJ.moves(pairs, groups, status)
+    assert (m["divergent_violating"]["toward_norm"], m["divergent_violating"]["opp_toward_judgment"]
+            ) == (1, 0)
+    assert m["divergent_neutral"]["toward_own_judgment"] == 1
+    assert m["uncertain"]["toward_norm"] == 1
+    assert (m["concordant_gap_leg"]["toward_norm"], m["concordant_gap_leg"]["toward_own_judgment"]
+            ) == (1, 0)
+    assert m["concordant_gap_leg"]["binom_two_sided_descriptive"] is None
+    assert OJ.binom_two_sided(0, 6) == pytest.approx(2 / 64)

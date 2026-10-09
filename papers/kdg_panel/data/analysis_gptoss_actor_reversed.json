@@ -1,0 +1,97 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A22 items 1 and 3 (3689315)",
+ "construct": "actor",
+ "rows_file": "ds_main_reconstructed.jsonl",
+ "labels": {
+  "raters": [
+   "subagent",
+   "codex"
+  ],
+  "risk_reversed": 83,
+  "risk_aligned": 339,
+  "mixed": 164,
+  "cohen_kappa": 0.34633572166676924
+ },
+ "risk_reversed": {
+  "n_scenarios": 83,
+  "counts": {
+   "toward": 10,
+   "away": 0,
+   "lateral": 19,
+   "same": 49,
+   "no_action": 3
+  },
+  "m": 10,
+  "toward": 10,
+  "away": 0,
+  "p_toward_one_sided": 0.0009765625,
+  "p_away_one_sided": 1.0,
+  "alpha": 0.01,
+  "branch": "toward"
+ },
+ "risk_aligned": {
+  "n_scenarios": 339,
+  "counts": {
+   "toward": 39,
+   "away": 2,
+   "lateral": 66,
+   "same": 222,
+   "no_action": 4
+  },
+  "m": 41,
+  "toward": 39,
+  "away": 2,
+  "p_toward_one_sided": 3.9199221646413207e-10,
+  "p_away_one_sided": 0.9999999999809006,
+  "alpha": 0.01,
+  "branch": "toward"
+ },
+ "mixed": {
+  "n_scenarios": 164,
+  "counts": {
+   "toward": 25,
+   "away": 0,
+   "lateral": 32,
+   "same": 103,
+   "no_action": 2
+  },
+  "m": 25,
+  "toward": 25,
+  "away": 0,
+  "p_toward_one_sided": 2.9802322387695312e-08,
+  "p_away_one_sided": 1.0,
+  "alpha": 0.01,
+  "branch": "toward"
+ },
+ "N_min": 27,
+ "gate_met": false,
+ "branch": "unresolved",
+ "fisher_toward_share_reversed_vs_aligned": {
+  "table": [
+   [
+    10,
+    0
+   ],
+   [
+    39,
+    2
+   ]
+  ],
+  "p_two_sided": 1.0,
+  "descriptive": true
+ },
+ "paper_deliberation_sets": {
+  "olmo3_instruct": {
+   "n": 130,
+   "reversed": 25,
+   "aligned": 72,
+   "split": 33
+  },
+  "llama31_instruct_meta": {
+   "n": 114,
+   "reversed": 15,
+   "aligned": 69,
+   "split": 30
+  }
+ }
+}

@@ -1,0 +1,159 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A22 item 4 (3689315), descriptive",
+ "gpt_oss_20b": {
+  "subset_sizes": {
+   "screen_pass": 71,
+   "uncertain": 125,
+   "divergent_violating": 92,
+   "concordant_gap_leg": 215,
+   "divergent_neutral": 83
+  },
+  "moves": {
+   "uncertain": {
+    "n": 120,
+    "same": 63,
+    "toward_norm": 49,
+    "toward_own_judgment": 0,
+    "other": 8,
+    "opp_toward_norm": 82,
+    "opp_toward_judgment": 0,
+    "crossing_count": 49,
+    "rate_toward_norm": 0.5975609756097561,
+    "rate_toward_judgment": null,
+    "binom_two_sided_descriptive": 3.552713678800501e-15
+   },
+   "screen_pass": {
+    "n": 67,
+    "same": 47,
+    "toward_norm": 10,
+    "toward_own_judgment": 0,
+    "other": 10,
+    "opp_toward_norm": 17,
+    "opp_toward_judgment": 17,
+    "crossing_count": 10,
+    "rate_toward_norm": 0.5882352941176471,
+    "rate_toward_judgment": 0.0,
+    "binom_two_sided_descriptive": null
+   },
+   "concordant_gap_leg": {
+    "n": 211,
+    "same": 187,
+    "toward_norm": 14,
+    "toward_own_judgment": 0,
+    "other": 10,
+    "opp_toward_norm": 16,
+    "opp_toward_judgment": 16,
+    "crossing_count": 14,
+    "rate_toward_norm": 0.875,
+    "rate_toward_judgment": 0.0,
+    "binom_two_sided_descriptive": null
+   },
+   "divergent_violating": {
+    "n": 89,
+    "same": 27,
+    "toward_norm": 44,
+    "toward_own_judgment": 1,
+    "other": 17,
+    "opp_toward_norm": 85,
+    "opp_toward_judgment": 9,
+    "crossing_count": 45,
+    "rate_toward_norm": 0.5176470588235295,
+    "rate_toward_judgment": 0.1111111111111111,
+    "binom_two_sided_descriptive": 2.6147972675971687e-12
+   },
+   "divergent_neutral": {
+    "n": 80,
+    "same": 50,
+    "toward_norm": 27,
+    "toward_own_judgment": 1,
+    "other": 2,
+    "opp_toward_norm": 77,
+    "opp_toward_judgment": 8,
+    "crossing_count": 28,
+    "rate_toward_norm": 0.35064935064935066,
+    "rate_toward_judgment": 0.125,
+    "binom_two_sided_descriptive": 2.1606683731079102e-07
+   }
+  },
+  "n_pairs": 567
+ },
+ "olmo3_instruct": {
+  "n_dose_set": 130,
+  "subset_sizes": {
+   "divergent_violating": 29,
+   "screen_pass": 36,
+   "uncertain": 47,
+   "concordant_gap_leg": 7,
+   "divergent_neutral": 11
+  },
+  "moves": {
+   "divergent_violating": {
+    "n": 29,
+    "same": 18,
+    "toward_norm": 7,
+    "toward_own_judgment": 1,
+    "other": 3,
+    "opp_toward_norm": 22,
+    "opp_toward_judgment": 11,
+    "crossing_count": 8,
+    "rate_toward_norm": 0.3181818181818182,
+    "rate_toward_judgment": 0.09090909090909091,
+    "binom_two_sided_descriptive": 0.0703125
+   },
+   "screen_pass": {
+    "n": 36,
+    "same": 28,
+    "toward_norm": 6,
+    "toward_own_judgment": 0,
+    "other": 2,
+    "opp_toward_norm": 7,
+    "opp_toward_judgment": 7,
+    "crossing_count": 6,
+    "rate_toward_norm": 0.8571428571428571,
+    "rate_toward_judgment": 0.0,
+    "binom_two_sided_descriptive": null
+   },
+   "uncertain": {
+    "n": 47,
+    "same": 37,
+    "toward_norm": 7,
+    "toward_own_judgment": 0,
+    "other": 3,
+    "opp_toward_norm": 23,
+    "opp_toward_judgment": 0,
+    "crossing_count": 7,
+    "rate_toward_norm": 0.30434782608695654,
+    "rate_toward_judgment": null,
+    "binom_two_sided_descriptive": 0.015625
+   },
+   "concordant_gap_leg": {
+    "n": 7,
+    "same": 5,
+    "toward_norm": 1,
+    "toward_own_judgment": 0,
+    "other": 1,
+    "opp_toward_norm": 1,
+    "opp_toward_judgment": 1,
+    "crossing_count": 1,
+    "rate_toward_norm": 1.0,
+    "rate_toward_judgment": 0.0,
+    "binom_two_sided_descriptive": null
+   },
+   "divergent_neutral": {
+    "n": 11,
+    "same": 6,
+    "toward_norm": 2,
+    "toward_own_judgment": 2,
+    "other": 1,
+    "opp_toward_norm": 10,
+    "opp_toward_judgment": 4,
+    "crossing_count": 4,
+    "rate_toward_norm": 0.2,
+    "rate_toward_judgment": 0.5,
+    "binom_two_sided_descriptive": 1.0
+   }
+  },
+  "arms": "filler of record (d_chat_dose2_filler_bf_forced) -> d_chat_dose2_bf_forced"
+ },
+ "llama31_instruct_meta": "deliberation set is its own screen; no screened-out scenarios"
+}

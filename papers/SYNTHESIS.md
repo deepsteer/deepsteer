@@ -961,4 +961,11 @@ less risky one in 542 of 586 scenarios.** The set holds 1 scenario both raters c
 pre-registered branch is unresolved: norm-tracking and risk aversion under RL point the same way on this
 set, and the separating cell needs scenarios built so the norm-consistent action carries the risk (about
 250 scenarios, about 2.3 A100-h; author's call). The same rival reaches the KDG paper's deliberation
-brake (KDG-A26, escalated).
+brake (KDG-A26, escalated). Split constructs (G-A22, 2026-10-09, §33): **reasoning at the default level moves
+GPT-OSS-20B toward the norm where its own dose-0 judgment points elsewhere (44 of 85 opportunities vs 1 of
+9 toward that judgment, divergent-violating scenarios) and, descriptively, where the norm-consistent
+option costs the agent itself (10 of 10 norm-crossings in the 83 actor-reversed scenarios).** The
+actor-cost cell stays unresolved by its gate (10 crossings against 27); harm to others is not separable on
+this set (1 reversed scenario), so the held scenario set, if built, targets harm divergence. Still
+claimed only as direction, and only against the dose-0 judgment readout, not a judgment read after
+reasoning.

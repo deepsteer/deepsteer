@@ -10,6 +10,9 @@ one-sided exact sign test at alpha 0.01, and the toward share in risk-reversed v
 scenarios (Fisher exact, two-sided, descriptive). Branches, in order: unresolved if the subset has
 fewer than 27 norm-crossings; norm-tracking if toward > away at one-sided p < 0.01; risk aversion
 under RL if away >= toward or the reverse test reaches p < 0.01; otherwise unresolved.
+``--construct actor|harm`` (G-A22 items 1 and 3): the same counts on that construct's labels, the
+gate (>= 27 norm-crossings in the reversed subset) recorded, and reversed / aligned / split counts
+within the paper's deliberation sets of record (OLMo-3 130, Llama-3.1 114).
 """
 
 from __future__ import annotations
@@ -42,15 +45,35 @@ def fisher_two_sided(a: int, b: int, c: int, d: int) -> float:
     return min(1.0, sum(pr(x) for x in range(lo, hi + 1) if pr(x) <= p0 * (1 + 1e-9)))
 
 
-def branch(toward: int, away: int) -> str:
+BRANCHES = {"risk": ("norm_tracking", "risk_aversion_under_rl"),
+            "actor": ("norm_tracking_against_actor_cost", "actor_cost_aversion_under_rl"),
+            "harm": ("norm_tracking_against_harm_descriptive", "harm_avoidance_descriptive")}
+
+
+def branch(toward: int, away: int, construct: str = "risk") -> str:
     v = P2.verdict(toward, away)
     if v["m"] < N_MIN:
         return "unresolved"
     if v["p_toward_one_sided"] < P2.ALPHA:
-        return "norm_tracking"
+        return BRANCHES[construct][0]
     if away >= toward or v["p_away_one_sided"] < P2.ALPHA:
-        return "risk_aversion_under_rl"
+        return BRANCHES[construct][1]
     return "unresolved"
+
+
+def paper_sets(lab: dict) -> dict:
+    """Reversed / aligned / split counts within the paper's deliberation sets of record."""
+    import analyze_dose_twin as DT
+
+    rev, ali = set(lab["risk_reversed_ids"]), set(lab["risk_aligned_ids"])
+    out = {}
+    for key, m in DT.MODELS.items():
+        ids = set(json.loads((A.DATA / m["screen"]).read_text())["ids"])
+        rows = A._rows(m["prim"] / "d_chat_dose2_bf_forced.jsonl")
+        ids &= {r["scenario_id"] for r in rows}
+        out[key] = {"n": len(ids), "reversed": len(ids & rev), "aligned": len(ids & ali),
+                    "split": len(ids - rev - ali)}
+    return out
 
 
 def counts(keep: set[str], rows: list[dict], dose0: dict, label: dict) -> dict:
@@ -78,9 +101,12 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--main-dir", type=Path, default=A.OUT / "p2i" / "main" / "gpt_oss_20b")
     ap.add_argument("--rows-file", default="ds_main_reconstructed.jsonl")
-    ap.add_argument("--out", type=Path, default=A.DATA / "analysis_gptoss_risk_reversed.json")
+    ap.add_argument("--construct", choices=sorted(BRANCHES), default="risk")
+    ap.add_argument("--out", type=Path)
     a = ap.parse_args(argv)
-    lab = json.loads((A.DATA / "risk_reversal_labels.json").read_text())
+    stem = "risk" if a.construct == "risk" else a.construct
+    out_path = a.out or A.DATA / (f"analysis_gptoss_{stem}_reversed.json")
+    lab = json.loads((A.DATA / f"{stem}_reversal_labels.json").read_text())
     scen, _ = load_scenario_dir(sorted(A.DATA.glob("*_scenarios_*.json")))
     label = {s.id: {o.option_id: o.norm_status for o in s.options} for s in scen}
     ids = set(json.loads((A.DATA / "gptoss_dose0_model_free_586.json").read_text())["ids"])
@@ -99,16 +125,20 @@ def main(argv=None) -> int:
     ref = counts(ids, rows, dose0, label)
     if tot != {"toward": ref["toward"], "away": ref["away"]}:
         raise SystemExit(f"subsets do not partition primary 2: {tot} vs {ref}")
-    rep = {"rule": "KDG_GPTOSS_SPEC G-A21 items 3-4 (3ce9327)", "rows_file": a.rows_file,
+    rule = ("G-A21 items 3-4 (3ce9327)" if a.construct == "risk"
+            else "G-A22 items 1 and 3 (3689315)")
+    rep = {"rule": f"KDG_GPTOSS_SPEC {rule}", "construct": a.construct, "rows_file": a.rows_file,
            "labels": {k: lab[k] for k in ("raters", "risk_reversed", "risk_aligned", "mixed",
                                           "cohen_kappa")},
-           **out, "N_min": N_MIN,
-           "branch": branch(r["toward"], r["away"]),
+           **out, "N_min": N_MIN, "gate_met": r["toward"] + r["away"] >= N_MIN,
+           "branch": branch(r["toward"], r["away"], a.construct),
            "fisher_toward_share_reversed_vs_aligned": {
                "table": [[r["toward"], r["away"]], [g["toward"], g["away"]]],
                "p_two_sided": fisher_two_sided(r["toward"], r["away"], g["toward"], g["away"]),
                "descriptive": True}}
-    a.out.write_text(json.dumps(rep, indent=1))
+    if a.construct != "risk":
+        rep["paper_deliberation_sets"] = paper_sets(lab)
+    out_path.write_text(json.dumps(rep, indent=1))
     print(json.dumps(rep, indent=1))
     return 0
 

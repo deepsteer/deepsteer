@@ -1,6 +1,6 @@
 {
- "rule": "KDG_GPTOSS_SPEC G-A21 items 3-4 (3ce9327)",
- "construct": "risk",
+ "rule": "KDG_GPTOSS_SPEC G-A22 items 1 and 3 (3689315)",
+ "construct": "harm",
  "rows_file": "ds_main_reconstructed.jsonl",
  "labels": {
   "raters": [
@@ -8,9 +8,9 @@
    "codex"
   ],
   "risk_reversed": 1,
-  "risk_aligned": 542,
-  "mixed": 43,
-  "cohen_kappa": 0.05095853263530672
+  "risk_aligned": 574,
+  "mixed": 11,
+  "cohen_kappa": 0.1512837393021776
  },
  "risk_reversed": {
   "n_scenarios": 1,
@@ -30,35 +30,35 @@
   "branch": "not_detected"
  },
  "risk_aligned": {
-  "n_scenarios": 542,
+  "n_scenarios": 574,
   "counts": {
-   "toward": 68,
+   "toward": 72,
    "away": 2,
-   "lateral": 105,
-   "same": 350,
-   "no_action": 8
+   "lateral": 112,
+   "same": 369,
+   "no_action": 9
   },
-  "m": 70,
-  "toward": 68,
+  "m": 74,
+  "toward": 72,
   "away": 2,
-  "p_toward_one_sided": 2.1057239068741906e-18,
+  "p_toward_one_sided": 1.469602163486211e-19,
   "p_away_one_sided": 1.0,
   "alpha": 0.01,
   "branch": "toward"
  },
  "mixed": {
-  "n_scenarios": 43,
+  "n_scenarios": 11,
   "counts": {
-   "toward": 6,
+   "toward": 2,
    "away": 0,
-   "lateral": 12,
-   "same": 23,
-   "no_action": 1
+   "lateral": 5,
+   "same": 4,
+   "no_action": 0
   },
-  "m": 6,
-  "toward": 6,
+  "m": 2,
+  "toward": 2,
   "away": 0,
-  "p_toward_one_sided": 0.015625,
+  "p_toward_one_sided": 0.25,
   "p_away_one_sided": 1.0,
   "alpha": 0.01,
   "branch": "not_detected"
@@ -73,11 +73,25 @@
     0
    ],
    [
-    68,
+    72,
     2
    ]
   ],
   "p_two_sided": 1.0,
   "descriptive": true
+ },
+ "paper_deliberation_sets": {
+  "olmo3_instruct": {
+   "n": 130,
+   "reversed": 0,
+   "aligned": 127,
+   "split": 3
+  },
+  "llama31_instruct_meta": {
+   "n": 114,
+   "reversed": 0,
+   "aligned": 114,
+   "split": 0
+  }
  }
 }

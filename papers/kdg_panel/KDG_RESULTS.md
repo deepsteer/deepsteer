@@ -2073,3 +2073,96 @@ sentence stands as written. Its rival is now stated with a number: on this set t
 the less risky option are the same direction in 542 of 586 scenarios. The same rival applies to the KDG
 paper's deliberation brake, measured on scenarios of the same families and construction; how far is
 unmeasured until its deliberation subsets are rated, which costs no GPU (ANOMALIES KDG-A26, escalated).
+
+## 33. Split risk constructs, the actor-cost cell, and own judgment vs norm on screened-out scenarios (G-A22; 2026-10-09)
+
+Rules and rater prompts pushed before any label or count (G-A22 3689315, prompts 9c3705f). Zero GPU.
+Premise corrected in the amendment: GPT-OSS's 71 are the scenarios that **pass** its P1-A9 screen; 515
+fail it. `data/{actor,harm}_ratings_{subagent,codex}.json`, `data/{actor,harm}_reversal_labels.json`,
+`data/analysis_gptoss_{actor,harm}_reversed.json`, `data/analysis_own_judgment_moves.json`.
+
+**Labels (item 1).** Each construct was asked in its own calls; both raters rated all 586 under both.
+
+| construct | Claude: consistent costlier / more harmful | GPT: same | reversed (both) | aligned (both) | split | raw agreement | κ | prevalence-adj. κ |
+|---|---|---|---|---|---|---|---|---|
+| combined risk (G-A21, §32) | 5 | 40 | 1 | 542 | 43 | 0.927 | 0.05 | 0.89 |
+| (a) cost to the actor | 107 | 222 | **83** | 339 | 164 | 0.722 | 0.35 | 0.58 |
+| (b) harm to others | 1 | 11 | **1** | 574 | 11 | 0.981 | 0.15 | 0.97 |
+
+Actor-reversed by family: F1 57 (of 160), F5 22 (of 88), F4 4 (of 122), none in F2 or F3. Second
+derivation: independent raters with these marginals would share 40.5 actor-reversed labels by chance
+(586 × 107/586 × 222/586); they share 83, about twice chance, whereas under the combined question they
+shared 1 against 0.34. The split construct finds what the combined one hid: in about one scenario in
+seven the norm-consistent action is the costlier one for the agent itself (blame from the principal, a
+missed target, conflict), while harm to others almost never favours it. **Paper's deliberation sets of
+record:** OLMo-3 (130) 25 actor-reversed, 72 aligned, 33 split; Llama-3.1 (114) 15, 69, 30. Under (b)
+both sets hold 0 reversed (OLMo-3 127 aligned, 3 split; Llama-3.1 114 aligned).
+
+**Author check (item 2).** The 20-item sheet is issued (`data/human_check_sheet.md`, 10 items from the
+pool where at least one rater flags the actor cost, seed 0; key kept separately). Agreement is reported
+when it returns; it does not gate item 3.
+
+**Actor-cost separating cell (item 3): gate not met, unresolved.**
+
+| actor-cost subset | scenarios | toward | away | lateral | same | no action |
+|---|---|---|---|---|---|---|
+| reversed (both: consistent costlier to the agent) | 83 | **10** | **0** | 19 | 49 | 3 |
+| aligned (both: violating costlier) | 339 | 39 | 2 | 66 | 222 | 4 |
+| split | 164 | 25 | 0 | 32 | 103 | 2 |
+
+The reversed subset holds 10 norm-crossings, below the 27 the gate requires, so by the pre-registered
+rule no verdict is read. Descriptive, not of record: all 10 go toward the norm. The crossing rate in the
+reversed subset (10 of 80 identity rows, 0.125) matches the set's (76 of 567, 0.134), and the toward share
+(10 of 10) matches the aligned subset's (39 of 41; Fisher p = 1.0). The actor-cost-aversion reading
+predicts away ≥ toward where the norm costs the agent. Ten of ten toward has probability ≤ 0.001 if the
+toward share there is 0.5 or less, but a count of 10 is under the power the gate was set for. Under (b) the
+reversed subset is 1 scenario with no crossing; harm to others and the norm are not separable on this set.
+
+**Own judgment vs norm on screened-out scenarios (item 4, descriptive).** GPT-OSS-20B: dose-0 action of
+record → medium-effort action, primary 2's permutation-0 identity rows. "Own judgment" is the dose-0
+letter-only judgment readout (J's option in ≥ 6 of 8 permutations).
+
+| GPT-OSS subset (by dose-0 J) | scenarios (identity) | same | toward norm (opportunities) | toward own dose-0 judgment (opportunities) | other | crossing count |
+|---|---|---|---|---|---|---|
+| divergent-violating | 92 (89) | 27 | **44** (85) | **1** (9) | 17 | 45 |
+| divergent-neutral | 83 (80) | 50 | **27** (77) | **1** (8) | 2 | 28 |
+| uncertain (no option ≥ 6 of 8) | 125 (120) | 63 | 49 (82) | n/a | 8 | 49 |
+| concordant, gap leg only (reference) | 215 (211) | 187 | 14 (16), same option as J | | 10 | 14 |
+| screen pass (reference) | 71 (67) | 47 | 10 (17), same option as J | | 10 | 10 |
+
+At dose 0 GPT-OSS already acts on its own judgment where that judgment departs from the norm: the dose-0
+action is J's violating option in 80 of 89 divergent-violating scenarios. Medium-effort reasoning moves
+44 of the 85 not already on the norm to the norm-consistent option, and 1 of the 9 not already on J's
+option to it (two-sided exact binomial on 44 vs 1, p = 2.6 × 10⁻¹², descriptive). Divergent-neutral reads
+the same way (27 of 77 vs 1 of 8). **Where GPT-OSS's dose-0 judgment and the norm disagree, reasoning at
+the default level moves the action to the norm, not to that judgment.**
+
+Carriers. OLMo-3-Instruct's deliberation set of record holds 94 scenarios that fail its own P1-A9 screen
+(the set came from the A17-union screen); Llama-3.1's set is its own screen, so it has none. OLMo-3
+(filler of record → forced 512-token reasoning arm; argmax of the mean over 16 rollouts): divergent-
+violating 29 scenarios, 7 toward the norm (of 22 opportunities) vs 1 toward its own dose-0 judgment (of
+11), 3 other, 18 same; divergent-neutral 11, 2 (of 10) vs 2 (of 4); uncertain 47, 7 toward the norm (of
+23). Small counts, same direction on the violating-divergent subset; descriptive.
+
+**Held (item 5).** The new scenario set is not built. Item 3 leaves the actor-cost question unresolved at
+10 crossings, and (b) shows the panel has no harm-divergent scenarios at all, so the held set, if built,
+is built to (b) as G-A22 says. Priced for the author beside it: three more medium-effort traces on each of
+the 83 actor-reversed scenarios (249 traces, about 1.7 A100-h of generation at 1,608 s per 64, about 2.2
+A100-h with setup) would give about 27 scenarios with at least one crossing if traces cross independently
+at 0.125. It needs an amendment, since the unit changes from one trace per scenario to a
+scenario's crossings over four traces.
+
+**Referee pass.** (1) *"The actor-cost labels are only fair (κ 0.35); the 83 is noisy."* Conceded on
+reliability: raw agreement is 0.72, and the GPT rater calls the consistent option costlier twice as often
+as Claude. The analysis uses only unanimous labels, which is why the subset is 83 and not 246, and the
+author's 20-item check is out. Label noise mixes aligned scenarios into the reversed subset, which pulls
+its toward share toward the aligned 0.95; it cannot produce 10 of 10 where the true share is at or below
+one half. (2) *"10 vs 0 at p 0.001 is a result; the gate is pedantry."* The gate is the pre-registered
+rule (N_min 27, set for power before any label). Reading past it is a post-hoc fork that needs an
+amendment and both verdicts, and that is the author's decision; until then the count is descriptive.
+(3) *"'Own judgment' at dose 0 is not GPT-OSS's judgment after reasoning; reasoning may move judgment and
+action together, so 'against its own judgment' overstates."* Conceded and named by construction: the
+comparison is with the dose-0 judgment readout. The separating cell is a judgment readout at the
+default reasoning level on the 175 divergent scenarios (about 1.3 A100-h of generation, about 1.7 with
+setup), not run. A second rival, that the divergent scenarios carry wrong norm labels, predicts reasoning
+should not move toward the labelled option; it moves there in 44 of 85.
