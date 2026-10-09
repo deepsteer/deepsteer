@@ -946,4 +946,7 @@ moral content). Separating experiment: a non-moral reasoning control at matched 
 norm-consistent option is the riskier one (priced, not run). Not claimed: the size of the effect, or a
 pressure-attributable gap at medium effort (primary 1 withdrawn; E at medium is not estimable within the
 envelope). Owed: the forward readout and post-reasoning residuals for the 640 banked traces and the
-VALIDATE numbers, lost in a post-generation crash and re-derivable in one short pod.
+VALIDATE numbers, lost in a post-generation crash and re-derivable in one short pod. [Re-derived
+2026-10-08, KDG_RESULTS §31: VALIDATE exact under identical batching on two pods; 625 readout rows and
+post-reasoning residuals banked; after reasoning GPT-OSS's letter is decided (top-letter probability
+≥ 0.99 on every row), so its medium-effort variation lives in the trace, not the answer step.]

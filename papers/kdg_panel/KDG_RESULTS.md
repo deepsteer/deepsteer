@@ -1960,3 +1960,37 @@ with the parser the pod would have run (script committed before the analysis); p
 sampled letters, so the lost forward readout does not enter it. What the crash cost (the VALIDATE
 numbers, the letter-step distributions and post-reasoning residuals, the descriptive dose-stated C0) is
 re-derivable from the banked ids in one short pod.
+
+## 31. Re-derivation of the p2i losses (G-A19, G-A20; 2026-10-08)
+
+Pods lkbr144fpppyhu (VALIDATE recorded, readout out of memory at batch 16) and hyb0x13slf9i8c (G-A20,
+readout at batch 1; rc 0, manifest verifies). `outputs/p2j/rederive/gpt_oss_20b/`.
+
+**VALIDATE at the post-reasoning position (KDG-A25), on two pods.** Under identical batching the forward
+readout reproduces generation exactly: 0.0000 nats with 16 per batch on both sides and 0.0000 one at a time
+on both sides (16 pilot rows). Between batch shapes the same readout moves by median 0.25, max 0.625 nats,
+the KDG-A21 batch-composition effect, which is what the pilot's 0.375 measured.
+
+**Readout banked.** All 625 token-identity rows of the 640 banked traces (576 main stage, 64 B1), read one
+sequence at a time: the letter-step distribution (full vocabulary) and residuals at the post-reasoning
+decision token and the letter position for all 25 hidden-state layers. Second derivation: the rows rebuilt
+on the pod agree with the reconstruction primary 2 used (`ds_main_reconstructed.jsonl`) on every one of the
+640 rows (token identity and option), so §30's inputs are reproduced independently.
+
+**After reasoning the letter is decided.** The top letter's probability at the post-reasoning position is
+≥ 0.99 on 100% of the 625 rows (median 1.0000). The sampled letter is therefore the readout's argmax, and
+GPT-OSS's medium-effort variation lives in the trace, not in the letter: across the 22 scenarios with four
+traces, 8 are unanimous, 6 split 3–1, 3 split 2–2, 3 split 2–1–1, and 2 have fewer identity traces.
+
+**Dose-stated C0, partial and descriptive (22 of 64 scenarios).** Agreement 0.727 [0.518, 0.868] against
+κ\* 0.727 (bar 0.655): "pass (near-miss)". Coincidence interrogated: with one-hot distributions κ\* per
+scenario is 0 or 1 and equals the observed agreement, so this C0 measures trace-to-trace disagreement, not
+readout validity, which the exact VALIDATE settles.
+
+**Referee pass.** (1) *"Batch 1 is not the shape VALIDATE was gated on in G-A18."* It is one of the two
+gated shapes (one at a time on both sides, 0.0000 nats), and G-A20 was pushed before the change. (2) *"A
+one-hot letter means the readout adds nothing beyond the sampled letter."* For the letter, yes, and that is
+the finding: GPT-OSS's medium-effort decision is made in the trace. The banked residuals at the
+post-reasoning decision token are the readout's added value (direction reads later, zero GPU). (3) *"22
+scenarios cannot validate anything."* The C0 here is descriptive and labelled partial; it no longer gates
+anything (G-A18).
