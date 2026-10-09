@@ -941,6 +941,7 @@ distribution, not an assumed one, and never run a generation stage without incre
 **Thesis impact.** R_a: the forward readout stands and the pilot's banked distributions are usable. R_b: the dose-stated readout is redesigned before any main stage.
 **Note (author, 2026-10-08):** the pilot's direction counts (6 toward, 1 away, 14 lateral; stage A, `dl_chat_neutral` permutation 0 against the dose-0 readout) are non-primary. The 1 away is the first non-zero count against the direction across the program's dose comparisons (C0 6 vs 0, C0-dm 5 vs 0); it carries no framing weight. The discriminator runs first in the G-A18 pod and gates it.
 **Status (2026-10-08).** resolved → R_a (batch shape), numbers lost: the G-A18 re-check under identical batching passed on pod q5bnihxwoootif (the main stage runs only after a pass), but its values lived in a record the post-generation crash never wrote; the re-derivation pod owed for the readout repeats the check and records the numbers.
+**Numbers (2026-10-08, pod lkbr144fpppyhu, p2j; `outputs/p2j/rederive/gpt_oss_20b/rederive_record.json`).** Under identical batching the forward readout reproduces generation exactly: batch of 16 on both sides 0.0000 nats, one at a time on both sides 0.0000 nats. Between batch shapes the same readout moves by median 0.25, max 0.625 nats (16 rows): the KDG-A21 batch-composition effect at the post-reasoning position, which is what the pilot's 0.375 measured. Resolution type: experiment (R_a, batch shape).
 
 **Process ledger 2026-10-08 — the primary-2 main stage crashed after generation; the per-batch bank kept every trace.**
 Pod q5bnihxwoootif (p2i): VALIDATE re-check ran and passed (the main stage only starts after a pass;
@@ -960,3 +961,16 @@ ids (about 640 rows, minutes after model load) with the VALIDATE re-check repeat
 Fixes owed before any later pod: a stage's first batch must also fit before its deadline (stage-start
 estimate), B1 starts only if a whole batch fits, the remote script copies `session.log` into `$OUT`, and
 the run writes `main_record.json` incrementally (VALIDATE result first).
+
+**Process ledger 2026-10-08 — the readout crash is an out-of-memory in eager attention at batch 16, and it is the p2i crash too.**
+Pod lkbr144fpppyhu (p2j) passed the VALIDATE re-check (0.0000 under both matched conditions), then the
+forward readout of the 640 banked traces failed with `torch.OutOfMemoryError` inside GPT-OSS's eager
+attention (`combined_logits.max`, a 6.32 GiB allocation with 6.11 GiB free). Eager attention
+materialises batch × 64 heads × length² logits; at batch 16 and sequences near 2,000 tokens that is
+several GB per layer, on top of the model's ~42 GB. The p2i run crashed at the same step and batch shape
+(its traceback was lost), so this is almost certainly its cause; the pilot read at batch 8 and survived.
+The session-log fix worked: the traceback came back with the download, and the incremental record kept
+the VALIDATE numbers. Fix (G-A20): read one sequence at a time. That shape validated exactly, carries no
+padding and no batch-composition noise (median 0.25 nats between shapes), and needs a sixteenth of the
+attention memory.
+

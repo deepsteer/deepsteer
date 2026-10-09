@@ -588,3 +588,12 @@ No new hypothesis and no generation: the pod recomputes quantities G-A18 already
 4. **Not recomputed:** primary 2 (sampled letters, KDG_RESULTS §30; the rebuilt rows of record stand).
    The forward readout is checked against them: every rebuilt identity row must get a readout row.
 Envelope about 0.5 A100-h; no deadline-sensitive stage.
+
+**G-A20. Forward readout at batch size 1 (2026-10-08; pushed before the code change and the p2j re-run).**
+The p2j re-derivation's readout at batch 16 ran out of GPU memory in eager attention on ~2,000-token
+sequences (ANOMALIES process ledger), as p2i's did. Every dose-stated forward readout (G-A18 item 3c,
+G-A19 item 2) is read one sequence at a time. This shape passed VALIDATE exactly (one at a time on both
+sides, 0.0000 nats), removes padding and batch-composition dependence (16-row spread between shapes median
+0.25, max 0.625 nats), and is recorded per row (`readout_batch_size` 1). The batch-16 shape stays the
+validated shape of the VALIDATE gate itself, which runs on 16 shorter pilot sequences. No rule changes.
+
