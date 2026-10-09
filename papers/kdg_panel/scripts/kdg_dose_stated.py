@@ -315,7 +315,9 @@ def run_pilot(model, cfg, S, status: dict, out: Path, load_seconds: float, dry: 
 # ---- primary-2 main stage (KDG_GPTOSS_SPEC G-A18) ---------------------------------------------
 
 MAIN_CAP, MAIN_BATCH, POD_ENVELOPE_H, SETUP_H, FWD_S_PER_ROW = 1536, 64, 5.0, 0.3, 0.2
-READOUT_BATCH = 16  # the batch shape VALIDATE checks; recorded on every readout row
+# G-A20: one sequence at a time (validated exactly; batch 16 ran out of memory in eager attention on
+# ~2,000-token sequences, and batch shape moves the readout by up to 0.6 nats); recorded per row
+READOUT_BATCH = 1
 
 
 def rebuild_validate_seqs(model, cfg, pilot_rows: list[dict], scen: dict) -> tuple[list, list]:

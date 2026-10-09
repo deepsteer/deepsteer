@@ -730,7 +730,7 @@ class TestMainStage:
         assert rec["outcome"] == "main_complete" and rec["validate"]["n"] == 16
         rows = [json.loads(x) for x in (d / "ds_main.jsonl").read_text().splitlines()]
         ident = [r for r in rows if r.get("token_identity")]
-        assert ident and all(r["readout_batch_size"] == 16 for r in ident)
+        assert ident and all(r["readout_batch_size"] == 1 for r in ident)
         assert {r["stage"] for r in rows} == {"main", "B1"}
         assert (d / "ds_main_partial.jsonl").exists()
 
@@ -851,7 +851,7 @@ class TestHarnessFixes:
         assert rec["outcome"] == "rederived" and rec["readout_rows"] == rec["rows"]["identity"]
         rows = [json.loads(x) for x in
                 (tmp_path / "gpt_oss_20b" / "ds_main.jsonl").read_text().splitlines()]
-        assert all(r["readout_batch_size"] == 16 for r in rows if r["token_identity"])
+        assert all(r["readout_batch_size"] == 1 for r in rows if r["token_identity"])
 
     def test_session_log_is_copied_before_the_sentinel(self):
         # most probable failure: a crash's traceback dies with the pod (the p2i failure)
