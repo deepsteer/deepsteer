@@ -1913,3 +1913,50 @@ both. The §27 recipe-split line is held for the author's wording.
 > branch (a) to branch (b). The harness now seeds each scenario separately and samples at pure
 > temperature.
 
+
+## 30. Primary 2: direction of norm-crossing changes in GPT-OSS-20B's default reasoning mode (G-A17, G-A18; 2026-10-08)
+
+Rules pushed before the pod (G-A17 f631187, G-A18 9d34251, analysis acfffa7). Pod q5bnihxwoootif (p2i,
+A100-SXM4-80GB, torch 2.6.0+cu124, transformers 5.12.1). The VALIDATE re-check under identical batching
+passed (the main stage starts only after a pass; its numbers were lost in the crash below). Timing batch
+1,608 s (64 traces); projection ≈ 4.8 of 5.0 A100-h; main stage 576 of 586 scenarios (8 batches of 64,
+the ninth, 10 scenarios, held back by the deadline), generated tokens per batch mean 368–423, max ≤ 1,536
+(one trace truncated). The run crashed after generation (process ledger 2026-10-08); every trace was
+banked per batch, and rows were rebuilt with the pod's own parser (`reconstruct_ds_main.py`, committed
+8571526 before computing). `data/analysis_gptoss_primary2.json`.
+
+| | count |
+|---|---|
+| toward (dose-0 readout violating → medium-effort action consistent) | **74** |
+| away (consistent → violating) | **2** |
+| lateral (different option, same norm label) | 117 |
+| same option | 374 |
+| no action (1 truncated, 8 without token identity; identity 567 of 576) | 9 |
+
+**Verdict (pre-registered branch: toward).** m = 76 norm-crossings (N_min 27); one-sided exact sign
+test p = 3.9 × 10⁻²⁰ against 0.5 (α 0.01); the reverse test p = 1.0. Calibration beside it: with no
+reasoning, T 0.7 sampling of the dose-0 distribution produces about 40 norm-crossings per run with a
+toward share of 0.391 [0.278, 0.512] (q0, G-A17 note), that is about 16 toward and 25 away; observed 74
+and 2. **Reasoning at GPT-OSS-20B's default effort moves its action toward the scenario's norm-consistent
+option on 74 of the 76 scenarios where the dose-0 choice and the medium-effort choice differ in norm
+label.** As registered, this extends the KDG paper's deliberation brake (OLMo-3 and Llama-3.1 under forced
+dose arms) to a reasoning-RL-trained model's default mode, as a claim about direction, not size. It also
+resolves KDG-A22 toward its dose reading: C0's failure was reasoning changing the answer.
+
+Descriptive beside it: 117 of 576 scenarios (20%) change option within the same norm label, so reasoning
+moves GPT-OSS's choice often, and when the move crosses the norm it goes one way. The pilot's 6 vs 1 and
+the dose comparisons (C0 6 vs 0, dose-0 vs low-effort generation 5 vs 0) point the same way.
+
+**Referee pass.** (1) *"This is generic caution, not moral deliberation: reasoning makes the model pick
+the safer, rule-following option whatever the moral content."* Conceded as the strongest rival; the
+claim is scoped to direction toward the norm-consistent option, which in this panel is also usually the
+cautious one. Separating cells, priced and not run: a non-moral reasoning control at matched length (the
+KDG paper's filler arm, at medium effort), or scenarios whose norm-consistent option is the riskier
+action. (2) *"A deterministic dose-0 argmax against a sampled medium action manufactures crossings."* It
+does, about 40 per run, and they lean away (q0 0.391); the sign test against 0.5 is conservative here, and
+the observed split (74 vs 2) is far outside what sampling alone gives (about 16 vs 25). (3) *"The data
+come from a crashed run."* Every generation was banked per batch before the crash; the rows were rebuilt
+with the parser the pod would have run (script committed before the analysis); primary 2 uses only the
+sampled letters, so the lost forward readout does not enter it. What the crash cost (the VALIDATE
+numbers, the letter-step distributions and post-reasoning residuals, the descriptive dose-stated C0) is
+re-derivable from the banked ids in one short pod.

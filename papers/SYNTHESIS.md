@@ -931,3 +931,19 @@ scenarios. Under the two-way bootstrap (P1-A15, a fork) their CIs widen by 16–
 estimates hold; the deliberation brake stands on both models. One parenthetical changes: OLMo-3 against
 its own truncated filler reads (b), not (a) (escalated). The harness now seeds per scenario with pure
 temperature sampling (sampler version 2).
+
+### Primary 2: GPT-OSS-20B's default reasoning mode moves norm-crossing actions toward the norm (2026-10-08; `kdg_panel/KDG_RESULTS.md` §30)
+
+Positive voice first: **reasoning at GPT-OSS-20B's default effort moves its action toward the norm. Of
+the 76 scenarios (of 576) whose dose-0 choice and medium-effort choice differ in norm label, 74 move
+toward the norm-consistent option and 2 away (one-sided exact p = 3.9 × 10⁻²⁰); sampling alone, with no
+reasoning, would give about 39% toward.** The deliberation brake the KDG paper measured on OLMo-3 and
+Llama-3.1 under forced dose arms holds, as a direction claim, in the default mode of a
+reasoning-RL-trained model from another lab. Standing claim: "deliberation brakes the violating action"
+now spans three recipes (two instruct models under forced reasoning, one reasoning model at its default).
+Strongest counter-reading: generic caution (reasoning picks the safer, rule-following option whatever the
+moral content). Separating experiment: a non-moral reasoning control at matched length, or scenarios whose
+norm-consistent option is the riskier one (priced, not run). Not claimed: the size of the effect, or a
+pressure-attributable gap at medium effort (primary 1 withdrawn; E at medium is not estimable within the
+envelope). Owed: the forward readout and post-reasoning residuals for the 640 banked traces and the
+VALIDATE numbers, lost in a post-generation crash and re-derivable in one short pod.

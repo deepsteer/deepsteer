@@ -1,0 +1,22 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A17 / G-A18",
+ "rows_file": "ds_main_reconstructed.jsonl",
+ "n_scenarios_set": 586,
+ "n_rows": 576,
+ "counts": {
+  "toward": 74,
+  "away": 2,
+  "lateral": 117,
+  "same": 374,
+  "no_action": 9
+ },
+ "m": 76,
+ "toward": 74,
+ "away": 2,
+ "p_toward_one_sided": 3.873852244708339e-20,
+ "p_away_one_sided": 1.0,
+ "alpha": 0.01,
+ "branch": "toward",
+ "N_min": 27,
+ "powered_as_planned": true
+}
