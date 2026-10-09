@@ -44,12 +44,14 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--main-dir", type=Path, default=A.OUT / "p2i" / "main" / "gpt_oss_20b")
     ap.add_argument("--out", type=Path, default=A.DATA / "analysis_gptoss_primary2.json")
+    ap.add_argument("--rows-file", default="ds_main.jsonl",
+                    help="rows file inside --main-dir (ds_main_reconstructed.jsonl after a crash)")
     a = ap.parse_args(argv)
     scen, _ = load_scenario_dir(sorted(A.DATA.glob("*_scenarios_*.json")))
     label = {s.id: {o.option_id: o.norm_status for o in s.options} for s in scen}
     ids = set(json.loads((A.DATA / "gptoss_dose0_model_free_586.json").read_text())["ids"])
     dose0 = {s: max(m, key=m.get) for s, m in P._dose0_means().items() if s in ids}
-    rows = [r for r in A._rows(a.main_dir / "ds_main.jsonl")
+    rows = [r for r in A._rows(a.main_dir / a.rows_file)
             if r["stage"] == "main" and r["cell"] == "dl_chat_neutral" and r["seed"] == 0]
     counts = {"toward": 0, "away": 0, "lateral": 0, "same": 0, "no_action": 0}
     for r in rows:
@@ -69,7 +71,8 @@ def main(argv=None) -> int:
         else:
             counts["lateral"] += 1
     v = verdict(counts["toward"], counts["away"])
-    rep = {"rule": "KDG_GPTOSS_SPEC G-A17 / G-A18", "n_scenarios_set": len(dose0),
+    rep = {"rule": "KDG_GPTOSS_SPEC G-A17 / G-A18", "rows_file": a.rows_file,
+           "n_scenarios_set": len(dose0),
            "n_rows": len(rows), "counts": counts, **v, "N_min": 27,
            "powered_as_planned": v["m"] >= 27}
     a.out.write_text(json.dumps(rep, indent=1))

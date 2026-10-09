@@ -939,3 +939,22 @@ distribution, not an assumed one, and never run a generation stage without incre
 **Status.** open; discriminator priced, rides the next pod.
 **Thesis impact.** R_a: the forward readout stands and the pilot's banked distributions are usable. R_b: the dose-stated readout is redesigned before any main stage.
 **Note (author, 2026-10-08):** the pilot's direction counts (6 toward, 1 away, 14 lateral; stage A, `dl_chat_neutral` permutation 0 against the dose-0 readout) are non-primary. The 1 away is the first non-zero count against the direction across the program's dose comparisons (C0 6 vs 0, C0-dm 5 vs 0); it carries no framing weight. The discriminator runs first in the G-A18 pod and gates it.
+
+**Process ledger 2026-10-08 — the primary-2 main stage crashed after generation; the per-batch bank kept every trace.**
+Pod q5bnihxwoootif (p2i): VALIDATE re-check ran and passed (the main stage only starts after a pass;
+its numbers lived in `main_record.json`, never written), the timing batch projected ≈ 4.8 A100-h,
+the main stage generated 576 traces (8 batches; the ninth, 10 scenarios, was held back by the deadline),
+then B1 started one batch of 64 (22 scenarios) after the main stage and the run crashed with a traceback
+before the forward readout's results or `ds_main.jsonl` were written (rc 1). The traceback is lost: the
+session log stays on the pod and the pod was terminated. Two harness defects: (1) the deadline never
+applied to a stage's first batch, so B1 started at about 17:26 HST with ~16 minutes of envelope left and
+ran ~25 minutes (the session overran the 5.0 A100-h envelope by about 0.25 h); (2) the session log is not
+copied into the results directory, so a crash's traceback dies with the pod. Kept: every generation
+(`ds_main_partial.jsonl`), so primary 2 (sampled letters only) is computable; rows are rebuilt by
+`scripts/reconstruct_ds_main.py` with the pod's own parser. Lost: the VALIDATE re-check numbers, the
+forward readout (letter-step distributions and post-reasoning residuals) for the 640 rows, and the
+descriptive dose-stated C0. Re-derivable: the readout and residuals by one forward pass over the banked
+ids (about 640 rows, minutes after model load) with the VALIDATE re-check repeated in the same pod.
+Fixes owed before any later pod: a stage's first batch must also fit before its deadline (stage-start
+estimate), B1 starts only if a whole batch fits, the remote script copies `session.log` into `$OUT`, and
+the run writes `main_record.json` incrementally (VALIDATE result first).
