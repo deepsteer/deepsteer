@@ -1,0 +1,81 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A21 items 3-4 (3ce9327)",
+ "rows_file": "ds_main_reconstructed.jsonl",
+ "labels": {
+  "raters": [
+   "subagent",
+   "codex"
+  ],
+  "risk_reversed": 1,
+  "risk_aligned": 542,
+  "mixed": 43,
+  "cohen_kappa": 0.05095853263530672
+ },
+ "risk_reversed": {
+  "n_scenarios": 1,
+  "counts": {
+   "toward": 0,
+   "away": 0,
+   "lateral": 0,
+   "same": 1,
+   "no_action": 0
+  },
+  "m": 0,
+  "toward": 0,
+  "away": 0,
+  "p_toward_one_sided": 1.0,
+  "p_away_one_sided": 1.0,
+  "alpha": 0.01,
+  "branch": "not_detected"
+ },
+ "risk_aligned": {
+  "n_scenarios": 542,
+  "counts": {
+   "toward": 68,
+   "away": 2,
+   "lateral": 105,
+   "same": 350,
+   "no_action": 8
+  },
+  "m": 70,
+  "toward": 68,
+  "away": 2,
+  "p_toward_one_sided": 2.1057239068741906e-18,
+  "p_away_one_sided": 1.0,
+  "alpha": 0.01,
+  "branch": "toward"
+ },
+ "mixed": {
+  "n_scenarios": 43,
+  "counts": {
+   "toward": 6,
+   "away": 0,
+   "lateral": 12,
+   "same": 23,
+   "no_action": 1
+  },
+  "m": 6,
+  "toward": 6,
+  "away": 0,
+  "p_toward_one_sided": 0.015625,
+  "p_away_one_sided": 1.0,
+  "alpha": 0.01,
+  "branch": "not_detected"
+ },
+ "N_min": 27,
+ "branch": "unresolved",
+ "fisher_toward_share_reversed_vs_aligned": {
+  "table": [
+   [
+    0,
+    0
+   ],
+   [
+    68,
+    2
+   ]
+  ],
+  "p_two_sided": 1.0,
+  "descriptive": true
+ }
+}

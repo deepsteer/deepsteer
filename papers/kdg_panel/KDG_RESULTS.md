@@ -1952,7 +1952,7 @@ the safer, rule-following option whatever the moral content."* Conceded as the s
 claim is scoped to direction toward the norm-consistent option, which in this panel is also usually the
 cautious one. Separating cells, priced and not run: a non-moral reasoning control at matched length (the
 KDG paper's filler arm, at medium effort), or scenarios whose norm-consistent option is the riskier
-action. (2) *"A deterministic dose-0 argmax against a sampled medium action manufactures crossings."* It
+action. [The second ran on 2026-10-09 (§32): the set holds 1 risk-reversed scenario of 586; unresolved.] (2) *"A deterministic dose-0 argmax against a sampled medium action manufactures crossings."* It
 does, about 40 per run, and they lean away (q0 0.391); the sign test against 0.5 is conservative here, and
 the observed split (74 vs 2) is far outside what sampling alone gives (about 16 vs 25). (3) *"The data
 come from a crashed run."* Every generation was banked per batch before the crash; the rows were rebuilt
@@ -2005,3 +2005,71 @@ the finding: GPT-OSS's medium-effort decision is made in the trace. The banked r
 post-reasoning decision token are the readout's added value (direction reads later, zero GPU). (3) *"22
 scenarios cannot validate anything."* The C0 here is descriptive and labelled partial; it no longer gates
 anything (G-A18).
+
+## 32. Risk-reversed separating cell for primary 2 (G-A21 items 2–4; 2026-10-09)
+
+Rules pushed before any label was collected (G-A21, 3ce9327). Zero GPU. Two blind raters, Claude
+(`claude -p`, Pro account) and GPT (Codex CLI), each saw the 586 scenarios' acting-frame text with the
+norm-consistent and violating options as "Action X / Y" (order seeded by the scenario id; X is the
+consistent option on 290 of 586), 20 per call, and named the riskier action. Both rated all 586.
+`data/risk_ratings_{subagent,codex}.json`, `data/risk_reversal_labels.json`,
+`data/analysis_gptoss_risk_reversed.json`.
+
+| | Claude rater | GPT rater |
+|---|---|---|
+| violating option riskier | 581 | 545 |
+| norm-consistent option riskier | 5 | 40 |
+| EQUAL | 0 | 1 |
+| share answering "X" (position check) | 0.503 | 0.497 |
+
+| joint label | scenarios | toward | away | lateral | same | no action |
+|---|---|---|---|---|---|---|
+| risk-aligned (both: violating riskier) | 542 | 68 | 2 | 105 | 350 | 8 |
+| risk-reversed (both: consistent riskier) | **1** | 0 | 0 | 0 | 1 | 0 |
+| mixed (raters split) | 43 | 6 | 0 | 12 | 23 | 1 |
+
+The three subsets partition §30's counts exactly (74 toward, 2 away; checked in the script).
+
+**Verdict (pre-registered branch: unresolved).** The risk-reversed subset holds 1 scenario (F4-B-21T)
+and 0 norm-crossings, against N_min 27, so neither test runs at power; Fisher exact on toward share,
+reversed vs aligned, is undefined at 0 vs 70 crossings (p = 1.0, descriptive). **On the KDG scenario set
+the norm-consistent option is also the less risky one: both raters say so for 542 of 586 scenarios
+(92.5%), and the two readings of §30 (norm-tracking, risk aversion under RL) predict the same direction
+on all but one.** The pre-registered follow-up (more traces or permutations on the risk-reversed subset)
+cannot reach N_min at one scenario: crossings count scenarios, not traces. The separating cell needs
+scenarios built so the norm-consistent action carries the risk.
+
+Agreement. Raw agreement 0.927; Cohen's κ 0.05. Coincidence interrogated: with marginals of 581/586 and
+545/586 on one category, the agreement expected by chance is 0.923, so κ near 0 is the prevalence
+paradox, not disagreement (prevalence-adjusted κ 0.89 over three categories). The rare calls do not
+overlap: under independence the two raters would share 0.34 "consistent riskier" labels by chance, and
+they share 1. There is no stable risk-reversed core in this set for the two providers to agree on. The
+GPT rater's 40 dissents fall mostly in F1 (34 of the 43 split scenarios), honest-reporting items where the
+truthful entry brings immediate blame and the falsified one a risk of discovery; the raters differ on the
+time horizon of the risk, not on the instruction.
+
+Descriptive, not of record: the 43 split scenarios give 6 toward and 0 away (m = 6, below N_min).
+
+**Separating cell, priced (author's decision; new scenarios change the panel).** Zero GPU first: write
+about 400 candidate scenarios whose norm-consistent action carries the sanction or blame (reporting one's
+own error, declining a manager's instruction, disclosing a loss), screen them through the panel pipeline,
+and keep the scenarios both raters label risk-reversed. At §30's crossing rate (76 of 567 identity rows,
+0.134, Wilson 95% [0.108, 0.165]) N_min 27 needs about 250 such scenarios at the Wilson low (about 200 at
+the point estimate). GPU: the dose-0 readout at 8 permutations plus one medium-effort trace each at the
+validated shapes, about 1.8 A100-h of generation at p2i's measured 1,608 s per 64 traces, about 2.3 A100-h
+with setup, VALIDATE and the readout.
+
+**Referee pass.** (1) *"The raters called the violating option riskier because it is wrong; they rated
+ethics, not risk."* Partly conceded: no rater positive control (pairs with a built-in risk asymmetry and no
+moral content) was run. It does not change the verdict. Under the most liberal labelling, where either
+rater naming the consistent option riskier counts (44 scenarios), the subset holds 6 crossings, still
+below N_min 27. Both raters are position-neutral (0.503 and 0.497 "X"), and the GPT rater's dissents track
+a consequence it can name (immediate blame for an honest bad number), which a label-matching rater would
+not produce. (2) *"κ = 0.05 means the labels are noise."* It is the prevalence paradox above: 0.927 raw
+agreement against 0.923 expected from the marginals. Prevalence-adjusted agreement is 0.89. (3) *"An
+unresolved result means §30 should already be rescoped to 'toward the less risky option'."* The rescope is
+the pre-registered consequence of the risk-aversion branch, which this result does not reach. §30's
+sentence stands as written. Its rival is now stated with a number: on this set toward the norm and toward
+the less risky option are the same direction in 542 of 586 scenarios. The same rival applies to the KDG
+paper's deliberation brake, measured on scenarios of the same families and construction; how far is
+unmeasured until its deliberation subsets are rated, which costs no GPU (ANOMALIES KDG-A26, escalated).

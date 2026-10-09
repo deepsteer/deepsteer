@@ -955,4 +955,10 @@ scenarios flip across traces), so deliberation-stage residuals, not decision-tok
 moral reference would have to be present. Letter balance (G-A21, 2026-10-09): the norm-consistent
 option's letter at permutation 0 is balanced against GPT-OSS's dose-0 letter marginals (chi-square
 p = 0.21; letter-prior advantage +0.003 [−0.001, +0.007]), so the letter channel does not carry the 74 vs 2.
-The generic-caution rival is under test on the risk-reversed scenarios (G-A21 items 2–4).
+Risk-reversed separating cell (G-A21, 2026-10-09, KDG_RESULTS §32): **reasoning at
+the default level moves GPT-OSS-20B toward the option that is norm-consistent and, by two blind raters, the
+less risky one in 542 of 586 scenarios.** The set holds 1 scenario both raters call risk-reversed, so the
+pre-registered branch is unresolved: norm-tracking and risk aversion under RL point the same way on this
+set, and the separating cell needs scenarios built so the norm-consistent action carries the risk (about
+250 scenarios, about 2.3 A100-h; author's call). The same rival reaches the KDG paper's deliberation
+brake (KDG-A26, escalated).

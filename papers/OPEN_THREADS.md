@@ -31,6 +31,7 @@ Prices are rough A100-hour estimates for the parked pods.
 | §9 l.97 "(against the truncated filler it resolves, −0.039)" | P1-A15/A16, KDG-A23 | under the two-way estimator of record it does not resolve (−0.039 [−0.082, +0.004]); OLMo-3 reads branch (b) on both references |
 | Harness-corrections methods paragraph | KDG-A20 + KDG-A23 | one paragraph, drafted in KDG_RESULTS §29 |
 | Two-way CIs beside every sampled-cell CI | P1-A16 | registered first, two-way beside, in tables and text |
+| Deliberation brake vs risk aversion (§9, §10 "reasoning brakes the violating action") | KDG-A26, KDG_RESULTS §32 | **author's call**: on the GPT-OSS 586 the violating option is also the riskier one for 542 (two blind raters); rate the paper's deliberation subsets (zero GPU), then either a scope sentence or a risk-reversed scenario set |
 
 ## A. Closed (verified this session)
 

@@ -30,3 +30,26 @@ def test_items_blind_to_norm_labels():
     share = sum(it["X_is"] == "consistent" for it in its) / len(its)
     assert 0.4 < share < 0.6
     assert not any("consistent" in it["X"] + it["Y"] + it["text"].lower() for it in its[:50])
+
+
+def test_fisher_matches_reference():
+    # most probable failure: the two-sided sum misses tables tied in probability with the observed
+    # one (floating-point equality); reference value from R fisher.test(matrix(c(1,11,9,3),2))
+    import analyze_gptoss_risk_reversed as RV
+
+    assert RV.fisher_two_sided(1, 9, 11, 3) == pytest.approx(0.002759, abs=1e-5)
+    assert RV.fisher_two_sided(3, 3, 3, 3) == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize("toward,away,want", [
+    (5, 0, "unresolved"),               # below N_min 27 however lopsided
+    (20, 7, "norm_tracking"),           # critical count 20 at m = 27 (p < 0.01)
+    (19, 8, "unresolved"),              # toward ahead but p > 0.01
+    (10, 17, "risk_aversion_under_rl"),  # away >= toward
+])
+def test_branch_order(toward, away, want):
+    # most probable failure: the N_min rule is checked after the significance test, so a small,
+    # lopsided subset is read as norm-tracking
+    import analyze_gptoss_risk_reversed as RV
+
+    assert RV.branch(toward, away) == want
