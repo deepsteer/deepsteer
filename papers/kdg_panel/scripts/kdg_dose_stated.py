@@ -357,7 +357,8 @@ def validate_matched(model, seqs, pos, letter_ids: list[int], dry: bool) -> dict
             "pass": bool(ok)}
 
 
-def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadline=None):
+def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadline=None,
+              est_batch_seconds=None):
     """Sampler-v2 generation of an ordered job list at MAIN_BATCH, banked per batch."""
     prompts, orders = [], []
     for s, c, k in jobs:
@@ -377,7 +378,7 @@ def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadl
 
     ids, seeds, secs = model.sample_ids(prompts, max_new_tokens=cap, temperature=T,
                                         seed=gen_seed, batch_size=MAIN_BATCH, on_batch=bank,
-                                        deadline=deadline)
+                                        deadline=deadline, est_batch_seconds=est_batch_seconds)
     rows, pids = [], []
     for (s, c, k), o, p, g, bs in zip(jobs, orders, prompts, ids, seeds):
         if g is None:
@@ -405,6 +406,13 @@ def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadl
     return rows, pids, secs
 
 
+def free_cache(model) -> None:
+    """Release the generation stage's cached GPU blocks before the long-sequence readout."""
+    torch = getattr(model, "torch", None)
+    if torch is not None and torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
 def _readout_batched(model, rows, pids, lid):
     ok, seqs, logp, resid, secs = readout(model, rows, pids, lid, batch_size=READOUT_BATCH)
     for j, i in enumerate(ok):
@@ -428,6 +436,10 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     def elapsed_h():
         return SETUP_H + (time.time() - t_start) / 3600
 
+    def checkpoint():
+        """The run record after every step (a crash keeps everything up to it)."""
+        (out / "main_record.json").write_text(json.dumps(rec, indent=1, default=float))
+
     def finish(outcome, rows, logp=None, resid=None, ok=()):
         rec["outcome"] = outcome
         with open(out / "ds_main.jsonl", "w") as f:
@@ -444,6 +456,7 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     # (a) VALIDATE re-check under identical batching (gates everything)
     seqs, pos = rebuild_validate_seqs(model, cfg, pilot_rows, scen)
     rec["validate"] = validate_matched(model, seqs, pos, list(lid.values()), dry)
+    checkpoint()
     if not rec["validate"]["pass"]:
         return finish("bail_validate", [])
     # (b) timing step: the first main-stage batch, banked
@@ -455,31 +468,40 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     proj = elapsed_h() + (secs[0] * n_rest_batches + FWD_S_PER_ROW * len(jobs)) / 3600
     rec["timing"] = {"first_batch_seconds": secs[0], "remaining_batches": n_rest_batches,
                      "projected_hours_at_main_end": proj, "elapsed_h": elapsed_h()}
+    checkpoint()
     if proj > envelope_h:
         ok, logp, resid, _ = _readout_batched(model, rows, pids, lid)
         return finish("stop_report", rows, logp, resid, ok)
     # (c) the rest of the main stage, deadline at the envelope
     deadline = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * len(jobs)
     r2, p2, s2 = _generate(model, cfg, rest, cap, SEED + 50_001, letter_ids, partial, "main",
-                           deadline)
+                           deadline, est_batch_seconds=secs[0])
     rows += r2
     pids += p2
     rec["main"] = {"n": len(rows), "run": sum(r["status"] != "not_run" for r in rows),
                    "identity": sum(r["token_identity"] for r in rows),
                    "truncated": sum(r["status"] == "truncated" for r in rows),
                    "gen_seconds": float(secs[0] + sum(s2))}
+    checkpoint()
+    est = float(np.mean([secs[0], *s2]))  # a whole B1 batch must fit, the first included
     # (d) stage B1 last, within the remaining envelope
     b1 = [(scen[s], "dl_chat_neutral", k) for s in c0_ids for k in (1, 2, 3)]
     deadline_b1 = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * (len(jobs) + len(b1))
-    if time.time() < deadline_b1:
+    if time.time() + est < deadline_b1:
         rb, pb, sb = _generate(model, cfg, b1, cap, SEED + 60_000, letter_ids, partial, "B1",
-                               deadline_b1)
+                               deadline_b1, est_batch_seconds=est)
         rows += rb
         pids += pb
         rec["b1"] = {"run": sum(r["status"] != "not_run" for r in rb), "n": len(b1),
                      "gen_seconds": float(sum(sb))}
     else:
         rec["b1"] = {"run": 0, "n": len(b1), "skipped": "envelope"}
+    checkpoint()
+    # rows before the readout: a readout crash keeps them
+    with open(out / "ds_main.jsonl", "w") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    free_cache(model)
     ok, logp, resid, fsecs = _readout_batched(model, rows, pids, lid)
     rec["forward_seconds"] = fsecs
     c0_rows = [r for r in rows if r["scenario_id"] in set(c0_ids)]
@@ -487,3 +509,79 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
                              {"verdict": "not_run"})
     rec["elapsed_h_at_end"] = elapsed_h()
     return finish("main_complete", rows, logp, resid, ok)
+
+
+# ---- re-derivation of what the p2i crash lost (KDG_GPTOSS_SPEC G-A19) ------------------------
+
+def rows_from_bank(model, cfg, bank: list[dict], scen: dict, letter_ids: set[int]):
+    """Rebuild main-stage / B1 rows and their prompt ids from the per-batch bank (prompt render +
+    banked ids), with the pod's parser at the main cap."""
+    rows, pids = [], []
+    for b in bank:
+        for (sid, seed), g in zip(b["jobs"], b["gen_ids"]):
+            s = scen[sid]
+            o = assign_letters(s, seed)
+            p = model.render_chat(letter_chat_messages(s, o, "agent", "neutral", "primary"))
+            ds = kh.parse_dose_stated(g, len(g) >= MAIN_CAP, letter_ids)
+            letter = None if ds.letter_id is None else model.tok.decode([ds.letter_id])
+            opt = dict(o).get(letter) if letter else None
+            rows.append({
+                "scenario_id": sid, "cell": "dl_chat_neutral", "seed": seed, "stage": b["stage"],
+                "batch": b["batch"], "batch_seed": b["seed"], "order": letter_map(o),
+                "prompt_sha256": sha256_text(p), "gen_ids": g, "n_gen_tokens": len(g),
+                "status": ds.status, "token_identity": ds.token_identity,
+                "trace_len": ds.trace_len, "header_end": ds.header_end,
+                "assistant_idx": ds.assistant_idx, "letter": letter,
+                "option_id": None if opt is None else opt.option_id,
+                "norm_status": None if opt is None else opt.norm_status,
+                "harmony_date_pin": cfg.date_pin, "harmony_reasoning_level": cfg.reasoning_level,
+                "readout_version": KDG_READOUT_VERSION, "sampler_version": KDG_SAMPLER_VERSION,
+                "rebuilt_from_bank": True,
+            })
+            pids.append(model.tok.encode(p, add_special_tokens=False))
+    return rows, pids
+
+
+def run_rederive(model, cfg, scen: dict, pilot_rows: list[dict], bank: list[dict], out: Path,
+                 dry: bool) -> dict:
+    out.mkdir(parents=True, exist_ok=True)
+    lid = {x: model.token_id(x) for x in "ABCDE"}
+    model.reasoning_level = cfg.reasoning_level
+    rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A19", "readout_batch": READOUT_BATCH}
+
+    def checkpoint():
+        (out / "rederive_record.json").write_text(json.dumps(rec, indent=1, default=float))
+
+    seqs, pos = rebuild_validate_seqs(model, cfg, pilot_rows, scen)
+    rec["validate"] = validate_matched(model, seqs, pos, list(lid.values()), dry)
+    checkpoint()
+    print(f">> VALIDATE re-check: batch16 {rec['validate']['matched_batch16_max']:.4f}, alone "
+          f"{rec['validate']['matched_alone_max']:.4f} -> pass {rec['validate']['pass']}",
+          flush=True)
+    if not rec["validate"]["pass"]:
+        rec["outcome"] = "bail_validate"
+        checkpoint()
+        return rec
+    rows, pids = rows_from_bank(model, cfg, bank, scen, set(lid.values()))
+    rec["rows"] = {"n": len(rows), "identity": sum(r["token_identity"] for r in rows),
+                   "by_stage": {st: sum(r["stage"] == st for r in rows) for st in ("main", "B1")}}
+    checkpoint()
+    free_cache(model)
+    ok, logp, resid, fsecs = _readout_batched(model, rows, pids, lid)
+    rec["forward_seconds"] = fsecs
+    rec["readout_rows"] = len(ok)
+    if len(ok) != rec["rows"]["identity"]:
+        raise RuntimeError("an identity row got no readout row")
+    print(f">> forward readout: {len(ok)} rows in {fsecs:.0f}s", flush=True)
+    b1_ids = sorted({r["scenario_id"] for r in rows if r["stage"] == "B1"})
+    rec["c0_descriptive_partial"] = {
+        **c0_dose_stated([r for r in rows if r["scenario_id"] in set(b1_ids)]),
+        "label": f"partial: {len(b1_ids)} of 64 C0 scenarios have B1 traces"}
+    rec["outcome"] = "rederived"
+    with open(out / "ds_main.jsonl", "w") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    np.savez_compressed(out / "ds_main.npz", logp_letter_step=logp.astype(np.float16),
+                        resid_post_reasoning=resid, readout_rows=np.array(ok))
+    checkpoint()
+    return rec

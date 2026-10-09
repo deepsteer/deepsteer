@@ -317,8 +317,7 @@ def test_p2c_upgrades_torch_before_any_gptoss_call():
     # most probable failure (VALIDATE pod g85xxpdraotqfw, 2026-10-07): p2c loads GPT-OSS on the
     # image's torch 2.4, whose missing torch.accelerator crashes the mxfp4 quantizer at load
     sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
-    head = ('if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ]'
-            ' || [ "$PROFILE" = "p2i" ]; then')
+    head = 'if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ]'  # prefix: profiles keep joining
     block = sh[sh.index(head):]
     up = block.index('"torch==2.6.0"')
     assert up < block.index("python -m pytest") < block.index("python $G")
@@ -784,3 +783,85 @@ def test_p2i_runs_the_main_stage_only():
     assert block.index("--dry-run --dose-stated-main") < block.index(
         'python $G --dose-stated-main --pilot-rows "$PILOT_ROWS" --envelope-hours 5.0')
     assert "--dose-stated-pilot" not in block and "--c0-dm" not in block
+
+
+BANK = REPO / "papers/kdg_panel/outputs/p2i/main/gpt_oss_20b/ds_main_partial.jsonl"
+
+
+class TestHarnessFixes:
+    def test_deadline_blocks_a_stages_first_batch_given_an_estimate(self):
+        # process ledger 2026-10-08. most probable failure: a stage's first batch starts with too
+        # little envelope left (B1 ran ~25 minutes past the deadline check)
+        import time
+
+        m = TestPilotBanking._fake_wrapper()
+        prompts = [str(i + 1) for i in range(10)]
+        ids, _, secs = m.sample_ids(prompts, max_new_tokens=3, temperature=0.0, seed=0,
+                                    batch_size=4, deadline=time.time() + 5,
+                                    est_batch_seconds=600.0)
+        assert ids == [None] * 10 and secs == []
+        ids, _, _ = m.sample_ids(prompts, max_new_tokens=3, temperature=0.0, seed=0,
+                                 batch_size=4, deadline=time.time() + 600,
+                                 est_batch_seconds=1.0)
+        assert all(x is not None for x in ids)
+
+    def test_readout_crash_keeps_rows_and_record(self, tok, tmp_path):
+        # most probable failure: a crash in the forward readout loses every generated row and the
+        # VALIDATE numbers again (the p2i failure)
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        kds = _load("kdg_dose_stated")
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+        scen = {s.id: s for s in S}
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        calls = {"n": 0}
+        real = stub.forward_readout
+
+        def flaky(seqs, positions, batch_size=8):
+            calls["n"] += 1
+            if calls["n"] > 2:  # VALIDATE uses two calls; the post-generation readout crashes
+                raise RuntimeError("simulated readout crash")
+            return real(seqs, positions, batch_size)
+
+        stub.forward_readout = flaky
+        ids = json.loads((REPO / "papers/kdg_panel/data/gptoss_dose0_model_free_586.json")
+                         .read_text())["ids"][:6]
+        pilot = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        import time
+
+        with pytest.raises(RuntimeError, match="simulated"):
+            kds.run_main(stub, CFG, scen, ids, ids[:2], pilot, tmp_path, time.time(), True)
+        rec = json.loads((tmp_path / "main_record.json").read_text())
+        assert {"validate", "timing", "main"} <= set(rec)
+        assert (tmp_path / "ds_main.jsonl").read_text().strip()
+
+    def test_dry_rederive_reads_every_identity_row(self, tok, tmp_path):
+        # G-A19. most probable failure: rebuilt sequences drop rows, so the re-derived readout no
+        # longer lines up with primary 2's rows of record
+        if not (PILOT_ROWS.exists() and BANK.exists()):
+            pytest.skip("pilot rows or bank not on disk")
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--rederive", "--pilot-rows", str(PILOT_ROWS), "--bank", str(BANK),
+                             "--out", str(tmp_path)], capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        rec = json.loads((tmp_path / "gpt_oss_20b" / "rederive_record.json").read_text())
+        assert rec["outcome"] == "rederived" and rec["readout_rows"] == rec["rows"]["identity"]
+        rows = [json.loads(x) for x in
+                (tmp_path / "gpt_oss_20b" / "ds_main.jsonl").read_text().splitlines()]
+        assert all(r["readout_batch_size"] == 16 for r in rows if r["token_identity"])
+
+    def test_session_log_is_copied_before_the_sentinel(self):
+        # most probable failure: a crash's traceback dies with the pod (the p2i failure)
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        trap = next(ln for ln in sh.splitlines() if ln.startswith("trap "))
+        assert trap.index("session.log") < trap.index(".session_done")
+
+    def test_p2j_ships_both_files_and_runs_rederive_only(self):
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2j" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert "--rederive" in block and "--dose-stated-main" not in block
+        assert "ds_main_partial.jsonl" in block and "ds_pilot.jsonl" in block

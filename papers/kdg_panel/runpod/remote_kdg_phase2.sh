@@ -30,6 +30,14 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2j  G-A19 re-derivation after the p2i crash (no generation): VALIDATE re-check with
+#                    numbers recorded, then the forward readout + post-reasoning residuals of the 640
+#                    banked traces and the partial dose-stated C0. About 0.5 A100-h:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl,outputs/p2i/main/gpt_oss_20b/ds_main_partial.jsonl \
+#     MAX_SYNC_GB=1 MIN_FREE_GB=20 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh \
+#     KDG_PROFILE=p2j SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2j \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2i  GPT-OSS-20B primary-2 main stage (KDG_GPTOSS_SPEC G-A18): VALIDATE re-check on
 #                    the pilot's 16 banked sequences under identical batching (gates everything),
 #                    timing step at cap 1,536 / batch 64 within a 5.0 A100-h envelope, the main stage
@@ -86,12 +94,14 @@ PROFILE="${KDG_PROFILE:-}"
 cd "$REPO_DIR"
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREADS:-4}"
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
-trap 'touch "$REPO_DIR/.session_done"' EXIT
+# copy the session log into the results before the sentinel, so a crash's traceback comes back with
+# the download instead of dying with the pod (process ledger 2026-10-08)
+trap 'cp "$REPO_DIR/session.log" "${OUT:-$REPO_DIR}/session.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2i (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2j (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -105,7 +115,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -134,6 +144,22 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] ||
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2j" ]; then  # G-A19: re-derivation, no generation
+    PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
+    BANK=papers/kdg_panel/outputs/p2i/main/gpt_oss_20b/ds_main_partial.jsonl
+    for f in "$PILOT_ROWS" "$BANK"; do
+      [ -f "$f" ] || { echo "FATAL: $f missing (SYNC_OUTPUTS must ship it)"; exit 1; }
+    done
+    python $G --dry-run --rederive --pilot-rows "$PILOT_ROWS" --bank "$BANK" --out "$OUT/_dry_rederive" \
+      || { echo "DRY RUN (re-derivation) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2j/rederive ===================="
+    python $G --rederive --pilot-rows "$PILOT_ROWS" --bank "$BANK" --out "$OUT/rederive"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/rederive" \
+      || echo "WARN: manifest verify reported mismatches"
+    echo ">> KDG p2j done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2j/"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2i" ]; then  # G-A18: primary-2 main stage
     PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
     [ -f "$PILOT_ROWS" ] || { echo "FATAL: $PILOT_ROWS missing (SYNC_OUTPUTS must ship it)"; exit 1; }

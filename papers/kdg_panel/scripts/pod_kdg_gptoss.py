@@ -129,7 +129,7 @@ class HarmonyStub:
     # dose-stated stubs (G-A15/G-A16): synthetic harmony traces, every 7th truncated and every 11th
     # closing into a commentary channel (non-identity), so the parser and gates are exercised
     def sample_ids(self, rendered, *, max_new_tokens, temperature, seed, batch_size=32,
-                   on_batch=None, deadline=None):
+                   on_batch=None, deadline=None, est_batch_seconds=None):
         ids, seeds = [], []
         body = self.tok.encode("Weighing the options.", add_special_tokens=False)
         for n, _ in enumerate(rendered):
@@ -146,7 +146,8 @@ class HarmonyStub:
         nb = (len(rendered) + batch_size - 1) // batch_size
         secs = []
         for b in range(nb):  # deadline honoured per batch, as in ModelWrapper.sample_ids
-            if deadline is not None and secs and time.time() + 0.01 > deadline:
+            est = 0.01 if secs else est_batch_seconds
+            if deadline is not None and est is not None and time.time() + est > deadline:
                 for j in range(b * batch_size, len(rendered)):
                     ids[j], seeds[j] = None, None
                 break
@@ -452,6 +453,10 @@ def main() -> int:
     ap.add_argument("--pilot-rows", type=Path, default=None,
                     help="G-A18 VALIDATE re-check: the banked pilot ds_pilot.jsonl")
     ap.add_argument("--envelope-hours", type=float, default=5.0)
+    ap.add_argument("--rederive", action="store_true",
+                    help="G-A19: VALIDATE re-check, then the forward readout of the banked traces")
+    ap.add_argument("--bank", type=Path, default=None,
+                    help="G-A19: the p2i per-batch bank (ds_main_partial.jsonl)")
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
                     help="dose-stated pilot: no new stage-A batch past this (set by amendment)")
     ap.add_argument("--c0-dm", action="store_true",
@@ -515,6 +520,26 @@ def main() -> int:
                   row_fields={"harmony_date_pin": hcfg.date_pin,
                               "harmony_reasoning_level": hcfg.reasoning_level,
                               "reasoning_trace": "none", "prefill": "primary"})
+        if a.rederive:
+            import kdg_dose_stated as kds
+
+            full, _ = load_scenario_dir(files)
+            pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            bank = [json.loads(x) for x in a.bank.read_text().splitlines() if x.strip()]
+            if a.dry_run:
+                bank = [dict(b, jobs=b["jobs"][:3], gen_ids=b["gen_ids"][:3]) for b in bank[:2]]
+            rr = kds.run_rederive(model, hcfg, {s.id: s for s in full}, pilot, bank, a.out / KEY,
+                                  a.dry_run)
+            manifest.data["gptoss"]["rederive"] = {k: v for k, v in rr.items()
+                                                   if k not in ("validate",)}
+            manifest.data["gptoss"]["rederive"]["validate"] = {
+                k: v for k, v in rr["validate"].items() if k != "per_row"}
+            for f in ("ds_main.jsonl", "ds_main.npz", "rederive_record.json"):
+                if (a.out / KEY / f).exists():
+                    manifest.add(a.out / KEY / f, "rederive", KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> re-derivation outcome: {rr['outcome']}", flush=True)
+            return 2 if rr["outcome"] == "bail_validate" else 0
         if a.dose_stated_main:
             import kdg_dose_stated as kds
 
