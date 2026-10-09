@@ -574,3 +574,17 @@ pod).** Supersedes the conflicting parts of G-A15–G-A17.
    first non-zero count against the direction across the program's dose comparisons (C0 6 vs 0, C0-dm
    5 vs 0), and it carries no framing weight.
 5. **Option 3 (throughput engineering) deferred.**
+
+**G-A19. Re-derivation of what the p2i crash lost (author, 2026-10-08; pushed before code or pod).**
+No new hypothesis and no generation: the pod recomputes quantities G-A18 already specified, from the
+640 banked traces (`ds_main_partial.jsonl`, shipped via SYNC_OUTPUTS with the pilot rows).
+1. **VALIDATE re-check, repeated with its numbers recorded** (G-A18 item 3a, unchanged rule: identical
+   batching, 16 and 1 per batch on both sides, both ≤ 0.05 nats; fail → bail before anything else).
+2. **Forward readout of every banked trace with token identity** (main stage and B1), at the validated
+   batch shape (16), from the rebuilt prompt render + banked ids up to the canonical header: the
+   letter-step distribution and residuals at the post-reasoning decision token and letter position, every
+   layer; each row records its batch shape.
+3. **Descriptive dose-stated C0** on the 22 scenarios with B1 traces (G-A16 item 3), labelled partial.
+4. **Not recomputed:** primary 2 (sampled letters, KDG_RESULTS §30; the rebuilt rows of record stand).
+   The forward readout is checked against them: every rebuilt identity row must get a readout row.
+Envelope about 0.5 A100-h; no deadline-sensitive stage.
