@@ -457,6 +457,8 @@ def main() -> int:
                     help="G-A19: VALIDATE re-check, then the forward readout of the banked traces")
     ap.add_argument("--bank", type=Path, default=None,
                     help="G-A19: the p2i per-batch bank (ds_main_partial.jsonl)")
+    ap.add_argument("--judgment-medium", action="store_true",
+                    help="G-A23 item 3: judgment readout at medium on the 175 divergent scenarios")
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
                     help="dose-stated pilot: no new stage-A batch past this (set by amendment)")
     ap.add_argument("--c0-dm", action="store_true",
@@ -540,6 +542,30 @@ def main() -> int:
             print(f"manifest: {manifest.write()}")
             print(f">> re-derivation outcome: {rr['outcome']}", flush=True)
             return 2 if rr["outcome"] == "bail_validate" else 0
+        if a.judgment_medium:
+            import kdg_judgment_medium as kjm
+
+            full, _ = load_scenario_dir(files)
+            div = json.loads((KDG_DIR / "data" / "gptoss_divergent_175.json").read_text())
+            ids = div["divergent_violating"] + div["divergent_neutral"]
+            if len(ids) != 175:
+                raise SystemExit(f"divergent set has {len(ids)} ids, expected 175")
+            if a.dry_run:
+                ids = ids[:12]
+            pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            jr = kjm.run_judgment_medium(model, hcfg, {s.id: s for s in full}, ids, pilot,
+                                         a.out / KEY, t_start, a.dry_run,
+                                         envelope_h=a.envelope_hours)
+            manifest.data["gptoss"]["judgment_medium"] = {
+                k: jr.get(k) for k in ("outcome", "timing", "generation", "readout_rows")}
+            manifest.data["gptoss"]["judgment_medium"]["validate"] = {
+                k: v for k, v in jr["validate"].items() if k != "per_row"}
+            for f in ("jm.jsonl", "jm.npz", "jm_record.json", "jm_partial.jsonl"):
+                if (a.out / KEY / f).exists():
+                    manifest.add(a.out / KEY / f, "judgment_medium", KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> judgment-medium outcome: {jr['outcome']}", flush=True)
+            return {"bail_validate": 2, "stop_report": 3}.get(jr["outcome"], 0)
         if a.dose_stated_main:
             import kdg_dose_stated as kds
 

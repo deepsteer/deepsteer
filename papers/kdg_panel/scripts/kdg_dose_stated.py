@@ -360,8 +360,9 @@ def validate_matched(model, seqs, pos, letter_ids: list[int], dry: bool) -> dict
 
 
 def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadline=None,
-              est_batch_seconds=None):
-    """Sampler-v2 generation of an ordered job list at MAIN_BATCH, banked per batch."""
+              est_batch_seconds=None, batch_size=None):
+    """Sampler-v2 generation of an ordered job list at MAIN_BATCH (or ``batch_size``), banked per
+    batch."""
     prompts, orders = [], []
     for s, c, k in jobs:
         frame, variant = CELLS[c]
@@ -379,7 +380,8 @@ def _generate(model, cfg, jobs, cap, gen_seed, letter_ids, partial, stage, deadl
                                          for j in range(len(got))], "gen_ids": got}) + "\n")
 
     ids, seeds, secs = model.sample_ids(prompts, max_new_tokens=cap, temperature=T,
-                                        seed=gen_seed, batch_size=MAIN_BATCH, on_batch=bank,
+                                        seed=gen_seed, batch_size=batch_size or MAIN_BATCH,
+                                        on_batch=bank,
                                         deadline=deadline, est_batch_seconds=est_batch_seconds)
     rows, pids = [], []
     for (s, c, k), o, p, g, bs in zip(jobs, orders, prompts, ids, seeds):

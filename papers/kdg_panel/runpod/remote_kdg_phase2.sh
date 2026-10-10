@@ -30,6 +30,14 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2k  G-A23 item 3: judgment readout at medium (jl_chat_neutral, permutation 0) on the
+#                    175 divergent scenarios: VALIDATE re-check (bail on fail), 2 batches of 88 at cap
+#                    1,536 within a 1.7 A100-h envelope, forward readout one sequence at a time:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl MAX_SYNC_GB=1 MIN_FREE_GB=20 \
+#     REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2k \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2k \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2j  G-A19 re-derivation after the p2i crash (no generation): VALIDATE re-check with
 #                    numbers recorded, then the forward readout + post-reasoning residuals of the 640
 #                    banked traces and the partial dose-stated C0. About 0.5 A100-h:
@@ -99,9 +107,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'cp "$REPO_DIR/session.log" "${OUT:-$REPO_DIR}/session.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j|p2k) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2j (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2k (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -115,7 +123,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ] || [ "$PROFILE" = "p2k" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -144,6 +152,25 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] ||
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2k" ]; then  # G-A23 item 3: judgment readout at medium, 175 divergent
+    PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
+    [ -f "$PILOT_ROWS" ] || { echo "FATAL: $PILOT_ROWS missing (SYNC_OUTPUTS must ship it)"; exit 1; }
+    [ -f papers/kdg_panel/data/gptoss_divergent_175.json ] || { echo "FATAL: divergent id list missing"; exit 1; }
+    python $G --dry-run --judgment-medium --pilot-rows "$PILOT_ROWS" --out "$OUT/_dry_jm" \
+      || { echo "DRY RUN (judgment-medium) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2k/judgment-medium ===================="
+    python $G --judgment-medium --pilot-rows "$PILOT_ROWS" --envelope-hours 1.7 --out "$OUT/jm"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/jm" \
+      || echo "WARN: manifest verify reported mismatches"
+    case $rc in
+      0) echo ">> judgment readout complete";;
+      2) echo ">> BAIL: VALIDATE re-check failed under identical batching; nothing generated";;
+      3) echo ">> STOP: the first batch projected past 1.7 A100-h; it is banked and read";;
+    esac
+    echo ">> KDG p2k done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2k/"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2j" ]; then  # G-A19: re-derivation, no generation
     PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
     BANK=papers/kdg_panel/outputs/p2i/main/gpt_oss_20b/ds_main_partial.jsonl

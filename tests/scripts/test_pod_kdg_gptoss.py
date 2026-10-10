@@ -865,3 +865,87 @@ class TestHarnessFixes:
         block = block[: block.index("exit $rc") + len("exit $rc")]
         assert "--rederive" in block and "--dose-stated-main" not in block
         assert "ds_main_partial.jsonl" in block and "ds_pilot.jsonl" in block
+
+
+class TestJudgmentMedium:
+    """G-A23 item 3 (p2k): the judgment readout at medium on the 175 divergent scenarios."""
+
+    def _scen(self):
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+        return {s.id: s for s in S}
+
+    def _ids(self):
+        div = json.loads((REPO / "papers/kdg_panel/data/gptoss_divergent_175.json").read_text())
+        return div["divergent_violating"] + div["divergent_neutral"]
+
+    def test_divergent_set_is_175_and_disjoint_from_screen_passes(self):
+        # most probable failure: the committed id list drifted from the G-A22 item 4 subsets
+        ids = self._ids()
+        assert len(ids) == len(set(ids)) == 175
+
+    def test_runs_the_judgment_prompt_not_the_action_prompt(self, tok, tmp_path):
+        # most probable failure: the pod renders the agent (action) frame, so J_med is just a
+        # second action trace and the principled-revision test compares action with action
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        import time
+
+        kjm = _load("kdg_judgment_medium")
+        scen, ids = self._scen(), self._ids()[:12]
+        pilot = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        rec = kjm.run_judgment_medium(stub, CFG, scen, ids, pilot, tmp_path, time.time(), True)
+        assert rec["outcome"] == "jm_complete" and rec["generation"]["n"] == 12
+        rows = [json.loads(x) for x in (tmp_path / "jm.jsonl").read_text().splitlines()]
+        assert {r["cell"] for r in rows} == {"jl_chat_neutral"} and {r["seed"] for r in rows} == {0}
+        r = rows[0]
+        o = assign_letters(scen[r["scenario_id"]], 0)
+        want = lib.sha256_text(stub.render_chat(
+            lib.letter_chat_messages(scen[r["scenario_id"]], o, "eval", "neutral", "primary")))
+        assert r["prompt_sha256"] == want
+        assert all(x["readout_batch_size"] == 1 for x in rows if x["token_identity"])
+        banks = [json.loads(x) for x in (tmp_path / "jm_partial.jsonl").read_text().splitlines()]
+        assert len(banks) == 2  # both batches banked (dry batch 8, 12 scenarios)
+
+    def test_validate_fail_generates_nothing(self, tok, tmp_path, monkeypatch):
+        # most probable failure: generation starts before the VALIDATE re-check passes
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        import time
+
+        kjm = _load("kdg_judgment_medium")
+        monkeypatch.setattr(kjm.kds, "validate_matched", lambda *a, **k: {
+            "pass": False, "matched_batch16_max": 1.0, "matched_alone_max": 1.0})
+        pilot = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        rec = kjm.run_judgment_medium(stub, CFG, self._scen(), self._ids()[:12], pilot,
+                                      tmp_path, time.time(), True)
+        assert rec["outcome"] == "bail_validate"
+        assert not (tmp_path / "jm_partial.jsonl").exists() and not (tmp_path / "jm.jsonl").exists()
+
+    def test_envelope_stop_banks_and_reads_the_first_batch(self, tok, tmp_path):
+        # most probable failure: a timing stop throws the first batch away or skips its readout
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--judgment-medium", "--pilot-rows", str(PILOT_ROWS),
+                             "--envelope-hours", "0.01", "--out", str(tmp_path)],
+                            capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 3, rc.stdout[-2000:]
+        d = tmp_path / "gpt_oss_20b"
+        rec = json.loads((d / "jm_record.json").read_text())
+        assert rec["outcome"] == "stop_report" and rec["readout_rows"] > 0
+        assert len((d / "jm.jsonl").read_text().splitlines()) == 8
+
+    def test_p2k_ships_its_inputs_and_runs_judgment_medium_only(self):
+        # most probable failure: p2k falls through to another profile's generation
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2k" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert block.index("--dry-run --judgment-medium") < block.index(
+            'python $G --judgment-medium --pilot-rows "$PILOT_ROWS" --envelope-hours 1.7')
+        assert "--dose-stated-main" not in block and "--rederive" not in block
+        assert "ds_pilot.jsonl" in block

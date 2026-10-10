@@ -107,3 +107,17 @@ def test_human_check_score_rules(tmp_path, monkeypatch):
                                          "either_rater_set": True}  # 2 of 3 = 2/3 qualifies
     # n1: X is violating, author says Y -> consistent (agrees); n2: X consistent, Y -> disagrees
     assert rep["norm_label_check"]["disagree_or_unclear"] == 1
+
+
+@pytest.mark.parametrize("k_rev,k_hold,want", [
+    (46, 23, "principled_revision"),      # two-sided p < 0.01 at m 69
+    (23, 46, "norm_compliance_against_own_judgment"),
+    (40, 29, "unresolved"),
+    (0, 0, "unresolved"),
+])
+def test_judgment_medium_branches(k_rev, k_hold, want):
+    # most probable failure: a one-sided test (or a share threshold) decides the branch instead of
+    # the registered two-sided exact test at alpha 0.01
+    import analyze_gptoss_judgment_medium as JM
+
+    assert JM.branch(k_rev, k_hold)["branch"] == want
