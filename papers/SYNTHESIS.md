@@ -980,4 +980,8 @@ waits on the two-pattern scan. Scan (§36): defensible-under-the-rule departures
 F1; positive control passes); the all-things-considered pattern's instrument fails its positive control,
 so its prevalence is unmeasured; toward-norm moves occur at the same rate in rater-flagged
 defensible-departure scenarios as elsewhere, so on present counts reasoning moves to the stated rule
-whether or not the departure is defensible.
+whether or not the departure is defensible. Compliance-harm split (§37): **reasoning at the default level moves GPT-OSS to the stated rule as
+reliably where breaking it harms no proximate third party (40 toward, 0 away) as where it does (31 vs
+2).** On the present evidence (all descriptive or below gates), the direction §30 found reads as rule
+compliance, not harm-avoidance or self-protection. The pre-registered compliance-harm cell is
+unresolved (15 scenarios, 3 crossings); the H1 set (pilot 23 of 24 kept) is built for it.

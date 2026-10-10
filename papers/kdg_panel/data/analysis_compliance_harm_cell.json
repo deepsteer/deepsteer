@@ -1,0 +1,70 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A25 item 4",
+ "n_compliance_harm": 15,
+ "counts": {
+  "compliance_harm": {
+   "toward": 3,
+   "away": 0,
+   "lateral": 5,
+   "same": 7,
+   "no_action": 0
+  },
+  "rest": {
+   "toward": 71,
+   "away": 2,
+   "lateral": 112,
+   "same": 367,
+   "no_action": 9
+  },
+  "compliance_only": {
+   "toward": 1,
+   "away": 0,
+   "lateral": 4,
+   "same": 5,
+   "no_action": 0
+  },
+  "both": {
+   "toward": 2,
+   "away": 0,
+   "lateral": 1,
+   "same": 2,
+   "no_action": 0
+  },
+  "violation_only": {
+   "toward": 31,
+   "away": 2,
+   "lateral": 64,
+   "same": 204,
+   "no_action": 6
+  },
+  "neither": {
+   "toward": 40,
+   "away": 0,
+   "lateral": 48,
+   "same": 163,
+   "no_action": 3
+  }
+ },
+ "m": 3,
+ "toward": 3,
+ "away": 0,
+ "p_toward_one_sided": 0.125,
+ "p_away_one_sided": 1.0,
+ "alpha": 0.01,
+ "branch": "unresolved",
+ "N_min": 27,
+ "gate_met": false,
+ "fisher_toward_share_vs_rest_descriptive": {
+  "table": [
+   [
+    3,
+    0
+   ],
+   [
+    71,
+    2
+   ]
+  ],
+  "p_two_sided": 1.0
+ }
+}
