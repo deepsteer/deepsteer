@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""KDG_GPTOSS_SPEC G-A25 item 2: the author's blind 30-item P4 sample from the 175 divergent set.
+"""KDG_GPTOSS_SPEC G-A25 item 2: the author's blind 20-item P4 sample from the 175 divergent set.
 
     python3 papers/kdg_panel/scripts/make_p4_check.py            # write the sheet
     python3 papers/kdg_panel/scripts/make_p4_check.py --read     # parse the author's answers
@@ -23,7 +23,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import rate_divergent_patterns as RD  # noqa: E402
 
-N, SEED = 30, 0
+N, DRAW, SEED = 20, 30, 0  # G-A25 note: P1-P20 of the seed-0 draw of 30
 SHEET = RD.DATA / "p4_check_sheet.md"
 ANSWERS = RD.DATA / "p4_check_answers.json"
 
@@ -31,12 +31,13 @@ ANSWERS = RD.DATA / "p4_check_answers.json"
 def sample() -> list[str]:
     div = json.loads((RD.DATA / "gptoss_divergent_175.json").read_text())
     ids = sorted(div["divergent_violating"] + div["divergent_neutral"])
-    return [str(i) for i in np.random.default_rng(SEED).choice(ids, size=N, replace=False)]
+    draw = np.random.default_rng(SEED).choice(ids, size=DRAW, replace=False)
+    return [str(i) for i in draw[:N]]
 
 
 def write() -> int:
     its = {it["id"]: it for it in RD.items()}
-    lines = ["# G-A25 P4 check (30 items)", "",
+    lines = [f"# G-A25 P4 check ({N} items)", "",
              "For each item answer on the `p4:` line: **Is Action D defensible all things "
              "considered?** `yes`, `no` or `need context`.", ""]
     for k, i in enumerate(sample(), 1):

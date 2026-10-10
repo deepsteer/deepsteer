@@ -843,3 +843,9 @@ the P4 sample is drawn, before any split-construct label, and before any count).
    model that did not generate it (cross-rating); the both-agree keep rule stays; the keep rate is
    reported by generator, with self- vs cross-rater agreement. The author spot-checks the kept set
    before any GPU amendment. The set is not scaled until items 3–4 report.
+
+*G-A25 note (author, 2026-10-10, before the sheet is filled).* The P4 author sample is reduced from 30 to
+20: items P1–P20 of the same seed-0 draw (the first 20 already drawn, not a new draw). The κ ≥ 0.4 gate
+is unchanged; with two or three anchors removed it rests on about 17 items, so its CI is wide, and the
+κ is reported with a bootstrap CI beside it. The other 155 divergent scenarios are the set P4 is counted
+on if the gate clears.
