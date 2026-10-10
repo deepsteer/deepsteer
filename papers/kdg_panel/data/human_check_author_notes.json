@@ -23,7 +23,8 @@
   "16b (F5-A-34)": {
    "entered": "EQUAL",
    "corrected": "Y",
-   "of_record": "entered; corrected reported beside"
+   "of_record": "entered; corrected reported beside",
+   "corrected_confirmed_by_author": "2026-10-10 (G-A25 item 1)"
   }
  }
 }
