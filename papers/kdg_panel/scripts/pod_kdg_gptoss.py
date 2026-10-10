@@ -459,6 +459,8 @@ def main() -> int:
                     help="G-A19: the p2i per-batch bank (ds_main_partial.jsonl)")
     ap.add_argument("--judgment-medium", action="store_true",
                     help="G-A23 item 3: judgment readout at medium on the 175 divergent scenarios")
+    ap.add_argument("--jm-done-rows", type=Path, default=None,
+                    help="G-A24 item 2 (p2l): p2k's jm.jsonl; run only the scenarios it left")
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
                     help="dose-stated pilot: no new stage-A batch past this (set by amendment)")
     ap.add_argument("--c0-dm", action="store_true",
@@ -553,9 +555,18 @@ def main() -> int:
             if a.dry_run:
                 ids = ids[:12]
             pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            done = None
+            if a.jm_done_rows is not None:
+                done = {json.loads(x)["scenario_id"] for x in
+                        a.jm_done_rows.read_text().splitlines() if x.strip()}
+                if a.dry_run:  # the dry run's 12 ids: p2k's dry first batch is its first 8
+                    import numpy as _np
+
+                    o = _np.random.default_rng(kjm.kds.ORDER_SEED + kjm.JM_ORDER_OFFSET)
+                    done = {ids[i] for i in o.permutation(len(ids))[:8]}
             jr = kjm.run_judgment_medium(model, hcfg, {s.id: s for s in full}, ids, pilot,
                                          a.out / KEY, t_start, a.dry_run,
-                                         envelope_h=a.envelope_hours)
+                                         envelope_h=a.envelope_hours, done_ids=done)
             manifest.data["gptoss"]["judgment_medium"] = {
                 k: jr.get(k) for k in ("outcome", "timing", "generation", "readout_rows")}
             manifest.data["gptoss"]["judgment_medium"]["validate"] = {

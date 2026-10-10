@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """KDG_GPTOSS_SPEC G-A23 item 3: judgment at the default reasoning level vs the action that moved.
 
-    python3 papers/kdg_panel/scripts/analyze_gptoss_judgment_medium.py [--jm-rows <p2k jm.jsonl>]
+    python3 papers/kdg_panel/scripts/analyze_gptoss_judgment_medium.py [--jm-rows <p2k> <p2l>]
 
 J_med = the option of the letter sampled after GPT-OSS's medium-effort judgment trace (token
 identity). Moved set M = divergent scenarios whose medium-effort action moved to the
@@ -60,8 +60,9 @@ def classify(jopt: dict[str, str], jmed: dict[str, str | None], status: dict) ->
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--jm-rows", type=Path,
-                    default=A.OUT / "p2k" / "jm" / "gpt_oss_20b" / "jm.jsonl")
+    ap.add_argument("--jm-rows", type=Path, nargs="+",
+                    default=[A.OUT / p / "jm" / "gpt_oss_20b" / "jm.jsonl" for p in ("p2k", "p2l")],
+                    help="G-A24 item 2: the test runs once on the union of p2k and p2l")
     ap.add_argument("--main-rows", type=Path,
                     default=A.OUT / "p2i" / "main" / "gpt_oss_20b" / "ds_main_reconstructed.jsonl")
     ap.add_argument("--pilot-rows", type=Path,
@@ -79,8 +80,14 @@ def main(argv=None) -> int:
     moved = sorted(s for s in jopt if s in act and s in dose0 and act[s] != dose0[s]
                    and status[s][act[s]] == "consistent" and act[s] != jopt[s])
     stayed = sorted(s for s in jopt if s in act and act[s] == jopt[s])
-    jmed = {r["scenario_id"]: (r["option_id"] if r.get("token_identity") else None)
-            for r in A._rows(a.jm_rows) if r["cell"] == "jl_chat_neutral"}
+    jmed: dict = {}
+    for f in a.jm_rows:
+        for r in A._rows(f):
+            if r["cell"] == "jl_chat_neutral":
+                if r["scenario_id"] in jmed:
+                    raise SystemExit(f"{r['scenario_id']} appears in two row files")
+                jmed[r["scenario_id"]] = r["option_id"] if r.get("token_identity") else None
+    fam = {s.id: s.family for s in scen}
     cm = classify({s: jopt[s] for s in moved}, jmed, status)
     cs = classify({s: jopt[s] for s in stayed}, jmed, status)
     n_m, n_s = cm["consistent"] + cm["dose0_option"], cs["consistent"] + cs["dose0_option"]
@@ -90,7 +97,14 @@ def main(argv=None) -> int:
     rep = {"rule": "KDG_GPTOSS_SPEC G-A23 item 3 (5ce8c22)", "n_moved": len(moved),
            "n_stayed": len(stayed), "moved": dict(cm), "stayed": dict(cs),
            **branch(cm["consistent"], cm["dose0_option"]),
+           "n_jm_scenarios": len(jmed),
            "all_175": dict(classify(jopt, jmed, status)),
+           # G-A24 item 2: the same test within F1 and within the rest (verdict of record: full set)
+           "split_f1_vs_rest": {
+               g: branch(c["consistent"], c["dose0_option"]) for g, c in (
+                   ("F1", classify({s: jopt[s] for s in moved if fam[s] == "F1"}, jmed, status)),
+                   ("rest", classify({s: jopt[s] for s in moved if fam[s] != "F1"}, jmed,
+                                     status)))},
            "coupling_fisher_descriptive": {
                "table": [[cm["consistent"], cm["dose0_option"]],
                          [cs["consistent"], cs["dose0_option"]]],

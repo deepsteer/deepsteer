@@ -949,3 +949,32 @@ class TestJudgmentMedium:
             'python $G --judgment-medium --pilot-rows "$PILOT_ROWS" --envelope-hours 1.7')
         assert "--dose-stated-main" not in block and "--rederive" not in block
         assert "ds_pilot.jsonl" in block
+
+    def test_continuation_refuses_a_different_split(self, tok, tmp_path):
+        # G-A24 item 2. most probable failure: p2l reruns scenarios p2k already ran (or skips some),
+        # so the union is not the 175 and one scenario gets two judgments
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        import time
+
+        kjm = _load("kdg_judgment_medium")
+        pilot = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        ids = self._ids()[:12]
+        with pytest.raises(RuntimeError, match="not its first batch"):
+            kjm.run_judgment_medium(stub, CFG, self._scen(), ids, pilot, tmp_path, time.time(),
+                                    True, done_ids=set(ids[:8]))  # not the permutation's head
+        o = np.random.default_rng(kjm.kds.ORDER_SEED + kjm.JM_ORDER_OFFSET).permutation(12)
+        head = {ids[i] for i in o[:8]}
+        rec = kjm.run_judgment_medium(stub, CFG, self._scen(), ids, pilot, tmp_path, time.time(),
+                                      True, done_ids=head)
+        rows = [json.loads(x) for x in (tmp_path / "jm.jsonl").read_text().splitlines()]
+        assert rec["outcome"] == "jm_complete"
+        assert {r["scenario_id"] for r in rows} == set(ids) - head
+
+    def test_p2l_ships_p2k_rows_and_continues(self):
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2l" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert '--jm-done-rows "$DONE"' in block and "p2k/jm/gpt_oss_20b/jm.jsonl" in block
+        assert "--envelope-hours 1.3" in block and "--dose-stated-main" not in block

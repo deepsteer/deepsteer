@@ -20,11 +20,15 @@ import kdg_dose_stated as kds
 import numpy as np
 
 JM_BATCH, JM_ENVELOPE_H, JM_SEED_OFFSET, JM_ORDER_OFFSET = 88, 1.7, 70_000, 4
+P2K_BATCH_SECONDS = 2643.0  # p2k's measured first batch (G-A24 item 2: the continuation's guard)
 CELL = "jl_chat_neutral"
 
 
 def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list[dict], out: Path,
-                        t_start: float, dry: bool, envelope_h: float = JM_ENVELOPE_H) -> dict:
+                        t_start: float, dry: bool, envelope_h: float = JM_ENVELOPE_H,
+                        done_ids: set[str] | None = None) -> dict:
+    """``done_ids`` (G-A24 item 2, p2l): the scenarios p2k already ran. They must be exactly the
+    first batch of p2k's permutation; the rest run as one batch with p2k's second-batch seed."""
     out.mkdir(parents=True, exist_ok=True)
     lid = {x: model.token_id(x) for x in "ABCDE"}
     letter_ids = set(lid.values())
@@ -77,9 +81,29 @@ def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list
         rec["outcome"] = "bail_validate"
         checkpoint()
         return rec
-    # (b) timing step: the first batch, banked
     order = np.random.default_rng(kds.ORDER_SEED + JM_ORDER_OFFSET).permutation(len(ids))
     jobs = [(scen[ids[i]], CELL, 0) for i in order]
+    if done_ids is not None:  # p2l: p2k's second batch, as p2k would have run it
+        head = {s.id for s, _, _ in jobs[:batch]}
+        if head != set(done_ids):
+            raise RuntimeError(f"p2k's rows are not its first batch ({len(head ^ set(done_ids))} "
+                               "ids differ); refusing to continue on a different split")
+        rest = jobs[batch:]
+        rec["continuation_of"] = "p2k"
+        rec["n_done_before"] = len(done_ids)
+        deadline = t_start + (envelope_h - kds.SETUP_H) * 3600 - kds.FWD_S_PER_ROW * len(rest)
+        rows, pids, secs = kds._generate(model, cfg, rest, cap, kds.SEED + JM_SEED_OFFSET + 1,
+                                         letter_ids, partial, "jm", deadline,
+                                         est_batch_seconds=0.0 if dry else P2K_BATCH_SECONDS,
+                                         batch_size=len(rest))
+        rec["generation"] = {"n": len(rows), "run": sum(r["status"] != "not_run" for r in rows),
+                             "identity": sum(r["token_identity"] for r in rows),
+                             "truncated": sum(r["status"] == "truncated" for r in rows),
+                             "gen_seconds": float(sum(secs))}
+        checkpoint()
+        return finish("jm_complete" if rec["generation"]["run"] == len(rest) else "stop_report",
+                      rows, pids)
+    # (b) timing step: the first batch, banked
     first, rest = jobs[:batch], jobs[batch:]
     rows, pids, secs = kds._generate(model, cfg, first, cap, kds.SEED + JM_SEED_OFFSET,
                                      letter_ids, partial, "jm", batch_size=batch)
