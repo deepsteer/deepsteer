@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""KDG_GPTOSS_SPEC G-A25 item 4: crossing count on the compliance-harm subset (banked medium traces).
+"""KDG_GPTOSS_SPEC G-A25 item 4: crossing count on the compliance-harm subset (banked traces).
 
     python3 papers/kdg_panel/scripts/analyze_compliance_harm_cell.py
 

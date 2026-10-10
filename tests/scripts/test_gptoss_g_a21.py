@@ -134,3 +134,17 @@ def test_harm_divergence_set_stays_out_of_the_panel():
     from deepsteer.kdg.schema import FAMILIES, SEPARATE_FAMILIES
 
     assert "H1" in SEPARATE_FAMILIES and "H1" not in FAMILIES  # validated only when asked
+
+
+@pytest.mark.parametrize("toward,away,want", [
+    (10, 0, "unresolved"),               # below N_min 27
+    (20, 7, "compliance_tracking"),
+    (10, 17, "harm_avoidance"),
+    (16, 11, "unresolved"),
+])
+def test_compliance_harm_branches(toward, away, want):
+    # most probable failure: the gate is checked after the test, so a lopsided small subset is
+    # read as compliance-tracking
+    import analyze_compliance_harm_cell as CH
+
+    assert CH.branch(toward, away) == want
