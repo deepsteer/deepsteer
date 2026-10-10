@@ -2166,3 +2166,38 @@ comparison is with the dose-0 judgment readout. The separating cell is a judgmen
 default reasoning level on the 175 divergent scenarios (about 1.3 A100-h of generation, about 1.7 with
 setup), not run. A second rival, that the divergent scenarios carry wrong norm labels, predicts reasoning
 should not move toward the labelled option; it moves there in 44 of 85.
+
+## 34. The KDG paper's deliberation brake split by actor cost (G-A23 item 4; 2026-10-10)
+
+Rule pushed before computing (G-A23 5ce8c22). Zero GPU, descriptive. Per scenario Δ_P = p_D(reasoning)
+− p_D(filler of record) on each carrier's deliberation set of record, split by §33's actor-cost labels
+(both raters; recomputed if G-A23 item 1 switches the set of record). Bootstrap 10,000, seed 0.
+`data/analysis_brake_actor_split.json`.
+
+| carrier | all | actor-reversed | actor-aligned | split | reversed − aligned |
+|---|---|---|---|---|---|
+| OLMo-3 (130) | −0.077 [−0.110, −0.047] | −0.026 [−0.087, +0.032] (25) | −0.110 [−0.157, −0.063] (72) | −0.045 [−0.104, +0.009] (33) | +0.085 [+0.010, +0.158] |
+| Llama-3.1 (114) | −0.350 [−0.387, −0.314] | −0.291 [−0.403, −0.192] (15) | −0.367 [−0.414, −0.318] (69) | −0.342 [−0.408, −0.279] (30) | +0.075 [−0.045, +0.188] |
+
+**Llama-3.1's brake holds where the norm costs the agent** (−0.291, CI well below 0, on 15 scenarios),
+and the reversed − aligned difference includes 0. On OLMo-3 the brake is near zero in the actor-reversed
+scenarios, and the difference excludes 0.
+
+Rivals checked (post-hoc, descriptive). *Floor:* OLMo-3's filler-arm violating probability is the same in
+both groups (0.291 reversed, 0.294 aligned); on the ratio scale reasoning keeps 0.91 vs 0.63 of it, so the
+gap is not a floor. *Family composition:* the actor-reversed scenarios are all F1 and F5 (OLMo-3 16 + 9),
+while the aligned ones are mostly F3 and F4 (49 of 72). Within family the gap does not survive: OLMo-3 F1
+reversed −0.008 [−0.068, +0.051] (16) vs aligned +0.029 [−0.056, +0.121] (16); F5 −0.057 [−0.181, +0.058]
+(9) vs −0.131 [−0.284, +0.029] (7). **OLMo-3's brake is absent on F1 whatever the actor label, and it lives
+in F3 and F4, where no scenario is actor-reversed; the OLMo-3 difference is family composition, and an
+actor-cost effect within family is not detectable at these sizes (CI half-widths 0.06–0.15).** Llama-3.1
+within F1: −0.336 [−0.456, −0.228] (12) vs −0.363 [−0.481, −0.245] (14).
+
+**Referee pass.** (1) *"OLMo-3's brake is caution: it vanishes where the norm costs the agent."* The
+pooled split says so, and the within-family split does not: inside F1 OLMo-3 shows no brake on aligned
+scenarios either. The reading that survives is family-specific: OLMo-3's forced reasoning does not brake
+the F1 (record-falsification) violations at all. That is new for the paper's v2 and gets its own line
+(OPEN_THREADS). (2) *"Fifteen Llama scenarios cannot carry a claim."* It is descriptive; the CI excludes
+0 by a wide margin (upper −0.192), and it is the only carrier evidence on actor-reversed scenarios. (3)
+*"The labels are both-rater only; the either-rater set could change this."* Yes. G-A23 item 1 decides the
+set after the author check, and this split is recomputed then.

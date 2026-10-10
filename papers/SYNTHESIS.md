@@ -968,4 +968,7 @@ option costs the agent itself (10 of 10 norm-crossings in the 83 actor-reversed 
 actor-cost cell stays unresolved by its gate (10 crossings against 27); harm to others is not separable on
 this set (1 reversed scenario), so the held scenario set, if built, targets harm divergence. Still
 claimed only as direction, and only against the dose-0 judgment readout, not a judgment read after
-reasoning.
+reasoning. Paper's brake by actor cost (G-A23, 2026-10-10, §34): **Llama-3.1's deliberation brake
+holds where the norm-consistent option costs the agent (−0.291 [−0.403, −0.192], 15 scenarios).**
+OLMo-3's pooled brake is weaker there, but within family the gap disappears: OLMo-3's brake is absent
+on F1 (record falsification) whatever the actor label, and lives in F3 and F4.
