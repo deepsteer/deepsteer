@@ -1,0 +1,20 @@
+{
+ "n_answered": {
+  "actor": 20,
+  "harm": 20
+ },
+ "actor_agree_subagent": 0.6,
+ "actor_agree_codex": 0.4,
+ "harm_agree_subagent": 0.3,
+ "harm_agree_codex": 0.35,
+ "set_of_record_rule": {
+  "split_items": 5,
+  "agree_with_gpt": 0,
+  "either_rater_set": false
+ },
+ "norm_label_check": {
+  "n": 10,
+  "disagree_or_unclear": 8,
+  "ledger_entry": true
+ }
+}

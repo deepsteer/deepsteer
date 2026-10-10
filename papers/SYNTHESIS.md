@@ -971,4 +971,9 @@ claimed only as direction, and only against the dose-0 judgment readout, not a j
 reasoning. Paper's brake by actor cost (G-A23, 2026-10-10, §34): **Llama-3.1's deliberation brake
 holds where the norm-consistent option costs the agent (−0.291 [−0.403, −0.192], 15 scenarios).**
 OLMo-3's pooled brake is weaker there, but within family the gap disappears: OLMo-3's brake is absent
-on F1 (record falsification) whatever the actor label, and lives in F3 and F4.
+on F1 (record falsification) whatever the actor label, and lives in F3 and F4. Author check (2026-10-10, §35): the actor-cost labels are not confirmed (0 of 5
+both-rater actor-reversed items called reversed by the author), so the actor-cost cell stays at 83,
+unresolved; the stated-rule labels of the divergent scenarios are confirmed 9 of 10, while the
+author's all-things-considered judgment departs from them on 2 of 4 answered (KDG-A27). §33's direction
+is therefore stated as **toward the stated rule**; whether that is moral improvement on these scenarios
+waits on the two-pattern scan.

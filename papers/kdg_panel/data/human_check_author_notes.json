@@ -1,0 +1,29 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A24 item 1",
+ "date": "2026-10-10",
+ "question_c_construct": "all-things-considered judgment (not stated-rule identification)",
+ "stated_rule_answers": {
+  "N1": "X",
+  "N2": "X",
+  "N3": "X",
+  "N4": "X",
+  "N5": "X",
+  "N6": "X",
+  "N7": "contested (clock-stop recoding may be what the statutory rule permits)",
+  "N8": "X",
+  "N9": "X",
+  "N10": "Y"
+ },
+ "own_judgment_diverges_from_stated_rule": [
+  "N4 (F3-A-66)",
+  "N7 (F1-A-06)"
+ ],
+ "own_judgment_withheld": "the six UNCLEARs, pending more context",
+ "slips": {
+  "16b (F5-A-34)": {
+   "entered": "EQUAL",
+   "corrected": "Y",
+   "of_record": "entered; corrected reported beside"
+  }
+ }
+}

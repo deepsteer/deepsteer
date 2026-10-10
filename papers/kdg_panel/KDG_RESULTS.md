@@ -2201,3 +2201,52 @@ the F1 (record-falsification) violations at all. That is new for the paper's v2 
 0 by a wide margin (upper −0.192), and it is the only carrier evidence on actor-reversed scenarios. (3)
 *"The labels are both-rater only; the either-rater set could change this."* Yes. G-A23 item 1 decides the
 set after the author check, and this split is recomputed then.
+
+## 35. The author's 30-item check (G-A22 item 2, G-A23 items 1–2, G-A24 item 1; 2026-10-10)
+
+Sheet filled by the author blind to the key (key held out of git until scoring; both now committed).
+`data/human_check_sheet.md`, `data/human_check_key.json`, `data/human_check_score.json`,
+`data/human_check_author_notes.json`.
+
+**Actor cost (a) and harm to others (b), 20 items.**
+
+| | author | Claude rater | GPT rater | author agrees with Claude / GPT (all 20) | excluding the author's EQUALs |
+|---|---|---|---|---|---|
+| (a) violating costlier / consistent costlier / EQUAL | 13 / 0 / 7 | 15 / 5 / 0 | 10 / 10 / 0 | 0.60 / 0.40 | 12/13 / 8/13 |
+| (b) violating more harmful / consistent more harmful / EQUAL | 6 / 3 / 11 | 20 / 0 / 0 | 19 / 1 / 0 | 0.30 / 0.35 | 6/9 / 7/9 |
+
+Item 16 b (F5-A-34) was a slip (entered EQUAL, corrected Y); with the correction, (b) agreement is 0.35 /
+0.40. The author never names the norm-consistent option as costlier to the agent. **G-A23 rule:** on
+the 5 items where the raters split under (a), the author agrees with GPT on 0 (4 with Claude, 1 EQUAL),
+so the actor-reversed set of record stays at 83, the actor-cost cell stays unresolved, and 10 vs 0 stays
+descriptive. The check also bears on the 83 themselves: on the 5 sheet items both raters call actor-
+reversed (F1-A-64, F1-A-74, F5-A-32, F5-A-34, F1-A-42), the author calls none reversed (4 EQUAL, 1
+violating). Under (b) the author names the norm-consistent option as the more harmful one on 3 items
+(F1-A-74: the honest report costs the school its reading specialists; F3-A-64 and F3-A-24: waiting for the
+required approval loses the bus and the grant), where the raters name it on 1 of 586.
+
+**Norm labels (question c), as recorded under G-A24 item 1.** The author answered c as an
+all-things-considered judgment, not as stated-rule identification, so the 8 of 10 that did not match are
+not label disconfirmations. Under the stated-rule construct the author confirms the dataset label on 9 of
+10 and marks N7 (F1-A-06) contested: recoding incomplete-drawing intakes as clock-stopped may be what the
+statute permits. The author's own judgment departs from the stated rule on N4 (F3-A-66, the shared admin
+login to save a 6 a.m. delivery) and N7, and is withheld on the six UNCLEARs (five of them F1) pending more
+context. ANOMALIES KDG-A27.
+
+**What this changes.** Two readings narrow. (1) §33's "toward the norm, against its own dose-0 judgment"
+is a claim about the **stated rule**: the divergent scenarios are ones where GPT-OSS's dose-0 judgment
+departs from the stated rule, and the author's own all-things-considered judgment departs too on 2 of
+the 4 items answered. Whether moving to the stated rule is an improvement is open for these scenarios;
+the two-pattern scan (G-A24 item 3) counts how many carry a defensible departure. (2) The actor-cost
+labels are rater constructs the author does not confirm on the sheet, so the 10 vs 0 carries no weight
+beyond its descriptive line.
+
+**Referee pass.** (1) *"One author on 20 items is not a validation."* It is a check, recorded as one; it
+changes nothing except through G-A23's pre-registered rule, which it applied (set stays at 83). (2)
+*"Question c's wording ('the norm or rule the scenario sets up') invited the all-things-considered
+reading, so the 8 of 10 is an instrument artifact."* Conceded: the sheet should have named the construct.
+The author supplied both readings, and the record keeps them apart; the stated-rule confirmation is 9 of
+10. (3) *"Eleven EQUALs on (b) mean the constructs are underdetermined, and the raters' crisp labels
+overstate them."* Partly conceded: raters forced a direction the author often did not see. Where the
+author committed, (b) agrees in direction with the raters 6 to 3, and the 3 the other way are exactly
+the compliance-harm cases G-A24 item 4 builds a set for.
