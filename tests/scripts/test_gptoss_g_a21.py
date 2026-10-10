@@ -79,3 +79,31 @@ def test_own_judgment_subsets_and_moves():
             ) == (1, 0)
     assert m["concordant_gap_leg"]["binom_two_sided_descriptive"] is None
     assert OJ.binom_two_sided(0, 6) == pytest.approx(2 / 64)
+
+
+def test_human_check_score_rules(tmp_path, monkeypatch):
+    # most probable failure: the 2/3 rule rounds 4 of 6 or 3 of 5 the wrong way, or the norm check
+    # reads X as the consistent option regardless of the item's order
+    import json
+
+    import make_human_check as HC
+
+    key = {"ids": ["s1", "s2", "s3"], "norm_ids": ["n1", "n2"],
+           "X_is": {"s1": "consistent", "s2": "violating", "s3": "consistent",
+                    "n1": "violating", "n2": "consistent"},
+           "raters": {c: {"codex": {"s1": "X", "s2": "Y", "s3": "X"},
+                          "subagent": {"s1": "Y", "s2": "X", "s3": "Y"}}
+                      for c in ("actor", "harm")}}
+    (tmp_path / "key.json").write_text(json.dumps(key))
+    sheet = ("## 1. s1\na: X\nb: X\n## 2. s2\na: Y\n## 3. s3\na: Y\n"
+             "## N1. n1\nc: Y\n## N2. n2\nc: Y\n")
+    (tmp_path / "sheet.md").write_text(sheet)
+    monkeypatch.setattr(HC, "KEY", tmp_path / "key.json")
+    monkeypatch.setattr(HC, "SHEET", tmp_path / "sheet.md")
+    monkeypatch.setattr(HC.RR, "DATA", tmp_path)
+    HC.score()
+    rep = json.loads((tmp_path / "human_check_score.json").read_text())
+    assert rep["set_of_record_rule"] == {"split_items": 3, "agree_with_gpt": 2,
+                                         "either_rater_set": True}  # 2 of 3 = 2/3 qualifies
+    # n1: X is violating, author says Y -> consistent (agrees); n2: X consistent, Y -> disagrees
+    assert rep["norm_label_check"]["disagree_or_unclear"] == 1
