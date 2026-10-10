@@ -121,3 +121,16 @@ def test_judgment_medium_branches(k_rev, k_hold, want):
     import analyze_gptoss_judgment_medium as JM
 
     assert JM.branch(k_rev, k_hold)["branch"] == want
+
+
+def test_harm_divergence_set_stays_out_of_the_panel():
+    # most probable failure: the H1 set lands where the panel loaders glob it, so 24-250 new
+    # scenarios silently join every panel analysis
+    import generate_harm_divergence as HD
+
+    assert not HD.SET_PATH.match("*_scenarios_*.json")
+    assert HD.SET_PATH.parent != HD.RR.DATA  # a subdirectory: DATA.glob is not recursive
+    assert [HD.plan(k)["generator_half"] for k in range(4)] == ["A", "B", "A", "B"]
+    from deepsteer.kdg.schema import FAMILIES, SEPARATE_FAMILIES
+
+    assert "H1" in SEPARATE_FAMILIES and "H1" not in FAMILIES  # validated only when asked

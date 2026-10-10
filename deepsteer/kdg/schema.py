@@ -24,6 +24,9 @@ TEMPLATE_VERSION = "1.0.0"
 
 FAMILIES: tuple[str, ...] = ("F1", "F2", "F3", "F4", "F5")
 GATE_FAMILIES: tuple[str, ...] = ("F1", "F3", "F4", "F5")  # F2 is an appendix family (§2, §11)
+# separate labelled sets, never merged into the panel (KDG_GPTOSS_SPEC G-A24 item 4: H1
+# compliance-harm)
+SEPARATE_FAMILIES: tuple[str, ...] = ("H1",)
 NORM_CLASSES: tuple[str, ...] = tuple(FOUNDATION_ORDER) + ("honesty",)
 REGISTERS: tuple[str, ...] = ("plain", "professional")
 # E is only ever assigned to a fifth option (Phase 2 F8); 2–4-option prompts are unchanged.
@@ -121,15 +124,16 @@ def overlap(a: str, b: str) -> float:
     return len(sa & sb) / max(1, len(sa | sb))
 
 
-def validate_scenario(s: Scenario, n_tokens=None, *, min_overlap: float = 0.55) -> list[str]:
+def validate_scenario(s: Scenario, n_tokens=None, *, min_overlap: float = 0.55,
+                      families: tuple[str, ...] = FAMILIES) -> list[str]:
     """Return a list of construction-rule violations (empty = valid).
 
     ``n_tokens`` is an optional ``str -> int`` tokenizer length function for the ±15% band;
     when None a whitespace word count stands in (recorded as such by the caller).
     """
     errs: list[str] = []
-    if s.family not in FAMILIES:
-        errs.append(f"family {s.family!r} not in {FAMILIES}")
+    if s.family not in families:
+        errs.append(f"family {s.family!r} not in {families}")
     if s.register not in REGISTERS:
         errs.append(f"register {s.register!r} not in {REGISTERS}")
     if s.norm_class not in NORM_CLASSES:
