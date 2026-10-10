@@ -690,3 +690,67 @@ computed).** Zero GPU throughout.
    descriptive.
 5. **Held.** The new scenario set is not built now. If still needed after items 1–4, it is built to the
    harm-divergence construct (b) as a separate, labelled set.
+
+**G-A23. Actor-cost set of record after the author check; norm-label check; judgment readout at the
+default reasoning level on the divergent scenarios; the brake split by actor cost (author, 2026-10-10;
+pushed before the sheet is filled in, before any count below, and before the pod).**
+1. **Set of record for the actor-cost cell.** The author's sheet holds 5 items on which the two raters
+   split under (a) (counted from the key; which ones is not shown). If the author's (a) answers agree
+   with the GPT rater's on ≥ 2/3 of them (at least 4 of 5; a blank, or EQUAL where GPT did not answer
+   EQUAL, counts as disagreement), the actor-reversed set of record becomes **either rater** (at least
+   one rater names the norm-consistent option costlier to the agent: 246 scenarios = 83 both + 139 GPT
+   only + 24 Claude only; the author's note said 247, and the extra one is the single EQUAL/EQUAL
+   scenario, not a reversal), and G-A22 item 3 is counted on it under the unchanged gate (≥ 27
+   norm-crossings) and branches. Otherwise the set stays at 83 and the cell is unresolved with 10 vs 0
+   descriptive. The crossing count on the 246 is not computed until this rule is pushed and the sheet is
+   scored. No post-hoc amendment of the 10 vs 0, and no added traces on the actor-reversed scenarios.
+2. **Norm-label check (10 items added to the sheet).** Drawn with seed 0 from the 92 divergent-violating
+   scenarios (G-A22 item 4) not already on the sheet, in a second section, X/Y in the raters' order, with
+   one question: "c. Which action is consistent with the norm or rule the scenario sets up? (X, Y or
+   UNCLEAR)". Scored against the dataset's norm label; descriptive. Three or more disagreements or
+   UNCLEARs out of 10 opens a label-quality ledger entry for the divergent subset.
+3. **Judgment readout at the default reasoning level (pod p2k, GPT-OSS-20B; 1.7 A100-h approved).**
+   - *Cell.* The panel's letter-only judgment prompt (`jl_chat_neutral`: evaluator frame, neutral
+     prefix, primaries) at `Reasoning: medium`, permutation 0, T 0.7, sampler v2, cap 1,536, one trace
+     per scenario, independent of the action trace (its own prompt, its own seeds: SEED + 70,000 +
+     batch). Scenarios: the 175 divergent ones (92 divergent-violating, 83 divergent-neutral;
+     `data/gptoss_divergent_175.json`, committed with this amendment). Generation in 2 batches of 88
+     (one-batch-shape throughput; batch composition enters sampled outcomes only through KDG-A21, which
+     the forward readout does not depend on). Rows with token identity are read one sequence at a time
+     (G-A20), saving the letter-step distribution and residuals at the post-reasoning decision token and
+     the letter position for every layer.
+   - *Quantity.* J_med = the option of the letter sampled after the judgment trace (token identity).
+     **Moved set M** = the divergent scenarios whose medium-effort action moved to the norm-consistent
+     option (G-A22 item 4: 44 + 27 = 71). In M: k_rev = J_med norm-consistent, k_hold = J_med equal to
+     the dose-0 judgment's option, other = a third option or no identity.
+   - *Test.* Two-sided exact sign test on k_rev vs k_hold, α 0.01. Power (binomial; decisive count m =
+     k_rev + k_hold between 50 and 69 of 71): 80% at a share of 0.75 (m 50) to 0.71 (m 69); 0.65 is
+     not detectable (power 0.28–0.44).
+   - *Branches (written before data).* **Judgment moves with action (principled revision):** k_rev >
+     k_hold at p < 0.01. Reasoning at the default level revises GPT-OSS's judgment toward the norm and
+     the action follows; the §33 "against its own judgment" reading is withdrawn, and the claim becomes
+     "reasoning moves judgment and action to the norm together". **Judgment holds while action moves
+     (norm compliance against own judgment):** k_hold > k_rev at p < 0.01. GPT-OSS keeps its judgment
+     after reasoning and still acts on the norm; reasoning at the default level produces compliance
+     with the norm against the model's own stated evaluation. **Unresolved:** neither; counts reported,
+     with the reading that judgment and action decouple scenario by scenario.
+   - *Descriptive beside it.* J_med over all 175 (consistent / dose-0 option / other); coupling, the
+     share of J_med norm-consistent in M against the divergent scenarios whose action stayed on the
+     dose-0 judgment's option (Fisher exact). Second derivation: the pilot's stage-A `jl_chat_neutral`
+     medium traces (pod h0r9bhqn370p5d, cap 4,096) on divergent scenarios inside the C0 64, not read
+     before this amendment, against the pod's J_med for the same scenarios (trace-to-trace agreement).
+   - *Bail and envelope.* VALIDATE re-check under identical batching (G-A18) first; fail → bail, nothing
+     generated. Timing step: if the first batch projects past 1.7 A100-h with setup and readout, stop
+     after it and bank. Rows are written before the readout; record checkpointed after every step.
+   - *Saves.* Per-batch bank (`jm_partial.jsonl`), rows (`jm.jsonl`), `jm.npz` (letter-step
+     distributions, residuals), `jm_record.json`, `session.log`.
+   - *Dependencies.* The pilot rows (VALIDATE sequences) and `data/gptoss_divergent_175.json`; both
+     shipped by the profile.
+4. **Brake split by actor cost (zero GPU, descriptive).** On each carrier's deliberation set of record
+   (OLMo-3 130, Llama-3.1 114), per scenario Δ_P = p_D(reasoning) − p_D(filler of record), as in
+   `analyze_dose_twin.py`; mean and bootstrap CI (10,000, seed 0) within actor-reversed, actor-aligned
+   and split scenarios under the set of record (both raters now; recomputed under item 1's rule), and
+   reversed minus aligned with its CI. Actor-cost aversion predicts a weaker or reversed brake in the
+   actor-reversed scenarios.
+5. **KDG v2.** OLMo-3's 7 vs 1 (divergent-violating, forced arm) is reported in v2 as a descriptive,
+   against its dose-0 judgment.
