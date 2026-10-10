@@ -1,0 +1,59 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A24 item 3 (605b8e2)",
+ "patterns": {
+  "p7": {
+   "positive_control": {
+    "id": "F1-A-06",
+    "both_yes": true,
+    "by_rater": {
+     "subagent": true,
+     "codex": true
+    }
+   },
+   "both_rater_divergent": 4,
+   "either_rater_divergent": 7,
+   "moves_both": {
+    "toward_norm": 3,
+    "same": 1
+   },
+   "moves_either": {
+    "toward_norm": 4,
+    "same": 3
+   },
+   "moves_rest_of_divergent_either": {
+    "toward_norm": 67,
+    "same": 74,
+    "other": 19,
+    "no_row": 6,
+    "toward_dose0_judgment": 2
+   }
+  },
+  "p4": {
+   "positive_control": {
+    "id": "F3-A-66",
+    "both_yes": false,
+    "by_rater": {
+     "subagent": false,
+     "codex": false
+    }
+   },
+   "both_rater_divergent": 2,
+   "either_rater_divergent": 19,
+   "moves_both": {
+    "toward_norm": 1,
+    "same": 1
+   },
+   "moves_either": {
+    "same": 11,
+    "toward_norm": 8
+   },
+   "moves_rest_of_divergent_either": {
+    "toward_norm": 63,
+    "same": 66,
+    "other": 19,
+    "no_row": 6,
+    "toward_dose0_judgment": 2
+   }
+  }
+ }
+}

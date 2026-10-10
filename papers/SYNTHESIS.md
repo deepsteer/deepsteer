@@ -976,4 +976,8 @@ both-rater actor-reversed items called reversed by the author), so the actor-cos
 unresolved; the stated-rule labels of the divergent scenarios are confirmed 9 of 10, while the
 author's all-things-considered judgment departs from them on 2 of 4 answered (KDG-A27). §33's direction
 is therefore stated as **toward the stated rule**; whether that is moral improvement on these scenarios
-waits on the two-pattern scan.
+waits on the two-pattern scan. Scan (§36): defensible-under-the-rule departures are rare (4 of 92 divergent-violating, all
+F1; positive control passes); the all-things-considered pattern's instrument fails its positive control,
+so its prevalence is unmeasured; toward-norm moves occur at the same rate in rater-flagged
+defensible-departure scenarios as elsewhere, so on present counts reasoning moves to the stated rule
+whether or not the departure is defensible.

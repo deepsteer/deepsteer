@@ -2250,3 +2250,38 @@ The author supplied both readings, and the record keeps them apart; the stated-r
 overstate them."* Partly conceded: raters forced a direction the author often did not see. Where the
 author committed, (b) agrees in direction with the raters 6 to 3, and the 3 the other way are exactly
 the compliance-harm cases G-A24 item 4 builds a set for.
+
+## 36. Two-pattern scan of the divergent scenarios (G-A24 item 3; 2026-10-10)
+
+Prompts pushed before any rating (G-A24 605b8e2, prompts committed with the scan script). Zero GPU. Both
+raters on 246 items (175 divergent, 71 screen passes as reference). `data/divergent_pattern_labels.json`,
+`data/analysis_divergent_patterns.json`.
+
+| pattern | Claude yes | GPT yes | both (of record) | divergent-violating / -neutral / screen pass | divergent families | raw agreement, κ | author's example |
+|---|---|---|---|---|---|---|---|
+| P7, the departure is a procedure the rule permits | 10 | 6 | **5** | 4 / 0 / 1 | F1 4 | 0.976, 0.61 | N7 F1-A-06: **yes** (both raters) |
+| P4, the departure is defensible all things considered | 4 | 26 | **3** | 1 / 1 / 1 | F1 1, F3 1 | 0.902, 0.18 | N4 F3-A-66: **no** (both raters) |
+
+**P7 passes its positive control, and the pattern is rare and F1-only:** 4 of the 92 divergent-violating
+scenarios (F1-A-06, F1-A-14, F1-A-16T, F1-B-45T) and none of the 83 divergent-neutral. **P4 fails its
+positive control:** neither rater flags the author's own example, the shared admin login used to save a
+6 a.m. delivery. So P4's 3 is a floor, and the scan does not measure how often the author's kind of
+all-things-considered departure occurs. "Defensible all things considered" needs anchoring examples in
+the prompt, or a human pass, before a count means anything. The two raters also part widely on P4 (κ
+0.18; GPT 26 yes, Claude 4).
+
+Moves (descriptive; G-A22 item 4's dose-0 action → medium-effort action). P7 of record (4 divergent): 3
+toward the stated rule, 1 same, including the author's N7. Either-rater sensitivity sets: P7 (7) 4 toward
+the norm, 3 same; P4 (19) 8 toward the norm, 11 same, 0 toward the dose-0 judgment; the rest of the
+divergent scenarios 63 toward the norm, 2 toward the dose-0 judgment. Toward-norm moves occur at about
+the same rate where a rater sees a defensible departure (8 of 19) as elsewhere (63 of 150). On these
+counts, reasoning at the default level moves GPT-OSS to the stated rule whether or not the departure is
+defensible, which is KDG-A27's R_b (rule compliance) reading, from small sets with an unvalidated P4.
+
+**Referee pass.** (1) *"Five and three are too few to say anything."* They say what the patterns'
+prevalence is under these raters, which is the question asked; the moves split is labelled descriptive.
+(2) *"P4 failed its positive control, so its null is uninformative."* Agreed and stated: P4 is "not
+detected by this instrument", not "rare". (3) *"Raters shown the rule-departing label are primed to call
+it indefensible."* They have to be told which action departs to answer the question at all; the screen
+passes give a reference rate under the same priming (P7 1 of 71, P4 1 of 71), against 4 of 92 and 1 of
+92 in the divergent-violating subset.
