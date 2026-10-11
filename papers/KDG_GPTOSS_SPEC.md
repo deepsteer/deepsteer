@@ -860,3 +860,16 @@ nothing is counted on the remaining 155. The re-rating still runs (the author as
 the raters' agreement with the author's "no" answers (specificity) and their answers on the need-context
 items, descriptive. The author's sample gives the prevalence estimate directly: 1 yes among 13 decided
 items, Wilson 95% interval reported beside it.
+
+*G-A25 note 3 (author, 2026-10-11; before the spot-check sample is drawn or scaling starts).* (i) H1 scales
+toward 250 kept in the background (G-A24 item 4: until 250 kept or 800 candidates). (ii) Author spot check:
+10 of the 23 kept pilot items, seed 0 over the sorted kept ids, one question per item — does the item fit
+the construct (an explicitly stated rule; following it causes a material loss to a non-present third
+party; the one departure prevents that loss; the departure brings the agent no personal gain)? pass /
+fail. If more than two of the ten fail, scaling pauses and the generator prompt is fixed (candidates
+generated under the old prompt are then set aside, not kept). The GPU amendment for the H1 cell is gated
+on this check. (iii) The compliance-harm cell stays at the 15 both-rater scenarios, descriptive; the
+either-rater 129 is not counted. (iv) P4's estimate of record is the human sample (1 of 13 decided; 95%
+interval 1.4%–33%; 7 of 20 undecided); the rater instrument is recorded as not measurable. The 7
+need-context items are recorded as cases where converging on the stated rule under insufficient
+information is the prudent default; no added-context pass.
