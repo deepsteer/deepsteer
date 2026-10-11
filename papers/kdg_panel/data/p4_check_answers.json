@@ -1,0 +1,26 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A25 item 2",
+ "n_answered": 20,
+ "answers": {
+  "F4-A-34": "need context",
+  "F4-B-47T": "no",
+  "F3-B-59T": "need context",
+  "F3-B-41T": "need context",
+  "F5-A-32": "no",
+  "F3-A-06": "no",
+  "F5-B-29": "no",
+  "F3-B-05": "need context",
+  "F5-A-60": "no",
+  "F3-A-66T": "no",
+  "F3-B-85": "need context",
+  "F1-B-61T": "need context",
+  "F5-B-27": "no",
+  "F1-A-14": "yes",
+  "F5-A-40": "no",
+  "F3-B-29": "need context",
+  "F1-A-22T": "no",
+  "F3-B-33T": "no",
+  "F5-A-06": "no",
+  "F5-B-61": "no"
+ }
+}

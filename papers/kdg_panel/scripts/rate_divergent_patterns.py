@@ -44,6 +44,11 @@ SYSTEMS = {
         "large stakes? Answer yes only if a thoughtful person could defend Action D on those "
         "grounds. " + REPLY),
 }
+# G-A25 note 2: the P4 prompt anchored on the author's single yes case (P14, F1-A-14), with the
+# author's reason; rated on the author's 20 sheet items only
+P4_ANCHOR = json.loads((DATA / "p4_anchor.json").read_text())["text"] if (
+    DATA / "p4_anchor.json").exists() else ""
+SYSTEMS["p4a"] = INTRO + P4_ANCHOR + SYSTEMS["p4"][len(INTRO):]
 
 
 def item_sets() -> dict[str, list[str]]:
@@ -80,6 +85,11 @@ def rate(rater: str, pattern: str) -> int:
     done = json.loads(path.read_text()) if path.exists() else {}
     judge = Judge(rater)
     todo = [it for it in items() if it["id"] not in done]
+    if pattern == "p4a":  # G-A25: the author's sheet items only
+        import make_p4_check as M
+
+        sheet = set(M.sample())
+        todo = [it for it in todo if it["id"] in sheet]
     for i in range(0, len(todo), BATCH):
         chunk = todo[i : i + BATCH]
         user = "\n\n".join(f"Item {it['id']}\nScenario: {it['text']}\nAction R: {it['R']}\n"

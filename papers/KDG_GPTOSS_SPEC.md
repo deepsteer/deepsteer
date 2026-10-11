@@ -849,3 +849,14 @@ the P4 sample is drawn, before any split-construct label, and before any count).
 is unchanged; with two or three anchors removed it rests on about 17 items, so its CI is wide, and the
 κ is reported with a bootstrap CI beside it. The other 155 divergent scenarios are the set P4 is counted
 on if the gate clears.
+
+*G-A25 note 2 (2026-10-11, after the author's sheet, before any anchored rating).* The author's 20 answers
+are 12 no, 7 need context and 1 yes (P14, F1-A-14: "the spreadsheet allowed that field and this has high
+impact"). The anchored prompt therefore uses one anchor, P14, with the author's reason, where item 2 asked
+for two or three. With the anchor and the 7 need-context items excluded, the κ set is the 12 items the
+author answered "no", so κ is undefined (raters all "no") or ≤ 0 (any rater "yes"), and the gate cannot
+clear by construction. As item 2 says, P4 is then reported as "not measurable with this instrument" and
+nothing is counted on the remaining 155. The re-rating still runs (the author asked for it) and reports
+the raters' agreement with the author's "no" answers (specificity) and their answers on the need-context
+items, descriptive. The author's sample gives the prevalence estimate directly: 1 yes among 13 decided
+items, Wilson 95% interval reported beside it.
