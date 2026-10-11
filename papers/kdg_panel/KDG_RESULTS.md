@@ -2338,3 +2338,47 @@ The rival this does not touch is cost to the organisation the agent works for, w
 excluded. (3) *"H1 at 96% kept is too easy; the generator built the label in."* The brief does build
 it in, which is the design. What the cell measures is GPT-OSS's action on those scenarios, and the
 author's spot check guards the labels before any GPU.
+
+## 38. Judgment at the default reasoning level on the divergent scenarios (G-A23 item 3, G-A24 item 2; pods p2k + p2l; 2026-10-10)
+
+Rules, analysis script and continuation pushed before the data (G-A23 5ce8c22, analysis 25ffc19; G-A24
+605b8e2, continuation and F1 split before p2l). Pods j1ky0rj7nj45u9 (p2k: VALIDATE 0.0000 both ways; first
+batch of 88 in 2,643 s projected 1.80 > 1.7 A100-h, so it stopped and banked as registered; 1.06
+A100-h) and p32jvr7m3ipkdg (p2l: VALIDATE 0.0000 both ways; the other 87 in one batch, 2,785 s; 1.10
+A100-h; refused-unless check passed: p2k's rows were exactly its permutation's first 88). Union: 175
+scenarios, 174 with token identity (1 truncated at 1,536), all read one sequence at a time, manifests
+verify. p2k's 88 were not read before the union existed. `data/analysis_gptoss_judgment_medium.json`.
+
+| | J_med norm-consistent | J_med = dose-0 judgment's option | other | no identity |
+|---|---|---|---|---|
+| **moved set** (action moved to the norm; 71) | **52** | **17** | 2 | 0 |
+| stayed set (action stayed on the dose-0 judgment's option; 68) | 24 | 41 | 2 | 1 |
+| all 175 | 93 | 66 | 15 | 1 |
+
+**Verdict (pre-registered branch: principled revision).** In the moved set k_rev = 52, k_hold = 17 (m 69;
+two-sided exact p = 2.9 × 10⁻⁵, α 0.01). **Where reasoning at GPT-OSS-20B's default level moves its
+action from its dose-0 judgment to the norm, an independent judgment trace at the same level revises the
+judgment to the norm too, in 52 of 69 decisive scenarios.** By G-A23's branch text, §33's "against its own
+judgment" reading is withdrawn; the claim becomes: reasoning moves judgment and action to the norm
+together. The F1-vs-rest split (G-A24) reads the same in both: F1 20 vs 6 (p = 0.0094), the rest 32 vs 11
+(p = 0.0019). Coupling, descriptive: the judgment is norm-consistent in 52 of 69 moved scenarios against 24
+of 65 stayed ones (Fisher p = 1.0 × 10⁻⁵), so judgment and action move together scenario by scenario, not
+just in aggregate.
+
+Second derivations. The pilot's medium judgment traces (cap 4,096) on 21 of the same scenarios agree with
+the pod's on 12 (0.57); action traces agree with each other on 78 of 104 pairs (0.75, the 22 B1
+scenarios). Single traces are noisy, which pulls k_rev / k_hold toward one half, so 0.75 (52 of 69) is
+measured despite that noise. Coincidence interrogated: the stayed set's 24 scenarios with a revised
+judgment and an unmoved action sit within what trace-to-trace disagreement of 0.25–0.43 produces between
+two independent traces, so they are not read as a judgment–action gap at medium effort.
+
+**Referee pass.** (1) *"Judgment and action are read from different prompts; 'together' is a population
+statement."* The coupling is per scenario (52 of 69 vs 24 of 65 across the moved/stayed split), from
+independent traces with separate prompts and seeds, so it is the scenario, not shared context, that both
+traces respond to. (2) *"Revision toward a stated rule may be deference to rules, not moral reasoning."*
+Conceded as the open part: the branch name is the pre-registered label, and what the data show is that
+the reasoned judgment and the action converge on the stated rule. Whether converging there is moral
+improvement on these scenarios is KDG-A27's question; the author's all-things-considered judgment departs
+from the rule on 2 of the 4 answered. (3) *"Two pods, a stop, and a continuation invite garden-of-forking-
+paths worries."* The continuation's job order, seeds and single test were pushed before p2l, the union was
+tested once, and p2k's rows were not read before it existed; the F1 split was added before data.

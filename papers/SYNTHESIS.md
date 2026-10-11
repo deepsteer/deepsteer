@@ -984,4 +984,9 @@ whether or not the departure is defensible. Compliance-harm split (§37): **reas
 reliably where breaking it harms no proximate third party (40 toward, 0 away) as where it does (31 vs
 2).** On the present evidence (all descriptive or below gates), the direction §30 found reads as rule
 compliance, not harm-avoidance or self-protection. The pre-registered compliance-harm cell is
-unresolved (15 scenarios, 3 crossings); the H1 set (pilot 23 of 24 kept) is built for it.
+unresolved (15 scenarios, 3 crossings); the H1 set (pilot 23 of 24 kept) is built for it. Judgment at the default level (§38, pre-registered, two pods): **GPT-OSS-20B's reasoning revises
+its judgment and its action together: where the action moved from the dose-0 judgment to the norm, an
+independent medium-effort judgment trace lands on the norm in 52 of 69 decisive scenarios (p =
+2.9 × 10⁻⁵; F1 and the rest each significant).** Branch: principled revision. §33's "against its own
+judgment" reading is withdrawn; the claim is that reasoning moves judgment and action to the stated
+rule together. Open (KDG-A27): whether converging on the stated rule is moral improvement.

@@ -1,0 +1,64 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A23 item 3 (5ce8c22)",
+ "n_moved": 71,
+ "n_stayed": 68,
+ "moved": {
+  "dose0_option": 17,
+  "consistent": 52,
+  "other": 2
+ },
+ "stayed": {
+  "consistent": 24,
+  "dose0_option": 41,
+  "other": 2,
+  "no_identity": 1
+ },
+ "k_rev": 52,
+ "k_hold": 17,
+ "m": 69,
+ "p_two_sided": 2.9304321745456655e-05,
+ "alpha": 0.01,
+ "branch": "principled_revision",
+ "n_jm_scenarios": 175,
+ "all_175": {
+  "consistent": 93,
+  "dose0_option": 66,
+  "other": 15,
+  "no_identity": 1
+ },
+ "split_f1_vs_rest": {
+  "F1": {
+   "k_rev": 20,
+   "k_hold": 6,
+   "m": 26,
+   "p_two_sided": 0.009355306625366211,
+   "alpha": 0.01,
+   "branch": "principled_revision"
+  },
+  "rest": {
+   "k_rev": 32,
+   "k_hold": 11,
+   "m": 43,
+   "p_two_sided": 0.001913961001264397,
+   "alpha": 0.01,
+   "branch": "principled_revision"
+  }
+ },
+ "coupling_fisher_descriptive": {
+  "table": [
+   [
+    52,
+    17
+   ],
+   [
+    24,
+    41
+   ]
+  ],
+  "p_two_sided": 1.031181208482669e-05
+ },
+ "second_derivation_pilot": {
+  "n": 21,
+  "agree": 12
+ }
+}
