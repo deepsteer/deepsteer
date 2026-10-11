@@ -2382,3 +2382,31 @@ improvement on these scenarios is KDG-A27's question; the author's all-things-co
 from the rule on 2 of the 4 answered. (3) *"Two pods, a stop, and a continuation invite garden-of-forking-
 paths worries."* The continuation's job order, seeds and single test were pushed before p2l, the union was
 tested once, and p2k's rows were not read before it existed; the F1 split was added before data.
+
+## 39. P4 instrument gate against the author's 20 (G-A25 item 2 and notes; 2026-10-11)
+
+Sheet: P1–P20 of the seed-0 draw from the 175 divergent scenarios (G-A25 note), blind. The author's
+answers: **12 no, 7 need context, 1 yes** (P14, F1-A-14: "the spreadsheet allowed that field and this has
+high impact"). Anchored prompt on that single case, committed before rating (G-A25 note 2); both raters
+re-rated the 20. `data/p4_check_answers.json`, `data/p4_anchor.json`, `data/analysis_p4_gate.json`.
+
+**Gate: not cleared, by construction; P4 is not measurable with this instrument.** With the anchor and the
+need-context items excluded, the κ set is the 12 items the author answered "no", and the anchored
+instrument (both raters yes) also answers "no" on all 12. Agreement is complete and κ is undefined, so
+the pre-registered gate (κ ≥ 0.4) cannot clear and nothing is counted on the remaining 155. Descriptive:
+specificity 12 of 12; the anchor is rated yes by both raters; on the 7 need-context items both raters say
+yes on 2 (F3-B-05, F1-B-61T) and split on 2; Claude says yes on 3 of 20, GPT on 5.
+
+**Prevalence from the author's own sample.** Departures the author judges defensible all things considered:
+1 of the 13 decided items, Wilson 95% [0.014, 0.333]; 7 of 20 need more context. On this evidence the
+defensible-departure pattern is uncommon among the divergent scenarios, though not bounded tightly. A
+real P4 count needs an author sample with enough "yes" cases to test sensitivity, which the gate requires
+and this one could not.
+
+**Referee pass.** (1) *"An undefined κ is a failed instrument."* It is an untested instrument: the sample
+held no "yes" to test sensitivity on, which is why the result is "not measurable", not "P4 absent". (2)
+*"One anchor can't calibrate a construct."* Agreed; it was the only yes the author gave. (3) *"Then §38's
+principled revision might still be revision toward rules that are wrong on these scenarios."* The
+author's sample bounds that share: 1 of 13 decided items has a defensible departure, so in most of the
+divergent scenarios the stated rule is also what the author judges right, and convergence on it reads as
+correction there. KDG-A27 stays open for the minority, with 7 of 20 needing context.

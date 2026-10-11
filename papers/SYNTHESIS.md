@@ -989,4 +989,8 @@ its judgment and its action together: where the action moved from the dose-0 jud
 independent medium-effort judgment trace lands on the norm in 52 of 69 decisive scenarios (p =
 2.9 × 10⁻⁵; F1 and the rest each significant).** Branch: principled revision. §33's "against its own
 judgment" reading is withdrawn; the claim is that reasoning moves judgment and action to the stated
-rule together. Open (KDG-A27): whether converging on the stated rule is moral improvement.
+rule together. Open (KDG-A27): whether converging on the stated rule is moral improvement. The author's blind sample (§39) bounds the
+worry: departures the author judges defensible all things considered are 1 of 13 decided divergent
+scenarios (Wilson [0.014, 0.333]; 7 of 20 need context), so on most of these scenarios the stated rule is
+also the author's judgment and convergence on it reads as correction. The rater P4 instrument is not
+measurable (its gate had no "yes" to test).

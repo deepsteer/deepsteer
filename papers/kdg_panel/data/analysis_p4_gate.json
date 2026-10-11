@@ -1,0 +1,55 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A25 item 2, note 2",
+ "anchor": "F1-A-14",
+ "n_scored": 12,
+ "author_yes_in_scored": 0,
+ "instrument_yes_in_scored": 0,
+ "kappa": null,
+ "gate": 0.4,
+ "gate_cleared": false,
+ "verdict": "P4 not measurable with this instrument",
+ "specificity_on_author_no": 1.0,
+ "by_rater_yes_on_20": {
+  "subagent": 3,
+  "codex": 5
+ },
+ "anchor_rated_yes_by_both": true,
+ "need_context_items": {
+  "F4-A-34": [
+   false,
+   false
+  ],
+  "F3-B-59T": [
+   false,
+   false
+  ],
+  "F3-B-41T": [
+   false,
+   true
+  ],
+  "F3-B-05": [
+   true,
+   true
+  ],
+  "F3-B-85": [
+   false,
+   false
+  ],
+  "F1-B-61T": [
+   true,
+   true
+  ],
+  "F3-B-29": [
+   false,
+   true
+  ]
+ },
+ "author_prevalence": {
+  "yes": 1,
+  "decided": 13,
+  "wilson95": [
+   0.013710421242556586,
+   0.3331395092109959
+  ]
+ }
+}
