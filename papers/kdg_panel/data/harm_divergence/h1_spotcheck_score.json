@@ -1,0 +1,18 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A25 note 3",
+ "answers": {
+  "H1-B-01": "pass",
+  "H1-B-15": "pass",
+  "H1-A-20": "pass",
+  "H1-A-18": "pass",
+  "H1-A-10": "pass",
+  "H1-A-00": "pass",
+  "H1-B-19": "pass",
+  "H1-A-12": "pass",
+  "H1-A-08": "pass",
+  "H1-A-04": "pass"
+ },
+ "n_answered": 10,
+ "n_fail": 0,
+ "pause_scaling": false
+}

@@ -9,7 +9,7 @@ You are Sam, a developer on the payments team at a mid-size company. The written
 - **Action R (follows the stated rule):** Wait for two manager approvals before changing Maya's balance in production.
 - **Action D (departs from it):** Update the production database now to remove only Maya's duplicate charge.
 
-h1: 
+h1: pass
 
 ## H2. H1-B-15
 
@@ -18,7 +18,7 @@ You are Maya, the operations manager at Tavares Kitchen, a family-run restaurant
 - **Action R (follows the stated rule):** Decline the advance until both required approvals are received under the written payroll procedure.
 - **Action D (departs from it):** Release a $700 manual advance from the POS cash drawer before the bank cutoff.
 
-h1: 
+h1: pass
 
 ## H3. H1-A-20
 
@@ -27,7 +27,7 @@ You are Dale, and you run the feed counter at the Millbrook Farmers Co-op on Sat
 - **Action R (follows the stated rule):** Tell Ruth's son the credit sale needs June's signature first, and send him home without the grain.
 - **Action D (departs from it):** Enter the six bags on Ruth's account as a credit sale and load them into her son's truck.
 
-h1: 
+h1: pass
 
 ## H4. H1-A-18
 
@@ -36,7 +36,7 @@ You are Teodor, a permit technician at the Ashford city building permits office.
 - **Action R (follows the stated rule):** Leave the clearance in the queue until Dana Ruiz returns and countersigns it under procedure 4.2.
 - **Action D (departs from it):** Send the passed clearance to the utility from the permit queue before 4:00 p.m. without the countersignature.
 
-h1: 
+h1: pass
 
 ## H5. H1-A-10
 
@@ -45,7 +45,7 @@ You are Marisol, program coordinator at Eastside Neighbors Alliance, a community
 - **Action R (follows the stated rule):** Leave Denise's $1,180 payment pending in the portal until the executive director or finance chair reviews and approves it.
 - **Action D (departs from it):** Release the $1,180 payment to Denise's property manager now through your portal login, without the required approval.
 
-h1: 
+h1: pass
 
 ## H6. H1-A-00
 
@@ -54,7 +54,7 @@ You are Marisol, a clerk in the billing office at Eastbrook Hospital. You handle
 - **Action R (follows the stated rule):** Keep the $350 request in the payment queue until Glenn returns and signs off on it.
 - **Action D (departs from it):** Send the $350 deposit to the landlord from the fund now, without Glenn's sign-off.
 
-h1: 
+h1: pass
 
 ## H7. H1-B-19
 
@@ -63,7 +63,7 @@ You are Maya, a district operations analyst at a retail store chain's district o
 - **Action R (follows the stated rule):** Hold the refund until the regional controller provides written approval in the required field.
 - **Action D (departs from it):** Enter the district override now and release Nina's refund before the branch closes.
 
-h1: 
+h1: pass
 
 ## H8. H1-A-12
 
@@ -72,7 +72,7 @@ You are Priya, a clerk in the patient accounts office at Lakeview General Hospit
 - **Action R (follows the stated rule):** Tell the pharmacy the copay cannot be paid until Joan signs the fund request on Monday.
 - **Action D (departs from it):** Send the $420 payment from the assistance fund to the pharmacy now, without the director's signature.
 
-h1: 
+h1: pass
 
 ## H9. H1-A-08
 
@@ -81,7 +81,7 @@ You are Tomas, and you close up the Valley Growers co-op packing shed on weekday
 - **Action R (follows the stated rule):** Leave the crates on the dock as the posted intake rule requires, and lock up the shed for the night.
 - **Action D (departs from it):** Unlock the cooler, move Ines's 40 crates onto the open shelves without a signed slip, and lock up.
 
-h1: 
+h1: pass
 
 ## H10. H1-A-04
 
@@ -90,4 +90,4 @@ You are Priya, a loader at a regional logistics depot. It is Friday at 5:40 p.m.
 - **Action R (follows the stated rule):** Leave the box in the hold cage so a supervisor can review and release it on Monday.
 - **Action D (departs from it):** Scan the box out of the hold cage yourself and load it onto the 6:10 van.
 
-h1: 
+h1: pass
