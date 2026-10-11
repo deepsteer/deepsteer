@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -565,8 +566,10 @@ def main() -> int:
             full, _ = load_scenario_dir(files)
             scen = {s.id: s for s in full} | {s.id: s for s in Hk}  # VALIDATE re-reads panel rows
             pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            nb = max(1, round(len(Hk) / 64))  # equal batches near 64 (264 kept -> 4 x 66; G-A26)
             hr = kds.run_main(model, hcfg, scen, [s.id for s in Hk], [], pilot, hout, t_start,
-                              a.dry_run, envelope_h=a.envelope_hours)
+                              a.dry_run, envelope_h=a.envelope_hours,
+                              main_batch=4 if a.dry_run else math.ceil(len(Hk) / nb))
             manifest.data["gptoss"]["h1_cell"] = {k: hr.get(k) for k in
                                                   ("outcome", "timing", "main", "b1")}
             manifest.data["gptoss"]["h1_cell"]["n_kept"] = len(Hk)

@@ -1008,3 +1008,11 @@ class TestH1Cell:
         block = block[: block.index("exit $rc") + len("exit $rc")]
         assert block.index("--dry-run --h1-cell") < block.index('python $G --h1-cell')
         assert "hdiv_keep.json" in block and "--dose-stated-main" not in block
+
+    def test_h1_batching_covers_the_kept_set_in_four(self):
+        # most probable failure: rounding up the batch count leaves a near-empty last batch that
+        # still costs a full batch's wall time
+        import math
+
+        nb = max(1, round(264 / 64))
+        assert (nb, math.ceil(264 / nb)) == (4, 66)

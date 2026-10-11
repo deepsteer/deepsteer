@@ -426,7 +426,8 @@ def _readout_batched(model, rows, pids, lid):
 
 
 def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pilot_rows: list[dict],
-             out: Path, t_start: float, dry: bool, envelope_h: float = POD_ENVELOPE_H) -> dict:
+             out: Path, t_start: float, dry: bool, envelope_h: float = POD_ENVELOPE_H,
+             main_batch: int = MAIN_BATCH) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     lid = {x: model.token_id(x) for x in "ABCDE"}
     letter_ids = set(lid.values())
@@ -434,7 +435,7 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     cap = 64 if dry else MAIN_CAP
     partial = out / "ds_main_partial.jsonl"
     partial.unlink(missing_ok=True)
-    rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A18", "cap": cap, "batch": MAIN_BATCH,
+    rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A18", "cap": cap, "batch": main_batch,
                  "envelope_h": envelope_h}
 
     def elapsed_h():
@@ -466,9 +467,10 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     # (b) timing step: the first main-stage batch, banked
     order = np.random.default_rng(ORDER_SEED + 3).permutation(len(main_ids))
     jobs = [(scen[main_ids[i]], "dl_chat_neutral", 0) for i in order]
-    first, rest = jobs[:MAIN_BATCH], jobs[MAIN_BATCH:]
-    rows, pids, secs = _generate(model, cfg, first, cap, SEED + 50_000, letter_ids, partial, "main")
-    n_rest_batches = math.ceil(len(rest) / MAIN_BATCH)
+    first, rest = jobs[:main_batch], jobs[main_batch:]
+    rows, pids, secs = _generate(model, cfg, first, cap, SEED + 50_000, letter_ids, partial, "main",
+                                 batch_size=main_batch)
+    n_rest_batches = math.ceil(len(rest) / main_batch)
     proj = elapsed_h() + (secs[0] * n_rest_batches + FWD_S_PER_ROW * len(jobs)) / 3600
     rec["timing"] = {"first_batch_seconds": secs[0], "remaining_batches": n_rest_batches,
                      "projected_hours_at_main_end": proj, "elapsed_h": elapsed_h()}
@@ -479,7 +481,7 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     # (c) the rest of the main stage, deadline at the envelope
     deadline = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * len(jobs)
     r2, p2, s2 = _generate(model, cfg, rest, cap, SEED + 50_001, letter_ids, partial, "main",
-                           deadline, est_batch_seconds=secs[0])
+                           deadline, est_batch_seconds=secs[0], batch_size=main_batch)
     rows += r2
     pids += p2
     rec["main"] = {"n": len(rows), "run": sum(r["status"] != "not_run" for r in rows),
