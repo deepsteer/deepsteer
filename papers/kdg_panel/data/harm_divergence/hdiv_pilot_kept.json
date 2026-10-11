@@ -1,0 +1,44 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A24 item 4",
+ "n": 24,
+ "kept": 23,
+ "pilot_n": 24,
+ "pilot_kept_share": 0.9583333333333334,
+ "gate": 0.4,
+ "pilot_pass": true,
+ "by_question": {
+  "harm": {
+   "subagent": 23,
+   "codex": 24
+  },
+  "rule": {
+   "subagent": 24,
+   "codex": 24
+  }
+ },
+ "kept_ids": [
+  "H1-A-00",
+  "H1-A-04",
+  "H1-A-06",
+  "H1-A-08",
+  "H1-A-10",
+  "H1-A-12",
+  "H1-A-14",
+  "H1-A-16",
+  "H1-A-18",
+  "H1-A-20",
+  "H1-A-22",
+  "H1-B-01",
+  "H1-B-03",
+  "H1-B-05",
+  "H1-B-07",
+  "H1-B-09",
+  "H1-B-11",
+  "H1-B-13",
+  "H1-B-15",
+  "H1-B-17",
+  "H1-B-19",
+  "H1-B-21",
+  "H1-B-23"
+ ]
+}

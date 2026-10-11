@@ -154,7 +154,7 @@ def keep() -> dict:
     kept = sorted(i for i, it in its.items()
                   if all(names_consistent(it, R[(r, q)].get(i)) for r in GENERATORS.values()
                          for q in QUESTIONS))
-    first = sorted(its)[:GATE_N]
+    first = sorted(i for i in its if int(i.rsplit("-", 1)[1]) < GATE_N)  # pilot = slots 0-23
     share = sum(i in set(kept) for i in first) / len(first) if first else 0.0
     rep = {"rule": "KDG_GPTOSS_SPEC G-A24 item 4", "n": len(its), "kept": len(kept),
            "pilot_n": len(first), "pilot_kept_share": share, "gate": GATE_SHARE,
