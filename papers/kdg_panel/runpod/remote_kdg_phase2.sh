@@ -30,6 +30,14 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2m  H1 compliance-harm cell (G-A26): dose-0 dl_chat_neutral readout (8 permutations) on
+#                    the kept H1 set, then the primary-2 pipeline on it (VALIDATE re-check, timing
+#                    step, medium-effort action at permutation 0, readout one at a time):
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl MAX_SYNC_GB=1 MIN_FREE_GB=20 \
+#     REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2m \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2m \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2l  G-A24 item 2: p2k's continuation, the 87 divergent scenarios its envelope stop left
 #                    (same cell, order and seeds; one batch), VALIDATE re-check first, 1.3 A100-h:
 #     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
@@ -114,9 +122,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'cp "$REPO_DIR/session.log" "${OUT:-$REPO_DIR}/session.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j|p2k|p2l) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j|p2k|p2l|p2m) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2l (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2m (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -130,7 +138,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ] || [ "$PROFILE" = "p2k" ] || [ "$PROFILE" = "p2l" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ] || [ "$PROFILE" = "p2k" ] || [ "$PROFILE" = "p2l" ] || [ "$PROFILE" = "p2m" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -159,6 +167,27 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] ||
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2m" ]; then  # G-A26: the H1 compliance-harm cell
+    PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
+    [ -f "$PILOT_ROWS" ] || { echo "FATAL: $PILOT_ROWS missing (SYNC_OUTPUTS must ship it)"; exit 1; }
+    for f in papers/kdg_panel/data/harm_divergence/hdiv_set.json papers/kdg_panel/data/harm_divergence/hdiv_keep.json; do
+      [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }
+    done
+    python $G --dry-run --h1-cell --pilot-rows "$PILOT_ROWS" --out "$OUT/_dry_h1" \
+      || { echo "DRY RUN (H1 cell) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2m/H1 cell ===================="
+    python $G --h1-cell --pilot-rows "$PILOT_ROWS" --envelope-hours 2.6 --out "$OUT/h1"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/h1" \
+      || echo "WARN: manifest verify reported mismatches"
+    case $rc in
+      0) echo ">> H1 cell complete";;
+      2) echo ">> BAIL: VALIDATE re-check failed under identical batching; nothing generated";;
+      3) echo ">> STOP: the timing step projected past the envelope; the first batch is banked and read";;
+    esac
+    echo ">> KDG p2m done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2m/"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2l" ]; then  # G-A24 item 2: p2k's continuation
     PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
     DONE=papers/kdg_panel/outputs/p2k/jm/gpt_oss_20b/jm.jsonl

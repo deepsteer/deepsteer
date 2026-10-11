@@ -491,7 +491,7 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     # (d) stage B1 last, within the remaining envelope
     b1 = [(scen[s], "dl_chat_neutral", k) for s in c0_ids for k in (1, 2, 3)]
     deadline_b1 = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * (len(jobs) + len(b1))
-    if time.time() + est < deadline_b1:
+    if b1 and time.time() + est < deadline_b1:
         rb, pb, sb = _generate(model, cfg, b1, cap, SEED + 60_000, letter_ids, partial, "B1",
                                deadline_b1, est_batch_seconds=est)
         rows += rb
@@ -499,7 +499,7 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
         rec["b1"] = {"run": sum(r["status"] != "not_run" for r in rb), "n": len(b1),
                      "gen_seconds": float(sum(sb))}
     else:
-        rec["b1"] = {"run": 0, "n": len(b1), "skipped": "envelope"}
+        rec["b1"] = {"run": 0, "n": len(b1), "skipped": "envelope" if b1 else "no_c0_ids"}
     checkpoint()
     # rows before the readout: a readout crash keeps them
     with open(out / "ds_main.jsonl", "w") as f:

@@ -459,6 +459,8 @@ def main() -> int:
                     help="G-A19: the p2i per-batch bank (ds_main_partial.jsonl)")
     ap.add_argument("--judgment-medium", action="store_true",
                     help="G-A23 item 3: judgment readout at medium on the 175 divergent scenarios")
+    ap.add_argument("--h1-cell", action="store_true",
+                    help="H1 compliance-harm cell: dose-0 readout + medium action on the kept set")
     ap.add_argument("--jm-done-rows", type=Path, default=None,
                     help="G-A24 item 2 (p2l): p2k's jm.jsonl; run only the scenarios it left")
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
@@ -544,6 +546,39 @@ def main() -> int:
             print(f"manifest: {manifest.write()}")
             print(f">> re-derivation outcome: {rr['outcome']}", flush=True)
             return 2 if rr["outcome"] == "bail_validate" else 0
+        if a.h1_cell:  # the separate H1 set: dose-0 readout, then the primary-2 pipeline on it
+            import kdg_dose_stated as kds
+
+            hdir = KDG_DIR / "data" / "harm_divergence"
+            H, _ = load_scenario_dir([hdir / "hdiv_set.json"])
+            kept = set(json.loads((hdir / "hdiv_keep.json").read_text())["kept_ids"])
+            Hk = sorted((s for s in H if s.id in kept), key=lambda s: s.id)
+            if not Hk or {s.family for s in Hk} != {"H1"}:
+                raise SystemExit("H1 kept set empty or not all H1: refusing to run")
+            if a.dry_run:
+                Hk = Hk[:10]
+            hout = a.out / KEY / "h1"
+            hctx = dataclasses.replace(ctx, out=hout)
+            t0 = time.time()
+            run_letter_units(hctx, Hk, ("dl_chat_neutral",))
+            manifest.status(f"{KEY}/h1/dl_chat_neutral", "ok", f"{time.time() - t0:.1f}s")
+            full, _ = load_scenario_dir(files)
+            scen = {s.id: s for s in full} | {s.id: s for s in Hk}  # VALIDATE re-reads panel rows
+            pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            hr = kds.run_main(model, hcfg, scen, [s.id for s in Hk], [], pilot, hout, t_start,
+                              a.dry_run, envelope_h=a.envelope_hours)
+            manifest.data["gptoss"]["h1_cell"] = {k: hr.get(k) for k in
+                                                  ("outcome", "timing", "main", "b1")}
+            manifest.data["gptoss"]["h1_cell"]["n_kept"] = len(Hk)
+            manifest.data["gptoss"]["h1_cell"]["validate"] = {
+                k: v for k, v in hr["validate"].items() if k != "per_row"}
+            for f in ("dl_chat_neutral.jsonl", "dl_chat_neutral.npz", "ds_main.jsonl",
+                      "ds_main.npz", "main_record.json", "ds_main_partial.jsonl"):
+                if (hout / f).exists():
+                    manifest.add(hout / f, "h1_cell", KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> H1 cell outcome: {hr['outcome']}", flush=True)
+            return {"bail_validate": 2, "stop_report": 3}.get(hr["outcome"], 0)
         if a.judgment_medium:
             import kdg_judgment_medium as kjm
 

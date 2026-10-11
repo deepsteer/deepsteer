@@ -978,3 +978,33 @@ class TestJudgmentMedium:
         block = block[: block.index("exit $rc") + len("exit $rc")]
         assert '--jm-done-rows "$DONE"' in block and "p2k/jm/gpt_oss_20b/jm.jsonl" in block
         assert "--envelope-hours 1.3" in block and "--dose-stated-main" not in block
+
+
+class TestH1Cell:
+    """The H1 compliance-harm cell (G-A24 item 4, G-A26)."""
+
+    def test_dry_h1_reads_only_the_kept_h1_set(self, tok, tmp_path):
+        # most probable failure: the cell runs on the panel's scenarios (the loader's default set)
+        # instead of the separate H1 set, or the action stage drifts off permutation 0
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--h1-cell", "--pilot-rows", str(PILOT_ROWS), "--out", str(tmp_path)],
+                            capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        d = tmp_path / "gpt_oss_20b" / "h1"
+        kept = set(json.loads((REPO / "papers/kdg_panel/data/harm_divergence/hdiv_keep.json")
+                              .read_text())["kept_ids"])
+        cell = [json.loads(x) for x in (d / "dl_chat_neutral.jsonl").read_text().splitlines()]
+        main = [json.loads(x) for x in (d / "ds_main.jsonl").read_text().splitlines()]
+        assert {r["scenario_id"] for r in cell} <= kept and {r["scenario_id"] for r in main} <= kept
+        assert {r["seed"] for r in main} == {0} and {r["stage"] for r in main} == {"main"}
+        rec = json.loads((d / "main_record.json").read_text())
+        assert rec["validate"]["n"] == 16 and rec["b1"]["skipped"] == "no_c0_ids"
+
+    def test_p2m_block(self):
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2m" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert block.index("--dry-run --h1-cell") < block.index('python $G --h1-cell')
+        assert "hdiv_keep.json" in block and "--dose-stated-main" not in block
