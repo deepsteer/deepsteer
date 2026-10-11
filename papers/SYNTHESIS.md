@@ -984,13 +984,14 @@ whether or not the departure is defensible. Compliance-harm split (§37): **reas
 reliably where breaking it harms no proximate third party (40 toward, 0 away) as where it does (31 vs
 2).** On the present evidence (all descriptive or below gates), the direction §30 found reads as rule
 compliance, not harm-avoidance or self-protection. The pre-registered compliance-harm cell is
-unresolved (15 scenarios, 3 crossings); the H1 set (pilot 23 of 24 kept) is built for it. Judgment at the default level (§38, pre-registered, two pods): **GPT-OSS-20B's reasoning revises
-its judgment and its action together: where the action moved from the dose-0 judgment to the norm, an
-independent medium-effort judgment trace lands on the norm in 52 of 69 decisive scenarios (p =
-2.9 × 10⁻⁵; F1 and the rest each significant).** Branch: principled revision. §33's "against its own
-judgment" reading is withdrawn; the claim is that reasoning moves judgment and action to the stated
-rule together. Open (KDG-A27): whether converging on the stated rule is moral improvement. The author's blind sample (§39) bounds the
-worry: departures the author judges defensible all things considered are 1 of 13 decided divergent
-scenarios (Wilson [0.014, 0.333]; 7 of 20 need context), so on most of these scenarios the stated rule is
-also the author's judgment and convergence on it reads as correction. The rater P4 instrument is not
-measurable (its gate had no "yes" to test).
+unresolved (15 scenarios, 3 crossings); the H1 set (pilot 23 of 24 kept) is built for it. Judgment at the default level (§38, pre-registered, two pods): **At its default reasoning level GPT-OSS-20B's
+judgment and action converge on the stated rule together: where the action moved from the dose-0
+judgment to the norm, an independent medium-effort judgment trace lands on the norm in 52 of 69 decisive
+scenarios (p = 2.9 × 10⁻⁵; F1 and the rest each significant).** Branch: principled revision. Single-trace
+noise is large (a second trace disagrees 25–43% of the time); the coupling is an aggregate that holds
+despite it, not a clean per-scenario pairing. §33's "against its own judgment" reading is withdrawn. On the human sample (§39, estimate of record) the
+stated rule is also the right call in 12 of 13 decided divergent scenarios (defensible departures 1 of
+13, 95% interval 1.4%–33%; 7 of 20 undecided), so at the point estimate the convergence reads as
+correction, with that interval attached. The undecided items are cases where converging on the stated
+rule under insufficient information is the prudent default. The rater P4 instrument is not
+measurable.

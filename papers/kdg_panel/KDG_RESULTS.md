@@ -2310,7 +2310,10 @@ since using it would be a fork).
 
 **Crossing count (pre-registered cell): gate not met, unresolved.** Compliance-harm subset (15): 3
 toward, 0 away, 5 lateral, 7 same; m = 3 against N_min 27. The panel holds too few compliance-harm
-scenarios for the cell.
+scenarios for the cell. Direction split of the 15 (G-A25 note 3: the cell stays at these 15,
+descriptive; the either-rater 129 is not counted): compliance harm only (10) 1 toward, 0 away, 4 lateral,
+5 same; compliance and violation harm (5) 2 toward, 0 away, 1 lateral, 2 same. Every crossing in the
+subset goes toward the stated rule, on 3 crossings.
 
 **Descriptive, and the strongest reading these data support.** §30's 74 toward / 2 away split by the
 violation side: where breaking the rule harms no proximate third party ("neither", 258 scenarios), 40
@@ -2362,20 +2365,22 @@ judgment to the norm too, in 52 of 69 decisive scenarios.** By G-A23's branch te
 judgment" reading is withdrawn; the claim becomes: reasoning moves judgment and action to the norm
 together. The F1-vs-rest split (G-A24) reads the same in both: F1 20 vs 6 (p = 0.0094), the rest 32 vs 11
 (p = 0.0019). Coupling, descriptive: the judgment is norm-consistent in 52 of 69 moved scenarios against 24
-of 65 stayed ones (Fisher p = 1.0 × 10⁻⁵), so judgment and action move together scenario by scenario, not
-just in aggregate.
+of 65 stayed ones (Fisher p = 1.0 × 10⁻⁵). **Single-trace noise is large** (below), so this table is not a
+clean per-scenario classification: any one scenario's cell can flip on a second trace. The coupling is an
+aggregate property, and it holds despite the noise.
 
 Second derivations. The pilot's medium judgment traces (cap 4,096) on 21 of the same scenarios agree with
 the pod's on 12 (0.57); action traces agree with each other on 78 of 104 pairs (0.75, the 22 B1
-scenarios). Single traces are noisy, which pulls k_rev / k_hold toward one half, so 0.75 (52 of 69) is
-measured despite that noise. Coincidence interrogated: the stayed set's 24 scenarios with a revised
+scenarios). Single traces are noisy (a second trace disagrees 25–43% of the time), which pulls k_rev / k_hold
+toward one half, so the aggregate 0.75 (52 of 69) is measured despite that noise. Coincidence interrogated: the stayed set's 24 scenarios with a revised
 judgment and an unmoved action sit within what trace-to-trace disagreement of 0.25–0.43 produces between
 two independent traces, so they are not read as a judgment–action gap at medium effort.
 
 **Referee pass.** (1) *"Judgment and action are read from different prompts; 'together' is a population
-statement."* The coupling is per scenario (52 of 69 vs 24 of 65 across the moved/stayed split), from
-independent traces with separate prompts and seeds, so it is the scenario, not shared context, that both
-traces respond to. (2) *"Revision toward a stated rule may be deference to rules, not moral reasoning."*
+statement."* Conceded: with single traces disagreeing 25–43% of the time, the claim is about the
+aggregate (52 of 69 against 24 of 65 across the moved/stayed split), not a clean per-scenario pairing.
+The traces are independent (separate prompts and seeds), so the aggregate coupling comes from the
+scenarios, not from shared context. (2) *"Revision toward a stated rule may be deference to rules, not moral reasoning."*
 Conceded as the open part: the branch name is the pre-registered label, and what the data show is that
 the reasoned judgment and the action converge on the stated rule. Whether converging there is moral
 improvement on these scenarios is KDG-A27's question; the author's all-things-considered judgment departs
@@ -2397,16 +2402,18 @@ the pre-registered gate (κ ≥ 0.4) cannot clear and nothing is counted on the 
 specificity 12 of 12; the anchor is rated yes by both raters; on the 7 need-context items both raters say
 yes on 2 (F3-B-05, F1-B-61T) and split on 2; Claude says yes on 3 of 20, GPT on 5.
 
-**Prevalence from the author's own sample.** Departures the author judges defensible all things considered:
-1 of the 13 decided items, Wilson 95% [0.014, 0.333]; 7 of 20 need more context. On this evidence the
-defensible-departure pattern is uncommon among the divergent scenarios, though not bounded tightly. A
-real P4 count needs an author sample with enough "yes" cases to test sensitivity, which the gate requires
-and this one could not.
+**Estimate of record (the human sample; G-A25 note 3).** Defensible departures from the stated rule: 1 of
+13 decided items (95% interval 1.4%–33%); 7 of 20 undecided. The rater instrument is recorded as not
+measurable. The 7 need-context items are recorded as cases where converging on the stated rule under
+insufficient information is the prudent default; no added-context pass is run. Rater over-reach,
+descriptive: on those 7, both raters answer "yes" on 2 (F3-B-05, F1-B-61T) and one rater on 2 more, calling
+defensible what the author judged undecidable from the text.
 
 **Referee pass.** (1) *"An undefined κ is a failed instrument."* It is an untested instrument: the sample
 held no "yes" to test sensitivity on, which is why the result is "not measurable", not "P4 absent". (2)
 *"One anchor can't calibrate a construct."* Agreed; it was the only yes the author gave. (3) *"Then §38's
-principled revision might still be revision toward rules that are wrong on these scenarios."* The
-author's sample bounds that share: 1 of 13 decided items has a defensible departure, so in most of the
-divergent scenarios the stated rule is also what the author judges right, and convergence on it reads as
-correction there. KDG-A27 stays open for the minority, with 7 of 20 needing context.
+principled revision might still be revision toward rules that are wrong on these scenarios."* On the
+human sample the stated rule is also the right call in 12 of 13 decided items (defensible departures 1 of
+13, 95% interval 1.4%–33%), so at the point estimate convergence on it reads as correction; the interval,
+not "most", is what the record states. The 7 undecided items are cases where converging on the stated rule
+under insufficient information is the prudent default.
