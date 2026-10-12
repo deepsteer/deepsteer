@@ -26,7 +26,8 @@ CELL = "jl_chat_neutral"
 
 def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list[dict], out: Path,
                         t_start: float, dry: bool, envelope_h: float = JM_ENVELOPE_H,
-                        done_ids: set[str] | None = None) -> dict:
+                        done_ids: set[str] | None = None, seed_offset: int = JM_SEED_OFFSET,
+                        spec: str = "KDG_GPTOSS_SPEC G-A23 item 3") -> dict:
     """``done_ids`` (G-A24 item 2, p2l): the scenarios p2k already ran. They must be exactly the
     first batch of p2k's permutation; the rest run as one batch with p2k's second-batch seed."""
     out.mkdir(parents=True, exist_ok=True)
@@ -37,7 +38,7 @@ def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list
     batch = 8 if dry else JM_BATCH  # the dry run still exercises the second-batch path
     partial = out / "jm_partial.jsonl"
     partial.unlink(missing_ok=True)
-    rec: dict = {"spec": "KDG_GPTOSS_SPEC G-A23 item 3", "cell": CELL, "cap": cap,
+    rec: dict = {"spec": spec, "cell": CELL, "cap": cap, "seed_offset": seed_offset,
                  "batch": batch, "envelope_h": envelope_h, "n_scenarios": len(ids),
                  "readout_batch": kds.READOUT_BATCH}
 
@@ -92,7 +93,7 @@ def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list
         rec["continuation_of"] = "p2k"
         rec["n_done_before"] = len(done_ids)
         deadline = t_start + (envelope_h - kds.SETUP_H) * 3600 - kds.FWD_S_PER_ROW * len(rest)
-        rows, pids, secs = kds._generate(model, cfg, rest, cap, kds.SEED + JM_SEED_OFFSET + 1,
+        rows, pids, secs = kds._generate(model, cfg, rest, cap, kds.SEED + seed_offset + 1,
                                          letter_ids, partial, "jm", deadline,
                                          est_batch_seconds=0.0 if dry else P2K_BATCH_SECONDS,
                                          batch_size=len(rest))
@@ -105,7 +106,7 @@ def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list
                       rows, pids)
     # (b) timing step: the first batch, banked
     first, rest = jobs[:batch], jobs[batch:]
-    rows, pids, secs = kds._generate(model, cfg, first, cap, kds.SEED + JM_SEED_OFFSET,
+    rows, pids, secs = kds._generate(model, cfg, first, cap, kds.SEED + seed_offset,
                                      letter_ids, partial, "jm", batch_size=batch)
     n_rest = math.ceil(len(rest) / batch)
     proj = elapsed_h() + (secs[0] * n_rest + kds.FWD_S_PER_ROW * len(jobs)) / 3600
@@ -119,7 +120,7 @@ def run_judgment_medium(model, cfg, scen: dict, ids: list[str], pilot_rows: list
     # (c) the rest under a deadline at the envelope
     if rest:
         deadline = t_start + (envelope_h - kds.SETUP_H) * 3600 - kds.FWD_S_PER_ROW * len(jobs)
-        r2, p2, s2 = kds._generate(model, cfg, rest, cap, kds.SEED + JM_SEED_OFFSET + 1,
+        r2, p2, s2 = kds._generate(model, cfg, rest, cap, kds.SEED + seed_offset + 1,
                                    letter_ids, partial, "jm", deadline, est_batch_seconds=secs[0],
                                    batch_size=batch)
         rows += r2

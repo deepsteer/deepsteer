@@ -1062,3 +1062,62 @@ class TestH1Cell:
         block = block[: block.index("exit $rc") + len("exit $rc")]
         assert '--h1-done-rows "$DONE"' in block and "p2m/h1/gpt_oss_20b/h1/ds_main.jsonl" in block
         assert "--envelope-hours 1.2" in block
+
+
+class TestH1JudgmentDose:
+    """G-A28 items 2-3 (p2o)."""
+
+    def test_dry_run_uses_the_registered_ids_prompts_and_levels(self, tok, tmp_path):
+        # most probable failure: the judgment readout renders the action prompt, or a dose arm runs
+        # at the default level (medium) because the reasoning level is not switched per arm
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        rc = subprocess.run([sys.executable, str(SCRIPTS / "pod_kdg_gptoss.py"), "--dry-run",
+                             "--h1-jm-dose", "--pilot-rows", str(PILOT_ROWS),
+                             "--out", str(tmp_path)], capture_output=True, text=True, cwd=REPO)
+        assert rc.returncode == 0, rc.stderr[-2000:]
+        d = tmp_path / "gpt_oss_20b"
+        hdir = REPO / "papers/kdg_panel/data/harm_divergence"
+        cross = set(json.loads((hdir / "h1_crossing_44.json").read_text())["ids"])
+        sample = set(json.loads((hdir / "h1_dose_sample.json").read_text())["sample"])
+        jm = [json.loads(x) for x in (d / "h1_jm" / "jm.jsonl").read_text().splitlines()]
+        assert {r["cell"] for r in jm} == {"jl_chat_neutral"}
+        assert {r["scenario_id"] for r in jm} <= cross
+        assert json.loads((d / "h1_jm" / "jm_record.json").read_text())["seed_offset"] == 80_000
+        dc = [json.loads(x) for x in (d / "h1_dc" / "dc.jsonl").read_text().splitlines()]
+        assert {r["scenario_id"] for r in dc} <= sample
+        assert {(r["arm"], r["harmony_reasoning_level"]) for r in dc} == {
+            ("low", "low"), ("medium", "medium"), ("high_pilot", "high"), ("high_rest", "high")}
+
+    def test_high_gate_stops_on_incomplete_pilot(self, monkeypatch, tmp_path):
+        # most probable failure: the other 48 run at cap 8,192 even when the pilot shows the cap is
+        # too short or the envelope too small
+        kdc = _load("kdg_dose_curve")
+        calls = []
+
+        def fake_generate(model, cfg, jobs, cap, seed, letter_ids, partial, stage, deadline=None,
+                          est_batch_seconds=None, batch_size=None):
+            calls.append(stage)
+            st = "truncated" if stage == "high_pilot" else "completed"
+            rows = [{"scenario_id": s.id, "status": st, "token_identity": st == "completed",
+                     "option_id": None} for s, _, _ in jobs]
+            return rows, [[] for _ in jobs], [10.0]
+
+        monkeypatch.setattr(kdc.kds, "_generate", fake_generate)
+        import time
+        import types
+
+        model = types.SimpleNamespace(token_id=lambda x: ord(x), reasoning_level="medium")
+        cfg = types.SimpleNamespace(reasoning_level="medium")
+        scen = {f"s{i}": types.SimpleNamespace(id=f"s{i}") for i in range(8)}
+        rec = kdc.run_dose_curve(model, cfg, scen, list(scen), ["s0", "s1"], tmp_path,
+                                 time.time(), False, 6.0)
+        assert rec["outcome"] == "high_gate_stop" and "high_rest" not in calls
+        assert model.reasoning_level == "medium"  # restored after the curve
+
+    def test_p2o_block(self):
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2o" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert "--h1-jm-dose" in block and "--envelope-hours 6.0" in block
+        assert "h1_crossing_44.json" in block and "h1_dose_sample.json" in block

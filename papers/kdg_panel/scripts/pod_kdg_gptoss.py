@@ -462,6 +462,8 @@ def main() -> int:
                     help="G-A23 item 3: judgment readout at medium on the 175 divergent scenarios")
     ap.add_argument("--h1-cell", action="store_true",
                     help="H1 compliance-harm cell: dose-0 readout + medium action on the kept set")
+    ap.add_argument("--h1-jm-dose", action="store_true",
+                    help="G-A28: judgment readout on the 44 H1 crossings, then the dose curve")
     ap.add_argument("--h1-done-rows", type=Path, default=None,
                     help="H1 continuation: p2m's ds_main.jsonl; run only the held-back tail")
     ap.add_argument("--jm-done-rows", type=Path, default=None,
@@ -549,6 +551,52 @@ def main() -> int:
             print(f"manifest: {manifest.write()}")
             print(f">> re-derivation outcome: {rr['outcome']}", flush=True)
             return 2 if rr["outcome"] == "bail_validate" else 0
+        if a.h1_jm_dose:  # G-A28 items 2-3, one pod, one envelope
+            import kdg_dose_curve as kdc
+            import kdg_judgment_medium as kjm
+
+            hdir = KDG_DIR / "data" / "harm_divergence"
+            H, _ = load_scenario_dir([hdir / "hdiv_set.json"])
+            kept = set(json.loads((hdir / "hdiv_keep.json").read_text())["kept_ids"])
+            Hk = sorted((s for s in H if s.id in kept), key=lambda s: s.id)
+            cross = json.loads((hdir / "h1_crossing_44.json").read_text())["ids"]
+            ds = json.loads((hdir / "h1_dose_sample.json").read_text())
+            sample, pilot16 = ds["sample"], ds["high_pilot_16"]
+            if len(cross) != 44 or len(sample) != 64 or len(pilot16) != 16:
+                raise SystemExit("G-A28 id lists are not 44 / 64 / 16: refusing to run")
+            if a.dry_run:
+                Hk, cross, sample, pilot16 = Hk[:10], cross[:6], sample[:8], sample[:3]
+            full, _ = load_scenario_dir(files)
+            scen = {s.id: s for s in full} | {s.id: s for s in Hk}
+            scen |= {s.id: s for s in H if s.id in set(cross) | set(sample)}
+            pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
+            base = a.out / KEY
+            t0 = time.time()
+            run_letter_units(dataclasses.replace(ctx, out=base / "h1_jm"), Hk, ("jl_chat_neutral",))
+            manifest.status(f"{KEY}/h1_jm/jl_chat_neutral", "ok", f"{time.time() - t0:.1f}s")
+            jr = kjm.run_judgment_medium(model, hcfg, scen, cross, pilot, base / "h1_jm", t_start,
+                                         a.dry_run, envelope_h=a.envelope_hours,
+                                         seed_offset=80_000, spec="KDG_GPTOSS_SPEC G-A28 item 2")
+            manifest.data["gptoss"]["h1_jm"] = {k: jr.get(k) for k in
+                                                ("outcome", "timing", "generation", "readout_rows")}
+            manifest.write()
+            print(f">> H1 judgment readout outcome: {jr['outcome']}", flush=True)
+            if jr["outcome"] == "bail_validate":
+                return 2
+            dr = kdc.run_dose_curve(model, hcfg, scen, sample, pilot16, base / "h1_dc", t_start,
+                                    a.dry_run, a.envelope_hours)
+            manifest.data["gptoss"]["h1_dc"] = {k: dr.get(k) for k in ("outcome", "arms",
+                                                                       "high_gate")}
+            for sub, files_ in (("h1_jm", ("jl_chat_neutral.jsonl", "jl_chat_neutral.npz",
+                                           "jm.jsonl", "jm.npz", "jm_record.json",
+                                           "jm_partial.jsonl")),
+                                ("h1_dc", ("dc.jsonl", "dc_record.json", "dc_partial.jsonl"))):
+                for f in files_:
+                    if (base / sub / f).exists():
+                        manifest.add(base / sub / f, sub, KEY)
+            print(f"manifest: {manifest.write()}")
+            print(f">> H1 dose curve outcome: {dr['outcome']}", flush=True)
+            return 3 if dr["outcome"] == "high_gate_stop" else 0
         if a.h1_cell:  # the separate H1 set: dose-0 readout, then the primary-2 pipeline on it
             import kdg_dose_stated as kds
 

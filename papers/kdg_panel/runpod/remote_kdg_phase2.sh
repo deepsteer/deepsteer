@@ -30,6 +30,15 @@
 #     MAX_SYNC_GB=1 REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2f \
 #     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2f \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
+#   KDG_PROFILE=p2o  G-A28: on the H1 set, the dose-0 judgment readout (264), the judgment readout at
+#                    medium on the 44 crossings (VALIDATE first), then the dose curve on the stratified
+#                    64 (low, fresh medium, high pilot 16 at cap 8,192 then the other 48 if gated);
+#                    one 6.0 A100-h envelope:
+#     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
+#     SYNC_OUTPUTS=outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl MAX_SYNC_GB=1 MIN_FREE_GB=20 \
+#     REMOTE_SCRIPT=papers/kdg_panel/runpod/remote_kdg_phase2.sh KDG_PROFILE=p2o \
+#     SELF_PAPER=papers/kdg_panel RESULTS_SUBPATH=outputs/p2o \
+#     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   KDG_PROFILE=p2n  G-A26 note: p2m's continuation, the 66 held-back H1 scenarios (same order and seed
 #                    as p2m would have used; one batch), VALIDATE re-check first, 1.2 A100-h:
 #     GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe" DISK_GB=150 \
@@ -129,9 +138,9 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'cp "$REPO_DIR/session.log" "${OUT:-$REPO_DIR}/session.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 
 case "$PROFILE" in
-  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j|p2k|p2l|p2m|p2n) ;;
+  p2a|p2b|p2c|p2d|p2e|p2f|p2g|p2h|p2i|p2j|p2k|p2l|p2m|p2n|p2o) ;;
   p2a_e1|p2a_e2) echo "FATAL: $PROFILE is an optional extra (spec §10) and is not scheduled; the author decides at the pod gate"; exit 1;;
-  *) echo "FATAL: KDG_PROFILE must be p2a..p2n (got '$PROFILE')"; exit 1;;
+  *) echo "FATAL: KDG_PROFILE must be p2a..p2o (got '$PROFILE')"; exit 1;;
 esac
 OUT="$REPO_DIR/papers/kdg_panel/outputs/$PROFILE"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -145,7 +154,7 @@ pip install -q --break-system-packages hf_xet >/dev/null 2>&1 && export HF_XET_H
 echo ">> transformers: $(python -c 'import transformers;print(transformers.__version__)' 2>&1)"
 
 # ---- p2c: GPT-OSS-20B (KDG_GPTOSS_SPEC v0.2); its own driver, gates inside it ----
-if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ] || [ "$PROFILE" = "p2k" ] || [ "$PROFILE" = "p2l" ] || [ "$PROFILE" = "p2m" ] || [ "$PROFILE" = "p2n" ]; then
+if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] || [ "$PROFILE" = "p2i" ] || [ "$PROFILE" = "p2j" ] || [ "$PROFILE" = "p2k" ] || [ "$PROFILE" = "p2l" ] || [ "$PROFILE" = "p2m" ] || [ "$PROFILE" = "p2n" ] || [ "$PROFILE" = "p2o" ]; then
   G=papers/kdg_panel/scripts/pod_kdg_gptoss.py
   # GPT-OSS's mxfp4 quantizer calls torch.accelerator (torch >= 2.6). The image ships 2.4, so
   # upgrade the matched trio exactly as W4 did (manifest_w4: torch 2.6.0+cu124, transformers
@@ -174,6 +183,26 @@ if [ "$PROFILE" = "p2c" ] || [ "$PROFILE" = "p2f" ] || [ "$PROFILE" = "p2h" ] ||
     *) echo "FATAL: p2c runs on A100 80GB only (timing parity with VALIDATE, G-A4); got '$GPU_NAME'"; exit 1;;
   esac
   python $G --dry-run --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+  if [ "$PROFILE" = "p2o" ]; then  # G-A28: H1 judgment readout, then the dose curve
+    PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
+    for f in "$PILOT_ROWS" papers/kdg_panel/data/harm_divergence/hdiv_set.json papers/kdg_panel/data/harm_divergence/h1_crossing_44.json papers/kdg_panel/data/harm_divergence/h1_dose_sample.json; do
+      [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }
+    done
+    python $G --dry-run --h1-jm-dose --pilot-rows "$PILOT_ROWS" --out "$OUT/_dry_h1" \
+      || { echo "DRY RUN (H1 judgment + dose curve) FAILED"; exit 1; }
+    [ "$VALIDATE" = "1" ] && { echo ">> VALIDATE=1: gates + dry runs OK. Launch without VALIDATE=1."; exit 0; }
+    echo "==================== p2o/H1 judgment + dose curve ===================="
+    python $G --h1-jm-dose --pilot-rows "$PILOT_ROWS" --envelope-hours 6.0 --out "$OUT/h1"; rc=$?
+    python papers/kdg_panel/scripts/pod_kdg_phase1.py --verify-manifest --out "$OUT/h1" \
+      || echo "WARN: manifest verify reported mismatches"
+    case $rc in
+      0) echo ">> H1 judgment readout and dose curve complete";;
+      2) echo ">> BAIL: VALIDATE re-check failed under identical batching; nothing generated";;
+      3) echo ">> STOP: the high-effort pilot failed its gate; low, medium and the pilot are banked";;
+    esac
+    echo ">> KDG p2o done (rc=$rc). rsync-back -> papers/kdg_panel/outputs/p2o/"
+    exit $rc
+  fi
   if [ "$PROFILE" = "p2n" ]; then  # G-A26 note: p2m's continuation (the held-back 66)
     PILOT_ROWS=papers/kdg_panel/outputs/p2h/pilot/gpt_oss_20b/ds_pilot.jsonl
     DONE=papers/kdg_panel/outputs/p2m/h1/gpt_oss_20b/h1/ds_main.jsonl
