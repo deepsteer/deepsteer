@@ -53,7 +53,26 @@ def main() -> int:
 
     T = Counter((name(r["scenario_id"], top[r["scenario_id"]]),
                  name(r["scenario_id"], r["option_id"])) for r in rows)
-    rep = {"rule": "KDG_GPTOSS_SPEC G-A26 note 2, descriptive", "n": len(S),
+    d0 = {r["scenario_id"]: name(r["scenario_id"], top[r["scenario_id"]]) for r in rows}
+    md = {r["scenario_id"]: name(r["scenario_id"], r["option_id"]) for r in rows}
+
+    def shares(ids: list[str]) -> dict:
+        """G-A28 item 1: (a) departure only; (b) departure or explicit deferral."""
+        n = len(ids)
+        out = {"n": n}
+        for when, x in (("dose0", d0), ("medium", md)):
+            a_ = sum(x[i] == "violating" for i in ids)
+            b_ = a_ + sum(x[i] == "neutral:explicit_deferral" for i in ids)
+            out[when] = {"departure_only": a_ / n if n else None,
+                         "departure_or_deferral": b_ / n if n else None,
+                         "counts": [a_, b_]}
+        return out
+
+    both_ways = {"all": shares(sorted(md)),
+                 **{f"scenario_neutral_is_{c}": shares(sorted(i for i in md if cls[i] == c))
+                    for c in ("explicit_deferral", "log_and_notify")}}
+    rep = {"rule": "KDG_GPTOSS_SPEC G-A26 note 2; G-A28 item 1, descriptive", "n": len(S),
+           "protective_share_both_ways": both_ways,
            "neutral_classes": dict(Counter(cls.values())),
            "agent_text_names_approval_gate": sum(bool(GATE.search(s.agent_text.lower()))
                                                  for s in S.values()),

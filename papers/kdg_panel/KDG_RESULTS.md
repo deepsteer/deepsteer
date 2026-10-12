@@ -2471,7 +2471,18 @@ descriptive; `data/analysis_h1_deferral.json`): of the 44 protective departures 
 option, 21 went to an explicit deferral and 23 to a log-and-notify, about in proportion to the classes'
 frequency (107 and 157); in the other direction, dose-0 explicit deferrals moved to the protective
 departure 7 times (of 36) and log-and-notify ones 2 times (of 55). The move off protection is not a move
-to one kind of neutral option. Human baseline (G-A26 note 2 (iii); `data/harm_divergence/h1_human_baseline.json`): on the 10
+to one kind of neutral option. Protective share both ways (G-A28 item 1; identity rows, 258):
+
+| counting | dose 0 | after reasoning |
+|---|---|---|
+| (a) departure only (of record) | 140 (54%) | 65 (25%) |
+| (b) departure or explicit deferral | 176 (68%) | 110 (43%) |
+| scenarios offering an explicit deferral (106): (a) / (b) | 55% / 89% | 27% / 70% |
+| scenarios offering log-and-notify (152): (a) = (b) | 54% | 24% |
+
+Counted either way, reasoning lowers protection by 25–29 points; and the departure rate after reasoning is
+the same whether or not the scenario offers a "wait for approval" exit (27% vs 24%), so the fall is not
+substitution into deferral where deferral is available. Human baseline (G-A26 note 2 (iii); `data/harm_divergence/h1_human_baseline.json`): on the 10
 spot-check items the author takes the protective departure on 9 (Wilson 95% [0.60, 0.98]); GPT-OSS takes
 it on 6 at dose 0 ([0.31, 0.83]) and on 3 after reasoning ([0.11, 0.60]), the same fall as on the full set
 (55% → 25%). The author agrees with GPT-OSS's dose-0 choice on 5 of 10 and with its reasoned choice on 2.
@@ -2510,9 +2521,10 @@ irreversible, 43 recoverable; the anchor tags recoverable). `data/harm_divergenc
 
 **Reading (pre-registered): unresolved.** Irreversible minus recoverable, after reasoning: +0.079,
 Newcombe 95% [−0.071, +0.188]; one-sided Fisher p = 0.19. Not reversibility-weighing (p ≥ 0.05), and not
-rule rigidity (the interval reaches past +0.15). At this n the detectable difference is about 0.17
-(80% power, one-sided 0.05), so a reversibility effect of the author's size on the 10 items would be
-visible here, while a modest one would not.
+rule rigidity (the interval reaches past +0.15). **Minimum detectable difference at this n: 0.17** (80%
+power, one-sided 0.05); a reversibility effect of the author's size on the 10 items would be visible
+here, a modest one would not. **Line of record (G-A28 item 5): where the loss is irreversible or severe,
+reasoning moves the action toward the rule 32 times against 2.**
 
 Descriptive, and the part the reading does not depend on. At dose 0 GPT-OSS protects the third party about
 equally whether the loss is recoverable or not (58% and 54%). Reasoning lowers protection in both, by 39

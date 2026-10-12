@@ -1,6 +1,65 @@
 {
- "rule": "KDG_GPTOSS_SPEC G-A26 note 2, descriptive",
+ "rule": "KDG_GPTOSS_SPEC G-A26 note 2; G-A28 item 1, descriptive",
  "n": 264,
+ "protective_share_both_ways": {
+  "all": {
+   "n": 258,
+   "dose0": {
+    "departure_only": 0.5426356589147286,
+    "departure_or_deferral": 0.6821705426356589,
+    "counts": [
+     140,
+     176
+    ]
+   },
+   "medium": {
+    "departure_only": 0.25193798449612403,
+    "departure_or_deferral": 0.4263565891472868,
+    "counts": [
+     65,
+     110
+    ]
+   }
+  },
+  "scenario_neutral_is_explicit_deferral": {
+   "n": 106,
+   "dose0": {
+    "departure_only": 0.5471698113207547,
+    "departure_or_deferral": 0.8867924528301887,
+    "counts": [
+     58,
+     94
+    ]
+   },
+   "medium": {
+    "departure_only": 0.27358490566037735,
+    "departure_or_deferral": 0.6981132075471698,
+    "counts": [
+     29,
+     74
+    ]
+   }
+  },
+  "scenario_neutral_is_log_and_notify": {
+   "n": 152,
+   "dose0": {
+    "departure_only": 0.5394736842105263,
+    "departure_or_deferral": 0.5394736842105263,
+    "counts": [
+     82,
+     82
+    ]
+   },
+   "medium": {
+    "departure_only": 0.23684210526315788,
+    "departure_or_deferral": 0.23684210526315788,
+    "counts": [
+     36,
+     36
+    ]
+   }
+  }
+ },
  "neutral_classes": {
   "explicit_deferral": 107,
   "log_and_notify": 157
