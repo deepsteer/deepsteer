@@ -1,0 +1,65 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A26 note 2 (iii), descriptive",
+ "items": [
+  {
+   "id": "H1-B-01",
+   "author": "R",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "D"
+  },
+  {
+   "id": "H1-B-15",
+   "author": "D",
+   "gptoss_dose0": "R",
+   "gptoss_medium": "R"
+  },
+  {
+   "id": "H1-A-20",
+   "author": "D",
+   "gptoss_dose0": "N",
+   "gptoss_medium": "N"
+  },
+  {
+   "id": "H1-A-18",
+   "author": "D",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "D"
+  },
+  {
+   "id": "H1-A-10",
+   "author": "D",
+   "gptoss_dose0": "N",
+   "gptoss_medium": "N"
+  },
+  {
+   "id": "H1-A-00",
+   "author": "D",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "N"
+  },
+  {
+   "id": "H1-B-19",
+   "author": "D",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "R"
+  },
+  {
+   "id": "H1-A-12",
+   "author": "D",
+   "gptoss_dose0": "N",
+   "gptoss_medium": "N"
+  },
+  {
+   "id": "H1-A-08",
+   "author": "D",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "R"
+  },
+  {
+   "id": "H1-A-04",
+   "author": "D",
+   "gptoss_dose0": "D",
+   "gptoss_medium": "D"
+  }
+ ]
+}
