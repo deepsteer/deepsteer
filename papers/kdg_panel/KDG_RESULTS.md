@@ -2471,8 +2471,12 @@ descriptive; `data/analysis_h1_deferral.json`): of the 44 protective departures 
 option, 21 went to an explicit deferral and 23 to a log-and-notify, about in proportion to the classes'
 frequency (107 and 157); in the other direction, dose-0 explicit deferrals moved to the protective
 departure 7 times (of 36) and log-and-notify ones 2 times (of 55). The move off protection is not a move
-to one kind of neutral option. Human baseline: the author's own R/D choices on the 10 spot-check items
-will be reported beside the 55% / 25% protective shares (pending). Second derivation: §30's toward
+to one kind of neutral option. Human baseline (G-A26 note 2 (iii); `data/harm_divergence/h1_human_baseline.json`): on the 10
+spot-check items the author takes the protective departure on 9 (Wilson 95% [0.60, 0.98]); GPT-OSS takes
+it on 6 at dose 0 ([0.31, 0.83]) and on 3 after reasoning ([0.11, 0.60]), the same fall as on the full set
+(55% → 25%). The author agrees with GPT-OSS's dose-0 choice on 5 of 10 and with its reasoned choice on 2.
+**Before reasoning GPT-OSS is closer to the human choice; reasoning moves it further from it.** Ten items,
+descriptive. Second derivation: §30's toward
 share on the panel, where the rule and harm prevention agree, is 74 of 76 (0.97); here, where they
 conflict, it is 42 of 44 (0.95). The direction does not change when following the rule starts to hurt
 someone.

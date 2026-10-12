@@ -1,5 +1,25 @@
 {
  "rule": "KDG_GPTOSS_SPEC G-A26 note 2 (iii), descriptive",
+ "n": 10,
+ "protective_D": {
+  "author": 9,
+  "gptoss_dose0": 6,
+  "gptoss_medium": 3
+ },
+ "wilson95": {
+  "author": [
+   0.5958499732047615,
+   0.9821237869049271
+  ],
+  "gptoss_dose0": [
+   0.31267376973365824,
+   0.8318196702937638
+  ],
+  "gptoss_medium": [
+   0.10779126740630099,
+   0.6032218525388546
+  ]
+ },
  "items": [
   {
    "id": "H1-B-01",

@@ -998,7 +998,7 @@ measurable. H1 compliance-harm cell (§40, pre-registered,
 two pods): **where following a written approval gate harms an absent third party and a transparent,
 personally costless departure would protect them, reasoning at GPT-OSS-20B's default level still moves
 its action to the gate: 42 toward, 2 away (p = 5.6 × 10⁻¹¹); at dose 0 it protects the third party in 55%
-of scenarios, after reasoning in 25%.** Construct validity: author spot check 10 of 10. Scope: one
+of scenarios, after reasoning in 25%.** Construct validity: author spot check 10 of 10. Human baseline on those 10: the author protects on 9, GPT-OSS on 6 at dose 0 and 3 after reasoning (descriptive). Scope: one
 structurally homogeneous family; a second family is the extension. Branch:
 compliance-tracking. With §37's descriptive split and §38's convergence, the program's reading of
 GPT-OSS's default-level reasoning is rule compliance: it brings judgment and action to the stated rule,

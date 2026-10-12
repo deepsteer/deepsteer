@@ -98,7 +98,8 @@ def baseline() -> int:
     items = [{"id": i, "author": a, "gptoss_dose0": code[label[i][top[i]]],
               "gptoss_medium": code[label[i][med[i]]] if med.get(i) else None}
              for i, a in ans.items()]
-    share = {k: sum(x[k] == "D" for x in items) for k in ("author", "gptoss_dose0", "gptoss_medium")}
+    share = {k: sum(x[k] == "D" for x in items)
+             for k in ("author", "gptoss_dose0", "gptoss_medium")}
     rep = {"rule": "KDG_GPTOSS_SPEC G-A26 note 2 (iii), descriptive", "n": len(items),
            "protective_D": share,
            "wilson95": {k: list(kh.wilson(v, len(items))) for k, v in share.items()},
