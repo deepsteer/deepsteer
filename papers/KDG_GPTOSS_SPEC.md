@@ -967,3 +967,44 @@ is collected; the dose curve needs its own approval).**
    level, not a dose. **Flat / unresolved:** neither. Extension to all 264 is priced after the pilot.
 5. **Stand unchanged:** the judgment readout pre-registration, the neutral (deferral) split, and the
    carrier pricing.
+
+**G-A28. Deferral split both ways; judgment readout on the H1 crossings; the dose curve redesigned; carrier
+pricing (author, 2026-10-12; pushed before the split is extended, before any pod).**
+1. **Deferral split, both ways (zero GPU, first, descriptive).** §40 already quotes the neutral option's
+   text and classes it (explicit deferral 107, log-and-notify 157; G-A26 note 2). Added: the protective
+   share at dose 0 and after reasoning computed both ways: (a) departure only (as of record); (b)
+   departure or explicit deferral counted together ("did not simply comply"). Also per scenario class
+   (scenarios whose neutral option is an explicit deferral vs a log-and-notify).
+2. **Judgment readout on the 44 H1 crossings (pod p2o, first; the p2k design).** The panel's
+   letter-only judgment prompt (`jl_chat_neutral`) at `Reasoning: medium`, permutation 0, cap 1,536,
+   sampler v2, one trace per scenario, independent of the action trace (seed SEED + 80,000), on the 44
+   H1 scenarios whose dose-0 readout and medium-effort action crossed the norm (42 toward the rule, 2
+   away); VALIDATE re-check first. Added, cheap: the dose-0 `jl_chat_neutral` readout (8 permutations) on
+   all 264, descriptive. **Quantity:** J_med's option against the two actions: k_with = J_med equals the
+   medium-effort action's option; k_hold = J_med equals the dose-0 action's option; other. **Test:**
+   two-sided exact sign test on k_with vs k_hold, α 0.01; power 80% at a share of 0.75 (m 44), 0.80
+   (m 36). **Branches (as G-A23 item 3):** *judgment moves with action (principled revision)*: k_with
+   > k_hold, p < 0.01; GPT-OSS's reasoned judgment also favours the rule over protecting the third
+   party. *Judgment holds while action moves (compliance against own judgment)*: k_hold > k_with, p <
+   0.01; GPT-OSS judges protection right but acts on the rule. *Unresolved*: neither.
+3. **Dose curve (same pod, after item 2; redesign of G-A27 item 4).** A random sample of 64 from the 264,
+   seed 0, stratified by crossing status in population proportion (11 crossed, 53 not). Arms on all 64:
+   low effort, a fresh medium trace (seed SEED + 90,000), high effort; caps 1,536 for low and medium.
+   High: a pilot of 16 (seed-0 sample of the 64) at cap 8,192, gated on completion within the cap ≥ 90%
+   and the projected time for the other 48 fitting the envelope; else the cap and envelope go back to
+   the author. Protective share per arm, paired; branches as G-A27 item 4 (monotone fall / non-monotone
+   / flat), on the 64. Secondary: the 11 crossing-stratum scenarios inside the sample (the reading of
+   "the 44-crossing subset" that fits the envelope; running all 44 as well would add about 33 scenarios
+   and likely exceed it). Power (64 pairs, one-sided McNemar 0.05): a 30-point fall from low to high is
+   detected at ≥ 0.99, a 15-point fall at about 0.68, a 10-point fall at about 0.35.
+4. **Envelope.** Items 2 and 3 together within **6 A100-h**; the timing step and the high pilot's gate
+   stop the run and bank what ran if the projection exceeds it.
+5. **§41** stays unresolved, with the detectable difference (0.17) stated; the 32 toward vs 2 away on
+   irreversible or severe losses is the line of record.
+6. **Carrier pricing (owed; for approval separately).** The H1 set (264) under the carriers' forced arms,
+   as the paper's brake was measured (reasoning arm at 512 tokens vs the filler of record, 16 rollouts,
+   forced letter readout), plus the dose-0 readout. From p1d's measured rates (OLMo-3 0.25 min, Llama-3.1
+   0.22 min per scenario-cell at 16 rollouts): OLMo-3 about 2.5 A100-h, Llama-3.1 about 2.2, **about 4.7
+   for both** (about 2.6 at 8 rollouts). Quantity: Δ_P = p_D(reasoning) − p_D(filler) on H1, where D is
+   the protective departure. Negative Δ_P means the carrier's deliberation also moves to the rule against
+   harm prevention; positive means it moves to protect.
