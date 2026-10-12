@@ -1024,3 +1024,41 @@ class TestH1Cell:
 
         nb = max(1, round(264 / 64))
         assert (nb, math.ceil(264 / nb)) == (4, 66)
+
+    def test_h1_continuation_runs_exactly_the_tail_with_the_held_back_seed(self, tok, tmp_path):
+        # most probable failure: p2n reruns scenarios p2m already generated (two actions for one
+        # scenario in the union) or seeds the tail differently from the batch p2m held back
+        if not PILOT_ROWS.exists():
+            pytest.skip("pilot rows not on disk")
+        import time
+
+        kds = _load("kdg_dose_stated")
+        from deepsteer.kdg.schema import load_scenario_dir
+
+        hdir = REPO / "papers/kdg_panel/data/harm_divergence"
+        H, _ = load_scenario_dir([hdir / "hdiv_set.json"])
+        kept = set(json.loads((hdir / "hdiv_keep.json").read_text())["kept_ids"])
+        Hk = sorted((s for s in H if s.id in kept), key=lambda s: s.id)[:10]
+        S, _ = load_scenario_dir(sorted((REPO / "papers/kdg_panel/data")
+                                        .glob("*_scenarios_*.json")))
+        scen = {s.id: s for s in S} | {s.id: s for s in Hk}
+        pilot = [json.loads(x) for x in PILOT_ROWS.read_text().splitlines()]
+        stub = pod.HarmonyStub(SPEC["repo"], SPEC["revision"], CFG)
+        ids = [s.id for s in Hk]
+        o = np.random.default_rng(kds.ORDER_SEED + 3).permutation(len(ids))
+        with pytest.raises(RuntimeError, match="not the head"):
+            kds.run_main(stub, CFG, scen, ids, [], pilot, tmp_path, time.time(), True,
+                         main_batch=4, done_ids=set(ids[:8]))
+        head = {ids[i] for i in o[:8]}
+        rec = kds.run_main(stub, CFG, scen, ids, [], pilot, tmp_path, time.time(), True,
+                           main_batch=4, done_ids=head)
+        rows = [json.loads(x) for x in (tmp_path / "ds_main.jsonl").read_text().splitlines()]
+        assert {r["scenario_id"] for r in rows} == set(ids) - head
+        assert rec["continuation"]["seed"] == kds.SEED + 50_002  # rest-call batch 1 of 4-batches
+
+    def test_p2n_block(self):
+        sh = (REPO / "papers/kdg_panel/runpod/remote_kdg_phase2.sh").read_text()
+        block = sh[sh.index('if [ "$PROFILE" = "p2n" ]; then'):]
+        block = block[: block.index("exit $rc") + len("exit $rc")]
+        assert '--h1-done-rows "$DONE"' in block and "p2m/h1/gpt_oss_20b/h1/ds_main.jsonl" in block
+        assert "--envelope-hours 1.2" in block

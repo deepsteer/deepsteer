@@ -427,7 +427,12 @@ def _readout_batched(model, rows, pids, lid):
 
 def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pilot_rows: list[dict],
              out: Path, t_start: float, dry: bool, envelope_h: float = POD_ENVELOPE_H,
-             main_batch: int = MAIN_BATCH) -> dict:
+             main_batch: int = MAIN_BATCH, done_ids: set[str] | None = None,
+             est_batch_seconds: float | None = None) -> dict:
+    """``done_ids`` (H1 continuation, G-A26 note): the scenarios an earlier run of this same job
+    list already generated. They must be exactly the head of the permutation; the rest run as one
+    batch seeded as the held-back batch would have been (batch b of the rest call is seeded
+    SEED + 50,001 + b)."""
     out.mkdir(parents=True, exist_ok=True)
     lid = {x: model.token_id(x) for x in "ABCDE"}
     letter_ids = set(lid.values())
@@ -467,6 +472,33 @@ def run_main(model, cfg, scen: dict, main_ids: list[str], c0_ids: list[str], pil
     # (b) timing step: the first main-stage batch, banked
     order = np.random.default_rng(ORDER_SEED + 3).permutation(len(main_ids))
     jobs = [(scen[main_ids[i]], "dl_chat_neutral", 0) for i in order]
+    if done_ids is not None:  # continuation: the held-back tail, as the first run would have run it
+        nd = len(done_ids)
+        if {s.id for s, _, _ in jobs[:nd]} != set(done_ids) or (nd - main_batch) % main_batch:
+            raise RuntimeError("the done set is not the head of this permutation in whole batches; "
+                               "refusing to continue on a different split")
+        tail = jobs[nd:]
+        seed = SEED + 50_001 + (nd - main_batch) // main_batch
+        deadline = t_start + (envelope_h - SETUP_H) * 3600 - FWD_S_PER_ROW * len(tail)
+        rows, pids, secs = _generate(model, cfg, tail, cap, seed, letter_ids, partial, "main",
+                                     deadline, est_batch_seconds=est_batch_seconds,
+                                     batch_size=len(tail))
+        rec["continuation"] = {"n_done_before": nd, "n_tail": len(tail), "seed": seed}
+        rec["main"] = {"n": len(rows), "run": sum(r["status"] != "not_run" for r in rows),
+                       "identity": sum(r["token_identity"] for r in rows),
+                       "truncated": sum(r["status"] == "truncated" for r in rows),
+                       "gen_seconds": float(sum(secs))}
+        rec["b1"] = {"run": 0, "n": 0, "skipped": "continuation"}
+        checkpoint()
+        with open(out / "ds_main.jsonl", "w") as f:
+            for r in rows:
+                f.write(json.dumps(r) + "\n")
+        free_cache(model)
+        ok, logp, resid, fsecs = _readout_batched(model, rows, pids, lid)
+        rec["forward_seconds"] = fsecs
+        rec["elapsed_h_at_end"] = elapsed_h()
+        done = rec["main"]["run"] == len(tail)
+        return finish("main_complete" if done else "stop_report", rows, logp, resid, ok)
     first, rest = jobs[:main_batch], jobs[main_batch:]
     rows, pids, secs = _generate(model, cfg, first, cap, SEED + 50_000, letter_ids, partial, "main",
                                  batch_size=main_batch)

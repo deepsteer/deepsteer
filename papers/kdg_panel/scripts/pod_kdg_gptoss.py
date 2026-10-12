@@ -462,6 +462,8 @@ def main() -> int:
                     help="G-A23 item 3: judgment readout at medium on the 175 divergent scenarios")
     ap.add_argument("--h1-cell", action="store_true",
                     help="H1 compliance-harm cell: dose-0 readout + medium action on the kept set")
+    ap.add_argument("--h1-done-rows", type=Path, default=None,
+                    help="H1 continuation: p2m's ds_main.jsonl; run only the held-back tail")
     ap.add_argument("--jm-done-rows", type=Path, default=None,
                     help="G-A24 item 2 (p2l): p2k's jm.jsonl; run only the scenarios it left")
     ap.add_argument("--stage-a-max-hours", type=float, default=None,
@@ -560,16 +562,26 @@ def main() -> int:
                 Hk = Hk[:10]
             hout = a.out / KEY / "h1"
             hctx = dataclasses.replace(ctx, out=hout)
-            t0 = time.time()
-            run_letter_units(hctx, Hk, ("dl_chat_neutral",))
-            manifest.status(f"{KEY}/h1/dl_chat_neutral", "ok", f"{time.time() - t0:.1f}s")
+            done = None
+            if a.h1_done_rows is None:  # the continuation reuses p2m's complete dose-0 readout
+                t0 = time.time()
+                run_letter_units(hctx, Hk, ("dl_chat_neutral",))
+                manifest.status(f"{KEY}/h1/dl_chat_neutral", "ok", f"{time.time() - t0:.1f}s")
+            else:
+                done = {r["scenario_id"] for r in (json.loads(x) for x in
+                        a.h1_done_rows.read_text().splitlines() if x.strip())
+                        if r["status"] != "not_run"}
+                if a.dry_run:  # the dry run's 10 ids in batches of 4: the first 8 are "done"
+                    o = np.random.default_rng(kds.ORDER_SEED + 3).permutation(len(Hk))
+                    done = {Hk[i].id for i in o[:8]}
             full, _ = load_scenario_dir(files)
             scen = {s.id: s for s in full} | {s.id: s for s in Hk}  # VALIDATE re-reads panel rows
             pilot = [json.loads(x) for x in a.pilot_rows.read_text().splitlines() if x.strip()]
             nb = max(1, round(len(Hk) / 64))  # equal batches near 64 (264 kept -> 4 x 66; G-A26)
             hr = kds.run_main(model, hcfg, scen, [s.id for s in Hk], [], pilot, hout, t_start,
                               a.dry_run, envelope_h=a.envelope_hours,
-                              main_batch=4 if a.dry_run else math.ceil(len(Hk) / nb))
+                              main_batch=4 if a.dry_run else math.ceil(len(Hk) / nb),
+                              done_ids=done, est_batch_seconds=None if a.dry_run else 2118.0)
             manifest.data["gptoss"]["h1_cell"] = {k: hr.get(k) for k in
                                                   ("outcome", "timing", "main", "b1")}
             manifest.data["gptoss"]["h1_cell"]["n_kept"] = len(Hk)

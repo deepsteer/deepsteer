@@ -52,7 +52,12 @@ def dose0(rows: list[dict]) -> tuple[dict[str, str], dict[str, float]]:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dir", type=Path, default=A.OUT / "p2m" / "h1" / "gpt_oss_20b" / "h1")
+    ap.add_argument("--dir", type=Path, default=A.OUT / "p2m" / "h1" / "gpt_oss_20b" / "h1",
+                    help="the run with the dose-0 readout (p2m)")
+    ap.add_argument("--main-rows", type=Path, nargs="+",
+                    default=[A.OUT / p / "h1" / "gpt_oss_20b" / "h1" / "ds_main.jsonl"
+                             for p in ("p2m", "p2n")],
+                    help="G-A26 note: the test runs once on p2m's run rows plus p2n's tail")
     ap.add_argument("--out", type=Path, default=A.DATA / "analysis_h1_cell.json")
     a = ap.parse_args(argv)
     H, _ = load_scenario_dir([HDIR / "hdiv_set.json"])
@@ -60,7 +65,16 @@ def main(argv=None) -> int:
     top, mass = dose0(A._rows(a.dir / "dl_chat_neutral.jsonl"))
     engaged = {s for s, m in mass.items() if m >= FLOOR}
     c = Counter()
-    for r in A._rows(a.dir / "ds_main.jsonl"):
+    rows, seen = [], set()
+    for f in a.main_rows:
+        for r in A._rows(f):
+            if r["status"] == "not_run":
+                continue
+            if r["scenario_id"] in seen:
+                raise SystemExit(f"{r['scenario_id']} run in two row files")
+            seen.add(r["scenario_id"])
+            rows.append(r)
+    for r in rows:
         s = r["scenario_id"]
         if r["stage"] != "main" or r["seed"] != 0 or s not in engaged:
             continue
@@ -78,6 +92,7 @@ def main(argv=None) -> int:
             c["lateral"] += 1
     v = P2.verdict(c["toward"], c["away"])
     rep = {"rule": "KDG_GPTOSS_SPEC G-A26", "n_dose0": len(top), "n_engaged": len(engaged),
+           "n_run": len(rows),
            "dose0_labels": dict(Counter(label[s][top[s]] for s in engaged)),
            "counts": dict(c), **v, "N_min": CH.N_MIN, "gate_met": v["m"] >= CH.N_MIN,
            "branch": CH.branch(c["toward"], c["away"])}

@@ -910,3 +910,13 @@ author's GPU approval).**
    `ds_main.npz` (letter-step distributions and post-reasoning residuals), `main_record.json`,
    `session.log`. **Dependencies:** the pilot rows (VALIDATE sequences; shipped), `hdiv_set.json` and
    `hdiv_keep.json` (committed).
+
+*G-A26 note (author, 2026-10-11, after p2m and before its rows are read).* p2m (pod n329p5m062kud1)
+generated 198 of the 264 (VALIDATE 0.0000 both ways; batches of 1,734 s and 2 × 2,118 s); the envelope
+guard held back the fourth batch of 66 because a whole batch at the observed mean would not fit inside
+2.6 A100-h with the readout (2.02 A100-h used). Continuation **p2n**: the 66 held-back scenarios, the
+same job order (p2m's permutation, jobs 199–264; checked locally that p2m's run rows are exactly its
+first 198), one batch seeded SEED + 50,003 (as the held-back batch would have been), VALIDATE re-check
+first, envelope 1.2 A100-h (about 0.95 projected). p2m's complete dose-0 readout is reused. The G-A26
+test then runs **once**, on p2m's 198 run rows plus p2n's 66; p2m's rows are not read before the union
+exists. Approved overage about 0.4 A100-h.
