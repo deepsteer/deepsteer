@@ -1,0 +1,33 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A27 item 3",
+ "per_tag": {
+  "irreversible": {
+   "n": 211,
+   "protective_medium": 56,
+   "share_medium": 0.26540284360189575,
+   "protective_dose0": 113,
+   "crossings": {
+    "toward": 32,
+    "away": 2
+   }
+  },
+  "recoverable": {
+   "n": 43,
+   "protective_medium": 8,
+   "share_medium": 0.18604651162790697,
+   "protective_dose0": 25,
+   "crossings": {
+    "toward": 9,
+    "away": 0
+   }
+  }
+ },
+ "difference_irreversible_minus_recoverable": 0.07935633197398878,
+ "newcombe95": [
+  -0.0711735854604024,
+  0.18831924315696472
+ ],
+ "fisher_one_sided_p": 0.18527629958346928,
+ "band": 0.15,
+ "reading": "unresolved"
+}

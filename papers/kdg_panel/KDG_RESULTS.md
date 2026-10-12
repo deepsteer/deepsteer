@@ -2476,7 +2476,9 @@ spot-check items the author takes the protective departure on 9 (Wilson 95% [0.6
 it on 6 at dose 0 ([0.31, 0.83]) and on 3 after reasoning ([0.11, 0.60]), the same fall as on the full set
 (55% → 25%). The author agrees with GPT-OSS's dose-0 choice on 5 of 10 and with its reasoned choice on 2.
 **Before reasoning GPT-OSS is closer to the human choice; reasoning moves it further from it.** Ten items,
-descriptive. Second derivation: §30's toward
+descriptive. The author's one rule-following choice (H1-B-01) rests on recoverability: the $750 deposit
+can be reimbursed later, whereas the other nine losses are irreversible or severe (health, housing,
+livestock, perishables). §41 tests whether GPT-OSS draws that line. Second derivation: §30's toward
 share on the panel, where the rule and harm prevention agree, is 74 of 76 (0.97); here, where they
 conflict, it is 42 of 44 (0.95). The direction does not change when following the rule starts to hurt
 someone.
@@ -2492,3 +2494,41 @@ neutral moves are reported as a descriptive, and they point the same way, off pr
 deterministic dose-0 argmax against one sampled trace manufactures crossings."* It does, and on the panel
 the sampling-only crossings lean away (toward share 0.39, §30). Here 42 of 44 go toward, in both
 generators' halves.
+
+## 41. Recoverability on H1 (G-A27 items 2–3; zero GPU; 2026-10-12)
+
+Rule, prompt and analysis pushed before any tag or split (G-A27 and its commits). Both raters tagged the
+third party's loss under rule-following as recoverable (money or goods that can be made whole after the
+fact; anchor H1-B-01, the $750 deposit) or irreversible or severe; they agree on 260 of 264 (217
+irreversible, 43 recoverable; the anchor tags recoverable). `data/harm_divergence/h1_recoverability_tags.json`,
+`data/analysis_h1_recoverability.json`.
+
+| loss if the rule is followed | scenarios (identity) | protective at dose 0 | protective after reasoning | toward the rule / away |
+|---|---|---|---|---|
+| irreversible or severe | 211 | 113 (54%) | **56 (26.5%)** | 32 / 2 |
+| recoverable | 43 | 25 (58%) | **8 (18.6%)** | 9 / 0 |
+
+**Reading (pre-registered): unresolved.** Irreversible minus recoverable, after reasoning: +0.079,
+Newcombe 95% [−0.071, +0.188]; one-sided Fisher p = 0.19. Not reversibility-weighing (p ≥ 0.05), and not
+rule rigidity (the interval reaches past +0.15). At this n the detectable difference is about 0.17
+(80% power, one-sided 0.05), so a reversibility effect of the author's size on the 10 items would be
+visible here, while a modest one would not.
+
+Descriptive, and the part the reading does not depend on. At dose 0 GPT-OSS protects the third party about
+equally whether the loss is recoverable or not (58% and 54%). Reasoning lowers protection in both, by 39
+and 27 points, and **where the loss is irreversible or severe, reasoning still moves the action toward
+the rule 32 times against 2.** The author draws the line at recoverability (9 of 10 protective, the one
+exception recoverable). GPT-OSS's reasoning moves toward the rule on both sides of that line. The point
+estimate leans the author's way (more protection kept where the loss is irreversible), by less than this
+set can resolve.
+
+**Referee pass.** (1) *"43 recoverable scenarios is a thin arm."* It clears the pre-registered floor
+(20), and the interval is reported; the reading is unresolved, not a null. (2) *"The tag is a rater
+construct."* Two raters agree on 260 of 264, and the anchor is the author's own case. (3) *"Irreversible
+is most of the set by construction (the brief asks for material loss), so this is mostly a description of
+the set."* Yes; that is why the 32 vs 2 among the irreversible losses matters more than the comparison.
+The comparison is the pre-registered question; the within-tag count is what H1 was built to show.
+
+**Dose curve (G-A27 item 4): priced, awaiting approval.** Low and high effort plus a fresh medium trace on
+the 44 scenarios that crossed in §40; high-effort pilot of 16 at cap 8,192 gates the rest; about
+2.7–4.2 A100-h; branches monotone fall / non-monotone / flat.
