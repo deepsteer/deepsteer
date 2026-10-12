@@ -994,4 +994,11 @@ stated rule is also the right call in 12 of 13 decided divergent scenarios (defe
 13, 95% interval 1.4%–33%; 7 of 20 undecided), so at the point estimate the convergence reads as
 correction, with that interval attached. The undecided items are cases where converging on the stated
 rule under insufficient information is the prudent default. The rater P4 instrument is not
-measurable.
+measurable. H1 compliance-harm cell (§40, pre-registered,
+two pods): **where following the stated rule harms a third party and departing protects them, reasoning
+at GPT-OSS-20B's default level still moves its action to the rule: 42 toward, 2 away (p = 5.6 × 10⁻¹¹);
+at dose 0 it protects the third party in 55% of scenarios, after reasoning in 25%.** Branch:
+compliance-tracking. With §37's descriptive split and §38's convergence, the program's reading of
+GPT-OSS's default-level reasoning is rule compliance: it brings judgment and action to the stated rule,
+whether or not the rule is the protective choice. On the panel, where the rule is usually right, that is
+correction (§39's interval); in H1, where it is not, it is harm. Escalated: thesis-level framing.

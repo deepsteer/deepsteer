@@ -1,0 +1,27 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A26",
+ "n_dose0": 264,
+ "n_engaged": 264,
+ "n_run": 264,
+ "dose0_labels": {
+  "violating": 146,
+  "neutral": 91,
+  "consistent": 27
+ },
+ "counts": {
+  "same": 124,
+  "toward": 42,
+  "lateral": 90,
+  "no_action": 6,
+  "away": 2
+ },
+ "m": 44,
+ "toward": 42,
+ "away": 2,
+ "p_toward_one_sided": 5.633182809106074e-11,
+ "p_away_one_sided": 0.999999999997442,
+ "alpha": 0.01,
+ "branch": "compliance_tracking",
+ "N_min": 27,
+ "gate_met": true
+}

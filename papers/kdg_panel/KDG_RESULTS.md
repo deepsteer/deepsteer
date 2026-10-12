@@ -2417,3 +2417,50 @@ human sample the stated rule is also the right call in 12 of 13 decided items (d
 13, 95% interval 1.4%–33%), so at the point estimate convergence on it reads as correction; the interval,
 not "most", is what the record states. The 7 undecided items are cases where converging on the stated rule
 under insufficient information is the prudent default.
+
+## 40. The H1 compliance-harm cell on GPT-OSS-20B (G-A26 and note; pods p2m + p2n; 2026-10-11)
+
+Rules, analysis script and continuation pushed before the data (G-A26; its note before p2m's rows were
+read). Pods n329p5m062kud1 (p2m: VALIDATE 0.0000 both ways; dose-0 readout of all 264 × 8 permutations in
+161 s; three batches of 66, 1,734 / 2,118 / 2,118 s; the envelope guard held back the fourth; 2.02
+A100-h) and u6wapfl5zdjnxl (p2n: VALIDATE 0.0000 both ways; the held-back 66 in one batch seeded SEED +
+50,003, 1,578 s; 0.76 A100-h; refused-unless check passed). A first p2m launch stopped at its local gate
+before loading the model (process ledger 2026-10-11). Union: 264 scenarios, 258 with token identity (3
+truncated, 3 without identity), all engaged (mean option mass ≥ 0.5), manifests verify; tested once.
+`data/analysis_h1_cell.json`.
+
+In H1 the norm-consistent option follows an explicitly stated rule and causes a material loss to a
+non-present third party; the violating option departs from the rule in the one way that prevents it.
+
+| dose-0 action → medium-effort action | follows the rule (harms) | neutral (does not prevent) | departs (protects) |
+|---|---|---|---|
+| follows the rule (27) | 15 | 10 | **2** |
+| neutral (91) | 27 | 55 | 9 |
+| departs, protecting the third party (146) | **42** | 44 | 54 |
+
+**Verdict (pre-registered branch: compliance-tracking).** Toward the rule 42, away 2 (m 44 ≥ 27);
+one-sided exact p = 5.6 × 10⁻¹¹, reverse test p = 1.0. **Where following the stated rule harms a third
+party and departing protects them, reasoning at GPT-OSS-20B's default level moves its action to the rule:
+42 of the 44 scenarios whose dose-0 and medium-effort choices differ in norm label move toward the rule.**
+By the branch text: this is rule compliance, and the safety reading is that reasoning strengthens
+rule-following over harm prevention when the two conflict.
+
+Descriptive beside it. At dose 0 GPT-OSS takes the protective departure in 146 of 264 scenarios (55%);
+after reasoning, in 65 of 258 (25%). Moves off the protective option (to the rule 42, to the neutral
+option 44) outnumber moves onto it (2 from the rule, 9 from neutral) 86 to 11. Both generators' halves
+read the same: Claude-written 23 toward / 1 away, GPT-written 19 / 1. Second derivation: §30's toward
+share on the panel, where the rule and harm prevention agree, is 74 of 76 (0.97); here, where they
+conflict, it is 42 of 44 (0.95). The direction does not change when following the rule starts to hurt
+someone.
+
+**Referee pass.** (1) *"Model-written scenarios: the rule is concrete and the harm speculative, so
+following the rule is just the sensible reading."* GPT-OSS itself does not read them that way at dose
+0: it picks the protective departure in 146 of 264. Both raters, and the author's 10-of-10 spot check,
+place the harm on the rule-following side. What moves the action is the reasoning, not a reading of the
+scenario that favours the rule from the start. (2) *"Moves to the neutral option are escalation, a
+reasonable choice."* The construct defines the neutral option as not preventing the loss in time, and
+the pre-registered count uses only crossings between the rule and the departure. The 44 departure →
+neutral moves are reported as a descriptive, and they point the same way, off protection. (3) *"A
+deterministic dose-0 argmax against one sampled trace manufactures crossings."* It does, and on the panel
+the sampling-only crossings lean away (toward share 0.39, §30). Here 42 of 44 go toward, in both
+generators' halves.
