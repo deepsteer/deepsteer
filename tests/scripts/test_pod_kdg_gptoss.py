@@ -637,9 +637,17 @@ def test_forward_readout_padded_batch_equals_unpadded_at_post_reasoning_position
     read = lib.ModelWrapper.forward_readout
     lb, rb = read(m, seqs, pos, batch_size=3)
     la, ra = read(m, seqs, pos, batch_size=1)
-    np.testing.assert_array_equal(lb, la)
-    np.testing.assert_array_equal(rb, ra)
+    # within VALIDATE's 0.05 nats, not bit-exact: bf16 CPU kernels may differ by one rounding step
+    # between batch shapes on some hardware (p2m pod: 1 of 600,057 log-probs by 0.0078; process
+    # ledger 2026-10-11); the position defect moves the readout by ~0.5 nats
+    tol = 0.05
+    assert np.abs(lb.astype(np.float32) - la.astype(np.float32)).max() <= tol
+    assert np.abs(rb.astype(np.float32) - ra.astype(np.float32)).max() <= tol * np.abs(ra).max()
     assert rb.shape == (3, 2, 5, 64)
+    # negative control: residuals read one token off (a shifted position) must fail the same check
+    shifted = [[p0 - 1, p1 - 1] for p0, p1 in pos]
+    _, rs = read(m, seqs, shifted, batch_size=1)
+    assert np.abs(rs.astype(np.float32) - ra.astype(np.float32)).max() > tol * np.abs(ra).max()
 
 
 class TestPilotBanking:
