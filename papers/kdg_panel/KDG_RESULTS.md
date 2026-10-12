@@ -2430,7 +2430,24 @@ truncated, 3 without identity), all engaged (mean option mass ≥ 0.5), manifest
 `data/analysis_h1_cell.json`.
 
 In H1 the norm-consistent option follows an explicitly stated rule and causes a material loss to a
-non-present third party; the violating option departs from the rule in the one way that prevents it.
+non-present third party; the violating option departs from the rule in the one way that prevents it; the
+neutral option logs the request and contacts the approver without preventing the loss in time. Typical
+neutral texts: "Record the radio call, message Elena again, and wait for an approval response"
+(explicit deferral, 107 scenarios), "Add a note to the incident log and message Owen and the backup
+approver" (log-and-notify, 157).
+
+**Construct validity.** Both raters label every kept scenario as harmful on the rule-following side and
+as rule-following on the norm-consistent option (264 of 270), and the author's spot check passes 10 of 10
+on the construct (G-A25 note 3; `data/harm_divergence/h1_spotcheck_score.json`). That check is the
+construct-validity record for the set.
+
+**Scope (G-A26 note 2).** The claim holds for the family the set contains: a transparent, auditable,
+personally costless departure from a written approval gate to prevent an imminent loss to an absent third
+party. 221 of the 264 agent texts name an approval, authorization, sign-off, permission or clearance; the
+rest a written policy or procedure of the same shape. The set is structurally homogeneous (one brief, one
+gate type, one kind of departure), which limits the claim to this family. A second family, for instance a
+departure that is hidden, costly to the agent, or from a norm that is not a procedural gate, is the
+extension.
 
 | dose-0 action → medium-effort action | follows the rule (harms) | neutral (does not prevent) | departs (protects) |
 |---|---|---|---|
@@ -2439,16 +2456,23 @@ non-present third party; the violating option departs from the rule in the one w
 | departs, protecting the third party (146) | **42** | 44 | 54 |
 
 **Verdict (pre-registered branch: compliance-tracking).** Toward the rule 42, away 2 (m 44 ≥ 27);
-one-sided exact p = 5.6 × 10⁻¹¹, reverse test p = 1.0. **Where following the stated rule harms a third
-party and departing protects them, reasoning at GPT-OSS-20B's default level moves its action to the rule:
-42 of the 44 scenarios whose dose-0 and medium-effort choices differ in norm label move toward the rule.**
+one-sided exact p = 5.6 × 10⁻¹¹, reverse test p = 1.0. **Where following a written approval gate harms an
+absent third party and a transparent, personally costless departure would protect them, reasoning at
+GPT-OSS-20B's default level moves its action to the gate: 42 of the 44 scenarios whose dose-0 and
+medium-effort choices differ in norm label move toward the rule.**
 By the branch text: this is rule compliance, and the safety reading is that reasoning strengthens
 rule-following over harm prevention when the two conflict.
 
 Descriptive beside it. At dose 0 GPT-OSS takes the protective departure in 146 of 264 scenarios (55%);
 after reasoning, in 65 of 258 (25%). Moves off the protective option (to the rule 42, to the neutral
 option 44) outnumber moves onto it (2 from the rule, 9 from neutral) 86 to 11. Both generators' halves
-read the same: Claude-written 23 toward / 1 away, GPT-written 19 / 1. Second derivation: §30's toward
+read the same: Claude-written 23 toward / 1 away, GPT-written 19 / 1. Deferral split (G-A26 note 2,
+descriptive; `data/analysis_h1_deferral.json`): of the 44 protective departures that moved to the neutral
+option, 21 went to an explicit deferral and 23 to a log-and-notify, about in proportion to the classes'
+frequency (107 and 157); in the other direction, dose-0 explicit deferrals moved to the protective
+departure 7 times (of 36) and log-and-notify ones 2 times (of 55). The move off protection is not a move
+to one kind of neutral option. Human baseline: the author's own R/D choices on the 10 spot-check items
+will be reported beside the 55% / 25% protective shares (pending). Second derivation: §30's toward
 share on the panel, where the rule and harm prevention agree, is 74 of 76 (0.97); here, where they
 conflict, it is 42 of 44 (0.95). The direction does not change when following the rule starts to hurt
 someone.
