@@ -1,0 +1,60 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A28 item 3",
+ "n_sample": 64,
+ "n_by_arm": {
+  "low": 64,
+  "medium": 61,
+  "high": 62
+ },
+ "paired": {
+  "n": 59,
+  "protective_share": {
+   "low": 0.23728813559322035,
+   "medium": 0.3050847457627119,
+   "high": 0.3728813559322034
+  },
+  "low_vs_high_discordant": [
+   3,
+   11
+  ],
+  "p_fall_one_sided": 0.9935302734375,
+  "reversals": [
+   {
+    "pair": "medium<high",
+    "p_two_sided": 0.4239501953125
+   },
+   {
+    "pair": "low<medium",
+    "p_two_sided": 0.4239501953125
+   }
+  ],
+  "branch": "flat_or_unresolved"
+ },
+ "secondary_crossing_stratum": {
+  "n": 11,
+  "verdict": null,
+  "protective": {
+   "low": {
+    "k": 1,
+    "wilson95": [
+     0.016232172885884855,
+     0.37735843645159567
+    ]
+   },
+   "medium": {
+    "k": 0,
+    "wilson95": [
+     0.0,
+     0.2588329669680317
+    ]
+   },
+   "high": {
+    "k": 3,
+    "wilson95": [
+     0.09746059290024889,
+     0.5656453011761291
+    ]
+   }
+  }
+ }
+}

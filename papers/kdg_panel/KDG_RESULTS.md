@@ -2545,3 +2545,54 @@ The comparison is the pre-registered question; the within-tag count is what H1 w
 **Dose curve (G-A27 item 4): priced, awaiting approval.** Low and high effort plus a fresh medium trace on
 the 44 scenarios that crossed in §40; high-effort pilot of 16 at cap 8,192 gates the rest; about
 2.7–4.2 A100-h; branches monotone fall / non-monotone / flat.
+
+## 42. Judgment on the H1 crossings and the reasoning-dose curve (G-A28 and note; pod p2o; 2026-10-13)
+
+Rules, id lists and analysis scripts pushed before the pod (G-A28; the note before any of its data). Pod
+2bii2hfphtdkv0 (VALIDATE 0.0000 both ways; dose-0 judgment readout of the 264 in 149 s; judgment batch of
+44 in 1,416 s; dose arms low 342 s, fresh medium 2,049 s, high pilot 1,198 s, high rest 6,867 s; about
+3.7 of the 6.0 A100-h envelope; manifest verifies). `data/analysis_h1_judgment.json`,
+`data/analysis_dose_curve.json`.
+
+**Judgment readout (pre-registered branch: principled revision).** On the 44 H1 crossings (42 toward the
+rule, 2 away; 40 judgment traces with token identity, 4 truncated at 1,536), the medium-effort judgment
+names the medium-effort action's option in 25 and the dose-0 action's option in 6 (9 other; m 31;
+two-sided exact p = 0.00088, α 0.01). Judgment labels: rule-following 24, protective 7, neutral 9.
+**On H1, principled revision means judgment and action converge on the rule where the rule is the less
+protective choice (G-A28 note).** The mechanism matches the panel's (§38: judgment and action move
+together); the evaluative reading differs, because here the rule is the choice that harms the third
+party. Beside it, GPT-OSS's dose-0 judgment on all 264 favours the protective departure in 154 (58%),
+the rule in 42, neutral 68: unreasoned, it judges protection right about as often as it acts on it
+(55%, §40).
+
+**Dose curve (pre-registered branch: flat / unresolved).** On the 59 of the stratified 64 with token
+identity in every arm (paired):
+
+| | dose 0 (forced readout) | low | fresh medium | high |
+|---|---|---|---|---|
+| protective share | 44 (75%) | 14 (24%) | 18 (31%) | 22 (37%) |
+| Wilson 95% | [0.62, 0.84] | [0.15, 0.36] | [0.20, 0.43] | [0.26, 0.50] |
+
+The point estimates rise from low to high, so there is no monotone fall (low vs high one-sided p = 0.99).
+Neither reversal pair reaches two-sided p < 0.05 (low < medium and medium < high, each p = 0.42), so the
+pre-registered branch is flat / unresolved. Descriptive beside it: low vs high discordant 3 vs 11
+(two-sided exact McNemar p = 0.057); the fresh medium trace agrees with the §40 medium action on 48 of
+59. Secondary, the 11 crossing-stratum scenarios (intervals, no verdict): protective low 1 [0.02, 0.38],
+medium 0 [0.00, 0.26], high 3 [0.10, 0.57].
+
+**The step that moves the action is the first one.** From the dose-0 readout to low effort, protection
+falls from 75% to 24% on the same 59 scenarios (31 move off protection, 1 onto it). Further reasoning does
+not continue the fall; at high effort protection is, if anything, partly restored (37%). Reasoning dose
+is not the lever; the onset of reasoning is. The comparison of dose 0 with the reasoned arms crosses
+instruments (a forced letter readout against a letter sampled after a trace), so this line is
+descriptive; the separating cell is a sampled dose-0 action on the same 64 (ANOMALIES KDG-A28).
+
+**Referee pass.** (1) *"Judgment m = 31 is below the planned 44."* Nine judgments named the neutral option
+and four traces truncated; the test reached p = 0.00088 at m 31, and the branch rests on it.
+(2) *"A rising curve is a finding; calling it unresolved hides it."* The branch rules were written for a
+fall or a significant reversal, and the rise does not reach p < 0.05 (0.057 two-sided). It is reported as
+a descriptive rise, and the large step is the first one, which the pre-registered branches did not
+address. (3) *"Dose 0 is a forced readout and the arms are sampled, so the 75% → 24% drop is partly
+instrument."* Conceded as stated; §30's calibration shows sampling-only crossings lean away from the rule
+(toward share 0.39), which would push a sampled dose-0 toward more protection, not less, but the
+separating cell is cheap and named.

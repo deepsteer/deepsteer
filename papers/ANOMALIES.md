@@ -1006,3 +1006,13 @@ attention memory.
 
 **Process ledger 2026-10-11 — p2m stopped at its local gate on a bit-exact test; no model loaded.**
 Pod e5cifka57z5gxi ran the local gates before any model load; `test_forward_readout_padded_batch_equals_unpadded_at_post_reasoning_positions` failed on 1 of 600,057 log-probs, which differed by 0.0078 (one bf16 rounding step at magnitude ~12) between batch sizes 3 and 1 on the tiny CPU model. The test asserted bit-exact equality; earlier pods (p2k, p2l) ran on hardware where the CPU bf16 kernels were batch-shape-invariant, this one picked a different kernel. It is KDG-A21's batch-composition effect at one-ulp scale, not the KDG-A20 position defect the test guards (that moves the readout by ~0.5 nats). Fix: the test compares within VALIDATE's 0.05 nats (log-probs) and 5% of the residual scale, and gains a negative control (residuals read one token off must fail the same check). Cost: setup time only (~0.1 A100-h). Lesson: no bit-exact float assertions in pod gates; tolerance plus a negative control that shows the tolerance still bites.
+
+## KDG-A28 (ledger) — On H1 the action moves at the onset of reasoning, not with its amount: 75% protective at dose 0, 24% at low effort, then 31% and 37% at medium and high
+
+**Date.** 2026-10-13 (G-A28 item 3; `kdg_panel/KDG_RESULTS.md` §42; `kdg_panel/data/analysis_dose_curve.json`).
+**Observation.** Paired over 59 of the stratified 64 H1 scenarios: dose-0 forced readout protective 44 (75%); low 14 (24%); fresh medium 18 (31%); high 22 (37%). Dose-0 → low: 31 off protection, 1 onto it. Low → high: 3 vs 11 (two-sided exact McNemar p = 0.057). Pre-registered branch: flat / unresolved.
+**Type.** dose-dependence (non-monotone in point estimate) with an instrument change at the first step.
+**Competing readings.** R_a (onset): any reasoning trace moves GPT-OSS to the rule; more reasoning does not push further and may partly restore protection. R_b (instrument): the dose-0 point is a forced letter readout and the arms are letters sampled after a trace, so part of the 75% → 24% step is the instrument.
+**Discriminator.** A sampled dose-0 action on the same 64 (the direct-final prefill, temperature 0.7, one sample each; no trace): about 0.2 A100-h after load, rides any GPT-OSS pod. R_a predicts the sampled dose-0 protective share stays near the forced readout's 75%; R_b predicts it falls toward the reasoned arms.
+**Status.** open; discriminator priced.
+**Thesis impact.** R_a: the lever is whether GPT-OSS reasons at all, and higher effort does not deepen rule compliance on H1. R_b: the step is partly the instrument, and the rule-compliance reading rests on §40's crossing count, which compares the same two instruments and is calibrated against sampling-only crossings (§30).

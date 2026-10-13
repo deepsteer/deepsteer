@@ -1,0 +1,26 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A28 item 2",
+ "n": 44,
+ "counts": {
+  "no_identity": 4,
+  "other": 9,
+  "with": 25,
+  "hold": 6
+ },
+ "k_with": 25,
+ "k_hold": 6,
+ "m": 31,
+ "p_two_sided": 0.0008779102936387062,
+ "alpha": 0.01,
+ "branch": "principled_revision",
+ "jmed_labels": {
+  "neutral": 9,
+  "consistent": 24,
+  "violating": 7
+ },
+ "dose0_judgment_all_264": {
+  "violating": 154,
+  "consistent": 42,
+  "neutral": 68
+ }
+}
