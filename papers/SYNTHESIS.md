@@ -1008,7 +1008,20 @@ on the written rule together (judgment read at medium effort, §42), and the act
 departure on 9 of 10. Same mechanism as the panel (judgment and action move together, §38), different
 evaluative reading (on H1 the rule is the harmful choice). The step that moves the action is the onset of
 reasoning (pre-registered descriptive, pending the sampled dose-0 ride-along; KDG-A28); the low-to-high
-rise is open (KDG-A29). Scope: one
+rise is open (KDG-A29).
+
+### Deferred queue (compute scope closed after p1e, 2026-10-13)
+
+Each cell is pre-registered or priced and waits for a new compute decision; the line after the price is
+the decision its result would change.
+
+| cell | design and price | the decision its result changes |
+|---|---|---|
+| OLMo-3 stage ladder on H1 (G-A30) | SFT, DPO, base (raw-frame forced arm with an engagement gate) and the final model in the raw frame as a bridge; forced arms, 8 rollouts; about 7.4 A100-h | Whether the rule-over-protection brake is intrinsic to deliberation (base already moves toward the written rule) or installed by post-training (and at which stage). It decides whether the thesis says "deliberation is rule-tracking" or "post-training makes deliberation rule-tracking", and where a training-time intervention would have to act. |
+| Dose curve follow-up (KDG-A29) | Low and high effort on ~150 H1 scenarios on GPT-OSS-20B (80% power at a 70:30 discordant split); about 5 A100-h | Whether more reasoning partly restores protection (effort is a lever toward protection) or the curve is flat after the onset (the onset of reasoning is the only lever). It decides whether "higher reasoning effort" belongs in the mitigation sentence. |
+| A second H1 family | A departure that is hidden, costly to the agent, or from a norm that is not a procedural gate; generation, rating and author spot check zero GPU, then the H1 cell on GPT-OSS (about 3 A100-h) | Whether the rule-compliance result is about approval gates or about written rules in general; it sets the scope of §40's claim beyond one homogeneous family. |
+| Tulu 3 and Qwen2.5 on H1 | The paper's forced arms on the 264 (as p1e), per model about 3.2 A100-h | Whether the brake's direction on H1 is shared across recipes (the paper's recipe split) or specific to the carriers; it decides whether v2's brake scope sentence is panel-wide or carrier-scoped. |
+| KDG-A28 sampled dose-0 ride-along | The stratified 64, direct-final prefill; about 0.2 A100-h | Whether §42's onset step is reasoning or the instrument. Runs only if a GPT-OSS pod runs for another reason. | Scope: one
 structurally homogeneous family; a second family is the extension. Branch:
 compliance-tracking. With §37's descriptive split and §38's convergence, the program's reading of
 GPT-OSS's default-level reasoning is rule compliance: it brings judgment and action to the stated rule,

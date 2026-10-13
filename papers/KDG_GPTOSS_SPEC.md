@@ -1082,3 +1082,9 @@ thesis-level cell, ahead of the dose-curve follow-up KDG-A29).**
    while the raw-frame final model's lies below 0; the SFT and DPO CIs (chat frame) then locate the
    stage where it appears. **Not measurable on base:** the base fails the engagement gate; SFT and DPO
    are still reported.
+
+*G-A30 note (author, 2026-10-13).* Compute scope closes after p1e. G-A30 is **deferred**, not approved: it
+stays a pre-registered cell (design, both branches and the not-measurable branch as written) at the
+recommended design, **raw-frame bridge, 8 rollouts, about 7.4 A100-h**. The KDG-A28 sampled dose-0
+ride-along is dropped unless a GPT-OSS pod runs for another reason. Deferred with it (SYNTHESIS, deferred
+queue): the KDG-A29 dose-curve follow-up (~150 scenarios), a second H1 family, and Tulu 3 and Qwen2.5 on H1.
