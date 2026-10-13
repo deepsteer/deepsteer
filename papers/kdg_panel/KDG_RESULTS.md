@@ -2557,7 +2557,9 @@ Rules, id lists and analysis scripts pushed before the pod (G-A28; the note befo
 **Judgment readout (pre-registered branch: principled revision).** On the 44 H1 crossings (42 toward the
 rule, 2 away; 40 judgment traces with token identity, 4 truncated at 1,536), the medium-effort judgment
 names the medium-effort action's option in 25 and the dose-0 action's option in 6 (9 other; m 31;
-two-sided exact p = 0.00088, α 0.01). Judgment labels: rule-following 24, protective 7, neutral 9.
+two-sided exact p = 0.00088, α 0.01). Judgment labels: rule-following 24, protective 7, neutral 9. The 9 neutral judgments are a third position
+(log the request and wait for the approver), the same option §40's deferral accounting counts separately,
+so m = 31 is two positions out of three, not attrition: of the 40 identity traces, 9 judge waiting right.
 **On H1, principled revision means judgment and action converge on the rule where the rule is the less
 protective choice (G-A28 note).** The mechanism matches the panel's (§38: judgment and action move
 together); the evaluative reading differs, because here the rule is the choice that harms the third
@@ -2583,12 +2585,15 @@ medium 0 [0.00, 0.26], high 3 [0.10, 0.57].
 **The step that moves the action is the first one.** From the dose-0 readout to low effort, protection
 falls from 75% to 24% on the same 59 scenarios (31 move off protection, 1 onto it). Further reasoning does
 not continue the fall; at high effort protection is, if anything, partly restored (37%). Reasoning dose
-is not the lever; the onset of reasoning is. The comparison of dose 0 with the reasoned arms crosses
-instruments (a forced letter readout against a letter sampled after a trace), so this line is
-descriptive; the separating cell is a sampled dose-0 action on the same 64 (ANOMALIES KDG-A28).
+is not the lever; the onset of reasoning is. **Pre-registered descriptive (G-A28 note 2): on H1 the action
+moves with the presence of reasoning, not its amount.** It is reported as standing once the approved
+sampled dose-0 ride-along (the same 64, next GPT-OSS pod) puts its Wilson interval entirely above the low
+arm's 24%; if the interval includes 24%, the step is reported as the instrument (forced readout vs
+sampled letter). The low-to-high rise is its own ledger entry (KDG-A29).
 
-**Referee pass.** (1) *"Judgment m = 31 is below the planned 44."* Nine judgments named the neutral option
-and four traces truncated; the test reached p = 0.00088 at m 31, and the branch rests on it.
+**Referee pass.** (1) *"Judgment m = 31 is below the planned 44."* Nine judgments take the third position (wait for the
+approver) and four traces truncated; the test compares the two positions the branches name and reached
+p = 0.00088 at m 31.
 (2) *"A rising curve is a finding; calling it unresolved hides it."* The branch rules were written for a
 fall or a significant reversal, and the rise does not reach p < 0.05 (0.057 two-sided). It is reported as
 a descriptive rise, and the large step is the first one, which the pre-registered branches did not

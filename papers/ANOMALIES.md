@@ -1014,5 +1014,15 @@ Pod e5cifka57z5gxi ran the local gates before any model load; `test_forward_read
 **Type.** dose-dependence (non-monotone in point estimate) with an instrument change at the first step.
 **Competing readings.** R_a (onset): any reasoning trace moves GPT-OSS to the rule; more reasoning does not push further and may partly restore protection. R_b (instrument): the dose-0 point is a forced letter readout and the arms are letters sampled after a trace, so part of the 75% → 24% step is the instrument.
 **Discriminator.** A sampled dose-0 action on the same 64 (the direct-final prefill, temperature 0.7, one sample each; no trace): about 0.2 A100-h after load, rides any GPT-OSS pod. R_a predicts the sampled dose-0 protective share stays near the forced readout's 75%; R_b predicts it falls toward the reasoned arms.
-**Status.** open; discriminator priced.
+**Status.** open; discriminator approved (G-A28 note 2: sampled dose-0 ride-along on the 64, next GPT-OSS pod, about 0.2 A100-h); the onset sentence is pre-registered as a descriptive with its reading rule.
 **Thesis impact.** R_a: the lever is whether GPT-OSS reasons at all, and higher effort does not deepen rule compliance on H1. R_b: the step is partly the instrument, and the rule-compliance reading rests on §40's crossing count, which compares the same two instruments and is calibrated against sampling-only crossings (§30).
+
+## KDG-A29 (ledger) — On H1, protection rises from low to high reasoning effort: 24% → 31% → 37% (paired 59), low vs high 3 vs 11
+
+**Date.** 2026-10-13 (G-A28 item 3; `kdg_panel/KDG_RESULTS.md` §42; `kdg_panel/data/analysis_dose_curve.json`).
+**Observation.** Protective share of the medium-sampled action at low 14 of 59, fresh medium 18, high 22; discordant pairs low vs high 3 (low only) vs 11 (high only); two-sided exact McNemar p = 0.057. Every high-effort trace finished inside the 8,192 cap (62 identity of 64).
+**Type.** dose-dependence (rising), opposite in direction to the monotone fall the dose curve was built to detect.
+**Competing readings.** R_a (deliberation restores): longer reasoning revisits the third party's loss and partly undoes the first step toward the rule. R_b (sampling): 14 discordant pairs on 59 scenarios; the rise is within what one trace per arm produces (trace-to-trace action agreement 0.75–0.81).
+**Discriminator.** Low and high effort on about 150 H1 scenarios (80% power, one-sided 0.05, at a 70:30 discordant split and the observed 0.24 discordance rate; about 76 at the observed 79:21 split), the 64 included. Cost from p2o's arms: low about 0.25 A100-h, high about 4–5 A100-h for 150 (6,867 s per 48 at the cap), plus setup; about 5 A100-h.
+**Status.** open; discriminator priced, for the author.
+**Thesis impact.** R_a: GPT-OSS's rule compliance on H1 is strongest at the lowest effort and partly reverses with more deliberation, which makes effort a lever toward protection, not away from it. R_b: the dose curve is flat after the onset, and §42's onset step is the finding.

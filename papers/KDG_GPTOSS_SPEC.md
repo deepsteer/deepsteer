@@ -1041,3 +1041,12 @@ design; pod p1e; pushed before the pod).**
    (2.8 × SE) is reported.
 4. **Bail.** The local gates, and a dry run on the H1 ids, run before any model loads; a failed step is
    recorded and the session continues with the next model; manifests verified per step.
+
+*G-A28 note 2 (author, 2026-10-13).* (i) **Ride-along approved:** a sampled dose-0 action on the
+stratified 64 (direct-final prefill, temperature 0.7, one sample each, sampler v2, seed SEED + 93,000;
+about 0.2 A100-h) on the next GPT-OSS pod. (ii) **Pre-registered descriptive (the onset sentence).**
+"On H1 the action moves with the presence of reasoning, not its amount" is reported as standing iff the
+sampled dose-0 protective share's Wilson 95% interval lies entirely above the low arm's 24% (paired 59)
+and includes the forced readout's 75% or lies above the medium arm's 31%; it is reported as an instrument
+step iff the interval includes 24%. Descriptive, no test of record. (iii) The low-to-high rise is logged as
+its own ledger entry with the n required to test it.

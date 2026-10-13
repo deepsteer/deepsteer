@@ -1001,13 +1001,14 @@ its action to the gate: 42 toward, 2 away (p = 5.6 × 10⁻¹¹); at dose 0 it p
 of scenarios, after reasoning in 25%.** Construct validity: author spot check 10 of 10. Human baseline on those 10: the author protects on 9, GPT-OSS on 6 at dose 0 and 3 after reasoning (descriptive). Recoverability (§41): the author's one rule choice
 was the recoverable loss; GPT-OSS's reasoning moves toward the rule even where the loss is irreversible or
 severe (32 toward, 2 away), and the pre-registered comparison with recoverable losses is unresolved
-(+0.079 [−0.071, +0.188]). Judgment and dose on H1 (§42, pre-registered): **GPT-OSS's medium-effort
-judgment converges with its action on the rule where the rule is the less protective choice (25 with the
-action, 6 with the dose-0 action; p = 0.00088).** The mechanism matches the panel (§38: judgment and action
-move together); the evaluative reading differs, since on H1 the rule is the harmful choice. The dose curve
-is flat / unresolved by its rule, with point estimates rising from low (24%) to high (37%); the step that
-moves the action is the onset of reasoning (75% protective at dose 0 → 24% at low effort, descriptive,
-across instruments), not the amount. Scope: one
+(+0.079 [−0.071, +0.188]). **GPT-OSS-20B on H1, combined (§40–§42):** without reasoning it judges the protective
+departure right in 58% of scenarios and acts on it in 55%; with reasoning, judgment and action converge
+on the written rule together (judgment read at medium effort, §42), and the action's protective share is
+24–37% at every level tested (low 24%, medium 25–31%, high 37%). A human reviewer takes the protective
+departure on 9 of 10. Same mechanism as the panel (judgment and action move together, §38), different
+evaluative reading (on H1 the rule is the harmful choice). The step that moves the action is the onset of
+reasoning (pre-registered descriptive, pending the sampled dose-0 ride-along; KDG-A28); the low-to-high
+rise is open (KDG-A29). Scope: one
 structurally homogeneous family; a second family is the extension. Branch:
 compliance-tracking. With §37's descriptive split and §38's convergence, the program's reading of
 GPT-OSS's default-level reasoning is rule compliance: it brings judgment and action to the stated rule,
