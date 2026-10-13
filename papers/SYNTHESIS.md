@@ -1008,7 +1008,12 @@ on the written rule together (judgment read at medium effort, §42), and the act
 departure on 9 of 10. Same mechanism as the panel (judgment and action move together, §38), different
 evaluative reading (on H1 the rule is the harmful choice). The step that moves the action is the onset of
 reasoning (pre-registered descriptive, pending the sampled dose-0 ride-along; KDG-A28); the low-to-high
-rise is open (KDG-A29).
+rise is open (KDG-A29). **The carriers on H1 (§43, pre-registered per model):** the paper's forced reasoning arm
+moves both OLMo-3 (−0.076 [−0.098, −0.053]) and Llama-3.1 (−0.050 [−0.067, −0.031]) toward the written gate
+against harm prevention: rule compliance under deliberation on both. OLMo-3 shows no detectable difference in
+brake magnitude between rule-protective and rule-harmful scenarios (−0.002 [−0.042, +0.037]); Llama-3.1's
+brake keeps its direction at about a seventh of its panel size (−0.301 [−0.340, −0.260]), the pattern of a
+brake that weighs the third party's loss alongside the rule.
 
 ### Deferred queue (compute scope closed after p1e, 2026-10-13)
 

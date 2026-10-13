@@ -2601,3 +2601,53 @@ address. (3) *"Dose 0 is a forced readout and the arms are sampled, so the 75% �
 instrument."* Conceded as stated; §30's calibration shows sampling-only crossings lean away from the rule
 (toward share 0.39), which would push a sampled dose-0 toward more protection, not less, but the
 separating cell is cheap and named.
+
+## 43. The H1 set under the carriers' forced arms (G-A29; pod p1e; 2026-10-13)
+
+Rules, analysis script and profile pushed before the pod (G-A29). Pod 9lqg4hl4iarge4 (OLMo-3 step 16:39–
+20:05 UTC, Llama-3.1 step 20:06–about 23:00; both manifests verify; about 6.5 A100-h, under-priced at 4.7,
+process ledger 2026-10-13, the author let it run). The paper's units and seeds: the 512-token budget-forced
+reasoning arm and the filler of record, 16 rollouts, forced letter readout, plus the dose-0 letter readout;
+264 kept H1 scenarios. In H1 the violating option is the protective departure, so p_D is the protective
+mass. `data/analysis_h1_carriers.json`, `data/analysis_brake_panel_vs_h1.json`.
+
+| carrier | p_D, filler | p_D, reasoning | Δ_P (reasoning − filler) | detectable | dose-0 protective | branch |
+|---|---|---|---|---|---|---|
+| OLMo-3-7B-Instruct | 0.344 | 0.268 | **−0.076 [−0.098, −0.053]** | 0.032 | 61% | rule compliance under deliberation |
+| Llama-3.1-8B-Instruct | 0.846 | 0.796 | **−0.050 [−0.067, −0.031]** | 0.026 | 75% | rule compliance under deliberation |
+
+**Verdict (pre-registered, per model): rule compliance under deliberation on both carriers.** On scenarios
+where following a written approval gate harms an absent third party and a transparent, personally
+costless departure would protect them, the forced reasoning arm moves both OLMo-3 and Llama-3.1 off the
+protective departure, toward the gate, relative to the filler of record.
+
+**Brake magnitude, panel vs H1 (author request; descriptive comparison).**
+
+| carrier | panel brake (n) | H1 brake (n) | panel − H1 | detectable |
+|---|---|---|---|---|
+| OLMo-3 | −0.077 (130) | −0.076 (264) | −0.002 [−0.042, +0.037] | 0.056 |
+| Llama-3.1 | −0.350 (114) | −0.050 (264) | −0.301 [−0.340, −0.260] | 0.058 |
+
+On OLMo-3 there is **no detectable difference in brake magnitude between rule-protective and rule-harmful
+scenarios** (the interval excludes differences larger than about 0.04 either way). On Llama-3.1 the brake keeps
+its direction and loses most of its size: about a seventh of the panel's, a difference well beyond the
+detectable 0.058. On the ratio scale the same holds (reasoning keeps 0.30 of the filler's violating mass on
+Llama-3.1's panel scenarios, 0.94 of the protective mass on H1). A reading that fits both carriers: on the
+panel the rule and harm prevention point the same way, and on H1 they conflict. A brake that tracks only
+the rule keeps its size (OLMo-3); a brake that weighs the rule and the third party's loss together shrinks
+when they conflict (Llama-3.1). Llama-3.1 also starts more protective: 85% of its filler-arm mass is on
+the departure, against OLMo-3's 34%.
+
+Across the program on H1, then: GPT-OSS-20B's default reasoning (§40, 42 vs 2), OLMo-3's forced reasoning
+(−0.076) and Llama-3.1's (−0.050) all move toward the written gate, with OLMo-3's brake as large as on the
+panel and Llama-3.1's much smaller.
+
+**Referee pass.** (1) *"Llama-3.1's −0.050 is a tenth of a probability unit; calling it rule compliance
+oversells it."* The branch is the direction the pre-registered rule reads (the CI lies below 0, detectable
+effect 0.026); the size is reported beside it, and the panel comparison states that it is a seventh of the
+panel brake. (2) *"Panel and H1 differ in more than the rule–harm relation (writers, families, length),
+so the magnitude comparison is confounded."* Yes; the comparison is descriptive and per carrier, and
+the same scenario-set difference applies to both carriers, which differ sharply, so the set difference
+alone does not produce OLMo-3's equality and Llama-3.1's drop. (3) *"Llama-3.1 at 0.85 protective mass has
+little room."* It has 0.85 of room toward the rule and moves 0.05; OLMo-3 at 0.34 moves 0.08. Room does
+not explain the order.

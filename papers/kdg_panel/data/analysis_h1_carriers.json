@@ -1,0 +1,43 @@
+{
+ "rule": "KDG_GPTOSS_SPEC G-A29",
+ "n_boot": 10000,
+ "seed": 0,
+ "models": {
+  "olmo3_instruct": {
+   "n": 264,
+   "delta_P": {
+    "mean": -0.07573747364380176,
+    "ci95": [
+     -0.0983375412301718,
+     -0.052970051447946184
+    ],
+    "n": 264,
+    "point_in_ci": true,
+    "mde": 0.03240534984444687
+   },
+   "detectable_2p8se": 0.03240534984444687,
+   "branch": "rule_compliance_under_deliberation",
+   "p_D_reasoning": 0.26830993361875877,
+   "p_D_filler": 0.34404740726256056,
+   "dose0_protective_share": 0.6098484848484849
+  },
+  "llama31_instruct_meta": {
+   "n": 264,
+   "delta_P": {
+    "mean": -0.049546291341821244,
+    "ci95": [
+     -0.06716358345243188,
+     -0.03125479683340158
+    ],
+    "n": 264,
+    "point_in_ci": true,
+    "mde": 0.025649133299307358
+   },
+   "detectable_2p8se": 0.025649133299307358,
+   "branch": "rule_compliance_under_deliberation",
+   "p_D_reasoning": 0.7959673800737235,
+   "p_D_filler": 0.8455136714155447,
+   "dose0_protective_share": 0.7462121212121212
+  }
+ }
+}
