@@ -1055,3 +1055,30 @@ its own ledger entry with the n required to test it.
 two generated cells and one forward-pass control, not three generated cells, so the rate per generated
 scenario-cell is about 0.38 min (OLMo-3) and 0.33 min (Llama-3.1), and p1e projects to about 6.5 A100-h,
 not 4.7. The author chose to let it run to completion. Design, quantity and branches are unchanged.
+
+**G-A30 (priced, for approval). The H1 brake across OLMo-3's training stages (author, 2026-10-13; the
+thesis-level cell, ahead of the dose-curve follow-up KDG-A29).**
+1. **Question.** Does deliberation already move OLMo-3 toward the written rule against harm prevention
+   before instruction tuning (deliberation-intrinsic), or does that appear only after it
+   (post-training-installed)?
+2. **Checkpoints and arms.** The H1 set (264), the paper's forced arms (512-token reasoning vs filler of
+   record, 16 rollouts) and the dose-0 letter readout, on OLMo-3 **SFT** and **DPO** (instruct-kind,
+   their chat template renders identically to the final model's, so the existing units run unchanged)
+   and on the **base** checkpoint. The final instruct model (RLVR) is p1e. The dose units are
+   instruct-only, and the base has no chat template, so the base needs a frame: a raw-text forced arm
+   (the scenario as plain text, "Reasoning:" with the same 512-token budget-forced continuation, then
+   the letter readout), with an engagement gate (mean option mass ≥ 0.5 on ≥ 80% of a 16-scenario pilot)
+   before the full run. Rider: base in the raw frame against instruct in the chat frame would cross
+   frames, so the final instruct model is also run in the **raw frame** as a bridge.
+3. **Price** (p1e's measured OLMo-3 rates: 102 min for the 264-scenario reasoning cell, 89 min for the
+   filler, 2 min for the dose-0 readout; about 3.35 A100-h per checkpoint with load). SFT 3.35, DPO 3.35,
+   base 3.35 plus pilot 0.3, final-instruct raw-frame bridge 3.35: **about 13.7 A100-h** at 16 rollouts,
+   **about 7.4 at 8 rollouts** (generation halves). Without the bridge, 10.4 / 5.6. The raw-frame unit is
+   a new build (zero GPU, with local tests) before any of it.
+4. **Branches (per checkpoint Δ_P = p_D(reasoning) − p_D(filler), D = the protective departure;
+   bootstrap CI).** **Deliberation-intrinsic:** base Δ_P's CI lies below 0, and so does the raw-frame
+   final model's: deliberation moves the base toward the written rule before any instruction tuning.
+   **Post-training-installed:** base Δ_P's CI includes 0 (detectable effect reported) or lies above it,
+   while the raw-frame final model's lies below 0; the SFT and DPO CIs (chat frame) then locate the
+   stage where it appears. **Not measurable on base:** the base fails the engagement gate; SFT and DPO
+   are still reported.

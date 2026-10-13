@@ -1,0 +1,26 @@
+{
+ "rule": "author request 2026-10-13, descriptive",
+ "n_boot": 10000,
+ "seed": 0,
+ "models": {
+  "olmo3_instruct": {
+   "panel": {
+    "n": 130,
+    "mean": -0.07739168102917375
+   },
+   "h1": {
+    "n": 264,
+    "mean": -0.07573747364380176
+   },
+   "difference_panel_minus_h1": -0.001654207385371989,
+   "ci95": [
+    -0.041973425252405216,
+    0.03658586936959418
+   ],
+   "detectable_2p8se": 0.055809144391417
+  },
+  "llama31_instruct_meta": {
+   "status": "H1 not run yet"
+  }
+ }
+}
