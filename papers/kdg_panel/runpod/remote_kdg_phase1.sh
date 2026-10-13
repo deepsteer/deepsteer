@@ -6,6 +6,9 @@
 #   KDG_PROFILE=p1a_fix2 re-run of stages_raw + stages_chat_sft only (lost twice to a full local disk)
 #   KDG_PROFILE=p1a_fix  re-run of the p1a cells lost in the download (stages_raw, SFT stage chat)
 #   KDG_PROFILE=p1b  Session B (Llama-3.1 base + Meta instruct, Tulu-3 stages, Qwen2.5: raw cells)
+#   KDG_PROFILE=p1e  KDG_GPTOSS_SPEC G-A29 (2026-10-12): the H1 compliance-harm set (264) under the
+#                    carriers' forced arms (512-token reasoning vs filler of record, 16 rollouts) plus the
+#                    dose-0 letter readout; OLMo-3 then Llama-3.1 Meta (needs HF_TOKEN); about 4.7 A100-h
 #   KDG_PROFILE=p1d  P1-A12 / GPU-1 (2026-10-05): dose2 + filler forced arms and the own truncated
 #                    filler on the pressure-removed twins of the dose sets of record (OLMo-3 136
 #                    screened, Llama-3.1 Meta its own screen), same seeds and orders as the primaries
@@ -30,7 +33,7 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}" MKL_NUM_THREADS="${MKL_NUM_THREAD
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-case "$PROFILE" in p1a|p1b|p1c|p1d|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1c, p1d, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
+case "$PROFILE" in p1a|p1b|p1c|p1d|p1e|p1a_fix|p1a_fix2) ;; *) echo "FATAL: KDG_PROFILE must be p1a, p1b, p1c, p1d, p1e, p1a_fix or p1a_fix2 (got '$PROFILE')"; exit 1;; esac
 # p1a_fix writes into outputs/p1a (it re-runs Session A cells lost in the 2026-09-27 download)
 OUT="$REPO_DIR/papers/kdg_panel/outputs/${PROFILE%%_fix*}"; mkdir -p "$OUT"
 S=papers/kdg_panel/scripts/pod_kdg_phase1.py
@@ -57,7 +60,14 @@ echo ">> scenario rows on pod: $N_ROWS"
 ls $D/round3_scenarios_*.json >/dev/null 2>&1 || { echo "FATAL: round3 scenario files missing"; exit 1; }
 [ -f $D/screened_ids_a17_union.json ] || { echo "FATAL: screened id list missing"; exit 1; }
 [ -f $D/dose_bf_rollout_texts.jsonl.gz ] || { echo "FATAL: dose rollout texts missing (P1-A8 input)"; exit 1; }
-if [ "$PROFILE" = "p1d" ]; then
+H1S=$D/harm_divergence/hdiv_set.json
+H1I=$D/harm_divergence/h1_kept_ids.json
+H1U=d_chat_dose2_bf,d_chat_dose2_filler_bf,dl_chat_neutral
+if [ "$PROFILE" = "p1e" ]; then
+  [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: p1e needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
+  for f in "$H1S" "$H1I"; do [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }; done
+  python $S --dry-run --models olmo3_instruct,llama31_instruct_meta --units $H1U --scenarios "$H1S" --scenario-ids-file "$H1I" --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
+elif [ "$PROFILE" = "p1d" ]; then
   [ -n "${HF_TOKEN:-}" ] || { echo "FATAL: p1d needs HF_TOKEN (gated Llama-3.1)"; exit 1; }
   [ -f $D/screened_ids_llama31_meta.json ] || { echo "FATAL: Llama screen list missing (P1-A9)"; exit 1; }
   python $S --dry-run --models olmo3_instruct,llama31_instruct_meta --units DOSE_TWIN --out "$OUT/_dry" || { echo "DRY RUN FAILED"; exit 1; }
@@ -88,7 +98,11 @@ step() {  # step <name> <driver args...>
 }
 R3="$(ls $D/round3_scenarios_*.json | tr '\n' ' ')"
 
-if [ "$PROFILE" = "p1d" ]; then
+if [ "$PROFILE" = "p1e" ]; then
+  # G-A29: the H1 set under the carriers' forced arms, OLMo-3 first (no gated download)
+  step olmo_h1 --models olmo3_instruct --units $H1U --scenarios "$H1S" --scenario-ids-file "$H1I"
+  step llama_h1 --models llama31_instruct_meta --units $H1U --scenarios "$H1S" --scenario-ids-file "$H1I"
+elif [ "$PROFILE" = "p1d" ]; then
   # P1-A12 (KDG_PHASE1_SPEC, pushed c263eb2): the twin cells, OLMo-3 first (no gated download)
   rows_check() {  # P1-A12 bail line: 16 rows per scenario in every twin cell, else "not run"
     python - "$1" <<'PY'

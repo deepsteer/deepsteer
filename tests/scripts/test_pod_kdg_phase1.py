@@ -540,3 +540,32 @@ class TestDoseTwin:
 
     def test_group_registered(self):
         assert pod.GROUPS["DOSE_TWIN"] == lib.DOSE_TWIN_UNITS
+
+
+def test_p1e_runs_only_the_h1_carrier_arms():
+    # G-A29. most probable failure: p1e falls through to another profile, runs the panel's
+    # scenarios instead of the H1 set, or adds the 64-token arm the approved budget excludes
+    from pathlib import Path
+
+    sh = (Path(__file__).resolve().parents[2]
+          / "papers/kdg_panel/runpod/remote_kdg_phase1.sh").read_text()
+    i = sh.index('if [ "$PROFILE" = "p1e" ]; then\n  # G-A29')
+    block = sh[i: sh.index("elif", i)]
+    assert block.count("step ") == 2
+    assert "olmo3_instruct" in block and "llama31_instruct_meta" in block
+    assert block.count('--scenarios "$H1S" --scenario-ids-file "$H1I"') == 2
+    assert "H1U=d_chat_dose2_bf,d_chat_dose2_filler_bf,dl_chat_neutral" in sh
+    assert "dose1" not in sh[sh.index("H1U="): sh.index("H1U=") + 80]
+
+
+def test_h1_carrier_branches():
+    # most probable failure: a CI touching 0 is read as a direction
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "papers/kdg_panel/scripts"))
+    import analyze_h1_carriers as HC
+
+    assert HC.branch({"ci95": [-0.2, -0.01]}) == "rule_compliance_under_deliberation"
+    assert HC.branch({"ci95": [0.01, 0.2]}) == "protective_deliberation"
+    assert HC.branch({"ci95": [-0.1, 0.0]}) == "unresolved"

@@ -1017,3 +1017,27 @@ because the post-reasoning departure rate is the same with or without an explici
 on the rule **where the rule is the less protective choice**; the write-up states that the mechanism
 matches the panel (§38) and the evaluative reading differs, and does not reuse the panel's "correction"
 wording. "Compliance against own judgment" keeps its G-A28 text.
+
+**G-A29. The H1 set under the carriers' forced dose arms (author approval 2026-10-12, paper-matched
+design; pod p1e; pushed before the pod).**
+1. **Design.** OLMo-3-7B-Instruct, then Llama-3.1-8B-Instruct (Meta), on the 264 kept H1 scenarios
+   (`data/harm_divergence/h1_kept_ids.json`), with the paper's units and seeds: `d_chat_dose2_bf`
+   (512-token budget-forced reasoning, 16 rollouts, forced letter readout) and `d_chat_dose2_filler_bf`
+   (the filler of record), plus the dose-0 letter readout `dl_chat_neutral` (8 permutations). The
+   64-token arm of the paper's `DOSE_BF` group is left out: the brake contrast of record is the
+   512-token arm against the filler, and dropping it keeps the approved budget (with it, about 6.2
+   A100-h). **About 4.7 A100-h** (from p1d's rates: OLMo-3 0.25 min, Llama-3.1 0.22 min per
+   scenario-cell); envelope 5.5 with setup.
+2. **Quantity (per model, `analyze_h1_carriers.py`, committed before the pod).** Per scenario Δ_P =
+   p_D(reasoning) − p_D(filler of record), where p_D is the forced readout's mass on the violating
+   option, which in H1 is the **protective departure**; mean and bootstrap CI (10,000, seed 0). Dose-0
+   protective share beside it.
+3. **Branches (written before data), per model, no cross-model size comparison.** **Rule compliance
+   under deliberation:** Δ_P's CI lies entirely below 0; the carrier's deliberation moves its action
+   off the protective departure toward the rule, as GPT-OSS's reasoning does (§40), and the paper's
+   brake operates against harm prevention when the two conflict. **Protective deliberation:** the CI
+   lies entirely above 0; the carrier's deliberation moves toward protecting the third party, and the
+   paper's brake tracks harm, not the rule. **Unresolved:** the CI includes 0; the detectable effect
+   (2.8 × SE) is reported.
+4. **Bail.** The local gates, and a dry run on the H1 ids, run before any model loads; a failed step is
+   recorded and the session continues with the next model; manifests verified per step.
