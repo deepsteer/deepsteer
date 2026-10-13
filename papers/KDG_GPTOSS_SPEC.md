@@ -1008,3 +1008,12 @@ pricing (author, 2026-10-12; pushed before the split is extended, before any pod
    for both** (about 2.6 at 8 rollouts). Quantity: Δ_P = p_D(reasoning) − p_D(filler) on H1, where D is
    the protective departure. Negative Δ_P means the carrier's deliberation also moves to the rule against
    harm prevention; positive means it moves to protect.
+
+*G-A28 note (author, 2026-10-12, during p2o, before any of its data).* (i) The dose-curve secondary is the
+11 crossing-stratum scenarios inside the stratified 64, reported with Wilson intervals per arm and no
+verdict. (ii) §40: both deferral accountings are recorded; departure-only is the accounting of record,
+because the post-reasoning departure rate is the same with or without an explicit-deferral exit (27% vs
+24%). (iii) Judgment-readout branch text on H1: "principled revision" means judgment and action converge
+on the rule **where the rule is the less protective choice**; the write-up states that the mechanism
+matches the panel (§38) and the evaluative reading differs, and does not reuse the panel's "correction"
+wording. "Compliance against own judgment" keeps its G-A28 text.

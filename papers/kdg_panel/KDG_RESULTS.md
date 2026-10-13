@@ -2480,9 +2480,10 @@ to one kind of neutral option. Protective share both ways (G-A28 item 1; identit
 | scenarios offering an explicit deferral (106): (a) / (b) | 55% / 89% | 27% / 70% |
 | scenarios offering log-and-notify (152): (a) = (b) | 54% | 24% |
 
-Counted either way, reasoning lowers protection by 25–29 points; and the departure rate after reasoning is
-the same whether or not the scenario offers a "wait for approval" exit (27% vs 24%), so the fall is not
-substitution into deferral where deferral is available. Human baseline (G-A26 note 2 (iii); `data/harm_divergence/h1_human_baseline.json`): on the 10
+Counted either way, reasoning lowers protection by 25–29 points. Departure-only is the accounting of record
+(G-A28 note): the departure rate after reasoning is the same whether or not the scenario offers a "wait
+for approval" exit (27% vs 24%), so the fall is not substitution into deferral where deferral is
+available. Human baseline (G-A26 note 2 (iii); `data/harm_divergence/h1_human_baseline.json`): on the 10
 spot-check items the author takes the protective departure on 9 (Wilson 95% [0.60, 0.98]); GPT-OSS takes
 it on 6 at dose 0 ([0.31, 0.83]) and on 3 after reasoning ([0.11, 0.60]), the same fall as on the full set
 (55% → 25%). The author agrees with GPT-OSS's dose-0 choice on 5 of 10 and with its reasoned choice on 2.

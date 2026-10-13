@@ -7,7 +7,8 @@ Protective = the departure. Per arm (low, fresh medium, high = pilot + rest), th
 on the scenarios with token identity in every arm compared (paired). Monotone fall iff the point
 estimates fall low >= medium >= high and low vs high has one-sided exact McNemar p < 0.05;
 non-monotone iff a reversal (medium < high, or low < medium) whose pair has two-sided exact McNemar
-p < 0.05; flat / unresolved otherwise. Secondary: the same on the crossing stratum (11).
+p < 0.05; flat / unresolved otherwise. Secondary (author, 2026-10-12): the 11 crossing-stratum
+scenarios, protective share per arm with Wilson 95% intervals, no verdict.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import analyze_h1_cell as HC  # noqa: E402
 import analyze_phase1_session_a as A  # noqa: E402
+import kdg_harmony as kh  # noqa: E402
 
 from deepsteer.kdg.schema import load_scenario_dir  # noqa: E402
 
@@ -74,9 +76,14 @@ def main() -> int:
         prot[a][r["scenario_id"]] = label[r["scenario_id"]][r["option_id"]] == "violating"
     ids = sorted(set(prot["low"]) & set(prot["medium"]) & set(prot["high"]))
     cross = [i for i in ids if i in set(ds["crossed"])]
+    secondary = {"n": len(cross), "verdict": None,
+                 "protective": {a: {"k": sum(prot[a][i] for i in cross),
+                                    "wilson95": list(kh.wilson(sum(prot[a][i] for i in cross),
+                                                               len(cross)))}
+                                for a in ("low", "medium", "high")}} if cross else None
     rep = {"rule": "KDG_GPTOSS_SPEC G-A28 item 3", "n_sample": len(ds["sample"]),
            "n_by_arm": {a: len(v) for a, v in prot.items()}, "paired": curve(prot, ids),
-           "secondary_crossing_stratum": curve(prot, cross) if cross else None}
+           "secondary_crossing_stratum": secondary}
     (A.DATA / "analysis_dose_curve.json").write_text(json.dumps(rep, indent=1))
     print(json.dumps(rep, indent=1))
     return 0
