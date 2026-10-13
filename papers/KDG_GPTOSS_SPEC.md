@@ -1050,3 +1050,8 @@ sampled dose-0 protective share's Wilson 95% interval lies entirely above the lo
 and includes the forced readout's 75% or lies above the medium arm's 31%; it is reported as an instrument
 step iff the interval includes 24%. Descriptive, no test of record. (iii) The low-to-high rise is logged as
 its own ledger entry with the n required to test it.
+
+*G-A29 note (author, 2026-10-13, during p1e).* The pricing in item 1 was wrong: p1d's 98 / 75 min covered
+two generated cells and one forward-pass control, not three generated cells, so the rate per generated
+scenario-cell is about 0.38 min (OLMo-3) and 0.33 min (Llama-3.1), and p1e projects to about 6.5 A100-h,
+not 4.7. The author chose to let it run to completion. Design, quantity and branches are unchanged.
