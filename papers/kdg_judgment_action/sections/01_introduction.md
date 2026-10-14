@@ -44,41 +44,6 @@ a positive control on every model read (an operator instruction to take the viol
 each null carries a detection bar; a same-base contrast of two post-training recipes on one set of
 Llama-3.1 weights; and a deliberation arm with truncation and norm-salience controls.
 
-\begin{table}[tbp]
-\centering
-\caption{Where this panel sits among measured judgment--action and knowing--doing gaps in language
-models (citations in the text above). ``Own'' means the reference is the model's own statement. The
-last column is to our reading of each paper: where a paper has something that works as a null or a
-check (a control condition, an instruction-following check), the cell names it, and ``no'' means we found
-nothing that does; chance-level floors are not counted. Strakhov and Claude find that 47.6\%
-of 351 paired choices across nine instruct models reverse; their reversal counts changes in either
-direction from one draw per mode at temperature 1.0, without a pressure manipulation or a re-elicitation
-floor, while the gap rate here counts only moves toward the violating option, by majority over 32
-rollouts, against a matched null, so the two numbers are different quantities. Their action-mode
-reversals were coded more often as less interventionist than as bolder (48.5\% against 36.5\%); here,
-read under the chat template with nothing at stake, the gap leans toward the violating option (0.055), on
-a different axis (norm consistency, not intervention level).}
-\label{tab:priorart}
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}p{0.15\linewidth}@{}}
-\toprule
-panel & reference for ``right'' & action readout & pressure manipulation & base model & matched null; positive control \\
-\midrule
-Strakhov and Claude (2025) & own theory-mode choice, same dilemma & agent's tool call, one draw & none & no & no \\
-Huang et al. (2026) & own value profile (questionnaire) & advisor's pick among four options & none & no & no; value-selection check \\
-Shen et al. (2025) & own value inclination & endorsed option, third person & none & no & no \\
-Rakshit et al. (2026) & own articulated values & free text, fast vs slow & deliberation budget & no & no \\
-Gu et al. (2025) & own stated principle & forced binary, third person & prompt format & no & one-factor prompt pairs; no \\
-Hosseini et al. (2026) & own responsibility judgment & allocation decision & none & no & no \\
-Backmann et al. (2025) & external (cooperation) & game move & framing, survival & no & neutral base game; no \\
-Cheng et al. (2026); Basu et al. (2026) & external (capability; physician labels) & tool call; hazard flag & none & no & random-steering controls (Basu); no \\
-\addlinespace
-this panel & own per-scenario judgment on four frames & agent's option, letter only, 32 rollouts & five typed families; a twin with the pressure removed; a deliberation arm & yes, three (raw); one same-base pair & pressure-removed twins; a known-gap control on every model \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 The panel was pre-registered before any scenario existed, and every construction or analysis
 decision taken afterwards is a dated amendment in the same document (\Cref{app:prereg}): eleven
 construction decisions before any model data, and six analysis decisions after, four of them
@@ -122,3 +87,39 @@ The argument runs in six steps; each section it cites carries its ladder.
 \Cref{panel} describes the panel and its readouts, \Cref{instruments} the harness, the screen, the ladder
 and the two readouts, \Cref{structure} the families and the generator effect, and \Cref{discussion} what
 the result does and does not say about the action channel.
+
+\begin{table}[bp]
+\centering
+\caption{Where this panel sits among measured judgment--action and knowing--doing gaps in language
+models (citations in the text above). ``Own'' means the reference is the model's own statement. The
+last column is to our reading of each paper: where a paper has something that works as a null or a
+check (a control condition, an instruction-following check), the cell names it, and ``no'' means we found
+nothing that does; chance-level floors are not counted. Strakhov and Claude find that 47.6\%
+of 351 paired choices across nine instruct models reverse; their reversal counts changes in either
+direction from one draw per mode at temperature 1.0, without a pressure manipulation or a re-elicitation
+floor, while the gap rate here counts only moves toward the violating option, by majority over 32
+rollouts, against a matched null, so the two numbers are different quantities. Their action-mode
+reversals were coded more often as less interventionist than as bolder (48.5\% against 36.5\%); here,
+read under the chat template with nothing at stake, the gap leans toward the violating option (0.055), on
+a different axis (norm consistency, not intervention level).}
+\label{tab:priorart}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}p{0.15\linewidth}@{}}
+\toprule
+panel & reference for ``right'' & action readout & pressure manipulation & base model & matched null; positive control \\
+\midrule
+Strakhov and Claude (2025) & own theory-mode choice, same dilemma & agent's tool call, one draw & none & no & no \\
+Huang et al. (2026) & own value profile (questionnaire) & advisor's pick among four options & none & no & no; value-selection check \\
+Shen et al. (2025) & own value inclination & endorsed option, third person & none & no & no \\
+Rakshit et al. (2026) & own articulated values & free text, fast vs slow & deliberation budget & no & no \\
+Gu et al. (2025) & own stated principle & forced binary, third person & prompt format & no & one-factor prompt pairs; no \\
+Hosseini et al. (2026) & own responsibility judgment & allocation decision & none & no & no \\
+Backmann et al. (2025) & external (cooperation) & game move & framing, survival & no & neutral base game; no \\
+Cheng et al. (2026); Basu et al. (2026) & external (capability; physician labels) & tool call; hazard flag & none & no & random-steering controls (Basu); no \\
+\addlinespace
+this panel & own per-scenario judgment on four frames & agent's option, letter only, 32 rollouts & five typed families; a twin with the pressure removed; a deliberation arm & yes, three (raw); one same-base pair & pressure-removed twins; a known-gap control on every model \\
+\bottomrule
+\end{tabular}
+\end{table}
+
