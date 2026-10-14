@@ -1088,3 +1088,9 @@ stays a pre-registered cell (design, both branches and the not-measurable branch
 recommended design, **raw-frame bridge, 8 rollouts, about 7.4 A100-h**. The KDG-A28 sampled dose-0
 ride-along is dropped unless a GPT-OSS pod runs for another reason. Deferred with it (SYNTHESIS, deferred
 queue): the KDG-A29 dose-curve follow-up (~150 scenarios), a second H1 family, and Tulu 3 and Qwen2.5 on H1.
+
+*G-A29 note 2 (author, 2026-10-13).* The deferred separating cell for KDG v2's differential brake sentence:
+a rule-protective twin of each H1 scenario (same writers, family and length; the written rule becomes the
+protective choice), read on Llama-3.1 under the same forced arms, about 3.2 A100-h plus zero-GPU generation
+and rating. It separates "Llama-3.1's deliberation weighs the third party's loss" from "the H1 set differs
+from the panel in construction". Logged in the SYNTHESIS deferred queue.

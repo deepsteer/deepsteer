@@ -60,7 +60,13 @@ reasoning lowers the violating choice there too (\Cref{deliberation}). By the pr
 the pressure-attributable part on Llama-3.1 (branch (a)) and closes the at-rest asymmetry on OLMo-3 (branch
 (b)); the post-hoc ratio reading (P1-A14) is consistent with one proportional cut on both models and does
 not separate a pressure-specific part smaller than about a fifth (OLMo-3) or a quarter (Llama-3.1) of the
-brake. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
+brake. Where following a written approval gate harms an absent third party, deliberation still moves the
+action toward the written rule on all three models we read there; on OLMo-3 and GPT-OSS-20B the effect does
+not detectably depend on whether the rule is the protective choice, and on Llama-3.1 it falls to about a
+seventh of its panel size, consistent with a deliberation that weighs the third party's loss alongside the
+rule (\Cref{deliberation}; added in v2). The two scenario sets differ in more than that relation, so the
+size comparison is between sets; a rule-protective twin of the same scenarios on Llama-3.1 would separate
+them. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
 lets us attribute the change to the content of the reasoning rather than to its length. Persona steering

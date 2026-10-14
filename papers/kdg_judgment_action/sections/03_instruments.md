@@ -16,6 +16,23 @@ models; the only human labels in the panel are the author's blind read of one fa
 (\Cref{structure}). On the pods of record the parse rate was 0.9997 on 10,240 action rollouts
 and 1.000 on 2,880 judgment replies.
 
+**Harness corrections (v2).** Two defects in the panel harness were found after the first version was
+posted and corrected; neither changes a verdict of record. First, the batched forward pass that reads the
+letter distribution did not pass position ids, so a left-padded prompt was read at positions shifted by
+its pad count. Rotary embeddings cancel the shift in exact arithmetic but not at 16-bit precision. With
+positions derived from the attention mask (readout version 2, which matches generation exactly on all four
+panel models), the original readout's per-row error stayed within the 0.05-nat validation bar on OLMo-3,
+Llama-3.1 and Tulu 3 (0.016 to 0.031) and reached 0.094 on Qwen2.5, whose re-read left the excess unchanged
+(paired difference +0.0002, $-0.0001$ to +0.0004); no padding contrast aligned with the twin design on any
+model. Second, the cells that sample (the reasoning traces of the dose arms and free replies) were
+generated one scenario at a time with a single seed, so rollout $k$ of every scenario drew from the same
+random stream, and sampling applied each model's default nucleus on top of the stated temperature. Under a
+two-way bootstrap over scenarios and rollout indices, which treats those shared streams as a second source
+of variance, the intervals of the sampled cells widen by 16 to 47%, the point estimates are unchanged, and
+the dose verdicts hold, except that OLMo-3 against its own truncated filler moves from branch (a) to
+branch (b) (\Cref{deliberation}). The harness now seeds each scenario separately and samples at pure
+temperature.
+
 ## 3.2 Screen and gates
 
 The panel is useful only where pressure engages. A scenario passes the **screen** if its

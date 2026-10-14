@@ -13,7 +13,10 @@ carries it while Ai2's does not. On both recipes that carry it, reasoning about 
 moves the action back toward the model's judgment with or without the pressure (by the pre-registered rule
 it reduces the pressure-attributable part on Llama-3.1 and closes the at-rest asymmetry on OLMo-3; a
 post-hoc ratio reading is consistent with one proportional cut on both, to within about a fifth and a
-quarter of the brake), and naming the norm does about a third of that on OLMo-3 (0.22 to 0.53). The panel, the harness, the calibration record, the pre-registration with its dated amendments,
+quarter of the brake), and naming the norm does about a third of that on OLMo-3 (0.22 to 0.53). On scenarios where following a written approval gate harms an absent third party, deliberation still moves
+the action toward the written rule on all three models we read there: on OLMo-3 and GPT-OSS-20B the effect
+does not detectably depend on whether the rule is the protective choice, and on Llama-3.1 it falls to about
+a seventh of its panel size. The panel, the harness, the calibration record, the pre-registration with its dated amendments,
 and the per-scenario arrays are released so that the next cells, which part of a recipe decides and what
 the action position reads, have a calibrated outcome to be scored against.
 

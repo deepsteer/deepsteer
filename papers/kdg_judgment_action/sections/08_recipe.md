@@ -33,7 +33,9 @@ own screened scenarios, with $n$ and the per-model detection bar, and below it t
 statistic on the twin-screened set (the selection-matched null), since that screen selects on the acting
 mass and so favors a positive value. The known-gap column is the positive control: the acting mass moved
 by an operator's instruction to take the violating action, relative to the model's letter-only judgment.
-Bracketed values are 95\% bootstrap CIs over scenarios.}
+Bracketed values are 95\% bootstrap CIs over scenarios. The GPT-OSS-20B row (added in v2) is read at dose 0:
+its harmony template with an empty, closed analysis turn and the forced letter, no reasoning trace
+\citep{openai2025gptoss}.}
 \label{tab:recipe}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -46,6 +48,8 @@ Llama-3.1-8B-Instruct (Meta) & 0.000 [$-$0.003, 0.003] & 0.028 [0.020, 0.036] & 
 Tulu 3 on Llama-3.1-8B (Ai2), final & (Llama base) & 0.001 [$-$0.007, 0.010] & 0.051 [0.023, 0.079] (52; 0.04); $-$0.004 [$-$0.054, 0.042] & 0.602 [0.568, 0.635] \\
 \quad Tulu 3 SFT / DPO & & $-$0.003 / 0.003 & & \\
 Qwen2.5-7B-Instruct (Alibaba) & 0.011 [0.007, 0.016] & $-$0.008 [$-$0.023, 0.009] & 0.187 [0.116, 0.259] (47; 0.10); 0.083 [$-$0.028, 0.195] & 0.519 [0.477, 0.560] \\
+\midrule
+GPT-OSS-20B (OpenAI), at dose 0 (v2) & (no public base) & $-$0.001 [$-$0.011, 0.008] & 0.052 [0.023, 0.081] (71; 0.04); $-$0.001 [$-$0.050, 0.049] & 0.501 [0.469, 0.534] \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -68,6 +72,13 @@ gaps zoomed, with each lineage's base read in the raw frame (hollow gray diamond
 Meta's Llama-3.1-8B-Instruct and Tulu 3 share a base. 95\% bootstrap CIs over scenarios.}
 \label{fig:recipe}
 \end{figure}
+
+**A reasoning model read without reasoning (v2).** We added OpenAI's GPT-OSS-20B \citep{openai2025gptoss} as
+an instruct-side row, read at dose 0: its own template with an empty, closed reasoning turn, so the letter
+is forced with no trace. No pressure-attributable excess is detectable ($-0.001$, $-0.011$ to 0.008; nothing
+above about 0.013), with its known-gap control at 0.501 on the same readout. That is a statement about
+GPT-OSS without reasoning; reasoning changes its answers (\Cref{deliberation}), so the row says nothing about
+the gap at its default reasoning level.
 
 **The instrument is validated on every model.** Told by its operator to take the violating action, each
 model's acting frame moves toward it by half a unit of probability or more (0.50 to 0.62; every lower
