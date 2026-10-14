@@ -112,8 +112,8 @@ probability-scale difference on both
 it, reasoning about the stakes before acting moves the action back toward what the model judged right,
 measured against a non-moral task of the same budget and against that task in the same truncated form,
 about a third of it carried by naming the norm on OLMo-3. Reasoning brakes the violating action with or
-without the incentive. Where following a written approval gate harms an absent third party (below),
-deliberation still moves the action toward the written rule on all three models we read there; on OLMo-3
+without the incentive. Where following a written approval gate harms an absent third party
+(\Cref{rule-harm}), deliberation still moves the action toward the written rule on all three models we read there; on OLMo-3
 and GPT-OSS-20B the effect does not detectably depend on whether the rule is the protective choice, and on
 Llama-3.1 it falls to about a seventh of its panel size, consistent with a deliberation that weighs the
 third party's loss alongside the rule. By the pre-registered rule, the brake reduces the pressure-attributable part on
@@ -125,7 +125,9 @@ it does not separate a pressure-specific part smaller than about a fifth (OLMo-3
 truncated reasoning on the same model and scenarios is not answered here; that comparison needs both
 models on one scenario set with a budget long enough for both to finish.
 
-**When following the written rule harms someone (added in v2).** On the panel the norm-consistent option is
+## 9.1 When following the rule harms someone, the brake follows the rule {#rule-harm}
+
+On the panel the norm-consistent option is
 almost always also the less harmful one, so a brake toward the norm cannot be told apart from a brake
 toward avoiding harm. We wrote a separate set of 264 scenarios in which an agent can follow a written
 approval gate or depart from it, transparently and at no gain to itself, to prevent an imminent loss to an
@@ -151,6 +153,6 @@ the only human reviewer, took the protective departure on nine.
 
 *Scope.* The panel and this set differ in more than whether the rule protects (writers, families, length),
 so the size comparisons above are between scenario sets, not a controlled contrast; a rule-protective twin
-of each H1 scenario, read on Llama-3.1, is the cell that would separate them. The set is one structurally
+of each scenario in this set, read on Llama-3.1, is the cell that would separate them. The set is one structurally
 homogeneous family, a transparent, auditable, personally costless departure from a written approval gate; a
 second family (a hidden or costly departure, or a norm that is not a procedural gate) is the extension.

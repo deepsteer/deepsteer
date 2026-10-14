@@ -162,39 +162,13 @@
 \maketitle
 
 \begin{abstract}
-Language models increasingly act as agents: they choose and take actions rather than only answer
-questions. An agent that can say an action is wrong and then take it anyway is a different failure
-from one that does not know better, and evaluations of stated values cannot see it. We ask how often
-open models act against their own moral judgment when something pressures them to, what decides
-whether they do, and what reduces it.
+An agent that can say an action is wrong and then take it anyway is a different failure from one that does not know better, and evaluations of stated values cannot see it. We ask how often open models act against their own moral judgment under pressure, and what decides and reduces it.
 
-We build a pre-registered panel of 248 scenarios across five kinds of pressure: finishing a task,
-pushback from a user, a prohibited shortcut, favor to one's own group, and harm to a third party.
-Each scenario is posed twice to the same model, once as the agent choosing what to do and once in
-the third person, asking which option is right. The model's own judgment is the reference, so no
-outside ethics enters the measurement. Every scenario has a twin with the pressure removed, and
-every model gets a positive control in which its operator orders the violating action, so that a
-missing gap can be told apart from an instrument that cannot see one.
+We build a pre-registered panel of 248 scenarios across five kinds of pressure. Each scenario is posed twice to the same model, as the agent choosing what to do and in the third person asking which option is right; the model's own judgment is the reference, so no outside ethics enters the measurement. Every scenario has a twin with the pressure removed, and every model gets a positive control that bounds what the instrument can see.
 
-On OLMo-3-7B-Instruct, the model takes the action it judged wrong on about one in five of the
-scenarios that pressure it, more often than on the same scenarios with the pressure removed.
-Across four instruct models the gap depends on the
-post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it; Tulu 3 shows none, on the whole
-panel (above about 0.01 in probability) or on its own most-pressuring scenarios; and Qwen2.5-7B-Instruct
-shows none on the whole panel (above about 0.02) and is unresolved on its own (0.083, $-0.028$ to 0.195). Meta's recipe and Ai2's Tulu 3
-start from the same Llama-3.1 weights, and only Meta's carries the gap. Reading a chat model outside its chat template
-reverses the sign of its gap with nothing at stake ($-0.038$ against $+0.055$ under the template on
-OLMo-3), a distortion present on two of the three recipes read and not on the third. On both models that carry
-it, asking the model to reason about the stakes before it acts moves its choice back toward its own
-judgment, against a same-length non-moral task, with or without the pressure (on OLMo-3, naming the norm
-at stake does about a third of that), and toward the written rule even where following it harms an absent
-third party, with no detectable change in size on OLMo-3 and OpenAI's GPT-OSS-20B and a drop to about a
-seventh on Llama-3.1.
+On OLMo-3-7B-Instruct, the model takes the action it judged wrong on about one scenario in five, more often than with the pressure removed. Whether the gap appears depends on the post-training recipe: OLMo-3 and Meta's Llama-3.1-8B-Instruct carry it; Tulu 3, Qwen2.5-7B-Instruct and OpenAI's GPT-OSS-20B, read without reasoning, show none within stated detection bars. Meta's recipe and Ai2's Tulu 3 share the same Llama-3.1 weights; only Meta's carries the gap. On both models that carry it, reasoning about the stakes before acting moves the choice back toward the model's own judgment. What that deliberation tracks is the stated rule: where following a written rule harms an absent third party, it still moves OLMo-3 and GPT-OSS-20B toward the rule, not detectably diminished, while Llama-3.1's brake shrinks to about a seventh.
 
-Whether a model acts on its own moral judgment is therefore not settled by pretraining. The same
-pretrained weights can yield a model that carries the gap or one that does not, and a short
-deliberation before acting brakes the violating action with or without the incentive. That makes the gap a measurable target for post-training
-recipes, not a fixed property of the model.
+Whether a model acts on its own moral judgment is therefore not settled by pretraining: the same weights can yield a model that carries the gap or one that does not, and deliberation moves the action toward the stated rule, which protects people only when the rule does. The gap is a measurable target for post-training recipes, not a fixed property of the model.
 \end{abstract}
 
 % =======================================================================

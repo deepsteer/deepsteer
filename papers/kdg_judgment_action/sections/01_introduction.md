@@ -96,43 +96,29 @@ were written half by Claude and half by GPT and cross-labeled by the other; neit
 the model evaluated. The harness that parses actions was calibrated twice on real replies against
 two judges.
 
-The argument runs in five steps, each carrying its ladder.
+The argument runs in six steps; each section it cites carries its ladder.
 
-1. First, the gap is real: on OLMo-3-7B-Instruct, read under its own chat template, the model takes the
-   action it judged wrong on one screened scenario in five by majority vote (0.19, 95% CI 0.13 to 0.28)
-   and two rollouts in five; the excess over the same statistic on pressure-removed twins is 0.10 (0.02
-   to 0.18), and a control in which the system prompt orders the violating action reaches 0.58, so the
-   instrument has room above the measurement. The gap is not reference noise: on a pre-registered
-   log-probability readout the excess holds at every strictness level of a four-frame judgment
-   reference and is largest where all four frames agree (0.08, 0.03 to 0.13). It has no family
-   structure at this power, so the action channel is not organized by the harm content refusal reads.
-2. Second, post-training stages do not enlarge it once each checkpoint is read in its own format: a
-   pre-registered format check shows that reading a chat model outside its chat template reverses the
-   sign of its gap with nothing at stake ($-0.038$ raw against $+0.055$ under the template on OLMo-3), so
-   a raw-frame reading would credit post-training with a caution the model does not have. Within OLMo-3,
-   the pressure-attributable excess (the part of the gap the incentive adds) is present at every
-   templated checkpoint and no post-training stage enlarges it on either readout, the probability scale
-   or per unit of output scale (586 scenarios screened by no model; the RL step's +0.004 sits at its
-   0.005 bar); the base model's raw-frame gap (0.017, 0.012 to 0.022) is descriptive, since that frame
-   misreads templated checkpoints.
-3. Third, whether the gap survives depends on the post-training recipe: with a positive control
-   validating the instrument on each of four instruct models, OLMo-3 and Meta's Llama-3.1-8B-Instruct
-   carry the gap; Tulu 3 shows none on either read (the whole panel, and its own screened scenarios
-   against a selection-matched null); Qwen2.5-7B-Instruct shows none on the whole panel and is
-   unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16); and on the same Llama-3.1 base Meta's recipe carries
-   it while Ai2's Tulu 3 does not.
-4. Fourth, thinking about the stakes before acting moves the action toward the model's judgment: on both
-   recipes that carry the gap, moral deliberation before acting lowers the violating choice against a
-   length-matched non-moral control and the same control in truncated form, with or without the
-   pressure (by the pre-registered rule, it reduces the pressure-attributable part on Llama-3.1 and closes
-   the at-rest asymmetry on OLMo-3; a post-hoc ratio reading is consistent with one proportional cut on
-   both, to within about a fifth and a quarter of the brake); on OLMo-3, where the reasoning is truncated
-   at the budget, about a third of the effect comes from naming the norm.
-5. Fifth, the format distortion follows the recipe too: it appears on both Ai2 recipes and not on
-   Meta's.
+1. **The gap is real.** On OLMo-3-7B-Instruct, read under its own chat template, the model takes the
+   action it judged wrong on one screened scenario in five by majority vote, more than on the
+   pressure-removed twins, and the excess holds at every strictness level of the judgment reference
+   (\Cref{gap}, \Cref{reference}).
+2. **Post-training stages do not enlarge it.** Read in each checkpoint's own format, the
+   pressure-attributable excess is present at every templated OLMo-3 checkpoint and no post-training stage
+   enlarges it on either readout (\Cref{base}).
+3. **The recipe decides.** Across five instruct models, with GPT-OSS-20B read without reasoning, OLMo-3 and
+   Meta's Llama-3.1-8B-Instruct carry the gap while Tulu 3, Qwen2.5-7B-Instruct and GPT-OSS-20B show none
+   on the whole panel within their detection bars, and on the same Llama-3.1 weights Meta's recipe carries
+   it while Ai2's Tulu 3 does not (\Cref{recipe}).
+4. **Deliberation brakes it.** On both models that carry the gap, reasoning about the stakes before acting
+   lowers the violating choice against a length-matched non-moral task, with or without the pressure
+   (\Cref{deliberation}).
+5. **The format distortion follows the recipe.** Reading a chat model outside its chat template reverses
+   the sign of its gap with nothing at stake on both Ai2 recipes and not on Meta's (\Cref{base},
+   \Cref{recipe}).
+6. **The brake tracks the stated rule.** Where following a written approval gate harms an absent third
+   party, deliberation still moves the action toward the rule on OLMo-3, Llama-3.1 and GPT-OSS-20B, with
+   Llama-3.1's brake at about a seventh of its panel size (\Cref{rule-harm}).
 
-\Cref{panel} describes the panel and its readouts; \Cref{instruments} the harness, the screen,
-the ladder, and the two readouts; \Cref{gap} the gap; \Cref{reference} its robustness to the
-judgment reference; \Cref{structure} the families and the generator effect; \Cref{base} the
-post-training stages and the format check; \Cref{recipe} the four recipes; \Cref{deliberation}
-the dose arm; \Cref{discussion} what the result does and does not say about the action channel.
+\Cref{panel} describes the panel and its readouts, \Cref{instruments} the harness, the screen, the ladder
+and the two readouts, \Cref{structure} the families and the generator effect, and \Cref{discussion} what
+the result does and does not say about the action channel.
