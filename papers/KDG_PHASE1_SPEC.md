@@ -782,3 +782,29 @@ filler, natural-anchor subset), KDG-53's secondaries (dose1 − filler, truncati
 KDG-A11, and the pilot-era D_chat claims (KDG-A1, KDG-A3, KDG-A4). Correction scheduled for the paper's
 v2: §9's "(against the truncated filler it resolves, −0.039)" does not resolve under the two-way
 estimator (−0.039 [−0.082, +0.004]); OLMo-3 reads branch (b) on both references.
+
+**P1-A17. KDG v2 external-review revision (author triage, 2026-10-15; pushed before any recompute below).**
+An external review (ChatGPT, against 73630b9) was triaged by the author; the author's decisions override its
+suggestions. Zero GPU throughout. Recomputes licensed here, each reported with its rule:
+1. *Exact bounds.* Stage-step intervals are printed to the first significant digit of each bound, so a
+   positive lower bound is never shown as 0.000 (OLMo-3 RL step, probability scale, +0.0041 [0.0004,
+   0.0078]; Tulu 3 DPO step +0.0059 [0.00004, 0.0119] and +0.031 [0.011, 0.052] per unit of output scale).
+   No recompute; the wording of the stage claim changes (a small increase on the probability scale,
+   unresolved after output-scale normalization on OLMo-3, consistent with sharpening).
+2. *Same-base contrast.* The paired difference in the pressure-attributable excess, Meta's
+   Llama-3.1-8B-Instruct minus Tulu 3 final, on the scenarios both engage among the 586 (letter-only
+   readout, each under its own template), scenario bootstrap 10,000, seed 0.
+3. *Two-way intervals primary.* For the dose arms, the two-way bootstrap (P1-A15) is printed as the interval
+   of record in Figure 8, its CSV and §9's prose; the scenario-only intervals move to a correction table in
+   Appendix B. The audit is bounded to: the norm-salience share, the P1-A14 log-ratio intervals, the
+   judgment-based statistics of §4, and the panel-side arms of the panel-vs-H1 difference CI. Same method
+   (scenarios × rollout indices, one index set across arms, 10,000 draws, seed 0).
+4. *Overlap sensitivity.* One clustered bootstrap that resamples scenario clusters (a primary with its
+   twin; a scenario in both the own-screen and the twin-screen set counted once per draw) for the
+   primary/twin and own-screen/twin-screen contrasts, reported in Appendix B beside the registered CIs.
+5. *H1 descriptives.* The carriers' three-option movement (rule, neutral, departure masses, reasoning vs
+   filler) and GPT-OSS-20B's full transition accounting with exact numerators.
+6. *Audit.* Appendix D's crossing sentence (0.136 on 88 vs 0.100 on 100; 20 up, 1 down) recomputed from the
+   saved masks.
+7. *Record.* A sample-flow table (248 / 397 / 440 / 586; 264), and a per-scenario, per-rollout export of
+   option probabilities (seed index, condition, model, primary/twin link) for the release.
