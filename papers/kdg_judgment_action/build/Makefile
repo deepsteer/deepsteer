@@ -69,7 +69,7 @@ sections: $(SECTION_TEX)
 pdf: sections $(MAIN_PDF)
 
 $(MAIN_PDF): $(MAIN_TEX) $(SECTION_TEX) references.bib
-	-$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN)
+	$(LATEXMK) $(LATEXMK_FLAGS) $(MAIN)
 	@if [ -f $(MAIN_PDF) ]; then \
 	  size=$$(wc -c < $(MAIN_PDF)); \
 	  cp $(MAIN_PDF) ../../kdg_judgment_action.pdf; \

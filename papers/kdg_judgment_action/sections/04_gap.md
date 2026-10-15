@@ -1,9 +1,11 @@
 # 4. The model acts against its own judgment, above its null {#gap}
 
-**In short.** On OLMo-3, the model takes the action it judged wrong on about one screened scenario in five
-(0.19, 0.13 to 0.28), more often than on the same scenarios with the pressure removed (an excess of 0.10,
-0.02 to 0.18), and far below what an explicit operator order produces (0.58); the log-probability readout
-shows the same picture.
+**In short.** On OLMo-3, on the scenarios screened on its own actions (an outcome-selected subset), the
+model takes the action it judged wrong on about one in five (0.19, 0.13 to 0.28), far below what an explicit
+operator order produces (0.58). The paired excess over the same scenarios with the pressure removed is 0.10
+on the binary readout (0.02 to 0.18 over scenarios; 0.00 to 0.19 under the two-way bootstrap of record,
+\Cref{instruments}, so at its edge) and 0.054 (0.021 to 0.086) on the log-probability readout, read before any
+token is sampled, which carries the excess.
 
 \begin{figure}[tbp]
 \centering
@@ -14,7 +16,8 @@ twins, the measurement, and the known-gap band. (b) The continuous readout $g=p_
 floor, the unsigned shift of the judgment mass under paraphrase. On both instruments the
 measurement sits above its null and well below the band; the paired excess over the null is the
 number the paper uses. Bars are 95\% bootstrap CIs over scenarios (nested over rollouts on the
-binary readout); $n$ is the number of scenarios with a defined statistic.}
+binary readout), as registered; on the binary readout the two-way intervals of record are wider and put the
+paired excess's lower bound at zero (\Cref{tab:twoway}); $n$ is the number of scenarios with a defined statistic.}
 \label{fig:ladder}
 \end{figure}
 
@@ -32,11 +35,14 @@ table.}
 \end{figure}
 
 \Cref{fig:ladder} is the paper's calibration figure and \Cref{fig:scatter} its data figure. On
-the screened panel of record (136 scenarios, 126 with a defined majority gap) the binary gap is
-0.19 (95% CI 0.13 to 0.28), the pressure-removed null 0.10 (0.06 to 0.17), and the known-gap
-band 0.58 (0.51 to 0.65). The paired excess of the measurement over the null is 0.10 (0.02 to
-0.18) on 100 scenarios, and the band sits 0.38 (0.24 to 0.48) above the measurement, so the
-observed rate is neither frame change alone nor instruction-following saturation. On the
+the screened panel of record (136 scenarios selected on the model's own actions, 126 with a defined
+majority gap) the binary gap is 0.19 (95% CI 0.13 to 0.28 over scenarios; 0.11 to 0.28 under the
+two-way bootstrap over scenarios and rollout indices), the pressure-removed null 0.10 (0.06 to 0.17;
+two-way 0.04 to 0.18), and the known-gap band 0.58 (0.51 to 0.65; two-way 0.50 to 0.65). The paired
+excess of the measurement over the null is 0.10 on 100 scenarios: 0.02 to 0.18 over scenarios, and 0.00
+to 0.19 under the two-way bootstrap, the estimator of record for sampled cells, whose lower bound sits at
+zero. The band sits 0.38 (0.24 to 0.48; two-way 0.22 to 0.50) above the measurement, so the observed rate
+is neither frame change alone nor instruction-following saturation. On the
 continuous readout the same rungs read 0.12 (null), 0.18 (measurement), and 0.60 (band), with a
 paired excess of 0.054 (0.021 to 0.086) on 136 scenarios; the floor, the unsigned shift of the
 judgment mass under paraphrase, is 0.14. Mass on the violating option is 0.44 when acting and
@@ -50,8 +56,8 @@ named a non-violating option, the model takes the violating action on 0.38 of ro
 majority-rule rate of 0.19 from per-scenario fractions averaging 0.38 is what a mixed panel
 predicts. Across instruments, the binary excess predicted from the continuous values (the net
 fraction of paired scenarios whose acting mass crosses 0.5 between the twin and the primary) is
-0.14 (0.07 to 0.22) on 88 scenarios, against the observed 0.10 (0.03 to 0.17) on the same
-scenarios; 20 scenarios cross upward and one crosses downward. The two instruments agree on sign
+0.14 (0.07 to 0.22) on the 88 paired scenarios with a non-violating reference, against the observed
+0.13 (0.06 to 0.21) on the same 88; 13 scenarios cross upward and one crosses downward. The two instruments agree on sign
 and size, and the majority readout is, as expected, the noisier of the two.
 
 **The floor and the null are one quantity in two units.** The binary floor is an agreement rate
@@ -70,7 +76,7 @@ incentive deleted. \Cref{tab:bias} names the known biases and their directions.
 | known bias | mechanism | direction relative to "gap above null" |
 |---|---|---|
 | reference noise | a scenario the model is undecided about lands non-violating by chance while its action is a coin flip | favors the claim; bounded by the strictness ladder (\Cref{reference}) |
-| the screen selects mixed scenarios | keeping violating fractions in $[0.15, 0.85]$ makes a majority-violating action a near coin flip on many scenarios | favors; removed in the paired null, which runs on the same scenarios' twins |
+| the screen selects mixed scenarios | keeping violating fractions in $[0.15, 0.85]$ makes a majority-violating action a near coin flip on many scenarios | favors; the rate is conditional on an outcome-selected subset (\Cref{instruments}) |
 | nested rollout resampling | resampling 32 rollouts near a 0.5 fraction flips majorities | opposes; widens every binary CI |
 | neutral counts as non-violating | a judgment of "hold" against a violating action counts as a gap | neutral; a real contradiction |
 | deliberation asymmetry | the judgment is read after reasoning, the action immediately | absorbed by the null; visible in the null's size |

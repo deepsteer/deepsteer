@@ -62,21 +62,23 @@ Table: The paired contrasts on the shared subset. {#tab:three-cell-shared}
 
 | slice | $n$ | $E_{\mathrm{base}}$ | $E_{\mathrm{instruct}}$ | $\Delta_E$ |
 |---|---|---|---|---|
-| pilot-written scenarios (prompt 1.0.0) | 45 | 0.013 [0.002, 0.025] | 0.016 [−0.015, 0.049] | −0.003 [−0.032, 0.027] |
-| later-written scenarios (prompt 1.1.0) | 147 | 0.020 [0.011, 0.028] | 0.055 [0.029, 0.083] | −0.036 [−0.063, −0.011] |
-| primaries | 105 | | | −0.030 [−0.060, 0.000] |
-| harm twins | 87 | | | −0.026 [−0.056, 0.002] |
-| F1 | 62 | 0.012 [0.002, 0.022] | 0.035 [0.002, 0.070] | −0.023 [−0.057, 0.009] |
-| F3 | 60 | 0.037 [0.022, 0.052] | 0.066 [0.029, 0.106] | −0.029 [−0.068, 0.006] |
-| F4 | 33 | 0.015 [0.002, 0.030] | 0.073 [0.030, 0.122] | −0.058 [−0.103, −0.015] |
-| F5 | 28 | 0.009 [−0.005, 0.024] | 0.014 [−0.069, 0.089] | −0.005 [−0.080, 0.079] |
+| pilot-written scenarios (prompt 1.0.0) | 45 | 0.013 [0.002, 0.025] | 0.016 [−0.016, 0.048] | −0.003 [−0.032, 0.028] |
+| later-written scenarios (prompt 1.1.0) | 147 | 0.020 [0.011, 0.028] | 0.055 [0.028, 0.083] | −0.036 [−0.062, −0.010] |
+| primaries | 105 | 0.013 [0.004, 0.021] | 0.042 [0.012, 0.073] | −0.030 [−0.060, −0.0001] |
+| harm twins | 87 | 0.025 [0.013, 0.037] | 0.050 [0.021, 0.082] | −0.026 [−0.055, 0.003] |
+| F1 | 62 | 0.012 [0.002, 0.022] | 0.035 [0.002, 0.073] | −0.023 [−0.059, 0.010] |
+| F3 | 60 | 0.037 [0.022, 0.053] | 0.066 [0.028, 0.106] | −0.029 [−0.066, 0.006] |
+| F4 | 33 | 0.015 [0.001, 0.029] | 0.073 [0.029, 0.120] | −0.058 [−0.104, −0.017] |
+| F5 | 28 | 0.009 [−0.005, 0.024] | 0.014 [−0.068, 0.089] | −0.005 [−0.079, 0.076] |
 
 Table: Slices of the shared subset. The pilot's 96 scenarios were re-run in the full-panel pod
 with bit-identical raw-frame values (maximum absolute difference 0.0 over 192 model-scenario
 pairs), so the pilot block is a scenario-subset check, not an independent replication. The
 pilot-written and later-written subsets are not separated from each other at these counts; the
-pooled number is the number of record and the prompt version is recorded as a covariate.
-{#tab:three-cell-slices}
+pooled number is the number of record and the prompt version is recorded as a covariate. Slice intervals
+(v2) are recomputed by a committed script with the pooled row's estimator (10,000 draws, seed 0); v1's slice
+rows came from an uncommitted computation and differ in the third decimal. The primaries' upper bound is
+$-0.0001$: at the edge of zero, not at zero. {#tab:three-cell-slices}
 
 **Exploratory items under the same amendment.** Six pairwise family contrasts on the chat
 continuous gap $g$ over screened scenarios: F1 − F3 0.09 [0.02, 0.16]; F1 − F4 0.03
@@ -85,5 +87,6 @@ continuous gap $g$ over screened scenarios: F1 − F3 0.09 [0.02, 0.16]; F1 − 
 pressure-removed null: F1 0.076 [0.020, 0.129] (43); F3 0.020 [−0.038, 0.079] (40); F4 0.121
 [0.054, 0.195] (26); F5 −0.008 [−0.090, 0.073] (21). The binary excess predicted from the
 per-scenario acting mass (net crossings of 0.5 from twin to primary on paired screened scenarios
-with a non-violating reference) is 0.136 [0.068, 0.216] on 88 scenarios against the observed
-0.100 [0.030, 0.170] on the same 100 scenarios; 20 scenarios cross upward and one downward.
+with a non-violating reference) is 0.136 [0.068, 0.216] on 88 scenarios against the observed 0.125
+[0.057, 0.205] on the same 88; 13 scenarios cross upward and one downward (corrected in v2: v1 printed the
+observed excess and the crossing counts from all 100 paired scenarios, 0.100 and 20 up, one down).

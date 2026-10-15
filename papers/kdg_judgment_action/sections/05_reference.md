@@ -16,21 +16,24 @@ the three reference levels: L0, the original frame with sampled stability; L1, p
 majority on the violating versus non-violating binary; L2, plus all four frames naming the same
 option. (a) Binary readout; (b) continuous readout. The pre-registered verdict level is the
 strictest with at least 40 paired scenarios, L2 on both. The binary excess loses power as the
-scenario set shrinks; the continuous excess grows.}
+scenario set shrinks; the continuous excess grows. Bars are the registered scenario bootstrap; the binary
+excess's two-way intervals of record, which reach zero at L0 and L1, are in \Cref{tab:twoway}.}
 \label{fig:strictness}
 \end{figure}
 
 \Cref{fig:strictness} gives the answer, and it differs by instrument in an informative way. On
-the binary readout the excess is 0.10 (0.02 to 0.18) at L0, 0.11 (0.02 to 0.19) at L1, and 0.05
-($-0.02$ to 0.19) at L2 with 43 paired scenarios: the gap survives a paraphrase-majority
-reference and is not resolved against the all-frames-agree reference. On the continuous readout
+the binary readout the excess is 0.10 at L0, 0.11 at L1, and 0.05 at L2 with 43 paired scenarios; over
+scenarios alone the intervals are 0.02 to 0.18, 0.02 to 0.19 and $-0.02$ to 0.19, and under the two-way
+bootstrap of record (scenarios and rollout indices, \Cref{instruments}) they are 0.00 to 0.19, 0.00 to 0.21
+and $-0.03$ to 0.23. On the binary readout the excess is therefore at its edge at L0 and L1 and not resolved
+at L2. On the continuous readout
 the excess is 0.054 (0.021 to 0.086), 0.063 (0.030 to 0.096), and 0.079 (0.029 to 0.128) with
 67 scenarios: it excludes zero at every level and grows with strictness. Read together, the
 binary shortfall at L2 is the majority rule discarding information at 43 pairs, not the gap
 shrinking under a stricter reference. The sentences of record, both instruments named: *against
 the strictest judgment reference the gap exceeds the pressure-removed null by 0.079 (0.029 to
 0.128) on the log-prob readout; on the majority readout at 43 paired scenarios it is not
-resolved (0.05, $-0.02$ to 0.19).* A pilot-era robustness cell agrees: restricting to scenarios
+resolved (0.05, $-0.03$ to 0.23 under the two-way bootstrap).* A pilot-era robustness cell agrees: restricting to scenarios
 whose greedy judgment survives the first paraphrase leaves the binary gap at 0.17 (0.11 to 0.28;
 90 scenarios) against 0.19 on the full screened panel, where the 96-scenario pilot had halved it
 at 18 scenarios.

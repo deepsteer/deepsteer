@@ -16,7 +16,7 @@ models; the only human labels in the panel are the author's blind read of one fa
 (\Cref{structure}). On the pods of record the parse rate was 0.9997 on 10,240 action rollouts
 and 1.000 on 2,880 judgment replies.
 
-**Harness corrections (v2).** Two defects in the panel harness were found after the first version was
+**Harness corrections.** Two defects in the panel harness were found after the first version was
 posted and corrected; neither changes a verdict of record. First, the batched forward pass that reads the
 letter distribution did not pass position ids, so a left-padded prompt was read at positions shifted by
 its pad count. Rotary embeddings cancel the shift in exact arithmetic but not at 16-bit precision. With
@@ -28,9 +28,12 @@ model. Second, the cells that sample (the reasoning traces of the dose arms and 
 generated one scenario at a time with a single seed, so rollout $k$ of every scenario drew from the same
 random stream, and sampling applied each model's default nucleus on top of the stated temperature. Under a
 two-way bootstrap over scenarios and rollout indices, which treats those shared streams as a second source
-of variance, the intervals of the sampled cells widen by 16 to 47%, the point estimates are unchanged, and
-the dose verdicts hold, except that OLMo-3 against its own truncated filler moves from branch (a) to
-branch (b) (\Cref{deliberation}). The harness now seeds each scenario separately and samples at pure
+of variance, the intervals of the sampled cells widen by 10 to 48%, the point estimates are unchanged, and
+three verdicts move: OLMo-3 against its own truncated filler goes from branch (a) to branch (b)
+(\Cref{deliberation}), and the binary paired excess over the twins at L0 and at L1 now has its lower bound
+at zero (\Cref{gap}, \Cref{reference}); the continuous readout, read before any token is sampled, is
+unaffected. Two-way intervals are the intervals of record for sampled cells in v2; the scenario-only
+intervals they replace are listed in \Cref{app:calibration}. The harness now seeds each scenario separately and samples at pure
 temperature.
 
 ## 3.2 Screen and gates
@@ -47,7 +50,10 @@ at least 60 screened primaries across at least three gate families, a family who
 excludes zero, harness agreement of at least 0.95, and no family whose result reverses across
 generator. The screen's binomial properties at 32 rollouts (a true 0.10 scenario lands in the
 mixed band one time in five) are why the panel's unit of inference is the scenario-level
-bootstrap, not the screen label. On OLMo-3 the screened set is 136 scenarios on this sampled-rollout
+bootstrap, not the screen label. The screen selects on the model's own actions, so every rate on the
+screened set is a rate on an outcome-selected subset, not a prevalence on the panel; the claims that do not
+depend on that selection are the paired excess over the same scenarios' twins and the whole-panel readouts
+of \Cref{recipe}. On OLMo-3 the screened set is 136 scenarios on this sampled-rollout
 screen, 110 on the letter-only screen of \Cref{recipe}, and 130 in the dose arm (the 136 less the six
 multi-turn F2 scenarios, which have no dose arm); each table names which.
 
@@ -97,3 +103,17 @@ table; the continuous one is reported beside it, instrument named, and no senten
 "established" without saying which instrument. In the raw frame, where both models are read by
 log-probability, the continuous statistic is the natural one and the argmax majority is its
 binary shadow.
+
+## 3.6 Estimands
+
+\Cref{tab:estimands} states each quantity the paper reports, per scenario, with how ties, neutral options and
+unstable judgments are handled.
+
+| estimand | per scenario | ties, neutral options, unstable judgments | reported as |
+|-------|------------|------------|----------|
+| binary directional gap | 1 if the stable judgment names a non-violating option and most of the 32 action rollouts take the violating one; 0 if the action majority matches the judgment | a neutral option counts as non-violating on both sides; undefined if the judgment is unstable (the greedy option does not hold a majority of the 8 sampled judgments), the action is unparsed, the violating fraction is exactly 0.5, or the action is non-violating against a violating judgment | the mean over defined scenarios (a rate on the screened, outcome-selected subset), and its paired excess over the same scenarios' twins |
+| continuous gap $g$ | $p_D - p_J$: the violating option's renormalized letter mass at the action position (32 order permutations) minus the same at the judgment position (four frames) | read before any token is sampled, so no rollout noise enters; neutral options carry their own mass and are not violating | the mean over scenarios, and its paired excess over the twins |
+| pressure-attributable excess $E$ | $(p_D - p_J) - (p_{D,\mathrm{twin}} - p_{J,\mathrm{twin}})$, letter-only readout under each model's template, eight option orders | scenarios kept when the option mass is at least 0.5 in all four cells | the mean over the 586 scenarios screened by no model, or over a named screened set |
+
+Table: The three estimands. Action and judgment are always closed-menu letter choices, posed in separate
+calls. {#tab:estimands}

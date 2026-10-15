@@ -18,15 +18,17 @@ that structure, and it is cheap to test.
 
 **Where the gap comes from.** On OLMo-3 the base model already acts more violating than it judges in
 the only frame a base model has, and under its own template the aligned model does the same at rest
-and under pressure; no post-training stage enlarges the pressure-attributable part on either readout,
-the probability scale or per unit of output scale (586 scenarios screened by no model; the RL step's
-+0.004 sits at its 0.005 bar, and per unit of scale it is +0.005, $-0.016$ to 0.026). Across
-lineages the picture is not one of a pretraining property that survives every alignment. Two of four
-instruct models carry the gap; Tulu 3 shows none on either read, and Qwen2.5 shows none on the whole
+and under pressure; later stages change the pressure-attributable part little: the DPO step does not
+enlarge it, and the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078; 586
+scenarios screened by no model) that does not resolve per unit of output scale (+0.005, $-0.016$ to 0.026),
+consistent with output sharpening. Across
+lineages the picture is not one of a pretraining property that survives every alignment. Two of five
+instruct models carry the gap; Tulu 3 shows none on either read, GPT-OSS-20B without reasoning shows
+none on either read, and Qwen2.5 shows none on the whole
 panel and is unresolved on its own screened scenarios (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16); the instrument is validated on each; and on the same
 Llama-3.1 base Meta's recipe carries it while Ai2's Tulu 3 does not (\Cref{recipe}). The defensible
 account is that post-training recipes differ in whether the aligned model acts on the incentive against
-its own judgment, and that within a recipe that carries the gap, later stages leave its size alone.
+its own judgment, and that within a recipe that carries the gap, later stages change its size little.
 Combined with our earlier finding that the refusal gate is a thin post-training construction over a
 broad pretrained moral representation [@reblitzrichardson2026refusal], the action decision looks like
 the refusal decision in one respect: both are shaped by post-training choices, and neither simply
@@ -55,11 +57,11 @@ it. That is consistent with the Schmied et al. [-@schmied2025greedy] observation
 act greedily on the goal in front of them. The dose arm shows the action is not fixed once the incentive
 is read: on both recipes that carry the gap, reasoning about the stakes before acting moves the action
 toward the model's own judgment against matched non-moral controls (\Cref{deliberation}), and naming the
-norm alone does about a third of that on OLMo-3 (0.22 to 0.53). Run on the pressure-removed twins, the same
+norm alone does about a third of that on OLMo-3 (0.18 to 0.64). Run on the pressure-removed twins, the same
 reasoning lowers the violating choice there too (\Cref{deliberation}). By the pre-registered rule it reduces
 the pressure-attributable part on Llama-3.1 (branch (a)) and closes the at-rest asymmetry on OLMo-3 (branch
 (b)); the post-hoc ratio reading (P1-A14) is consistent with one proportional cut on both models and does
-not separate a pressure-specific part smaller than about a fifth (OLMo-3) or a quarter (Llama-3.1) of the
+not separate a pressure-specific part smaller than about a third (OLMo-3) or two-fifths (Llama-3.1) of the
 brake. This differs from Rakshit et al.'s [-@rakshit2026pseudo] finding
 that reasoning before acting does not by itself align action with stated values, in a different
 construct (value profiles, free-text actions) and without a filler control; the filler control is what
@@ -67,14 +69,16 @@ lets us attribute the change to the content of the reasoning rather than to its 
 [@chen2025persona] remains the second lever the design anticipates; with the raw frame's at-rest caution
 shown to be a format effect, its target is the pressure-attributable excess itself.
 
-**What deliberation tracks is the rule, not the harm (v2).** On the panel, moving the action toward the
+**What deliberation tracks is the rule, not the harm.** On the panel, moving the action toward the
 model's judgment and moving it toward the stated norm coincide: the model judges the norm-consistent option
 right, and that option is almost always also the less harmful one. The scenario set of \Cref{rule-harm} is
 where the two separate:
 there, following a written approval gate is rated the less protective choice, by two raters from different
-providers and in the author's spot check. Deliberation still moves the action toward the rule on all three
-models we read there; on OLMo-3 and GPT-OSS-20B the effect does not detectably depend on whether the rule
-is the protective choice, and on Llama-3.1 it falls to about a seventh of its panel size, consistent with a
+providers and in the author's spot check. Deliberation still moves the action off the protective departure on
+all three models we read there: onto the rule on OLMo-3 and GPT-OSS-20B, and on Llama-3.1 onto contacting
+the approver, which keeps the rule without preventing the loss, while its mass on the rule-following act
+falls slightly. On OLMo-3 and GPT-OSS-20B the effect does not detectably depend on whether the rule is the
+protective choice, and on Llama-3.1 the brake falls to about a seventh of its panel size, consistent with a
 deliberation that weighs the third party's loss alongside the rule. The two scenario
 sets differ in more than that relation, so the size comparison is between sets; a rule-protective twin of
 the same scenarios on Llama-3.1 would separate them.
@@ -104,7 +108,7 @@ next panel's scenarios to be decisive by construction.
 **Generators are a covariate, not a nuisance.** Writing half the panel with each of two models
 and cross-labeling caught three scenarios with inverted labels, produced one family whose rate
 depended on its author, and, on the pooled panel, a generator difference of about 0.05 to 0.08
-in the same direction on both instruments. The blind read found no construction asymmetry, so
-the difference is register: the same pressure, written in one model's idiom, engages the acting
-model somewhat more. Any single-generator panel of this kind carries that effect invisibly, and
+in the same direction on both instruments. The blind read found no construction asymmetry; a
+difference in register, the same pressure written in one model's idiom engaging the acting model somewhat
+more, would produce it, but register was not manipulated and the cause is untested. Any single-generator panel of this kind carries that effect invisibly, and
 so does any panel whose generator is also the model evaluated.

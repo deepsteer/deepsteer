@@ -632,6 +632,9 @@ the prompt version is recorded as a covariate.
 - **E2, second derivation across instruments:** binary excess predicted from per-scenario p_D
   crossings of 0.5 (twin → primary, net) 0.136 [0.068, 0.216] (n 88) vs observed binary paired
   excess 0.100 [0.030, 0.170] on the same 100 scenarios; 20 up-crossings, 1 down. Agree.
+  *Corrected 2026-10-15 (P1-A17 item 8, §44): the predicted and observed values above sit on different sets.
+  On the same 88: observed 0.125 [0.057, 0.205], 13 up, 1 down; on all 100: observed 0.100, 20 up, 1 down.
+  Agree either way.*
 - **E3, A13 decomposition (chat continuous):** L0 p_D 0.436 / p_J 0.260, twin 0.282 / 0.160; L1
   0.426 / 0.244, twin 0.276 / 0.156; L2 0.413 / 0.182, twin 0.260 / 0.108. Tightening the
   reference lowers p_J (more decisive non-violating judgments) while p_D barely moves; the
@@ -2641,6 +2644,9 @@ the departure, against OLMo-3's 34%.
 Across the program on H1, then: GPT-OSS-20B's default reasoning (§40, 42 vs 2), OLMo-3's forced reasoning
 (−0.076) and Llama-3.1's (−0.050) all move toward the written gate, with OLMo-3's brake as large as on the
 panel and Llama-3.1's much smaller.
+*Scoped 2026-10-15 (§44): "toward the written gate" means off the protective departure. On the three
+options, OLMo-3's mass goes to the rule-following option (+0.123) and Llama-3.1's to the neutral option
+(+0.071), with its rule-following mass falling (−0.022).*
 
 **Referee pass.** (1) *"Llama-3.1's −0.050 is a tenth of a probability unit; calling it rule compliance
 oversells it."* The branch is the direction the pre-registered rule reads (the CI lies below 0, detectable
@@ -2651,3 +2657,62 @@ the same scenario-set difference applies to both carriers, which differ sharply,
 alone does not produce OLMo-3's equality and Llama-3.1's drop. (3) *"Llama-3.1 at 0.85 protective mass has
 little room."* It has 0.85 of room toward the rule and moves 0.05; OLMo-3 at 0.34 moves 0.08. Room does
 not explain the order.
+
+## 44. External-review revision of the paper's v2 (P1-A17; zero GPU; 2026-10-15)
+
+Author triage of an external review of commit 73630b9; P1-A17 pushed (aefb7de) before any recompute below.
+No GPU, no paid job. Scripts: `analyze_v2_dose_twoway.py`, `analyze_gap_twoway.py`,
+`analyze_v2_overlap_cluster.py`, `analyze_h1_three_option.py`, `analyze_v2_crossing_audit.py`,
+`analyze_v2_slice_check.py`, `analyze_meta_vs_tulu_paired.py`, `export_rollout_option_probs.py`. Every scenario-only interval re-derived below reproduces the
+printed one, except the Appendix D slices (last row).
+
+| item | quantity | before | now | verdict |
+|---|---|---|---|---|
+| 1 | OLMo-3 RL step, E on the 586, probability scale | "does not enlarge" | +0.004 [0.0004, 0.0078] | **changes**: a small increase, unresolved per unit of output scale (+0.005 [−0.016, 0.026]); consistent with sharpening |
+| 1 | Tulu 3 DPO step | "does not enlarge" | +0.006 [0.00004, 0.012]; +0.031 [0.011, 0.052] per unit of scale | **changes**: a small increase on both readouts that the final model does not keep |
+| 2 | Meta − Tulu 3 excess, paired on the 586 | not computed | +0.027 [0.017, 0.037]; MDE 0.015 | new; strengthens the same-base contrast |
+| 3 | binary paired excess, L0 / L1 (two-way) | [0.02, 0.18] / [0.02, 0.19] | [0.00, 0.19] / [0.00, 0.21] | **changes**: lower bound at zero; the log-prob excess carries the claim |
+| 3 | ratio-reading bars (2.8 SE on L) | 0.21 / 0.30 | 0.31 / 0.41 | **changes**: "about a fifth / a quarter" becomes "about a third / two-fifths" |
+| 3 | norm-salience share | 0.32 [0.22, 0.53] | 0.32 [0.18, 0.64] | mixed under both |
+| 3 | panel − rule-harms brake, OLMo-3 / Llama | [−0.042, 0.037] / [−0.340, −0.260] | [−0.047, 0.045] / [−0.349, −0.254] | unchanged |
+| 3 | clustered overlap sensitivity (five models) and band − measurement | registered | clustered | unchanged (every E_sel verdict; band − measurement [0.27, 0.49]) |
+| 5–6 | rule-harms set, three options | binary "toward the rule" | OLMo-3 rule +0.123 [0.101, 0.145]; Llama neutral +0.071 [0.057, 0.086], rule −0.022 [−0.036, −0.008] | **changes for Llama-3.1**: off the departure into contacting the approver, not toward the rule-following act |
+| 8 | Appendix D E2 crossing | 0.136 (88) vs 0.100 (100); 20 up | 0.136 vs 0.125 on the same 88; 13 up, 1 down | corrected; agree |
+| 8 | Appendix D slices | uncommitted computation | committed script, 10,000 draws, seed 0 | third-decimal changes; primaries Δ_E −0.030 [−0.060, −0.0001], at the edge |
+
+GPT-OSS-20B transition accounting on the rule-harms set (258 with an identifiable reasoned action): 124
+same, 44 direct (42 toward the rule), 90 lateral (departure → neutral 44, neutral → departure 9, neutral →
+rule 27, rule → neutral 10); six without identity. Departure 140/258 → 65/258; departure or explicit
+deferral 176 → 110 (§40).
+
+**Found while doing this, outside the nine items.** The paper's Appendix E F1 example ("Nadia … Bellview
+County Hospital … 81 percent") is in no scenario file; it was in v1 as posted. Replaced with F1-A-00 quoted
+verbatim; F5-A-00 was correct but cut short without a mark and is now quoted in full. Process ledger entry
+in ANOMALIES.
+
+**Per-rollout release (item 7).** `export_rollout_option_probs.py` wrote 791,461 rows (20.9 MB gzipped,
+SHA-256 f7384873…) from every pod of record; 19,200 rows from the Phase 2 F6–F8 pilot (p2a), whose
+scenarios are not in this paper's files, are skipped and counted. Second derivation: the table reproduces
+the carriers' rule-harms Δ_P (−0.0757, −0.0495). Release location is the author's decision (repository
+policy: no bundled datasets).
+
+Positive voice: **on OLMo-3 the model acts against its own judgment on one in five of the scenarios screened
+on its own actions, and the excess over the pressure-removed twins is carried by the log-probability readout
+(0.054 [0.021, 0.086]) at every strictness level; the gap follows the post-training recipe across five
+instruct models, with Meta's recipe above Tulu 3's by 0.027 [0.017, 0.037] on the same weights; reasoning
+about the stakes brakes the violating action on both carriers; and where the written rule harms an absent
+third party, deliberation still moves every model we read off the protective departure, onto the rule on
+OLMo-3 and GPT-OSS-20B and onto contacting the approver on Llama-3.1.**
+
+**Referee pass.** (1) *"With the binary excess at zero under the estimator you now call of record, the
+headline 'more often than with the pressure removed' is unsupported."* The binary interval's lower bound is
+at zero, not below (2.5th percentile exactly 0; 1.8% of draws below 0), and the claim now names the readout
+that carries it: the log-probability excess, read before any token is sampled, is 0.054 [0.021, 0.086] and
+grows with reference strictness. The abstract keeps the phrase; the body states which instrument holds it.
+(2) *"Llama-3.1's move to the neutral option is not 'following the rule'."* The neutral option keeps the gate
+(it contacts the approver) and does not prevent the loss, so the brake still moves Llama-3.1 off protection;
+what changed is that it does not move it to the harmful act, and every sentence now says which. The §9.1
+heading "the brake follows the rule" holds in the keeps-the-gate sense; author to confirm. (3) *"A seventh of
+the panel brake on a different scenario set is not a dependence on whether the rule protects."* Conceded as
+before: the between-set caveat now sits at the first mention in the body, and the separating cell (a
+rule-protective twin of the set on Llama-3.1) is in the deferred queue.

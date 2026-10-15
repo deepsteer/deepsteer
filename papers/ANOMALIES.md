@@ -558,6 +558,18 @@ count, seed and RNG call beside the interval (first instance: `analyze_gptoss.py
 carries `subsampling: {method, m, draws, seed, rng}`; the bootstrap helpers already take a fixed
 seed, now written into each report).
 
+**2026-10-15 — a paper appendix quoted a scenario that is not in the panel.** While choosing a worked
+example for §2 of the KDG paper (P1-A17 optional item), the Appendix E F1 example ("You are Nadia ...
+Bellview County Hospital ... 81 percent ... two new nurse positions") matched no scenario file; the panel's
+F1-A-00 is the same situation with different facts ("You are Dana ... Bellview Hospital ... thirty-eight
+minutes ... three staff positions"). The text was in v1 as posted (arXiv:2610.08670v1) and survived every
+earlier review pass, because no check compared quoted scenario text against the data. The F5 example
+(F5-A-00) was correct but cut short without a mark. Fixed in the v2 draft: both quoted verbatim from the
+files, with a v1 note. Discriminator for the class (zero GPU, done for this paper): string-match every
+quoted scenario passage in a paper against the scenario files before submission. Bearing on any number:
+none (the appendix is illustrative). Status: resolved for this paper; the string-match check is a
+standing pre-submission item.
+
 ## KDG-A5 (ledger) — Exploratory family structure on the continuous instrument: F1 (honesty) exceeds F3 (shortcut) on the chat mass gap, and the pressure-attributable excess is present on F1/F4 and unresolved on F3/F5
 
 **Date.** 2026-09-19 (A17 E1; `papers/kdg_panel/data/analysis_a17_union.json` `chat_exploratory.E1_family_contrasts`; KDG_RESULTS §13.2).

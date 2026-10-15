@@ -1,5 +1,24 @@
 # Appendix C. Pilot, full panel, and union: the numbers by pod {#app:pods}
 
+**Sample flow (v2).** \Cref{tab:flow} gives every scenario set the paper reads and how it is formed. Each row
+carries its own pressure-removed twin as a second pair of frames, so pressure-removed twins are not counted
+as rows; "harm twins" are separate rows that vary the level of harm.
+
+| set | scenarios | formed as | read in |
+|------------|------|-------------------|-------------|
+| pilot pod | 96 | 60 primaries + 36 harm twins | \Cref{tab:pods}, first column |
+| full-panel pod | 320 | the pilot's 96 + 140 primaries + 84 harm twins | \Cref{tab:pods}, second column |
+| round 2 | 120 | 48 primaries + 32 harm twins + 40 swapped F4 scenarios | \Cref{tab:pods} union; \Cref{tab:swap} |
+| union of the panel pods | 440 | 248 primaries + 152 harm twins + 40 swaps | \Cref{gap}, \Cref{reference}, \Cref{structure} |
+| analysis set | 397 | 440 less the 40 swaps and 3 flagged F4 harm twins | \Cref{base}, \Cref{app:three-cell} |
+| gate-family primaries | 208 | 248 less the 40 F2 primaries | the screen (\Cref{instruments}): 74 pass |
+| round 3 | 192 | 112 primaries + 80 harm twins (3 flagged F4 harm twins) | the 586 only |
+| letter-only union | 586 | 632 rows less 40 swaps and 6 flagged: 360 primaries + 226 harm twins | \Cref{base}, \Cref{recipe}, GPT-OSS-20B |
+| rule-harms set (separate) | 264 | 270 generated (135 per generator), kept by both raters | \Cref{rule-harm} |
+
+Table: Sample flow from the generated rows to each analysis set. Screened subsets (136, 130, 110 on OLMo-3;
+each model's own screen in \Cref{tab:recipe}) are drawn from these sets and named where used. {#tab:flow}
+
 | quantity | pilot (96) | full panel (320) | union (440) |
 |---|---|---|---|
 | gate-family primaries screened | 19/48 | 55/160 | 74/208 |
@@ -14,7 +33,8 @@
 | L2 excess (continuous) | not run | not run | 0.079 [0.029, 0.128] (67) |
 | raw-frame argmax gap, base vs instruct (shared) | 0.10 vs 0.08 (50) | 0.136 vs 0.089 (169) | 0.145 vs 0.094 (235) |
 
-Table: Numbers of record by pod. Bracketed values are 95% bootstrap CIs; parenthesized values
+Table: Numbers of record by pod. Bracketed values are 95% bootstrap CIs over scenarios, as printed in v1 (two-way
+intervals for the union column are in \Cref{tab:twoway}); parenthesized values
 the number of scenarios with a defined statistic. The pilot's paraphrase-stable robustness cell
 (0.11 at 18 scenarios) did not replicate (0.17 at 90). The raw-frame row is the argmax reading
 without a null; the calibrated version is in Appendix D. {#tab:pods}

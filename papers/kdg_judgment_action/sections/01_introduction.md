@@ -15,9 +15,10 @@ and did alignment create it?
 
 The quantity is a **judgment–action gap**: per scenario, the divergence between what the model
 judges to be right, elicited in a third-person frame, and what it does, elicited in a matched
-agent frame with a discrete, logged action. The reference for "right" is the model's own stated
-judgment, not an external label. A gap means the model contradicted itself, acting against what
-it had just said was right, so the measurement does not depend on whose ethics are correct. The
+agent frame with a discrete, logged action. Both are closed-menu choices among the same lettered
+options, posed in separate calls. The model's own judgment is the reference; the scenario's
+construction fixes which option counts as the violation. A gap means the model contradicted itself,
+acting against what it had said was right. The
 construct is old in moral psychology, where the relation between moral judgment and moral action
 has been the central empirical problem since Blasi's review [-@blasi1980bridging], and it has a
 recent history in the language-model literature under the name *knowing–doing gap*
@@ -48,8 +49,10 @@ The panel was pre-registered before any scenario existed, and every construction
 decision taken afterwards is a dated amendment in the same document (\Cref{app:prereg}): eleven
 construction decisions before any model data, and six analysis decisions after, four of them
 committed before the computation they license and two post-hoc forks that carry verdicts under
-both choices. Fourteen further amendments govern the Phase 1 sessions: three are post-hoc forks, one is a post-hoc
-addition (P1-A13), and four are post-review additions (P1-A11 to P1-A14). We report three pods on
+both choices. Seventeen further amendments govern the Phase 1 sessions: four are post-hoc forks, one is a post-hoc
+addition (P1-A13), four are post-review additions (P1-A11 to P1-A14), and three record corrections after
+the first version (P1-A15 to P1-A17); GPT-OSS-20B
+runs under a third specification with 29 (\Cref{app:prereg}). We report three pods on
 OLMo-3-7B-Instruct with its base checkpoint [@olmo3_2025]: a 96-scenario pilot that tested the
 instrument, a 320-scenario full panel, and a 120-scenario second round that lifted the screened count
 past the pre-registered gate. Three Phase 1 sessions then read the OLMo-3 post-training stages under
@@ -64,12 +67,13 @@ two judges.
 The argument runs in six steps; each section it cites carries its ladder.
 
 1. **The gap is real.** On OLMo-3-7B-Instruct, read under its own chat template, the model takes the
-   action it judged wrong on one screened scenario in five by majority vote, more than on the
-   pressure-removed twins, and the excess holds at every strictness level of the judgment reference
-   (\Cref{gap}, \Cref{reference}).
-2. **Post-training stages do not enlarge it.** Read in each checkpoint's own format, the
-   pressure-attributable excess is present at every templated OLMo-3 checkpoint and no post-training stage
-   enlarges it on either readout (\Cref{base}).
+   action it judged wrong on one in five of the scenarios screened on its own actions, more than on the
+   pressure-removed twins, and on the log-probability readout the excess holds at every strictness level
+   of the judgment reference (\Cref{gap}, \Cref{reference}).
+2. **Later post-training stages change it little.** Read in each checkpoint's own format, the excess is
+   present after SFT; the DPO step does not enlarge it, and the RL step adds a small increase on the
+   probability scale that does not resolve after output-scale normalization, consistent with sharpening
+   (\Cref{base}).
 3. **The recipe decides.** Across five instruct models, with GPT-OSS-20B read without reasoning, OLMo-3 and
    Meta's Llama-3.1-8B-Instruct carry the gap while Tulu 3, Qwen2.5-7B-Instruct and GPT-OSS-20B show none
    on the whole panel within their detection bars, and on the same Llama-3.1 weights Meta's recipe carries
@@ -81,8 +85,9 @@ The argument runs in six steps; each section it cites carries its ladder.
    the sign of its gap with nothing at stake on both Ai2 recipes and not on Meta's (\Cref{base},
    \Cref{recipe}).
 6. **The brake tracks the stated rule.** Where following a written approval gate harms an absent third
-   party, deliberation still moves the action toward the rule on OLMo-3, Llama-3.1 and GPT-OSS-20B, with
-   Llama-3.1's brake at about a seventh of its panel size (\Cref{rule-harm}).
+   party, deliberation still moves the action off the protective departure on OLMo-3, Llama-3.1 and
+   GPT-OSS-20B: onto the rule on OLMo-3 and GPT-OSS-20B, and onto contacting the approver on Llama-3.1, whose
+   brake is about a seventh of its panel size, a comparison between two scenario sets (\Cref{rule-harm}).
 
 \Cref{panel} describes the panel and its readouts, \Cref{instruments} the harness, the screen, the ladder
 and the two readouts, \Cref{structure} the families and the generator effect, and \Cref{discussion} what

@@ -4,8 +4,9 @@
 only be read as plain text completion, the part the incentive adds is 0.017 (0.012 to 0.022); we report
 this as a description, because that format misreads chat models. In the aligned model, read in its own
 chat format on all 586 scenarios, the gap is already present after supervised fine-tuning (0.015, 0.007
-to 0.023), and no later stage makes it detectably larger (0.014 after DPO and 0.018 after RL; detection
-bars of 0.008 and 0.005 for the two steps, with the RL step's +0.004 at its bar; \Cref{fig:stages}), while the same test
+to 0.023). The DPO step does not enlarge it, and the RL step adds a small increase on the probability scale
+(+0.004, 0.0004 to 0.0078) that does not resolve after normalizing by each checkpoint's output scale (+0.005,
+$-0.016$ to 0.026), consistent with the output sharpening RL also brings (\Cref{fig:stages}), while the same test
 registers a large gap on the final model when its operator orders the violation (0.497, 0.468 to 0.525).
 What post-training does change is the model's default lean when it acts: preference optimization nudges
 it toward the advantageous option even when nothing is at stake (+0.011, 0.007 to 0.016).
@@ -28,8 +29,9 @@ That second readout changed what this section can claim, and we report the chang
 \caption{\textbf{OLMo-3 across post-training, each checkpoint read in its own chat template.} (a) The
 pressure-attributable excess $E$ after SFT, after DPO and after RL (the final model), on the 586 scenarios
 screened by no model (filled; the number of record for stage claims) and on the 136 scenarios screened on
-the final model's actions (hollow); the gap is present at every stage and no later stage makes it
-detectably larger (step detection bars 0.008 for DPO and 0.005 for RL on the 586). The base model, which
+the final model's actions (hollow); the gap is present at every stage; the DPO step does not enlarge it, and
+the RL step adds a small increase on the probability scale (+0.004, 0.0004 to 0.0078; bar 0.005) that does
+not resolve per unit of output scale. The base model, which
 has no chat template, is shown in the raw completion frame (gray diamond) as a description only: that
 frame misreads templated checkpoints, so the base value is not a validated before-and-after comparison.
 (b) On the final checkpoint, the positive control (red: the acting frame's move when the operator orders
@@ -119,18 +121,20 @@ at rest grows at the DPO step: 0.021 after SFT, 0.033 after DPO and 0.039 after 
 (0.007 to 0.016), survives division by each checkpoint's output scale (+0.058, 0.027 to 0.090), so it is
 not the sharpening that post-training also brings. The RL step is positive on the probability scale
 (+0.006, 0.003 to 0.009) but not per unit of output scale (+0.018, $-0.001$ to 0.037), and reads as that
-sharpening. No step enlarges the pressure-attributable part on either readout (positive control on the
+sharpening. The DPO step does not enlarge the pressure-attributable part on either readout; the RL step
+enlarges it slightly on the probability scale and not per unit of output scale (positive control on the
 final checkpoint: known-gap band 0.497, 0.468 to 0.525; the cell was not run on the SFT and DPO
 checkpoints). On the probability
 scale the DPO step does not move it ($-0.001$, $-0.006$ to 0.005; bar 0.008), and per unit of output
 scale it falls ($-0.039$, $-0.069$ to $-0.008$), because DPO sharpens the output without adding pull.
-The RL step reads +0.004 on the probability scale (0.000 to 0.008; bar 0.005), at the bar, with every
-known bias favoring a positive step and the same sign as the screened set; on the primary
+The RL step reads +0.004 on the probability scale (0.0004 to 0.0078; bar 0.005): the interval excludes zero
+and the point sits below its detection bar, with every known bias favoring a positive step and the same sign
+as the screened set; on the primary
 per-unit-of-output-scale readout it is +0.005 ($-0.016$ to 0.026; bar 0.030). Log-odds also excludes
 zero, so baseline compression is ruled out and the remaining rival is the output sharpening the RL step
 also brings. Preference optimization makes the model, placed as the actor, lean further toward the
-locally advantageous option than it does as a judge, without enlarging how much the incentive adds on
-either readout. That is the opposite direction from the raw frame's
+locally advantageous option than it does as a judge; how much the incentive adds grows at most slightly, at
+the RL step on the probability scale only. That is the opposite direction from the raw frame's
 at-rest reading, and it replicates on a second DPO recipe (\Cref{recipe}); which part of the DPO stage
 produces it is left to a recipe ablation on one base.
 

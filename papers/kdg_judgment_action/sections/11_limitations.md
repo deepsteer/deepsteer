@@ -1,7 +1,8 @@
 # 11. Limitations {#limitations}
 
-**Four models, one panel.** The panel was written and screened on OLMo-3, and each model finds its own
-pressuring scenarios (\Cref{recipe}). All four are 7--8B models and scale is not varied; nothing here
+**Five models, one panel.** The panel was written and screened on OLMo-3, and each model finds its own
+pressuring scenarios (\Cref{recipe}). Four are 7--8B models and GPT-OSS-20B is a 21B-parameter
+mixture-of-experts model read only without its reasoning on the recipe comparison; scale is not varied; nothing here
 says what holds at larger sizes. Whether the pressures in this panel are the ones that matter for the
 recipes that show no gap is a construct question the positive control does not answer. The positive
 control shows each readout moves when the action changes; the detection bar for a small gap comes from
@@ -9,7 +10,7 @@ each null's own interval (about 0.01 on Tulu 3, 0.02 on Qwen2.5). On its own scr
 than the same screen produces on its pressure-removed twins; Qwen2.5's is unresolved against that null
 (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16). Resolving it needs more scenarios that engage Qwen2.5: at its measured screen rate (0.08), about
 1,700 new scenarios would bring its screened set to about 185, where an excess of 0.083 would clear its
-bar, plus about one A100-hour of letter-only forward passes (KDG-A19). The base cells are raw-frame readings,
+bar, plus about one A100-hour of letter-only forward passes. The base cells are raw-frame readings,
 descriptive by the bridge rule, so the same-base contrast says that the recipe decides whether the aligned
 model carries the gap, not what either recipe did to the base. A recipe is a bundle of data, method and
 template; which part decides is an ablation on one base, not a question this panel can answer. Huang et
@@ -50,10 +51,12 @@ on the scenarios it declined to engage.
 of degree by three zero-GPU legs and an amended reversal clause; the swap cell that would have
 separated construction from register cleanly was too small, and the amendment is a post-hoc
 change with both verdicts recorded. Of the seventeen panel amendments, eleven precede any model data,
-four were committed before the computation they license, and two are post-hoc forks. Of the fourteen
-Phase 1 amendments, six precede the data they govern, four precede the computation they license, three
-are post-hoc forks (P1-A1, P1-A5, P1-A14), and one is a post-hoc addition (P1-A13, written after P1-A11's result and
-pushed before its own computation). A reader may prefer the non-F4 panel, which meets the original gate.
+four were committed before the computation they license, and two are post-hoc forks. Of the seventeen
+Phase 1 amendments, six precede the data they govern, six precede the computation they license, four
+are post-hoc forks (P1-A1, P1-A5, P1-A14, P1-A15), and one is a post-hoc addition (P1-A13, written after P1-A11's
+result and pushed before its own computation). Of the 29 GPT-OSS-20B amendments, three were written after a
+verdict they bear on (G-A10, G-A12, G-A13), and the last of these sets the model-relative construct-check bar
+that the dose-0 row passes and the registered bar it fails (\Cref{app:prereg}). A reader may prefer the non-F4 panel, which meets the original gate.
 
 **Labels and readers.** The scenarios were written by two large models under one prompt, so the
 pressures they contain are the pressures those models think of; the harness judges are language
@@ -67,8 +70,8 @@ are not in this paper.
 
 **What would change these results, and what it costs.** Each open reading has a priced discriminator.
 The pressure-removed twins under deliberation (P1-A12, run for this version) leave one question open: a
-pressure-specific effect of reasoning smaller than the ratio bars (about a fifth on OLMo-3, a quarter on
-Llama-3.1). Narrowing it needs more scenarios per model (the bars shrink as $1/\sqrt{n}$, and OLMo-3's
+pressure-specific effect of reasoning smaller than the ratio bars (about a third on OLMo-3, two-fifths on
+Llama-3.1, under the two-way bootstrap). Narrowing it needs more scenarios per model (the bars shrink as $1/\sqrt{n}$, and OLMo-3's
 screen holds 136) or a reasoning arm that names the incentive itself.
 A like-for-like dose run, both carrying models on one scenario set with a budget long enough for both to
 finish (about three GPU-hours), says whether completed reasoning does more than truncated reasoning and

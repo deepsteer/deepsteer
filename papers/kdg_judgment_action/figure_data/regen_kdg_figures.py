@@ -48,6 +48,14 @@ def load(name):
     return json.loads((DATA / name).read_text())
 
 
+def enlarge(fig, k=1.25):
+    """v2 (author, 2026-10-15): larger labels on Figures 6-8; every text element scaled by k."""
+    from matplotlib.text import Text
+
+    for t in fig.findobj(Text):
+        t.set_fontsize(t.get_fontsize() * k)
+
+
 def save(fig, stem, rows, header):
     fig.savefig(FIG / f"{stem}.pdf", bbox_inches="tight")
     fig.savefig(FIG / f"{stem}.png", dpi=200, bbox_inches="tight")
@@ -250,7 +258,8 @@ def fig_f4():
     out = []
     for ax, src, key, nkey, color, title, xl in (
         (axes[0], {p: b[p]["per_family"]["F4"] for p in ("anthropic", "openai")}, "rate", "n_defined", INDIGO,
-         "(a) Binary instrument: F4 gap rate by generator (CI-separated)", "gap rate"),
+         "(a) Binary instrument: F4 gap rate by generator "
+         "(each CI excludes the other's point)", "gap rate"),
         (axes[1], c, "mean", "n", ORANGE, "(b) Continuous instrument: F4 gap by generator (overlapping)", "g = p_D − p_J"),
     ):
         for y, (p, lab) in zip((1, 0), (("anthropic", "Claude-written"), ("openai", "GPT-written"))):
@@ -374,7 +383,7 @@ def fig_recipe():
     ax1.legend(handles=[
         Line2D([0], [0], marker="s", ls="", color=RED, mec="black", ms=8, label="known-gap control (operator orders the violation)"),
         Line2D([0], [0], marker="o", ls="-", color=INDIGO, mec="black", ms=7, label="pressure-attributable excess, own template")],
-        loc="lower right", fontsize=7.5, frameon=True, framealpha=0.95)
+        loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2, fontsize=7.5, frameon=False)
     for y, (lab, k) in zip(ys, MODELS_R):
         e = inst[k]
         ax2.plot(e["ci95"], [y + 0.12] * 2, color=INDIGO, lw=2.2, zorder=3)
@@ -400,7 +409,8 @@ def fig_recipe():
     fig.suptitle("The instrument is validated on every model; OLMo-3 and Meta's Llama-3.1 carry the gap, Tulu 3 does not; "
                  "Qwen2.5 does not on the whole panel",
                  fontsize=10.5)
-    fig.subplots_adjust(left=0.16, right=0.985, top=0.86, bottom=0.14, wspace=0.08)
+    fig.subplots_adjust(left=0.16, right=0.985, top=0.86, bottom=0.24, wspace=0.08)
+    enlarge(fig)
     save(fig, "kdg_recipe", out, ["panel", "model", "quantity", "mean", "ci_lo", "ci_hi", "n"])
 
 
@@ -470,24 +480,31 @@ def fig_stages():
     ax2.set_xlabel("acting minus judging violating mass, 95% CI")
     ax2.set_title("(b) The final checkpoint: the test sees 0.5; the gap is 0.02", fontsize=10, loc="left")
     ax2.grid(True, axis="x", alpha=0.25); ax2.set_axisbelow(True)
-    fig.suptitle("On OLMo-3 the gap is present after SFT and no later post-training stage makes it detectably larger",
-                 fontsize=10.5)
+    fig.suptitle("On OLMo-3 the gap is present after SFT; later stages change it little (a small RL-step "
+                 "increase on the probability scale)", fontsize=10.5)
     fig.subplots_adjust(left=0.07, right=0.985, top=0.85, bottom=0.2, wspace=0.42)
+    enlarge(fig)
     save(fig, "kdg_stages", out, ["panel", "stage", "quantity", "mean", "ci_lo", "ci_hi", "n"])
 
 
 def fig_deliberation():
-    a, c = load("analysis_phase1_session_a.json"), load("analysis_phase1_session_c.json")
-    dc, cf, ld = a["DOSE_CONTROLS"], a["C2_forced"], c["llama_dose"]
-    olmo = [("reasoning - filler", cf["delta_dose2_minus_filler_forced"], INDIGO),
-            ("reasoning - truncated filler", dc["delta_dose2_minus_TF"], INDIGO),
-            ("brief reasoning - filler", cf["secondary_dose1_minus_filler_forced"], INDIGO),
-            ("truncated filler - filler", dc["truncation_effect_TF_minus_filler"], GRAY),
-            ("norm named - filler", dc["delta_NS_minus_filler"], INDIGO)]
-    llama = [("reasoning - filler", ld["delta_dose2_minus_filler"], INDIGO),
-             ("reasoning - truncated filler", ld["delta_dose2_minus_TF"], INDIGO),
-             ("brief reasoning - filler", ld["secondary_dose1_minus_filler"], INDIGO),
-             ("truncated filler - filler", ld["truncation_effect_TF_minus_filler"], GRAY)]
+    # v2: the two-way bootstrap (scenarios x rollout indices) is the interval of record (P1-A16/A17)
+    tw = load("analysis_v2_dose_twoway.json")["models"]
+
+    def row(key, q):
+        d = tw[key][q]
+        return {"mean": d["point"], "ci95": d["two_way_ci95"], "n": tw[key]["n"]}
+
+    o, lk = "olmo3_instruct", "llama31_instruct_meta"
+    olmo = [("reasoning - filler", row(o, "d2_minus_f"), INDIGO),
+            ("reasoning - truncated filler", row(o, "d2_minus_tf"), INDIGO),
+            ("brief reasoning - filler", row(o, "d1_minus_f"), INDIGO),
+            ("truncated filler - filler", row(o, "tf_minus_f"), GRAY),
+            ("norm named - filler", row(o, "ns_minus_f"), INDIGO)]
+    llama = [("reasoning - filler", row(lk, "d2_minus_f"), INDIGO),
+             ("reasoning - truncated filler", row(lk, "d2_minus_tf"), INDIGO),
+             ("brief reasoning - filler", row(lk, "d1_minus_f"), INDIGO),
+             ("truncated filler - filler", row(lk, "tf_minus_f"), GRAY)]
     fig, axes = plt.subplots(1, 2, figsize=(11.2, 3.9))
     out = []
     panels = ((axes[0], olmo, "(a) OLMo-3-7B-Instruct: truncated reasoning (8% finish)", "olmo", (-0.16, 0.09)),
@@ -505,13 +522,14 @@ def fig_deliberation():
         ax.axvline(0, color=INK, lw=0.9, zorder=2)
         ax.set_yticks(range(n)); ax.set_yticklabels([r[0] for r in rows][::-1], fontsize=8.5)
         ax.set_xlim(*xl); ax.set_ylim(-0.6, n - 0.4)
-        ax.set_xlabel("difference in violating mass at the forced answer, 95% CI")
+        ax.set_xlabel("difference in violating mass\n(forced answer; 95% two-way CI)")
         ax.set_title(title, fontsize=9.5, loc="left")
         ax.grid(True, axis="x", alpha=0.25); ax.set_axisbelow(True)
     fig.suptitle("Reasoning about the stakes before acting lowers the violating choice more than a same-length "
                  "non-moral task does, on both models that carry the gap (separate scales; sizes not compared)",
                  fontsize=10.5)
-    fig.subplots_adjust(left=0.15, right=0.985, top=0.84, bottom=0.16, wspace=0.55)
+    fig.subplots_adjust(left=0.15, right=0.985, top=0.84, bottom=0.2, wspace=0.55)
+    enlarge(fig)
     save(fig, "kdg_deliberation", out, ["model", "contrast", "mean", "ci_lo", "ci_hi", "n"])
 
 

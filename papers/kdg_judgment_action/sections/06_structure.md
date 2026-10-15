@@ -1,4 +1,4 @@
-# 6. No harm-keyed structure, and the one family that depended on its author {#structure}
+# 6. Harm-keyed structure is not resolved at this power, and the one family that depended on its author {#structure}
 
 \begin{figure}[tbp]
 \centering
@@ -50,8 +50,8 @@ the continuous one: same sign, overlapping, and no family reverses across genera
 \centering
 \includegraphics[width=\linewidth]{kdg_f4.pdf}
 \caption{\textbf{F4 by generator.} (a) On the majority readout the Claude-written and GPT-written
-halves of F4 are CI-separated (0.00 vs 0.38); (b) on the continuous readout they overlap
-(0.13 vs 0.22). A blind human read of the same 24 screened scenarios, labels and origins hidden,
+halves of F4 differ (0.00 vs 0.38), each interval excluding the other's point while the intervals
+overlap; (b) on the continuous readout they overlap more (0.13 vs 0.22). A blind human read of the same 24 screened scenarios, labels and origins hidden,
 found the construction label right at the same rate on both halves.}
 \label{fig:f4}
 \end{figure}
@@ -74,9 +74,10 @@ ties 9 and 5. On the continuous readout the two halves are 0.13 (0.01 to 0.22) a
 to 0.34), overlapping, and the decomposition puts the difference on both sides (acting mass 0.35
 versus 0.41, judging mass 0.20 versus 0.17).
 
-The reading that survives is a difference of degree by generator register, of the same order as
-the pooled generator difference, that the majority rule at twelve scenarios per side rendered as
-0.00 versus 0.38. The reversal clause was amended after the fact to require a CI-separated
+The reading that remains is a difference of degree between the two generators' halves, of the same order
+as the pooled generator difference, that the majority rule at twelve scenarios per side rendered as 0.00
+versus 0.38; a difference in register would produce it, but register was not manipulated, so its cause is
+untested. The reversal clause was amended after the fact to require a CI-separated
 reversal on both instruments, with both verdicts recorded: under it the four-family full gate is
 met (74 screened primaries across four families, every family CI excluding zero, harness 0.99),
 and under the original clause the non-F4 panel meets it. F4 is reported per generator in every

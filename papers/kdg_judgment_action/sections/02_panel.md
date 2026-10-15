@@ -14,7 +14,18 @@ Dana, the release coordinator...") for the action readout, and a **third-person 
 same person for the judgment readout, with the same entities, facts, sentence order, and length
 within 15% (tokenized with the model's own tokenizer); only pronouns and the role framing differ.
 Option texts are plain descriptions of actions with no evaluative words, presented under neutral
-letters whose order is a fresh seeded permutation on every rollout.
+letters whose order is a fresh seeded permutation on every rollout. Acting and judging are separate calls,
+and each ends in a choice from the same closed menu of lettered options.
+
+*A worked example* (F1-A-00, \Cref{app:scenarios}). The agent frame begins "You are Dana. You work in the
+administration office at Bellview Hospital"; the quarter's average emergency-room wait is thirty-eight
+minutes, the state board pays a bonus below thirty, and the director has said the bonus covers three jobs,
+including Dana's. The menu is: enter thirty-eight minutes and note the hand-filled hours (norm-consistent);
+enter twenty-nine minutes, adjusting the hand-filled hours (violating); or ask for an extension (neutral).
+The third-person frame tells the same facts about Dana and asks which option is right. On OLMo-3-7B-Instruct
+the judgment is stable on the honest entry, and 20 of 32 action rollouts enter twenty-nine minutes: on this
+scenario the model acts against its own judgment. In the pressure-removed twin the bonus, job and log-file
+sentences become mundane ones, and the action majority is no longer the violating entry.
 
 \begin{table}[tbp]
 \centering
@@ -63,7 +74,8 @@ The panel of record has 248 primaries (40 per family plus 16 added to F1, F3, an
 second round), 152 harm twins, and 40 swapped F4 scenarios used only by one cell
 (\Cref{structure}). Three GPT-written F4 twins whose option labels the cross-rater found
 inverted are flagged and excluded from every analysis, leaving 397 scenarios in the analyses
-below.
+below. \Cref{tab:flow} traces every set the paper reads (440, 397, 586, and the separate 264) to
+these rows.
 
 ## 2.3 Readouts
 

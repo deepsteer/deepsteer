@@ -1,12 +1,13 @@
 # 8. The gap follows the post-training recipe {#recipe}
 
-**In short.** We read four aligned models the same way, after first checking with a positive control that
-the test can see a large gap on each (0.50 to 0.62). Two carry the gap: OLMo-3 (0.018) and Meta's
-Llama-3.1-8B-Instruct (0.028). On the whole panel two show none the test can see: Ai2's Tulu 3
-(0.001, nothing above about 0.01) and Qwen2.5 ($-0.008$, nothing above about 0.02). Read only on each
-model's own most-pressuring scenarios, all four show an excess (Tulu 3 0.05, Qwen2.5 0.19), but that
+**In short.** We read five aligned models the same way, after first checking with a positive control that
+the test can see a large gap on each (0.50 to 0.62); the fifth, GPT-OSS-20B, is read without its reasoning. Two carry the gap: OLMo-3 (0.018) and Meta's
+Llama-3.1-8B-Instruct (0.028). On the whole panel three show none the test can see: Ai2's Tulu 3
+(0.001, nothing above about 0.01), Qwen2.5 ($-0.008$, nothing above about 0.02) and GPT-OSS-20B without
+reasoning ($-0.001$, nothing above about 0.013). Read only on each
+model's own most-pressuring scenarios, all five show an excess (Tulu 3 0.05, Qwen2.5 0.19, GPT-OSS-20B 0.05), but that
 screen favors a positive value by construction; against the same screen applied to the pressure-removed
-twins, OLMo-3 (0.073) and Llama-3.1 (0.143) keep a gap, Tulu 3 does not ($-0.004$), and Qwen2.5 is
+twins, OLMo-3 (0.073) and Llama-3.1 (0.143) keep a gap, Tulu 3 ($-0.004$) and GPT-OSS-20B ($-0.001$) do not, and Qwen2.5 is
 unresolved (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16). So Tulu 3 shows none on either read, and Qwen2.5 shows none on the whole panel and is
 unresolved on its own screened scenarios. The clearest comparison is Meta's and Tulu
 3's: both start from the same Llama-3.1 weights, and only Meta's carries the gap. Tulu 3 shows none
@@ -28,12 +29,12 @@ known-gap acting-versus-judging mass difference has a 95% lower bound of at leas
 \centering
 \caption{The pressure-attributable excess across post-training recipes, each instruct model read under
 its own chat template on the 586 union scenarios; bases in the raw frame (descriptive, \Cref{base}). The
-own-screen column (a post-review addition, amendments P1-A11 and P1-A13) gives the excess on each model's
+own-screen column (amendments P1-A11 and P1-A13) gives the excess on each model's
 own screened scenarios, with $n$ and the per-model detection bar, and below it the excess minus the same
 statistic on the twin-screened set (the selection-matched null), since that screen selects on the acting
 mass and so favors a positive value. The known-gap column is the positive control: the acting mass moved
 by an operator's instruction to take the violating action, relative to the model's letter-only judgment.
-Bracketed values are 95\% bootstrap CIs over scenarios. The GPT-OSS-20B row (added in v2) is read at dose 0:
+Bracketed values are 95\% bootstrap CIs over scenarios. The GPT-OSS-20B row is read at dose 0:
 its harmony template with an empty, closed analysis turn and the forced letter, no reasoning trace
 \citep{openai2025gptoss}.}
 \label{tab:recipe}
@@ -49,7 +50,7 @@ Tulu 3 on Llama-3.1-8B (Ai2), final & (Llama base) & 0.001 [$-$0.007, 0.010] & 0
 \quad Tulu 3 SFT / DPO & & $-$0.003 / 0.003 & & \\
 Qwen2.5-7B-Instruct (Alibaba) & 0.011 [0.007, 0.016] & $-$0.008 [$-$0.023, 0.009] & 0.187 [0.116, 0.259] (47; 0.10); 0.083 [$-$0.028, 0.195] & 0.519 [0.477, 0.560] \\
 \midrule
-GPT-OSS-20B (OpenAI), at dose 0 (v2) & (no public base) & $-$0.001 [$-$0.011, 0.008] & 0.052 [0.023, 0.081] (71; 0.04); $-$0.001 [$-$0.050, 0.049] & 0.501 [0.469, 0.534] \\
+GPT-OSS-20B (OpenAI), at dose 0 & (no public base) & $-$0.001 [$-$0.011, 0.008] & 0.052 [0.023, 0.081] (71; 0.04); $-$0.001 [$-$0.050, 0.049] & 0.501 [0.469, 0.534] \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -73,10 +74,13 @@ Meta's Llama-3.1-8B-Instruct and Tulu 3 share a base. 95\% bootstrap CIs over sc
 \label{fig:recipe}
 \end{figure}
 
-**A reasoning model read without reasoning (v2).** We added OpenAI's GPT-OSS-20B \citep{openai2025gptoss} as
+**A reasoning model read without reasoning.** We added OpenAI's GPT-OSS-20B \citep{openai2025gptoss} as
 an instruct-side row, read at dose 0: its own template with an empty, closed reasoning turn, so the letter
 is forced with no trace. No pressure-attributable excess is detectable ($-0.001$, $-0.011$ to 0.008; nothing
-above about 0.013), with its known-gap control at 0.501 on the same readout. That is a statement about
+above about 0.013), with its known-gap control at 0.501 on the same readout. Its construct check, agreement of the forced
+letter with the model's own sampled answer, fails the registered bar of 0.80 (0.688 and, dose-matched,
+0.766) and passes the model-relative bar adopted after those verdicts (0.668; \Cref{app:prereg},
+\Cref{app:calibration}). That is a statement about
 GPT-OSS without reasoning; reasoning changes its answers (\Cref{deliberation}), so the row says nothing about
 the gap at its default reasoning level.
 
@@ -89,7 +93,7 @@ Llama-3.1-8B-Instruct each carry a pressure-attributable excess (0.018 and 0.028
 zero). Tulu 3 carries none that the instrument detects at any of its three stages (final 0.001, $-0.007$
 to 0.010; not detectable above about 0.01), and neither does Qwen2.5-7B-Instruct ($-0.008$, $-0.023$ to
 0.009; not detectable above about 0.02). These are whole-panel numbers. On each model's own screened
-scenarios (a post-review addition, P1-A11) every model shows an excess, Tulu 3 (0.051, 0.023 to 0.079)
+scenarios every model shows an excess, Tulu 3 (0.051, 0.023 to 0.079)
 and Qwen2.5 (0.187, 0.116 to 0.259) included. That read needs its own null. The screen keeps a scenario
 by the acting mass that feeds the excess, so a screened set shows some excess even where the pressure
 does nothing. The selection-matched null (P1-A13; post-hoc, pre-registered and pushed before it was
@@ -97,14 +101,15 @@ computed) measures how much: it applies the identical screen to the pressure-rem
 the contrast. Against it OLMo-3 (0.073, 0.033 to 0.114) and Llama-3.1 (0.143, 0.112 to 0.173) keep their
 gap, Tulu 3's own-screen excess is what the selection produces ($-0.004$, $-0.054$ to 0.042), and
 Qwen2.5's is unresolved (0.083, $-0.028$ to 0.195; $n = 47$, bar about 0.16). Tulu 3 therefore shows none on either read, and Qwen2.5 shows none on
-the whole panel and is unresolved on its own screened scenarios (KDG-A19). The panel does not favor one family's pressures in engagement:
+the whole panel and is unresolved on its own screened scenarios. The panel does not favor one family's pressures in engagement:
 every model engages every scenario, and each finds its own set of pressuring scenarios (the screened
 fraction is 0.19 to 0.22 for OLMo-3, 0.20 for Llama-3.1, 0.09 to 0.12 for Tulu 3 and 0.08 for Qwen2.5,
 and Llama's screened set overlaps OLMo-3's on 23 of 118 scenarios).
 
 **The same base, two recipes.** Meta's Llama-3.1-8B-Instruct and Ai2's Tulu 3 start from the same
 Llama-3.1-8B weights. Read with a validated instrument on both, Meta's instruct model carries a gap
-(0.028, 0.020 to 0.036) and Tulu 3's final model does not (0.001, $-0.007$ to 0.010). The base's own
+(0.028, 0.020 to 0.036) and Tulu 3's final model does not (0.001, $-0.007$ to 0.010). Paired on the 586
+scenarios both engage, Meta's excess exceeds Tulu 3's by 0.027 (0.017 to 0.037; detection bar 0.015). The base's own
 raw-frame reading is zero (0.000, $-0.003$ to 0.003), which is the raw frame's reading of a base model
 and not a validated absence, so we do not say which recipe added or removed anything. What the contrast
 establishes is narrower and firm: on one set of pretrained weights, whether the aligned model carries
@@ -117,10 +122,12 @@ they optimize.
 **The DPO-stage lean replicates.** The at-rest change that \Cref{base} finds at OLMo-3's DPO step appears at
 Tulu 3's DPO step too, on the same model-free construction (586 scenarios): +0.017 (0.012 to 0.022), and
 +0.099 (0.077 to 0.122) per unit of output scale, with the RL step small and negative ($-0.004$, $-0.007$ to
-$-0.002$). For the pressure-attributable part, the Tulu 3 DPO step is 0.006 with an interval that touches
-zero (0.000 to 0.012), below its detection bar of about 0.008 at $n = 586$; the RL step is $-0.001$
-($-0.005$ to 0.002; bar about 0.005). Two DPO recipes on two bases move the acting frame's default the same
-way, with no change in the incentive's pull detectable above those bars on the probability scale.
+$-0.002$). For the pressure-attributable part, the Tulu 3 DPO step is +0.006 (0.00004 to 0.012) on the
+probability scale and +0.031 (0.011 to 0.052) per unit of output scale, a small increase on both readouts,
+from $-0.003$ after SFT to +0.003 after DPO with neither stage different from zero; the RL step is $-0.001$
+($-0.005$ to 0.002), and the final model shows none (0.001). Two DPO recipes on two bases move the acting
+frame's default the same way; the incentive's pull changes little, with a small increase at Tulu 3's DPO
+step that its final model does not keep.
 
 **The raw-frame distortion follows the recipe too.** The frame effect of \Cref{base}
 is present on every templated checkpoint of both Ai2 recipes (OLMo-3 SFT: $-0.052$; Tulu 3

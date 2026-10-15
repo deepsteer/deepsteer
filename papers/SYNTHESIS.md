@@ -1033,3 +1033,28 @@ compliance-tracking. With §37's descriptive split and §38's convergence, the p
 GPT-OSS's default-level reasoning is rule compliance: it brings judgment and action to the stated rule,
 whether or not the rule is the protective choice. On the panel, where the rule is usually right, that is
 correction (§39's interval); in H1, where it is not, it is harm. Escalated: thesis-level framing.
+
+### External-review revision of the KDG paper's v2 (2026-10-15; `kdg_panel/KDG_RESULTS.md` §44, P1-A17) — what changed
+
+Positive voice first: **on OLMo-3 the model acts against its own judgment on one in five of the scenarios
+screened on its own actions, with an excess over the pressure-removed twins carried by the log-probability
+readout (0.054 [0.021, 0.086]) at every strictness level; the gap follows the post-training recipe across
+five instruct models (Meta above Tulu 3 by 0.027 [0.017, 0.037] on the same Llama-3.1 weights, paired on the
+586); deliberation brakes the violating action on both carriers; and where the written rule harms an absent
+third party, deliberation moves every model read off the protective departure, onto the rule on OLMo-3 and
+GPT-OSS-20B and onto contacting the approver on Llama-3.1.** What changed, all zero GPU:
+
+- Stage claims: the OLMo-3 RL step (+0.004 [0.0004, 0.0078]) and Tulu 3's DPO step (+0.006 [0.00004,
+  0.012]) are small increases on the probability scale, not "no enlargement"; the RL step does not resolve
+  per unit of output scale (sharpening).
+- Under the two-way bootstrap of record the binary paired excess touches zero at L0 and L1; the continuous
+  readout carries the excess. The ratio reading resolves a pressure-specific part only beyond about a third
+  (OLMo-3) or two-fifths (Llama-3.1) of the brake.
+- On the rule-harms set Llama-3.1 moves into the approver-contact option, not toward the rule-following
+  act (rule mass −0.022 [−0.036, −0.008]); OLMo-3 moves to the rule (+0.123).
+- Clustered sensitivity changes no selection-null verdict on any of the five models.
+- An Appendix E example in v1 did not match the scenario files (ANOMALIES process ledger, 2026-10-15).
+
+Escalated to the author with the diff: the abstract's trimmed closing clause; the §9.1 heading in the
+keeps-the-gate sense; the per-rollout table's release location.
+

@@ -1,0 +1,55 @@
+{
+ "rule": "KDG_PHASE1_SPEC P1-A17 item 6",
+ "sets": {
+  "all_paired_screened": {
+   "n": 100,
+   "predicted_from_pD": {
+    "mean": 0.19,
+    "ci95": [
+     0.11,
+     0.27
+    ],
+    "n": 100,
+    "sd_boot": 0.04148532150050183,
+    "excludes_zero": true
+   },
+   "observed": {
+    "mean": 0.1,
+    "ci95": [
+     0.03,
+     0.17
+    ],
+    "n": 100,
+    "sd_boot": 0.035786025205378706,
+    "excludes_zero": true
+   },
+   "crossings_up": 20,
+   "crossings_down": 1
+  },
+  "non_violating_reference": {
+   "n": 88,
+   "predicted_from_pD": {
+    "mean": 0.13636363636363635,
+    "ci95": [
+     0.06818181818181818,
+     0.2159090909090909
+    ],
+    "n": 88,
+    "sd_boot": 0.04045452909537463,
+    "excludes_zero": true
+   },
+   "observed": {
+    "mean": 0.125,
+    "ci95": [
+     0.056818181818181816,
+     0.20454545454545456
+    ],
+    "n": 88,
+    "sd_boot": 0.039660814953409555,
+    "excludes_zero": true
+   },
+   "crossings_up": 13,
+   "crossings_down": 1
+  }
+ }
+}
