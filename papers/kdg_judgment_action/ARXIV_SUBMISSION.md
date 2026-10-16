@@ -2,6 +2,12 @@
 
 **Posted: arXiv:2610.08670 (v1, 2026-10-06; title and author verified against the arXiv API).** `apply_arxiv_id.py` applied the same day.
 
+**v2 replacement submitted 2026-10-16 (author), from the tarball recorded under "v2 build of record" (SHA-256
+prefix 257f64e2040897b6, commit a258a90); awaiting announcement (the arXiv API still lists v1 at
+2026-10-16T21:19Z). Zenodo dataset published the same day: 10.5281/zenodo.23425333, "DeepSteer per-rollout
+option probabilities for KDG v2", CC BY 4.0; the three files' MD5s on the record match
+ARTIFACT_MANIFEST.json, and the DOI resolves.**
+
 Prepared 2026-10-04, updated through 2026-10-06 (pre-submit decisions, adversarial review, GPU-1, references) for the author's submission (author submits; this file is the metadata of record).
 Source: commit of record at submission time; tarball `build/arxiv.tar.gz` (gitignored, rebuilt below).
 
