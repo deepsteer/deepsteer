@@ -43,7 +43,7 @@ read from the arXiv API 2026-10-04); no reason to differ: same program, same aud
   0 missing files, 0 undefined references, 33 pages, no Type 3 fonts. 33 entries, 296 KB (rebuilt 2026-10-06 at 9659446).
 - **v2 build of record (2026-10-15, P1-A17 item 9).** The Makefile's latexmk call no longer ignores failures
   (the leading `-` is removed, so a failed build fails `make`). `make arxiv` rebuilt `build/arxiv.tar.gz`
-  (40 files, 1,580,960 bytes, SHA-256 prefix 031c86147f6ecd3c); extracted into an empty temporary directory and
+  (40 files, 1,581,003 bytes, SHA-256 prefix c5dd7d7db9bc1014; rebuilt 2026-10-16 with the Zenodo DOI 10.5281/zenodo.23425333 in Appendix F); extracted into an empty temporary directory and
   compiled there with three `pdflatex -halt-on-error` passes and no BibTeX: every pass exit 0, 0 errors,
   0 undefined references, 0 missing files, 0 overfull boxes, 40 pages, no Type 3 fonts.
 - Rebuild: stage as in that check (the Makefile's `arxiv` target copies every file in `figures/` and

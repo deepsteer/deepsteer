@@ -11,6 +11,28 @@
    "zenodo_record": "23203126",
    "license": "CC-BY-NC-4.0",
    "access": "restricted; request access on the record page"
+  },
+  "kdg_v2_rollouts": {
+   "doi": "10.5281/zenodo.23425333",
+   "zenodo_record": "23425333",
+   "license": "CC-BY-4.0",
+   "title": "DeepSteer per-rollout option probabilities for KDG v2",
+   "files": {
+    "kdg_rollout_option_probs.csv.gz": {
+     "sha256": "f7384873b7d2a4c78caf54ae0e67bd9046d5b5a24c96bebcc41404947a12d0be",
+     "md5": "3106f16dddde6a8978dc3995dbf4e9ec",
+     "bytes": 20943803
+    },
+    "kdg_rollout_option_probs.manifest.json": {
+     "md5": "66ada5991398fb8e5f31df41e063401e",
+     "bytes": 23310
+    },
+    "README.md": {
+     "md5": "b9f96a6bf8901387b3d6c51a029bf5a9",
+     "bytes": 2801
+    }
+   },
+   "producer": "papers/kdg_panel/scripts/export_rollout_option_probs.py (commit 3fbf995)"
   }
  },
  "last_in_tree": "341487e4a7b67046fb0e4ecf7dede893c52a3012",
@@ -1855,6 +1877,7 @@
   "readers lists load sites that receive this path, usually as argv from an orchestrator (run_phase*.py, runpod/*.sh); paths are rarely literal at the load call.",
   "byte_reproducible=false: committed before torch.manual_seed(42) was added to probe training (af75f30, 2026-06-12); rerunning today's code gives different directions, so the deposit is the only record outside git history.",
   "also_in: byte-identical copy already published in that DOI (inside a 2.35 GB tar.zst, so not fetchable per file).",
-  "license_review: stimuli include mlabonne/harmless_alpaca (verbatim Stanford Alpaca instructions, CC BY-NC 4.0 upstream); these arrays are bundled for the restricted record."
+  "license_review: stimuli include mlabonne/harmless_alpaca (verbatim Stanford Alpaca instructions, CC BY-NC 4.0 upstream); these arrays are bundled for the restricted record.",
+  "kdg_v2_rollouts is a standalone dataset record (no tar bundle, so not resolvable through get()); download it from the DOI. Cited in the KDG paper's Appendix F (v2)."
  ]
 }

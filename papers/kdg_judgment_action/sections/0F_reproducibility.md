@@ -68,5 +68,6 @@ its primary's id for harm twins, rollout and seed index, the letter-to-option or
 the displayed options' probabilities at the decision position, renormalized over the saved letter tokens
 and, for the forced-answer arms, over each letter's bare and space-prefixed tokens together, as the dose
 analyses read them. A manifest gives row counts per source file and the table's SHA-256. The table is
-published with v2 at \textbf{[release location: author to confirm]}; the full arrays (next-token
+published with v2 on Zenodo, \href{https://doi.org/10.5281/zenodo.23425333}{doi:10.5281/zenodo.23425333}, with a
+README describing each column; the full arrays (next-token
 log-probabilities over the vocabulary, residual-stream saves) are available on request.

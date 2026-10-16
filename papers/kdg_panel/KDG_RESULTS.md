@@ -2693,8 +2693,9 @@ in ANOMALIES.
 **Per-rollout release (item 7).** `export_rollout_option_probs.py` wrote 791,461 rows (20.9 MB gzipped,
 SHA-256 f7384873…) from every pod of record; 19,200 rows from the Phase 2 F6–F8 pilot (p2a), whose
 scenarios are not in this paper's files, are skipped and counted. Second derivation: the table reproduces
-the carriers' rule-harms Δ_P (−0.0757, −0.0495). Release location is the author's decision (repository
-policy: no bundled datasets).
+the carriers' rule-harms Δ_P (−0.0757, −0.0495). Released on Zenodo as "DeepSteer per-rollout option probabilities for KDG v2",
+10.5281/zenodo.23425333 (author, 2026-10-16), with a README of the columns; recorded in
+`papers/ARTIFACT_MANIFEST.json`.
 
 Positive voice: **on OLMo-3 the model acts against its own judgment on one in five of the scenarios screened
 on its own actions, and the excess over the pressure-removed twins is carried by the log-probability readout

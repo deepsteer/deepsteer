@@ -1056,5 +1056,6 @@ GPT-OSS-20B and onto contacting the approver on Llama-3.1.** What changed, all z
 - An Appendix E example in v1 did not match the scenario files (ANOMALIES process ledger, 2026-10-15).
 
 Escalated to the author with the diff: the abstract's trimmed closing clause; the §9.1 heading in the
-keeps-the-gate sense; the per-rollout table's release location.
+keeps-the-gate sense; the per-rollout table's release location (resolved 2026-10-16: Zenodo,
+10.5281/zenodo.23425333).
 
