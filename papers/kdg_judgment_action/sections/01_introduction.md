@@ -3,20 +3,20 @@
 A language model can say, when asked as an observer, that an action is wrong, and then take
 that action when placed inside the situation as the agent. Reports of agentic misalignment show
 frontier models acknowledging an ethical violation in their own reasoning and proceeding with it
-[@lynch2025agentic]; models trained to behave can conceal a triggered policy through the training
+[@lynch2025agentic]. Models trained to behave can conceal a triggered policy through the training
 itself [@hubinger2024sleeper] and can fake alignment when they infer they are monitored
 [@greenblatt2024faking]. Our earlier work located one dissociation behind divergence of this kind.
 On the models studied here, moral comprehension is a broad representation that forms during
 pretraining, while the refusal decision is a thin post-training control that reads only a narrow
 harm slice of it [@reblitzrichardson2026refusal]: the model knows more than its refusal uses.
 This paper asks the next question in that program. When the model acts rather than refuses, does
-its action follow its judgment; if not, is the discrepancy organized by the same harm content;
-and did alignment create it?
+its action follow its judgment? If not, is the discrepancy organized by the same harm content? And
+did alignment create it?
 
 The quantity is a **judgment–action gap**: per scenario, the divergence between what the model
 judges to be right, elicited in a third-person frame, and what it does, elicited in a matched
 agent frame with a discrete, logged action. Both are closed-menu choices among the same lettered
-options, posed in separate calls. The model's own judgment is the reference; the scenario's
+options, posed in separate calls. The model's own judgment is the reference, and the scenario's
 construction fixes which option counts as the violation. A gap means the model contradicted itself,
 acting against what it had said was right. The
 construct is old in moral psychology, where the relation between moral judgment and moral action
