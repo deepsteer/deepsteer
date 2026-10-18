@@ -1,6 +1,7 @@
 # Steering Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.2, 2026-10-18 (v0.2.1 plus Amendment 1, §14: independent `none` baseline, `L-beh` as
+Status: v0.2.3, 2026-10-18 (Amendment 2, §14: cap 1,536, effort of record, trace-length pilot,
+dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
 Pre-registration candidate. No GPU spend authorized by this document; Tier 1 cells are priced for
@@ -100,12 +101,31 @@ could run there at near-frontier scale and §5.2–5.3 could not (verify before 
 
 **Screen (T1.0)** on OLMo-3-7B-Think, Qwen3.8-27B and Muse Glimmer 30B: VALIDATE (template, letter
 mass, C0 bar, the known-gap positive band), the dose-0 letter readout on panel + twins, and H1 under
-native reasoning at the model's default effort (100 scenarios × 4 rollouts for the 7B; 60 × 4 for
-the 27–30B). GPT-OSS-20B's screen is its existing §40 result.
+native reasoning at the model's effort of record (100 scenarios × 4 rollouts for the 7B; 60 × 4 for
+the 27–30B). GPT-OSS-20B's screen is its existing §40 result (medium, cap 1,536), which stands.
+
+**Effort of record (Amendment 2).** Each model's shipped default (Qwen3.8-27B `xhigh`, Muse
+Glimmer 30B `high`, GPT-OSS-20B `medium`; OLMo-3-7B-Think documents no levels), stepped down only by
+the trace-length pilot rule below, fixed before the screen and printed beside every number. The
+claim is about the deployed setting. Because the brake depends on effort on the one model where it
+was measured (KDG-A28/A29), the §2 selection is never reported as a cross-model brake comparison;
+a pilot step-down is reported as a two-point descriptive (default vs the level of record). The
+effort slope is a Tier 2 line.
+
+**Trace-length pilot (Amendment 2; first unit of T1.0 per model).** 8 H1_train scenarios × 4
+rollouts at the default effort, cap 4,096, measuring the trace-length distribution and tokens/s.
+Step-down rule: if the p95 trace length exceeds the 1,536 cap, step down one effort level and
+re-pilot, stopping at the lowest level that still reasons. Truncation bar at the full screen ≤ 5% of
+rollouts at the level of record. Every Tier 1 row is re-priced from the measured tokens/s before the
+60/100-scenario screen runs (Amendment 1's 0.11 A100-min per rollout assumed a 1,024 cap).
 
 **Selection rule, pre-registered.** Each model is scored on: (a) the H1 brake at the screen
 (`B_none`) and the dose-0 gap; (b) fit for training and generation on one A100 at bf16 or QLoRA;
-(c) a license that permits derivative weights; (d) recipe recency. The **development model** (the
+(c) a license that permits derivative weights; (d) recipe recency. Under (b), a working dose-0
+regime is a tie-breaker only (Amendment 2): if two candidates' screen brakes lie within each other's
+screen CIs, the one with a working dose-0 regime wins; a candidate without one stays eligible on the
+H1 co-primary alone (for Muse Glimmer 30B, which documents no thinking-off path and has no sibling,
+T1.6 then reports ΔP with no panel ΔE row and the transfer sentence is scoped to H1 for that family). The **development model** (the
 one that gets three adapters and the full depth) is the 7B-class model with a detectable brake,
 because the full program fits on it at the envelope; the **second family** is the 27–30B model with
 the larger clean brake, run at reduced depth (one adapter, §7 T1.6). If OLMo-3-7B-Think shows no
@@ -115,8 +135,11 @@ measured), and OLMo-3 keeps only the Tier 2 checkpoint role. OLMo-3 is in the se
 no other candidate has (stage checkpoints, existing anatomy, Purple Maiʻa), not for precedent.
 
 Registry: each model pinned at first load into `kdg_panel/models.yaml` (revision, template sha256,
-think-open/close tokens, empty-think prefill string, effort setting of record). Trace cap
-`max_new_tokens = 1,024` for every model; truncation logged per rollout; a cap change is a fork.
+think-open/close tokens, empty-think prefill string, effort setting of record). Trace cap of record
+`max_new_tokens = 1,536` for every model (Amendment 2, 2026-10-18, before any data: v0.2.1's 1,024
+did not match the §40 screen it is compared with); truncation logged per rollout; after the T1.0
+screen starts, a cap change is a fork. The rendered-prompt sha256 is saved per cell, which carries
+Qwen3.8's effort system prompt and Muse's injected date (pinned per pod).
 
 Dose-0 readout on a reasoning model: thinking suppressed by the documented toggle or an empty-think
 prefill, verified in VALIDATE (letter mass on `A..E` ≥ 0.95 and the C0 bar of KDG v2 §3.1). If it
@@ -331,7 +354,7 @@ before training; no adapter is selected on H1_held.
 | T0.3 | S0 direction read on banked decision-token residuals (OLMo-3-Instruct letter cells; GPT-OSS-20B's 625 post-reasoning rows × 25 layers) onto each model's `V_moral`/`V_care`, split by parsed action | signature table; L* prior |
 | T0.4 | Direction re-extraction on OLMo-3-7B-Think on the Mac (bf16, batch ≤ 4) with type blocks; Instruct-vs-Think cosines; the 27–30B models' extraction rides on T1.0 | `d2_decision_coupling/outputs/<model>/*.npz` + sidecars |
 | T0.5 | AtP harness in `deepsteer.causal.attribution` (residual per position per layer; MLP-neuron with SwiGLU sign regimes; metric = option margin at the decision token); positive control on OLMo-2-1B: AtP vs real patching on 50 sites, Spearman ≥ 0.7 | module + test |
-| T0.6 | Training harness: the three losses (§5.1–5.3; DPO for `L-beh` built here, β = 0.1, adapter-disabled reference) on top of `deepsteer.steering.chat_lora_trainer`, per-model `chat_sigma` sidecar, position-class masks, KL term, τ computation, QLoRA path; end-to-end on OLMo-2-1B with a synthetic target; merged-adapter evaluation path through `kdg_harness` | module + tests |
+| T0.6 | Training harness: the three losses (§5.1–5.3; DPO for `L-beh` built here, β = 0.1, adapter-disabled reference) on top of `deepsteer.steering.chat_lora_trainer`; `WhiteBoxModel` layer detection at `model.language_model.layers` (Qwen3.8 and Muse are VLM wrappers) and LoRA targets restricted to the text tower (Muse's vision tower has q/k/v_proj; Qwen3.8's DeltaNet layers name their projections in_proj_*/out_proj) (Amendment 2); per-model `chat_sigma` sidecar, position-class masks, KL term, τ computation, QLoRA path; end-to-end on OLMo-2-1B with a synthetic target; merged-adapter evaluation path through `kdg_harness` | module + tests |
 | T0.7 | Steering harness for the gate (position rules, self-patch mix, coherence gate, per-rollout saving); shakedown on OLMo-2-1B | module |
 | T0.8 | Analysis scripts against synthetic rows: ΔP against the independent `none` re-run (never the selecting sample; a synthetic regression-to-the-mean fixture asserts it), the floor rung `P_none^re − P_none^sel`, ΔE, ladder, MDE recompute, adapter-vs-adapter differences, transport curves; so every Tier 1 statistic is zero GPU after banking | scripts + fixtures |
 | T0.9 | Frontier exhibit, hand-run, zero cost (author's option): 20 `H1_held` scenarios pasted into 2–3 closed frontier chat products at their default reasoning setting, one response each, parsed by hand; reported as a descriptive exhibit ("the pattern appears at the frontier"), never as a KDG measurement; no automation of consumer accounts (outside their terms); the API pass is a funded item | `steering/FRONTIER_EXHIBIT.md` |
@@ -341,7 +364,7 @@ before training; no adapter is selected on H1_held.
 
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
-| T1.0 | Screen: OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 100 × 4); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); direction extraction riders for the 27–30B | 1.5 + 2.5 + 2.5 = 6.5 | development model and second family (§2 rule); whether the brake exists on Think at all |
+| T1.0 | Screen, per model first the trace-length pilot (8 × 4, cap 4,096, step-down rule, re-price every Tier 1 row before continuing; Amendment 2): OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 100 × 4); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); direction extraction riders for the 27–30B | 1.5 + 2.5 + 2.5 = 6.5 | development model and second family (§2 rule); whether the brake exists on Think at all |
 | T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on `H1_train` scenarios lacking a DPO pair if pairs < 40; about 0.11 A100-min per rollout at this row's rate, so 0.3 A100-h covers about 20 scenarios and all 132 would be about 2) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
 | T1.2 | AtP localization on one trace per brake-engaged scenario at the 5 banked layers; constancy read (zero GPU) | 0.5 | L* and the anchoring position class |
 | T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8 (`none` is the independent baseline `P_none^re`); strength sweep | 1.5 | which representation the loss holds |
@@ -375,6 +398,7 @@ T1.6 needs T1.5's verdict; Tier 2 reads T1.1/T1.6's banked residuals and T1.5's 
 | `L-suppress` with `V_rule`'s type block and twins | ~8 | the routing-around contrast |
 | Developmental neuron audit across OLMo-3 checkpoints; AtP mediation of the adapter's effect | ~10 | mechanism; the Goodfire comparison |
 | Second H1 family (hidden or costly departures; non-procedural norms) | ~6 | scope of the claim beyond approval gates |
+| Effort slope on the development model and second family (H1 at a second effort level; Amendment 2) | ~3–5 | whether the restoration holds across the effort axis, not only at the deployed setting |
 | **Envelope** | **~450–600** | |
 
 ## 8. Both branches (written before data)
@@ -442,6 +466,9 @@ hand-run at zero cost only (no consumer-account automation), the API pass funded
 external ask.
 
 Decisions (2026-10-18, Amendment 1, §14): independent `none` re-run as the baseline of every ΔP; `L-beh` is DPO at β = 0.1 with the adapter-disabled reference, no SFT comparator.
+Decisions (2026-10-18, Amendment 2, §14): trace cap of record 1,536; effort of record = each model's
+shipped default, stepped down only by the pilot rule; a model without a dose-0 regime is eligible on
+H1 alone, with dose-0 as a tie-breaker.
 
 Open for the author: G1 (model roles), G2 (target), G3 (which objective goes to family 2), G4
 (the claim sentence); whether `L-fill` runs; the Purple Maiʻa model swap if their answer arrives
@@ -564,3 +591,31 @@ model, what would need data) and a scored constitution-scoped family on their mo
 Prices: Tier 1 ~34.25 A100-h (≤ 34.55 with the pair rider) against the 35 envelope; v0.2.1's
 32.5 priced the gate's re-run (T1.3) but not the T1.5 and T1.6 re-runs. A pair rider larger than about 20 scenarios goes to the
 author before it runs.
+
+### Amendment 2 (2026-10-18; author decisions on the T0.1 template audit; zero GPU; before any compute)
+
+1. **Trace cap of record 1,536** (§2), matching GPT-OSS-20B's §40 screen (medium, 3 of 264
+   truncated). v0.2.1's 1,024 would have made the one banked screen result non-comparable. A dated
+   pre-data amendment, not a fork; after T1.0 starts, a cap change is a fork.
+2. **Effort of record = each model's shipped default** (`xhigh` Qwen3.8-27B, `high` Muse Glimmer
+   30B, `medium` GPT-OSS-20B; none on OLMo-3-7B-Think), stepped down only by the pilot rule, fixed
+   before the screen, printed beside every number. The claim is about the deployed setting; the §2
+   selection is never reported as a cross-model brake comparison (the brake is effort-dependent,
+   KDG-A28/A29). No low-effort rider in T1.0; the effort slope is a Tier 2 line; a pilot step-down
+   is reported as a two-point descriptive.
+3. **Trace-length pilot** as T1.0's first unit per model: 8 × 4 at cap 4,096; p95 > 1,536 → one
+   level down, stopping at the lowest level that reasons; full-screen truncation ≤ 5%; every Tier 1
+   row re-priced from the measured tokens/s before the 60/100-scenario screen.
+4. **Dose-0 as tie-breaker.** A model without a working dose-0 regime is eligible for the second
+   family on H1 alone (T1.6 reports ΔP with no panel ΔE row; the transfer sentence is scoped to H1
+   for that family). Under §2 criterion (b), A100 fit stays a requirement; brakes within each
+   other's screen CIs → the family with a working dose-0 regime wins.
+5. **Architecture paths (T0.6).** Qwen3.8-27B and Muse Glimmer 30B are VLM wrappers with decoder
+   layers at `model.language_model.layers`; `WhiteBoxModel` detects them there, and LoRA targets are
+   restricted to the text tower (Muse's vision tower carries q/k/v_proj; Qwen3.8's 48 DeltaNet
+   layers use in_proj_qkv/in_proj_z/in_proj_a/in_proj_b/out_proj).
+6. **Rendered-prompt sha per cell** carries Qwen3.8's effort system prompt and Muse's injected
+   date (pinned per pod); registry notes in `kdg_panel/models.yaml` `steering:`.
+
+Verified facts behind this amendment (HF primary sources at the pinned revisions, 2026-10-18):
+registry `steering:` entries, commit ca84d0b.
