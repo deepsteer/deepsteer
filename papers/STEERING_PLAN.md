@@ -697,9 +697,11 @@ model's own variance and reports it beside its brake.
    no-brake null's 95th percentile. The null is the calibration of record for (ii): each
    scenario's parsed actions drawn at its own forced dose-0 protect probability, 10,000
    simulations, seed 0; the count is reported beside the null at G1. A brake on the engaged subset
-   is negative by construction and is never a criterion. The reason for (ii): on the H1 record
-   OLMo-3's brake concentrates in F3/F4, so a whole-set brake can pass with too few scenarios for
-   the T1.3 gate's 20 and the §6 MDE.
+   is negative by construction and is never a criterion. The reason for (ii): OLMo-3's
+   forced-reasoning brake on the panel lives in F3 and F4 and is absent on F1 (KDG_RESULTS §34),
+   so a whole-set brake can rest on a minority of scenarios; the count makes the subset the gate
+   and the adapters need explicit (correction 2026-10-18: the first wording of this item called
+   §34 an H1 result; it is a panel result).
 3. **A model without a dose-0 regime** (Muse, if VALIDATE fails both candidates) is ranked by its
    reasoned protective share, descriptive; its brake against the failed candidate's readout is a
    second descriptive; its engaged subset is defined by `P_none` ≤ 0.5 alone and stated beside any
