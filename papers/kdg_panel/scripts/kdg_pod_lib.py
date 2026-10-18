@@ -168,7 +168,8 @@ class GenOut:
 class ModelWrapper:
     """Real HF model: batched chat generation with per-step logits, raw next-token log-probs."""
 
-    def __init__(self, repo: str, revision: str | None = None, harmony=None) -> None:
+    def __init__(self, repo: str, revision: str | None = None, harmony=None,
+                 torch_dtype=None) -> None:
         import torch
 
         from deepsteer.directions.extraction import load_whitebox
@@ -181,12 +182,15 @@ class ModelWrapper:
         self.letter_prefill = harmony.prefill_primary if harmony else ""
         # KDG_GPTOSS_SPEC G-A8 branch 2: batches hold rows of equal token length only (no padding)
         self.bucket_by_length = False
-        self.wb = load_whitebox(repo) if revision is None else None
+        # torch_dtype (STEERING T0.11): the screen loads in bf16 at a pinned revision; None keeps
+        # every KDG driver's load exactly as it was
+        self.wb = load_whitebox(repo) if revision is None and torch_dtype is None else None
         if self.wb is None:
             from deepsteer.core.model_interface import WhiteBoxModel
             from deepsteer.core.types import AccessTier
 
-            self.wb = WhiteBoxModel(repo, access_tier=AccessTier.WEIGHTS, revision=revision)
+            self.wb = WhiteBoxModel(repo, access_tier=AccessTier.WEIGHTS, revision=revision,
+                                    torch_dtype=torch_dtype)
         self.model = self.wb.model
         self.tok = self.wb.tokenizer
         self.tok.padding_side = "left"
