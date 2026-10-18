@@ -1,6 +1,6 @@
 # Steering Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.3, 2026-10-18 (Amendment 2, §14: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.4, 2026-10-18 (Amendment 3, §14: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -240,9 +240,9 @@ rollout whose action is `rule`, same scenario, per scenario where both exist; a 
 never a rejected sample (nor a chosen one); pairs counted and reported per scenario. β = 0.1;
 reference policy = the same model with the adapter disabled (no second copy in memory). Built in
 T0.6 on `deepsteer.steering.chat_lora_trainer`, which is SFT-only as of v0.2.1 (Amendment 1).
-Floor: 40 pairs across `H1_train`. If T1.1 yields fewer, 8 more rollouts are sampled on the
-`H1_train` scenarios that lack a pair (same seed discipline, seeds disjoint from T1.1's) before
-training, priced at T1.1's rate (§7). Plus the KL-to-base term on the general text slice at the
+Floor: 40 pairs across `H1_train`. If T1.1 yields fewer, sample 8 more rollouts on the train
+scenarios lacking a pair, up to ~20 scenarios (~0.3 A100-h; same seed discipline, seeds disjoint
+from T1.1's), before training (Amendment 3). Plus the KL-to-base term on the general text slice at the
 same weight as §5.2–5.3. No SFT comparator. LoRA rank 16 on attention and MLP projections, bf16 on 7B, QLoRA
 (4-bit base, bf16 adapters) on 27–30B. This arm sees the **outcome labels**; §5.2–5.3 do not.
 
@@ -359,21 +359,23 @@ before training; no adapter is selected on H1_held.
 | T0.8 | Analysis scripts against synthetic rows: ΔP against the independent `none` re-run (never the selecting sample; a synthetic regression-to-the-mean fixture asserts it), the floor rung `P_none^re − P_none^sel`, ΔE, ladder, MDE recompute, adapter-vs-adapter differences, transport curves; so every Tier 1 statistic is zero GPU after banking | scripts + fixtures |
 | T0.9 | Frontier exhibit, hand-run, zero cost (author's option): 20 `H1_held` scenarios pasted into 2–3 closed frontier chat products at their default reasoning setting, one response each, parsed by hand; reported as a descriptive exhibit ("the pattern appears at the frontier"), never as a KDG measurement; no automation of consumer accounts (outside their terms); the API pass is a funded item | `steering/FRONTIER_EXHIBIT.md` |
 | T0.10 | ANOMALIES/CLAIMS/SYNTHESIS stubs for §8 | entries |
+| T0.11 | T1.0 screen pod driver (Amendment 3): one model loaded at a time, its trace-length pilot, VALIDATE and screen run back to back before unloading, so step-down and re-price happen inline; dose-0 candidates per model (Muse: empty reasoning channel, then direct answer; records which passes or that neither does); per-rollout saving; last output the re-priced Tier 1 table for G1. Local test on tiny models, then a `VALIDATE=1` dry run before the pod command goes to the author | driver + tests |
 
 ### Tier 1 — pods (prices at the stated rollouts, 1,024-token cap, HF generate with hooks, batched)
 
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
 | T1.0 | Screen, per model first the trace-length pilot (8 × 4, cap 4,096, step-down rule, re-price every Tier 1 row before continuing; Amendment 2): OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 100 × 4); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); direction extraction riders for the 27–30B | 1.5 + 2.5 + 2.5 = 6.5 | development model and second family (§2 rule); whether the brake exists on Think at all |
-| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on `H1_train` scenarios lacking a DPO pair if pairs < 40; about 0.11 A100-min per rollout at this row's rate, so 0.3 A100-h covers about 20 scenarios and all 132 would be about 2) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
+| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on the train scenarios lacking a DPO pair if pairs < 40, up to ~20 scenarios, ~0.3 A100-h) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
 | T1.2 | AtP localization on one trace per brake-engaged scenario at the 5 banked layers; constancy read (zero GPU) | 0.5 | L* and the anchoring position class |
 | T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8 (`none` is the independent baseline `P_none^re`); strength sweep | 1.5 | which representation the loss holds |
 | T1.4 | Train `L-beh`, `L-anchor`, `L-self` on the development model (bf16 LoRA, 7B) | 3 | — |
 | T1.5 | Evaluate the three adapters: H1_held 132 × 8 each; independent `none` re-run on the `H1_held` brake-engaged subset × 8 (the baseline `P_none^re`, about 1 A100-h at T1.1's rate for 50–80 scenarios); panel + twins at dose 0 (forward); capability slice; specificity set; Heretic on passing adapters | 11 | the §6 verdicts; the headline adapter-vs-adapter difference |
 | T1.6 | Second family (27–30B): H1 to 100 × 6 uninstrumented with banking (the screen's 60 become its train split; the other 100 are held out); train the best-performing objective from T1.5 (QLoRA) and `L-beh`; evaluate both on the 100 held-out × 6 and the panel at dose 0; independent `none` re-run × 6 on the held-out brake-engaged subset (about 0.75 A100-h, re-priced from T1.0's measured rate) | 7.75 | whether the recipe transfers across families; the pitch's transfer claim |
-| | **Total** | **~34.25 (≤ 34.55 with the pair rider)** | headroom to 35; a pair rider beyond about 20 scenarios exceeds the envelope and goes to the author before it runs |
+| | **Total** | **~34.25 of record (≤ 34.55 with the pair rider)** | headroom to 35; if the rider would pass 35, the bail order applies before it runs |
 
-Bail order if a pod runs long: T1.6's `L-beh` arm, then `L-fill` (already optional), then T1.5's
+Bail order if a pod runs long (and, before the §5.1 pair rider runs, if the rider would take Tier 1
+past 35): T1.6's `L-beh` arm, then `L-fill` (already optional), then T1.5's
 Heretic pass. Never cut: T1.1 (the banked baseline is the asset every zero-GPU read depends on) and
 T1.6's uninstrumented baseline on the second family.
 
@@ -619,3 +621,21 @@ author before it runs.
 
 Verified facts behind this amendment (HF primary sources at the pinned revisions, 2026-10-18):
 registry `steering:` entries, commit ca84d0b.
+
+### Amendment 3 (2026-10-18; author, after the Amendment 2 status; zero GPU; before any compute)
+
+1. **§2 criterion (b), confirmed.** One-A100 fit for training and generation is a hard requirement;
+   a working dose-0 regime only breaks ties between brakes within each other's screen CIs
+   (Amendment 2 item 4 stands as written).
+2. **Pair rider capped.** Below the 40-pair floor: 8 more rollouts on the train scenarios lacking a
+   pair, up to ~20 scenarios (~0.3 A100-h). This supersedes Amendment 1 item 2's uncapped rider and
+   its "goes to the author" clause. ~34.25 A100-h is the Tier 1 total of record; if the rider would
+   take Tier 1 past 35, the bail order applies before it runs.
+3. **T0.11, the T1.0 screen pod driver** (missing from v0.2.1's Tier 0): one model loaded at a time,
+   with its trace-length pilot, VALIDATE and screen back to back before unloading, so step-down and
+   re-price happen inline; Muse tries both dose-0 candidates in order (empty reasoning channel, then
+   direct answer) and records which passes or that neither does; the driver's last output is the
+   re-priced Tier 1 table for G1. Local test on tiny models, then a `VALIDATE=1` dry run, before the
+   pod command goes to the author. Amendments are pushed before T1.0 runs.
+4. **Order of Tier 0 work:** T0.11; T0.10 and T0.8 (T0.8's fixture must fail if ΔP reads the
+   selecting sample); T0.3; T0.5, T0.7, T0.6; T0.4 held until G1.
