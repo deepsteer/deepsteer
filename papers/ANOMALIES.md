@@ -1040,3 +1040,20 @@ Pod e5cifka57z5gxi ran the local gates before any model load; `test_forward_read
 **Thesis impact.** R_a: GPT-OSS's rule compliance on H1 is strongest at the lowest effort and partly reverses with more deliberation, which makes effort a lever toward protection, not away from it. R_b: the dose curve is flat after the onset, and §42's onset step is the finding.
 
 **Process ledger 2026-10-13 — p1e under-priced by about 40%.** G-A29 priced the carrier H1 pod at about 4.7 A100-h from p1d's per-unit times, treating p1d's three units as three generated cells; the third (`dose_ctrl_tf_own_pressure_removed`) was a forward pass on existing filler rollouts. Corrected rates: OLMo-3 0.38, Llama-3.1 0.33 min per generated scenario-cell, so about 6.5 A100-h. Caught when OLMo-3's first unit had not written after 1h37m (GPU at 85%, process alive). The author let it run. Lesson: price from generated cells only, checking each unit's kind (generation vs forward pass) before reusing its time.
+
+## ST line ledger (prefix ST-A; opened 2026-10-18, `ST_PLAN.md` v0.2.7)
+
+No entries yet: the ST line has no data. Entries open on observation only, in the schema above.
+Pre-registered triggers (each opens an entry at the gate where it appears, with a priced
+discriminator):
+
+- T1.0: parser disagreement above 5% of finished rollouts on any model (Amendment 5 item 4); a
+  padded-vs-alone failure, the KDG-A20 pattern (Amendment 4 item 4); a truncation-limited model
+  (Amendment 4 item 2); a dose-0 candidate that passes letter mass and fails C0 or the known-gap
+  band; a screen brake of the opposite sign to the KDG record (reasoning moving toward protection).
+- G2: a `fill` gate configuration that restores (a live-vector effect, §8).
+- G3: an adapter that widens the gap or moves the specificity set (§8); `L-fill` restoring; an
+  adapter shifting a model's truncation rate by more than 5 pp (Amendment 4 item 2); a
+  regression-to-the-mean floor larger than the restoration it sits under.
+- G4: a second family that breaks the T1.5 ordering.
+

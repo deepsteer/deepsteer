@@ -1059,3 +1059,40 @@ Escalated to the author with the diff: the abstract's trimmed closing clause; th
 keeps-the-gate sense; the per-rollout table's release location (resolved 2026-10-16: Zenodo,
 10.5281/zenodo.23425333).
 
+## What the next result changes (ST line, pre-registered 2026-10-18; `papers/ST_PLAN.md` v0.2.7)
+
+The ST line turns the KDG instrument into an intervention target. Hypothesis of record (ST_PLAN §0):
+a post-training stage that holds the model's moral reference live during deliberation narrows the
+judgment–action gap on held-out scenarios, without a prompt-level reminder, where behavioral
+fine-tuning on the same data does not. Co-primary outcomes: ΔP on `H1_held` (brake-engaged subset,
+baseline an independent `none` re-run, Amendment 1) and ΔE on the panel at dose 0. Inference-time
+steering appears once, as a localization gate (§5.0), never as the deliverable.
+
+Positive voice, pre-data (move 7): *the program now has a measured failure to repair, deliberation
+moving models off a protective departure toward a harmful written rule (GPT-OSS-20B −0.224 on the
+forced dose-0 vs sampled-action instrument, n = 258; the carriers −0.076 and −0.050 under forced
+reasoning), a held-out split built before any training, and a screen whose power was computed from
+that failure's own variance (MDE 0.075 at 132 × 4) before the pod.*
+
+| cell | branch | thesis edit |
+|---|---|---|
+| T1.0 screen (G1), OLMo-3-7B-Think | Amendment 5 (i) and (ii) both hold | development model is OLMo-3-Think; the stage-checkpoint ladder (Tier 2) can locate where the brake is installed on the same lineage |
+| | either misses | GPT-OSS-20B is the development model; OLMo-3 keeps the Tier 2 checkpoint role; "the brake on a 7B open recipe" is not claimed |
+| T1.0, the 27–30B pair | one has a dose-0 regime and a CI-separated brake | it is the second family, with both co-primaries |
+| | only Muse remains and fails dose-0 | the second family carries ΔP on H1 alone; the transfer sentence is scoped to H1 |
+| T1.0, any model | parser disagreement > 5% or truncation-limited | ANOMALIES entry before G1; the brake of record is stated with both parser columns |
+| T1.5 (G3) | §8 rows | the headline is the adapter-vs-adapter difference on held-out sets; every §8 branch is publishable (§8 table) |
+
+Standing claim (pending) and its rival:
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| an outcome-free representation objective (`L-anchor` or `L-self`) restores protection on held-out scenarios where DPO on the same traces does not | the objective teaches rule-breaking, not care (it moves every rule-protected choice) | the specificity set (60 panel scenarios where the rule is right; bar ±0.03) and panel ΔE with the twin at rest (§6) | HELD (T1.5) |
+
+Conjunction added under watch: **ST effort of record × KDG-A28/A29.** The screen runs each model at
+its shipped default effort (Amendment 2), while on GPT-OSS-20B protection on H1 rises from low to
+high effort (24% → 31% → 37%, paired 59, unresolved) after a step at the onset of reasoning. If the
+screen's step-downs move a model to a lower effort, its brake is measured where KDG-A29's reading
+predicts the largest rule compliance; the two-point descriptive in the screen record is the first
+cross-model read of that dose curve.
+

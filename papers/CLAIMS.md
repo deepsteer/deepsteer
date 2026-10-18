@@ -321,3 +321,22 @@ Unit `KDG` = the knowing–doing-gap panel paper (not yet packaged; none of thes
 | KDG-72 | Brake magnitude, panel vs H1 (descriptive): OLMo-3 −0.002 [−0.042, +0.037] (no detectable difference; detectable 0.056); Llama-3.1 −0.301 [−0.340, −0.260] (H1 brake about a seventh of the panel's). *P1-A17 (§44): with the panel arm two-way, OLMo-3 −0.002 [−0.047, +0.045] (detectable 0.065), Llama-3.1 −0.301 [−0.349, −0.254]; between-set comparison.* | CI (descriptive comparison) | KDG | `kdg_panel/data/analysis_brake_panel_vs_h1.json`; KDG_RESULTS §43 | — |
 | KDG-73 | Same Llama-3.1 base, two recipes, paired on the 586 scenarios screened by no model (P1-A17 item 2, letter-only readout under each template): Meta's pressure-attributable excess minus Tulu 3's (final) +0.027 [0.017, 0.037]; MDE 0.015. | CI (paired) | KDG | `kdg_panel/data/analysis_meta_vs_tulu_paired.json`; KDG_RESULTS §44 | — |
 | KDG-65 | Actor-cost separating cell (G-A22 items 1, 3): two blind raters agree the norm-consistent option is costlier to the agent itself in 83 of 586 scenarios (κ 0.35; 2× chance overlap) and more harmful to others in 1. Actor-reversed subset: 10 toward, 0 away; gate (≥ 27 crossings) not met → **unresolved**; descriptive only. Paper deliberation sets: OLMo-3 25 of 130 and Llama-3.1 15 of 114 actor-reversed, 0 harm-reversed. | gate (pre-registered), descriptive counts | KDG | `kdg_panel/data/analysis_gptoss_actor_reversed.json`; KDG_RESULTS §33 | author check (§35): set stays at 83; actor labels not confirmed (0/5) |
+
+## ST claims (pre-registered 2026-10-18 as `ST_PLAN.md` v0.2.7, Amendments 1–5; readings at G1–G4)
+
+Unit `ST` = the live-reference post-training line (not packaged). Every row is `HELD` until its
+cell runs; the anchored sentence fixes the wording and the bracketed slots are the only parts the
+data fills. Artifacts land under `papers/st_live_reference/outputs/` (gitignored; numbers of record
+go to an ST results file at each gate).
+
+| id | anchored sentence (template) | status | unit | artifact | figure |
+|---|---|---|---|---|---|
+| ST-01 | T1.0 screen, per model at its effort of record [level] and cap 1,536: whole-set brake B [mean] [CI] over [n] H1_train scenarios × 4 (MDE [x] from its own variance); truncation [rate]; parser disagreement [rate]. | HELD | ST | `outputs/t10/<model>/screen_record.json` `brake`, `screen` | — |
+| ST-02 | Development role (Amendment 5): (i) B's CI [excludes / includes] 0; (ii) [k] brake-engaged scenarios against the no-brake null's q95 [q]; role → [model]. | HELD | ST | same, `dev_criteria`, `engaged` | — |
+| ST-03 | Dose-0 regime per model: candidate of record [name / none]; letter mass [x]; C0 [agreement] vs 0.9 κ* [bar]; known-gap g_band [mean] [CI]. | HELD | ST | same, `dose0` | — |
+| ST-04 | Per adapter on H1_held's brake-engaged subset (n [k]): ΔP against the independent `none` re-run [mean] [CI]; regression-to-the-mean floor P_none^re − P_none^sel [x]; verdict [generalizes / restores, local / partial / non-specific / null] with its MDE. | HELD | ST | T1.5 | — |
+| ST-05 | Headline difference on held-out sets: ΔP(`L-anchor` or `L-self`) − ΔP(`L-beh`) [mean] [CI]. | HELD | ST | T1.5 | — |
+| ST-06 | Panel at dose 0 per adapter: ΔE [mean] [CI] with Δg_twin [x] (twin noise band [y]); capability [Δacc]; specificity [Δmass]. | HELD | ST | T1.5 | — |
+| ST-07 | Second family [model]: the T1.5 ordering [replicates / breaks] at MDE [x] ([co-primaries / H1 only]). | HELD | ST | T1.6 | — |
+| ST-08 | Constitution overlap (§13): projection fraction of `V_const` onto `V_moral` [x] against the matched null [q95] and `V_harm` [y]; positive control GPT-OSS-20B × `C_spec` [passes / fails]. | HELD | ST | §13 | — |
+
