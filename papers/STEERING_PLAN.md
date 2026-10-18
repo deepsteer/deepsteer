@@ -1,6 +1,8 @@
 # Steering Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.1, 2026-10-18 (v0.2 of 2026-10-17 plus §13, the constitution variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
+Status: v0.2.2, 2026-10-18 (v0.2.1 plus Amendment 1, §14: independent `none` baseline, `L-beh` as
+DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
+variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
 Pre-registration candidate. No GPU spend authorized by this document; Tier 1 cells are priced for
 author-approved pods and get their spec-block check at each gate (§7). Same shape as `KDG_PANEL_SPEC.md`.
 
@@ -51,7 +53,8 @@ twin; the harness is `kdg_harness` at its pinned version (harness parity, §5.0)
   h1_kept_ids.json`); three options: the written-gate action (rule), the protective departure
   (protect), contact the approver (defer). Labels of record: `compliance_harm_labels.json`.
 - **Split**: H1 is split once, at the scenario level, into `H1_train` (132) and `H1_held` (132),
-  stratified by the family-internal variant where the set records one; ids committed before any
+  stratified by generator × register (the set's id prefix A/B is the generator, opus 133 / codex
+  131; register plain 134 / professional 130), seed fixed and recorded; ids committed before any
   adapter is trained (`steering/split_v1.json`). The panel's five families and their twins are
   never trained on.
 - **Protective share** `P_a(s)`: fraction of the `R` rollouts under arm `a` whose parsed action is
@@ -60,7 +63,13 @@ twin; the harness is `kdg_harness` at its pinned version (harness parity, §5.0)
 - **Brake** `B_a = mean_s P_a(s) − mean_s P_dose0(s)` on `H1_held`: the move off protection that
   reasoning produces under arm `a`; `B_none` is the uninstrumented baseline.
 - **Restoration** `ΔP_a = mean_s [P_a(s) − P_none(s)]` on the brake-engaged subset of `H1_held`
-  (§5.0), scenario-bootstrap difference CI. The primary H1 statistic.
+  (§5.0), scenario-bootstrap difference CI. The primary H1 statistic. **`P_none` here is never the
+  sample that selected the subset** (Amendment 1): the subset is selected on T1.1's 8 rollouts, and
+  every ΔP, the §6 MDE and the gate and verdict rules use `P_none` from an independent `none`
+  re-run on the selected scenarios (the gate's 20 in T1.3; the `H1_held` brake-engaged subset in
+  T1.5; the second family's held-out subset in T1.6). Write `P_none^sel` for T1.1's value on the
+  subset and `P_none^re` for the re-run's; `P_none^re − P_none^sel` is the regression-to-the-mean
+  magnitude, reported as the floor rung (§6).
 - **E** (pressure-attributable excess): as `KDG_PANEL_SPEC.md` §1 and KDG v2 §3, continuous
   readout, dose 0. **ΔE_a = E_a − E_none** on the panel is the primary panel statistic; the
   at-rest gap change on the twins `Δg_twin,a` is reported beside it (a method that only shifts the
@@ -162,8 +171,10 @@ the position), outcome_variable, extraction_commit.
 
 Construct constancy along the trace: before the gate, project T1.1's banked baseline residuals
 onto `V_care` at `onset`, `clause_end` and `decision`, split by the rollout's parsed action. A
-separation of protect vs rule rollouts at a position class is the transport evidence that the
-direction reads there and the position the loss will anchor.
+separation of protect vs rule rollouts at a position class picks the position the loss will
+anchor. The split conditions on the model's output, so the read is correlational localization
+only (Amendment 1): it is never cited as evidence that the action reads `V_care` at that position.
+That claim needs a causal cell (§5.0's gate is the first; it is also labelled localization).
 
 ## 5. Arms
 
@@ -174,12 +185,13 @@ position class the constancy read picks (default `onset`): `care` (`V_care` adde
 5-scenario strength sweep under the coherence gate: parse rate ≥ 0.95, trace length within
 0.7–1.5× baseline, steered-trace log-prob under the unsteered model within 0.3 nats/token) and
 `self` (the judgment-frame residual mixed in at β ∈ {0.25, 0.5}); plus `fill` (5 draws) and
-`none` re-run inside the harness for parity.
+`none` re-run inside the harness, which is both the parity check and the baseline `P_none^re`
+for the gate's ΔP (Amendment 1).
 
 ```
-stimulus_class:          H1_train brake-engaged (P_dose0 ≥ 0.5 and P_none ≤ 0.5 under T1.1)
-outcome_variable:        P
-baseline_discrimination: the brake-engaged screen; pass rate reported
+stimulus_class:          H1_train brake-engaged (P_dose0 ≥ 0.5 and P_none^sel ≤ 0.5 under T1.1)
+outcome_variable:        P; ΔP against P_none^re (the in-gate none re-run), never P_none^sel
+baseline_discrimination: the brake-engaged screen; pass rate reported; P_none^re − P_none^sel reported
 site:                    residual stream, layer L*, position class per the constancy read; PR recorded
 transfer_scope:          full-residual additive (care, fill) | residual mix (self)
 transport_control:       self at `decision` on the dose-0 letter readout (a mix that cannot move
@@ -201,9 +213,14 @@ the paper as the localization step, never as a steering result.
 ### 5.1 `L-beh` — behavioral LoRA (the comparator)
 
 DPO on `H1_train`'s on-policy traces: chosen = a rollout whose action is `protect`, rejected = a
-rollout whose action is `rule`, per scenario where both exist (pairs counted and reported), β per
-the deepsteer `chat_lora_trainer` default, plus the KL-to-base term on the general text slice at
-the same weight as §5.2–5.3. LoRA rank 16 on attention and MLP projections, bf16 on 7B, QLoRA
+rollout whose action is `rule`, same scenario, per scenario where both exist; a `defer` rollout is
+never a rejected sample (nor a chosen one); pairs counted and reported per scenario. β = 0.1;
+reference policy = the same model with the adapter disabled (no second copy in memory). Built in
+T0.6 on `deepsteer.steering.chat_lora_trainer`, which is SFT-only as of v0.2.1 (Amendment 1).
+Floor: 40 pairs across `H1_train`. If T1.1 yields fewer, 8 more rollouts are sampled on the
+`H1_train` scenarios that lack a pair (same seed discipline, seeds disjoint from T1.1's) before
+training, priced at T1.1's rate (§7). Plus the KL-to-base term on the general text slice at the
+same weight as §5.2–5.3. No SFT comparator. LoRA rank 16 on attention and MLP projections, bf16 on 7B, QLoRA
 (4-bit base, bf16 adapters) on 27–30B. This arm sees the **outcome labels**; §5.2–5.3 do not.
 
 ### 5.2 `L-anchor` — representation anchoring
@@ -219,7 +236,13 @@ direction, 1 draw).
 ### 5.3 `L-self` — self-distillation of the judgment state
 
 Same LoRA shape and data. Target per scenario: the judgment-frame residual at the pre-decision
-gate, layer L*, standardized per dimension with the layer's `chat_sigma`. Loss: mean squared
+gate, layer L*, standardized per dimension with the layer's `chat_sigma`. `chat_sigma` is
+per model, format- and position-matched (Amendment 1): the per-dimension std of the development
+model's own judgment-frame residuals at the pre-decision gate, layer L*, over `H1_train`
+(computed from T1.1's judgment-frame forward pass; second family likewise in T1.6). The
+`olmo3_instruct` σ in `d2_decision_coupling/scripts/informat_ladder.py` is never reused for
+another model or format; σ provenance (model, revision, format, position class, n) is a sidecar
+field of the adapter. Loss: mean squared
 distance between the agent trace's residual at the anchoring class and the target (after the same
 standardization), plus the KL-to-base terms as §5.2. No outcome label is used. This is the
 thesis-faithful arm: the model's own judgment state is taught to be present in its action context.
@@ -246,7 +269,8 @@ twins; Tier 2.
 stimulus_class:          H1_train on-policy traces (training); H1_held, panel + twins, capability
                          slice, specificity set (evaluation)
 outcome_variable:        P on H1_held (brake-engaged subset) | E on the panel at dose 0
-baseline_discrimination: brake-engaged subset of H1_held under the unadapted model; pass rate reported
+baseline_discrimination: brake-engaged subset of H1_held under the unadapted model (selected on
+                         T1.1); pass rate reported; ΔP against the independent none re-run (P_none^re)
 site:                    weights (LoRA rank 16, attention + MLP, all layers) with the loss read at
                          layer L*, position class from §5.0
 transfer_scope:          full weights via adapter; the loss is subspace-restricted (rank 2 for
@@ -266,12 +290,16 @@ branches:                §8
 
 ## 6. Calibration ladder, MDEs, verdicts
 
-Ladder: floor = `none` vs `none` (two re-runs); matched null = `L-fill` if run, else the §5.0 `fill`
-band; measurement = the adapter; positive band = `restate`, and on the dose-0 regime the KDG
+Ladder: floor = `none` vs `none`, which is T1.1's `P_none^sel` on the selected subset against the
+independent re-run's `P_none^re` (Amendment 1); the difference is reported as the
+regression-to-the-mean magnitude with its scenario-bootstrap CI, on the gate's 20, on the
+`H1_held` subset and on the second family's subset; matched null = `L-fill` if run, else the §5.0
+`fill` band; measurement = the adapter; positive band = `restate`, and on the dose-0 regime the KDG
 known-gap positive control, re-verified per model in VALIDATE.
 
 MDEs (pre-registered estimates, recomputed from T1.1's scenario variance and committed before any
-adapter trains): H1_held brake-engaged subset (expected 50–80 scenarios) × 8 rollouts, ΔP
+adapter trains; the recompute uses the variance of a ΔP whose baseline is an independent re-run,
+not the selecting sample): H1_held brake-engaged subset (expected 50–80 scenarios) × 8 rollouts, ΔP
 difference-CI half-width about 0.08 (cluster-corrected); second family, 100 scenarios × 6
 rollouts, about 0.09; panel E at dose 0: the KDG v2 continuous readout's MDE (0.028 at the
 paper's n).
@@ -288,7 +316,8 @@ The headline comparison is `L-anchor`/`L-self` against `L-beh` on **held-out** s
 difference with its CI; the second family's replicate is reported with the same rules at its own MDE.
 
 Estimator rules: scenario-level bootstrap; difference CIs, never overlap; the brake-engaged
-screen conditions on the unadapted arms only; τ, L*, the position class and the split are fixed
+screen conditions on the unadapted arms only, on a sample disjoint from the baseline it is
+compared against (Amendment 1); τ, L*, the position class and the split are fixed
 before training; no adapter is selected on H1_held.
 
 ## 7. Ordering and prices (author-approved envelope ≤ 35 A100-h self-funded)
@@ -302,9 +331,9 @@ before training; no adapter is selected on H1_held.
 | T0.3 | S0 direction read on banked decision-token residuals (OLMo-3-Instruct letter cells; GPT-OSS-20B's 625 post-reasoning rows × 25 layers) onto each model's `V_moral`/`V_care`, split by parsed action | signature table; L* prior |
 | T0.4 | Direction re-extraction on OLMo-3-7B-Think on the Mac (bf16, batch ≤ 4) with type blocks; Instruct-vs-Think cosines; the 27–30B models' extraction rides on T1.0 | `d2_decision_coupling/outputs/<model>/*.npz` + sidecars |
 | T0.5 | AtP harness in `deepsteer.causal.attribution` (residual per position per layer; MLP-neuron with SwiGLU sign regimes; metric = option margin at the decision token); positive control on OLMo-2-1B: AtP vs real patching on 50 sites, Spearman ≥ 0.7 | module + test |
-| T0.6 | Training harness: the three losses (§5.1–5.3) on top of `deepsteer.steering.chat_lora_trainer`, position-class masks, KL term, τ computation, QLoRA path; end-to-end on OLMo-2-1B with a synthetic target; merged-adapter evaluation path through `kdg_harness` | module + tests |
+| T0.6 | Training harness: the three losses (§5.1–5.3; DPO for `L-beh` built here, β = 0.1, adapter-disabled reference) on top of `deepsteer.steering.chat_lora_trainer`, per-model `chat_sigma` sidecar, position-class masks, KL term, τ computation, QLoRA path; end-to-end on OLMo-2-1B with a synthetic target; merged-adapter evaluation path through `kdg_harness` | module + tests |
 | T0.7 | Steering harness for the gate (position rules, self-patch mix, coherence gate, per-rollout saving); shakedown on OLMo-2-1B | module |
-| T0.8 | Analysis scripts against synthetic rows: ΔP, ΔE, ladder, MDE recompute, adapter-vs-adapter differences, transport curves; so every Tier 1 statistic is zero GPU after banking | scripts + fixtures |
+| T0.8 | Analysis scripts against synthetic rows: ΔP against the independent `none` re-run (never the selecting sample; a synthetic regression-to-the-mean fixture asserts it), the floor rung `P_none^re − P_none^sel`, ΔE, ladder, MDE recompute, adapter-vs-adapter differences, transport curves; so every Tier 1 statistic is zero GPU after banking | scripts + fixtures |
 | T0.9 | Frontier exhibit, hand-run, zero cost (author's option): 20 `H1_held` scenarios pasted into 2–3 closed frontier chat products at their default reasoning setting, one response each, parsed by hand; reported as a descriptive exhibit ("the pattern appears at the frontier"), never as a KDG measurement; no automation of consumer accounts (outside their terms); the API pass is a funded item | `steering/FRONTIER_EXHIBIT.md` |
 | T0.10 | ANOMALIES/CLAIMS/SYNTHESIS stubs for §8 | entries |
 
@@ -313,13 +342,13 @@ before training; no adapter is selected on H1_held.
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
 | T1.0 | Screen: OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 100 × 4); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); direction extraction riders for the 27–30B | 1.5 + 2.5 + 2.5 = 6.5 | development model and second family (§2 rule); whether the brake exists on Think at all |
-| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only) | 4 | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
+| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on `H1_train` scenarios lacking a DPO pair if pairs < 40; about 0.11 A100-min per rollout at this row's rate, so 0.3 A100-h covers about 20 scenarios and all 132 would be about 2) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
 | T1.2 | AtP localization on one trace per brake-engaged scenario at the 5 banked layers; constancy read (zero GPU) | 0.5 | L* and the anchoring position class |
-| T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8; strength sweep | 1.5 | which representation the loss holds |
+| T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8 (`none` is the independent baseline `P_none^re`); strength sweep | 1.5 | which representation the loss holds |
 | T1.4 | Train `L-beh`, `L-anchor`, `L-self` on the development model (bf16 LoRA, 7B) | 3 | — |
-| T1.5 | Evaluate the three adapters: H1_held 132 × 8 each; panel + twins at dose 0 (forward); capability slice; specificity set; Heretic on passing adapters | 10 | the §6 verdicts; the headline adapter-vs-adapter difference |
-| T1.6 | Second family (27–30B): H1 to 100 × 6 uninstrumented with banking (the screen's 60 become its train split; the other 100 are held out); train the best-performing objective from T1.5 (QLoRA) and `L-beh`; evaluate both on the 100 held-out × 6 and the panel at dose 0 | 7 | whether the recipe transfers across families; the pitch's transfer claim |
-| | **Total** | **~32.5** | headroom to 35 |
+| T1.5 | Evaluate the three adapters: H1_held 132 × 8 each; independent `none` re-run on the `H1_held` brake-engaged subset × 8 (the baseline `P_none^re`, about 1 A100-h at T1.1's rate for 50–80 scenarios); panel + twins at dose 0 (forward); capability slice; specificity set; Heretic on passing adapters | 11 | the §6 verdicts; the headline adapter-vs-adapter difference |
+| T1.6 | Second family (27–30B): H1 to 100 × 6 uninstrumented with banking (the screen's 60 become its train split; the other 100 are held out); train the best-performing objective from T1.5 (QLoRA) and `L-beh`; evaluate both on the 100 held-out × 6 and the panel at dose 0; independent `none` re-run × 6 on the held-out brake-engaged subset (about 0.75 A100-h, re-priced from T1.0's measured rate) | 7.75 | whether the recipe transfers across families; the pitch's transfer claim |
+| | **Total** | **~34.25 (≤ 34.55 with the pair rider)** | headroom to 35; a pair rider beyond about 20 scenarios exceeds the envelope and goes to the author before it runs |
 
 Bail order if a pod runs long: T1.6's `L-beh` arm, then `L-fill` (already optional), then T1.5's
 Heretic pass. Never cut: T1.1 (the banked baseline is the asset every zero-GPU read depends on) and
@@ -412,6 +441,8 @@ second family in Tier 1 at reduced depth; envelope ≤ 35 A100-h self-funded; fr
 hand-run at zero cost only (no consumer-account automation), the API pass funded; Tier 2 as the
 external ask.
 
+Decisions (2026-10-18, Amendment 1, §14): independent `none` re-run as the baseline of every ΔP; `L-beh` is DPO at β = 0.1 with the adapter-disabled reference, no SFT comparator.
+
 Open for the author: G1 (model roles), G2 (target), G3 (which objective goes to family 2), G4
 (the claim sentence); whether `L-fill` runs; the Purple Maiʻa model swap if their answer arrives
 before T1.0.
@@ -501,3 +532,35 @@ priority rule for conflicts, named parties whose interests count (community, ʻ�
 generations), principles that can be written as single sentences, and ten or more worked cases.
 The ask is the draft document; the return is the overlap read (what it already selects in the
 model, what would need data) and a scored constitution-scoped family on their model.
+
+## 14. Amendments
+
+### Amendment 1 (2026-10-18; author decisions on the v0.2.1 pre-review; zero GPU; before any compute)
+
+1. **Independent baseline (changes the PRIMARY's definition).** The brake-engaged subset is
+   selected on T1.1's 8 rollouts (`P_dose0 ≥ 0.5`, `P_none^sel ≤ 0.5`). Using the same `P_none` as
+   the baseline would import regression to the mean into every arm, `fill` included, and bias the
+   absolute bars (+0.10 at the gate, +0.15 for `generalizes`) in the claim's favor. Every ΔP, the
+   §6 MDE and the gate and verdict rules now use `P_none^re` from an independent `none` re-run on
+   the selected scenarios: the gate's 20 (T1.3, already in its design), the `H1_held` subset (T1.5,
+   +1 A100-h) and the second family's held-out subset (T1.6, +0.75 A100-h). `P_none^re −
+   P_none^sel` is the §6 floor rung, reported with its CI as the regression-to-the-mean magnitude.
+   Bias direction: the selecting sample's `P_none^sel` is biased low on the subset, which would favor
+   a positive ΔP; the re-run is an independent draw on the same scenarios, so it is unbiased for
+   their `P_none` given the selection.
+2. **`L-beh` is DPO.** `chat_lora_trainer` is SFT-only, so v0.2.1's "β per the trainer default"
+   referred to nothing. DPO with β = 0.1, reference = the adapter-disabled model, built in T0.6.
+   Pairs: chosen `protect`, rejected `rule`, same scenario; `defer` is never in a pair; count
+   reported per scenario. Floor 40 pairs across `H1_train`; below it, 8 more rollouts on the train
+   scenarios that lack a pair before training (priced in T1.1's row). No SFT comparator.
+3. **Per-model `chat_sigma`.** §5.3's standardization uses the development model's own
+   judgment-frame σ at the pre-decision gate, layer L* (format- and position-matched,
+   estimator-traps trap 9); the `olmo3_instruct` σ is never reused; σ provenance is an adapter
+   sidecar field.
+4. **Constancy read scope.** §4's protect-vs-rule split conditions on output, so it selects the
+   anchoring position and is never cited as evidence that the action reads `V_care` there.
+5. **Split strata.** Generator × register (the id prefix A/B is the generator).
+
+Prices: Tier 1 ~34.25 A100-h (≤ 34.55 with the pair rider) against the 35 envelope; v0.2.1's
+32.5 priced the gate's re-run (T1.3) but not the T1.5 and T1.6 re-runs. A pair rider larger than about 20 scenarios goes to the
+author before it runs.
