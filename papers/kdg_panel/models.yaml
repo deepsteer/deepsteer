@@ -310,6 +310,7 @@ steering:
     think_close: "</think>"          # "<|im_start|>assistant\n", so trace onset is string-based
     thinking_toggle: null            # none documented (card, template); dose-0 candidate: prefill "</think>"
     effort_levels: null              # none documented
+    card_sampler: {temperature: 0.6, top_p: 0.95}   # generation_config.json; recorded only (sampler v2 T 0.7 runs, Amendment 4)
     effort_of_record: null           # Amendment 2
     dose0_prefill: null              # VALIDATE
     license: apache-2.0
@@ -336,6 +337,7 @@ steering:
     thinking_toggle: enable_thinking # False renders "<think>\n\n</think>\n\n" after the assistant header
     effort_levels: [low, medium, xhigh]   # template raises on any other value; there is no "high"
     effort_default: xhigh
+    card_sampler: {temperature: 1.0, top_p: 0.95, top_k: 20}   # generation_config.json; recorded only
     effort_of_record: null           # Amendment 2
     dose0_prefill: null              # VALIDATE (candidate: the enable_thinking=False render)
     license: apache-2.0
@@ -361,6 +363,7 @@ steering:
     thinking_toggle: null            # none documented
     effort_levels: [low, medium, high, xhigh]   # "Reasoning strength: <level>." in the system message
     effort_default: high
+    card_sampler: {temperature: 1.0, top_p: 0.95, top_k: 64}   # card and generation_config.json; the optional 8 x 4 descriptive row
     effort_of_record: null           # Amendment 2
     dose0_prefill: null              # VALIDATE; no documented path, and no sibling to fall back on
     license: apache-2.0              # plus USAGE_POLICY.md in the repo
