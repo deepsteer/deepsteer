@@ -793,3 +793,19 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
 5. **If parity fails:** 4 rollouts per scenario at HF batch 264, MDE about 0.10, stated.
 6. **Order:** the relaunch is held until this amendment and the harmony format are built and
    `VALIDATE=1` passes; the push follows the commits.
+7. **Performance requirements (author, 2026-10-18, verbatim intent):** vLLM with compile and
+   CUDA graphs on, fused attention and fused MoE kernels (GPT-OSS-20B's MXFP4 path), and
+   speculative decoding enabled (n-gram draft by default; an MTP/EAGLE draft if available for the
+   model; the draft choice recorded). The throughput probe measures with and without speculation
+   at the pilot batch and at the full batch; the driver uses the faster setting per regime and
+   records it. HF side: torch.compile and SDPA flash attention for the teacher-forced readout and
+   banking passes; training uses flash attention, fused or chunked cross-entropy for the KL term,
+   and compile on the LoRA forward where it holds. Every engine setting is hashed into the
+   manifest and covered by the engine-parity rung and the forward-vs-generation check; nothing in
+   the readout harness changes. (This overrides CLAUDE.md's "no torch.compile" for the ST pod
+   engines; the library default is unchanged.)
+8. **Precision note (Claude, 2026-10-18):** GPT-OSS-20B on vLLM's fused MXFP4 MoE path computes the
+   experts in MXFP4, while §40's HF reference dequantized them to bf16 (`precision: bf16_dequant`).
+   The engine-parity rung (item 3) is the test that licenses the change for generation; the HF
+   readouts stay bf16-dequantized, so the forward-vs-generation check compares across that
+   precision difference and its bar applies as stated.
