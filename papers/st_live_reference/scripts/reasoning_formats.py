@@ -25,8 +25,13 @@ Token-level facts, from the pinned tokenizers (registry ``st:`` entries, 2026-10
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
+
+# kdg_harmony (GPT-OSS's harmony pieces) lives with the KDG scripts
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "kdg_panel" / "scripts"))
 
 PARSE_VERSION = 2  # bump on any change to what counts as an action (2: Amendment 5 columns)
 LETTERS = "ABCDE"
@@ -205,13 +210,60 @@ class ChannelFormat(ReasoningFormat):
         return (e - m if tok.decode(g[m:e]).strip() else 0), e + 1 + h
 
 
+@dataclass(frozen=True)
+class HarmonyFormat(ReasoningFormat):
+    """GPT-OSS-20B (harmony): rendering, date pin and token constants are ``kdg_harmony``'s, so
+    prompts are byte-identical to KDG_RESULTS §40's. The generated ids start after
+    ``<|start|>assistant``: an analysis turn ``<|channel|>analysis<|message|>...<|end|>`` then the
+    canonical final header ``<|start|>assistant<|channel|>final<|message|>`` (§40's
+    ``parse_dose_stated``), or a direct final channel (no trace). The answer's first token follows
+    the header immediately."""
+
+    skip_blank: bool = False
+    harmony: object = None  # kdg_harmony.HarmonyConfig
+
+    def render(self, tok, messages, effort, date_pin=None, **extra):
+        import kdg_harmony as kh
+
+        if extra:
+            raise ValueError(f"harmony render takes no extra kwargs: {sorted(extra)}")
+        # the registered date pin (§40's) wins over the session pin: prompt parity with §40
+        return kh.render(tok, messages, self.harmony, effort)
+
+    def _locate(self, tok, g):
+        import kdg_harmony as kh
+
+        if tuple(g[:3]) == kh.DIRECT_FINAL:
+            return 0, 3
+        if tuple(g[:3]) != kh.ANALYSIS_OPEN:
+            return "other"
+        if kh.END not in g[3:]:
+            return None
+        e = g.index(kh.END, 3)
+        h = len(kh.CANON_HEADER)
+        if tuple(g[e : e + h]) != kh.CANON_HEADER:
+            return "other"
+        return (e - 3 if tok.decode(g[3:e]).strip() else 0), e + h
+
+
 def _muse_ids(tok, text: str) -> tuple[int, ...]:
     return tuple(tok.encode(text, add_special_tokens=False))
 
 
-def build_format(key: str, tok) -> ReasoningFormat:
+def build_format(key: str, tok, spec: dict | None = None) -> ReasoningFormat:
     """The format of record for a ``st:`` registry key, built against its pinned tokenizer
-    (token ids are read from the tokenizer, never hard-coded)."""
+    (token ids are read from the tokenizer, never hard-coded; GPT-OSS's harmony constants are
+    ``kdg_harmony``'s, asserted against the tokenizer in the tests)."""
+    if key == "gpt_oss_20b":
+        import kdg_harmony as kh
+
+        cfg = kh.HarmonyConfig.from_registry(spec)
+        return HarmonyFormat(
+            key=key, effort_kwarg=None, effort_ladder=(cfg.reasoning_level, "low"),
+            dose0=(Dose0("primary", prefill=cfg.prefill_primary),
+                   Dose0("direct_final", prefill=cfg.prefill_direct_final)),
+            harmony=cfg,
+        )
     if key == "olmo3_think":
         return ThinkTextFormat(
             key=key, effort_kwarg=None, effort_ladder=(None,),

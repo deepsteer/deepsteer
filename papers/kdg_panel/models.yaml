@@ -371,3 +371,32 @@ st:
       The template always injects a system block with "Current date: <today>" and "Reasoning
       strength: <level>." (it rewrites "Reasoning effort" to "Reasoning strength"); the rendered
       prompt depends on the date, so the date is pinned per pod and the rendered sha saved per cell.
+  # G1 (2026-10-18): the development model. Same pins as tier2.gpt_oss_20b (a test asserts the
+  # shared fields are equal); the harmony block is §40's, so ST prompts are byte-identical to it.
+  gpt_oss_20b:
+    repo: openai/gpt-oss-20b
+    revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    kind: reasoning
+    stage: final
+    lineage: gpt_oss
+    template_sha256: a4c9919cbbd4acdd51ccffe22da049264b1b73e59055fa58811a99efbd7c8146
+    n_layers: 24
+    hidden: 2880
+    precision: bf16_dequant
+    chat_format: harmony
+    layers_path: model.layers
+    effort_default: medium
+    effort_of_record: medium         # §40's screen stands (Amendment 2 item 2)
+    card_sampler: null               # generation_config.json sets no sampler (checked 2026-10-18)
+    license: apache-2.0
+    harmony:
+      date_pin: "Current date: 2026-10-04"
+      cutoff_line: "Knowledge cutoff: 2024-06"
+      reasoning_level: medium
+      reasoning_level_c0_generate: low
+      prefill_primary: "<|channel|>analysis<|message|><|end|><|start|>assistant<|channel|>final<|message|>"
+      prefill_direct_final: "<|channel|>final<|message|>"
+      prefill_dose_matched: "<|channel|>analysis<|message|><|end|><|start|>assistant"
+      c0_max_new_tokens: 512
+      c0_rollouts: 4
+

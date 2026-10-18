@@ -4,6 +4,7 @@ Loads from the local HF cache when present (download once; the pod downloads the
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -179,3 +180,66 @@ def test_muse_roundtrip_completed_turn(muse):
 def test_letters_single_tokens_everywhere(olmo, qwen, muse):
     for tok, _ in (olmo, qwen, muse):
         assert sorted(R.letter_token_ids(tok).values()) == list("ABCDE")
+
+
+# ---- GPT-OSS-20B (harmony) --------------------------------------------------------------------
+
+KDG = ROOT / "papers" / "kdg_panel"
+
+
+@pytest.fixture(scope="module")
+def oss():
+    tok = _tok("gpt_oss_20b")
+    return tok, R.build_format("gpt_oss_20b", tok, REG["gpt_oss_20b"])
+
+
+def test_st_gpt_oss_registry_matches_kdg_tier2():
+    # most probable drift: the ST entry pins a different revision/template than §40 ran on
+    t2 = yaml.safe_load((KDG / "models.yaml").read_text())["tier2"]["gpt_oss_20b"]
+    st = REG["gpt_oss_20b"]
+    for k in ("repo", "revision", "template_sha256", "n_layers", "hidden"):
+        assert st[k] == t2[k], k
+    assert st["harmony"] == t2["harmony"]
+
+
+def test_harmony_constants_match_tokenizer(oss):
+    import kdg_harmony as kh
+
+    tok, f = oss
+    enc = lambda s: tuple(tok.encode(s, add_special_tokens=False))  # noqa: E731
+    assert enc("<|channel|>analysis<|message|>") == kh.ANALYSIS_OPEN
+    assert enc("<|channel|>final<|message|>") == kh.DIRECT_FINAL
+    assert enc("<|end|><|start|>assistant<|channel|>final<|message|>") == kh.CANON_HEADER
+    assert [c.name for c in f.dose0] == ["primary", "direct_final"]
+    assert f.effort_ladder == ("medium", "low")
+
+
+def test_harmony_render_is_section40s(oss):
+    # prompt parity with §40: the render is kdg_harmony's, date-pinned to §40's pin
+    tok, f = oss
+    r = f.render(tok, MSG, "medium")
+    assert "Current date: 2026-10-04" in r and "Reasoning: medium" in r
+    assert r.endswith("<|start|>assistant")
+
+
+def test_harmony_parser_reproduces_section40_on_its_banked_rows(oss):
+    # parity with §40's parse_dose_stated on every banked rollout (status, trace length, letter)
+    import kdg_harmony as kh
+
+    tok, f = oss
+    paths = [KDG / "outputs" / p / "h1" / "gpt_oss_20b" / "h1" / "ds_main.jsonl" for p in
+             ("p2m", "p2n")]
+    rows = [json.loads(x) for p in paths if p.exists() for x in p.read_text().splitlines()]
+    rows = [r for r in rows if r["status"] != "not_run"]
+    if not rows:
+        pytest.skip("§40 banked rows not on this machine (gitignored KDG outputs)")
+    L = R.letter_token_ids(tok)
+    for r in rows:
+        g = r["gen_ids"]
+        ds = kh.parse_dose_stated(g, len(g) >= r["cap"], set(L))
+        p = f.parse(tok, g, len(g) >= r["cap"], L)
+        assert p.status == ds.status, r["scenario_id"]
+        if ds.status == "completed":
+            assert p.trace_len == ds.trace_len
+            assert p.token_identity == ds.token_identity
+            assert p.letter_record == r["letter"]
