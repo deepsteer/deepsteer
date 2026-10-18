@@ -162,3 +162,23 @@ def test_tiny_real_checkpoint(tmp_path, model):
     assert rec["padded_check"]["max_abs_nats"] < 1e-4  # fp32 on CPU
     assert rec["dose0"]["tried"][0]["fwd_vs_gen"]["max_abs_nats"] < 1e-4
     assert rec["screen"]["n_run"] == rec["screen"]["n_rollouts"]
+
+
+def test_reprice_counts_screen_rollouts_once(tmp_path):
+    # most probable failure: T1.1 re-prices all 264 x 8 for the development model although its
+    # screen rollouts count toward T1.1 (Amendment 4 item 1)
+    import reprice_tier1 as RP
+
+    _run(tmp_path, "olmo3_think")
+    t = json.loads((tmp_path / "olmo3_think" / "timing.json").read_text())
+    priced = RP.price(t, screen_n=100)["development"]
+    row = next(v for k, v in priced.items() if k.startswith("T1.1"))
+    expect = (RP.gen_h(t, 264 * 8 - 100 * 4) + RP.read_h(t, 264 * 8, long=True)
+              + RP.read_h(t, 132) + t["load_seconds"] / 3600)
+    assert row == pytest.approx(expect, rel=1e-12)
+    assert RP.gen_h(t, 264 * 8) > RP.gen_h(t, 264 * 8 - 100 * 4)  # the subtraction bites
+    r = subprocess.run([sys.executable, str(SCRIPTS / "reprice_tier1.py"), "--screen-dir",
+                        str(tmp_path)], capture_output=True, text=True, cwd=ROOT)
+    assert r.returncode == 0, r.stderr
+    md = (tmp_path / "tier1_reprice.md").read_text()
+    assert "| measured |" in md and "| plan |" in md and "| estimate |" in md

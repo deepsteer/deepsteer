@@ -107,6 +107,8 @@ papers/d3_decision_anatomy/outputs/
 
 # KDG panel: per-rollout pod outputs (regenerable; numbers of record go in KDG_RESULTS.md)
 papers/kdg_panel/outputs/
+# steering T1.0+ per-rollout outputs (like KDG's; the pod writes them, Zenodo at write-up)
+papers/steering/outputs/
 papers/kdg_panel/data/*.log
 papers/kdg_panel/data/parts*/
 
