@@ -1043,8 +1043,7 @@ Pod e5cifka57z5gxi ran the local gates before any model load; `test_forward_read
 
 ## ST line ledger (prefix ST-A; opened 2026-10-18, `ST_PLAN.md` v0.2.7)
 
-No entries yet: the ST line has no data. Entries open on observation only, in the schema above.
-Pre-registered triggers (each opens an entry at the gate where it appears, with a priced
+Entries open on observation only, in the schema above. Pre-registered triggers (each opens an entry at the gate where it appears, with a priced
 discriminator):
 
 - T1.0: parser disagreement above 5% of finished rollouts on any model (Amendment 5 item 4); a
@@ -1056,4 +1055,24 @@ discriminator):
   adapter shifting a model's truncation rate by more than 5 pp (Amendment 4 item 2); a
   regression-to-the-mean floor larger than the restoration it sits under.
 - G4: a second family that breaks the T1.5 ordering.
+
+## ST-A1 (ledger) — OLMo-3-7B-Think's padded-vs-alone readout check fails in bf16: 0.170 nats against the 0.05 KDG bar
+
+**Date.** 2026-10-18 (T1.0 pod 7y7jn6pwphbzb5, A100-SXM4-80GB; `st_live_reference/outputs/t10/olmo3_think/screen_record.json` `padded_check`).
+**Observation.** 16 H1_train agent prompts (313–385 tokens), decision-token letter log-probs read alone vs in one left-padded batch of 16: max |Δ| 0.170 nats. Per Amendment 4 item 4 every later cell ran unbatched (54 s per rollout at cap 4,096), and the projection (5.74 h against 1.8 h) stopped OLMo after its pilot.
+**Type.** control misbehavior (a gate calibrated in fp16 against a ~0.5-nat position defect, read in bf16).
+**Competing readings.** R_a (misfire): bf16 batch-size rounding alone moves the letter log-probs by ~0.1–0.2 nats at these logit scales (KDG-A21's batch-composition effect; the p2m bit-exactness lesson). R_b (defect): a pad-dependent readout error (the KDG-A20 pattern) at a third of KDG-A20's size.
+**Discriminator.** Amendment 6 item 1's recalibrated check: the replicate unpadded floor (each row alone vs in a batch of 16 copies of itself) and the one-position-off negative control, on the same 16 prompts. R_a: the measurement sits within max(0.05, 2 × floor) and batching is restored; R_b: it exceeds the bar while the floor stays small. Cost: seconds after any OLMo-3-Think load (rides the next pod that loads it; the same check runs per model on every load).
+**Status.** open; discriminator built (Amendment 6, commit 6e04a2b), runs on the next load.
+**Thesis impact.** R_a: no instrument issue; OLMo's unbatched cost was an artifact and only ST-A2 bears on its role. R_b: a batched readout defect specific to this model or stack, entered as a methods finding beside KDG-A20.
+
+## ST-A2 (ledger) — OLMo-3-7B-Think deliberates past any affordable cap on H1: median 1,860 tokens to the answer, 59% over 1,536, 44% over 2,048, 16% unfinished at 4,096
+
+**Date.** 2026-10-18 (same pod; `pilot/pilot_None.jsonl`, `pilot/pilot_None_caps.json`).
+**Observation.** Trace-length pilot, 8 H1_train scenarios × 4 permutations, sampler v2 (T 0.7), cap 4,096: 27 completed, 5 truncated; tokens to answer median 1,860, p95 above 4,096; share over 1,536 0.594, over 2,048 0.438. No repetition loops: the share of repeated 8-grams is at most 0.06 in every trace, and the five unfinished traces end mid-argument weighing the written rule against the third party's loss. Every completed trace ends `</think>\n\n<letter><|endoftext|>`; the parser of record reads 27 of 27.
+**Type.** pre-registered trigger: a truncation-limited model (Amendment 4 item 2; the plan's 1,024 and then 1,536 caps assumed traces near GPT-OSS-20B's medium-effort lengths).
+**Competing readings.** R_a (model property): OLMo-3-Think's deliberation on rule-versus-harm conflicts is long, and the brake, if present, lives inside traces longer than the envelope affords. R_b (frame): the letter-only agent frame elicits long traces from this model whatever the content.
+**Discriminator.** Trace length on 16 panel scenarios (no H1 conflict) in the same frame at cap 4,096, 2 rollouts each; R_b predicts the same length distribution, R_a shorter. About 0.3 A100-h batched, more if ST-A1 resolves R_b. Does not change G1 either way: at 2,048, truncation 0.438 is far above the 5% bar.
+**Status.** open; G1 input (the cap amendment at 2,048 does not reach the bar; Amendment 4 item 2 leaves the GPT-OSS-20B replacement).
+**Thesis impact.** R_a: the deliberation brake on an open 7B reasoning recipe is measurable only with traces of 4k+ tokens, which prices OLMo-3-Think out of the Tier 1 envelope; the stage-checkpoint ladder (Tier 2) must budget for it. R_b: the frame, not the model, sets the budget, and a brevity instruction becomes a design question (never a lever: §0).
 
