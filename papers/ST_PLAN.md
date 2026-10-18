@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.8, 2026-10-18 (Amendment 6, §14: padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.9, 2026-10-18 (G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -750,3 +750,46 @@ bar at 1 × floor fails about half the time on pure noise; 2× keeps a KDG-A20-s
 nats) above any bf16 floor under ~0.2. (c) A negative control that does not fail the bar marks the
 check uncalibrated and the model runs unbatched. Stub tests: a 0.5-nat pad defect fails (with and
 without 0.05-sd rounding noise); 0.05-sd rounding alone keeps batching.
+
+Author confirmation (2026-10-18): the unpadded-replicate floor and the 2× factor are adopted, and
+the one-position-off negative control must exceed the bar per model, else that model's check is
+reported uncalibrated. ST-A1 keeps OLMo-3-Think's 0.170 nats as the first calibration point.
+
+### G1, partial (author, 2026-10-18)
+
+- **Development model: GPT-OSS-20B.** OLMo-3-7B-Think leaves the development role: it is
+  truncation-limited at every cap the envelope affords (ST-A2: 59% over 1,536, 44% over 2,048,
+  16% unfinished at 4,096), so the dated cap amendment at 2,048 cannot reach the 5% bar
+  (Amendment 4 item 2). ST-A2 enters the record as a result (CLAIMS ST-09).
+- The stage-checkpoint ladder (Tier 2) stays on OLMo-3-Instruct's pipeline.
+- §13's positive control sits on the development model (GPT-OSS-20B × `C_spec`), with OLMo-3 as
+  the comparison, as written.
+- The second family is still open: Qwen3.8-27B and Muse Glimmer 30B are screened on the relaunch.
+- GPT-OSS-20B's §40 rollouts cover all 264 H1 scenarios and predate the split; they are never used
+  for selection, training or a baseline. T1.1 generates its own.
+
+### Amendment 7 (2026-10-18; author; zero GPU; before the relaunch)
+
+Trigger: §40's banked batches put HF generation on GPT-OSS-20B at 1.37 s per decoding step at
+batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A100-h at that batch.
+
+1. **vLLM is the generation engine for every trace cell**, in its own venv. Letter readouts and
+   residual banking are HF teacher-forced forward passes over the banked traces at the
+   registered positions (the readout instrument is unchanged: `kdg_harness`, readout v2).
+2. **The engine is tuned for throughput (author requirement):** speculative decoding (the
+   model's own drafter where one ships: Qwen3.8's MTP head, Muse's DFlash drafter; otherwise the
+   best supported method for GPT-OSS-20B), fused kernels and compilation (torch.compile and CUDA
+   graphs, fused MoE kernels), prefix caching and chunked prefill, bf16 weights and KV cache with
+   no quantization beyond what a checkpoint ships. Speculation must preserve the target model's
+   sampling distribution (rejection sampling); the engine-parity check below is the test. The
+   exact vLLM version, flags and drafters are pinned in this amendment's implementation section
+   before the relaunch, each verified against primary sources.
+3. **Engine parity in VALIDATE:** 64 H1 scenarios × 4 rollouts via vLLM on GPT-OSS-20B against
+   §40's HF rollouts on the same scenarios; protective share within the scenario-bootstrap CI and
+   the letter marginals matched.
+4. **The relaunch pod carries:** the HF memory probe at batch 132 and 264 on GPT-OSS-20B (the
+   fallback), the vLLM parity-and-throughput probe on GPT-OSS-20B, and vLLM screens for
+   Qwen3.8-27B and Muse Glimmer 30B.
+5. **If parity fails:** 4 rollouts per scenario at HF batch 264, MDE about 0.10, stated.
+6. **Order:** the relaunch is held until this amendment and the harmony format are built and
+   `VALIDATE=1` passes; the push follows the commits.

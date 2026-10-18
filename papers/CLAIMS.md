@@ -339,4 +339,5 @@ go to an ST results file at each gate).
 | ST-06 | Panel at dose 0 per adapter: ΔE [mean] [CI] with Δg_twin [x] (twin noise band [y]); capability [Δacc]; specificity [Δmass]. | HELD | ST | T1.5 | — |
 | ST-07 | Second family [model]: the T1.5 ordering [replicates / breaks] at MDE [x] ([co-primaries / H1 only]). | HELD | ST | T1.6 | — |
 | ST-08 | Constitution overlap (§13): projection fraction of `V_const` onto `V_moral` [x] against the matched null [q95] and `V_harm` [y]; positive control GPT-OSS-20B × `C_spec` [passes / fails]. | HELD | ST | §13 | — |
+| ST-09 | OLMo-3-7B-Think on H1 (T1.0 pilot; 8 H1_train scenarios × 4 permutations; KDG sampler v2, T 0.7; cap 4,096; A100-SXM4-80GB, bf16): tokens to the answer median 1,860; share over 1,536 0.594, over 2,048 0.438; 5 of 32 unfinished at 4,096; repeated 8-gram share ≤ 0.06 in every trace (no loops); parser of record 27 of 27 completed → truncation-limited at every affordable cap; development role → GPT-OSS-20B (G1, 2026-10-18). | SCOPED (descriptive, n 32) | ST | `outputs/t10/olmo3_think/pilot/pilot_None.jsonl`, `pilot_None_caps.json` | — |
 

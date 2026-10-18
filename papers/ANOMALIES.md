@@ -1073,6 +1073,6 @@ discriminator):
 **Type.** pre-registered trigger: a truncation-limited model (Amendment 4 item 2; the plan's 1,024 and then 1,536 caps assumed traces near GPT-OSS-20B's medium-effort lengths).
 **Competing readings.** R_a (model property): OLMo-3-Think's deliberation on rule-versus-harm conflicts is long, and the brake, if present, lives inside traces longer than the envelope affords. R_b (frame): the letter-only agent frame elicits long traces from this model whatever the content.
 **Discriminator.** Trace length on 16 panel scenarios (no H1 conflict) in the same frame at cap 4,096, 2 rollouts each; R_b predicts the same length distribution, R_a shorter. About 0.3 A100-h batched, more if ST-A1 resolves R_b. Does not change G1 either way: at 2,048, truncation 0.438 is far above the 5% bar.
-**Status.** open; G1 input (the cap amendment at 2,048 does not reach the bar; Amendment 4 item 2 leaves the GPT-OSS-20B replacement).
+**Status.** resolved → a result (G1, author, 2026-10-18; CLAIMS ST-09): OLMo-3-Think leaves the development role; GPT-OSS-20B takes it. The R_a/R_b discriminator stays priced for the Tier 2 stage ladder's budget.
 **Thesis impact.** R_a: the deliberation brake on an open 7B reasoning recipe is measurable only with traces of 4k+ tokens, which prices OLMo-3-Think out of the Tier 1 envelope; the stage-checkpoint ladder (Tier 2) must budget for it. R_b: the frame, not the model, sets the budget, and a brevity instruction becomes a design question (never a lever: §0).
 

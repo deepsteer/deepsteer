@@ -1096,3 +1096,15 @@ screen's step-downs move a model to a lower effort, its brake is measured where 
 predicts the largest rule compliance; the two-point descriptive in the screen record is the first
 cross-model read of that dose curve.
 
+### ST G1, partial (2026-10-18) — what changed
+
+Positive voice first: **the development model is GPT-OSS-20B, the model whose deliberation brake
+on H1 is the largest the program has measured (−0.224 on the forced dose-0 vs sampled-action
+instrument, n = 258), and the open 7B reasoning recipe is priced out by its own deliberation:
+OLMo-3-7B-Think needs a median 1,860 tokens to answer an H1 scenario and leaves 16% unfinished at
+4,096 (ST-09, ST-A2), so its brake could be screened only at a cost the envelope does not carry.**
+The G1 row "either misses → GPT-OSS-20B" applied through truncation, before the brake criteria
+could be read. The generation engine moves to vLLM (Amendment 7), with HF teacher-forced readouts
+unchanged; an engine-parity check against §40's rollouts gates it. Open: the second family
+(Qwen3.8-27B or Muse Glimmer 30B, screened on the relaunch) and ST-A1 (the bf16 padded check).
+
