@@ -89,14 +89,30 @@ def test_no_dose0_skips_panel_but_runs_screen(tmp_path):
     assert rec["screen"]["n_run"] > 0 and rec["brake"]["dose0_of_record"] is False
 
 
-def test_padded_failure_switches_to_unbatched(tmp_path):
-    # Amendment 4 item 4: a padded-vs-alone failure makes every later cell unbatched and flags
-    # the KDG-A20 pattern
+def test_padded_defect_switches_to_unbatched(tmp_path):
+    # Amendment 4 item 4 / 6 item 1: a pad-dependent defect (KDG-A20) fails the recalibrated
+    # check against the unpadded replicate floor, and every later cell runs unbatched
     _, rec, out = _run(tmp_path, "qwen38_27b", "--stub-padding-noise", "0.5")
-    assert not rec["padded_check"]["ok"] and rec["unbatched"]
+    pc = rec["padded_check"]
+    assert not pc["ok"] and pc["calibrated"] and rec["unbatched"]
+    assert pc["noise_floor_replicate_unpadded"] < 0.05 < pc["max_abs_nats"]
     assert any("KDG-A20" in f for f in rec["anomaly_flags"])
     t = json.loads((out / "timing.json").read_text())
     assert t["screen"]["batch"] == 1 and t["pilot"]["batch"] == 1
+
+
+def test_padded_rounding_noise_alone_keeps_batching(tmp_path):
+    # most probable misfire (this run's OLMo case): bf16 batch rounding with no padding defect
+    # must not switch a model to unbatched
+    _, rec, _ = _run(tmp_path, "qwen38_27b", "--stub-batch-noise", "0.05")
+    pc = rec["padded_check"]
+    assert pc["max_abs_nats"] > 0.05 and pc["ok"] and not rec["unbatched"]
+
+
+def test_padded_defect_under_rounding_noise_still_fails(tmp_path):
+    _, rec, _ = _run(tmp_path, "qwen38_27b", "--stub-batch-noise", "0.05",
+                     "--stub-padding-noise", "0.5")
+    assert not rec["padded_check"]["ok"] and rec["unbatched"]
 
 
 def test_step_down_stops_at_first_fitting_level(tmp_path):
@@ -115,11 +131,30 @@ def test_cannot_step_down_marks_truncation_limited(tmp_path):
     assert rec["screen"]["truncation_limited"]
 
 
-def test_envelope_stop_banks_pilot(tmp_path):
+def test_envelope_guard_stops_inside_the_pilot_and_banks(tmp_path):
+    # Amendment 6 item 2: the deadline/projection is checked inside the pilot, not after it
     rc, rec, out = _run(tmp_path, "olmo3_think", "--envelope-hours", "1e-9")
-    assert rc == 3 and rec["status"] == "envelope_stop_after_pilot"
+    assert rc == 3 and rec["status"] == "envelope_stop_in_pilot"
+    assert rec["pilot_guard"] and rec["pilot_guard"][-1]["stop"] in ("deadline", "envelope")
+    rows = [json.loads(x) for x in (out / "pilot" / "pilot_None.jsonl").read_text().splitlines()]
+    assert any(r["status"] == "not_run" for r in rows)
     man = json.loads((out / "manifest_kdg.json").read_text())
     assert any(a["path"].startswith("pilot/") for a in man["artifacts"])
+
+
+def test_at_most_one_step_down_per_pod(tmp_path):
+    lengths = json.dumps({"xhigh": 3000, "medium": 3000, "low": 300})
+    _, rec, _ = _run(tmp_path, "qwen38_27b", "--stub-length", lengths)
+    assert [t["effort"] for t in rec["pilot"]["tried"]] == ["xhigh", "medium"]
+    assert rec["pilot"]["lowest_level_this_pod"] == "medium"
+    assert rec["effort_of_record"] == "medium" and rec["pilot"]["pilot_p95_exceeds_cap"]
+
+
+def test_pilot_reports_both_caps(tmp_path):
+    _, rec, _ = _run(tmp_path, "olmo3_think", "--stub-length", json.dumps({"null": 1800}))
+    t = rec["pilot"]["tried"][0]
+    assert {"share_over_cap_of_record", "share_over_2048", "p95_tokens_to_answer"} <= set(t)
+    assert t["share_over_cap_of_record"] >= t["share_over_2048"]
 
 
 def test_panel_rows_read_by_kdg_option_cell(tmp_path):
@@ -219,3 +254,15 @@ def test_parser_columns_disagreement_reported(tmp_path):
     row = json.loads((out / "screen" / "h1_screen.jsonl").read_text().splitlines()[0])
     assert {"letter", "letter_strict", "norm_status", "norm_status_strict"} <= set(row)
     assert rec["gpu"] == "dry-run" and "dev_criteria" in rec and "engaged" in rec
+
+
+def test_pilot_caps_report():
+    import pilot_caps
+
+    rows = ([{"status": "completed", "tokens_to_answer": n} for n in (800, 1500, 1900, 2500)]
+            + [{"status": "truncated", "tokens_to_answer": 4097},
+               {"status": "not_run"}])
+    r = pilot_caps.report(rows)
+    assert r["n_run"] == 5 and r["n_not_run"] == 1
+    assert r["truncation_at_1536"] == pytest.approx(3 / 5)
+    assert r["truncation_at_2048"] == pytest.approx(2 / 5)

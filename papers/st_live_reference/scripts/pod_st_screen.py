@@ -165,7 +165,10 @@ def main() -> int:
     ap.add_argument("--date-pin", default=None, help="YYYY-MM-DD; default: today (UTC)")
     ap.add_argument("--stub-length", type=json.loads, default=None,
                     help="dry run only: mean trace length per effort level (JSON)")
-    ap.add_argument("--stub-padding-noise", type=float, default=0.0)
+    ap.add_argument("--stub-padding-noise", type=float, default=0.0,
+                    help="dry run only: a pad-dependent readout defect (nats)")
+    ap.add_argument("--stub-batch-noise", type=float, default=0.0,
+                    help="dry run only: rounding noise any batch > 1 adds (nats, sd)")
     ap.add_argument("--stub-low-mass", default="", help="dry run only: comma list of candidates")
     ap.add_argument("--tiny-local", type=Path, default=None,
                     help="local test only: a tiny random checkpoint saved with the model's real "
@@ -200,7 +203,7 @@ def main() -> int:
     out = a.out / key
     out.mkdir(parents=True, exist_ok=True)
     manifest = Manifest(out, dry, metas + h1_meta)  # one manifest per model directory
-    rec: dict = {"model": key, "spec": spec, "plan": "ST_PLAN v0.2.7 (Amendments 2-5)",
+    rec: dict = {"model": key, "spec": spec, "plan": "ST_PLAN v0.2.8 (Amendments 2-6)",
                  "date_pin": date_pin, "envelope_h": envelope, "screen_n": len(screen_ids),
                  "pilot_ids": pilot_ids, "screen_ids": screen_ids, "order_seed": L.ORDER_SEED,
                  "split_sha256": sha256_text(SPLIT.read_text()), "kernel_path": kernel_path()}
@@ -226,7 +229,7 @@ def main() -> int:
         from screen_stub import ScreenStub
 
         model = ScreenStub(key, tok, fmt, spec["n_layers"], length_by_effort=a.stub_length,
-                           padding_noise=a.stub_padding_noise,
+                           padding_noise=a.stub_padding_noise, batch_noise=a.stub_batch_noise,
                            low_mass_candidates=tuple(x for x in a.stub_low_mass.split(",") if x))
     elif a.tiny_local is not None:
         import torch
@@ -269,15 +272,42 @@ def main() -> int:
     rec["read_seconds_per_row"] = (time.time() - t0) / len(probe)
     rec["probe_mean_len"] = float(np.mean([len(x) for x in probe]))
 
-    # 3. trace-length pilot and step-down
-    sd = L.step_down(sc, H, pilot_ids)
+    # 3. trace-length pilot and step-down, under the envelope guard (Amendment 6 item 2)
+    n_reads = (len(C0) * 8 * 3 * len(fmt.dose0) + len(panel) * 8 * 5 + len(screen_ids) * 8)
+    reads_h = n_reads * rec["read_seconds_per_row"] / 3600
+    n_pilot = len(pilot_ids) * L.PILOT_R
+    rec["pilot_guard"] = []
+    last = [0]
+
+    def guard(n_done: int, secs: list[float]) -> bool:
+        """Every 4 rollouts: project the whole remaining run from this pilot's seconds per
+        rollout (cap 4,096, so conservative for the 1,536 screen); False stops the pilot."""
+        if time.time() > deadline:
+            rec["pilot_guard"].append({"n_done": n_done, "stop": "deadline"})
+            return False
+        if n_done - last[0] < 4 and n_done < n_pilot:
+            return True
+        last[0] = n_done
+        spr = sum(secs) / n_done
+        proj_h = ((time.time() - t_start) / 3600
+                  + ((n_pilot - n_done) + len(screen_ids) * 4) * spr / 3600 + reads_h)
+        ok = proj_h <= envelope
+        rec["pilot_guard"].append({"n_done": n_done, "seconds_per_rollout": spr,
+                                   "projected_total_h": proj_h, "stop": None if ok else "envelope"})
+        return ok
+
+    sd = L.step_down(sc, H, pilot_ids, guard=guard)
     rec["pilot"] = sd
     chosen = sd["tried"][-1]
+    rec["timing_pilot"] = chosen["timing"]
+    if sd["stopped"]:
+        print(f">> {key}: pilot stopped by the envelope guard ({rec['pilot_guard'][-1]})",
+              flush=True)
+        return bank("envelope_stop_in_pilot", 3)
     sc.gen_batch = gb
     plen = [r["tokens_to_answer"] for r in
-            map(json.loads, (out / "pilot" / f"pilot_{sc.effort}.jsonl").read_text().splitlines())]
-    rec["timing_pilot"] = chosen["timing"]
-    n_reads = (len(C0) * 8 * 3 * len(fmt.dose0) + len(panel) * 8 * 5 + len(screen_ids) * 8)
+            map(json.loads, (out / "pilot" / f"pilot_{sc.effort}.jsonl").read_text().splitlines())
+            if r["status"] != "not_run"]
     post_scale = (rec["probe_mean_len"] + float(np.mean(plen))) / rec["probe_mean_len"]
     proj = {
         "screen_generation_h": L.gen_hours(chosen["timing"], plen, len(screen_ids) * 4,
@@ -333,7 +363,8 @@ def main() -> int:
     np.savez_compressed(out / "screen" / "h1_screen_readout.npz", letter_logp=lp.astype(np.float16),
                         resid_decision=resid, rows=np.array(ok), layers=np.array(sc.layers()))
     summ = L.screen_summary(rows)
-    last_level = sc.effort == fmt.effort_ladder[-1]
+    # Amendment 6 item 2: "cannot step down" = no further step allowed on this pod
+    last_level = sc.effort == sd["lowest_level_this_pod"]
     summ["truncation_limited"] = bool(not summ["truncation_ok"] and last_level)
     rec["screen"] = summ
     cand = sc.dose0 or fmt.dose0[0]

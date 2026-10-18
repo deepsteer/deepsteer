@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.7, 2026-10-18 (renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.8, 2026-10-18 (Amendment 6, §14: padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -717,3 +717,36 @@ model's own variance and reports it beside its brake.
    in ANOMALIES before G1.
 5. **Pod order.** Push, then `VALIDATE=1`, then the screen; the GPU card is recorded per model and
    every Tier 1 row is re-priced from the measured rates.
+
+### Amendment 6 (2026-10-18; author, during the first T1.0 pod; zero GPU; before the relaunch)
+
+Trigger: on pod 7y7jn6pwphbzb5 (A100-SXM4-80GB), OLMo-3-7B-Think's padded-vs-alone check failed
+and its pilot ran unbatched (one rollout per batch, 21–87 s each); the envelope was checked only
+after the pilot, so the 27–30B models could have run unbounded unbatched pilots. The session is
+stopped after OLMo banks; Qwen3.8 and Muse relaunch under this amendment.
+
+1. **Padded bar recalibrated in bf16, per model.** The 0.05-nat KDG bar was set against a ~0.5-nat
+   position defect (KDG-A20) in fp16; bf16 rounding from batch composition alone can approach it
+   (KDG-A21; the p2m process-ledger lesson). The check now reports a noise floor and a
+   one-position-off negative control beside the measurement. OLMo's number from this run is the
+   first data point; if it lies inside the noise floor, the check misfired and batching is restored
+   for OLMo.
+2. **Envelope deadline inside pilots.** The projection of the whole remaining run is re-checked
+   every 4 rollouts inside the pilot (and the deadline after every batch); a stop banks and exits
+   3. At most one step-down per model per pod (the shipped default and one level below);
+   "cannot step down" for the truncation-limited mark means no further step on this pod.
+3. **The banked OLMo pilot reports p95 trace length and truncation at both 1,536 and 2,048**
+   (`pilot_caps.py`), so G1 can price a dated cap amendment at 2,048 against the GPT-OSS-20B
+   replacement.
+
+Implementation notes for the author's confirmation before the relaunch (Claude, 2026-10-18):
+(a) the noise floor of record is a **replicate floor**: each probe row read alone vs in a batch of
+identical copies of itself (batch size > 1, no padding). The two-composition floor (the rows in two
+padded compositions) is reported beside it but is not the bar: a pad-dependent defect (KDG-A20)
+changes with each row's pad count, so whenever the compositions span several batches the A-vs-B
+difference grows with the defect and the bar would absorb the thing it exists to catch. (b) Bar =
+max(0.05, 2 × replicate floor): measurement and floor are both maxima over rounding noise, so a
+bar at 1 × floor fails about half the time on pure noise; 2× keeps a KDG-A20-sized defect (0.46
+nats) above any bf16 floor under ~0.2. (c) A negative control that does not fail the bar marks the
+check uncalibrated and the model runs unbatched. Stub tests: a 0.5-nat pad defect fails (with and
+without 0.05-sd rounding noise); 0.05-sd rounding alone keeps batching.

@@ -55,6 +55,7 @@ PILOT_CAP = 4096
 PILOT_N, PILOT_R = 8, 4
 C0_N, C0_R, C0_ANSWER_TOKENS = 64, 4, 8
 MAX_NATS = 0.05
+FLOOR_FACTOR = 2.0  # Amendment 6 item 1 (proposed): bar = max(0.05, 2 x replicate floor)
 LETTER_MASS_BAR = 0.95
 TRUNCATION_BAR = 0.05
 PARSER_DISAGREEMENT_BAR = 0.05
@@ -218,8 +219,8 @@ def sample_from_ids(sc: Screen, id_lists: list[list[int]], *, cap: int, seed: in
         got = [[int(t) for t in row if int(t) != pad] for row in seq[:, L:].cpu()]
         out[i : i + len(chunk)] = got
         seeds[i : i + len(chunk)] = [seed + b] * len(chunk)
-        if on_batch is not None:
-            on_batch(b, nb, i, got, seed + b, secs[-1])
+        if on_batch is not None and on_batch(b, nb, i, got, seed + b, secs[-1]) is False:
+            break  # the envelope guard stopped the stage (Amendment 6 item 2)
     return out, seeds, secs
 
 
@@ -295,16 +296,45 @@ def first_step_letters(sc: Screen, id_lists: list[list[int]]) -> np.ndarray:
 
 
 def padded_check(sc: Screen, id_lists: list[list[int]]) -> dict:
-    """Decision-token letter log-probs read alone vs in left-padded batches of mixed lengths
-    (the KDG-A20 pattern; Qwen3.8's DeltaNet state runs through the padding)."""
+    """Decision-token letter log-probs read alone vs in left-padded batches (the KDG-A20 pattern;
+    Qwen3.8's DeltaNet state runs through the padding), calibrated per model in its own precision
+    (Amendment 6 item 1):
+
+    - noise floor of record: each row read in a batch of ``read_batch`` identical copies of
+      itself (batch size > 1, no padding) vs alone: the bf16 rounding a larger batch introduces
+      without any padding. Reported beside it, the two-composition floor (the rows in two
+      seeded padded compositions); that one moves with pad counts, so it absorbs a
+      pad-dependent defect and is never the bar;
+    - bar: max(0.05 nats, FLOOR_FACTOR x replicate floor): the factor absorbs the noise of
+      comparing one maximum with another (both are maxima over rounding noise), and the KDG bar
+      is never loosened below its value;
+    - measurement: max |alone - padded (composition 0)|; passes iff within the bar;
+    - negative control: each row read one position early must FAIL the bar against the alone
+      read, or the check is reported uncalibrated (treated as a failure: run unbatched)."""
     alone, _ = read_ids(sc, id_lists, 1)
-    mixed = list(np.random.default_rng(0).permutation(len(id_lists)))  # batches of mixed length
-    padded, _ = read_ids(sc, [id_lists[k] for k in mixed], sc.read_batch)
-    padded = padded[np.argsort(mixed)]
+
+    def composed(seed: int) -> np.ndarray:
+        mixed = list(np.random.default_rng(seed).permutation(len(id_lists)))
+        out, _ = read_ids(sc, [id_lists[k] for k in mixed], sc.read_batch)
+        return out[np.argsort(mixed)]
+
+    pa, pb = composed(0), composed(1)
+    rep = np.stack([read_ids(sc, [x] * sc.read_batch, sc.read_batch)[0][0] for x in id_lists])
+    off, _ = read_ids(sc, [x[:-1] for x in id_lists], 1)
+    floor = float(np.abs(alone - rep).max())
+    bar = max(MAX_NATS, FLOOR_FACTOR * floor)
+    meas = float(np.abs(alone - pa).max())
+    neg = float(np.abs(alone - off).max())
+    calibrated = neg > bar
     lens = [len(x) for x in id_lists]
-    d = float(np.abs(alone - padded).max())
-    return {"n": len(id_lists), "max_abs_nats": d, "bar": MAX_NATS, "ok": d <= MAX_NATS,
-            "batch": sc.read_batch, "length_range": [min(lens), max(lens)]}
+    return {"n": len(id_lists), "max_abs_nats": meas,
+            "max_abs_nats_alone_vs_composition_1": float(np.abs(alone - pb).max()),
+            "noise_floor_replicate_unpadded": floor,
+            "noise_floor_two_compositions": float(np.abs(pa - pb).max()),
+            "bar": bar, "kdg_bar": MAX_NATS, "floor_factor": FLOOR_FACTOR,
+            "negative_control_one_position_off": neg, "calibrated": calibrated,
+            "ok": bool(calibrated and meas <= bar), "batch": sc.read_batch,
+            "length_range": [min(lens), max(lens)]}
 
 
 def fwd_vs_gen(sc: Screen, id_lists: list[list[int]]) -> dict:
@@ -342,8 +372,10 @@ def h1_jobs(sc: Screen, H: dict, ids: list[str], R: int) -> list[dict]:
 
 
 def run_generation(sc: Screen, jobs: list[dict], *, cap: int, stage: str, sampler=None,
-                   deadline: float | None = None) -> tuple[list[dict], dict]:
-    """Generate every job in a seeded shuffled order, bank per batch, parse every row."""
+                   deadline: float | None = None, guard=None) -> tuple[list[dict], dict]:
+    """Generate every job in a seeded shuffled order, bank per batch, parse every row.
+    ``guard(n_done, secs)`` is called after each banked batch; False stops the stage (rows never
+    run come back ``not_run``)."""
     perm = np.random.default_rng(ORDER_SEED + STAGE_SEED[stage]).permutation(len(jobs))
     partial = sc.out / stage / f"{stage}_{sc.effort}_partial.jsonl"
     partial.parent.mkdir(parents=True, exist_ok=True)
@@ -356,9 +388,14 @@ def run_generation(sc: Screen, jobs: list[dict], *, cap: int, stage: str, sample
                                          for j in range(len(got))], "gen_ids": got}) + "\n")
         lens = [len(g) for g in got]
         batch_max.append(max(lens))
+        done[0] += len(got)
+        secs_seen.append(secs_b)
         print(f">> {sc.key} {stage} batch {b + 1}/{nb}: {secs_b:.0f}s, gen tokens mean "
               f"{np.mean(lens):.0f} max {max(lens)}", flush=True)
+        return True if guard is None else guard(done[0], secs_seen)
 
+    done = [0]
+    secs_seen: list[float] = []
     ids, seeds, secs = sample_from_ids(sc, [jobs[i]["ids"] for i in perm], cap=cap,
                                        seed=SEED + 1000 * STAGE_SEED[stage],
                                        batch=sc.bs(sc.gen_batch), sampler=sampler,
@@ -412,33 +449,45 @@ def pilot_summary(rows: list[dict]) -> dict:
         "n": int(len(t)), "p95_tokens_to_answer": p95,
         "median_tokens_to_answer": float(np.median(t)) if len(t) else None,
         "share_over_cap_of_record": float(np.mean(t > CAP_OF_RECORD)) if len(t) else None,
+        # Amendment 6 item 3: what a dated cap amendment at 2,048 would buy
+        "share_over_2048": float(np.mean(t > 2048)) if len(t) else None,
+        "p95_tokens_to_answer_capped_4096": p95,
         "statuses": _counts(r["status"] for r in rows),
         "parse_modes": _counts(r.get("parse_mode") for r in rows),
         "fits_cap_of_record": bool(p95 <= CAP_OF_RECORD),
     }
 
 
-def step_down(sc: Screen, H: dict, pilot_ids: list[str]) -> dict:
-    """Amendment 2 item 3: pilot at the shipped default; p95 > 1,536 -> one level down and
-    re-pilot, stopping at the lowest level that still reasons. Sets ``sc.effort``."""
-    levels = list(sc.fmt.effort_ladder)
+MAX_LEVELS_PER_POD = 2  # Amendment 6 item 2: the shipped default and at most one step down
+
+
+def step_down(sc: Screen, H: dict, pilot_ids: list[str], guard=None) -> dict:
+    """Amendment 2 item 3 as limited by Amendment 6 item 2: pilot at the shipped default; p95 >
+    1,536 -> one level down and re-pilot, at most one step per model per pod. ``guard`` (the
+    envelope check) runs inside each pilot; a stop ends the step-down with ``stopped``.
+    Sets ``sc.effort``."""
+    levels = list(sc.fmt.effort_ladder)[:MAX_LEVELS_PER_POD]
     tried = []
+    stopped = False
     for level in levels:
         sc.effort = level
         jobs = h1_jobs(sc, H, pilot_ids, PILOT_R)
-        rows, timing = run_generation(sc, jobs, cap=PILOT_CAP, stage="pilot")
+        rows, timing = run_generation(sc, jobs, cap=PILOT_CAP, stage="pilot", guard=guard)
         sc.save_jsonl(f"pilot/pilot_{level}.jsonl", rows)
         summ = {"effort": level, **pilot_summary(rows), "timing": timing}
         tried.append(summ)
+        stopped = timing["n_run"] < timing["n_jobs"]
         print(f">> {sc.key} pilot @ {level}: p95 {summ['p95_tokens_to_answer']:.0f} tokens, "
-              f"{timing['tokens_per_second'] or 0:.1f} tok/s", flush=True)
-        if summ["fits_cap_of_record"]:
+              f"{timing['tokens_per_second'] or 0:.1f} tok/s"
+              + (" (stopped by the envelope guard)" if stopped else ""), flush=True)
+        if stopped or summ["fits_cap_of_record"]:
             break
     chosen = tried[-1]
     return {"tried": tried, "effort_of_record": chosen["effort"],
-            "stepped_down": len(tried) > 1,
+            "stepped_down": len(tried) > 1, "stopped": stopped,
             "pilot_p95_exceeds_cap": not chosen["fits_cap_of_record"],
-            "can_step_down": len(levels) > 1}
+            "can_step_down": len(levels) > 1,
+            "lowest_level_this_pod": levels[-1]}
 
 
 # ---------------------------------------------------------------------------------------------
