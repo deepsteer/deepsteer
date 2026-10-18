@@ -95,6 +95,21 @@ def _auto_dequant_config(model_name_or_path: str, revision: str | None):
     return None
 
 
+def _auto_model_class(config: Any) -> type:
+    """Pick the auto class that loads *config*'s checkpoint with its text decoder.
+
+    ``AutoModelForCausalLM`` when the config type has a causal-LM mapping (for Qwen3.5-family
+    VLM checkpoints this loads the text tower only, stripping the ``language_model`` prefix);
+    otherwise ``AutoModelForImageTextToText`` (e.g. Muse Glimmer, which has no causal-LM class).
+    """
+    from transformers import AutoModelForCausalLM, AutoModelForImageTextToText
+    from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING
+
+    if type(config) in MODEL_FOR_CAUSAL_LM_MAPPING:
+        return AutoModelForCausalLM
+    return AutoModelForImageTextToText
+
+
 def _default_dtype(device: str) -> torch.dtype:
     """float16 on GPU/MPS, float32 on CPU."""
     if device in ("cuda", "mps") or device.startswith("cuda:"):
@@ -164,7 +179,7 @@ class WhiteBoxModel(ModelInterface):
         revision: str | None = None,
         quantization_config: Any | None = None,
     ) -> None:
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import AutoConfig, AutoTokenizer
 
         self._device = _resolve_device(device)
 
@@ -185,6 +200,9 @@ class WhiteBoxModel(ModelInterface):
         self._tokenizer = AutoTokenizer.from_pretrained(
             model_name_or_path, revision=revision,
         )
+        auto_cls = _auto_model_class(
+            AutoConfig.from_pretrained(model_name_or_path, revision=revision)
+        )
         # ``quantization_config`` is optional and defaults to None (no change for
         # unquantized models). It is the clean path for loading a quantized repo
         # under an explicit policy, e.g. ``Mxfp4Config(dequantize=True)`` to force
@@ -192,7 +210,7 @@ class WhiteBoxModel(ModelInterface):
         if self._device == "mps":
             # MPS can fail with device_map="mps" on large models due to
             # single-buffer allocation limits.  Load to CPU first then move.
-            self._model = AutoModelForCausalLM.from_pretrained(
+            self._model = auto_cls.from_pretrained(
                 model_name_or_path,
                 torch_dtype=self._dtype,
                 low_cpu_mem_usage=True,
@@ -201,7 +219,7 @@ class WhiteBoxModel(ModelInterface):
             )
             self._model = self._model.to("mps")
         else:
-            self._model = AutoModelForCausalLM.from_pretrained(
+            self._model = auto_cls.from_pretrained(
                 model_name_or_path,
                 torch_dtype=self._dtype,
                 device_map=self._device if self._device != "cpu" else None,
@@ -298,49 +316,38 @@ class WhiteBoxModel(ModelInterface):
             model = model.model
         return model
 
-    def _detect_n_layers(self) -> int:
-        """Detect number of decoder layers by probing known attribute paths."""
+    def _decoder_layers(self) -> torch.nn.ModuleList:
+        """Return the decoder-layer ``ModuleList`` by probing known attribute paths.
+
+        Vision-language wrappers (Qwen3.5-family, Muse Glimmer) keep the text decoder at
+        ``language_model.layers`` beside a vision tower that also has ``layers``; only the
+        language-model path is ever returned for them.
+        """
         base = self._unwrap_model()
-        # OLMo / Llama / Mistral: model.model.layers
         inner = getattr(base, "model", None)
-        if inner is not None:
-            layers = getattr(inner, "layers", None)
-            if layers is not None:
-                return len(layers)
-        # Direct: base.layers (when already unwrapped)
-        layers = getattr(base, "layers", None)
-        if layers is not None:
-            return len(layers)
-        # GPT-2 / GPT-Neo: model.transformer.h
-        transformer = getattr(base, "transformer", None)
-        if transformer is not None:
-            h = getattr(transformer, "h", None)
-            if h is not None:
-                return len(h)
-        raise RuntimeError(
-            f"Cannot detect layer count for {type(self._model).__name__}. "
-            "Expected model.model.layers or model.transformer.h"
+        candidates = (
+            (inner, "layers"),                                  # OLMo / Llama / Mistral
+            (base, "layers"),                                   # already unwrapped
+            (getattr(base, "language_model", None), "layers"),  # VLM wrapper, unwrapped
+            (getattr(inner, "language_model", None), "layers"),  # VLM wrapper
+            (getattr(base, "transformer", None), "h"),          # GPT-2 / GPT-Neo
         )
+        for owner, attr in candidates:
+            layers = getattr(owner, attr, None) if owner is not None else None
+            if layers is not None:
+                return layers
+        raise RuntimeError(
+            f"Cannot detect decoder layers for {type(self._model).__name__}. Expected "
+            "model.model.layers, model.language_model.layers or model.transformer.h"
+        )
+
+    def _detect_n_layers(self) -> int:
+        """Detect number of decoder layers."""
+        return len(self._decoder_layers())
 
     def _get_layer_module(self, layer_index: int) -> torch.nn.Module:
         """Return the ``nn.Module`` for decoder layer *layer_index*."""
-        base = self._unwrap_model()
-        inner = getattr(base, "model", None)
-        if inner is not None:
-            layers = getattr(inner, "layers", None)
-            if layers is not None:
-                return layers[layer_index]
-        layers = getattr(base, "layers", None)
-        if layers is not None:
-            return layers[layer_index]
-        transformer = getattr(base, "transformer", None)
-        if transformer is not None:
-            h = getattr(transformer, "h", None)
-            if h is not None:
-                return h[layer_index]
-        raise RuntimeError(
-            f"Cannot resolve layer {layer_index} for {type(self._model).__name__}"
-        )
+        return self._decoder_layers()[layer_index]
 
     # -- Activation capture --------------------------------------------------
 
