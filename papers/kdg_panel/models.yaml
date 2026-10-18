@@ -291,3 +291,80 @@ phase1:
     n_layers: 28
     hidden: 3584
 # Phase 1 stage map (C3/C3'): olmo3: base -> sft -> dpo -> [rl_s050 .. rl_s400] -> final ; llama31_tulu3: llama31_base -> sft -> dpo -> final
+# STEERING_PLAN v0.2.2 §2 / T0.1 (2026-10-18): the T1.0 screen models. Revision, template sha256
+# (sha256 of tok.chat_template, as kdg_pod_lib), layer count and width read from the HF primary
+# sources at the pinned revision on 2026-10-18. GPT-OSS-20B is tier2.gpt_oss_20b (sha matches).
+# effort_of_record and dose0_prefill stay null until Amendment 2 and each model's VALIDATE.
+steering:
+  olmo3_think:
+    repo: allenai/Olmo-3-7B-Think
+    revision: d97e442d7cc678210054dbcc9b440894d62c89a4
+    kind: reasoning
+    stage: final
+    lineage: olmo3
+    template_sha256: 6d549883b5ed12879e191845c256a30c7dfd4eced0a4f160060a3ea0199d9e3a
+    n_layers: 32
+    hidden: 4096
+    layers_path: model.layers
+    think_open: "<think>"            # NOT a special token (3 tokens); the template hard-codes it after
+    think_close: "</think>"          # "<|im_start|>assistant\n", so trace onset is string-based
+    thinking_toggle: null            # none documented (card, template); dose-0 candidate: prefill "</think>"
+    effort_levels: null              # none documented
+    effort_of_record: null           # Amendment 2
+    dose0_prefill: null              # VALIDATE
+    license: apache-2.0
+    chat_template_note: >
+      With no system message the template injects a default system prompt (Ai2 identity, "You do
+      not currently have access to any functions. <functions></functions>"), like olmo3_instruct.
+  qwen38_27b:
+    repo: Qwen/Qwen3.8-27B
+    revision: 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+    kind: reasoning
+    stage: final
+    lineage: qwen38
+    template_sha256: c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041
+    n_layers: 64                     # text_config; 48 Gated DeltaNet (linear attention) + 16 full attention (every 4th)
+    hidden: 5120
+    layers_path: model.language_model.layers   # VLM wrapper (Qwen3_5ForConditionalGeneration); 27-block ViT beside it
+    lora_targets_note: >
+      Text-tower Linear names: full-attention q/k/v/o_proj (16 layers); DeltaNet in_proj_qkv,
+      in_proj_z, in_proj_a, in_proj_b, out_proj (48 layers); MLP gate/up/down_proj (64). The ViT's
+      Linears are qkv/proj/linear_fc1/linear_fc2. Target set fixed in T0.6, restricted to
+      model.language_model.
+    think_open: "<think>"            # special token 248068
+    think_close: "</think>"          # special token 248069
+    thinking_toggle: enable_thinking # False renders "<think>\n\n</think>\n\n" after the assistant header
+    effort_levels: [low, medium, xhigh]   # template raises on any other value; there is no "high"
+    effort_default: xhigh
+    effort_of_record: null           # Amendment 2
+    dose0_prefill: null              # VALIDATE (candidate: the enable_thinking=False render)
+    license: apache-2.0
+    chat_template_note: >
+      The reasoning-effort level is rendered as an injected system prompt (at xhigh: "... prioritize
+      correctness, consistency, and clarity in the final answer."); how it combines with a KDG frame's
+      own system message is recorded per cell from the rendered prompt.
+  muse_glimmer_30b:
+    repo: meta-models/Muse-Glimmer-30B
+    revision: a4e59da52a7bc87ae7251dd5545c0dd437c44b68
+    kind: reasoning
+    stage: final                     # already post-trained (card: safety SFT and RL); no base or instruct sibling
+    lineage: muse
+    template_sha256: cfc67e5f349f37690dfd31ed1f18bc4442a9dd32fe39a648f993cb4eb3cae678
+    n_layers: 52                     # text_config; sliding (window 2048) and full attention, 13 full
+    hidden: 6656
+    layers_path: model.language_model.layers   # VLM wrapper; model.vision_tower.layers also exists
+    lora_targets_note: >
+      The vision tower also has q_proj/k_proj/v_proj Linears; LoRA targets must be restricted to
+      model.language_model or the adapter trains the ViT.
+    think_open: null                 # no think tokens; reasoning goes to "<|start|>assistant to=self<|message|>...<|eom|>"
+    think_close: null
+    thinking_toggle: null            # none documented
+    effort_levels: [low, medium, high, xhigh]   # "Reasoning strength: <level>." in the system message
+    effort_default: high
+    effort_of_record: null           # Amendment 2
+    dose0_prefill: null              # VALIDATE; no documented path, and no sibling to fall back on
+    license: apache-2.0              # plus USAGE_POLICY.md in the repo
+    chat_template_note: >
+      The template always injects a system block with "Current date: <today>" and "Reasoning
+      strength: <level>." (it rewrites "Reasoning effort" to "Reasoning strength"); the rendered
+      prompt depends on the date, so the date is pinned per pod and the rendered sha saved per cell.
