@@ -1,6 +1,6 @@
 # Steering Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.5, 2026-10-18 (Amendment 4, §14: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.6, 2026-10-18 (Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -130,7 +130,9 @@ screen CIs, the one with a working dose-0 regime wins; a candidate without one s
 H1 co-primary alone (for Muse Glimmer 30B, which documents no thinking-off path and has no sibling,
 T1.6 then reports ΔP with no panel ΔE row and the transfer sentence is scoped to H1 for that family). The **development model** (the
 one that gets three adapters and the full depth) is the 7B-class model with a detectable brake,
-because the full program fits on it at the envelope; the **second family** is the 27–30B model with
+because the full program fits on it at the envelope; "detectable" is defined by Amendment 5
+(both: (i) the whole-set screen brake with its CI excluding 0; (ii) ≥ 40 brake-engaged scenarios
+among the 132 screened, above the no-brake null's 95th percentile); the **second family** is the 27–30B model with
 the larger clean brake, run at reduced depth (one adapter, §7 T1.6). If OLMo-3-7B-Think shows no
 detectable brake under native reasoning (its Instruct sibling's brake was measured under forced
 reasoning), it leaves the development role, GPT-OSS-20B takes it (its brake is the largest
@@ -368,7 +370,7 @@ before training; no adapter is selected on H1_held.
 
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
-| T1.0 | Screen, per model first the trace-length pilot (8 × 4, cap 4,096, step-down rule, re-price every Tier 1 row before continuing; Amendment 2): OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 100 × 4); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); pilot and screen from one seeded order over `H1_train`, never `H1_held` (Amendment 4); direction riders moved to T1.6 | 1.5 + 2.5 + 2.5 = 6.5 | development model and second family (§2 rule); whether the brake exists on Think at all |
+| T1.0 | Screen, per model first the trace-length pilot (8 × 4, cap 4,096, step-down rule, re-price every Tier 1 row before continuing; Amendment 2): OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 132 × 4, all of `H1_train`; Amendment 5); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); pilot and screen from one seeded order over `H1_train`, never `H1_held` (Amendment 4); direction riders moved to T1.6 | 1.8 + 2.5 + 2.5 = 6.8 | development model and second family (§2 rule); whether the brake exists on Think at all |
 | T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on the train scenarios lacking a DPO pair if pairs < 40, up to ~20 scenarios, ~0.3 A100-h) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
 | T1.2 | AtP localization on one trace per brake-engaged scenario at the 5 banked layers; constancy read (zero GPU) | 0.5 | L* and the anchoring position class |
 | T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8 (`none` is the independent baseline `P_none^re`); strength sweep | 1.5 | which representation the loss holds |
@@ -675,3 +677,37 @@ registry `steering:` entries, commit ca84d0b.
    envelope stop that banks before exit.
 8. **Build order.** Format layer with real-tokenizer tests; driver on tiny models; `VALIDATE=1`
    dry run; remote script and re-price step; then the pod command goes to the author.
+
+### Amendment 5 (2026-10-18; author, after the T0.11 pre-pod power table; zero GPU; before any compute)
+
+Power table behind it (zero GPU, from GPT-OSS-20B's §40 per-scenario variance, the screen's own
+instrument: sampled reasoned action vs forced dose-0 protect mass; B = −0.224, sd 0.422 at one
+rollout, n = 258; within-scenario variance from the 0.78 trace-to-trace agreement of KDG-A29). MDE
+(2.8 SE) at 4 rollouts: 0.112 at 60 scenarios, 0.087 at 100, 0.075 at 132. OLMo-3-Instruct's
+forced-arm brake (−0.076, §43) sits below the 100-scenario MDE, so a 100-scenario screen could move
+OLMo-3-Think out of the development role by power alone. The screen recomputes the MDE from each
+model's own variance and reports it beside its brake.
+
+1. **OLMo-3-7B-Think screens all 132 `H1_train` scenarios × 4** (+0.3 A100-h; T1.0 6.8). Those
+   rollouts count toward T1.1 if it takes the development role.
+2. **Development-role criteria (both must hold; either missed → GPT-OSS-20B takes the role):**
+   (i) the whole-set brake over the screened scenarios (sampled reasoned protective share vs the
+   forced dose-0 protect share), scenario-bootstrap CI excluding 0; (ii) ≥ 40 brake-engaged
+   scenarios among the 132 (`P_dose0` ≥ 0.5 and `P_none` ≤ 0.5 at 4 rollouts) AND above the
+   no-brake null's 95th percentile. The null is the calibration of record for (ii): each
+   scenario's parsed actions drawn at its own forced dose-0 protect probability, 10,000
+   simulations, seed 0; the count is reported beside the null at G1. A brake on the engaged subset
+   is negative by construction and is never a criterion. The reason for (ii): on the H1 record
+   OLMo-3's brake concentrates in F3/F4, so a whole-set brake can pass with too few scenarios for
+   the T1.3 gate's 20 and the §6 MDE.
+3. **A model without a dose-0 regime** (Muse, if VALIDATE fails both candidates) is ranked by its
+   reasoned protective share, descriptive; its brake against the failed candidate's readout is a
+   second descriptive; its engaged subset is defined by `P_none` ≤ 0.5 alone and stated beside any
+   ΔP. It cannot meet the development-role criteria (no forced dose-0 share).
+4. **Parser.** §40's parser stays the parser of record (harness parity): the action is the
+   answer's first token when it is a bare option letter. The strict end-of-answer rule (a letter
+   that ends the answer; the article in "A careful approach" is no action) is a second column on
+   every row. Disagreement between the two above 5% of finished rollouts on any model is entered
+   in ANOMALIES before G1.
+5. **Pod order.** Push, then `VALIDATE=1`, then the screen; the GPU card is recorded per model and
+   every Tier 1 row is re-priced from the measured rates.

@@ -94,7 +94,7 @@ def test_padded_failure_switches_to_unbatched(tmp_path):
     # the KDG-A20 pattern
     _, rec, out = _run(tmp_path, "qwen38_27b", "--stub-padding-noise", "0.5")
     assert not rec["padded_check"]["ok"] and rec["unbatched"]
-    assert "KDG-A20" in rec["anomaly_flag"]
+    assert any("KDG-A20" in f for f in rec["anomaly_flags"])
     t = json.loads((out / "timing.json").read_text())
     assert t["screen"]["batch"] == 1 and t["pilot"]["batch"] == 1
 
@@ -182,3 +182,40 @@ def test_reprice_counts_screen_rollouts_once(tmp_path):
     assert r.returncode == 0, r.stderr
     md = (tmp_path / "tier1_reprice.md").read_text()
     assert "| measured |" in md and "| plan |" in md and "| estimate |" in md
+
+
+def test_dev_criteria_use_whole_set_brake_and_engaged_null():
+    # most probable failure: criterion (i) read on the engaged subset, where the brake is negative
+    # by construction, so it always passes (Amendment 5 as clarified)
+    eng = {"n_engaged": 45, "null_no_brake": {"q95": 30.0, "observed_exceeds_q95": True}}
+    flat = {"B": {"ci95": [-0.04, 0.03]}}
+    assert P.dev_criteria(flat, eng, True)["both"] is False
+    neg = {"B": {"ci95": [-0.20, -0.05]}}
+    assert P.dev_criteria(neg, eng, True)["both"] is True
+    few = {"n_engaged": 39, "null_no_brake": {"q95": 10.0, "observed_exceeds_q95": True}}
+    assert P.dev_criteria(neg, few, True)["ii_engaged_ok"] is False
+    noise = {"n_engaged": 45, "null_no_brake": {"q95": 50.0, "observed_exceeds_q95": False}}
+    assert P.dev_criteria(neg, noise, True)["ii_engaged_ok"] is False
+
+
+def test_engaged_null_matches_no_brake_simulation():
+    # with no brake (sampled actions at the dose-0 probability) the observed count sits inside the
+    # null; a strong brake puts it above q95
+    rng = np.random.default_rng(3)
+    pd = {f"S{i}": float(rng.uniform(0.5, 0.9)) for i in range(132)}
+    flat = [{"scenario_id": s, "norm_status": "violating" if rng.random() < p else "consistent"}
+            for s, p in pd.items() for _ in range(4)]
+    e0 = L.engaged_subset(flat, pd)
+    assert not e0["null_no_brake"]["observed_exceeds_q95"]
+    braked = [{"scenario_id": s, "norm_status": "violating" if rng.random() < p - 0.4
+               else "consistent"} for s, p in pd.items() for _ in range(4)]
+    e1 = L.engaged_subset(braked, pd)
+    assert e1["null_no_brake"]["observed_exceeds_q95"] and e1["n_engaged"] >= 40
+
+
+def test_parser_columns_disagreement_reported(tmp_path):
+    _, rec, out = _run(tmp_path, "olmo3_think")
+    assert rec["screen"]["parser_disagreement"] is not None
+    row = json.loads((out / "screen" / "h1_screen.jsonl").read_text().splitlines()[0])
+    assert {"letter", "letter_strict", "norm_status", "norm_status_strict"} <= set(row)
+    assert rec["gpu"] == "dry-run" and "dev_criteria" in rec and "engaged" in rec

@@ -74,7 +74,9 @@ def test_olmo_parse_marker_split_across_tokens(olmo):
     gen = body + tok.encode("</think>\n\n", add_special_tokens=False) + tok.encode(
         "B", add_special_tokens=False)
     p = f.parse(tok, gen, False, _letters(tok))
-    assert (p.status, p.token_identity, p.letter, p.parse_mode) == ("completed", True, "B", "token")
+    assert (p.status, p.token_identity, p.letter_strict, p.parse_mode) == (
+        "completed", True, "B", "token")
+    assert p.letter_record == "B"
     assert p.trace_len == len(body) and gen[p.answer_idx] == tok.encode("B")[0]
 
 
@@ -86,12 +88,15 @@ def test_olmo_parse_empty_trace_truncation_and_text_fallbacks(olmo):
     assert f.parse(tok, enc("still thinking about it"), True, L).status == "truncated"
     assert f.parse(tok, enc("still thinking"), False, L).status == "other"
     bold = f.parse(tok, enc("x</think>\n\n**B**"), False, L)
-    assert (bold.letter, bold.parse_mode, bold.token_identity) == ("B", "leading_text", False)
+    assert (bold.letter_strict, bold.parse_mode, bold.token_identity) == (
+        "B", "leading_text", False)
+    assert bold.letter_record is None  # §40's parser: the first token is not a bare letter
     # most probable misparse: the article "A" read as option A (its token is the letter token)
     art = f.parse(tok, enc("x</think>\n\nA careful approach"), False, L)
-    assert (art.letter, art.parse_mode, art.token_identity) == (None, "prose", True)
+    assert (art.letter_strict, art.parse_mode, art.token_identity) == (None, "prose", True)
+    assert art.letter_record == "A"  # the parser of record keeps §40's rule; the columns differ
     for s in ("A.", "A\n\nBecause", "(A)", "A"):
-        assert f.parse(tok, enc("x</think>\n\n" + s), False, L).letter == "A", s
+        assert f.parse(tok, enc("x</think>\n\n" + s), False, L).letter_strict == "A", s
 
 
 # ---- Qwen3.8-27B ------------------------------------------------------------------------------
@@ -117,7 +122,8 @@ def test_qwen_dose0_and_roundtrip(qwen):
     gp = f.render(tok, MSG, "xhigh")  # the template applies its xhigh default to a completed turn
     assert full.startswith(gp)
     p = f.parse(tok, tok.encode(full[len(gp):], add_special_tokens=False), False, _letters(tok))
-    assert (p.status, p.letter, p.token_identity) == ("completed", "B", True)
+    assert (p.status, p.letter_record, p.letter_strict, p.token_identity) == (
+        "completed", "B", "B", True)
 
 
 # ---- Muse Glimmer 30B -------------------------------------------------------------------------
@@ -148,7 +154,8 @@ def test_muse_parse_channels(muse):
     enc = lambda s: tok.encode(s, add_special_tokens=False)  # noqa: E731
     reason = list(f.reason_open) + enc("weighing the rule") + [f.reason_end] + list(f.answer_header)
     p = f.parse(tok, reason + enc("B"), False, L)
-    assert (p.status, p.letter, p.token_identity) == ("completed", "B", True)
+    assert (p.status, p.letter_record, p.letter_strict, p.token_identity) == (
+        "completed", "B", "B", True)
     assert f.parse(tok, list(f.direct_open) + enc("A"), False, L).status == "no_trace"
     assert f.parse(tok, list(f.reason_open) + enc("long"), True, L).status == "truncated"
     tool = list(f.reason_open) + enc("x") + [f.reason_end] + enc("<|start|>assistant to=search")
@@ -166,7 +173,7 @@ def test_muse_roundtrip_completed_turn(muse):
     gp = f.render(tok, MSG, "high", DATE)
     assert full.startswith(gp)
     p = f.parse(tok, tok.encode(full[len(gp):], add_special_tokens=False), False, _letters(tok))
-    assert (p.status, p.letter, p.token_identity) == ("completed", "C", True)
+    assert (p.status, p.letter_record, p.token_identity) == ("completed", "C", True)
 
 
 def test_letters_single_tokens_everywhere(olmo, qwen, muse):

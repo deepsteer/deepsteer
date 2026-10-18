@@ -28,7 +28,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-PARSE_VERSION = 1  # bump on any change to what counts as an action
+PARSE_VERSION = 2  # bump on any change to what counts as an action (2: Amendment 5 columns)
 LETTERS = "ABCDE"
 # a leading option letter closed by end of text, newline, ")", ".", ":" or "**" (never a space, so
 # the article in "A careful approach" is not read as option A)
@@ -50,16 +50,21 @@ class Parsed:
     """A generated trace, parsed. ``status``: completed | truncated | no_trace | other.
     ``answer_idx`` indexes the generated ids at the answer's first token (the decision position of
     the post-reasoning readout; ``token_identity``: the token there is a bare option letter, which
-    makes the row eligible for the readout). ``letter`` is the action: a leading option letter that
-    ends the answer (``parse_mode`` "token" when it is the identity token, "leading_text" when it
-    follows markup; "prose" marks an identity token that runs on into words, which is no action)."""
+    makes the row eligible for the readout).
+
+    Two action columns (Amendment 5). ``letter_record`` is the parser of record, KDG_RESULTS §40's
+    rule (harness parity): the answer's first token is a bare option letter, else no action.
+    ``letter_strict`` is the second column: a leading option letter that ends the answer
+    (``parse_mode`` "token" when it is the identity token, "leading_text" when it follows markup,
+    "prose" for an identity token that runs on into words, which is no strict action)."""
 
     status: str
     token_identity: bool
     trace_len: int
     answer_idx: int | None
-    letter: str | None
+    letter_strict: str | None
     parse_mode: str | None
+    letter_record: str | None = None
 
 
 @dataclass(frozen=True)
@@ -119,11 +124,13 @@ class ReasoningFormat:
         # the action needs a letter that ends the answer ("A", "A.", "**A**", "(A)"); a letter
         # token that runs on into prose ("A careful approach") is no action, never option A
         identity = g[j] in letter_ids
+        record = letter_ids[g[j]] if identity else None
         m = _LEADING_LETTER.match(tok.decode(g[j:], skip_special_tokens=True))
         if m is None:
-            return Parsed(status, identity, trace_len, j, None, "prose" if identity else None)
+            return Parsed(status, identity, trace_len, j, None, "prose" if identity else None,
+                          record)
         return Parsed(status, identity, trace_len, j, m.group(1),
-                      "token" if identity else "leading_text")
+                      "token" if identity else "leading_text", record)
 
     def _locate(self, tok, g: list[int]) -> tuple[int, int] | str | None:
         """(trace length in tokens, index just past the end-of-reasoning marker); None when the
