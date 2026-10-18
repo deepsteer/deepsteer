@@ -806,6 +806,6 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    engines; the library default is unchanged.)
 8. **Precision note (Claude, 2026-10-18):** GPT-OSS-20B on vLLM's fused MXFP4 MoE path computes the
    experts in MXFP4, while §40's HF reference dequantized them to bf16 (`precision: bf16_dequant`).
-   The engine-parity rung (item 3) is the test that licenses the change for generation; the HF
-   readouts stay bf16-dequantized, so the forward-vs-generation check compares across that
-   precision difference and its bar applies as stated.
+   The engine-parity rung (item 3) is the test that licenses the change for generation, and it is
+   the only rung that crosses it: the HF readouts stay bf16-dequantized, and the
+   forward-vs-generation check stays HF forward against HF generation in that precision.
