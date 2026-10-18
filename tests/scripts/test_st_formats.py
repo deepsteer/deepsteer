@@ -11,10 +11,10 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "papers" / "steering" / "scripts"))
+sys.path.insert(0, str(ROOT / "papers" / "st_live_reference" / "scripts"))
 import reasoning_formats as R  # noqa: E402
 
-REG = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["steering"]
+REG = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["st"]
 DATE = "2026-10-18"
 MSG = [{"role": "user", "content": "Pick one.\n\nA. rule\nB. protect\nC. defer"}]
 

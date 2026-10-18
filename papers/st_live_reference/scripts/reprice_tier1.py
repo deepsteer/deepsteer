@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """T0.11's last output: the Tier 1 table re-priced from the T1.0 screen's measured rates (G1 input).
 
-    python3 papers/steering/scripts/reprice_tier1.py --screen-dir OUT [--write OUT/tier1_reprice.md]
+    python3 papers/st_live_reference/scripts/reprice_tier1.py --screen-dir OUT \
+        [--write OUT/tier1_reprice.md]
 
 Per screened model, the generation and readout parts of each Tier 1 row are priced from that
 model's measured screen step time (seconds per decoding step at the screen batch), its
 tokens-to-answer distribution at the effort and cap of record, and its measured readout seconds per
 row; parts the screen cannot measure (training, AtP, Heretic, capability and specificity scoring)
-keep STEERING_PLAN §7 prices ("plan") or split a §7 row priced only as a whole ("estimate"). Each
+keep ST_PLAN §7 prices ("plan") or split a §7 row priced only as a whole ("estimate"). Each
 model is priced in both roles (development model: T1.1-T1.5; second family: T1.6), because G1
-assigns the roles after this table. The rollout counts are the plan's (v0.2.5): the brake-engaged
+assigns the roles after this table. The rollout counts are the plan's (v0.2.7): the brake-engaged
 subsets are taken at the plan's expected sizes (65 of H1_held; 50 of the second family's 100)
 until T1.1 measures them.
 """
@@ -32,7 +33,7 @@ ENVELOPE = 35.0
 BRAKE_HELD = 65  # expected brake-engaged H1_held scenarios (plan §6: 50-80)
 BRAKE_SECOND = 50
 PANEL_READS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
-# components the screen cannot measure (A100-h): "plan" = a STEERING_PLAN §7 / amendment line
+# components the screen cannot measure (A100-h): "plan" = a ST_PLAN §7 / amendment line
 # item; "estimate" = this script's split of a §7 row the plan prices only as a whole (T1.5 = 11,
 # T1.6 = 7.75), to be replaced by measured numbers when those cells run
 FIXED = {"T1.2 AtP": (0.5, "plan"), "T1.4 training (3 adapters)": (3.0, "plan"),
@@ -105,7 +106,7 @@ def main() -> int:
     lines = ["# Tier 1 re-priced from the T1.0 screen (G1 input)", "",
              f"T1.0 as run: {t10:.2f} A100-h over {len(models)} models. Measured parts use each "
              "model's screen step time and trace lengths at its effort and cap of record; "
-             "rows marked plan keep STEERING_PLAN §7 prices and rows marked estimate split a §7 "
+             "rows marked plan keep ST_PLAN §7 prices and rows marked estimate split a §7 "
              "row the plan prices only as a whole. The T1.1 pair rider (<= 0.3, conditional) is "
              "not included.", ""]
     for k, m in models.items():

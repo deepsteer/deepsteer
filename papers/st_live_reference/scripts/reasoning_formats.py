@@ -1,4 +1,4 @@
-"""Reasoning-model formats for the steering screen (STEERING_PLAN Amendments 2 and 4; T0.11).
+"""Reasoning-model formats for the ST screen (ST_PLAN Amendments 2 and 4; T0.11).
 
 One ``ReasoningFormat`` per screen model: how the KDG letter frame is rendered at an effort level,
 how the dose-0 prompt is built (thinking suppressed), and how a generated trace is parsed into the
@@ -7,7 +7,7 @@ of the answer, as in KDG_RESULTS §40; the forward readout reads the letter dist
 same position, so it is defined only on rows with token identity (the answer's first token is a
 bare option letter).
 
-Token-level facts, from the pinned tokenizers (registry ``steering:`` entries, 2026-10-18):
+Token-level facts, from the pinned tokenizers (registry ``st:`` entries, 2026-10-18):
 
 - OLMo-3-7B-Think: the template hard-codes ``<think>`` after ``<|im_start|>assistant\\n``;
   neither ``<think>`` nor ``</think>`` is a special token, and ``>`` merges with what follows
@@ -210,7 +210,7 @@ def _muse_ids(tok, text: str) -> tuple[int, ...]:
 
 
 def build_format(key: str, tok) -> ReasoningFormat:
-    """The format of record for a ``steering:`` registry key, built against its pinned tokenizer
+    """The format of record for a ``st:`` registry key, built against its pinned tokenizer
     (token ids are read from the tokenizer, never hard-coded)."""
     if key == "olmo3_think":
         return ThinkTextFormat(

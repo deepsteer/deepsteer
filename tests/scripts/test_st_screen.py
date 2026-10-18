@@ -1,4 +1,4 @@
-"""T0.11 screen driver (pod_steering_screen.py) on the stub (dry run) and on tiny real checkpoints.
+"""T0.11 screen driver (pod_st_screen.py) on the stub (dry run) and on tiny real checkpoints.
 
 Tokenizers and configs come from the local HF cache (downloaded once; the pod downloads them)."""
 
@@ -13,11 +13,11 @@ import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "papers" / "steering" / "scripts"
-DRIVER = SCRIPTS / "pod_steering_screen.py"
+SCRIPTS = ROOT / "papers" / "st_live_reference" / "scripts"
+DRIVER = SCRIPTS / "pod_st_screen.py"
 sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import pod_steering_screen as P  # noqa: E402
+import pod_st_screen as P  # noqa: E402
 import screen_lib as L  # noqa: E402
 
 MODELS = ("olmo3_think", "qwen38_27b", "muse_glimmer_30b")
@@ -151,9 +151,9 @@ def test_brake_sign():
 @pytest.mark.parametrize("model", MODELS)
 def test_tiny_real_checkpoint(tmp_path, model):
     # the real wrapper path (generate, hooks, padding, VLM loaders) on a tiny random checkpoint
-    import steering_tiny
+    import st_tiny
 
-    ck = steering_tiny.build(model, tmp_path / "ck")
+    ck = st_tiny.build(model, tmp_path / "ck")
     r = subprocess.run([sys.executable, str(DRIVER), "--model", model, "--tiny-local", str(ck),
                         "--date-pin", "2026-10-18", "--out", str(tmp_path / "run")],
                        capture_output=True, text=True, cwd=ROOT)

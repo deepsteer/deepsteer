@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""T1.0 screen, one model per process (STEERING_PLAN v0.2.5 §2, Amendments 2-4; T0.11).
+"""T1.0 screen, one model per process (ST_PLAN v0.2.7 §2, Amendments 2-5; T0.11).
 
-    python3 papers/steering/scripts/pod_steering_screen.py --model olmo3_think --out OUT [--dry-run]
+    python3 papers/st_live_reference/scripts/pod_st_screen.py --model olmo3_think --out OUT \
+        [--dry-run]
 
 Order, back to back on one load (Amendment 3 item 3):
   1. GATES (exit 2, nothing else runs): resolved revision and template sha equal the registry;
@@ -43,7 +44,7 @@ from reasoning_formats import build_format  # noqa: E402
 from deepsteer.kdg.schema import load_scenario_dir  # noqa: E402
 
 KDG = L.REPO / "papers" / "kdg_panel"
-SPLIT = L.REPO / "papers" / "steering" / "split_v1.json"
+SPLIT = L.REPO / "papers" / "st_live_reference" / "split_v1.json"
 H1_SET = KDG / "data" / "harm_divergence" / "hdiv_set.json"
 H1_KEPT = KDG / "data" / "harm_divergence" / "h1_kept_ids.json"
 TRANSFORMERS_PIN = "5.17.0"
@@ -62,7 +63,7 @@ CARD_ROW_MAX_H = 0.2
 def registry() -> dict:
     import yaml
 
-    return yaml.safe_load((KDG / "models.yaml").read_text())["steering"]
+    return yaml.safe_load((KDG / "models.yaml").read_text())["st"]
 
 
 def gates(sc: L.Screen, spec: dict, split: dict, order: list[str], H: dict, dry: bool) -> dict:
@@ -199,11 +200,11 @@ def main() -> int:
     out = a.out / key
     out.mkdir(parents=True, exist_ok=True)
     manifest = Manifest(out, dry, metas + h1_meta)  # one manifest per model directory
-    rec: dict = {"model": key, "spec": spec, "plan": "STEERING_PLAN v0.2.5 (Amendments 2-4)",
+    rec: dict = {"model": key, "spec": spec, "plan": "ST_PLAN v0.2.7 (Amendments 2-5)",
                  "date_pin": date_pin, "envelope_h": envelope, "screen_n": len(screen_ids),
                  "pilot_ids": pilot_ids, "screen_ids": screen_ids, "order_seed": L.ORDER_SEED,
                  "split_sha256": sha256_text(SPLIT.read_text()), "kernel_path": kernel_path()}
-    manifest.data["steering_screen"] = rec
+    manifest.data["st_screen"] = rec
 
     def bank(status: str, code: int) -> int:
         rec["status"] = status

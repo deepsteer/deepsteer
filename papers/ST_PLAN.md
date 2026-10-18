@@ -1,9 +1,13 @@
-# Steering Plan — Holding the Moral Reference Live Through Post-Training
+# ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.6, 2026-10-18 (Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.7, 2026-10-18 (renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
+Line prefix **ST** (author, 2026-10-18): this file is `papers/ST_PLAN.md`; code, data and outputs
+live in `papers/st_live_reference/`; anomalies are `ST-A1, ST-A2, ...` in `papers/ANOMALIES.md` and
+claims `ST-01, ST-02, ...` in `papers/CLAIMS.md`. Commits and artifacts before the rename say
+`STEERING_PLAN` / `papers/steering/` (the split's provenance string keeps the old name).
 Pre-registration candidate. No GPU spend authorized by this document; Tier 1 cells are priced for
 author-approved pods and get their spec-block check at each gate (§7). Same shape as `KDG_PANEL_SPEC.md`.
 
@@ -56,7 +60,7 @@ twin; the harness is `kdg_harness` at its pinned version (harness parity, §5.0)
 - **Split**: H1 is split once, at the scenario level, into `H1_train` (132) and `H1_held` (132),
   stratified by generator × register (the set's id prefix A/B is the generator, opus 133 / codex
   131; register plain 134 / professional 130), seed fixed and recorded; ids committed before any
-  adapter is trained (`steering/split_v1.json`). The panel's five families and their twins are
+  adapter is trained (`st_live_reference/split_v1.json`). The panel's five families and their twins are
   never trained on.
 - **Protective share** `P_a(s)`: fraction of the `R` rollouts under arm `a` whose parsed action is
   `protect`; rule share `U_a(s)` and defer share `W_a(s)` likewise (the three-option accounting of
@@ -355,7 +359,7 @@ before training; no adapter is selected on H1_held.
 | id | item | output |
 |---|---|---|
 | T0.1 | Template audit for the three screen models: think tokens, thinking toggle or empty-think prefill, effort setting of record, reasoning-template rendering of the KDG frames; Glimmer's reasoning mode verified from its model card; registry entries | `kdg_panel/models.yaml` |
-| T0.2 | H1 split `steering/split_v1.json` (132/132, stratified); committed before any training | split file |
+| T0.2 | H1 split `st_live_reference/split_v1.json` (132/132, stratified); committed before any training | split file |
 | T0.3 | S0 direction read on banked decision-token residuals (OLMo-3-Instruct letter cells; GPT-OSS-20B's 625 post-reasoning rows × 25 layers) onto each model's `V_moral`/`V_care`, split by parsed action | signature table; L* prior |
 | T0.4 | Direction re-extraction on OLMo-3-7B-Think on the Mac (bf16, batch ≤ 4) with type blocks; Instruct-vs-Think cosines; the 27–30B models' extraction rides on T1.0 | `d2_decision_coupling/outputs/<model>/*.npz` + sidecars |
 | T0.5 | AtP harness in `deepsteer.causal.attribution` (residual per position per layer; MLP-neuron with SwiGLU sign regimes; metric = option margin at the decision token); positive control on OLMo-2-1B: AtP vs real patching on 50 sites, Spearman ≥ 0.7 | module + test |
@@ -510,7 +514,7 @@ document of record when it arrives; nothing in the pipeline depends on which doc
 
 Documents of record for development (both CC0):
 - `C_spec`: the OpenAI Model Spec, current build at model-spec.openai.com (dated 2026-08-18 by its
-  URL; Claude Code pins the fetched text by date and sha256 in `steering/constitutions.yaml`).
+  URL; Claude Code pins the fetched text by date and sha256 in `st_live_reference/constitutions.yaml`).
   Primary stand-in: explicit precedence (chain of command), non-overridable rules vs instructable
   behavior, worked examples per principle. GPT-OSS was post-trained against it, which gives the
   overlap read its positive control.
@@ -622,10 +626,10 @@ author before it runs.
    restricted to the text tower (Muse's vision tower carries q/k/v_proj; Qwen3.8's 48 DeltaNet
    layers use in_proj_qkv/in_proj_z/in_proj_a/in_proj_b/out_proj).
 6. **Rendered-prompt sha per cell** carries Qwen3.8's effort system prompt and Muse's injected
-   date (pinned per pod); registry notes in `kdg_panel/models.yaml` `steering:`.
+   date (pinned per pod); registry notes in `kdg_panel/models.yaml` `st:`.
 
 Verified facts behind this amendment (HF primary sources at the pinned revisions, 2026-10-18):
-registry `steering:` entries, commit ca84d0b.
+registry `st:` entries, commit ca84d0b.
 
 ### Amendment 3 (2026-10-18; author, after the Amendment 2 status; zero GPU; before any compute)
 

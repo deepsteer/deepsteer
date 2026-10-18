@@ -1,11 +1,11 @@
-"""T1.0 screen units (STEERING_PLAN Amendments 2-4; T0.11): one loaded reasoning model at a time.
+"""T1.0 screen units (ST_PLAN Amendments 2-4; T0.11): one loaded reasoning model at a time.
 
 Every prompt goes through token ids built by ``reasoning_formats`` (never a joint re-tokenization
 of prompt + prefill), sampled with KDG sampler v2 (pure temperature 0.7, a seed per batch, rows in a
 seeded shuffled order) and read with mask-derived positions (KDG readout v2). Rows are written in
 the schema ``analyze_phase1_session_a.option_cell`` reads, so E, g_band and C0 reuse the KDG code.
 
-Units, in run order (``pod_steering_screen.py``):
+Units, in run order (``pod_st_screen.py``):
   padded_check   decision-token log-probs of prompts read alone vs inside a left-padded batch
   pilot          8 H1_train scenarios x 4 at an effort level, cap 4,096; p95 tokens-to-answer and
                  tokens/s; the step-down rule picks the effort of record

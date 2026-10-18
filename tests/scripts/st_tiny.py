@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-REG = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["steering"]
+REG = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["st"]
 TEXT = dict(hidden_size=32, intermediate_size=64, num_attention_heads=4, num_key_value_heads=2,
             head_dim=8)
 

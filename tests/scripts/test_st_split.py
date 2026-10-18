@@ -1,4 +1,4 @@
-"""T0.2 (build_split.py): the H1 train/held split of STEERING_PLAN v0.2.2."""
+"""T0.2 (build_split.py): the H1 train/held split of ST_PLAN v0.2.2."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "papers" / "steering" / "scripts"))
+sys.path.insert(0, str(ROOT / "papers" / "st_live_reference" / "scripts"))
 import build_split as S  # noqa: E402
 
 

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""T0.2 (STEERING_PLAN v0.2.2 §1, Amendment 1 item 5): the H1 train/held split, built once.
+"""T0.2 (ST_PLAN v0.2.2 §1, Amendment 1 item 5): the H1 train/held split, built once.
 
-    python3 papers/steering/scripts/build_split.py
+    python3 papers/st_live_reference/scripts/build_split.py
 
 The 264 kept H1 scenarios are split at the scenario level into H1_train (132) and H1_held (132),
 stratified by generator × register. Each stratum is shuffled with a seed derived from SEED and the
 stratum key, then halved; odd strata alternate which side takes the extra scenario (in sorted
 stratum order) so the totals come out 132/132. No outcome, rollout or model read enters the split.
-Writes papers/steering/split_v1.json with the input sha256s, the seed and per-stratum counts.
+Writes papers/st_live_reference/split_v1.json with the input sha256s, the seed and per-stratum
+counts.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ PAPERS = Path(__file__).resolve().parents[2]
 H1_DIR = PAPERS / "kdg_panel" / "data" / "harm_divergence"
 KEPT = H1_DIR / "h1_kept_ids.json"
 SCENARIOS = H1_DIR / "hdiv_set.json"
-OUT = PAPERS / "steering" / "split_v1.json"
+OUT = PAPERS / "st_live_reference" / "split_v1.json"
 SEED = 20261018
 STRATA = ("generator", "register")
 
@@ -61,6 +62,8 @@ def main() -> None:
             key = " × ".join(str(records[sid][f]) for f in STRATA)
             counts.setdefault(key, {"H1_train": 0, "H1_held": 0})[side] += 1
     out = {
+        # provenance: the plan's name when the split was built (renamed ST_PLAN.md on
+        # 2026-10-18); kept so the committed file rebuilds byte-for-byte
         "rule": "STEERING_PLAN v0.2.2 §1 / Amendment 1 item 5 (T0.2)",
         "strata": list(STRATA),
         "seed": SEED,

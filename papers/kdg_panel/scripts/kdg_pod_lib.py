@@ -182,7 +182,7 @@ class ModelWrapper:
         self.letter_prefill = harmony.prefill_primary if harmony else ""
         # KDG_GPTOSS_SPEC G-A8 branch 2: batches hold rows of equal token length only (no padding)
         self.bucket_by_length = False
-        # torch_dtype (STEERING T0.11): the screen loads in bf16 at a pinned revision; None keeps
+        # torch_dtype (ST T0.11): the screen loads in bf16 at a pinned revision; None keeps
         # every KDG driver's load exactly as it was
         self.wb = load_whitebox(repo) if revision is None and torch_dtype is None else None
         if self.wb is None:

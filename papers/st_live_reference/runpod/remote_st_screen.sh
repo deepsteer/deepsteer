@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Remote runner for the steering T1.0 screen (papers/STEERING_PLAN.md v0.2.5 §2, §7; Amendments
-# 2-4; T0.11). Orion launches (keys stay in Orion's terminal). One model loaded at a time, in
+# Remote runner for the ST T1.0 screen (papers/ST_PLAN.md v0.2.7 §2, §7; Amendments
+# 2-5; T0.11). Orion launches (keys stay in Orion's terminal). One model loaded at a time, in
 # MODELS order; each runs gates -> padded check -> trace-length pilot (step-down, re-price) ->
 # VALIDATE -> panel -> H1 screen back to back before unloading; the last output is the re-priced
 # Tier 1 table (outputs/t10/tier1_reprice.md) for G1.
 #
 #   GPU_TYPES="NVIDIA A100-SXM4-80GB,NVIDIA A100 80GB PCIe,NVIDIA H100 80GB HBM3,NVIDIA H100 PCIe" \
-#   DISK_GB=250 REMOTE_SCRIPT=papers/steering/runpod/remote_steering_screen.sh \
-#     SELF_PAPER=papers/steering RESULTS_SUBPATH=outputs/t10 \
+#   DISK_GB=250 REMOTE_SCRIPT=papers/st_live_reference/runpod/remote_st_screen.sh \
+#     SELF_PAPER=papers/st_live_reference RESULTS_SUBPATH=outputs/t10 \
 #     ./papers/d1_moral_subspace/runpod/run_session.sh
 #   VALIDATE=1 <same> ......  stack upgrade, local gates (incl. tiny real checkpoints of all three
 #                             architectures) and the three dry runs on the pod, then exit. FIRST.
@@ -26,8 +26,8 @@ export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1
 PY="${PY:-python}"
 trap 'touch "$REPO_DIR/.session_done"' EXIT
 
-OUT="$REPO_DIR/papers/steering/outputs/t10"; mkdir -p "$OUT"
-S=papers/steering/scripts/pod_steering_screen.py
+OUT="$REPO_DIR/papers/st_live_reference/outputs/t10"; mkdir -p "$OUT"
+S=papers/st_live_reference/scripts/pod_st_screen.py
 DATE_PIN="$(date -u +%F)"   # one date for the whole session (Muse renders it; Amendment 2 item 6)
 echo ">> date pin: $DATE_PIN   models: $MODELS"
 
@@ -48,16 +48,16 @@ $PY -c 'import transformers,sys; sys.exit(0 if transformers.__version__=="5.17.0
   || { echo "FATAL: transformers is not 5.17.0 (Amendment 4 item 7)"; exit 1; }
 
 # ---- inputs the screen needs (committed; never regenerated here) ----
-for f in papers/steering/split_v1.json papers/kdg_panel/data/harm_divergence/hdiv_set.json \
+for f in papers/st_live_reference/split_v1.json papers/kdg_panel/data/harm_divergence/hdiv_set.json \
          papers/kdg_panel/data/harm_divergence/h1_kept_ids.json papers/kdg_panel/models.yaml; do
   [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }
 done
 
 # ---- no-model gates always run first (tiny real checkpoints exercise generate, hooks, padding
 # and the VLM loaders on this torch/transformers before any large download) ----
-echo ">> steering local gates:"
-$PY -m pytest -q tests/scripts/test_steering_split.py tests/scripts/test_steering_formats.py \
-  tests/scripts/test_steering_screen.py tests/core/test_model_interface_vlm.py tests/kdg \
+echo ">> ST local gates:"
+$PY -m pytest -q tests/scripts/test_st_split.py tests/scripts/test_st_formats.py \
+  tests/scripts/test_st_screen.py tests/core/test_model_interface_vlm.py tests/kdg \
   -m "slow or not slow" || { echo "LOCAL GATE FAILED"; exit 1; }
 for m in $MODELS; do
   $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
@@ -75,7 +75,7 @@ hf_cache_dir() {  # the HF hub cache directory of a registry key's repo
   $PY - "$1" <<'PY'
 import sys, yaml
 from huggingface_hub.constants import HF_HUB_CACHE
-repo = yaml.safe_load(open("papers/kdg_panel/models.yaml"))["steering"][sys.argv[1]]["repo"]
+repo = yaml.safe_load(open("papers/kdg_panel/models.yaml"))["st"][sys.argv[1]]["repo"]
 print(f"{HF_HUB_CACHE}/models--{repo.replace('/', '--')}")
 PY
 }
@@ -94,6 +94,6 @@ for m in $MODELS; do
 done
 
 echo "==================== t10/reprice ===================="
-$PY papers/steering/scripts/reprice_tier1.py --screen-dir "$OUT" || echo "WARN: re-price failed"
-echo ">> steering T1.0 done (rc=$RC_ALL). rsync-back -> papers/steering/outputs/t10/"
+$PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir "$OUT" || echo "WARN: re-price failed"
+echo ">> ST T1.0 done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/t10/"
 exit $RC_ALL

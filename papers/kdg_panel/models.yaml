@@ -291,11 +291,11 @@ phase1:
     n_layers: 28
     hidden: 3584
 # Phase 1 stage map (C3/C3'): olmo3: base -> sft -> dpo -> [rl_s050 .. rl_s400] -> final ; llama31_tulu3: llama31_base -> sft -> dpo -> final
-# STEERING_PLAN v0.2.2 §2 / T0.1 (2026-10-18): the T1.0 screen models. Revision, template sha256
+# ST_PLAN v0.2.2 §2 / T0.1 (2026-10-18): the T1.0 screen models. Revision, template sha256
 # (sha256 of tok.chat_template, as kdg_pod_lib), layer count and width read from the HF primary
 # sources at the pinned revision on 2026-10-18. GPT-OSS-20B is tier2.gpt_oss_20b (sha matches).
 # effort_of_record and dose0_prefill stay null until Amendment 2 and each model's VALIDATE.
-steering:
+st:
   olmo3_think:
     repo: allenai/Olmo-3-7B-Think
     revision: d97e442d7cc678210054dbcc9b440894d62c89a4

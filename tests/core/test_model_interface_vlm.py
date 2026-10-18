@@ -1,4 +1,4 @@
-"""WhiteBoxModel on vision-language wrappers (STEERING_PLAN Amendment 2 item 5).
+"""WhiteBoxModel on vision-language wrappers (ST_PLAN Amendment 2 item 5).
 
 Qwen3.8-27B (``qwen3_5``) and Muse Glimmer 30B (``muse_glimmer``) keep the text decoder at
 ``model.language_model.layers``; Muse also has ``model.vision_tower.layers``. Tiny random
