@@ -1106,3 +1106,13 @@ Fix: `VLLM_USE_FLASHINFER_SAMPLER=0` in the worker's environment (hashed with it
 venv's bin first on the worker's PATH, `ninja` in the venv, and the venv check asserts ninja
 resolves. Each VALIDATE pod has stopped earlier in the stack than the last and cost one setup.
 
+## ST-A3 (ledger) — GPT-OSS-20B's HF letter readout moves 0.43–0.52 nats with batch size alone in bf16 (identical rows, no padding), so the Amendment 6 bar on this model sits at 0.87–1.05 nats
+
+**Date.** 2026-10-19 (fourth VALIDATE pod nw2ot7pye4ad1a, A100-SXM4-80GB; `st_live_reference/outputs/t10/_validate/gpt_oss_20b/smoke_record.json`).
+**Observation.** 8 of §40's H1 prompts (305–375 tokens), decision-token letter log-probs, bf16, HF: each row alone vs in a batch of 16 identical copies (no padding) differs by up to 0.434 nats (eager) and 0.523 (flex attention + compile). Padded vs alone 0.586; flex + compile vs eager 0.680. Both pass the Amendment 6 ladder (bars 0.867 and 1.047); the one-position-off controls sit at 26.0 and 26.4 nats, so the check is calibrated. The KDG bar was 0.05.
+**Type.** control behaviour (an instrument floor an order of magnitude above the bar it was built around); replicates KDG-A21 (GPT-OSS's forced readout moves up to 0.49 nats with its batch-mates) on a second stack.
+**Competing readings.** R_a (MoE routing): batch-size-dependent GEMM rounding flips near-tied top-4 expert choices in some layers, and a flipped expert moves the logits by tenths of a nat; the effect is specific to the MoE model. R_b (stack): the bf16 kernels or the attention implementation on this torch/transformers stack carry it, and a dense model on the same stack shows the same floor.
+**Discriminator.** The same replicate floor on Qwen3.8-27B and Muse Glimmer 30B (dense) on the relaunch, which computes it in their phase H at no extra cost: floors near 0.05 → R_a; floors near 0.4 → R_b.
+**Status.** open; discriminator rides the relaunch (zero added cost).
+**Thesis impact.** Either reading: on GPT-OSS a batched readout carries about half a nat of batch-dependent jitter, so readouts of record should be read one row at a time with one fixed implementation across every arm (author decision pending). R_a also scopes KDG-A21 as an MoE property rather than a harness defect.
+
