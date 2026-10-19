@@ -211,6 +211,199 @@ def rider_oss_h(sc, ctx, rec: dict) -> None:
     rec["hf_memory_probe"] = {**EP.summarize(probes), "path": "eager, uncompiled"}
 
 
+# ---- rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9) ------------------------------
+FOLD_BLOCK = 11  # GPT-OSS-20B has 24 blocks; the fold check's injection block (any block tests it)
+FOLD_SCALE = 0.25  # |v| as a fraction of the median residual norm at that block on the rows
+BATCHED_FLOOR_MAX = 0.025  # the Amendment 6 bar stays at the KDG 0.05 iff 2 x floor <= 0.05
+DOD_BAR = 0.25  # fold validation (ii): the HF-vs-vLLM band at the dose-0 position (rider pod)
+
+
+def readout_mode(dp: dict) -> dict:
+    """G1 item 4, pre-registered (Amendment 9): batched readouts at the KDG bar iff, with the fp32
+    head at the dose-0 position, the padded-vs-alone check is calibrated, measures <= 0.05, and
+    the replicate floor is <= 0.025 (so the Amendment 6 bar max(0.05, 2 x floor) is 0.05 itself);
+    single-row with the bf16 head otherwise. The kept rung path under that head is the readout
+    path of record."""
+    f = dp["fp32"]
+    ok = bool(f.get("calibrated") and f["max_abs_nats"] <= L.MAX_NATS
+              and f["noise_floor_replicate_unpadded"] <= BATCHED_FLOOR_MAX)
+    head = "fp32" if ok else "bf16"
+    return {"batched_admissible": ok, "mode": "batched" if ok else "single-row", "head": head,
+            "readout_path": (dp[head].get("rung") or {}).get("kept"),
+            "rule": "fp32 head at the dose-0 position: calibrated, padded-vs-alone <= 0.05 and "
+                    "replicate floor <= 0.025 -> batched at 0.05; else single-row, bf16 head"}
+
+
+def _reset_eager(sc) -> None:
+    if sc.dry:
+        return
+    sc.model.model.set_attn_implementation("eager")
+    if sc.eager_forward is not None:
+        sc.model.model.forward = sc.eager_forward
+
+
+def _free_hf(sc) -> None:
+    import gc
+
+    import torch
+
+    sc.model, sc.grab, sc.eager_forward = None, None, None
+    gc.collect()
+    torch.cuda.empty_cache()
+
+
+def build_folded(src: Path, block: int, v, dst: Path) -> dict:
+    """A copy of checkpoint ``src`` with ``v`` added to every expert's ``down_proj_bias`` of
+    ``block`` (G1 item 3: the residual after the block gains exactly v, router weights summing to
+    1). Only the shard holding that tensor is rewritten; every other top-level file is linked."""
+    import torch
+    from safetensors.torch import load_file, save_file
+
+    key = f"model.layers.{block}.mlp.experts.down_proj_bias"
+    idx = src / "model.safetensors.index.json"
+    shard = json.loads(idx.read_text())["weight_map"][key] if idx.exists() else "model.safetensors"
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in src.iterdir():
+        if f.is_file() and f.name != shard and not (dst / f.name).exists():
+            (dst / f.name).symlink_to(f.resolve())
+    tensors = load_file(str(src / shard))
+    b = tensors[key]
+    tensors[key] = (b.float() + torch.as_tensor(v, dtype=torch.float32)[None, :]).to(b.dtype)
+    save_file(tensors, str(dst / shard), metadata={"format": "pt"})
+    return {"src": str(src), "dst": str(dst), "shard": shard, "key": key, "block": block,
+            "shard_sha256": hashlib.sha256((dst / shard).read_bytes()).hexdigest()}
+
+
+def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
+    """G1 item 3's validation (author-approved): (i) HF with v added by a hook at the block's
+    output vs HF from the folded checkpoint, same rows read alone, within the dose-0 ladder bar,
+    with the hook's own movement as the positive control; (ii) the steering effect on vLLM
+    (folded - base first-token log-probs) vs on HF, the difference of differences within the
+    HF-vs-vLLM band; (iii) 64 generations on each vLLM engine with their parse rates."""
+    import torch
+    from huggingface_hub import snapshot_download
+    from kdg_pod_lib import ModelWrapper
+
+    spec, out = ctx.spec, sc.out / "fold"
+    out.mkdir(parents=True, exist_ok=True)
+    layer = sc.model.wb._get_layer_module(FOLD_BLOCK)
+    norms: list = []
+    h = layer.register_forward_hook(lambda _m, _i, o: norms.append(
+        float((o[0] if isinstance(o, tuple) else o)[0, -1].float().norm())))
+    base, _ = L.read_ids(sc, rows16, 1)
+    h.remove()
+    hid = sc.model.model.config.hidden_size
+    u = np.random.default_rng(0).standard_normal(hid)
+    v = (FOLD_SCALE * float(np.median(norms)) * u / np.linalg.norm(u)).astype(np.float32)
+    np.save(out / "v.npy", v)
+    vt = torch.as_tensor(v, device=sc.model.model.device, dtype=torch.bfloat16)
+
+    def add(_m, _i, o):
+        return (o[0] + vt,) + tuple(o[1:]) if isinstance(o, tuple) else o + vt
+    h = layer.register_forward_hook(add)
+    hooked, _ = L.read_ids(sc, rows16, 1)
+    h.remove()
+    del layer, h  # the module reference would keep the first model's weights on the GPU
+    _free_hf(sc)
+    src = Path(snapshot_download(spec["repo"], revision=spec["revision"],
+                                 ignore_patterns=["original/*", "metal/*"]))
+    built = build_folded(src, FOLD_BLOCK, v, out / "ckpt")
+    sc.model = ModelWrapper(built["dst"], None, torch_dtype=torch.bfloat16,
+                            attn_implementation="eager")
+    folded, _ = L.read_ids(sc, rows16, 1)
+    _free_hf(sc)
+    rec: dict = {"block": FOLD_BLOCK, "v_norm": float(np.linalg.norm(v)),
+                 "median_resid_norm": float(np.median(norms)), "built": built, "bar": bar}
+    rec["i_hook_vs_fold"] = {
+        "max_abs_nats": float(np.abs(hooked - folded).max()),
+        "positive_control_hook_vs_base": float(np.abs(hooked - base).max()),
+        "ok": bool(np.abs(hooked - folded).max() <= bar < np.abs(hooked - base).max())}
+    # vLLM: base and folded engines, the same 16 rows (first-token log-probs) + 64 generations
+    lids = L.letter_ids(sc)
+    gen = L.h1_jobs(sc, ctx.H, ctx.order[:16], 4)
+    wj = ([{"job_id": f"lp|{i}", "prompt_ids": x, "max_tokens": 1, "seed": job_seed("lp", "", i),
+            "logprob_ids": lids} for i, x in enumerate(rows16)]
+          + worker_jobs(gen, "fold", L.CAP_OF_RECORD))
+    vl: dict = {}
+    for tag in ("base", "folded"):
+        eng = V.engine_json(spec, spec_on=False, label=f"{sc.key}:fold:{tag}")
+        if tag == "folded":
+            eng.update(model=built["dst"], revision=None, tokenizer=spec["repo"],
+                       tokenizer_revision=spec["revision"])
+        rows, summ, _ = V.run_vllm(sc, wj, eng, out / f"vllm_{tag}.jsonl")
+        by = {r["job_id"]: r for r in rows}
+        g = [by[j["job_id"]]["gen_ids"] if by[j["job_id"]]["status"] == "finished" else None
+             for j in wj[len(rows16):]]
+        parsed = L.build_rows(sc, gen, g, [j["seed"] for j in wj[len(rows16):]],
+                              cap=L.CAP_OF_RECORD, stage=f"fold_{tag}", engine="vllm")
+        vl[tag] = {"first": [by[f"lp|{i}"].get("first_logprobs") or {} for i in range(len(rows16))],
+                   "parse_rate": float(np.mean([r.get("letter") is not None for r in parsed])),
+                   "statuses": L._counts(r["status"] for r in parsed),
+                   "tokens_per_second": summ["tokens_per_second"]}
+    dd = []
+    for i in range(len(rows16)):
+        for c, tid in enumerate(lids):
+            fb, ff = vl["base"]["first"][i].get(str(tid)), vl["folded"]["first"][i].get(str(tid))
+            if fb is not None and ff is not None:
+                dd.append(abs((ff - fb) - float(folded[i, c] - base[i, c])))
+    rec["ii_steering_effect_vllm_vs_hf"] = {
+        "n_letter_values": len(dd), "max_abs_dod": max(dd) if dd else None,
+        "mean_abs_dod": float(np.mean(dd)) if dd else None, "bar": DOD_BAR,
+        "hf_effect_max": float(np.abs(folded - base).max()),
+        "ok": bool(dd and max(dd) <= DOD_BAR)}
+    rec["iii_generation"] = {t: {k: vl[t][k] for k in ("parse_rate", "statuses",
+                                                       "tokens_per_second")} for t in vl}
+    np.savez_compressed(out / "letters.npz", base=base, hooked=hooked, folded=folded)
+    return rec
+
+
+def rider2_h(sc, ctx, rec: dict) -> None:
+    """Rider pod 2 on a model of record (GPT-OSS-20B, Muse Glimmer 30B): the padded check and the
+    rung re-read at the dose-0 letter position (the first-registered candidate, of record for
+    both), with the bf16 head and the fp32 head (G1 item 4); the pre-registered readout-mode
+    rule; the 64 dose-0 rows written for the stack-parity read (Amendment 9); and, on GPT-OSS,
+    the fold validation (G1 item 3)."""
+    cand = sc.fmt.dose0[0]
+    rows64 = L.fwd_gen_ids(sc, ctx.C0, cand, 64)
+    rows16 = rows64[:16]
+    (sc.out / "stack").mkdir(parents=True, exist_ok=True)
+    (sc.out / "stack" / "rows64.json").write_text(json.dumps(
+        {"ids": rows64, "letter_ids": L.letter_ids(sc), "candidate": cand.name,
+         "effort": sc.effort, "date_pin": sc.date_pin}))
+    if sc.key == "gpt_oss_20b":  # generation prompts for the MoE probe (the parity prompts)
+        _, ids = parity_jobs(sc, ctx)
+        (sc.out / "stack" / "probe_prompts.json").write_text(json.dumps(
+            {"ids": _probe_prompts(sc, ctx, ids)}))
+    import head32
+
+    dp: dict = {}
+    for head in ("bf16", "fp32"):
+        if not sc.dry:
+            dp.setdefault("head_switch", {})[head] = head32.set_head_fp32(sc.model.model,
+                                                                          head == "fp32")
+        pc = L.padded_check(sc, rows16)
+        pc["rung"] = L.fast_path_rung(sc, rows16, HF_FAST_ATTN[sc.key],
+                                      ref_floor=pc["noise_floor_replicate_unpadded"])
+        _reset_eager(sc)
+        dp[head] = pc
+        print(f">> {sc.key} dose-0 position [{head} head]: floor "
+              f"{pc['noise_floor_replicate_unpadded']:.4f}, padded {pc['max_abs_nats']:.4f}, "
+              f"rung kept {pc['rung'].get('kept')}", flush=True)
+    if not sc.dry:
+        head32.set_head_fp32(sc.model.model, False)
+    rec["dose0_position"] = {"candidate": cand.name, **dp}
+    rec["readout_mode"] = readout_mode(dp)
+    print(f">> {sc.key} readout mode: {rec['readout_mode']['mode']} "
+          f"({rec['readout_mode']['head']} head)", flush=True)
+    if sc.key == "gpt_oss_20b":
+        if sc.dry:
+            rec["fold_validation"] = {"dry": True}
+        else:
+            rec["fold_validation"] = fold_validation(
+                sc, ctx, rows16, max(L.MAX_NATS, L.FLOOR_FACTOR
+                                     * dp["bf16"]["noise_floor_replicate_unpadded"]))
+
+
 def load_banked_v(sc, ctx, d: Path) -> dict:
     """Phase V from a banked run (author, 2026-10-19: Qwen's relaunch rollouts were generated at
     the registry-pinned revision, so its rerun is phase H on them; Muse's dose-0 re-check uses its
@@ -297,8 +490,8 @@ def run(ctx) -> int:
     sc, rec, key = ctx.sc, ctx.rec, ctx.key
     mode = getattr(ctx, "mode", "full")
     t0 = time.time()
-    if mode == "rider_oss":
-        sc.effort = sc.fmt.effort_ladder[0]
+    if mode in ("rider_oss", "rider2"):
+        sc.effort = getattr(ctx, "effort", None) or sc.fmt.effort_ladder[0]
         v: dict = {}
     elif mode in ("resume", "dose0_recheck", "provenance"):
         v = load_banked_v(sc, ctx, ctx.resume_from)
@@ -323,6 +516,9 @@ def run(ctx) -> int:
     rec["gates"] = g
     if not g["ok"]:
         return ctx.bank("gate_failed", 2)
+    if mode == "rider2":
+        rider2_h(sc, ctx, rec)
+        return ctx.bank("ok_rider2", 0)
     probe = [j["ids"] for j in L.h1_jobs(sc, ctx.H, ctx.order[:16], 1)]
     rec["probe_mean_len"] = float(np.mean([len(x) for x in probe]))
     rec["padded_check"] = L.padded_check(sc, probe)

@@ -214,14 +214,14 @@ def run_vllm_engine(a, env: dict) -> int:
 
     mode = ("provenance" if a.provenance_only else "dose0_recheck" if a.dose0_only
             else "resume" if a.resume_from is not None
-            else "rider_oss" if a.rider_oss else "full")
+            else "rider_oss" if a.rider_oss else "rider2" if a.rider2 else "full")
     rec["mode"] = mode
     ctx = SimpleNamespace(
         spec=spec, H=H, pilot_ids=env["pilot_ids"], screen_ids=env["screen_ids"], C0=env["C0"],
         order=env["order"], deadline=env["deadline"], hf_after_h=HF_AFTER_H[key], sc=sc,
         rec=rec, key=key, bank=env["bank"], load_hf=load_hf, finish_screen=finish_screen,
         gates=lambda s: gates(s, spec, env["split"], env["order"], H, dry),
-        resume_from=a.resume_from, mode=mode)
+        resume_from=a.resume_from, mode=mode, effort=a.effort)
     return SV.run(ctx)
 
 
@@ -263,6 +263,12 @@ def main() -> int:
     ap.add_argument("--rider-oss", action="store_true",
                     help="GPT-OSS-20B: gates, padded check, corrected rung, eager memory probe "
                          "(rider (b), 2026-10-19)")
+    ap.add_argument("--rider2", action="store_true",
+                    help="rider pod 2 (G1 items 3-4): dose-0-position padded check and rung "
+                         "with the bf16 and fp32 heads, readout-mode rule, stack-parity rows, "
+                         "GPT-OSS fold validation")
+    ap.add_argument("--effort", default=None,
+                    help="rider modes: the effort of record (default: the ladder's first)")
     ap.add_argument("--provenance-only", action="store_true",
                     help="with --resume-from: run the provenance checks and stop")
     a = ap.parse_args()
@@ -270,7 +276,10 @@ def main() -> int:
         ap.error("--dose0-only and --provenance-only need --resume-from")
     if a.rider_oss and (a.model != "gpt_oss_20b" or a.resume_from is not None):
         ap.error("--rider-oss is GPT-OSS-20B's rider and takes no --resume-from")
-    if (a.resume_from or a.rider_oss) and a.engine != "vllm":
+    if a.rider2 and (a.model not in ("gpt_oss_20b", "muse_glimmer_30b")
+                     or a.resume_from is not None or a.rider_oss):
+        ap.error("--rider2 is for the models of record (GPT-OSS-20B, Muse Glimmer 30B)")
+    if (a.resume_from or a.rider_oss or a.rider2) and a.engine != "vllm":
         ap.error("resume and rider modes run on the vLLM engine path")
     if a.tiny_local is not None:  # reduced caps so a CPU run takes seconds; never on a pod
         L.PILOT_CAP, L.CAP_OF_RECORD, L.C0_ANSWER_TOKENS = 24, 16, 2

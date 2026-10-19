@@ -14,6 +14,12 @@
 #                             smoke (EAGLE3 on/off) and HF fast-path rung, dry runs, then the
 #                             slow gates; its own envelope stop at VALIDATE_MAX_SECONDS (0.3 h).
 #   MODELS="qwen38_27b" <same>  a subset, in the given order.
+#   STEPS=rider2 RESULTS_SUBPATH=outputs/t10c SYNC_OUTPUTS=none <same>
+#                             rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): on
+#                             GPT-OSS-20B and Muse, the padded check and rung at the dose-0
+#                             position with the bf16 and fp32 heads, the readout-mode rule, the
+#                             stack-parity read (torch 2.6 vs the vLLM venv's 2.13), and on
+#                             GPT-OSS the fold validation and the MoE probes; envelope 1.5 h.
 #   STEPS=rider RESULTS_SUBPATH=outputs/t10b SYNC_OUTPUTS="outputs/t10/qwen38_27b/,outputs/t10/muse_glimmer_30b/,outputs/t10/gpt_oss_20b/" <same>
 #                             the G1 rider pod (author, 2026-10-19; Amendment 8): Qwen3.8 phase H
 #                             on its banked relaunch phase V (--resume-from), Muse's dose-0
@@ -30,6 +36,10 @@ if [ "$STEPS" = "rider" ]; then
   # cannot stop itself mid-panel: the 3.0 h watchdog then leaves it ~2.1 h (about twice its estimate)
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b qwen38_27b}"; OUT_SUB=t10b
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
+elif [ "$STEPS" = "rider2" ]; then
+  # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
+  MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-1.5}"
 else
   MODELS="${MODELS:-gpt_oss_20b qwen38_27b muse_glimmer_30b}"; OUT_SUB=t10
 fi
@@ -76,6 +86,13 @@ BANKED="$REPO_DIR/papers/st_live_reference/outputs/t10"
 # the rider pod's per-model mode (author, 2026-10-19): Qwen phase H on its banked phase V, Muse's
 # dose-0 re-check (rider (a)), GPT-OSS's corrected rung + eager memory probe (rider (b))
 mode_args() {
+  if [ "$STEPS" = "rider2" ]; then
+    case "$1" in
+      gpt_oss_20b) echo "--rider2" ;;
+      muse_glimmer_30b) echo "--rider2 --effort medium" ;;  # Muse's effort of record (screen)
+    esac
+    return 0
+  fi
   [ "$STEPS" = "rider" ] || return 0
   case "$1" in
     qwen38_27b) echo "--resume-from $2/qwen38_27b" ;;
@@ -168,13 +185,13 @@ dry_runs() {
   for m in $MODELS; do
     $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
       || { echo "DRY RUN FAILED ($m)"; return 1; }
-    if [ "$STEPS" = "rider" ]; then
+    if [ "$STEPS" = "rider" ] || [ "$STEPS" = "rider2" ]; then
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rider" $(mode_args "$m" "$OUT/_dry") \
         || { echo "DRY RUN FAILED ($m, rider mode)"; return 1; }
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -209,6 +226,33 @@ print(" ".join(f"{HF_HUB_CACHE}/models--{r.replace('/', '--')}" for r in repos))
 PY
 }
 
+# rider pod 2, after each model's driver: the stack-parity reads (the same script on torch 2.6 and
+# in the vLLM venv on torch 2.13) and their ladder; GPT-OSS's MoE probes (eager and batched_mm on
+# torch 2.6, grouped_mm on torch 2.13; the MegaBlocks kernel runs last of the session, since it
+# installs `kernels` into the HF stack)
+VPY="$VLLM_VENV/bin/python"
+rider2_after() {
+  local m="$1" repo rev
+  read -r repo rev < <($PY -c "import yaml;e=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['$m'];print(e['repo'],e['revision'])")
+  local d="$OUT/$m/stack"
+  [ -f "$d/rows64.json" ] || { echo "WARN: $m wrote no stack rows; skipping its stack read"; return 0; }
+  $PY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch26.npz" \
+    || echo "WARN: $m stack read (torch 2.6) failed"
+  $VPY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch213.npz" \
+    || echo "WARN: $m stack read (torch 2.13) failed"
+  [ -f "$d/torch26.npz" ] && [ -f "$d/torch213.npz" ] && $PY papers/st_live_reference/scripts/stack_compare.py \
+    --a "$d/torch26.npz" --b "$d/torch213.npz" --out "$d/parity.json" --tie "$OUT/$m/screen_record.json"
+  if [ "$m" = "gpt_oss_20b" ]; then
+    rm -rf "$OUT/$m/fold/ckpt"  # the folded checkpoint (its shard sha is in the record)
+    for ex in eager batched_mm; do
+      $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_$ex.json" --experts "$ex" \
+        || echo "WARN: moe probe $ex failed"
+    done
+    $VPY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_grouped_mm.json" --experts grouped_mm \
+      || echo "WARN: moe probe grouped_mm failed"
+  fi
+}
+
 RC_ALL=0
 for m in $MODELS; do
   echo "==================== $OUT_SUB/$m ===================="
@@ -217,14 +261,27 @@ for m in $MODELS; do
   $PY -c "import sys; sys.path.insert(0,'papers/kdg_panel/scripts'); from kdg_pod_lib import verify_manifest as v; bad=v('$OUT/$m/manifest_kdg.json'); print('manifest verify:', 'OK' if not bad else bad[:5])" \
     || echo "WARN: $m manifest verify did not run"
   [ "$rc" -ne 0 ] && RC_ALL=$rc
-  if [ "$CLEAN_HF_CACHE" = "1" ]; then
+  [ "$STEPS" = "rider2" ] && [ "$rc" -eq 0 ] && rider2_after "$m"
+  if [ "$CLEAN_HF_CACHE" = "1" ] && ! { [ "$STEPS" = "rider2" ] && [ "$m" = "gpt_oss_20b" ]; }; then
     for d in $(hf_cache_dirs "$m"); do [ -d "$d" ] && rm -rf "$d" && echo ">> removed $d"; done
   fi
 done
+if [ "$STEPS" = "rider2" ] && [[ " $MODELS " == *" gpt_oss_20b "* ]]; then
+  echo "==================== $OUT_SUB/gpt_oss_20b MegaBlocks kernel probe (last) ===================="
+  pip install -q --break-system-packages kernels >/dev/null 2>&1 || echo "WARN: kernels install failed"
+  read -r repo rev < <($PY -c "import yaml;e=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['gpt_oss_20b'];print(e['repo'],e['revision'])")
+  $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$OUT/gpt_oss_20b/stack/probe_prompts.json" --out "$OUT/gpt_oss_20b/moe_kernels.json" --experts kernels \
+    || echo "WARN: moe probe kernels failed"
+  if [ "$CLEAN_HF_CACHE" = "1" ]; then
+    for d in $(hf_cache_dirs gpt_oss_20b); do [ -d "$d" ] && rm -rf "$d" && echo ">> removed $d"; done
+  fi
+fi
 
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-$PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
+if [ "$STEPS" != "rider2" ]; then  # rider pod 2 has no generation timing; re-priced locally
+  $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
+fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
 exit $RC_ALL
