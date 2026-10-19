@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import atexit
+import importlib.util
 import re
 import shutil
 import subprocess
@@ -162,6 +163,24 @@ def build_comments(pages: int | None, figures: int, tables: int, code_url: str) 
     return f"{lead}. {tail}" if lead else tail
 
 
+def prose_lint_warning(paper_dir: Path) -> str | None:
+    """Run scripts/prose_lint.py over the paper's sections; return a warning, or None if clean.
+
+    Never blocks packaging: the paper-prose skill owns the fix, this only surfaces it."""
+    section_files = sorted((paper_dir / "sections").glob("*.md"))
+    if not section_files:
+        return None
+    name = "prose_lint"
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name("prose_lint.py"))
+    lint = importlib.util.module_from_spec(spec)
+    sys.modules[name] = lint  # dataclasses look the module up while the class is built
+    spec.loader.exec_module(lint)
+    reports = lint.lint_paths(section_files)
+    if not any(r.flagged for r in reports):
+        return None
+    return "WARNING (prose lint, paper-prose skill):\n" + lint.format_report(reports)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Package a paper directory for arXiv submission")
     parser.add_argument("paper_dir", type=Path, help="Path to paper directory (e.g. papers/paper1)")
@@ -290,6 +309,9 @@ def main() -> None:
     print(f"\nSaved to: {tarball}")
     print(f"Metadata: {metadata_file}")
     print(f"  Comments: {comments}")
+
+    warning = prose_lint_warning(paper_dir)
+    print(f"\n{warning}" if warning else "Prose lint: no section over the em-dash bar")
 
 
 if __name__ == "__main__":

@@ -125,3 +125,7 @@ papers/**/*.bin
 papers/**/*.safetensors
 papers/**/*.ckpt
 papers/**/adapter/tokenizer.json
+
+# Monthly AI-tells guide drops land here; the copy of record is
+# .claude/skills/paper-prose/references/ai-writing-tells.md (paper-prose skill)
+/ai-writing-tells-*.md

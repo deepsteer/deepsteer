@@ -1,0 +1,21 @@
+# Prose lint (paper-prose skill) on PRs that touch paper sections. Non-blocking: the job reports
+# em-dash bar violations and tell counts, and its failure never fails the PR.
+name: prose
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "papers/*/sections/**"
+
+jobs:
+  prose-lint:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Stdlib only, nothing to install.
+      - run: python scripts/prose_lint.py --strict

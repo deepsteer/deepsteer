@@ -27,6 +27,14 @@ mechanically visible in review.
 (data conventions, exact signatures, worked steps) and points to the gates above at the moment
 each applies. Keep its signatures in step with the code (they were generated from `inspect`).
 
+## Prose skill (2026-10-19)
+
+`paper-prose` is a release-text skill, not a methodology skill: it strips AI-writing tells from
+paper sections, READMEs and submission text after `program-thesis` has fixed the claims, and never
+changes claim strength. Its catalog, `paper-prose/references/ai-writing-tells.md`, is refreshed
+monthly in place; its lint is `scripts/prose_lint.py`. In this repo it replaces the general deslop
+skill.
+
 ## Install — Claude Code (project-scoped, versioned with the repo)
 
 ```bash
@@ -70,6 +78,7 @@ repo, but installing all seven keeps the two surfaces consistent.
 plan (`compute-ordering`) → build objects (`construct-audit`) → design causal cells
 (`intervention-validity`) → measure and judge (`instrument-calibration`,
 `estimator-traps`) → interpret (`anomaly-triage`) → frame and gate (`program-thesis`) →
+surface prose (`paper-prose`) → `scripts/package_arxiv.py` (prints the prose lint);
 promoted discriminators feed the next plan.
 
 ## Maintenance
