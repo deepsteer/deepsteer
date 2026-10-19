@@ -876,3 +876,46 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    an extremum such as GPT-OSS's 2.79-nat eager floor this run (0.43 at VALIDATE, 16 rows vs 8) can
    be traced to its rows. Qwen3.8 and Muse in this relaunch ran the old rung; their kept paths
    are re-read under (a) from their records before any of their readouts is used.
+
+### Amendment 8 (2026-10-19; author, after the T1.0 relaunch; zero GPU; before the rider pod)
+
+1. **Forward vs generation is like with like within the HF engine.** The gate reads each row's
+   teacher-forced letter log-probs alone and compares them with HF generation's first step alone
+   (single row), bar 0.05 kept. The relaunch's version read the forward batched against generation
+   alone, so the batch jitter of ST-A3 sat inside it (ST-A4). Two columns stand beside the gate and
+   never gate: the post-hoc variant (the relaunch's batched comparison against
+   max(0.05, 2 × the padded check's replicate floor)), labelled post hoc; and HF forward alone vs
+   vLLM's first-token log-probs on the same ids (descriptive; letters outside vLLM's top-20 are
+   reported missing). Engine parity remains the distributional rung between the engines.
+2. **Muse's brake stays descriptive** (−0.31 [−0.39, −0.24], n = 60, against the empty-reasoning
+   candidate's readout) until rider (a) passes that candidate on the corrected rung.
+3. **Qwen3.8-27B reruns before the second family is chosen.** Its relaunch rollouts were generated
+   at the registry-pinned revision (all seven engine configs and the vLLM log name
+   `1d4bf0f2…`; checked 2026-10-19), so the rerun is phase H only, on the banked 60 × 4. The driver
+   resumes from the banked directory and refuses it unless every engine config names the pinned
+   repo and revision, the screen ids equal the seeded order, the date pin matches, every screen
+   row's prompt-id and render hashes equal a fresh render, and every C0 job's prompt ids equal a
+   fresh `c0_jobs` (all verified locally on the real banked data before the pod).
+4. **Riders, approved.** (a) Muse's dose-0 re-check on the corrected rung (item 9 of the
+   Amendment 7 implementation) with its banked C0 answers; it stops after the dose-0 checks.
+   (b) GPT-OSS-20B: gates, padded check and corrected rung with per-row arrays, then the HF
+   memory probe on eager attention, uncompiled, at batches 33, 66 and 132, for a measured T1.3
+   price. The pod records start and end timestamps.
+
+**Rider pod plan (compute-ordering).** One session, `STEPS=rider`, outputs to `outputs/t10b`;
+order Qwen (keystone), Muse (a), GPT-OSS (b). Estimated 1.9–2.3 A100-h (setup 0.25; Qwen phase H
+0.7–1.0 including its 54 GB download and the descriptive vLLM stage, 1.0 if its padded check fails
+and the panel reads unbatched; Muse 0.35; GPT-OSS 0.3); watchdog 3.0 h. Power: the screen reports
+each model's MDE from its own variance; Muse's measured brake MDE at 60 scenarios is 0.110, and
+Qwen's screen has the same size. Bail: per-model envelope stops, the watchdog, and the provenance
+checks (fatal before any download). Saved per unit: everything the relaunch saved, plus per-row
+arrays of the padded check, the rung and forward vs generation, the vLLM first-token rows, and the
+probe records. Branches, each publishable at G1:
+- Qwen meets Amendment 5's criteria (i) and (ii) with a dose-0 regime → a second-family candidate
+  on the same instrument as GPT-OSS; misses → it is not, and the record says which criterion.
+- Muse's empty-reasoning candidate passes forward vs generation alone vs alone → ST-A4 resolves
+  as R_a (instrument), its regime is of record and its brake leaves descriptive status; fails →
+  R_b: its forced dose-0 readouts are not its generation behaviour, and it can take the second
+  family only on reasoned-arm endpoints.
+- GPT-OSS's eager probe fits at some batch → T1.3 is priced from it; no batch fits → T1.3 keeps
+  its plan price and the gate's batch plan is a G1 item.
