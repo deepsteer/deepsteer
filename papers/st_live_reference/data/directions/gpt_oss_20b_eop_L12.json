@@ -1,0 +1,84 @@
+{
+ "V_moral": {
+  "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
+  "format": "harmony (think format)",
+  "layer": "block 12 output (hidden index 13)",
+  "participation_ratio": {
+   "w4_raw_of_record": 9.4,
+   "w4_std_of_record": 12.79,
+   "kdg_panel_sample_centred": 7.5120541909430285,
+   "flag": "PR < 30: position-invalid flag (construct-audit)"
+  },
+  "extraction_commit": "847e28e",
+  "contrast_semantics": "stimulus/content (moral-salience: `moral` member minus `neutral` member)",
+  "rank": 3,
+  "source_dataset": "deepsteer/datasets/d1_vmoral_v1.json @3b9bab7 (moral_stories, fables, ethics; 60 pairs/source)",
+  "position_class": "END_OF_PROMPT (harmony <|start|>assistant)",
+  "source_file": {
+   "path": "papers/d3_decision_anatomy/outputs/w4/gpt_oss_20b/vmoral_sources_decision_token.npz",
+   "sha256": "cec01425c66453ad197c1b83128172e1d63201fbb6d6fba3f1391b492bf4cfbe",
+   "provenance": "d3 W4 unit 14.3 (PREREGISTRATION 14.3; W4_RESULTS \u00a714.3); extraction script not in the repo; orientation inferred moral-pole positive (cos with the pooled phase-2 sources 0.05-0.11, all positive)"
+  },
+  "known_covariates": "narrative vs declarative register; source genre",
+  "outcome_variable": "none (descriptive T0.3); anchor axis -> \u00a75.2 target"
+ },
+ "V_harm": {
+  "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
+  "format": "harmony (think format)",
+  "layer": "block 12 output (hidden index 13)",
+  "participation_ratio": {
+   "w4_raw_of_record": 9.4,
+   "w4_std_of_record": 12.79,
+   "kdg_panel_sample_centred": 7.5120541909430285,
+   "flag": "PR < 30: position-invalid flag (construct-audit)"
+  },
+  "extraction_commit": "847e28e",
+  "contrast_semantics": "stimulus/content (harmful minus harmless requests)",
+  "rank": 1,
+  "source_dataset": "papers/5_moral_alignment/refusal_prompts.json @0269799 (64/64)",
+  "variants": {
+   "t_inst": "last instruction token (FL's harm slice; primary; not this cell's token)",
+   "end_of_prompt": "<|start|>assistant (co-located; FL's refusal direction by construction)"
+  },
+  "source_file": {
+   "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_directions.npz",
+   "sha256": "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71"
+  },
+  "in_span_fraction": {
+   "t_inst": 0.08472316021889437,
+   "end_of_prompt": 0.5290596512871732
+  },
+  "known_covariates": "AdvBench vs Alpaca style, topic, length",
+  "outcome_variable": "none (removed from V_care)"
+ },
+ "V_care": {
+  "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
+  "format": "harmony (think format)",
+  "layer": "block 12 output (hidden index 13)",
+  "participation_ratio": {
+   "w4_raw_of_record": 9.4,
+   "w4_std_of_record": 12.79,
+   "kdg_panel_sample_centred": 7.5120541909430285,
+   "flag": "PR < 30: position-invalid flag (construct-audit)"
+  },
+  "extraction_commit": "847e28e",
+  "contrast_semantics": "stimulus/content, derived",
+  "rank": 2,
+  "construction": "V_moral minus its in-span harm component (per harm variant)",
+  "outcome_variable": "\u00a75.2 anchor (via the anchor axis)"
+ },
+ "anchor_axis": {
+  "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
+  "format": "harmony (think format)",
+  "layer": "block 12 output (hidden index 13)",
+  "participation_ratio": {
+   "w4_raw_of_record": 9.4,
+   "w4_std_of_record": 12.79,
+   "kdg_panel_sample_centred": 7.5120541909430285,
+   "flag": "PR < 30: position-invalid flag (construct-audit)"
+  },
+  "extraction_commit": "847e28e",
+  "construction": "normalized sum of the three harm-removed signed sources (moral pole positive); author 2026-10-19",
+  "rank": 1
+ }
+}

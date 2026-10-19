@@ -6,10 +6,11 @@ development model, QLoRA on the 27-30B second family; every adapter is saved wit
 (objective, layer, class, tau, the anchor axis's provenance, sigma's provenance, LoRA config,
 training config, per-step records), and evaluated merged at the base's precision.
 
-Author item (2026-10-19): §5.2's hinge reads ``<h, V_care> / |h|`` with ``V_care`` of rank 2,
-which has no sign. The implementation anchors on one signed axis in ``V_care``: the projection
-onto ``V_care`` of the protect-minus-rule mean difference of the unadapted model's banked
-residuals at the anchoring class (``anchor_axis``), recorded in the sidecar.
+Anchor axis (author, 2026-10-19): §5.2's ``<h, V_care> / |h|`` needs a signed axis in the rank-2
+``V_care``; it is the normalized sum of the three ``V_moral`` source mean-differences (moral pole
+positive) with the in-span harm component removed (``anchor_axis``). The protect-minus-rule
+orientation inside ``V_care`` is a diagnostic only (``orientation_diagnostic``); anti-alignment is
+logged in ANOMALIES.
 """
 
 from __future__ import annotations
@@ -55,15 +56,29 @@ def compute_tau(protect_margins: np.ndarray) -> float:
     return float(np.quantile(np.asarray(protect_margins, float), TAU_QUANTILE))
 
 
-def anchor_axis(v_care: np.ndarray, protect: np.ndarray, rule: np.ndarray) -> np.ndarray:
-    """The signed unit axis in ``V_care`` (rows orthonormal, [k, H]) along which protect and rule
-    rollouts separate at the anchoring class: ``P_V (mean protect - mean rule)``, normalized."""
+def anchor_axis(sources: np.ndarray, harm: np.ndarray) -> np.ndarray:
+    """The §5.2 anchor (author, 2026-10-19): the normalized sum of the signed source
+    mean-differences ``sources`` [k, H] (moral pole positive), each with the component along the
+    in-span harm direction removed (the same removal that makes ``V_care`` rank 2)."""
+    S = np.asarray(sources, float)
+    S = S / np.linalg.norm(S, axis=1, keepdims=True)
+    B = np.linalg.qr(S.T)[0].T
+    hv = B.T @ (B @ (harm / np.linalg.norm(harm)))
+    if np.linalg.norm(hv) == 0:
+        raise ValueError("harm has no component in the span of the sources")
+    hv = hv / np.linalg.norm(hv)
+    r = S - np.outer(S @ hv, hv)
+    u = r.sum(0)
+    return (u / np.linalg.norm(u)).astype(np.float32)
+
+
+def orientation_diagnostic(axis: np.ndarray, v_care: np.ndarray, protect: np.ndarray,
+                           rule: np.ndarray) -> float:
+    """cos between the anchor axis and the protect-minus-rule orientation inside ``V_care``
+    (rows orthonormal); negative = anti-aligned (author: log it in ANOMALIES)."""
     d = protect.mean(0) - rule.mean(0)
-    u = v_care.T @ (v_care @ d)
-    n = np.linalg.norm(u)
-    if n == 0:
-        raise ValueError("protect and rule do not separate inside V_care")
-    return (u / n).astype(np.float32)
+    o = v_care.T @ (v_care @ d)
+    return float(o @ axis / (np.linalg.norm(o) * np.linalg.norm(axis)))
 
 
 def margins(resid: np.ndarray, axis: np.ndarray) -> np.ndarray:

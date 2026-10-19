@@ -199,9 +199,9 @@ T1.2 per model (default: the model's V_moral match layer, 16 on OLMo-3-7B).
 
 | id | contrast_semantics | source | position_class | role |
 |---|---|---|---|---|
-| `V_moral` | stimulus/content | v2 pairs, 3 sources, mean-diff then rank-3 basis as FL | pooled over the stimulus | reference of record |
-| `V_harm` | stimulus/content | FL request twins, rank-1 (the slice refusal reads) | pre-decision gate | named-reference control; projected out of `V_care` |
-| `V_care` | stimulus/content, derived | `V_moral` with its `V_harm` component projected out, re-orthonormalized (rank 2) | as `V_moral` | the anchoring target (§5.2) |
+| `V_moral` | stimulus/content (moral salience) | `d1_vmoral_v1` (Moral Stories train 877, ETHICS `eval_generalization_probe` 118, fables 62 clean): mean-diff of each pair's `moral` minus `neutral` member, then rank-3 basis as FL (corrected 2026-10-19, author) | pooled over the stimulus | reference of record |
+| `V_harm` | stimulus/content | `papers/5_moral_alignment/refusal_prompts.json`, harmful minus harmless, rank-1 (the slice refusal reads; FL's harm direction; corrected 2026-10-19, author, no re-extraction) | pre-decision gate | named-reference control; projected out of `V_care` |
+| `V_care` | stimulus/content, derived | `V_moral` minus its in-span `V_harm` component, re-orthonormalized (rank 2; 2026-10-19, author) | as `V_moral` | the anchoring target (§5.2), through the anchor axis (T0.6) |
 | `V_judg` | behavior/decision | B1 judgment contrast | pre-decision gate | types the self-distillation source; not a loss term |
 | `V_fill` | matched random | Gaussian in whitened space, norm-matched, 5 draws, seed recorded | — | gate control (§5.0) and the `L-fill` placebo adapter if budget allows |
 | `V_rule` | stimulus/content | gate-present vs gate-absent twins (to build; never traces selected by option) | in-trace | §5.5 only |
@@ -1258,9 +1258,37 @@ post-hoc check.
   End to end on OLMo-2-1B with a synthetic target: held-out margin rises, KL stays small, the
   merged checkpoint reproduces the adapter. Runs on the ST stack of record: the vLLM venv gains
   deepsteer `[lora]`, `peft==0.21.2`, `bitsandbytes==0.50.2` (venv check extended).
-- **Author items.** (1) §5.2's `⟨h, V_care⟩/‖h‖` with `V_care` of rank 2 has no sign; the build
-  anchors on one signed axis, `P_V_care(mean protect − mean rule)` at the anchoring class from the
-  unadapted model's banked residuals, recorded in the sidecar. (2) On GPT-OSS the "MLP projections"
-  of §5.1 are expert tensors, adapted through PEFT `target_parameters`
-  (`mlp.experts.gate_up_proj`, `mlp.experts.down_proj`). (3) The QLoRA path (4-bit NF4 base,
-  bf16 adapters, bf16 merge) needs CUDA and bitsandbytes; it is built but first runs on a pod.
+- **Author decisions (2026-10-19).** (1) The §5.2 anchor axis is the normalized sum of the three
+  `V_moral` source mean-differences (moral pole positive) with the in-span harm component removed
+  (`st_train.anchor_axis`; it lies in `V_care`); the protect-minus-rule orientation inside `V_care`
+  is a zero-GPU diagnostic, anti-alignment logged in ANOMALIES. (2) On GPT-OSS the "MLP
+  projections" of §5.1 are expert tensors, adapted through PEFT `target_parameters`
+  (`mlp.experts.gate_up_proj`, `mlp.experts.down_proj`): confirmed. (3) QLoRA's first run is a
+  short rider on the T1.1 pod (Muse is the only model that needs it): 4-bit Muse, a few steps on a
+  synthetic target, bf16 merge, merged-vs-adapted check.
+
+#### T0.3, descriptive (2026-10-19; zero GPU; author: GPT-OSS only, co-located cell, no L* verdict)
+
+`scripts/t03_signature.py`; `outputs/t03/t03_signature.json`; directions and type blocks in
+`data/directions/gpt_oss_20b_eop_L12.{npz,json}`. Cell: the harmony END_OF_PROMPT token
+(`<|start|>assistant`), block 12's output, where the W4 decision-token `V_moral` sources live (60
+pairs per source) and KDG banked its dose-0 letter rows. **PR flag:** the cell's PR is 7.5 on the
+panel sample and 13.2 on `H1_train` (W4 of record 9.40 raw, 12.79 standardized), below 30, so
+every number here is position-flagged and none is a verdict. `V_harm` variants: `t_inst` (FL's
+slice; 0.085 of it lies in `V_moral`'s span, so `V_care` ≈ `V_moral`) and END_OF_PROMPT (co-located;
+0.53 in span).
+
+| rows | `V_moral` fraction (null rank-3 q50 / q95) | `V_care` fraction (null rank-2 q50 / q95) | anchor axis, departure − rule side (SD) vs covariance-matched null \|q95\| |
+|---|---|---|---|
+| panel, 5,056 (consistent / neutral / violating) | 0.159 (0.465 / 0.536) | 0.147 (0.385 / 0.489) | −0.19 vs 0.78 (`t_inst`); −0.46 vs 0.78 (END_OF_PROMPT) |
+| H1_train, 1,056 (rule / defer / protect) | 0.180 (0.389 / 0.452) | 0.164 (0.316 / 0.386) | +0.12 vs 0.25; +0.13 vs 0.27 |
+
+Read on the ladder: both moral subspaces sit **below the covariance-matched null's median** at this
+cell (the sample's variance runs along other axes), and no split separates on the anchor axis
+beyond what a covariance-matched random direction does (all contrasts inside the null's |q95|),
+on the panel or on H1. The splits condition on the model's dose-0 choice (correlational,
+Amendment 1 item 4). **Diagnostic (T0.6 item 1):** cos(anchor axis, protect − rule orientation in
+`V_care`, H1_train) = 0.90 (`t_inst`), 0.85 (END_OF_PROMPT): not anti-aligned, but the
+scenario-bootstrap CI is [−0.66, 1.00], so the orientation itself is not resolved on 132
+scenarios; nothing logged as anti-alignment. The L* choice stays with T1.2 and the constancy read
+on T1.1's own residuals.

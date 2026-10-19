@@ -122,11 +122,21 @@ def test_tau_axis_sigma_and_pairs():
     # to rule; chat_sigma is accepted without its provenance (Amendment 1 item 3)
     rng = np.random.default_rng(0)
     assert ST.compute_tau(np.arange(101)) == pytest.approx(75.0)
-    v = np.linalg.qr(rng.standard_normal((8, 2)))[0].T
-    prot = rng.standard_normal((20, 8)) + 3 * v[0]
-    rule = rng.standard_normal((20, 8)) - 3 * v[0]
-    ax = ST.anchor_axis(v, prot, rule)
-    assert ST.margins(prot, ax).mean() > ST.margins(rule, ax).mean()
+    # the anchor axis (author): harm-removed signed sources summed; it stays in the sources' span,
+    # is orthogonal to the in-span harm direction, and keeps the moral pole positive
+    S = rng.standard_normal((3, 8))
+    S[:, 0] += 3  # a shared moral pole along e0
+    harm = rng.standard_normal(8)
+    ax = ST.anchor_axis(S, harm)
+    B = np.linalg.qr((S / np.linalg.norm(S, axis=1, keepdims=True)).T)[0].T
+    hv = B.T @ (B @ harm)
+    assert abs(ax @ hv) < 1e-6 and np.linalg.norm(B.T @ (B @ ax)) == pytest.approx(1, abs=1e-6)
+    assert ax[0] > 0
+    Vc = np.linalg.qr(np.stack([ax, B[1] - (B[1] @ hv) / (hv @ hv) * hv]).T)[0].T
+    prot = rng.standard_normal((20, 8)) + 3 * ax
+    rule = rng.standard_normal((20, 8)) - 3 * ax
+    assert ST.orientation_diagnostic(ax, Vc, prot, rule) > 0.8
+    assert ST.orientation_diagnostic(ax, Vc, rule, prot) < -0.8  # anti-aligned is detectable
     with pytest.raises(ValueError, match="provenance"):
         ST.chat_sigma(prot, {"model": "x"})
     rows = [{"scenario_id": "a", "action": a, "prompt_ids": [1], "gen_ids": [i]}
