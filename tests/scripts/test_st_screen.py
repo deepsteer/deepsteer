@@ -241,6 +241,14 @@ def test_reprice_counts_screen_rollouts_once(tmp_path):
     assert RP.hf_step(cold) == pytest.approx(0.1)
     cold["probes"][1]["warmed"] = True
     assert RP.hf_step(cold) == pytest.approx(0.001)
+    # the relaunch's Muse rung: compile raised, uncompiled SDPA kept; its alone pass is the
+    # measured single-row rate (16 rows in 1.96 s), never the failed attempt's
+    rung = {"kept": "fast", "n": 16, "attempts": [
+        {"compiled": True, "ok": False, "error": "NameError"},
+        {"compiled": False, "ok": True, "first_fast_pass_seconds": 1.96}]}
+    assert RP.rung_alone_rate(rung) == pytest.approx(1.96 / 16)
+    assert RP.rung_alone_rate({"kept": "eager"}) is None
+    assert RP.read_rate(dict(q2, alone_read_s=0.1225))[0] == 0.1225
     # T1.3 never priced from a probe on uncompiled flex attention (author rider (b), 2026-10-19)
     gm = dict(g, hf_step_s=2.68, hf_batch=132, lens=[1536] * 64, rec=dict(
         g["rec"], fast_path_rung={"kept": "fast", "fast_impl": "flex_attention"}))

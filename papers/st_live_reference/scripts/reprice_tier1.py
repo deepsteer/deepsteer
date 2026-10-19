@@ -70,6 +70,20 @@ def hf_step(hf: dict) -> float | None:
     return p["t_decode_2n"] / (2 * p["decode_steps"])
 
 
+def rung_alone_rate(rung: dict) -> float | None:
+    """Seconds per row of the rung's first pass on the kept fast path, each row read alone
+    (batch 1): a measured single-row rate, first-call cost included (so biased high)."""
+    kept = rung.get("kept", "eager")
+    if kept == "eager":
+        return None
+    comp = kept.endswith("compile")
+    a = next((x for x in rung.get("attempts") or [] if x.get("ok") and x.get("compiled") == comp),
+             None)
+    if a is None or not a.get("first_fast_pass_seconds") or not rung.get("n"):
+        return None
+    return a["first_fast_pass_seconds"] / rung["n"]
+
+
 def model_rates(d: Path) -> dict | None:
     """Measured rates for one model directory of the relaunch (None if nothing usable)."""
     rec = json.loads((d / "screen_record.json").read_text())
@@ -94,6 +108,7 @@ def model_rates(d: Path) -> dict | None:
         "screen_rollouts": len(lens) if stage == "screen" else 0,
         "prompt_len": rec.get("probe_mean_len") or 350.0,
         "batched_read_s": rec.get("read_seconds_per_row"),
+        "alone_read_s": rung_alone_rate(rec.get("fast_path_rung") or {}),
         "replicate_floor": floor,
         "single_row": d.name == "gpt_oss_20b" or (floor is not None and floor > KDG_BAR),
         "hf_step_s": hf_step(hf),
@@ -112,7 +127,11 @@ def read_rate(m: dict) -> tuple[float, str]:
     """(seconds per readout row at the probe's mean length, basis)."""
     r = m["batched_read_s"]
     if r is None:
-        raise SystemExit(f"{m['model']}: no measured read rate in its record")
+        px = m.get("read_proxy")
+        if px is None:
+            raise SystemExit(f"{m['model']}: no measured read rate in its record and no proxy")
+        rate, basis = read_rate(px)
+        return rate, f"proxy: {px['model']}'s rate ({basis}); this model's HF phase did not run"
     if not m["single_row"]:
         return r, "measured (batched)"
     if m["model"] == "gpt_oss_20b":
@@ -121,6 +140,9 @@ def read_rate(m: dict) -> tuple[float, str]:
     pad = m["rec"].get("padded_check") or {}
     if not pad.get("ok"):  # the probe read unbatched (sc.unbatched): r is the single-row rate
         return r, "measured single-row"
+    if m.get("alone_read_s"):
+        return m["alone_read_s"], ("measured single-row (the rung's alone pass on the kept "
+                                   "path, first-call cost included)")
     return r * min(pad.get("batch") or 1, 16), "single-row bound (one batch forward per row)"
 
 
@@ -146,7 +168,7 @@ def gate_price(gm: dict) -> tuple[float, str]:
     rung = gm["rec"].get("fast_path_rung") or {}
     h = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
     if h is None:
-        return 1.5, "plan"
+        return 1.5, "plan (no HF memory probe for this model)"
     if rung.get("kept") == "fast" and rung.get("fast_impl") == "flex_attention":
         return 1.5, "plan (probe ran on uncompiled flex attention, not a path of record)"
     probes = (gm["rec"].get("hf_memory_probe") or {}).get("probes") or [{}]
@@ -154,9 +176,9 @@ def gate_price(gm: dict) -> tuple[float, str]:
                else "measured bound (cold-probe fix: warm 2n timing / 2n)")
 
 
-def price(m: dict, gate_m: dict | None = None) -> dict:
-    """Both roles. ``gate_m``: the model whose HF probe prices the steering gate (GPT-OSS)."""
-    gate = gate_price(gate_m or m)
+def price(m: dict) -> dict:
+    """Both roles; the steering gate from the model's own HF probe (else its plan price)."""
+    gate = gate_price(m)
     t = m["mean_tokens"]
     rb = read_rate(m)[1]
     dev = {
@@ -207,11 +229,17 @@ def main() -> int:
     session_h = a.session_h if a.session_h is not None else (
         sum(m["elapsed_h"] for m in models.values()) + 0.25)
     spent = sum(SPENT.values()) + session_h
-    gate_m = models.get("gpt_oss_20b")
-    prices = {k: price(m, gate_m) for k, m in models.items()}
+    # a model whose HF phase did not run (the relaunch's Qwen3.8 revision-gate stop) borrows the
+    # readout rate of a measured dense model of its size class, labelled as a proxy
+    dense = [m for k, m in models.items() if k != "gpt_oss_20b" and m["batched_read_s"]]
+    for m in models.values():
+        if m["batched_read_s"] is None and dense:
+            m["read_proxy"] = dense[0]
+    prices = {k: price(m) for k, m in models.items()}
     lines = ["# Tier 1 re-priced from the T1.0 relaunch (G1 input)", "",
              "Spent so far: " + "; ".join(f"{k} {v:.2f}" for k, v in SPENT.items())
-             + f"; this session {session_h:.2f} (models' elapsed + 0.25 setup unless given)"
+             + f"; this session {session_h:.2f} ("
+             + ("given" if a.session_h is not None else "models' elapsed + 0.25 setup") + ")"
              + f" → **{spent:.2f} A100-h**.", "",
              "Readouts are single-row where the model's unpadded replicate floor exceeds 0.05 "
              "nats (GPT-OSS-20B by ST-A3 and §31's precedent); rows marked plan keep ST_PLAN "

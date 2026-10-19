@@ -1108,3 +1108,13 @@ could be read. The generation engine moves to vLLM (Amendment 7), with HF teache
 unchanged; an engine-parity check against §40's rollouts gates it. Open: the second family
 (Qwen3.8-27B or Muse Glimmer 30B, screened on the relaunch) and ST-A1 (the bf16 padded check).
 
+**Relaunch (2026-10-19), what changed.** vLLM reproduces §40's rollouts within its detection bar
+(protective-share difference +0.012 [−0.067, 0.096], MDE 0.12, 61 scenarios), so the generation
+engine of record moves without moving the instrument. Muse Glimmer 30B screens with a brake of
+−0.31 [−0.39, −0.24] on 60 scenarios, descriptive until its dose-0 regime is validated (ST-A4,
+one failed check that contains batch jitter). Qwen3.8-27B's screen rollouts are banked without
+readouts (revision gate on a text-tower load, fixed). The bf16 readout floor appears in a dense
+model too (Muse 0.375 nats; ST-A3 leaning toward a stack property rather than MoE routing), so
+readouts of record are single-row on every model. Re-priced Tier 1: GPT-OSS development plus
+either second family is about 15.6–15.8 A100-h cumulative of the 35-hour envelope.
+

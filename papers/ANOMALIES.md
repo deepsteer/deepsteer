@@ -1133,5 +1133,29 @@ this session.
 **Competing readings.** R_a (MoE routing): batch-size-dependent GEMM rounding flips near-tied top-4 expert choices in some layers, and a flipped expert moves the logits by tenths of a nat; the effect is specific to the MoE model. R_b (stack): the bf16 kernels or the attention implementation on this torch/transformers stack carry it, and a dense model on the same stack shows the same floor.
 **Discriminator.** The same replicate floor on Qwen3.8-27B and Muse Glimmer 30B (dense) on the relaunch, which computes it in their phase H at no extra cost: floors near 0.05 → R_a; floors near 0.4 → R_b.
 **Status.** open; discriminator rides the relaunch (zero added cost).
+**Relaunch read (2026-10-19, pod esmxvsxj8wzkaq; `outputs/t10/*/screen_record.json`).** Muse
+Glimmer 30B (dense: 52 layers of sliding and full attention, no experts; bf16, eager): replicate
+floor 0.375 nats at batch 8 on 16 H1 prompts (294–365 tokens); negative control 16.8 nats. That
+is the "near 0.4" branch: the pre-stated discriminator favours R_b (the bf16 stack carries the
+batch-size jitter; a dense model shows it too). Qwen3.8-27B did not reach its HF phase (revision
+gate, process ledger), so R_b rests on one dense model. Reading against the floor is at the end of
+the generation prompt, where the letters sit in the tail of the next-token distribution; a floor
+at the dose-0 or post-reasoning position, where letters hold the mass, may be smaller. GPT-OSS on
+the relaunch: eager floor 2.79 nats over 16 rows (0.43 over 8 rows at VALIDATE, same position
+type); the record keeps only the maximum, so whether one row drives it is unknown (per-row arrays
+are saved from now on, Amendment 7 implementation item 9). **Status:** leaning R_b on one dense
+model; the Qwen rerun gives the second floor and per-row arrays at the same position.
 **Thesis impact.** Either reading: on GPT-OSS a batched readout carries about half a nat of batch-dependent jitter, so readouts of record should be read one row at a time with one fixed implementation across every arm (author decision pending). R_a also scopes KDG-A21 as an MoE property rather than a harness defect.
+
+## ST-A4 (ledger) — Muse Glimmer 30B's dose-0 forward-vs-generation check fails at 0.25 nats against the 0.05 bar, below its own 0.375-nat batch floor
+
+**Date.** 2026-10-19 (T1.0 relaunch, pod esmxvsxj8wzkaq; `st_live_reference/outputs/t10/muse_glimmer_30b/screen_record.json`, `dose0.tried`).
+**Observation.** The empty-reasoning dose-0 candidate passes letter mass (0.983, bar 0.95), C0 (agreement 0.719, Wilson [0.599, 0.814], bar 0.633 = 0.9 κ*), and the known-gap band (0.591 [0.522, 0.655]), and fails only forward-vs-generation: 0.249 nats against 0.05. The direct-answer candidate fails letter mass (0.945) and forward-vs-generation (0.246). `fwd_vs_gen` reads the teacher-forced side batched (batch 8) and the generation side one row at a time, so the comparison contains the batch-size jitter whose floor on this model is 0.375 nats (ST-A3). With no dose-0 regime of record, the screen's brake for Muse is descriptive: B = −0.314 [−0.393, −0.239] against the failed candidate's readout, n = 60.
+**Type.** control misbehaviour (a check whose bar predates Amendment 6's recalibration and whose two sides differ in batch size).
+**Competing readings.** R_a (instrument): the 0.25 nats is batch jitter; forward and generation read alone agree within 0.05. R_b (real): the empty-reasoning prefill takes a different path through generation than through the teacher-forced forward (e.g. cache or sliding-window handling at the channel boundary), so forced dose-0 readouts do not equal what the model would generate.
+**Discriminator.** Forward alone vs generation alone on the same 16 rows (like with like, bar 0.05): one Muse load, about 0.25 A100-h with download, and it can share the Qwen rerun pod. A zero-GPU partial: the Amendment 6 ladder applied to this check (bar 2 × 0.375 = 0.75) passes on saved data, but that is a post-hoc fork and needs its amendment first.
+**Status.** open; the discriminator is priced for the Qwen rerun pod (author decision at G1).
+**Thesis impact.** R_a: Muse has a valid dose-0 regime and a measured brake of −0.31 on 60 screened scenarios (not comparable in size with GPT-OSS's −0.224 until both are read on the same scenarios and readout); it competes for the second-family role on the same criteria as Qwen. R_b: Muse's forced dose-0 readouts are not its generation behaviour; it can take the second-family role only on reasoned-arm endpoints, or Qwen takes it.
+
+**Process ledger 2026-10-19 — Muse's compiled readout path raised `NameError: name 'torch' is not defined`.** The rung's first attempt (SDPA + torch.compile) raised inside compilation; the rung recorded it and kept uncompiled SDPA (measured 0.31 nats against bar 0.75; under item 9's reference-floor rule the bar is the same 0.75, since the eager floor equals the candidate's, 0.375, and it still passes). Uncompiled SDPA read 16 rows alone in 1.96 s (0.12 s per row), the single-row rate the re-price uses. The traceback is not in the log, so the cause is not established. No numeric effect.
 
