@@ -24,7 +24,13 @@ CLEAN_HF_CACHE="${CLEAN_HF_CACHE:-1}"   # drop each model's (and drafter's) weig
 PIP_INSTALL="${PIP_INSTALL:-1}"         # 0 = local VALIDATE on a machine with the stack already
 VLLM_SMOKE="${VLLM_SMOKE:-1}"           # 0 = local VALIDATE (no CUDA): skip the real vLLM smoke
 VLLM_VENV="${VLLM_VENV:-/workspace/venv_vllm}"
-VLLM_VERSION=0.31.0                      # Amendment 7 implementation (default wheel CUDA 12.9)
+VLLM_VERSION=0.31.0                      # Amendment 7 implementation
+# the PyPI wheel of 0.31.0 is a CUDA 13 build (requires_dist pins [cu13] kernels; its _C links
+# libcudart.so.13: the first VALIDATE pod, 2026-10-18); the CUDA 12.9 build is the GitHub release
+# asset, pinned by the sha256 GitHub publishes for it, over torch 2.13.0+cu129
+VLLM_WHEEL_URL="https://github.com/vllm-project/vllm/releases/download/v0.31.0/vllm-0.31.0%2Bcu129-cp38-abi3-manylinux_2_28_x86_64.whl"
+VLLM_WHEEL_SHA256=5176ab746f4e736c4a354a11d0620abf0a941de287cad937ac34039293ca6f5f
+CU129_INDEX=https://download.pytorch.org/whl/cu129
 VALIDATE_MAX_SECONDS="${VALIDATE_MAX_SECONDS:-1080}"     # 0.3 A100-h
 SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-6.8}"            # 1.0 + 2.5 + 2.5 + setup
 cd "$REPO_DIR"
@@ -86,12 +92,14 @@ if [ "$VLLM_SMOKE" = "1" ]; then
     echo ">> creating $VLLM_VENV (vllm==$VLLM_VERSION)"
     $PY -m venv "$VLLM_VENV"
     "$VLLM_VENV/bin/pip" install -q --upgrade pip 2>&1 | tail -1
-    "$VLLM_VENV/bin/pip" install -q "vllm==$VLLM_VERSION" \
-      --extra-index-url https://download.pytorch.org/whl/cu129 2>&1 | tail -3
+    "$VLLM_VENV/bin/pip" install -q "torch==2.13.0+cu129" "torchvision==0.28.0+cu129" \
+      "torchaudio==2.11.0+cu129" --index-url "$CU129_INDEX" 2>&1 | tail -3
+    "$VLLM_VENV/bin/pip" install -q "vllm @ ${VLLM_WHEEL_URL}#sha256=${VLLM_WHEEL_SHA256}" \
+      --extra-index-url "$CU129_INDEX" 2>&1 | tail -3
     "$VLLM_VENV/bin/pip" install -q "transformers==5.17.0" pyyaml 2>&1 | tail -1
   fi
-  "$VLLM_VENV/bin/python" -c "import vllm, torch, transformers, sys; print('>> vLLM stack:', vllm.__version__, torch.__version__, 'cuda', torch.version.cuda, torch.cuda.is_available(), 'transformers', transformers.__version__); sys.exit(0 if vllm.__version__=='$VLLM_VERSION' and torch.cuda.is_available() else 1)" \
-    || { echo "FATAL: vLLM venv not usable (version or CUDA)"; exit 1; }
+  "$VLLM_VENV/bin/python" -c "import vllm, torch, transformers, sys; print('>> vLLM stack:', vllm.__version__, torch.__version__, 'cuda', torch.version.cuda, torch.cuda.is_available(), 'transformers', transformers.__version__); sys.exit(0 if vllm.__version__.split('+')[0]=='$VLLM_VERSION' and torch.version.cuda.startswith('12.9') and torch.cuda.is_available() and transformers.__version__=='5.17.0' else 1)" \
+    || { echo "FATAL: vLLM venv not usable (version, CUDA 12.9 build, or transformers pin)"; exit 1; }
   export ST_VLLM_PYTHON="$VLLM_VENV/bin/python"
 fi
 

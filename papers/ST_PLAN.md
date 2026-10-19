@@ -812,8 +812,13 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
 
 #### Amendment 7, implementation (author confirmations 2026-10-18; facts checked against primary sources)
 
-1. **vLLM v0.31.0** (PyPI 2026-10-05; default wheel CUDA 12.9 for the pods' CUDA 12 driver; torch
-   2.13.0; transformers 5.17.0 pinned in its venv, inside v0.31.0's ≥ 5.10.4, < 5.18 range, so
+1. **vLLM v0.31.0** (released 2026-10-05; the CUDA 12.9 build for the pods' CUDA 12 driver is the
+   GitHub release asset `vllm-0.31.0+cu129`, pinned by its published sha256, over torch
+   2.13.0+cu129. Correction 2026-10-18: the first wording said the default PyPI wheel was CUDA 12.9,
+   from the v0.31.0 docs; the wheel's own metadata pins `[cu13]` kernels and its compiled core
+   links `libcudart.so.13`, which the first VALIDATE pod caught. A local dry-run resolve for the
+   pod's platform now confirms torch 2.13.0+cu129, vLLM 0.31.0+cu129 and the cu12 12.9 runtime;
+   transformers 5.17.0 pinned in its venv, inside v0.31.0's ≥ 5.10.4, < 5.18 range, so
    both venvs share one tokenizer and template stack). Every architecture and drafter method used
    here (qwen3_5, muse_glimmer, gpt_oss; mtp, dflash, eagle3, ngram_gpu) is in v0.31.0's registry;
    both DeltaNet speculative fixes (#51812, #51674) are in it. v0.32.0 is not used (published the

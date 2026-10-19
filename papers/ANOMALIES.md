@@ -1076,3 +1076,15 @@ discriminator):
 **Status.** resolved → a result (G1, author, 2026-10-18; CLAIMS ST-09): OLMo-3-Think leaves the development role; GPT-OSS-20B takes it. The R_a/R_b discriminator stays priced for the Tier 2 stage ladder's budget.
 **Thesis impact.** R_a: the deliberation brake on an open 7B reasoning recipe is measurable only with traces of 4k+ tokens, which prices OLMo-3-Think out of the Tier 1 envelope; the stage-checkpoint ladder (Tier 2) must budget for it. R_b: the frame, not the model, sets the budget, and a brevity instruction becomes a design question (never a lever: §0).
 
+**Process ledger 2026-10-18 — the first ST VALIDATE pod (146trytky4d1z3) stopped at the vLLM import: the PyPI wheel of vLLM 0.31.0 is a CUDA 13 build.**
+`import vllm` failed on `libcudart.so.13` after the fast gates passed (110 passed, 1 skipped). The
+pin had followed the v0.31.0 installation docs ("compiled with CUDA 12.9 by default"); the research
+pass had flagged the same docs line as stale for v0.32.0 and it was not re-checked for v0.31.0. The
+wheel's own metadata (`humming-kernels[cu13]`, `nvidia-cutlass-dsl[cu13]`) said CUDA 13. Fix: the
+`+cu129` GitHub release asset pinned by sha256 over torch 2.13.0+cu129, and a local dry-run resolve
+for the pod platform (manylinux up to 2_35, cp311) before any pod: 181 packages, the cu12 12.9
+runtime; `nvidia-cutlass-dsl-libs-cu13` still arrives through flashinfer's `nvidia-cudnn-frontend`
+(every version ≥ 1.29 requires it), as it does in vLLM's own cu129 build. Cost: one setup-only pod,
+no model loaded (under 0.2 A100-h). Lesson: pin a binary by its metadata and a resolve for the
+target platform, never by its docs.
+
