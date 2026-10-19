@@ -402,6 +402,11 @@ def rider2_h(sc, ctx, rec: dict) -> None:
     print(f">> {sc.key} readout mode: {rec['readout_mode']['mode']} "
           f"({rec['readout_mode']['head']} head)", flush=True)
     if sc.key == "gpt_oss_20b":
+        # the dose-0 reads reach disk before the fold check can fail (rider pod 2's lesson); the
+        # bank at the end rewrites the record with the manifest
+        rec["status"] = "partial_rider2 (dose-0 reads; fold check running)"
+        (sc.out / "screen_record.json").write_text(json.dumps(rec, indent=1,
+                                                              default=L._json_default))
         if sc.dry:
             rec["fold_validation"] = {"dry": True}
         else:  # first GPU run of the fold path: a failure is recorded, the dose-0 reads bank
