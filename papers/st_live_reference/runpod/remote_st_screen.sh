@@ -31,6 +31,7 @@ VLLM_VERSION=0.31.0                      # Amendment 7 implementation
 VLLM_WHEEL_URL="https://github.com/vllm-project/vllm/releases/download/v0.31.0/vllm-0.31.0%2Bcu129-cp38-abi3-manylinux_2_28_x86_64.whl"
 VLLM_WHEEL_SHA256=5176ab746f4e736c4a354a11d0620abf0a941de287cad937ac34039293ca6f5f
 CU129_INDEX=https://download.pytorch.org/whl/cu129
+VLLM_CONSTRAINTS=papers/st_live_reference/runpod/vllm_constraints.txt
 VALIDATE_MAX_SECONDS="${VALIDATE_MAX_SECONDS:-1080}"     # 0.3 A100-h
 SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-6.8}"            # 1.0 + 2.5 + 2.5 + setup
 cd "$REPO_DIR"
@@ -58,6 +59,49 @@ S=papers/st_live_reference/scripts/pod_st_screen.py
 DATE_PIN="$(date -u +%F)"   # one date for the whole session (Muse renders it; Amendment 2 item 6)
 echo ">> date pin: $DATE_PIN   models: $MODELS"
 
+# ---- 1. the vLLM venv first, with the deep import check (a missing CUDA library shows in
+# minutes, before the HF stack and the gates; author, 2026-10-18) ----
+if [ "$VLLM_SMOKE" = "1" ]; then
+  command -v nvidia-smi >/dev/null && echo ">> driver: $(nvidia-smi --query-gpu=driver_version,name --format=csv,noheader)"
+  if [ ! -x "$VLLM_VENV/bin/python" ]; then
+    echo ">> creating $VLLM_VENV (vllm==$VLLM_VERSION, CUDA 12.9 line)"
+    $PY -m venv "$VLLM_VENV"
+    "$VLLM_VENV/bin/pip" install -q --upgrade pip 2>&1 | tail -1
+    "$VLLM_VENV/bin/pip" install -q "torch==2.13.0+cu129" "torchvision==0.28.0+cu129" \
+      "torchaudio==2.11.0+cu129" --index-url "$CU129_INDEX" 2>&1 | tail -3
+    "$VLLM_VENV/bin/pip" install -q "vllm @ ${VLLM_WHEEL_URL}#sha256=${VLLM_WHEEL_SHA256}" \
+      "transformers==5.17.0" pyyaml -c "$VLLM_CONSTRAINTS" --extra-index-url "$CU129_INDEX" \
+      2>&1 | tail -3
+  fi
+  VLLM_VERSION="$VLLM_VERSION" "$VLLM_VENV/bin/python" - <<'PY' || { echo "FATAL: vLLM venv not usable (see the check above)"; exit 1; }
+import importlib.metadata as md, os, sys
+import torch
+from vllm import LLM, SamplingParams  # noqa: F401  (the worker's own import; pulls torchcodec)
+import flashinfer, torchcodec  # noqa: F401,E401
+from cuda.bindings import nvrtc
+from vllm.model_executor.models import gpt_oss, muse_glimmer, qwen3_5  # noqa: F401
+v = {p: md.version(p) for p in ("vllm", "torch", "torchcodec", "cuda-bindings", "cuda-python",
+                                "flashinfer-python", "transformers")}
+err, major, minor = nvrtc.nvrtcVersion()  # loads libnvrtc: the CUDA 13 failure mode
+print(">> vLLM stack:", v, "| torch cuda", torch.version.cuda, torch.cuda.is_available(),
+      "| nvrtc", major, minor, err)
+checks = {
+    "vllm": v["vllm"].split("+")[0] == os.environ["VLLM_VERSION"],
+    "torch_cuda_12.9": (torch.version.cuda or "").startswith("12.9"),
+    "cuda_available": torch.cuda.is_available(),
+    "transformers": v["transformers"] == "5.17.0",
+    "cuda_bindings_12": v["cuda-bindings"].startswith("12."),
+    "torchcodec_cu129": v["torchcodec"].endswith("+cu129"),
+    "nvrtc_12": int(major) == 12,
+}
+bad = [k for k, ok in checks.items() if not ok]
+print(">> vLLM venv checks:", "OK" if not bad else f"FAILED {bad}")
+sys.exit(1 if bad else 0)
+PY
+  export ST_VLLM_PYTHON="$VLLM_VENV/bin/python"
+fi
+
+# ---- 2. the HF stack ----
 if [ "$PIP_INSTALL" = "1" ]; then
   # HF stack: transformers 5.17.0 (muse_glimmer) on the W4/GPT-OSS torch 2.6.0+cu124 trio
   if ! $PY -c 'import torch,sys; v=tuple(int(x) for x in torch.__version__.split("+")[0].split(".")[:2]); sys.exit(0 if v>=(2,6) else 1)' 2>/dev/null; then
@@ -72,7 +116,6 @@ fi
 echo ">> HF stack: torch $($PY -c 'import torch;print(torch.__version__)' 2>&1)  transformers $($PY -c 'import transformers;print(transformers.__version__)' 2>&1)  cuda $($PY -c 'import torch;print(torch.cuda.is_available())' 2>&1)"
 $PY -c 'import transformers,sys; sys.exit(0 if transformers.__version__=="5.17.0" else 1)' \
   || { echo "FATAL: transformers is not 5.17.0 (Amendment 4 item 7)"; exit 1; }
-command -v nvidia-smi >/dev/null && echo ">> driver: $(nvidia-smi --query-gpu=driver_version,name --format=csv,noheader)"
 
 # ---- inputs the screen needs (committed; never regenerated here) ----
 for f in papers/st_live_reference/split_v1.json papers/st_live_reference/data/s40_reference.json \
@@ -80,35 +123,17 @@ for f in papers/st_live_reference/split_v1.json papers/st_live_reference/data/s4
          papers/kdg_panel/data/harm_divergence/h1_kept_ids.json papers/kdg_panel/models.yaml; do
   [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }
 done
-
-# ---- fast gates first (no model) ----
 GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/core/test_model_interface_vlm.py tests/kdg"
-echo ">> ST fast gates:"
-$PY -m pytest -q $GATE_TESTS -m "not slow" || { echo "LOCAL GATE FAILED"; exit 1; }
-
-# ---- the vLLM venv (Amendment 7): v0.31.0 on CUDA 12.9 torch, transformers 5.17.0 ----
-if [ "$VLLM_SMOKE" = "1" ]; then
-  if [ ! -x "$VLLM_VENV/bin/python" ]; then
-    echo ">> creating $VLLM_VENV (vllm==$VLLM_VERSION)"
-    $PY -m venv "$VLLM_VENV"
-    "$VLLM_VENV/bin/pip" install -q --upgrade pip 2>&1 | tail -1
-    "$VLLM_VENV/bin/pip" install -q "torch==2.13.0+cu129" "torchvision==0.28.0+cu129" \
-      "torchaudio==2.11.0+cu129" --index-url "$CU129_INDEX" 2>&1 | tail -3
-    "$VLLM_VENV/bin/pip" install -q "vllm @ ${VLLM_WHEEL_URL}#sha256=${VLLM_WHEEL_SHA256}" \
-      --extra-index-url "$CU129_INDEX" 2>&1 | tail -3
-    "$VLLM_VENV/bin/pip" install -q "transformers==5.17.0" pyyaml 2>&1 | tail -1
-  fi
-  "$VLLM_VENV/bin/python" -c "import vllm, torch, transformers, sys; print('>> vLLM stack:', vllm.__version__, torch.__version__, 'cuda', torch.version.cuda, torch.cuda.is_available(), 'transformers', transformers.__version__); sys.exit(0 if vllm.__version__.split('+')[0]=='$VLLM_VERSION' and torch.version.cuda.startswith('12.9') and torch.cuda.is_available() and transformers.__version__=='5.17.0' else 1)" \
-    || { echo "FATAL: vLLM venv not usable (version, CUDA 12.9 build, or transformers pin)"; exit 1; }
-  export ST_VLLM_PYTHON="$VLLM_VENV/bin/python"
-fi
 
 if [ "$VALIDATE" = "1" ]; then
+  # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
   if [ "$VLLM_SMOKE" = "1" ]; then
     echo "==================== VALIDATE: GPT-OSS-20B vLLM smoke + HF fast-path rung ===================="
     $PY papers/st_live_reference/scripts/smoke_st.py --out "$OUT/_validate" \
       || { echo "SMOKE FAILED"; exit 1; }
   fi
+  echo ">> ST fast gates:"
+  $PY -m pytest -q $GATE_TESTS -m "not slow" || { echo "LOCAL GATE FAILED"; exit 1; }
   for m in $MODELS; do
     $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
       || { echo "DRY RUN FAILED ($m)"; exit 1; }
@@ -118,6 +143,9 @@ if [ "$VALIDATE" = "1" ]; then
   echo ">> VALIDATE: smoke, dry runs and gates OK. Launch without VALIDATE for the real run."; exit 0
 fi
 
+# ---- 3. real run: fast gates and dry runs before any model ----
+echo ">> ST fast gates:"
+$PY -m pytest -q $GATE_TESTS -m "not slow" || { echo "LOCAL GATE FAILED"; exit 1; }
 for m in $MODELS; do
   $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
     || { echo "DRY RUN FAILED ($m)"; exit 1; }

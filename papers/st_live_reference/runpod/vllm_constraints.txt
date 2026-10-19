@@ -1,0 +1,10 @@
+# Constraints for the ST vLLM venv (ST_PLAN Amendment 7 implementation item 1): keep every
+# CUDA-linked dependency on the CUDA 12.9 line the pods' driver runs. Each pin answers a VALIDATE
+# finding or a resolve check (2026-10-18):
+# - flashinfer's unpinned cuda-python pulled cuda-python/cuda-bindings 13.x (NVRTC 13), against
+#   torch 2.13.0+cu129's own requirement cuda-bindings>=12.9.4,<13;
+# - the PyPI torchcodec 0.17.0 is a CUDA 13 build (libnvrtc.so.13; second VALIDATE pod); the cu129
+#   index carries 0.16.0+cu129, inside vLLM 0.31.0's torchcodec>=0.14.
+cuda-bindings>=12.9.4,<13
+cuda-python>=12.9,<13
+torchcodec==0.16.0+cu129

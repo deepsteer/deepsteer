@@ -1087,4 +1087,13 @@ runtime; `nvidia-cutlass-dsl-libs-cu13` still arrives through flashinfer's `nvid
 (every version ≥ 1.29 requires it), as it does in vLLM's own cu129 build. Cost: one setup-only pod,
 no model loaded (under 0.2 A100-h). Lesson: pin a binary by its metadata and a resolve for the
 target platform, never by its docs.
+Follow-up the same day (second VALIDATE pod, 40yy8fg8wtnucu): the venv check `import vllm` passed
+(vLLM imports lazily) and the worker's `from vllm import LLM` then failed on `libnvrtc.so.13` in
+the PyPI `torchcodec` 0.17.0. A resolve audit found a second CUDA 13 path: flashinfer's unpinned
+`cuda-python` had pulled `cuda-bindings` 13.4.4 against torch 2.13.0+cu129's own `<13` pin. Fix: a
+constraints file (`cuda-bindings`/`cuda-python` 12.9 line, `torchcodec==0.16.0+cu129`; the
+constrained resolve is consistent), and the venv check now runs the worker's own import, imports
+flashinfer, torchcodec and the three model modules, and loads NVRTC (`nvrtcVersion` must report
+12), before the HF stack and every gate, so a failure of this kind shows in minutes (author).
+Lesson added: check the import the program makes, not the package's top-level import.
 
