@@ -1162,6 +1162,16 @@ final norm and LM head in fp32 (minutes on any loaded model): a floor that drops
 position of record confirms the precision reading and makes batched readouts admissible at the
 0.05 bar; a floor that stays ~0.25 sends the jitter back into the network. **Status:** R_a (MoE
 routing) no longer needed to explain the floor; precision reading leading, discriminator priced.
+**Rider pod 2 read (2026-10-19, A100 80GB PCIe, `outputs/t10c`; fp32-head discriminator).** At
+the dose-0 position, replicate floor with the bf16 head → fp32 head: GPT-OSS-20B 0.299 → 0.258
+(padded vs alone 0.458 → 0.479), Muse 0.396 → 0.278 (0.396 → 0.278). The fp32 head removes about
+a third of Muse's floor and a seventh of GPT-OSS's; neither approaches 0.01. **The precision-of-
+the-head reading is refuted as the main source:** the batch-size jitter at a position of record
+is in the network's own bf16 computation, on a dense model and an MoE alike (R_b as originally
+stated: the stack, not MoE routing). Readouts of record are single-row with the bf16 head on both
+models of record (Amendment 9 item 2). GPT-OSS's per-row arrays were lost with its record (two
+fold-path bugs, fixed in `0d4e96f`); its rerun recovers them. **Status:** resolved for the
+readout decision; the mechanism inside the network is not localized (not needed for any gate).
 **Scope of the relaunch's rung verdicts:** every floor and bar of the padded check and the rung
 was read at the tail position, so the kept fast paths (GPT-OSS flex + compile under a 5.58 bar)
 are validated there only; a re-read at the dose-0 position is part of the discriminator above.
@@ -1215,4 +1225,6 @@ the GPU discriminator).
 **Thesis impact.** None on the science; on the plan, T1.3 is now the largest Tier-1 line (development total 15.9 A100-h with GPT-OSS; envelope still holds at ~25 of 35 with Muse).
 
 **Process ledger 2026-10-19 — torch.compile of the HF forward fails on both dense models on the pod stack (torch 2.6 + transformers 5.17).** Muse: `NameError: name 'torch' is not defined`; Qwen: `InternalTorchDynamoError: AttributeError: module 'torch.compiler' has no attribute 'is_exp…'` (an API newer than torch 2.6). The rung recorded both and kept uncompiled SDPA. GPT-OSS compiled. No numeric effect; the HF readouts of the dense models run uncompiled until the HF stack moves past torch 2.6.
+
+**Process ledger 2026-10-19 — rider pod 2's GPT-OSS record was lost to two bugs in a path no local test reached.** (1) After the fold check freed the first HF model, its vLLM half needed the tokenizer through `sc.model` (None). (2) The folded checkpoint's links into the HF cache entered the bank's manifest walk, which raised, so the record (with the dose-0-position reads computed minutes earlier) was never written, and the stack reads and three MoE probes that run only after a clean exit were skipped. Fixes: a tokenizer stand-in after each free, the checkpoint removed after the check (also on failure), the bank never walks links; regression tests for both. The headline dose-0-position numbers survive in the session log. The MegaBlocks probe failed to load: transformers 5.17 accepts `kernels` 0.16.x only and an unpinned install pulled a newer one (now pinned). Lesson: a step that can fail must not sit between expensive reads and the bank; the dose-0 reads should have banked before the fold check started. Cost of the pod: 0.65 A100-h (timestamps + provisioning); Muse's half (dose-0-position reads, stack parity inside) is complete.
 
