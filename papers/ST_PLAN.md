@@ -857,7 +857,9 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    of the seeded order at §40's exact prompts (the ST render reproduces 264 of 264 of §40's prompt
    shas; `data/s40_reference.json`, an engine reference only), 4 vLLM rollouts against §40's one,
    paired scenario-bootstrap difference CIs for the protective share and each letter's share,
-   all including 0; the MDE is reported beside it.
+   all including 0; the MDE is reported beside it. (Rider pod 2c: at the dose-0 decision token
+   the unsteered GPT-OSS gap between HF, bf16-dequantized, and vLLM, MXFP4 on Marlin, is up to
+   0.78 nats, mean 0.16, on 16 rows; parity is distributional and no readout crosses engines.)
 5a. **Sampler path (verified in v0.31.0 source):** with no top-k/top-p and an explicit per-request
    seed, vLLM samples through its seeded gumbel path, never FlashInfer's fused sampler; the worker
    sets `VLLM_USE_FLASHINFER_SAMPLER=0` so engine warm-up does not JIT-compile that unused kernel
@@ -1225,7 +1227,9 @@ post-hoc check.
 - **Fold validation (item 4):** (i) passes (hook vs fold 0.262 against 0.584; hook vs base 1.07);
   (ii) fails as written (0.638 against 0.25) with the engines' effects correlated at 0.87 and
   GPT-OSS's own unsteered HF-vs-vLLM gap 0.78 on the same rows (ST-A7, R_a); (iii) parse rates
-  0.953 / 0.922. Fold arms are not admitted to T1.3 until the author decides on ST-A7.
+  0.953 / 0.922. **Author (2026-10-19): folds stay out of T1.3; every gate arm runs on HF with
+  eager experts** (~1.2 A100-h). ST-A7 resolved as descriptive, no amendment; the fold is recorded
+  as validated for later vLLM-speed uses outside the gate.
 - **MoE (item 5):** T1.3 prices at ~1.2 A100-h on eager experts at batch 132 (ST-A6, resolved);
   `grouped_mm` on torch 2.13 is faster at small batches and slower at 132.
 - **ST-A5 (rider 2c item 5):** resolved R_a (Qwen3.8's B +0.126 [0.067, 0.184] under the
