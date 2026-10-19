@@ -23,7 +23,8 @@ built in pretraining. Whether refusal and action follow it is shaped in post-tra
   evidence of the individualizing/binding split [P3].
 - **Refusal reads a slice of it.** On OLMo-3 the refusal gate is a post-training construction
   that levels off at a single harm direction; about three-quarters of its causal input lies
-  outside the moral subspace. Across model families this varies [FL].
+  outside the moral subspace. Other families differ: Llama's refusal reads broad moral content,
+  GPT-OSS's reads harm, and Qwen's is unresolved at the paper's sample size [FL].
 - **Acting on it depends on post-training.** Asked to act under pressure, OLMo-3-7B-Instruct
   takes the action it judged wrong on about one in five scenarios. From the same Llama-3.1
   weights, Meta's recipe carries this gap and Ai2's Tulu 3 does not [KDG].
