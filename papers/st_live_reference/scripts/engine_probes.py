@@ -56,7 +56,8 @@ def hf_batch_probe(model, prompt_ids: list[list[int]], batch: int, *, cap: int,
     if cuda:
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
-    out: dict = {"batch": batch, "decode_steps": decode_steps, "prompt_len_max": L, "cap": cap}
+    out: dict = {"batch": batch, "decode_steps": decode_steps, "prompt_len_max": L, "cap": cap,
+                 "warmed": True}
     ids, mask = ids.to(model.device), mask.to(model.device)
 
     def timed(n: int) -> float:
@@ -71,6 +72,10 @@ def hf_batch_probe(model, prompt_ids: list[list[int]], batch: int, *, cap: int,
         return time.time() - t0
 
     try:
+        # untimed warm-up at the same shapes: first-call costs (kernel selection, a compile at a
+        # new batch shape) otherwise land in t_short and shrink or flip the slope (local test,
+        # 2026-10-19: t_short 0.160 s vs t_long 0.056 s)
+        timed(decode_steps)
         t_short = timed(decode_steps)
         t_long = timed(2 * decode_steps)
     except torch.cuda.OutOfMemoryError as e:  # the probe's answer, not a crash

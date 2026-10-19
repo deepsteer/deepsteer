@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
-"""T0.11's last output: the Tier 1 table re-priced from the T1.0 screen's measured rates (G1 input).
+"""The Tier 1 re-price from the T1.0 relaunch's measured rates (G1 input; Amendments 7 and later).
 
-    python3 papers/st_live_reference/scripts/reprice_tier1.py --screen-dir OUT \
+    python3 papers/st_live_reference/scripts/reprice_tier1.py --screen-dir OUT \\
         [--write OUT/tier1_reprice.md]
 
-Per screened model, the generation and readout parts of each Tier 1 row are priced from that
-model's measured screen step time (seconds per decoding step at the screen batch), its
-tokens-to-answer distribution at the effort and cap of record, and its measured readout seconds per
-row; parts the screen cannot measure (training, AtP, Heretic, capability and specificity scoring)
-keep ST_PLAN §7 prices ("plan") or split a §7 row priced only as a whole ("estimate"). Each
-model is priced in both roles (development model: T1.1-T1.5; second family: T1.6), because G1
-assigns the roles after this table. The rollout counts are the plan's (v0.2.7): the brake-engaged
-subsets are taken at the plan's expected sizes (65 of H1_held; 50 of the second family's 100)
-until T1.1 measures them.
+Rates, per model, from its own records (vLLM engine, Amendment 7):
+- generation (every trace cell except the steering gate): rollouts x mean tokens to the answer at
+  the cap of record / the full-batch aggregate decoded tokens per second of the setting of record
+  (the screen's, or GPT-OSS-20B's parity probe); continuous batching makes total tokens over
+  throughput the right model;
+- the steering gate (T1.3) needs residual-stream hooks during generation, which vLLM does not
+  offer: HF generation at the largest batch the HF memory probe fits, its measured seconds per
+  step times the expected batch-maximum length;
+- readouts (HF teacher-forced): single-row where the model's unpadded replicate floor exceeds the
+  KDG bar (0.05 nats): GPT-OSS-20B by default (ST-A3; §31's one-sequence-at-a-time precedent,
+  0.131 s per row at ~740 tokens, scaled linearly in length), the second family by its own
+  measured floor, at its own rate (measured single-row when its padded check failed and the probe
+  read unbatched; else bounded by one batch forward per row, r x b); batched otherwise, at the
+  measured batched rate. Every readout rate scales linearly in length.
+Parts the T1.0 records cannot measure keep a "plan" price (a ST_PLAN line item) or an
+"estimate" (a split of a §7 row the plan prices only as a whole). Every row prints the cumulative
+A100-h with it included, starting from the A100-h already spent (``SPENT``, plus this session).
 """
 
 from __future__ import annotations
@@ -30,63 +38,143 @@ sys.path.insert(0, str(HERE))
 import screen_lib as L  # noqa: E402
 
 ENVELOPE = 35.0
-BRAKE_HELD = 65  # expected brake-engaged H1_held scenarios (plan §6: 50-80)
-BRAKE_SECOND = 50
-PANEL_READS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
-# components the screen cannot measure (A100-h): "plan" = a ST_PLAN §7 / amendment line
-# item; "estimate" = this script's split of a §7 row the plan prices only as a whole (T1.5 = 11,
-# T1.6 = 7.75), to be replaced by measured numbers when those cells run
+BRAKE_HELD, BRAKE_SECOND = 65, 50
+PANEL_ROWS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
+KDG_BAR = 0.05
+S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 s, GPT-OSS-20B, A100
+# A100-h already spent on the ST line before this session (author, 2026-10-19)
+SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
+         "VALIDATE pods x4 (146trytky4d1z3, 40yy8fg8wtnucu, vgjndx7dmqyfa8, nw2ot7pye4ad1a)": 0.85}
 FIXED = {"T1.2 AtP": (0.5, "plan"), "T1.4 training (3 adapters)": (3.0, "plan"),
          "T1.5 capability + specificity + Heretic": (2.0, "estimate"),
          "T1.6 training (2 QLoRA adapters)": (1.5, "estimate"),
          "T1.6 direction riders": (0.2, "estimate")}
 
 
-def gen_h(t: dict, n: int) -> float:
-    """Hours to generate n rollouts at the screen batch and cap of record."""
-    s = t["screen"]
-    lens = [x for x in t["screen_tokens_to_answer"] if x is not None]
-    step = s["seconds_per_step"] or 0.0
-    b = s["batch"]
-    return math.ceil(n / b) * L.expected_batch_max(lens, b, L.CAP_OF_RECORD) * step / 3600
+def _rows(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    return [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
 
 
-def read_h(t: dict, n: int, long: bool = False) -> float:
-    """Hours for n forward readouts; ``long`` = prompt + a trace (scaled by length)."""
-    per = t["read_seconds_per_row"]
-    if long:
-        lens = [x for x in t["screen_tokens_to_answer"] if x is not None]
-        per *= (t["probe_mean_len"] + float(np.mean(lens))) / t["probe_mean_len"]
-    return n * per / 3600
+def hf_step(hf: dict) -> float | None:
+    """Seconds per decode step at the HF probe's largest fitting batch. Probes recorded before the
+    warm-up fix (no ``warmed``) timed the short decode cold, so their slope is biased low; their
+    warm second timing bounds the step from above (t_2n = prefill + 2n steps, prefill >= 0)."""
+    big = hf.get("largest_fitting_batch")
+    p = next((x for x in hf.get("probes") or [] if x.get("batch") == big and x.get("fits")), None)
+    if p is None:
+        return None
+    if p.get("warmed"):
+        return p["seconds_per_step"]
+    return p["t_decode_2n"] / (2 * p["decode_steps"])
 
 
-def price(t: dict, screen_n: int) -> dict:
-    load = t["load_seconds"] / 3600
+def model_rates(d: Path) -> dict | None:
+    """Measured rates for one model directory of the relaunch (None if nothing usable)."""
+    rec = json.loads((d / "screen_record.json").read_text())
+    pv = rec.get("phase_v") or {}
+    timing = pv.get("screen_timing") or pv.get("parity_timing")
+    if not timing:
+        return None
+    stage = "screen" if pv.get("screen_timing") else "parity"
+    rel = "screen/h1_screen.jsonl" if stage == "screen" else "parity/parity_vllm.jsonl"
+    rows = _rows(d / rel)
+    lens = [r["tokens_to_answer"] for r in rows if r.get("status") not in (None, "not_run")]
+    pad = rec.get("padded_check") or {}
+    floor = pad.get("noise_floor_replicate_unpadded")
+    hf = (rec.get("hf_memory_probe") or {})
+    return {
+        "model": d.name, "rec": rec, "stage": stage,
+        "tps": timing["tokens_per_second"], "choice": timing.get("choice"),
+        "mean_tokens": float(np.mean(np.minimum(lens, L.CAP_OF_RECORD))) if lens else 0.0,
+        "lens": lens,
+        # Amendment 4 item 1: the development model's screen rollouts count toward T1.1 (same
+        # effort, cap, sampler, harness); parity rows use §40's prompts and do not
+        "screen_rollouts": len(lens) if stage == "screen" else 0,
+        "prompt_len": rec.get("probe_mean_len") or 350.0,
+        "batched_read_s": rec.get("read_seconds_per_row"),
+        "replicate_floor": floor,
+        "single_row": d.name == "gpt_oss_20b" or (floor is not None and floor > KDG_BAR),
+        "hf_step_s": hf_step(hf),
+        "hf_batch": hf.get("largest_fitting_batch"),
+        "load_h": (sum(x or 0 for x in timing.get("load_seconds", [])) / max(1, len(
+            timing.get("load_seconds", [])))) / 3600 + (rec.get("load_seconds") or 0) / 3600,
+        "elapsed_h": rec.get("elapsed_h") or 0.0,
+    }
+
+
+def gen_h(m: dict, n: int) -> float:
+    return n * m["mean_tokens"] / max(m["tps"], 1e-9) / 3600
+
+
+def read_rate(m: dict) -> tuple[float, str]:
+    """(seconds per readout row at the probe's mean length, basis)."""
+    r = m["batched_read_s"]
+    if r is None:
+        raise SystemExit(f"{m['model']}: no measured read rate in its record")
+    if not m["single_row"]:
+        return r, "measured (batched)"
+    if m["model"] == "gpt_oss_20b":
+        return (S31_SINGLE_ROW_S * m["prompt_len"] / S31_TOKENS,
+                "§31 single-row precedent, length-scaled")
+    pad = m["rec"].get("padded_check") or {}
+    if not pad.get("ok"):  # the probe read unbatched (sc.unbatched): r is the single-row rate
+        return r, "measured single-row"
+    return r * min(pad.get("batch") or 1, 16), "single-row bound (one batch forward per row)"
+
+
+def read_h(m: dict, n: int, gen_tokens: float = 0.0) -> float:
+    """n readouts of prompt (+ gen_tokens of trace) at ``read_rate``, scaled by length."""
+    return n * read_rate(m)[0] * (m["prompt_len"] + gen_tokens) / m["prompt_len"] / 3600
+
+
+def hf_gen_h(m: dict, n: int) -> float | None:
+    """HF generation (hooks needed), at the HF probe's largest fitting batch."""
+    if not m["hf_step_s"] or not m["hf_batch"]:
+        return None
+    b = m["hf_batch"]
+    steps = L.expected_batch_max(m["lens"], b, L.CAP_OF_RECORD)
+    return math.ceil(n / b) * steps * m["hf_step_s"] / 3600
+
+
+def price(m: dict, gate_m: dict | None = None) -> dict:
+    """Both roles. ``gate_m``: the model whose HF probe prices the steering gate (GPT-OSS)."""
+    gm = gate_m or m
+    gate = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
+    t = m["mean_tokens"]
+    rb = read_rate(m)[1]
     dev = {
-        "T1.1 H1 264 x 8 (minus screen rollouts) + residual banking + judgment frame":
-            gen_h(t, 264 * 8 - screen_n * 4) + read_h(t, 264 * 8, long=True)
-            + read_h(t, 132) + load,
-        "T1.2 AtP": FIXED["T1.2 AtP"][0],
-        "T1.3 gate 20 x (none, fill, care, self x2) x 8 + strength sweep 5 x 4 x 8":
-            gen_h(t, 20 * 5 * 8 + 5 * 4 * 8) + load,
-        "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"][0],
-        "T1.5 H1_held 132 x 8 x 3 + none re-run + panel dose-0 x 3":
-            gen_h(t, 132 * 8 * 3 + BRAKE_HELD * 8) + read_h(t, 132 * 8 * 3, long=True)
-            + read_h(t, PANEL_READS * 3) + 3 * load,
-        "T1.5 capability + specificity + Heretic":
-            FIXED["T1.5 capability + specificity + Heretic"][0],
+        f"T1.1 generation 264 x 8 less the screen's {m['screen_rollouts']} (vLLM)":
+            (gen_h(m, 264 * 8 - m["screen_rollouts"]), "measured"),
+        "T1.1 readout pass (post-reasoning 2,112 + dose-0 2,112 + judgment 132)":
+            (read_h(m, 264 * 8, t) + read_h(m, 264 * 8) + read_h(m, 132), rb),
+        "T1.1 loads (vLLM + HF)": (m["load_h"], "measured"),
+        "T1.2 AtP": FIXED["T1.2 AtP"],
+        "T1.3 steering gate 960 rollouts (HF generate with hooks)":
+            (gate if gate is not None else 1.5, "plan" if gate is None else "measured" if (
+                gm["rec"].get("hf_memory_probe") or {}).get("probes", [{}])[0].get("warmed")
+             else "measured bound (cold-probe fix: warm 2n timing / 2n)"),
+        "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
+        "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
+            (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
+        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3)":
+            (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * 3), rb),
+        "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
     }
     second = {
-        "T1.6 baseline (60 train top-up x 2, 100 held x 6) + banking":
-            gen_h(t, 60 * 2 + 100 * 6) + read_h(t, 60 * 6 + 100 * 6, long=True) + load,
-        "T1.6 training (2 QLoRA adapters)": FIXED["T1.6 training (2 QLoRA adapters)"][0],
-        "T1.6 evaluation (100 x 6 x 2 + none re-run + panel dose-0 x 2)":
-            gen_h(t, 100 * 6 * 2 + BRAKE_SECOND * 6) + read_h(t, 100 * 6 * 2, long=True)
-            + read_h(t, PANEL_READS * 2) + 2 * load,
-        "T1.6 direction riders": FIXED["T1.6 direction riders"][0],
+        "T1.6 generation (60 x 2 top-up, 100 x 6, 100 x 6 x 2, none re-run) (vLLM)":
+            (gen_h(m, 60 * 2 + 100 * 6 + 100 * 6 * 2 + BRAKE_SECOND * 6), "measured"),
+        "T1.6 readouts (post-reasoning, panel dose-0 x 2)":
+            (read_h(m, 160 * 6 + 100 * 6 * 2, t) + read_h(m, PANEL_ROWS * 2),
+             rb),
+        "T1.6 loads": (2 * m["load_h"], "measured"),
+        "T1.6 training (2 QLoRA adapters)": FIXED["T1.6 training (2 QLoRA adapters)"],
+        "T1.6 direction riders": FIXED["T1.6 direction riders"],
     }
     return {"development": dev, "second_family": second,
-            "development_total": sum(dev.values()), "second_family_total": sum(second.values())}
+            "development_total": sum(v[0] for v in dev.values()),
+            "second_family_total": sum(v[0] for v in second.values())}
 
 
 def main() -> int:
@@ -94,59 +182,63 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--screen-dir", type=Path, required=True)
     ap.add_argument("--write", type=Path, default=None)
+    ap.add_argument("--session-h", type=float, default=None,
+                    help="A100-h of this session incl. setup (default: the models' elapsed + 0.25)")
     a = ap.parse_args()
     models = {}
-    for d in sorted(p for p in a.screen_dir.iterdir() if (p / "timing.json").exists()):
-        t = json.loads((d / "timing.json").read_text())
-        r = json.loads((d / "screen_record.json").read_text())
-        models[d.name] = {"timing": t, "record": r, "price": price(t, r["screen_n"])}
+    for d in sorted(p for p in a.screen_dir.iterdir() if (p / "screen_record.json").exists()):
+        m = model_rates(d)
+        if m is not None:
+            models[d.name] = m
     if not models:
-        raise SystemExit(f"no timing.json under {a.screen_dir}")
-    t10 = sum(m["record"]["elapsed_h"] for m in models.values())
-    lines = ["# Tier 1 re-priced from the T1.0 screen (G1 input)", "",
-             f"T1.0 as run: {t10:.2f} A100-h over {len(models)} models. Measured parts use each "
-             "model's screen step time and trace lengths at its effort and cap of record; "
-             "rows marked plan keep ST_PLAN §7 prices and rows marked estimate split a §7 "
-             "row the plan prices only as a whole. The T1.1 pair rider (<= 0.3, conditional) is "
+        raise SystemExit(f"no relaunch records under {a.screen_dir}")
+    session_h = a.session_h if a.session_h is not None else (
+        sum(m["elapsed_h"] for m in models.values()) + 0.25)
+    spent = sum(SPENT.values()) + session_h
+    gate_m = models.get("gpt_oss_20b")
+    prices = {k: price(m, gate_m) for k, m in models.items()}
+    lines = ["# Tier 1 re-priced from the T1.0 relaunch (G1 input)", "",
+             "Spent so far: " + "; ".join(f"{k} {v:.2f}" for k, v in SPENT.items())
+             + f"; this session {session_h:.2f} (models' elapsed + 0.25 setup unless given)"
+             + f" → **{spent:.2f} A100-h**.", "",
+             "Readouts are single-row where the model's unpadded replicate floor exceeds 0.05 "
+             "nats (GPT-OSS-20B by ST-A3 and §31's precedent); rows marked plan keep ST_PLAN "
+             "prices, estimate splits a §7 row priced only as a whole. The pair rider (≤ 0.3) is "
              "not included.", ""]
     for k, m in models.items():
-        r, p = m["record"], m["price"]
-        scr = r.get("screen", {})
+        p = prices[k]
         lines += [f"## {k}", "",
-                  f"effort of record `{r.get('effort_of_record')}`; unbatched "
-                  f"{r.get('unbatched')}; status `{r['status']}`; truncation "
-                  f"{_f(scr.get('truncation_rate'))}; truncation-limited "
-                  f"{scr.get('truncation_limited')}; dose-0 of record "
-                  f"`{r.get('dose0', {}).get('of_record')}`", "",
-                  "| role | row | A100-h | basis |", "|---|---|---|---|"]
+                  f"stage {m['stage']}; setting of record `{m['choice']}`; full-batch "
+                  f"{m['tps']:.0f} tok/s; mean tokens to answer {m['mean_tokens']:.0f}; "
+                  f"replicate floor {m['replicate_floor']}; readouts "
+                  f"{read_rate(m)[1]}, {read_rate(m)[0]:.3f} s/row at "
+                  f"{m['prompt_len']:.0f} tokens", ""]
         for role in ("development", "second_family"):
-            for row, h in p[role].items():
-                basis = FIXED[row][1] if row in FIXED else "measured"
-                lines.append(f"| {role} | {row} | {h:.2f} | {basis} |")
-            lines.append(f"| {role} | **total** | **{p[role + '_total']:.2f}** | |")
-        lines.append("")
-    lines += ["## Envelope by role assignment", "",
-              "| development | second family | Tier 1 total incl. T1.0 as run | within 35 |",
-              "|---|---|---|---|"]
+            lines += [f"**{role}**", "",
+                      "| row | A100-h | cumulative (spent + rows so far) | basis |",
+                      "|---|---|---|---|"]
+            cum = spent
+            for row, (h, basis) in p[role].items():
+                cum += h
+                lines.append(f"| {row} | {h:.2f} | {cum:.2f} | {basis} |")
+            lines += [f"| **total** | **{p[role + '_total']:.2f}** | **{cum:.2f}** | |", ""]
+    lines += ["## Envelope by role assignment (spent + development + second family)", "",
+              "| development | second family | total A100-h | within 35 |", "|---|---|---|---|"]
     for dev in models:
         for sec in models:
-            if sec == dev:
-                continue
-            tot = (t10 + models[dev]["price"]["development_total"]
-                   + models[sec]["price"]["second_family_total"])
-            lines.append(f"| {dev} | {sec} | {tot:.2f} | {'yes' if tot <= ENVELOPE else 'NO'} |")
+            if sec != dev:
+                tot = spent + prices[dev]["development_total"] + prices[sec]["second_family_total"]
+                ok = "yes" if tot <= ENVELOPE else "NO"
+                lines.append(f"| {dev} | {sec} | {tot:.2f} | {ok} |")
     text = "\n".join(lines) + "\n"
     print(text)
     out = a.write or (a.screen_dir / "tier1_reprice.md")
     out.write_text(text)
-    (out.with_suffix(".json")).write_text(json.dumps(
-        {k: {"price": v["price"], "elapsed_h": v["record"]["elapsed_h"]}
-         for k, v in models.items()}, indent=1))
+    out.with_suffix(".json").write_text(json.dumps(
+        {"spent": {**SPENT, "this_session": session_h, "total": spent},
+         "prices": {k: {r: {n: list(v) for n, v in p[r].items()} for r in
+                        ("development", "second_family")} for k, p in prices.items()}}, indent=1))
     return 0
-
-
-def _f(x) -> str:
-    return "n/a" if x is None else f"{x:.3f}"
 
 
 if __name__ == "__main__":

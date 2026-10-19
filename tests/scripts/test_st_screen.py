@@ -204,22 +204,48 @@ def test_tiny_real_checkpoint(tmp_path, model):
 
 def test_reprice_counts_screen_rollouts_once(tmp_path):
     # most probable failure: T1.1 re-prices all 264 x 8 for the development model although its
-    # screen rollouts count toward T1.1 (Amendment 4 item 1)
+    # screen rollouts count toward T1.1 (Amendment 4 item 1); also: GPT-OSS readouts priced at the
+    # batched rate (ST-A3 makes them single-row, §31) and a cumulative column that ignores SPENT
     import reprice_tier1 as RP
 
-    _run(tmp_path, "olmo3_think")
-    t = json.loads((tmp_path / "olmo3_think" / "timing.json").read_text())
-    priced = RP.price(t, screen_n=100)["development"]
-    row = next(v for k, v in priced.items() if k.startswith("T1.1"))
-    expect = (RP.gen_h(t, 264 * 8 - 100 * 4) + RP.read_h(t, 264 * 8, long=True)
-              + RP.read_h(t, 132) + t["load_seconds"] / 3600)
-    assert row == pytest.approx(expect, rel=1e-12)
-    assert RP.gen_h(t, 264 * 8) > RP.gen_h(t, 264 * 8 - 100 * 4)  # the subtraction bites
+    _run(tmp_path, "qwen38_27b", engine="vllm")
+    _run(tmp_path, "gpt_oss_20b", engine="vllm")
+    q = RP.model_rates(tmp_path / "qwen38_27b")
+    assert q["stage"] == "screen" and q["screen_rollouts"] > 0
+    dev = RP.price(q)["development"]
+    (k, (h, _)), = [(k, v) for k, v in dev.items() if k.startswith("T1.1 generation")]
+    assert h == pytest.approx(RP.gen_h(q, 264 * 8 - q["screen_rollouts"]), rel=1e-12)
+    assert RP.gen_h(q, 264 * 8) > h  # the subtraction bites
+    g = RP.model_rates(tmp_path / "gpt_oss_20b")
+    assert g["stage"] == "parity" and g["screen_rollouts"] == 0 and g["single_row"]
+    rate, basis = RP.read_rate(g)
+    assert basis.startswith("§31") and rate == pytest.approx(
+        RP.S31_SINGLE_ROW_S * g["prompt_len"] / RP.S31_TOKENS)
+    assert rate > 100 * g["batched_read_s"]  # the stub's batched rate is far cheaper
+    # a dense model whose floor exceeds the bar while its padded check passed: one batch forward
+    q2 = dict(q, single_row=True)
+    assert RP.read_rate(q2)[0] == pytest.approx(
+        q["batched_read_s"] * min(q["rec"]["padded_check"]["batch"], 16))
+    # a probe recorded before the warm-up fix: its cold slope is not used, the warm 2n bound is
+    cold = {"largest_fitting_batch": 8, "probes": [
+        {"batch": 4, "fits": True, "seconds_per_step": 0.5, "t_decode_2n": 1.0, "decode_steps": 32},
+        {"batch": 8, "fits": True, "seconds_per_step": 0.001, "t_decode_2n": 6.4,
+         "decode_steps": 32}]}
+    assert RP.hf_step(cold) == pytest.approx(0.1)
+    cold["probes"][1]["warmed"] = True
+    assert RP.hf_step(cold) == pytest.approx(0.001)
     r = subprocess.run([sys.executable, str(SCRIPTS / "reprice_tier1.py"), "--screen-dir",
-                        str(tmp_path)], capture_output=True, text=True, cwd=ROOT)
+                        str(tmp_path), "--session-h", "1.0"], capture_output=True, text=True,
+                       cwd=ROOT)
     assert r.returncode == 0, r.stderr
     md = (tmp_path / "tier1_reprice.md").read_text()
-    assert "| measured |" in md and "| plan |" in md and "| estimate |" in md
+    assert "| measured" in md and "| plan |" in md and "| estimate |" in md
+    js = json.loads((tmp_path / "tier1_reprice.json").read_text())
+    spent = sum(RP.SPENT.values()) + 1.0
+    assert js["spent"]["total"] == pytest.approx(spent)
+    first = next(x for x in md.splitlines() if x.startswith("| T1.1 generation"))
+    h1, cum1 = (float(c) for c in first.split("|")[2:4])
+    assert cum1 == pytest.approx(spent + h1, abs=0.011)
 
 
 def test_dev_criteria_use_whole_set_brake_and_engaged_null():

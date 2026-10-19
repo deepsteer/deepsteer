@@ -1105,6 +1105,13 @@ or any request carries an explicit seed; ours do both); only warm-up's dummy set
 Fix: `VLLM_USE_FLASHINFER_SAMPLER=0` in the worker's environment (hashed with its settings), the
 venv's bin first on the worker's PATH, `ninja` in the venv, and the venv check asserts ninja
 resolves. Each VALIDATE pod has stopped earlier in the stack than the last and cost one setup.
+2026-10-19, while the relaunch ran: the HF memory-and-throughput probe (`engine_probes.hf_batch_probe`)
+timed its short decode cold, so first-call costs (kernel selection, a compile at a new batch shape)
+landed in `t_short` and biased the slope `(t_2n − t_n)/n` low (local tiny model: `t_n` 0.160 s
+vs `t_2n` 0.056 s; the slope went negative). Its only consumer is the T1.3 steering-gate price.
+Fix: an untimed warm-up decode at the same shapes, and probes record `warmed`. The relaunch's
+GPT-OSS probe ran the cold version, so the re-price prices its step from the warm second timing
+as an upper bound (`t_2n / 2n`, prefill ≥ 0) and labels that row a bound.
 
 ## ST-A3 (ledger) — GPT-OSS-20B's HF letter readout moves 0.43–0.52 nats with batch size alone in bf16 (identical rows, no padding), so the Amendment 6 bar on this model sits at 0.87–1.05 nats
 

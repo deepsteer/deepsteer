@@ -58,6 +58,8 @@ trap 'pkill -P "$WATCHDOG_PID" 2>/dev/null; kill "$WATCHDOG_PID" 2>/dev/null; mk
 echo ">> envelope stop armed: ${MAX_S}s"
 
 OUT="$REPO_DIR/papers/st_live_reference/outputs/t10"; mkdir -p "$OUT"
+# session wall time for the re-price's cumulative A100-h (author, 2026-10-19)
+echo "{\"session_start_utc\": \"$(date -u +%FT%TZ)\", \"validate\": $VALIDATE}" > "$OUT/session_start.json"
 S=papers/st_live_reference/scripts/pod_st_screen.py
 DATE_PIN="$(date -u +%F)"   # one date for the whole session (Muse renders it; Amendment 2 item 6)
 echo ">> date pin: $DATE_PIN   models: $MODELS"
@@ -183,5 +185,6 @@ done
 
 echo "==================== t10/reprice ===================="
 $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir "$OUT" || echo "WARN: re-price failed"
+echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo ">> ST T1.0 relaunch done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/t10/"
 exit $RC_ALL
