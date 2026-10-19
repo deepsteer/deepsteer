@@ -26,7 +26,9 @@ REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
 STEPS="${STEPS:-}"
 if [ "$STEPS" = "rider" ]; then
-  MODELS="${MODELS:-qwen38_27b muse_glimmer_30b gpt_oss_20b}"; OUT_SUB=t10b
+  # the bounded riders first (~0.65 h), then Qwen's phase H, which has never run on a GPU and
+  # cannot stop itself mid-panel: the 3.0 h watchdog then leaves it ~2.1 h (about twice its estimate)
+  MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b qwen38_27b}"; OUT_SUB=t10b
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
 else
   MODELS="${MODELS:-gpt_oss_20b qwen38_27b muse_glimmer_30b}"; OUT_SUB=t10

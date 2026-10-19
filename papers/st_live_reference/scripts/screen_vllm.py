@@ -305,7 +305,11 @@ def run(ctx) -> int:
         rec["resumed_from"] = v.pop("resumed_from")
         if mode == "provenance":
             return ctx.bank("ok_provenance", 0)
-        rec["fwdgen_vllm"] = vllm_dose0_first(sc, ctx)
+        try:  # descriptive (Amendment 8): its first real run must never block phase H
+            rec["fwdgen_vllm"] = vllm_dose0_first(sc, ctx)
+        except RuntimeError as e:
+            rec["fwdgen_vllm"] = {"failed": str(e)}
+            print(f">> {key}: descriptive vLLM stage failed ({e}); phase H continues", flush=True)
     else:
         v = phase_v_oss(sc, ctx) if key == "gpt_oss_20b" else phase_v_screen(sc, ctx)
     rec["phase_v"] = {k: val for k, val in v.items()

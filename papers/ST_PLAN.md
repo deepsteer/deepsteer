@@ -903,7 +903,9 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    price. The pod records start and end timestamps.
 
 **Rider pod plan (compute-ordering).** One session, `STEPS=rider`, outputs to `outputs/t10b`;
-order Qwen (keystone), Muse (a), GPT-OSS (b). Estimated 1.9–2.3 A100-h (setup 0.25; Qwen phase H
+order GPT-OSS (b), Muse (a), then Qwen (keystone): the riders are bounded (~0.65 h together),
+while Qwen's phase H has never run on a GPU and cannot stop itself mid-panel, so it goes last with
+~2.1 h of watchdog margin (about twice its estimate) rather than first with the riders at risk. Estimated 1.9–2.3 A100-h (setup 0.25; Qwen phase H
 0.7–1.0 including its 54 GB download and the descriptive vLLM stage, 1.0 if its padded check fails
 and the panel reads unbatched; Muse 0.35; GPT-OSS 0.3); watchdog 3.0 h. Power: the screen reports
 each model's MDE from its own variance; Muse's measured brake MDE at 60 scenarios is 0.110, and
