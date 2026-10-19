@@ -310,8 +310,11 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
     src = Path(snapshot_download(spec["repo"], revision=spec["revision"],
                                  ignore_patterns=["original/*", "metal/*"]))
     built = build_folded(src, FOLD_BLOCK, v, out / "ckpt")
+    import pod_st_screen as P
+
     sc.model = ModelWrapper(built["dst"], None, torch_dtype=torch.bfloat16,
-                            attn_implementation="eager")
+                            attn_implementation="eager",
+                            **P.hf_load_kwargs(spec, built["dst"]))
     folded, _ = L.read_ids(sc, rows16, 1)
     _free_hf(sc)
     sc.model = L.tok_only(tok)
@@ -476,6 +479,8 @@ def load_banked_v(sc, ctx, d: Path) -> dict:
     v["c0_answers"] = {}
     for cand in sc.fmt.dose0:
         stem = d / "vllm" / f"c0_{cand.name}_{v['pilot_choice']}_rest"
+        if not Path(f"{stem}.jobs.jsonl").exists():  # a candidate the banked run never tried
+            continue
         bj = [json.loads(x) for x in Path(f"{stem}.jobs.jsonl").read_text().splitlines()]
         want = [x[3] for x in L.c0_jobs(sc, ctx.C0, cand)]
         if [j["prompt_ids"] for j in bj] != want:
@@ -490,6 +495,30 @@ def load_banked_v(sc, ctx, d: Path) -> dict:
                          "checks": "record model, engine repo@revision, screen ids, date pin, "
                                    "screen rows' prompt and render hashes, C0 job prompt ids"}
     return v
+
+
+def st_a5_c0(sc, ctx, v: dict, rec: dict) -> None:
+    """ST-A5's discriminator (author, 2026-10-19): C0's sampled answers for each selected dose-0
+    candidate the banked run never tried, on vLLM at the banked pilot's setting; and, for the
+    record, how the candidate's ids differ from the registered candidate's on one C0 row."""
+    import reasoning_formats as rfm
+
+    for cand in sc.fmt.dose0:
+        if cand.name in v["c0_answers"]:
+            continue
+        jobs = [{"s": s, "k": k, "order": o, "ids": ids, "rendered_sha256": None}
+                for s, k, o, ids in L.c0_jobs(sc, ctx.C0, cand)]
+        g = gen_stage(sc, jobs, f"c0_{cand.name}", L.C0_ANSWER_TOKENS, ctx.spec, probe=False,
+                      choice=v["pilot_choice"], deadline=ctx.deadline)
+        v["c0_answers"][cand.name] = [r["gen_ids"] or None for r in g["rows"]]
+    recs = [c for c in rfm.build_format(sc.key, sc.tok, ctx.spec).dose0]
+    s0 = ctx.C0[0]
+    o0 = L.assign_letters(s0, 0)
+    ref = L.dose0_ids(sc, s0, o0, "dl_chat_neutral", recs[0])
+    rec["dose0_ids_vs_record"] = {
+        c.name: {"identical": (x := L.dose0_ids(sc, s0, o0, "dl_chat_neutral", c)) == ref,
+                 "tail": x[-6:], "record_tail": ref[-6:], "record_candidate": recs[0].name}
+        for c in sc.fmt.dose0}
 
 
 def vllm_dose0_first(sc, ctx) -> dict:
@@ -523,11 +552,13 @@ def run(ctx) -> int:
     if mode in ("rider_oss", "rider2"):
         sc.effort = getattr(ctx, "effort", None) or sc.fmt.effort_ladder[0]
         v: dict = {}
-    elif mode in ("resume", "dose0_recheck", "provenance"):
+    elif mode in ("resume", "dose0_recheck", "provenance", "dose0_brake"):
         v = load_banked_v(sc, ctx, ctx.resume_from)
         rec["resumed_from"] = v.pop("resumed_from")
         if mode == "provenance":
             return ctx.bank("ok_provenance", 0)
+        if mode == "dose0_brake":
+            st_a5_c0(sc, ctx, v, rec)
         try:  # descriptive (Amendment 8): its first real run must never block phase H
             rec["fwdgen_vllm"] = vllm_dose0_first(sc, ctx)
         except RuntimeError as e:

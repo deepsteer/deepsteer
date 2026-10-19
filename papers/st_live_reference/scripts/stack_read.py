@@ -28,7 +28,8 @@ sys.path.insert(0, str(HERE))
 import head32  # noqa: E402
 
 
-def load(repo: str, revision: str | None, experts: str | None = None):
+def load(repo: str, revision: str | None, experts: str | None = None,
+         dequantize: bool = False):
     """The model as the screen loads it: bf16, eager attention, the text-tower class rule of
     ``deepsteer.core.model_interface._auto_model_class`` (restated here so this runs without the
     deepsteer package)."""
@@ -39,7 +40,11 @@ def load(repo: str, revision: str | None, experts: str | None = None):
     cfg = AutoConfig.from_pretrained(repo, revision=revision)
     cls = (AutoModelForCausalLM if type(cfg) in MODEL_FOR_CAUSAL_LM_MAPPING
            else AutoModelForImageTextToText)
-    kw = {"experts_implementation": experts} if experts else {}
+    kw: dict = {"experts_implementation": experts} if experts else {}
+    if dequantize and getattr(cfg, "quantization_config", None):  # MXFP4 -> bf16, both stacks
+        from transformers import Mxfp4Config
+
+        kw["quantization_config"] = Mxfp4Config(dequantize=True)
     m = cls.from_pretrained(repo, revision=revision, dtype=torch.bfloat16,
                             attn_implementation="eager", **kw)
     m.to("cuda" if torch.cuda.is_available() else "cpu").eval()
@@ -70,6 +75,9 @@ def main() -> int:
     ap.add_argument("--rows", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--batch", type=int, default=16)
+    ap.add_argument("--experts", default=None, help="experts_implementation pin (registry hf)")
+    ap.add_argument("--dequantize", action="store_true",
+                    help="MXFP4 experts dequantized to bf16 (registry hf.mxfp4_dequantize)")
     a = ap.parse_args()
     import torch
     import transformers
@@ -77,7 +85,7 @@ def main() -> int:
     spec = json.loads(a.rows.read_text())
     rows, lids = spec["ids"], spec["letter_ids"]
     t0 = time.time()
-    m = load(a.repo, a.revision)
+    m = load(a.repo, a.revision, a.experts, a.dequantize)
     res: dict = {}
     for head in ("bf16", "fp32"):
         head32.set_head_fp32(m, head == "fp32")

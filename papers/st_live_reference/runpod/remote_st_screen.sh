@@ -96,6 +96,8 @@ mode_args() {
     case "$1" in
       gpt_oss_20b) echo "--rider2" ;;
       muse_glimmer_30b) echo "--rider2 --effort medium" ;;  # Muse's effort of record (screen)
+      # ST-A5's discriminator (author, 2026-10-19), last in the bail order
+      qwen38_27b) echo "--resume-from $2/qwen38_27b --dose0-candidates think_on_empty --dose0-brake" ;;
     esac
     return 0
   fi
@@ -177,6 +179,11 @@ for f in papers/st_live_reference/split_v1.json papers/st_live_reference/data/s4
          papers/kdg_panel/data/harm_divergence/h1_kept_ids.json papers/kdg_panel/models.yaml; do
   [ -f "$f" ] || { echo "FATAL: $f missing"; exit 1; }
 done
+if [ "$STEPS" = "rider2" ] && [[ " $MODELS " == *" qwen38_27b "* ]]; then  # ST-A5 resumes Qwen
+  [ -f "$BANKED/qwen38_27b/screen_record.json" ] || { echo "FATAL: banked $BANKED/qwen38_27b missing (SYNC_OUTPUTS)"; exit 1; }
+  $PY $S --model qwen38_27b --out "$OUT/_provenance" --resume-from "$BANKED/qwen38_27b" --provenance-only \
+    || { echo "FATAL: provenance check failed (qwen38_27b)"; exit 1; }
+fi
 if [ "$STEPS" = "rider" ]; then  # the banked relaunch records the rider resumes from (SYNC_OUTPUTS)
   for m in qwen38_27b muse_glimmer_30b gpt_oss_20b; do
     [ -f "$BANKED/$m/screen_record.json" ] || { echo "FATAL: banked $BANKED/$m missing (SYNC_OUTPUTS)"; exit 1; }
@@ -232,32 +239,40 @@ print(" ".join(f"{HF_HUB_CACHE}/models--{r.replace('/', '--')}" for r in repos))
 PY
 }
 
-# rider pod 2, after each model's driver: the stack-parity reads (the same script on torch 2.6 and
-# in the vLLM venv on torch 2.13) and their ladder; GPT-OSS's MoE probes (eager and batched_mm on
-# torch 2.6, grouped_mm on torch 2.13; the MegaBlocks kernel runs last of the session, since it
-# installs `kernels` into the HF stack)
+# rider pod 2, after each model's driver: GPT-OSS's fold check, vLLM half (own process); the
+# stack-parity reads with the registry's HF pins (the same script on torch 2.6 and in the vLLM venv
+# on torch 2.13) and their ladder; grouped_mm on 2.13 only if the ladder keeps 2.13 (rider 2c,
+# author 2026-10-19; eager and batched_mm on 2.6 were measured on rider pod 2b, and MegaBlocks has
+# no torch-2.6 build)
 VPY="$VLLM_VENV/bin/python"
 rider2_after() {
-  local m="$1" repo rev
+  local m="$1" repo rev hfargs
+  [ "$m" = "qwen38_27b" ] && return 0  # ST-A5's discriminator: no stack read, no probe
   read -r repo rev < <($PY -c "import yaml;e=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['$m'];print(e['repo'],e['revision'])")
+  # the registry's HF pins, the same on both stacks (GPT-OSS: eager experts, bf16 dequantization)
+  hfargs="$($PY -c "import yaml;h=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['$m'].get('hf') or {};print(' '.join(([('--experts '+h['experts_implementation'])] if h.get('experts_implementation') else [])+(['--dequantize'] if h.get('mxfp4_dequantize') else [])))")"
   local d="$OUT/$m/stack"
+  if [ "$m" = "gpt_oss_20b" ]; then
+    # the fold check's vLLM half first, in its own process on an empty GPU; it removes the checkpoint
+    $PY papers/st_live_reference/scripts/fold_vllm.py --dir "$OUT/$m" || echo "WARN: fold vLLM half failed"
+    rm -rf "$OUT/$m/fold/ckpt"
+  fi
   [ -f "$d/rows64.json" ] || { echo "WARN: $m wrote no stack rows; skipping its stack read"; return 0; }
-  $PY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch26.npz" \
+  $PY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch26.npz" $hfargs \
     || echo "WARN: $m stack read (torch 2.6) failed"
-  $VPY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch213.npz" \
+  $VPY papers/st_live_reference/scripts/stack_read.py --repo "$repo" --revision "$rev" --rows "$d/rows64.json" --out "$d/torch213.npz" $hfargs \
     || echo "WARN: $m stack read (torch 2.13) failed"
   [ -f "$d/torch26.npz" ] && [ -f "$d/torch213.npz" ] && $PY papers/st_live_reference/scripts/stack_compare.py \
     --a "$d/torch26.npz" --b "$d/torch213.npz" --out "$d/parity.json" --tie "$OUT/$m/screen_record.json"
-  if [ "$m" = "gpt_oss_20b" ]; then
-    # the fold check's vLLM half in its own process on an empty GPU; it removes the checkpoint
-    $PY papers/st_live_reference/scripts/fold_vllm.py --dir "$OUT/$m" || echo "WARN: fold vLLM half failed"
-    rm -rf "$OUT/$m/fold/ckpt"
-    for ex in eager batched_mm; do
-      $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_$ex.json" --experts "$ex" \
-        || echo "WARN: moe probe $ex failed"
-    done
-    $VPY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_grouped_mm.json" --experts grouped_mm \
-      || echo "WARN: moe probe grouped_mm failed"
+  if [ "$m" = "gpt_oss_20b" ] && [ -f "$d/parity.json" ]; then
+    # Amendment 9 (a), author 2026-10-19: grouped_mm on torch 2.13 only if 2.13 is kept, i.e. the
+    # ladder of the readout head of record is inside the bar
+    if $PY -c "import json,sys;r=json.load(open('$OUT/$m/screen_record.json'));v=json.load(open('$d/parity.json'));sys.exit(0 if v['ladders'][r['readout_mode']['head']]['inside'] else 1)"; then
+      $VPY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_grouped_mm_t213.json" --experts grouped_mm --dequantize \
+        || echo "WARN: moe probe grouped_mm failed"
+    else
+      echo ">> stack parity outside the bar for $m: torch 2.6 stays; no grouped_mm probe"
+    fi
   fi
 }
 
@@ -274,17 +289,8 @@ for m in $MODELS; do
     for d in $(hf_cache_dirs "$m"); do [ -d "$d" ] && rm -rf "$d" && echo ">> removed $d"; done
   fi
 done
-if [ "$STEPS" = "rider2" ] && [[ " $MODELS " == *" gpt_oss_20b "* ]]; then
-  echo "==================== $OUT_SUB/gpt_oss_20b MegaBlocks kernel probe (last) ===================="
-  # transformers 5.17.0 accepts kernels >= 0.16.0, < 0.17.0 only (rider pod 2: an unpinned install
-  # pulled a newer release and the probe could not load)
-  pip install -q --break-system-packages "kernels==0.16.0" >/dev/null 2>&1 || echo "WARN: kernels install failed"
-  read -r repo rev < <($PY -c "import yaml;e=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['gpt_oss_20b'];print(e['repo'],e['revision'])")
-  $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$OUT/gpt_oss_20b/stack/probe_prompts.json" --out "$OUT/gpt_oss_20b/moe_kernels.json" --experts kernels \
-    || echo "WARN: moe probe kernels failed"
-  if [ "$CLEAN_HF_CACHE" = "1" ]; then
-    for d in $(hf_cache_dirs gpt_oss_20b); do [ -d "$d" ] && rm -rf "$d" && echo ">> removed $d"; done
-  fi
+if [ "$STEPS" = "rider2" ] && [[ " $MODELS " == *" gpt_oss_20b "* ]] && [ "$CLEAN_HF_CACHE" = "1" ]; then
+  for d in $(hf_cache_dirs gpt_oss_20b); do [ -d "$d" ] && rm -rf "$d" && echo ">> removed $d"; done
 fi
 
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"

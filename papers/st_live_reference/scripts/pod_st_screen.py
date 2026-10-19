@@ -71,6 +71,25 @@ def registry() -> dict:
     return yaml.safe_load((KDG / "models.yaml").read_text())["st"]
 
 
+def hf_load_kwargs(spec: dict, path: str | None = None) -> dict:
+    """The registry's ``hf`` pins for every ST HF load (author, 2026-10-19; ST-A6): GPT-OSS runs
+    ``experts_implementation="eager"`` (the default grouped_mm runs a slow fallback op on SM80
+    under torch < 2.9) and dequantizes its MXFP4 experts to bf16 explicitly. The dequantization
+    config goes only to a checkpoint that is MXFP4-quantized (a tiny local checkpoint is not)."""
+    hf = spec.get("hf") or {}
+    kw: dict = {}
+    if hf.get("experts_implementation"):
+        kw["experts_implementation"] = hf["experts_implementation"]
+    if hf.get("mxfp4_dequantize"):
+        from transformers import AutoConfig, Mxfp4Config
+
+        cfg = AutoConfig.from_pretrained(path or spec["repo"],
+                                         revision=None if path else spec["revision"])
+        if getattr(cfg, "quantization_config", None):
+            kw["quantization_config"] = Mxfp4Config(dequantize=True)
+    return kw
+
+
 def loaded_commit(model, spec: dict) -> dict:
     """The commit the HF model was loaded from. ``config._commit_hash`` when the loaded config
     carries it; a Qwen3.5-family checkpoint loads its text tower through ``AutoModelForCausalLM``,
@@ -114,6 +133,10 @@ def gates(sc: L.Screen, spec: dict, split: dict, order: list[str], H: dict, dry:
         check("dtype_bf16", dt == torch.bfloat16, str(dt))
         check("n_layers", sc.model.wb.info.n_layers == spec["n_layers"],
               sc.model.wb.info.n_layers)
+        pin = (spec.get("hf") or {}).get("experts_implementation")
+        if pin:  # the registry's experts pin is the path the loaded model runs (ST-A6)
+            got = getattr(sc.model.model.config, "_experts_implementation_internal", None)
+            check("experts_pin", got == pin, got)
     return {"ok": all(c["ok"] for c in checks.values()), "checks": checks}
 
 
@@ -200,7 +223,7 @@ def run_vllm_engine(a, env: dict) -> int:
             from kdg_pod_lib import ModelWrapper
 
             sc.model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16,
-                                    attn_implementation="eager")
+                                    attn_implementation="eager", **hf_load_kwargs(spec))
         rec["load_seconds"] = time.time() - t0
 
     def finish_screen(sc, v) -> int:
@@ -213,6 +236,7 @@ def run_vllm_engine(a, env: dict) -> int:
                              v["lowest_level_this_pod"], v["c0_answers"], plen)
 
     mode = ("provenance" if a.provenance_only else "dose0_recheck" if a.dose0_only
+            else "dose0_brake" if a.dose0_brake
             else "resume" if a.resume_from is not None
             else "rider_oss" if a.rider_oss else "rider2" if a.rider2 else "full")
     rec["mode"] = mode
@@ -269,10 +293,16 @@ def main() -> int:
                          "GPT-OSS fold validation")
     ap.add_argument("--effort", default=None,
                     help="rider modes: the effort of record (default: the ladder's first)")
+    ap.add_argument("--dose0-candidates", default=None,
+                    help="comma list of dose-0 candidates to try, by name (registered or "
+                         "reasoning_formats.EXTRA_DOSE0)")
+    ap.add_argument("--dose0-brake", action="store_true",
+                    help="with --resume-from: the dose-0 checks, the dose-0 readout on the screen "
+                         "scenarios and the brake only (ST-A5's discriminator, 2026-10-19)")
     ap.add_argument("--provenance-only", action="store_true",
                     help="with --resume-from: run the provenance checks and stop")
     a = ap.parse_args()
-    if (a.dose0_only or a.provenance_only) and a.resume_from is None:
+    if (a.dose0_only or a.provenance_only or a.dose0_brake) and a.resume_from is None:
         ap.error("--dose0-only and --provenance-only need --resume-from")
     if a.rider_oss and (a.model != "gpt_oss_20b" or a.resume_from is not None):
         ap.error("--rider-oss is GPT-OSS-20B's rider and takes no --resume-from")
@@ -340,17 +370,21 @@ def main() -> int:
         cells, the post-reasoning readout of the screen rows, the dose-0 readout on the screen
         scenarios, brake, engaged subset and criteria, timing."""
         rec["dose0"] = L.choose_dose0(sc, C0, c0_answers)
-        if sc.dose0 is not None:
+        brake_only = rec.get("mode") == "dose0_brake"  # ST-A5: no panel, no post-reasoning read
+        if brake_only:
+            rec["panel"] = "skipped: dose0_brake mode (ST-A5 discriminator)"
+        elif sc.dose0 is not None:
             rec["panel"] = [L.run_letter_cell(sc, panel, cell, "panel") for cell in L.PANEL_CELLS]
         else:
             rec["panel"] = "skipped: no dose-0 candidate passed (no E regime; Amendment 2 item 4)"
         rec["timing_screen"] = timing
-        pids = {(j["s"].id, j["k"]): j["ids"] for j in jobs}
-        ok, lp, resid = L.post_reasoning_readout(sc, rows, pids)
-        sc.save_jsonl("screen/h1_screen.jsonl", rows)
-        np.savez_compressed(out / "screen" / "h1_screen_readout.npz",
-                            letter_logp=lp.astype(np.float16), resid_decision=resid,
-                            rows=np.array(ok), layers=np.array(sc.layers()))
+        if not brake_only:
+            pids = {(j["s"].id, j["k"]): j["ids"] for j in jobs}
+            ok, lp, resid = L.post_reasoning_readout(sc, rows, pids)
+            sc.save_jsonl("screen/h1_screen.jsonl", rows)
+            np.savez_compressed(out / "screen" / "h1_screen_readout.npz",
+                                letter_logp=lp.astype(np.float16), resid_decision=resid,
+                                rows=np.array(ok), layers=np.array(sc.layers()))
         summ = L.screen_summary(rows)
         # Amendment 6 item 2: "cannot step down" = no further step allowed on this pod
         summ["truncation_limited"] = bool(not summ["truncation_ok"]
@@ -392,12 +426,23 @@ def main() -> int:
             "batches": {"pilot": pb, "generation": gb, "read": rb}, "dry_run": dry,
             "gpu": rec.get("gpu")})
         status = "ok" if timing["n_run"] == timing["n_jobs"] else "envelope_stop_in_screen"
-        return bank(status, 0 if status == "ok" else 3)
+        if brake_only and status == "ok":
+            status = "ok_dose0_brake"
+        return bank(status, 0 if status.startswith("ok") else 3)
 
     from transformers import AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
     fmt = build_format(key, tok, spec)
+    if a.dose0_candidates:
+        import dataclasses
+
+        import reasoning_formats as rfm
+
+        pool = {c.name: c for c in fmt.dose0 + rfm.EXTRA_DOSE0.get(key, ())}
+        rec["dose0_record_candidates"] = [c.name for c in fmt.dose0]
+        fmt = dataclasses.replace(fmt, dose0=tuple(pool[n] for n in a.dose0_candidates.split(",")))
+        rec["dose0_candidates"] = [c.name for c in fmt.dose0]
     rec["engine"] = a.engine
     if a.engine == "vllm":
         return run_vllm_engine(a, locals())
@@ -417,7 +462,8 @@ def main() -> int:
         import torch
         from kdg_pod_lib import ModelWrapper
 
-        model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16)
+        model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16,
+                             **hf_load_kwargs(spec))
     rec["load_seconds"] = time.time() - t_load
     rec["gpu"] = "dry-run" if dry else _gpu_name()
     sc = L.Screen(key, spec, model, fmt, out, date_pin, dry=dry, gen_batch=pb, read_batch=rb)

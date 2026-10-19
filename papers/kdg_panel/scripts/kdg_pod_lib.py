@@ -169,7 +169,9 @@ class ModelWrapper:
     """Real HF model: batched chat generation with per-step logits, raw next-token log-probs."""
 
     def __init__(self, repo: str, revision: str | None = None, harmony=None,
-                 torch_dtype=None, attn_implementation: str | None = None) -> None:
+                 torch_dtype=None, attn_implementation: str | None = None,
+                 experts_implementation: str | None = None,
+                 quantization_config=None) -> None:
         import torch
 
         from deepsteer.directions.extraction import load_whitebox
@@ -191,7 +193,9 @@ class ModelWrapper:
 
             self.wb = WhiteBoxModel(repo, access_tier=AccessTier.WEIGHTS, revision=revision,
                                     torch_dtype=torch_dtype,
-                                    attn_implementation=attn_implementation)
+                                    attn_implementation=attn_implementation,
+                                    experts_implementation=experts_implementation,
+                                    quantization_config=quantization_config)
         self.model = self.wb.model
         self.tok = self.wb.tokenizer
         self.tok.padding_side = "left"

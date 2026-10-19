@@ -250,6 +250,16 @@ def _muse_ids(tok, text: str) -> tuple[int, ...]:
     return tuple(tok.encode(text, add_special_tokens=False))
 
 
+# Candidates outside each format's registered order, selectable only by name (--dose0-candidates):
+# ST-A5's discriminator (author, 2026-10-19): Qwen3.8's thinking-on render with the empty think
+# block appended as separately encoded ids. At effort medium the registered candidate's render
+# is the same text, but its jointly encoded ids carry the merged "\n\n" token (271) where this
+# one carries two "\n" tokens (198, 198); the difference is recorded beside the result.
+EXTRA_DOSE0: dict[str, tuple[Dose0, ...]] = {
+    "qwen38_27b": (Dose0("think_on_empty", prefill="\n</think>\n\n"),),
+}
+
+
 def build_format(key: str, tok, spec: dict | None = None) -> ReasoningFormat:
     """The format of record for a ``st:`` registry key, built against its pinned tokenizer
     (token ids are read from the tokenizer, never hard-coded; GPT-OSS's harmony constants are

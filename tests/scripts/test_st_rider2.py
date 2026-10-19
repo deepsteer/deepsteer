@@ -247,3 +247,43 @@ def test_fold_vllm_half_difference_of_differences(tmp_path, monkeypatch):
     out = SV.fold_vllm_half(sc, ctx, fold)
     ii = out["ii_steering_effect_vllm_vs_hf"]
     assert ii["n_letter_values"] == 20 and ii["max_abs_dod"] < 1e-5 and ii["ok"]
+
+
+def test_st_a5_dose0_brake_mode(tmp_path):
+    # ST-A5's discriminator (author, 2026-10-19): only the dose-0 candidate changes against the
+    # banked run; most probable failure: the new candidate silently falls back to the registered
+    # one (same ids), or the run re-reads the panel it must skip
+    pytest.importorskip("transformers")
+    run = [sys.executable, str(SCRIPTS / "pod_st_screen.py"), "--model", "qwen38_27b",
+           "--dry-run", "--date-pin", "2026-10-19"]
+    r = subprocess.run(run + ["--out", str(tmp_path / "a")], capture_output=True, text=True,
+                       cwd=ROOT)
+    assert r.returncode == 0, r.stderr[-2000:]
+    r = subprocess.run(run + ["--out", str(tmp_path / "b"), "--resume-from",
+                              str(tmp_path / "a" / "qwen38_27b"), "--dose0-candidates",
+                              "think_on_empty", "--dose0-brake"],
+                       capture_output=True, text=True, cwd=ROOT)
+    rec = json.loads((tmp_path / "b" / "qwen38_27b" / "screen_record.json").read_text())
+    assert r.returncode == 0 and rec["status"] == "ok_dose0_brake", r.stderr[-2000:]
+    assert rec["dose0_candidates"] == ["think_on_empty"]
+    assert rec["brake"]["dose0_candidate"] == "think_on_empty"
+    ids = rec["dose0_ids_vs_record"]["think_on_empty"]
+    assert ids["identical"] is False and ids["record_candidate"] == "enable_thinking_false"
+    assert ids["tail"][-4:] == [198, 198, 248069, 271] and ids["record_tail"][-3:] == [271, 248069,
+                                                                                         271]
+    assert rec["panel"].startswith("skipped")
+    assert (tmp_path / "b" / "qwen38_27b" / "vllm"
+            / "c0_think_on_empty_spec_rest.jobs.jsonl").exists() or list(
+        (tmp_path / "b" / "qwen38_27b" / "vllm").glob("c0_think_on_empty_*.jobs.jsonl"))
+
+
+def test_hf_load_kwargs_pin(tiny_oss):
+    # most probable failure (ST-A6's fix): the pin is dropped on some load, or the MXFP4
+    # dequantization config reaches an unquantized checkpoint (which it would then try to quantize)
+    import pod_st_screen as P
+
+    spec = P.registry()["gpt_oss_20b"]
+    kw = P.hf_load_kwargs(spec)
+    assert kw["experts_implementation"] == "eager" and kw["quantization_config"].dequantize
+    assert P.hf_load_kwargs(spec, str(tiny_oss)) == {"experts_implementation": "eager"}
+    assert P.hf_load_kwargs(P.registry()["muse_glimmer_30b"]) == {}

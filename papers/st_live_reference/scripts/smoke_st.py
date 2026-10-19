@@ -96,7 +96,7 @@ def main() -> int:
 
     t0 = time.time()
     sc.model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16,
-                            attn_implementation="eager")
+                            attn_implementation="eager", **P.hf_load_kwargs(spec))
     rec["hf_load_seconds"] = time.time() - t0
     probe = [j["ids"] for j in jobs]
     rec["padded_check"] = L.padded_check(sc, probe)

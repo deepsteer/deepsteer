@@ -41,6 +41,8 @@ def main() -> int:
                     choices=("eager", "batched_mm", "grouped_mm", "kernels"))
     ap.add_argument("--batches", default="1,8,33,132")
     ap.add_argument("--decode-steps", type=int, default=16)
+    ap.add_argument("--dequantize", action="store_true",
+                    help="MXFP4 experts dequantized to bf16 (the registry's hf pin)")
     a = ap.parse_args()
     import torch
     import transformers
@@ -52,6 +54,10 @@ def main() -> int:
     try:
         kw = ({"use_kernels": True} if a.experts == "kernels"
               else {"experts_implementation": a.experts})
+        if a.dequantize:
+            from transformers import Mxfp4Config
+
+            kw["quantization_config"] = Mxfp4Config(dequantize=True)
         m = AutoModelForCausalLM.from_pretrained(a.repo, revision=a.revision,
                                                  dtype=torch.bfloat16,
                                                  attn_implementation="eager", **kw)

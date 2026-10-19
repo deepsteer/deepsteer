@@ -179,6 +179,7 @@ class WhiteBoxModel(ModelInterface):
         revision: str | None = None,
         quantization_config: Any | None = None,
         attn_implementation: str | None = None,
+        experts_implementation: str | None = None,
     ) -> None:
         from transformers import AutoConfig, AutoTokenizer
 
@@ -207,6 +208,10 @@ class WhiteBoxModel(ModelInterface):
         # ``attn_implementation`` (optional): passed through to from_pretrained; None keeps the
         # HuggingFace default for the architecture
         extra = {} if attn_implementation is None else {"attn_implementation": attn_implementation}
+        # ``experts_implementation`` (optional, MoE models): likewise; None keeps the default
+        # (on torch < 2.9 with an SM80 GPU the default grouped_mm runs a slow fallback op)
+        if experts_implementation is not None:
+            extra["experts_implementation"] = experts_implementation
         # ``quantization_config`` is optional and defaults to None (no change for
         # unquantized models). It is the clean path for loading a quantized repo
         # under an explicit policy, e.g. ``Mxfp4Config(dequantize=True)`` to force

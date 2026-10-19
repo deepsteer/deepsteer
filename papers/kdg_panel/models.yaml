@@ -414,6 +414,9 @@ st:
     n_layers: 24
     hidden: 2880
     precision: bf16_dequant
+    hf:                              # every ST HF load of GPT-OSS (author, 2026-10-19; ST-A6)
+      experts_implementation: eager  # the default grouped_mm runs a slow fallback op on SM80 under torch < 2.9
+      mxfp4_dequantize: true         # bf16 experts, explicit (Mxfp4Config(dequantize=True)); no accelerate needed
     chat_format: harmony
     layers_path: model.layers
     effort_default: medium
