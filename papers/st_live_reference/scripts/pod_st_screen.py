@@ -153,16 +153,17 @@ def dose0_protect(dose0_rows: list[dict]) -> dict[str, float]:
 
 
 def dev_criteria(b: dict, eng: dict, has_dose0: bool) -> dict:
-    """Amendment 5 (as clarified 2026-10-18): (i) the whole-set brake over the screened scenarios
-    with its CI excluding 0; (ii) the engaged count >= 40 and above the no-brake null's 95th
-    percentile (the calibration of record). Both must hold, else GPT-OSS-20B takes the role. G1
-    applies the rule; this records the inputs."""
+    """Amendment 5 (as clarified 2026-10-18, and at G1 2026-10-19: (i) is directional): (i) the
+    whole-set brake over the screened scenarios with its CI's upper end below 0 (a positive B with
+    a CI above 0 is a sign flip, ST-A5, not a brake); (ii) the engaged count >= 40 and above the
+    no-brake null's 95th percentile (the calibration of record). Both must hold, else GPT-OSS-20B
+    takes the role. G1 applies the rule; this records the inputs."""
     lo, hi = b["B"]["ci95"]
-    i = bool(has_dose0 and lo is not None and (hi < 0 or lo > 0))
+    i = bool(has_dose0 and hi is not None and hi < 0)
     null = eng.get("null_no_brake") or {}
     ii = bool(has_dose0 and eng["n_engaged"] >= DEV_MIN_ENGAGED
               and null.get("observed_exceeds_q95", False))
-    return {"i_whole_set_brake_ci_excludes_0": i, "ii_engaged_count": eng["n_engaged"],
+    return {"i_whole_set_brake_ci_below_0": i, "ii_engaged_count": eng["n_engaged"],
             "ii_null_q95": null.get("q95"), "ii_min": DEV_MIN_ENGAGED,
             "ii_engaged_ok": ii, "both": i and ii,
             "note": "rule applied at G1; a model without a dose-0 regime is not eligible for the "

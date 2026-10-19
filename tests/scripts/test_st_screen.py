@@ -277,6 +277,9 @@ def test_dev_criteria_use_whole_set_brake_and_engaged_null():
     assert P.dev_criteria(flat, eng, True)["both"] is False
     neg = {"B": {"ci95": [-0.20, -0.05]}}
     assert P.dev_criteria(neg, eng, True)["both"] is True
+    # G1 (2026-10-19): (i) is directional; Qwen3.8's B +0.083 [0.020, 0.146] is a sign flip
+    pos = {"B": {"ci95": [0.020, 0.146]}}
+    assert P.dev_criteria(pos, eng, True)["i_whole_set_brake_ci_below_0"] is False
     few = {"n_engaged": 39, "null_no_brake": {"q95": 10.0, "observed_exceeds_q95": True}}
     assert P.dev_criteria(neg, few, True)["ii_engaged_ok"] is False
     noise = {"n_engaged": 45, "null_no_brake": {"q95": 50.0, "observed_exceeds_q95": False}}
