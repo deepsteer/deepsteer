@@ -1013,3 +1013,55 @@ far enough above it that a plausible widening does not cross it, but this is not
    (the fold's arithmetic); (ii) vLLM folded vs HF folded first-token log-probs, as steered minus
    unsteered per engine: the difference of differences inside the HF-vs-vLLM band (0.25);
    (iii) one folded generation batch with its parse rate.
+
+### Amendment 9 (2026-10-19; author; pre-registered before rider pod 2; zero GPU)
+
+1. **Stack of record, conditional.** The stack-parity read reads the same 64 rows (the first 64 of
+   the dose-0 letter cell `dl_chat_neutral` over C0 at permutations 0–7, the candidate of record,
+   the effort of record) on GPT-OSS-20B and Muse Glimmer 30B, with one script
+   (`stack_read.py`) under the HF stack of record (torch 2.6, transformers 5.17.0) and in the
+   vLLM venv (torch 2.13.0+cu129, transformers 5.17.0, its default experts path), and compares
+   them on the Amendment 6 ladder (`stack_compare.py`): floor = the larger replicate floor of the
+   two stacks; bar = max(0.05, 2 × floor); measurement = max |alone₂.₆ − alone₂.₁₃| over rows ×
+   letters; negative control = one position early on 2.13 against alone on 2.6, which must exceed
+   the bar. The operative ladder is the one for the readout head of record (item 2). **Inside the
+   bar on both models → torch 2.13 in the vLLM venv becomes the ST HF stack of record from T1.1
+   on** (KDG's stack is unchanged); outside on either → torch 2.6 stays and `batched_mm` is the
+   HF-generation lever. The read is void unless `stack_read`'s torch-2.6 read of the first 16
+   rows equals the driver's readout of record (`read_ids`, alone) to 1e-3.
+2. **Readout mode** (G1 item 4, the author's "floor drops to ~0.01" made exact): per model, with
+   the fp32 head at the dose-0 position, batched readouts at the KDG bar iff the padded-vs-alone
+   check is calibrated, measures ≤ 0.05, and the replicate floor is ≤ 0.025 (so the Amendment 6
+   bar max(0.05, 2 × floor) is 0.05 itself); otherwise single-row with the bf16 head. The rung
+   re-read at the dose-0 position under that head names the readout path of record.
+3. **Fold arms are their own class.** `fold (prompt + trace constant)` is typed separately from
+   a hooked constant class; each engine carries its own `fill` and `none`; ΔP never crosses
+   engines; vLLM hooks are rejected; hooked arms stay on HF.
+4. **Fold validation, pass criteria** (GPT-OSS, block 11, ‖v‖ = 0.25 × the median residual norm
+   there, a seeded random direction): (i) HF hook vs HF folded checkpoint, 16 dose-0 rows alone,
+   max |Δ| ≤ max(0.05, 2 × the bf16 replicate floor at the dose-0 position), with hook vs base
+   above that bar (the positive control); (ii) steering effect on vLLM (folded − base first-token
+   log-probs) vs on HF, max |difference of differences| ≤ 0.25; (iii) 64 generations per engine
+   with parse rates, reported.
+5. **MoE probe.** Four paths (eager and `batched_mm` on torch 2.6, `grouped_mm` on torch 2.13,
+   the MegaBlocks kernel) × batches 1, 8, 33 and 132, 16 decode steps after a warm-up, eager
+   attention, bf16. T1.3 is re-priced from the fastest path that is admissible on the stack of
+   record (item 1).
+
+**Rider pod 2 plan.** `STEPS=rider2`, outputs `outputs/t10c`, models GPT-OSS-20B then Muse;
+GPT-OSS: gates, the dose-0-position padded check and rung (bf16 and fp32 heads), the fold
+validation (HF hook, HF fold, vLLM base and fold), then the stack reads and the eager,
+`batched_mm` and `grouped_mm` probes; Muse: gates, the dose-0-position checks, the stack reads;
+the MegaBlocks probe last (it installs `kernels` into the HF stack, after all stack-of-record
+work). Estimate ~1.0 A100-h (setup 0.25, GPT-OSS ~0.5, Muse ~0.3); watchdog 1.5 h; a failing
+step is recorded and the session continues. Each branch is a G1-item decision: batched or
+single-row readouts per model; torch 2.13 or 2.6 as the ST stack; the fold arms admitted to T1.3
+or not; T1.3's price from the fastest admissible path.
+
+**ST-A5's discriminator (author item).** At Qwen3.8's effort of record (medium), the
+`enable_thinking=False` render is byte-identical to the thinking-on render plus `\n</think>\n\n`,
+and it encodes to the same ids (checked 2026-10-19 against the pinned tokenizer). A "forced empty
+think under thinking-on" therefore re-reads the dose-0 prompt of record; only a separately encoded
+prefill differs (the merged `\n\n` token 271 becomes 198, 198), which is a tokenization
+perturbation. The mode-switch reading (R_b) has no prompt-level mode to switch; the ~0.3 A100-h
+discriminator is not on this pod pending the author's call.

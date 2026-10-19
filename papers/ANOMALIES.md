@@ -1192,6 +1192,15 @@ its brake leaves descriptive status (Amendment 8 item 2). resolution_type: exper
 **Competing readings.** R_a (model): Qwen3.8's reasoning raises its protective share on H1; its post-training installs no deliberation brake, so it is a natural negative control for the ST mechanism. R_b (regime): `enable_thinking=False` is not Qwen's dose 0 in the sense the other models' prefills are: the template switch changes the conversation mode (a distinct trained no-think behaviour) rather than cutting deliberation at zero length, so B compares two modes, not two doses.
 **Discriminator.** A forced empty think block under thinking-on (`</think>` prefilled at zero trace length; a new dose-0 candidate, not one the format registers today) on the same 60 scenarios, through the same dose-0 checks: B near +0.08 → R_a; B moving toward the panel's negative values → R_b. About 0.3 A100-h with one Qwen load, plus the candidate's local format tests.
 **Status.** open; not on the critical path (Qwen does not meet criterion (ii) under either reading).
+**Calibration read (2026-10-19, zero GPU).** At the effort of record (medium) the
+`enable_thinking=False` render equals the thinking-on render plus `\n</think>\n\n` byte for byte,
+and encodes to the same ids: Qwen's dose-0 of record already is an empty think block, so R_b's
+"mode switch" has no prompt-level counterpart, and the forced-empty-think discriminator would
+re-read the same prompt (a separately encoded prefill differs only by splitting the `\n\n` token).
+What remains of R_b is that the empty think block is a trained no-think behaviour, which is true
+of every model's dose 0 (OLMo's `close_think`, Muse's empty reasoning channel) and is what the
+brake's definition compares. resolution_type: calibration (pending the author's call on dropping
+the GPU discriminator).
 **Thesis impact.** R_a: the brake is not universal across reasoning families; ST's second-family replication needs a braking family (Muse), and Qwen becomes the panel's documented non-braker, which sharpens what the intervention claims. R_b: the dose-0 construction is a per-family instrument choice that can flip a brake's sign, and the KDG dose-0 arm needs a cross-family construction audit.
 **Note (criterion (i)'s sign).** Amendment 5's criterion (i) reads "CI excluding 0" and is coded that way; Qwen's positive B satisfies it literally. Its verdict is the same under a directional reading because (ii) fails; the sign is an author item at G1.
 
