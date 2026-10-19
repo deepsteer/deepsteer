@@ -8,7 +8,10 @@ engine configuration per process, no HF model loaded beside it.
 ENGINE.json: ``{"model", "revision", "tokenizer", "tokenizer_revision", "llm_kwargs": {...},
 "label"}`` (``llm_kwargs`` holds the speculative config, compilation, batch limits; nothing else
 is set implicitly). JOBS.jsonl rows: ``{"job_id", "prompt_ids", "max_tokens", "seed",
-"sampler": {"temperature", "top_p", "top_k"}}``.
+"sampler": {"temperature", "top_p", "top_k"}, "logprob_ids": [...]}`` (``logprob_ids``,
+optional: the row also carries the first generated position's log-probs of those token ids,
+from vLLM's top-``FIRST_LOGPROBS`` list; an id outside it is missing, never imputed; Amendment 8's
+descriptive HF-vs-vLLM column).
 
 Sampling is the KDG sampler v2 contract unless a job carries the card sampler: temperature as
 given, top_p / top_k off unless given, min_p 0, no penalties, a per-request seed, prompts as token
@@ -41,6 +44,7 @@ import time
 from pathlib import Path
 
 GUARD_EVERY = 4
+FIRST_LOGPROBS = 20  # vLLM's default max_logprobs
 
 
 def settings_hash(engine: dict, versions: dict) -> str:
@@ -54,7 +58,8 @@ def sampling_params(SamplingParams, job: dict):
     return SamplingParams(temperature=s.get("temperature", 0.7), top_p=s.get("top_p", 1.0),
                           top_k=s.get("top_k", 0), min_p=0.0, repetition_penalty=1.0,
                           presence_penalty=0.0, frequency_penalty=0.0, seed=int(job["seed"]),
-                          max_tokens=int(job["max_tokens"]), detokenize=False)
+                          max_tokens=int(job["max_tokens"]), detokenize=False,
+                          logprobs=FIRST_LOGPROBS if job.get("logprob_ids") else None)
 
 
 def run_jobs(engine, jobs: list[dict], make_params, *, deadline: float | None = None,
@@ -66,6 +71,7 @@ def run_jobs(engine, jobs: list[dict], make_params, *, deadline: float | None = 
     for j in jobs:
         engine.add_request(j["job_id"], {"prompt_token_ids": j["prompt_ids"]}, make_params(j))
     cap = {j["job_id"]: int(j["max_tokens"]) for j in jobs}
+    want = {j["job_id"]: j["logprob_ids"] for j in jobs if j.get("logprob_ids")}
     live: dict[str, int] = {j["job_id"]: 0 for j in jobs}  # current decoded length
     rows: dict[str, dict] = {}
     checks: list[dict] = []
@@ -84,6 +90,10 @@ def run_jobs(engine, jobs: list[dict], make_params, *, deadline: float | None = 
                 rows[rid] = {"job_id": rid, "gen_ids": ids, "n_tokens": len(ids),
                              "finish_reason": out.outputs[0].finish_reason, "status": "finished",
                              "t_finish": clock() - t0}
+                if rid in want:
+                    first = (out.outputs[0].logprobs or [{}])[0]
+                    rows[rid]["first_logprobs"] = {str(i): float(first[i].logprob)
+                                                   for i in want[rid] if i in first}
                 del live[rid]
         if deadline is not None and len(rows) >= next_check and live:
             next_check = len(rows) + GUARD_EVERY

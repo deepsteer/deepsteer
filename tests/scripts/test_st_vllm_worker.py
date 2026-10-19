@@ -122,3 +122,26 @@ def test_worker_env_skips_flashinfer_sampler_jit_and_finds_venv_tools(monkeypatc
     env = V.worker_env()
     assert env["VLLM_USE_FLASHINFER_SAMPLER"] == "0"
     assert env["PATH"].split(":")[0] == "/workspace/venv_vllm/bin"
+
+
+def test_first_logprobs_kept_for_the_requested_ids_only():
+    # most probable failure (Amendment 8's descriptive column): a letter outside vLLM's top-k list
+    # is imputed (or the row breaks) instead of being reported missing
+    clock = FakeClock()
+    eng = FakeEngine({"j0": 1, "j1": 1}, clock)
+    real_step = eng.step
+
+    def step():
+        outs = real_step()
+        for o in outs:
+            o.outputs[0].logprobs = [{32: SimpleNamespace(logprob=-0.1),
+                                      33: SimpleNamespace(logprob=-2.5)}]
+        return outs
+    eng.step = step
+    jobs = _jobs(2, cap=1)
+    jobs[0]["logprob_ids"] = [32, 33, 34]
+    rows, _ = G.run_jobs(eng, jobs, lambda j: {"seed": j["seed"]}, clock=clock)
+    assert rows["j0"]["first_logprobs"] == {"32": -0.1, "33": -2.5}  # 34 missing, not imputed
+    assert "first_logprobs" not in rows["j1"]
+    assert G.sampling_params(lambda **k: k, {**jobs[0], "seed": 1})["logprobs"] == 20
+    assert G.sampling_params(lambda **k: k, {**jobs[1], "seed": 1})["logprobs"] is None

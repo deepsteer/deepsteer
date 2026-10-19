@@ -55,6 +55,7 @@ PILOT_CAP = 4096
 PILOT_N, PILOT_R = 8, 4
 C0_N, C0_R, C0_ANSWER_TOKENS = 64, 4, 8
 MAX_NATS = 0.05
+FWD_GEN_N = 16  # rows of the forward-vs-generation check
 FLOOR_FACTOR = 2.0  # Amendment 6 item 1 (proposed): bar = max(0.05, 2 x replicate floor)
 LETTER_MASS_BAR = 0.95
 TRUNCATION_BAR = 0.05
@@ -95,6 +96,12 @@ class Screen:
     dose0: rf.Dose0 | None = None
     record: dict = field(default_factory=dict)
     grab: dict | None = None  # persistent hook buffer (set by ``install_hooks``)
+    # Amendment 8: vLLM first-token log-probs per dose-0 candidate on the forward-vs-generation
+    # rows (descriptive column; set by the vLLM phase), and the padded check's replicate floor
+    # (the post-hoc column's bar)
+    vllm_first: dict | None = None
+    replicate_floor: float | None = None
+    eager_forward: Any = None  # the uncompiled forward (set by the rung; rider (b) restores it)
 
     @property
     def tok(self):
@@ -329,6 +336,7 @@ def fast_path_rung(sc: Screen, id_lists: list[list[int]], fast_impl: str,
         ref_floor = float(np.abs(ref - rep_ref).max())
     bar = max(MAX_NATS, FLOOR_FACTOR * ref_floor)
     orig_forward = model.model.forward
+    sc.eager_forward = orig_forward
     attempts = [True, False] if compile_forward else [False]
     tried: list[dict] = []
     for comp in attempts:
@@ -444,11 +452,60 @@ def _per_row(**reads: np.ndarray) -> dict:
     return out
 
 
-def fwd_vs_gen(sc: Screen, id_lists: list[list[int]]) -> dict:
-    fwd, _ = read_ids(sc, id_lists, sc.bs(sc.read_batch))
+def letter_ids(sc: Screen) -> list[int]:
+    """The letter token ids in A..E order (the column order of every readout)."""
+    return [k for k, _ in sorted(sc.letters.items(), key=lambda kv: kv[1])]
+
+
+def fwd_gen_ids(sc: Screen, C0, cand: rf.Dose0, n: int = FWD_GEN_N) -> list[list[int]]:
+    """The rows forward-vs-generation reads: the first ``n`` ids of the dose-0 letter cell
+    (``dl_chat_neutral`` over C0, permutations 0..N_PERM-1), built as ``letter_rows`` builds them;
+    tokenizer only, so the vLLM phase can read the same rows before any HF load."""
+    jobs = [(s, k) for s in C0 for k in range(N_PERM)][:n]
+    return [dose0_ids(sc, s, assign_letters(s, k), "dl_chat_neutral", cand) for s, k in jobs]
+
+
+def fwd_vs_gen(sc: Screen, id_lists: list[list[int]], vllm_first: list | None = None) -> dict:
+    """Amendment 8 (author, 2026-10-19). The gate is like with like inside the HF engine: each
+    row's teacher-forced letter log-probs read alone vs HF generation's first step alone (single
+    row), bar 0.05. The relaunch read the forward batched against generation alone, so the batch
+    jitter (ST-A3) sat inside the comparison (ST-A4). Two columns beside it never gate:
+    - ``post_hoc_two_floor`` (labelled post hoc): the relaunch's comparison (forward at the read
+      batch vs generation alone) against max(0.05, 2 x the padded check's replicate floor);
+    - ``vllm_descriptive``: HF forward alone vs vLLM's first-token log-probs on the same ids
+      (letters outside vLLM's top-20 are skipped, never imputed); engine parity, not this column,
+      is the distributional rung between the engines."""
+    alone, _ = read_ids(sc, id_lists, 1)
     gen = first_step_letters(sc, id_lists)
-    d = float(np.abs(fwd - gen).max())
-    return {"n": len(id_lists), "max_abs_nats": d, "bar": MAX_NATS, "ok": d <= MAX_NATS}
+    d = float(np.abs(alone - gen).max())
+    out: dict = {"n": len(id_lists), "comparison": "HF forward alone vs HF generation alone",
+                 "max_abs_nats": d, "bar": MAX_NATS, "ok": d <= MAX_NATS,
+                 "per_row": _per_row(forward_alone=alone, generation_alone=gen)}
+    batched, _ = read_ids(sc, id_lists, sc.bs(sc.read_batch))
+    db = float(np.abs(batched - gen).max())
+    bar2 = (max(MAX_NATS, FLOOR_FACTOR * sc.replicate_floor) if sc.replicate_floor is not None
+            else None)
+    out["post_hoc_two_floor"] = {
+        "label": "post hoc (Amendment 8): forward at the read batch vs generation alone, bar "
+                 "max(0.05, 2 x replicate floor); never gates",
+        "batch": sc.bs(sc.read_batch), "max_abs_nats": db, "bar": bar2,
+        "ok": None if bar2 is None else db <= bar2}
+    if vllm_first is not None:
+        lids = letter_ids(sc)
+        diffs, per_row = [], []
+        for row_hf, first in zip(alone, vllm_first):
+            dd = [abs(float(row_hf[c]) - first[str(t)]) for c, t in enumerate(lids)
+                  if first and str(t) in first]
+            diffs += dd
+            per_row.append(max(dd) if dd else None)
+        out["vllm_descriptive"] = {
+            "label": "descriptive (Amendment 8): HF forward alone vs vLLM first-token log-probs; "
+                     "never gates", "n_rows": len(per_row),
+            "n_letter_values": len(diffs), "n_letter_values_expected": len(per_row) * len(lids),
+            "max_abs_nats": max(diffs) if diffs else None,
+            "mean_abs_nats": float(np.mean(diffs)) if diffs else None,
+            "per_row_max_abs": per_row}
+    return out
 
 
 # ---------------------------------------------------------------------------------------------
@@ -714,7 +771,8 @@ def choose_dose0(sc: Screen, C0, c0_answers: dict | None = None) -> dict:
         rows, lp, _, ids = letter_rows(sc, C0, "dl_chat_neutral", cand)
         mass = float(np.mean([r["option_mass"] for r in rows]))
         rec["letter_mass"] = {"mean": mass, "bar": LETTER_MASS_BAR, "ok": mass >= LETTER_MASS_BAR}
-        rec["fwd_vs_gen"] = fwd_vs_gen(sc, ids[:16])
+        rec["fwd_vs_gen"] = fwd_vs_gen(sc, ids[:FWD_GEN_N],
+                                       (sc.vllm_first or {}).get(cand.name))
         rec["c0"] = (c0_check(sc, C0, cand, rows, (c0_answers or {}).get(cand.name))
                      if rec["letter_mass"]["ok"] else None)
         kg, _, _, _ = letter_rows(sc, C0, "dl_chat_known_gap", cand)

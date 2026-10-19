@@ -472,3 +472,89 @@ def test_revision_gate_reads_the_composite_commit_for_a_text_tower_load(monkeypa
     assert got["commit"] == spec["revision"] and got["source"].startswith("AutoConfig")
     full = types.SimpleNamespace(config=types.SimpleNamespace(_commit_hash="abc"))
     assert P.loaded_commit(full, spec) == {"commit": "abc", "source": "model.config"}
+
+
+def _resume(tmp: Path, model: str, banked: Path, *extra: str):
+    r = subprocess.run([sys.executable, str(DRIVER), "--model", model, "--dry-run", "--engine",
+                        "vllm", "--date-pin", "2026-10-18", "--out", str(tmp), "--resume-from",
+                        str(banked), *extra], capture_output=True, text=True, cwd=ROOT)
+    rec_p = tmp / model / "screen_record.json"
+    return r, (json.loads(rec_p.read_text()) if rec_p.exists() else None)
+
+
+def test_resume_runs_phase_h_on_the_banked_rows(tmp_path):
+    # most probable failure (the Qwen rerun, author 2026-10-19): phase H reads rows other than
+    # the banked ones (a fresh render, another effort or date pin), or regenerates them
+    _, old, banked = _run(tmp_path / "a", "qwen38_27b", engine="vllm")
+    r, rec = _resume(tmp_path / "b", "qwen38_27b", banked)
+    assert r.returncode == 0 and rec["status"] == "ok" and rec["mode"] == "resume", r.stderr[-2000:]
+    assert rec["resumed_from"]["dir"] == str(banked)
+    assert rec["phase_v"]["effort_of_record"] == old["phase_v"]["effort_of_record"]
+    new_rows = (tmp_path / "b" / "qwen38_27b" / "screen" / "h1_screen.jsonl").read_text()
+    assert new_rows == (banked / "screen" / "h1_screen.jsonl").read_text()
+    fg = rec["dose0"]["tried"][0]["fwd_vs_gen"]  # Amendment 8: the gate and its two columns
+    assert fg["comparison"] == "HF forward alone vs HF generation alone" and fg["bar"] == 0.05
+    assert fg["post_hoc_two_floor"]["label"].startswith("post hoc")
+    vd = fg["vllm_descriptive"]
+    assert vd["n_letter_values"] == vd["n_letter_values_expected"] > 0
+    assert len(fg["per_row"]["max_abs_vs_forward_alone_generation_alone"]) == fg["n"]
+
+
+def test_resume_refuses_banked_rows_that_do_not_match(tmp_path):
+    # most probable failure: a banked engine at another revision, or a banked row rendered
+    # differently, passes into phase H unnoticed
+    _, _, banked = _run(tmp_path / "a", "qwen38_27b", engine="vllm")
+    eng = sorted((banked / "vllm").glob("*.engine.json"))[0]
+    e = json.loads(eng.read_text())
+    eng.write_text(json.dumps({**e, "revision": "0" * 40}))
+    r, _ = _resume(tmp_path / "b", "qwen38_27b", banked)
+    assert r.returncode != 0 and "is not the registry pin" in r.stderr
+    eng.write_text(json.dumps(e))
+    rows_p = banked / "screen" / "h1_screen.jsonl"
+    rows = rows_p.read_text().splitlines()
+    first = json.loads(rows[0])
+    rows_p.write_text("\n".join([json.dumps({**first, "rendered_sha256": "x"})] + rows[1:]) + "\n")
+    r, _ = _resume(tmp_path / "c", "qwen38_27b", banked)
+    assert r.returncode != 0 and "does not match this run's render" in r.stderr
+
+
+def test_dose0_recheck_and_oss_rider_modes(tmp_path):
+    # riders (a) and (b): Muse stops after the dose-0 checks on its banked C0 answers; GPT-OSS
+    # runs no phase V and records an eager memory probe
+    _, _, banked = _run(tmp_path / "a", "muse_glimmer_30b", engine="vllm")
+    r, rec = _resume(tmp_path / "b", "muse_glimmer_30b", banked, "--dose0-only")
+    assert r.returncode == 0 and rec["status"] == "ok_dose0_recheck", r.stderr[-2000:]
+    assert [t["candidate"] for t in rec["dose0"]["tried"]][0] == "empty_reasoning"
+    assert "panel" not in rec and "brake" not in rec
+    rc, rec, _ = _run(tmp_path / "c", "gpt_oss_20b", "--rider-oss", engine="vllm")
+    assert rc == 0 and rec["status"] == "ok_rider" and rec["mode"] == "rider_oss"
+    assert rec["hf_memory_probe"]["path"] == "eager, uncompiled"
+    assert "engine_parity" not in rec and not list((tmp_path / "c" / "gpt_oss_20b").glob("vllm/*"))
+
+
+def test_reprice_merges_the_rider_session_and_reads_pod_timestamps(tmp_path):
+    # most probable failure: the rider pod's GPT-OSS record (no generation timing) is dropped, so
+    # the re-price keeps the relaunch's probe on uncompiled flex; or session hours stay a guess
+    import reprice_tier1 as RP
+
+    _run(tmp_path / "t10", "gpt_oss_20b", engine="vllm")
+    _run(tmp_path / "t10b", "gpt_oss_20b", "--rider-oss", engine="vllm")
+    rider = json.loads((tmp_path / "t10b" / "gpt_oss_20b" / "screen_record.json").read_text())
+    rider["hf_memory_probe"] = {"largest_fitting_batch": 66, "path": "eager, uncompiled",
+                                "probes": [{"batch": 66, "fits": True, "warmed": True,
+                                            "seconds_per_step": 0.2}]}
+    rider["fast_path_rung"] = {"kept": "fast", "fast_impl": "flex_attention"}
+    m = RP.model_rates(tmp_path / "t10" / "gpt_oss_20b", (rider,))
+    assert m["stage"] == "parity" and m["hf_step_s"] == 0.2 and m["hf_batch"] == 66
+    h, basis = RP.gate_price(m)
+    assert basis == "measured" and h != 1.5  # an eager probe prices T1.3 whatever the rung kept
+    (tmp_path / "t10b" / "session_start.json").write_text(
+        '{"session_start_utc": "2026-10-20T01:00:00Z", "validate": 0}')
+    (tmp_path / "t10b" / "session_end.json").write_text(
+        '{"session_end_utc": "2026-10-20T03:30:00Z", "rc": 0}')
+    assert RP.session_hours(tmp_path / "t10b") == pytest.approx(2.5 + RP.PROVISION_H)
+    r = subprocess.run([sys.executable, str(SCRIPTS / "reprice_tier1.py"), "--screen-dir",
+                        str(tmp_path / "t10"), str(tmp_path / "t10b")], capture_output=True,
+                       text=True, cwd=ROOT)
+    assert r.returncode == 0, r.stderr
+    assert "pod timestamps" in (tmp_path / "t10b" / "tier1_reprice.md").read_text()

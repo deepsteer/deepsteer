@@ -211,11 +211,16 @@ def run_vllm_engine(a, env: dict) -> int:
         return env["finish"](sc, v["screen_rows"], v["screen_timing"], jobs,
                              v["lowest_level_this_pod"], v["c0_answers"], plen)
 
+    mode = ("provenance" if a.provenance_only else "dose0_recheck" if a.dose0_only
+            else "resume" if a.resume_from is not None
+            else "rider_oss" if a.rider_oss else "full")
+    rec["mode"] = mode
     ctx = SimpleNamespace(
         spec=spec, H=H, pilot_ids=env["pilot_ids"], screen_ids=env["screen_ids"], C0=env["C0"],
         order=env["order"], deadline=env["deadline"], hf_after_h=HF_AFTER_H[key], sc=sc,
         rec=rec, key=key, bank=env["bank"], load_hf=load_hf, finish_screen=finish_screen,
-        gates=lambda s: gates(s, spec, env["split"], env["order"], H, dry))
+        gates=lambda s: gates(s, spec, env["split"], env["order"], H, dry),
+        resume_from=a.resume_from, mode=mode)
     return SV.run(ctx)
 
 
@@ -249,7 +254,23 @@ def main() -> int:
                     help="local test only: a tiny random checkpoint saved with the model's real "
                          "tokenizer; runs the real wrapper on CPU at reduced caps and subsets, "
                          "revision/pin/dtype/layer gates recorded as skipped")
+    ap.add_argument("--resume-from", type=Path, default=None,
+                    help="a banked model directory: phase H on its phase V (provenance-checked; "
+                         "its date pin is used)")
+    ap.add_argument("--dose0-only", action="store_true",
+                    help="with --resume-from: the dose-0 checks only (rider (a), 2026-10-19)")
+    ap.add_argument("--rider-oss", action="store_true",
+                    help="GPT-OSS-20B: gates, padded check, corrected rung, eager memory probe "
+                         "(rider (b), 2026-10-19)")
+    ap.add_argument("--provenance-only", action="store_true",
+                    help="with --resume-from: run the provenance checks and stop")
     a = ap.parse_args()
+    if (a.dose0_only or a.provenance_only) and a.resume_from is None:
+        ap.error("--dose0-only and --provenance-only need --resume-from")
+    if a.rider_oss and (a.model != "gpt_oss_20b" or a.resume_from is not None):
+        ap.error("--rider-oss is GPT-OSS-20B's rider and takes no --resume-from")
+    if (a.resume_from or a.rider_oss) and a.engine != "vllm":
+        ap.error("resume and rider modes run on the vLLM engine path")
     if a.tiny_local is not None:  # reduced caps so a CPU run takes seconds; never on a pod
         L.PILOT_CAP, L.CAP_OF_RECORD, L.C0_ANSWER_TOKENS = 24, 16, 2
 
@@ -259,6 +280,11 @@ def main() -> int:
     envelope = a.envelope_hours or ENVELOPE_H[key]
     deadline = t_start + envelope * 3600
     date_pin = a.date_pin or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if a.resume_from is not None:  # the banked prompts were rendered at the banked date pin
+        banked_pin = json.loads((a.resume_from / "screen_record.json").read_text())["date_pin"]
+        if banked_pin != date_pin:
+            print(f">> date pin {date_pin} -> {banked_pin} (the banked run's)", flush=True)
+        date_pin = banked_pin
     split = json.loads(SPLIT.read_text())
     order = L.h1_train_order(split)
     n_screen = SCREEN_N[key]
@@ -279,7 +305,7 @@ def main() -> int:
     out = a.out / key
     out.mkdir(parents=True, exist_ok=True)
     manifest = Manifest(out, dry, metas + h1_meta)  # one manifest per model directory
-    rec: dict = {"model": key, "spec": spec, "plan": "ST_PLAN v0.2.8 (Amendments 2-6)",
+    rec: dict = {"model": key, "spec": spec, "plan": "ST_PLAN v0.2.9+ (Amendments 2-8)",
                  "date_pin": date_pin, "envelope_h": envelope, "screen_n": len(screen_ids),
                  "pilot_ids": pilot_ids, "screen_ids": screen_ids, "order_seed": L.ORDER_SEED,
                  "split_sha256": sha256_text(SPLIT.read_text()), "kernel_path": kernel_path()}
@@ -399,6 +425,7 @@ def main() -> int:
     probe = [j["ids"] for j in L.h1_jobs(sc, H, order[:16], 1)]
     t0 = time.time()
     rec["padded_check"] = L.padded_check(sc, probe)
+    sc.replicate_floor = rec["padded_check"].get("noise_floor_replicate_unpadded")
     rec["padded_check"]["seconds"] = time.time() - t0
     if not rec["padded_check"]["ok"]:
         sc.unbatched = True

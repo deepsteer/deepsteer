@@ -43,8 +43,15 @@ PANEL_ROWS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
 KDG_BAR = 0.05
 S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 s, GPT-OSS-20B, A100
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
+# (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
+# --session-h defaults to the pod's session_start/session_end timestamps)
 SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
-         "VALIDATE pods x4 (146trytky4d1z3, 40yy8fg8wtnucu, vgjndx7dmqyfa8, nw2ot7pye4ad1a)": 0.85}
+         "VALIDATE pods x4 (146trytky4d1z3, 40yy8fg8wtnucu, vgjndx7dmqyfa8, nw2ot7pye4ad1a)": 0.85,
+         "T1.0 relaunch (esmxvsxj8wzkaq; estimate)": 1.8}
+PROVISION_H = 0.1  # pod creation to script start, and the download after the end timestamp
+# HF-side measurements a later session (the rider pod) replaces in an earlier session's record
+HF_KEYS = ("padded_check", "fast_path_rung", "hf_memory_probe", "read_seconds_per_row",
+           "probe_mean_len", "load_seconds")
 FIXED = {"T1.2 AtP": (0.5, "plan"), "T1.4 training (3 adapters)": (3.0, "plan"),
          "T1.5 capability + specificity + Heretic": (2.0, "estimate"),
          "T1.6 training (2 QLoRA adapters)": (1.5, "estimate"),
@@ -84,9 +91,12 @@ def rung_alone_rate(rung: dict) -> float | None:
     return a["first_fast_pass_seconds"] / rung["n"]
 
 
-def model_rates(d: Path) -> dict | None:
-    """Measured rates for one model directory of the relaunch (None if nothing usable)."""
+def model_rates(d: Path, overlays: tuple = ()) -> dict | None:
+    """Measured rates for one model directory (None if it has no generation timing); HF-side
+    keys from ``overlays`` (later sessions' records of the same model) replace its own."""
     rec = json.loads((d / "screen_record.json").read_text())
+    for o in overlays:
+        rec.update({k: o[k] for k in HF_KEYS if o.get(k) is not None})
     pv = rec.get("phase_v") or {}
     timing = pv.get("screen_timing") or pv.get("parity_timing")
     if not timing:
@@ -169,7 +179,9 @@ def gate_price(gm: dict) -> tuple[float, str]:
     h = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
     if h is None:
         return 1.5, "plan (no HF memory probe for this model)"
-    if rung.get("kept") == "fast" and rung.get("fast_impl") == "flex_attention":
+    path = ((gm["rec"].get("hf_memory_probe") or {}).get("path")) or ""
+    if not path.startswith("eager") and rung.get("kept") == "fast" and rung.get(
+            "fast_impl") == "flex_attention":
         return 1.5, "plan (probe ran on uncompiled flex attention, not a path of record)"
     probes = (gm["rec"].get("hf_memory_probe") or {}).get("probes") or [{}]
     return h, ("measured" if probes[0].get("warmed")
@@ -211,23 +223,49 @@ def price(m: dict) -> dict:
             "second_family_total": sum(v[0] for v in second.values())}
 
 
+def session_hours(d: Path) -> float | None:
+    """Wall hours between the pod's session_start.json and session_end.json, plus provisioning."""
+    from datetime import datetime
+
+    try:
+        s = json.loads((d / "session_start.json").read_text())["session_start_utc"]
+        e = json.loads((d / "session_end.json").read_text())["session_end_utc"]
+    except FileNotFoundError:
+        return None
+    f = "%Y-%m-%dT%H:%M:%SZ"
+    return (datetime.strptime(e, f) - datetime.strptime(s, f)).total_seconds() / 3600 + PROVISION_H
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--screen-dir", type=Path, required=True)
+    ap.add_argument("--screen-dir", type=Path, nargs="+", required=True,
+                    help="session output dirs, oldest first: a model's generation rates come from "
+                         "the latest dir with its generation timing, HF-side measurements from "
+                         "any later dir (the rider pod's GPT-OSS rung and probe)")
     ap.add_argument("--write", type=Path, default=None)
     ap.add_argument("--session-h", type=float, default=None,
-                    help="A100-h of this session incl. setup (default: the models' elapsed + 0.25)")
+                    help="A100-h of the latest session (default: its session_start/end "
+                         "timestamps + 0.1 provisioning, else the models' elapsed + 0.25)")
     a = ap.parse_args()
-    models = {}
-    for d in sorted(p for p in a.screen_dir.iterdir() if (p / "screen_record.json").exists()):
-        m = model_rates(d)
-        if m is not None:
-            models[d.name] = m
+    found: dict[str, tuple] = {}
+    for sd in a.screen_dir:
+        for d in sorted(p for p in sd.iterdir() if (p / "screen_record.json").exists()):
+            r = json.loads((d / "screen_record.json").read_text())
+            pv = r.get("phase_v") or {}
+            if pv.get("screen_timing") or pv.get("parity_timing"):
+                found[d.name] = (d, [])
+            elif d.name in found:
+                found[d.name][1].append(r)
+    models = {k: m for k, (d, ov) in found.items() if (m := model_rates(d, tuple(ov)))}
     if not models:
-        raise SystemExit(f"no relaunch records under {a.screen_dir}")
-    session_h = a.session_h if a.session_h is not None else (
-        sum(m["elapsed_h"] for m in models.values()) + 0.25)
+        raise SystemExit(f"no records with generation timing under {a.screen_dir}")
+    session_h, how = a.session_h, "given"
+    if session_h is None:
+        session_h, how = session_hours(a.screen_dir[-1]), "pod timestamps + 0.1 provisioning"
+    if session_h is None:
+        session_h, how = (sum(m["elapsed_h"] for m in models.values()) + 0.25,
+                          "models' elapsed + 0.25 setup")
     spent = sum(SPENT.values()) + session_h
     # a model whose HF phase did not run (the relaunch's Qwen3.8 revision-gate stop) borrows the
     # readout rate of a measured dense model of its size class, labelled as a proxy
@@ -238,8 +276,7 @@ def main() -> int:
     prices = {k: price(m) for k, m in models.items()}
     lines = ["# Tier 1 re-priced from the T1.0 relaunch (G1 input)", "",
              "Spent so far: " + "; ".join(f"{k} {v:.2f}" for k, v in SPENT.items())
-             + f"; this session {session_h:.2f} ("
-             + ("given" if a.session_h is not None else "models' elapsed + 0.25 setup") + ")"
+             + f"; this session {session_h:.2f} ({how})"
              + f" → **{spent:.2f} A100-h**.", "",
              "Readouts are single-row where the model's unpadded replicate floor exceeds 0.05 "
              "nats (GPT-OSS-20B by ST-A3 and §31's precedent); rows marked plan keep ST_PLAN "
@@ -272,7 +309,7 @@ def main() -> int:
                 lines.append(f"| {dev} | {sec} | {tot:.2f} | {ok} |")
     text = "\n".join(lines) + "\n"
     print(text)
-    out = a.write or (a.screen_dir / "tier1_reprice.md")
+    out = a.write or (a.screen_dir[-1] / "tier1_reprice.md")
     out.write_text(text)
     out.with_suffix(".json").write_text(json.dumps(
         {"spent": {**SPENT, "this_session": session_h, "total": spent},

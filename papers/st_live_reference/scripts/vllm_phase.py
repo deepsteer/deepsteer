@@ -75,12 +75,12 @@ def run_vllm(sc, jobs: list[dict], engine: dict, out: Path, *, deadline: float |
     """Run ``jobs`` (dicts with job_id, prompt_ids, max_tokens, seed[, sampler]) through the
     vLLM worker; returns (rows in job order, summary, exit code)."""
     out.parent.mkdir(parents=True, exist_ok=True)
-    if sc.dry:
-        return _dry(sc, jobs, engine, out)
     jobs_path = out.with_suffix(".jobs.jsonl")
     eng_path = out.with_suffix(".engine.json")
     jobs_path.write_text("".join(json.dumps(j) + "\n" for j in jobs))
     eng_path.write_text(json.dumps(engine, indent=1))
+    if sc.dry:  # after the jobs and engine files, so a dry run banks what a real one banks
+        return _dry(sc, jobs, engine, out)
     cmd = [VLLM_PY, str(WORKER), "--engine", str(eng_path), "--jobs", str(jobs_path),
            "--out", str(out), "--after-h", str(after_h), "--expected-len", str(expected_len)]
     if deadline is not None:
@@ -101,11 +101,17 @@ def _dry(sc, jobs, engine, out):
                                             cap=max(j["max_tokens"] for j in jobs), seed=0,
                                             batch=len(jobs))
     rows = []
+    want = [j for j in jobs if j.get("logprob_ids")]
+    first = (dict(zip((j["job_id"] for j in want), sc.model.read_ids(
+        [j["prompt_ids"] for j in want], sc.layers())[0])) if want else {})
     for j, g in zip(jobs, ids):
         g = (g or [])[: j["max_tokens"]]
         rows.append({"job_id": j["job_id"], "gen_ids": g, "n_tokens": len(g),
                      "status": "finished", "finish_reason": "length"
                      if len(g) >= j["max_tokens"] else "stop", "t_finish": 0.0})
+        if j["job_id"] in first:  # the stub's letter log-probs stand in for vLLM's top-k list
+            rows[-1]["first_logprobs"] = {str(t): float(v) for t, v in
+                                          zip(j["logprob_ids"], first[j["job_id"]])}
     spec = engine["llm_kwargs"].get("speculative_config")
     wall = float(sum(secs)) * (getattr(sc.model, "spec_factor", 0.6) if spec else 1.0)
     dec = sum(r["n_tokens"] for r in rows)
