@@ -1077,3 +1077,22 @@ think under thinking-on" therefore re-reads the dose-0 prompt of record; only a 
 prefill differs (the merged `\n\n` token 271 becomes 198, 198), which is a tokenization
 perturbation. The mode-switch reading (R_b) has no prompt-level mode to switch; the ~0.3 A100-h
 discriminator is not on this pod pending the author's call.
+
+**Rider 2c (author, 2026-10-19, after rider pod 2b; recorded before the pod).** (1) Every HF load of
+GPT-OSS-20B pins `experts_implementation="eager"` and an explicit bf16 dequantization of its MXFP4
+experts (registry `st.gpt_oss_20b.hf`, so the pin is in every record and its manifest; a gate
+checks the loaded model runs the pin). The dose-0 floor and rung are re-read under the pin before
+any readout of record. (2) Amendment 9 is read as option (a): torch 2.13 in the vLLM venv
+(bf16 dequantization, eager experts) against torch 2.6 (eager experts) on the same 64 rows, on
+the Amendment 6 ladder of the readout head of record; inside the bar → torch 2.13 is the ST stack
+of record and T1.4's training kernels are priced on it; outside → torch 2.6 stays. (Muse's read,
+rider pod 2: inside.) (3) The fold check's vLLM half runs in its own process. (4) `grouped_mm` on
+torch 2.13 is probed only if (2) keeps 2.13. (5) ST-A5's discriminator runs last in the bail
+order: Qwen3.8 resumed from its banked relaunch phase V, the dose-0 candidate `think_on_empty`
+(the thinking-on render with `\n</think>\n\n` appended as separately encoded ids: the registered
+candidate's text, with the merged `\n\n` token 271 split into 198, 198; the id difference is
+recorded beside the result), C0 answers generated for it on vLLM, the dose-0 checks, the dose-0
+readout on the 60 screen scenarios and the brake against the same reasoned rows; no panel; the
+readouts as in the rider pod's Qwen run, so the candidate is the only difference. Launch:
+`STEPS=rider2/t10d MODELS="gpt_oss_20b qwen38_27b" RESULTS_SUBPATH=outputs/t10d
+SYNC_OUTPUTS=outputs/t10/qwen38_27b/`; ~0.6 A100-h plus ~0.3 for ST-A5; watchdog 1.5 h.
