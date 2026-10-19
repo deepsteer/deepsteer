@@ -152,6 +152,11 @@ def test_rider2_dry_run(tmp_path, model):
     assert len(rows["letter_ids"]) == 5 and rows["effort"] == "medium"
     assert not list((tmp_path / model).glob("vllm/*"))
     assert (tmp_path / model / "stack" / "probe_prompts.json").exists() == (model == "gpt_oss_20b")
+    # GPT-OSS writes an interim record before the fold check; the manifest must still verify
+    # (rider pod 2b: the interim record was listed twice, 'sha mismatch screen_record.json')
+    from kdg_pod_lib import verify_manifest
+
+    assert verify_manifest(tmp_path / model / "manifest_kdg.json") == []
 
 
 def test_rider2_banks_past_links_in_its_directory(tmp_path):

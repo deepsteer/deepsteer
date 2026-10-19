@@ -325,7 +325,8 @@ def main() -> int:
         rec["status"] = status
         rec["elapsed_h"] = (time.time() - t_start) / 3600
         for p in sorted(out.rglob("*")):  # never a link (rider pod 2: the folded checkpoint)
-            if p.is_file() and not p.is_symlink() and p.suffix in (".jsonl", ".json", ".npz"):
+            if (p.is_file() and not p.is_symlink() and p.suffix in (".jsonl", ".json", ".npz")
+                    and p.name not in ("screen_record.json", "manifest_kdg.json")):
                 manifest.add(p, p.parent.name, key)
         (out / "screen_record.json").write_text(json.dumps(rec, indent=1,
                                                              default=L._json_default))

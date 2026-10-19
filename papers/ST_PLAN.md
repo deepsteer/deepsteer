@@ -961,6 +961,18 @@ far enough above it that a plausible widening does not cross it, but this is not
 
 #### G1 item 3: T1.3 feasibility read (zero GPU, 2026-10-19; vLLM v0.31.0 and transformers 5.17.0 source)
 
+**Correction (2026-10-19, rider pod 2b's log): items 6 and 7 had the slow path backwards.** On
+torch 2.6 transformers selects `grouped_mm` at load (the run's `stack_read` reports it in effect),
+and at run time `_can_use_grouped_mm` fails on SM80 under torch < 2.9, so every expert matmul goes
+to `torch.ops.transformers.grouped_mm_fallback`: that op is the ~20 ms per sequence-step path.
+The explicit `experts_implementation="eager"` per-expert loop is fast and batches well: 0.082,
+0.191, 0.282 and 0.354 s per decode step at batches 1, 8, 33 and 132 (A100-SXM4, eager
+attention, bf16), against 2.69 s at 132 on the default path. T1.3's 960 rollouts at batch 132
+then cost ~1.2 A100-h (8 batches × ~1,536 steps × 0.354 s), under the plan's 1.5, with no stack
+change. `batched_mm` does not fit even at batch 1 (it asked for 45 GiB), and the hub MegaBlocks
+kernel has no build for torch 2.6/cu124. The numbers below in items 6–7 are kept as written.
+
+
 1. **Constant additive vectors fold exactly into the MoE output bias.** The residual stream after
    block `ℓ` (HF `hidden_states[ℓ+1]`) is the block's residual plus its MoE output. Both engines
    weight each expert's output, bias included, by router weights that sum to 1 per token:
