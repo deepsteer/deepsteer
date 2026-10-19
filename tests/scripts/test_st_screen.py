@@ -192,7 +192,8 @@ def test_tiny_real_checkpoint(tmp_path, model):
 
     ck = st_tiny.build(model, tmp_path / "ck")
     r = subprocess.run([sys.executable, str(DRIVER), "--model", model, "--tiny-local", str(ck),
-                        "--date-pin", "2026-10-18", "--out", str(tmp_path / "run")],
+                        "--engine", "hf", "--date-pin", "2026-10-18",
+                        "--out", str(tmp_path / "run")],
                        capture_output=True, text=True, cwd=ROOT)
     assert r.returncode == 0, r.stderr[-3000:]
     rec = json.loads((tmp_path / "run" / model / "screen_record.json").read_text())

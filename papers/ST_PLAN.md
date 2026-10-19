@@ -809,3 +809,46 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    The engine-parity rung (item 3) is the test that licenses the change for generation, and it is
    the only rung that crosses it: the HF readouts stay bf16-dequantized, and the
    forward-vs-generation check stays HF forward against HF generation in that precision.
+
+#### Amendment 7, implementation (author confirmations 2026-10-18; facts checked against primary sources)
+
+1. **vLLM v0.31.0** (PyPI 2026-10-05; default wheel CUDA 12.9 for the pods' CUDA 12 driver; torch
+   2.13.0; transformers 5.17.0 pinned in its venv, inside v0.31.0's ≥ 5.10.4, < 5.18 range, so
+   both venvs share one tokenizer and template stack). Every architecture and drafter method used
+   here (qwen3_5, muse_glimmer, gpt_oss; mtp, dflash, eagle3, ngram_gpu) is in v0.31.0's registry;
+   both DeltaNet speculative fixes (#51812, #51674) are in it. v0.32.0 is not used (published the
+   same day; its default wheel is CUDA 13 and needs an R580 driver; its one extra relevant fix,
+   #56531, concerns n-gram speculation on hybrid models, which no model of record uses).
+2. **GPT-OSS-20B** runs the official MXFP4 checkpoint at §40's revision; on A100 vLLM selects the
+   Marlin W4A16 MoE kernel (in-kernel dequantization; MXFP4 values are exact in bf16) and Triton
+   attention (FlashAttention-2 has no attention sinks). Third-party bf16 conversions are not used.
+3. **Drafters, pinned in the registry beside each model:** Qwen3.8 its in-checkpoint MTP head (3
+   tokens); Muse Meta's DFlash assistant (15 tokens; revision, config and weights sha256); GPT-OSS
+   RedHatAI's EAGLE3 speculator (3 tokens; revision, config and weights sha256); fallback
+   `ngram_gpu`. Rejection sampling is pinned to the lossless `standard` method. The probe runs
+   each regime with and without the drafter (pilot regime on the pilot jobs; full regime on the
+   first `max_num_seqs` screen jobs, or GPT-OSS's 256 parity jobs); the faster run is of record and
+   the slower is banked as a probe duplicate, never a statistic. If DFlash loses at Muse's screen
+   batch, Muse's screen runs without speculation.
+4. **HF fast path:** eager attention, uncompiled, is the reference; the fast path is flex attention
+   for GPT-OSS (SDPA does not support its sinks; its sink-capable flash kernels need Hopper or
+   later) and SDPA for Qwen3.8 and Muse, compiled where Inductor can compile it (tried in order:
+   fused + compile, fused, eager; each attempt and its error recorded). The rung uses the
+   Amendment 6 ladder: replicate floor, bar max(0.05, 2 × floor), negative control above the bar.
+5. **Parity is distributional.** Seeded vLLM runs are not batch-invariant and speculation changes
+   the token path; batch-invariant mode is off. The parity rung: the first 64 H1_train scenarios
+   of the seeded order at §40's exact prompts (the ST render reproduces 264 of 264 of §40's prompt
+   shas; `data/s40_reference.json`, an engine reference only), 4 vLLM rollouts against §40's one,
+   paired scenario-bootstrap difference CIs for the protective share and each letter's share,
+   all including 0; the MDE is reported beside it.
+6. **Envelope guard in the vLLM worker:** every 4 finished requests, the projection from decoded
+   tokens per second with the pilot's 90th-percentile length as a prior for unfinished requests
+   (finished lengths alone underestimate: the first to finish are the short traces); the deadline
+   is the backstop for the pilot, which has no prior.
+7. **Pod envelope stops:** `VALIDATE=1` (the first real vLLM run: the GPT-OSS-20B smoke with and
+   without EAGLE3, the HF fast-path rung on the GPU, dry runs, slow gates) has its own watchdog at
+   0.3 A100-h; the real run's watchdog is 6.8 h. A watchdog stop kills the workers and touches
+   the sentinel, so the launcher downloads what was banked and tears the pod down.
+8. **Not yet built:** the training kernels of item 7 (flash attention, fused or chunked cross-entropy,
+   compile on the LoRA forward) belong to T0.6.
+
