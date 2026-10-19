@@ -958,3 +958,58 @@ scenario's actions are binomial at its dose-0 protect probability": that is the 
 null (Amendment 5), and a model with overdispersed actions would widen it; 25 against q95 14 is
 far enough above it that a plausible widening does not cross it, but this is not computed.
 
+
+#### G1 item 3: T1.3 feasibility read (zero GPU, 2026-10-19; vLLM v0.31.0 and transformers 5.17.0 source)
+
+1. **Constant additive vectors fold exactly into the MoE output bias.** The residual stream after
+   block `ℓ` (HF `hidden_states[ℓ+1]`) is the block's residual plus its MoE output. Both engines
+   weight each expert's output, bias included, by router weights that sum to 1 per token:
+   HF `GptOssExperts` computes `(gated @ down_proj[e] + down_proj_bias[e]) × routing_weights` with
+   a softmax over the top-4; vLLM's `MLPBlock` uses `FusedMoE(renormalize=True, has_bias=True,
+   apply_router_weight_on_input=False)`. Adding `v` to every expert's `down_proj_bias` in block `ℓ`
+   therefore adds exactly `v` to that block's output for every token (up to bf16 rounding of the
+   summed weights). The attention `o_proj` bias is not equivalent (the MLP of the same block would
+   see `v`, the residual at the block boundary would not carry it alone).
+2. **The fold goes into the checkpoint, not into the loaded engine.** On the A100's Marlin MXFP4
+   path vLLM casts each expert's `w2_bias` to bf16 and permutes it at load
+   (`prepare_moe_mxfp4_layer_for_marlin` → `marlin_permute_bias`), so a raw in-place edit of the
+   loaded parameter lands in the wrong coordinates. Per arm and strength: a copy of the checkpoint
+   directory with the one shard holding block `ℓ`'s `down_proj_bias` rewritten (the other shards
+   linked), served by vLLM with no hooks and CUDA graphs on; one engine load per arm
+   (~1–1.5 min at GPT-OSS's measured loads). The registered drafter sees steered hidden states;
+   speculation stays lossless but accepts less, and full-batch runs are non-speculative anyway
+   (5,977 vs 5,202 tok/s on the relaunch).
+3. **Scope of a fold.** A fold steers every position, the prompt included. §1's `constant` class is
+   "every generated token", so `care_const`, `harm` and the fill draws served by a fold are a
+   "prompt + trace" constant class; the gate's spec block names it that way, or the class is
+   redefined. (Keeping the prompt unsteered would need hooks.)
+4. **Matched controls across engines.** The gate rule compares a target's ΔP with `fill`'s at the
+   same position class. Folded arms (`care_const`, `harm`, fill draws) and hooked arms (`care` at
+   `onset`/`clause_end`, `self`) therefore need their own `fill` and their own `none` on their own
+   engine: folded fill against `care_const` on vLLM, hooked fill (3 draws) at the hooked class on
+   HF, and a `none` re-run on each engine (engine parity is distributional, so ΔP is read within
+   an engine).
+5. **Hooked arms stay on HF eager generation.** vLLM hooks were read and rejected for this gate:
+   tokens are flattened across requests in each step, `onset` needs each request's generated index
+   and `clause_end` the previous token's identity, CUDA graphs must be off, and `self` needs a
+   per-request source residual.
+6. **Why HF generation is slow (ST-A6), from the source.** transformers 5.17 asks for the
+   `grouped_mm` experts path by default; on an A100 (SM80) it needs torch ≥ 2.9
+   (`torch._grouped_mm`) or `torch.nn.functional.grouped_mm`. The HF stack is torch 2.6, so
+   GPT-OSS silently falls back to the per-expert `eager` loop, which matches rider (b)'s step time
+   linear in batch (20.3–20.6 ms per sequence-step at 33, 66 and 132). Three levers, each a probe:
+   `experts_implementation="batched_mm"` on torch 2.6; the HF model in the vLLM venv
+   (torch 2.13.0+cu129 with transformers 5.17.0 already installed), where `grouped_mm` dispatches
+   and the dense models' `torch.compile` errors (an API newer than torch 2.6) should also go; the
+   hub `MegaBlocksMoeMLP` kernel (`kernels`, `use_kernels=True`).
+7. **Cost model correction.** With step time linear in batch, padding every batch to its longest
+   trace wastes most of the work: the re-price's 9.1 A100-h is T1.3's 960 rollouts at batch 132.
+   At batch ≈ 1 the cost is ≈ 20 ms × generated tokens; the hooked arms after the fold (care at the
+   chosen class 160, self × 2 320, a hooked fill × 3 480 and an HF `none` 160, plus the
+   5-scenario sweep 160: ~1,280 rollouts × ~520 tokens) would cost ~3.8 A100-h on the eager loop
+   if 20 ms holds at batch 1, which is unmeasured below 33. Every lever in item 6 should cut it further.
+8. **Validation before T1.3 uses a fold (~0.1 A100-h).** (i) HF with the folded checkpoint vs HF
+   with a hook adding `v` at block `ℓ`'s output, all positions, 16 rows: equal within one bf16 step
+   (the fold's arithmetic); (ii) vLLM folded vs HF folded first-token log-probs, as steered minus
+   unsteered per engine: the difference of differences inside the HF-vs-vLLM band (0.25);
+   (iii) one folded generation batch with its parse rate.
