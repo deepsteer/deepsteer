@@ -146,6 +146,28 @@ class ReasoningFormat:
     def _is_blank(tok, i: int) -> bool:
         return tok.decode([i]).strip() == ""
 
+    # ---- trace bounds during generation (T0.7: position classes live inside the trace) ----------
+    def trace_open(self, tok, g: list[int]):
+        """The generated index where the trace's first token sits; None when the generation
+        carries no trace (a direct answer); "pending" while the opening is undecided. Default: the
+        template opens the reasoning block, so the trace starts at the first generated token."""
+        return 0
+
+    def trace_closes(self, tok, g: list[int]) -> bool:
+        """Whether the last generated id closes the trace (checked once per step)."""
+        raise NotImplementedError
+
+
+def _prefix_open(g: list[int], opens: tuple[int, ...], direct: tuple[int, ...]):
+    if tuple(g[: len(opens)]) == opens:
+        return len(opens)
+    if tuple(g[: len(direct)]) == direct:
+        return None
+    n = len(g)
+    if n < max(len(opens), len(direct)) and (tuple(g) == opens[:n] or tuple(g) == direct[:n]):
+        return "pending"
+    return None
+
 
 @dataclass(frozen=True)
 class ThinkTextFormat(ReasoningFormat):
@@ -154,6 +176,9 @@ class ThinkTextFormat(ReasoningFormat):
     tokens wholly before the marker's first character; it is empty when they decode to blank."""
 
     close: str = "</think>"
+
+    def trace_closes(self, tok, g):
+        return self.close in tok.decode(list(g[-8:]))
 
     def _locate(self, tok, g):
         text, ends = "", []
@@ -174,6 +199,9 @@ class ThinkTokenFormat(ReasoningFormat):
 
     close_id: int = -1
 
+    def trace_closes(self, tok, g):
+        return bool(g) and g[-1] == self.close_id
+
     def _locate(self, tok, g):
         if self.close_id not in g:
             return None
@@ -193,6 +221,12 @@ class ChannelFormat(ReasoningFormat):
     reason_end: int = -1
     answer_header: tuple[int, ...] = ()
     direct_open: tuple[int, ...] = ()
+
+    def trace_open(self, tok, g):
+        return _prefix_open(list(g), tuple(self.reason_open), tuple(self.direct_open))
+
+    def trace_closes(self, tok, g):
+        return bool(g) and g[-1] == self.reason_end
 
     def _locate(self, tok, g):
         n = len(self.direct_open)
@@ -229,6 +263,16 @@ class HarmonyFormat(ReasoningFormat):
             raise ValueError(f"harmony render takes no extra kwargs: {sorted(extra)}")
         # the registered date pin (§40's) wins over the session pin: prompt parity with §40
         return kh.render(tok, messages, self.harmony, effort)
+
+    def trace_open(self, tok, g):
+        import kdg_harmony as kh
+
+        return _prefix_open(list(g), kh.ANALYSIS_OPEN, kh.DIRECT_FINAL)
+
+    def trace_closes(self, tok, g):
+        import kdg_harmony as kh
+
+        return bool(g) and g[-1] == kh.END
 
     def _locate(self, tok, g):
         import kdg_harmony as kh
