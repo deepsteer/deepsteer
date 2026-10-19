@@ -211,7 +211,9 @@ def run(ctx) -> int:
         sc.unbatched = True
         rec.setdefault("anomaly_flags", []).append(
             "padded check failed or uncalibrated (Amendment 6): readouts unbatched")
-    rec["fast_path_rung"] = L.fast_path_rung(sc, probe, HF_FAST_ATTN[key])
+    rec["fast_path_rung"] = L.fast_path_rung(
+        sc, probe, HF_FAST_ATTN[key],
+        ref_floor=rec["padded_check"].get("noise_floor_replicate_unpadded"))
     t1 = time.time()
     L.read_ids(sc, probe, sc.bs(sc.read_batch))
     rec["read_seconds_per_row"] = (time.time() - t1) / len(probe)

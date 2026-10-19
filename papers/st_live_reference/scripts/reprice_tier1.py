@@ -138,10 +138,25 @@ def hf_gen_h(m: dict, n: int) -> float | None:
     return math.ceil(n / b) * steps * m["hf_step_s"] / 3600
 
 
+def gate_price(gm: dict) -> tuple[float, str]:
+    """T1.3 (960 rollouts, HF generate with hooks) from the HF probe, unless the probe ran on
+    uncompiled flex attention: that is a reference-speed kernel no arm would run (the relaunch's
+    GPT-OSS rung kept it under the candidate-floor bar, since replaced), so T1.3 keeps its plan
+    price (author, 2026-10-19)."""
+    rung = gm["rec"].get("fast_path_rung") or {}
+    h = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
+    if h is None:
+        return 1.5, "plan"
+    if rung.get("kept") == "fast" and rung.get("fast_impl") == "flex_attention":
+        return 1.5, "plan (probe ran on uncompiled flex attention, not a path of record)"
+    probes = (gm["rec"].get("hf_memory_probe") or {}).get("probes") or [{}]
+    return h, ("measured" if probes[0].get("warmed")
+               else "measured bound (cold-probe fix: warm 2n timing / 2n)")
+
+
 def price(m: dict, gate_m: dict | None = None) -> dict:
     """Both roles. ``gate_m``: the model whose HF probe prices the steering gate (GPT-OSS)."""
-    gm = gate_m or m
-    gate = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
+    gate = gate_price(gate_m or m)
     t = m["mean_tokens"]
     rb = read_rate(m)[1]
     dev = {
@@ -151,10 +166,7 @@ def price(m: dict, gate_m: dict | None = None) -> dict:
             (read_h(m, 264 * 8, t) + read_h(m, 264 * 8) + read_h(m, 132), rb),
         "T1.1 loads (vLLM + HF)": (m["load_h"], "measured"),
         "T1.2 AtP": FIXED["T1.2 AtP"],
-        "T1.3 steering gate 960 rollouts (HF generate with hooks)":
-            (gate if gate is not None else 1.5, "plan" if gate is None else "measured" if (
-                gm["rec"].get("hf_memory_probe") or {}).get("probes", [{}])[0].get("warmed")
-             else "measured bound (cold-probe fix: warm 2n timing / 2n)"),
+        "T1.3 steering gate 960 rollouts (HF generate with hooks)": gate,
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),

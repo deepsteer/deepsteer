@@ -299,12 +299,20 @@ def install_hooks(sc: Screen) -> None:
 
 
 def fast_path_rung(sc: Screen, id_lists: list[list[int]], fast_impl: str,
-                   compile_forward: bool = True) -> dict:
+                   compile_forward: bool = True, ref_floor: float | None = None) -> dict:
     """Amendment 7 items 4 and 7 (author): the fused HF readout (``fast_impl`` attention, then
     torch.compile of the forward) against the eager reference on the Amendment 6 ladder:
-    reference = eager attention, uncompiled, each row alone; replicate floor = the fast path's row
-    alone vs in a batch of identical copies; bar = max(0.05, 2 x floor); the fast path's
-    one-position-off read must exceed the bar against the reference (else uncalibrated).
+    reference = eager attention, uncompiled, each row alone; replicate floor = the REFERENCE's row
+    alone vs in a batch of ``read_batch`` identical copies (``ref_floor``: the padded check's
+    ``noise_floor_replicate_unpadded``, measured on the same rows; computed here if not given);
+    bar = max(0.05, 2 x that floor). A candidate passes iff its alone read is within the bar of
+    the reference, its own replicate floor is within the bar (it reads batched), and its
+    one-position-off read exceeds the bar against the reference (else uncalibrated).
+
+    The bar comes from the reference, never the candidate (author, 2026-10-19, after the relaunch:
+    with each candidate's own floor, uncompiled flex attention on GPT-OSS-20B passed at 1.84 nats
+    against a bar its own 2.28-nat floor had raised to 4.57, while flex + compile, floor 0.52,
+    failed at 1.45 against 1.05: the noisier path passed more easily).
 
     Attempts in order: fused + compile, fused without compile; the first attempt that runs and
     passes stays on. An attempt that raises (e.g. Inductor cannot compile a kernel) is recorded
@@ -315,6 +323,11 @@ def fast_path_rung(sc: Screen, id_lists: list[list[int]], fast_impl: str,
     torch = model.torch
     install_hooks(sc)
     ref, _ = read_ids(sc, id_lists, 1)
+    if ref_floor is None:
+        rep_ref = np.stack([read_ids(sc, [x] * sc.read_batch, sc.read_batch)[0][0]
+                            for x in id_lists])
+        ref_floor = float(np.abs(ref - rep_ref).max())
+    bar = max(MAX_NATS, FLOOR_FACTOR * ref_floor)
     orig_forward = model.model.forward
     attempts = [True, False] if compile_forward else [False]
     tried: list[dict] = []
@@ -334,12 +347,13 @@ def fast_path_rung(sc: Screen, id_lists: list[list[int]], fast_impl: str,
             tried.append(rec)
             continue
         floor = float(np.abs(fast - rep_).max())
-        bar = max(MAX_NATS, FLOOR_FACTOR * floor)
         meas = float(np.abs(fast - ref).max())
         neg = float(np.abs(off - ref).max())
-        rec.update(max_abs_nats=meas, noise_floor_replicate=floor, bar=bar,
-                   floor_factor=FLOOR_FACTOR, negative_control_one_position_off=neg,
-                   calibrated=neg > bar, ok=bool(neg > bar and meas <= bar))
+        rec.update(max_abs_nats=meas, noise_floor_replicate_reference=ref_floor,
+                   noise_floor_replicate_candidate=floor, bar=bar, floor_factor=FLOOR_FACTOR,
+                   negative_control_one_position_off=neg, calibrated=neg > bar,
+                   ok=bool(neg > bar and meas <= bar and floor <= bar),
+                   per_row=_per_row(ref=ref, fast=fast, fast_replicate=rep_, off=off))
         tried.append(rec)
         if rec["ok"]:
             return {**rec, "kept": "fast" + (" + compile" if comp else ""), "attempts": tried,
@@ -404,6 +418,7 @@ def padded_check(sc: Screen, id_lists: list[list[int]]) -> dict:
     floor = float(np.abs(alone - rep).max())
     bar = max(MAX_NATS, FLOOR_FACTOR * floor)
     meas = float(np.abs(alone - pa).max())
+    per_row = _per_row(alone=alone, composition_0=pa, composition_1=pb, replicate=rep, off=off)
     neg = float(np.abs(alone - off).max())
     calibrated = neg > bar
     lens = [len(x) for x in id_lists]
@@ -414,7 +429,19 @@ def padded_check(sc: Screen, id_lists: list[list[int]]) -> dict:
             "bar": bar, "kdg_bar": MAX_NATS, "floor_factor": FLOOR_FACTOR,
             "negative_control_one_position_off": neg, "calibrated": calibrated,
             "ok": bool(calibrated and meas <= bar), "batch": sc.read_batch,
-            "length_range": [min(lens), max(lens)]}
+            "length_range": [min(lens), max(lens)], "lengths": lens, "per_row": per_row}
+
+
+def _per_row(**reads: np.ndarray) -> dict:
+    """Per-row evidence behind a check's maxima (author, 2026-10-19: an extremum over rows needs
+    its rows): the first read's letter log-probs (rows x letters), then each other read's per-row
+    max |difference| from it, so a floor driven by one row, or by letters deep in the tail, is
+    visible from the saved record."""
+    (k0, base), *rest = reads.items()
+    out = {f"letter_logprobs_{k0}": np.round(base, 4).tolist()}
+    for k, v in rest:
+        out[f"max_abs_vs_{k0}_{k}"] = np.round(np.abs(v - base).max(axis=1), 4).tolist()
+    return out
 
 
 def fwd_vs_gen(sc: Screen, id_lists: list[list[int]]) -> dict:

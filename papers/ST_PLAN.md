@@ -861,3 +861,18 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
 8. **Not yet built:** the training kernels of item 7 (flash attention, fused or chunked cross-entropy,
    compile on the LoRA forward) belong to T0.6.
 
+9. **Rung bar and re-price riders (author, 2026-10-19, during the relaunch; zero GPU; before any
+   recompute).** On the relaunch, GPT-OSS-20B's rung measured each candidate against a bar set by
+   that candidate's own replicate floor: flex attention + compile (floor 0.52, measured 1.45, bar
+   1.05) failed, uncompiled flex attention (floor 2.28, measured 1.84, bar 4.57) passed and was
+   kept, so the noisier and slower path passed more easily. (a) The rung's bar is
+   max(0.05, 2 × the eager reference's unpadded replicate floor) (the padded check's, on the same
+   rows), and a candidate also needs its own replicate floor within that bar, since it reads
+   batched. (b) The T1.3 steering-gate price comes from the HF probe only when the probe ran on a
+   path an arm would run; the relaunch's GPT-OSS probe ran on uncompiled flex attention (2.68 s
+   per step at batch 132, about 9 h for T1.3), so T1.3 keeps its plan price (1.5) until an eager
+   or compiled probe exists. (c) The padded check and the rung save per-row evidence (letter
+   log-probs of the reference read, per-row max differences for each comparison, row lengths), so
+   an extremum such as GPT-OSS's 2.79-nat eager floor this run (0.43 at VALIDATE, 16 rows vs 8) can
+   be traced to its rows. Qwen3.8 and Muse in this relaunch ran the old rung; their kept paths
+   are re-read under (a) from their records before any of their readouts is used.

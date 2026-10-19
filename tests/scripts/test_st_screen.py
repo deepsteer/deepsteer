@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import types
 from pathlib import Path
 
 import numpy as np
@@ -99,6 +100,12 @@ def test_padded_defect_switches_to_unbatched(tmp_path):
     assert not pc["ok"] and pc["calibrated"] and rec["unbatched"]
     assert pc["noise_floor_replicate_unpadded"] < 0.05 < pc["max_abs_nats"]
     assert any("KDG-A20" in f for f in rec["anomaly_flags"])
+    # per-row evidence behind the maxima is saved (author rider (c), 2026-10-19)
+    pr = pc["per_row"]
+    assert len(pr["letter_logprobs_alone"]) == pc["n"] == len(pc["lengths"])
+    assert max(pr["max_abs_vs_alone_composition_0"]) == pytest.approx(pc["max_abs_nats"], abs=1e-3)
+    assert max(pr["max_abs_vs_alone_replicate"]) == pytest.approx(
+        pc["noise_floor_replicate_unpadded"], abs=1e-3)
     t = json.loads((out / "timing.json").read_text())
     assert t["screen"]["batch"] == 1 and t["pilot"]["batch"] == 1
 
@@ -234,6 +241,12 @@ def test_reprice_counts_screen_rollouts_once(tmp_path):
     assert RP.hf_step(cold) == pytest.approx(0.1)
     cold["probes"][1]["warmed"] = True
     assert RP.hf_step(cold) == pytest.approx(0.001)
+    # T1.3 never priced from a probe on uncompiled flex attention (author rider (b), 2026-10-19)
+    gm = dict(g, hf_step_s=2.68, hf_batch=132, lens=[1536] * 64, rec=dict(
+        g["rec"], fast_path_rung={"kept": "fast", "fast_impl": "flex_attention"}))
+    assert RP.gate_price(gm)[0] == 1.5 and RP.gate_price(gm)[1].startswith("plan")
+    gm["rec"]["fast_path_rung"] = {"kept": "eager"}
+    assert RP.gate_price(gm)[0] > 1.5  # the same probe on eager is used as measured
     r = subprocess.run([sys.executable, str(SCRIPTS / "reprice_tier1.py"), "--screen-dir",
                         str(tmp_path), "--session-h", "1.0"], capture_output=True, text=True,
                        cwd=ROOT)
@@ -358,6 +371,57 @@ def test_parity_prompts_are_section40s_exact_prompts():
     jobs, ids = SV.parity_jobs(sc, ctx)  # raises on any sha mismatch (not a dry run)
     assert len(ids) == 64 and len(jobs) == 256
     assert not set(ids) & set(json.loads(P.SPLIT.read_text())["H1_held"])
+
+
+def test_rung_bar_comes_from_the_reference_floor(tmp_path, monkeypatch):
+    # most probable failure (the relaunch's GPT-OSS rung): the bar is raised by the candidate's
+    # own replicate floor, so a noisier fused path passes more easily than a cleaner one
+    # (uncompiled flex: floor 2.28, measured 1.84, passed; compiled: floor 0.52, 1.45, failed)
+    rng = np.random.default_rng(0)
+    base = rng.normal(-5, 1, (16, 5))
+    state = {"impl": "eager"}
+
+    class FakeHF:
+        def set_attn_implementation(self, impl):
+            state["impl"] = impl
+
+        def forward(self, *a, **k):
+            return None
+
+    def fake_compile(f, dynamic):
+        def g(*a, **k):
+            return f(*a, **k)
+        g.compiled = True
+        return g
+
+    hf = FakeHF()
+    model = types.SimpleNamespace(model=hf, torch=types.SimpleNamespace(compile=fake_compile))
+    sc = types.SimpleNamespace(dry=False, model=model, read_batch=16)
+
+    def fake_read(sc_, id_lists, batch):
+        # the relaunch's numbers: candidates offset from the reference, their batch jitter on top;
+        # the one-position-off control (one id shorter) far away
+        comp = getattr(hf.forward, "compiled", False)
+        out = []
+        for x in id_lists:
+            r = base[x[0]].copy() + (26.0 if len(x) == 2 else 0.0)
+            if state["impl"] != "eager":
+                r += (1.45 if comp else 1.84) + (0.0 if batch == 1 else 0.52 if comp else 2.28)
+            elif batch > 1:
+                r += 0.43
+            out.append(r)
+        return np.stack(out), None
+
+    monkeypatch.setattr(L, "read_ids", fake_read)
+    monkeypatch.setattr(L, "install_hooks", lambda sc_: None)
+    ids = [[k, 0, 0] for k in range(16)]
+    r = L.fast_path_rung(sc, ids, "flex_attention", ref_floor=0.43)
+    assert r["attempts"][0]["bar"] == pytest.approx(0.86)  # 2 x the reference floor, not 2 x 0.52
+    assert not r["attempts"][0]["ok"]  # compiled: 1.45 > 0.86
+    # uncompiled: 1.84 > 0.86 and its own floor 2.28 > 0.86 -> fails; the model stays eager
+    assert r["kept"] == "eager" and state["impl"] == "eager"
+    assert all(a["noise_floor_replicate_reference"] == 0.43 for a in r["attempts"])
+    assert len(r["attempts"][1]["per_row"]["max_abs_vs_ref_fast"]) == 16
 
 
 @pytest.mark.slow

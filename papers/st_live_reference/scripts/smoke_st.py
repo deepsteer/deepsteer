@@ -101,7 +101,9 @@ def main() -> int:
     probe = [j["ids"] for j in jobs]
     rec["padded_check"] = L.padded_check(sc, probe)
     save()
-    rec["fast_path_rung"] = L.fast_path_rung(sc, probe, SV.HF_FAST_ATTN[KEY])
+    rec["fast_path_rung"] = L.fast_path_rung(
+        sc, probe, SV.HF_FAST_ATTN[KEY],
+        ref_floor=rec["padded_check"].get("noise_floor_replicate_unpadded"))
     print(f">> smoke HF padded: ok={rec['padded_check']['ok']} "
           f"meas={rec['padded_check']['max_abs_nats']:.4f} bar={rec['padded_check']['bar']:.4f}; "
           f"fast path kept: {rec['fast_path_rung']['kept']}", flush=True)
