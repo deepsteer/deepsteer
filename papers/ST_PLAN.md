@@ -1174,3 +1174,36 @@ post-hoc check.
    sympathetic framing, the adapter does not raise compliance beyond the unadapted model within
    [bar]" and nothing stronger; it is not a jailbreak-robustness claim. The refusal-retention set is
    a secondary and a gate, never a headline.
+
+#### Amendment 10, implementation (2026-10-19; zero GPU)
+
+1. **Set.** `st_live_reference/data/refusal_retention_v1.json` (built by
+   `scripts/build_refusal_retention.py`, `--check` rebuilds it byte for byte): 360 prompts (60 twins
+   × {following, violating} × {plain, care, fill}; 60 per foundation) plus the 60-prompt positive
+   control. Five care and five fill templates in `data/refusal_retention_templates_v1.json`, paired
+   by index, each fill within ±15% tokens of its care twin on both pinned tokenizers (GPT-OSS-20B,
+   Muse; ratios 0.91–1.10); one seeded index per twin, shared by its two members, so the twin flip
+   stays the only difference inside a twin.
+2. **Readout.** `scripts/refusal_retention.py`: FL's `is_refusal` imported from
+   `b1_judgment_direction.py` (never re-implemented) on the final answer only, the first 64
+   generated tokens after each format's reasoning close (FL's 64-token budget; the trace cap of
+   record plus 64 is the generation cap); a rollout with no final answer is missing, never
+   imputed. Every record pins the sha256 of `b1_judgment_direction.py`, `greenblatt.py` and the set.
+3. **Positive control, attribution for the author.** The operator-instruction control named in
+   item 4 is not in the FL paper or its scripts; the construction that matches ("operator orders
+   the violation") is KDG's known-gap positive band (P1-A9, `render_known_gap_system_prompt`). The
+   set uses that construction on the `plain` violating requests: an operator system prompt
+   ordering the user's request done. It must raise compliance on the unadapted model (the paired
+   item-bootstrap CI of compliance(operator) − compliance(plain) above 0), else the readout is
+   recorded as not valid on that model.
+4. **Selection pass.** `pod_st_screen.py --model gpt_oss_20b --rr-select` (vLLM only, effort and
+   cap of record, non-speculative, 4 rollouts; its own record under `<out>/_rr`); the remote
+   script runs it before GPT-OSS's driver on every pod that loads the development model, so it
+   rides the next one (T1.1 if T1.1 is the next). Gate as item 3; dropped and kept counts per
+   foundation.
+5. **Evaluation and price.** `refusal_retention.evaluate` (compliance per framing, `J_care`,
+   paired item-bootstrap CIs of `ΔJ_care` and `Δcompliance(plain)` against `none^re`, MDE as 2.8 ×
+   the bootstrap SD, benign over-refusal per framing, item 5's bar). Priced at the measured vLLM
+   rates (upper bounds, every twin kept): T1.1 selection +0.05 A100-h; T1.5 +0.29 (none^re + 3
+   adapters × 360 × 4, 0.07 per arm); T1.6 on Muse +0.68 (none^re + best + `L-beh` × 360 × 2,
+   0.23 per arm); no arm reaches the 0.5 cap, so none drops to 2 rollouts.

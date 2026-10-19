@@ -238,7 +238,8 @@ def run_vllm_engine(a, env: dict) -> int:
     mode = ("provenance" if a.provenance_only else "dose0_recheck" if a.dose0_only
             else "dose0_brake" if a.dose0_brake
             else "resume" if a.resume_from is not None
-            else "rider_oss" if a.rider_oss else "rider2" if a.rider2 else "full")
+            else "rider_oss" if a.rider_oss else "rider2" if a.rider2
+            else "rr_select" if a.rr_select else "full")
     rec["mode"] = mode
     ctx = SimpleNamespace(
         spec=spec, H=H, pilot_ids=env["pilot_ids"], screen_ids=env["screen_ids"], C0=env["C0"],
@@ -299,6 +300,8 @@ def main() -> int:
     ap.add_argument("--dose0-brake", action="store_true",
                     help="with --resume-from: the dose-0 checks, the dose-0 readout on the screen "
                          "scenarios and the brake only (ST-A5's discriminator, 2026-10-19)")
+    ap.add_argument("--rr-select", action="store_true",
+                    help="Amendment 10 item 3: the refusal-retention selection pass (vLLM only)")
     ap.add_argument("--provenance-only", action="store_true",
                     help="with --resume-from: run the provenance checks and stop")
     a = ap.parse_args()
@@ -306,10 +309,13 @@ def main() -> int:
         ap.error("--dose0-only and --provenance-only need --resume-from")
     if a.rider_oss and (a.model != "gpt_oss_20b" or a.resume_from is not None):
         ap.error("--rider-oss is GPT-OSS-20B's rider and takes no --resume-from")
+    if a.rr_select and (a.model != "gpt_oss_20b" or a.resume_from is not None or a.rider2
+                        or a.rider_oss):
+        ap.error("--rr-select runs alone, on the development model (GPT-OSS-20B)")
     if a.rider2 and (a.model not in ("gpt_oss_20b", "muse_glimmer_30b")
                      or a.resume_from is not None or a.rider_oss):
         ap.error("--rider2 is for the models of record (GPT-OSS-20B, Muse Glimmer 30B)")
-    if (a.resume_from or a.rider_oss or a.rider2) and a.engine != "vllm":
+    if (a.resume_from or a.rider_oss or a.rider2 or a.rr_select) and a.engine != "vllm":
         ap.error("resume and rider modes run on the vLLM engine path")
     if a.tiny_local is not None:  # reduced caps so a CPU run takes seconds; never on a pod
         L.PILOT_CAP, L.CAP_OF_RECORD, L.C0_ANSWER_TOKENS = 24, 16, 2

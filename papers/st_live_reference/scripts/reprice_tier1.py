@@ -188,6 +188,20 @@ def gate_price(gm: dict) -> tuple[float, str]:
                else "measured bound (cold-probe fix: warm 2n timing / 2n)")
 
 
+RR_PROMPTS, RR_SELECT_PROMPTS, RR_ANSWER, RR_ARM_CAP = 360, 180, 64, 0.5
+
+
+def rr_h(m: dict, prompts: int, rollouts: int, arms: int) -> tuple[float, str]:
+    """Amendment 10 (author, 2026-10-19): refusal-retention generation at the model's measured
+    vLLM rate, the answer budget on top of the mean tokens to the answer, one engine load per
+    arm; an arm over 0.5 A100-h drops to 2 rollouts. Upper bound: every twin kept."""
+    def arm(r: int) -> float:
+        return prompts * r * (m["mean_tokens"] + RR_ANSWER) / max(m["tps"], 1e-9) / 3600 \
+            + m["load_h"]
+    r = rollouts if arm(rollouts) <= RR_ARM_CAP else 2
+    return arms * arm(r), f"measured rate; {r} rollouts x {arms} arm(s); upper bound (60 kept)"
+
+
 def price(m: dict) -> dict:
     """Both roles; the steering gate from the model's own HF probe (else its plan price)."""
     gate = gate_price(m)
@@ -199,6 +213,8 @@ def price(m: dict) -> dict:
         "T1.1 readout pass (post-reasoning 2,112 + dose-0 2,112 + judgment 132)":
             (read_h(m, 264 * 8, t) + read_h(m, 264 * 8) + read_h(m, 132), rb),
         "T1.1 loads (vLLM + HF)": (m["load_h"], "measured"),
+        "T1.1 refusal-retention selection (Amendment 10: 60 x {plain, care, operator} x 4)":
+            rr_h(m, RR_SELECT_PROMPTS, 4, 1),
         "T1.2 AtP": FIXED["T1.2 AtP"],
         "T1.3 steering gate 960 rollouts (HF generate with hooks)": gate,
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
@@ -207,6 +223,8 @@ def price(m: dict) -> dict:
         "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3)":
             (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * 3), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
+        "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
+            rr_h(m, RR_PROMPTS, 4, 4),
     }
     second = {
         "T1.6 generation (60 x 2 top-up, 100 x 6, 100 x 6 x 2, none re-run) (vLLM)":
@@ -217,6 +235,8 @@ def price(m: dict) -> dict:
         "T1.6 loads": (2 * m["load_h"], "measured"),
         "T1.6 training (2 QLoRA adapters)": FIXED["T1.6 training (2 QLoRA adapters)"],
         "T1.6 direction riders": FIXED["T1.6 direction riders"],
+        "T1.6 refusal-retention (Amendment 10: none^re + best + L-beh x 360 x 2)":
+            rr_h(m, RR_PROMPTS, 2, 3),
     }
     return {"development": dev, "second_family": second,
             "development_total": sum(v[0] for v in dev.values()),

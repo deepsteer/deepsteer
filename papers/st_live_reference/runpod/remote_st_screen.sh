@@ -202,9 +202,13 @@ dry_runs() {
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rider" $(mode_args "$m" "$OUT/_dry") \
         || { echo "DRY RUN FAILED ($m, rider mode)"; return 1; }
     fi
+    if [ "$m" = "gpt_oss_20b" ]; then  # Amendment 10's selection pass rides every GPT-OSS pod
+      $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rr" --rr-select \
+        || { echo "DRY RUN FAILED ($m, refusal-retention selection)"; return 1; }
+    fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -278,6 +282,13 @@ rider2_after() {
 
 RC_ALL=0
 for m in $MODELS; do
+  if [ "$m" = "gpt_oss_20b" ]; then
+    # Amendment 10 item 3 (author, 2026-10-19): the refusal-retention selection pass rides the
+    # first pod that loads the development model after the amendment; vLLM only, its own record
+    echo "==================== $OUT_SUB/_rr/gpt_oss_20b (refusal-retention selection) ===================="
+    $PY $S --model gpt_oss_20b --date-pin "$DATE_PIN" --out "$OUT/_rr" --rr-select \
+      || echo "WARN: refusal-retention selection failed (recorded; the session continues)"
+  fi
   echo "==================== $OUT_SUB/$m ===================="
   $PY $S --model "$m" --date-pin "$DATE_PIN" --out "$OUT" $(mode_args "$m" "$BANKED"); rc=$?
   echo ">> $m exit $rc (0 ok, 2 gate failed, 3 envelope stop; banked either way)"

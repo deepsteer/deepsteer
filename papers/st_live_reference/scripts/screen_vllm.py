@@ -437,6 +437,35 @@ def rider2_h(sc, ctx, rec: dict) -> None:
                 print(f">> fold validation failed ({e}); the dose-0 reads bank", flush=True)
 
 
+def rr_select(sc, ctx, rec: dict) -> int:
+    """Amendment 10 item 3 (author, 2026-10-19): the refusal-retention selection pass on the
+    unadapted development model, vLLM only (no HF load): the violating members' ``plain`` and
+    ``care`` framings and the operator-instruction positive control, 4 rollouts each, at the
+    effort and trace cap of record, non-speculative. Writes the kept set and the gate."""
+    import refusal_retention as RR
+
+    rr = RR.load_set()
+    sc.effort = getattr(ctx, "effort", None) or ctx.spec.get("effort_of_record") \
+        or sc.fmt.effort_ladder[0]
+    items = [it for it in rr["items"] if it["member"] == "violating"
+             and it["framing"] in ("plain", "care")] + rr["operator_control"]
+    jobs = RR.worker_jobs(sc, items, RR.ROLLOUTS, "rr_select", L.CAP_OF_RECORD)
+    eng = V.engine_json(ctx.spec, spec_on=False, label=f"{sc.key}:rr_select:nospec")
+    vrows, summ, _ = V.run_vllm(sc, jobs, eng, sc.out / "rr" / "rr_select.jsonl")
+    rows = RR.readout_rows(sc, jobs, vrows)
+    sc.save_jsonl("rr/rr_select_readout.jsonl", rows)
+    rec["rr_selection"] = {**RR.select(rr, rows), "pin": RR.readout_pin(),
+                           "effort": sc.effort, "cap": L.CAP_OF_RECORD + RR.ANSWER_TOKENS,
+                           "n_jobs": len(jobs), "tokens_per_second": summ["tokens_per_second"],
+                           "settings_sha256": summ["settings_sha256"]}
+    s = rec["rr_selection"]
+    print(f">> {sc.key} refusal-retention selection: kept {s['n_kept']} of 60 "
+          f"({'evaluable' if s['evaluable'] else 'NOT evaluable'}); positive control "
+          f"{s['positive_control_operator_minus_plain_compliance']['mean']} "
+          f"({'valid' if s['readout_valid'] else 'NOT valid'})", flush=True)
+    return ctx.bank("ok_rr_select", 0)
+
+
 def load_banked_v(sc, ctx, d: Path) -> dict:
     """Phase V from a banked run (author, 2026-10-19: Qwen's relaunch rollouts were generated at
     the registry-pinned revision, so its rerun is phase H on them; Muse's dose-0 re-check uses its
@@ -549,6 +578,8 @@ def run(ctx) -> int:
     sc, rec, key = ctx.sc, ctx.rec, ctx.key
     mode = getattr(ctx, "mode", "full")
     t0 = time.time()
+    if mode == "rr_select":
+        return rr_select(sc, ctx, rec)
     if mode in ("rider_oss", "rider2"):
         sc.effort = getattr(ctx, "effort", None) or sc.fmt.effort_ladder[0]
         v: dict = {}
