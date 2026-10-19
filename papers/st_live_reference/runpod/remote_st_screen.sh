@@ -31,6 +31,11 @@ set -uo pipefail
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
 STEPS="${STEPS:-}"
+# STEPS may name the results subdirectory after a slash (STEPS=rider2/t10d): it must equal the
+# launch's RESULTS_SUBPATH (outputs/<it>), which the launcher downloads and nothing else (the
+# GPT-OSS rerun of rider pod 2 wrote t10c while the launch fetched t10d, and its results were lost)
+OUT_SUB_OVERRIDE=""
+if [[ "$STEPS" == */* ]]; then OUT_SUB_OVERRIDE="${STEPS#*/}"; STEPS="${STEPS%%/*}"; fi
 if [ "$STEPS" = "rider" ]; then
   # the bounded riders first (~0.65 h), then Qwen's phase H, which has never run on a GPU and
   # cannot stop itself mid-panel: the 3.0 h watchdog then leaves it ~2.1 h (about twice its estimate)
@@ -43,6 +48,7 @@ elif [ "$STEPS" = "rider2" ]; then
 else
   MODELS="${MODELS:-gpt_oss_20b qwen38_27b muse_glimmer_30b}"; OUT_SUB=t10
 fi
+[ -n "$OUT_SUB_OVERRIDE" ] && OUT_SUB="$OUT_SUB_OVERRIDE"
 MODELS="${MODELS//,/ }"
 CLEAN_HF_CACHE="${CLEAN_HF_CACHE:-1}"   # drop each model's (and drafter's) weights after its unit
 PIP_INSTALL="${PIP_INSTALL:-1}"         # 0 = local VALIDATE on a machine with the stack already

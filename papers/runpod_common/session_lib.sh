@@ -71,6 +71,16 @@ rp_require_disk() {
 rp_download() {
   local src="$1" dst="$2" tries="${DOWNLOAD_TRIES:-5}" k rc=1 free
   mkdir -p "$dst"
+  # a missing remote results directory is a mismatch between the remote script and the launch,
+  # not an empty run: keep the pod so the results can be fetched by hand (2026-10-19: rsync
+  # reported an empty file list, returned success, and the pod was terminated with its results)
+  if ! ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -d '$src'"; then
+    echo "ERROR: remote results directory $src does not exist; KEEPING the pod."
+    ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "ls -d '$(dirname "$src")'/*/ 2>/dev/null" \
+      | sed 's/^/   remote has: /'
+    KEEP_POD=1
+    return 1
+  fi
   for ((k = 1; k <= tries; k++)); do
     free="$(rp_free_gb "$dst")"
     if [ "${free:-0}" -lt 5 ]; then
