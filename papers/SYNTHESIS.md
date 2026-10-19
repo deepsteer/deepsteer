@@ -1118,3 +1118,17 @@ model too (Muse 0.375 nats; ST-A3 leaning toward a stack property rather than Mo
 readouts of record are single-row on every model. Re-priced Tier 1: GPT-OSS development plus
 either second family is about 15.6–15.8 A100-h cumulative of the 35-hour envelope.
 
+**Rider pod (2026-10-19), what changed.** Positive voice first: **two of the three reasoning
+families measured on the same screen instrument brake, and one deliberates the other way: Muse
+Glimmer 30B's reasoning lowers its protective share by 0.31 [0.24, 0.39] against its own forced
+dose-0 answer (dose-0 regime now of record; forward and generation agree to the bit when both read
+one row), GPT-OSS-20B's by 0.22 (§40), and Qwen3.8-27B's raises it by 0.08 [0.02, 0.15] with 8 of
+60 scenarios engaged, below its no-brake null (ST-A5).** The second family therefore has one
+braking candidate measured end to end (Muse); Qwen is either the panel's non-braker or a case
+where `enable_thinking=False` is a mode switch rather than a dose (ST-A5's discriminator). The
+readout floor that drove single-row pricing was read at a tail position (letters at −45 nats on
+GPT-OSS); at the dose-0 position the batch jitter is ≈ 0.25 nats on both dense models and HF vs
+vLLM is ≈ 0.25, the size of one bf16 step of a large logit (ST-A3, fp32-head discriminator
+priced). T1.3 on HF generation measures ~9 A100-h for GPT-OSS (ST-A6), the largest Tier-1 line;
+spent so far 5.26 A100-h, GPT-OSS + Muse ~25 of 35.
+

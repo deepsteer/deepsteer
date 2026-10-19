@@ -1145,6 +1145,26 @@ the relaunch: eager floor 2.79 nats over 16 rows (0.43 over 8 rows at VALIDATE, 
 type); the record keeps only the maximum, so whether one row drives it is unknown (per-row arrays
 are saved from now on, Amendment 7 implementation item 9). **Status:** leaning R_b on one dense
 model; the Qwen rerun gives the second floor and per-row arrays at the same position.
+**Rider pod read (2026-10-19, `outputs/t10b`, per-row arrays).** (1) The floor's position is a
+tail position: at the end of the generation prompt GPT-OSS's letter log-probs sit at −42 to −49
+nats (Qwen −6 to −18), and GPT-OSS's 2.79 is one row (others 0.14–0.58, one 1.33). A floor
+measured where the letters carry no mass is not the floor of a readout of record. (2) At a
+position of record (the dose-0 letter position, letters at −0.01 to −11.7), the batched-vs-alone
+difference (Amendment 8's post-hoc column, batch 8–16 vs alone) is 0.249 on Muse and 0.249 on Qwen,
+and HF-forward vs vLLM is 0.235 (Muse) and 0.250 (Qwen). Four maxima at 0.25, and Muse's per-row
+tail floors fall on multiples of 1/16 (0.125, 0.1875, 0.25, 0.375). The simplest model: bf16
+rounding of the logits (spacing 0.125 at |logit| 16–32, 0.25 at 32–64), so any change of
+accumulation order moves a large logit by one or two steps; the jitter is in the output
+precision, not in the computation, and it is the same in a dense model (R_b, generalized:
+precision, not MoE). Qwen's tail-position values are not all on that grid (0.080, 0.157, 0.274),
+so the model is not complete there. **Discriminator (new, cheap):** the same checks with the
+final norm and LM head in fp32 (minutes on any loaded model): a floor that drops to ~0.01 at the
+position of record confirms the precision reading and makes batched readouts admissible at the
+0.05 bar; a floor that stays ~0.25 sends the jitter back into the network. **Status:** R_a (MoE
+routing) no longer needed to explain the floor; precision reading leading, discriminator priced.
+**Scope of the relaunch's rung verdicts:** every floor and bar of the padded check and the rung
+was read at the tail position, so the kept fast paths (GPT-OSS flex + compile under a 5.58 bar)
+are validated there only; a re-read at the dose-0 position is part of the discriminator above.
 **Thesis impact.** Either reading: on GPT-OSS a batched readout carries about half a nat of batch-dependent jitter, so readouts of record should be read one row at a time with one fixed implementation across every arm (author decision pending). R_a also scopes KDG-A21 as an MoE property rather than a harness defect.
 
 ## ST-A4 (ledger) — Muse Glimmer 30B's dose-0 forward-vs-generation check fails at 0.25 nats against the 0.05 bar, below its own 0.375-nat batch floor
@@ -1154,8 +1174,36 @@ model; the Qwen rerun gives the second floor and per-row arrays at the same posi
 **Type.** control misbehaviour (a check whose bar predates Amendment 6's recalibration and whose two sides differ in batch size).
 **Competing readings.** R_a (instrument): the 0.25 nats is batch jitter; forward and generation read alone agree within 0.05. R_b (real): the empty-reasoning prefill takes a different path through generation than through the teacher-forced forward (e.g. cache or sliding-window handling at the channel boundary), so forced dose-0 readouts do not equal what the model would generate.
 **Discriminator.** Forward alone vs generation alone on the same 16 rows (like with like, bar 0.05): one Muse load, about 0.25 A100-h with download, and it can share the Qwen rerun pod. A zero-GPU partial: the Amendment 6 ladder applied to this check (bar 2 × 0.375 = 0.75) passes on saved data, but that is a post-hoc fork and needs its amendment first.
-**Status.** open; the discriminator is priced for the Qwen rerun pod (author decision at G1).
+**Status.** resolved (2026-10-19, rider pod, `outputs/t10b/muse_glimmer_30b`): R_a. Forward
+alone vs HF generation alone on the same 16 rows: 0.000 nats on every row (Amendment 8 gate,
+bar 0.05). The relaunch's 0.25 was the batch jitter its batched forward carried (the post-hoc
+column reproduces it: 0.249 against max(0.05, 2 × 0.375)). Muse's empty-reasoning candidate passes
+every dose-0 check (letter mass 0.983, C0 0.719 against 0.633, known-gap band) and is of record;
+its brake leaves descriptive status (Amendment 8 item 2). resolution_type: experiment.
 **Thesis impact.** R_a: Muse has a valid dose-0 regime and a measured brake of −0.31 on 60 screened scenarios (not comparable in size with GPT-OSS's −0.224 until both are read on the same scenarios and readout); it competes for the second-family role on the same criteria as Qwen. R_b: Muse's forced dose-0 readouts are not its generation behaviour; it can take the second-family role only on reasoned-arm endpoints, or Qwen takes it.
 
 **Process ledger 2026-10-19 — Muse's compiled readout path raised `NameError: name 'torch' is not defined`.** The rung's first attempt (SDPA + torch.compile) raised inside compilation; the rung recorded it and kept uncompiled SDPA (measured 0.31 nats against bar 0.75; under item 9's reference-floor rule the bar is the same 0.75, since the eager floor equals the candidate's, 0.375, and it still passes). Uncompiled SDPA read 16 rows alone in 1.96 s (0.12 s per row), the single-row rate the re-price uses. The traceback is not in the log, so the cause is not established. No numeric effect.
+
+## ST-A5 (ledger) — Qwen3.8-27B deliberates toward protection: whole-set brake +0.083 [0.020, 0.146], 8 brake-engaged scenarios against a no-brake null q95 of 18
+
+**Date.** 2026-10-19 (rider pod, `outputs/t10b/qwen38_27b/screen_record.json`; phase H on the relaunch's banked 60 × 4, effort medium).
+**Observation.** Dose-0 regime of record (`enable_thinking=False`: letter mass 1.000, C0 0.844 against 0.740, forward vs generation 0.000). P_reasoned 0.696 [0.604, 0.783], P_dose0 0.612 [0.558, 0.668], B = +0.083 [0.020, 0.146] (MDE 0.090). Engaged (P_dose0 ≥ 0.5 and P_none ≤ 0.5): 8 of 60, below the no-brake null (mean 13.8, q95 18). On the same screen instrument Muse's B is −0.314 [−0.393, −0.239] and GPT-OSS's (§40, n = 258) −0.224.
+**Type.** sign flip (family exception).
+**Competing readings.** R_a (model): Qwen3.8's reasoning raises its protective share on H1; its post-training installs no deliberation brake, so it is a natural negative control for the ST mechanism. R_b (regime): `enable_thinking=False` is not Qwen's dose 0 in the sense the other models' prefills are: the template switch changes the conversation mode (a distinct trained no-think behaviour) rather than cutting deliberation at zero length, so B compares two modes, not two doses.
+**Discriminator.** A forced empty think block under thinking-on (`</think>` prefilled at zero trace length; a new dose-0 candidate, not one the format registers today) on the same 60 scenarios, through the same dose-0 checks: B near +0.08 → R_a; B moving toward the panel's negative values → R_b. About 0.3 A100-h with one Qwen load, plus the candidate's local format tests.
+**Status.** open; not on the critical path (Qwen does not meet criterion (ii) under either reading).
+**Thesis impact.** R_a: the brake is not universal across reasoning families; ST's second-family replication needs a braking family (Muse), and Qwen becomes the panel's documented non-braker, which sharpens what the intervention claims. R_b: the dose-0 construction is a per-family instrument choice that can flip a brake's sign, and the KDG dose-0 arm needs a cross-family construction audit.
+**Note (criterion (i)'s sign).** Amendment 5's criterion (i) reads "CI excluding 0" and is coded that way; Qwen's positive B satisfies it literally. Its verdict is the same under a directional reading because (ii) fails; the sign is an author item at G1.
+
+## ST-A6 (ledger) — GPT-OSS-20B's HF generation costs ~20 ms per sequence-step at every batch: the steering gate (T1.3) prices at 9.1 A100-h, against a plan of 1.5
+
+**Date.** 2026-10-19 (rider (b), `outputs/t10b/gpt_oss_20b/screen_record.json`, eager attention, uncompiled, bf16).
+**Observation.** Decode step 0.680 s at batch 33, 1.348 at 66, 2.686 at 132 (peaks 49 / 57 / 72 GB): linear in batch, ~20.4 ms per sequence-step, so batching buys nothing. Uncompiled flex attention on the relaunch: 2.683 s at 132 (the same). T1.3's 960 rollouts at the cap: 9.1 A100-h. `kernels` (the hub MoE kernels) was absent on both pods.
+**Type.** control behaviour (a cost floor the plan did not model).
+**Competing readings.** R_a: HF's GPT-OSS MoE runs a per-token expert loop in bf16 (dequantized MXFP4), so step time scales with tokens, not batches; the hub MoE kernels or grouped GEMM would remove most of it. R_b: the attention path dominates (sinks, eager or flex without compile), and MoE kernels would not help.
+**Discriminator.** One probe with `kernels` installed and `use_kernels=True` (the transformers hub MoE path) at batch 33 and 132: ~0.1 A100-h. A second lever needs no HF generation at all: steering inside vLLM (hooks registered in the engine process with eager execution).
+**Status.** open; G1 cost item.
+**Thesis impact.** None on the science; on the plan, T1.3 is now the largest Tier-1 line (development total 15.9 A100-h with GPT-OSS; envelope still holds at ~25 of 35 with Muse).
+
+**Process ledger 2026-10-19 — torch.compile of the HF forward fails on both dense models on the pod stack (torch 2.6 + transformers 5.17).** Muse: `NameError: name 'torch' is not defined`; Qwen: `InternalTorchDynamoError: AttributeError: module 'torch.compiler' has no attribute 'is_exp…'` (an API newer than torch 2.6). The rung recorded both and kept uncompiled SDPA. GPT-OSS compiled. No numeric effect; the HF readouts of the dense models run uncompiled until the HF stack moves past torch 2.6.
 
