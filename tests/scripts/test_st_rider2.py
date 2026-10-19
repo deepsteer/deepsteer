@@ -194,3 +194,51 @@ def test_tokenizer_stand_in_serves_the_vllm_half(tmp_path):
     ctx = types.SimpleNamespace(H={s.id: s for s in Hs})
     jobs = L.h1_jobs(sc, ctx.H, [Hs[0].id], 2)
     assert len(jobs) == 2 and jobs[0]["ids"]
+
+
+def test_fold_vllm_half_difference_of_differences(tmp_path, monkeypatch):
+    # most probable failure: the vLLM half compares engines across letters or rows (a letter-order
+    # slip), so a fold that moves both engines identically reads as a mismatch
+    pytest.importorskip("transformers")
+    import types
+
+    import pod_st_screen as P
+    import screen_lib as L
+    from reasoning_formats import build_format
+    from transformers import AutoTokenizer
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    spec = P.registry()["gpt_oss_20b"]
+    tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+    sc = L.Screen("gpt_oss_20b", spec, L.tok_only(tok), build_format("gpt_oss_20b", tok, spec),
+                  tmp_path, "2026-10-19")
+    sc.effort = sc.fmt.effort_ladder[0]
+    Hs, _ = load_scenario_dir([P.H1_SET])
+    ctx = types.SimpleNamespace(spec=spec, H={s.id: s for s in Hs},
+                                order=L.h1_train_order(json.loads(P.SPLIT.read_text())))
+    fold = tmp_path / "fold"
+    fold.mkdir()
+    rng = np.random.default_rng(0)
+    base = rng.normal(-3, 1, (4, 5)).astype(np.float32)
+    delta = rng.normal(0, 0.5, (4, 5)).astype(np.float32)
+    np.savez(fold / "letters.npz", base=base, hooked=base + delta, folded=base + delta)
+    (fold / "rows16.json").write_text(json.dumps([[1, 2, 3]] * 4))
+    (fold / "hf.json").write_text(json.dumps({"built": {"dst": str(fold / "ckpt")}}))
+    lids = L.letter_ids(sc)
+
+    def fake_run(sc_, jobs, eng, out, **kw):
+        folded = eng["model"] != spec["repo"]
+        rows = []
+        for j in jobs:
+            r = {"job_id": j["job_id"], "gen_ids": [], "status": "finished", "n_tokens": 0}
+            if j.get("logprob_ids"):
+                i = int(j["job_id"].split("|")[1])
+                lp = base[i] + (delta[i] if folded else 0)
+                r["first_logprobs"] = {str(t): float(v) for t, v in zip(lids, lp)}
+            rows.append(r)
+        return rows, {"tokens_per_second": 1.0}, 0
+    monkeypatch.setattr(SV.V, "run_vllm", fake_run)
+    out = SV.fold_vllm_half(sc, ctx, fold)
+    ii = out["ii_steering_effect_vllm_vs_hf"]
+    assert ii["n_letter_values"] == 20 and ii["max_abs_dod"] < 1e-5 and ii["ok"]

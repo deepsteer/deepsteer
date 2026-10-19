@@ -243,7 +243,9 @@ rider2_after() {
   [ -f "$d/torch26.npz" ] && [ -f "$d/torch213.npz" ] && $PY papers/st_live_reference/scripts/stack_compare.py \
     --a "$d/torch26.npz" --b "$d/torch213.npz" --out "$d/parity.json" --tie "$OUT/$m/screen_record.json"
   if [ "$m" = "gpt_oss_20b" ]; then
-    rm -rf "$OUT/$m/fold/ckpt"  # the folded checkpoint (its shard sha is in the record)
+    # the fold check's vLLM half in its own process on an empty GPU; it removes the checkpoint
+    $PY papers/st_live_reference/scripts/fold_vllm.py --dir "$OUT/$m" || echo "WARN: fold vLLM half failed"
+    rm -rf "$OUT/$m/fold/ckpt"
     for ex in eager batched_mm; do
       $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$d/probe_prompts.json" --out "$OUT/$m/moe_$ex.json" --experts "$ex" \
         || echo "WARN: moe probe $ex failed"

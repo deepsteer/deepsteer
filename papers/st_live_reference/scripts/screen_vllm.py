@@ -321,7 +321,24 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
         "max_abs_nats": float(np.abs(hooked - folded).max()),
         "positive_control_hook_vs_base": float(np.abs(hooked - base).max()),
         "ok": bool(np.abs(hooked - folded).max() <= bar < np.abs(hooked - base).max())}
-    # vLLM: base and folded engines, the same 16 rows (first-token log-probs) + 64 generations
+    np.savez_compressed(out / "letters.npz", base=base, hooked=hooked, folded=folded)
+    (out / "rows16.json").write_text(json.dumps(rows16))
+    (out / "hf.json").write_text(json.dumps(rec, indent=1))
+    # the vLLM half runs in its own process after this driver exits (fold_vllm.py): in-process,
+    # the driver could not hand the GPU back (rider pod 2b: 39 of 79 GiB free at vLLM's start,
+    # the compiled rung path holding the first model), so the folded checkpoint stays until then
+    return {**rec, "vllm_half": "fold/vllm.json (fold_vllm.py, own process)"}
+
+
+def fold_vllm_half(sc, ctx, out: Path) -> dict:
+    """G1 item 3's validation, the vLLM half: base and folded engines on the same 16 dose-0 rows
+    (first-token log-probs) and 64 generations each; (ii) the steering effect on vLLM against
+    HF's, as the difference of differences; (iii) parse rates."""
+    hf = json.loads((out / "hf.json").read_text())
+    rows16 = json.loads((out / "rows16.json").read_text())
+    z = np.load(out / "letters.npz")
+    base, folded = z["base"], z["folded"]
+    spec = ctx.spec
     lids = L.letter_ids(sc)
     gen = L.h1_jobs(sc, ctx.H, ctx.order[:16], 4)
     wj = ([{"job_id": f"lp|{i}", "prompt_ids": x, "max_tokens": 1, "seed": job_seed("lp", "", i),
@@ -331,7 +348,7 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
     for tag in ("base", "folded"):
         eng = V.engine_json(spec, spec_on=False, label=f"{sc.key}:fold:{tag}")
         if tag == "folded":
-            eng.update(model=built["dst"], revision=None, tokenizer=spec["repo"],
+            eng.update(model=hf["built"]["dst"], revision=None, tokenizer=spec["repo"],
                        tokenizer_revision=spec["revision"])
         rows, summ, _ = V.run_vllm(sc, wj, eng, out / f"vllm_{tag}.jsonl")
         by = {r["job_id"]: r for r in rows}
@@ -349,18 +366,13 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
             fb, ff = vl["base"]["first"][i].get(str(tid)), vl["folded"]["first"][i].get(str(tid))
             if fb is not None and ff is not None:
                 dd.append(abs((ff - fb) - float(folded[i, c] - base[i, c])))
-    rec["ii_steering_effect_vllm_vs_hf"] = {
-        "n_letter_values": len(dd), "max_abs_dod": max(dd) if dd else None,
-        "mean_abs_dod": float(np.mean(dd)) if dd else None, "bar": DOD_BAR,
-        "hf_effect_max": float(np.abs(folded - base).max()),
-        "ok": bool(dd and max(dd) <= DOD_BAR)}
-    rec["iii_generation"] = {t: {k: vl[t][k] for k in ("parse_rate", "statuses",
-                                                       "tokens_per_second")} for t in vl}
-    np.savez_compressed(out / "letters.npz", base=base, hooked=hooked, folded=folded)
-    import shutil
-
-    shutil.rmtree(out / "ckpt", ignore_errors=True)  # links into the HF cache; sha in the record
-    return rec
+    return {"ii_steering_effect_vllm_vs_hf": {
+                "n_letter_values": len(dd), "max_abs_dod": max(dd) if dd else None,
+                "mean_abs_dod": float(np.mean(dd)) if dd else None, "bar": DOD_BAR,
+                "hf_effect_max": float(np.abs(folded - base).max()),
+                "ok": bool(dd and max(dd) <= DOD_BAR)},
+            "iii_generation": {t: {k: vl[t][k] for k in ("parse_rate", "statuses",
+                                                         "tokens_per_second")} for t in vl}}
 
 
 def rider2_h(sc, ctx, rec: dict) -> None:
