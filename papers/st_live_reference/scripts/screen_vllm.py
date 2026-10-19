@@ -398,10 +398,14 @@ def rider2_h(sc, ctx, rec: dict) -> None:
     if sc.key == "gpt_oss_20b":
         if sc.dry:
             rec["fold_validation"] = {"dry": True}
-        else:
-            rec["fold_validation"] = fold_validation(
-                sc, ctx, rows16, max(L.MAX_NATS, L.FLOOR_FACTOR
-                                     * dp["bf16"]["noise_floor_replicate_unpadded"]))
+        else:  # first GPU run of the fold path: a failure is recorded, the dose-0 reads bank
+            try:
+                rec["fold_validation"] = fold_validation(
+                    sc, ctx, rows16, max(L.MAX_NATS, L.FLOOR_FACTOR
+                                         * dp["bf16"]["noise_floor_replicate_unpadded"]))
+            except Exception as e:  # noqa: BLE001
+                rec["fold_validation"] = {"failed": f"{type(e).__name__}: {str(e)[:400]}"}
+                print(f">> fold validation failed ({e}); the dose-0 reads bank", flush=True)
 
 
 def load_banked_v(sc, ctx, d: Path) -> dict:
