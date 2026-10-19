@@ -1132,3 +1132,11 @@ vLLM is ≈ 0.25, the size of one bf16 step of a large logit (ST-A3, fp32-head d
 priced). T1.3 on HF generation measures ~9 A100-h for GPT-OSS (ST-A6), the largest Tier-1 line;
 spent so far 5.26 A100-h, GPT-OSS + Muse ~25 of 35.
 
+**G1 (author, 2026-10-19).** Development GPT-OSS-20B, second family Muse Glimmer 30B: its brake is
+of record and concentrated, 25 of 60 screened scenarios brake-engaged against a no-brake null
+q95 of 14, with the engaged brake at −0.60; T1.6 can detect a recipe that closes about a sixth of
+it (MDE 0.10 at the projected 42 held-out engaged). Criterion (i) is directional. T1.3's cost is
+an engineering fact, not a property of the gate: constant vectors fold exactly into the MoE output
+bias and run on vLLM, and the slow HF path is a fallback to the per-expert loop under torch 2.6
+(G1 item 3).
+
