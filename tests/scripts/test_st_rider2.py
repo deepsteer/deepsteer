@@ -152,3 +152,45 @@ def test_rider2_dry_run(tmp_path, model):
     assert len(rows["letter_ids"]) == 5 and rows["effort"] == "medium"
     assert not list((tmp_path / model).glob("vllm/*"))
     assert (tmp_path / model / "stack" / "probe_prompts.json").exists() == (model == "gpt_oss_20b")
+
+
+def test_rider2_banks_past_links_in_its_directory(tmp_path):
+    # most probable failure (rider pod 2's first GPT-OSS run): the folded checkpoint's links into
+    # the HF cache reach the manifest walk and the bank raises, losing the record
+    pytest.importorskip("transformers")
+    ck = tmp_path / "gpt_oss_20b" / "fold" / "ckpt"
+    ck.mkdir(parents=True)
+    outside = tmp_path.parent / f"{tmp_path.name}_outside.json"
+    outside.write_text("{}")
+    (ck / "config.json").symlink_to(outside)
+    r = subprocess.run([sys.executable, str(SCRIPTS / "pod_st_screen.py"), "--model",
+                        "gpt_oss_20b", "--dry-run", "--date-pin", "2026-10-19", "--out",
+                        str(tmp_path), "--rider2"], capture_output=True, text=True, cwd=ROOT)
+    assert r.returncode == 0, r.stderr[-2000:]
+    assert json.loads((tmp_path / "gpt_oss_20b" / "screen_record.json").read_text())["status"] \
+        == "ok_rider2"
+
+
+def test_tokenizer_stand_in_serves_the_vllm_half(tmp_path):
+    # most probable failure (same run): once the HF model is freed, sc.tok fails, so the vLLM
+    # half of the fold check cannot build its letter ids or jobs
+    pytest.importorskip("transformers")
+    import types
+
+    import pod_st_screen as P
+    import screen_lib as L
+    from reasoning_formats import build_format
+    from transformers import AutoTokenizer
+
+    spec = P.registry()["gpt_oss_20b"]
+    tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+    sc = L.Screen("gpt_oss_20b", spec, L.tok_only(tok), build_format("gpt_oss_20b", tok, spec),
+                  tmp_path, "2026-10-19")
+    sc.effort = sc.fmt.effort_ladder[0]
+    assert len(L.letter_ids(sc)) == 5
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    Hs, _ = load_scenario_dir([P.H1_SET])
+    ctx = types.SimpleNamespace(H={s.id: s for s in Hs})
+    jobs = L.h1_jobs(sc, ctx.H, [Hs[0].id], 2)
+    assert len(jobs) == 2 and jobs[0]["ids"]

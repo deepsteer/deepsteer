@@ -286,6 +286,7 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
 
     spec, out = ctx.spec, sc.out / "fold"
     out.mkdir(parents=True, exist_ok=True)
+    tok = sc.model.tok  # after each HF model is freed, a tokenizer stand-in keeps sc.tok working
     layer = sc.model.wb._get_layer_module(FOLD_BLOCK)
     norms: list = []
     h = layer.register_forward_hook(lambda _m, _i, o: norms.append(
@@ -305,6 +306,7 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
     h.remove()
     del layer, h  # the module reference would keep the first model's weights on the GPU
     _free_hf(sc)
+    sc.model = L.tok_only(tok)
     src = Path(snapshot_download(spec["repo"], revision=spec["revision"],
                                  ignore_patterns=["original/*", "metal/*"]))
     built = build_folded(src, FOLD_BLOCK, v, out / "ckpt")
@@ -312,6 +314,7 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
                             attn_implementation="eager")
     folded, _ = L.read_ids(sc, rows16, 1)
     _free_hf(sc)
+    sc.model = L.tok_only(tok)
     rec: dict = {"block": FOLD_BLOCK, "v_norm": float(np.linalg.norm(v)),
                  "median_resid_norm": float(np.median(norms)), "built": built, "bar": bar}
     rec["i_hook_vs_fold"] = {
@@ -354,6 +357,9 @@ def fold_validation(sc, ctx, rows16: list, bar: float) -> dict:
     rec["iii_generation"] = {t: {k: vl[t][k] for k in ("parse_rate", "statuses",
                                                        "tokens_per_second")} for t in vl}
     np.savez_compressed(out / "letters.npz", base=base, hooked=hooked, folded=folded)
+    import shutil
+
+    shutil.rmtree(out / "ckpt", ignore_errors=True)  # links into the HF cache; sha in the record
     return rec
 
 
@@ -404,6 +410,9 @@ def rider2_h(sc, ctx, rec: dict) -> None:
                     sc, ctx, rows16, max(L.MAX_NATS, L.FLOOR_FACTOR
                                          * dp["bf16"]["noise_floor_replicate_unpadded"]))
             except Exception as e:  # noqa: BLE001
+                import shutil
+
+                shutil.rmtree(sc.out / "fold" / "ckpt", ignore_errors=True)
                 rec["fold_validation"] = {"failed": f"{type(e).__name__}: {str(e)[:400]}"}
                 print(f">> fold validation failed ({e}); the dose-0 reads bank", flush=True)
 
