@@ -1236,3 +1236,31 @@ post-hoc check.
   alternative dose-0 construction).
 - Cost of the three rider pods: 0.65 + ~0.75 (lost download) + 1.0 A100-h (2c, timestamps +
   provisioning); spent so far ~7.6 A100-h.
+
+#### Tier 0 builds T0.5, T0.7, T0.6 (2026-10-19; zero GPU)
+
+- **T0.5** `deepsteer.causal.attribution`: AtP on residual sites (layer × position) and SwiGLU
+  neurons (down_proj input, with a gate sign-regime flag), metric = the option margin at the
+  decision token, token-aligned inputs only. Positive control on OLMo-2-0425-1B: 50 residual
+  sites (seed 0, cells at and after the one differing token of an aligned pair), Spearman 0.997
+  against real patching (bar 0.7).
+- **T0.7** `scripts/steering_gate.py`: one HF decode loop for every gate arm, `none` included
+  (author, ST-A7); position classes inside the trace only (each format's `trace_open` /
+  `trace_closes`); `care`/`fill` additive and `self` mix at hidden-state index L*; seeded
+  per-rollout sampling (KDG sampler v2); per-rollout saving; covariance-matched fill draws; the
+  coherence gate; the `self` transport control on the dose-0 readout. Zero dose equals `none`
+  bitwise; OLMo-2-1B shakedown passes.
+- **T0.6** `deepsteer.steering.objective_lora` + `scripts/st_train.py`: DPO (β 0.1, reference =
+  adapter disabled), the §5.2 hinge, the §5.3 standardized MSE, KL-to-base on the general slice and
+  the non-anchor trace tokens; LoRA targets walked from the text decoder's layers (Muse's vision
+  tower never adapted; Qwen3.8's DeltaNet projections included); τ, `chat_sigma` with enforced
+  provenance, DPO pairs with the 40-pair floor; adapters saved with a sidecar and evaluated merged.
+  End to end on OLMo-2-1B with a synthetic target: held-out margin rises, KL stays small, the
+  merged checkpoint reproduces the adapter. Runs on the ST stack of record: the vLLM venv gains
+  deepsteer `[lora]`, `peft==0.21.2`, `bitsandbytes==0.50.2` (venv check extended).
+- **Author items.** (1) §5.2's `⟨h, V_care⟩/‖h‖` with `V_care` of rank 2 has no sign; the build
+  anchors on one signed axis, `P_V_care(mean protect − mean rule)` at the anchoring class from the
+  unadapted model's banked residuals, recorded in the sidecar. (2) On GPT-OSS the "MLP projections"
+  of §5.1 are expert tensors, adapted through PEFT `target_parameters`
+  (`mlp.experts.gate_up_proj`, `mlp.experts.down_proj`). (3) The QLoRA path (4-bit NF4 base,
+  bf16 adapters, bf16 merge) needs CUDA and bitsandbytes; it is built but first runs on a pod.

@@ -127,6 +127,10 @@ if [ "$VLLM_SMOKE" = "1" ]; then
     "$VLLM_VENV/bin/pip" install -q "vllm @ ${VLLM_WHEEL_URL}#sha256=${VLLM_WHEEL_SHA256}" \
       "transformers==5.17.0" pyyaml ninja -c "$VLLM_CONSTRAINTS" --extra-index-url "$CU129_INDEX" \
       2>&1 | tail -3
+    # the ST stack of record (Amendment 9): HF readouts and T0.6's training run here too, so the
+    # venv carries deepsteer (+ peft) and bitsandbytes for the QLoRA path; torch stays 2.13 cu129
+    "$VLLM_VENV/bin/pip" install -q -e ".[lora]" "peft==0.21.2" "bitsandbytes==0.50.2" \
+      "transformers==5.17.0" -c "$VLLM_CONSTRAINTS" --extra-index-url "$CU129_INDEX" 2>&1 | tail -3
   fi
   PATH="$VLLM_VENV/bin:$PATH" VLLM_VERSION="$VLLM_VERSION" "$VLLM_VENV/bin/python" - <<'PY' || { echo "FATAL: vLLM venv not usable (see the check above)"; exit 1; }
 import importlib.metadata as md, os, shutil, sys
@@ -135,8 +139,10 @@ from vllm import LLM, SamplingParams  # noqa: F401  (the worker's own import; pu
 import flashinfer, torchcodec  # noqa: F401,E401
 from cuda.bindings import nvrtc
 from vllm.model_executor.models import gpt_oss, muse_glimmer, qwen3_5  # noqa: F401
+import bitsandbytes, peft  # noqa: F401,E401  (T0.6 on the ST stack of record)
+from deepsteer.steering import objective_lora  # noqa: F401
 v = {p: md.version(p) for p in ("vllm", "torch", "torchcodec", "cuda-bindings", "cuda-python",
-                                "flashinfer-python", "transformers")}
+                                "flashinfer-python", "transformers", "peft", "bitsandbytes")}
 err, major, minor = nvrtc.nvrtcVersion()  # loads libnvrtc: the CUDA 13 failure mode
 print(">> vLLM stack:", v, "| torch cuda", torch.version.cuda, torch.cuda.is_available(),
       "| nvrtc", major, minor, err)
@@ -149,6 +155,9 @@ checks = {
     "torchcodec_cu129": v["torchcodec"].endswith("+cu129"),
     "nvrtc_12": int(major) == 12,
     "ninja_on_worker_path": shutil.which("ninja") is not None,
+    "peft": v["peft"] == "0.21.2",
+    "bitsandbytes": v["bitsandbytes"] == "0.50.2",
+    "torch_still_2.13": torch.__version__.startswith("2.13.0"),
 }
 bad = [k for k, ok in checks.items() if not ok]
 print(">> vLLM venv checks:", "OK" if not bad else f"FAILED {bad}")
@@ -208,7 +217,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
