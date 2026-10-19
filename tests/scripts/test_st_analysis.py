@@ -129,3 +129,31 @@ def test_verdict_rules_in_order():
     # every verdict sentence carries the ladder, never a bare label
     s = S.verdict(_b(0.05, -0.02, 0.12), **kw)["sentence"]
     assert "floor" in s and "matched null" in s and "positive band" in s and "MDE" in s
+
+
+def test_engine_parity_passes_same_distribution_and_fails_a_shift():
+    # most probable failure: an engine that moves the protective share passes because the check
+    # compares overlapping CIs; the difference CI must exclude 0 for a real shift
+    rng = np.random.default_rng(11)
+    ids = [f"H{i}" for i in range(64)]
+    p = {s: float(rng.uniform(0.1, 0.9)) for s in ids}
+
+    def rollouts(shift):
+        out = []
+        for s in ids:
+            for _ in range(4):
+                prot = rng.random() < min(1.0, max(0.0, p[s] + shift))
+                out.append({"scenario_id": s, "status": "completed",
+                            "norm_status": "violating" if prot else "consistent",
+                            "letter": "B" if prot else "A"})
+        return out
+
+    ref = {}
+    for s in ids:
+        prot = rng.random() < p[s]
+        ref[s] = {"norm_status": "violating" if prot else "consistent",
+                  "letter": "B" if prot else "A", "status": "completed"}
+    same = S.engine_parity(rollouts(0.0), ref, ids)
+    assert same["passes"]
+    shifted = S.engine_parity(rollouts(-0.45), ref, ids)
+    assert not shifted["protective_ok"] and not shifted["letters_ok"]

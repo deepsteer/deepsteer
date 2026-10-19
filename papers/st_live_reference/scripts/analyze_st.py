@@ -217,3 +217,43 @@ def ladder_sentence(v: str, dp: dict, floor: dict, null: dict | None, band: dict
     return (f"{v}: ΔP {_ci(dp)} (n {dp.get('n_scenarios')}, MDE {mde:.3f}); "
             f"floor (none re-run − selecting sample) {_ci(floor)}; matched null (fill) "
             f"{_ci(null)}; positive band (restate) {_ci(band)}")
+
+
+# ---------------------------------------------------------------------------------------------
+# engine parity (Amendment 7 item 3)
+# ---------------------------------------------------------------------------------------------
+
+
+def engine_parity(vllm_rows: list[dict], reference: dict[str, dict], ids: list[str]) -> dict:
+    """vLLM rollouts vs §40's HF rollouts on the same prompts. ``vllm_rows``: per rollout
+    ``scenario_id``, ``norm_status``, ``letter``, ``status``; ``reference``: per scenario §40's
+    parsed ``norm_status`` and ``letter``. Paired by scenario: (i) protective share, vLLM's mean
+    over its rollouts minus §40's single action, scenario-bootstrap difference CI must include 0;
+    (ii) letter marginals, for each letter the same paired difference of letter shares, every CI
+    must include 0. A difference CI, never an overlap check (estimator-traps #1); the MDE beside
+    it says how large an engine difference this sample could see."""
+    v = {}
+    for r in vllm_rows:
+        if r.get("norm_status") is not None:
+            v.setdefault(r["scenario_id"], []).append(r)
+    keep = [s for s in ids if s in v and reference.get(s, {}).get("norm_status") is not None]
+    d_p = np.array([np.mean([x["norm_status"] == "violating" for x in v[s]])
+                    - float(reference[s]["norm_status"] == "violating") for s in keep])
+    prot = A.boot(d_p)
+    letters = sorted({x["letter"] for s in keep for x in v[s]} | {reference[s]["letter"]
+                                                                  for s in keep})
+    marg = {}
+    for L in letters:
+        d = np.array([np.mean([x["letter"] == L for x in v[s]])
+                      - float(reference[s]["letter"] == L) for s in keep])
+        marg[L] = A.boot(d)
+    inc0 = lambda b: b["ci95"][0] is not None and b["ci95"][0] <= 0 <= b["ci95"][1]  # noqa: E731
+    run = [r for r in vllm_rows if r.get("status") not in (None, "not_run", "aborted")]
+    return {"n_scenarios": len(keep), "protective_share_difference": prot,
+            "letter_marginal_differences": marg,
+            "protective_ok": inc0(prot), "letters_ok": all(inc0(b) for b in marg.values()),
+            "passes": inc0(prot) and all(inc0(b) for b in marg.values()),
+            "vllm_truncation_rate": float(np.mean([r["status"] == "truncated" for r in run]))
+            if run else None,
+            "reference_truncation_rate": float(np.mean([reference[s]["status"] == "truncated"
+                                                        for s in ids if s in reference]))}

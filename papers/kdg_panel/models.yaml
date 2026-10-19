@@ -345,6 +345,19 @@ st:
       The reasoning-effort level is rendered as an injected system prompt (at xhigh: "... prioritize
       correctness, consistency, and clarity in the final answer."); how it combines with a KDG frame's
       own system message is recorded per cell from the rendered prompt.
+    vllm:                            # Amendment 7 (verified against vLLM v0.31.0 source, 2026-10-18)
+      version: "0.31.0"                # default wheel CUDA 12.9; transformers 5.17.0 admitted
+      dtype: bfloat16
+      kv_cache_dtype: bfloat16
+      max_model_len: 8192
+      gpu_memory_utilization: 0.92
+      max_num_seqs: 64
+      language_model_only: true        # vision tower skipped (all modality limits 0)
+      draft:                           # MTP head shipped in the checkpoint (mtp.* weights)
+        method: mtp
+        num_speculative_tokens: 3
+        source: in-checkpoint (Qwen/Qwen3.8-27B @ 1d4bf0f2ff60, mtp.*)
+      draft_fallback: {method: ngram_gpu, num_speculative_tokens: 4, prompt_lookup_max: 4}
   muse_glimmer_30b:
     repo: meta-models/Muse-Glimmer-30B
     revision: a4e59da52a7bc87ae7251dd5545c0dd437c44b68
@@ -371,6 +384,24 @@ st:
       The template always injects a system block with "Current date: <today>" and "Reasoning
       strength: <level>." (it rewrites "Reasoning effort" to "Reasoning strength"); the rendered
       prompt depends on the date, so the date is pinned per pod and the rendered sha saved per cell.
+    vllm:                            # Amendment 7 (verified against vLLM v0.31.0 source, 2026-10-18)
+      version: "0.31.0"                # default wheel CUDA 12.9; transformers 5.17.0 admitted
+      dtype: bfloat16
+      kv_cache_dtype: bfloat16
+      max_model_len: 8192
+      gpu_memory_utilization: 0.92
+      max_num_seqs: 32                 # the Muse recipe's setting with the DFlash drafter
+      language_model_only: true
+      draft:                           # Meta's DFlash drafter (Amendment 7 item 3)
+        method: dflash
+        repo: meta-models/Muse-Glimmer-30B-assistant
+        revision: e8192f3a8f617f74be2ce220360c89ef4789f39f
+        config_sha256: 38915167b64b1e6405492aacae5b1b4511b6431163d2960b9bd25821df6fa30a
+        weights_sha256: fd88d337eb84f8d0e6ba33a7684d7efa6722d4460ba4d6badca9699418392a84
+        num_speculative_tokens: 15     # fixed by the drafter's block_size 16
+      draft_fallback: {method: ngram_gpu, num_speculative_tokens: 4, prompt_lookup_max: 4}
+      # author rule: if DFlash loses the with/without probe at Muse's screen batch, the screen
+      # runs without speculation
   # G1 (2026-10-18): the development model. Same pins as tier2.gpt_oss_20b (a test asserts the
   # shared fields are equal); the harmony block is §40's, so ST prompts are byte-identical to it.
   gpt_oss_20b:
@@ -399,4 +430,21 @@ st:
       prefill_dose_matched: "<|channel|>analysis<|message|><|end|><|start|>assistant"
       c0_max_new_tokens: 512
       c0_rollouts: 4
+    vllm:                            # Amendment 7 (verified against vLLM v0.31.0 source, 2026-10-18)
+      version: "0.31.0"                # default wheel CUDA 12.9; transformers 5.17.0 admitted
+      dtype: bfloat16
+      kv_cache_dtype: bfloat16
+      max_model_len: 8192
+      gpu_memory_utilization: 0.92
+      max_num_seqs: 256
+      language_model_only: false       # text-only model
+      checkpoint: official MXFP4 at the pinned revision; A100 runs Marlin W4A16 MoE + TRITON_ATTN
+      draft:                           # EAGLE3 speculator (Amendment 7 item 3)
+        method: eagle3
+        repo: RedHatAI/gpt-oss-20b-speculator.eagle3
+        revision: c2825cb49c32649bab8fb012df38df50a0a43db1
+        config_sha256: ed85382f13d0f974eeaca48fd96f1a04bc54be7d79e468a50f2249aa9171c962
+        weights_sha256: 43c37a7067306dc0821737e734a7057aeb5ac5c9976215f21bd6fd3cab7c810e
+        num_speculative_tokens: 3
+      draft_fallback: {method: ngram_gpu, num_speculative_tokens: 4, prompt_lookup_max: 4}
 

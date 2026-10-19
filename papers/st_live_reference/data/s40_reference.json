@@ -1,0 +1,4498 @@
+{
+ "source": "KDG_RESULTS \u00a740 (pods p2m + p2n), ds_main.jsonl",
+ "source_sha256": {
+  "papers/kdg_panel/outputs/p2m/h1/gpt_oss_20b/h1/ds_main.jsonl": "96e2e72d133005cee86ab12f338dc15eef5ca5cdafbc8f09ab2e7ace3a1a4421",
+  "papers/kdg_panel/outputs/p2n/h1/gpt_oss_20b/h1/ds_main.jsonl": "21733648ebd2fc52adf1b64e1335a7e8d43cdf869003f5f4ffe1a884bc70a8dc"
+ },
+ "n": 264,
+ "rows": {
+  "H1-A-00": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "3958c744076a18886f602e5709c13738cbcc159dd3124e88328fd2ae00e14e2c",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 539,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-04": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "fc7cd9f90368b7b5c30dcd678aa7a31236f87ecb70d7a6ff6b1456f0a2aa0303",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 422,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-06": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "b49fd5a76ee0ddc50936e4dd5320f3b466716c3ca9591850160968897f8211cb",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 316,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-08": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "57c4d7ca6345b8b48987dc292c928baf33ffb73cdf63864f1af114aff0c78d26",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1198,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-10": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "f5647d1e1688a0ec2b5c333e8b01d6c4a7399abbca73f6878c61660369627bfc",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 253,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-100": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "851cca8c4aa22644b3f8e82d0aa52970dfc09afe91cc67c8b46b3937cafbe7a4",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 153,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-102": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "b6f1f78536b4ff518988a1fa01c47453cdf60c8ad175b65080f7656c1e6403b8",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1212,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-104": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "f1a313b1f2463b06364dc64d6986cf19cd064f90a3bfc07bb008aad192225f4a",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 1213,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-106": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "0cdb6fe628d7fc164822585424afa581176a258e3bc36175057d620c91e21138",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 285,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-108": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "5dfe9ccc9ca4413232f41388f7a8963bd38ddeecd3814bf7d3fc91b96e2ed013",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 374,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-110": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "bc82fcc9dd9e5e617d5ff6af1f5c78f898d8f393a005ef9008c4902754a523e9",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 341,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-112": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "911e2f465cdc0f6bacac7797c926b1f3ec9f5d899842edbf9ba134f14664b4f3",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 868,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-114": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "5537f819116a2edf31fdf5d7a7f1b335638315d4a2acc39d4060798d4b8a9700",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 316,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-116": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "428e3ede6ee235af5c2bf88c5ebcdbfb9cf4cac17300781ed4b5f67977856d4a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 1124,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-118": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "64f59ee4096c7d0a27f30b709163a191b0af5e6892ce3bbe2f9a2bd3401c167e",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 392,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-12": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "e0260abf0ff5de0e883cd7765f469babaf369424ae868a23364314ae9a982848",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 482,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-120": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "303657489e7ee87b55ad07f6c7dd6c4994d7e3417b92ac3a8dbfdc4f897a9827",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 385,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-122": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "beca99ee884c5c24e8a7881ee88572ec3cda10e1cc2b525dfcb1dba8ba27205f",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 605,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-124": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "b0d843e459696af246fa4e0b51b8fb93dd081b7b37cc81f8a7bba3e415f78c14",
+   "status": "other",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 1536,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-126": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "acae4dca524174d25cc91bab1894f096b15886cc39c9ae57bfe11d9d362884bb",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 560,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-128": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "73d76677afd7e2f448f2477e83953a4e881a74a8e540d8925f2275204eae4f84",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 845,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-130": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "bec1073ab5ef475c2f52630e733cf0a10d3db0bed38d36271c465a99f9881fe8",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 822,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-132": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "16d76f066a7468c9e67a45d773b93cb2e2a75aea54d76160036d4f42c6a935f9",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 484,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-134": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "70e955f63504b54bf35b561de9aec61779aaa1d6cd8ad6f43ce8aef19dece082",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 324,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-136": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "1b879099089a9be0a3088013752d415b335e9675e5e74292788f2be83bfb314b",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 214,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-138": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "3676ffc7d16bfa86cfc0b37b048239cdc009c820072ca79841fc9e0448746e59",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 120,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-14": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "79a3bddd9e21e4930598736af6358a891e503a63a29eb04ec4dfdcda4b70708d",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 168,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-140": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "76cb200eb83dd9edbc3f80f02d0b637a35e320ab9886d8dd2443eac65e097af5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 612,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-142": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b513513c2e8500cd18224830e9e4c0fa7c7a90d52f6304685a721e8e2336d1ee",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 299,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-144": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "2ce289494ed7c66b65dbed89f03292cb7fbbd2d64ffa6580f49b53009f907335",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 750,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-146": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "fb994299397adfced2faa5fe3ababf352d1c5f95d4cb7893b6b70fa0cb1aefda",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 598,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-148": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "413cef00afec0f61d27fe7a449eab29fd83dcb4163c1b03604e45a1e650bd445",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 968,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-150": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "7c572ccf6bc017ffe014878f71e78e235f04563d5343faaecb3b8bcf36fa8364",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 167,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-152": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "18863838e09c6dd73daa036263b09395489bd87d0f0b9981e06aedd0cb27909c",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 840,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-154": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "f19c1a520a365a0578159237130ed862793491f413a4bc049d159757a3f71354",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 452,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-156": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "95636fd14ef8fd58394f8c2c91638d1edb34718f301baf318d5748c642b52677",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 277,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-158": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b2767cad51fc2bb34bcf3ef246809dcf862929d9e854481ccf668f5d9e522f53",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 247,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-16": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "6a29dda70dde16d8816be6af81ddf025ce2912bbd6ec6965714debe6d0b0952b",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 1082,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-160": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "c8e9104cc433b45477bf5842f922948e7817ce7d76fc18015d7fd4f9777d603f",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 853,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-162": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "f165a487a7eb7b5873765b1e5ef65f78bffe8862338a7f0282e8f3644455d24f",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 81,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-164": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "09481db0353cfaef24df15e74cc239d978b4b68cef577a7325c4efd2fb46d674",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 555,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-166": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "7a662ab93b551c6c682d0811a987c1faccd28b117f0ae68d63a9d89a025c9c79",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 218,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-168": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "94e431f3c116b5fb05ef0c0a7c810ac94f12d76c148e620f5625109b99ee78bd",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 205,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-170": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "bf756afe85db95a8a912e5d2f38e6e1041561f2dfcb50a798a04f33f9a5f4b14",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 162,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-172": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "46538f0e1cea5b9a0d7c1b524baed5c72b5fc95720abea8bc436c0ff31112358",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 664,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-174": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "28ab695769bb864396183e47eb9a4687a040c58c1c8306bcdc95a65963ee5fe6",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 514,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-176": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "6141b7590a3565a38847e61398b87ce497de987b84bb5ab75b1396a537377a97",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 454,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-178": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "339431087c1d6d6bd982dad7a5b32414689df67c2d31a800c3062e6c19a50344",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 360,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-18": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "cc3c7de262815366f1ad027a46e7a419d65082cbf56f03a0e4491a27c8122739",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 1251,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-180": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "6c83184189b2997670b4b1d05b344e2d24f34f96ca36200fc9e8d0667417bf4f",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 566,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-182": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "10c5e51d670e45d67668e42ba00ad293a59a139554fb2e4cf48f27f46af41f83",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 567,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-184": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "f84f2a9be6b0b0123fb4e26c9ae1c4869386e094a47893eb0be5fcf64730ce50",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 520,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-186": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "5307757f11adbd0c4b797e6fabeb88d3b732fa9385d8b0b29d5fad336fcf6126",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 669,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-190": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "35b07be0639c9cd6cde682ddcfea6e7fccd45599fc2f1a5c476435ed756e8567",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 323,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-192": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "bddfccc7679bcdd6dd5fe82834c013ac4120786c7a6f0fd76b120013f87f3638",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 517,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-194": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "912dbcda987999e0d99334c7eb874142fc73574f9a862b2e44d88db5f9e7a25e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 128,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-196": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "fd54810bdb56ef9ad43691e0e3bece4a19b2cb0f0a740b4367d69f04d893b2d4",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 367,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-198": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "3b999c1f6318c9b8c09363065144a5953a180e9646758614665ef136004b9899",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 152,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-20": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "1b18451416a9aa65a7679382417a2f6dde17a1f1e0afb8833c34ff2588a3e198",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 1144,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-200": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "b3480a5014898b5af15f00d56f4e32f8bc291a7c87a3d38f43f51974b66e7440",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 421,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-202": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "89ba0de0e946f81228f4e78bb0e6a1c450b851cdcc230eb890fcdf1126e94ab9",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 186,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-204": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "9d3a084742dd6a28a5bb9327f14697d6d9398e96bf22b64bd4aabdba973e921e",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 313,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-206": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "7ca9386841fe5db33c8a697864c29dfb607d63cd731d73bca2470763d5a26ee8",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 158,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-208": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "8084f1bfe0c312c5cbbe4822aa18f6dc8510e3b3bc0e1b0a3bbb2356cc802844",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 573,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-210": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b4db7eddefb098ca62249f41d775a41941278c5660cb1b36e35e4895f9f105cb",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 246,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-212": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "3d4078976fec052166b41e5cb09ba12f4c375db4554ad281fc6cb93149f9936b",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 575,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-214": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "0725158c99ae25169a66cf64670d4ba70f9dca9824a13d1eabe5791b913774fb",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 360,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-216": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "7220a0cf6a148031b206a51c8d77e0a916dd806ba86bd4bf224e19ab4c0f2070",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 333,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-218": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "75f99093640238d3ba1b7d35d683ce71e3d1995ae4af77f62dd4c3a936fa1956",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 407,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-22": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "610c13d0b1ad28970a4cecd4d83236df67f08ddeeb3dd1205392207f8e9b7851",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 239,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-220": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "b3601c9c03a57bab20b2e46e7d3946aeb07b650aed0a4235195520d29aa83001",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 649,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-222": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "ba254915e442b08fd7fd00eee4fdcbe02f7d5a6597ee43c6056589a088e0f562",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 152,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-224": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "5b8d480956277c568454c8b4d92378622e9a43a11805a475281a6cc7ddd44fee",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 1007,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-226": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "855c34ff69393fa3feb756def5975df52b734f80d701c51262ad992bfca2662e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 146,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-228": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "c9e38aaf118c2bb2b224c177669046c46075933b719f54b5d38c4bfaaa1a4de7",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 260,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-230": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "79901492a9812d2ae57661cffc57ee2638f90c33c5f56a6262064cb335256d31",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 180,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-232": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "0f3d67636cd6a49e574a5995bf0cad751dffb169b7bef444d59e9385333d6787",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 1137,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-234": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "0e306dc01d5f70f549a1421f6191506df6b77422e260bde5b312a439b4db5d17",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 472,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-236": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "f05249f5ee69dc101333197abb6dea99034ef070015ceaf7284d1b6b3bafa846",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 411,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-238": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "6fb9a8a816ca99337c31db1e43e0304d3df8bca3a215c1bf227e2973a448dc83",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 157,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-24": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "43d2af4187c5da81b285d0569412a3efcdb9c1da566b24b2a921cae2bfd2175a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 786,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-240": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "1a2a0841efd8fde42b8b2c55992ea594a6299c5f6aba13c69553e558f1d48527",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 255,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-242": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "96b0cfbb73c82a892b03465447fd28ca36a016837dd34b1933d90f61b92a0bc7",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 341,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-244": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "6cee1af117fefe4e1872fdb4b0f00a23c47e1865ba5a1f226ed1319c5c61d408",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 202,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-246": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "3fc367ffd3c5a58f5c332adae9192c7dc937726e04b8b7182ff67e34d6aa8fad",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 159,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-248": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "9938812c9fc78ab0c6e9695ad04e8d3b13bf385d5e38c5c4b3cdf93d3cb9c43e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 363,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-250": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "32c36997a3b8382565762b26c73207dbb3c0fb66b67a43caf1f8225487aca499",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 701,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-252": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "45268b91eee139f76059a6e72838a4a190a9c5f98370cca3d97cc08af9d1da75",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 556,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-254": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "1ed7c9486e67d29f2372eebfaf760ea4c21f4ebee72fc33ad18dedc6ba63578b",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 982,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-256": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "e62a532f1e8a4f255d6bb5286c3ea65eef62d76759a7595a4dffff4e652c3bfa",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 657,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-258": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "c1da2581edd44027dbfb5e35650e789977564d032ae37927e3089a188c2402d7",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 567,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-26": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "51523ba3e982c388699c2e83e205ac5b18b5bd061fb9abadc90383b80569781c",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 273,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-260": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "8ca1b989e1ba323e4c26d0877675d1043adbeb9e19507cfd38ba6c86817b7068",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 582,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-262": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "e28355a36f42e475e9f6cc4c0ce2f68726961278891ef25ead1134ceb7c3e3d5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 547,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-264": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "8406f9a0827480ce49666e5cf67b322333b8ddfb1a0a87476e656077e070e7d4",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 795,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-266": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "e03c754fcee59d4c53a2a4b8f7eb389ec533b6af5ec876f95d60f222cdba8d48",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 250,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-268": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "91ea76f0698988bb7be6843b4619fc2a27baf9e711560b46784784e9dedfe55a",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 127,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-28": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "dfb0766f96516d2513d2b9483271db5946bb45ed86e2b626570159133dcc28f4",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 728,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-30": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "fe2bb58cade83a9df5bdaa231e7eecedcb0f0cb05e17cabf711f3d9a54020ff4",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 778,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-32": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "3493913818ff905af811fb417207a0c91b8dc6b1c1285bf1901ae900daac03f6",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 366,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-34": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "42651fe1ea47ffa1a49d5867d3cf49b2ea5b49f9db01bddfb24274d4eb05c30a",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 551,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-36": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "17cc087428724237c2c95bdf3bbc50097c0a3d7c4d7978170c33a33ae935edc0",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 688,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-38": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "15088ef51c5e1b5d25c51a9e8cda8a9a077e334759a1a3b6cd43996841d21b8e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 132,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-40": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "8f66a68b7dcb465c7f265b043132f46b1db224de9f81ac6dfcb6b0e295f5916f",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 780,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-42": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "17e68ecf1577f7d540833ad154980efa7ccb59548fc683a151887378cdb6d5f9",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 273,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-44": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "ab6569bf17aaa2a0493f7b0e4a77e9cd5433037131f89c5a4b245fd51e90c677",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 1115,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-46": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "91c495ec880f64352ef9eec5ab5256fb73346bf4ae24bbd671ee2caf80141944",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 350,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-48": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "a21c349e4c32937f7225dcb9b8e28b2f3d26586ec51d86a73f722e29ae65ae73",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 610,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-50": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b503156c7c0ba5af4013195c9c192c111d60c15ac618d336224986fc8d78cc0e",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 513,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-52": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "fe51a5864863c1801de3c9ec81630f00428f79524db3def4f7844c2f47727524",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 582,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-54": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "3ede09482b617b11b8c4ffaaf8abc0be24d19548d8d3a57798701037c373a5b1",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 626,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-56": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "f24249db5181f8f87697dc5c1dd592660bd6c58325dc21335cfb514ea09b37d0",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 286,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-58": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "4578f02d69936e86be47c1231fddfb08add3b5e14fd03e3d79c1328c8480215b",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 431,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-60": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "3eca15e00ee2a92d69f64b486718f92fa70ecffa977f4bb8d97f080e6e24cce2",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 613,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-62": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "a63a65a484726ea79d587476dbaae3ecb693a2f57669fa50158f1ee19df6b3a4",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 188,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-64": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "b3b0bdaff763ec589691e8136b0ea4793d6c5f02a10d3a8c06fd803514ed1dfb",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 165,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-66": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "44d6b8f425922a561693a034eab70ca3f575dba51c8e68881ad47b598c2a172b",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 663,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-68": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "67c676ea0e18f49758f2c82c71ca8a3cc6555f61615be6b790390d4818068eb2",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 710,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-70": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b874d12d91660a92f1cc1f7ac17e5b9d5ca2c3dead8feb57aee160faf31df011",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 376,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-72": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "7eb33da46d13f6692ad79510f64ec7d41f1ee1c5460b544329c1a755aab83944",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 748,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-74": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "715ebb6a7dda9fb4335585c51d4bc157a23385406a6e398390e5000ba7b88970",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 338,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-76": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "e9fef33636eb4293ff6eae5aa723cd833adbba8ae8cd598f21affbbcb31ceb45",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1262,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-78": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "1ac742f814ea7e73cca69fc1868e5c519cb10cdf361596eedb76709d667c9668",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 479,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-80": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "e0ddb88419813973c57b98de417712c8154b352a5ce7289530464992cfb1d8df",
+   "status": "completed",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 223,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-82": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "18cfbe937c1a44c344a8b0a0126a01285352c690c44cb7571e865231424f4a82",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 367,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-84": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "fa85a292bdd571874d208a6655b312c54ad37af4f7e2a0d5852e12047f7d1544",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 729,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-86": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "abe2cabe5426c63c8003f8161a862bf3ab9e891113f6b1997500ef823ff221dd",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 155,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-88": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "8e69dc7152a1192c68bc6ea604a0d908077cbedb5a6b247a5aa12bbbb512ce51",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 481,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-90": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "7a57ee5965a46721b8b3bd931265e3518175f723dc0793d1bb49b1758e62b65a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 869,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-92": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "df3930a924c8b2f10326ed359742b88fbe219746d81d45b1a87386a5513c3d29",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 875,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-94": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "8ceb5b7fd0aa8fcddd885e7f35f052fd0272a2a21c3c6156ea4fe5c455bf240a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 866,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-96": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "33d08f1c55d80a7844a955fdda2584708f5a3f8f39c491482272b4f5c1a1d05e",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 589,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-A-98": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "658e87e009c16557cf331b602728d1cd50d7f76c6645f3604164a6ba835aad7f",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 155,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-01": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "5baee88d55911b1f0c185f4dcda181bb88a32578fdad6e09311e9079b1695c5c",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 192,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-03": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "155da42aa6eb6cd1450ade65a0816bffb51431a50aaf6e2ff9bf56479e62ef7e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 335,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-05": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "213d7256b147b42b96ca2630c02792abdc92c962b8fce6acf1eade4d71343b27",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 309,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-07": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "0a07f4dcfb234c122b34742e3b873fcdc75424b5a4495b82d467d8d502015600",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1101,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-09": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "20cad7023c92f813399f08301d46434c9502303bdd93b9cd2395829ba6150226",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 478,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-101": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "8a201eac1c1e19b3af8422c419cf334faad4a501dbde1ad82c688cb7cd68b541",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 594,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-103": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "f7f66a8130cacf843a3ad63185513b4efe8d593b81e1554088d61a8246e1a272",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 195,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-105": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "77d5456da1e091fafa95535690ca478da5ba42f45363127f98f25a8fc29a0be4",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 566,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-107": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "1d9a9e6c4ba8d7cf924826dbec4ad5d1b55faac628ac955499a5821be0747083",
+   "status": "truncated",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 1536,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-109": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "c974af944c6e8d5e51dc1b49a7b5e72414beff16991de27cca94f2a211d2f30e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 361,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-11": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "4789f18f9a8fa9ad857e199363ade65ab7fd3b16c7958ebb0f3a50f27c14e4de",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 188,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-111": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "c359559641913059448c12c0dc63fb6bd64042e72ad2d8ade56fd5f0788bdd4f",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 541,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-113": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "6ec4cf40a902b84b46f171820885eb221da9d0ec19e7e70ee961bc9f2c4b8aa3",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 359,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-115": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "52c566d22c83a044dde0cb6a78aa3a33ac48c06db7df5d80b59e4c6ac12c45e0",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 86,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-117": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "9d473a0e4284249a26e0bf42d6367972810c92f608bdef7c021a40824a13e362",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 626,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-119": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "ff123d04014a1bbe4c3281c15cf9cce0cf6f6c6b79b5cee129f74e061311df34",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 630,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-121": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "c0685bd3858a9133aab138feb996ab1ee936ae8680a353a551049e2c0b5f9a99",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 583,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-123": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "71f4c2410fa6dc2d8b6d53b1929c33d8bbb4376a78dd3a2e78e99bfbb1fff9b7",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 304,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-125": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "4077bcf64a0c4be7ce632d01d9549117b1474ba31a145c86e8194fd12256ffaa",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 172,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-127": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "8b2dc5cd5184fd3c40b747d7eea55df80d481f6a6bcae2267ff7192252695bda",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 261,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-129": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "b9aa62c70d4fa1f126040f054b79e722a2a0162ed0776fe3a8c9644f37bc7c37",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 276,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-13": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "05acefd20f0e4fa9d0b768caaebd8ffea94eaecdccd9f5eadc77037a5e4cfa15",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 358,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-131": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "55c8a272a6f30a0bfcd4197e5f4ce2964c02d352ec8a2c5c5d3076f91a273db5",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 509,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-133": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "e8149d007cc0bd9b85a29f3a73094afb47c10495cca37698be42be21d5ac04c8",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 185,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-135": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "574e724a0bf3eea8826e88a1eac5aa5dc1431754563dda755e6fa90f38984b72",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 514,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-137": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "cbf794ff6bf6544cce8376b935ce5b85f8f52c6480fb971a27778c376fe0171e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 330,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-139": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "a56b84415fc78b54dc980264461f2e9b43262bac7bd734a084f9519b206e4c27",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 516,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-141": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "d32ea733961c201f0218a4401437d42e832c49f80565a0b5e062a34aaea51da1",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 225,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-143": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "71176ce3af3dbc7103a9acaccd51cace387a2fbb007a879f5892c71a38d1e9e1",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 269,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-145": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "ada983b8d2c1e5d924c8a23b670ae0d8a2a7dd237ac3aee64224b11772279913",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 912,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-147": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "dda2a9386b2fd4e093467f5199f410600b5bbae9206fb97bb27a04fac851f13d",
+   "status": "completed",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 187,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-149": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "d1aa58dbaacc028e8a654e556337fdf53cde9980ff8a86eb51bdd3a14d824cb4",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 498,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-15": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "53011eb369ce6d9c09a4571eda4fa16cd7e459ba1adfb4fc9ea5cfaaf298014a",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 193,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-151": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "d1f3a329ae854c0a6505391a204cd2fad8f898a5fc70e11bbf8db856c7645651",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 286,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-153": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "eed0aa157828d52a36166557af0948d52dd0d42fe27960a7d81e001f40cb8d8c",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 436,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-155": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "889e030187e085e7fda06001acaee25e0cbb7dc8d190b23a840f8e207b439b08",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 376,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-157": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "207df42b19d0038def7e97b92549a28b56e3b7f9d97231d9f1adf2f34e9440f5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 553,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-159": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "e41b5ec37a2c975df420b406e2e1652f04fe47e5dc7e8fff180c42f37e50226e",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 339,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-161": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "f9de5e896c005e6cebceedcdbbf529bf0722665c1f93c0c04b4243256b0d03df",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 504,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-163": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "5318706b4776c75b3f708430c2b72721f498c0458f4d12178686d35a60cdbcf2",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 360,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-165": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "9f1863148b9a2159b6f21eef60d054280077fbd02f2db404f56a7ffd0bfd295e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 745,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-167": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "af40efaca0b93aa8420cc08c290949cd6e023442d1501d57089be215e3b3b345",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 809,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-169": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "d8aaff6eedf8cd733c8d2213fc4545a10de0355a5fcffa2944e55eb4f61d065b",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 1062,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-17": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "aebee61fdc9f799d09b87a78261e342d407cb49145beb683d8a9b8fe1097ba29",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 337,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-171": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b08e191519e22b3a84cd66f7754c41ba1c972ae3b631fc7f69a803e97bbadf51",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 220,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-173": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "4952e3f882a307d75460a23e71fee45f0098cdeefe63f55ccbb714d1628adc63",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 142,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-175": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "c6d3afd53d83d27bf00c9cbb71f1378b668e36257ac47a05e316ef12f5a2d2cb",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 243,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-177": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "b0642ddec0b935c2a29aaca850e05d9aaca033c29a4b8dc4d28334cf79875bc7",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 421,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-179": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "d388b1a7be6384df117e0356e6e5bac92215b1614cf7be0c27b072386c3b5fb1",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 899,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-181": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "bfad0d2e04d8f81f92eb851124425d9242f6aeb1d5d19370a97b373d45b1eac7",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 527,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-183": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "6347b15668dead5188a31b6c517b9d36311ce2c8cd18e897f23c0ae4dbbff505",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 1061,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-185": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "178d0ed34512ea0a165bd3ce7af786cb36ef98601834bb9ec85712ee29c4cb5e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 377,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-187": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "d47cec9670e666e2e3ba57d4d4f069cf76c32a44eb651708b39523474d0a095e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 185,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-189": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "3e7d8299c5535279d38fc77bbf644ccd0a907bff458fed932568556fc83a642e",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 911,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-19": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "4e45ac1dfb83ae2764a55ea228a9884c57a3727c93f8a12986d68b6743879a61",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 223,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-191": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b461e5ff6a3c7f390723f31b56dac90fee05eb7f87f2379ecc3519bab0c3ff5f",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 162,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-193": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "f68cfa0bb058e3bbe4a3a59caedc8f4845c8227a0f85bce8f76fddcb129b6741",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 492,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-195": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "132e15ef82f95078d91fcd745139451c917c87d421dcc1ff4b9f6e0ef21a7c55",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 123,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-197": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "a3d4f0ffe45b69948868db111315cb6448cf5ecf0a2c3be406507111b38a7a23",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 440,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-199": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "d77433892621f2e2fa84a9464372f252fccdb95c4b939b2df59830901e0f39b2",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 162,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-201": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "d9918cd6dd05ab42228def61dfca18a1fafeb8ad91bb2cb1a3dcab1d78f80605",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 1154,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-203": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "3d04c9a0638a56de3691a2ec3e52247e6ee664e69da590ec06928815ed735ac5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 858,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-205": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "4f6a0aa36277dbd1409ee39b40137b6bc5bdee3edab00bf30e8aa3ce20aabf52",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 406,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-207": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "3482aedfff93eb1fb69b939014ed2e7d98baa603908abc1a58b72df72633452f",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 374,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-209": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "eb42c54e6dc2a2bbcb1fee88855107acf94f38c6d05f213815dd3ada7916bff4",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 384,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-21": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "982c60b292c63a66a2c108a8a375e6969761c6ec04bafabfbd098d59b3e41287",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 953,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-211": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "51afc8a9cdf77a97db73ca55a4278c690e7f6ae4b5814a3a139d33f4b1191315",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 365,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-213": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "b025c17ea44a7cb472263b46ba9f28cd54c5117e4208a8b9f4fee4dbb8f9b421",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 905,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-217": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "b964af6eca92c25a5a21a174c7fcf659d2b6994f7434bc7acca799c7435f9419",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 460,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-221": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "4071bb0a0599e013e3558cbf5232d0dfc5581653ad2d8d04f76e2d4b3830c82f",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 542,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-223": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "8216ae53e150a929bf45d15892ecb218cd9ff74e47b2ad3f954842bf9de04d0d",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 251,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-225": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "43e9283a9dbd4ed1d8bb93f9113bf464d40618b0f717106bace14cbf17b52221",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 307,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-227": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "59999ab301c1900449d51f773557fe4bd99b1c60f5ce49ef7395486422b7717d",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 202,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-229": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "d70be8a46277ff548894f2f627d5fbc7d20e22baec199ecd1b92eadc0775268a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 288,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-23": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "ebb596d2fad4748f5a1d71fdc4a2f1d21a43b565561ac8d82b38b3f9c49d8b23",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 230,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-231": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "97d21681719fb2745c8baa9df93d3d7bc8d3d52d0984089ba00ffdec537adf4a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 680,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-233": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "01bc737ae7adde1bb418450c8ae8c41dcf46328a2ad5be998cba6f18894f46a7",
+   "status": "truncated",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 1536,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-237": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "3ff2bf6f98442d19a7579c15ae35ca469616d61d9cc7d36a2dc52341ea93f4c5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 1169,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-239": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "66f2377cec30e23d66a7549b5027645096d5d02877124b12977715ce9e7e963b",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 450,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-241": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "881853fca274e69c1cb06ff92c4a65ad964f7ee64cb2375ad666bd5a337706d1",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 692,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-243": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "12d174bc16417d0bfa50437b296ea0657fe8633cc17777e952757338696ab651",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 409,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-245": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "6168ef6e43200d0e49f2e96b43a541d937912587ab75375257a6a32990ceb4bc",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 105,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-247": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "72f2368935ca108a223d2f717be1fa9915bc4d61d9ebdbc576e0c5082a8c61c5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 264,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-25": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "159986afc1573bdb7fde51a1881960e2abcf2cc7a35022701c2e8a5ca25498ad",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 136,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-251": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "e1d6dbd90a34114cc34131dbdac4f67a957c3e68f5c44346553b5b3dff2a5624",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1114,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-253": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "a90cf1547a5f279cb250c9f7a8bceb0bc7667dcec6f90877a651fec36ec9d156",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 498,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-255": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "c835c3a0f1d9086cf723a334312549f717e4b27cac767b5decaecb810229ab1c",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 464,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-257": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "d5f76ed616b1f22582e36de06be5b7cee1ed9b638c0d4936c89e190ff84c1450",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 773,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-259": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "2b6b4c46ef12355b0be02599048744cf8d06d44b2f9a577e99a492dbf3d8efc9",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 351,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-261": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "f98d8a42ae6407845ae9bdc5e7cea302b69d3194c516c474609adaea981b8a69",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 1094,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-263": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "45bccbf3d3fcc98b498b32f3938f9142ab9ccce45c09c905ff862535944b985f",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 333,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-265": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "acdb6c48026c112474e6f417c63d9393c4214c1c670de0a56f9d29c19bc51b66",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 472,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-267": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "4652d66c52411872c06666be1fc0b4c2c1ece4870b1cb6aa38110396535ed119",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 1076,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-269": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "58b7f4897d82e320f4da4c8f178b0947e85e9a587d6c99ba2bcb371071d50f70",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 438,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-27": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "6469cafd5ddf378436999a188d79b833172e15a7076334274a0287bd61fa6a9e",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 740,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-29": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "a03897849b355a5dfdcadeca456a04a9053e6a17e62e2d3c3b10073d33b67acf",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 966,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-31": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "3b29a15f2c3fe16db363b25fd38d14dc6ee84ad6960ec585cbe35ff3965344ed",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 357,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-33": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "8efd7c6715330e9dd7caa41b497cf954c1346a01ddae58a985f5a0f24d3fca14",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 627,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-35": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "13dd6d8afa785c9eb3aba044bbebb94eb20ead4d9c37ee8e36ef9e8243f60fc7",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 640,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-37": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "c529e534a54735b931967142435ac16096caddb149ab6b2033c067f57c609eb3",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 393,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-39": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "4056d70c0a90edad634d0e546c0a39f610be364010564ec2d58dc5dbd95cf8e7",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 576,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-41": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "c9a69154fcae3f5dcd0c08275f7367174f7c262c91b274ff47b124e6a3c66c14",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "neutral",
+   "n_gen_tokens": 297,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-43": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "5e2a1e05b28fc7b9add1f67c5896cd84cbbc978f7b75702512f9c7018a3f0f00",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "violating",
+   "n_gen_tokens": 439,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-45": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "36fa94430c0249978d756095be37c639eb293dbbf2fb75ff44e1a76392c8f2b8",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 683,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-47": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "bdd374fc979fc362983180c8aec7d4f6a179843a096b65cbcaf74f5b2b8692ca",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 799,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-49": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "44337fc6b278f86243e92fd6d7d9b0da19fe5440f37834e8544ff483aa98e2c3",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 343,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-51": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "96e7c1909738349608d4b2cabbdafa23aa4797deda542eb30edbe164328b640f",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 489,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-53": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "dc33880a226a69423d26bbbd5fdc5e5ec7050194b89b0a4df73a3d98f983cdb8",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 542,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-55": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "30fbfb24b79414e149c5d3e6a0146a06ce8b315b0266faaaefafa7d60f61cdde",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 509,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-57": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "170e851bbd71a12262682b73a57843f4dbb2e0e8bd00971b118acc42fede783b",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 418,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-59": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "5f3b9fed47736d54a800b627af01ebfa5e4e26b8279fe231fb35ea5dc681332c",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 403,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-61": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "954f94e75c4146f77da66ddce31546a8910dd4723a48c8fd674e0ac1cd122b07",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 545,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-63": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "8fe20db0045a614a5aa253dc1e0df3da79c0d8dcd283c710172c9edd9ecd151b",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 549,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-65": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "44dce60264321555d218e119a9e242028e5f41b7311269343e970127a7792ede",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 313,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-67": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "0cbc263d4de02240c8979bfcf5c1491be62a47c97f3d8dd42bee7d8bfb31a7c9",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 382,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-69": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "907adf86cc3c241f6722f3233704c1cca52aca23a544c69b04caf2d18ff54d8f",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "violating",
+   "n_gen_tokens": 842,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-71": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "b8e6dacb92efe48abab48f1cfbaba07876429719fa845e0c708dea39fa27184d",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 443,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-73": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "985e0a5a8cffa78c736265c7f3a62f6c3bfa60b9095174bae800e914cb1d012b",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 156,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-75": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "cf53f51a7787a1febd10535c960a9ded2ad891595e3ac5b7eea89aa3d31c0205",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 664,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-77": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "78c9bb5cc04eb51a944f82b858e359a9397bf20440b8c519149cdccc9dec750b",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 620,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-79": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o3",
+    "C": "o1"
+   },
+   "prompt_sha256": "75c5fc16bbdbb58a31723bc6394ae3101a7d3fe547c0861e17e9b1f8374f3f00",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 289,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-81": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "f7a0684740f850c5a44a602bd2ae2efbca242a9576dc1af1e6e87e6a65f7fe7a",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 360,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-83": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "7eb589659abe3a22d8bd71c095bdae4c316c592e4e563db33c69b99aa88506a5",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 449,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-85": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "09a3fa33476bb7b6b086e80bc64387c1216a7d1787cdf7f10e4c8b08c283caae",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "consistent",
+   "n_gen_tokens": 523,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-87": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "e7eb808f3c453268ed974f63cef59967244810663efd9d329e87646d43d2f323",
+   "status": "truncated",
+   "letter": null,
+   "norm_status": null,
+   "n_gen_tokens": 1536,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-89": {
+   "permutation": 0,
+   "order": {
+    "A": "o2",
+    "B": "o1",
+    "C": "o3"
+   },
+   "prompt_sha256": "cd8cd19493d40cfaeafebe948b75aca4de6b9215426119985edc715f57452350",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "consistent",
+   "n_gen_tokens": 286,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-91": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "268bbdf7e78aa934ce7329bc2686eb7dd1ae756ca2b06e135c5c9614a43ed7ca",
+   "status": "completed",
+   "letter": "C",
+   "norm_status": "violating",
+   "n_gen_tokens": 899,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-93": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o1",
+    "C": "o2"
+   },
+   "prompt_sha256": "7d554e364bc38bb03d119ce47bc3d2f3c1e9141f3072feb7ae3a7d55acd25c31",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 565,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-95": {
+   "permutation": 0,
+   "order": {
+    "A": "o3",
+    "B": "o2",
+    "C": "o1"
+   },
+   "prompt_sha256": "099c49550c45f955830d20e718dec4cb64e55ef01eb3dd442f63672e9e2fb41a",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "neutral",
+   "n_gen_tokens": 427,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-97": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o2",
+    "C": "o3"
+   },
+   "prompt_sha256": "1d343fc8cb617dfa1700d3039486bb0a51cec46e8e83e1e9729042e5d5a1cd54",
+   "status": "completed",
+   "letter": "A",
+   "norm_status": "consistent",
+   "n_gen_tokens": 499,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  },
+  "H1-B-99": {
+   "permutation": 0,
+   "order": {
+    "A": "o1",
+    "B": "o3",
+    "C": "o2"
+   },
+   "prompt_sha256": "52513c6d5c99e7d9be774489fb4b5db833f21c42589ecb81502729ba3849e6ec",
+   "status": "completed",
+   "letter": "B",
+   "norm_status": "neutral",
+   "n_gen_tokens": 253,
+   "cap": 1536,
+   "temperature": 0.7,
+   "sampler_version": 2,
+   "reasoning_level": "medium"
+  }
+ }
+}
