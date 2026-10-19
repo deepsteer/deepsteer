@@ -1222,6 +1222,16 @@ What remains of R_b is that the empty think block is a trained no-think behaviou
 of every model's dose 0 (OLMo's `close_think`, Muse's empty reasoning channel) and is what the
 brake's definition compares. resolution_type: calibration (pending the author's call on dropping
 the GPU discriminator).
+**Discriminator run (rider pod 2c, 2026-10-19, `outputs/t10d/qwen38_27b`; author ran it).** Candidate
+`think_on_empty` (the registered text with the merged `\n\n` token 271 split into 198, 198):
+every dose-0 check passes (letter mass 0.996; C0 0.844 vs 0.729; known-gap band 0.659; forward vs
+generation alone 0.000). On the same 60 reasoned rows: P_dose0 0.569 [0.509, 0.631] (0.612 with
+the registered candidate), B = +0.126 [0.067, 0.184] (MDE 0.084), 5 engaged against the null q95 16.
+**Status: resolved, R_a.** The sign and the CI's exclusion of 0 hold under the only construction
+that differs from the registered one, so Qwen3.8 deliberates toward protection on H1 on this
+instrument; R_b (a mode switch) had no prompt-level form. Side finding: splitting one newline token
+moved Qwen's dose-0 protective share by −0.043, about half its MDE; dose-0 shares on this model
+carry that much tokenization sensitivity. resolution_type: experiment.
 **Thesis impact.** R_a: the brake is not universal across reasoning families; ST's second-family replication needs a braking family (Muse), and Qwen becomes the panel's documented non-braker, which sharpens what the intervention claims. R_b: the dose-0 construction is a per-family instrument choice that can flip a brake's sign, and the KDG dose-0 arm needs a cross-family construction audit.
 **Note (criterion (i)'s sign).** Amendment 5's criterion (i) reads "CI excluding 0" and is coded that way; Qwen's positive B satisfies it literally. Its verdict is the same under a directional reading because (ii) fails; the sign is an author item at G1.
 
@@ -1238,7 +1248,10 @@ transformers' `grouped_mm_fallback` op; that is the ~20 ms per sequence-step cos
 `experts_implementation="eager"` the step is 0.082 / 0.191 / 0.282 / 0.354 s at batches
 1 / 8 / 33 / 132 (7.6× faster at 132), so T1.3 prices at ~1.2 A100-h on the HF stack of record.
 `batched_mm` does not fit at any batch; MegaBlocks has no torch-2.6 build. resolution_type:
-experiment. Open consequence: the HF readouts of record so far (screen, riders) ran on the default
+experiment. Rider pod 2c (torch 2.13, bf16-dequantized, A100-SXM4 community): `grouped_mm` runs
+0.038 / 0.070 / 0.249 / 0.961 s per step at batches 1 / 8 / 33 / 132: faster than eager at small
+batches, slower at 132 (eager 0.354 on rider pod 2b), so T1.3's batch-132 price stays on the
+eager path (~1.2 A100-h); the two timings come from different pods on the same GPU model. Open consequence: the HF readouts of record so far (screen, riders) ran on the default
 (fallback) path; pinning `eager` for GPT-OSS changes its MoE arithmetic, so its dose-0 floor and
 stack-parity reads are re-taken under the pin before any readout of record.
 **Thesis impact.** None on the science; on the plan, T1.3 is now the largest Tier-1 line (development total 15.9 A100-h with GPT-OSS; envelope still holds at ~25 of 35 with Muse).
@@ -1248,4 +1261,14 @@ stack-parity reads are re-taken under the pin before any readout of record.
 **Process ledger 2026-10-19 — rider pod 2's GPT-OSS record was lost to two bugs in a path no local test reached.** (1) After the fold check freed the first HF model, its vLLM half needed the tokenizer through `sc.model` (None). (2) The folded checkpoint's links into the HF cache entered the bank's manifest walk, which raised, so the record (with the dose-0-position reads computed minutes earlier) was never written, and the stack reads and three MoE probes that run only after a clean exit were skipped. Fixes: a tokenizer stand-in after each free, the checkpoint removed after the check (also on failure), the bank never walks links; regression tests for both. The headline dose-0-position numbers survive in the session log. The MegaBlocks probe failed to load: transformers 5.17 accepts `kernels` 0.16.x only and an unpinned install pulled a newer one (now pinned). Lesson: a step that can fail must not sit between expensive reads and the bank; the dose-0 reads should have banked before the fold check started. Cost of the pod: 0.65 A100-h (timestamps + provisioning); Muse's half (dose-0-position reads, stack parity inside) is complete.
 
 **Process ledger 2026-10-19 — rider pod 2b's GPT-OSS results were lost to a download path mismatch Claude asserted without checking.** The relaunch command set `RESULTS_SUBPATH=outputs/t10d` while the rider2 mode writes `outputs/t10c`; Claude said the download would map one onto the other, which the launcher does not do. rsync found no source, reported an empty file list as success, and the launcher terminated the pod (gyyo2g10b95uqs, ~0.75 A100-h). What survives is the streamed session log: the dose-0-position reads (identical to the first rider-2 pod), the eager MoE timings, `batched_mm`'s out-of-memory at every batch, MegaBlocks' missing build, and two load failures in the vLLM venv (`accelerate` absent for transformers' MXFP4 path, so GPT-OSS's torch-2.13 stack read and `grouped_mm` probe never ran). The fold check's vLLM half failed for GPU memory (39 of 79 GiB free; now its own process). Fixes: `rp_download` keeps the pod and lists the remote outputs when the results directory is missing (shared launcher); `STEPS=<mode>/<subdir>` names the remote results directory; the bank no longer lists the interim record twice (the manifest's sha mismatch).
+
+## ST-A7 (ledger) — The fold validation's vLLM-vs-HF steering check fails its pre-registered bar (max difference of differences 0.638 vs 0.25) while the two engines' steering effects correlate at 0.87
+
+**Date.** 2026-10-19 (rider pod 2c, `outputs/t10d/gpt_oss_20b/fold`; Amendment 9 item 4 (ii)).
+**Observation.** v (‖v‖ 325, 0.25 × the median residual norm at block 11) folded into every expert's `down_proj_bias`: (i) HF hook vs HF fold 0.262 nats, inside the 0.584 bar, hook vs base 1.07 (passes); (ii) the steering effect on vLLM (folded − base) against HF's: max |difference of differences| 0.638, mean 0.187, bar 0.25 (fails); (iii) parse rate 0.953 base, 0.922 folded (64 each). Zero-GPU follow-up on the saved rows (80 letter values): Pearson 0.874 between the engines' per-letter effects, sign agreement 0.86, vLLM's effect ≈ 0.82 × HF's; the unsteered HF-vs-vLLM gap on the same rows is max 0.783, mean 0.164.
+**Type.** control misbehaviour (a bar calibrated on other models).
+**Competing readings.** R_a (engine band): the fold is applied correctly in vLLM and the residual is the two engines' ordinary disagreement (Marlin W4A16 vs bf16-dequantized arithmetic), which on GPT-OSS's dose-0 rows is ~0.78 nats unsteered, three times the dense models' 0.25 the bar was taken from. R_b (fold mislanded): the bias reaches vLLM's experts in another layout or weighting. R_b predicts an uncorrelated or sign-scrambled effect; 0.87 and 86% sign agreement rule out a gross mislanding, and a scale of 0.82 with a correlated residual fits R_a.
+**Discriminator.** Done (zero GPU, above): R_a. A sharper one if needed: the same check with a smaller ‖v‖ (residuals that shrink in proportion → engine nonlinearity; that stay at the baseline band → engine noise).
+**Status.** resolved, R_a, against the bar as written: under Amendment 9 item 4 the fold arms are not admitted until the author decides. The fold's correctness in vLLM is shown; what fails is a cross-engine equality the gate never uses, since ΔP never crosses engines (Amendment 9 item 3). resolution_type: calibration.
+**Thesis impact.** None on the science. On T1.3: R_a admits fold arms for within-vLLM contrasts (fold vs its own fill and none), and the cross-engine bar would be re-set from GPT-OSS's own HF-vs-vLLM band (a post-hoc fork: amendment plus both columns).
 

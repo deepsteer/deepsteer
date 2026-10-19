@@ -1207,3 +1207,28 @@ post-hoc check.
    rates (upper bounds, every twin kept): T1.1 selection +0.05 A100-h; T1.5 +0.29 (none^re + 3
    adapters × 360 × 4, 0.07 per arm); T1.6 on Muse +0.68 (none^re + best + `L-beh` × 360 × 2,
    0.23 per arm); no arm reaches the 0.5 cap, so none drops to 2 rollouts.
+
+#### Rider pods 2–2c, outcomes against Amendment 9's pre-registered rules (2026-10-19)
+
+- **Readout mode (item 2): single-row with the bf16 head on both models of record.** Dose-0
+  position, replicate floor bf16 → fp32 head: GPT-OSS-20B 0.292 → 0.375 under the experts pin
+  (0.299 → 0.258 before it), Muse 0.396 → 0.278; neither reaches 0.025.
+- **Stack of record (item 1): torch 2.13 in the vLLM venv becomes the ST HF stack of record from
+  T1.1 on** (KDG's unchanged), with GPT-OSS loaded bf16-dequantized on eager experts. Inside the
+  bar on both models: GPT-OSS max 0.476 against 1.662 (64-row floors 0.724 / 0.831, negative
+  control 27.5, tie 5e-5); Muse max 0.457 against 0.856 (rider pod 2). T1.4's training kernels
+  are priced on torch 2.13. The 64-row floors make the bar wide: the read rules out cross-stack
+  differences above ~1.7 nats on GPT-OSS; what it saw was a 0.48 maximum and a 0.11 mean.
+- **Rung (item 2):** GPT-OSS's compile fails under the experts pin (Inductor lowering); uncompiled
+  flex attention passes the reference-floor ladder at the dose-0 position (0.375 against 0.584,
+  own floor 0.541 within it). Muse keeps uncompiled SDPA.
+- **Fold validation (item 4):** (i) passes (hook vs fold 0.262 against 0.584; hook vs base 1.07);
+  (ii) fails as written (0.638 against 0.25) with the engines' effects correlated at 0.87 and
+  GPT-OSS's own unsteered HF-vs-vLLM gap 0.78 on the same rows (ST-A7, R_a); (iii) parse rates
+  0.953 / 0.922. Fold arms are not admitted to T1.3 until the author decides on ST-A7.
+- **MoE (item 5):** T1.3 prices at ~1.2 A100-h on eager experts at batch 132 (ST-A6, resolved);
+  `grouped_mm` on torch 2.13 is faster at small batches and slower at 132.
+- **ST-A5 (rider 2c item 5):** resolved R_a (Qwen3.8's B +0.126 [0.067, 0.184] under the
+  alternative dose-0 construction).
+- Cost of the three rider pods: 0.65 + ~0.75 (lost download) + 1.0 A100-h (2c, timestamps +
+  provisioning); spent so far ~7.6 A100-h.

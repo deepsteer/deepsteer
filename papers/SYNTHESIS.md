@@ -1140,3 +1140,10 @@ an engineering fact, not a property of the gate: constant vectors fold exactly i
 bias and run on vLLM, and the slow HF path is a fallback to the per-expert loop under torch 2.6
 (G1 item 3).
 
+**Rider pods 2–2c (2026-10-19).** Qwen3.8's protective deliberation survives the alternative dose-0
+construction (B +0.126 [0.067, 0.184]), so the panel has two braking reasoning families and one
+that deliberates the other way. Readouts of record are single-row with the bf16 head on both models
+of record; torch 2.13 becomes the ST HF stack (inside the parity bar on both); T1.3 prices at
+~1.2 A100-h on eager experts; the bias fold lands in vLLM (effects correlated 0.87 with HF's) but
+fails its cross-engine bar, which was set from the dense models (ST-A7, author's call).
+
