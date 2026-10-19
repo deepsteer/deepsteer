@@ -268,7 +268,9 @@ for m in $MODELS; do
 done
 if [ "$STEPS" = "rider2" ] && [[ " $MODELS " == *" gpt_oss_20b "* ]]; then
   echo "==================== $OUT_SUB/gpt_oss_20b MegaBlocks kernel probe (last) ===================="
-  pip install -q --break-system-packages kernels >/dev/null 2>&1 || echo "WARN: kernels install failed"
+  # transformers 5.17.0 accepts kernels >= 0.16.0, < 0.17.0 only (rider pod 2: an unpinned install
+  # pulled a newer release and the probe could not load)
+  pip install -q --break-system-packages "kernels==0.16.0" >/dev/null 2>&1 || echo "WARN: kernels install failed"
   read -r repo rev < <($PY -c "import yaml;e=yaml.safe_load(open('papers/kdg_panel/models.yaml'))['st']['gpt_oss_20b'];print(e['repo'],e['revision'])")
   $PY papers/st_live_reference/scripts/moe_probe.py --repo "$repo" --revision "$rev" --prompts "$OUT/gpt_oss_20b/stack/probe_prompts.json" --out "$OUT/gpt_oss_20b/moe_kernels.json" --experts kernels \
     || echo "WARN: moe probe kernels failed"
