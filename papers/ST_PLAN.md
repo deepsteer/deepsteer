@@ -846,6 +846,10 @@ batch 66 (about 30 s per rollout amortized), so T1.1 alone would cost about 17 A
    shas; `data/s40_reference.json`, an engine reference only), 4 vLLM rollouts against §40's one,
    paired scenario-bootstrap difference CIs for the protective share and each letter's share,
    all including 0; the MDE is reported beside it.
+5a. **Sampler path (verified in v0.31.0 source):** with no top-k/top-p and an explicit per-request
+   seed, vLLM samples through its seeded gumbel path, never FlashInfer's fused sampler; the worker
+   sets `VLLM_USE_FLASHINFER_SAMPLER=0` so engine warm-up does not JIT-compile that unused kernel
+   (third VALIDATE pod). The setting is hashed with the engine's.
 6. **Envelope guard in the vLLM worker:** every 4 finished requests, the projection from decoded
    tokens per second with the pilot's 90th-percentile length as a prior for unfinished requests
    (finished lengths alone underestimate: the first to finish are the short traces); the deadline

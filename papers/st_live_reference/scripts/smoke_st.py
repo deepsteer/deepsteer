@@ -68,7 +68,14 @@ def main() -> int:
         tag = "spec" if on else "nospec"
         eng = V.engine_json(spec, spec_on=on, label=f"smoke:{tag}")
         wj = SV.worker_jobs(jobs, f"smoke_{tag}", 256)
-        rows, summ, rc = V.run_vllm(sc, wj, eng, out / "smoke" / f"vllm_{tag}.jsonl")
+        try:
+            rows, summ, rc = V.run_vllm(sc, wj, eng, out / "smoke" / f"vllm_{tag}.jsonl")
+        except RuntimeError as e:  # recorded; the next setting and the HF checks still run
+            rec["vllm"][tag] = {"failed": str(e)}
+            ok = False
+            print(f">> smoke vLLM {tag}: FAILED ({e}); continuing", flush=True)
+            save()
+            continue
         by = {r["job_id"]: r for r in rows}
         gen = [by[j["job_id"]]["gen_ids"] if by[j["job_id"]]["status"] == "finished" else None
                for j in wj]

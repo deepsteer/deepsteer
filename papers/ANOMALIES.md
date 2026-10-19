@@ -1096,4 +1096,13 @@ constrained resolve is consistent), and the venv check now runs the worker's own
 flashinfer, torchcodec and the three model modules, and loads NVRTC (`nvrtcVersion` must report
 12), before the HF stack and every gate, so a failure of this kind shows in minutes (author).
 Lesson added: check the import the program makes, not the package's top-level import.
+Third VALIDATE pod (vgjndx7dmqyfa8, driver 595.91.07): the venv checks passed (vLLM 0.31.0+cu129,
+torch 2.13.0+cu129, CUDA 12.9 available, NVRTC 12.9) and GPT-OSS-20B loaded with CUDA graphs
+captured (54.7 GiB KV cache); engine warm-up then JIT-compiled FlashInfer's top-k/top-p sampler and
+failed: no `ninja` on PATH (the worker runs the venv's python without activating it). Our requests
+never use that sampler (vLLM 0.31.0 takes the seeded gumbel path when no request sets top-k/top-p
+or any request carries an explicit seed; ours do both); only warm-up's dummy settings reach it.
+Fix: `VLLM_USE_FLASHINFER_SAMPLER=0` in the worker's environment (hashed with its settings), the
+venv's bin first on the worker's PATH, `ninja` in the venv, and the venv check asserts ninja
+resolves. Each VALIDATE pod has stopped earlier in the stack than the last and cost one setup.
 

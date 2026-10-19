@@ -49,9 +49,12 @@ MAIN_PID=$$
   echo ">> WATCHDOG: envelope stop after ${MAX_S}s (banked outputs are downloaded)"
   pkill -TERM -f "scripts/pod_st_screen.py" ; pkill -TERM -f "scripts/gen_vllm.py"
   pkill -TERM -f "scripts/smoke_st.py" ; pkill -TERM -f "pytest -q tests/scripts"
-  sleep 20; touch "$REPO_DIR/.session_done"; kill -TERM "$MAIN_PID" 2>/dev/null ) &
+  sleep 20; cp "$REPO_DIR/session.log" "$REPO_DIR/papers/st_live_reference/outputs/t10/session_watchdog.log" 2>/dev/null
+  touch "$REPO_DIR/.session_done"; kill -TERM "$MAIN_PID" 2>/dev/null ) &
 WATCHDOG_PID=$!
-trap 'pkill -P "$WATCHDOG_PID" 2>/dev/null; kill "$WATCHDOG_PID" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+# on exit: the session log goes into the downloaded outputs before the sentinel (the launcher
+# syncs only RESULTS_SUBPATH; the second and third VALIDATE pods lost their logs)
+trap 'pkill -P "$WATCHDOG_PID" 2>/dev/null; kill "$WATCHDOG_PID" 2>/dev/null; mkdir -p "$REPO_DIR/papers/st_live_reference/outputs/t10"; cp "$REPO_DIR/session.log" "$REPO_DIR/papers/st_live_reference/outputs/t10/session_$(date -u +%Y%m%dT%H%M%S).log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 echo ">> envelope stop armed: ${MAX_S}s"
 
 OUT="$REPO_DIR/papers/st_live_reference/outputs/t10"; mkdir -p "$OUT"
@@ -70,11 +73,11 @@ if [ "$VLLM_SMOKE" = "1" ]; then
     "$VLLM_VENV/bin/pip" install -q "torch==2.13.0+cu129" "torchvision==0.28.0+cu129" \
       "torchaudio==2.11.0+cu129" --index-url "$CU129_INDEX" 2>&1 | tail -3
     "$VLLM_VENV/bin/pip" install -q "vllm @ ${VLLM_WHEEL_URL}#sha256=${VLLM_WHEEL_SHA256}" \
-      "transformers==5.17.0" pyyaml -c "$VLLM_CONSTRAINTS" --extra-index-url "$CU129_INDEX" \
+      "transformers==5.17.0" pyyaml ninja -c "$VLLM_CONSTRAINTS" --extra-index-url "$CU129_INDEX" \
       2>&1 | tail -3
   fi
-  VLLM_VERSION="$VLLM_VERSION" "$VLLM_VENV/bin/python" - <<'PY' || { echo "FATAL: vLLM venv not usable (see the check above)"; exit 1; }
-import importlib.metadata as md, os, sys
+  PATH="$VLLM_VENV/bin:$PATH" VLLM_VERSION="$VLLM_VERSION" "$VLLM_VENV/bin/python" - <<'PY' || { echo "FATAL: vLLM venv not usable (see the check above)"; exit 1; }
+import importlib.metadata as md, os, shutil, sys
 import torch
 from vllm import LLM, SamplingParams  # noqa: F401  (the worker's own import; pulls torchcodec)
 import flashinfer, torchcodec  # noqa: F401,E401
@@ -93,6 +96,7 @@ checks = {
     "cuda_bindings_12": v["cuda-bindings"].startswith("12."),
     "torchcodec_cu129": v["torchcodec"].endswith("+cu129"),
     "nvrtc_12": int(major) == 12,
+    "ninja_on_worker_path": shutil.which("ninja") is not None,
 }
 bad = [k for k, ok in checks.items() if not ok]
 print(">> vLLM venv checks:", "OK" if not bad else f"FAILED {bad}")

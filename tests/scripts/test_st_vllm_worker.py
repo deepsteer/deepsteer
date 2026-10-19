@@ -110,3 +110,15 @@ def test_without_a_prior_the_deadline_still_stops_the_run():
     eng = FakeEngine(lengths, clock, per_step=8, dt=1.0)
     rows, rec = G.run_jobs(eng, _jobs(40, cap=4000), lambda j: {}, deadline=60.0, clock=clock)
     assert rec["stopped"] == "deadline" and clock.t <= 61.0
+
+
+def test_worker_env_skips_flashinfer_sampler_jit_and_finds_venv_tools(monkeypatch):
+    # most probable failure (third VALIDATE pod): engine warm-up JIT-compiles FlashInfer's sampler
+    # and dies without ninja on PATH; the worker env turns that sampler off and puts the venv's
+    # bin first
+    import vllm_phase as V
+
+    monkeypatch.setattr(V, "VLLM_PY", "/workspace/venv_vllm/bin/python")
+    env = V.worker_env()
+    assert env["VLLM_USE_FLASHINFER_SAMPLER"] == "0"
+    assert env["PATH"].split(":")[0] == "/workspace/venv_vllm/bin"

@@ -23,6 +23,20 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 VLLM_PY = os.environ.get("ST_VLLM_PYTHON", "/workspace/venv_vllm/bin/python")
 WORKER = HERE / "gen_vllm.py"
+# The worker's environment (recorded in its settings hash, which covers every VLLM_* variable).
+# FlashInfer's fused top-k/top-p sampler is never used by these requests (vLLM v0.31.0 skips the
+# fused sampler when no request sets top-k/top-p or any request carries an explicit seed; ours do
+# both, so they take the seeded gumbel path), but engine warm-up calls it with dummy settings and
+# JIT-compiles it, which failed on the third VALIDATE pod (no ninja on PATH) and would cost minutes
+# per fresh pod; off. The venv's bin goes first on the worker's PATH so any other runtime kernel
+# build finds the venv's own tools (ninja).
+WORKER_ENV = {"VLLM_USE_FLASHINFER_SAMPLER": "0"}
+
+
+def worker_env() -> dict:
+    env = dict(os.environ, **WORKER_ENV)
+    env["PATH"] = str(Path(VLLM_PY).parent) + os.pathsep + env.get("PATH", "")
+    return env
 
 
 def engine_json(spec: dict, *, spec_on: bool, label: str, fallback: bool = False) -> dict:
@@ -33,7 +47,10 @@ def engine_json(spec: dict, *, spec_on: bool, label: str, fallback: bool = False
           "max_model_len": v["max_model_len"], "max_num_seqs": v["max_num_seqs"],
           "gpu_memory_utilization": v["gpu_memory_utilization"],
           "enable_prefix_caching": True, "enable_chunked_prefill": True,
-          "generation_config": "vllm", "seed": 0}
+          "generation_config": "vllm", "seed": 0,
+          # the offline LLM disables stats by default; on, so the speculative acceptance counters
+          # reach the run summary (logging only; no numeric effect)
+          "disable_log_stats": False}
     if v.get("language_model_only"):
         kw["language_model_only"] = True
     if spec_on:
@@ -68,7 +85,7 @@ def run_vllm(sc, jobs: list[dict], engine: dict, out: Path, *, deadline: float |
            "--out", str(out), "--after-h", str(after_h), "--expected-len", str(expected_len)]
     if deadline is not None:
         cmd += ["--deadline", str(deadline)]
-    rc = subprocess.run(cmd, stdout=sys.stdout, stderr=sys.stderr).returncode
+    rc = subprocess.run(cmd, stdout=sys.stdout, stderr=sys.stderr, env=worker_env()).returncode
     if rc not in (0, 3):
         raise RuntimeError(f"vLLM worker failed (exit {rc}) on {engine['label']}")
     rows = [json.loads(x) for x in out.read_text().splitlines() if x.strip()]
