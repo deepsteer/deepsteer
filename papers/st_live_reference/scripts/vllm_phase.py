@@ -90,7 +90,7 @@ def _dry(sc, jobs, engine, out):
                      "status": "finished", "finish_reason": "length"
                      if len(g) >= j["max_tokens"] else "stop", "t_finish": 0.0})
     spec = engine["llm_kwargs"].get("speculative_config")
-    wall = float(sum(secs)) * (0.6 if spec else 1.0)
+    wall = float(sum(secs)) * (getattr(sc.model, "spec_factor", 0.6) if spec else 1.0)
     dec = sum(r["n_tokens"] for r in rows)
     summary = {"label": engine["label"], "engine": engine, "versions": {"vllm": "dry"},
                "settings_sha256": "dry", "wall_seconds": wall, "decoded_tokens": dec,

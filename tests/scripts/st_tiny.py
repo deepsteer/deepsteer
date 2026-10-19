@@ -27,7 +27,14 @@ def build(key: str, out: Path) -> Path:
     tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
     cfg = AutoConfig.from_pretrained(spec["repo"], revision=spec["revision"]).to_dict()
     torch.manual_seed(0)
-    if key == "olmo3_think":
+    if key == "gpt_oss_20b":  # no quantization: the tiny weights are random bf16/fp32
+        cfg.pop("quantization_config", None)
+        cfg.update(hidden_size=32, intermediate_size=64, num_attention_heads=4,
+                   num_key_value_heads=2, head_dim=8, num_hidden_layers=4,
+                   layer_types=cfg["layer_types"][:4], num_local_experts=4,
+                   num_experts_per_tok=2)
+        model = AutoModelForCausalLM.from_config(AutoConfig.for_model(**cfg))
+    elif key == "olmo3_think":
         cfg.update(TEXT, num_hidden_layers=4, layer_types=cfg["layer_types"][:4])
         model = AutoModelForCausalLM.from_config(AutoConfig.for_model(**cfg))
     else:

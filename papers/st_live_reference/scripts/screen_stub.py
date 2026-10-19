@@ -15,7 +15,7 @@ import reasoning_formats as rf
 class ScreenStub:
     def __init__(self, key: str, tok, fmt: rf.ReasoningFormat, n_layers: int, *,
                  length_by_effort: dict | None = None, padding_noise: float = 0.0,
-                 batch_noise: float = 0.0,
+                 batch_noise: float = 0.0, spec_factor: float = 0.6,
                  low_mass_candidates: tuple[str, ...] = (), hidden: int = 8) -> None:
         self.key = key
         self.tok = tok
@@ -29,6 +29,7 @@ class ScreenStub:
         self.length_by_effort = length_by_effort or {}
         self.padding_noise = padding_noise
         self.batch_noise = batch_noise
+        self.spec_factor = spec_factor  # simulated wall-time factor with speculation (vLLM dry)
         self.end_ids = self._prompt_end_ids()
         self.noise_rng = np.random.default_rng(1)  # one stream: every read draws fresh noise
         self.low_mass_candidates = low_mass_candidates
@@ -114,6 +115,10 @@ class ScreenStub:
             seq = body + self.tok.encode("</think>\n\n", add_special_tokens=False) + letter
         elif isinstance(f, rf.ThinkTokenFormat):
             seq = body + [f.close_id] + self.tok.encode("\n\n", add_special_tokens=False) + letter
+        elif isinstance(f, rf.HarmonyFormat):
+            import kdg_harmony as kh
+
+            seq = list(kh.ANALYSIS_OPEN) + body + list(kh.CANON_HEADER) + letter
         else:
             seq = list(f.reason_open) + body + [f.reason_end] + list(f.answer_header) + letter
         seq = seq + [self.eos]

@@ -23,10 +23,12 @@ import screen_lib as L  # noqa: E402
 MODELS = ("olmo3_think", "qwen38_27b", "muse_glimmer_30b")
 
 
-def _run(tmp: Path, model: str, *extra: str) -> tuple[int, dict, Path]:
+def _run(tmp: Path, model: str, *extra: str, engine: str = "hf") -> tuple[int, dict, Path]:
+    # the tests below exercise the HF engine path unless they pass engine="vllm" (Amendment 7)
     pytest.importorskip("transformers")
     r = subprocess.run([sys.executable, str(DRIVER), "--model", model, "--dry-run",
-                        "--date-pin", "2026-10-18", "--out", str(tmp), *extra],
+                        "--engine", engine, "--date-pin", "2026-10-18", "--out", str(tmp),
+                        *extra],
                        capture_output=True, text=True, cwd=ROOT)
     if "OSError" in r.stderr and "tokenizer" in r.stderr.lower():
         pytest.skip("tokenizer unavailable offline")
@@ -266,3 +268,93 @@ def test_pilot_caps_report():
     assert r["n_run"] == 5 and r["n_not_run"] == 1
     assert r["truncation_at_1536"] == pytest.approx(3 / 5)
     assert r["truncation_at_2048"] == pytest.approx(2 / 5)
+
+
+
+# ---- Amendment 7: the vLLM engine path (stub generation in-process; vLLM itself on the pod) ----
+
+
+@pytest.mark.parametrize("model", ("qwen38_27b", "muse_glimmer_30b"))
+def test_vllm_path_screen_end_to_end(tmp_path, model):
+    rc, rec, out = _run(tmp_path, model, engine="vllm")
+    assert rc == 0 and rec["status"] == "ok" and rec["engine"] == "vllm"
+    pv = rec["phase_v"]
+    assert pv["pilot"][0]["probe"]["regime"] == "pilot" and pv["screen_probe"]["regime"] == "screen"
+    rows = [json.loads(x) for x in (out / "screen" / "h1_screen.jsonl").read_text().splitlines()]
+    # most probable failure: rows of record mixing the probe's two settings
+    assert {r["vllm_choice"] for r in rows} == {pv["screen_probe"]["choice"]}
+    assert all(r["engine"] == "vllm" for r in rows)
+    assert rec["fast_path_rung"]["kept"] == "fast" and rec["dose0"]["e_regime"]
+    assert (out / "vllm" / "screen_nospec.jsonl").exists()  # the probe duplicate is banked
+
+
+def test_vllm_probe_keeps_the_faster_setting_muse_rule(tmp_path):
+    # author rule: if DFlash loses the with/without probe at Muse's screen batch, the screen runs
+    # without speculation (the stub makes speculation slower here)
+    _, rec, out = _run(tmp_path, "muse_glimmer_30b", "--stub-spec-factor", "1.5", engine="vllm")
+    assert rec["phase_v"]["screen_probe"]["choice"] == "nospec"
+    rows = [json.loads(x) for x in (out / "screen" / "h1_screen.jsonl").read_text().splitlines()]
+    assert {r["vllm_choice"] for r in rows} == {"nospec"}
+
+
+def test_vllm_path_gpt_oss_probe_and_parity(tmp_path):
+    rc, rec, out = _run(tmp_path, "gpt_oss_20b", engine="vllm")
+    assert rc == 0 and rec["status"] == "ok_probe"
+    assert rec["engine_parity"]["n_scenarios"] > 0 and "protective_ok" in rec["engine_parity"]
+    assert rec["phase_v"]["parity_probe"]["regime"] == "parity"
+
+
+def test_parity_prompts_are_section40s_exact_prompts():
+    # most probable failure: the parity jobs render a prompt §40 never saw (the comparison would
+    # then test the prompt, not the engine); every sha must equal §40's
+    pytest.importorskip("transformers")
+    import types
+
+    import screen_vllm as SV
+    import yaml
+    from reasoning_formats import build_format
+    from transformers import AutoTokenizer
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    spec = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["st"]["gpt_oss_20b"]
+    try:
+        tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+    except OSError:
+        pytest.skip("tokenizer unavailable offline")
+    fmt = build_format("gpt_oss_20b", tok, spec)
+    sc = L.Screen("gpt_oss_20b", spec, L.tok_only(tok), fmt, Path("/tmp"), "2026-10-18")
+    sc.effort = "medium"
+    Hs, _ = load_scenario_dir([P.H1_SET])
+    ctx = types.SimpleNamespace(order=L.h1_train_order(json.loads(P.SPLIT.read_text())),
+                                H={s.id: s for s in Hs})
+    jobs, ids = SV.parity_jobs(sc, ctx)  # raises on any sha mismatch (not a dry run)
+    assert len(ids) == 64 and len(jobs) == 256
+    assert not set(ids) & set(json.loads(P.SPLIT.read_text())["H1_held"])
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("model,impl", (("gpt_oss_20b", "flex_attention"), ("qwen38_27b", "sdpa")))
+def test_fast_path_rung_on_a_tiny_checkpoint(tmp_path, model, impl):
+    # Amendment 7 items 4 and 7: the fused attention + torch.compile readout against the eager
+    # reference on the Amendment 6 ladder, on real tensors (CPU, fp32)
+    import st_tiny
+    import torch
+    import yaml
+    from kdg_pod_lib import ModelWrapper
+    from reasoning_formats import build_format
+
+    spec = yaml.safe_load((ROOT / "papers/kdg_panel/models.yaml").read_text())["st"][model]
+    ck = st_tiny.build(model, tmp_path / "ck")
+    m = ModelWrapper(str(ck), None, torch_dtype=torch.float32, attn_implementation="eager")
+    fmt = build_format(model, m.tok, spec)
+    sc = L.Screen(model, spec, m, fmt, tmp_path, "2026-10-18", read_batch=4)
+    msgs = [{"role": "user", "content": "Pick one.\n\nA. rule\nB. protect" + " x" * k}
+            for k in (1, 5, 9, 13)]
+    ids = [fmt.prompt_ids(m.tok, fmt.render(m.tok, [mm], fmt.effort_ladder[0], "2026-10-18"))
+           for mm in msgs]
+    r = L.fast_path_rung(sc, ids, impl)
+    # a fused path must hold, compiled where Inductor can compile it (Qwen3.5's DeltaNet torch
+    # fallback cannot on CPU; the failed attempt is recorded with its error, never silent)
+    assert r["ok"] and r["calibrated"] and r["kept"].startswith("fast"), r
+    assert all("error" in t or "max_abs_nats" in t for t in r["attempts"])

@@ -178,6 +178,7 @@ class WhiteBoxModel(ModelInterface):
         checkpoint_step: int | None = None,
         revision: str | None = None,
         quantization_config: Any | None = None,
+        attn_implementation: str | None = None,
     ) -> None:
         from transformers import AutoConfig, AutoTokenizer
 
@@ -203,6 +204,9 @@ class WhiteBoxModel(ModelInterface):
         auto_cls = _auto_model_class(
             AutoConfig.from_pretrained(model_name_or_path, revision=revision)
         )
+        # ``attn_implementation`` (optional): passed through to from_pretrained; None keeps the
+        # HuggingFace default for the architecture
+        extra = {} if attn_implementation is None else {"attn_implementation": attn_implementation}
         # ``quantization_config`` is optional and defaults to None (no change for
         # unquantized models). It is the clean path for loading a quantized repo
         # under an explicit policy, e.g. ``Mxfp4Config(dequantize=True)`` to force
@@ -216,6 +220,7 @@ class WhiteBoxModel(ModelInterface):
                 low_cpu_mem_usage=True,
                 revision=revision,
                 quantization_config=quantization_config,
+                **extra,
             )
             self._model = self._model.to("mps")
         else:
@@ -225,6 +230,7 @@ class WhiteBoxModel(ModelInterface):
                 device_map=self._device if self._device != "cpu" else None,
                 revision=revision,
                 quantization_config=quantization_config,
+                **extra,
             )
             if self._device == "cpu":
                 self._model = self._model.to(self._device)

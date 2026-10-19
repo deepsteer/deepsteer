@@ -49,13 +49,18 @@ H1_SET = KDG / "data" / "harm_divergence" / "hdiv_set.json"
 H1_KEPT = KDG / "data" / "harm_divergence" / "h1_kept_ids.json"
 TRANSFORMERS_PIN = "5.17.0"
 # Amendment 5: OLMo-3-Think screens all 132 H1_train scenarios (MDE 0.075 vs 0.087 at 100)
-SCREEN_N = {"olmo3_think": 132, "qwen38_27b": 60, "muse_glimmer_30b": 60}
+SCREEN_N = {"olmo3_think": 132, "qwen38_27b": 60, "muse_glimmer_30b": 60,
+            "gpt_oss_20b": 0}  # GPT-OSS-20B (development model): probes only on T1.0
 # (pilot batch, screen generation batch, readout batch): OLMo-3-7B has 32 KV heads, so a batch of
 # 32 at the 4,096 pilot cap needs ~80 GB of cache; Qwen3.8 (16 full-attention layers) and Muse
 # (2 KV heads) fit at 32
 BATCHES = {"olmo3_think": (8, 24, 16), "qwen38_27b": (32, 32, 16),
-           "muse_glimmer_30b": (32, 32, 8)}
-ENVELOPE_H = {"olmo3_think": 1.8, "qwen38_27b": 2.5, "muse_glimmer_30b": 2.5}
+           "muse_glimmer_30b": (32, 32, 8), "gpt_oss_20b": (32, 66, 16)}
+ENVELOPE_H = {"olmo3_think": 1.8, "qwen38_27b": 2.5, "muse_glimmer_30b": 2.5,
+              "gpt_oss_20b": 1.0}
+# hours of HF work after the last vLLM stage (the guard's after_h): panel cells at 27-30B are the
+# bulk (586 x 8 x 5 reads); GPT-OSS's HF phase is the rungs and the memory probe
+HF_AFTER_H = {"qwen38_27b": 1.2, "muse_glimmer_30b": 1.3, "gpt_oss_20b": 0.3, "olmo3_think": 0.5}
 DEV_MIN_ENGAGED = 40
 CARD_ROW_MAX_H = 0.2
 
@@ -149,6 +154,56 @@ def dev_criteria(b: dict, eng: dict, has_dose0: bool) -> dict:
                     "development role by these criteria (no forced dose-0 share)"}
 
 
+def run_vllm_engine(a, env: dict) -> int:
+    """Amendment 7: phase V (vLLM, tokenizer only) then phase H (HF) through ``screen_vllm``."""
+    from types import SimpleNamespace
+
+    import screen_vllm as SV
+
+    key, spec, dry, rec, out = env["key"], env["spec"], env["dry"], env["rec"], env["out"]
+    tok, fmt, H = env["tok"], env["fmt"], env["H"]
+    if dry:
+        from screen_stub import ScreenStub
+
+        model = ScreenStub(key, tok, fmt, spec["n_layers"], length_by_effort=a.stub_length,
+                           padding_noise=a.stub_padding_noise, batch_noise=a.stub_batch_noise,
+                           low_mass_candidates=tuple(x for x in a.stub_low_mass.split(",") if x),
+                           spec_factor=a.stub_spec_factor)
+    else:
+        model = L.tok_only(tok)
+    pb, gb, rb = BATCHES[key]
+    sc = L.Screen(key, spec, model, fmt, out, env["date_pin"], dry=dry, gen_batch=gb,
+                  read_batch=rb)
+    sc.effort = fmt.effort_ladder[0]
+    rec["gpu"] = "dry-run" if dry else _gpu_name()
+
+    def load_hf(sc) -> None:
+        t0 = time.time()
+        if not dry:
+            import torch
+            from kdg_pod_lib import ModelWrapper
+
+            sc.model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16,
+                                    attn_implementation="eager")
+        rec["load_seconds"] = time.time() - t0
+
+    def finish_screen(sc, v) -> int:
+        plen = [r["tokens_to_answer"] for r in map(json.loads, (
+            out / "pilot" / f"pilot_{sc.effort}.jsonl").read_text().splitlines())
+            if r["status"] != "not_run"]
+        rec["timing_pilot"] = v["pilot"][-1]["timing"]
+        jobs = L.h1_jobs(sc, H, env["screen_ids"], 4)
+        return env["finish"](sc, v["screen_rows"], v["screen_timing"], jobs,
+                             v["lowest_level_this_pod"], v["c0_answers"], plen)
+
+    ctx = SimpleNamespace(
+        spec=spec, H=H, pilot_ids=env["pilot_ids"], screen_ids=env["screen_ids"], C0=env["C0"],
+        order=env["order"], deadline=env["deadline"], hf_after_h=HF_AFTER_H[key], sc=sc,
+        rec=rec, key=key, bank=env["bank"], load_hf=load_hf, finish_screen=finish_screen,
+        gates=lambda s: gates(s, spec, env["split"], env["order"], H, dry))
+    return SV.run(ctx)
+
+
 def _gpu_name() -> str:
     import torch
 
@@ -170,6 +225,11 @@ def main() -> int:
     ap.add_argument("--stub-batch-noise", type=float, default=0.0,
                     help="dry run only: rounding noise any batch > 1 adds (nats, sd)")
     ap.add_argument("--stub-low-mass", default="", help="dry run only: comma list of candidates")
+    ap.add_argument("--stub-spec-factor", type=float, default=0.6,
+                    help="dry run only: simulated wall-time factor with speculation (vLLM path)")
+    ap.add_argument("--engine", choices=("vllm", "hf"), default="vllm",
+                    help="trace-cell generation engine (Amendment 7: vllm; hf = the KDG path, "
+                         "kept for tiny local tests and the fallback)")
     ap.add_argument("--tiny-local", type=Path, default=None,
                     help="local test only: a tiny random checkpoint saved with the model's real "
                          "tokenizer; runs the real wrapper on CPU at reduced caps and subsets, "
@@ -187,6 +247,7 @@ def main() -> int:
     split = json.loads(SPLIT.read_text())
     order = L.h1_train_order(split)
     n_screen = SCREEN_N[key]
+    pb, gb, rb = BATCHES[key]  # pilot, generation and readout batches (used by finish())
     pilot_ids, screen_ids = order[: L.PILOT_N], order[:n_screen]
     Hs, h1_meta = load_scenario_dir([H1_SET])
     kept = set(json.loads(H1_KEPT.read_text())["ids"])
@@ -215,15 +276,79 @@ def main() -> int:
         for p in sorted(out.rglob("*")):
             if p.is_file() and p.suffix in (".jsonl", ".json", ".npz"):
                 manifest.add(p, p.parent.name, key)
-        L.Screen.save_json(sc, "screen_record.json", rec)
+        (out / "screen_record.json").write_text(json.dumps(rec, indent=1,
+                                                             default=L._json_default))
         manifest.add(out / "screen_record.json", "record", key)
         print(f"manifest: {manifest.write()}  status: {status}", flush=True)
         return code
 
+
+    def finish(sc, rows, timing, jobs, lowest_level, c0_answers, plen) -> int:
+        """Steps 5-7's readouts, shared by the HF and vLLM engines: dose-0 candidates, panel
+        cells, the post-reasoning readout of the screen rows, the dose-0 readout on the screen
+        scenarios, brake, engaged subset and criteria, timing."""
+        rec["dose0"] = L.choose_dose0(sc, C0, c0_answers)
+        if sc.dose0 is not None:
+            rec["panel"] = [L.run_letter_cell(sc, panel, cell, "panel") for cell in L.PANEL_CELLS]
+        else:
+            rec["panel"] = "skipped: no dose-0 candidate passed (no E regime; Amendment 2 item 4)"
+        rec["timing_screen"] = timing
+        pids = {(j["s"].id, j["k"]): j["ids"] for j in jobs}
+        ok, lp, resid = L.post_reasoning_readout(sc, rows, pids)
+        sc.save_jsonl("screen/h1_screen.jsonl", rows)
+        np.savez_compressed(out / "screen" / "h1_screen_readout.npz",
+                            letter_logp=lp.astype(np.float16), resid_decision=resid,
+                            rows=np.array(ok), layers=np.array(sc.layers()))
+        summ = L.screen_summary(rows)
+        # Amendment 6 item 2: "cannot step down" = no further step allowed on this pod
+        summ["truncation_limited"] = bool(not summ["truncation_ok"]
+                                          and sc.effort == lowest_level)
+        rec["screen"] = summ
+        cand = sc.dose0 or fmt.dose0[0]
+        d0, d0lp, d0res, _ = L.letter_rows(sc, [H[s] for s in screen_ids], "dl_chat_neutral",
+                                           cand)
+        sc.save_jsonl("screen/h1_dose0.jsonl", d0)
+        np.savez_compressed(out / "screen" / "h1_dose0.npz", letter_logp=d0lp.astype(np.float16),
+                            resid_decision=d0res, layers=np.array(sc.layers()))
+        rec["brake"] = brake(rows, d0)
+        rec["brake"]["dose0_candidate"] = cand.name
+        rec["brake"]["dose0_of_record"] = sc.dose0 is not None
+        has0 = sc.dose0 is not None
+        if not has0:  # Amendment 5: descriptive only, beside the reasoned protective share
+            rec["brake"]["label"] = "descriptive: against the failed dose-0 candidate's readout"
+        eng = L.engaged_subset(rows, dose0_protect(d0), use_dose0=has0)
+        rec["engaged"] = eng
+        rec["dev_criteria"] = dev_criteria(rec["brake"], eng, has0)
+        rec["ranking"] = ({"basis": "whole-set brake B (CI) and the engaged count beside its null"}
+                          if has0 else
+                          {"basis": "reasoned protective share, descriptive (no dose-0 regime)",
+                           "P_reasoned": rec["brake"]["P_reasoned"],
+                           "engaged_rule": eng["rule"]})
+        if summ["parser_disagreement_flag"]:
+            rec.setdefault("anomaly_flags", []).append(
+                f"parser disagreement {summ['parser_disagreement']:.3f} > 0.05 (Amendment 5): "
+                "ANOMALIES entry before G1")
+        rec["effort_of_record"] = sc.effort
+        L.Screen.save_json(sc, "timing.json", {
+            "model": key, "engine": a.engine, "effort_of_record": sc.effort,
+            "unbatched": sc.unbatched, "load_seconds": rec.get("load_seconds"),
+            "read_seconds_per_row": rec.get("read_seconds_per_row"),
+            "probe_mean_len": rec.get("probe_mean_len"), "pilot": rec.get("timing_pilot"),
+            "pilot_tokens_to_answer": plen, "screen": timing,
+            "screen_tokens_to_answer": [r.get("tokens_to_answer") for r in rows
+                                        if r["status"] != "not_run"],
+            "batches": {"pilot": pb, "generation": gb, "read": rb}, "dry_run": dry,
+            "gpu": rec.get("gpu")})
+        status = "ok" if timing["n_run"] == timing["n_jobs"] else "envelope_stop_in_screen"
+        return bank(status, 0 if status == "ok" else 3)
+
     from transformers import AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
-    fmt = build_format(key, tok)
+    fmt = build_format(key, tok, spec)
+    rec["engine"] = a.engine
+    if a.engine == "vllm":
+        return run_vllm_engine(a, locals())
     t_load = time.time()
     if dry:
         from screen_stub import ScreenStub
@@ -243,7 +368,6 @@ def main() -> int:
         model = ModelWrapper(spec["repo"], spec["revision"], torch_dtype=torch.bfloat16)
     rec["load_seconds"] = time.time() - t_load
     rec["gpu"] = "dry-run" if dry else _gpu_name()
-    pb, gb, rb = BATCHES[key]
     sc = L.Screen(key, spec, model, fmt, out, date_pin, dry=dry, gen_batch=pb, read_batch=rb)
     sc.effort = fmt.effort_ladder[0]
 
@@ -343,66 +467,12 @@ def main() -> int:
                                            sampler=spec["card_sampler"],
                                            label="descriptive sensitivity row, never a statistic")
 
-    # 5. dose-0 candidates
-    rec["dose0"] = L.choose_dose0(sc, C0)
-
-    # 6. panel letter cells
-    if sc.dose0 is not None:
-        rec["panel"] = [L.run_letter_cell(sc, panel, cell, "panel") for cell in L.PANEL_CELLS]
-    else:
-        rec["panel"] = "skipped: no dose-0 candidate passed (no E regime; Amendment 2 item 4)"
-
-    # 7. H1 screen
+    # 7. H1 screen (HF engine), then the shared readouts
     jobs = L.h1_jobs(sc, H, screen_ids, 4)
     rows, timing = L.run_generation(sc, jobs, cap=L.CAP_OF_RECORD, stage="screen",
                                     deadline=deadline)
-    rec["timing_screen"] = timing
-    pids = {(j["s"].id, j["k"]): j["ids"] for j in jobs}
-    ok, lp, resid = L.post_reasoning_readout(sc, rows, pids)
     sc.save_jsonl("screen/h1_screen.jsonl", rows)
-    np.savez_compressed(out / "screen" / "h1_screen_readout.npz", letter_logp=lp.astype(np.float16),
-                        resid_decision=resid, rows=np.array(ok), layers=np.array(sc.layers()))
-    summ = L.screen_summary(rows)
-    # Amendment 6 item 2: "cannot step down" = no further step allowed on this pod
-    last_level = sc.effort == sd["lowest_level_this_pod"]
-    summ["truncation_limited"] = bool(not summ["truncation_ok"] and last_level)
-    rec["screen"] = summ
-    cand = sc.dose0 or fmt.dose0[0]
-    d0, d0lp, d0res, _ = L.letter_rows(sc, [H[s] for s in screen_ids], "dl_chat_neutral", cand)
-    sc.save_jsonl("screen/h1_dose0.jsonl", d0)
-    np.savez_compressed(out / "screen" / "h1_dose0.npz", letter_logp=d0lp.astype(np.float16),
-                        resid_decision=d0res, layers=np.array(sc.layers()))
-    rec["brake"] = brake(rows, d0)
-    rec["brake"]["dose0_candidate"] = cand.name
-    rec["brake"]["dose0_of_record"] = sc.dose0 is not None
-    has0 = sc.dose0 is not None
-    if not has0:  # Amendment 5: descriptive only, beside the reasoned protective share
-        rec["brake"]["label"] = "descriptive: against the failed dose-0 candidate's readout"
-    eng = L.engaged_subset(rows, dose0_protect(d0), use_dose0=has0)
-    rec["engaged"] = eng
-    rec["dev_criteria"] = dev_criteria(rec["brake"], eng, has0)
-    rec["ranking"] = ({"basis": "whole-set brake B (CI) and the engaged count beside its null"}
-                      if has0 else
-                      {"basis": "reasoned protective share, descriptive (no dose-0 regime)",
-                       "P_reasoned": rec["brake"]["P_reasoned"],
-                       "engaged_rule": eng["rule"]})
-    if summ["parser_disagreement_flag"]:
-        rec.setdefault("anomaly_flags", []).append(
-            f"parser disagreement {summ['parser_disagreement']:.3f} > 0.05 (Amendment 5): "
-            "ANOMALIES entry before G1")
-    rec["effort_of_record"] = sc.effort
-    L.Screen.save_json(sc, "timing.json", {
-        "model": key, "effort_of_record": sc.effort, "unbatched": sc.unbatched,
-        "load_seconds": rec["load_seconds"], "read_seconds_per_row": rec["read_seconds_per_row"],
-        "probe_mean_len": rec["probe_mean_len"], "pilot": rec["timing_pilot"],
-        "pilot_tokens_to_answer": plen, "screen": timing,
-        "screen_tokens_to_answer": [r.get("tokens_to_answer") for r in rows
-                                    if r["status"] != "not_run"],
-        "batches": {"pilot": pb, "generation": gb, "read": rb}, "dry_run": dry,
-        "gpu": rec["gpu"]})
-    status = "ok" if timing["n_run"] == timing["n_jobs"] else "envelope_stop_in_screen"
-    return bank(status, 0 if status == "ok" else 3)
-
+    return finish(sc, rows, timing, jobs, sd["lowest_level_this_pod"], None, plen)
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -94,6 +94,7 @@ class Screen:
     effort: str | None = None
     dose0: rf.Dose0 | None = None
     record: dict = field(default_factory=dict)
+    grab: dict | None = None  # persistent hook buffer (set by ``install_hooks``)
 
     @property
     def tok(self):
@@ -237,14 +238,9 @@ def read_ids(sc: Screen, id_lists: list[list[int]], batch: int):
     pad = model.tok.pad_token_id
     lids = [k for k, _ in sorted(sc.letters.items(), key=lambda kv: kv[1])]
     lay = sc.layers()
-    grabbed: dict[int, Any] = {}
-
-    def hook(h):
-        def fn(_m, _i, out):
-            grabbed[h] = (out[0] if isinstance(out, tuple) else out)[:, -1, :].detach()
-        return fn
-
-    handles = [model.wb._get_layer_module(h - 1).register_forward_hook(hook(h)) for h in lay]
+    persistent = sc.grab is not None
+    grabbed: dict[int, Any] = sc.grab if persistent else {}
+    handles = [] if persistent else _register(sc, grabbed)
     lps, res = [], []
     try:
         for i in range(0, len(id_lists), batch):
@@ -268,6 +264,90 @@ def read_ids(sc: Screen, id_lists: list[list[int]], batch: int):
         for hd in handles:
             hd.remove()
     return np.concatenate(lps).astype(np.float32), np.concatenate(res)
+
+
+def tok_only(tok):
+    """A model stand-in for the vLLM phase: the tokenizer, nothing on the GPU."""
+
+    class _T:
+        pass
+
+    m = _T()
+    m.tok = tok
+    m.effort = None
+    return m
+
+
+def _register(sc: Screen, grabbed: dict) -> list:
+    """Forward hooks capturing the last position's residual after each banked block."""
+
+    def hook(h):
+        def fn(_m, _i, out):
+            grabbed[h] = (out[0] if isinstance(out, tuple) else out)[:, -1, :].detach()
+        return fn
+
+    return [sc.model.wb._get_layer_module(h - 1).register_forward_hook(hook(h))
+            for h in sc.layers()]
+
+
+def install_hooks(sc: Screen) -> None:
+    """Register the banked-layer hooks once, before any compile (hooks added or removed after a
+    compile would trigger recompiles on every readout)."""
+    if sc.grab is None and not sc.dry:
+        sc.grab = {}
+        _register(sc, sc.grab)
+
+
+def fast_path_rung(sc: Screen, id_lists: list[list[int]], fast_impl: str,
+                   compile_forward: bool = True) -> dict:
+    """Amendment 7 items 4 and 7 (author): the fused HF readout (``fast_impl`` attention, then
+    torch.compile of the forward) against the eager reference on the Amendment 6 ladder:
+    reference = eager attention, uncompiled, each row alone; replicate floor = the fast path's row
+    alone vs in a batch of identical copies; bar = max(0.05, 2 x floor); the fast path's
+    one-position-off read must exceed the bar against the reference (else uncalibrated).
+
+    Attempts in order: fused + compile, fused without compile; the first attempt that runs and
+    passes stays on. An attempt that raises (e.g. Inductor cannot compile a kernel) is recorded
+    with its error and the next is tried; if none passes the model stays eager and uncompiled."""
+    if sc.dry:
+        return {"fast_impl": fast_impl, "dry": True, "ok": True, "kept": "fast"}
+    model = sc.model
+    torch = model.torch
+    install_hooks(sc)
+    ref, _ = read_ids(sc, id_lists, 1)
+    orig_forward = model.model.forward
+    attempts = [True, False] if compile_forward else [False]
+    tried: list[dict] = []
+    for comp in attempts:
+        model.model.set_attn_implementation(fast_impl)
+        model.model.forward = torch.compile(orig_forward, dynamic=True) if comp else orig_forward
+        rec: dict = {"fast_impl": fast_impl, "compiled": comp}
+        try:
+            t0 = time.time()
+            fast, _ = read_ids(sc, id_lists, 1)
+            rec["first_fast_pass_seconds"] = time.time() - t0
+            rep_ = np.stack([read_ids(sc, [x] * sc.read_batch, sc.read_batch)[0][0]
+                             for x in id_lists])
+            off, _ = read_ids(sc, [x[:-1] for x in id_lists], 1)
+        except Exception as e:  # noqa: BLE001  (the attempt's failure is the record)
+            rec.update(ok=False, error=f"{type(e).__name__}: {str(e)[:300]}")
+            tried.append(rec)
+            continue
+        floor = float(np.abs(fast - rep_).max())
+        bar = max(MAX_NATS, FLOOR_FACTOR * floor)
+        meas = float(np.abs(fast - ref).max())
+        neg = float(np.abs(off - ref).max())
+        rec.update(max_abs_nats=meas, noise_floor_replicate=floor, bar=bar,
+                   floor_factor=FLOOR_FACTOR, negative_control_one_position_off=neg,
+                   calibrated=neg > bar, ok=bool(neg > bar and meas <= bar))
+        tried.append(rec)
+        if rec["ok"]:
+            return {**rec, "kept": "fast" + (" + compile" if comp else ""), "attempts": tried,
+                    "n": len(id_lists)}
+    model.model.set_attn_implementation("eager")
+    model.model.forward = orig_forward
+    return {"fast_impl": fast_impl, "ok": False, "kept": "eager", "attempts": tried,
+            "n": len(id_lists)}
 
 
 def first_step_letters(sc: Screen, id_lists: list[list[int]]) -> np.ndarray:
@@ -402,6 +482,22 @@ def run_generation(sc: Screen, jobs: list[dict], *, cap: int, stage: str, sample
                                        on_batch=bank, deadline=deadline)
     inv = np.argsort(perm)
     ids, seeds = [ids[i] for i in inv], [seeds[i] for i in inv]
+    rows = build_rows(sc, jobs, ids, seeds, cap=cap, stage=stage, sampler=sampler)
+    n_run = sum(g is not None for g in ids)
+    gen_tokens = int(sum(len(g) for g in ids if g is not None))
+    timing = {"n_jobs": len(jobs), "n_run": int(n_run), "gen_seconds": float(sum(secs)),
+              "gen_tokens": gen_tokens,
+              "tokens_per_second": gen_tokens / sum(secs) if secs else None,
+              "seconds_per_rollout": float(sum(secs)) / n_run if n_run else None,
+              "batch": sc.bs(sc.gen_batch), "batch_max_tokens": batch_max,
+              "seconds_per_step": float(sum(secs)) / sum(batch_max) if batch_max else None}
+    return rows, timing
+
+
+def build_rows(sc: Screen, jobs: list[dict], ids: list, seeds: list, *, cap: int, stage: str,
+               sampler=None, engine: str = "hf") -> list[dict]:
+    """Per-rollout rows from generated ids (None = never run), with both parser columns; shared
+    by the HF and vLLM engines so the schema and the parse never differ between them."""
     rows = []
     for job, g, bseed in zip(jobs, ids, seeds):
         s, k, o, pids = job["s"], job["k"], job["order"], job["ids"]
@@ -429,17 +525,9 @@ def run_generation(sc: Screen, jobs: list[dict], *, cap: int, stage: str, sample
             "batch_seed": bseed, "temperature": (sampler or {}).get("temperature", T),
             "sampler": sampler or "kdg_v2", "sampler_version": KDG_SAMPLER_VERSION,
             "parse_version": rf.PARSE_VERSION, "date_pin": sc.date_pin, "model_key": sc.key,
-            "prompt_len": len(pids),
+            "prompt_len": len(pids), "engine": engine,
         })
-    n_run = sum(g is not None for g in ids)
-    gen_tokens = int(sum(len(g) for g in ids if g is not None))
-    timing = {"n_jobs": len(jobs), "n_run": int(n_run), "gen_seconds": float(sum(secs)),
-              "gen_tokens": gen_tokens,
-              "tokens_per_second": gen_tokens / sum(secs) if secs else None,
-              "seconds_per_rollout": float(sum(secs)) / n_run if n_run else None,
-              "batch": sc.bs(sc.gen_batch), "batch_max_tokens": batch_max,
-              "seconds_per_step": float(sum(secs)) / sum(batch_max) if batch_max else None}
-    return rows, timing
+    return rows
 
 
 def pilot_summary(rows: list[dict]) -> dict:
@@ -523,19 +611,27 @@ def letter_rows(sc: Screen, scenarios, cell: str, cand: rf.Dose0, nperm: int = N
     return rows, lp, resid, ids
 
 
-def c0_check(sc: Screen, C0, cand: rf.Dose0, forced_rows: list[dict]) -> dict:
+def c0_jobs(sc: Screen, C0, cand: rf.Dose0) -> list[tuple]:
+    """(scenario, permutation, order, dose-0 ids) for the C0 sampled answers, perms 0..3."""
+    return [(s, k, o, dose0_ids(sc, s, o, "dl_chat_neutral", cand))
+            for s in C0 for k in range(C0_R) for o in [assign_letters(s, k)]]
+
+
+def c0_check(sc: Screen, C0, cand: rf.Dose0, forced_rows: list[dict],
+             answers: list | None = None) -> dict:
     """C0 (dose-matched): forced dose-0 argmax (mean over 8 permutations, renormalised) vs the
     strict majority of 4 sampled answers under the same prefill at permutations 0..3; bar
     0.9 kappa* from the forced distributions (``analyze_c0_ceiling.kappa_star``, sampler v2)."""
     import analyze_c0_ceiling as C
     import kdg_harmony as kh
 
-    jobs = [(s, k, assign_letters(s, k)) for s in C0 for k in range(C0_R)]
-    ids = [dose0_ids(sc, s, o, "dl_chat_neutral", cand) for s, k, o in jobs]
-    gen, _, _ = sample_from_ids(sc, ids, cap=C0_ANSWER_TOKENS, seed=SEED + 1000 * STAGE_SEED["c0"],
-                                batch=sc.bs(sc.gen_batch))
+    jobs = c0_jobs(sc, C0, cand)
+    if answers is None:  # HF engine; the vLLM engine passes its pre-generated answers
+        answers, _, _ = sample_from_ids(sc, [j[3] for j in jobs], cap=C0_ANSWER_TOKENS,
+                                        seed=SEED + 1000 * STAGE_SEED["c0"],
+                                        batch=sc.bs(sc.gen_batch))
     by: dict[str, list] = {}
-    for (s, k, o), g in zip(jobs, gen):
+    for (s, k, o, _), g in zip(jobs, answers):
         # parser of record (§40): the first generated token after the prefill is a bare letter
         L = sc.letters.get(g[0]) if g else None
         by.setdefault(s.id, []).append(dict(o)[L].option_id if L in dict(o) else None)
@@ -582,7 +678,7 @@ def known_gap_band(sc: Screen, rows_kg: list[dict], rows_j: list[dict]) -> dict:
     return {"g_band": g, "ok": lo is not None and lo >= KNOWN_GAP_LB}
 
 
-def choose_dose0(sc: Screen, C0) -> dict:
+def choose_dose0(sc: Screen, C0, c0_answers: dict | None = None) -> dict:
     """Amendment 4 item 5: candidates in order; the first passing letter mass, forward vs
     generation, C0 and the known-gap band is of record. Every tried candidate is recorded."""
     out = []
@@ -592,7 +688,8 @@ def choose_dose0(sc: Screen, C0) -> dict:
         mass = float(np.mean([r["option_mass"] for r in rows]))
         rec["letter_mass"] = {"mean": mass, "bar": LETTER_MASS_BAR, "ok": mass >= LETTER_MASS_BAR}
         rec["fwd_vs_gen"] = fwd_vs_gen(sc, ids[:16])
-        rec["c0"] = c0_check(sc, C0, cand, rows) if rec["letter_mass"]["ok"] else None
+        rec["c0"] = (c0_check(sc, C0, cand, rows, (c0_answers or {}).get(cand.name))
+                     if rec["letter_mass"]["ok"] else None)
         kg, _, _, _ = letter_rows(sc, C0, "dl_chat_known_gap", cand)
         jn, _, _, _ = letter_rows(sc, C0, "jl_chat_neutral", cand)
         rec["known_gap"] = known_gap_band(sc, kg, jn)
