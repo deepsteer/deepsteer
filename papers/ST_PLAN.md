@@ -921,3 +921,40 @@ probe records. Branches, each publishable at G1:
   family only on reasoned-arm endpoints.
 - GPT-OSS's eager probe fits at some batch → T1.3 is priced from it; no batch fits → T1.3 keeps
   its plan price and the gate's batch plan is a G1 item.
+
+### G1 (author, 2026-10-19, after the rider pod)
+
+1. **Second family: Muse Glimmer 30B.** Its dose-0 regime is of record (rider (a): forward alone
+   vs generation alone 0.000 on 16 rows), so its screen brake leaves descriptive status:
+   B = −0.314 [−0.393, −0.239] over 60 `H1_train` scenarios × 4 (MDE 0.110). Brake-engaged count
+   under Amendment 5's dose-0 rule, from saved data (zero GPU, 2026-10-19): **25 of 60**, against
+   the no-brake null mean 10.1, q95 14 (above the null; G4 is not scoped); brake on the engaged
+   subset −0.60 (P_none 0.09 vs P_dose0 0.69). **T1.6's MDE** on its held-out engaged subset
+   (100 `H1_held` × 6 against the independent `none` re-run): 0.10 at the projected 42 engaged
+   (0.11 at 32, 0.09 at 51, the binomial 95% range from 25/60); per-scenario sd 0.23, mostly the
+   two 6-rollout binomial terms, with effect heterogeneity proxied by the engaged brake's own
+   (0.067 sd), which may understate an adapter's.
+2. **Criterion (i) is directional** (clarification, not an amendment of substance): the whole-set
+   brake's CI upper end must be below 0. Qwen3.8's B = +0.083 [0.020, 0.146] is ST-A5 (a sign
+   flip), not a near miss; its G1 verdict is unchanged ((ii) fails: 8 engaged against q95 18).
+3. **T1.3.** A zero-GPU feasibility read of steering in vLLM, including constant additive
+   vectors (`care_const`, `harm`, the fill draws) folded as a bias into the injection layer's
+   output projection and served by vLLM with no hooks; only `onset`/`clause_end` and `self` need
+   hooked eager generation. A 0.1 A100-h MoE kernels probe (HF `kernels`) on the next pod. If
+   needed, the fill control drops from 5 to 3 draws in the gate.
+4. **Readouts of record.** The next pod re-reads the floor with the final norm and LM head in
+   fp32, and re-reads every rung at the dose-0 position, before any readout of record: batched at
+   the 0.05 bar if the floor drops to about 0.01, single-row otherwise.
+5. **ST-A5's discriminator** (Qwen3.8, forced empty think under thinking-on, ~0.3 A100-h) rides
+   the next pod, last in the bail order.
+
+Referee pass on the G1 record. (1) "Muse's brake rests on batch-8 readouts carrying ~0.25 nats of
+jitter": conceded as unmeasured on the brake itself; the jitter sits mostly on tail letters and
+the protective share uses the argmax over shown letters, and item 4's re-read decides the readout
+mode before T1.6 reads anything of record. (2) "Muse's brake is larger than GPT-OSS's": not
+claimed; the two come from different samples and instruments (60 × 4 screen vs §40's 258 × 1),
+and the record says only that both are negative. (3) "The engaged count's null assumes each
+scenario's actions are binomial at its dose-0 protect probability": that is the pre-registered
+null (Amendment 5), and a model with overdispersed actions would widen it; 25 against q95 14 is
+far enough above it that a plausible widening does not cross it, but this is not computed.
+
