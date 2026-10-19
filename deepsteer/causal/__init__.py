@@ -22,10 +22,15 @@ Usage::
 from __future__ import annotations
 
 from deepsteer.causal.ablation import ablate_and_measure, ablation_sweep
+from deepsteer.causal.attribution import AtPResult, atp, option_margin, patch_residual
 from deepsteer.causal.behavioral import classify_by_projection, projection_classify
 from deepsteer.causal.steering import inject_and_measure, steering_sweep
 
 __all__ = [
+    "AtPResult",
+    "atp",
+    "option_margin",
+    "patch_residual",
     "ablate_and_measure",
     "ablation_sweep",
     "inject_and_measure",
