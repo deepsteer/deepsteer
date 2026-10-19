@@ -1112,6 +1112,18 @@ vs `t_2n` 0.056 s; the slope went negative). Its only consumer is the T1.3 steer
 Fix: an untimed warm-up decode at the same shapes, and probes record `warmed`. The relaunch's
 GPT-OSS probe ran the cold version, so the re-price prices its step from the warm second timing
 as an upper bound (`t_2n / 2n`, prefill ≥ 0) and labels that row a bound.
+2026-10-19, relaunch: Qwen3.8-27B banked `gate_failed` after its vLLM phase (0.52 h: pilot,
+C0 answers, screen, all rows saved). Every gate passed except `revision`, whose detail was `None`:
+a Qwen3.5-family checkpoint loads its text tower through `AutoModelForCausalLM`
+(`Qwen3_5ForCausalLM`), whose config is the composite's `text_config`, and transformers sets
+`_commit_hash` on the composite only (checked locally on the pinned configs of all three models).
+The weights were loaded at the pinned revision; the check could not see it. GPT-OSS (no
+composite) and Muse (`AutoModelForImageTextToText`, composite config) carry the hash. Fix: the
+gate falls back to the composite config at the pinned revision and records which source it read.
+The revision gate runs only on real checkpoints, so no local test or dry run had exercised it on
+a text-tower load; the fourth VALIDATE pod loaded only GPT-OSS. Cost: Qwen's HF phase did not run
+(no readouts, no replicate floor), so ST-A3's dense-model discriminator rests on Muse alone in
+this session.
 
 ## ST-A3 (ledger) — GPT-OSS-20B's HF letter readout moves 0.43–0.52 nats with batch size alone in bf16 (identical rows, no padding), so the Amendment 6 bar on this model sits at 0.87–1.05 nats
 

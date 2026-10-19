@@ -71,6 +71,21 @@ def registry() -> dict:
     return yaml.safe_load((KDG / "models.yaml").read_text())["st"]
 
 
+def loaded_commit(model, spec: dict) -> dict:
+    """The commit the HF model was loaded from. ``config._commit_hash`` when the loaded config
+    carries it; a Qwen3.5-family checkpoint loads its text tower through ``AutoModelForCausalLM``,
+    whose config is the composite's ``text_config`` sub-config and has no ``_commit_hash`` (the
+    relaunch's Qwen3.8 gate failure, 2026-10-19: every other gate passed). Then the composite
+    config at the pinned revision gives it (the weights were loaded with that same ``revision``)."""
+    c = getattr(model.config, "_commit_hash", None)
+    if c:
+        return {"commit": c, "source": "model.config"}
+    from transformers import AutoConfig
+
+    c = AutoConfig.from_pretrained(spec["repo"], revision=spec["revision"])._commit_hash
+    return {"commit": c, "source": "AutoConfig at the pinned revision (text-tower load)"}
+
+
 def gates(sc: L.Screen, spec: dict, split: dict, order: list[str], H: dict, dry: bool) -> dict:
     checks: dict[str, dict] = {}
 
@@ -91,8 +106,8 @@ def gates(sc: L.Screen, spec: dict, split: dict, order: list[str], H: dict, dry:
         import torch
         import transformers
 
-        commit = getattr(sc.model.model.config, "_commit_hash", None)
-        check("revision", commit == spec["revision"], commit)
+        commit = loaded_commit(sc.model.model, spec)
+        check("revision", commit["commit"] == spec["revision"], commit)
         check("transformers_pin", transformers.__version__ == TRANSFORMERS_PIN,
               transformers.__version__)
         dt = next(sc.model.model.parameters()).dtype

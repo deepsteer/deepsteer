@@ -449,3 +449,18 @@ def test_fast_path_rung_on_a_tiny_checkpoint(tmp_path, model, impl):
     # fallback cannot on CPU; the failed attempt is recorded with its error, never silent)
     assert r["ok"] and r["calibrated"] and r["kept"].startswith("fast"), r
     assert all("error" in t or "max_abs_nats" in t for t in r["attempts"])
+
+
+def test_revision_gate_reads_the_composite_commit_for_a_text_tower_load(monkeypatch):
+    # most probable failure (the relaunch's Qwen3.8 gate_failed): a text-tower load's config is the
+    # composite's text_config, which carries no _commit_hash, so the gate compares None to the pin
+    import transformers
+
+    spec = {"repo": "Qwen/Qwen3.8-27B", "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"}
+    text_tower = types.SimpleNamespace(config=types.SimpleNamespace(_commit_hash=None))
+    monkeypatch.setattr(transformers.AutoConfig, "from_pretrained", lambda repo, revision: (
+        types.SimpleNamespace(_commit_hash=revision)))
+    got = P.loaded_commit(text_tower, spec)
+    assert got["commit"] == spec["revision"] and got["source"].startswith("AutoConfig")
+    full = types.SimpleNamespace(config=types.SimpleNamespace(_commit_hash="abc"))
+    assert P.loaded_commit(full, spec) == {"commit": "abc", "source": "model.config"}
