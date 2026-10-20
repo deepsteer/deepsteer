@@ -395,7 +395,8 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--inputs", type=Path, required=True)
-    ap.add_argument("--phases", default="sweep,gate,transport,panel")
+    # care_rerun (Amendment 13) runs only when triggered; a resumed pod skips finished phases
+    ap.add_argument("--phases", default="sweep,gate,transport,care_rerun,panel")
     ap.add_argument("--date-pin", default=datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--deadline", type=float, default=None, help="epoch seconds (envelope)")
