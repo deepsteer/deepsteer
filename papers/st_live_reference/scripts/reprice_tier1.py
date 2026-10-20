@@ -279,7 +279,7 @@ def price(m: dict) -> dict:
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
-        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters, branch-A subsample; none separate)":
+        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters at branch A)":
             (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
         "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
