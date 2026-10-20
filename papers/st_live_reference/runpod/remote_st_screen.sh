@@ -310,8 +310,12 @@ for m in $MODELS; do
     # Amendment 10 item 3 (author, 2026-10-19): the refusal-retention selection pass rides the
     # first pod that loads the development model after the amendment; vLLM only, its own record
     echo "==================== $OUT_SUB/_rr/gpt_oss_20b (refusal-retention selection) ===================="
-    $PY $S --model gpt_oss_20b --date-pin "$DATE_PIN" --out "$OUT/_rr" --rr-select \
-      || echo "WARN: refusal-retention selection failed (recorded; the session continues)"
+    if grep -qs '"status": "ok_rr_select"' "$OUT/_rr/gpt_oss_20b/screen_record.json"; then
+      echo ">> refusal-retention selection already of record (synced from an earlier pod); not re-run"
+    else
+      $PY $S --model gpt_oss_20b --date-pin "$DATE_PIN" --out "$OUT/_rr" --rr-select \
+        || echo "WARN: refusal-retention selection failed (recorded; the session continues)"
+    fi
   fi
   echo "==================== $OUT_SUB/$m ===================="
   if [ "$STEPS" = "t11" ]; then

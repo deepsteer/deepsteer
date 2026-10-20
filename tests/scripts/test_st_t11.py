@@ -104,3 +104,23 @@ def test_forward_bank_matches_the_readout_of_record(tmp_path):
     want = float(sum(lg[t - 1, ids[t]] for t in range(4, len(ids))))
     assert tlp == pytest.approx(want, abs=1e-3)
     del sc
+
+
+def test_resume_reuses_banked_v1_and_skips_finished_phases(tmp_path):
+    # author, 2026-10-19: if the HF phase fails after v1 banks, the next pod resumes from the bank;
+    # most probable failure: v1 regenerates (new rollouts replace the selecting sample) or a
+    # tampered bank is silently reused
+    pytest.importorskip("transformers")
+    assert _phase(tmp_path, "v1").returncode == 0
+    p = tmp_path / "gpt_oss_20b" / "gen" / "h1_rollouts.jsonl"
+    before = p.read_text()
+    r = _phase(tmp_path, "v1")
+    assert r.returncode == 0 and "resumed from" in r.stdout and p.read_text() == before
+    assert _phase(tmp_path, "h").returncode == 0
+    r = _phase(tmp_path, "h")
+    assert "skipped" in r.stdout  # a finished phase is not re-run
+    rows = before.splitlines()
+    first = json.loads(rows[0])
+    p.write_text("\n".join([json.dumps({**first, "rendered_sha256": "x"})] + rows[1:]) + "\n")
+    r = _phase(tmp_path, "v1")
+    assert r.returncode != 0 and "does not match" in r.stderr

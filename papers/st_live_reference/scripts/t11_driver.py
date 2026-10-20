@@ -119,11 +119,35 @@ def _jsonl(p: Path) -> list[dict]:
 
 
 # ---- v1 ------------------------------------------------------------------------------------------
+def _v1_banked(c: dict, sc, jobs: list[dict]) -> bool:
+    """Resume (author, 2026-10-19): v1's rollouts from an earlier pod are reused, never
+    regenerated, if they are complete and every row's prompt render matches a fresh one."""
+    p = c["out"] / "gen" / "h1_rollouts.jsonl"
+    rec = load_record(c)
+    if not p.exists() or not (rec["phases"].get("v1") or {}).get("finished"):
+        return False
+    rows = _jsonl(p)
+    if len(rows) != len(jobs):
+        raise SystemExit(f"banked v1 has {len(rows)} rows for {len(jobs)} jobs; not resuming")
+    for r, j in zip(rows, jobs):
+        if (r["scenario_id"], r["rollout"], r["rendered_sha256"]) != (
+                j["s"].id, j["k"], j["rendered_sha256"]) or r.get("sample") != "selection":
+            raise SystemExit(f"banked v1 row {r['scenario_id']}|{r['rollout']} does not match "
+                             "this run's render; not resuming")
+    rec["phases"]["v1"]["resumed"] = _now()
+    save_record(c, rec)
+    print(f">> t11 v1: resumed from {len(rows)} banked rollouts (verified); not regenerated",
+          flush=True)
+    return True
+
+
 def phase_v1(c: dict, a) -> int:
     import screen_vllm as SV
 
     sc = screen(c, stub(c, a) if a.dry_run else L.tok_only(c["tok"]), a)
     jobs = L.h1_jobs(sc, c["H"], c["ids"], R_GEN)
+    if _v1_banked(c, sc, jobs):
+        return 0
     t0 = time.time()
     g = SV.gen_stage(sc, jobs, "t11", L.CAP_OF_RECORD, c["spec"], probe=True,
                      deadline=a.deadline)
@@ -234,6 +258,8 @@ def phase_h(c: dict, a) -> int:
     cls_codes = {"onset": 1, "clause_end": 2, "stride32": 4, "decision_post": 8}
     bank_dir = c["out"] / "bank"
     bank_dir.mkdir(parents=True, exist_ok=True)
+    for old in bank_dir.glob("bank_*.npz"):  # a resumed h re-reads from scratch, never mixes
+        old.unlink()
     idx_rows, buf, t_read = [], {"resid": [], "row": [], "pos": [], "cls": []}, []
     for i, r in enumerate(rows):
         if a.deadline and time.time() > a.deadline:
@@ -509,8 +535,15 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--deadline", type=float, default=None, help="epoch seconds (envelope)")
     ap.add_argument("--no-probe", action="store_true")
+    ap.add_argument("--force", action="store_true", help="re-run a phase recorded as finished")
     a = ap.parse_args()
     c = context(a)
+    done = (load_record(c)["phases"].get(a.phase) or {})
+    if a.phase in ("h", "v2", "qlora") and done.get("finished") and done.get("status", "ok") \
+            in ("ok",) and not a.force:  # resume: a finished phase is not re-run
+        print(f">> t11 {a.phase}: finished on an earlier pod ({done['finished']}); skipped",
+              flush=True)
+        return 0
     return {"v1": phase_v1, "h": phase_h, "v2": phase_v2, "qlora": phase_qlora}[a.phase](c, a)
 
 

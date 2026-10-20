@@ -385,7 +385,7 @@ before training; no adapter is selected on H1_held.
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
 | T1.0 | Screen, per model first the trace-length pilot (8 × 4, cap 4,096, step-down rule, re-price every Tier 1 row before continuing; Amendment 2): OLMo-3-7B-Think (VALIDATE, dose-0 panel + twins, H1 132 × 4, all of `H1_train`; Amendment 5); Qwen3.8-27B and Muse Glimmer 30B (VALIDATE, dose-0, H1 60 × 4); pilot and screen from one seeded order over `H1_train`, never `H1_held` (Amendment 4); direction riders moved to T1.6 | 1.8 + 2.5 + 2.5 = 6.8 | development model and second family (§2 rule); whether the brake exists on Think at all |
-| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on the train scenarios lacking a DPO pair if pairs < 40, up to ~20 scenarios, ~0.3 A100-h) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
+| T1.1 | Development model: H1 264 × 8 under native reasoning, uninstrumented; residual banking at 5 layers, `onset`, `clause_end`, every 32nd token, `decision`, fp16 (~9.9 GB for 264 × 8: ~163 banked positions per rollout measured on 256 GPT-OSS traces; corrected 2026-10-19 from ~3–4 GB); judgment-frame residuals for H1_train (forward only), from which the model's `chat_sigma` is computed; conditional pair rider (§5.1: 8 more rollouts on the train scenarios lacking a DPO pair if pairs < 40, up to ~20 scenarios, ~0.3 A100-h) | 4 (+ ≤ 0.3) | brake-engaged sets; on-policy training traces; constancy read; τ; MDE recompute |
 | T1.2 | AtP localization on one trace per brake-engaged scenario at the 5 banked layers; constancy read (zero GPU) | 0.5 | L* and the anchoring position class |
 | T1.3 | Target-selection gate (§5.0): 20 × {none, fill ×5 pooled, care, self} × 8 (`none` is the independent baseline `P_none^re`); strength sweep | 1.5 | which representation the loss holds |
 | T1.4 | Train `L-beh`, `L-anchor`, `L-self` on the development model (bf16 LoRA, 7B) | 3 | — |
@@ -447,6 +447,18 @@ commit, effort setting, seed, template sha, truncation flag, log-prob under the 
 Per adapter: config, training curve, held-out transport curve, merged weights (released with the
 write-up), τ, L*, class. Banked residuals as T1.1/T1.6. Directions as §4. The per-rollout table
 is released with the write-up (Zenodo, as KDG v2). Every §6 statistic is recomputable at zero GPU.
+
+**Release-size accounting** (added 2026-10-19; Zenodo's per-record limit is 50 GB):
+
+| artifact | size | source |
+|---|---|---|
+| T1.1 residual bank (264 × 8, five layers, fp16) | ~9.9 GB | measured ~163 positions per rollout (256 GPT-OSS traces) |
+| T1.1 dose-0 and judgment-frame residuals (2,112 + 132 rows × 5 layers, fp16) | ~0.07 GB | 2,244 × 5 × 2,880 × 2 bytes |
+| per-rollout tables (all arms) | < 0.5 GB | jsonl, generated ids included |
+| directions and type blocks | < 1 MB | §4 |
+| LoRA adapters (rank 16) | to be measured at T1.4 | |
+| merged weights per adapter (GPT-OSS-20B, bf16) | ~42 GB each | ~21B parameters × 2 bytes; three adapters exceed one record, so merged weights go per adapter or as adapters plus the base pin |
+| T1.6 bank (second family) | to be priced at T1.6 | |
 
 ## 10. Referee pass (draft; finalize at G3)
 
@@ -1331,3 +1343,12 @@ the relaunch's 256 parity traces), so the bank is ~9.9 GB in fp16 for 264 × 8 (
 alone), not §7's ~3–4 GB; all of it is banked as specified. (3) The `decision` class is read at
 the pre-prefill END_OF_PROMPT token (KDG's banking convention and T0.3's cell); the post-reasoning
 decision position is banked as its own code.
+
+**Confirmed (author, 2026-10-19):** banked layers {6, 9, 12, 15, 18}; the ~9.9 GB bank as specified
+(§7 corrected; in the release-size accounting, §9); `decision` at END_OF_PROMPT before the
+prefill, the post-reasoning answer position under its own code. **Resume:** if the HF phase fails
+after v1 has banked, the pod exits with v1's rollouts intact; the next pod resumes from them
+(`STEPS=t11/t11`, `SYNC_OUTPUTS` naming `outputs/t11/gpt_oss_20b/gen/`, `.../vllm/`,
+`.../t11_record.json` and `outputs/t11/_rr/`): v1 verifies the banked rows (count and every row's
+render hash) and is not regenerated; finished phases are skipped; the HF phase re-reads from
+scratch; Amendment 10's selection pass is not repeated once of record.
