@@ -37,6 +37,10 @@ N_ONSET = 48
 PUNCT = set(".;:?!\n")
 TEMPERATURE = 0.7
 COHERENCE = {"parse_rate_min": 0.95, "length_ratio": (0.7, 1.5), "nll_delta_max": 0.3}
+# Amendment 13 (author, 2026-10-20): the parse bar is relative to the unsteered arm on the same
+# scenarios (arm >= none - 0.05, about 2 SD of the rate difference at n = 160); the absolute rate
+# is reported beside it. Length and NLL bars unchanged.
+PARSE_DELTA_MAX = 0.05
 
 
 @dataclass
@@ -251,9 +255,13 @@ def trace_nll(model, prompt: Sequence[int], gen: Sequence[int]) -> float | None:
 
 
 def coherence(steered: list[dict], base: list[dict], parsed_steered: Sequence[bool],
-              nll_steered: Sequence[float | None], nll_base: Sequence[float | None]) -> dict:
-    """§5.0's coherence gate for one steered arm against the unsteered arm."""
+              nll_steered: Sequence[float | None], nll_base: Sequence[float | None],
+              parsed_base: Sequence[bool] | None = None) -> dict:
+    """§5.0's coherence gate for one steered arm against the unsteered arm. With
+    ``parsed_base`` the parse bar is Amendment 13's relative one (steered >= base - 0.05);
+    without it, the original absolute 0.95."""
     pr = float(np.mean(parsed_steered)) if len(parsed_steered) else 0.0
+    pb = float(np.mean(parsed_base)) if parsed_base is not None and len(parsed_base) else None
     ls = np.median([r["n_tokens"] for r in steered]) if steered else 0.0
     lb = np.median([r["n_tokens"] for r in base]) if base else 0.0
     ratio = float(ls / lb) if lb else float("inf")
@@ -261,10 +269,13 @@ def coherence(steered: list[dict], base: list[dict], parsed_steered: Sequence[bo
     nb = [x for x in nll_base if x is not None]
     dn = float(np.mean(ns) - np.mean(nb)) if ns and nb else float("inf")
     lo, hi = COHERENCE["length_ratio"]
-    ok = (pr >= COHERENCE["parse_rate_min"] and lo <= ratio <= hi
-          and dn <= COHERENCE["nll_delta_max"])
-    return {"parse_rate": pr, "length_ratio": ratio, "nll_delta": dn, "passes": bool(ok),
-            "bars": COHERENCE}
+    parse_ok = (pr >= pb - PARSE_DELTA_MAX) if pb is not None else (
+        pr >= COHERENCE["parse_rate_min"])
+    ok = parse_ok and lo <= ratio <= hi and dn <= COHERENCE["nll_delta_max"]
+    return {"parse_rate": pr, "parse_rate_base": pb, "parse_ok": bool(parse_ok),
+            "parse_rule": ("relative: arm >= none - 0.05 (Amendment 13)" if pb is not None
+                           else "absolute: >= 0.95"),
+            "length_ratio": ratio, "nll_delta": dn, "passes": bool(ok), "bars": COHERENCE}
 
 
 def mix_readout(model, ids: Sequence[Sequence[int]], sources: np.ndarray, beta: float,

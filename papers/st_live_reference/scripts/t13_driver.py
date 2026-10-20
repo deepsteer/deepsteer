@@ -195,12 +195,13 @@ def run_arm(c: dict, sc, model, name: str, jobs: list[dict], intervention, pidx=
     return parsed
 
 
-def _coh(steered: list[dict], base: list[dict]) -> dict:
+def _coh(steered: list[dict], base: list[dict], relative: bool = False) -> dict:
     return SG.coherence([{"n_tokens": r["n_gen_tokens"]} for r in steered],
                         [{"n_tokens": r["n_gen_tokens"]} for r in base],
                         [r["letter"] is not None for r in steered],
                         [r["trace_nll_unsteered"] for r in steered],
-                        [r["trace_nll_unsteered"] for r in base])
+                        [r["trace_nll_unsteered"] for r in base],
+                        parsed_base=[r["letter"] is not None for r in base] if relative else None)
 
 
 # ---- phases ----------------------------------------------------------------------------------
@@ -355,22 +356,34 @@ def phase_care_rerun(c, sc, model, rec, a) -> dict:
     care2 = run_arm(c, sc, model, "gate_care_rerun", jobs, SG.Add(c["inp"]["axis"], alpha),
                     extra=lambda i: {"alpha": alpha})
     dpf, dpc = delta_p(fill, none), delta_p(care2, none)
-    coh = _coh(care2, none)
-    passes = bool(coh["passes"] and dpc["mean"] is not None and dpf["mean"] is not None
-                  and dpc["mean"] >= GATE_DP and dpc["mean"] - dpf["mean"] >= GATE_OVER_FILL)
-    selfs = {}
-    for b in BETAS:
-        d = g["arms"][f"self_{b}"]
-        selfs[f"self_{b}"] = {
-            "vs_fill_rerun": bool(d["coherence"]["passes"] and d["dP"]["mean"] is not None
-                                  and d["dP"]["mean"] >= GATE_DP
-                                  and d["dP"]["mean"] - dpf["mean"] >= GATE_OVER_FILL),
-            "vs_fill_original": d["passes"]}
+
+    def verdict(coh: dict, dp: dict) -> bool:
+        return bool(coh["passes"] and dp["mean"] is not None and dpf["mean"] is not None
+                    and dp["mean"] >= GATE_DP and dp["mean"] - dpf["mean"] >= GATE_OVER_FILL)
+
+    coh = _coh(care2, none, relative=True)
+    arms = {"care": {"alpha": alpha, "coherence": coh, "dP": dpc, "passes": verdict(coh, dpc)},
+            "fill": {"alpha": alpha, "coherence": _coh(fill, none, relative=True), "dP": dpf}}
+    for b in BETAS:  # self's comparator is the rerun fill; coherence re-scored on the new rule
+        rows = _rows(c, f"gate_self_{b}")
+        cs = _coh(rows, none, relative=True)
+        ds = delta_p(rows, none)
+        arms[f"self_{b}"] = {"coherence": cs, "dP": ds, "passes": verdict(cs, ds)}
+    off = {k: {"alpha": g["alpha"], "coherence_relative": _coh(_rows(c, f"gate_{k}"), none,
+                                                               relative=True),
+               "coherence_absolute": g["arms"][k]["coherence"], "dP": g["arms"][k]["dP"],
+               "status": ("failed coherence at 534.6 (descriptive: a random direction at this "
+                          "norm broke parsing where V_care did not)" if k == "fill" else
+                          "failed coherence under the rule then in force; dP descriptive, "
+                          "off-coherence, not used for the gate")}
+           for k in ("care", "fill")}
     return {"status": "ok", "ran": True, "alpha": alpha, "from_alpha": g["alpha"],
-            "care": {"coherence": coh, "dP": dpc, "passes": passes},
-            "fill": {"coherence": _coh(fill, none), "dP": dpf},
-            "care_passes": passes, "self_by_comparator": selfs,
-            "rule": "Amendment 13: one step down, once; pass is care's gate result"}
+            "trigger": "care's parse rate below 0.95 under the rule then in force (Amendment 13)",
+            "gate_of_record": arms, "care_passes": arms["care"]["passes"],
+            "self_passes": any(arms[f"self_{b}"]["passes"] for b in BETAS),
+            "first_alpha_runs": off,
+            "rule": ("Amendment 13: one step down, once; coherence parse relative to none (-0.05), "
+                     "absolute rate beside; self's comparator is the rerun fill")}
 
 
 PHASES = {"sweep": phase_sweep, "gate": phase_gate, "transport": phase_transport,

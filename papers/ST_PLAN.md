@@ -1768,3 +1768,14 @@ separates, whatever the sign; adding +a at `clause_end` is the cell that tests R
    parses 0.950, so the absolute 0.95 bar sits at `none`'s own rate: an arm with no effect on
    parsing falls below it about half the time (binomial SD at n 160 ≈ 0.017; 0.931 is ~1.1 SD
    under `none`). As written the rerun passes or fails partly on that noise.
+5. **Addendum (author, 2026-10-20; before the rerun).** The coherence parse criterion becomes
+   relative: an arm's parse rate ≥ `none`'s rate on the same 20 scenarios − 0.05 (about 2 SD of the
+   rate difference at n = 160), with the absolute rate reported beside it; the length and NLL bars
+   are unchanged (`steering_gate.coherence(..., parsed_base=...)`). The 534.6 `care` run passes
+   parse under this rule (0.931 ≥ 0.900), but its step-down was triggered under the rule then in
+   force: the 267.3 rerun proceeds as committed and is `care`'s gate result if it passes all three
+   bars; 534.6's ΔP stays descriptive. `self`'s comparator is the 267.3 `fill`, and `self`'s
+   coherence is scored under the relative rule. The 534.6 `fill` is recorded as failed coherence
+   (parse 0.762), with the descriptive note that a random direction at that norm broke parsing where
+   `V_care` did not. The rerun phase writes the gate of record (`care_rerun.gate_of_record`); the
+   driver's own `gate` phase, scored under the absolute rule, stays in the record as history.

@@ -188,3 +188,18 @@ def test_shakedown_on_olmo2_1b(tmp_path):
     assert [r["gen_ids"] for r in zero] == [r["gen_ids"] for r in none]
     assert [r["gen_ids"] for r in big] != [r["gen_ids"] for r in none]
     assert len((tmp_path / "none.jsonl").read_text().splitlines()) == 4
+
+
+def test_relative_parse_bar_reads_the_unsteered_arm():
+    # most probable failure (Amendment 13): the parse bar stays absolute, so an arm that parses
+    # like none on scenarios where none itself sits at 0.95 fails on noise
+    base = [{"n_tokens": 100}] * 20
+    st = [{"n_tokens": 95}] * 20
+    nll = [1.0] * 20
+    c = SG.coherence(st, base, [True] * 18 + [False] * 2, nll, nll,
+                     parsed_base=[True] * 19 + [False])
+    assert c["parse_ok"] and c["passes"] and c["parse_rate"] == 0.9  # 0.90 >= 0.95 - 0.05
+    c = SG.coherence(st, base, [True] * 17 + [False] * 3, nll, nll,
+                     parsed_base=[True] * 19 + [False])
+    assert not c["parse_ok"]
+    assert not SG.coherence(st, base, [True] * 18 + [False] * 2, nll, nll)["parse_ok"]  # absolute
