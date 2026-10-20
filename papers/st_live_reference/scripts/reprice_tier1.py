@@ -48,7 +48,9 @@ S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 
 # At 0.40 s for ~370 prompt tokens vs 0.475 s for ~870 prompt + trace tokens, the eager forward is
 # mostly fixed cost, so dose-0 rows are priced at their own rate, not length-scaled.
 T11_DOSE0_S = {"gpt_oss_20b": 840.0 / 2112}
-T15_SUBSET = 2  # author, 2026-10-19: post-reasoning forward on a seeded 2 of 8 per scenario
+# ΔE_a = E_a − E_none needs the unadapted panel on the same instrument: one `none` panel read per
+# evaluation (2026-10-19; earlier re-prices counted the adapters' panels only)
+T15_PANELS, T16_PANELS = 3 + 1, 2 + 1
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
 # (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
 # --session-h defaults to the pod's session_start/session_end timestamps)
@@ -258,8 +260,8 @@ def price(m: dict) -> dict:
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
-        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3)":
-            (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * 3), rb),
+        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x (3 adapters + none))":
+            (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
         "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
             rr_h(m, RR_PROMPTS, 4, 4),
@@ -267,8 +269,8 @@ def price(m: dict) -> dict:
     second = {
         "T1.6 generation (60 x 2 top-up, 100 x 6, 100 x 6 x 2, none re-run) (vLLM)":
             (gen_h(m, 60 * 2 + 100 * 6 + 100 * 6 * 2 + BRAKE_SECOND * 6), "measured"),
-        "T1.6 readouts (post-reasoning, panel dose-0 x 2)":
-            (read_h(m, 160 * 6 + 100 * 6 * 2, t) + read_h(m, PANEL_ROWS * 2),
+        "T1.6 readouts (post-reasoning, panel dose-0 x (2 adapters + none))":
+            (read_h(m, 160 * 6 + 100 * 6 * 2, t) + read_h(m, PANEL_ROWS * T16_PANELS),
              rb),
         "T1.6 loads": (2 * m["load_h"], "measured"),
         "T1.6 training (2 QLoRA adapters)": FIXED["T1.6 training (2 QLoRA adapters)"],
@@ -278,7 +280,6 @@ def price(m: dict) -> dict:
     }
     second["T1.6 refusal-retention selection (Amendment 10 item 3 on the unadapted model; "
            "60 x {plain, care, operator} x 4)"] = rr_h(m, RR_SELECT_PROMPTS, 4, 1)
-    variants: dict = {}
     if m["stage"] == "t11":  # T1.1 has run: its rows are spent; T1.5's none re-run was v2's
         for k in [k for k in dev if k.startswith("T1.1")]:
             dev[k] = (0.0, "done (T1.1 pod; in the spend)")
@@ -287,22 +288,14 @@ def price(m: dict) -> dict:
         d0 = dose0_rate(m)
         if d0 is not None:  # T1.1's rate is per rollout including the trace: no length rescale
             r_post = m["rec"]["single_row_read_s"]
-            panel = PANEL_ROWS * 3 * d0[0] / 3600
             kr = next(k for k in dev if k.startswith("T1.5 readouts"))
-            dev[kr] = (132 * 8 * 3 * r_post / 3600 + panel,
+            dev[kr] = (132 * 8 * 3 * r_post / 3600 + PANEL_ROWS * T15_PANELS * d0[0] / 3600,
                        f"post-reasoning {r_post:.3f} s/rollout + panel dose-0 {d0[0]:.3f} s/row "
                        f"({d0[1]})")
-            sub = 132 * T15_SUBSET * 3 * r_post / 3600
-            full = 132 * (8 - T15_SUBSET) * r_post / 3600  # one adapter falling back
-            variants["T1.5 readouts, variant: post-reasoning forward on a seeded "
-                     f"{T15_SUBSET} of 8 per scenario per adapter (banking + the §31 >= 0.99 "
-                     "top-letter check), panel dose-0 full single-row"] = (
-                sub + panel, dev[kr][0],
-                f"each adapter failing the check adds {full:.2f} (its letters from full forwards)")
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")
-    return {"development": dev, "second_family": second, "variants": variants,
+    return {"development": dev, "second_family": second,
             "development_total": sum(v[0] for v in dev.values()),
             "second_family_total": sum(v[0] for v in second.values())}
 
@@ -383,13 +376,6 @@ def main() -> int:
                 cum += h
                 lines.append(f"| {row} | {h:.2f} | {cum:.2f} | {basis} |")
             lines += [f"| **total** | **{p[role + '_total']:.2f}** | **{cum:.2f}** | |", ""]
-            if role == "development" and p.get("variants"):
-                lines += ["Priced variants (not in the total):", "",
-                          "| variant | A100-h | row of record | delta | note |",
-                          "|---|---|---|---|---|"]
-                for row, (h, ref, note) in p["variants"].items():
-                    lines.append(f"| {row} | {h:.2f} | {ref:.2f} | {h - ref:+.2f} | {note} |")
-                lines.append("")
     lines += ["## Envelope by role assignment (spent + development + second family)", "",
               "| development | second family | total A100-h | within 35 |", "|---|---|---|---|"]
     for dev in models:
@@ -410,7 +396,7 @@ def main() -> int:
     out.with_suffix(".json").write_text(json.dumps(
         {"spent": {**SPENT, "this_session": session_h, "total": spent},
          "prices": {k: {r: {n: list(v) for n, v in p[r].items()} for r in
-                        ("development", "second_family", "variants")} for k, p in prices.items()}},
+                        ("development", "second_family")} for k, p in prices.items()}},
         indent=1))
     return 0
 

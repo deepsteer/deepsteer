@@ -396,7 +396,11 @@ before training; no adapter is selected on H1_held.
 Bail order if a pod runs long (and, before the §5.1 pair rider runs, if the rider would take Tier 1
 past 35): T1.6's `L-beh` arm, then `L-fill` (already optional), then T1.5's
 Heretic pass. Never cut: T1.1 (the banked baseline is the asset every zero-GPU read depends on) and
-T1.6's uninstrumented baseline on the second family.
+T1.6's uninstrumented baseline on the second family. Panel levers (author, 2026-10-19), used only
+if the envelope needs them, after the items above and in this order: (1) panel dose-0 on 2 of the
+letter cells for the non-headline adapters, the `none` baseline re-read on the same cells; (2) a
+50% panel subsample for those adapters at a recomputed, stated MDE. The headline adapter always
+gets the full panel. Details and prices in the T1.5 note of 2026-10-19 below.
 
 **Gates (author; zero GPU).** G1 after T1.0: development model and second family named by the §2
 rule. G2 after T1.3: anchoring target fixed; τ, L*, class committed. G3 after T1.5: verdicts;
@@ -1531,3 +1535,36 @@ fixed cost (0.40 s at ~370 tokens, 0.475 s at ~870), so the panel's 56,256 dose-
 A100-h) are the T1.5 cost driver, and the post-reasoning variant can save at most 0.42. GPT-OSS's
 T1.5 retention arm leaves with the uncalibrated branch; Muse's selection pass enters. Envelope of
 record (GPT-OSS development, Muse second family): **27.09 of 35** (26.78 under the variant).
+
+#### T1.5 readouts and panel levers (author, 2026-10-19; zero GPU)
+
+1. **Row of record, no variant.** T1.5's post-reasoning forward runs on every rollout of every
+   adapter; the 2-of-8 variant is not adopted and is removed from the re-price.
+2. **Calibration note (§31's property on the ST instrument).** At the post-reasoning position the
+   top letter's probability is ≥ 0.99 and equals the sampled letter on 2,059 of 2,059 T1.1 rows
+   with a readout (unadapted GPT-OSS-20B, torch 2.13, eager experts, single-row; the other 53 of
+   2,112 rollouts have no parsed answer); §31 found 625 of 625 on the KDG stack. On this model,
+   after reasoning, the readout's argmax and the sampled letter are the same quantity.
+3. **The `none` panel (re-price correction).** ΔE_a = E_a − E_none needs the unadapted model's
+   panel on the same instrument (single-row on the ST stack), and no earlier re-price counted it:
+   T1.5 now prices panels for three adapters plus `none`, T1.6 for two plus `none`. GPT-OSS T1.5
+   readouts 8.70 A100-h (6.63 + 2.07 for `none`); Muse T1.6 readouts 2.08. Envelope of record
+   (GPT-OSS development, Muse second family) **29.80 of 35**.
+4. **Panel levers (bail order, above).** Prices at GPT-OSS's measured 0.398 s per dose-0 row:
+   lever (1) saves 2.07 A100-h on T1.5 (two non-headline adapters × 586 × 8 × 2 rows); lever (2)
+   saves 2.07 alone, or a further 1.04 after (1) (3.11 together). On T1.6 the non-headline adapter
+   is one arm: on Muse lever (1) saves 0.32, lever (2) alone 0.32, both 0.47. With both levers on
+   both tiers the envelope would be about 26.2.
+
+**For the author (both needed before T1.5 if a lever is ever used).** (a) *Which 2 cells.* E is
+`(D − J)` at primary minus `(D − J)` at pressure-removed, so it needs four cells; the fifth letter
+cell, known-gap, is the per-model positive control and is not read per adapter in the re-price. On
+2 cells ΔE cannot be computed. Recommendation: the two agent-frame cells (`dl_chat_neutral`,
+`dl_chat_neutral_pressure_removed`), reporting the change in the action-frame pressure gap
+Δ(D_primary − D_pressure_removed) for those adapters. It equals ΔE when the adapter leaves the
+judgment frame's gap unmoved, and the headline adapter's full panel measures whether that holds.
+(b) *Which adapter is the headline.* §6's headline is the difference between `L-anchor`/`L-self`
+and `L-beh`, so a lever on any of the three thins one side of that difference. Recommendation: the
+headline adapter is the one with the largest H1_held ΔP point estimate, fixed from the H1 rows
+before any panel row is read. The headline-vs-other ΔE difference is then reported at the reduced
+arm's recomputed MDE, stated beside it.

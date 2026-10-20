@@ -565,8 +565,8 @@ def test_reprice_merges_the_rider_session_and_reads_pod_timestamps(tmp_path):
 
 def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
     # most probable failure: T1.1's per-rollout rate (prompt + trace already) is rescaled by the
-    # trace length again, panel dose-0 rows are priced at the trace rate, or the retention arm the
-    # pre-registered uncalibrated branch removed is still priced
+    # trace length again, panel dose-0 rows are priced at the trace rate, the none panel that
+    # ΔE needs is left out, or the retention arm the uncalibrated branch removed is still priced
     import reprice_tier1 as RP
 
     d = tmp_path / "t11" / "gpt_oss_20b"
@@ -582,10 +582,8 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
          "rec": {"single_row_read_s": 0.5, "dose0_read_s": 0.4}}
     p = RP.price(m)
     kr = next(k for k in p["development"] if k.startswith("T1.5 readouts"))
-    want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 3 * 0.4) / 3600
+    want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 4 * 0.4) / 3600  # 3 adapters + the none panel
     assert abs(p["development"][kr][0] - want) < 1e-9
-    (h, ref, _), = p["variants"].values()
-    assert abs(ref - want) < 1e-9 and abs(want - h - 132 * 6 * 3 * 0.5 / 3600) < 1e-9
     kq = next(k for k in p["development"] if k.startswith("T1.5 refusal-retention"))
     assert p["development"][kq][0] == 0.0
     assert any(k.startswith("T1.6 refusal-retention selection") for k in p["second_family"])
