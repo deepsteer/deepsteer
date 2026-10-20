@@ -1779,3 +1779,38 @@ separates, whatever the sign; adding +a at `clause_end` is the cell that tests R
    (parse 0.762), with the descriptive note that a random direction at that norm broke parsing where
    `V_care` did not. The rerun phase writes the gate of record (`care_rerun.gate_of_record`); the
    driver's own `gate` phase, scored under the absolute rule, stays in the record as history.
+
+#### T1.3 outcome, the target-selection gate (2026-10-20; GPT-OSS-20B; class `clause_end`, L* = block 12; Amendments 12-13; G2 read)
+
+Baseline: the in-gate independent `none` re-run, P_none 0.200 over the 20 gate scenarios × 8.
+
+| arm | ΔP vs none^re | parse (vs none 0.950; bar 0.900) | length ratio | NLL Δ | ΔP − ΔP_fill (paired) | gate |
+|---|---|---|---|---|---|---|
+| `care`, α 267.3 | −0.071 [−0.161, +0.007] (MDE 0.120) | 0.956 | 0.93 | +0.000 | −0.043 [−0.113, +0.024] | fail |
+| `self`, β 0.25 | −0.091 [−0.177, −0.014] (MDE 0.117) | 0.931 | 0.89 | −0.018 | −0.063 [−0.145, +0.020] | fail |
+| `self`, β 0.5 | +0.005 [−0.189, +0.208] (n 18) | 0.287 FAIL | 0.20 FAIL | +1.618 FAIL | | fail (coherence) |
+| `fill`, α 267.3 | −0.028 [−0.091, +0.040] (MDE 0.094) | 0.969 | 1.03 | +0.004 | (control) | |
+
+**Neither target passes: `care` and `self` fail the gate.** Descriptive, off-coherence (Amendment 13):
+`care` at α 534.6 ΔP −0.128 [−0.211, −0.060]; the dose step along the axis, `care` 534.6 minus
+`care` 267.3 paired by scenario, −0.057 [−0.113, −0.007]; `fill` at 534.6 −0.018 [−0.116, +0.073]
+with parse 0.762. Transport control: the `self` mix at the dose-0 decision token moves the letter
+(β 0.25: ΔP_dose0 −0.068 [−0.099, −0.042]; β 0.5: −0.125 [−0.193, −0.063]; unmixed P_dose0 0.712),
+so `self`'s in-trace result is not an instrument null. Second derivation: every ΔP recomputed from
+the raw rows matches the record exactly. The `none` panel (Amendment 11) runs on the resume pod.
+
+Reading, in the direction the constancy read predicted (ST-A10, R_a): adding the anchor axis at
+clause ends moves GPT-OSS toward the rule, dose-dependently along the axis, and mixing in its own
+judgment-frame state moves it the same way in the trace and at dose 0. What the data do not show at
+the coherent α is direction specificity: neither target separates from the norm-matched random
+direction (both difference CIs include 0).
+
+**Referee pass.** (1) *"Steering at clause ends just perturbs deliberation; any push lowers P."* The
+matched `fill` at 267.3 moves P by −0.028 [−0.091, +0.040], and the dose step along the axis is
+negative with its CI excluding 0, but the target-minus-`fill` difference at 267.3 includes 0: the
+specificity claim is not made. (2) *"The 534.6 numbers are off-coherence; you are leaning on them."*
+They are reported as descriptive, and the dose step is the only use; under the relative rule now
+in force the 534.6 run passes all three bars, which is stated beside it, not used for the gate.
+(3) *"n = 20 scenarios cannot carry a sign."* The gate's MDE is about 0.12; the gate rule is a
+point rule (ΔP ≥ +0.10), and both targets fail it by more than their own CI half-widths on the
+positive side. Signs are reported with their CIs, not as verdicts.

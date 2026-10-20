@@ -1188,3 +1188,14 @@ argues itself into the rule; T1.3's `care` arm (+a at `clause_end`) is the causa
 predicts ΔP ≤ 0 under that reading. Rivals (trace position; torn-scenario selection) have zero-GPU
 discriminators on the bank.
 
+**T1.3, the target-selection gate (2026-10-20; G2 read), what changed.** Positive voice first:
+**on GPT-OSS-20B, steering along the moral-salience anchor axis at clause ends lowers protection
+dose-dependently (the paired step from α 267 to 534 is −0.057 [−0.113, −0.007]), and mixing the
+model's own judgment-frame state into its trace lowers it too (−0.091 [−0.177, −0.014]); the same
+mix lowers the forced dose-0 answer (−0.068 [−0.099, −0.042]).** Both run in the direction the
+constancy read predicted (ST-A10) and neither passes the gate (ΔP ≥ +0.10). Not shown: direction
+specificity, since neither target separates from a norm-matched random direction at the coherent α
+(differences −0.043 and −0.063, CIs include 0). The reading this favors (ST-A11, R_a) is that on
+this model the moral-salience reference participates in the brake rather than opposing it; a
+reversed-axis arm (~0.35 A100-h) separates it from generic perturbation.
+
