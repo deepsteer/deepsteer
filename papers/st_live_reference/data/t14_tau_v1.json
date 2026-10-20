@@ -1,0 +1,21 @@
+{
+ "rule": "ST_PLAN Amendment 14 item 3 (section 5.2)",
+ "class": "clause_end",
+ "layer": "block 12 (hidden index 13)",
+ "axis": "anchor_axis_t_inst",
+ "quantile": 0.75,
+ "tau": 0.05892777256667614,
+ "n_positions": 32371,
+ "n_rollouts": 249,
+ "beside": {
+  "per_rollout_mean": 0.04388026709017946,
+  "rule_rollouts_per_position": 0.06249169632792473,
+  "protect_median": 0.038916196674108505,
+  "rule_median": 0.04154292866587639,
+  "share_of_protect_positions_below_tau": 0.7499922770380897
+ },
+ "inputs": {
+  "directions_sha256": "c17fca7a4e8539a560b42a2c381864d2aed02b48f9d6abb9c02aaff5e81d7e84",
+  "rollouts_sha256": "98c825f28ef15edb4ff1d833ffc4e80934bc65ca601a4ce8013e1b1c92715052"
+ }
+}

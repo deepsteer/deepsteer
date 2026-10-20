@@ -71,7 +71,9 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
 # what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
 # rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
 # generation plus 320 single-row NLL forwards at 0.475 s
-T13_REMAINDER = {"gpt_oss_20b": 0.0}  # the rerun ran on the T1.3b pod
+# the rerun ran on the T1.3b pod; owed: Amendment 14's reversed-axis arm (160 rollouts at the care
+# rerun's measured 1,089 s plus 160 single-row NLL forwards at 0.475 s)
+T13_REMAINDER = {"gpt_oss_20b": (1089 + 160 * 0.475) / 3600}
 # Amendment 11's call on GPT-OSS, provisional from the T1.3b log (A; author 2026-10-20): T1.5's
 # adapter panels run as the one-sided guard at the 50% subsample for every adapter; the `none`
 # panel is re-read in full on the next GPT-OSS pod (the call of record and T1.5's paired baseline)
@@ -316,7 +318,8 @@ def price(m: dict) -> dict:
             dev[kn] = (PANEL_ROWS * d0[0] / 3600, d0[1])
             kg = next(k for k in dev if k.startswith("T1.3 steering gate"))
             if m["model"] in T13_REMAINDER:  # the T1.3 pod ran: only its remainder is owed
-                dev[kg] = (T13_REMAINDER[m["model"]], "done (T1.3 and T1.3b pods; in the spend)")
+                dev[kg] = (T13_REMAINDER[m["model"]],
+                           "gate done (T1.3, T1.3b); owed: Amendment 14's reversed-axis arm")
             else:
                 # the coherence gate's NLL forward per rollout (1,000) and the transport readout
                 # (20 x 8 x 3 betas at dose 0), at T1.1's single-row rates (Amendment 12)

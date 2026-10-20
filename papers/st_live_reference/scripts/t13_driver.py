@@ -386,8 +386,39 @@ def phase_care_rerun(c, sc, model, rec, a) -> dict:
                      "absolute rate beside; self's comparator is the rerun fill")}
 
 
+def phase_care_reversed(c, sc, model, rec, a) -> dict:
+    """Amendment 14 item 2 (ST-A11's discriminator): care with the anchor axis negated at the gate
+    of record's alpha, on the gate's 20 x 8, against the gate's none rows (reused). Read of record:
+    the paired difference dP(-a) - dP(+a), scenario bootstrap; R_a predicts it above 0 with the CI
+    excluding 0. Not a gate."""
+    cr = rec["phases"]["care_rerun"]
+    alpha = cr["alpha"]
+    jobs = L.h1_jobs(sc, c["H"], c["gate"], R)
+    none = _rows(c, "gate_none")
+    if [r["rollout_key"] for r in none] != [f"t13|{j['s'].id}|{j['k']}" for j in jobs]:
+        raise SystemExit("gate_none rows do not match the gate's jobs")
+    rev = run_arm(c, sc, model, "gate_care_reversed", jobs, SG.Add(-c["inp"]["axis"], alpha),
+                  extra=lambda i: {"alpha": alpha, "sign": -1})
+    pos, fill = _rows(c, "gate_care_rerun"), _rows(c, "gate_fill_rerun")
+    pr, pp, pf = p_by_scenario(rev), p_by_scenario(pos), p_by_scenario(fill)
+    ids = sorted(set(pr) & set(pp))
+    paired = boot([pr[s] - pp[s] for s in ids])
+    coh = _coh(rev, none, relative=True)
+    lo = paired["ci95"][0]
+    reading = ("not informative (incoherent)" if not coh["passes"] else
+               "R_a (salience drives the brake)" if lo is not None and lo > 0 else
+               "R_b (generic perturbation) or unresolved")
+    ids_f = sorted(set(pr) & set(pf))
+    return {"status": "ok", "alpha": alpha, "coherence": coh,
+            "dP_reversed_vs_none": delta_p(rev, none),
+            "dP_reversed_minus_care": paired,
+            "dP_reversed_minus_fill": boot([pr[s] - pf[s] for s in ids_f]),
+            "reading": reading, "rule": "Amendment 14 item 2 (not a gate)"}
+
+
 PHASES = {"sweep": phase_sweep, "gate": phase_gate, "transport": phase_transport,
-          "panel": phase_panel, "care_rerun": phase_care_rerun}
+          "panel": phase_panel, "care_rerun": phase_care_rerun,
+          "care_reversed": phase_care_reversed}
 
 
 def main() -> int:
@@ -396,7 +427,7 @@ def main() -> int:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--inputs", type=Path, required=True)
     # care_rerun (Amendment 13) runs only when triggered; a resumed pod skips finished phases
-    ap.add_argument("--phases", default="sweep,gate,transport,care_rerun,panel")
+    ap.add_argument("--phases", default="sweep,gate,transport,care_rerun,care_reversed,panel")
     ap.add_argument("--date-pin", default=datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--deadline", type=float, default=None, help="epoch seconds (envelope)")
@@ -422,6 +453,9 @@ def main() -> int:
             raise SystemExit("gate needs the sweep's alpha")
         if name == "care_rerun" and not (rec["phases"].get("gate") or {}).get("finished"):
             raise SystemExit("care_rerun needs the gate's record")
+        if name == "care_reversed" and not (rec["phases"].get("care_rerun") or {}).get("ran"):
+            print(">> t13 care_reversed: no care_rerun of record; skipped", flush=True)
+            continue
         if a.deadline and name != "panel" and time.time() > a.deadline:
             rec["phases"][name] = {"status": "deadline", "at": _now()}
             save_record(c, rec)

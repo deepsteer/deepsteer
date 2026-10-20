@@ -1852,3 +1852,11 @@ branch-A subsample; envelope of record **32.82 of 35**.
    banked `clause_end` position of the H1_train protect rollouts at block 12 (T1.1's bank), per
    position, since the hinge acts per position; the per-rollout-mean version is reported beside it.
    Written to `data/t14_tau_v1.json`.
+
+**τ of record (Amendment 14 item 3; `data/t14_tau_v1.json`).** τ = **0.0589**, the 75th percentile
+of the anchor-axis margin over 32,371 banked `clause_end` positions of the 249 H1_train protect
+rollouts at block 12 (75.0% of those positions fall below it). Beside it: the per-rollout-mean
+version 0.0439; the rule rollouts' per-position 75th percentile 0.0625; medians protect 0.0389,
+rule 0.0415 (the ordering of ST-A10). The reversed-axis arm is driver phase `care_reversed`; the
+next GPT-OSS pod resumes the T1.3 record and runs it and the `none` panel re-read (~0.32 + 2.59
+A100-h). Envelope of record 33.14 of 35.
