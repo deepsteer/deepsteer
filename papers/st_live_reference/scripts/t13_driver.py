@@ -325,8 +325,56 @@ def phase_panel(c, sc, model, rec, a) -> dict:
             "dose0_candidate": sc.dose0.name}
 
 
+def _rows(c: dict, name: str) -> list[dict]:
+    return [json.loads(x) for x in (c["out"] / "gen" / f"{name}.jsonl").open()]
+
+
+def phase_care_rerun(c, sc, model, rec, a) -> dict:
+    """Amendment 13 (author, 2026-10-20): if the gate's parse rate for care at the sweep's alpha is
+    below 0.95, alpha steps down one grid point and care reruns once on the gate's 20 x 8 with fill
+    norm-matched to the new alpha (same unit draws); pass = care's gate result, fail = care fails.
+    The in-gate none rows are reused. self is scored against both fills (which one is self's
+    comparator is the author's call)."""
+    g = rec["phases"]["gate"]
+    care = g["arms"]["care"]
+    if care["coherence"]["parse_rate"] >= 0.95:
+        return {"status": "ok", "ran": False, "reason": "care's parse rate met the bar"}
+    al = sorted(c["alphas"])
+    lower = [x for x in al if x < g["alpha"]]
+    if not lower:
+        return {"status": "ok", "ran": False, "reason": "no lower grid point", "care_passes": False}
+    alpha = max(lower)
+    jobs = L.h1_jobs(sc, c["H"], c["gate"], R)
+    none = _rows(c, "gate_none")
+    if [r["rollout_key"] for r in none] != [f"t13|{j['s'].id}|{j['k']}" for j in jobs]:
+        raise SystemExit("gate_none rows do not match the gate's jobs")
+    fu = c["inp"]["fill_unit"]
+    Vf = np.stack([alpha * fu[j["k"] % len(fu)] for j in jobs]).astype(np.float32)
+    fill = run_arm(c, sc, model, "gate_fill_rerun", jobs, SG.Add(Vf, 1.0),
+                   extra=lambda i: {"fill_draw": jobs[i]["k"] % len(fu), "alpha": alpha})
+    care2 = run_arm(c, sc, model, "gate_care_rerun", jobs, SG.Add(c["inp"]["axis"], alpha),
+                    extra=lambda i: {"alpha": alpha})
+    dpf, dpc = delta_p(fill, none), delta_p(care2, none)
+    coh = _coh(care2, none)
+    passes = bool(coh["passes"] and dpc["mean"] is not None and dpf["mean"] is not None
+                  and dpc["mean"] >= GATE_DP and dpc["mean"] - dpf["mean"] >= GATE_OVER_FILL)
+    selfs = {}
+    for b in BETAS:
+        d = g["arms"][f"self_{b}"]
+        selfs[f"self_{b}"] = {
+            "vs_fill_rerun": bool(d["coherence"]["passes"] and d["dP"]["mean"] is not None
+                                  and d["dP"]["mean"] >= GATE_DP
+                                  and d["dP"]["mean"] - dpf["mean"] >= GATE_OVER_FILL),
+            "vs_fill_original": d["passes"]}
+    return {"status": "ok", "ran": True, "alpha": alpha, "from_alpha": g["alpha"],
+            "care": {"coherence": coh, "dP": dpc, "passes": passes},
+            "fill": {"coherence": _coh(fill, none), "dP": dpf},
+            "care_passes": passes, "self_by_comparator": selfs,
+            "rule": "Amendment 13: one step down, once; pass is care's gate result"}
+
+
 PHASES = {"sweep": phase_sweep, "gate": phase_gate, "transport": phase_transport,
-          "panel": phase_panel}
+          "panel": phase_panel, "care_rerun": phase_care_rerun}
 
 
 def main() -> int:
@@ -358,6 +406,8 @@ def main() -> int:
             continue
         if name == "gate" and not (rec["phases"].get("sweep") or {}).get("finished"):
             raise SystemExit("gate needs the sweep's alpha")
+        if name == "care_rerun" and not (rec["phases"].get("gate") or {}).get("finished"):
+            raise SystemExit("care_rerun needs the gate's record")
         if a.deadline and name != "panel" and time.time() > a.deadline:
             rec["phases"][name] = {"status": "deadline", "at": _now()}
             save_record(c, rec)
