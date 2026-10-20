@@ -39,7 +39,10 @@ import screen_lib as L  # noqa: E402
 
 ENVELOPE = 35.0
 BRAKE_HELD, BRAKE_SECOND = 65, 50
-PANEL_ROWS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
+# all five letter cells at dose 0, eight permutations: the four E cells plus the known-gap band,
+# which every arm reads by default (author, 2026-10-19; skipping it on non-headline adapters is
+# panel lever (1)); the screen's panel of record is the same 586 x 8 x 5
+PANEL_ROWS = 586 * 8 * 5
 KDG_BAR = 0.05
 S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 s, GPT-OSS-20B, A100
 # T1.1 pod (w4bn754dc3u8qs), GPT-OSS-20B on torch 2.13 with eager experts, single-row: the dose-0

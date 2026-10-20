@@ -397,10 +397,12 @@ Bail order if a pod runs long (and, before the §5.1 pair rider runs, if the rid
 past 35): T1.6's `L-beh` arm, then `L-fill` (already optional), then T1.5's
 Heretic pass. Never cut: T1.1 (the banked baseline is the asset every zero-GPU read depends on) and
 T1.6's uninstrumented baseline on the second family. Panel levers (author, 2026-10-19), used only
-if the envelope needs them, after the items above and in this order: (1) panel dose-0 on 2 of the
-letter cells for the non-headline adapters, the `none` baseline re-read on the same cells; (2) a
-50% panel subsample for those adapters at a recomputed, stated MDE. The headline adapter always
-gets the full panel. Details and prices in the T1.5 note of 2026-10-19 below.
+if the envelope needs them, after the items above and in this order: (2) a 50% scenario subsample
+of the panel for the non-headline adapters, all four E cells kept, at a recomputed MDE stated beside
+each ΔE; then (1) the non-headline adapters skip the known-gap cell (all four E cells kept; the
+known-gap band stays on the headline adapter). The headline adapter always gets the full panel.
+Reading the D cells alone is not a lever: it changes E's construct for the arm (`L-self`) built to
+move the judgment frame. Prices in the T1.5 notes of 2026-10-19 below.
 
 **Gates (author; zero GPU).** G1 after T1.0: development model and second family named by the §2
 rule. G2 after T1.3: anchoring target fixed; τ, L*, class committed. G3 after T1.5: verdicts;
@@ -1556,7 +1558,7 @@ record (GPT-OSS development, Muse second family): **27.09 of 35** (26.78 under t
    is one arm: on Muse lever (1) saves 0.32, lever (2) alone 0.32, both 0.47. With both levers on
    both tiers the envelope would be about 26.2.
 
-**For the author (both needed before T1.5 if a lever is ever used).** (a) *Which 2 cells.* E is
+**For the author (resolved in the next note: reading D cells alone is not a lever; the headline rule is adopted).** (a) *Which 2 cells.* E is
 `(D − J)` at primary minus `(D − J)` at pressure-removed, so it needs four cells; the fifth letter
 cell, known-gap, is the per-model positive control and is not read per adapter in the re-price. On
 2 cells ΔE cannot be computed. Recommendation: the two agent-frame cells (`dl_chat_neutral`,
@@ -1568,3 +1570,19 @@ and `L-beh`, so a lever on any of the three thins one side of that difference. R
 headline adapter is the one with the largest H1_held ΔP point estimate, fixed from the H1 rows
 before any panel row is read. The headline-vs-other ΔE difference is then reported at the reduced
 arm's recomputed MDE, stated beside it.
+
+#### Panel levers redefined; headline-adapter rule (author, 2026-10-19; zero GPU; before T1.5)
+
+1. **Headline adapter (rule of record).** The headline adapter is the adapter with the largest
+   H1_held ΔP point estimate (against `P_none^re`), fixed from the H1 rows before any panel forward
+   runs; the choice and the ΔP values that made it are written to the T1.5 record first.
+2. **Default panel.** Every arm, `none` included, reads all five letter cells on 586 × 8: the four
+   E cells and the known-gap band (the positive control, so it is read on the instrument of record
+   beside each measurement). The re-price had counted four cells per panel; at five, GPT-OSS's
+   T1.5 readouts are 10.78 A100-h and Muse's T1.6 readouts 2.55. **Envelope of record (GPT-OSS
+   development, Muse second family): 32.34 of 35.**
+3. **Levers, in bail order.** (2) first: the non-headline adapters read a 50% scenario subsample
+   with every cell, MDE recomputed from the subsample and stated; saves 2.59 A100-h on T1.5 (two
+   adapters) and 0.39 on T1.6 (one). Then (1): the non-headline adapters skip the known-gap cell;
+   saves a further 0.52 on T1.5 and 0.08 on T1.6 after (2), or 1.04 and 0.16 alone. Both levers on
+   both tiers: about 28.76. The superseded 2-cell lever and its prices (note above) are withdrawn.
