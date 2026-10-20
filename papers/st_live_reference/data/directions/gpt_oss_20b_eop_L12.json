@@ -49,7 +49,8 @@
    "end_of_prompt": 0.5290596512871732
   },
   "known_covariates": "AdvBench vs Alpaca style, topic, length",
-  "outcome_variable": "none (removed from V_care)"
+  "outcome_variable": "none (removed from V_care)",
+  "of_record": "t_inst (FL provenance); author 2026-10-19"
  },
  "V_care": {
   "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
@@ -65,7 +66,8 @@
   "contrast_semantics": "stimulus/content, derived",
   "rank": 2,
   "construction": "V_moral minus its in-span harm component (per harm variant)",
-  "outcome_variable": "\u00a75.2 anchor (via the anchor axis)"
+  "outcome_variable": "\u00a75.2 anchor (via the anchor axis)",
+  "of_record": "V_care_t_inst"
  },
  "anchor_axis": {
   "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
@@ -79,6 +81,26 @@
   },
   "extraction_commit": "847e28e",
   "construction": "normalized sum of the three harm-removed signed sources (moral pole positive); author 2026-10-19",
-  "rank": 1
+  "rank": 1,
+  "positive_pole": "morally loaded content (the `moral` member of each d1_vmoral_v1 pair, against its `neutral` twin), not the morally right act",
+  "loss_semantics": "outcome-free: the \u00a75.2 hinge pushes the anchoring positions toward the moral-salience pole; the action's direction is read from P, never assumed from the axis",
+  "orientation_diagnostic": "cos(axis, protect-minus-rule in V_care, H1_train) 0.90, scenario-bootstrap CI [-0.66, 1.00]: a diagnostic, not a criterion (author, 2026-10-19)"
+ },
+ "V_care_alt": {
+  "model": "openai/gpt-oss-20b@6cee5e81ee83917806bbde320786a8fb61efebee",
+  "format": "harmony (think format)",
+  "layer": "block 12 output (hidden index 13)",
+  "participation_ratio": {
+   "w4_raw_of_record": 9.4,
+   "w4_std_of_record": 12.79,
+   "kdg_panel_sample_centred": 7.5120541909430285,
+   "flag": "PR < 30: position-invalid flag (construct-audit)"
+  },
+  "extraction_commit": "847e28e",
+  "contrast_semantics": "stimulus/content, derived (sensitivity column)",
+  "rank": 2,
+  "construction": "V_moral minus its in-span END_OF_PROMPT harm component (refusal_t_post_inst, co-located)",
+  "role": "typed sensitivity column carried into T1.2's constancy read; reconsidered at G2 if it separates where V_care does not (author, 2026-10-19)",
+  "npz_key": "V_care_end_of_prompt"
  }
 }

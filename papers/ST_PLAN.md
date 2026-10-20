@@ -1292,3 +1292,10 @@ Amendment 1 item 4). **Diagnostic (T0.6 item 1):** cos(anchor axis, protect − 
 scenario-bootstrap CI is [−0.66, 1.00], so the orientation itself is not resolved on 132
 scenarios; nothing logged as anti-alignment. The L* choice stays with T1.2 and the constancy read
 on T1.1's own residuals.
+
+**Accepted (author, 2026-10-19).** (1) The anchor axis's type block states its positive pole as
+morally loaded content (the `moral` member of each `d1_vmoral_v1` pair against its `neutral` twin),
+not the morally right act; the §5.2 loss is outcome-free and the action's direction is read from
+P. (2) `V_harm` of record stays the FL-provenance `t_inst` vector; the co-located END_OF_PROMPT
+variant is a typed sensitivity column, `V_care_alt` (rank 2), carried into T1.2's constancy read
+and reconsidered at G2 if it separates where `V_care` does not. (3) cos 0.90 stays a diagnostic.
