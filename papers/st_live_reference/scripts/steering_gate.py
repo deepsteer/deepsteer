@@ -84,6 +84,11 @@ class Tracker:
         if not self.closed and isinstance(self.start, int) and len(g) - 1 >= self.start:
             self.closed = self.fmt.trace_closes(self.tok, g)
 
+    def _punct(self, t: int) -> bool:
+        """Ids past the tokenizer (the embedding's padding rows; GPT-OSS has 201,088 rows for a
+        200,019-token tokenizer) decode to nothing and are never punctuation."""
+        return t < len(self.punct) and bool(self.punct[t])
+
     def in_class(self, g: list[int], cls: str) -> bool:
         """Whether position ``len(g) - 1`` (the token ``g[-1]`` being fed) is in ``cls``."""
         i = len(g) - 1
@@ -94,7 +99,7 @@ class Tracker:
         if cls == "onset":
             return i - self.start < N_ONSET
         if cls == "clause_end":
-            return bool(self.punct[g[i]] or (i - 1 >= self.start and self.punct[g[i - 1]]))
+            return self._punct(g[i]) or (i - 1 >= self.start and self._punct(g[i - 1]))
         raise ValueError(cls)
 
 

@@ -110,6 +110,16 @@ def test_position_classes_on_known_sequences(tiny):
     assert trk2.closed and not trk2.in_class(g, "constant")
 
 
+def test_clause_end_survives_ids_past_the_tokenizer():
+    # most probable failure (found on the T1.3 dry run): a sampled id in the embedding's padding
+    # rows (past len(tok)) indexes past the punctuation mask and the gate crashes mid-arm
+    trk = SG.Tracker(_think_fmt(), None, np.array([False, True, False]))
+    trk.start = 0
+    assert trk.in_class([0, 1], "clause_end") is True
+    assert trk.in_class([0, 1, 7], "clause_end") is True  # the token after punctuation
+    assert trk.in_class([0, 2, 7, 9], "clause_end") is False
+
+
 def test_harmony_trace_opens_after_the_analysis_header():
     # GPT-OSS's generated ids begin with <|channel|>analysis<|message|>: those three are not trace
     pytest.importorskip("transformers")
