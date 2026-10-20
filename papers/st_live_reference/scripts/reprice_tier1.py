@@ -302,6 +302,12 @@ def price(m: dict) -> dict:
                        f"({d0[1]})")
             kn = next(k for k in dev if k.startswith("T1.3 pod: `none` panel"))
             dev[kn] = (PANEL_ROWS * d0[0] / 3600, d0[1])
+            kg = next(k for k in dev if k.startswith("T1.3 steering gate"))
+            # the coherence gate's NLL forward per rollout (1,000) and the transport readout
+            # (20 x 8 x 3 betas at dose 0), at T1.1's single-row rates (Amendment 12)
+            extra = (1000 * r_post + 20 * 8 * 3 * d0[0]) / 3600
+            dev[kg] = (dev[kg][0] + extra, f"{dev[kg][1]} + {extra:.2f} coherence NLL and "
+                                           "transport forwards (single-row)")
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")

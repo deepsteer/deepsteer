@@ -1692,3 +1692,37 @@ as §6.
 Both branches of item 3 are publishable: a positive separation at the picked class is a
 correlational localization (Amendment 1's scope); a negative one is a pre-registered expectation
 change for `L-anchor` before any adapter exists.
+
+#### T1.3 pod build (2026-10-19; Amendments 11-12; zero GPU until launch)
+
+- **`scripts/panel_call.py`** (Amendment 11): the band precondition and the carrier call from one
+  `none` panel read, with KDG's own estimators imported. Second derivation: on KDG's GPT-OSS cells
+  it reproduces §27 exactly (E −0.00126 [−0.0106, 0.0081], n 586, MDE 0.01335; g_band 0.501).
+- **`scripts/constancy_read.py`** (T1.2, Amendment 12 item 3) and **`scripts/build_t13_inputs.py`**
+  (the pod's inputs: the unit anchor axis, five covariance-matched unit fill draws from T1.1's bank
+  at L\* and the picked class, the judgment-frame `self` sources for the 25 drawn scenarios). Both
+  run locally after Amendment 12 is pushed; the constancy result is committed as
+  `data/t12_constancy_v1.json` before the inputs are built.
+- **`scripts/t13_driver.py`**: one HF process on the ST stack, phases sweep → gate → transport →
+  panel, recorded and resumable. Seeds are shared across arms by (scenario, rollout); every arm's
+  rollouts are parsed by the parser of record and scored for coherence by their trace NLL under the
+  unsteered model; fill's five draws and the sweep's four alphas each run in one batch through a
+  per-rollout vector (`steering_gate.Add` now takes one vector per entry; a test asserts it equals
+  separate calls). The panel starts only if the deadline leaves time for all five cells (~3.0 h
+  with a 15% margin at T1.1's 0.398 s/row); otherwise it is recorded as moved to the T1.4 pod.
+  Dry run: every phase on a tiny GPT-OSS with the real harmony tokenizer, the trace opened at the
+  first token so the hooks fire (`none` steers 0 positions, every steered arm > 0).
+- **Remote**: `STEPS=t13/t13`, watchdog 5.0 h, inputs checked before any model
+  (`SYNC_OUTPUTS=outputs/t13_inputs/`), Amendment 10's selection skipped (of record from T1.1),
+  the remote re-price skipped (T1.3 has no generation timing; re-priced locally). Fast gates: 170
+  pass locally.
+- **Price.** T1.3 1.37 A100-h (generation 1.18 at the eager probe's rate, plus the coherence NLL
+  and transport forwards, 0.18), the `none` panel 2.59; envelope of record 32.02 of 35. Estimated
+  pod ~4.4 h with setup, under the 5.0 h watchdog.
+- **Launch sequence.** Push Amendment 12 and this build → the constancy read locally (commit the
+  JSON) → `build_t13_inputs.py` → launch with `STEPS=t13/t13 RESULTS_SUBPATH=outputs/t13
+  SYNC_OUTPUTS=outputs/t13_inputs/`.
+- **For the author.** No coherent alpha: if no alpha passes the coherence gate on the sweep,
+  `care` and `fill` run at the smallest alpha, so `self` keeps its `fill` comparator and `care`'s
+  coherence failure fails it under the rule (implemented that way; the alternative is to skip both
+  and leave `self` without a comparator).

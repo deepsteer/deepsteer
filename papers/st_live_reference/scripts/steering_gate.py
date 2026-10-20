@@ -41,7 +41,9 @@ COHERENCE = {"parse_rate_min": 0.95, "length_ratio": (0.7, 1.5), "nll_delta_max"
 
 @dataclass
 class Add:
-    """``h += alpha * vector`` at the class positions (care, fill)."""
+    """``h += alpha * vector`` at the class positions (care, fill). ``vector`` is one vector for
+    every row, or ``[n_entries, hidden]``, one per entry of ``prompts`` (per rollout), so arms that
+    differ only in the vector (fill's draws, the sweep's alphas) share one batch."""
 
     vector: np.ndarray
     alpha: float
@@ -128,7 +130,10 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
         if intervention is not None:
             vec = None
             if isinstance(intervention, Add):
-                vec = torch.as_tensor(intervention.vector, dtype=hf.dtype, device=dev)
+                v = np.asarray(intervention.vector)
+                if v.ndim == 2:  # one vector per entry: this batch's rows
+                    v = v[b0: b0 + B]
+                vec = torch.as_tensor(v, dtype=hf.dtype, device=dev)
             src = None
             if isinstance(intervention, Mix):
                 src = torch.as_tensor(intervention.sources[[pidx[b0 + r] for r in range(B)]],
@@ -142,7 +147,7 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
                 h = h.clone()
                 last = h[:, -1, :]
                 if vec is not None:
-                    last[m] = last[m] + intervention.alpha * vec
+                    last[m] = last[m] + intervention.alpha * (vec[m] if vec.dim() == 2 else vec)
                 else:
                     last[m] = (1 - intervention.beta) * last[m] + intervention.beta * src[m]
                 h[:, -1, :] = last

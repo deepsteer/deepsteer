@@ -58,6 +58,21 @@ def test_zero_dose_is_bitwise_the_unsteered_arm(tiny):
     assert all(r["n_steered"] == r["n_tokens"] - 1 for r in big if r["n_tokens"])
 
 
+def test_per_row_vectors_equal_separate_calls(tiny):
+    # most probable failure: a per-entry vector is applied to the wrong row (batch offset), so a
+    # pooled fill draw or a sweep alpha lands on another rollout
+    P, seeds = _prompts(tiny) * 2, [11, 12, 13, 14]
+    fmt = _think_fmt()
+    hid = tiny.model.config.hidden_size
+    rng = np.random.default_rng(0)
+    V = rng.standard_normal((4, hid)).astype(np.float32) * 20
+    pooled = SG.generate(tiny, P, fmt=fmt, cap=10, seeds=seeds, layer=2, cls="constant", batch=3,
+                         intervention=SG.Add(V, 1.0))
+    one = [SG.generate(tiny, [P[i]], fmt=fmt, cap=10, seeds=[seeds[i]], layer=2, cls="constant",
+                       batch=1, intervention=SG.Add(V[i], 1.0))[0] for i in range(4)]
+    assert [r["gen_ids"] for r in pooled] == [r["gen_ids"] for r in one]
+
+
 def test_mix_lands_at_hidden_state_index_layer(tiny):
     # most probable failure: an off-by-one between "layer L" and the hooked block, so the self mix
     # writes the source into the wrong residual; beta = 1 with the row's own residual at index L
