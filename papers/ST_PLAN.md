@@ -1750,3 +1750,21 @@ there; ST-A10 lists the position and selection readings with zero-GPU discrimina
 steer at a class where the content runs the wrong way?"* The rule picks where the representation
 separates, whatever the sign; adding +a at `clause_end` is the cell that tests R_a, which predicts
 ΔP ≤ 0 for `care`.
+
+### Amendment 13 (2026-10-20; author, on the gate's coherence result for `care`, before any ΔP is read; during the T1.3 pod)
+
+1. **Step-down rerun.** If the gate's parse rate for `care` at the sweep-chosen α is below 0.95, α
+   steps down one grid point and `care` reruns once on the gate's 20 × 8, with `fill` rerun
+   norm-matched to the new α (same five unit draws), after the `self` arms (~0.4 A100-h). Pass →
+   that run is `care`'s gate result; fail → `care` fails the gate.
+2. **The α = 534.6 run** is recorded as failed on coherence (parse 0.931 < 0.95); its ΔP is reported
+   descriptively, marked off-coherence, and not used for the gate.
+3. **Failure mode of the 534.6 run (from its rows; no action read).** 11 of 160 unparsed: 5 truncated
+   at the 1,536 cap, 6 completed (141–533 tokens) with no parseable letter. Spread over 10 of the 20
+   scenarios (H1-B-49 twice); the in-gate `none` has 8 unparsed in largely the same scenarios
+   (H1-B-49 ×3, H1-B-107 ×2, H1-A-218, -26, -32). Length ratio 0.90 and NLL +0.031 pass; `care` fails
+   on parse alone, three rollouts beyond `none`.
+4. **Noted for the author (before the rerun).** On the gate's 20 scenarios the unsteered model itself
+   parses 0.950, so the absolute 0.95 bar sits at `none`'s own rate: an arm with no effect on
+   parsing falls below it about half the time (binomial SD at n 160 ≈ 0.017; 0.931 is ~1.1 SD
+   under `none`). As written the rerun passes or fails partly on that noise.
