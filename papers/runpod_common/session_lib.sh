@@ -187,6 +187,7 @@ rp_sync_up() {
   # Filter order matters: explicitly named output FILES (SYNC_OUTPUTS) first, then the shared
   # universal excludes (blobs/caches, and trees no pod needs such as the KDG outputs), then THIS
   # paper's outputs, then drop every other paper's outputs.
+  rp_check_sync_outputs || exit 1
   rp_output_filters
   rp_check_sync_size || exit 1
   echo ">> Syncing repo -> pod:$REMOTE_DIR (${SYNC_OUTPUTS:+outputs: $SYNC_OUTPUTS; }blobs/other papers excluded)"
@@ -196,6 +197,27 @@ rp_sync_up() {
     "${RP_OUT_FILTERS[@]}" \
     -e "ssh ${SSH_OPTS[*]}" \
     "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
+}
+
+# rp_check_sync_outputs: before any pod exists, refuse a SYNC_OUTPUTS entry that carries
+# whitespace (a wrapped paste once split "outputs/t13/..." across a newline and the record never
+# reached the pod) or names nothing under $SELF_PAPER locally.
+rp_check_sync_outputs() {
+  [ -z "${SYNC_OUTPUTS:-}" ] || [ "$SYNC_OUTPUTS" = "none" ] && return 0
+  local item bad=0
+  if [[ "$SYNC_OUTPUTS" =~ [[:space:]] ]]; then  # before splitting: read stops at a newline
+    echo "ERROR: SYNC_OUTPUTS contains whitespace or a line break (a wrapped paste?):"
+    printf '  %q\n' "$SYNC_OUTPUTS"; return 1
+  fi
+  IFS=',' read -ra _items <<< "$SYNC_OUTPUTS"
+  for item in "${_items[@]}"; do
+    if [[ "$item" =~ [[:space:]] ]]; then
+      echo "ERROR: SYNC_OUTPUTS entry contains whitespace (a wrapped paste?): '$item'"; bad=1
+    elif [ ! -e "$REPO_ROOT/$SELF_PAPER/${item%/}" ]; then
+      echo "ERROR: SYNC_OUTPUTS entry matches nothing locally: $SELF_PAPER/$item"; bad=1
+    fi
+  done
+  return $bad
 }
 
 # rp_output_filters: sets RP_PRE_FILTERS and RP_OUT_FILTERS (global arrays, not namerefs: the
