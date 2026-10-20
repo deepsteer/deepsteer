@@ -345,6 +345,11 @@ def main() -> int:
                 tot = spent + prices[dev]["development_total"] + prices[sec]["second_family_total"]
                 ok = "yes" if tot <= ENVELOPE else "NO"
                 lines.append(f"| {dev} | {sec} | {tot:.2f} | {ok} |")
+    if len(models) < 2:
+        lines += ["", f"Only {', '.join(models)} has generation timing under these dirs, so no "
+                  "role pair is priced and the second-family block above uses this model's own "
+                  "rates; re-run locally with every banked session dir (oldest first) for the "
+                  "envelope."]
     text = "\n".join(lines) + "\n"
     print(text)
     out = a.write or (a.screen_dir[-1] / "tier1_reprice.md")

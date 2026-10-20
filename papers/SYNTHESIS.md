@@ -1147,3 +1147,20 @@ of record; torch 2.13 becomes the ST HF stack (inside the parity bar on both); T
 ~1.2 A100-h on eager experts; the bias fold lands in vLLM (effects correlated 0.87 with HF's) but
 fails its cross-engine bar, which was set from the dense models (ST-A7, author's call).
 
+
+**T1.1 (2026-10-19), what changed.** Positive voice first: **GPT-OSS-20B's deliberation brake
+replicates at eight rollouts on the full H1 set, −0.248 [−0.286, −0.213] over 264 scenarios
+against §40's −0.224 on a different sample, and it is concentrated enough to train on: 45 of 132
+H1_train and 38 of 132 H1_held scenarios are brake-engaged, 2.5 and 3.2 times their no-brake
+nulls' 95th percentiles (18 and 12).** The independent `none` re-run on the 38 held scenarios moves
+P_none by +0.022 [−0.035, 0.078], so the selection carries no detectable regression to the mean,
+and the ΔP MDE of record is 0.08, half the `generalizes` bar. The residual bank (337,487 positions,
+five layers, 9.1 GB), `chat_sigma`, 66 DPO pairs and the QLoRA path on Muse are in place for T1.2
+to T1.4; spent 8.85 A100-h, envelope of record 28.09 of 35. The refusal-retention secondary
+(Amendment 10) is uncalibrated on GPT-OSS: the model refuses the FL request twins under an
+operator order as often as without one (0.933 vs 0.942), so the set selects nothing on this model
+and its return is a G2 decision. Reaching that reading took a classifier fix: the shared refusal
+classifier missed GPT-OSS's curly apostrophe and now folds typography itself (ST-A8; it changes no
+label on any saved text). Conjunction under watch: GPT-OSS was already the program's
+hardest-to-strip refuser (Paper 7); here it also refuses an explicit operator instruction, which
+limits any refusal-loosening instrument built on operator framing for this model.

@@ -1416,3 +1416,81 @@ Both branches are publishable. Calibrated: the retention gate stands on GPT-OSS 
 Uncalibrated: a model that refuses these requests even when an operator orders them leaves the
 instrument no room to show loosening that it can certify; T1.5 carries no refusal-retention verdict
 on GPT-OSS, and the descriptive care-vs-plain rates stay on the record for G2.
+
+#### T1.1 outcomes (2026-10-19; GPT-OSS-20B, pod w4bn754dc3u8qs; zero GPU from here)
+
+Records: `outputs/t11/gpt_oss_20b/t11_record.json` (untracked, with the bank, the rollouts, the
+dose-0 and judgment readouts and the engaged sets beside it); session 1.19 A100-h by timestamps.
+
+1. **v1 (vLLM).** H1 264 × 8 at medium effort, cap 1,536, non-speculative (7,920 tok/s): truncation
+   0.9% (19 of 2,112), parse 98.4%, parser disagreement 0, P_protect 0.231 over scenarios.
+2. **h (HF, torch 2.13, eager experts, single-row; 0.56 h).** All gates pass (no H1_held id in the
+   order, revision, template sha256, transformers 5.17.0, bf16, eager pin). The bank holds 337,487
+   positions over 2,112 rollouts (160 per rollout; §7's measured ~163), fp16 `[n, 5, 2880]` at
+   block outputs {6, 9, 12, 15, 18}, 9.1 GB in 33 chunks; checksums pass and the index sums to the
+   record after download. Readouts: 0.475 s per rollout for the teacher-forced bank pass (about 840
+   tokens), 0.40 s per row for dose-0 and the judgment cell (short prompts; per-forward overhead of
+   the eager expert loop, not tokens). `chat_sigma` per banked layer with its provenance (judgment
+   frame, END_OF_PROMPT before the prefill, H1_train, n 132). T1.3 probe at batch 132: 0.359 s per
+   decode step, projected peak 58.5 GB at the cap.
+3. **Brake and engaged subsets (Amendment 5 rule, `P_dose0` the forced dose-0 protect probability,
+   `P_none` the sampled share).** H1_held B = −0.232 [−0.283, −0.183] (MDE 0.071), 38 engaged
+   against a no-brake null q95 of 12; H1_train B = −0.265 [−0.318, −0.215], 45 engaged against
+   q95 18. Whole set −0.248 [−0.286, −0.213] over 264 scenarios; held minus train +0.033
+   [−0.039, 0.104]. *Second derivation:* an independent recompute from the saved rows reproduces
+   both B values to four decimals and the same 38 and 45 ids; §40's GPT-OSS brake on a different
+   sample (258 × 1) was −0.224, inside the whole-set CI. With an argmax dose-0 share instead of the
+   probability, B would read −0.256 / −0.312 and the counts 45 / 57; the probability is the
+   registered construction (KDG's forced dose-0 share).
+4. **DPO pairs.** 66 pairs over 40 H1_train scenarios (protect vs rule, defer never paired): the
+   40-pair floor is met, no pair rider.
+5. **v2 (vLLM).** The independent `none` re-run on the 38 held engaged scenarios × 8 (304 rollouts,
+   disjoint seeds, tagged `rerun`): P_none^sel 0.158, P_none^re 0.180, floor rung P_none^re −
+   P_none^sel = +0.022 [−0.035, 0.078], MDE 0.081. The selection carries no detectable
+   regression to the mean at that bar.
+6. **§6 MDE recompute (pre-registered: from T1.1's variance, committed before any adapter trains).**
+   §6 expected 50–80 held engaged scenarios and a ΔP difference-CI half-width of about 0.08; T1.1
+   gives 38. The null ΔP between two independent 8-rollout `none` samples on those 38 has a
+   scenario-bootstrap CI half-width of 0.057 and MDE (2.8 SD) 0.081 (the floor rung's own
+   bootstrap). *Second derivation:* the closed-form binomial SD from the re-run's per-scenario
+   shares, sqrt(2 · mean p(1−p)/(n_s − 1) / 38), gives half-width 0.056 and MDE 0.080. So the
+   smaller subset still delivers a tighter interval than §6 planned, because within-scenario
+   variance at P ≈ 0.18 is lower than assumed. **ΔP MDE of record on H1_held: 0.08** (the
+   `generalizes` bar of +0.15 sits about twice above it). The T1.6 MDE stays as G1 set it until
+   Muse's own re-run.
+7. **QLoRA shakedown (Muse, T0.6 item 3).** 4-bit load 209 s, peak 27.5 GB, LoRA rank 16 on the
+   text tower (104.8 M trainable); the anchor loss falls 0.488 → 0.324 over six steps; PEFT on
+   the bf16 base vs the merged bf16 model differs by at most 0.438 in logits, inside the 0.5 bar.
+   The adapter's weights were not downloaded (the session's `*.safetensors` exclude); it was a
+   shakedown, not an artifact.
+8. **Amendment 10.** Selection re-read under `rr-readout-v3` (above): uncalibrated on GPT-OSS, the
+   pre-registered branch. Refusal 0.942 plain, 0.958 care, 0.933 under the operator order (placed
+   in harmony's developer message, checked); positive control +0.008 [−0.013, 0.033]. No kept set,
+   no T1.5 retention verdict on GPT-OSS; the return is a G2 decision. The care-vs-plain contrast is
+   uninformative here: at ceiling refusal under every framing, a flat care cell is what both a
+   care-insensitive and a care-sensitive model would show.
+9. **Re-price.** Spent 8.85 A100-h. The pod's own re-price saw one model and printed an empty
+   envelope (fixed: a single-model run now says so); run locally over every banked session dir,
+   the envelope of record (GPT-OSS development, Muse second family) is **28.09 of 35** (pair rider
+   not needed). GPT-OSS's T1.5 retention row (0.17) leaves with the uncalibrated branch. The
+   largest remaining line is T1.5's readouts on GPT-OSS, 8.09 A100-h at the single-row eager rate.
+
+**Open, with costs.** (a) The QLoRA shakedown had an empty KL mask by construction, so the KL term
+was not exercised on a 4-bit base, and it compared adapted vs merged on bf16 only; the shift from
+training on NF4 to evaluating merged bf16 is unmeasured. Both checks ride the first T1.4/T1.6 pod
+that loads Muse (≈ 0 marginal). (b) Amendment 10's T1.6 cell needs its own selection pass on the
+unadapted Muse (≈ 0.26 A100-h at the measured rate), not in the re-price. (c) §5.0 names 20
+brake-engaged H1_train scenarios for T1.3 and a 5-scenario strength sweep but no draw rule; 45 are
+engaged. Proposed for the author: a seeded draw (seed 0) of 20 for the gate and 5 of the remaining
+25 for the sweep, so the sweep never tunes α on a gate scenario; committed before T1.3.
+
+**Referee pass.** (1) *"38 is below the 40 you required for a detectable brake."* The ≥ 40 count
+was Amendment 5's development-role criterion on the 132 screened H1_train scenarios at 4
+rollouts; on H1_train T1.1 gives 45 at 8. H1_held's 38 is T1.5's evaluation subset, whose
+adequacy is its MDE, recomputed above at 0.08 against §6's planned 0.08 half-width. (2) *"The
+floor rung is computed on the same 38 it qualifies, and 8 rollouts may be too few to see
+regression to the mean."* Its MDE is 0.081, so a regression effect below that is not excluded;
+every ΔP of record uses P_none^re, so such an effect cannot inflate a restoration either way.
+(3) *"The engaged rule conditions on P_none, so the subset's P_none^sel is biased low."* That is
+why the baseline of record is the independent re-run (Amendment 1); the bias is measured (+0.022)
+rather than assumed.
