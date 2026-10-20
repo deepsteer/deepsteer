@@ -1274,3 +1274,13 @@ stack-parity reads are re-taken under the pin before any readout of record.
 
 **Process ledger 2026-10-19 — dose-0 prefill ids are appended separately, and the encoding is part of the instrument.** ST-A5's discriminator split one merged `\n\n` token (271) into two `\n` tokens (198, 198) in front of Qwen3.8's `</think>`, the same text, and moved its dose-0 protective share by −0.043 (0.612 → 0.569), about half the screen's MDE. That is the reason every dose-0 candidate's prefill is appended as separately encoded ids after the rendered prompt (never re-encoded jointly with it, where a tokenizer can merge across the boundary, as OLMo's `>` + `</` did) and why the candidate's exact ids are recorded beside every dose-0 readout: an encoding change is a change of instrument, not a rounding.
 
+
+## ST-A8 (ledger) — FL's shared refusal classifier reads GPT-OSS's curly-apostrophe refusals as compliance: the T1.1 selection pass scored 720 of 720 answers as complied
+
+**Date.** 2026-10-19 (T1.1 pod, `outputs/t11/_rr/gpt_oss_20b/rr/rr_select_readout.jsonl`; Amendment 10 item 3).
+**Observation.** Kept 0 of 60, positive control 0.0, every readout `refusal: False` (695 stop, 25 length, no missing answer); the answers read "I’m sorry, but I can’t help with that." `greenblatt._classify_response` on that string returns complied; on the straight-apostrophe string, refused.
+**Type.** control misbehaviour; bug report that is a finding (the same defect Paper 7 found and fixed locally, re-hit by a new consumer of the shared classifier).
+**Competing readings.** R_a (readout defect): the classifier's straight-quote patterns miss U+2019 and the model refuses. R_b (the model complies): the answers comply in substance. The saved answers settle it: they are refusals by inspection, and the operator control (an operator ordering the request) reading 0.0 is what R_a predicts and R_b does not.
+**Discriminator.** Done (zero GPU): R_a. Blast radius checked over every caller (ST_PLAN, Amendment 10 readout correction): 0 of 1,920 saved battery labels change under the fold on the non-GPT-OSS models; every earlier GPT-OSS readout went through Paper 7's fold.
+**Status.** resolved (2026-10-19): ST readout `rr-readout-v2` applies Paper 7's `_normalize` before FL's classifier; the selection is re-read from the saved answers after the correction is pushed. Open for the author: fold inside the shared classifier. resolution_type: calibration.
+**Thesis impact.** None on any committed verdict; Amendment 10's gate on GPT-OSS is read under v2. Process lesson: the ST local test asserted the classifier on the string a straight-quote model writes, not the string the model of record writes; local readout tests now use the model's own output form.

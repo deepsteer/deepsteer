@@ -1352,3 +1352,41 @@ after v1 has banked, the pod exits with v1's rollouts intact; the next pod resum
 `.../t11_record.json` and `outputs/t11/_rr/`): v1 verifies the banked rows (count and every row's
 render hash) and is not regenerated; finished phases are skipped; the HF phase re-reads from
 scratch; Amendment 10's selection pass is not repeated once of record.
+
+#### Amendment 10, readout correction (2026-10-19; zero GPU; before the selection is read)
+
+**Observation.** The T1.1 pod's selection pass (720 readouts: 60 twins × {plain, care, operator} ×
+4) recorded every readout as compliance: kept 0 of 60, positive control 0.0. The saved answers are
+refusals ("I’m sorry, but I can’t help with that."). GPT-OSS writes the apostrophe as U+2019; FL's
+patterns (`greenblatt._OPENING_REFUSAL`, `_REFUSAL_PATTERNS`) spell `I'?m` and `can'?t` with a
+straight one, so the opening rule and every short-answer pattern miss. Paper 7 found the same
+defect on this model and folds the text first (`gpt_oss_precision_gate._normalize`); the D3 harness
+that item 2 names for parity uses that fold on GPT-OSS. The ST readout imported FL's classifier
+without it, and its local test asserted the straight-quote refusal only.
+
+**Correction.** `refusal_retention.is_refusal` applies Paper 7's `_normalize` (curly quotes and
+dashes to ASCII, imported from its file) before FL's `is_refusal`; readout version `rr-readout-v2`,
+the pin adds the normalizer file's sha256. The classifier, the 64-token final-answer window, the
+set, the gate thresholds and the positive control are unchanged. Tests assert the GPT-OSS string
+reads as a refusal and that a folded compliant answer stays compliant.
+
+**Recompute (after this commit is pushed).** Zero GPU from the pod's saved answers:
+`python refusal_retention.py outputs/t11/_rr/gpt_oss_20b/rr/rr_select_readout.jsonl --out
+outputs/t11/_rr/gpt_oss_20b/rr/rr_selection_v2.json` re-reads every stored answer and writes the
+selection of record with the number of labels changed. The v1 record stays on disk, marked
+superseded by v2; T1.5 reads its kept twins from v2. No selection pass is regenerated.
+
+**Blast radius (CLAUDE.md move 3).** Every user of FL's classifier was checked. GPT-OSS readouts
+before ST all went through Paper 7's fold (Paper 7's gate and ablation, D3 `gptoss_tier1`, W4's
+GPT-OSS extractor). The unfolded users (D2 B1/B5, D3 C1 and `patch_stimuli`, W4 14.5, Paper 5
+stage 2, the Paper 5/6 persona battery) ran on OLMo-2, OLMo-3-Instruct, Llama-3.1 and Qwen2.5.
+Re-reading the 1,920 saved battery texts with and without the fold changes 0 labels; none of the
+201 saved refusals on those models opens with a curly apostrophe, though OLMo-3-Instruct and Qwen
+write curly ones elsewhere (32 to 112 of 160 texts per file). D2, D3 C1 and W4 14.5 saved rates, not texts, so
+their check rests on the same models' battery texts rather than their own rows. No committed
+verdict outside ST changes. KDG reads letters and never calls the classifier.
+
+**For the author.** The fold lives in two scripts and not in the shared classifier, which is how
+ST hit the defect a second time. Recommendation: fold inside `greenblatt._classify_response`
+itself (a shared-classifier change, so escalated); on every saved text the change is
+label-preserving (0 of 1,920), and the ST readout would then drop its own fold at the next version.
