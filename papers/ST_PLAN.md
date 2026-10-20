@@ -1621,8 +1621,12 @@ so the panel ΔE co-primary may start at its floor on the development model.
    reported beside it. √2 assumes the two arms' panel reads are independent; ΔE is paired by
    scenario, and positively correlated arms give a smaller MDE, so 0.0189 is conservative (it
    sends borderline cases to branch A). §6 stands as written under B, with the full panel and the
-   levers as in §7's bail order. For Muse, whose dose-0 E has never been read, the threshold is
-   √2 × the MDE of its own `none` panel read (a variance, not the point), stated with the read.
+   levers as in §7's bail order. For Muse, whose dose-0 E has never been read (author, 2026-10-19): the
+   threshold is √2 × the MDE of its own `none` panel read on the ST instrument, from the same
+   scenario-level bootstrap estimator ΔE uses, stated beside the read; the point estimate plays
+   no part in it. Precondition: Muse's known-gap control is in band on that same read (g_band's
+   95% lower bound ≥ 0.10, P1-A9; `screen_lib.known_gap_band`); otherwise the carrier call is
+   deferred and the panel is reported uncalibrated for Muse.
 4. **Prices.** The `none` panels move without changing the total. Branch A saves 3.89 A100-h on
    T1.5 (three adapters at 50%, 1.295 each); envelope of record 32.34 under branch B, about 28.45
    under branch A. Under branch A the bail-order levers no longer apply to GPT-OSS's panel except
