@@ -1632,10 +1632,13 @@ so the panel ΔE co-primary may start at its floor on the development model.
    P1-A9); otherwise the call is deferred, never defaulted to either branch. If deferred: T1.4
    trains on schedule; the call moves to the first pod that re-reads the band; until the call,
    T1.5's panel rows are priced at the branch-A subsample (three adapters at 50%), topped up to the
-   full panel if branch B applies. Implementing reading: the call uses E_none from the read whose
-   band passed, so the re-reading pod reads GPT-OSS's `none` panel again, all five cells (2.59
-   A100-h, not in the re-price until a deferral happens). The re-price reads the call from the
-   T1.3 record when the T1.3 pod is built.
+   full panel if branch B applies. On deferral the re-reading pod reads GPT-OSS's `none` panel
+   again, all five cells, so E_none and the band come from the same read (author, 2026-10-19; 2.59
+   A100-h, not in the re-price until a deferral happens). No re-read runs before a zero-GPU
+   diagnosis of the band failure from the banked cells: an instrument difference (the ST stack
+   reading the band differently from KDG's) against a property of the model on this stack. Any
+   instrument change that diagnosis motivates is made under a dated amendment first. The envelope
+   of record stays 32.34 until the T1.3 record carries the call, which the re-price then reads.
 4. **Prices.** The `none` panels move without changing the total. Branch A saves 3.89 A100-h on
    T1.5 (three adapters at 50%, 1.295 each); envelope of record 32.34 under branch B, about 28.45
    under branch A. Under branch A the bail-order levers no longer apply to GPT-OSS's panel except
