@@ -1,130 +1,51 @@
 # DeepSteer Papers
 
-DeepSteer's results span four distinct contributions (full narrative
-in **[RESEARCH_BRIEF.md](../RESEARCH_BRIEF.md)**; experimental record
-in **[RESEARCH_PLAN.md](../RESEARCH_PLAN.md)**).
+The program's current thesis and standing claims are in [SYNTHESIS.md](SYNTHESIS.md); open anomalies
+in [ANOMALIES.md](ANOMALIES.md). The longer narrative is [RESEARCH_BRIEF.md](../RESEARCH_BRIEF.md) and
+the experimental record [RESEARCH_PLAN.md](../RESEARCH_PLAN.md). [PACKAGING.md](PACKAGING.md) maps the
+early numbered papers onto the published units.
 
-## Published (arXiv, 2026)
+## Published
 
-- **Flagship.** *Refusal Reads Only a Slice of What the Model Knows* (arXiv:2609.14759),
-  `fl_what_refusal_reads/`.
-- **Methods note.** *Calibrating Interpretability Instruments Before Trusting Their Verdicts*
-  (arXiv:2609.14754), `mn_instruments_before_verdicts/`.
-- **Judgment–action gap.** *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* (arXiv:2610.08670), `kdg_judgment_action/`: open models act
-  against their own stated moral judgment under pressure, and whether they do follows the
-  post-training recipe (same Llama-3.1 base: Meta's carries the gap, Tulu 3's does not).
+| paper | arXiv | directory |
+|---|---|---|
+| *The Moral Emergence Curve* (P1) | 2606.11375 (v2 adds the §4.4 scale control) | `1_accuracy_vs_fragility/` |
+| *Do Moral Representations Specialize Across Experts?* (P2) | 2608.25231 | `2_moe_output_dilution/` |
+| *How Language Models Organize and Structure Moral Knowledge* (P3) | 2608.27402 | `3_moral_geometry/` |
+| *Calibrating Interpretability Instruments Before Trusting Their Verdicts* (methods note) | 2609.14754 | `mn_instruments_before_verdicts/` |
+| *Refusal Reads Only a Slice of What the Model Knows* (flagship) | 2609.14759 | `fl_what_refusal_reads/` |
+| *Principled Under Pressure: Post-Training Decides Whether LLMs Act on Their Own Moral Judgment* | 2610.08670 (v2; data: Zenodo 10.5281/zenodo.23425333) | `kdg_judgment_action/` |
 
-## Paper 1 — *The Moral Emergence Curve* (OLMo-2 1B and OLMo-3 7B)
+- **P1.** Moral concepts are linearly decodable within the first ~5% of pre-training. Probing
+  accuracy saturates early; fragility (robustness to activation noise) still separates
+  representations that accuracy cannot. Use RMS-normalized fragility for cross-layer claims.
+- **P2.** On OLMoE-1B-7B no expert specializes in moral content (all 1,024 per-expert probes above
+  75%). Its moral encoding collapses under 5.1× less noise than dense OLMo-2 1B, and the MoE block's
+  output reaches the residual stream at 74× smaller scale (output dilution).
+- **P3.** Six foundation directions stay distinct (effective dimensionality 5), and the model's
+  grouping of them does not recover Moral Foundations Theory's individualizing/binding split.
+- **Methods note.** Interpretability instruments fail in specific, diagnosable ways: calibrate,
+  certify with an orthogonal cell, compute power before the pod, give depth-indexed verdicts.
+- **Flagship.** Refusal reads the harm percept through a narrow control-token bottleneck; model
+  families differ in what refusal reads and in how it commits. It absorbs P4–P7 and Directions
+  1–3 (`4_causal_validation/` through `7_reasoning/`, `d1_moral_subspace/`, `d2_decision_coupling/`,
+  `d3_decision_anatomy/`).
+- **Judgment–action gap (KDG).** Open models act against their own stated moral judgment under
+  pressure, and whether they do follows the post-training recipe (same Llama-3.1 base: Meta's
+  carries the gap, Tulu 3's does not). Scenarios, harness and analyses: `kdg_panel/`.
 
-- **Moral concepts emerge early and fast** — linearly decodable within
-  the first ~5% of pre-training as a sharp phase transition.
-  Moralized semantic distinctions appear *before* sentiment polarity
-  and far before syntactic competence.
-- **Fragility finds what accuracy cannot** — probing accuracy
-  saturates quickly, but fragility testing (robustness to activation
-  noise) still separates representations that accuracy cannot: matched
-  fine-tuning corpora with identical accuracy leave distinct fragility
-  profiles at the same layer. (The raw cross-layer layer-depth gradient
-  is largely an activation-scale effect; use RMS-normalized fragility
-  for cross-layer claims, raw for within-layer.) *Probing accuracy is
-  the wrong discriminator; fragility is the metric that actually moves.*
-- **Data curation reshapes structure, not content** — LoRA fine-tuning
-  shows that training content doesn't change *whether* moral concepts
-  are encoded but *how* they're organized. Repetitive declarative
-  statements create brittle shortcuts; narrative content produces
-  uniformly robust representations.
-- **Moral foundations emerge in a staggered sequence** — authority
-  emerges fastest (step 1K), followed by care and fairness (step 2K),
-  with loyalty, sanctity, and liberty reaching 100% by step 3K.
-- **Storage and usage diverge** — moral information is *stored* in
-  mid-network layers but *used* for prediction in early layers, a
-  ~10-layer gap invisible to probing alone.
+## In progress
 
-## Paper 2 — *Do Moral Representations Specialize Across Experts? Probing MoE Architectures During Pre-Training*
+**ST line: holding the moral reference live through post-training** ([ST_PLAN.md](ST_PLAN.md),
+`st_live_reference/`). Development model GPT-OSS-20B, second family Muse Glimmer 30B. T1.1 (the
+banked uninstrumented baseline) is done. At the T1.3 target-selection gate neither anchoring target
+passed, and G2 is open with the author; GPT-OSS's dose-0 panel read (Amendment 11) is running.
 
-Four findings on OLMoE-1B-7B (64 experts, top-8 routing) vs. dense
-OLMo-2 1B, testing whether MoE's structural partition into experts
-creates moral specialization — and discovering an output dilution
-mechanism that makes MoE moral encoding structurally fragile:
+## Working directories and program documents
 
-- **No expert moral specialization.** All 1,024 per-expert probes
-  (64 experts × 16 layers) decode moral content above 75% accuracy.
-  At the peak layer, every expert individually exceeds 90%. Gini
-  coefficient of expert accuracy stays below 0.03 at all layers —
-  moral encoding is as diffuse across experts as across neurons in
-  dense models. The router shows negligible moral preference (max 2.4%).
-- **MoE encoding is 5.1× more fragile than dense.** Despite matching
-  OLMo-2 1B on probing accuracy (99.0% vs. 99.0% peak), OLMoE
-  collapses under 5.1× less noise (mean critical σ* = 0.84 vs. 4.25).
-- **Output dilution explains the fragility.** The MoE block's
-  aggregated output (top-8 weighted average of 64 experts) contributes
-  to the residual stream at **74× smaller scale** than the dense MLP
-  output — the moral signal is present but at a scale trivially
-  overwhelmed by noise.
-- **Specialization never emerges during training.** Across 11
-  checkpoints (step 5K to 1.2M), peak-layer Gini stays between
-  0.011 and 0.015. Top-5 experts by accuracy change between
-  checkpoints at near-random rates (Jaccard ≈ 0.08).
-
-## Paper 3 — *How Language Models Organize and Structure Moral Knowledge*
-
-Extends binary moral/neutral probing to **structured** moral
-representations — does the model distinguish between ethical
-frameworks, and if so, what is the geometry? Six independent probes
-(one per MFT foundation) on OLMo-2 1B and OLMoE-1B-7B:
-
-- **Integration, not collapse.** Foundation probe directions are
-  separated (mean pairwise cosine ≈ 0.22–0.27 across layers, far
-  from collapse >0.95) with effective dimensionality 5 at all layers.
-  The model maintains distinct directions for distinct moral
-  foundations, sharing a common moral-salience component.
-- **The model's moral taxonomy is not MFT.** Hierarchical clustering
-  does not recover the MFT individualizing/binding distinction at any
-  layer; the permutation test is non-significant throughout. The most
-  consistent clustering feature is a care–sanctity pairing that
-  crosses MFT groups — both foundations concern protection of
-  vulnerable entities.
-- **Sanctity fragility reversal across architectures.** Sanctity is
-  the *most* robust foundation in dense OLMo-2 (σ* = 5.60) but the
-  *least* robust in MoE OLMoE (σ* = 0.91) — a 6.2× ratio, far
-  larger than the overall 3.1× architecture gap. Output dilution
-  disproportionately degrades sanctity representations.
-- **Framework geometry stabilizes before accuracy saturates.** Mean
-  cosine similarity reaches its mature value by step 2000 while
-  accuracy continues climbing through step 25,000 — a third
-  metric (after accuracy and fragility) showing early structural
-  commitment.
-- **Partial compositionality of moral dilemmas.** Dilemma probe
-  directions share ~10% variance with the 2D subspace of component
-  foundations (100× null baseline), with near-balanced loading across
-  conflicting foundations. The ~90% residual encodes conflict-specific
-  features beyond the component parts.
-- **Direction robustness.** Mean-difference directions (training-free)
-  replicate all core geometric findings — effective dimensionality 5,
-  absence of MFT dendrogram structure, >90% cross-register transfer —
-  confirming the geometry is not an artifact of probe training.
-  Representation-engineering PCA fails in the p ≫ n regime.
-
-## Paper 4 — *Causal Validation of Moral Probe Directions* (preliminary)
-
-Validates whether the foundation-specific probe directions from Paper 3
-are genuine features of OLMo-2 1B's computation, not probing artifacts.
-Three independent lines of evidence:
-
-- **Direction ablation is foundation-specific.** Removing a foundation's
-  direction from the residual stream specifically reduces log-probability
-  of that foundation's continuations (mean specificity −0.63 at layer 12),
-  with minimal off-target effects. Ablation damage increases with depth.
-- **Steering injection shows dose–response specificity.** Injecting a
-  foundation direction produces a specific boost at low amplitude
-  (α = 1–2) with dose–response amplification at higher amplitudes,
-  distinguishable from noise injection.
-- **Behavioral grounding.** Projection-based 6-way classification
-  achieves 83.3% on causal prompts and 70.8% on held-out test data
-  (chance = 16.7%). A "sanctity saturation" phenomenon emerges on
-  real-world moral vignettes: harm-witnessing scenarios preferentially
-  activate the sanctity direction regardless of target foundation.
-- **SAE features partially recover moral subspace.** Even a partially
-  trained sparse autoencoder discovers features overlapping with probe
-  directions at 3.2× the chance level (15.5% subspace overlap vs. 4.9%
-  random baseline).
+- `supplement/`: manifest-indexed artifacts behind the published papers' quantitative claims.
+- `build_common/`, `runpod_common/`, `figure_data/`, `_artifacts/`: shared build, pod and figure
+  infrastructure.
+- [CLAIMS.md](CLAIMS.md) (claim ids and sentences), [OPEN_THREADS.md](OPEN_THREADS.md),
+  [MISSING_ARTIFACTS.md](MISSING_ARTIFACTS.md), [METHODS_NOTE.md](METHODS_NOTE.md), and the KDG
+  specs (`KDG_*_SPEC.md`).

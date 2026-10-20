@@ -2,6 +2,8 @@
 
 **Posted: arXiv:2610.08670 (v1, 2026-10-06; title and author verified against the arXiv API).** `apply_arxiv_id.py` applied the same day.
 
+**v2 live (checked 2026-10-20): the arXiv API lists 2610.08670v2, version timestamp 2026-10-16T20:44:06Z.**
+
 **v2 replacement submitted 2026-10-16 (author), from the tarball recorded under "v2 build of record" (SHA-256
 prefix 257f64e2040897b6, commit a258a90); awaiting announcement (the arXiv API still lists v1 at
 2026-10-16T21:19Z). Zenodo dataset published the same day: 10.5281/zenodo.23425333, "DeepSteer per-rollout
