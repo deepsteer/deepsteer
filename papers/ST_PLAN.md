@@ -1726,3 +1726,27 @@ change for `L-anchor` before any adapter exists.
   `care` and `fill` run at the smallest alpha, so `self` keeps its `fill` comparator and `care`'s
   coherence failure fails it under the rule (implemented that way; the alternative is to skip both
   and leave `self` without a comparator).
+
+#### T1.2 outcome, the constancy read (2026-10-19; zero GPU; Amendment 12 item 3; `data/t12_constancy_v1.json`)
+
+At L\* (block 12), the within-scenario protect-minus-rule difference of the anchor-axis margin over
+the 40 mixed-outcome H1_train scenarios: **`clause_end` −0.0024 [−0.0041, −0.0007]**, `onset` −0.0028
+[−0.0062, +0.0004]. By the rule the anchoring class is **`clause_end`** (the only class whose CI
+excludes 0), and its difference is negative with the CI excluding 0: **the pre-registered branch
+fires. `L-anchor`'s expected branch flips to the null before training** (ANOMALIES ST-A10); the arm
+still runs. The gate steers at `clause_end`; α ∈ {66.8, 133.7, 267.3, 534.6} (0.05–0.4 × the median
+norm 1,336.5 at L\* and class). Beside it, descriptive: the sign is negative at all five layers on
+both axes (`clause_end` CI excludes 0 on 9 of 10 cells); between scenarios the END_OF_PROMPT margin
+does not track P_none (Spearman −0.03 [−0.26, 0.07], n 132). Scale: per-rollout margin 0.043 ±
+0.0105, within-scenario SD 0.0064, so the difference is about 0.37 within-scenario SD. Position
+validity: PR 36.4 at `clause_end`; `onset` 29.8, under the PR 30 flag (not the picked class).
+
+**Referee pass.** (1) *"0.0024 in cosine units is nothing."* It is 0.37 within-scenario SD on 40
+scenarios with a CI excluding 0, and its consequence was fixed before the number existed: it changes
+an expectation, not a verdict. The gate is the test that can move a verdict. (2) *"The split
+conditions on output, so this is selection, not representation."* Conceded by design: Amendment 1
+scopes the read to localization and forbids citing it as evidence that the action reads `V_care`
+there; ST-A10 lists the position and selection readings with zero-GPU discriminators. (3) *"Then why
+steer at a class where the content runs the wrong way?"* The rule picks where the representation
+separates, whatever the sign; adding +a at `clause_end` is the cell that tests R_a, which predicts
+ΔP ≤ 0 for `care`.

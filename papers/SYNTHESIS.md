@@ -1176,3 +1176,15 @@ a gap, else on a Tier 2 carrier; the pitch's twin sentence is scoped to the fami
 If GPT-OSS carries E by that rule, §6 stands as written. Verdicts name their scope:
 `generalizes (H1)` on a non-carrier, `generalizes (H1 + E)` on a carrier. Envelope of record 32.34 of 35 (about
 28.45 under the guard branch).
+
+**T1.2, the constancy read (2026-10-19), what changed.** Positive voice first: **on GPT-OSS-20B the
+anchor axis separates the model's own protect and rule deliberations within a scenario, at clause
+ends, at every banked layer, and in the direction opposite to the anchoring hypothesis: rule
+rollouts carry more moral-content load (−0.0024 [−0.0041, −0.0007], about 0.37 within-scenario SD,
+40 scenarios).** The rule fixed the consequence before the number existed: the gate steers at
+`clause_end`, and `L-anchor`'s expected branch is the null before any adapter trains (ST-A10). The
+reading this favors is that `V_care` as typed measures moral salience, which rises when the model
+argues itself into the rule; T1.3's `care` arm (+a at `clause_end`) is the causal test, and it
+predicts ΔP ≤ 0 under that reading. Rivals (trace position; torn-scenario selection) have zero-GPU
+discriminators on the bank.
+
