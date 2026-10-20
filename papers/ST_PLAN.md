@@ -1627,6 +1627,15 @@ so the panel ΔE co-primary may start at its floor on the development model.
    no part in it. Precondition: Muse's known-gap control is in band on that same read (g_band's
    95% lower bound ≥ 0.10, P1-A9; `screen_lib.known_gap_band`); otherwise the carrier call is
    deferred and the panel is reported uncalibrated for Muse.
+3a. **Precondition for GPT-OSS (author, 2026-10-19).** The branch call is made only if the
+   known-gap band is in band on the T1.3 pod's `none` panel read (g_band's 95% lower bound ≥ 0.10,
+   P1-A9); otherwise the call is deferred, never defaulted to either branch. If deferred: T1.4
+   trains on schedule; the call moves to the first pod that re-reads the band; until the call,
+   T1.5's panel rows are priced at the branch-A subsample (three adapters at 50%), topped up to the
+   full panel if branch B applies. Implementing reading: the call uses E_none from the read whose
+   band passed, so the re-reading pod reads GPT-OSS's `none` panel again, all five cells (2.59
+   A100-h, not in the re-price until a deferral happens). The re-price reads the call from the
+   T1.3 record when the T1.3 pod is built.
 4. **Prices.** The `none` panels move without changing the total. Branch A saves 3.89 A100-h on
    T1.5 (three adapters at 50%, 1.295 each); envelope of record 32.34 under branch B, about 28.45
    under branch A. Under branch A the bail-order levers no longer apply to GPT-OSS's panel except
