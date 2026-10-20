@@ -102,6 +102,7 @@ class Screen:
     vllm_first: dict | None = None
     replicate_floor: float | None = None
     eager_forward: Any = None  # the uncompiled forward (set by the rung; rider (b) restores it)
+    layers_override: list[int] | None = None  # T1.1's banked hidden-state indices
 
     @property
     def tok(self):
@@ -117,6 +118,8 @@ class Screen:
     def layers(self) -> list[int]:
         """hidden_states indices banked: block outputs at the fractional depths of the loaded
         model (the gates assert it equals the registry's layer count on a real load)."""
+        if self.layers_override is not None:
+            return list(self.layers_override)
         wb = getattr(self.model, "wb", None)
         n = int(wb.info.n_layers if wb is not None else self.spec["n_layers"])
         return sorted({min(n, max(1, round(d * n))) for d in RESID_DEPTHS})

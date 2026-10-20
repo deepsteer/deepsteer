@@ -47,7 +47,11 @@ S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 
 # --session-h defaults to the pod's session_start/session_end timestamps)
 SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "VALIDATE pods x4 (146trytky4d1z3, 40yy8fg8wtnucu, vgjndx7dmqyfa8, nw2ot7pye4ad1a)": 0.85,
-         "T1.0 relaunch (esmxvsxj8wzkaq; estimate)": 1.8}
+         "T1.0 relaunch (esmxvsxj8wzkaq; estimate)": 1.8,
+         "rider pod (t10b; timestamps)": 1.81,
+         "rider pod 2 (t10c; timestamps)": 0.65,
+         "rider pod 2b (gyyo2g10b95uqs; download lost; estimate)": 0.75,
+         "rider pod 2c (t10d; timestamps)": 1.0}
 PROVISION_H = 0.1  # pod creation to script start, and the download after the end timestamp
 # HF-side measurements a later session (the rider pod) replaces in an earlier session's record
 HF_KEYS = ("padded_check", "fast_path_rung", "hf_memory_probe", "read_seconds_per_row",
@@ -91,18 +95,25 @@ def rung_alone_rate(rung: dict) -> float | None:
     return a["first_fast_pass_seconds"] / rung["n"]
 
 
+def _record_file(d: Path) -> Path:
+    """A session's per-model record: the screen's, or T1.1's."""
+    return d / "t11_record.json" if (d / "t11_record.json").exists() else d / "screen_record.json"
+
+
 def model_rates(d: Path, overlays: tuple = ()) -> dict | None:
     """Measured rates for one model directory (None if it has no generation timing); HF-side
     keys from ``overlays`` (later sessions' records of the same model) replace its own."""
-    rec = json.loads((d / "screen_record.json").read_text())
+    rec = json.loads(_record_file(d).read_text())
     for o in overlays:
         rec.update({k: o[k] for k in HF_KEYS if o.get(k) is not None})
     pv = rec.get("phase_v") or {}
-    timing = pv.get("screen_timing") or pv.get("parity_timing")
+    timing = pv.get("screen_timing") or pv.get("parity_timing") or pv.get("t11_timing")
     if not timing:
         return None
-    stage = "screen" if pv.get("screen_timing") else "parity"
-    rel = "screen/h1_screen.jsonl" if stage == "screen" else "parity/parity_vllm.jsonl"
+    stage = ("screen" if pv.get("screen_timing") else "parity" if pv.get("parity_timing")
+             else "t11")
+    rel = {"screen": "screen/h1_screen.jsonl", "parity": "parity/parity_vllm.jsonl",
+           "t11": "gen/h1_rollouts.jsonl"}[stage]
     rows = _rows(d / rel)
     lens = [r["tokens_to_answer"] for r in rows if r.get("status") not in (None, "not_run")]
     pad = rec.get("padded_check") or {}
@@ -144,6 +155,8 @@ def read_rate(m: dict) -> tuple[float, str]:
         return rate, f"proxy: {px['model']}'s rate ({basis}); this model's HF phase did not run"
     if not m["single_row"]:
         return r, "measured (batched)"
+    if m["rec"].get("single_row_read_s"):  # T1.1's own single-row forward, measured
+        return m["rec"]["single_row_read_s"], "measured single-row (T1.1, prompt + trace)"
     if m["model"] == "gpt_oss_20b":
         return (S31_SINGLE_ROW_S * m["prompt_len"] / S31_TOKENS,
                 "§31 single-row precedent, length-scaled")
@@ -238,6 +251,11 @@ def price(m: dict) -> dict:
         "T1.6 refusal-retention (Amendment 10: none^re + best + L-beh x 360 x 2)":
             rr_h(m, RR_PROMPTS, 2, 3),
     }
+    if m["stage"] == "t11":  # T1.1 has run: its rows are spent; T1.5's none re-run was v2's
+        for k in [k for k in dev if k.startswith("T1.1")]:
+            dev[k] = (0.0, "done (T1.1 pod; in the spend)")
+        k5 = next(k for k in dev if k.startswith("T1.5 generation"))
+        dev[k5] = (gen_h(m, 132 * 8 * 3), "measured (none re-run done in T1.1 v2)")
     return {"development": dev, "second_family": second,
             "development_total": sum(v[0] for v in dev.values()),
             "second_family_total": sum(v[0] for v in second.values())}
@@ -270,10 +288,10 @@ def main() -> int:
     a = ap.parse_args()
     found: dict[str, tuple] = {}
     for sd in a.screen_dir:
-        for d in sorted(p for p in sd.iterdir() if (p / "screen_record.json").exists()):
-            r = json.loads((d / "screen_record.json").read_text())
+        for d in sorted(p for p in sd.iterdir() if _record_file(p).exists()):
+            r = json.loads(_record_file(d).read_text())
             pv = r.get("phase_v") or {}
-            if pv.get("screen_timing") or pv.get("parity_timing"):
+            if pv.get("screen_timing") or pv.get("parity_timing") or pv.get("t11_timing"):
                 found[d.name] = (d, [])
             elif d.name in found:
                 found[d.name][1].append(r)

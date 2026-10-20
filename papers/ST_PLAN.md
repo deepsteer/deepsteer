@@ -1299,3 +1299,35 @@ not the morally right act; the §5.2 loss is outcome-free and the action's direc
 P. (2) `V_harm` of record stays the FL-provenance `t_inst` vector; the co-located END_OF_PROMPT
 variant is a typed sensitivity column, `V_care_alt` (rank 2), carried into T1.2's constancy read
 and reconsidered at G2 if it separates where `V_care` does not. (3) cos 0.90 stays a diagnostic.
+
+#### T1.1 pod build (2026-10-19; author's list; zero GPU until launch)
+
+`scripts/t11_driver.py`, four phases in their own processes (`STEPS=t11/<dir>`): **v1** (vLLM,
+the uninstrumented `none` arm): H1 264 × 8 at medium, cap 1,536, KDG sampler v2, speculation probed
+on the first batch; rows tagged `sample: selection`, `arm: none`, a `rollout_key` each. **h** (torch
+2.13 in the vLLM venv, Amendment 9; eager attention, GPT-OSS's eager-experts and bf16-dequantization
+pins, gated; single-row of record): per rollout one teacher-forced forward over prompt + trace
+banking the residual at the five layers at `onset`, `clause_end`, every 32nd trace token and the
+post-reasoning decision position (classes coded per position), the post-reasoning letter readout,
+and the trace's log-prob under the unadapted model (§9); the dose-0 letter readout on 264 × 8 with
+the residual at the pre-prefill END_OF_PROMPT token (§1's `decision`; T0.3's cell); the
+judgment-frame (`jl_chat_neutral`) residuals for H1_train at that token and `chat_sigma` per banked
+layer with its provenance; the brake-engaged subsets (H1_held for T1.5, H1_train for T1.3's 20),
+brake B per split, the DPO pair count and the pair-rider list (Amendment 3); one warmed eager HF
+probe at batch 132 (T1.3's price). **v2** (vLLM): the independent `none` re-run on the H1_held
+brake-engaged subset × 8 (seeds disjoint from v1's; `sample: rerun`; Amendment 1) with the floor
+rung P_none^re − P_none^sel, and the pair rider if pairs < 40. **qlora**: Muse 4-bit NF4, LoRA on the
+text tower, six steps on a synthetic anchor target, merged into a bf16 copy, merged-vs-adapted
+logits (T0.6 item 3). Amendment 10's selection pass runs first (its own record under `_rr`); the
+re-price runs last (T1.1's rows priced as spent; T1.3 from the eager probe; single-row read rate
+measured). Estimate ~1.0 A100-h (setup 0.25, selection 0.05, v1 0.1, h ~0.25, v2 ~0.05, QLoRA
+~0.3 with Muse's download); watchdog 2.0 h, each phase's deadline 15 min before it.
+
+**Choices for the author.** (1) Banked layers: no five were registered; T1.1 banks block outputs
+{6, 9, 12, 15, 18} (hidden-state indices 7, 10, 13, 16, 19), evenly spaced around the `V_moral`
+match layer (block 12, T0.3's cell) over 25–75% of depth; the screen's depths would have missed
+block 12 by one. (2) Size: GPT-OSS traces carry ~163 banked positions per rollout (p90 253, from
+the relaunch's 256 parity traces), so the bank is ~9.9 GB in fp16 for 264 × 8 (5.0 GB for H1_train
+alone), not §7's ~3–4 GB; all of it is banked as specified. (3) The `decision` class is read at
+the pre-prefill END_OF_PROMPT token (KDG's banking convention and T0.3's cell); the post-reasoning
+decision position is banked as its own code.

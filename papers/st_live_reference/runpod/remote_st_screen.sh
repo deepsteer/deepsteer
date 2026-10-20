@@ -41,6 +41,12 @@ if [ "$STEPS" = "rider" ]; then
   # cannot stop itself mid-panel: the 3.0 h watchdog then leaves it ~2.1 h (about twice its estimate)
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b qwen38_27b}"; OUT_SUB=t10b
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
+elif [ "$STEPS" = "t11" ]; then
+  # T1.1 on the development model (author, 2026-10-19): the refusal-retention selection, vLLM
+  # 264 x 8, HF readouts + banking on the ST stack of record, the independent none re-run, Muse's
+  # QLoRA rider, the re-price last
+  MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=t11
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.0}"
 elif [ "$STEPS" = "rider2" ]; then
   # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
@@ -72,6 +78,7 @@ trap 'touch "$REPO_DIR/.session_done"' EXIT
 
 # ---- envelope stop: a watchdog that ends the session, kills the workers, and touches the
 # sentinel so the launcher still downloads what was banked and tears the pod down ----
+SESSION_T0="$(date +%s)"  # the phases' deadline is measured from here (T1.1)
 if [ "$VALIDATE" = "1" ]; then MAX_S="$VALIDATE_MAX_SECONDS"; else
   MAX_S="$($PY -c "print(int(float('$SESSION_MAX_HOURS') * 3600))")"; fi
 MAIN_PID=$$
@@ -141,6 +148,8 @@ from cuda.bindings import nvrtc
 from vllm.model_executor.models import gpt_oss, muse_glimmer, qwen3_5  # noqa: F401
 import bitsandbytes, peft  # noqa: F401,E401  (T0.6 on the ST stack of record)
 from deepsteer.steering import objective_lora  # noqa: F401
+sys.path[:0] = ["papers/st_live_reference/scripts", "papers/kdg_panel/scripts"]
+import pod_st_screen, st_train, t11_driver  # noqa: F401,E401  (T1.1's HF phase runs here)
 v = {p: md.version(p) for p in ("vllm", "torch", "torchcodec", "cuda-bindings", "cuda-python",
                                 "flashinfer-python", "transformers", "peft", "bitsandbytes")}
 err, major, minor = nvrtc.nvrtcVersion()  # loads libnvrtc: the CUDA 13 failure mode
@@ -211,13 +220,19 @@ dry_runs() {
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rider" $(mode_args "$m" "$OUT/_dry") \
         || { echo "DRY RUN FAILED ($m, rider mode)"; return 1; }
     fi
+    if [ "$STEPS" = "t11" ] && [ "$m" = "gpt_oss_20b" ]; then  # every T1.1 phase, dry
+      for ph in v1 h v2 qlora; do
+        $PY papers/st_live_reference/scripts/t11_driver.py --phase "$ph" --out "$OUT/_dry_t11" \
+          --dry-run --date-pin "$DATE_PIN" || { echo "DRY RUN FAILED (t11 $ph)"; return 1; }
+      done
+    fi
     if [ "$m" = "gpt_oss_20b" ]; then  # Amendment 10's selection pass rides every GPT-OSS pod
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rr" --rr-select \
         || { echo "DRY RUN FAILED ($m, refusal-retention selection)"; return 1; }
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -299,6 +314,18 @@ for m in $MODELS; do
       || echo "WARN: refusal-retention selection failed (recorded; the session continues)"
   fi
   echo "==================== $OUT_SUB/$m ===================="
+  if [ "$STEPS" = "t11" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    T11="papers/st_live_reference/scripts/t11_driver.py --out $OUT --date-pin $DATE_PIN --deadline $DEADLINE"
+    rc=0
+    $PY $T11 --phase v1 || rc=$?
+    [ "$rc" -eq 0 ] && { $VPY $T11 --phase h || rc=$?; }       # HF on torch 2.13 (Amendment 9)
+    [ "$rc" -eq 0 ] && { $PY $T11 --phase v2 || rc=$?; }
+    [ "$rc" -eq 0 ] && { $VPY $T11 --phase qlora || echo "WARN: QLoRA rider failed (recorded)"; }
+    echo ">> $m exit $rc (0 ok, 2 gate failed, 3 envelope stop; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   $PY $S --model "$m" --date-pin "$DATE_PIN" --out "$OUT" $(mode_args "$m" "$BANKED"); rc=$?
   echo ">> $m exit $rc (0 ok, 2 gate failed, 3 envelope stop; banked either way)"
   $PY -c "import sys; sys.path.insert(0,'papers/kdg_panel/scripts'); from kdg_pod_lib import verify_manifest as v; bad=v('$OUT/$m/manifest_kdg.json'); print('manifest verify:', 'OK' if not bad else bad[:5])" \
