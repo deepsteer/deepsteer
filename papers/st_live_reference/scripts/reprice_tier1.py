@@ -42,6 +42,13 @@ BRAKE_HELD, BRAKE_SECOND = 65, 50
 PANEL_ROWS = 586 * 8 * 4  # four E cells at dose 0, eight permutations
 KDG_BAR = 0.05
 S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 s, GPT-OSS-20B, A100
+# T1.1 pod (w4bn754dc3u8qs), GPT-OSS-20B on torch 2.13 with eager experts, single-row: the dose-0
+# cell's 2,112 rows took 840 s between the bank index and dose0_h1 file mtimes (the judgment cell
+# 132 rows in 53 s); the record holds no per-cell timing before 2026-10-19 (now `dose0_read_s`).
+# At 0.40 s for ~370 prompt tokens vs 0.475 s for ~870 prompt + trace tokens, the eager forward is
+# mostly fixed cost, so dose-0 rows are priced at their own rate, not length-scaled.
+T11_DOSE0_S = {"gpt_oss_20b": 840.0 / 2112}
+T15_SUBSET = 2  # author, 2026-10-19: post-reasoning forward on a seeded 2 of 8 per scenario
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
 # (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
 # --session-h defaults to the pod's session_start/session_end timestamps)
@@ -120,7 +127,7 @@ def model_rates(d: Path, overlays: tuple = ()) -> dict | None:
     floor = pad.get("noise_floor_replicate_unpadded")
     hf = (rec.get("hf_memory_probe") or {})
     return {
-        "model": d.name, "rec": rec, "stage": stage,
+        "model": d.name, "dir": d, "rec": rec, "stage": stage,
         "tps": timing["tokens_per_second"], "choice": timing.get("choice"),
         "mean_tokens": float(np.mean(np.minimum(lens, L.CAP_OF_RECORD))) if lens else 0.0,
         "lens": lens,
@@ -215,6 +222,24 @@ def rr_h(m: dict, prompts: int, rollouts: int, arms: int) -> tuple[float, str]:
     return arms * arm(r), f"measured rate; {r} rollouts x {arms} arm(s); upper bound (60 kept)"
 
 
+def dose0_rate(m: dict) -> tuple[float, str] | None:
+    """Measured single-row dose-0 rate from a T1.1 record (or the T1.1 pod's timestamps)."""
+    if m["rec"].get("dose0_read_s"):
+        return m["rec"]["dose0_read_s"], "measured single-row dose-0 (T1.1)"
+    if m["stage"] == "t11" and m["model"] in T11_DOSE0_S:
+        return T11_DOSE0_S[m["model"]], "measured single-row dose-0 (T1.1 pod file timestamps)"
+    return None
+
+
+def rr_uncalibrated(m: dict) -> bool:
+    """Amendment 10's pre-registered branch: a selection read as uncalibrated selects nothing."""
+    d = m.get("dir")
+    if d is None:
+        return False
+    f = d.parent / "_rr" / d.name / "rr" / "rr_selection_v3.json"
+    return f.exists() and json.loads(f.read_text()).get("status", "").startswith("uncalibrated")
+
+
 def price(m: dict) -> dict:
     """Both roles; the steering gate from the model's own HF probe (else its plan price)."""
     gate = gate_price(m)
@@ -251,12 +276,33 @@ def price(m: dict) -> dict:
         "T1.6 refusal-retention (Amendment 10: none^re + best + L-beh x 360 x 2)":
             rr_h(m, RR_PROMPTS, 2, 3),
     }
+    second["T1.6 refusal-retention selection (Amendment 10 item 3 on the unadapted model; "
+           "60 x {plain, care, operator} x 4)"] = rr_h(m, RR_SELECT_PROMPTS, 4, 1)
+    variants: dict = {}
     if m["stage"] == "t11":  # T1.1 has run: its rows are spent; T1.5's none re-run was v2's
         for k in [k for k in dev if k.startswith("T1.1")]:
             dev[k] = (0.0, "done (T1.1 pod; in the spend)")
         k5 = next(k for k in dev if k.startswith("T1.5 generation"))
         dev[k5] = (gen_h(m, 132 * 8 * 3), "measured (none re-run done in T1.1 v2)")
-    return {"development": dev, "second_family": second,
+        d0 = dose0_rate(m)
+        if d0 is not None:  # T1.1's rate is per rollout including the trace: no length rescale
+            r_post = m["rec"]["single_row_read_s"]
+            panel = PANEL_ROWS * 3 * d0[0] / 3600
+            kr = next(k for k in dev if k.startswith("T1.5 readouts"))
+            dev[kr] = (132 * 8 * 3 * r_post / 3600 + panel,
+                       f"post-reasoning {r_post:.3f} s/rollout + panel dose-0 {d0[0]:.3f} s/row "
+                       f"({d0[1]})")
+            sub = 132 * T15_SUBSET * 3 * r_post / 3600
+            full = 132 * (8 - T15_SUBSET) * r_post / 3600  # one adapter falling back
+            variants["T1.5 readouts, variant: post-reasoning forward on a seeded "
+                     f"{T15_SUBSET} of 8 per scenario per adapter (banking + the §31 >= 0.99 "
+                     "top-letter check), panel dose-0 full single-row"] = (
+                sub + panel, dev[kr][0],
+                f"each adapter failing the check adds {full:.2f} (its letters from full forwards)")
+        if rr_uncalibrated(m):
+            kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
+            dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")
+    return {"development": dev, "second_family": second, "variants": variants,
             "development_total": sum(v[0] for v in dev.values()),
             "second_family_total": sum(v[0] for v in second.values())}
 
@@ -337,6 +383,13 @@ def main() -> int:
                 cum += h
                 lines.append(f"| {row} | {h:.2f} | {cum:.2f} | {basis} |")
             lines += [f"| **total** | **{p[role + '_total']:.2f}** | **{cum:.2f}** | |", ""]
+            if role == "development" and p.get("variants"):
+                lines += ["Priced variants (not in the total):", "",
+                          "| variant | A100-h | row of record | delta | note |",
+                          "|---|---|---|---|---|"]
+                for row, (h, ref, note) in p["variants"].items():
+                    lines.append(f"| {row} | {h:.2f} | {ref:.2f} | {h - ref:+.2f} | {note} |")
+                lines.append("")
     lines += ["## Envelope by role assignment (spent + development + second family)", "",
               "| development | second family | total A100-h | within 35 |", "|---|---|---|---|"]
     for dev in models:
@@ -357,7 +410,8 @@ def main() -> int:
     out.with_suffix(".json").write_text(json.dumps(
         {"spent": {**SPENT, "this_session": session_h, "total": spent},
          "prices": {k: {r: {n: list(v) for n, v in p[r].items()} for r in
-                        ("development", "second_family")} for k, p in prices.items()}}, indent=1))
+                        ("development", "second_family", "variants")} for k, p in prices.items()}},
+        indent=1))
     return 0
 
 

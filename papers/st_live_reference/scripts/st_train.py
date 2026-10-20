@@ -121,11 +121,22 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
         axis: np.ndarray | None = None, tau: float | None = None,
         targets: dict[str, np.ndarray] | None = None, sigma: np.ndarray | None = None,
         max_steps: int = 100, lr: float = 1e-4, grad_accum: int = 1, seed: int = 0,
-        eval_fn=None, eval_every: int = 0, lora_rank: int = 16) -> dict:
+        eval_fn=None, eval_every: int = 0, lora_rank: int = 16,
+        allow_empty_kl: bool = False) -> dict:
     """Train one adapter. ``traces``: rows with ``ids``, ``anchor_mask``, ``kl_mask`` and
     ``scenario_id`` (anchor / self); ``pairs``: DPO pairs (beh); ``general``: token sequences for
-    the general-slice KL term, weighted ``kl_weight`` in every arm."""
+    the general-slice KL term, weighted ``kl_weight`` in every arm.
+
+    For anchor / self, a KL term that is identically zero (no trace has a KL position and there is
+    no general slice) is refused unless ``allow_empty_kl`` (author, 2026-10-19: T1.1's QLoRA
+    shakedown ran with an empty mask and so never exercised the term)."""
     import torch
+
+    n_kl = sum(sum(bool(x) for x in t["kl_mask"]) for t in traces or [])
+    if (objective in ("anchor", "self") and n_kl == 0 and not general and kl_weight
+            and not allow_empty_kl):
+        raise ValueError("KL-to-base term is identically zero: no trace has a KL position and "
+                         "there is no general slice")
 
     lora = OL.inject_lora(model, rank=lora_rank)
     dev = model.model.device
@@ -159,7 +170,7 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
                             seed=seed, eval_fn=eval_fn, eval_every=eval_every)
     return {"objective": objective, "layer": layer, "lora": lora, "kl_weight": kl_weight,
             "tau": tau, "dpo_beta": DPO_BETA if objective == "beh" else None,
-            "n_traces": len(traces or []), "n_pairs": len(pairs or []),
+            "n_traces": len(traces or []), "n_pairs": len(pairs or []), "n_kl_positions": n_kl,
             "steps": [s.__dict__ for s in steps], "eval": snaps,
             "max_steps": max_steps, "lr": lr, "grad_accum": grad_accum, "seed": seed}
 

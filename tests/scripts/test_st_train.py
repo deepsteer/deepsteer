@@ -84,15 +84,38 @@ def test_anchor_and_self_objectives_move_their_targets(ck):
     axis = np.random.default_rng(0).standard_normal(hid).astype(np.float32)
     axis /= np.linalg.norm(axis)
     tr = [{"ids": p + g, "anchor_mask": am, "kl_mask": km, "scenario_id": "s"}]
-    rec = ST.run(m, "anchor", layer=2, traces=tr, axis=axis, tau=0.5, max_steps=12, lr=5e-3)
+    rec = ST.run(m, "anchor", layer=2, traces=tr, axis=axis, tau=0.5, max_steps=12, lr=5e-3,
+                 allow_empty_kl=True)  # this trace sits wholly inside onset: no KL position
     rep = [s["rep"] for s in rec["steps"]]
     assert rep[-1] < rep[0]
     assert rec["steps"][-1]["info"]["margin_mean"] > rec["steps"][0]["info"]["margin_mean"]
     m2 = _wb(ck["olmo3_think"])
     tgt = {"s": np.ones(hid, np.float32)}
     rec2 = ST.run(m2, "self", layer=2, traces=tr, targets=tgt, sigma=np.ones(hid, np.float32),
-                  max_steps=12, lr=5e-3)
+                  max_steps=12, lr=5e-3, allow_empty_kl=True)
     assert rec2["steps"][-1]["rep"] < rec2["steps"][0]["rep"]
+
+
+def test_kl_mask_is_non_empty_and_the_kl_term_moves(ck):
+    # most probable failure (T1.1's QLoRA shakedown): every kl_mask is empty, the KL-to-base term
+    # is identically zero, and training runs without the constraint the plan relies on
+    import steering_gate as SG
+
+    m = _wb(ck["olmo3_think"])
+    p, g = _trace(m, n_gen=14)
+    fmt = rf.ThinkTextFormat(key="x", effort_kwarg=None, effort_ladder=(None,), dose0=())
+    am, km = ST.trace_masks(fmt, m.tokenizer, p, g, "clause_end", SG.punct_mask(m.tokenizer))
+    assert any(km) and any(am)
+    assert not any(a and k for a, k in zip(am, km)) and not any(km[: len(p)])
+    hid = m.model.config.hidden_size
+    axis = np.ones(hid, np.float32) / np.sqrt(hid)
+    empty = [{"ids": p + g, "anchor_mask": am, "kl_mask": [False] * len(km), "scenario_id": "s"}]
+    with pytest.raises(ValueError, match="identically zero"):
+        ST.run(m, "anchor", layer=2, traces=empty, axis=axis, tau=0.9, max_steps=1)
+    tr = [{"ids": p + g, "anchor_mask": am, "kl_mask": km, "scenario_id": "s"}]
+    rec = ST.run(m, "anchor", layer=2, traces=tr, axis=axis, tau=0.9, max_steps=6, lr=1e-2)
+    assert rec["n_kl_positions"] == sum(km)
+    assert rec["steps"][0]["kl"] == 0.0 and rec["steps"][-1]["kl"] > 0.0  # zero at init, then live
 
 
 def test_merged_adapter_reproduces_the_adapted_model(ck, tmp_path):
@@ -104,7 +127,8 @@ def test_merged_adapter_reproduces_the_adapted_model(ck, tmp_path):
     axis = np.ones(hid, np.float32) / np.sqrt(hid)
     tr = [{"ids": p + g, "anchor_mask": [False] * len(p) + [True] * len(g),
            "kl_mask": [False] * (len(p) + len(g)), "scenario_id": "s"}]
-    ST.run(m, "anchor", layer=2, traces=tr, axis=axis, tau=0.9, max_steps=3, lr=1e-2)
+    ST.run(m, "anchor", layer=2, traces=tr, axis=axis, tau=0.9, max_steps=3, lr=1e-2,
+           allow_empty_kl=True)
     ids = torch.tensor([p + g])
     with torch.no_grad():
         want = m.model(input_ids=ids).logits

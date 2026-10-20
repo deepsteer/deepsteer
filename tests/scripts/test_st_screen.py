@@ -561,3 +561,31 @@ def test_reprice_merges_the_rider_session_and_reads_pod_timestamps(tmp_path):
                        text=True, cwd=ROOT)
     assert r.returncode == 0, r.stderr
     assert "pod timestamps" in (tmp_path / "t10b" / "tier1_reprice.md").read_text()
+
+
+def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
+    # most probable failure: T1.1's per-rollout rate (prompt + trace already) is rescaled by the
+    # trace length again, panel dose-0 rows are priced at the trace rate, or the retention arm the
+    # pre-registered uncalibrated branch removed is still priced
+    import reprice_tier1 as RP
+
+    d = tmp_path / "t11" / "gpt_oss_20b"
+    rr = tmp_path / "t11" / "_rr" / "gpt_oss_20b" / "rr"
+    rr.mkdir(parents=True)
+    d.mkdir(parents=True, exist_ok=True)
+    (rr / "rr_selection_v3.json").write_text(
+        json.dumps({"status": "uncalibrated: selects nothing"}))
+    m = {"model": "gpt_oss_20b", "dir": d, "stage": "t11", "tps": 8000.0, "mean_tokens": 500.0,
+         "lens": [500] * 8, "screen_rollouts": 0, "prompt_len": 840.0, "batched_read_s": 0.5,
+         "alone_read_s": None, "replicate_floor": None, "single_row": True, "hf_step_s": None,
+         "hf_batch": None, "load_h": 0.01, "elapsed_h": 0.5,
+         "rec": {"single_row_read_s": 0.5, "dose0_read_s": 0.4}}
+    p = RP.price(m)
+    kr = next(k for k in p["development"] if k.startswith("T1.5 readouts"))
+    want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 3 * 0.4) / 3600
+    assert abs(p["development"][kr][0] - want) < 1e-9
+    (h, ref, _), = p["variants"].values()
+    assert abs(ref - want) < 1e-9 and abs(want - h - 132 * 6 * 3 * 0.5 / 3600) < 1e-9
+    kq = next(k for k in p["development"] if k.startswith("T1.5 refusal-retention"))
+    assert p["development"][kq][0] == 0.0
+    assert any(k.startswith("T1.6 refusal-retention selection") for k in p["second_family"])

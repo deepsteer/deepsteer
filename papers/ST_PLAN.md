@@ -1494,3 +1494,40 @@ every ΔP of record uses P_none^re, so such an effect cannot inflate a restorati
 (3) *"The engaged rule conditions on P_none, so the subset's P_none^sel is biased low."* That is
 why the baseline of record is the independent re-run (Amendment 1); the bias is measured (+0.022)
 rather than assumed.
+
+#### T1.1 follow-ups (author, 2026-10-19; zero GPU; before T1.3 and before any adapter trains)
+
+1. **T1.3 draw rule.** Seed 0. Gate: 20 of the 45 brake-engaged H1_train scenarios, stratified by
+   the split's strata (generator × register): each stratum's quota is its share of the engaged set
+   times 20, rounded by largest remainder (ties to the earlier stratum in sorted order), taken from
+   the front of the stratum shuffled with a seed derived from 0 and the stratum key. Sweep: 5 of
+   the remaining 25, shuffled with a seed derived from 0, so α is never tuned on a gate scenario.
+   `scripts/build_t13_draw.py` (tests: the sweep never shares a gate scenario; quotas follow the
+   strata by largest remainder; deterministic and order-free) writes `data/t13_draw_v1.json` with
+   the engaged ids' sha256; the draw runs after this rule is committed.
+2. **QLoRA KL.** `st_train.run` refuses an anchor or self run whose KL-to-base term is identically
+   zero (no KL position in any trace and no general slice) unless the caller opts out by name; the
+   test asserts a non-empty KL mask from `trace_masks` and a KL term that is 0 at initialization
+   and positive after training. The T1.1 shakedown's mask now carries KL positions. On the first
+   Muse pod: the KL term on the 4-bit base and the shift from the adapter on NF4 to the merged
+   bf16 model, both reported beside T1.6's transport curve.
+3. **Muse retention pass.** Amendment 10's selection pass on the unadapted Muse model rides the
+   first Muse pod (≈ 0.26 A100-h, in the re-price as a T1.6 row). The pre-registered uncalibrated
+   branch applies unchanged: a failed operator-instruction control means the set selects nothing on
+   Muse, is reported descriptively, and its return is a G2 decision.
+4. **T1.5 readouts, priced variant.** The post-reasoning forward runs on a seeded 2 of 8 rollouts
+   per scenario per adapter, for banking and for a re-check of §31's property on that subset under
+   each adapter: the top letter's probability at the post-reasoning position ≥ 0.99 and equal to
+   the sampled letter on every subset row (§31: 625 of 625; T1.1, unadapted: 2,059 of 2,059 rows
+   with a readout). An adapter that fails takes its letters from full forwards. Panel dose-0
+   readouts stay full single-row. Price: 6.32 A100-h against 6.63 for the row of record (−0.31);
+   each failing adapter adds 0.10.
+
+**Re-price corrections (same commit).** T1.1's single-row rate (0.475 s) is per rollout and
+already includes the trace; the T1.5 row had rescaled it by the trace length again. Panel dose-0
+rows are now priced at their own measured rate, 0.398 s per row (the T1.1 pod's 2,112 dose-0 rows
+in 840 s, from file timestamps; the driver now records `dose0_read_s`). The eager forward is mostly
+fixed cost (0.40 s at ~370 tokens, 0.475 s at ~870), so the panel's 56,256 dose-0 rows (6.25
+A100-h) are the T1.5 cost driver, and the post-reasoning variant can save at most 0.42. GPT-OSS's
+T1.5 retention arm leaves with the uncalibrated branch; Muse's selection pass enters. Envelope of
+record (GPT-OSS development, Muse second family): **27.09 of 35** (26.78 under the variant).

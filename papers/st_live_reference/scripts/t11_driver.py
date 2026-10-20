@@ -302,8 +302,10 @@ def phase_h(c: dict, a) -> int:
     save_record(c, rec)
     # dose-0 on all ids x 8 permutations, residual at the pre-prefill END_OF_PROMPT token
     cand = c["fmt"].dose0[0]
+    t0 = time.time()
     d0 = _letter_cell(sc, c, [c["H"][s] for s in c["ids"]], "dl_chat_neutral", cand, L.N_PERM,
                       c["out"] / "readout" / "dose0_h1")
+    ph["dose0_read_s_per_row"] = (time.time() - t0) / max(len(d0), 1)
     # judgment frame on H1_train, one permutation, at the same token: chat_sigma per layer
     tr_ids = [s for s in c["ids"] if s in c["train"]]
     jr, jres = _letter_cell(sc, c, [c["H"][s] for s in tr_ids], "jl_chat_neutral", cand, 1,
@@ -350,6 +352,7 @@ def phase_h(c: dict, a) -> int:
     rec["probe_mean_len"] = float(np.mean(lens)) if lens else None  # the read's mean length
     rec["read_seconds_per_row"] = ph["bank"]["read_seconds_per_rollout"]
     rec["single_row_read_s"] = ph["bank"]["read_seconds_per_rollout"]
+    rec["dose0_read_s"] = ph.get("dose0_read_s_per_row")  # re-price: dose-0 rows at their own rate
     rec["hf_memory_probe"] = ph["hf_memory_probe"]
     save_record(c, rec)
     print(f">> t11 h: banked {ph['bank']['n_positions']} positions over "
@@ -495,8 +498,11 @@ def phase_qlora(c: dict, a) -> int:
     hid = wb.model.config.get_text_config().hidden_size
     axis = np.random.default_rng(0).standard_normal(hid).astype(np.float32)
     axis /= np.linalg.norm(axis)
-    tr = [{"ids": ids, "anchor_mask": [False] * 4 + [True] * (len(ids) - 4),
-           "kl_mask": [False] * len(ids), "scenario_id": "synthetic"}]
+    # anchor on alternate trace positions, KL on the others, so both terms run (an empty KL mask
+    # is refused by st_train.run; T1.1's shakedown ran before that guard with no KL position)
+    body = [i >= 4 for i in range(len(ids))]
+    tr = [{"ids": ids, "anchor_mask": [b and i % 2 == 0 for i, b in enumerate(body)],
+           "kl_mask": [b and i % 2 == 1 for i, b in enumerate(body)], "scenario_id": "synthetic"}]
     layer = int(spec["n_layers"]) // 2
     r = ST.run(wb, "anchor", layer=layer, traces=tr, axis=axis, tau=0.5, max_steps=6, lr=5e-4)
     ph["steps"] = [{"rep": s["rep"], "kl": s["kl"]} for s in r["steps"]]
