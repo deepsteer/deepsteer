@@ -144,9 +144,10 @@ measured), and OLMo-3 keeps only the Tier 2 checkpoint role. OLMo-3 is in the se
 no other candidate has (stage checkpoints, existing anatomy, Purple Maiʻa), not for precedent.
 
 **The E co-primary requires a dose-0 carrier (Amendment 11).** Panel ΔE can show a pressure gap
-closing only on a model that carries one at dose 0: E_none's CI excluding 0 on the instrument of
-record. On a model of record without one, the panel is a one-sided guard and the positive ΔE claim
-rests on the model of record that carries E.
+closing only on a model that carries one at dose 0: on the instrument of record, E_none's CI
+excludes 0 and its point estimate is at least ΔE's MDE at the full panel (GPT-OSS-20B: 0.0189). On
+a model of record without one, the panel is a one-sided guard and the positive ΔE claim rests on
+the model of record that carries E.
 
 Registry: each model pinned at first load into `kdg_panel/models.yaml` (revision, template sha256,
 think-open/close tokens, empty-think prefill string, effort setting of record). Trace cap of record
@@ -359,6 +360,9 @@ Verdict rules per adapter, written before data:
 - **partial**: H1_held CI excludes 0, ΔP < 0.15;
 - **non-specific**: a capability, specificity or refusal-retention (Amendment 10) bar fails;
 - **null**: CI includes 0, reported with the MDE, the ladder and the adapter's transport control.
+- *Amendment 11:* the panel term depends on whether the model is a dose-0 carrier (§2):
+  `generalizes (H1)` on a non-carrier (panel as a one-sided guard), `generalizes (H1 + E)` on a
+  carrier, `restores, local` on carriers only, a failed guard `non-specific (panel gap)`.
 The headline comparison is `L-anchor`/`L-self` against `L-beh` on **held-out** sets, as a
 difference with its CI; the second family's replicate is reported with the same rules at its own MDE.
 
@@ -1601,17 +1605,24 @@ so the panel ΔE co-primary may start at its floor on the development model.
    ST instrument) runs on the T1.3 pod, before T1.4 trains; it is T1.5's `none` panel moved
    earlier, at the same price. Muse's dose-0 panel (the same five cells, ≈ 0.79 A100-h) runs on the
    first Muse pod; it is T1.6's `none` panel moved earlier.
-2. **Branch A: GPT-OSS's dose-0 E on the ST instrument has a CI including 0** (reported with the
-   KDG MDE, 0.013, and its own). Its panel criterion becomes a one-sided guard: no adapter creates
+2. **Branch A: GPT-OSS is not a dose-0 carrier on the ST instrument** (any outcome other than
+   branch B's; E_none reported with the KDG MDE, 0.0133, and its own). Its panel criterion becomes a one-sided guard: no adapter creates
    a gap, read as ΔE_a against `none` with its scenario-bootstrap CI and the stated MDE; an adapter
    whose ΔE CI lies above 0 fails the guard. The guard runs at the 50% scenario subsample for every
    adapter, the headline adapter included (the `none` panel stays full). On the development model
    the "not a baseline shift" guard is the specificity set, in place of `Δg_twin`. The positive ΔE
-   claim rests on the model of record that carries E: Muse, if its dose-0 panel shows one (E's CI
-   excluding 0); otherwise it is deferred to Tier 2 on a carrier. The pitch's twin sentence is
+   claim rests on the model of record that carries E: Muse, if its dose-0 panel shows one (the same
+   carrier rule at Muse's own threshold, item 3); otherwise it is deferred to Tier 2 on a carrier. The pitch's twin sentence is
    scoped to the family that carries E.
-3. **Branch B: GPT-OSS's dose-0 E sits away from zero** (CI excluding 0). §6 stands as written,
-   with the full panel and the levers as in §7's bail order.
+3. **Branch B: GPT-OSS is a dose-0 carrier** (author's edit, 2026-10-19): E_none's CI excludes 0
+   AND its point estimate is ≥ ΔE's MDE at the full panel, √2 × the KDG §27 MDE = √2 × 0.01335 =
+   **0.0189** (`kdg_panel/data/analysis_gptoss.json`, `c3.model_free.E_prob`, n 586). The value is
+   fixed now and not recomputed from the read it decides; the ST instrument's own √2 × MDE is
+   reported beside it. √2 assumes the two arms' panel reads are independent; ΔE is paired by
+   scenario, and positively correlated arms give a smaller MDE, so 0.0189 is conservative (it
+   sends borderline cases to branch A). §6 stands as written under B, with the full panel and the
+   levers as in §7's bail order. For Muse, whose dose-0 E has never been read, the threshold is
+   √2 × the MDE of its own `none` panel read (a variance, not the point), stated with the read.
 4. **Prices.** The `none` panels move without changing the total. Branch A saves 3.89 A100-h on
    T1.5 (three adapters at 50%, 1.295 each); envelope of record 32.34 under branch B, about 28.45
    under branch A. Under branch A the bail-order levers no longer apply to GPT-OSS's panel except
@@ -1621,9 +1632,9 @@ Both branches are publishable. A: the development model's adapters are tested fo
 pressure gap they could not be credited with closing, and the transfer of a closed gap is claimed
 only where a gap exists. B: the co-primary runs as designed on the development model.
 
-**Verdict ladder under branch A (implementing reading, for the author to confirm).** On GPT-OSS,
-§6's `generalizes` needs ΔE < 0, so it is not available; the H1 criterion with the guard passed,
-capability and specificity bars met and Heretic survived reads `restores, local`, and a failed
-guard reads `non-specific (panel gap)`. `generalizes` is earned on the carrier only. Edge case
-the rule leaves as written: a CI excluding 0 with a point below 0.013 sends GPT-OSS to branch B,
-where ΔE would be powered against a gap smaller than its own MDE; the record states it if it occurs.
+**Verdict ladder (author's edit, 2026-10-19; replaces §6's for the panel term).** On a
+non-carrier: H1_held criterion met + guard passed + specificity + capability + Heretic survived =
+**`generalizes (H1)`**. On a carrier: the same + ΔE < 0 with its CI excluding 0 = **`generalizes
+(H1 + E)`**; `restores, local` (H1 met, panel ΔE null or `Δg_twin` moved) applies on carriers only.
+On either: a failed guard = **`non-specific (panel gap)`**; `partial`, `non-specific` and `null`
+as §6.
