@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.11, 2026-10-19 (Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.12, 2026-10-19 (Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -1654,3 +1654,41 @@ non-carrier: H1_held criterion met + guard passed + specificity + capability + H
 (H1 + E)`**; `restores, local` (H1 met, panel ΔE null or `Δg_twin` moved) applies on carriers only.
 On either: a failed guard = **`non-specific (panel gap)`**; `partial`, `non-specific` and `null`
 as §6.
+
+### Amendment 12 (2026-10-19; author, before the T1.3 pod; zero GPU; committed and pushed before the constancy read is computed)
+
+1. **L\*.** Block 12 (hidden-state index 13), fixed: §4's default, the `V_moral` match layer (T0.3's
+   cell). AtP has no selection role. The constancy statistic (item 3) is also reported at all five
+   banked layers as a descriptive table, with no switching in Tier 1. Implementing reading: the
+   `V_moral` sources exist at block 12 only (`vmoral_sources_decision_token.npz`), so the other four
+   layers' rows project onto block 12's anchor axis and are labelled off-layer (the construct is not
+   claimed constant across layers).
+2. **T1.2 is zero-GPU.** Its AtP localization moves to Tier 2's AtP line; T1.2 is the constancy read.
+   Re-price: T1.2 0.0 (was 0.5); envelope of record 31.84 of 35.
+3. **Constancy read (rule of record).** At L\*, the anchor-axis margin m = ⟨h, a⟩ / ‖h‖ (the §5.2
+   loss's quantity; a = `anchor_axis_t_inst`) at each banked `onset` and `clause_end` position of
+   T1.1's 2,112 rollouts. Per rollout, the mean margin over the class's positions; per scenario, the
+   mean over its protect rollouts minus the mean over its rule rollouts; over the 40 H1_train
+   scenarios with at least one of each (the DPO-pair scenarios), the mean difference with a scenario
+   bootstrap (10,000, seed 0). Pick: the class with the larger |difference| whose CI excludes 0;
+   default `onset`. `decision` is excluded from the within-scenario read (its END_OF_PROMPT
+   residual is the same for a scenario's rollouts except for the letter order) and reported between
+   scenarios, descriptive: the Spearman correlation across H1_train of the scenario's mean
+   END_OF_PROMPT margin (eight permutations, T1.1's dose-0 read) with its sampled P_none. The same
+   statistics with `anchor_axis_end_of_prompt` (`V_care_alt`) are reported beside. **Pre-registered:**
+   a negative difference with its CI excluding 0 at the picked class flips `L-anchor`'s expected
+   branch to the null before training and is promoted in ANOMALIES; the arm still runs.
+4. **Strength sweep.** α ∈ {0.05, 0.1, 0.2, 0.4} × the median residual norm at L\* at the picked
+   class (from the bank, fixed before the pod), applied along the unit anchor axis; the largest α
+   passing the coherence gate on the 5 sweep scenarios is the gate's α (outcome-blind). A `none` arm
+   runs on the 5 sweep scenarios for the coherence comparison. `fill` is norm-matched (‖v‖ = α ×
+   the median norm), covariance-matched, 5 draws pooled over the 8 rollouts.
+5. **`self`.** Passes the gate rule if either β ∈ {0.25, 0.5} clears it; both are reported.
+6. **Pod order.** Sweep → gate (20 × {none, fill, care, self 0.25, self 0.5} × 8) → transport
+   control → GPT-OSS's `none` panel; watchdog about 5 h. If the pod runs long, the panel moves to
+   the T1.4 pod and still precedes any T1.5 panel forward and T1.5's pricing. T1.3 is priced at
+   1,000 rollouts (the gate's 800 and the sweep's 200), 1.18 A100-h at the eager probe's rate.
+
+Both branches of item 3 are publishable: a positive separation at the picked class is a
+correlational localization (Amendment 1's scope); a negative one is a pre-registered expectation
+change for `L-anchor` before any adapter exists.

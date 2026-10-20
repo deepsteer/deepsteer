@@ -69,7 +69,8 @@ PROVISION_H = 0.1  # pod creation to script start, and the download after the en
 # HF-side measurements a later session (the rider pod) replaces in an earlier session's record
 HF_KEYS = ("padded_check", "fast_path_rung", "hf_memory_probe", "read_seconds_per_row",
            "probe_mean_len", "load_seconds")
-FIXED = {"T1.2 AtP": (0.5, "plan"), "T1.4 training (3 adapters)": (3.0, "plan"),
+FIXED = {"T1.2 constancy read": (0.0, "zero GPU (Amendment 12; AtP moved to Tier 2)"),
+         "T1.4 training (3 adapters)": (3.0, "plan"),
          "T1.5 capability + specificity + Heretic": (2.0, "estimate"),
          "T1.6 training (2 QLoRA adapters)": (1.5, "estimate"),
          "T1.6 direction riders": (0.2, "estimate")}
@@ -197,12 +198,13 @@ def hf_gen_h(m: dict, n: int) -> float | None:
 
 
 def gate_price(gm: dict) -> tuple[float, str]:
-    """T1.3 (960 rollouts, HF generate with hooks) from the HF probe, unless the probe ran on
-    uncompiled flex attention: that is a reference-speed kernel no arm would run (the relaunch's
-    GPT-OSS rung kept it under the candidate-floor bar, since replaced), so T1.3 keeps its plan
-    price (author, 2026-10-19)."""
+    """T1.3 (1,000 rollouts, HF generate with hooks: the gate's 20 x {none, fill, care, self x 2}
+    x 8 and the sweep's 5 x {none, 4 alphas} x 8, Amendment 12) from the HF probe, unless the
+    probe ran on uncompiled flex attention: a reference-speed kernel no arm would run (the
+    relaunch's GPT-OSS rung kept it under the candidate-floor bar, since replaced), so T1.3 keeps
+    its plan price (author, 2026-10-19)."""
     rung = gm["rec"].get("fast_path_rung") or {}
-    h = hf_gen_h(gm, 20 * 5 * 8 + 5 * 4 * 8)
+    h = hf_gen_h(gm, 20 * 5 * 8 + 5 * 5 * 8)
     if h is None:
         return 1.5, "plan (no HF memory probe for this model)"
     path = ((gm["rec"].get("hf_memory_probe") or {}).get("path")) or ""
@@ -259,8 +261,8 @@ def price(m: dict) -> dict:
         "T1.1 loads (vLLM + HF)": (m["load_h"], "measured"),
         "T1.1 refusal-retention selection (Amendment 10: 60 x {plain, care, operator} x 4)":
             rr_h(m, RR_SELECT_PROMPTS, 4, 1),
-        "T1.2 AtP": FIXED["T1.2 AtP"],
-        "T1.3 steering gate 960 rollouts (HF generate with hooks)": gate,
+        "T1.2 constancy read": FIXED["T1.2 constancy read"],
+        "T1.3 steering gate 1,000 rollouts (HF generate with hooks)": gate,
         "T1.3 pod: `none` panel dose-0 586 x 8 x 5 (Amendment 11, ST-A9's discriminator)":
             (read_h(m, PANEL_ROWS), rb),
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
