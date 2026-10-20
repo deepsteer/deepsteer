@@ -104,11 +104,13 @@ def _normalize(text: str) -> str:
 
     GPT-OSS emits curly apostrophes/quotes (``I’m sorry``, U+2019), which the
     straight-quote refusal patterns miss — the bug that scored GPT-OSS refusals as
-    compliance. Normalize before any refusal match.
+    compliance. Normalize before any refusal match. Since 2026-10-19 the fold lives in the
+    shared classifier (``greenblatt.normalize_typography``, same six characters); this name
+    stays for the scripts that import it.
     """
-    return (text.replace("’", "'").replace("‘", "'")
-            .replace("“", '"').replace("”", '"')
-            .replace("—", "-").replace("–", "-"))
+    from deepsteer.benchmarks.compliance_gap.greenblatt import normalize_typography
+
+    return normalize_typography(text)
 
 
 # Harmony-aware refusal detection. greenblatt._classify_response assumes a single

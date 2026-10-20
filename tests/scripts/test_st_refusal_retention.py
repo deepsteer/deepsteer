@@ -94,7 +94,8 @@ def test_readout_is_fls_classifier_on_the_final_answer_only():
                                           add_special_tokens=False)) is None
     pin = RR.readout_pin()
     assert len(pin["b1_sha256"]) == 64 and pin["answer_tokens"] == 64
-    assert pin["version"] == "rr-readout-v2" and len(pin["normalize_sha256"]) == 64
+    assert pin["version"] == "rr-readout-v3" and pin["classifier_version"].startswith(
+        "greenblatt-refusal-v2")
 
 
 def _rows(rates: dict[str, float], k: int = 4) -> list[dict]:

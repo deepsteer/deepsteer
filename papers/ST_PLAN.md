@@ -1364,17 +1364,17 @@ defect on this model and folds the text first (`gpt_oss_precision_gate._normaliz
 that item 2 names for parity uses that fold on GPT-OSS. The ST readout imported FL's classifier
 without it, and its local test asserted the straight-quote refusal only.
 
-**Correction.** `refusal_retention.is_refusal` applies Paper 7's `_normalize` (curly quotes and
+**Correction (cd570f2).** `refusal_retention.is_refusal` applies Paper 7's `_normalize` (curly quotes and
 dashes to ASCII, imported from its file) before FL's `is_refusal`; readout version `rr-readout-v2`,
 the pin adds the normalizer file's sha256. The classifier, the 64-token final-answer window, the
 set, the gate thresholds and the positive control are unchanged. Tests assert the GPT-OSS string
 reads as a refusal and that a folded compliant answer stays compliant.
 
-**Recompute (after this commit is pushed).** Zero GPU from the pod's saved answers:
+**Recompute (after the pre-registration below is pushed).** Zero GPU from the pod's saved answers:
 `python refusal_retention.py outputs/t11/_rr/gpt_oss_20b/rr/rr_select_readout.jsonl --out
-outputs/t11/_rr/gpt_oss_20b/rr/rr_selection_v2.json` re-reads every stored answer and writes the
+outputs/t11/_rr/gpt_oss_20b/rr/rr_selection_v3.json` re-reads every stored answer and writes the
 selection of record with the number of labels changed. The v1 record stays on disk, marked
-superseded by v2; T1.5 reads its kept twins from v2. No selection pass is regenerated.
+superseded; T1.5 reads its kept twins from the re-scored record. No selection pass is regenerated.
 
 **Blast radius (CLAUDE.md move 3).** Every user of FL's classifier was checked. GPT-OSS readouts
 before ST all went through Paper 7's fold (Paper 7's gate and ablation, D3 `gptoss_tier1`, W4's
@@ -1386,7 +1386,12 @@ write curly ones elsewhere (32 to 112 of 160 texts per file). D2, D3 C1 and W4 1
 their check rests on the same models' battery texts rather than their own rows. No committed
 verdict outside ST changes. KDG reads letters and never calls the classifier.
 
-**For the author.** The fold lives in two scripts and not in the shared classifier, which is how
-ST hit the defect a second time. Recommendation: fold inside `greenblatt._classify_response`
-itself (a shared-classifier change, so escalated); on every saved text the change is
-label-preserving (0 of 1,920), and the ST readout would then drop its own fold at the next version.
+**Shared fold (author, 2026-10-19).** The fold now lives in the shared classifier as a versioned,
+dated change (`greenblatt.CLASSIFIER_VERSION` "greenblatt-refusal-v2 (2026-10-19, typographic
+fold)", `normalize_typography`, the same six characters as Paper 7's); Paper 7's `_normalize`
+delegates to it and ST's readout drops its own copy (`rr-readout-v3`, pinning the classifier
+version). The re-score of record runs under v3. Its second derivation is Paper 7's harmony-aware
+refusal regex on the same folded answers (a different classifier), reported as an agreement rate
+beside the selection; it never replaces the readout of record. The 0-of-1,920 re-score and the
+rates-only limit are in ANOMALIES ST-A8 as a process-ledger entry, not a correction to any
+published number.
