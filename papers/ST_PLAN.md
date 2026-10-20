@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.12, 2026-10-19 (Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.14, 2026-10-20 (Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -1833,3 +1833,22 @@ before any T1.5 panel forward, with Amendment 11's band precondition as written;
 paired E_none baseline. A flip would re-plan T1.5 before anything runs. Re-price: spent 14.90 A100-h
 (T1.3b ~3.7 by estimate), the `none` panel owed again (2.59), T1.5's adapter panels at the
 branch-A subsample; envelope of record **32.82 of 35**.
+
+### Amendment 14 (2026-10-20; author, at G2; zero GPU; before T1.4 and before the reversed-axis arm runs)
+
+1. **The gate's rerun-once rule is exhausted.** §5.0 names "the constancy read's best-separating
+   class, then `clause_end`"; both are `clause_end`, which the gate ran. No rerun at another class.
+   Both targets failed, so under §5.0 `L-self`'s expected branch is the null, as `L-anchor`'s already
+   is (Amendment 12, ST-A10); both train as planned at `clause_end`, block 12.
+2. **Reversed-axis arm (ST-A11's discriminator).** `care` with the anchor axis negated (−a) at α
+   267.3 on the gate's 20 × 8, against the gate's `none` rows (reused), the 267.3 `fill` and `care`
+   rows beside it (~0.35 A100-h; driver phase `care_reversed`, on the next GPT-OSS pod). Read of
+   record: the paired difference ΔP(−a) − ΔP(+a) at 267.3, scenario bootstrap. R_a (salience drives
+   the brake) predicts it above 0 with the CI excluding 0; R_b (generic perturbation) predicts a CI
+   including 0, or ΔP(−a) below 0. The arm must pass the coherence bars (Amendment 13); an
+   incoherent arm reads as not informative. Descriptive beside it: ΔP(−a) against `none` and against
+   `fill`. It is a discriminator, not a gate: no training choice depends on it.
+3. **τ (§5.2) of record.** The 75th percentile of the anchor-axis margin ⟨h, a⟩ / ‖h‖ over every
+   banked `clause_end` position of the H1_train protect rollouts at block 12 (T1.1's bank), per
+   position, since the hinge acts per position; the per-rollout-mean version is reported beside it.
+   Written to `data/t14_tau_v1.json`.
