@@ -53,7 +53,8 @@ S31_SINGLE_ROW_S, S31_TOKENS = 0.131, 740  # KDG_RESULTS §31: 625 rows in 81.8 
 T11_DOSE0_S = {"gpt_oss_20b": 840.0 / 2112}
 # ΔE_a = E_a − E_none needs the unadapted panel on the same instrument: one `none` panel read per
 # evaluation (2026-10-19; earlier re-prices counted the adapters' panels only)
-T15_PANELS, T16_PANELS = 3 + 1, 2 + 1
+# (Amendment 11: GPT-OSS's `none` panel runs on the T1.3 pod, priced there; same total)
+T15_PANELS, T16_PANELS = 3, 2 + 1
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
 # (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
 # --session-h defaults to the pod's session_start/session_end timestamps)
@@ -260,10 +261,12 @@ def price(m: dict) -> dict:
             rr_h(m, RR_SELECT_PROMPTS, 4, 1),
         "T1.2 AtP": FIXED["T1.2 AtP"],
         "T1.3 steering gate 960 rollouts (HF generate with hooks)": gate,
+        "T1.3 pod: `none` panel dose-0 586 x 8 x 5 (Amendment 11, ST-A9's discriminator)":
+            (read_h(m, PANEL_ROWS), rb),
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
-        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x (3 adapters + none))":
+        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters; none on T1.3's pod)":
             (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
         "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
@@ -295,6 +298,8 @@ def price(m: dict) -> dict:
             dev[kr] = (132 * 8 * 3 * r_post / 3600 + PANEL_ROWS * T15_PANELS * d0[0] / 3600,
                        f"post-reasoning {r_post:.3f} s/rollout + panel dose-0 {d0[0]:.3f} s/row "
                        f"({d0[1]})")
+            kn = next(k for k in dev if k.startswith("T1.3 pod: `none` panel"))
+            dev[kn] = (PANEL_ROWS * d0[0] / 3600, d0[1])
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")

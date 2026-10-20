@@ -1164,3 +1164,13 @@ classifier missed GPT-OSS's curly apostrophe and now folds typography itself (ST
 label on any saved text). Conjunction under watch: GPT-OSS was already the program's
 hardest-to-strip refuser (Paper 7); here it also refuses an explicit operator instruction, which
 limits any refusal-loosening instrument built on operator framing for this model.
+
+**Amendment 11 (2026-10-19), what the next result changes.** KDG §27 read GPT-OSS-20B's dose-0
+pressure gap at −0.001 [−0.011, 0.008], so the development model may not carry the gap the panel
+co-primary is built to close (ST-A9). The `none` panel on the ST instrument, moved to the T1.3 pod,
+decides it. If its CI includes 0, GPT-OSS's panel becomes a one-sided guard (no adapter creates a
+gap, at the 50% subsample for every adapter), the specificity set is the "not a baseline shift"
+guard there, and the positive ΔE claim rests on Muse if Muse's dose-0 panel (first Muse pod) shows
+a gap, else on a Tier 2 carrier; the pitch's twin sentence is scoped to the family that carries E.
+If GPT-OSS's E sits away from 0, §6 stands as written. Envelope of record 32.34 of 35 (about
+28.45 under the guard branch).

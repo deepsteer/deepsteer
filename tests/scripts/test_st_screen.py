@@ -582,8 +582,10 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
          "rec": {"single_row_read_s": 0.5, "dose0_read_s": 0.4}}
     p = RP.price(m)
     kr = next(k for k in p["development"] if k.startswith("T1.5 readouts"))
-    want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 4 * 0.4) / 3600  # 3 adapters + the none panel
+    want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 3 * 0.4) / 3600  # 3 adapter panels
     assert abs(p["development"][kr][0] - want) < 1e-9
+    kn = next(k for k in p["development"] if k.startswith("T1.3 pod: `none` panel"))
+    assert abs(p["development"][kn][0] - RP.PANEL_ROWS * 0.4 / 3600) < 1e-9  # moved, not dropped
     kq = next(k for k in p["development"] if k.startswith("T1.5 refusal-retention"))
     assert p["development"][kq][0] == 0.0
     assert any(k.startswith("T1.6 refusal-retention selection") for k in p["second_family"])
