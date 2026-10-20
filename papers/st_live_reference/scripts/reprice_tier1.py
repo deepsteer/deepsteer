@@ -64,7 +64,12 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "rider pod (t10b; timestamps)": 1.81,
          "rider pod 2 (t10c; timestamps)": 0.65,
          "rider pod 2b (gyyo2g10b95uqs; download lost; estimate)": 0.75,
-         "rider pod 2c (t10d; timestamps)": 1.0}
+         "rider pod 2c (t10d; timestamps)": 1.0,
+         "T1.3 pod (t13; timestamps; sweep, gate, transport; rerun lost, panel moved)": 2.35}
+# what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
+# rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
+# generation plus 320 single-row NLL forwards at 0.475 s
+T13_REMAINDER = {"gpt_oss_20b": (1057 + 1288 + 320 * 0.475) / 3600}
 PROVISION_H = 0.1  # pod creation to script start, and the download after the end timestamp
 # HF-side measurements a later session (the rider pod) replaces in an earlier session's record
 HF_KEYS = ("padded_check", "fast_path_rung", "hf_memory_probe", "read_seconds_per_row",
@@ -303,11 +308,15 @@ def price(m: dict) -> dict:
             kn = next(k for k in dev if k.startswith("T1.3 pod: `none` panel"))
             dev[kn] = (PANEL_ROWS * d0[0] / 3600, d0[1])
             kg = next(k for k in dev if k.startswith("T1.3 steering gate"))
-            # the coherence gate's NLL forward per rollout (1,000) and the transport readout
-            # (20 x 8 x 3 betas at dose 0), at T1.1's single-row rates (Amendment 12)
-            extra = (1000 * r_post + 20 * 8 * 3 * d0[0]) / 3600
-            dev[kg] = (dev[kg][0] + extra, f"{dev[kg][1]} + {extra:.2f} coherence NLL and "
-                                           "transport forwards (single-row)")
+            if m["model"] in T13_REMAINDER:  # the T1.3 pod ran: only its remainder is owed
+                dev[kg] = (T13_REMAINDER[m["model"]],
+                           "remainder: Amendment 13's care + fill rerun (T1.3 pod's arm times)")
+            else:
+                # the coherence gate's NLL forward per rollout (1,000) and the transport readout
+                # (20 x 8 x 3 betas at dose 0), at T1.1's single-row rates (Amendment 12)
+                extra = (1000 * r_post + 20 * 8 * 3 * d0[0]) / 3600
+                dev[kg] = (dev[kg][0] + extra, f"{dev[kg][1]} + {extra:.2f} coherence NLL and "
+                                               "transport forwards (single-row)")
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")
