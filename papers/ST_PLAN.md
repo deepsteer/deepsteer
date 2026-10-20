@@ -1860,3 +1860,10 @@ version 0.0439; the rule rollouts' per-position 75th percentile 0.0625; medians 
 rule 0.0415 (the ordering of ST-A10). The reversed-axis arm is driver phase `care_reversed`; the
 next GPT-OSS pod resumes the T1.3 record and runs it and the `none` panel re-read (~0.32 + 2.59
 A100-h). Envelope of record 33.14 of 35.
+
+**Reversed-axis arm (Amendment 14 item 2; T1.3c pod, 2026-10-20).** Coherent (parse 0.950 vs `none`
+0.950; length 1.14; NLL +0.004). ΔP(−a) against `none` +0.013 [−0.066, +0.097]; against the 267.3
+`fill` +0.041 [−0.012, +0.094]. Read of record, ΔP(−a) − ΔP(+a) paired by scenario: **+0.084
+[−0.007, +0.177]** (n 20, MDE about 0.13): positive, its CI including 0, so by the rule the reading
+is **R_b or unresolved** (ST-A11). Exploratory beside it: the dose step along +a and this reversal
+both point to a direction-specific effect; neither the gate nor any training choice depends on it.
