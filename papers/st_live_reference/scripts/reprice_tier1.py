@@ -65,11 +65,17 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "rider pod 2 (t10c; timestamps)": 0.65,
          "rider pod 2b (gyyo2g10b95uqs; download lost; estimate)": 0.75,
          "rider pod 2c (t10d; timestamps)": 1.0,
-         "T1.3 pod (t13; timestamps; sweep, gate, transport; rerun lost, panel moved)": 2.35}
+         "T1.3 pod (t13; timestamps; sweep, gate, transport; rerun lost, panel moved)": 2.35,
+         "T1.3b pod (lsb4193stzic9k; estimate 16:59-20:35 UTC + 0.1; rerun done, panel read "
+         "but lost in the download)": 3.7}
 # what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
 # rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
 # generation plus 320 single-row NLL forwards at 0.475 s
-T13_REMAINDER = {"gpt_oss_20b": (1057 + 1288 + 320 * 0.475) / 3600}
+T13_REMAINDER = {"gpt_oss_20b": 0.0}  # the rerun ran on the T1.3b pod
+# Amendment 11's call on GPT-OSS, provisional from the T1.3b log (A; author 2026-10-20): T1.5's
+# adapter panels run as the one-sided guard at the 50% subsample for every adapter; the `none`
+# panel is re-read in full on the next GPT-OSS pod (the call of record and T1.5's paired baseline)
+BRANCH_A = {"gpt_oss_20b": 0.5}
 PROVISION_H = 0.1  # pod creation to script start, and the download after the end timestamp
 # HF-side measurements a later session (the rider pod) replaces in an earlier session's record
 HF_KEYS = ("padded_check", "fast_path_rung", "hf_memory_probe", "read_seconds_per_row",
@@ -268,12 +274,12 @@ def price(m: dict) -> dict:
             rr_h(m, RR_SELECT_PROMPTS, 4, 1),
         "T1.2 constancy read": FIXED["T1.2 constancy read"],
         "T1.3 steering gate 1,000 rollouts (HF generate with hooks)": gate,
-        "T1.3 pod: `none` panel dose-0 586 x 8 x 5 (Amendment 11, ST-A9's discriminator)":
+        "`none` panel dose-0 586 x 8 x 5, next GPT-OSS pod (Amendment 11; T1.3b's read lost)":
             (read_h(m, PANEL_ROWS), rb),
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
-        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters; none on T1.3's pod)":
+        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters, branch-A subsample; none separate)":
             (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
         "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
@@ -302,15 +308,15 @@ def price(m: dict) -> dict:
         if d0 is not None:  # T1.1's rate is per rollout including the trace: no length rescale
             r_post = m["rec"]["single_row_read_s"]
             kr = next(k for k in dev if k.startswith("T1.5 readouts"))
-            dev[kr] = (132 * 8 * 3 * r_post / 3600 + PANEL_ROWS * T15_PANELS * d0[0] / 3600,
+            frac = BRANCH_A.get(m["model"], 1.0)
+            dev[kr] = (132 * 8 * 3 * r_post / 3600 + PANEL_ROWS * T15_PANELS * frac * d0[0] / 3600,
                        f"post-reasoning {r_post:.3f} s/rollout + panel dose-0 {d0[0]:.3f} s/row "
                        f"({d0[1]})")
-            kn = next(k for k in dev if k.startswith("T1.3 pod: `none` panel"))
+            kn = next(k for k in dev if k.startswith("`none` panel"))
             dev[kn] = (PANEL_ROWS * d0[0] / 3600, d0[1])
             kg = next(k for k in dev if k.startswith("T1.3 steering gate"))
             if m["model"] in T13_REMAINDER:  # the T1.3 pod ran: only its remainder is owed
-                dev[kg] = (T13_REMAINDER[m["model"]],
-                           "remainder: Amendment 13's care + fill rerun (T1.3 pod's arm times)")
+                dev[kg] = (T13_REMAINDER[m["model"]], "done (T1.3 and T1.3b pods; in the spend)")
             else:
                 # the coherence gate's NLL forward per rollout (1,000) and the transport readout
                 # (20 x 8 x 3 betas at dose 0), at T1.1's single-row rates (Amendment 12)

@@ -1199,3 +1199,10 @@ specificity, since neither target separates from a norm-matched random direction
 this model the moral-salience reference participates in the brake rather than opposing it; a
 reversed-axis arm (~0.35 A100-h) separates it from generic perturbation.
 
+**T1.3b (2026-10-20), what changed.** GPT-OSS-20B reads as a non-carrier on the ST instrument too:
+its dose-0 E is −0.0011 [−0.0105, +0.0083] against KDG §27's −0.0013 [−0.0106, +0.0081] on another
+stack (call A, printed in the session log; the rows were lost at the download, so the call is
+provisional until the re-read on the next GPT-OSS pod). T1.5 is planned under branch A: on the
+development model the panel guards against an adapter creating a gap, and the positive ΔE claim
+rests on Muse if Muse carries E. Envelope of record 32.82 of 35.
+

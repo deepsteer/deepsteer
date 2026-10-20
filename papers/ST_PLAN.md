@@ -1814,3 +1814,22 @@ in force the 534.6 run passes all three bars, which is stated beside it, not use
 (3) *"n = 20 scenarios cannot carry a sign."* The gate's MDE is about 0.12; the gate rule is a
 point rule (ΔP ≥ +0.10), and both targets fail it by more than their own CI half-widths on the
 positive side. Signs are reported with their CIs, not as verdicts.
+
+#### T1.3b, the resume pod (2026-10-20; Amendments 11 and 13; author's decision on the lost panel)
+
+The pod resumed from the T1.3 record (copied in by hand after a wrapped `SYNC_OUTPUTS` paste
+dropped it; ANOMALIES process ledger), ran Amendment 13's rerun (`fill` and `care` at α 267.3;
+the gate of record is the T1.3 outcome above) and GPT-OSS's `none` panel. The panel's rows were
+lost at the download (a launcher edit during the session; ANOMALIES process ledger); the session
+log printed the call: **A** (not a carrier), E_none −0.0011 [−0.0105, +0.0083], g_band 0.487
+(not deferred, so in band). Second derivation: KDG §27's read on its own stack gave −0.0013
+[−0.0106, +0.0081].
+
+**Decision (author, 2026-10-20).** The logged call is provisional: T1.5 is planned under branch A
+(the one-sided guard at the 50% subsample for every adapter; the specificity set as the
+not-a-baseline-shift guard; the positive ΔE claim rests on Muse if its dose-0 panel carries E).
+The call of record comes from a full re-read of GPT-OSS's `none` panel on the next GPT-OSS pod,
+before any T1.5 panel forward, with Amendment 11's band precondition as written; it is also T1.5's
+paired E_none baseline. A flip would re-plan T1.5 before anything runs. Re-price: spent 14.90 A100-h
+(T1.3b ~3.7 by estimate), the `none` panel owed again (2.59), T1.5's adapter panels at the
+branch-A subsample; envelope of record **32.82 of 35**.
