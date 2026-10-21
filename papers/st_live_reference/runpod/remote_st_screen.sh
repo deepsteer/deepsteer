@@ -267,10 +267,11 @@ if [ "$STEPS" = "t15" ]; then  # T1.4's inputs and adapters (SYNC_OUTPUTS); the 
 fi
 ST2A_DIR="$REPO_DIR/papers/st_live_reference/outputs/st2a/gpt_oss_20b"  # SYNC_OUTPUTS (pod B)
 QWEN_SCREEN="$REPO_DIR/papers/st_live_reference/outputs/t10/qwen38_27b/screen/h1_screen.jsonl"
+T15_JOBS="$REPO_DIR/papers/st_live_reference/outputs/t15_early/gpt_oss_20b/vllm/mxfp4_parity.jobs.jsonl"  # ST-A15
 ST2B_PHASES="c3_qwen,c2_extract,c2_direction,c2_anchor,c2_ablate,c2_random,c2_twin_none,c2_transport,c2_freegen,c3_reencode,c3_direction,c3_qwen_arm"
 if [ "$STEPS" = "st2b" ]; then  # built locally; synced (sync_st2b.txt); twins and ids committed
   for f in "$ST2_INPUTS/st2_inputs.npz" "$T11_DIR/gen/h1_rollouts_read.jsonl" "$QWEN_SCREEN" \
-           "$ST2A_DIR/gen/c1_none.jsonl" papers/st_live_reference/data/st2_engaged_train_v1.json \
+           "$ST2A_DIR/gen/c1_none.jsonl" "$T15_JOBS" papers/st_live_reference/data/st2_engaged_train_v1.json \
            papers/st_live_reference/data/st2_rule_twins_v1.json; do
     [ -f "$f" ] || { echo "FATAL: $f missing (pod B inputs; SYNC_OUTPUTS from sync_st2b.txt)"; exit 1; }
   done
@@ -333,6 +334,9 @@ dry_runs() {
     fi
     if [ "$STEPS" = "st2b" ] && [ "$m" = "gpt_oss_20b" ]; then  # Cell 1 dry (its none), then pod B's order, dry
       rm -rf "$OUT/_dry_st2"
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/router_disc.py \
+        --phase hf --dry-run --jobs "$T15_JOBS" --out "$OUT/_dry_st2/rd" \
+        || { echo "DRY RUN FAILED (st2b, router_disc hf)"; return 1; }
       PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2_driver.py \
         --out "$OUT/_dry_st2" --dry-run --inputs "$ST2_INPUTS" --date-pin "$DATE_PIN" \
         || { echo "DRY RUN FAILED (st2b, cell 1)"; return 1; }
@@ -348,7 +352,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -435,6 +439,14 @@ for m in $MODELS; do
   fi
   echo "==================== $OUT_SUB/$m ===================="
   if [ "$STEPS" = "st2b" ]; then
+    # ST-A15's discriminator first (author, 2026-10-21): HF router capture + the bf16 checkpoint,
+    # then each vLLM engine in its own process; fail-soft (recorded), the checkpoint deleted after
+    RD="$OUT/router_disc"
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/router_disc.py --phase hf \
+      --jobs "$T15_JOBS" --out "$RD" || echo "WARN: router_disc hf failed (recorded; Phase 2 goes on)"
+    [ -d "$RD/ckpt" ] && { PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/router_disc.py \
+      --phase vllm --jobs "$T15_JOBS" --out "$RD" || echo "WARN: router_disc vllm failed (recorded)"; }
+    rm -rf "$RD/ckpt"
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     rc=0
     PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2_driver.py --out "$OUT" \

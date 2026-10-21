@@ -163,20 +163,26 @@ def cos_read(per_q: dict, per_o: dict, samples: np.ndarray, n_null: int = 1000) 
     null = SG.fill_draws(samples.astype(np.float64), 1.0, n_null, SEED).astype(np.float64)
     q95 = float(np.percentile(np.abs(null @ unit(Om.mean(0))), 95))
     reading = ("aligned: shared content, a transfer candidate" if lo > q95 else
-               "orthogonal: different content" if max(abs(lo), abs(hi)) < q95 else "unresolved")
+               "orthogonal: different content (geometric only; Cell 3's arm speaks to function)"
+               if max(abs(lo), abs(hi)) < q95 else
+               "unresolved (geometric only; Cell 3's arm speaks to function)")
     return {"cos": c, "ci95": [float(lo), float(hi)], "null_abs_q95": q95,
             "n_qwen_scenarios": len(q_ids), "n_oss_scenarios": len(o_ids), "reading": reading}
 
 
-def split_half_cos(per: dict, seed: int = 20261021) -> dict:
-    """Stability: the direction from a seeded half of the scenarios against the other half."""
+def split_half_cos(per: dict, seed: int = 20261021, size: int = 20) -> dict:
+    """Amendment 23 item 4: two disjoint seeded sets of ``size`` scenarios (halves when fewer than
+    2 x size), the cosine between their directions, and its Spearman-Brown full-length value."""
     import random
 
     ids = sorted(per)
-    half = set(random.Random(seed).sample(ids, len(ids) // 2))
-    va = unit(np.mean([per[s] for s in ids if s in half], 0))
-    vb = unit(np.mean([per[s] for s in ids if s not in half], 0))
-    return {"cos": float(va @ vb), "n_a": len(half), "n_b": len(ids) - len(half), "seed": seed}
+    m = min(size, len(ids) // 2)
+    pick = random.Random(seed).sample(ids, 2 * m)
+    va = unit(np.mean([per[s] for s in pick[:m]], 0))
+    vb = unit(np.mean([per[s] for s in pick[m:]], 0))
+    r = float(va @ vb)
+    return {"cos": r, "spearman_brown": 2 * r / (1 + r) if r > -1 else None, "n_a": m, "n_b": m,
+            "n_scenarios": len(ids), "seed": seed}
 
 
 def v_oss(t11: Path) -> tuple[dict, dict, np.ndarray]:
@@ -193,7 +199,12 @@ def cell3(b: Path, a: Path, t11: Path) -> dict:
     per_q = {str(s): v.astype(np.float64) for s, v in zip(z["ids"], z["per_scenario"])}
     per_o, acc, samples = v_oss(t11)
     out["cos_V_qwen_V_oss"] = cos_read(per_q, per_o, samples)
-    out["split_half"] = {"V_oss": split_half_cos(per_o), "V_qwen": split_half_cos(per_q)}
+    sh = {"V_oss": split_half_cos(per_o), "V_qwen": split_half_cos(per_q)}
+    out["split_half"] = sh
+    ro, rq = sh["V_oss"]["spearman_brown"], sh["V_qwen"]["spearman_brown"]
+    out["cos_V_qwen_V_oss"]["disattenuated_ceiling"] = (
+        float(np.sqrt(ro * rq)) if ro is not None and rq is not None and ro > 0 and rq > 0
+        else None)
     rz = np.load(b / "c3" / "reencode.npz")
     qp: dict = {}
     for key, sm, n, act in zip(rz["keys"], rz["sums"], rz["counts"], rz["action"]):

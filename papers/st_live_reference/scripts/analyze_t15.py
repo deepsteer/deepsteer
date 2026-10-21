@@ -16,7 +16,11 @@ Per adapter, against the unadapted model on the same engine (Amendment 20 item 1
 - **capability** (Amendment 19 item 4): accuracy minus ``none``'s on the same items, ≥ −0.02;
 - **readouts** (Amendment 20 item 3): the anchor-axis margin at ``clause_end``, block 12, against
   ``none``'s (L-anchor's transport control of record);
-- the **precision effect**: bf16 ``none`` minus T1.1's MXFP4 re-run on the 38.
+- the **precision effect**: bf16 ``none`` minus T1.1's MXFP4 re-run on the 38;
+- **parity** (Amendment 23 item 1): each merged adapter on vLLM against the HF stack with the
+  adapter attached, over the 61 parity rows without ST-A15's three bf16-odd rows, against the bf16
+  engine's own band (``none`` on vLLM against HF over the same rows) + 0.05; all-64 beside. An arm
+  the pod sent to HF that passes here takes its bf16-vLLM rows of record.
 
 Verdicts follow the non-carrier ladder: ``generalizes (H1)`` needs the H1 criterion (ΔP ≥ +0.15,
 CI excluding 0), the guard, specificity, capability and Heretic (run only on a passing adapter, so
@@ -44,6 +48,8 @@ DATA = HERE.parent / "data"
 OUTS = HERE.parent / "outputs"
 ARMS = ("beh", "beh_epoch3", "anchor", "self")
 H1_BAR, SPEC_BAR, CAP_BAR = 0.15, 0.03, -0.02
+PARITY_MARGIN = 0.05
+ODD_ROWS = (4, 15, 40)  # ST-A15: the bf16 engine is the odd one (Amendment 23 item 1)
 
 
 def _jsonl(p: Path) -> list[dict]:
@@ -105,9 +111,11 @@ def specificity(t15: Path, panel_none: Path, arm: str, ids: list[str]) -> dict:
             "passes": bool(dp["mean"] is not None and abs(dp["mean"]) <= SPEC_BAR), "bar": SPEC_BAR}
 
 
-def capability(t15: Path, arm: str) -> dict:
+def capability(t15: Path, arm: str, par: dict | None = None) -> dict:
     key = lambda r: (r["dataset"], r["index"])  # noqa: E731
-    a = {key(r): float(r["correct"]) for r in _jsonl(t15 / "cap" / f"{arm}.jsonl")}
+    f = (rows_of_record(t15, arm, par, "cap")[0] if par is not None
+         else t15 / "cap" / f"{arm}.jsonl")
+    a = {key(r): float(r["correct"]) for r in _jsonl(f)}
     n = {key(r): float(r["correct"]) for r in _jsonl(t15 / "cap" / "none.jsonl")}
     k = sorted(set(a) & set(n))
     d = T13.boot([a[x] - n[x] for x in k])
@@ -148,6 +156,58 @@ def readouts(t15: Path, arm: str) -> dict:
     return {"d_margin": d, "moves_up": bool(d["ci95"][0] is not None and d["ci95"][0] > 0)}
 
 
+def _vllm_letters(f: Path, lids: list[int], n: int) -> np.ndarray:
+    by = {r["job_id"]: r for r in _jsonl(f)}
+    return np.array([[(by.get(f"lp|{i}", {}).get("first_logprobs") or {}).get(str(t), -np.inf)
+                      for t in lids] for i in range(n)])
+
+
+def _tv(a: np.ndarray, b: np.ndarray, shown: list[list[int]]) -> np.ndarray:
+    out = []
+    for x, y, idx in zip(a, b, shown):
+        px, py = np.exp(x[idx]), np.exp(y[idx])
+        out.append(1.0 if px.sum() <= 0 or py.sum() <= 0 else
+                   0.5 * float(np.abs(px / px.sum() - py / py.sum()).sum()))
+    return np.array(out)
+
+
+def parity(t15: Path) -> dict:
+    """Amendment 23 item 1, per arm: TV(merged on vLLM, HF attached) over the 61 rows against the
+    bf16 engine's own band over the same rows + 0.05."""
+    import router_disc as RD
+
+    jobs = _jsonl(t15 / "vllm" / "mxfp4_parity.jobs.jsonl")
+    lids, n = jobs[0]["logprob_ids"], len(jobs)
+    shown = RD.shown_columns(n)
+    keep = [i for i in range(n) if i not in ODD_ROWS]
+    base = _tv(_vllm_letters(t15 / "vllm" / "none.jsonl", lids, n),
+               np.load(t15 / "parity" / "hf_none.npy"), shown)
+    out = {"band61": float(base[keep].mean()), "band64": float(base.mean()),
+           "bar61": float(base[keep].mean()) + PARITY_MARGIN, "arms": {}}
+    for arm in ARMS:
+        f, h = t15 / "vllm" / f"{arm}.jsonl", t15 / "parity" / f"hf_{arm}.npy"
+        if not (f.exists() and h.exists()):
+            continue
+        d = _tv(_vllm_letters(f, lids, n), np.load(h), shown)
+        out["arms"][arm] = {"tv61": float(d[keep].mean()), "tv64": float(d.mean()),
+                            "passes": bool(d[keep].mean() <= out["bar61"])}
+    return out
+
+
+def rows_of_record(t15: Path, arm: str, par: dict, kind: str) -> tuple[Path | None, str]:
+    """``kind`` gen (h1_<arm>) or cap (<arm>): the vLLM rows if the arm passes Amendment 23's bar
+    (the pod may have set them aside), else the HF rows."""
+    stem = f"h1_{arm}" if kind == "gen" else arm
+    d = t15 / kind
+    vllm_aside = d / f"{stem}.parity_failed.jsonl"
+    passes = (par["arms"].get(arm) or {}).get("passes")
+    if passes and vllm_aside.exists():
+        return vllm_aside, "vllm_bf16 (passes Amendment 23; the pod had routed it to HF)"
+    if (d / f"{stem}.jsonl").exists():
+        return d / f"{stem}.jsonl", "as on the pod"
+    return None, "missing"
+
+
 def read(t15: Path, panel_none: Path, t11: Path | None) -> dict:
     rec = json.loads((t15 / "t15_record.json").read_text())
     engaged = json.loads((DATA / "t15_engaged_held_v1.json").read_text())["ids"]
@@ -158,11 +218,12 @@ def read(t15: Path, panel_none: Path, t11: Path | None) -> dict:
     panel_arms = {comp, "anchor"}
     none = _jsonl(t15 / "gen" / "h1_none.jsonl")
     nr, nx = p_record(none), T13.p_by_scenario(none)
+    par = parity(t15)
     out: dict = {"comparator": comp, "engine": {k: rec["phases"].get(k) for k in
-                                                ("base_vllm",)}, "arms": {}}
+                                                ("base_vllm",)}, "parity": par, "arms": {}}
     for arm in ARMS:
-        f = t15 / "gen" / f"h1_{arm}.jsonl"
-        if not f.exists():
+        f, src = rows_of_record(t15, arm, par, "gen")
+        if f is None:
             out["arms"][arm] = {"status": "no H1_held rows"}
             continue
         rows = _jsonl(f)
@@ -176,8 +237,9 @@ def read(t15: Path, panel_none: Path, t11: Path | None) -> dict:
                    truncation_share(none),
                    "engine": "hf" if rows and rows[0].get("engine", "").startswith("hf")
                    else "vllm_bf16",
+                   "rows_of_record": src,
                    "specificity": specificity(t15, panel_none, arm, spec_ids),
-                   "capability": capability(t15, arm)}
+                   "capability": capability(t15, arm, par)}
         if (t15 / "readouts" / f"{arm}.jsonl").exists():
             x["readouts"] = readouts(t15, arm)
         if arm in panel_arms and (t15 / "panel" / arm).exists():

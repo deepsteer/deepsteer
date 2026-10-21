@@ -2437,3 +2437,26 @@ computed).**
 - **Tests:** ablation math, hook and readout; the pod B order dry run (Qwen on the screen stub, Cell
   2 on T1.1's real traces, the re-encode on Qwen's real screen traces); clause_end positions under
   the real harmony format; the runner's phase list equals the driver's. Fast gates 190 pass.
+
+### Amendment 23 (2026-10-21; author; zero GPU; before any adapter parity is read and before pod B)
+
+1. **Per-adapter parity bar (supersedes Amendment 20 item 2's per-adapter bar; the base check stands
+   as read).** The bar is the bf16 engine's own band plus 0.05: mean letter TV of the bf16 `none`
+   checkpoint on vLLM against the HF stack over the 61 parity rows without ST-A15's three bf16-odd
+   rows (4, 15, 40), + 0.05; each adapter's parity TV is read over the same 61 rows, the all-64
+   figures reported beside. The T1.5 pod routes arms by Amendment 20's bar; the local read applies
+   this one. An arm the pod sent to HF that passes here takes its bf16-vLLM rows of record (kept as
+   `*.parity_failed.jsonl`), its HF rows reported beside; an arm the pod kept on vLLM that fails here
+   goes to HF on the next GPT-OSS pod.
+2. **ΔP reading stands:** the engine is fixed within each adapter − `none` difference; the extra
+   engine variance goes to the CIs.
+3. **ST-A15's discriminator** runs first on pod B (`scripts/router_disc.py`): per-layer router top-4
+   under HF and under the bf16 and MXFP4 engines in eager mode, each row alone, and the bf16 rows
+   re-read alone at T1.5's engine settings (R_d, batch composition: T1.5 read the bf16 parity rows
+   inside one run with ~1,250 generation requests, the MXFP4 rows alone). About 0.25 A100-h with
+   the three engine loads.
+4. **Cell 3's cosine read, reliabilities.** V_oss and V_qwen each get a 20/20 seeded split-half
+   cosine, Spearman-Brown corrected to full length (r = 2r½ / (1 + r½)); the disattenuated ceiling
+   √(r_oss · r_qwen) is reported beside cos(V_qwen, V_oss). "Aligned" still needs the cosine's CI
+   lower bound above the covariance-matched null's q95 (0.374 against V_oss); a cosine at or below
+   the null is a geometric statement only, and Cell 3's causal arm speaks to function.
