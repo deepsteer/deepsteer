@@ -67,6 +67,28 @@ def specificity() -> dict:
             "quotas": dict(sorted(q.items())), "ids": sorted(ids)}
 
 
+def panel_half() -> dict:
+    """Amendment 20 item 6: the panel guard's 50% subsample, 293 of the 586, seed 20261021,
+    stratified by family (largest-remainder quotas)."""
+    import screen_lib as L
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    allp, _ = load_scenario_dir(sorted(glob.glob(str(HERE.parents[1] / "kdg_panel" / "data" /
+                                                     "*_scenarios_*.json"))))
+    by: dict[str, list[str]] = {}
+    for s in L.panel_586(allp):
+        by.setdefault(s.family, []).append(s.id)
+    q = quotas({f: len(v) for f, v in by.items()}, 293)
+    ids = []
+    for f in sorted(by):
+        m = sorted(by[f])
+        random.Random(f"{SEED}|half|{f}").shuffle(m)
+        ids += m[: q[f]]
+    return {"rule": "ST_PLAN Amendment 20 item 6", "seed": SEED, "n": len(ids),
+            "quotas": dict(sorted(q.items())), "ids": sorted(ids)}
+
+
 def capability() -> dict:
     from datasets import load_dataset
 
@@ -82,6 +104,11 @@ def capability() -> dict:
 
 
 def main() -> None:
+    if sys.argv[1:] == ["panel_half"]:
+        h = panel_half()
+        (DATA / "t15_panel_half_v1.json").write_text(json.dumps(h, indent=1) + "\n")
+        print(f">> panel half: {h['n']} (quotas {h['quotas']})")
+        return
     s = specificity()
     (DATA / "t15_specificity_v1.json").write_text(json.dumps(s, indent=1) + "\n")
     c = capability()
