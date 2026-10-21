@@ -280,6 +280,8 @@ def price(m: dict) -> dict:
         "`none` panel dose-0 586 x 8 x 5, next GPT-OSS pod (Amendment 11; T1.3b's read lost)":
             (read_h(m, PANEL_ROWS), rb),
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
+        "T1.4 pod: Amendment 16's two gate arms (+care_harm, +V_harm at 267.3)":
+            (2 * (1089 + 160 * 0.475) / 3600, "the T1.3 gate's measured arm cost"),
         "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
             (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
         "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters at branch A)":

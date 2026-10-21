@@ -1951,3 +1951,39 @@ test.
    T1.5 evaluation is priced, and the envelope decision is made at G3 with the numbers.
 4. **Beside ST-A10 (recorded).** `V_harm` separates protect above rule at clause ends (+0.0109
    [+0.0081, +0.0138]); `V_care`, and so the anchor axis, removed that content by construction (§4).
+
+#### T1.4 pod build (2026-10-21; Amendments 14-16; zero GPU until launch)
+
+- **`scripts/t14_driver.py`**: one HF process on the ST stack, phases gate_arms → beh → anchor → self
+  → fourth (conditional), recorded and resumable. The gate arms reuse the T1.3 driver's arm, parse
+  and coherence code against the T1.3 gate's `none` and 267.3 `fill` rows (row keys checked).
+  Each adapter: a timed pilot (one optimizer step over 3 micro-batches on a throwaway adapter,
+  unloaded), the run with held-out monitoring, `st_train.save_adapter` (adapter + sidecar with τ,
+  axis, σ provenance, recipe, pilot), then `unload()` and a base check (probe logits within 1e-3 of
+  the pre-training ones, else the pod stops). Dry run on a tiny GPT-OSS with the real tokenizer:
+  every phase, including the fourth adapter's path, passes locally.
+- **`scripts/general_slice.py`** + `data/general_slice_v1.json` (§3's slice): C4 English validation,
+  the first 2,000 documents with ≥ 128 GPT-OSS tokens (through stream index 2,833), indices and text
+  sha256 only; the pod re-streams and verifies; each cut to 512 tokens.
+- **`scripts/build_t14_inputs.py`**: the three unit axes, τ per axis by Amendment 14's rule (the
+  anchor axis must reproduce 0.0589), `chat_sigma` at block 12 with provenance, the `self` targets.
+  Runs after Amendment 16 is pushed (the two new τ are its quantities).
+- **Fixes found by the dry run.** PEFT's expert-parameter LoRA (GPT-OSS's experts) refuses a
+  nonzero `lora_dropout`; the harness defaulted to 0.05, so every arm now uses 0.0. The launcher's
+  download excluded `*.safetensors`, which would have left the adapters on the pod; it now keeps
+  `**/adapters/**` (tested with a local rsync: adapters come back, other weights do not).
+- **Remote**: `STEPS=t14/t14`, watchdog 6.5 h, inputs checked first (`t14_inputs`, the T1.1
+  rollouts, the T1.3 gate rows, the slice ids), Amendment 10's selection and the remote re-price
+  skipped, gate tests include `test_st_t14.py`.
+- **Price.** The two gate arms 0.65 A100-h (the T1.3 gate's measured arm cost); envelope of record
+  34.12 of 35. The fourth adapter, if it trains, adds about 1.0 before its T1.5 evaluation.
+- **Proposed training schedule (`RECIPE`; for the author before the pod).** LoRA rank 16, α 32,
+  dropout 0.0 on attention and expert tensors; AdamW lr 1e-4, 10 warm-up steps, cosine; 4
+  micro-batches per optimizer step; 264 optimizer steps per arm (matched across arms: one pass over
+  the ~1,050 H1_train traces for `L-anchor`/`L-self`, about 16 passes over the 66 pairs for
+  `L-beh`); KL weight 1.0 on the general slice (1,984 sequences; 16 reserved for monitoring) and,
+  for the representation arms, the trace tokens outside `clause_end`; gradient checkpointing on.
+  Budget 1.0 A100-h per arm: if the pilot projects more, `max_steps` is cut to fit and the schedule
+  is set from the cut value. Held-out monitoring, never selection: every 66 steps, the anchor-axis
+  and `care_harm` margins on 16 H1_held traces, the DPO margin on 8 H1_held pairs, the KL on the 16
+  reserved sequences (forward only, no gradient, no early stopping).

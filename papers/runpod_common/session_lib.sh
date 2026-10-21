@@ -87,7 +87,9 @@ rp_download() {
       echo "ERROR: local disk has ${free} GB free; not retrying into a full disk."
       break
     fi
-    rsync -az --partial \
+    # trained LoRA adapters (``adapters/<arm>/``, a few hundred MB each) are results and come
+    # back; every other weight file stays on the pod
+    rsync -az --partial --include '**/adapters/**' \
       --exclude '*.pt' --exclude '*.pth' --exclude '*.ckpt' --exclude '*.safetensors' \
       -e "ssh ${SSH_OPTS[*]}" "root@$SSH_HOST:$src" "$dst"
     rc=$?

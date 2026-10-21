@@ -121,7 +121,8 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
         axis: np.ndarray | None = None, tau: float | None = None,
         targets: dict[str, np.ndarray] | None = None, sigma: np.ndarray | None = None,
         max_steps: int = 100, lr: float = 1e-4, grad_accum: int = 1, seed: int = 0,
-        eval_fn=None, eval_every: int = 0, lora_rank: int = 16,
+        eval_fn=None, eval_every: int = 0, lora_rank: int = 16, lora_alpha: int = 32,
+        lora_dropout: float = 0.0,
         allow_empty_kl: bool = False) -> dict:
     """Train one adapter. ``traces``: rows with ``ids``, ``anchor_mask``, ``kl_mask`` and
     ``scenario_id`` (anchor / self); ``pairs``: DPO pairs (beh); ``general``: token sequences for
@@ -138,7 +139,8 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
         raise ValueError("KL-to-base term is identically zero: no trace has a KL position and "
                          "there is no general slice")
 
-    lora = OL.inject_lora(model, rank=lora_rank)
+    # dropout 0: PEFT's expert-parameter LoRA (GPT-OSS's experts) refuses any other value
+    lora = OL.inject_lora(model, rank=lora_rank, alpha=lora_alpha, dropout=lora_dropout)
     dev = model.model.device
     ax = torch.as_tensor(axis, device=dev) if axis is not None else None
     sg = torch.as_tensor(sigma, device=dev) if sigma is not None else None
