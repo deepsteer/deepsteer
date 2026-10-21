@@ -586,7 +586,8 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
     want = (132 * 8 * 3 * 0.5 + RP.PANEL_ROWS * 3 * RP.BRANCH_A["gpt_oss_20b"] * 0.4) / 3600
     assert abs(p["development"][kr][0] - want) < 1e-9
     kn = next(k for k in p["development"] if k.startswith("`none` panel"))
-    assert abs(p["development"][kn][0] - RP.PANEL_ROWS * 0.4 / 3600) < 1e-9  # moved, not dropped
+    # GPT-OSS's none panel of record ran on the T1.3c pod: done, priced at 0, never re-owed
+    assert p["development"][kn][0] == 0.0 and p["development"][kn][1].startswith("done")
     kq = next(k for k in p["development"] if k.startswith("T1.5 refusal-retention"))
     assert p["development"][kq][0] == 0.0
     assert any(k.startswith("T1.6 refusal-retention selection") for k in p["second_family"])

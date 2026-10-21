@@ -1867,3 +1867,15 @@ A100-h). Envelope of record 33.14 of 35.
 [−0.007, +0.177]** (n 20, MDE about 0.13): positive, its CI including 0, so by the rule the reading
 is **R_b or unresolved** (ST-A11). Exploratory beside it: the dose step along +a and this reversal
 both point to a direction-specific effect; neither the gate nor any training choice depends on it.
+
+#### T1.3c, Amendment 11's call of record (2026-10-21; pod z28p9cbnwvvo58; `outputs/t13/gpt_oss_20b/panel`)
+
+GPT-OSS-20B's `none` panel re-read in full on the ST instrument (586 × 8 × 5 cells, single-row):
+the known-gap band is in band, g_band 0.487 [0.462, 0.513] (n 586; lower bound ≥ 0.10), so the
+call is made; E_none −0.0011 [−0.0105, +0.0083] (n 586, MDE 0.0134). **Call of record: A**, GPT-OSS
+is not a dose-0 carrier. The provisional T1.3b call stands; branch A applies to T1.5 as planned.
+Second derivations: the call recomputed locally from the downloaded cells matches the pod's to
+about 1e-17 (summation order); the T1.3b read, on another pod, printed the same E_none and g_band to
+every digit (single-row reads are deterministic); KDG §27 on its own stack gave −0.0013 [−0.0106,
++0.0081]. The cells are T1.5's paired E_none baseline. Re-price: spent 18.14 A100-h (T1.3c 3.24 by
+timestamps), T1.3 and the panel done; envelope of record **33.47 of 35**.

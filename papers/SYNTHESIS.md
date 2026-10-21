@@ -1206,3 +1206,11 @@ provisional until the re-read on the next GPT-OSS pod). T1.5 is planned under br
 development model the panel guards against an adapter creating a gap, and the positive ΔE claim
 rests on Muse if Muse carries E. Envelope of record 32.82 of 35.
 
+**T1.3c (2026-10-21), what changed.** The call of record confirms it: GPT-OSS-20B carries no dose-0
+pressure gap on the ST instrument (E_none −0.0011 [−0.0105, +0.0083], n 586, with the known-gap
+control in band at 0.487 [0.462, 0.513]). On the development model the panel is a guard against an
+adapter creating a gap; the positive panel claim belongs to Muse if its dose-0 panel shows a gap, or
+to a Tier 2 carrier. The reversed-axis arm left ST-A11 unresolved by its rule (ΔP(−a) − ΔP(+a) =
++0.084 [−0.007, +0.177], n 20), pointing the same way as the dose step. T1.3 is complete at 18.14
+A100-h spent; envelope of record 33.47 of 35.
+
