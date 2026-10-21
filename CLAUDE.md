@@ -217,6 +217,11 @@ context. This recreates it mechanically, every time.
 variance — power is computed, not guessed); both branch framings pre-registered and
 publishable; an explicit bail condition (screen → gate → proceed/bank); per-unit artifact
 save list; dependency check (data the session needs exists and is committed).
+During a session: (1) never edit a script the running session executes (launcher, session
+library, remote runner; bash reads them as it goes); if a change cannot wait, write a new file and
+`mv` it over the old one. (2) Never run a pod-side helper that has not been executed locally first,
+and never put an environment dump on a command line or in a log. Pull pod-side results the author
+has not yet downloaded before the session ends; keep `SYNC_OUTPUTS` on its own short line.
 
 **Commit-boundary (no RESULTS commit without):** referee pass (3 damaging objections,
 answered or conceded) and SYNTHESIS.md update in the same commit; verdict sentences that
