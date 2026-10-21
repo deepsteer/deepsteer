@@ -80,7 +80,10 @@ def test_dry_run_every_phase_on_a_tiny_gpt_oss(tmp_path):
     # scenarios (both checkpoints generated), never on H1_held
     sel = rec["phases"]["beh"]["comparator_selection"]
     assert (d / "adapters" / "beh_epoch3" / "adapter_model.safetensors").exists()
-    assert set(sel) >= {"step_matched", "epoch3", "comparator"}
+    assert set(sel) >= {"step_matched", "epoch3", "comparator", "epoch3_minus_step_matched"}
+    d3 = sel["epoch3_minus_step_matched"]
+    if d3["ci95"][0] is None or d3["ci95"][0] <= 0:  # CI including 0: step-matched by default
+        assert sel["comparator"] == "step_matched"
     held = set(json.loads((ROOT / "papers/st_live_reference/split_v1.json").read_text())["H1_held"])
     picked = {json.loads(x)["scenario_id"] for x in (d / "gen" / "select_beh_final.jsonl").open()}
     assert picked and not picked & held

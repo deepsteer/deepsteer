@@ -2005,3 +2005,8 @@ test.
 4. **(c) Envelope.** Raised to 36 A100-h for the fourth adapter's training; its T1.5 evaluation is a
    G3 decision. Envelope of record 34.58 of 36 (the gate arms 0.65, the comparator choice ~0.30,
    T1.5 with `L-beh`'s second checkpoint on H1_held); the fourth adapter, if it trains, adds ~1.0.
+5. **Addendum (author, 2026-10-21; before the pod).** "Higher P on the reserved 10 × 8" confirmed.
+   The two checkpoints' reserved P are reported with the paired scenario-bootstrap difference CI
+   (epoch 3 − step-matched); epoch 3 is the comparator of record only if that CI lies above 0;
+   otherwise (CI including 0, or below it) the step-matched checkpoint is the comparator by default.
+   Epoch 3 is evaluated on H1_held in T1.5 either way.

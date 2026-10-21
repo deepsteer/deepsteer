@@ -407,17 +407,24 @@ def beh_select(c, sc, wb, a, adir: Path, ckpt_step: int | None) -> dict:
         sc.save_jsonl(f"gen/select_{tag}.jsonl", parsed)
         ps = T13.p_by_scenario(parsed)
         return {"P": float(np.mean(list(ps.values()))) if ps else None, "n_scenarios": len(ps),
-                "parse_rate": float(np.mean([r["letter"] is not None for r in parsed]))}
+                "parse_rate": float(np.mean([r["letter"] is not None for r in parsed])),
+                "per_scenario": ps}
     out = {"step_matched": p_of("beh_final")}
     if ckpt_step is not None:
         e3 = c["out"] / "adapters" / "beh_epoch3"
         set_peft_model_state_dict(wb.model, load_file(str(e3 / "adapter_model.safetensors")))
         out["epoch3"] = p_of("beh_epoch3")
         set_peft_model_state_dict(wb.model, load_file(str(adir / "adapter_model.safetensors")))
-    pf, pe = out["step_matched"]["P"], (out.get("epoch3") or {}).get("P")
-    out["comparator"] = ("epoch3" if pe is not None and pf is not None and pe > pf
-                         else "step_matched")
-    out["rule"] = "Amendment 17 (a): higher P on the reserved scenarios; ties to step-matched"
+    diff = None
+    if "epoch3" in out:  # the addendum: epoch-3 only if it beats step-matched with CI above 0
+        pf, pe = out["step_matched"]["per_scenario"], out["epoch3"]["per_scenario"]
+        ids = sorted(set(pf) & set(pe))
+        diff = T13.boot([pe[s] - pf[s] for s in ids])
+    out["epoch3_minus_step_matched"] = diff
+    out["comparator"] = ("epoch3" if diff is not None and diff["ci95"][0] is not None
+                         and diff["ci95"][0] > 0 else "step_matched")
+    out["rule"] = ("Amendment 17 (a) and its addendum: the higher P on the reserved scenarios; "
+                   "epoch 3 only if its paired difference CI lies above 0, else step-matched")
     return out
 
 
