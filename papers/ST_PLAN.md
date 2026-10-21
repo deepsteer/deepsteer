@@ -2169,7 +2169,9 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
   its own process so the HF model is gone before a vLLM engine starts: `beh_cap` (Amendment 18 item
   3; its reading sets the comparator and the arm order), `base_hf` (parity rows; the bf16
   checkpoint), `base_vllm` (the band from MXFP4 on vLLM, the base check, then on the bf16 engine
-  `none` on 132 × 8 and the capability slice), per adapter `hf_<arm>` (parity rows, specificity, the
+  `none` on 132 × 8 and the capability slice), per adapter in the order comparator, `L-anchor`,
+  the other `L-beh` checkpoint, `L-self` (the panel arms first, so a deadline cuts the secondary
+  arms first; flagged) `hf_<arm>` (parity rows, specificity, the
   panel guard on the comparator and `L-anchor`, the merge) and `vllm_<arm>` (parity, 132 × 8,
   capability; checkpoint deleted), `readouts` last. H1_held and capability jobs carry the same seeds
   in every arm (paired), seeds disjoint from T1.1's by stage name. The pod only measures; ΔP, the

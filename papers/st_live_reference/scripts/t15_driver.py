@@ -15,7 +15,7 @@ Order (Amendment 20 item 4):
    ``none`` baseline of record: H1_held 132 x 8 and the capability slice (Amendment 20 item 1). A
    failed base check sends every adapter to HF (item 2) and, so ``none`` shares their engine,
    ``none`` too (``hfgen_none``; the bf16-vLLM rows are kept as ``*.parity_failed.jsonl``).
-4. per adapter (comparator first, then the other L-beh checkpoint, L-anchor, L-self):
+4. per adapter (the comparator, L-anchor, then the other L-beh checkpoint and L-self):
    ``hf_<arm>`` (parity rows, the specificity cell, the panel guard on the 50% subsample for the
    comparator and L-anchor, then the merge saved as bf16) and ``vllm_<arm>`` (parity within band +
    0.05, then H1_held 132 x 8 and capability on the merged engine; the checkpoint deleted);
@@ -129,9 +129,11 @@ def save_record(c: dict, rec: dict) -> None:
 
 
 def arms_order(rec: dict) -> list[str]:
+    """The two panel arms first (the comparator of record, then L-anchor), so a deadline cuts the
+    secondary arms (L-beh's other checkpoint, L-self's descriptive run) before them."""
     comp = (rec["phases"].get("beh_cap") or {}).get("comparator", "beh")
     other = "beh_epoch3" if comp == "beh" else "beh"
-    return [comp, other, "anchor", "self"]
+    return [comp, "anchor", other, "self"]
 
 
 def panel_arms(rec: dict) -> set[str]:

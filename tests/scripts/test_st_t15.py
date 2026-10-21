@@ -48,7 +48,7 @@ def test_comparator_leads_and_only_it_and_anchor_get_the_panel():
     # most probable failure: the panel runs on the step-matched checkpoint after the cap rerun
     # made epoch-3 the comparator, or on L-self (no panel, Amendment 18)
     rec = {"phases": {"beh_cap": _done(comparator="beh_epoch3")}}
-    assert T.arms_order(rec) == ["beh_epoch3", "beh", "anchor", "self"]
+    assert T.arms_order(rec) == ["beh_epoch3", "anchor", "beh", "self"]  # panel arms first
     assert T.panel_arms(rec) == {"beh_epoch3", "anchor"}
     rec = {"phases": {"beh_cap": _done(comparator="beh")}}
     assert T.panel_arms(rec) == {"beh", "anchor"}
