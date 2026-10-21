@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.21, 2026-10-21 (Amendment 21: the merge gate, capability cap, truncation columns, T1.5 author items; v0.2.20 = Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.22, 2026-10-21 (Amendment 22: ST Phase 2 target search, four cells, envelope 56; v0.2.21 = Amendment 21: the merge gate, capability cap, truncation columns, T1.5 author items; v0.2.20 = Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -2234,3 +2234,97 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
 4. **`none` after a failed base check** generates on HF with the adapters, so ΔP never crosses
    engines; the bf16-vLLM rows are kept as a column.
 5. **Price.** The cap rerun's 0.81 A100-h is accepted as an upper bound (Amendment 18 priced 0.3).
+
+### Amendment 22 (2026-10-21; author; zero GPU; committed and pushed before any Phase 2 input is built or computed)
+
+**ST Phase 2, target search.** Four pre-registered cells on GPT-OSS-20B and Muse Glimmer 30B, about
+20 A100-h added to the envelope (36 → 56). Parked: T1.6's Muse adapters and §13's adapter arm
+(`L-self-const`). §13's evaluation stays (the `V_const` overlap read and the constitution-scoped
+family on the unadapted models). Every cell is an inference-time instrument (§5.0): a pass is
+localization and a training target, never the deliverable.
+
+1. **Cell 1, the full-n gate (GPT-OSS).** All 45 brake-engaged H1_train scenarios (T1.1's train
+   selection, `P_dose0 ≥ 0.5 and P_none ≤ 0.5`) × 8 rollouts, fresh seeds (disjoint from every
+   earlier gate by stage name), every arm regenerated: `none`, `fill` (the 267.3 construction, 5
+   draws), `−a` (the anchor axis negated), `care_harm`, and `care_harm ⊥ V_harm` (`care_harm` with
+   its `V_harm` component removed, re-unit-normed), each added at α 267.3 at `clause_end`, block 12.
+   Rule of record §5.0's (ΔP ≥ +0.10 against `none` and ≥ `fill`'s + 0.05) under Amendment 13's
+   coherence bars (relative parse bar). The 20 earlier rows are not pooled: they selected these arms.
+2. **Cell 2, `V_rule` (GPT-OSS).** Twins of the 132 H1_train scenarios with the written approval
+   rule removed and everything else verbatim (options, parties, stakes; zero GPU, generated and
+   checked locally). `V_rule` = the within-scenario mean difference, rule present minus rule absent,
+   of the in-trace residual at `clause_end`, block 12, over the 87 H1_train scenarios outside the
+   engaged 45 (extraction disjoint from evaluation), 4 rollouts per twin member. The intervention
+   on the engaged 45 × 8 is a mean-ablation at `clause_end`, block 12: the residual's component on
+   unit `V_rule` is replaced by the rule-absent twins' mean projection (never zeroed). Controls: a
+   matched random rank-1 projection-out (covariance-matched draw, the same mean-replacement
+   semantics) and `none` (Cell 1's). Beside it, `none` on the 45 rule-absent twins (how far P moves
+   when the rule is gone from the input). **Transport control:** the same ablation at every
+   position of the dose-0 input, block 12, must move the rule-present twins' dose-0 protect
+   probability toward the rule-absent twins' (paired by scenario, CI excluding 0 in that direction);
+   the cosine between the in-trace and the dose-0 `V_rule` is reported (construct constancy).
+   Coherence bars on the ablated traces. **Branches:** P rises (the rule read is load-bearing at this
+   site; `L-suppress` is next, with FL's routing-around risk stated); no change with the transport
+   control passed (the brake is not carried by rule content at this site); P falls (rule content and
+   protective content are entangled at this site). With the transport control failed, no change is
+   uninformative.
+3. **Cell 3, cross-recipe content (GPT-OSS).** Qwen3.8-27B top-up, 45 engaged × 8 on vLLM (~0.3
+   A100-h), beside its 60 × 4 screen. `V_qwen` = Qwen's protect minus rule traces within scenario,
+   each trace's text re-encoded in the subject model (the subject's prompt for the same scenario and
+   letter permutation, the trace in the subject's reasoning channel), at `clause_end`, block 12.
+   `V_oss` = the subject's own within-scenario protect − rule direction at the same site (T1.1's
+   bank; zero GPU). Read: cos(`V_qwen`, `V_oss`) in the subject's space with a scenario-bootstrap CI
+   against a covariance-matched random null at that position (PR recorded): aligned (CI above the
+   null q95) = shared content, a transfer candidate; orthogonal (CI below it) = different content;
+   otherwise unresolved. Writing-style loading reported: `V_qwen`'s cosine with Qwen-protect minus
+   subject-protect re-encoded traces (which model wrote the trace). The gate arm adds `V_qwen`
+   (unit, α 267.3, `clause_end`) on the engaged 45 × 8, read by §5.0's rule against Cell 1's `none`
+   and `fill`.
+4. **Cell 4, Muse.** Baseline at 8 rollouts (T1.1's design: H1 264 × 8 on vLLM, the readout pass,
+   the bank, Muse's own brake-engaged H1_train set), Muse's directions (`V_moral`, `V_harm`, the
+   anchor axis, `care_harm`) at Muse's block of record, then Cells 1-3 on Muse's engaged set with the
+   same arms, α set by the same coherence-gated rule on Muse, and Qwen's traces re-encoded in Muse.
+   Muse's HF generation cost is unmeasured: the Muse pod opens with a one-batch timing pilot and
+   re-prices the cells before they run.
+5. **Program-level branch.** No protect-ward move in the four cells = the brake is not steerable at
+   this site (block 12, `clause_end`) on these models, and the partner deliverable is detection (the
+   regression gate, item 7), not a lever. A protect-ward move in any cell = a training target for the
+   adapter recipe at that site, reported as localization.
+6. **Bail order** (dropped first to last): Muse Cell 3, Muse Cell 2, GPT-OSS Cell 3, GPT-OSS Cell
+   2, Muse Cell 1. Never cut: Muse's baseline and GPT-OSS Cell 1.
+7. **Partner track (pending the partner's answer next week).** A brake screen of the partner's
+   production candidate (Qwen3.8 already screened: no brake, ST-A5; Gemma 4 31B or Nemotron if
+   named) on the T1.0 instrument; OLMo-3-Instruct as the research subject for the stage-ladder and
+   RL-stage cells; the deliverable to the partner is a shaping-round regression gate (does a shaping
+   round install a brake, with twins, specificity and capability guards), not a steering lever.
+   Priced when the candidate is named; not inside the 20.
+
+**Claude's riders (zero GPU; the author keeps or strikes each before the push).**
+- (a) **Protect-ward move, defined.** An arm with ΔP > 0 against `none` and against its matched
+  control (`fill` or the random projection-out), both CIs excluding 0, under the coherence bars.
+- (b) **Multiplicity.** Item 5 is an "any" over ten arms (five per model: `−a`, `care_harm`,
+  `care_harm ⊥ V_harm`, `V_qwen`, the `V_rule` ablation). At one-sided 2.5% each, the chance of at
+  least one spurious protect-ward move under a true null is about 22%. Proposed: item 5's "steerable"
+  reading requires Holm-Bonferroni over the ten arms; per-arm readings stay unadjusted and labelled.
+- (c) **`care_harm ⊥ V_harm` nearly coincides with `care_harm`.** cos(`care_harm`, `V_harm`) = 0.286
+  at block 12, so the projected arm keeps 0.958 of `care_harm`'s direction. Linear prediction for
+  ΔP(⊥) − ΔP(`care_harm`): 0.286 × 0.107 (the `V_harm` arm's rule-ward ΔP) ≈ +0.03, under that
+  paired difference's MDE at 45 (~0.09, from the SD of the −a − +a paired read at n 20). The arm is read on its own against §5.0's rule; the paired
+  difference is descriptive.
+- (d) **Fill margin power.** Measured per-scenario SDs on the T1.3/T1.4 gate (n 20): ΔP vs `none`
+  0.19-0.21, vs `fill` 0.13-0.16. MDE (80% power, two-sided) at 45: 0.078-0.087 against `none`
+  (below the +0.10 bar) and 0.052-0.068 against `fill` (at or above the +0.05 margin; that margin is
+  underpowered at 45).
+
+**Power and price.** GPT-OSS cells at n 45 × 8, MDEs as rider (d); Muse's at its own engaged n
+(MDE scales with sqrt(45 / n)). Gate arms at the T1.3 gate's measured cost (1,089 s per 160 HF
+rollouts + 0.475 s NLL per rollout: 0.73 A100-h per 360). GPT-OSS pod about 7.8 (Cell 1 3.64; Cell
+2 2.41 with the twin traces, bank and transport rows; Cell 3 0.82 with the re-encode; Qwen top-up 0.3; setup and
+loads 0.6); Muse pod about 8.6 at GPT-OSS's per-arm cost (baseline 0.8, directions 0.4, nine arms
+6.6, setup 0.8), to be re-priced from its pilot. Phase 2 about 16.4 of the 20; with T1.6's 5.97
+parked, T1.5's 5.07 and §13's evaluation (~0.5): envelope of record about 44.8 of 56.
+
+**Saved per unit.** Every rollout (ids, parse columns, seeds, trace NLL), per-scenario P per arm,
+the twins and their checks, every direction with its type block (contrast semantics, source,
+position class, layer, model, n, PR, outcome variable, extraction commit), the re-encoded positions
+and residuals, the transport rows, and the pilot timings.
