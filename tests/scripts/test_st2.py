@@ -135,3 +135,34 @@ def test_dry_run_cell1_on_a_tiny_gpt_oss(tmp_path):
     r2 = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT,
                         env={**os.environ, "PYTHONPATH": str(ROOT)})
     assert r2.returncode == 0 and "finished earlier" in r2.stdout
+
+
+def test_rule_twins_are_minimal_and_rule_free():
+    # most probable failure: a twin that still states the written rule (its sentence or a clause
+    # edit missed), a rewrite that adds a fact, or a twin built from a different scenario text
+    import hashlib
+
+    import build_st2_inputs as B
+    import pod_st_screen as P
+
+    tw = json.loads((DATA / "st2_rule_twins_v1.json").read_text())
+    sc = {s["id"]: s for s in json.loads(P.H1_SET.read_text())["scenarios"]}
+    split = json.loads((ROOT / "papers/st_live_reference/split_v1.json").read_text())
+    assert sorted(tw["twins"]) == sorted(split["H1_train"])
+    assert tw["counts"] == {"deleted": 103, "clause_deleted": 7, "rewritten": 22}
+    for sid, v in tw["twins"].items():
+        text, twin = sc[sid]["agent_text"], v["agent_text_twin"]
+        assert hashlib.sha256(text.encode()).hexdigest() == v["sha256_agent_text"]
+        assert not any(s in twin for s in v["agent_rule_spans"]) and "  " not in twin
+        if v["twin_kind"] == "rewritten":
+            assert not B.BANNED.search(v["replacement"])
+            orig = set(B._words(" ".join(v["agent_rule_spans"])))
+            assert all(w in B.FUNCTION or w in orig for w in B._words(v["replacement"])), sid
+        else:  # the twin is the original with the spans and the recorded clause edits removed
+            exp = text
+            for s in v["agent_rule_spans"]:
+                exp = exp.replace(s + " ", "") if s + " " in exp else exp.replace(" " + s, "")
+            for old, new in v["clause_edits"]:
+                exp = exp.replace(old, new)
+            assert exp == twin, sid
+        assert (v["twin_kind"] == "clause_deleted") == bool(v["clause_edits"])
