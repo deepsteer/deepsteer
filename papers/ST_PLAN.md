@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.16, 2026-10-21 (Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.17, 2026-10-21 (Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -1987,3 +1987,21 @@ test.
   is set from the cut value. Held-out monitoring, never selection: every 66 steps, the anchor-axis
   and `care_harm` margins on 16 H1_held traces, the DPO margin on 8 H1_held pairs, the KL on the 16
   reserved sequences (forward only, no gradient, no early stopping).
+
+### Amendment 17 (2026-10-21; author; zero GPU; before the T1.4 inputs are built and before the pod)
+
+1. **Schedule of record.** The proposed `RECIPE` above, confirmed.
+2. **(a) `L-beh` comparator.** `L-beh` trains step-matched (264) and also saves its epoch-3 snapshot
+   from the same run (step ⌈3 × n_pairs / 4⌉; 47 at the 62 training pairs); both are evaluated on
+   H1_held in T1.5. The comparator of record is the stronger of the two on the reserved monitoring
+   scenarios, chosen on the T1.4 pod before any H1_held row exists for either: **implementing
+   reading, flagged for the author**, "stronger" is the protective share P over parsed actions on
+   the reserved 10 × 8 under each checkpoint (HF generation, parser of record; ties go to the
+   step-matched run; ~0.3 A100-h), since the forward-only alternative (the DPO margin) would rest on
+   the reserved set's 4 pairs in 3 scenarios. Only the comparator of record gets the panel in T1.5.
+3. **(b) Monitoring.** On a seeded reserved 10 of the 132 H1_train scenarios (seed 20261021:
+   H1-A-00, -10, -48, -58, H1-B-143, -205, -209, -221, -227, -49), excluded from training (traces
+   and pairs; 62 training pairs remain, above the 40-pair floor); never H1_held.
+4. **(c) Envelope.** Raised to 36 A100-h for the fourth adapter's training; its T1.5 evaluation is a
+   G3 decision. Envelope of record 34.58 of 36 (the gate arms 0.65, the comparator choice ~0.30,
+   T1.5 with `L-beh`'s second checkpoint on H1_held); the fourth adapter, if it trains, adds ~1.0.

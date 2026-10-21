@@ -122,7 +122,7 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
         targets: dict[str, np.ndarray] | None = None, sigma: np.ndarray | None = None,
         max_steps: int = 100, lr: float = 1e-4, grad_accum: int = 1, seed: int = 0,
         eval_fn=None, eval_every: int = 0, lora_rank: int = 16, lora_alpha: int = 32,
-        lora_dropout: float = 0.0,
+        lora_dropout: float = 0.0, eval_at=(),
         allow_empty_kl: bool = False) -> dict:
     """Train one adapter. ``traces``: rows with ``ids``, ``anchor_mask``, ``kl_mask`` and
     ``scenario_id`` (anchor / self); ``pairs``: DPO pairs (beh); ``general``: token sequences for
@@ -169,7 +169,7 @@ def run(model, objective: str, *, layer: int, traces: list[dict] | None = None,
     if objective not in ("beh", "anchor", "self"):
         raise ValueError(objective)
     steps, snaps = OL.train(model, step_loss, max_steps=max_steps, lr=lr, grad_accum=grad_accum,
-                            seed=seed, eval_fn=eval_fn, eval_every=eval_every)
+                            seed=seed, eval_fn=eval_fn, eval_every=eval_every, eval_at=eval_at)
     return {"objective": objective, "layer": layer, "lora": lora, "kl_weight": kl_weight,
             "tau": tau, "dpo_beta": DPO_BETA if objective == "beh" else None,
             "n_traces": len(traces or []), "n_pairs": len(pairs or []), "n_kl_positions": n_kl,

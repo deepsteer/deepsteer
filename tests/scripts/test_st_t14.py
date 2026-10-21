@@ -76,3 +76,11 @@ def test_dry_run_every_phase_on_a_tiny_gpt_oss(tmp_path):
         assert (d / "adapters" / name / "adapter_model.safetensors").exists()
     assert json.loads((d / "adapters" / "self" / "st_adapter.json").read_text())[
         "sidecar"]["sigma_provenance"] is not None
+    # Amendment 17 (a): the epoch-3 snapshot exists and the comparator was chosen on the reserved
+    # scenarios (both checkpoints generated), never on H1_held
+    sel = rec["phases"]["beh"]["comparator_selection"]
+    assert (d / "adapters" / "beh_epoch3" / "adapter_model.safetensors").exists()
+    assert set(sel) >= {"step_matched", "epoch3", "comparator"}
+    held = set(json.loads((ROOT / "papers/st_live_reference/split_v1.json").read_text())["H1_held"])
+    picked = {json.loads(x)["scenario_id"] for x in (d / "gen" / "select_beh_final.jsonl").open()}
+    assert picked and not picked & held

@@ -203,10 +203,12 @@ def train(model: WhiteBoxModel, step_loss: Callable[[int], tuple[torch.Tensor, f
                                                                 float, dict]], *,
           max_steps: int, lr: float = 1e-4, warmup_steps: int = 10, max_grad_norm: float = 1.0,
           grad_accum: int = 1, eval_every: int = 0,
-          eval_fn: Callable[[int], dict] | None = None, seed: int = 0) -> list:
+          eval_fn: Callable[[int], dict] | None = None, seed: int = 0,
+          eval_at: Sequence[int] = ()) -> list:
     """The optimization loop shared by the three objectives: ``step_loss(micro)`` returns
     (total loss, representation term, KL term, info) for one micro-batch; AdamW over the LoRA
-    parameters, linear warm-up then cosine (as ``ChatLoRATrainer``)."""
+    parameters, linear warm-up then cosine (as ``ChatLoRATrainer``). ``eval_fn`` also runs at the
+    steps in ``eval_at`` (a checkpoint taken mid-run, e.g. ST's epoch-3 ``L-beh``)."""
     torch.manual_seed(seed)
     params = [p for p in model.model.parameters() if p.requires_grad]
     opt = torch.optim.AdamW(params, lr=lr, weight_decay=0.01)
@@ -238,7 +240,8 @@ def train(model: WhiteBoxModel, step_loss: Callable[[int], tuple[torch.Tensor, f
         r = [x for x in reps if x is not None]
         steps.append(ObjectiveStep(s, tot / grad_accum, sum(r) / len(r) if r else None,
                                    sum(kls) / len(kls), sched.get_last_lr()[0], info))
-        if eval_fn is not None and eval_every and (s % eval_every == 0 or s == max_steps):
+        if eval_fn is not None and ((eval_every and (s % eval_every == 0 or s == max_steps))
+                                    or s in eval_at):
             model.model.eval()
             snaps.append({"step": s, **eval_fn(s)})
             model.model.train()

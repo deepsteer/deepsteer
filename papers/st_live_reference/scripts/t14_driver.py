@@ -52,7 +52,8 @@ ACTION = {"violating": "protect", "consistent": "rule"}
 # Proposed (author to confirm before the pod): matched optimizer steps across arms
 RECIPE = {"rank": 16, "alpha": 32, "dropout": 0.0, "lr": 1e-4, "warmup": 10, "grad_accum": 4,
           "max_steps": 264, "kl_weight": 1.0, "budget_h": 1.0, "eval_every": 66,
-          "general_train": 1984, "general_monitor": 16, "gradient_checkpointing": True}
+          "general_train": 1984, "general_monitor": 16, "gradient_checkpointing": True,
+          "beh_ckpt_epochs": 3}
 PILOT_MICRO = 3
 SEEDS = {"beh": 101, "anchor": 102, "self": 103, "fourth": 104}
 
@@ -90,7 +91,14 @@ def context(a) -> dict:
          "gate": list(meta["gate"]), "t13": a.t13}
     if a.dry_run:
         c["recipe"].update(max_steps=4, grad_accum=1, eval_every=2, warmup=1, general_train=4,
-                           general_monitor=2, gradient_checkpointing=False)
+                           general_monitor=2, gradient_checkpointing=False, beh_ckpt_epochs=0.3)
+        if "reserved" not in meta:  # three train scenarios with both actions stand in
+            both = {}
+            for r in c["rollouts"]:
+                if r["scenario_id"] in set(c["split"]["H1_train"]):
+                    both.setdefault(r["scenario_id"], set()).add(r.get("norm_status"))
+            meta["reserved"] = sorted(sid for sid, v in both.items()
+                                      if {"violating", "consistent"} <= v)[:3]
         c.update(layer=2, cap=16, batch=8, gate=c["gate"][:2], dry=True)
     return c
 
@@ -151,7 +159,10 @@ def save_record(c: dict, rec: dict) -> None:
 
 # ---- data -----------------------------------------------------------------------------------
 def train_rows(c: dict, split: str = "train") -> list[dict]:
-    ids = set(c["split"][f"H1_{split}"])
+    """``train``: H1_train minus the reserved monitoring scenarios (Amendment 17); ``reserved``:
+    those 10."""
+    res = set(c["meta"]["reserved"])
+    ids = (set(c["split"]["H1_train"]) - res) if split == "train" else res
     rows = [r for r in c["rollouts"] if r["scenario_id"] in ids and r.get("gen_ids")]
     if c.get("dry"):  # a few short rows on the tiny model; the pairs need both actions
         keep = [r for r in rows if r.get("norm_status") in ("violating", "consistent")]
@@ -219,10 +230,10 @@ def monitor_fn(c: dict, wb, held_tr: list[dict], held_pairs: list[dict],
                 hs = h[0][torch.tensor(t["anchor_mask"], device=x.device)].float()
                 for k, v in ax.items():
                     margins[k].append(float(((hs @ v.float()) / hs.norm(dim=-1)).mean()))
-            out.update({f"held_margin_{k}": float(np.mean(v)) for k, v in margins.items()})
+            out.update({f"reserved_margin_{k}": float(np.mean(v)) for k, v in margins.items()})
             dm = [OL.dpo_loss(wb, p["prompt"], p["chosen"], p["rejected"], beta=ST.DPO_BETA)[1]
                   for p in held_pairs]
-            out["held_dpo_margin"] = float(np.mean([d["dpo_margin"] for d in dm])) \
+            out["reserved_dpo_margin"] = float(np.mean([d["dpo_margin"] for d in dm])) \
                 if dm else None
             out["monitor_kl"] = float(np.mean([float(OL.kl_general(wb, s)) for s in gen_mon]))
         return out
@@ -284,11 +295,11 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
 
 
     rc = c["recipe"]
-    rows_tr, rows_held = train_rows(c, "train"), train_rows(c, "held")
+    rows_tr, rows_res = train_rows(c, "train"), train_rows(c, "reserved")
     gen_tr, gen_mon = general(c, a)
     rng = np.random.default_rng(SEEDS[name])
-    held_tr = traces(c, [rows_held[i] for i in rng.permutation(len(rows_held))[:16]])
-    held_pairs = pairs(rows_held)[0][:8]
+    held_tr = traces(c, [rows_res[i] for i in rng.permutation(len(rows_res))[:16]])
+    held_pairs = pairs(rows_res)[0]
     probe = gen_mon[0]
     base_logits = _probe_logits(wb, probe)
     objective = {"beh": "beh", "anchor": "anchor", "self": "self", "fourth": "anchor"}[name]
@@ -331,8 +342,23 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
     fit = int(rc["budget_h"] * 3600 / max(per_step, 1e-9))
     steps = min(rc["max_steps"], max(fit, 1))
     t0 = time.time()
-    res = ST.run(wb, objective, max_steps=steps, eval_every=rc["eval_every"],
-                 eval_fn=monitor_fn(c, wb, held_tr, held_pairs, gen_mon), **kw)
+    mon = monitor_fn(c, wb, held_tr, held_pairs, gen_mon)
+    ckpt_step = None
+    if objective == "beh":  # Amendment 17 (a): the epoch-3 snapshot of the step-matched run
+        ckpt_step = int(np.ceil(rc["beh_ckpt_epochs"] * len(pr) / rc["grad_accum"]))
+        if ckpt_step >= steps:
+            ckpt_step = None  # the run ends before epoch 3: only the final adapter exists
+
+    def eval_fn(step: int) -> dict:
+        out = mon(step)
+        if ckpt_step is not None and step == ckpt_step:
+            e3 = c["out"] / "adapters" / "beh_epoch3"
+            e3.mkdir(parents=True, exist_ok=True)
+            wb.model.save_pretrained(str(e3))
+            out["saved"] = str(e3)
+        return out
+    res = ST.run(wb, objective, max_steps=steps, eval_every=rc["eval_every"], eval_fn=eval_fn,
+                 eval_at=[ckpt_step] if ckpt_step else (), **kw)
     adir = c["out"] / "adapters" / name
     sidecar = {"arm": name, "objective": objective, "layer_hidden_index": c["layer"],
                "class": c["cls"], "tau": tau, "axis": axis_name, "recipe": rc,
@@ -341,10 +367,12 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
                "n_traces": len(tr) if tr else None,
                "sigma_provenance": c["meta"].get("chat_sigma_provenance") if sigma is not None
                else None, "inputs_sha256": c["meta"].get("sha256")}
+    sidecar["epoch3_step"] = ckpt_step
     ST.save_adapter(wb, adir, res, sidecar)
-    wb._model = wb.model.unload()  # noqa: SLF001  the base without any adapter
     if rc["gradient_checkpointing"]:
         wb.model.gradient_checkpointing_disable()
+    select = beh_select(c, sc, wb, a, adir, ckpt_step) if objective == "beh" else None
+    wb._model = wb.model.unload()  # noqa: SLF001  the base without any adapter
     drift = float((_probe_logits(wb, probe) - base_logits).abs().max())
     same = drift <= 1e-3
     if not same:
@@ -352,7 +380,45 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
     return {"status": "ok", "objective": objective, "axis": axis_name, "tau": tau,
             "max_steps_run": steps, "pilot": pilot, "train_seconds": time.time() - t0,
             "final": res["steps"][-1] if res["steps"] else None, "monitor": res["eval"],
-            "adapter_dir": str(adir), "base_unchanged": same, "base_drift_max_abs": drift}
+            "adapter_dir": str(adir), "base_unchanged": same, "base_drift_max_abs": drift,
+            "epoch3_step": ckpt_step, "comparator_selection": select}
+
+
+def beh_select(c, sc, wb, a, adir: Path, ckpt_step: int | None) -> dict:
+    """Amendment 17 (a): the comparator of record is whichever L-beh checkpoint (step-matched
+    final, epoch 3) has the higher protective share P on the reserved scenarios x 8 (generation,
+    parser of record); ties go to the step-matched run. Chosen here, before any H1_held row exists
+    for either adapter."""
+    import t13_driver as T13
+    from peft.utils import set_peft_model_state_dict
+    from safetensors.torch import load_file
+
+    jobs = L.h1_jobs(sc, c["H"], c["meta"]["reserved"], 8)
+    import zlib
+
+    seeds = [zlib.crc32(f"t14sel|{j['s'].id}|{j['k']}".encode()) % (2**31) for j in jobs]
+
+    def p_of(tag: str) -> dict:
+        rows = SG.generate(_Gen(wb), [j["ids"] for j in jobs], fmt=c["fmt"], cap=c["cap"],
+                           seeds=seeds, batch=c["batch"],
+                           on_finish=SG.jsonl_saver(c["out"] / "gen" / f"select_{tag}.raw.jsonl"))
+        parsed = L.build_rows(sc, jobs, [r["gen_ids"] for r in rows], seeds, cap=c["cap"],
+                              stage="t14_select", engine="hf_adapter")
+        sc.save_jsonl(f"gen/select_{tag}.jsonl", parsed)
+        ps = T13.p_by_scenario(parsed)
+        return {"P": float(np.mean(list(ps.values()))) if ps else None, "n_scenarios": len(ps),
+                "parse_rate": float(np.mean([r["letter"] is not None for r in parsed]))}
+    out = {"step_matched": p_of("beh_final")}
+    if ckpt_step is not None:
+        e3 = c["out"] / "adapters" / "beh_epoch3"
+        set_peft_model_state_dict(wb.model, load_file(str(e3 / "adapter_model.safetensors")))
+        out["epoch3"] = p_of("beh_epoch3")
+        set_peft_model_state_dict(wb.model, load_file(str(adir / "adapter_model.safetensors")))
+    pf, pe = out["step_matched"]["P"], (out.get("epoch3") or {}).get("P")
+    out["comparator"] = ("epoch3" if pe is not None and pf is not None and pe > pf
+                         else "step_matched")
+    out["rule"] = "Amendment 17 (a): higher P on the reserved scenarios; ties to step-matched"
+    return out
 
 
 def phase_beh(c, sc, wb, rec, a) -> dict:

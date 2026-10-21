@@ -13,13 +13,16 @@ Writes ``outputs/t14_inputs/gpt_oss_20b/t14_inputs.npz`` + ``.json`` (synced to 
   equal ``data/t14_tau_v1.json``'s (0.0589), the other two are Amendment 16's;
 - ``chat_sigma`` at hidden index 13 and the ``self`` targets (the judgment-frame residual at
   END_OF_PROMPT, block 12, per H1_train scenario), with their provenance;
-- the gate's 20 scenarios (``data/t13_draw_v1.json``).
+- the gate's 20 scenarios (``data/t13_draw_v1.json``);
+- the reserved monitoring scenarios (Amendment 17 (b)): 10 of the 132 H1_train, seed 20261021,
+  excluded from training.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import random
 import sys
 from pathlib import Path
 
@@ -34,6 +37,7 @@ DATA = HERE.parent / "data"
 MFT = (HERE.parents[1] / "d3_decision_anatomy" / "outputs" / "w4" / "gpt_oss_20b"
        / "mft_directions.npz")
 OUT = HERE.parent / "outputs" / "t14_inputs" / "gpt_oss_20b"
+RESERVED_SEED = 20261021
 
 
 def unit(v) -> np.ndarray:
@@ -77,11 +81,16 @@ def main() -> None:
     sigma = np.load(d / "readout" / "chat_sigma_h13.npy").astype(np.float32)
     rec = json.loads((d / "t11_record.json").read_text())
     draw = json.loads((DATA / "t13_draw_v1.json").read_text())
+    split = json.loads((HERE.parent / "split_v1.json").read_text())
+    reserved = sorted(random.Random(RESERVED_SEED).sample(sorted(split["H1_train"]), 10))
     OUT.mkdir(parents=True, exist_ok=True)
     np.savez(OUT / "t14_inputs.npz", **axes, chat_sigma=sigma, self_ids=np.array(jrows),
              self_src=jz["resid_eop"][:, CR.L_STAR_SLOT].astype(np.float32))
     meta = {"rule": "ST_PLAN Amendments 14 and 16", "layer": "block 12 (hidden index 13)",
             "class": "clause_end", "tau": tau, "gate": draw["gate"],
+            "reserved": reserved, "reserved_seed": RESERVED_SEED,
+            "reserved_rule": "Amendment 17 (b): 10 of the 132 H1_train scenarios, seeded, "
+                             "excluded from training; monitoring and L-beh's comparator choice",
             "chat_sigma_provenance": rec["phases"]["h"]["chat_sigma"]["13"],
             "self_target": "judgment-frame residual, END_OF_PROMPT before the prefill, block 12, "
                            "jl_chat_neutral, one per H1_train scenario (T1.1)",

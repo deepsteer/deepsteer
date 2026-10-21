@@ -37,7 +37,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import screen_lib as L  # noqa: E402
 
-ENVELOPE = 35.0
+ENVELOPE = 36.0  # raised from 35 for the fourth adapter's training (author, 2026-10-21)
 BRAKE_HELD, BRAKE_SECOND = 65, 50
 # all five letter cells at dose 0, eight permutations: the four E cells plus the known-gap band,
 # which every arm reads by default (author, 2026-10-19; skipping it on non-headline adapters is
@@ -55,6 +55,9 @@ T11_DOSE0_S = {"gpt_oss_20b": 840.0 / 2112}
 # evaluation (2026-10-19; earlier re-prices counted the adapters' panels only)
 # (Amendment 11: GPT-OSS's `none` panel runs on the T1.3 pod, priced there; same total)
 T15_PANELS, T16_PANELS = 3, 2 + 1
+# Amendment 17 (a): L-beh's two checkpoints are both evaluated on H1_held; only the comparator of
+# record gets the panel
+T15_H1_ARMS = 4
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
 # (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
 # --session-h defaults to the pod's session_start/session_end timestamps)
@@ -282,10 +285,12 @@ def price(m: dict) -> dict:
         "T1.4 training (3 adapters)": FIXED["T1.4 training (3 adapters)"],
         "T1.4 pod: Amendment 16's two gate arms (+care_harm, +V_harm at 267.3)":
             (2 * (1089 + 160 * 0.475) / 3600, "the T1.3 gate's measured arm cost"),
-        "T1.5 generation 132 x 8 x 3 + none re-run (vLLM)":
-            (gen_h(m, 132 * 8 * 3 + BRAKE_HELD * 8), "measured"),
-        "T1.5 readouts (post-reasoning x 3 + panel dose-0 x 3 adapters at branch A)":
-            (read_h(m, 132 * 8 * 3, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
+        "T1.4 pod: L-beh's comparator choice (2 checkpoints x reserved 10 x 8, HF)":
+            (2 * 1089 / 3600 * 0.5 + 0.0, "estimate: half a 160-rollout gate batch each"),
+        "T1.5 generation 132 x 8 x 4 (L-beh's two checkpoints) + none re-run (vLLM)":
+            (gen_h(m, 132 * 8 * T15_H1_ARMS + BRAKE_HELD * 8), "measured"),
+        "T1.5 readouts (post-reasoning x 4 + panel dose-0 x 3 adapters at branch A)":
+            (read_h(m, 132 * 8 * T15_H1_ARMS, t) + read_h(m, PANEL_ROWS * T15_PANELS), rb),
         "T1.5 capability + specificity + Heretic": FIXED["T1.5 capability + specificity + Heretic"],
         "T1.5 refusal-retention (Amendment 10: none^re + 3 adapters x 360 x 4)":
             rr_h(m, RR_PROMPTS, 4, 4),
@@ -308,13 +313,14 @@ def price(m: dict) -> dict:
         for k in [k for k in dev if k.startswith("T1.1")]:
             dev[k] = (0.0, "done (T1.1 pod; in the spend)")
         k5 = next(k for k in dev if k.startswith("T1.5 generation"))
-        dev[k5] = (gen_h(m, 132 * 8 * 3), "measured (none re-run done in T1.1 v2)")
+        dev[k5] = (gen_h(m, 132 * 8 * T15_H1_ARMS), "measured (none re-run done in T1.1 v2)")
         d0 = dose0_rate(m)
         if d0 is not None:  # T1.1's rate is per rollout including the trace: no length rescale
             r_post = m["rec"]["single_row_read_s"]
             kr = next(k for k in dev if k.startswith("T1.5 readouts"))
             frac = BRANCH_A.get(m["model"], 1.0)
-            dev[kr] = (132 * 8 * 3 * r_post / 3600 + PANEL_ROWS * T15_PANELS * frac * d0[0] / 3600,
+            dev[kr] = (132 * 8 * T15_H1_ARMS * r_post / 3600
+                       + PANEL_ROWS * T15_PANELS * frac * d0[0] / 3600,
                        f"post-reasoning {r_post:.3f} s/rollout + panel dose-0 {d0[0]:.3f} s/row "
                        f"({d0[1]})")
             kn = next(k for k in dev if k.startswith("`none` panel"))
@@ -415,7 +421,8 @@ def main() -> int:
                 lines.append(f"| {row} | {h:.2f} | {cum:.2f} | {basis} |")
             lines += [f"| **total** | **{p[role + '_total']:.2f}** | **{cum:.2f}** | |", ""]
     lines += ["## Envelope by role assignment (spent + development + second family)", "",
-              "| development | second family | total A100-h | within 35 |", "|---|---|---|---|"]
+              f"| development | second family | total A100-h | within {ENVELOPE:g} |",
+              "|---|---|---|---|"]
     for dev in models:
         for sec in models:
             if sec != dev:
