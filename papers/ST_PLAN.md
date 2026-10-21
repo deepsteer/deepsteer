@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.19, 2026-10-21 (Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.20, 2026-10-21 (Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -2127,3 +2127,38 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
    Readout: generation at the effort of record and the trace cap of record, the final answer parsed
    (GSM8K: the last number, exact match; MMLU: the letter); bar: accuracy within −0.02 of the
    unadapted model on the same items. The 100-item fallback is the first 50 of each.
+
+### Amendment 20 (2026-10-21; author; zero GPU; before the T1.5 pod)
+
+1. **Baseline of record for T1.5's ΔP:** the unadapted model saved as a bf16 checkpoint (the HF
+   stack's dequantized weights, `quantization_config` removed) and served on vLLM, so `none` and the
+   merged adapters share engine and precision. One `none` run on all 132 H1_held × 8 (seeds disjoint
+   from T1.1's) gives `P_none^re` on the 38 engaged scenarios (Amendment 1: independent of the
+   selecting sample) and the brake on all 132; the same engine gives capability's baseline. The
+   MXFP4 re-run (T1.1 v2) is kept as a column, and bf16 − MXFP4 on `none` is reported as the
+   precision effect.
+2. **Parity gates (relative).** On 64 dose-0 rows (`dl_chat_neutral`, the 20 gate scenarios × the
+   first 3-4 permutations, H1_train): the engine band = mean total-variation distance between letter
+   distributions, MXFP4 on vLLM vs the HF stack (bf16). **Base check, read first:** the bf16
+   unadapted checkpoint on vLLM vs the HF stack within the band + 0.05; if it fails, no adapter
+   parity is read and every adapter goes to HF under Amendment 18 item 4. **Per adapter:** the merged
+   checkpoint on vLLM vs the HF stack with the adapter attached within the band + 0.05; a failing
+   adapter goes to HF under Amendment 18 item 4.
+3. **Post-reasoning readouts.** On a seeded 2 of 8 rollouts per H1_held scenario per adapter (HF,
+   adapter attached, single-row): the anchor-axis margin at `clause_end`, block 12, as `L-anchor`'s
+   transport control of record, and the post-reasoning letter (~0.15 A100-h), outside the bail
+   order. Full banking of every rollout is last in the bail order.
+4. **Sequencing.** `L-beh`'s cap-4,096 rerun first (it decides the comparator); then the unadapted
+   HF phase (parity rows; the bf16 checkpoint saved) and the vLLM base phase (band, base check,
+   `none` generation, capability baseline); then per adapter an HF phase (parity rows, specificity,
+   the panel guard where it applies, the merge) and a vLLM phase (parity, H1_held × 8, capability),
+   each merged checkpoint deleted after use; the post-reasoning readouts last.
+5. **Specificity's `none` rows (correction, flagged).** The author approved a bf16 re-read of these
+   rows on the HF stack, on Claude's statement that they were MXFP4. They are not: the HF stack of
+   record loads GPT-OSS dequantized to bf16, so T1.3c's `none` panel (`dl_chat_neutral`, single-row,
+   reproduced to every digit across two pods) is already the instrument the adapters' specificity
+   reads use. The plan reuses those rows and drops the re-read (0.05 A100-h); the author can restore
+   it.
+6. **Panel guard's 50% subsample** (Amendment 11 branch A), drawn before the pod: 293 of the 586
+   panel scenarios, seed 20261021, stratified by family; the comparator of record and `L-anchor`
+   only (`L-self` has no panel, Amendment 18; `L-beh`'s other checkpoint none, Amendment 17).
