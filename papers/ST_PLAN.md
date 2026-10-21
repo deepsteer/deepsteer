@@ -2028,3 +2028,23 @@ GPT-OSS in opposite directions, each apart from the matched random direction: th
 direction-specific result. `care_harm` is the first anchoring target to move P toward protection,
 below the +0.10 bar. `V_harm` moves P toward the rule although its constancy sign put protect above
 rule (ST-A12).
+
+#### T1.4 outcome, the three adapters (2026-10-22; pod byr26tsrjyh66q; `outputs/t14/gpt_oss_20b/adapters/`)
+
+| arm | optimizer steps (of 264) | pilot s / micro | train h | final rep. term | final KL | reserved monitor at the end |
+|---|---|---|---|---|---|---|
+| `L-beh` (DPO) | 58 (epoch-3 snapshot at 47) | 15.4 | 1.85 (incl. comparator generation) | — | 0.029 | DPO margin 24.8; anchor-axis margin 0.037 |
+| `L-anchor` (τ 0.0589) | 83 | 10.8 | 0.92 | 0.0006 | 0.017 | anchor-axis margin 0.041 → 0.097; `care_harm` 0.082 → 0.097; DPO margin −0.52; general KL 0.020 |
+| `L-self` (σ at block 12) | 89 | 10.0 | 0.92 | 3.006 | 1.212 | anchor-axis margin 0.045 → 0.063; DPO margin −41.0; general KL 0.35 |
+
+Every arm's pilot cut `max_steps` to fit the 1.0 A100-h budget (Amendment 17's fallback), so the
+arms are not step-matched (58 / 83 / 89). `L-beh`'s pilot under-projected its time by about 1.35×;
+the representation arms' pilots were accurate. Base logits returned within 1e-3 after each unload.
+All four adapters (with `beh_epoch3`) downloaded and match the mid-session copies byte for byte.
+`L-beh`'s comparator of record is the step-matched checkpoint by the addendum's default (reserved P
+1.0 for both, difference CI [0, 0]); its reserved rollouts truncate at half the rate of none's
+completions (ST-A13). `L-self` moved the model on general text 17× as far as `L-anchor` and left its
+own objective far from met (ST-A14). Spent 22.84 A100-h; envelope of record 35.33 of 36.
+**For T1.5's build:** adapted generation on vLLM needs either LoRA on GPT-OSS's expert tensors or a
+merged bf16 checkpoint vLLM can load (ST-A7's fold validation loaded a modified checkpoint); HF
+generation of the 4,224 adapted rollouts would cost several A100-h more than the 0.07 priced.

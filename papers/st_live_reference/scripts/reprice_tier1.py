@@ -71,7 +71,9 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "T1.3 pod (t13; timestamps; sweep, gate, transport; rerun lost, panel moved)": 2.35,
          "T1.3b pod (lsb4193stzic9k; estimate 16:59-20:35 UTC + 0.1; rerun done, panel read "
          "but lost in the download)": 3.7,
-         "T1.3c pod (z28p9cbnwvvo58; timestamps; reversed-axis arm, none panel of record)": 3.24}
+         "T1.3c pod (z28p9cbnwvvo58; timestamps; reversed-axis arm, none panel of record)": 3.24,
+         "T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters)": 4.70}
+T14_DONE = {"gpt_oss_20b"}  # T1.4's rows ran on the T1.4 pod (no fourth adapter: no arm passed)
 # what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
 # rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
 # generation plus 320 single-row NLL forwards at 0.475 s
@@ -336,6 +338,9 @@ def price(m: dict) -> dict:
                 extra = (1000 * r_post + 20 * 8 * 3 * d0[0]) / 3600
                 dev[kg] = (dev[kg][0] + extra, f"{dev[kg][1]} + {extra:.2f} coherence NLL and "
                                                "transport forwards (single-row)")
+        if m["model"] in T14_DONE:
+            for k in [k for k in dev if k.startswith("T1.4")]:
+                dev[k] = (0.0, "done (T1.4 pod; in the spend)")
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")

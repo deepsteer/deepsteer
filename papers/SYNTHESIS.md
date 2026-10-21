@@ -1232,3 +1232,12 @@ so no fourth adapter trains. `V_harm` runs against its own correlational sign (S
 traces discuss harm, while adding harm salience pushes the model toward the rule. The three
 pre-registered adapters are training now.
 
+**T1.4 (2026-10-22), what changed.** The three pre-registered adapters exist for GPT-OSS-20B, each
+cut by the budget fallback (58 / 83 / 89 of 264 steps). `L-anchor` met its objective on held-out
+traces (anchor-axis margin 0.041 → 0.097, general KL 0.020) and nudged the reserved preference
+toward rule traces (DPO margin −0.52), the direction ST-A11's salience reading predicts.
+`L-beh` overfit its 62 pairs (margin 44): on reserved scenarios it protects whenever it finishes
+and truncates half its rollouts at the cap (ST-A13). `L-self` moved the model off-distribution
+(general KL 0.35) and strongly toward rule traces (reserved DPO margin −41) without meeting its own
+objective (ST-A14). T1.5 tests all of this on H1_held. Spent 22.84 A100-h; envelope 35.33 of 36.
+
