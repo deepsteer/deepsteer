@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.17, 2026-10-21 (Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.18, 2026-10-21 (Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -2048,3 +2048,29 @@ own objective far from met (ST-A14). Spent 22.84 A100-h; envelope of record 35.3
 **For T1.5's build:** adapted generation on vLLM needs either LoRA on GPT-OSS's expert tensors or a
 merged bf16 checkpoint vLLM can load (ST-A7's fold validation loaded a modified checkpoint); HF
 generation of the 4,224 adapted rollouts would cost several A100-h more than the 0.07 priced.
+
+### Amendment 18 (2026-10-21; author; zero GPU; committed and pushed before the L-self checks and before the T1.5 build)
+
+1. **Gate (recorded).** The reading "neither" stands. `care_harm` − `fill` (+0.076 [+0.008,
+   +0.146]) is the one direction-specific protective signal at the gate: a near miss on the
+   absolute bar (ΔP +0.048 against +0.10), not upgraded.
+2. **`L-self` checks (zero GPU) and rule.** (i) σ-dominance: the self loss at initialization,
+   Σ_d ((h_d − t_d) / σ_d)² averaged over the T1.1 bank's H1_train `clause_end` positions at block 12
+   against each scenario's target t, decomposed by dimension; (ii) target norm: the median
+   judgment-frame target norm against the band of `clause_end` residual norms at block 12 (5th–95th
+   percentile over the same positions); (iii) descriptive, ST-A14 R_c: where the targets sit on the
+   within-scenario protect − rule mean-difference direction at `clause_end`, relative to the protect
+   and rule means. **Rule:** the top 1% of dimensions (29 of 2,880) carrying more than 50% of the loss
+   in (i), or the median target norm outside the band in (ii) → instrument failure: `L-self`'s
+   H1_held generation is descriptive only, it gets no panel, and a σ-floored retrain is deferred.
+   Otherwise `L-self` is evaluated as trained.
+3. **`L-beh` cap rerun.** The step-matched checkpoint (the comparator of record) on the reserved
+   10 × 8 at cap 4,096 (~0.3 A100-h, before any T1.5 panel forward). "Finishes" = truncation ≤ 5%
+   (Amendment 4's flag); finishes and protects → a cap problem (the comparator stands; T1.5's cap for
+   it is an author item); does not finish → termination is broken and the epoch-3 checkpoint is the
+   comparator of record by default. Protective share over parsed actions and truncation are both
+   reported.
+4. **T1.5 generation path.** A zero-GPU check of a merged bf16 checkpoint on vLLM comes first. If HF
+   generation is required, T1.5 is scoped to H1_held ΔP, specificity and capability for every
+   adapter, and the panel guard on the headline adapter only.
+5. **Envelope.** Holds at 36. T1.6, and anything over the headroom, go to G3 with numbers.
