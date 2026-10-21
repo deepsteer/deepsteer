@@ -1214,3 +1214,12 @@ to a Tier 2 carrier. The reversed-axis arm left ST-A11 unresolved by its rule (Î
 +0.084 [âˆ’0.007, +0.177], n 20), pointing the same way as the dose step. T1.3 is complete at 18.14
 A100-h spent; envelope of record 33.47 of 35.
 
+**Foundation constancy read (2026-10-21), what changed.** Positive voice first: **in GPT-OSS-20B's
+own deliberation, the clause ends of protective traces carry more care/harm, fairness and sanctity
+content than the rule-following traces of the same scenario (care/harm +0.0068 [+0.0038, +0.0098],
+0.77 within-scenario SD), while the anchor axis, a different construct near-orthogonal to all six
+foundation axes, runs the other way.** Harm content carries part of the care/harm separation
+(`V_harm` +0.0109; care/harm without it +0.0039 [+0.0009, +0.0066]). By Amendment 15's rule a
+care gate arm on `care_harm` rides the T1.4 pod as target selection for a later adapter; the three
+pre-registered adapters are unchanged. Correlational localization only; the arm is the causal test.
+

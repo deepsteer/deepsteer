@@ -1904,3 +1904,29 @@ timestamps), T1.3 and the panel done; envelope of record **33.47 of 35**.
    `none` rows and the 267.3 `fill` (reused), §5.0's rule under Amendment 13's coherence bars. It is
    target selection for a later adapter; the three T1.4 adapters are unchanged. Otherwise no arm,
    and the table is reported.
+
+#### Amendment 15 outcome, the foundation constancy read (2026-10-21; zero GPU; `data/t15_foundation_read_v1.json`)
+
+Within-scenario protect − rule at block 12, 40 mixed-outcome H1_train scenarios:
+
+| axis | `clause_end` | `onset` | cos anchor axis | cos V_harm |
+|---|---|---|---|---|
+| `care_harm` | **+0.0068 [+0.0038, +0.0098]** | −0.0029 [−0.0076, +0.0019] | +0.10 | +0.29 |
+| `fairness_cheating` | +0.0036 [+0.0003, +0.0069] | −0.0032 [−0.0080, +0.0016] | +0.09 | +0.23 |
+| `sanctity_degradation` | +0.0058 [+0.0029, +0.0088] | −0.0027 [−0.0062, +0.0009] | +0.04 | +0.25 |
+| `liberty_oppression` | +0.0013 [−0.0019, +0.0045] | −0.0052 [−0.0097, −0.0010] | +0.09 | +0.26 |
+| `loyalty_betrayal` | +0.0021 [−0.0018, +0.0058] | −0.0051 [−0.0096, −0.0006] | +0.08 | +0.22 |
+| `authority_subversion` | −0.0004 [−0.0045, +0.0037] | −0.0070 [−0.0129, −0.0011] | +0.13 | +0.15 |
+
+At clause ends three foundation axes put protect above rule (care/harm, fairness, sanctity) and
+none puts rule above protect; at `onset` every point is negative, with liberty, loyalty and
+authority excluding 0. The anchor axis, near-orthogonal to all six (cos 0.04–0.13; `care_harm` sits
+outside `V_care`, cos −0.02 and −0.11 with its two rows), runs the other way (−0.0024, T1.2).
+Scale: `care_harm`'s difference is 0.77 within-scenario SD (anchor axis 0.37). **Rule (item 3):
+fires.** One `care` gate arm on `care_harm` rides the T1.4 pod (+`care_harm` at `clause_end`, block
+12, α 267.3, against the gate's `none` and 267.3 `fill` rows; ~0.35 A100-h); the three adapters are
+unchanged. Exploratory, descriptive: `V_harm` itself separates protect above rule at clause ends,
++0.0109 [+0.0081, +0.0138], and `care_harm` with `V_harm` projected out keeps +0.0039 [+0.0009,
++0.0066] (57% of its value), so harm content carries part of the `care_harm` separation and not
+all of it. All of this is correlational localization (Amendment 1's scope); the arm is the causal
+test.

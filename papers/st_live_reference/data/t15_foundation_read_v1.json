@@ -1,0 +1,162 @@
+{
+ "rule": "ST_PLAN Amendment 15 items 2-3",
+ "layer": "block 12 (hidden index 13)",
+ "table": {
+  "care_harm": {
+   "cos_anchor_axis": 0.09740344434976578,
+   "cos_V_harm_t_inst": 0.2858735918998718,
+   "onset": {
+    "mean": -0.0029243927009935905,
+    "ci95": [
+     -0.0076384748978399865,
+     0.0019059885616251617
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.006817473899617963
+   },
+   "clause_end": {
+    "mean": 0.006833940325639163,
+    "ci95": [
+     0.0037977763811845285,
+     0.009785098336052733
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.004276658539191574
+   },
+   "separates_clause_end": "protect above rule"
+  },
+  "fairness_cheating": {
+   "cos_anchor_axis": 0.0862758606672287,
+   "cos_V_harm_t_inst": 0.2321741282939911,
+   "onset": {
+    "mean": -0.003195117292094178,
+    "ci95": [
+     -0.007970552026296944,
+     0.0015987951968443601
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.006835248016529503
+   },
+   "clause_end": {
+    "mean": 0.0036405666854323975,
+    "ci95": [
+     0.00025380314304337,
+     0.006913763395143705
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.004757114465785953
+   },
+   "separates_clause_end": "protect above rule"
+  },
+  "liberty_oppression": {
+   "cos_anchor_axis": 0.09473763406276703,
+   "cos_V_harm_t_inst": 0.25739505887031555,
+   "onset": {
+    "mean": -0.005198366419737423,
+    "ci95": [
+     -0.009651275508055866,
+     -0.0009711910063301103
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.00620006035837554
+   },
+   "clause_end": {
+    "mean": 0.0013202066404267962,
+    "ci95": [
+     -0.001933435259945036,
+     0.00452183061808813
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.0046109041985951185
+   },
+   "separates_clause_end": "no"
+  },
+  "loyalty_betrayal": {
+   "cos_anchor_axis": 0.08443661034107208,
+   "cos_V_harm_t_inst": 0.22486649453639984,
+   "onset": {
+    "mean": -0.005080712564762624,
+    "ci95": [
+     -0.009604087790896531,
+     -0.0006147428385071274
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.006420960680278145
+   },
+   "clause_end": {
+    "mean": 0.002071795624693952,
+    "ci95": [
+     -0.0017588765147594308,
+     0.00581202337473047
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.005407785635349929
+   },
+   "separates_clause_end": "no"
+  },
+  "authority_subversion": {
+   "cos_anchor_axis": 0.127266526222229,
+   "cos_V_harm_t_inst": 0.15484052896499634,
+   "onset": {
+    "mean": -0.006961483708786081,
+    "ci95": [
+     -0.012901393178600028,
+     -0.001130366230129899
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.008407876391764378
+   },
+   "clause_end": {
+    "mean": -0.00044566962572785575,
+    "ci95": [
+     -0.004541012955578778,
+     0.003678694621732475
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.005871219698079467
+   },
+   "separates_clause_end": "no"
+  },
+  "sanctity_degradation": {
+   "cos_anchor_axis": 0.04103824868798256,
+   "cos_V_harm_t_inst": 0.2482261061668396,
+   "onset": {
+    "mean": -0.0027351101733271085,
+    "ci95": [
+     -0.006243564666588864,
+     0.0008544130505299159
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.005069984083656272
+   },
+   "clause_end": {
+    "mean": 0.005796914598741511,
+    "ci95": [
+     0.0028582855687915025,
+     0.00875418723712141
+    ],
+    "n": 40,
+    "point_in_ci": true,
+    "mde": 0.004211358334521362
+   },
+   "separates_clause_end": "protect above rule"
+  }
+ },
+ "rule_axis": "care_harm",
+ "care_arm_added": true,
+ "inputs": {
+  "mft_directions_sha256": "06ed4f26d82428762eddb5adb4c8e465c886bd39741130efb76189c24a2eaa5f",
+  "directions_sha256": "c17fca7a4e8539a560b42a2c381864d2aed02b48f9d6abb9c02aaff5e81d7e84"
+ }
+}
