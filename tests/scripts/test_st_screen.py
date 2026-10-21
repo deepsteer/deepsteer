@@ -581,11 +581,16 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
          "hf_batch": None, "load_h": 0.01, "elapsed_h": 0.5,
          "rec": {"single_row_read_s": 0.5, "dose0_read_s": 0.4}}
     p = RP.price(m)
-    kr = next(k for k in p["development"] if k.startswith("T1.5 readouts"))
-    # 3 adapter panels at Amendment 11's branch-A subsample (provisional call A on GPT-OSS)
-    want = (132 * 8 * RP.T15_H1_ARMS * 0.5 + RP.PANEL_ROWS * RP.T15_PANELS
-            * RP.BRANCH_A["gpt_oss_20b"] * 0.4) / 3600
+    kr = next(k for k in p["development"] if k.startswith("T1.5 HF reads"))
+    # Amendment 20: readouts on 2 of 8 rollouts for none and 4 adapters; 2 adapter panels at
+    # Amendment 11's branch-A subsample, parity and specificity rows, all at the dose-0 rate
+    want = (132 * 2 * (RP.T15_H1_ARMS + 1) * 0.5 + (RP.T15_PARITY_ROWS + RP.T15_SPEC_ROWS
+            + RP.PANEL_ROWS * RP.T15_PANELS * RP.BRANCH_A["gpt_oss_20b"]) * 0.4) / 3600
     assert abs(p["development"][kr][0] - want) < 1e-9
+    kg = next(k for k in p["development"] if k.startswith("T1.5 generation"))
+    # none's bf16 run is owed again (Amendment 20), with capability, at twice the MXFP4 time
+    assert abs(p["development"][kg][0] - 2 * RP.gen_h(m, (132 * 8 + 200) * 5)) < 1e-9
+    assert not any(k.startswith("T1.5 readouts") for k in p["development"])
     kn = next(k for k in p["development"] if k.startswith("`none` panel"))
     # GPT-OSS's none panel of record ran on the T1.3c pod: done, priced at 0, never re-owed
     assert p["development"][kn][0] == 0.0 and p["development"][kn][1].startswith("done")

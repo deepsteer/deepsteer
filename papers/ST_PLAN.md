@@ -2162,3 +2162,55 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
 6. **Panel guard's 50% subsample** (Amendment 11 branch A), drawn before the pod: 293 of the 586
    panel scenarios, seed 20261021, stratified by family; the comparator of record and `L-anchor`
    only (`L-self` has no panel, Amendment 18; `L-beh`'s other checkpoint none, Amendment 17).
+
+#### T1.5 pod build (2026-10-21; Amendments 17-20; zero GPU until launch)
+
+- **`scripts/t15_driver.py`**: Amendment 20 item 4's order as recorded, resumable phases, each in
+  its own process so the HF model is gone before a vLLM engine starts: `beh_cap` (Amendment 18 item
+  3; its reading sets the comparator and the arm order), `base_hf` (parity rows; the bf16
+  checkpoint), `base_vllm` (the band from MXFP4 on vLLM, the base check, then on the bf16 engine
+  `none` on 132 × 8 and the capability slice), per adapter `hf_<arm>` (parity rows, specificity, the
+  panel guard on the comparator and `L-anchor`, the merge) and `vllm_<arm>` (parity, 132 × 8,
+  capability; checkpoint deleted), `readouts` last. H1_held and capability jobs carry the same seeds
+  in every arm (paired), seeds disjoint from T1.1's by stage name. The pod only measures; ΔP, the
+  brake, the guard's ΔE, specificity and capability are read locally.
+- **The checkpoint writer (a fix the local tests found).** After a dequantizing MXFP4 load,
+  transformers 5.17's `save_pretrained` reverts the load's weight conversions and writes only the
+  experts' biases: `gate_up_proj` and `down_proj` never reach the file (reproduced on the tiny
+  GPT-OSS with the conversions a dequantizing load attaches). The driver writes the module state dict
+  with `save_torch_state_dict` and the config without `quantization_config`, and checks the written
+  keys against the state dict; a failed write sends that arm to HF instead of stopping the session.
+  The test asserts the expert weights survive a reload.
+- **Merge check (descriptive).** On the 64 parity rows, the HF-merged model against the adapter
+  attached and against the base (total variation): `kept_share` and whether the merge sits closer to
+  the base. Parity alone cannot see a merge that kept nothing when the adapter moves the dose-0
+  letters by less than the band + 0.05. Recorded, not gating (`MERGE_GATE` off); proposed to the
+  author below.
+- **Branches the dry runs exercise.** Both parity outcomes run locally on a tiny GPT-OSS with the
+  real harmony tokenizer (vLLM phases on the screen stub): the bf16 path, and with
+  `--dry-fail-base` the failed base check, where `none` and every adapter generate on HF.
+  Implementation reading of item 2 (flagged): when the base check fails `none` also generates on
+  HF, so ΔP never crosses engines; the bf16-vLLM rows are kept as `*.parity_failed.jsonl`. The HF
+  fallback follows Amendment 18 item 4's scope in this order: the 38 brake-engaged H1_held scenarios
+  (`data/t15_engaged_held_v1.json`, T1.1's ids, no new draw), capability's 100-item slice, then the
+  other 94 for the brake if the deadline leaves room.
+- **Capability.** Prompts: GSM8K "Solve the problem. End your final answer with the number alone."
+  (gold after `####`, last number in the final answer); MMLU the lettered options and "Answer with
+  the letter of the correct option." (`answer is X`, else a leading letter, else the last standalone
+  A-D). The whole final answer is decoded and saved, so the parse can be re-run locally. Generation
+  at the effort of record with a 1,792-token cap (1,536 + 256 for the final answer; flagged).
+- **Remote**: `STEPS=t15`, watchdog 7.0 h (spent 22.84 + 7.1 + the second family's 5.97 = 35.91 of
+  36 at worst), inputs and the four adapters checked first, both dry runs, Amendment 10's selection
+  and the remote re-price skipped, gate tests include `test_st_t15.py`. Adapters reach the pod as
+  named files (`*.safetensors` is a universal sync exclude).
+- **Price (re-price, Amendment 20 rows).** `L-beh`'s cap rerun 0.81 (upper bound: the T1.3 gate's
+  per-step time run to 4,096 steps; Amendment 18 priced 0.3); bf16 generation 0.22 (MXFP4 rate × 2,
+  bf16 unmeasured); HF reads 3.04 (the panel guard 2.59 of it); writes, loads and setup 1.0
+  (estimate); Heretic 0 on this pod (it runs on a passing adapter, known only after the local read).
+  T1.5 5.07; envelope of record 33.88 of 36. A failed base check costs about 0.95 A100-h per arm on
+  HF for ΔP and capability; the deadline stops it inside the watchdog.
+- **Open for the author (before launch).** (1) `MERGE_GATE`: a merge closer to the base than to the
+  attached adapter sends that arm to HF (recommended; off until amended). (2) Capability's 1,792
+  cap. (3) If `L-beh` finishes at 4,096, Amendment 18 item 3 leaves its T1.5 cap to the author; the
+  driver keeps 1,536 for every arm and reports truncation per arm. (4) `none` on HF after a failed
+  base check. (5) The cap rerun's 0.81 upper bound against the 0.3 priced.

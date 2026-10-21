@@ -58,6 +58,15 @@ T15_PANELS, T16_PANELS = 2, 2 + 1  # L-self gets no panel (Amendment 18: instrum
 # Amendment 17 (a): L-beh's two checkpoints are both evaluated on H1_held; only the comparator of
 # record gets the panel
 T15_H1_ARMS = 4
+# Amendment 20 (author, 2026-10-21): T1.5 on GPT-OSS serves bf16 checkpoints on vLLM (none and
+# each merged adapter), so none's 132 x 8 is generated again with the adapters; parity rows (64 x
+# base, 4 attached, 4 merged), specificity 60 x 8 per adapter, readouts on 2 of 8 rollouts; L-beh's
+# cap-4,096 rerun first (an upper bound: the T1.3 gate arm's 1,089 s per 1,536 steps, run to 4,096)
+T15_A20 = {"gpt_oss_20b"}
+T15_PARITY_ROWS, T15_SPEC_ROWS, T15_CAP_ITEMS = 64 * 9, 60 * 8 * 4, 200
+T15_CAP_RERUN_H = 1089 / 1536 * 4096 / 3600
+T15_BF16_FACTOR = 2.0  # bf16 vLLM throughput unmeasured: twice the MXFP4 time
+T15_FIXED_H = 1.0  # 5 bf16 writes (~42 GB), 6 vLLM + 7 HF loads, pod setup with two dry runs
 # A100-h already spent on the ST line before this session (author, 2026-10-19)
 # (the relaunch's own row is an estimate: its pod logged no start time; from the rider pod on,
 # --session-h defaults to the pod's session_start/session_end timestamps)
@@ -341,12 +350,45 @@ def price(m: dict) -> dict:
         if m["model"] in T14_DONE:
             for k in [k for k in dev if k.startswith("T1.4")]:
                 dev[k] = (0.0, "done (T1.4 pod; in the spend)")
+        if m["model"] in T15_A20 and d0 is not None:
+            dev = t15_amendment20(m, dev, d0)
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")
     return {"development": dev, "second_family": second,
             "development_total": sum(v[0] for v in dev.values()),
             "second_family_total": sum(v[0] for v in second.values())}
+
+
+def t15_amendment20(m: dict, dev: dict, d0: tuple[float, str]) -> dict:
+    """T1.5's rows under Amendment 20, in place of the earlier generation, readout and
+    capability rows (the refusal-retention row is unchanged)."""
+    r_post = m["rec"]["single_row_read_s"]
+    arms = T15_H1_ARMS + 1  # none's bf16 run with the adapters
+    reads = T15_PARITY_ROWS + T15_SPEC_ROWS + PANEL_ROWS * T15_PANELS * BRANCH_A.get(
+        m["model"], 1.0)
+    new = {
+        "T1.5 L-beh cap-4,096 rerun (reserved 10 x 8, HF; Amendment 18 item 3)":
+            (T15_CAP_RERUN_H, "upper bound: the T1.3 gate arm's 1,089 s per 1,536 steps, to 4,096"),
+        "T1.5 generation, bf16 on vLLM (none + 4 adapters x 132 x 8; capability 200 x 5)":
+            (T15_BF16_FACTOR * gen_h(m, 132 * 8 * arms + T15_CAP_ITEMS * arms),
+             f"measured MXFP4 rate x {T15_BF16_FACTOR:g} (bf16 unmeasured)"),
+        "T1.5 HF reads (parity 64 x 9, specificity 60 x 8 x 4, panel guard at 50% x 2, "
+        "readouts 2 of 8 x 5)":
+            ((132 * 2 * arms * r_post + reads * d0[0]) / 3600,
+             f"post-reasoning {r_post:.3f} s/rollout + dose-0 {d0[0]:.3f} s/row ({d0[1]})"),
+        "T1.5 bf16 writes, engine loads, pod setup": (T15_FIXED_H, "estimate"),
+        "T1.5 Heretic (on a passing adapter, after the local read)":
+            (0.0, "not on the T1.5 pod; priced at G3 if an adapter passes"),
+    }
+    out: dict = {}
+    for k, v in dev.items():
+        if k.startswith("T1.5") and "refusal-retention" not in k:
+            out.update(new)
+            new = {}
+            continue
+        out[k] = v
+    return out
 
 
 def session_hours(d: Path) -> float | None:

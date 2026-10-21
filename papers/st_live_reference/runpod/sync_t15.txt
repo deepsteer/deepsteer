@@ -1,0 +1,6 @@
+outputs/t14_inputs/
+outputs/t14/gpt_oss_20b/adapters/
+outputs/t14/gpt_oss_20b/adapters/beh/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/beh_epoch3/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/anchor/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/self/adapter_model.safetensors

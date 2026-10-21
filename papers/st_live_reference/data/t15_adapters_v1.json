@@ -1,0 +1,21 @@
+{
+ "rule": "the T1.4 adapters T1.5 evaluates (pod byr26tsrjyh66q); the T1.5 driver verifies these sha256 before any phase",
+ "arms": {
+  "beh": {
+   "adapter_config.json": "407c60a2e9091fe48420abf65c613a9adf23b556a294f1e160336f22b5ffbcb5",
+   "adapter_model.safetensors": "52650dea65f781a30ffc7b0a578d8cda1ab3c53ffea59ad07e4fcc98cddcfe09"
+  },
+  "beh_epoch3": {
+   "adapter_config.json": "407c60a2e9091fe48420abf65c613a9adf23b556a294f1e160336f22b5ffbcb5",
+   "adapter_model.safetensors": "6fc3729468e652af2d0537ca113bac24ce8f03dfabc463d4cc88594928fcd33c"
+  },
+  "anchor": {
+   "adapter_config.json": "407c60a2e9091fe48420abf65c613a9adf23b556a294f1e160336f22b5ffbcb5",
+   "adapter_model.safetensors": "1b904e1d7e2d97f094b4930e04a2f31a53d948bb3a4c0b7db8c4de4de96dc4a3"
+  },
+  "self": {
+   "adapter_config.json": "407c60a2e9091fe48420abf65c613a9adf23b556a294f1e160336f22b5ffbcb5",
+   "adapter_model.safetensors": "68e89215a7dc66cdd9d1edb38ed28bc6d2fe0d9a0516436f86612460bafa8459"
+  }
+ }
+}

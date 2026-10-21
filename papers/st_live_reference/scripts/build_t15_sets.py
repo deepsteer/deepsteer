@@ -9,6 +9,10 @@
 - ``data/t15_capability_v1.json``: 100 GSM8K test items (``openai/gsm8k``, ``main``) and 100 MMLU
   test items (``cais/mmlu``, ``all``), seed 20261021; stream indices and question sha256 only (the
   pod re-streams, verifies and scores against the datasets' own answers).
+- ``python3 build_t15_sets.py panel_half``: ``data/t15_panel_half_v1.json`` (Amendment 20 item 6).
+- ``python3 build_t15_sets.py engaged <t11 dir>``: ``data/t15_engaged_held_v1.json``, T1.1's 38
+  brake-engaged H1_held ids copied from ``select/engaged.json`` (no new draw), so an HF fallback
+  generates ΔP's scenarios first (Amendment 18 item 4's scope).
 """
 
 from __future__ import annotations
@@ -103,7 +107,22 @@ def capability() -> dict:
     return out
 
 
+def engaged(t11: Path) -> dict:
+    f = t11 / "select" / "engaged.json"
+    h = json.loads(f.read_text())["held"]
+    if len(h["engaged_ids"]) != h["n_engaged"]:
+        raise SystemExit("engaged.json is inconsistent")
+    return {"rule": f"T1.1's held brake-engaged subset ({h['rule']}); ST_PLAN Amendment 1",
+            "n": h["n_engaged"], "ids": sorted(h["engaged_ids"]),
+            "source_sha256": hashlib.sha256(f.read_bytes()).hexdigest()}
+
+
 def main() -> None:
+    if sys.argv[1:2] == ["engaged"]:
+        e = engaged(Path(sys.argv[2]))
+        (DATA / "t15_engaged_held_v1.json").write_text(json.dumps(e, indent=1) + "\n")
+        print(f">> engaged H1_held: {e['n']}")
+        return
     if sys.argv[1:] == ["panel_half"]:
         h = panel_half()
         (DATA / "t15_panel_half_v1.json").write_text(json.dumps(h, indent=1) + "\n")
