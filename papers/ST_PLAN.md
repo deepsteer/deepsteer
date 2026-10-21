@@ -2413,3 +2413,27 @@ computed).**
 9. **Price:** the twin traces of item 2 of Amendment 22 are replaced by prefill (1,152 single-row
    forwards at 0.475 s, ~0.15 A100-h); Cell 2 about 2.5 A100-h with the free-generation side read's
    forwards.
+
+#### ST Phase 2 pod B build, Cells 2 and 3 (2026-10-21; Amendment 22 and its decisions; zero GPU until launch)
+
+- **Order** (`STEPS=st2b`, watchdog 5.0 h): the Qwen top-up first, on vLLM before GPT-OSS loads
+  (the engine needs the GPU); then Cell 2; then Cell 3, so the bail order's first GPT-OSS cut
+  (Cell 3) is last. Cells 2 and 3 render with Cell 1's date pin (read from pod A's `none` rows) and
+  take Cell 1's seeds for rollouts 0-7, so their arms pair with Cell 1's `none`; pod B needs pod A's
+  `c1_none.jsonl` (sync list `runpod/sync_st2b.txt`).
+- **Cell 2.** `steering_gate.Ablate` sets the residual's component on a unit direction to a
+  reference mean (float32, never zeroed), in the decode hook and in a dose-0 readout. `c2_extract`
+  re-renders each T1.1 prompt and must reproduce its saved ids before the twin is rendered under the
+  same date pin, effort and permutation; per-trace class sums at block 12 (`clause_end`, `onset`,
+  `stride32`, `prompt`). The dose-0 ablation's target is the twin prefix's mean projection over
+  prompt positions (the `prompt` class), the class rule of the Cell 2 decisions. The matched random
+  direction is the T1.3 fill draw 0 (covariance-matched at this site), with its own targets.
+- **Cell 3.** Qwen's top-up at its screen's setting (effort medium, cap 1,536, sampler v2, its
+  date pin); each parsed protect or rule Qwen trace (top-up and screen) re-encoded in GPT-OSS
+  under GPT-OSS's prompt for the same scenario and permutation, the analysis channel opened.
+  `V_qwen` pools Qwen's traces over H1_train scenarios with both actions, including the engaged 45
+  the arm runs on (the top-up's design); `V_oss`, the cosine read and the writing-style loading run
+  locally from T1.1's bank.
+- **Tests:** ablation math, hook and readout; the pod B order dry run (Qwen on the screen stub, Cell
+  2 on T1.1's real traces, the re-encode on Qwen's real screen traces); clause_end positions under
+  the real harmony format; the runner's phase list equals the driver's. Fast gates 190 pass.

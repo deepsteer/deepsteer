@@ -169,13 +169,15 @@ def test_rule_twins_are_minimal_and_rule_free():
 
 
 @pytest.mark.slow
-def test_dry_run_cell2_on_a_tiny_gpt_oss(tmp_path):
+def test_dry_run_pod_b_on_a_tiny_gpt_oss(tmp_path):
     # most probable failure: the twin prefill reads a prompt that does not reproduce T1.1's saved
     # ids (a different date pin, effort or permutation), the two prefixes count different class
-    # positions, or an arm, the transport control or a side read crashes on the pod
+    # positions, the Qwen engine is asked for after GPT-OSS took the GPU, or an arm, the transport
+    # control, a side read or the Qwen re-encode crashes on the pod
     t11 = ROOT / "papers/st_live_reference/outputs/t11/gpt_oss_20b"
-    if not (t11 / "gen" / "h1_rollouts_read.jsonl").exists():
-        pytest.skip("T1.1 outputs not present locally")
+    qscreen = ROOT / "papers/st_live_reference/outputs/t10/qwen38_27b/screen/h1_screen.jsonl"
+    if not (t11 / "gen" / "h1_rollouts_read.jsonl").exists() or not qscreen.exists():
+        pytest.skip("T1.1 / Qwen screen outputs not present locally")
     inp = tmp_path / "inputs"
     inp.mkdir()
     np.savez(inp / "st2_inputs.npz", anchor_axis=np.ones(4, np.float32))
@@ -186,11 +188,14 @@ def test_dry_run_cell2_on_a_tiny_gpt_oss(tmp_path):
     r = subprocess.run(base, capture_output=True, text=True, cwd=ROOT, env=env)
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
     d = out / "gpt_oss_20b"
-    r = subprocess.run(base + ["--phases", ",".join(D.CELL2), "--t11", str(t11), "--c1", str(d)],
+    r = subprocess.run(base + ["--phases", ",".join(D.POD_B), "--t11", str(t11), "--c1", str(d),
+                               "--qwen-screen", str(qscreen)],
                        capture_output=True, text=True, cwd=ROOT, env=env)
     assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-3000:]
     rec = json.loads((d / "st2_record.json").read_text())
-    assert all(rec["phases"][p]["finished"] for p in D.CELL2)
+    assert all(rec["phases"][p]["finished"] for p in D.POD_B)
+    assert D.POD_B[0] == "c3_qwen" and "c3_qwen" in D.NO_MODEL  # the engine on an empty GPU
+    assert r.stdout.index("st2 c3_qwen: done") < r.stdout.index("st2 c2_extract")
     ex = rec["phases"]["c2_extract"]
     assert ex["n_traces"] == 8 and ex["n_scenarios"] == 4  # 4 extraction scenarios x 2 rollouts
     dr = rec["phases"]["c2_direction"]
@@ -207,6 +212,12 @@ def test_dry_run_cell2_on_a_tiny_gpt_oss(tmp_path):
         "present", "present_ablated", "present_random", "twin"}
     assert rec["phases"]["c2_freegen"]["n"] >= 1
     assert rec["phases"]["c2_anchor"]["n"] == 4
+    q = rec["phases"]
+    assert q["c3_reencode"]["n_protect"] > 0 and q["c3_reencode"]["n_rule"] > 0
+    assert q["c3_direction"]["n_scenarios"] >= 1
+    qa = [json.loads(x) for x in (d / "gen" / "c3_qwen_arm.jsonl").open()]
+    assert qa and {x["rollout_key"] for x in qa} <= set(c1)
+    assert any(x["n_steered"] > 0 for x in qa)
 
 
 @pytest.mark.slow
@@ -234,3 +245,17 @@ def test_trace_positions_on_a_real_trace_with_the_real_format():
     assert ce and min(ce) >= len(kh.ANALYSIS_OPEN) and max(ce) < end
     assert all(tok.decode([gen[i]]).strip() in ".,;:!?" or tok.decode([gen[i - 1]]).strip()
                in ".,;:!?" for i in ce[:20])
+
+
+def test_remote_runs_pod_b_in_the_drivers_order():
+    # most probable failure: the runner's phase list drifts from the driver's (a phase dropped, or
+    # the Qwen engine moved after GPT-OSS loads), and Cell 3 is no longer the first cut (bail
+    # order: GPT-OSS Cell 3 before Cell 2)
+    import re
+
+    sh = (ROOT / "papers/st_live_reference/runpod/remote_st_screen.sh").read_text()
+    phases = re.search(r'ST2B_PHASES="([^"]*)"', sh).group(1).split(",")
+    assert phases == D.POD_B
+    assert max(phases.index(p) for p in D.CELL2) < min(phases.index(p) for p in D.CELL3[1:])
+    sync = (ROOT / "papers/st_live_reference/runpod/sync_st2b.txt").read_text().split()
+    assert "outputs/st2a/gpt_oss_20b/gen/c1_none.jsonl" in sync

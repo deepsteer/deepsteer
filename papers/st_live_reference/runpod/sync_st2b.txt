@@ -1,0 +1,4 @@
+outputs/st2_inputs/
+outputs/t11/gpt_oss_20b/gen/h1_rollouts_read.jsonl
+outputs/t10/qwen38_27b/screen/h1_screen.jsonl
+outputs/st2a/gpt_oss_20b/gen/c1_none.jsonl

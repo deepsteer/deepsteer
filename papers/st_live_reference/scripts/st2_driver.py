@@ -24,6 +24,16 @@ read; ``c2_ablate`` / ``c2_random`` / ``c2_twin_none`` the engaged 45 x 8 (seeds
 permutations: rule-present, rule-present ablated, rule-present random-ablated, rule-absent twin);
 ``c2_freegen`` the free-generation side read (Cell 1's ``none`` vs the twins' free generations).
 
+Cell 3 (pod B), cross-recipe content (Amendment 22 item 3): ``c3_qwen`` tops up Qwen3.8-27B on vLLM
+(engaged 45 x 8 at its screen's setting: effort medium, cap 1,536, KDG sampler v2, its screen's date
+pin), before any HF model loads; ``c3_reencode`` re-encodes each parsed protect or rule Qwen trace
+(top-up and 60 x 4 screen) in GPT-OSS (GPT-OSS's prompt for the same scenario and permutation, the
+trace text in its analysis channel) and banks clause_end sums at block 12; ``c3_direction`` builds
+``V_qwen`` (within scenario, protect minus rule, per position then scenario, unit) over scenarios
+with both; ``c3_qwen_arm`` adds it at alpha 267.3 on the engaged 45 x 8 (seeds paired with Cell
+1). ``V_oss``, the cosine read with its null and the writing-style loading run locally from T1.1's
+bank (zero GPU).
+
     python3 st2_driver.py --out <dir> --inputs <st2_inputs dir> [--phases ...] [--dry-run]
 """
 
@@ -57,6 +67,9 @@ R1 = 16  # Cell 1 rollouts per scenario (Amendment 22 rider (d))
 BATCH = 160
 C1_ARMS = ("none", "fill", "care_harm", "V_harm", "neg_a")
 R2 = 8  # Cells 2 and 3 rollouts per scenario, paired with Cell 1's first 8 (seeds st2c1)
+QWEN = "qwen38_27b"
+QWEN_DATE_PIN = "2026-10-19"  # its screen's (the top-up matches its setting)
+NO_MODEL = {"c1_read", "c3_qwen"}  # phases that never load GPT-OSS
 CLASSES = ("clause_end", "onset", "stride32", "prompt")
 SPLIT_SEED = 20261021
 PR_PER_TRACE = 8  # clause_end positions kept per trace for the participation ratio
@@ -92,6 +105,7 @@ def context(a) -> dict:
                           and v["twin_kind"] != "rewritten")
     c["t11"] = a.t11 / "gen" / "h1_rollouts_read.jsonl" if a.t11 else None
     c["c1_none"] = a.c1 / "gen" / "c1_none.jsonl" if a.c1 else None
+    c["qwen_screen"] = a.qwen_screen
     if a.dry_run:  # a random tiny model writes no punctuation: onset, so the hooks fire
         c.update(engaged=c["engaged"][:2], layer=2, cap=24, batch=8, alpha=1.0, r1=2, r2=2,
                  cls="onset", extract=c["extract"][:4])
@@ -566,6 +580,132 @@ def phase_c2_freegen(c, sc, model, rec, a) -> dict:
             "class": cls}
 
 
+# ---- cell 3 -------------------------------------------------------------------------------------
+def qwen_context(c: dict, a) -> dict:
+    import pod_st_screen as P
+    from reasoning_formats import build_format
+    from transformers import AutoTokenizer
+
+    spec = P.registry()[QWEN]
+    tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+    return {"spec": spec, "tok": tok, "fmt": build_format(QWEN, tok, spec)}
+
+
+def phase_c3_qwen(c, sc, model, rec, a) -> dict:
+    """The Qwen top-up on vLLM, in this process before any HF model loads (the engine needs the
+    GPU)."""
+    import screen_vllm as SV
+    import vllm_phase as V
+
+    q = qwen_context(c, a)
+    if a.dry_run:
+        from screen_stub import ScreenStub
+
+        m = ScreenStub(QWEN, q["tok"], q["fmt"], q["spec"]["n_layers"],
+                       length_by_effort={"medium": 4})
+    else:
+        m = L.tok_only(q["tok"])
+    qs = L.Screen(QWEN, q["spec"], m, q["fmt"], c["out"], QWEN_DATE_PIN, dry=a.dry_run)
+    qs.effort = "medium"
+    cap = c["cap"]
+    jobs = L.h1_jobs(qs, c["H"], c["engaged"], c["r2"])
+    wj = SV.worker_jobs(jobs, "st2c3q", cap)
+    eng = V.engine_json(q["spec"], spec_on=False, label=f"{QWEN}:st2c3q")
+    vrows, summ, rc = V.run_vllm(qs, wj, eng, c["out"] / "vllm" / "c3_qwen.jsonl")
+    by = {r["job_id"]: r for r in vrows}
+    g = [by[j["job_id"]]["gen_ids"] if by.get(j["job_id"], {}).get("status") == "finished"
+         else None for j in wj]
+    rows = L.build_rows(qs, jobs, g, [j["seed"] for j in wj], cap=cap, stage="st2c3q",
+                        engine="vllm")
+    qs.save_jsonl("gen/c3_qwen_topup.jsonl", rows)
+    act = [r["norm_status"] for r in rows if r.get("norm_status")]
+    return {"status": "ok", "n": len(rows), "rc": rc, "counts": {k: act.count(k) for k in set(act)},
+            "tokens_per_second": summ.get("tokens_per_second")}
+
+
+def qwen_trace_text(q: dict, gen: list[int]) -> str:
+    """Qwen's thinking text (the template opens the think block; it ends at ``</think>``)."""
+    close = q["fmt"].close_id
+    return q["tok"].decode(gen[: gen.index(close)] if close in gen else gen,
+                           skip_special_tokens=True)
+
+
+def phase_c3_reencode(c, sc, model, rec, a) -> dict:
+    """Each parsed protect or rule Qwen trace (top-up + screen) in GPT-OSS: GPT-OSS's prompt for
+    the same scenario and permutation (Cell 1's date pin), the analysis channel opened, the trace
+    text encoded by GPT-OSS's tokenizer; clause_end sums at block 12 per trace."""
+    import kdg_harmony as kh
+
+    q = qwen_context(c, a)
+    punct = SG.punct_mask(c["tok"])
+    src = [c["out"] / "gen" / "c3_qwen_topup.jsonl"] + ([c["qwen_screen"]] if c["qwen_screen"]
+                                                         else [])
+    rows = [json.loads(x) for f in src for x in f.open()]
+    rows = [r for r in rows if r.get("norm_status") in ("violating", "consistent")
+            and r["scenario_id"] in c["H"]]
+    if a.dry_run:  # the tiny stub's letters are arbitrary: label alternately so both actions exist
+        for i, r in enumerate(rows):
+            r["norm_status"] = ("violating", "consistent")[i % 2]
+    keys, sums, counts, acts = [], [], [], []
+    ci = c["cls"]
+    for r in rows:
+        s, k = c["H"][r["scenario_id"]], r["rollout"]
+        if L.letter_map(L.assign_letters(s, k)) != r["order"]:
+            raise SystemExit(f"{r['scenario_id']}#{k}: letter order differs")
+        pre = render_ids(sc, s, k, sc.date_pin) + list(kh.ANALYSIS_OPEN)
+        body = c["tok"].encode(qwen_trace_text(q, r["gen_ids"]), add_special_tokens=False)
+        gen = list(kh.ANALYSIS_OPEN) + body
+        n_p = len(pre) - len(kh.ANALYSIS_OPEN)
+        sm, _ = class_sums(model, pre + body, n_p, trace_positions(c, gen, n_p, punct), c["layer"])
+        keys.append(f"{r['stage']}|{r['scenario_id']}|{k}")
+        sums.append(sm[ci][0])
+        counts.append(sm[ci][1])
+        acts.append("protect" if r["norm_status"] == "violating" else "rule")
+    (c["out"] / "c3").mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(c["out"] / "c3" / "reencode.npz", keys=np.array(keys),
+                        sums=np.array(sums), counts=np.array(counts), action=np.array(acts),
+                        cls=np.array(ci))
+    return {"status": "ok", "n_traces": len(keys),
+            "n_protect": acts.count("protect"), "n_rule": acts.count("rule")}
+
+
+def within_scenario_direction(keys, sums, counts, acts):
+    """Per scenario with both actions: mean over protect-trace positions minus mean over
+    rule-trace positions; mean over scenarios; unit."""
+    acc: dict = {}
+    for key, sm, n, act in zip(keys, sums, counts, acts):
+        sid = str(key).split("|")[1]
+        d = acc.setdefault(sid, {"protect": [0.0, 0], "rule": [0.0, 0]})
+        d[str(act)][0] = d[str(act)][0] + sm
+        d[str(act)][1] += int(n)
+    per = {s: v["protect"][0] / v["protect"][1] - v["rule"][0] / v["rule"][1]
+           for s, v in acc.items() if v["protect"][1] and v["rule"][1]}
+    if not per:
+        return None, {}
+    m = np.mean([per[s] for s in sorted(per)], 0)
+    return m / np.linalg.norm(m), per
+
+
+def phase_c3_direction(c, sc, model, rec, a) -> dict:
+    z = np.load(c["out"] / "c3" / "reencode.npz")
+    v, per = within_scenario_direction(z["keys"], z["sums"], z["counts"], z["action"])
+    if v is None:
+        raise SystemExit("no scenario has both a protect and a rule Qwen trace")
+    np.savez(c["out"] / "c3" / "v_qwen.npz", v_qwen=v.astype(np.float32), ids=np.array(sorted(per)),
+             per_scenario=np.array([per[s] for s in sorted(per)], np.float32))
+    return {"status": "ok", "n_scenarios": len(per),
+            "n_engaged_among_them": len(set(per) & set(c["engaged"]))}
+
+
+def phase_c3_qwen_arm(c, sc, model, rec, a) -> dict:
+    v = np.load(c["out"] / "c3" / "v_qwen.npz")["v_qwen"]
+    jobs = L.h1_jobs(sc, c["H"], c["engaged"], c["r2"])
+    rows = run_arm(c, sc, model, "st2c1", "c3_qwen_arm", jobs, SG.Add(v, c["alpha"]),
+                   extra=lambda i: {"cell": 3, "alpha": c["alpha"], "axis": "V_qwen"})
+    return {"status": "ok", "n": len(rows),
+            "parse_rate": float(np.mean([r["letter"] is not None for r in rows]))}
+
+
 PHASES = {**{f"c1_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c1_arm(c, sc, m, rec, a,
                                                                              arm))(arm)
              for arm in C1_ARMS}, "c1_read": phase_c1_read,
@@ -574,11 +714,16 @@ PHASES = {**{f"c1_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c1_arm(c, 
           **{f"c2_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c2_arm(c, sc, m, rec, a,
                                                                               arm))(arm)
              for arm in ("ablate", "random", "twin_none")},
-          "c2_transport": phase_c2_transport, "c2_freegen": phase_c2_freegen}
+          "c2_transport": phase_c2_transport, "c2_freegen": phase_c2_freegen,
+          "c3_qwen": phase_c3_qwen, "c3_reencode": phase_c3_reencode,
+          "c3_direction": phase_c3_direction, "c3_qwen_arm": phase_c3_qwen_arm}
 CELL1 = [f"c1_{arm}" for arm in C1_ARMS] + ["c1_read"]
 CELL2 = ["c2_extract", "c2_direction", "c2_anchor", "c2_ablate", "c2_random", "c2_twin_none",
          "c2_transport", "c2_freegen"]
-GEN_PHASES = {f"c1_{a}" for a in C1_ARMS} | {"c2_ablate", "c2_random", "c2_twin_none"}
+CELL3 = ["c3_qwen", "c3_reencode", "c3_direction", "c3_qwen_arm"]
+POD_B = ["c3_qwen"] + CELL2 + CELL3[1:]  # the Qwen engine first, on an empty GPU
+GEN_PHASES = ({f"c1_{a}" for a in C1_ARMS} | {"c2_ablate", "c2_random", "c2_twin_none"}
+              | {"c3_qwen_arm"})
 
 
 def main() -> int:
@@ -592,6 +737,8 @@ def main() -> int:
     ap.add_argument("--deadline", type=float, default=None)
     ap.add_argument("--t11", type=Path, default=None, help="T1.1's output dir (Cell 2's traces)")
     ap.add_argument("--c1", type=Path, default=None, help="pod A's output dir (Cell 1's none)")
+    ap.add_argument("--qwen-screen", type=Path, default=None,
+                    help="Qwen3.8's 60 x 4 screen rows (outputs/t10/qwen38_27b/screen)")
     a = ap.parse_args()
     c = context(a)
     rec = load_record(c)
@@ -599,10 +746,16 @@ def main() -> int:
     if not todo:
         print(">> st2: every requested phase finished earlier", flush=True)
         return 0
-    model = load_model(c, a)
-    sc = screen(c, model, a)
-    if any(p.startswith(("c2_", "c3_")) for p in todo) and c["c1_none"] is not None:
-        sc.date_pin = c1_date_pin(c)  # pair with Cell 1's none (the harmony prompt carries it)
+    model, sc = None, None
+
+    def ready():
+        nonlocal model, sc
+        if model is None:
+            model = load_model(c, a)
+            sc = screen(c, model, a)
+            if any(p.startswith(("c2_", "c3_")) for p in todo) and c["c1_none"] is not None:
+                sc.date_pin = c1_date_pin(c)  # pair with Cell 1's none (the prompt carries it)
+
     per_rollout: list[float] = []  # measured seconds per generated rollout, any arm
 
     def n_rollouts(name: str) -> int:
@@ -615,6 +768,8 @@ def main() -> int:
             print(f">> st2 {name}: not started (would end past the deadline)", flush=True)
             return 3
         t0 = time.time()
+        if name not in NO_MODEL:
+            ready()
         res = PHASES[name](c, sc, model, rec, a)
         if name in GEN_PHASES:
             per_rollout.append((time.time() - t0) / n_rollouts(name))
