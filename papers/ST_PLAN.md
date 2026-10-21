@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.15, 2026-10-21 (Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.16, 2026-10-21 (Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -1930,3 +1930,24 @@ unchanged. Exploratory, descriptive: `V_harm` itself separates protect above rul
 +0.0066] (57% of its value), so harm content carries part of the `care_harm` separation and not
 all of it. All of this is correlational localization (Amendment 1's scope); the arm is the causal
 test.
+
+### Amendment 16 (2026-10-21; author; zero GPU; pre-registered before the T1.4 pod and before the axes' τ are computed)
+
+1. **Two gate arms on the T1.4 pod** (replacing Amendment 15 item 3's single arm): +`care_harm`
+   (W4 14.4 MFT axis, block 12) and +`V_harm` (`t_inst`, the FL-provenance vector of record), each
+   at `clause_end`, block 12, α 267.3, on the gate's 20 × 8, against the gate's `none` rows and the
+   267.3 `fill` rows (reused from the T1.3 pods), §5.0's rule under Amendment 13's coherence bars
+   (~0.7 A100-h).
+2. **Readings, written before data.** *Harm content*: `V_harm` passes (whether or not `care_harm`
+   does; a `care_harm` pass is then read through its harm component, cos 0.29). *Care beyond harm*:
+   `care_harm` passes and `V_harm` does not. *Neither*: no arm passes; the foundation read stays
+   correlational. All three are publishable.
+3. **Fourth adapter (conditional).** If either arm passes, `L-anchor` on that axis trains on the
+   same pod (~1 A100-h): the §5.2 hinge with the axis in place of the anchor axis, τ by Amendment 14's
+   rule on that axis (the 75th percentile of the per-position margin over the H1_train protect
+   rollouts' `clause_end` positions at block 12, computed from T1.1's bank after this amendment is
+   pushed and shipped to the pod with both values), the same LoRA shape, data, schedule and KL terms
+   as the other three. If both pass, the arm with the larger ΔP point estimate gives the axis. Its
+   T1.5 evaluation is priced, and the envelope decision is made at G3 with the numbers.
+4. **Beside ST-A10 (recorded).** `V_harm` separates protect above rule at clause ends (+0.0109
+   [+0.0081, +0.0138]); `V_care`, and so the anchor axis, removed that content by construction (§4).
