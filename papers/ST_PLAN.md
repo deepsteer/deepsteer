@@ -96,7 +96,7 @@ Candidates that fit one 80 GB A100 for both LoRA training and hooked generation:
 
 | candidate | size | type | license | notes |
 |---|---|---|---|---|
-| OLMo-3-7B-Think (`allenai/Olmo-3-7B-Think`) | 7B dense | reasoning, think block | Apache-2.0 | stage checkpoints (SFT/DPO/RL) and the Dolci data; existing V_moral/FL anatomy (on Instruct); Purple Maiʻa's line |
+| OLMo-3-7B-Think (`allenai/Olmo-3-7B-Think`) | 7B dense | reasoning, think block | Apache-2.0 | stage checkpoints (SFT/DPO/RL) and the Dolci data; existing V_moral/FL anatomy (on Instruct); the partner's line |
 | Qwen3.8-27B | 27B dense, 64 layers | thinking on by default, toggle, effort levels | Apache-2.0 | most recent frontier-adjacent recipe; QLoRA for training |
 | Muse Glimmer 30B | 30B dense | effort levels (reasoning mode to verify in T0.1) | Apache-2.0 | Meta's first open weights since Llama 4; 60 GB bf16 |
 | GPT-OSS-20B | 21B MoE, 3.6B active | reasoning, harmony format | Apache-2.0 | already screened at full size (55% → 25% on H1); no base; MoE experts dequantized |
@@ -141,7 +141,7 @@ the larger clean brake, run at reduced depth (one adapter, §7 T1.6). If OLMo-3-
 detectable brake under native reasoning (its Instruct sibling's brake was measured under forced
 reasoning), it leaves the development role, GPT-OSS-20B takes it (its brake is the largest
 measured), and OLMo-3 keeps only the Tier 2 checkpoint role. OLMo-3 is in the set for three assets
-no other candidate has (stage checkpoints, existing anatomy, Purple Maiʻa), not for precedent.
+no other candidate has (stage checkpoints, existing anatomy, the partner track), not for precedent.
 
 **The E co-primary requires a dose-0 carrier (Amendment 11).** Panel ΔE can show a pressure gap
 closing only on a model that carries one at dose 0: on the instrument of record, E_none's CI
@@ -426,7 +426,7 @@ T1.6 needs T1.5's verdict; Tier 2 reads T1.1/T1.6's banked residuals and T1.5's 
 
 | cell | A100-h | what it buys |
 |---|---|---|
-| RL-stage form of the recipe on OLMo-3-7B's open pipeline (the anchoring or self-distillation term as a regularizer on the RLVR stage from its public SFT/DPO checkpoints; Dolci data), scored on H1_held, the panel, held-out families, Heretic | ~150–250 | the form a frontier lab would adopt; the Purple Maiʻa model-shaping tie-in (a value read that survives post-training) |
+| RL-stage form of the recipe on OLMo-3-7B's open pipeline (the anchoring or self-distillation term as a regularizer on the RLVR stage from its public SFT/DPO checkpoints; Dolci data), scored on H1_held, the panel, held-out families, Heretic | ~150–250 | the form a frontier lab would adopt; the partner's model-shaping tie-in (a value read that survives post-training) |
 | G-A30 stage ladder on H1 (SYNTHESIS queue) extended with the adapter at each stage | ~12 | which stage installs the brake and where the term has to act |
 | OLMo-3-32B-Think or Qwen3.8-27B at full depth (three objectives) | ~60–80 | the scale step |
 | Muse Spark Open or Inkling-Small with institutional compute (multi-GPU LoRA; `L-beh` on Inkling via Tinker if its loss API suffices) | ~200+ | near-frontier open weights |
@@ -521,7 +521,7 @@ shipped default, stepped down only by the pilot rule; a model without a dose-0 r
 H1 alone, with dose-0 as a tie-breaker.
 
 Open for the author: G1 (model roles), G2 (target), G3 (which objective goes to family 2), G4
-(the claim sentence); whether `L-fill` runs; the Purple Maiʻa model swap if their answer arrives
+(the claim sentence); whether `L-fill` runs; the partner's model swap if their answer arrives
 before T1.0.
 
 ## 12. Notes for Claude Code
@@ -542,13 +542,13 @@ before T1.0.
   `generalizes` / `restores, local` / `partial` / `non-specific` / `null` only as §6 defines them,
   nulls with their MDE and transport curve; the gate is "localization", never "steering works".
 
-## 13. Constitution variant (added 2026-10-18; stand-in documents until Purple Maiʻa's draft arrives)
+## 13. Constitution variant (added 2026-10-18; stand-in documents until the partner's draft arrives)
 
 Purpose: three uses of a written constitution inside this plan, built so the document is an input
 that can be swapped: (a) a community- or lab-specific reference direction `V_const` with an
 **overlap read** against the model's pretrained moral subspace; (b) a constitution-conditioned
 judgment frame for §5.3 (`L-self-const`); (c) a constitution-scoped H1 family with a
-document-informed rater baseline. Purple Maiʻa's draft (`C_pm`) replaces the stand-in as the
+document-informed rater baseline. The partner's draft (`C_partner`) replaces the stand-in as the
 document of record when it arrives; nothing in the pipeline depends on which document it is.
 
 Documents of record for development (both CC0):
@@ -582,7 +582,7 @@ Overlap read (zero GPU after extraction): projection fraction of `V_const` onto 
 (random content directions of matched norm drawn from the covariate basis) and (ii) `V_harm`.
 **Positive control, pre-registered:** on GPT-OSS-20B with `C_spec`, the overlap exceeds OLMo-3-
 Think's with `C_spec` by a margin outside the null band. If it does not, the overlap read is
-reported as uncalibrated and is not used on `C_pm`. Branches: high overlap (the document selects a
+reported as uncalibrated and is not used on `C_partner`. Branches: high overlap (the document selects a
 facet of content the model already carries; anchoring is the tool) / low overlap (new content; the
 first round for that document is corpus work, SFT or continued pretraining, before anchoring).
 
@@ -595,7 +595,7 @@ Optional genre contrast: the same arm conditioned on `C_anth` (one more adapter,
 unless the envelope allows).
 
 Evaluation: the constitution-scoped family's held-out half with a document-informed rater baseline
-(for `C_pm`, community raters; for the stand-ins, the author), beside the standard `H1_held` and
+(for `C_partner`, community raters; for the stand-ins, the author), beside the standard `H1_held` and
 panel reads. An adapter that helps on the constitution family and hurts the panel or the
 specificity set is `non-specific` under §6.
 
@@ -604,8 +604,8 @@ overlap read zero; `L-self-const` training (~1) and its evaluation on `H1_held` 
 constitution family (~3.5): about 4.7 A100-h, which takes Tier 1 to ~37 or replaces `L-fill` and
 T1.6's `L-beh` arm. Author's call at G2.
 
-For Purple Maiʻa (the Oct 28 meeting): what makes a constitution evaluable here is a stated
-priority rule for conflicts, named parties whose interests count (community, ʻāina, future
+For the partner: what makes a constitution evaluable here is a stated
+priority rule for conflicts, named parties whose interests count (community, land, future
 generations), principles that can be written as single sentences, and ten or more worked cases.
 The ask is the draft document; the return is the overlap read (what it already selects in the
 model, what would need data) and a scored constitution-scoped family on their model.
