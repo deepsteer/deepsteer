@@ -203,3 +203,41 @@ def test_relative_parse_bar_reads_the_unsteered_arm():
                      parsed_base=[True] * 19 + [False])
     assert not c["parse_ok"]
     assert not SG.coherence(st, base, [True] * 18 + [False] * 2, nll, nll)["parse_ok"]  # absolute
+
+
+def test_ablate_sets_the_component_to_its_target_and_keeps_the_rest():
+    # most probable failure (Amendment 22 Cell 2): the ablation zeroes the component (off
+    # distribution) or moves the orthogonal part of the residual
+    rng = np.random.default_rng(0)
+    h = torch.tensor(rng.standard_normal((3, 5, 16)), dtype=torch.bfloat16)
+    v = torch.tensor(rng.standard_normal(16), dtype=torch.float32)
+    v = v / v.norm()
+    out = SG._ablate(h, v, 2.5)  # noqa: SLF001
+    assert out.dtype == h.dtype
+    assert torch.allclose(out.float() @ v, torch.full((3, 5), 2.5), atol=0.05)
+    orth = lambda x: x.float() - (x.float() @ v).unsqueeze(-1) * v  # noqa: E731
+    assert torch.allclose(orth(out), orth(h), atol=0.05)
+
+
+def test_ablate_in_generation_and_readout(tiny):
+    # most probable failure: the Ablate branch never fires in the decode hook, or the readout's
+    # unablated path (vector None) differs from a plain forward
+    m = tiny
+    P = [m.tok.encode("Should the clerk follow the rule or help the customer? Think:",
+                      add_special_tokens=False)] * 2
+    fmt = _think_fmt()
+    hid = m.model.config.hidden_size
+    v = np.random.default_rng(1).standard_normal(hid).astype(np.float32)
+    v /= np.linalg.norm(v)
+    none = SG.generate(m, P, fmt=fmt, cap=16, seeds=[1, 2], batch=2)
+    abl = SG.generate(m, P, fmt=fmt, cap=16, seeds=[1, 2], batch=2, layer=2, cls="constant",
+                      intervention=SG.Ablate(v, 500.0))
+    assert [r["gen_ids"] for r in abl] != [r["gen_ids"] for r in none]
+    assert all(r["n_steered"] > 0 for r in abl)
+    lids = list(range(5))
+    plain = SG.ablate_readout(m, P[:1], None, 0.0, 2, lids)
+    with torch.no_grad():
+        lg = m.model(input_ids=torch.tensor([P[0]], device=m.model.device)).logits[0, -1]
+    assert np.allclose(plain[0], torch.log_softmax(lg.float(), -1)[lids].cpu().numpy(), atol=1e-5)
+    moved = SG.ablate_readout(m, P[:1], v, 500.0, 2, lids)
+    assert not np.allclose(moved, plain, atol=1e-3)

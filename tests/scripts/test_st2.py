@@ -166,3 +166,71 @@ def test_rule_twins_are_minimal_and_rule_free():
                 exp = exp.replace(old, new)
             assert exp == twin, sid
         assert (v["twin_kind"] == "clause_deleted") == bool(v["clause_edits"])
+
+
+@pytest.mark.slow
+def test_dry_run_cell2_on_a_tiny_gpt_oss(tmp_path):
+    # most probable failure: the twin prefill reads a prompt that does not reproduce T1.1's saved
+    # ids (a different date pin, effort or permutation), the two prefixes count different class
+    # positions, or an arm, the transport control or a side read crashes on the pod
+    t11 = ROOT / "papers/st_live_reference/outputs/t11/gpt_oss_20b"
+    if not (t11 / "gen" / "h1_rollouts_read.jsonl").exists():
+        pytest.skip("T1.1 outputs not present locally")
+    inp = tmp_path / "inputs"
+    inp.mkdir()
+    np.savez(inp / "st2_inputs.npz", anchor_axis=np.ones(4, np.float32))
+    out = tmp_path / "out"
+    base = [sys.executable, str(SCRIPTS / "st2_driver.py"), "--out", str(out), "--inputs",
+            str(inp), "--dry-run", "--date-pin", "2026-10-21"]
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    r = subprocess.run(base, capture_output=True, text=True, cwd=ROOT, env=env)
+    assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    d = out / "gpt_oss_20b"
+    r = subprocess.run(base + ["--phases", ",".join(D.CELL2), "--t11", str(t11), "--c1", str(d)],
+                       capture_output=True, text=True, cwd=ROOT, env=env)
+    assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-3000:]
+    rec = json.loads((d / "st2_record.json").read_text())
+    assert all(rec["phases"][p]["finished"] for p in D.CELL2)
+    ex = rec["phases"]["c2_extract"]
+    assert ex["n_traces"] == 8 and ex["n_scenarios"] == 4  # 4 extraction scenarios x 2 rollouts
+    dr = rec["phases"]["c2_direction"]
+    assert np.isfinite(dr["split_half_cos"]) and dr["target_twin"]["clause_end"] is not None
+    assert dr["random"]["target_twin"]["prompt"] is not None
+    tn = [json.loads(x) for x in (d / "gen" / "c2_twin_none.jsonl").open()]
+    assert tn and all(x["twin_kind"] in ("deleted", "clause_deleted", "rewritten") for x in tn)
+    ab = [json.loads(x) for x in (d / "gen" / "c2_ablate.jsonl").open()]
+    assert any(x["n_steered"] > 0 for x in ab)
+    c1 = [json.loads(x)["rollout_key"] for x in (d / "gen" / "c1_none.jsonl").open()]
+    assert {x["rollout_key"] for x in ab} <= set(c1)  # paired with Cell 1's seeds
+    tr = [json.loads(x) for x in (d / "c2" / "transport.jsonl").open()]
+    assert len(tr) == 2 * 2 * 4 and {x["condition"] for x in tr} == {
+        "present", "present_ablated", "present_random", "twin"}
+    assert rec["phases"]["c2_freegen"]["n"] >= 1
+    assert rec["phases"]["c2_anchor"]["n"] == 4
+
+
+@pytest.mark.slow
+def test_trace_positions_on_a_real_trace_with_the_real_format():
+    # most probable failure: the dry runs patch the harmony trace opening, so on the pod the
+    # clause_end positions could fall on the header or outside the analysis channel and V_rule
+    # would read the wrong tokens
+    t11 = ROOT / "papers/st_live_reference/outputs/t11/gpt_oss_20b/gen/h1_rollouts_read.jsonl"
+    if not t11.exists():
+        pytest.skip("T1.1 outputs not present locally")
+    import kdg_harmony as kh
+    import pod_st_screen as P
+    import steering_gate as SG
+    from reasoning_formats import build_format
+    from transformers import AutoTokenizer
+
+    spec = P.registry()[D.KEY]
+    tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+    c = {"fmt": build_format(D.KEY, tok, spec), "tok": tok}
+    r = json.loads(t11.open().readline())
+    gen = r["gen_ids"]
+    pos = D.trace_positions(c, gen, 100, SG.punct_mask(tok))
+    ce = [p - 100 for p in pos["clause_end"]]
+    end = gen.index(kh.END) if kh.END in gen else len(gen)
+    assert ce and min(ce) >= len(kh.ANALYSIS_OPEN) and max(ce) < end
+    assert all(tok.decode([gen[i]]).strip() in ".,;:!?" or tok.decode([gen[i - 1]]).strip()
+               in ".,;:!?" for i in ce[:20])

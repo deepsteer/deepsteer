@@ -63,6 +63,24 @@ class Mix:
     name: str = "self"
 
 
+@dataclass
+class Ablate:
+    """Mean-ablation along a unit direction (Amendment 22, Cell 2): ``h -= (<h, v> - target) v`` at
+    the class positions, so the component on ``v`` is replaced by ``target`` (a reference mean),
+    never zeroed. Computed in float32."""
+
+    vector: np.ndarray  # unit
+    target: float
+    name: str = "ablate"
+
+
+def _ablate(h, v, target: float):
+    """``h`` [..., hidden] with its component on unit ``v`` set to ``target``."""
+    hf = h.float()
+    p = hf @ v
+    return (hf - (p - target).unsqueeze(-1) * v).to(h.dtype)
+
+
 def punct_mask(tok) -> np.ndarray:
     """Per vocabulary id: the token decodes to punctuation only (after trailing spaces)."""
     out = np.zeros(len(tok), dtype=bool)
@@ -143,7 +161,10 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
                 if v.ndim == 2:  # one vector per entry: this batch's rows
                     v = v[b0: b0 + B]
                 vec = torch.as_tensor(v, dtype=hf.dtype, device=dev)
-            src = None
+            src = abl = None
+            if isinstance(intervention, Ablate):
+                abl = torch.as_tensor(np.asarray(intervention.vector), dtype=torch.float32,
+                                      device=dev)
             if isinstance(intervention, Mix):
                 src = torch.as_tensor(intervention.sources[[pidx[b0 + r] for r in range(B)]],
                                       dtype=hf.dtype, device=dev)
@@ -155,7 +176,9 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
                 h = out[0] if isinstance(out, tuple) else out
                 h = h.clone()
                 last = h[:, -1, :]
-                if vec is not None:
+                if abl is not None:
+                    last[m] = _ablate(last[m], abl, intervention.target)
+                elif vec is not None:
                     last[m] = last[m] + intervention.alpha * (vec[m] if vec.dim() == 2 else vec)
                 else:
                     last[m] = (1 - intervention.beta) * last[m] + intervention.beta * src[m]
@@ -276,6 +299,36 @@ def coherence(steered: list[dict], base: list[dict], parsed_steered: Sequence[bo
             "parse_rule": ("relative: arm >= none - 0.05 (Amendment 13)" if pb is not None
                            else "absolute: >= 0.95"),
             "length_ratio": ratio, "nll_delta": dn, "passes": bool(ok), "bars": COHERENCE}
+
+
+def ablate_readout(model, ids: Sequence[Sequence[int]], vector: np.ndarray | None, target: float,
+                   layer: int, letter_ids: Sequence[int]) -> np.ndarray:
+    """Cell 2's transport control: the dose-0 letter readout (last position, one row at a time)
+    with the mean-ablation at every input position, block ``layer - 1``'s output; ``vector`` None
+    reads the input unablated. Returns letter log-probs [n, letters]."""
+    import torch
+
+    hf = model.model
+    v = None if vector is None else torch.as_tensor(np.asarray(vector), dtype=torch.float32,
+                                                    device=hf.device)
+
+    def hook(_m, _i, o):
+        h = o[0] if isinstance(o, tuple) else o
+        h = _ablate(h, v, target)
+        return (h,) + tuple(o[1:]) if isinstance(o, tuple) else h
+    out = []
+    for x in ids:
+        hd = (model.wb._get_layer_module(layer - 1).register_forward_hook(hook)  # noqa: SLF001
+              if v is not None else None)
+        try:
+            with torch.no_grad():
+                lg = hf(input_ids=torch.tensor([list(x)], device=hf.device),
+                        logits_to_keep=1).logits[0, -1]
+        finally:
+            if hd is not None:
+                hd.remove()
+        out.append(torch.log_softmax(lg.float(), -1)[list(letter_ids)].cpu().numpy())
+    return np.stack(out)
 
 
 def mix_readout(model, ids: Sequence[Sequence[int]], sources: np.ndarray, beta: float,

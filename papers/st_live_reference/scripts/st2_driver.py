@@ -11,13 +11,28 @@ summary (ΔP against ``none`` and against ``fill``, Amendment 13's relative cohe
 rule, rider (a)'s protect-ward reading, care beyond harm as ΔP(care_harm) − ΔP(V_harm)); the
 analysis of record, Holm-Bonferroni included, runs locally from the saved rows.
 
+Cell 2 (pod B), ``V_rule`` (Amendment 22 item 2 and its Cell 2 decisions): ``c2_extract`` prefills
+each of the 576 T1.1 rule-present traces of the 72 deletion-twin non-engaged H1_train scenarios
+under the saved rule-present prompt and under the twin's prompt, and banks per-trace residual sums
+at block 12 per position class (``clause_end``, ``onset``, ``stride32``, ``prompt``) plus a
+``clause_end`` sample for the participation ratio; ``c2_direction`` builds ``V_rule`` (per-trace
+sums -> per-scenario mean over positions -> mean over scenarios, unit), the twin-prefix target per
+class, the split-half cosine (36/36, seeded) and the matched random direction (the T1.3 fill draw
+0, covariance-matched at this site) with its own targets; ``c2_anchor`` the end-of-scenario side
+read; ``c2_ablate`` / ``c2_random`` / ``c2_twin_none`` the engaged 45 x 8 (seeds paired with Cell
+1's first 8 rollouts, Cell 1's date pin); ``c2_transport`` the dose-0 control (45 x 8
+permutations: rule-present, rule-present ablated, rule-present random-ablated, rule-absent twin);
+``c2_freegen`` the free-generation side read (Cell 1's ``none`` vs the twins' free generations).
+
     python3 st2_driver.py --out <dir> --inputs <st2_inputs dir> [--phases ...] [--dry-run]
 """
 
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
+import random
 import sys
 import time
 import zlib
@@ -41,6 +56,10 @@ ALPHA = 267.301171875  # the gate of record's alpha (Amendment 13)
 R1 = 16  # Cell 1 rollouts per scenario (Amendment 22 rider (d))
 BATCH = 160
 C1_ARMS = ("none", "fill", "care_harm", "V_harm", "neg_a")
+R2 = 8  # Cells 2 and 3 rollouts per scenario, paired with Cell 1's first 8 (seeds st2c1)
+CLASSES = ("clause_end", "onset", "stride32", "prompt")
+SPLIT_SEED = 20261021
+PR_PER_TRACE = 8  # clause_end positions kept per trace for the participation ratio
 
 
 def _now() -> str:
@@ -66,10 +85,16 @@ def context(a) -> dict:
          "H": {s.id: s for s in Hs if s.id in kept},
          "engaged": json.loads((DATA / "st2_engaged_train_v1.json").read_text())["ids"],
          "inp": {k: z[k] for k in z.files}, "layer": L_STAR, "cls": CLS,
-         "cap": L.CAP_OF_RECORD, "batch": BATCH, "alpha": ALPHA, "r1": R1}
+         "cap": L.CAP_OF_RECORD, "batch": BATCH, "alpha": ALPHA, "r1": R1, "r2": R2}
+    tw = json.loads((DATA / "st2_rule_twins_v1.json").read_text())["twins"]
+    c["twins"] = tw
+    c["extract"] = sorted(sid for sid, v in tw.items() if sid not in set(c["engaged"])
+                          and v["twin_kind"] != "rewritten")
+    c["t11"] = a.t11 / "gen" / "h1_rollouts_read.jsonl" if a.t11 else None
+    c["c1_none"] = a.c1 / "gen" / "c1_none.jsonl" if a.c1 else None
     if a.dry_run:  # a random tiny model writes no punctuation: onset, so the hooks fire
-        c.update(engaged=c["engaged"][:2], layer=2, cap=24, batch=8, alpha=1.0, r1=2,
-                 cls="onset")
+        c.update(engaged=c["engaged"][:2], layer=2, cap=24, batch=8, alpha=1.0, r1=2, r2=2,
+                 cls="onset", extract=c["extract"][:4])
     return c
 
 
@@ -215,10 +240,345 @@ def phase_c1_read(c, sc, model, rec, a) -> dict:
     return {"status": "ok", **out}
 
 
+# ---- cell 2 -------------------------------------------------------------------------------------
+def twin_scenario(c: dict, sid: str):
+    return dataclasses.replace(c["H"][sid], agent_text=c["twins"][sid]["agent_text_twin"])
+
+
+def render_ids(sc, s, k: int, date_pin: str, cell: str | None = None) -> list[int]:
+    """The agent-frame generation prompt (or, with ``cell``, the dose-0 input) at permutation k
+    under an explicit date pin."""
+    o = L.assign_letters(s, k)
+    if cell is not None:
+        return sc.fmt.dose0_ids(sc.tok, sc.messages(s, o, cell), sc.effort, sc.dose0, date_pin)
+    msgs = L.letter_chat_messages(s, o, "agent", "neutral", "primary")
+    return sc.fmt.prompt_ids(sc.tok, sc.fmt.render(sc.tok, msgs, sc.effort, date_pin))
+
+
+def class_sums(model, ids: list[int], n_prompt: int, pos: dict[str, list[int]], layer: int,
+               keep: int = 0, rng=None) -> tuple[dict, np.ndarray | None]:
+    """One single-row teacher-forced forward: per class the sum of block ``layer - 1``'s output
+    over the class's absolute positions (``prompt`` = every prompt position; float32 on the
+    device, float64 out), and up to ``keep`` sampled ``clause_end`` rows (float32)."""
+    import torch
+
+    grab: dict = {}
+    hd = model.wb._get_layer_module(layer - 1).register_forward_hook(  # noqa: SLF001
+        lambda _m, _i, o: grab.__setitem__("h", (o[0] if isinstance(o, tuple) else o)[0]))
+    try:
+        with torch.no_grad():
+            model.model(input_ids=torch.tensor([list(ids)], device=model.model.device),
+                        logits_to_keep=1)
+    finally:
+        hd.remove()
+    h = grab["h"].float()
+    out = {}
+    allpos = {**pos, "prompt": list(range(n_prompt))}
+    for k in CLASSES:
+        ix = allpos.get(k) or []
+        out[k] = ((h[ix].sum(0).cpu().numpy().astype(np.float64) if ix
+                   else np.zeros(h.shape[-1])), len(ix))
+    sample = None
+    ce = allpos.get("clause_end") or []
+    if keep and ce:
+        pick = sorted(rng.sample(ce, min(keep, len(ce))))
+        sample = h[pick].cpu().numpy().astype(np.float32)
+    return out, sample
+
+
+def trace_positions(c: dict, gen: list[int], n_prompt: int, punct) -> dict[str, list[int]]:
+    import t11_driver as T11
+
+    pos: dict[str, list[int]] = {k: [] for k in ("clause_end", "onset", "stride32")}
+    for i, cls in T11.class_positions(c["fmt"], c["tok"], gen, punct).items():
+        for k in cls:
+            pos[k].append(n_prompt + i)
+    return pos
+
+
+def phase_c2_extract(c, sc, model, rec, a) -> dict:
+    """Item 2's read of record: each saved T1.1 rule-present trace of the extraction scenarios,
+    prefilled under its saved prompt and under the twin's (same date pin, effort and permutation;
+    the original is re-rendered first and must reproduce the saved ids)."""
+    import hashlib
+
+    punct = SG.punct_mask(c["tok"])
+    want = set(c["extract"])
+    rows = [r for r in (json.loads(x) for x in c["t11"].open()) if r["scenario_id"] in want]
+    if a.dry_run:
+        rows = [r for r in rows if r["rollout"] < 2]
+    rng = random.Random(SPLIT_SEED)
+    keys, sums_p, sums_t, counts, sample = [], [], [], [], []
+    for r in sorted(rows, key=lambda r: (r["scenario_id"], r["rollout"])):
+        s, k = c["H"][r["scenario_id"]], r["rollout"]
+        if L.letter_map(L.assign_letters(s, k)) != r["order"]:
+            raise SystemExit(f"{r['scenario_id']}#{k}: letter order differs from T1.1's")
+        pres = render_ids(sc, s, k, r["date_pin"])
+        if pres != r["prompt_ids"] or hashlib.sha256(json.dumps(pres).encode()).hexdigest() != \
+                r["prompt_ids_sha256"]:
+            raise SystemExit(f"{r['scenario_id']}#{k}: re-rendered prompt differs from T1.1's")
+        twin = render_ids(sc, twin_scenario(c, r["scenario_id"]), k, r["date_pin"])
+        gen = r["gen_ids"] if not a.dry_run else r["gen_ids"][:48]
+        sp, smp = class_sums(model, pres + gen, len(pres),
+                             trace_positions(c, gen, len(pres), punct), c["layer"], PR_PER_TRACE,
+                             rng)
+        st, _ = class_sums(model, twin + gen, len(twin),
+                           trace_positions(c, gen, len(twin), punct), c["layer"])
+        keys.append(f"{r['scenario_id']}|{k}")
+        sums_p.append([sp[x][0] for x in CLASSES])
+        sums_t.append([st[x][0] for x in CLASSES])
+        counts.append([[sp[x][1] for x in CLASSES], [st[x][1] for x in CLASSES]])
+        if smp is not None:
+            sample.append(smp)
+    out = c["out"] / "c2"
+    out.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out / "extract.npz", keys=np.array(keys), classes=np.array(CLASSES),
+                        sums_present=np.array(sums_p), sums_twin=np.array(sums_t),
+                        counts=np.array(counts), pr_sample=np.concatenate(sample) if sample
+                        else np.zeros((0, 1), np.float32))
+    return {"status": "ok", "n_traces": len(keys), "n_scenarios": len({k.split("|")[0]
+                                                                       for k in keys})}
+
+
+def participation_ratio(x: np.ndarray) -> float:
+    x = x - x.mean(0, keepdims=True)
+    ev = np.linalg.eigvalsh(x.T @ x / max(len(x) - 1, 1)) if x.shape[1] <= 4096 else None
+    ev = np.clip(ev, 0, None)
+    return float(ev.sum() ** 2 / (ev ** 2).sum())
+
+
+def rule_direction(keys, sums_p, sums_t, counts, ci: int, ids: list[str] | None = None):
+    """Per scenario: (sum present - sum twin) / n over its traces' class positions; mean over
+    scenarios; unit. Returns (unit direction, per-scenario mean differences)."""
+    by: dict[str, list] = {}
+    for key, sp, st, n in zip(keys, sums_p, sums_t, counts):
+        sid = str(key).split("|")[0]
+        if n[0][ci] != n[1][ci]:
+            raise SystemExit(f"{key}: class counts differ between the prefixes")
+        d = by.setdefault(sid, [np.zeros_like(sp[ci]), 0])
+        d[0] += sp[ci] - st[ci]
+        d[1] += n[0][ci]
+    per = {s: v[0] / v[1] for s, v in by.items() if v[1] and (ids is None or s in ids)}
+    m = np.mean([per[s] for s in sorted(per)], 0)
+    return m / np.linalg.norm(m), per
+
+
+def twin_targets(keys, sums_t, counts, v: np.ndarray) -> dict[str, float]:
+    """Per class: the mean projection on v under the twin prefix, mean over positions within the
+    scenario then over scenarios."""
+    out = {}
+    for ci, cls in enumerate(CLASSES):
+        by: dict[str, list] = {}
+        for key, st, n in zip(keys, sums_t, counts):
+            d = by.setdefault(str(key).split("|")[0], [0.0, 0])
+            d[0] += float(st[ci] @ v)
+            d[1] += n[1][ci]
+        vals = [x / n for x, n in by.values() if n]
+        out[cls] = float(np.mean(vals)) if vals else None
+    return out
+
+
+def phase_c2_direction(c, sc, model, rec, a) -> dict:
+    z = np.load(c["out"] / "c2" / "extract.npz")
+    keys, sp, st, n = z["keys"], z["sums_present"], z["sums_twin"], z["counts"]
+    ci = CLASSES.index("clause_end")
+    v, per = rule_direction(keys, sp, st, n, ci)
+    ids = sorted(per)
+    rng = random.Random(SPLIT_SEED)
+    half = sorted(rng.sample(ids, len(ids) // 2))
+    va, _ = rule_direction(keys, sp, st, n, ci, set(half))
+    vb, _ = rule_direction(keys, sp, st, n, ci, set(ids) - set(half))
+    r = c["inp"]["fill_unit"][0].astype(np.float64)
+    r = r / np.linalg.norm(r)
+    pr = participation_ratio(z["pr_sample"].astype(np.float64)) if len(z["pr_sample"]) > 2 \
+        else None
+    out = {"status": "ok", "n_scenarios": len(ids), "split_half_cos": float(va @ vb),
+           "split": {"a": half, "seed": SPLIT_SEED},
+           "target_twin": twin_targets(keys, st, n, v),
+           "random": {"source": "T1.3 fill_unit[0] (covariance-matched at clause_end, block 12)",
+                      "cos_with_V_rule": float(r @ v), "target_twin": twin_targets(keys, st, n, r)},
+           "participation_ratio_clause_end": pr, "n_pr_rows": int(len(z["pr_sample"])),
+           "diff_norm_mean": float(np.mean([np.linalg.norm(x) for x in per.values()]))}
+    np.savez(c["out"] / "c2" / "v_rule.npz", v_rule=v.astype(np.float32),
+             random=r.astype(np.float32), ids=np.array(ids),
+             per_scenario=np.array([per[s] for s in ids], np.float32))
+    return out
+
+
+def _anchor_index(sc, ids: list[int], s) -> int:
+    """The last prompt token inside the scenario text (end of scenario, before the options)."""
+    text = sc.tok.decode(ids)
+    end = text.find(s.agent_text)
+    if end < 0:
+        raise SystemExit(f"{s.id}: scenario text not found in its rendered prompt")
+    end += len(s.agent_text)
+    enc = sc.tok(text, add_special_tokens=False, return_offsets_mapping=True)
+    if list(enc["input_ids"]) != list(ids):
+        raise SystemExit(f"{s.id}: re-encoding the prompt changed its ids")
+    return max(i for i, (_b, e) in enumerate(enc["offset_mapping"]) if e <= end)
+
+
+def phase_c2_anchor(c, sc, model, rec, a) -> dict:
+    """Side read: rule-present minus twin at the end-of-scenario anchor (prompt only; the anchor
+    precedes the options, so permutation 0 stands for all), over the extraction scenarios."""
+    import torch
+
+    v = np.load(c["out"] / "c2" / "v_rule.npz")["v_rule"].astype(np.float64)
+    diffs = []
+    for sid in c["extract"]:
+        hs = []
+        for s in (c["H"][sid], twin_scenario(c, sid)):
+            ids = render_ids(sc, s, 0, sc.date_pin)
+            j = _anchor_index(sc, ids, s)
+            grab: dict = {}
+            hd = model.wb._get_layer_module(c["layer"] - 1).register_forward_hook(  # noqa: SLF001
+                lambda _m, _i, o: grab.__setitem__("h", (o[0] if isinstance(o, tuple) else o)[0]))
+            try:
+                with torch.no_grad():
+                    model.model(input_ids=torch.tensor([ids[: j + 1]], device=model.model.device),
+                                logits_to_keep=1)
+            finally:
+                hd.remove()
+            hs.append(grab["h"][-1].float().cpu().numpy().astype(np.float64))
+        diffs.append(hs[0] - hs[1])
+    m = np.mean(diffs, 0)
+    u = m / np.linalg.norm(m)
+    np.save(c["out"] / "c2" / "anchor_diffs.npy", np.array(diffs, np.float32))
+    return {"status": "ok", "n": len(diffs), "cos_with_V_rule": float(u @ v)}
+
+
+def c1_date_pin(c: dict) -> str:
+    """Cells 2 and 3 render with Cell 1's date pin, so their arms pair with Cell 1's none."""
+    pins = {json.loads(x)["date_pin"] for x in c["c1_none"].open()}
+    if len(pins) != 1:
+        raise SystemExit(f"Cell 1's none carries {len(pins)} date pins")
+    return pins.pop()
+
+
+def c2_jobs(c: dict, sc, twin: bool) -> list[dict]:
+    jobs = L.h1_jobs(sc, c["H"], c["engaged"], c["r2"])
+    if twin:
+        for j in jobs:
+            s = twin_scenario(c, j["s"].id)
+            j["ids"] = render_ids(sc, s, j["k"], sc.date_pin)
+            j["rendered_sha256"] = None
+            j["twin_kind"] = c["twins"][s.id]["twin_kind"]
+    return jobs
+
+
+def phase_c2_arm(c, sc, model, rec, a, arm: str) -> dict:
+    d = rec["phases"]["c2_direction"]
+    vr = np.load(c["out"] / "c2" / "v_rule.npz")
+    if arm == "ablate":
+        iv = SG.Ablate(vr["v_rule"], d["target_twin"]["clause_end"])
+    elif arm == "random":
+        iv = SG.Ablate(vr["random"], d["random"]["target_twin"]["clause_end"])
+    else:
+        iv = None
+    jobs = c2_jobs(c, sc, twin=(arm == "twin_none"))
+    rows = run_arm(c, sc, model, "st2c1", f"c2_{arm}", jobs, iv,
+                   extra=lambda i: {"cell": 2, "arm2": arm,
+                                    **({"twin_kind": jobs[i]["twin_kind"]} if arm == "twin_none"
+                                       else {})})
+    return {"status": "ok", "n": len(rows),
+            "parse_rate": float(np.mean([r["letter"] is not None for r in rows]))}
+
+
+def _p_viol(lp: np.ndarray, s, k: int) -> float:
+    o = L.assign_letters(s, k)
+    shown = [x for x, _ in o]
+    q = np.exp(np.array([lp["ABCDE".index(x)] for x in shown]))
+    q /= q.sum()
+    return float(q[[op.norm_status for _x, op in o].index("violating")])
+
+
+def phase_c2_transport(c, sc, model, rec, a) -> dict:
+    """The dose-0 transport control: the same ablation at every input position (target: the twin
+    prefix's mean projection over prompt positions, the ``prompt`` class); rows saved per
+    (scenario, permutation, condition)."""
+    d = rec["phases"]["c2_direction"]
+    vr = np.load(c["out"] / "c2" / "v_rule.npz")
+    lids = L.letter_ids(sc)
+    conds = {"present": (False, None, 0.0),
+             "present_ablated": (False, vr["v_rule"], d["target_twin"]["prompt"]),
+             "present_random": (False, vr["random"], d["random"]["target_twin"]["prompt"]),
+             "twin": (True, None, 0.0)}
+    rows = []
+    for sid in c["engaged"]:
+        for k in range(L.N_PERM if not a.dry_run else 2):
+            for name, (tw, vec, tgt) in conds.items():
+                s = twin_scenario(c, sid) if tw else c["H"][sid]
+                ids = render_ids(sc, s, k, sc.date_pin, cell="dl_chat_neutral")
+                lp = SG.ablate_readout(model, [ids], vec, tgt, c["layer"], lids)[0]
+                rows.append({"scenario_id": sid, "perm": k, "condition": name,
+                             "twin_kind": c["twins"][sid]["twin_kind"],
+                             "letter_logp": [float(x) for x in lp],
+                             "p_violating": _p_viol(lp, s, k)})
+    sc.save_jsonl("c2/transport.jsonl", rows)
+    per = {}
+    for r in rows:
+        per.setdefault((r["condition"], r["scenario_id"]), []).append(r["p_violating"])
+    m = {k: float(np.mean(v)) for k, v in per.items()}
+    ids = [s for s in c["engaged"] if s != "H1-A-168"]
+
+    def moved(sel):
+        return T13.boot([m[("present_ablated", s)] - m[("present", s)] for s in sel])
+    return {"status": "ok", "n_rows": len(rows),
+            "dP0_ablated_vs_present_headline": moved(ids),
+            "dP0_ablated_vs_present_all45": moved(c["engaged"]),
+            "dP0_twin_vs_present": T13.boot([m[("twin", s)] - m[("present", s)]
+                                             for s in c["engaged"]]),
+            "dP0_random_vs_present": T13.boot([m[("present_random", s)] - m[("present", s)]
+                                               for s in c["engaged"]]),
+            "headline_excludes": ["H1-A-168"]}
+
+
+def phase_c2_freegen(c, sc, model, rec, a) -> dict:
+    """Side read: Cell 1's rule-present none against the twins' free generations, each rollout
+    teacher-forced, clause_end at block 12; per scenario mean over positions, mean over scenarios,
+    cosine with V_rule."""
+    punct = SG.punct_mask(c["tok"])
+    v = np.load(c["out"] / "c2" / "v_rule.npz")["v_rule"].astype(np.float64)
+    cls = c["cls"]  # clause_end on the pod (the dry run's onset)
+    means = {}
+    jobs = {"present": {(j["s"].id, j["k"]): j for j in L.h1_jobs(sc, c["H"], c["engaged"],
+                                                                  c["r1"])},
+            "twin": {(j["s"].id, j["k"]): j for j in c2_jobs(c, sc, twin=True)}}
+    srcs = {"present": c["c1_none"], "twin": c["out"] / "gen" / "c2_twin_none.jsonl"}
+    for side, f in srcs.items():
+        acc: dict[str, list] = {}
+        for r in (json.loads(x) for x in f.open()):
+            j = jobs[side].get((r["scenario_id"], r["rollout"]))
+            if j is None or not r.get("gen_ids"):
+                continue
+            ids = j["ids"]
+            sums, _ = class_sums(model, ids + r["gen_ids"], len(ids),
+                                 trace_positions(c, r["gen_ids"], len(ids), punct), c["layer"])
+            a_ = acc.setdefault(r["scenario_id"], [np.zeros_like(v), 0])
+            a_[0] += sums[cls][0]
+            a_[1] += sums[cls][1]
+        means[side] = {s: x[0] / x[1] for s, x in acc.items() if x[1]}
+    ids = sorted(set(means["present"]) & set(means["twin"]))
+    if not ids:
+        return {"status": "ok", "n": 0, "cos_with_V_rule": None}
+    m = np.mean([means["present"][s] - means["twin"][s] for s in ids], 0)
+    return {"status": "ok", "n": len(ids), "cos_with_V_rule": float(m @ v / np.linalg.norm(m)),
+            "class": cls}
+
+
 PHASES = {**{f"c1_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c1_arm(c, sc, m, rec, a,
                                                                              arm))(arm)
-             for arm in C1_ARMS}, "c1_read": phase_c1_read}
+             for arm in C1_ARMS}, "c1_read": phase_c1_read,
+          "c2_extract": phase_c2_extract, "c2_direction": phase_c2_direction,
+          "c2_anchor": phase_c2_anchor,
+          **{f"c2_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c2_arm(c, sc, m, rec, a,
+                                                                              arm))(arm)
+             for arm in ("ablate", "random", "twin_none")},
+          "c2_transport": phase_c2_transport, "c2_freegen": phase_c2_freegen}
 CELL1 = [f"c1_{arm}" for arm in C1_ARMS] + ["c1_read"]
+CELL2 = ["c2_extract", "c2_direction", "c2_anchor", "c2_ablate", "c2_random", "c2_twin_none",
+         "c2_transport", "c2_freegen"]
+GEN_PHASES = {f"c1_{a}" for a in C1_ARMS} | {"c2_ablate", "c2_random", "c2_twin_none"}
 
 
 def main() -> int:
@@ -230,6 +590,8 @@ def main() -> int:
     ap.add_argument("--date-pin", default=datetime.now(timezone.utc).strftime("%Y-%m-%d"))
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--deadline", type=float, default=None)
+    ap.add_argument("--t11", type=Path, default=None, help="T1.1's output dir (Cell 2's traces)")
+    ap.add_argument("--c1", type=Path, default=None, help="pod A's output dir (Cell 1's none)")
     a = ap.parse_args()
     c = context(a)
     rec = load_record(c)
@@ -239,16 +601,23 @@ def main() -> int:
         return 0
     model = load_model(c, a)
     sc = screen(c, model, a)
-    arm_s: list[float] = []
+    if any(p.startswith(("c2_", "c3_")) for p in todo) and c["c1_none"] is not None:
+        sc.date_pin = c1_date_pin(c)  # pair with Cell 1's none (the harmony prompt carries it)
+    per_rollout: list[float] = []  # measured seconds per generated rollout, any arm
+
+    def n_rollouts(name: str) -> int:
+        return len(c["engaged"]) * (c["r1"] if name.startswith("c1_") else c["r2"])
+
     for name in todo:
-        est = float(np.mean(arm_s)) if arm_s and name != "c1_read" else 0.0
+        est = (float(np.mean(per_rollout)) * n_rollouts(name)
+               if per_rollout and name in GEN_PHASES else 0.0)
         if a.deadline and time.time() + est > a.deadline:
             print(f">> st2 {name}: not started (would end past the deadline)", flush=True)
             return 3
         t0 = time.time()
         res = PHASES[name](c, sc, model, rec, a)
-        if name != "c1_read":
-            arm_s.append(time.time() - t0)
+        if name in GEN_PHASES:
+            per_rollout.append((time.time() - t0) / n_rollouts(name))
         rec = load_record(c)
         rec["phases"][name] = {**res, "seconds": time.time() - t0, "finished": _now()}
         save_record(c, rec)
