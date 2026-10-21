@@ -2074,3 +2074,18 @@ generation of the 4,224 adapted rollouts would cost several A100-h more than the
    generation is required, T1.5 is scoped to H1_held ΔP, specificity and capability for every
    adapter, and the panel guard on the headline adapter only.
 5. **Envelope.** Holds at 36. T1.6, and anything over the headroom, go to G3 with numbers.
+
+**T1.5 generation path, zero-GPU check (Amendment 18 item 4; vLLM v0.31.0 source,
+`vllm/model_executor/models/gpt_oss.py` at the tag).** A GPT-OSS checkpoint without a
+`quantization_config` loads through `GptOssModel._load_weights_other`, which takes the HF bf16
+expert layout: the checkpoint-name map sends `.gate_up_proj` → `w13_weight`, `.down_proj` →
+`w2_weight`, `.gate_up_proj_bias` → `w13_bias`, `.down_proj_bias` → `w2_bias`, and the loader
+permutes each `[E, H, 2I]` / `[E, I, H]` tensor into the fused-MoE layout. So a LoRA merged into the
+dequantized bf16 base (`Mxfp4Config(dequantize=True)`, as the HF stack of record loads it) and saved
+with `save_pretrained` is servable by vLLM (~42 GB per merged checkpoint on disk, one at a time).
+Not settled by source: that vLLM's fused kernel reads the gate/up columns in the interleaved order
+HF's `GptOssExperts` uses. T1.5 therefore opens with a parity gate per adapter: the merged
+checkpoint on vLLM against HF with the adapter attached, first-token letter log-probs on the same
+rows read one at a time, within the engine-parity bar of record; a failure sends that adapter to
+HF generation under item 4's HF scope. Generation therefore stays priced at vLLM rates pending the
+gate.
