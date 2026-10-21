@@ -2347,3 +2347,24 @@ MDE (80%, two-sided) at 45 × 16 is 0.054-0.067 against `none`, 0.049-0.055 agai
 Cell 1 at 5 arms × 720 rollouts is 7.28 A100-h (+3.64), so GPT-OSS's Phase 2 runs on two pods:
 pod A, Cell 1 (~7.8 with setup); pod B, the Qwen top-up and Cells 2-3 (~4.1). Envelope of record
 about 48.4 of 56.
+
+#### ST Phase 2 pod A build, Cell 1 (2026-10-21; Amendment 22 and its riders; zero GPU until launch)
+
+- **`scripts/st2_driver.py`**: one HF process on the ST stack, the five Cell 1 arms in the order
+  `none`, `fill`, `care_harm`, `V_harm`, `neg_a`, each its own resumable phase, then `c1_read`
+  (the pod's summary; the analysis of record, Holm-Bonferroni included, runs locally). 45 engaged
+  H1_train × 16, seeds by stage `st2c1` (disjoint from T1.3's; shared across the cell's arms), α
+  267.3 at `clause_end`, block 12; every rollout parsed by the parser of record and scored for
+  coherence. Before each arm, the deadline check uses the mean measured arm time.
+- **`scripts/build_st2_inputs.py`**: `data/st2_engaged_train_v1.json` (T1.1's 45 ids, no new
+  draw; the T1.3 gate's 20 are among them) and `outputs/st2_inputs/` (the T1.4 inputs' unit
+  `anchor_axis`, `care_harm` and `V_harm`, checked equal to the T1.3 gate's axis, and the T1.3 unit
+  fill draws, with sha256).
+- **Remote**: `STEPS=st2a`, watchdog 8.0 h, inputs checked first, a dry run of every Cell 1 phase,
+  Amendment 10's selection and the remote re-price skipped, gate tests include `test_st2.py`
+  (fresh seeds, the arms' vectors and signs, rider (a), the read on synthetic rows, the dry run with
+  resume).
+- **Twins for Cell 2 (in progress).** The written-rule sentence is marked in all 132 H1_train
+  scenarios (130 single sentences, 2 pairs). In 22 the sentence also carries other content, mostly
+  the approver's only introduction, and 3 refer to the rule again elsewhere; the twin rule for those
+  is an author item before Cell 2's build.

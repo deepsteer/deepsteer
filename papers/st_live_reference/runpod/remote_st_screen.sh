@@ -67,6 +67,11 @@ elif [ "$STEPS" = "t15" ]; then
   # envelope at 36 with the second family's price (22.84 spent + 7.1 + 5.97).
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=t15
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-7.0}"
+elif [ "$STEPS" = "st2a" ]; then
+  # ST Phase 2 pod A (author, 2026-10-21; Amendment 22 and its riders): Cell 1, the full-n gate on
+  # GPT-OSS (45 engaged H1_train x 16, five arms), one HF process; inputs from outputs/st2_inputs
+  MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2a
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-8.0}"
 elif [ "$STEPS" = "rider2" ]; then
   # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
@@ -119,6 +124,7 @@ BANKED="$REPO_DIR/papers/st_live_reference/outputs/t10"
 T13_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/t13_inputs/gpt_oss_20b"  # SYNC_OUTPUTS (T1.3)
 T14_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/t14_inputs/gpt_oss_20b"  # SYNC_OUTPUTS (T1.4)
 T14_ADAPTERS="$REPO_DIR/papers/st_live_reference/outputs/t14/gpt_oss_20b/adapters"  # SYNC_OUTPUTS (T1.5)
+ST2_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/st2_inputs/gpt_oss_20b"  # SYNC_OUTPUTS (Phase 2)
 T11_DIR="$REPO_DIR/papers/st_live_reference/outputs/t11/gpt_oss_20b"
 T13_DIR="$REPO_DIR/papers/st_live_reference/outputs/t13/gpt_oss_20b"
 # the rider pod's per-model mode (author, 2026-10-19): Qwen phase H on its banked phase V, Muse's
@@ -174,7 +180,7 @@ from vllm.model_executor.models import gpt_oss, muse_glimmer, qwen3_5  # noqa: F
 import bitsandbytes, peft  # noqa: F401,E401  (T0.6 on the ST stack of record)
 from deepsteer.steering import objective_lora  # noqa: F401
 sys.path[:0] = ["papers/st_live_reference/scripts", "papers/kdg_panel/scripts"]
-import pod_st_screen, st_train, t11_driver, t13_driver, panel_call, t14_driver, general_slice, t15_driver, screen_stub  # noqa: F401,E401
+import pod_st_screen, st_train, t11_driver, t13_driver, panel_call, t14_driver, general_slice, t15_driver, screen_stub, st2_driver  # noqa: F401,E401
 v = {p: md.version(p) for p in ("vllm", "torch", "torchcodec", "cuda-bindings", "cuda-python",
                                 "flashinfer-python", "transformers", "peft", "bitsandbytes")}
 err, major, minor = nvrtc.nvrtcVersion()  # loads libnvrtc: the CUDA 13 failure mode
@@ -253,6 +259,12 @@ if [ "$STEPS" = "t15" ]; then  # T1.4's inputs and adapters (SYNC_OUTPUTS); the 
     done
   done
 fi
+if [ "$STEPS" = "st2a" ]; then  # built locally (build_st2_inputs.py); the engaged ids (committed)
+  for f in "$ST2_INPUTS/st2_inputs.npz" "$ST2_INPUTS/st2_inputs.json" \
+           papers/st_live_reference/data/st2_engaged_train_v1.json; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (Phase 2 inputs; SYNC_OUTPUTS=outputs/st2_inputs/)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "rider" ]; then  # the banked relaunch records the rider resumes from (SYNC_OUTPUTS)
   for m in qwen38_27b muse_glimmer_30b gpt_oss_20b; do
     [ -f "$BANKED/$m/screen_record.json" ] || { echo "FATAL: banked $BANKED/$m missing (SYNC_OUTPUTS)"; exit 1; }
@@ -296,13 +308,20 @@ dry_runs() {
       done
       rm -rf "$OUT/_dry_t15"
     fi
-    if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ]; then  # Amendment 10
+    if [ "$STEPS" = "st2a" ] && [ "$m" = "gpt_oss_20b" ]; then  # every Cell 1 phase, dry (tiny model)
+      rm -rf "$OUT/_dry_st2"
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2_driver.py \
+        --out "$OUT/_dry_st2" --dry-run --inputs "$ST2_INPUTS" --date-pin "$DATE_PIN" \
+        || { echo "DRY RUN FAILED (st2a)"; return 1; }
+      rm -rf "$OUT/_dry_st2"
+    fi
+    if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ]; then  # Amendment 10
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rr" --rr-select \
         || { echo "DRY RUN FAILED ($m, refusal-retention selection)"; return 1; }
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -376,7 +395,7 @@ rider2_after() {
 
 RC_ALL=0
 for m in $MODELS; do
-  if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ]; then  # of record from T1.1 (t11/_rr)
+  if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ]; then  # of record from T1.1 (t11/_rr)
     # Amendment 10 item 3 (author, 2026-10-19): the refusal-retention selection pass rides the
     # first pod that loads the development model after the amendment; vLLM only, its own record
     echo "==================== $OUT_SUB/_rr/gpt_oss_20b (refusal-retention selection) ===================="
@@ -388,6 +407,15 @@ for m in $MODELS; do
     fi
   fi
   echo "==================== $OUT_SUB/$m ===================="
+  if [ "$STEPS" = "st2a" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    rc=0
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2_driver.py --out "$OUT" \
+      --inputs "$ST2_INPUTS" --date-pin "$DATE_PIN" --deadline "$DEADLINE" || rc=$?
+    echo ">> $m exit $rc (0 ok, 3 envelope stop; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "t15" ]; then
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     rc=0
@@ -446,7 +474,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
