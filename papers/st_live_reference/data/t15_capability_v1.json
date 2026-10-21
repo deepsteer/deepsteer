@@ -1,0 +1,1407 @@
+{
+ "rule": "ST_PLAN Amendment 19 item 4",
+ "seed": 20261021,
+ "items": [
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 8,
+   "sha256": "d458d13913f72049e0a432d2c5b6412639ef6609a5d9ccebe0995be35306e4f9"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 10,
+   "sha256": "e526372b2e960c6d1575e76cca4759a9c393a66949d1fd1a727a3ff239b13f03"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 18,
+   "sha256": "851e6439f44e55eecd8d0ae494751c927b1fe964507c75e5709fd09fb2dab402"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 19,
+   "sha256": "154c8df41aba1614e0af88f0bdbc3d2dc10e0e76789989a6c3c7c011bdb9309b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 47,
+   "sha256": "d0bb365671823346050e7f62e8b76a97013f2458e21e7c812e1ae151763c4bab"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 70,
+   "sha256": "a1e05c1512a24d6227fab529b40972a4ec15995fc0ca7ee8c1ff50361491114e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 88,
+   "sha256": "4240e2d1bb84639f412d72b13419a6ceef1e2e2023fe76db612beb7cc89112d1"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 129,
+   "sha256": "883512359703bdbc7e311e6da14ba2907fd2bb0fc50a077602ba081145d88afa"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 130,
+   "sha256": "1c64800ffb2c7c83b5645657552e2a22c4cce32e533e2fa4f8248eb55492e0f9"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 139,
+   "sha256": "dceb7c73dd545bc71d850af9a921d77f290b8db70a1ea173bf9d544beaa0352c"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 146,
+   "sha256": "aa8117eb2f6758984419d06e19a0107dab523e49ea64df822b539a045e63ed0e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 164,
+   "sha256": "bee14fca4246442a51d1fcf03645c0a5e392f4524236c99bf18d84714a9ac320"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 175,
+   "sha256": "7588f7e816026ce9039cae073bf681eca9681de0a7a9bc14039b8c757ba40bbf"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 178,
+   "sha256": "e2c3edfe6881860228f62cbb2dba4a9e84a6beebb1159c7206bb132725343a28"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 183,
+   "sha256": "f29cc49868a9b93fc1f8bc183ee65933c5743a67523e973f84fc6014cd9d4809"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 188,
+   "sha256": "56680f207e277d0832470931f3c467cb4a1021b3bbf3bb88e7e86e3c8eeeb2a1"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 193,
+   "sha256": "83a1d4f50c9399fcb9826602f413377dbc5e947a2af4ed2addf3a8d2bf532d27"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 198,
+   "sha256": "bd4992524c6e0423e384132ac3bc4f10ae5c68a0dab570ae97cb6350ef3ea70b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 204,
+   "sha256": "ca83378f3af35bfa295974bd053805eaba06d9c15ee50b49e14fa7bec86ed020"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 227,
+   "sha256": "59892b16c65d22087cb2aa8c612a00c51db674a78293acb37b785f61308c7426"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 230,
+   "sha256": "74b1d6c6c2f90f76f55b438e77da74c8329c2c7391798389cfe2a677e583ab56"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 234,
+   "sha256": "393b992899f7f10740dc00b2070878ca72a2bf285b90467f8c73d3aca5ab4a52"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 259,
+   "sha256": "1996a72dbf80558f4505f413993dfbd8b5daa193428dd1cc03e638cbe84e060a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 263,
+   "sha256": "4c305368ca9258dd67b8889b68e7145fef60dbffa715e15fe0bce6db8486ad22"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 271,
+   "sha256": "2baf04e31d4e975c6e5cc8bb9db3a54aae4edf283ee1b94aeb7e34968d3c4bfa"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 288,
+   "sha256": "18becb25c8a05be72a1e2e9572117b0cdd79df3784c9b733dc2d8f8ae5c3048c"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 313,
+   "sha256": "fc44241cabca651beb23910950683c8fae91a25b8cfd4501798424136f513a0f"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 335,
+   "sha256": "622e753db5cdef054a780370a1d57c142fad315df2e9985ebc16f7f900a9d51f"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 341,
+   "sha256": "29793875cc349773e2c73a18a649120a7c106dac59835e1c26ec455b067a9566"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 344,
+   "sha256": "68de5ac410fd32842103f375f81d861660062941e7fd0f2d82421fe1c3fe5563"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 350,
+   "sha256": "693fc3e110811705c9a0098a55547d34cba2b66bbc8e5385ccd4c73767c4b054"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 379,
+   "sha256": "75cbd45b2cf34c82c48a903c3595b2923df9d1db36ade7d01721237449a597a9"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 383,
+   "sha256": "93da1c545b475b8722349f37ce5a80c830eba549b08733a1006f1df271f7dad8"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 394,
+   "sha256": "d08bed33a30751e1b482f5a45ad6d7202fe37ba7c656c6aaf423a128f17915fa"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 478,
+   "sha256": "a0cfad6314e5b8653152565dd083d57fc7a3f7c3281b7e956b66ff6605131891"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 494,
+   "sha256": "17771b9de3b5b3e5e838291fb50115b59ed27812c944b0ebe7483d4abbbeb269"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 511,
+   "sha256": "0e762e85088891d175fbaeb6bfde84da3677c5e15b683f064258d1d66baa3592"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 540,
+   "sha256": "c4325a52ba4070af41b41ab2df8185d8acd6b20c4e2fb53138fb8b8e00c06bc0"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 549,
+   "sha256": "5a6c963924fa162970a3a37d42350b4862ab698ffaf044b0883a36a02d8f4a40"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 572,
+   "sha256": "08583e67384e90c9f4719350825f76e606a0a913c44aa8afa13d44a5dc1379df"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 573,
+   "sha256": "d8fbc5f6fe5f1b9b811a328175c86a192b8dd869a98020bcb30b09346ff706d9"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 574,
+   "sha256": "f60080fb9229d890b495edeac98428e4ab49d7494c73b3890792e30b2f72894b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 582,
+   "sha256": "b658cc3bc6453a2ab1b0818a038c2080184cbb0b28463d7550f07fa828905af5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 592,
+   "sha256": "0ddccee16a7a50c5d4c8af9836029befc5c6e385c256a3089399b7bdeeb04a2a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 606,
+   "sha256": "1f35a9a0e3041a52537e83dc0578b0dffcc396e821f0a025669dbf9423b3291e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 629,
+   "sha256": "3026d59a9d8084fefa304fb22f5a1ceecfa51503df601d44c976cadfcf2caa19"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 631,
+   "sha256": "15c874942d6f3fd88b477918ca92565471c619e380307872c8b189d12867b3a0"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 642,
+   "sha256": "820f9fab14df057237e5de943bf40095454d80a1f0e5edeb6736b386953a9da5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 644,
+   "sha256": "4783e30761c87bde4f49b6e28196113c5566c9708aef88a3df37c50d0d0147b6"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 657,
+   "sha256": "98f19298724e304a79a533c94e1064e265f828bbad4d3b0c779564c3387dbcf8"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 661,
+   "sha256": "71c5a303a4ee08888d1bbba5bf037e5a164ec6a02340ff8c80ac088d36b41507"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 677,
+   "sha256": "a8e1614a634ba8d86f3bdf7330376695c91aff1634b9263e1c9284a21cd030ee"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 681,
+   "sha256": "04c9fdeb308af985a5e7170f21377ef14a0b58a80ac62242f32ab7e4dc678894"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 689,
+   "sha256": "270649c36e2edec1ceb7deb2a07a6ea1964f52708feec3b1853f110cff0839db"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 721,
+   "sha256": "4067bce91754443c261b50bc01c9240ea442bd00793c5f59abf1e6bbfa91ca71"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 747,
+   "sha256": "8e86f442e4b8ab1214f3a3a8b09a3db66fd7cad0d0cdef5fffda5c2eb35b39a3"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 771,
+   "sha256": "c21f6c5502510dbfe9312876eac99e9d931a7ac8551e370cb11211ab848a27de"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 786,
+   "sha256": "fc62af6cd91296bf0da1e67bce53ccf16dc08252c4302077283505298bc94ae6"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 803,
+   "sha256": "f86655f6128d433191c4906589ea8052831f3e1ee79ffd7bdfe9ded0d7493084"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 807,
+   "sha256": "027d66b3e03dabcf7746f5bb150b99eb2a43d2870053100b1593065b97d6c2e1"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 812,
+   "sha256": "5995504093caa318fc71a5df03f39e2180bf18affc0771e0cfecb482ef833961"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 819,
+   "sha256": "d9eb85dbea16ec3f3df18c7cf393ed27bd082874bb8f7b04f4f89edb46375faf"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 866,
+   "sha256": "f8c95a63f4f96613ec709f0a8fd7cea554abb9a064a819c92784b5da3d9c9c94"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 879,
+   "sha256": "c62dc57e651d0ae91c4a03a245c65989dc11f578edb784d0dc3bff4ce9bf88e0"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 906,
+   "sha256": "da2760f4f2f38c084029728114c2017b9ae49d0bf21f8846968cd705038e9cd5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 935,
+   "sha256": "298733e22a4f1a0dc82500ad0b041017a0e457aa2a53ac060de891828402e70b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 936,
+   "sha256": "79a51caa84107c5dcf3f151db2465e374936204c015989cbcb2dfb0bcf2eb30d"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 951,
+   "sha256": "8fd6525f5b25a51226ed5c53e8d6fa871061e7d766d51d66cddc37eade3888ef"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 970,
+   "sha256": "a278521e9dfab4c4bdbb40e1d0981ecb629277220fddda01c61aa64a8c7c3ed3"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 973,
+   "sha256": "317924694f86c19c6d222cd54678355c12bc69dd766bb672de534c16b511bda4"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 983,
+   "sha256": "63c10e422dd934697d85808772679a26401dbe12949ef5c88ef5b09167488c25"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1032,
+   "sha256": "018f6c642af7ddad46a6c63b3a95c01b982f8b26fef53c1e9f76091dda109505"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1048,
+   "sha256": "6feb7653ae34934a94bd843384672437d0ca7134689faf64ba96096c96137280"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1075,
+   "sha256": "147eedadf9e112a484cc8bfe3ac5f683eb7aa1b3975fabdce95c310f87cbfa13"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1098,
+   "sha256": "f1c05dc76fa3a34e0aca9001c27a84371f2f5abe53a9509f88e58bc39b8c48e1"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1103,
+   "sha256": "d454e529748bf7928c6c00e33ecce1de8d9e299185d3f30a6e544cb17472d6b4"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1106,
+   "sha256": "1a4e2bf2683ab853b585c01fd362ea01d8133a9eded17d945412a02eb67a6e2d"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1110,
+   "sha256": "cfd73b5b79ab85ce48ffa2ec07eeb885bc77bd7ad1a794c777272caa3eb050a7"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1111,
+   "sha256": "a9f00036243d0862b639dd86f1eb89ef9c0f8bccdb156ddf58afff70dcdb7d74"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1126,
+   "sha256": "8321dd48e4bebaa152d3b77c6b0e6bcdf3237803b26813f7de337670964db4bd"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1127,
+   "sha256": "48705328fbdd61a3820c40b3b488089f341ace66f78cd69797d464fccb66a37e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1137,
+   "sha256": "6515b49f952e34bb6a36a888a0b12468965a50523dbbde2ae9629b3f849f7214"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1140,
+   "sha256": "15e53aebc2660282f07a3ddde327c9c899a743602a4a0b68f55be97b8f0c2a38"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1145,
+   "sha256": "cfc052f73c1334a97db5dce201c63b5696d94191bc2077fce945e8d33550ed3a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1171,
+   "sha256": "e03f54e7d94c8c839d23e29574fb37822b7f8fde42fb1b9bb4358cf8e6867a82"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1180,
+   "sha256": "5c273a4296dab569a9227675d3415098976f9b9726e03ddf75856b179512a2b6"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1182,
+   "sha256": "cc0ffee694a5bc09e07d3ad2fd64b3912db6888ddb6a1e68f3205865221c8635"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1204,
+   "sha256": "8340c7f0c10ef4f77a4284ed8087b43ba75df281f51977db562bc247a61001bd"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1213,
+   "sha256": "06591e3000388735364d0f5a24cb2d03e55a8c5ff25a847e956a23829d27ed01"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1242,
+   "sha256": "738f3e641810ffc112e0739f8745909f663999a6d7f1a03d99273bfa872b67cd"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1269,
+   "sha256": "c9da308003667fe153894159e3b670fd976986604cd7d31f22524cb83434aafc"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1271,
+   "sha256": "5343412b836c336b3a0fd178059e3acd0239312fa419c8b533adf797031fffc7"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1272,
+   "sha256": "db8209d8cf78aacb65c409d3046bd5a78e0c641c5e4d52f8006efcd1fd8ee64a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1278,
+   "sha256": "8b75a12254132bcaa50bd6e8bc7e9754db606e66f4aca3ecfb2b833c38f5bf66"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1289,
+   "sha256": "d2df3eca291bb9fa61ec0ca1abdaf539f79a388a9c859aac86308631508bab68"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1290,
+   "sha256": "7aa654e3bd9e9ab25a5d1a7cd8229b5d21c2d8d6bfb8aea5a74e89d7e58a51dd"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1299,
+   "sha256": "d4350e7f863b05ee6fc0dc0e92fe04815e183172553fc1674fbef33febb33971"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1300,
+   "sha256": "0e15d21591acf91047c42bb7c8157aba2ff3743e5f08e228f4f850ee51848dbc"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1306,
+   "sha256": "19f8f54a31c562e3640fdcc97dc3f21924dad555306a7e47377df31aa8cc6714"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1318,
+   "sha256": "d633d02dadf2829335564843a2f90ffa1a3d70fcca7a137dda303792f4239633"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 27,
+   "sha256": "ef2a7bcc704e611e709a70d69ac71de7b8eac4f2624f57fd11e117d70a097355"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 44,
+   "sha256": "52cbbb4162d3a46fdc2f33dabae051890bd03012218a3d3c22ebf1a98c1046c4"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 51,
+   "sha256": "6649ae9153ae8abe1db5fccd087c203889f80073d951e8c017792d476d9b23b3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 447,
+   "sha256": "43329bba688123412413290706b28ef15f16bdfc56510818730ce80558163115"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 455,
+   "sha256": "bccf747d5a84638bccbeada0a8ccdb705fb31e5956f53bdb8e4f10da7c554606"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 789,
+   "sha256": "27b1af6a2864a6388b421e3d6fb5fc1ac2f72df7c344d2e70d4a755603e7acb6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1061,
+   "sha256": "2daaf1bc5420be640387da90e80f753c0bab89b3e26b74d808893a034875b4d1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1432,
+   "sha256": "c63ac2a9bccdba026c1bc5777d955f48608e5a30bedf3b96651e355932337f8e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1579,
+   "sha256": "64faf3494d48290a686bfff8735f308e0fbe1cbec732d4fddca16f3d58e2108f"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1598,
+   "sha256": "14477416b3ec3880aa9e4b8d9dad16bf124a4f649607877d270cac80478c3b5c"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1775,
+   "sha256": "afbbd5b814333eb7e82e479beda587006dab5ff286fd2f5be62a115bfcc996d5"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1926,
+   "sha256": "1686f980a9ac89ae4319b01d65b2a3fb44c5251055df31b17564a10221c04cf4"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2315,
+   "sha256": "72060d97f2ad91c034125da27eb465fd312e8a8867cafdf9dec528a88adc58d2"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2425,
+   "sha256": "effe5551522ef3b7c20726ef6a9fa83ac5d8821972267bdfa2f4eb9c7d69c60f"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2482,
+   "sha256": "1f821ee55e848cd7bbd6cb389fd5c080c4185aaf72cf9d6ddd8dfe511d6cdac2"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2490,
+   "sha256": "9716b2b20300cc83375bea36a1dceedf558ff2a9c2d87641e293b963ccc58c88"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2674,
+   "sha256": "191873668ae952660b4e9bb7df3418ca835a11be3efa0af927243dd4ed8a8fa8"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2776,
+   "sha256": "c81cbbb9fadde7f152bfe9bb87c83635a59516d1f75e91dae76c521b5f9cc8f1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3142,
+   "sha256": "e08dc4221ac53412341476dc903fc756a7478e1ce659055802858455824896d3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3144,
+   "sha256": "c473b6cd49af420a5a62043378bdb29cff0d2f29ad504f8cf5cff842c45de361"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3190,
+   "sha256": "3b66a09d1541ba57b1ff89e6ec0aaa43b615e41b54e3d2be877fecbdeb032503"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3197,
+   "sha256": "43b996de68521921bd31be22e6cc69201b59afc76cb8374fa86be11c8aa9a266"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3360,
+   "sha256": "ee32ac1d892c297505153b34c1dbc774131465c05c454ae8af873a049e2d9ad9"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3513,
+   "sha256": "0805797e2327b5805decfddbeaa45e8881528957a37a6dae1de063f73845a099"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3589,
+   "sha256": "92d25819d31dbe19e1742232154926b0e5dd4a92090d5e0ceede4205297582a6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3979,
+   "sha256": "971a6d62b529b49fb2880b8a49335318286a0e845335249cb149b3f7b66875f7"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4273,
+   "sha256": "1b0c2b6ee1e3e857ec2ee7be1a5ba434ed1eb33e38ca15186e09d520d7085971"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4399,
+   "sha256": "55d8db3cbddc62671f839cf6b8a3c09085a07d737ba50ffec3b86dafe6eab1ad"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4436,
+   "sha256": "4850760813de3af52afc6e4f889e40a7409a03cf9f0ae5e2d76404ce50d5efda"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4486,
+   "sha256": "1e7d261aad087113bb39abf8cbcc4fd60e24e29ca166a100882cf44514c16457"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4681,
+   "sha256": "c7cf7d08b3acb048df79bd4f49bccee2c2e7c938193dcaceb23747d5ce8f7fc2"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4958,
+   "sha256": "436f2bde8822369a02a271a576b028e375d87668407b2fbcac6e255e67a03044"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5063,
+   "sha256": "d9946a57d52461a82e4dffc7368d96182a1ea5851e96c6d35eb6a8f9b0d8fea6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5110,
+   "sha256": "8d3dfc1113fc308e71ef09705de645a9b7410a9bcc3b9cf6db047f920b008eee"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5185,
+   "sha256": "053a0fc3d12d1eafec96410188074c05c669a490b4c3cf286016568991736885"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5576,
+   "sha256": "256b1fa0c368aa28ce40541e654262e8d2eb14eaf768a015f4a0a25e96daf106"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5716,
+   "sha256": "6444dcc2609cdfa7381ce62d9bc0de860e0783df5ee989ec045b11c5479e3a5e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5903,
+   "sha256": "5b2be94133e249227179d74b9bcb461208677dad26b2b8277610b92d99f5ddc4"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5934,
+   "sha256": "f50d5f134a155b6f340dcc1a9ef083bd2cf737dabaddf34b6f6d61c74183a163"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5980,
+   "sha256": "c80f5c064edb64eb5801c23892658163f76b50ffff498a3fe83816f1be97c80c"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6010,
+   "sha256": "4f87b7454a97d33da1c1d3d7381c8963c83762c8022e08a663bd811ab8b283bb"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6125,
+   "sha256": "03b395cb62b8bfec9ad5e2152f38156dd244d6564fb093cb1f8ec6917f0d9f59"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6134,
+   "sha256": "5adefa092f81611c632b9090b0cc7a56d2253d8f57c6780ff0a9e893d413dd8e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6200,
+   "sha256": "226f961e46cc41ac23429beef9eb857cce51e61c956341a52cfb7e9973076bab"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6267,
+   "sha256": "aa6f43f9f6800869398ad9c24163725742c75c16a80bc604cfe8fd561018597b"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6318,
+   "sha256": "f32096818d9a16316b57bca436636ffa6744e9fb79a756816e5b513152f55fdf"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6416,
+   "sha256": "70a86640760acdf452fbac85d8c2189cd933d81a95d9995355abdd1cce64ceb0"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6530,
+   "sha256": "5c8e5a5b71b7ab1d77738ec150f7dd10e0d29a74b523f7b8dc520d8d7670abaf"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6594,
+   "sha256": "e3a787bc531cef48d0904b5638f7154af9302986049d230377200317dfa52e62"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6610,
+   "sha256": "61ed119267c9b81098fa6bd52eb6a1fa8c04dc4beb05cf477fb5b3826c919de1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6977,
+   "sha256": "09db08c8595faa464e5e591089ef0f8fd087da1d24cab2c43e9998173bbd0efb"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7050,
+   "sha256": "f16011bb95bcc3c0b2546579e00eb59dfd31b094338533500ba496e48422211c"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7171,
+   "sha256": "4b1dd434655f73467969749d0d78884f69993d93978117893bb530922c6d6396"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7447,
+   "sha256": "c2d1f962a73682e4eef92923aaa1ab3bf1c442f2234372b85ef2ef23ee9befb1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7527,
+   "sha256": "e480b489cb3841efe58244c12ced939b77687dfe9af17df37cdac52911aa39ee"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7751,
+   "sha256": "84a2f5a28e507a1743e8f1ff7e698305fa548efcee6c5ca2908187a401894d3e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7818,
+   "sha256": "a63c30f433dace0980e797bb486f1305f1238f8e042101452a0e1871350db6f8"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8087,
+   "sha256": "78f87ea76b447e822ff850c8f98dc1ba2bcabc63cf0a7ffaf2655c7377a09a96"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8202,
+   "sha256": "13555b0ded81806d6497990fc7cd9a44a9b189d7ce75495f86769cca4a1b364d"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8206,
+   "sha256": "9a757ac9a7ffe851bfd03f589a3c0dc0d796f524ab439906a700f14073076438"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8214,
+   "sha256": "24d2cb321fdb272a0fa692c683a9c2d0157cde93a3e09ca7f3392f11a4d8bc95"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8551,
+   "sha256": "112f0bc55e57bddf15153aff20b403e3c95deb48012b779e80159acf81b4bfcd"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8625,
+   "sha256": "b5be23210e9dc1afd55d1c38fd243df75d8259fdd1e1e5e1dfaa7da66a9461a9"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8966,
+   "sha256": "f70b46f48622dd1fbcb0eae30c99a7d169a18fd9136067b99df453827d2c03a1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8987,
+   "sha256": "991f56fdfddfec0b52637be3d63fbf22d6b83c412429b990ecbee08f1f107736"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9068,
+   "sha256": "da8ff5fdb3965146b85dcc5b85ca09db6331b9759a50c1e069a029a0e3a4045d"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9141,
+   "sha256": "9cf367d68090192ef92fe810e9bce44eb2c74946598cd6dd6f3db1dac0ee0c1b"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9166,
+   "sha256": "99958b20845edb870d9b11fa37648ff52f8b942dce7d7ed2faae52f0dc0695db"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9481,
+   "sha256": "cc145fcbffee11ec4d96667eb0481f71f4988f5cd07e9381b96d1b64ff62cf97"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9575,
+   "sha256": "cdc136d67e7126c8cc0239b12e7c14f733da5174b59ce2f6e93e2130cd31abd0"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9657,
+   "sha256": "5b37b5f66a161836adceb5040a0f9cfaba80a78b166368754098ee6cd6b99b89"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9659,
+   "sha256": "5fcd067028360ac0b4adbfd8c03a51aa8ec1e63059f17665184cc76d20524ccb"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10122,
+   "sha256": "674c8816a461bffccd1c2919a9aedef58ffbe53a178ad1cc942ee636cf1170e1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10147,
+   "sha256": "4b3f799b9a0ab5b3f27b222af99684fe0bc8faffe71db2df109da250ac2f88e8"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10301,
+   "sha256": "102df81f282f8be80a7cd5e25b2447b02720d16f831946a1ccf79754f45ce2d6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10350,
+   "sha256": "e46c2a8dd7b8cd349379e7ecc6822759856ebaba843f9cfae5059cba598367e0"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10467,
+   "sha256": "2bebb809649d3344431eaefb8582c3b84fef0fbd0d0a14513efc9e4ae99de3f6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10477,
+   "sha256": "1c33bd97f80b2e7ad254b67f2e9566430d7f4e2ce208a2f83f99ac99ce659ca0"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10536,
+   "sha256": "d533e4670796170933f9db39a436d405758ea4a2381eef7fd0c168369069745f"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10670,
+   "sha256": "f4f80c246941b17edb134fa88afaeee649e2a723d21ed9a94a4402bbf4d90d20"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10865,
+   "sha256": "d3a5278e6d44cabca0fa3195c15763e0dd6140b834782a359801959159b826da"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11079,
+   "sha256": "fce726f2b2107782fd6607a2d78b7473abf3902fbcdd94ef08c0195b5b8f73cd"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11111,
+   "sha256": "d58e5d7ab3d8d33fe9fbeab2057713d849c56dcaa50b7f8369ae9bbc80bd4e00"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11118,
+   "sha256": "ee2ff631b58143b6aad75632edbdfbb917270c5fe16ce5b9b443f692198084b5"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11472,
+   "sha256": "9da742fd3f828fc4a175e42be4cf8c4ebe82179ba97e15cff30b0effc0cff0f6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11611,
+   "sha256": "4c821ad289487f1dacc91d8d2cec74fd26998da4f34b9ff556c05214141a5ba4"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11712,
+   "sha256": "d231726ce9bb47687567e0f0461bdc423f4d31bfc6f64f4c4a22cb1558d19422"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11898,
+   "sha256": "3559e27f3e5309e8692a0569bf0c3f07f72f80b8d5f4deafc6be366b3eb43e89"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12043,
+   "sha256": "5c5e15a0a5bafe306912405ef803f01a53da37d0cd23faa1300c60cf4647401a"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12339,
+   "sha256": "b9874d5bcef2943f183d20f7cf9205d18a55f31da6561f6d57c83807896c14c8"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12410,
+   "sha256": "a6099378585c91b099b111344304d263d0ac25f3becb96c4fc0368e7539f3e5b"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12854,
+   "sha256": "223695ac3fe2b40a103d9bb82a5224f672ae86ceb48f8d4917e8811ee2fb06a1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12976,
+   "sha256": "f820e3f9ca068c1bd9b5d929e284fd298f11b8054e0c6644d471068e9faa190d"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13042,
+   "sha256": "d3056d4937c6ba249fdbc1c4cda234cb155da34fd8e09a65f0abebaacabfc127"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13456,
+   "sha256": "41cb406a97e9e80c5996ae28bc1d9a562b4e9566649c67af94ebff3bc4b30889"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13497,
+   "sha256": "218d150bdf5f9c77f5951d2be3310d8c6100706f8bd8905407a0cbf18e334e61"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13521,
+   "sha256": "4fe55ca073488a06b9ddf662b3708a7d3033663f5d7ee74eb3460c380754b574"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13602,
+   "sha256": "feb2b27466e0067ec38533934112f3516685b664ed73617d122413bf039656aa"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13607,
+   "sha256": "7fd150c6435e25fd8bfc224b42c421d26dd6729524ed5f37da9c64ddf48b4bfb"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13923,
+   "sha256": "8f045eea83261851e6d97771228e47bf7a8f7ac1fc0a42cbdab2e62aac1df51e"
+  }
+ ],
+ "fallback_100": "the first 50 of each dataset in this order"
+}
