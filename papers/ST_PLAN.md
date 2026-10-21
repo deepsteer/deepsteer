@@ -2328,3 +2328,22 @@ parked, T1.5's 5.07 and §13's evaluation (~0.5): envelope of record about 44.8 
 the twins and their checks, every direction with its type block (contrast semantics, source,
 position class, layer, model, n, PR, outcome variable, extraction commit), the re-encoded positions
 and residuals, the transport rows, and the pilot timings.
+
+**Amendment 22, riders decided (author, 2026-10-21; before any Phase 2 input is built).**
+(a) Kept: a protect-ward move is ΔP > 0 against `none` and against the arm's matched control, both
+CIs excluding 0, under the coherence bars. (b) Kept for the positive program-level reading only:
+"steerable at this site" requires Holm-Bonferroni over the pre-registered arms; per-arm readings
+are unadjusted and labelled; the negative reading carries each arm's MDE. (c) Struck:
+`care_harm ⊥ V_harm` does not run. Cell 1's third direction arm is `+V_harm` at n 45, and "care
+beyond harm" is the paired difference ΔP(`care_harm`) − ΔP(`V_harm`) with its scenario-bootstrap
+CI (observed +0.155 on the earlier 20; those rows are not pooled). (d) GPT-OSS Cell 1 runs at 16
+rollouts per scenario for every arm, `none` and `fill` included (720 rollouts per arm); Muse Cell 1
+at 8 pending its pilot. Cells 2 and 3 keep 8 rollouts per arm against Cell 1's `none`.
+
+Power at 16 (from the T1.3/T1.4 gate rows, n 20 × 8): the binomial rollout variance accounts for
+about all of the per-scenario variance of each paired ΔP (share 0.7-1.0 against `none`), so the
+MDE (80%, two-sided) at 45 × 16 is 0.054-0.067 against `none`, 0.049-0.055 against `fill` (the
++0.05 margin now sits at its MDE), and 0.056 for the `care_harm` − `V_harm` difference. Price:
+Cell 1 at 5 arms × 720 rollouts is 7.28 A100-h (+3.64), so GPT-OSS's Phase 2 runs on two pods:
+pod A, Cell 1 (~7.8 with setup); pod B, the Qwen top-up and Cells 2-3 (~4.1). Envelope of record
+about 48.4 of 56.
