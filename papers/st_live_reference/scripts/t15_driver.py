@@ -62,10 +62,10 @@ N_PARITY = 64
 CAP_EXTRA = 256  # capability answers: the trace cap of record plus room for a worked answer
 SEED = 20261021
 ARMS_ALL = ("beh", "beh_epoch3", "anchor", "self")
-# proposed to the author (not yet of record, so off): a merge that sits closer to the base than to
-# the attached adapter on the parity rows sends the arm to HF (parity alone cannot see a lost merge
-# when the adapter moves the dose-0 letters by less than the band + 0.05)
-MERGE_GATE = False
+# Amendment 21 item 1: a merge that sits closer to the base than to the attached adapter on the
+# parity rows (letter TV) sends the arm to HF (parity alone cannot see a lost merge when the adapter
+# moves the dose-0 letters by less than the band + 0.05)
+MERGE_GATE = True
 
 
 def _now() -> str:

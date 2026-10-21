@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.20, 2026-10-21 (Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.21, 2026-10-21 (Amendment 21: the merge gate, capability cap, truncation columns, T1.5 author items; v0.2.20 = Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -2186,8 +2186,7 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
 - **Merge check (descriptive).** On the 64 parity rows, the HF-merged model against the adapter
   attached and against the base (total variation): `kept_share` and whether the merge sits closer to
   the base. Parity alone cannot see a merge that kept nothing when the adapter moves the dose-0
-  letters by less than the band + 0.05. Recorded, not gating (`MERGE_GATE` off); proposed to the
-  author below.
+  letters by less than the band + 0.05. Gating under Amendment 21 item 1.
 - **Branches the dry runs exercise.** Both parity outcomes run locally on a tiny GPT-OSS with the
   real harmony tokenizer (vLLM phases on the screen stub): the bf16 path, and with
   `--dry-fail-base` the failed base check, where `none` and every adapter generate on HF.
@@ -2215,4 +2214,23 @@ Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
   attached adapter sends that arm to HF (recommended; off until amended). (2) Capability's 1,792
   cap. (3) If `L-beh` finishes at 4,096, Amendment 18 item 3 leaves its T1.5 cap to the author; the
   driver keeps 1,536 for every arm and reports truncation per arm. (4) `none` on HF after a failed
-  base check. (5) The cap rerun's 0.81 upper bound against the 0.3 priced.
+  base check. (5) The cap rerun's 0.81 upper bound against the 0.3 priced. All five decided in
+  Amendment 21.
+
+### Amendment 21 (2026-10-21; author; zero GPU; committed and pushed before the T1.5 pod)
+
+1. **Merge gate, on.** On the 64 parity rows, total variation between the letter distributions of
+   the HF-merged model (bf16, the HF stack) and the base, and between the merged model and the
+   adapter attached. A merge closer to the base than to the attached adapter sends that arm to HF
+   generation under Amendment 18 item 4; otherwise the merged checkpoint is written and goes to the
+   vLLM parity gate (Amendment 20 item 2). Both distances and `kept_share` are recorded for every
+   arm.
+2. **Capability cap.** 1,792 tokens (the 1,536 of record + 256 for the final answer), every arm and
+   `none`, on either engine.
+3. **Cap and truncation.** Every arm generates H1_held at 1,536, whatever `L-beh`'s cap rerun
+   reads. ΔP's column of record counts a truncated rollout as non-protect; the column with truncated
+   rows excluded is reported beside it. If the two columns fall on different sides of a verdict bar
+   for the comparator of record, the comparison reads **"unresolved by truncation"**.
+4. **`none` after a failed base check** generates on HF with the adapters, so ΔP never crosses
+   engines; the bf16-vLLM rows are kept as a column.
+5. **Price.** The cap rerun's 0.81 A100-h is accepted as an upper bound (Amendment 18 priced 0.3).

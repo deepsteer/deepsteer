@@ -44,6 +44,18 @@ def test_failed_base_check_sends_none_and_every_adapter_to_hf():
     assert "hfgen_none" not in T.plan(passed)
 
 
+def test_merge_gate_is_on_and_reads_closer_to_base():
+    # most probable failure: the gate left off after Amendment 21, or the comparison inverted so a
+    # merge that kept the adapter is sent to HF
+    assert T.MERGE_GATE is True
+    rows = [{"shown": ["A", "B"]}]
+    base = np.log(np.array([[0.9, 0.1, 1e-9, 1e-9, 1e-9]]))
+    adapter = np.log(np.array([[0.5, 0.5, 1e-9, 1e-9, 1e-9]]))
+    lost = T.tv(base, adapter, rows) > T.tv(base, base, rows)  # merged == base: closer to base
+    kept = T.tv(adapter, adapter, rows) > T.tv(adapter, base, rows)  # merged == adapter
+    assert lost and not kept
+
+
 def test_comparator_leads_and_only_it_and_anchor_get_the_panel():
     # most probable failure: the panel runs on the step-matched checkpoint after the cap rerun
     # made epoch-3 the comparator, or on L-self (no panel, Amendment 18)
