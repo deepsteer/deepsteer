@@ -1241,3 +1241,11 @@ and truncates half its rollouts at the cap (ST-A13). `L-self` moved the model of
 (general KL 0.35) and strongly toward rule traces (reserved DPO margin −41) without meeting its own
 objective (ST-A14). T1.5 tests all of this on H1_held. Spent 22.84 A100-h; envelope 35.33 of 36.
 
+**`L-self` checks (2026-10-21), what changed.** The §5.3 objective as specified fails as an instrument
+on GPT-OSS-20B: its judgment-frame targets (END_OF_PROMPT state, norm ~1,883) all sit above the
+norm band of the `clause_end` residuals they are imposed on ([1,166, 1,590]), so the loss pulls the
+residual's scale as much as its content, which fits the general-text drift L-self showed (KL 0.35).
+By the pre-registered rule its H1_held generation is descriptive only, it gets no panel, and a
+σ-floored retrain is deferred. The thesis-faithful arm is therefore not tested on this model in
+Tier 1; the test needs a position- and norm-matched target.
+

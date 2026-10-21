@@ -1,0 +1,70 @@
+{
+ "rule": "ST_PLAN Amendment 18 item 2",
+ "n_positions": 106644,
+ "n_scenarios": 122,
+ "i_sigma_dominance": {
+  "top_k": 29,
+  "share_top_1pct": 0.18313706168189045,
+  "bar": 0.5,
+  "fails": false,
+  "top_dims": [
+   585,
+   1799,
+   2512,
+   613,
+   650,
+   1456,
+   1013,
+   177,
+   2362,
+   455,
+   627,
+   1202,
+   1405,
+   94,
+   656,
+   1333,
+   1966,
+   216,
+   1335,
+   2416,
+   20,
+   1616,
+   689,
+   2214,
+   1064,
+   2010,
+   2119,
+   883,
+   2152
+  ],
+  "sigma_of_top_dims_median": 0.734670102596283,
+  "sigma_median_all": 1.7629421949386597,
+  "loss_per_position": 662478.2184585624
+ },
+ "ii_target_norm": {
+  "median_target_norm": 1882.5245279284509,
+  "band_p5_p95": [
+   1166.1155281538074,
+   1589.745131057526
+  ],
+  "fails": true,
+  "target_norm_range": [
+   1849.9875474573216,
+   1918.9996283919952
+  ]
+ },
+ "iii_placement": {
+  "median": -2.612011386552756,
+  "iqr": [
+   -2.6523416250605667,
+   -2.574176755713041
+  ],
+  "note": "0 = the rule mean, 1 = the protect mean (descriptive)"
+ },
+ "instrument_failure": true,
+ "consequence": "H1_held generation descriptive only, no panel, sigma-floored retrain deferred",
+ "inputs": {
+  "t14_inputs.npz": "9a193c739758b95b0092f79d2faf66e5cbd7f6730f160e4068b8b4642364e6cd"
+ }
+}

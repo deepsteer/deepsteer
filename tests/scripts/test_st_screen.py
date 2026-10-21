@@ -583,8 +583,8 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
     p = RP.price(m)
     kr = next(k for k in p["development"] if k.startswith("T1.5 readouts"))
     # 3 adapter panels at Amendment 11's branch-A subsample (provisional call A on GPT-OSS)
-    want = (132 * 8 * RP.T15_H1_ARMS * 0.5 + RP.PANEL_ROWS * 3 * RP.BRANCH_A["gpt_oss_20b"]
-            * 0.4) / 3600
+    want = (132 * 8 * RP.T15_H1_ARMS * 0.5 + RP.PANEL_ROWS * RP.T15_PANELS
+            * RP.BRANCH_A["gpt_oss_20b"] * 0.4) / 3600
     assert abs(p["development"][kr][0] - want) < 1e-9
     kn = next(k for k in p["development"] if k.startswith("`none` panel"))
     # GPT-OSS's none panel of record ran on the T1.3c pod: done, priced at 0, never re-owed

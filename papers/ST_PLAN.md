@@ -2089,3 +2089,16 @@ checkpoint on vLLM against HF with the adapter attached, first-token letter log-
 rows read one at a time, within the engine-parity bar of record; a failure sends that adapter to
 HF generation under item 4's HF scope. Generation therefore stays priced at vLLM rates pending the
 gate.
+
+**`L-self` checks, Amendment 18 item 2 (2026-10-21; zero GPU; computed after 8e73c1e reached
+origin; `data/t18_lself_checks_v1.json`).** Over L-self's 106,644 training `clause_end` positions at
+block 12 (122 scenarios): (i) the top 1% of dimensions carry 18.3% of the self loss at initialization
+(bar 50%; passes; σ of those dimensions median 0.73 against 1.76 overall); (ii) the median target
+norm is 1,883 (all 122 between 1,850 and 1,919) against the `clause_end` norm band [1,166, 1,590]:
+**outside, so the rule fires: instrument failure.** `L-self`'s H1_held generation is descriptive
+only, it gets no panel, and a σ-floored retrain is deferred. (iii), descriptive: the targets sit at
+−2.61 (IQR −2.65 to −2.57) on the protect − rule direction (0 = the rule mean, 1 = the protect
+mean), beyond the rule mean; the targets come from another position (END_OF_PROMPT), so this offset
+is confounded with position and is not read as content. The loss at initialization averages
+662,478 per position (standardized), which is the scale the 89 training steps worked against.
+Re-price: T1.5's panel guard drops `L-self` (two adapter panels).

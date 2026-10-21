@@ -54,7 +54,7 @@ T11_DOSE0_S = {"gpt_oss_20b": 840.0 / 2112}
 # ΔE_a = E_a − E_none needs the unadapted panel on the same instrument: one `none` panel read per
 # evaluation (2026-10-19; earlier re-prices counted the adapters' panels only)
 # (Amendment 11: GPT-OSS's `none` panel runs on the T1.3 pod, priced there; same total)
-T15_PANELS, T16_PANELS = 3, 2 + 1
+T15_PANELS, T16_PANELS = 2, 2 + 1  # L-self gets no panel (Amendment 18: instrument failure)
 # Amendment 17 (a): L-beh's two checkpoints are both evaluated on H1_held; only the comparator of
 # record gets the panel
 T15_H1_ARMS = 4
