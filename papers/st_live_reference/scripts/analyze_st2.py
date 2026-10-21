@@ -168,15 +168,32 @@ def cos_read(per_q: dict, per_o: dict, samples: np.ndarray, n_null: int = 1000) 
             "n_qwen_scenarios": len(q_ids), "n_oss_scenarios": len(o_ids), "reading": reading}
 
 
+def split_half_cos(per: dict, seed: int = 20261021) -> dict:
+    """Stability: the direction from a seeded half of the scenarios against the other half."""
+    import random
+
+    ids = sorted(per)
+    half = set(random.Random(seed).sample(ids, len(ids) // 2))
+    va = unit(np.mean([per[s] for s in ids if s in half], 0))
+    vb = unit(np.mean([per[s] for s in ids if s not in half], 0))
+    return {"cos": float(va @ vb), "n_a": len(half), "n_b": len(ids) - len(half), "seed": seed}
+
+
+def v_oss(t11: Path) -> tuple[dict, dict, np.ndarray]:
+    acc, samples = bank_scenario_means(t11)
+    per = {s: v["protect"][0] / v["protect"][1] - v["rule"][0] / v["rule"][1]
+           for s, v in acc.items() if v["protect"][1] and v["rule"][1]}
+    return per, acc, samples
+
+
 def cell3(b: Path, a: Path, t11: Path) -> dict:
     g = lambda d, n: _jsonl(d / "gen" / f"{n}.jsonl")  # noqa: E731
     out = {"arm": arm_read(g(b, "c3_qwen_arm"), g(a, "c1_none"), g(a, "c1_fill"), "fill")}
     z = np.load(b / "c3" / "v_qwen.npz")
     per_q = {str(s): v.astype(np.float64) for s, v in zip(z["ids"], z["per_scenario"])}
-    acc, samples = bank_scenario_means(t11)
-    per_o = {s: v["protect"][0] / v["protect"][1] - v["rule"][0] / v["rule"][1]
-             for s, v in acc.items() if v["protect"][1] and v["rule"][1]}
+    per_o, acc, samples = v_oss(t11)
     out["cos_V_qwen_V_oss"] = cos_read(per_q, per_o, samples)
+    out["split_half"] = {"V_oss": split_half_cos(per_o), "V_qwen": split_half_cos(per_q)}
     rz = np.load(b / "c3" / "reencode.npz")
     qp: dict = {}
     for key, sm, n, act in zip(rz["keys"], rz["sums"], rz["counts"], rz["action"]):
