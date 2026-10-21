@@ -241,3 +241,27 @@ def test_ablate_in_generation_and_readout(tiny):
     assert np.allclose(plain[0], torch.log_softmax(lg.float(), -1)[lids].cpu().numpy(), atol=1e-5)
     moved = SG.ablate_readout(m, P[:1], v, 500.0, 2, lids)
     assert not np.allclose(moved, plain, atol=1e-3)
+
+
+def test_prefill_keeps_last_logits_only_and_batches_do_not_leak(tiny):
+    # most probable failure (pod A, 2026-10-21): the prefill materializes [batch, prompt, vocab]
+    # logits (24 GB at 160 x 376 on GPT-OSS) while the previous batch's cache is still alive, so
+    # the second batch of a multi-batch call runs out of memory
+    m = tiny
+    calls = []
+    orig = m.model.forward
+
+    def spy(*a, **kw):
+        calls.append(kw.get("logits_to_keep"))
+        return orig(*a, **kw)
+    m.model.forward = spy
+    try:
+        P = _prompts(m) * 2
+        fmt = _think_fmt()
+        both = SG.generate(m, P, fmt=fmt, cap=8, seeds=[1, 2, 3, 4], batch=2)
+    finally:
+        m.model.forward = orig
+    assert calls[0] == 1 and calls.count(1) >= 2  # every batch's prefill keeps one position
+    first = SG.generate(m, P[:2], fmt=fmt, cap=8, seeds=[1, 2], batch=2)
+    second = SG.generate(m, P[2:], fmt=fmt, cap=8, seeds=[3, 4], batch=2)
+    assert [r["gen_ids"] for r in both] == [r["gen_ids"] for r in first + second]

@@ -194,8 +194,10 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
                 att[r, L - len(x):] = 1
             ids, att = ids.to(dev), att.to(dev)
             pos = (att.cumsum(-1) - 1).clamp(min=0)
-            with torch.no_grad():
-                o = hf(input_ids=ids, attention_mask=att, position_ids=pos, use_cache=True)
+            with torch.no_grad():  # the prefill keeps the last position's logits only: the
+                # full [batch, prompt, vocab] tensor is ~24 GB at 160 x ~376 tokens (pod A's OOM)
+                o = hf(input_ids=ids, attention_mask=att, position_ids=pos, use_cache=True,
+                       logits_to_keep=1)
             past, logits = o.past_key_values, o.logits[:, -1, :]
             for _step in range(cap):
                 nxt = []
@@ -226,6 +228,10 @@ def generate(model, prompts: Sequence[Sequence[int]], *, fmt, cap: int, seeds: S
         finally:
             if handle is not None:
                 handle.remove()
+            # this batch's cache and logits go before the next batch's prefill
+            o = past = logits = None
+            if dev.type == "cuda":
+                torch.cuda.empty_cache()
         for r in range(B):
             row = {"prompt": pidx[b0 + r], "seed": int(seeds[b0 + r]), "gen_ids": gen[r],
                    "n_tokens": len(gen[r]), "hit_cap": len(gen[r]) >= cap and gen[r][-1] not in eos,

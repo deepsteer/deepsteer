@@ -81,7 +81,8 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "T1.3b pod (lsb4193stzic9k; estimate 16:59-20:35 UTC + 0.1; rerun done, panel read "
          "but lost in the download)": 3.7,
          "T1.3c pod (z28p9cbnwvvo58; timestamps; reversed-axis arm, none panel of record)": 3.24,
-         "T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters)": 4.70}
+         "T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters)": 4.70,
+         "ST Phase 2 pod A, attempt 1 (sx9ag0uq14lw64; timestamps; OOM at c1_none batch 2)": 0.62}
 T14_DONE = {"gpt_oss_20b"}  # T1.4's rows ran on the T1.4 pod (no fourth adapter: no arm passed)
 # what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
 # rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
