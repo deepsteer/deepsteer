@@ -2368,3 +2368,48 @@ about 48.4 of 56.
   scenarios (130 single sentences, 2 pairs). In 22 the sentence also carries other content, mostly
   the approver's only introduction, and 3 refer to the rule again elsewhere; the twin rule for those
   is an author item before Cell 2's build.
+
+**Amendment 22, Cell 2's twins and `V_rule` read (author, 2026-10-21; before any twin activation is
+computed).**
+
+1. **Twins of record:** `data/st2_rule_twins_v1.json` (sha256 `3444d4f3…`), one per H1_train
+   scenario's `agent_text`, options verbatim, `twin_kind` per scenario: 103 `deleted` (the
+   written-rule sentence removed), 7 `clause_deleted` (also the smallest clause edit where the rule
+   is stated again: B-123, B-203, B-261, A-194, A-58, B-131, and A-10's "without that step"), 22
+   `rewritten` (the rule sentence also carried other facts: a sentence keeping only those facts, no
+   requirement wording, every content word present in the original; all 22 hand-checked). A-58's
+   "can override that step" stays as a recorded residual reference (the sentence carries the access
+   and audit facts). Rewritten twins never enter the direction or the ablation target; they serve
+   the dose-0 transport control.
+2. **`V_rule`, read of record:** `clause_end` at block 12, teacher-forced. For each of the 72
+   non-engaged H1_train scenarios with a deletion twin (`deleted` or `clause_deleted`), every saved
+   T1.1 rule-present `none` trace (8 per scenario, 576) is prefilled under the rule-present prompt
+   and under the twin prompt (same trace ids, same letter permutation); the residual at block 12 is
+   read at the trace's `clause_end` positions; the difference rule-present minus twin is taken per
+   position, averaged over positions within the scenario, then over scenarios, and unit-normed.
+   Prefill only, no generation.
+3. **Ablation target:** the mean projection on `V_rule` under the twin prefix over the same
+   prefills, per position class (`clause_end` of record; the other classes recorded).
+4. **Stability:** split-half cosine of the record read, 36 against 36 scenarios (seeded split).
+5. **Side reads, never of record, each reported as its cosine with the record:** the
+   end-of-scenario anchor (prompt only: the last token of the scenario text before the options,
+   rule-present minus twin, over the 72); and the free-generation `clause_end` difference on the
+   engaged 45 (the rule-absent twins' free generations from Cell 2's descriptive arm against Cell
+   1's rule-present `none`, read by a teacher-forced forward of each rollout).
+6. **Transport control:** on the engaged 45. Headline without A-168 (44 scenarios; B-95 is not
+   among the 45), the all-45 figure beside it. Residual approval assumptions in the twins weaken the
+   contrast, so the transport control is a lower bound.
+7. **`V_rule` type block:** contrast_semantics stimulus/content (the stated written rule, beyond the
+   approval setup that the premise sentences and the verbatim options still carry); source = the
+   twins above; position_class `clause_end` in-trace, teacher-forced on T1.1's rule-present traces;
+   format the harmony reasoning template at the effort of record; layer block 12; model GPT-OSS-20B
+   at the registry revision; n 72 scenarios × 8 traces; known covariates: prompt length (the deleted
+   sentence shifts every trace position by its token count), the residual approval wording, A-58;
+   participation ratio at `clause_end` recorded at extraction; outcome_variable P on the engaged 45
+   under the ablation.
+8. **Branches, addition:** a null ablation (no change with the transport control passed) has a
+   second reading, that the verbatim options re-install the gate; the dose-0 twin control bounds
+   it, since its twins keep the options verbatim too.
+9. **Price:** the twin traces of item 2 of Amendment 22 are replaced by prefill (1,152 single-row
+   forwards at 0.475 s, ~0.15 A100-h); Cell 2 about 2.5 A100-h with the free-generation side read's
+   forwards.
