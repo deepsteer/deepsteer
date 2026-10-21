@@ -1,6 +1,6 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.18, 2026-10-21 (Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: v0.2.19, 2026-10-21 (Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
 variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
@@ -2102,3 +2102,28 @@ mean), beyond the rule mean; the targets come from another position (END_OF_PROM
 is confounded with position and is not read as content. The loss at initialization averages
 662,478 per position (standardized), which is the scale the 89 training steps worked against.
 Re-price: T1.5's panel guard drops `L-self` (two adapter panels).
+
+### Amendment 19 (2026-10-21; author; zero GPU; before the T1.5 build's sets are drawn)
+
+1. **ST-A14's deferred `L-self` retrain, specified (funded tier).** Target: the judgment-frame
+   residual at the judgment trace's own `clause_end` positions under the same reasoning setting
+   (the third-person `jl` frame generated at the effort of record, read at its clause ends at block
+   12), so target and trained positions are matched in position class and norm by construction
+   (§5.0's alignment rule: position classes only, never token indices across traces). Priced for
+   Tier 2 (the judgment rollouts on H1_train, ~132 × 8 on vLLM, a banked read of their clause ends,
+   then one retrain at the T1.4 rate): about 0.3 + 0.6 + 1.0 A100-h.
+2. **Capability and specificity.** Both are priced; if only one fits the envelope, specificity runs
+   first and capability at a 100-item slice.
+3. **Specificity set (§3), drawn now.** From the 326 panel primaries whose external label of record
+   (`external_label.right_option_id`, the other generator family's rater) names the rule-following
+   (`consistent`) option, 60 drawn with seed 20261021, stratified by family. Readout: the dose-0
+   letter cell `dl_chat_neutral` (8 permutations, single-row, the instrument of record). **Bar,
+   implementing reading flagged for the author:** §3's "option-mass change within ±0.03" is read
+   as the change in the violating option's renormalized probability against `none` (the move toward
+   rule-breaking the bar exists to catch; KDG's `option_mass`, the total letter mass, is reported
+   beside it as a format check), mean over the 60, within ±0.03.
+4. **Capability slice (§3), drawn now.** 100 GSM8K test items (`openai/gsm8k`, `main`) and 100 MMLU
+   test items (`cais/mmlu`, `all`), seed 20261021, ids and text sha256 committed (no bundled text).
+   Readout: generation at the effort of record and the trace cap of record, the final answer parsed
+   (GSM8K: the last number, exact match; MMLU: the letter); bar: accuracy within −0.02 of the
+   unadapted model on the same items. The 100-item fallback is the first 50 of each.
