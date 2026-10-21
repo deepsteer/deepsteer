@@ -2010,3 +2010,21 @@ test.
    (epoch 3 − step-matched); epoch 3 is the comparator of record only if that CI lies above 0;
    otherwise (CI including 0, or below it) the step-matched checkpoint is the comparator by default.
    Epoch 3 is evaluated on H1_held in T1.5 either way.
+
+#### T1.4 pod, Amendment 16's gate arms (2026-10-22; pod byr26tsrjyh66q; `outputs/t14`)
+
+Against the T1.3 gate's `none` (P_none 0.200) and 267.3 `fill` rows, 20 gate scenarios × 8,
+`clause_end`, block 12, α 267.3:
+
+| arm | ΔP vs none^re | coherence (parse vs none 0.950; length; NLL) | ΔP − ΔP_fill (paired) | gate |
+|---|---|---|---|---|
+| +`care_harm` | +0.048 [−0.039, +0.141] (MDE 0.128) | 0.969; 1.04; +0.036 | +0.076 [+0.008, +0.146] | fail (ΔP < 0.10) |
+| +`V_harm` | −0.107 [−0.191, −0.037] (MDE 0.110) | 0.925; 0.85; +0.030 | −0.079 [−0.147, −0.019] | fail |
+
+**Reading of record (Amendment 16 item 2): neither.** No fourth adapter trains. Descriptive beside
+it (paired, computed after the rule): `care_harm` − `V_harm` +0.155 [+0.090, +0.228]; `care_harm` −
+the anchor axis at 267.3 +0.119 [+0.023, +0.225]. At one norm, care content and harm content move
+GPT-OSS in opposite directions, each apart from the matched random direction: the gate's first
+direction-specific result. `care_harm` is the first anchoring target to move P toward protection,
+below the +0.10 bar. `V_harm` moves P toward the rule although its constancy sign put protect above
+rule (ST-A12).

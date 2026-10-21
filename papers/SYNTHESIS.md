@@ -1223,3 +1223,12 @@ foundation axes, runs the other way.** Harm content carries part of the care/har
 care gate arm on `care_harm` rides the T1.4 pod as target selection for a later adapter; the three
 pre-registered adapters are unchanged. Correlational localization only; the arm is the causal test.
 
+**T1.4 gate arms (2026-10-22), what changed.** Positive voice first: **at one steering norm, care
+content and harm content move GPT-OSS-20B's action in opposite directions: +`care_harm` raises
+protection relative to a matched random direction (+0.076 [+0.008, +0.146]) and +`V_harm` lowers it
+(−0.079 [−0.147, −0.019]); the two differ by +0.155 [+0.090, +0.228].** That is the gate's first
+direction-specific result. Neither arm passes the gate (care_harm ΔP +0.048 against the +0.10 bar),
+so no fourth adapter trains. `V_harm` runs against its own correlational sign (ST-A12): protective
+traces discuss harm, while adding harm salience pushes the model toward the rule. The three
+pre-registered adapters are training now.
+
