@@ -2913,3 +2913,58 @@ it calibrates."* Conceded in scope: it shows the readout registers a rise and no
 direction; B1 is a reading, and `rr_fill` separates the rivals. (3) *"V_qwen passes retention only
 because it ran at half the dose."* Conceded open: its retention reading is scoped to α 133.6;
 `rr_fill_half` is the dose-matched comparison.
+
+#### ST Phase 2 D-lite outcome on GPT-OSS (2026-10-22; Amendment 29; `data/st2dl_read_v1.json`)
+
+The D-lite ran 21:58-23:21 UTC (1.49 A100-h with provisioning; rc 0). Its `none` reproduced pod C's
+240 rollouts token for token (same seeds, same GPU model), so fill pairs with pod C's arms rollout by
+rollout; its specificity `none` again reproduced T1.3c's rows exactly.
+
+| read | result | rule (Amendment 29) |
+|---|---|---|
+| `spec_fill` (267.3) | ΔP(violating) −0.006 [−0.027, +0.014] (MDE 0.030) | inside ±0.03 |
+| `spec_fill_half` (133.6) | −0.011 [−0.021, −0.002] | inside ±0.03 (point) |
+| −V_harm − fill, specificity (descriptive) | +0.095 [+0.060, +0.133] | fails |
+| V_qwen − `fill_half`, specificity (of record under S2; S1 holds) | +0.104 [+0.077, +0.134] | fails |
+| `rr_fill` (267.3) | Δcompliance +0.004 [−0.008, +0.021] (MDE 0.020); 2 flips | CI includes 0 |
+| −V_harm − fill, retention | +0.033 [+0.008, +0.062] | above 0 |
+| −refusal − fill, retention | +0.029 [+0.008, +0.054] | above 0 |
+| `rr_fill_half` (133.6) | +0.017 [0.000, +0.037]; 5 flips | |
+| V_qwen − `fill_half`, retention | −0.004 [−0.017, +0.008] (MDE 0.018) | inside |
+
+**Verdicts.**
+- **Specificity: S1.** A random vector at either α stays within ±0.03, so Amendment 27 stands and
+  −V_harm and V_qwen fail it on their own account. **The GPT-OSS branch closes: no admissible target
+  at this site and these doses** (no longer provisional). Muse's conditional arms (−V_harm,
+  `care_harm`) open (Amendment 29 item 4).
+- **Retention: rival (b).** Fill does not raise plain compliance and both directions rise above it,
+  so B1 is a verdict (registered wording, Amendment 27: "−refusal raises plain compliance;
+  −harmfulness raises plain compliance by less than the bar"). At this site and dose, −harmfulness
+  and −refusal loosen plain refusal beyond a random vector by the same amount (+0.033 vs +0.029 over
+  fill) on the same rollouts: a causal overlap at the margin, below the bar. Whether Paper 7's
+  dissociation holds under its own protocol is untested here; it is pod D's question (every-position
+  ablation of each direction, ~0.45 A100-h per arm).
+- V_qwen's plain-refusal rise is at the random-vector level for its dose (all 3 of its flips are
+  among fill's 5): no refusal-loosening of its own.
+- ST-A18 resolves as R_b on both measures (a shared component, not borderline items under any push).
+
+**Second derivations.** The D-lite's `none` against pod C's: identical (240 of 240 token sequences);
+its specificity `none` against T1.3c's: identical. Fill's flips at the two α (2 and 5 of 229 refusing
+rollouts) are non-monotone in dose, which at these counts is the floor of fragile rollouts under any
+push; the directions' 8-10 sit above it.
+
+Bias directions: the specificity bar on the point lets `spec_fill_half` pass with a CI that excludes
+0 on the protect side (−0.011; it makes the arms' differences from fill larger, so it opposes the
+arms); five fill draws assigned by item index are a coarse sample of the random-vector distribution
+(neutral: both α agree); identical engines across pods remove cross-pod noise from the pairing
+(neutral).
+
+Referee pass. (1) *"Five draws are not a random-vector distribution."* Conceded in scope: fill is a
+covariance-matched reference with five draws, as at Cell 1's gate; both α and both readouts agree
+with it, and the arms' differences from it exceed their MDEs by about 2×. (2) *"The overlap of
+−harmfulness and −refusal contradicts Paper 7."* Not claimed: the overlap is at the margin of
+in-trace steering at `clause_end`, below the retention bar; Paper 7's protocol (ablation at every
+position) is pod D's. (3) *"S1 leans on `spec_fill_half`'s point inside the bar while its CI excludes
+0."* The CI excludes 0 toward rule (−0.011), not toward violating; on the registered point rule S1
+holds either way, and the arms' failures are measured against fill (+0.095, +0.104) as well as
+against `none`.
