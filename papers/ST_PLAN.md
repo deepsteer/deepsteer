@@ -2805,3 +2805,49 @@ the registered wording and under this one.
    adapter pod if V_qwen passes both gates (§5.0 with coherence, and specificity per Amendment
    27), otherwise the full pod D after Muse's transfer test.
 4. Pod C runs untouched.
+
+### Amendment 29 (2026-10-22; author; zero GPU; after pod C, before the D-lite pod and Cell 4)
+
+1. **D-lite before Muse** (`STEPS=st2dl`, one HF process, GPT-OSS): `rr_none`, `rr_fill`,
+   `rr_fill_half`, `spec_none`, `spec_fill`, `spec_fill_half`. `rr_fill*`: Cell 1's five fill draws
+   cycled by rollout at α 267.3 and 133.6, `clause_end`, block 12, on pod C's 60 plain × 4 with pod
+   C's seeds. `spec_fill*`: the specificity set (60 rule-right × 8, dose 0, single-row) with a fill
+   draw added at every input position at block 12, draw = item index mod 5, at α 267.3 and 133.6.
+   `rr_none` is re-run on the D-lite so the fill arms pair rollout by rollout on one engine (rival
+   (a) is a claim about the same seeded rollouts); `spec_none` repeats pod C's parity check.
+2. **Specificity branches, written before data.**
+   - **S1:** `spec_fill` within ±0.03 of T1.3c's `none` at both α (point estimate, CI reported):
+     Amendment 27 stands; −V_harm and V_qwen fail it; the GPT-OSS branch closes with no target.
+   - **S2:** `spec_fill` outside ±0.03 at either α: specificity is read as Δ(arm − fill at the
+     arm's α), item-bootstrap CI, ±0.03 on the difference. V_qwen is re-read under it (`spec_V_qwen`
+     − `spec_fill_half`, of record); −V_harm's difference is descriptive (its gate predates
+     Amendment 27). V_qwen passing → a target (gate, coherence, specificity against fill), and the
+     next GPT-OSS pod is its adapter pod (Amendment 28 item 3; `rr_fill` will have run here).
+     V_qwen failing → no target; the GPT-OSS branch closes.
+   "Closes" (for item 4's conditional) is S1, or S2 with V_qwen failing.
+3. **Retention reading of `rr_fill`** (B1's rival, Amendment 28), each arm read against its own
+   pod's `none`, paired by item: `rr_fill` raising compliance with the difference from −V_harm's and
+   −refusal's rises inside its CI, on the same borderline items → rival (a), any vector of this
+   size tips the same rollouts; B1 stays a reading and the −refusal control calibrates the readout
+   only. `rr_fill` flat (CI includes 0) and below both (difference CI excludes 0) → rival (b), a
+   shared refusal-relevant component; B1 becomes a verdict. Otherwise unresolved. `rr_fill_half`
+   is V_qwen's dose-matched comparison (its retention rise against fill's at 133.6).
+4. **Cell 4, Muse's transfer test.** Core: Muse's baseline at 8 rollouts (vLLM H1 264 × 8, the
+   readout pass, the bank, Muse's engaged H1_train set), the one-batch timing pilot, V_qwen
+   re-encoded in Muse (Qwen3.8's protect − rule traces in Muse's reasoning channel, within
+   scenario), Muse's fill draws from its bank, α by T1.3's sweep rule on Muse (0.05-0.4 × Muse's
+   median residual norm at its block of record, largest coherent on 5 sweep scenarios; the block
+   of record fixed at the Cell 4 build from Muse's bank, before its pod), then `none`, `fill` and
+   V_qwen on the engaged set × 8, and Muse's specificity baseline, `spec_fill` and `spec_V_qwen`.
+   Conditional on the D-lite closing the GPT-OSS branch: −V_harm (Muse's harmfulness direction by
+   Paper 7's recipe, 64/64 at t_inst) and `care_harm` re-encoded in Muse, each with its
+   specificity read (Amendment 27 binds Muse). Bail order inside Cell 4: the conditional arms
+   first, then V_qwen's specificity before its arm; Muse's baseline and `none` are never cut.
+5. **Price** (GPT-OSS's measured rates; Muse's HF cost is re-priced from its pilot before its arms):
+   D-lite ~1.6 A100-h (setup 0.25, `rr_none` and two fill arms 1.0, three spec reads 0.25,
+   provisioning 0.1; ~1.25 without the `rr_none` re-run). Cell 4 core ~4.7 (setup and loads 0.8,
+   baseline 0.8, pilot 0.1, V_qwen re-encode 0.1, α sweep 0.4, three arms at 45 × 8 2.2, three spec
+   reads 0.3); with the conditional arms ~6.5 (+ directions 0.15, two arms 1.45, two spec reads
+   0.2). Envelope: spent 46.94 (pod C 2.82 by timestamps) + D-lite 1.6 + §13's evaluation 0.5 +
+   Cell 4 ≤ 6.5 = **~55.5 of 60**; the rest of pod D (−refusal on the engaged H1 set, ~1.1 with
+   setup) after Muse if it fits.
