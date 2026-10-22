@@ -2472,3 +2472,31 @@ computed).**
    is pre-approved. Every finished phase's outputs are pulled before the pod's stop.
 3. **Pod A:** `fill` parses 0.953 against `none`'s 0.978 (−0.025), inside Amendment 13's relative
    bar; Cell 1 continues.
+
+### G3 (author, 2026-10-22; after T1.5's read)
+
+1. **Follow-up at the front of pod B:** T1.5's readouts (pre-approved, ~0.3 A100-h) and L-anchor's
+   HF generation with the adapter attached (option (b), ST-A17). L-anchor's ΔP of record keeps the
+   engine fixed (Amendment 23 item 2), so `none` also generates on HF on the 38 engaged H1_held
+   scenarios × 8 (T1.5's seeds; no capability, whose vLLM read stands; no brake rest): ~1.2 A100-h
+   for the pair. Then the readouts over every arm's rows (the vLLM rows, and the two HF arms').
+2. **ST-A17, merge arithmetic against engine:** the specificity rows (60 × 8, dose 0) under the
+   HF-merged bf16 L-anchor beside the attached-adapter rows T1.5 read. If the bf16 merge halves
+   small adapters, a merge-fidelity bar is set before T1.6.
+3. **L-self:** HF generation declined; descriptive under ST-A14.
+4. **L-beh: non-specific.** The registered capability verdict is reported with accuracy on
+   answered items beside it, and its truncation as an adapter side effect. SYNTHESIS frames it as
+   the regression-gate demonstration: an outcome-supervised shaping round installs rule-breaking,
+   the instrument catches it, and the pressure guard stays flat.
+5. **L-anchor:** null for the anchor-axis target only, not for representation adapters. If the
+   readouts show the margin shift at `clause_end` on H1_held, the result is written as
+   "representation moved, action didn't".
+6. **Re-price:** the panel guard at its measured 2.1 A100-h per adapter (not 1.3); envelope
+   restated below. RESULTS after the readouts and (b), with the referee pass and SYNTHESIS.
+
+**Envelope restated (2026-10-22).** Spent: 22.84 before T1.5, T1.5 7.10 (timestamps; its panel
+guard ran 2.1 A100-h per adapter, single-row dose-0 at ~0.64 s per row with specificity, parity and
+the merge), Phase 2 pod A's first attempt 0.62, pod A's rerun ~7.9 (running) → ~38.5. Owed: pod B
+~6.6 (the G3 follow-up ~1.7, ST-A15's discriminator ~0.25, Cells 2-3 ~4.1, setup), Cell 4 on Muse
+~8.6 (re-priced from its pilot), §13's evaluation ~0.5 → **~54.2 of 56**. Any further panel read
+prices at 2.1 A100-h per adapter at the 50% subsample.

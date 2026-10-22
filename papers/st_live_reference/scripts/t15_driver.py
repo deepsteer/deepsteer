@@ -26,6 +26,13 @@ Order (Amendment 20 item 4):
    adapter, the anchor-axis margin at ``clause_end``, block 12 (L-anchor's transport control of
    record) and the post-reasoning letter (Amendment 20 item 3).
 
+G3 follow-up (author, 2026-10-22; on pod B, after T1.5's session ended before its readouts):
+``hfgen2_none`` and ``hfgen2_anchor`` generate the 38 engaged H1_held scenarios x 8 on HF (the
+adapter attached; T1.5's seeds; rows ``gen/h1_<arm>.hf.jsonl``; no capability, no brake rest), so
+L-anchor's ΔP of record keeps the engine fixed (ST-A17, Amendment 23 item 2); ``merged_spec_anchor``
+reads the specificity rows under the HF-merged bf16 L-anchor (ST-A17: merge arithmetic without the
+engine); ``readouts`` then reads every arm's vLLM rows and the two HF arms'.
+
 Every analysis (ΔP, the brake, the guard's ΔE, specificity, capability) runs locally from the saved
 rows; the pod only measures.
 """
@@ -567,6 +574,8 @@ def phase_hfgen_arm(c, a, rec, arm: str) -> dict:
     first = [s for s in c["held"] if s in eng]
     rest = [s for s in c["held"] if s not in eng]
     parsed: list[dict] = []
+    follow = c.get("followup", False)  # G3: engaged only, rows under .hf, no capability
+    stem = f"h1_{arm}.hf" if follow else f"h1_{arm}"
 
     def h1(ids: list[str]) -> float:
         t0 = time.time()
@@ -574,16 +583,19 @@ def phase_hfgen_arm(c, a, rec, arm: str) -> dict:
         seeds = [j["seed"] for j in SV.worker_jobs(jobs, "t15", c["cap"])]  # vLLM's seeds
         rows = SG.generate(mw, [j["ids"] for j in jobs], fmt=c["fmt"], cap=c["cap"], seeds=seeds,
                            batch=c["batch"], on_finish=SG.jsonl_saver(
-                               c["out"] / "gen" / f"h1_{arm}.hf.raw.jsonl"))
+                               c["out"] / "gen" / f"{stem}.raw.jsonl"))
         got = L.build_rows(sc, jobs, [r["gen_ids"] for r in rows], seeds, cap=c["cap"],
                            stage="t15", engine="hf_adapter" if arm != "none" else "hf")
         for r in got:
             r["arm"] = arm
         parsed.extend(got)
-        sc.save_jsonl(f"gen/h1_{arm}.jsonl", parsed)
+        sc.save_jsonl(f"gen/{stem}.jsonl", parsed)
         return (time.time() - t0) / max(1, len(jobs))
 
     per = h1(first)  # ΔP's scenarios first
+    if follow:
+        return {"status": "ok", "engine": "hf", "n_h1": len(parsed), "scope": "engaged 38 only",
+                "seconds_per_rollout": per}
     half = cap_fallback(c["cap_items"])
     cj, recs = cap_jobs(sc, c, a)
     cj, recs = [cj[i] for i in half], [recs[i] for i in half]
@@ -623,10 +635,13 @@ def phase_readouts(c, a, rec) -> dict:
     # a dry run's stub traces carry no punctuation; onset positions stand in so the forward runs
     classes = ("clause_end", "onset") if a.dry_run else ("clause_end",)
     out = {}
-    for arm in ["none"] + arms_order(rec):
-        f = c["out"] / "gen" / f"h1_{arm}.jsonl"
+    sources = [(arm, arm, f"h1_{arm}.jsonl") for arm in ["none"] + arms_order(rec)]
+    sources += [(f"{arm}_hf", arm, f"h1_{arm}.hf.jsonl") for arm in ("none", "anchor")]
+    for name, arm, fname in sources:
+        f = c["out"] / "gen" / fname
         if not f.exists():
-            out[arm] = {"skipped": "no H1_held rows of record"}
+            if not name.endswith("_hf"):
+                out[name] = {"skipped": "no H1_held rows of record"}
             continue
         peft = attach(mw, c["adapters"] / arm) if arm != "none" else None
         res = []
@@ -651,13 +666,31 @@ def phase_readouts(c, a, rec) -> dict:
                         "margin_anchor_axis": m, "n_positions": len(pos),
                         "norm_status": r.get("norm_status"),
                         "post_letter_logp": None if lp is None else [float(x) for x in lp]})
-        sc.save_jsonl(f"readouts/{arm}.jsonl", res)
-        out[arm] = {"n": len(res), "margin_mean": float(np.mean([x["margin_anchor_axis"]
-                                                                for x in res])) if res else None}
+        sc.save_jsonl(f"readouts/{name}.jsonl", res)
+        out[name] = {"n": len(res), "margin_mean": float(np.mean([x["margin_anchor_axis"]
+                                                                 for x in res])) if res else None}
         if peft is not None:
             mw.model = peft.unload()
             mw.wb._model = mw.model  # noqa: SLF001
     return {"status": "ok", "arms": out}
+
+
+def phase_merged_spec_anchor(c, a, rec) -> dict:
+    """ST-A17 (author's G3 addition): the specificity rows (dose 0, single-row) under L-anchor
+    merged into the bf16 weights on HF, beside the attached-adapter rows T1.5 read: merge
+    arithmetic without the engine."""
+    mw = load_hf(c, a)
+    sc = screen(c, mw, a)
+    peft = attach(mw, c["adapters"] / "anchor")
+    merged = peft.merge_and_unload()
+    mw.model = merged
+    mw.wb._model = merged  # noqa: SLF001
+    spec = L.run_letter_cell(sc, [c["panel"][i] for i in c["spec_ids"]], "dl_chat_neutral",
+                             "spec/anchor_merged")
+    return {"status": "ok", "specificity_merged": spec}
+
+
+FOLLOWUP = ("hfgen2_none", "hfgen2_anchor", "merged_spec_anchor", "readouts")
 
 
 def run_phase(c, a, name: str) -> int:
@@ -667,9 +700,13 @@ def run_phase(c, a, name: str) -> int:
         print(f">> t15 {name}: finished earlier ({done['finished']}); skipped", flush=True)
         return 0
     t0 = time.time()
-    if name in ("beh_cap", "base_hf", "base_vllm", "readouts"):
+    if name in ("beh_cap", "base_hf", "base_vllm", "readouts", "merged_spec_anchor"):
         res = {"beh_cap": phase_beh_cap, "base_hf": phase_base_hf, "base_vllm": phase_base_vllm,
-               "readouts": phase_readouts}[name](c, a, rec)
+               "readouts": phase_readouts, "merged_spec_anchor": phase_merged_spec_anchor}[name](
+                   c, a, rec)
+    elif name.startswith("hfgen2_"):
+        c["followup"] = True
+        res = phase_hfgen_arm(c, a, rec, name.split("_", 1)[1])
     else:
         kind, arm = name.split("_", 1)
         res = {"hf": phase_hf_arm, "vllm": phase_vllm_arm, "hfgen": phase_hfgen_arm}[kind](
@@ -767,7 +804,26 @@ def main() -> int:
     a = ap.parse_args()
     if a.dry_fail_base and not a.dry_run:
         ap.error("--dry-fail-base is a dry-run flag")
+    if a.phase in FOLLOWUP or a.phase == "followup":
+        # T1.5's prompts carry its date pin; the follow-up renders with the rows' own
+        pins = {json.loads(x)["date_pin"] for x in (a.out / KEY / "gen" / "h1_none.jsonl").open()}
+        if len(pins) != 1:
+            raise SystemExit(f"T1.5's none rows carry {len(pins)} date pins")
+        a.date_pin = pins.pop()
     c = context(a)
+    if a.phase == "followup":
+        if not a.dry_run:
+            verify_adapters(c)
+        for name in FOLLOWUP:
+            if a.deadline and time.time() > a.deadline:
+                print(f">> t15 {name}: not started, past the deadline", flush=True)
+                return 3
+            rc = subprocess.run([sys.executable, __file__, "--phase", name]
+                                + _passthrough(a)).returncode
+            if rc != 0:
+                print(f">> t15 {name}: exit {rc}; stopping", flush=True)
+                return rc
+        return 0
     if a.phase == "all":
         return run_all(c, a)
     return run_phase(c, a, a.phase)

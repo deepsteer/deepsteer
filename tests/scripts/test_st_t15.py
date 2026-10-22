@@ -252,3 +252,33 @@ def test_dry_run_failed_base_check_takes_every_arm_to_hf(tmp_path):
     for arm in T.ARMS_ALL:
         assert rec["phases"][f"vllm_{arm}"]["parity_ok"] is False
         assert not (d / "merged" / arm).exists(), arm
+
+
+@pytest.mark.slow
+def test_dry_run_g3_followup_after_a_cut_session(tmp_path):
+    # most probable failure: the follow-up overwrites L-anchor's or none's vLLM rows with the HF
+    # rows, renders with the follow-up pod's date (prompts no longer match T1.5's rows), or the
+    # readouts skip the HF arms that are L-anchor's transport control of record
+    d = _dry(tmp_path)
+    rec = json.loads((d / "t15_record.json").read_text())
+    del rec["phases"]["readouts"]  # the T1.5 pod's stop cut the readouts
+    (d / "t15_record.json").write_text(json.dumps(rec))
+    before = {a: (d / "gen" / f"h1_{a}.jsonl").read_text() for a in ("none", "anchor")}
+    inp, adapters = tmp_path / "inputs", tmp_path / "adapters"
+    cmd = [sys.executable, str(SCRIPTS / "t15_driver.py"), "--out", str(tmp_path / "out"),
+           "--t14-inputs", str(inp), "--adapters", str(adapters), "--dry-run", "--date-pin",
+           "2026-10-30", "--phase", "followup"]
+    r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT,
+                       env={**os.environ, "PYTHONPATH": str(ROOT)})
+    assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-3000:]
+    rec = json.loads((d / "t15_record.json").read_text())
+    for p in T.FOLLOWUP:
+        assert rec["phases"][p]["finished"], p
+    for a in ("none", "anchor"):
+        assert (d / "gen" / f"h1_{a}.jsonl").read_text() == before[a]  # vLLM rows untouched
+        hf = [json.loads(x) for x in (d / "gen" / f"h1_{a}.hf.jsonl").open()]
+        assert hf and {x["engine"] for x in hf} == {"hf" if a == "none" else "hf_adapter"}
+        assert {x["date_pin"] for x in hf} == {"2026-10-21"}  # T1.5's pin, not the flag's
+        assert (d / "readouts" / f"{a}_hf.jsonl").exists()
+    assert (d / "spec" / "anchor_merged" / "dl_chat_neutral.jsonl").exists()
+    assert rec["phases"]["readouts"]["arms"]["anchor_hf"]["n"] >= 1

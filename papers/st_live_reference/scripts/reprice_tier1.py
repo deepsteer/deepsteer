@@ -82,7 +82,14 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "but lost in the download)": 3.7,
          "T1.3c pod (z28p9cbnwvvo58; timestamps; reversed-axis arm, none panel of record)": 3.24,
          "T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters)": 4.70,
-         "ST Phase 2 pod A, attempt 1 (sx9ag0uq14lw64; timestamps; OOM at c1_none batch 2)": 0.62}
+         "ST Phase 2 pod A, attempt 1 (sx9ag0uq14lw64; timestamps; OOM at c1_none batch 2)": 0.62,
+         "T1.5 pod (gwobskujn4mmap; timestamps 21:03-04:03 + 0.1; stopped before the readouts)":
+             7.10}
+# T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
+# 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
+# T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)
+T15_DONE = {"gpt_oss_20b"}
+PANEL_GUARD_H_PER_ARM = 2.1
 T14_DONE = {"gpt_oss_20b"}  # T1.4's rows ran on the T1.4 pod (no fourth adapter: no arm passed)
 # what T1.3 still owes after its pod (Amendment 13's care + fill rerun at alpha 267.3, 320
 # rollouts), priced from that pod's measured arms: gate_care 1,057 s + gate_fill 1,288 s of
@@ -353,6 +360,11 @@ def price(m: dict) -> dict:
                 dev[k] = (0.0, "done (T1.4 pod; in the spend)")
         if m["model"] in T15_A20 and d0 is not None:
             dev = t15_amendment20(m, dev, d0)
+        if m["model"] in T15_DONE:
+            for k in [k for k in dev if k.startswith("T1.5") and "refusal-retention" not in k]:
+                dev[k] = (0.0, "done (T1.5 pod; in the spend)")
+            dev["T1.5 follow-up on pod B (G3: readouts 0.3, HF none + L-anchor on the 38, 1.2, "
+                "the ST-A17 merge read 0.07, loads)"] = (1.7, "estimate")
         if rr_uncalibrated(m):
             kq = next(k for k in dev if k.startswith("T1.5 refusal-retention"))
             dev[kq] = (0.0, "uncalibrated on this model (Amendment 10 pre-registration): no arm")

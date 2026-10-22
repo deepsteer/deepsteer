@@ -563,7 +563,7 @@ def test_reprice_merges_the_rider_session_and_reads_pod_timestamps(tmp_path):
     assert "pod timestamps" in (tmp_path / "t10b" / "tier1_reprice.md").read_text()
 
 
-def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
+def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path, monkeypatch):
     # most probable failure: T1.1's per-rollout rate (prompt + trace already) is rescaled by the
     # trace length again, panel dose-0 rows are priced at the trace rate, the none panel that
     # ΔE needs is left out, or the retention arm the uncalibrated branch removed is still priced
@@ -580,6 +580,7 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
          "alone_read_s": None, "replicate_floor": None, "single_row": True, "hf_step_s": None,
          "hf_batch": None, "load_h": 0.01, "elapsed_h": 0.5,
          "rec": {"single_row_read_s": 0.5, "dose0_read_s": 0.4}}
+    monkeypatch.setattr(RP, "T15_DONE", set())  # the Amendment 20 rows, before T1.5 ran
     p = RP.price(m)
     kr = next(k for k in p["development"] if k.startswith("T1.5 HF reads"))
     # Amendment 20: readouts on 2 of 8 rollouts for none and 4 adapters; 2 adapter panels at
@@ -597,3 +598,7 @@ def test_reprice_t11_rates_variant_and_uncalibrated_retention(tmp_path):
     kq = next(k for k in p["development"] if k.startswith("T1.5 refusal-retention"))
     assert p["development"][kq][0] == 0.0
     assert any(k.startswith("T1.6 refusal-retention selection") for k in p["second_family"])
+    monkeypatch.setattr(RP, "T15_DONE", {"gpt_oss_20b"})  # after: done, the G3 follow-up owed
+    q = RP.price(m)["development"]
+    assert all(v[0] == 0.0 for k, v in q.items() if k.startswith("T1.5 HF reads"))
+    assert any(k.startswith("T1.5 follow-up on pod B") and v[0] > 0 for k, v in q.items())

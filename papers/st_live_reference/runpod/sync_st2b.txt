@@ -3,3 +3,10 @@ outputs/t11/gpt_oss_20b/gen/h1_rollouts_read.jsonl
 outputs/t10/qwen38_27b/screen/h1_screen.jsonl
 outputs/st2a/gpt_oss_20b/gen/c1_none.jsonl
 outputs/t15_early/gpt_oss_20b/vllm/mxfp4_parity.jobs.jsonl
+outputs/t15/gpt_oss_20b/
+outputs/t14_inputs/
+outputs/t14/gpt_oss_20b/adapters/
+outputs/t14/gpt_oss_20b/adapters/beh/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/beh_epoch3/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/anchor/adapter_model.safetensors
+outputs/t14/gpt_oss_20b/adapters/self/adapter_model.safetensors

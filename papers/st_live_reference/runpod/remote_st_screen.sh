@@ -76,8 +76,10 @@ elif [ "$STEPS" = "st2b" ]; then
   # ST Phase 2 pod B (author, 2026-10-21; Amendment 22, its riders and Cell 2 decisions): the Qwen
   # top-up (vLLM, first, on an empty GPU), Cell 2 (V_rule) and Cell 3 (V_qwen) on GPT-OSS; inputs
   # from outputs/st2_inputs, T1.1's rows, Qwen's screen rows and pod A's Cell 1 none (SYNC_OUTPUTS)
+  # G3 (author, 2026-10-22): T1.5's follow-up first (HF none and L-anchor on the 38 engaged, the
+  # ST-A17 merge read, the readouts), on a copy of T1.5's rows under outputs/st2b/t15_followup
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2b
-  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-5.0}"
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-7.0}"
 elif [ "$STEPS" = "rider2" ]; then
   # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
@@ -265,13 +267,22 @@ if [ "$STEPS" = "t15" ]; then  # T1.4's inputs and adapters (SYNC_OUTPUTS); the 
     done
   done
 fi
+if [ "$STEPS" = "st2b" ]; then  # G3: the T1.4 adapters for the follow-up (sha256 checked by the driver)
+  for arm in beh beh_epoch3 anchor self; do
+    for f in adapter_config.json adapter_model.safetensors; do
+      [ -s "$T14_ADAPTERS/$arm/$f" ] || { echo "FATAL: $T14_ADAPTERS/$arm/$f missing (SYNC_OUTPUTS)"; exit 1; }
+    done
+  done
+fi
 ST2A_DIR="$REPO_DIR/papers/st_live_reference/outputs/st2a/gpt_oss_20b"  # SYNC_OUTPUTS (pod B)
 QWEN_SCREEN="$REPO_DIR/papers/st_live_reference/outputs/t10/qwen38_27b/screen/h1_screen.jsonl"
 T15_JOBS="$REPO_DIR/papers/st_live_reference/outputs/t15_early/gpt_oss_20b/vllm/mxfp4_parity.jobs.jsonl"  # ST-A15
+T15_DIR="$REPO_DIR/papers/st_live_reference/outputs/t15/gpt_oss_20b"  # SYNC_OUTPUTS (G3 follow-up)
 ST2B_PHASES="c3_qwen,c2_extract,c2_direction,c2_anchor,c2_ablate,c2_random,c2_twin_none,c2_transport,c2_freegen,c3_reencode,c3_direction,c3_qwen_arm"
 if [ "$STEPS" = "st2b" ]; then  # built locally; synced (sync_st2b.txt); twins and ids committed
   for f in "$ST2_INPUTS/st2_inputs.npz" "$T11_DIR/gen/h1_rollouts_read.jsonl" "$QWEN_SCREEN" \
-           "$ST2A_DIR/gen/c1_none.jsonl" "$T15_JOBS" papers/st_live_reference/data/st2_engaged_train_v1.json \
+           "$ST2A_DIR/gen/c1_none.jsonl" "$T15_JOBS" "$T15_DIR/t15_record.json" \
+           "$T15_DIR/gen/h1_none.jsonl" "$T15_DIR/gen/h1_anchor.jsonl" "$T14_INPUTS/t14_inputs.npz" papers/st_live_reference/data/st2_engaged_train_v1.json \
            papers/st_live_reference/data/st2_rule_twins_v1.json; do
     [ -f "$f" ] || { echo "FATAL: $f missing (pod B inputs; SYNC_OUTPUTS from sync_st2b.txt)"; exit 1; }
   done
@@ -333,7 +344,14 @@ dry_runs() {
       rm -rf "$OUT/_dry_st2"
     fi
     if [ "$STEPS" = "st2b" ] && [ "$m" = "gpt_oss_20b" ]; then  # Cell 1 dry (its none), then pod B's order, dry
-      rm -rf "$OUT/_dry_st2"
+      rm -rf "$OUT/_dry_st2" "$OUT/_dry_t15fu"
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/t15_driver.py \
+        --out "$OUT/_dry_t15fu" --dry-run --t14-inputs "$T14_INPUTS" --adapters "$OUT/_dry_t15fu/adapters" \
+        --date-pin "$DATE_PIN" || { echo "DRY RUN FAILED (st2b, t15 base)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/t15_driver.py \
+        --out "$OUT/_dry_t15fu" --dry-run --t14-inputs "$T14_INPUTS" --adapters "$OUT/_dry_t15fu/adapters" \
+        --date-pin "$DATE_PIN" --phase followup --force || { echo "DRY RUN FAILED (st2b, t15 follow-up)"; return 1; }
+      rm -rf "$OUT/_dry_t15fu"
       PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/router_disc.py \
         --phase hf --dry-run --jobs "$T15_JOBS" --out "$OUT/_dry_st2/rd" \
         || { echo "DRY RUN FAILED (st2b, router_disc hf)"; return 1; }
@@ -439,7 +457,14 @@ for m in $MODELS; do
   fi
   echo "==================== $OUT_SUB/$m ===================="
   if [ "$STEPS" = "st2b" ]; then
-    # ST-A15's discriminator first (author, 2026-10-21): HF router capture + the bf16 checkpoint,
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    # G3 first (author, 2026-10-22): T1.5's follow-up on a copy of its rows; fail-soft
+    FU="$OUT/t15_followup"; mkdir -p "$FU/gpt_oss_20b"
+    cp -r "$T15_DIR/." "$FU/gpt_oss_20b/" && rm -rf "$FU/gpt_oss_20b/merged"
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/t15_driver.py --phase followup \
+      --out "$FU" --t14-inputs "$T14_INPUTS" --adapters "$T14_ADAPTERS" --deadline "$DEADLINE" \
+      || echo "WARN: T1.5 follow-up stopped (recorded; Phase 2 goes on)"
+    # ST-A15's discriminator (author, 2026-10-21): HF router capture + the bf16 checkpoint,
     # then each vLLM engine in its own process; fail-soft (recorded), the checkpoint deleted after
     RD="$OUT/router_disc"
     PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/router_disc.py --phase hf \

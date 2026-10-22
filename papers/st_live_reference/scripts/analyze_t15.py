@@ -44,6 +44,8 @@ HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts")]
 import t13_driver as T13  # noqa: E402
 
+A13 = T13
+
 DATA = HERE.parent / "data"
 OUTS = HERE.parent / "outputs"
 ARMS = ("beh", "beh_epoch3", "anchor", "self")
@@ -225,6 +227,60 @@ def rows_of_record(t15: Path, arm: str, par: dict, kind: str) -> tuple[Path | No
     return None, "missing"
 
 
+def g3_anchor(t15: Path, engaged: list[str], spec_ids: list[str]) -> dict | None:
+    """G3 (author, 2026-10-22): L-anchor's ΔP of record from HF generation, the adapter attached,
+    against HF ``none`` on the 38 engaged (engine fixed, ST-A17); its transport control (anchor-axis
+    margin at clause_end, adapter vs none, on each engine's traces); ST-A17's merge read (the
+    specificity rows under the HF-merged bf16 adapter against the attached one)."""
+    fa, fn = t15 / "gen" / "h1_anchor.hf.jsonl", t15 / "gen" / "h1_none.hf.jsonl"
+    if not (fa.exists() and fn.exists()):
+        return None
+    ra, rn = _jsonl(fa), _jsonl(fn)
+    out: dict = {"dP_record": paired(p_record(ra), p_record(rn), engaged),
+                 "dP_truncation_excluded": paired(A13.p_by_scenario(ra), A13.p_by_scenario(rn),
+                                                  engaged),
+                 "truncation_arm": truncation_share(ra), "truncation_none": truncation_share(rn)}
+    out["category_record"] = category(out["dP_record"])
+    out["category_excluded"] = category(out["dP_truncation_excluded"])
+    rd = t15 / "readouts"
+    for tag, (a, n) in {"hf": ("anchor_hf", "none_hf"), "vllm": ("anchor", "none")}.items():
+        if (rd / f"{a}.jsonl").exists() and (rd / f"{n}.jsonl").exists():
+            out[f"transport_{tag}"] = margin_shift(rd / f"{a}.jsonl", rd / f"{n}.jsonl")
+    m = t15 / "spec" / "anchor_merged" / "dl_chat_neutral.jsonl"
+    if m.exists():
+        pm = _spec_p(_jsonl(m), spec_ids)
+        pa = _spec_p(_jsonl(t15 / "spec" / "anchor" / "dl_chat_neutral.jsonl"), spec_ids)
+        s_ = sorted(set(pm) & set(pa))
+        out["st_a17_merged_minus_attached_spec"] = T13.boot([pm[x] - pa[x] for x in s_])
+    return out
+
+
+def _spec_p(rows: list[dict], ids) -> dict:
+    acc: dict[str, list] = {}
+    for r in rows:
+        if r["scenario_id"] not in ids:
+            continue
+        letters = sorted(r["option_logps"])
+        m = np.exp([r["option_logps"][x] for x in letters])
+        acc.setdefault(r["scenario_id"], []).append(float(sum(
+            q for x, q in zip(letters, m / m.sum()) if r["norm_status_by_letter"][x] ==
+            "violating")))
+    return {s: float(np.mean(v)) for s, v in acc.items()}
+
+
+def margin_shift(fa: Path, fn: Path) -> dict:
+    def per(p: Path) -> dict:
+        acc: dict[str, list] = {}
+        for r in _jsonl(p):
+            acc.setdefault(r["scenario_id"], []).append(r["margin_anchor_axis"])
+        return {s: float(np.mean(v)) for s, v in acc.items()}
+
+    a, n = per(fa), per(fn)
+    s_ = sorted(set(a) & set(n))
+    d = T13.boot([a[x] - n[x] for x in s_])
+    return {"d_margin": d, "moves_up": bool(d["ci95"][0] is not None and d["ci95"][0] > 0)}
+
+
 def read(t15: Path, panel_none: Path, t11: Path | None) -> dict:
     rec = json.loads((t15 / "t15_record.json").read_text())
     engaged = json.loads((DATA / "t15_engaged_held_v1.json").read_text())["ids"]
@@ -263,6 +319,16 @@ def read(t15: Path, panel_none: Path, t11: Path | None) -> dict:
             x["guard"] = guard(t15, panel_none, arm, half)
         x["verdict"] = verdict(arm, x, comp)
         out["arms"][arm] = x
+    g3 = g3_anchor(t15, engaged, spec_ids)
+    if g3 is not None and "anchor" in out["arms"]:
+        x = out["arms"]["anchor"]
+        x["vllm_column"] = {k: x[k] for k in ("dP_record", "dP_truncation_excluded",
+                                              "category_record", "category_excluded")}
+        x["g3_hf"] = g3
+        for k in ("dP_record", "dP_truncation_excluded", "category_record", "category_excluded"):
+            x[k] = g3[k]
+        x["rows_of_record"] = "HF, adapter attached, vs HF none on the 38 (G3, ST-A17)"
+        x["verdict"] = verdict("anchor", x, comp)
     if t11 is not None and (t11 / "rerun" / "h1_held_engaged_rerun.jsonl").exists():
         mx = T13.p_by_scenario(_jsonl(t11 / "rerun" / "h1_held_engaged_rerun.jsonl"))
         out["precision_effect_bf16_minus_mxfp4"] = paired(nx, mx, engaged)
