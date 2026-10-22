@@ -5,6 +5,7 @@
         papers/st_live_reference/outputs/t11/gpt_oss_20b
     python3 papers/st_live_reference/scripts/build_st2_inputs.py cell1
     python3 papers/st_live_reference/scripts/build_st2_inputs.py twins <spans.json> <rewrites.json>
+    python3 papers/st_live_reference/scripts/build_st2_inputs.py podc
 
 - ``engaged``: ``data/st2_engaged_train_v1.json``, T1.1's 45 brake-engaged H1_train ids copied from
   ``select/engaged.json`` (no new draw).
@@ -17,6 +18,10 @@
   elsewhere (``clause_deleted``); or, where the rule sentence also carries other facts, replaced by
   a sentence keeping only those facts, with no requirement wording and no content word absent from
   the original (``rewritten``; built for the dose-0 transport control only). Options are verbatim.
+- ``podc``: ``outputs/st2c_inputs/gpt_oss_20b/st2c_inputs.npz`` + ``.json`` (synced to pod C,
+  Amendment 25): ``V_qwen`` exactly as pod B built it, and Paper 7's refusal direction of record on
+  GPT-OSS (``refusal_t_post_inst_layer12``, the output of block 12, ST's L*) for the rider's
+  positive control, unit, with the sources' sha256 and their cosines to the Cell 1 vectors.
 """
 
 from __future__ import annotations
@@ -165,6 +170,42 @@ def cell1() -> dict:
     return meta
 
 
+ST2B_QWEN = OUTS / "st2b" / "gpt_oss_20b" / "c3" / "v_qwen.npz"
+P7_DIRS = HERE.parents[1] / "7_reasoning" / "outputs" / "gpt_oss_20b" / "position_directions.npz"
+P7_KEY = "refusal_t_post_inst_layer12"  # Paper 7's layer 12 = _get_layer_module(12)'s output
+P7_SHA = "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71"  # its Zenodo ledger
+OUT_C = OUTS / "st2c_inputs" / "gpt_oss_20b"
+
+
+def podc() -> dict:
+    if sha(P7_DIRS) != P7_SHA:
+        raise SystemExit(f"{P7_DIRS} differs from the Zenodo ledger's sha256")
+    q = np.load(ST2B_QWEN)["v_qwen"].astype(np.float32)
+    r = np.load(P7_DIRS)[P7_KEY].astype(np.float32)
+    r = r / np.linalg.norm(r)
+    if abs(float(np.linalg.norm(q)) - 1.0) > 1e-5:
+        raise SystemExit("V_qwen is not unit")
+    c1 = np.load(OUT / "st2_inputs.npz")
+    OUT_C.mkdir(parents=True, exist_ok=True)
+    np.savez(OUT_C / "st2c_inputs.npz", V_qwen=q, refusal=r)
+    meta = {"rule": "ST_PLAN Amendment 25 (pod C)", "layer": "block 12 (hidden index 13)",
+            "class": "clause_end",
+            "vectors": {
+                "V_qwen": "pod B's c3/v_qwen.npz (outcome-conditioned, cross-model: Qwen3.8-27B's "
+                          "protect - rule traces within scenario, re-encoded in GPT-OSS; unit)",
+                "refusal": f"Paper 7 position_directions.npz {P7_KEY}: harmful - harmless at "
+                           "t_post_inst, chat format, 64 + 64 prompts, block 12's output; unit "
+                           "(the rider's positive control, subtracted)"},
+            "cos": {f"{a}.{b}": float(x @ c1[b]) for a, x in (("V_qwen", q), ("refusal", r))
+                    for b in ("V_harm", "care_harm", "anchor_axis")} | {
+                "V_qwen.refusal": float(q @ r)},
+            "sha256": {"v_qwen.npz": sha(ST2B_QWEN), "position_directions.npz": sha(P7_DIRS),
+                       "st2_inputs.npz": sha(OUT / "st2_inputs.npz"),
+                       "st2c_inputs.npz": sha(OUT_C / "st2c_inputs.npz")}}
+    (OUT_C / "st2c_inputs.json").write_text(json.dumps(meta, indent=1) + "\n")
+    return meta
+
+
 def main() -> None:
     if sys.argv[1:2] == ["engaged"]:
         e = engaged(Path(sys.argv[2]))
@@ -178,6 +219,9 @@ def main() -> None:
     elif sys.argv[1:2] == ["cell1"]:
         m = cell1()
         print(f">> st2 inputs (cell 1): cos {m['cos']}")
+    elif sys.argv[1:2] == ["podc"]:
+        m = podc()
+        print(f">> st2c inputs (pod C): cos {m['cos']}")
     else:
         raise SystemExit(__doc__)
 

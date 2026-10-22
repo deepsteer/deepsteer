@@ -84,7 +84,10 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters)": 4.70,
          "ST Phase 2 pod A, attempt 1 (sx9ag0uq14lw64; timestamps; OOM at c1_none batch 2)": 0.62,
          "T1.5 pod (gwobskujn4mmap; timestamps 21:03-04:03 + 0.1; stopped before the readouts)":
-             7.10}
+             7.10,
+         "ST Phase 2 pod A (st2a; timestamps 22:54-05:57 + 0.1; Cell 1)": 7.15,
+         "ST Phase 2 pod B (st2b; timestamps 06:41-13:00 + 0.1; G3 follow-up, ST-A15's "
+         "discriminator, Cells 2-3, -V_harm)": 6.41}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)

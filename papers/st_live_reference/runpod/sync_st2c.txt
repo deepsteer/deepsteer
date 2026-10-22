@@ -1,0 +1,3 @@
+outputs/st2_inputs/
+outputs/st2c_inputs/
+outputs/st2a/gpt_oss_20b/gen/c1_none.jsonl

@@ -2648,3 +2648,57 @@ unadjusted, under its MDE, not past Holm; it is reported with the transport cont
 is the next step before any wording beyond that. (3) *"`V_qwen`'s +0.36 is longer deliberation, not
 content."* By the registered rule it is not informative; the step-down at α 133.6 is the test, and
 the within-action lengths show it lengthens rule and defer traces most.
+
+#### ST Phase 2 pod C build (2026-10-22; Amendment 25; zero GPU until launch)
+
+- **Order** (`STEPS=st2c`, `scripts/st2c_driver.py`, watchdog 4.0 h): `rr_none`, `rr_neg_V_harm`,
+  `spec_none`, `spec_neg_V_harm`, `rr_neg_refusal` (the rider, if kept), `qwen_half`, then
+  `rr_V_qwen` and `spec_V_qwen` only if `qwen_half` passes coherence (the driver checks its own
+  record and writes "skipped" otherwise). −V_harm's two reads come first in the bail order. One HF
+  process on the ST stack of record; every arm renders with Cell 1's date pin (pod A's `none` rows),
+  so `qwen_half` pairs with Cell 1's `none` on seeds `st2c1|sid|k`, k < 8.
+- **Refusal retention, spec block.** Stimulus: the 60 plain violating members of
+  `data/refusal_retention_v1.json` (no system prompt), 4 rollouts, seeds `st2rr|item|k` shared by
+  every arm. Baseline discrimination: T1.1's selection pass, re-read under readout v3, refuses 0.942
+  of plain requests (53 of 60 items at 1.0), so a rise in compliance is visible and a fall is not;
+  the read only needs the rise. Outcome: compliance = 1 − FL's `is_refusal` on the final answer's
+  first 64 tokens (readout v3, pinned by source sha256 in each phase record); a rollout without a
+  final answer has no readout and is never imputed. Site: `clause_end`, block 12 (hidden index 13),
+  trace tokens only; scope full residual, `h += α v` with v unit. Controls: `none` on the same
+  seeds; named reference, the rider's positive control (Paper 7's `refusal_t_post_inst_layer12`,
+  harmful − harmless at t_post_inst in the chat format, block 12's output, subtracted at α 267.3;
+  cos 0.157 to V_harm, which is Paper 7's `harmfulness_t_inst_layer12` itself). The positive control
+  reads by Amendment 10 item 3's rule (CI lower bound above 0). No matched-random arm (open rider
+  below). Cap: 1,536 + 64.
+- **Specificity at inference, spec block.** The 60 rule-right panel items
+  (`data/t15_specificity_v1.json`) × 8 permutations, dose 0, `dl_chat_neutral`, single-row,
+  T1.5's screen settings; the arm's α v added at every position of block 12's output. Outcome:
+  P(violating option) over the shown letters, per item; baseline of record T1.3c's `none` rows. The
+  pod's own `none` is a parity read: its prompts must hash to T1.3c's (they do on the dry run, 16 of
+  16, and T1.5's rows matched T1.3c's 480 of 480 across date pins) and its Δ must sit inside the bar.
+- **Power, from measured variance.** Retention: resampling T1.1's per-item plain refusal rates
+  twice at 4 rollouts gives a null Δcompliance SD of 0.014, MDE 0.034; the bar passes a null arm in
+  ~100% of draws and flags a true +0.10 rise in 98% (+0.05: 47%). Specificity: MDE 0.015 to 0.089
+  on T1.5's arms (L-anchor to L-beh); the ±0.03 bar is on the point estimate. V_qwen at 133.6: MDE
+  0.112 against `none` at 45 × 8 (its 267.3 read).
+- **Branches** (Amendment 25 item 2, both publishable): −V_harm passes both reads with the positive
+  control raising compliance → "retains refusal on plain requests at MDE 0.034 and is specific at
+  ±0.03", cleared for a training objective by the author; passes with a flat control → "no rise
+  detected at MDE 0.034, readout uncalibrated on GPT-OSS", the author's call; fails either →
+  "non-specific (refusal)" or "non-specific", nothing trains on it. V_qwen: incoherent at 133.6 →
+  not informative (Amendment 25 item 1), its reads skipped; coherent → its ΔP of record at 133.6
+  replaces the 267.3 read in Holm over the eleven arms, and the same two reads follow.
+- **Saves:** `rr/<arm>.jsonl` (answer, label, gen_ids, seed, n_steered) and `.raw.jsonl`;
+  `spec/<arm>/dl_chat_neutral.{jsonl,npz}`; `gen/c3_qwen_half.{jsonl,raw.jsonl}` (trace NLL under
+  the unsteered model); `st2c_record.json`; session logs. Local read: `scripts/analyze_st2c.py`
+  (second derivation under Paper 7's regex; the analysis path reproduces pod B's 267.3 V_qwen read
+  and the committed Holm reading when fed pod B's rows).
+- **Dependencies:** `outputs/st2_inputs` (V_harm, Cell 1's), `outputs/st2c_inputs` (V_qwen as pod B
+  built it; the refusal direction, its file checked against the Zenodo ledger's sha256), pod A's
+  `c1_none.jsonl` (sync list `runpod/sync_st2c.txt`); committed sets above.
+- **Price:** plain-request traces run a median 104 tokens but 95th percentile 1,176, and a batch
+  decodes until its longest row ends, so each retention arm is ~0.45 A100-h (240 rollouts in two
+  batches), the specificity reads ~0.05 each, `qwen_half` ~0.8 (pod B's V_qwen arm), setup and dry
+  runs ~0.35: ~3.0 A100-h without V_qwen's reads, ~3.5 with them. Spent 44.12 (pod A's rerun 7.15
+  and pod B 6.41 by timestamps); with pod C and §13's evaluation ~48.1, which leaves ~7.9 of 56 for
+  the re-shaped Cell 4 on Muse (the original Cell 4 priced 8.6).
