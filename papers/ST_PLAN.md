@@ -2460,3 +2460,15 @@ computed).**
    √(r_oss · r_qwen) is reported beside cos(V_qwen, V_oss). "Aligned" still needs the cosine's CI
    lower bound above the covariance-matched null's q95 (0.374 against V_oss); a cosine at or below
    the null is a geometric statement only, and Cell 3's causal arm speaks to function.
+
+### Amendment 24 (2026-10-22; author; zero GPU; during the T1.5 pod)
+
+1. **Log-space parity stays descriptive,** for T1.5 and for future adapters, until it has its own
+   ladder (an HF replicate floor, an engine band, a bar set as Amendment 6 set the padded check's):
+   the mean |Δ log p| over the displayed letters is reported beside TV for every adapter (ST-A16).
+   Amendment 23's bar is 0.0975 (the bf16 band over the 61 rows, 0.0475, + 0.05).
+2. **T1.5's running driver is not changed.** If the session's deadline stops it before the
+   post-reasoning readouts, a readouts-only follow-up session (~0.3 A100-h; finished phases skipped)
+   is pre-approved. Every finished phase's outputs are pulled before the pod's stop.
+3. **Pod A:** `fill` parses 0.953 against `none`'s 0.978 (−0.025), inside Amendment 13's relative
+   bar; Cell 1 continues.

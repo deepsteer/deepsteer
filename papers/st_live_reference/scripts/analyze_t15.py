@@ -171,6 +171,19 @@ def _tv(a: np.ndarray, b: np.ndarray, shown: list[list[int]]) -> np.ndarray:
     return np.array(out)
 
 
+def logp_distance(a: np.ndarray, b: np.ndarray, shown: list[list[int]],
+                  keep: list[int]) -> dict:
+    """Descriptive (author, 2026-10-22; ST-A16): mean |Δ log p| over the displayed letters, where
+    TV saturates; letters outside a vLLM top-20 are counted, not imputed. Not a gate until it has
+    its own ladder (HF replicate floor, engine band, bar per Amendment 6)."""
+    d = [abs(float(a[i][j] - b[i][j])) for i in keep for j in shown[i]
+         if np.isfinite(a[i][j]) and np.isfinite(b[i][j])]
+    miss = sum(1 for i in keep for j in shown[i] if not (np.isfinite(a[i][j])
+                                                        and np.isfinite(b[i][j])))
+    return {"mean": float(np.mean(d)) if d else None, "median": float(np.median(d)) if d else None,
+            "max": float(np.max(d)) if d else None, "n": len(d), "outside_top20": miss}
+
+
 def parity(t15: Path) -> dict:
     """Amendment 23 item 1, per arm: TV(merged on vLLM, HF attached) over the 61 rows against the
     bf16 engine's own band over the same rows + 0.05."""
@@ -180,17 +193,21 @@ def parity(t15: Path) -> dict:
     lids, n = jobs[0]["logprob_ids"], len(jobs)
     shown = RD.shown_columns(n)
     keep = [i for i in range(n) if i not in ODD_ROWS]
-    base = _tv(_vllm_letters(t15 / "vllm" / "none.jsonl", lids, n),
-               np.load(t15 / "parity" / "hf_none.npy"), shown)
+    vn, hn = _vllm_letters(t15 / "vllm" / "none.jsonl", lids, n), np.load(t15 / "parity" /
+                                                                            "hf_none.npy")
+    base = _tv(vn, hn, shown)
     out = {"band61": float(base[keep].mean()), "band64": float(base.mean()),
-           "bar61": float(base[keep].mean()) + PARITY_MARGIN, "arms": {}}
+           "bar61": float(base[keep].mean()) + PARITY_MARGIN,
+           "logp_none_vllm_vs_hf_61": logp_distance(vn, hn, shown, keep), "arms": {}}
     for arm in ARMS:
         f, h = t15 / "vllm" / f"{arm}.jsonl", t15 / "parity" / f"hf_{arm}.npy"
         if not (f.exists() and h.exists()):
             continue
-        d = _tv(_vllm_letters(f, lids, n), np.load(h), shown)
+        va, ha = _vllm_letters(f, lids, n), np.load(h)
+        d = _tv(va, ha, shown)
         out["arms"][arm] = {"tv61": float(d[keep].mean()), "tv64": float(d.mean()),
-                            "passes": bool(d[keep].mean() <= out["bar61"])}
+                            "passes": bool(d[keep].mean() <= out["bar61"]),
+                            "logp61_descriptive": logp_distance(va, ha, shown, keep)}
     return out
 
 
