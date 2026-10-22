@@ -2789,3 +2789,19 @@ the registered wording and under this one.
    by the same non-specific route; two handles, one failure mode.
 7. **Pod D deferred** (`rr_fill` and −refusal on the engaged H1 set, ~1.4 A100-h) behind Muse's
    transfer test; it runs after that test if the envelope of 60 allows.
+
+### Amendment 28 (2026-10-22; author; zero GPU; during pod C, after `rr_neg_refusal`, before the read of record)
+
+1. **B1 is a reading, with rival (a) beside it.** The registered rules place pod C in B1 (the
+   rider's control raises plain compliance, +0.033 [+0.013, +0.058], MDE 0.035; −V_harm passes the
+   bar). The two directions (cos 0.157) move the same items and the same seeded rollouts (all 8
+   that −refusal flips are among −V_harm's 10). Rival (a): any vector of this size at `clause_end`
+   tips the same borderline rollouts, and the shared seeds make them the same ones. Rival (b): a
+   shared refusal-relevant component. `rr_fill` separates them; until it runs, B1 is a reading.
+2. **−V_harm against the control.** −V_harm passes the retention bar but is indistinguishable from
+   the −refusal control (paired +0.004 [−0.008, +0.017], MDE 0.020). The write-up never says it
+   retains refusal beyond the bar.
+3. **No pod D-lite.** `rr_fill` is pinned as the first phase of the next GPT-OSS pod: V_qwen's
+   adapter pod if V_qwen passes both gates (§5.0 with coherence, and specificity per Amendment
+   27), otherwise the full pod D after Muse's transfer test.
+4. Pod C runs untouched.

@@ -123,6 +123,13 @@ def retention(d: Path) -> dict:
             "direction-specific rise (beyond a matched random vector at alpha 267.3)"
             if v["ci95"][0] is not None and v["ci95"][0] > 0 else
             "not separable from a matched random vector at alpha 267.3")}
+    if "neg_refusal" in rows and "neg_V_harm" in rows:  # Amendment 28
+        v = versus(rows["neg_V_harm"], rows["neg_refusal"])
+        lo, hi = v["ci95"]
+        out["neg_V_harm_vs_neg_refusal"] = {**v, "reading": (
+            "indistinguishable from the -refusal control: the write-up never says -V_harm retains "
+            "refusal beyond the bar" if lo is not None and lo <= 0 <= hi
+            else "separable from the -refusal control")}
     for arm in ("neg_V_harm", "V_qwen"):
         x = a.get(arm)
         if x is None:
@@ -141,6 +148,10 @@ def retention(d: Path) -> dict:
         x["moved_items"] = moved_items(rows[arm], none)
     b = branch(a)
     out["branch"] = {"id": b, "reading": BRANCHES.get(b),
+                     "status": ("a reading, not a verdict (Amendment 28): rival (a), any vector "
+                                "of this size at clause_end tips the same borderline seeded "
+                                "rollouts; rr_fill separates (first phase of the next GPT-OSS "
+                                "pod)") if b in ("B1", "B2") and "fill" not in rows else "verdict",
                      **({"reading_registered": B1_REGISTERED} if b == "B1" else {})}
     return out
 

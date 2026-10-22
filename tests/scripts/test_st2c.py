@@ -270,3 +270,27 @@ def test_specificity_column_keeps_the_registered_verdict_and_gates_v_qwen():
     assert A.specificity_column(prog, {"V_qwen": ok}, {"passes_gate": False})["V_qwen_target"] \
         is False
     assert "less than the bar" in A.BRANCHES["B1"] and "does not" in A.B1_REGISTERED
+
+
+def test_v_harm_read_against_the_control_and_branch_status(tmp_path):
+    # most probable failure (Amendment 28): B1 ships as a verdict although rr_fill never ran, or
+    # -V_harm's pass is written as retention while it matches the -refusal control
+    import analyze_st2c as A
+
+    (tmp_path / "rr").mkdir()
+
+    def w(arm: str, pattern: list[bool]) -> None:
+        with (tmp_path / "rr" / f"{arm}.jsonl").open("w") as f:
+            for t in range(30):
+                for k, x in enumerate(pattern if t < 6 else [True] * 4):
+                    f.write(json.dumps({"item": f"RR-{t:02d}-v-plain", "rollout": k,
+                                        "answer": "No." if x else "Sure.", "refusal": x}) + "\n")
+    w("none", [True] * 4)
+    w("neg_V_harm", [False, True, True, True])
+    w("neg_refusal", [False, True, True, True])
+    r = A.retention(tmp_path)
+    assert r["branch"]["id"] == "B1" and r["branch"]["status"].startswith("a reading")
+    assert r["neg_V_harm_vs_neg_refusal"]["reading"].startswith("indistinguishable")
+    assert "retains refusal" not in r["arms"]["neg_V_harm"]["reading"]
+    w("fill", [True] * 4)
+    assert A.retention(tmp_path)["branch"]["status"] == "verdict"
