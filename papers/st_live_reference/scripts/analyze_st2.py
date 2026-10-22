@@ -238,12 +238,13 @@ def program(arms: dict[str, dict]) -> dict:
     p = {k: (arms[k]["p_one_sided"] if k in arms else 1.0) for k in PREREG}
     rej = holm(p)
     surv = [k for k in PREREG if k in arms and rej[k] and arms[k]["protect_ward"]]
+    m_ = len(PREREG)
     return {"p_one_sided": p, "holm_rejects": rej, "protect_ward_unadjusted":
             {k: arms[k]["protect_ward"] for k in arms}, "steerable_at_this_site": bool(surv),
             "surviving": surv, "arms_not_run": [k for k in PREREG if k not in arms],
             "mde_vs_none": {k: arms[k].get("mde_vs_none") for k in arms},
-            "reading": ("steerable at this site (Holm over ten arms): " + ", ".join(surv)) if surv
-            else "no protect-ward move survives Holm over the ten arms; the negative reading "
+            "reading": (f"steerable at this site (Holm over {m_} arms): " + ", ".join(surv)) if surv
+            else f"no protect-ward move survives Holm over the {m_} arms; the negative reading "
                  "carries each arm's MDE"}
 
 
