@@ -156,10 +156,11 @@ def vector(c: dict, arm: str) -> tuple[np.ndarray | None, float]:
 def rr_intervention(c: dict, arm: str, jobs: list[dict]) -> tuple[object, float | None]:
     """The decode-hook intervention at ``clause_end`` (None for ``none`` and for the every-position
     ablation, which hooks every block itself) and the alpha recorded on the rows."""
-    if arm == "fill":  # Cell 1's draws, cycled by rollout (S2.c1_intervention's rule)
-        fu = c["inp"]["fill_unit"]
-        return SG.Add(np.stack([c["alpha"] * fu[j["k"] % len(fu)] for j in jobs])
-                      .astype(np.float32), 1.0), c["alpha"]
+    if arm in ("fill", "fill_half"):  # Cell 1's draws, cycled by rollout (S2.c1_intervention's
+        fu = c["inp"]["fill_unit"]    # rule); fill_half at alpha / 2 (Amendment 29, the D-lite)
+        al = c["alpha"] / 2 if arm == "fill_half" else c["alpha"]
+        return SG.Add(np.stack([al * fu[j["k"] % len(fu)] for j in jobs])
+                      .astype(np.float32), 1.0), al
     if arm == "ablate_refusal":
         return None, None
     v, al = vector(c, arm)
@@ -229,8 +230,8 @@ def phase_rr(c, sc, model, rec, a, arm: str) -> dict:
                      "n_tokens": g["n_tokens"], "hit_cap": g["hit_cap"],
                      "n_steered": g["n_steered"], "trace_start": g["trace_start"],
                      "gen_ids": g["gen_ids"], "date_pin": sc.date_pin,
-                     **({"fill_draw": j["k"] % len(c["inp"]["fill_unit"])} if arm == "fill"
-                        else {})})
+                     **({"fill_draw": j["k"] % len(c["inp"]["fill_unit"])}
+                        if arm in ("fill", "fill_half") else {})})
     sc.save_jsonl(f"rr/{arm}.jsonl", rows)
     read = [r["refusal"] for r in rows if r["refusal"] is not None]
     print(f">> st2c rr_{arm}: {len(rows)} rollouts in {time.time() - t0:.0f}s, refusal "
