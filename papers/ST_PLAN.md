@@ -2851,3 +2851,65 @@ the registered wording and under this one.
    0.2). Envelope: spent 46.94 (pod C 2.82 by timestamps) + D-lite 1.6 + §13's evaluation 0.5 +
    Cell 4 ≤ 6.5 = **~55.5 of 60**; the rest of pod D (−refusal on the engaged H1 set, ~1.1 with
    setup) after Muse if it fits.
+
+#### ST Phase 2 pod C outcome on GPT-OSS (2026-10-22; Amendments 25-28; `data/st2c_read_v1.json`)
+
+Pod C ran 18:03-20:46 UTC (2.82 A100-h with provisioning; rc 0). Retention reads: the 60 plain
+violating requests × 4 rollouts, steered at `clause_end`, block 12, against `none` on the same seeds,
+FL's readout v3. Specificity: the 60 rule-right items × 8 at dose 0, the vector at every input
+position, against T1.3c's `none`. Both conditionals were skipped by their registered triggers
+(−V_harm passed the retention bar; the rider's control raised compliance).
+
+| arm (α) | §5.0 gate, Holm over 11 | plain Δcompliance (MDE) | specificity ΔP(violating), bar ±0.03 (MDE) |
+|---|---|---|---|
+| `none` | — | refusal 0.954, no missing readouts | +0.000 (parity with T1.3c: 480 of 480 prompts, max Δlog-p 0.0) |
+| −V_harm (267.3) | passes; survives | +0.0375 [+0.008, +0.071] (0.046) | **+0.089 [+0.055, +0.127]** (0.051): fails |
+| −refusal, the rider's control (267.3) | — | +0.033 [+0.013, +0.058] (0.035): raises | — |
+| V_qwen (133.6) | passes (+0.193 [+0.134, +0.255] vs `none`, +0.222 [+0.160, +0.286] vs `fill`; coherent); survives | +0.0125 [0.000, +0.029] (0.020) | **+0.093 [+0.069, +0.119]** (0.035): fails |
+
+**Verdicts, under both wordings (Amendment 27's fork).**
+- −V_harm, retention: registered "no rise detected (at the reported MDE)"; Amendment 27 "rise below
+  bar, detectable: +0.0375 [+0.008, +0.071]". Indistinguishable from the −refusal control (paired
+  +0.004 [−0.008, +0.017], MDE 0.020): the write-up never says −V_harm retains refusal beyond the bar
+  (Amendment 28).
+- −V_harm, specificity: non-specific (+0.089 against ±0.03, the CI wholly outside). Nothing trains
+  on it (Amendment 25).
+- V_qwen at 133.6: coherent (parse 0.958 against `none`'s 0.978, length ratio 1.28, NLL Δ 0.033),
+  passes §5.0 and survives Holm; retention passes with no detectable rise at MDE 0.020 and sits below
+  the −refusal control (−0.021 [−0.042, −0.004]) at half the control's α; specificity fails (+0.093).
+  Under Amendment 27's prospective rule it is not a target.
+- Branch: B1 by the registered rules (registered wording "−harmfulness does not"; Amendment 27
+  "−harmfulness raises plain compliance by less than the bar"), held as a reading with rival (a)
+  beside it (Amendment 28).
+- Program level: "steerable at this site" as registered (V_qwen and −V_harm survive Holm over eleven
+  arms, one-sided p 1e-4 each); the specificity column beside it shows both failing. **No target on
+  GPT-OSS at this site, provisional on `spec_fill`** (Amendment 29's S1/S2).
+
+**Second derivations.** `none`'s refusal 0.954 against T1.1's selection pass on vLLM 0.942 (agree);
+Paper 7's regex gives the same Δ for every arm (0.0375, 0.033, 0.0125; agree); the pod's specificity
+`none` reproduces T1.3c's rows exactly; the local read reproduces pod B's 267.3 V_qwen read and the
+committed Holm reading when fed pod B's rows.
+
+**The two coincidences (ST-A18).** Retention: −refusal and −V_harm (cos 0.157) flip the same seeded
+rollouts (all 8 of −refusal's among −V_harm's 10, on the same 6-7 items: liberty, sanctity and
+authority, none care/harm; one rollout flips back). Specificity: −V_harm, V_qwen and L-beh shift the
+same items (r 0.61-0.75 across the 60; L-anchor against −V_harm −0.05), and the moved items are the
+borderline ones (baseline P(violating) 0.38 against 0.18). Rival (a): any vector of this size tips
+borderline items, which the shared seeds turn into the same rollouts; rival (b): a shared component.
+The D-lite's `rr_fill` and `spec_fill` (Amendment 29) separate them.
+
+Bias directions: the shared seeds make any two perturbations flip the same borderline rollouts
+(favors rival (a)'s appearance; opposes reading the overlap as a shared direction); the specificity
+read adds the vector at every input position, a larger dose than generation's in-trace steering
+(favors failing specificity, opposes both arms); V_qwen's α is half the control's (favors V_qwen's
+smaller retention rise); plain refusal at 0.954 lets only rises register (neutral for a retention
+read); Holm with Muse's five arms at p = 1 (conservative).
+
+Referee pass. (1) *"Every vector fails your specificity instrument; 'non-specific' is the
+instrument's verdict."* Conceded open: the instrument has no random-vector reference; `spec_fill`
+at both α decides (Amendment 29), and "no target" is provisional until it runs. (2) *"Your positive
+control is no control: −refusal raises compliance by the same amount on the same rollouts as the arm
+it calibrates."* Conceded in scope: it shows the readout registers a rise and nothing about
+direction; B1 is a reading, and `rr_fill` separates the rivals. (3) *"V_qwen passes retention only
+because it ran at half the dose."* Conceded open: its retention reading is scoped to α 133.6;
+`rr_fill_half` is the dose-matched comparison.

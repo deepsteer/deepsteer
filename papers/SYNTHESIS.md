@@ -1089,6 +1089,7 @@ Standing claim (pending) and its rival:
 |---|---|---|---|
 | an outcome-free representation objective (`L-anchor` or `L-self`) restores protection on held-out scenarios where DPO on the same traces does not | the objective teaches rule-breaking, not care (it moves every rule-protected choice) | the specificity set (60 panel scenarios where the rule is right; bar ±0.03) and panel ΔE with the twin at rest (§6) | NOT SUPPORTED on GPT-OSS for the anchor-axis objective (T1.5, 2026-10-22: `L-anchor` moved its target, not the action; no ΔP detectable at \|ΔP\| ≳ 0.066); `L-self` untested (ST-A14); the counter-reading landed on DPO instead (`L-beh` non-specific) |
 | the KDG H1 instrument with its specificity and pressure guards separates a repair from a shaping round that installs rule-breaking (the partner deliverable's regression gate) | the guards are blunt: any large policy shift trips specificity | an adapter that raises protection on H1 and passes specificity (none yet), and Phase 2's detection deliverable | DEMONSTRATED ONCE (T1.5: `L-beh` +0.445 on H1_held, +0.192 on rule-right items, ΔE flat) |
+| a direction at `clause_end`, block 12 is a training target for protection on GPT-OSS (gate, coherence, retention and specificity) | the specificity failures of −V_harm and V_qwen (+0.089, +0.093) are what any vector of this size does to borderline items (ST-A18) | the D-lite's `spec_fill` and `rr_fill` at both α (Amendment 29) | NOT SUPPORTED, provisional on `spec_fill`: both gate-passing directions fail specificity |
 
 Conjunction added under watch: **ST effort of record × KDG-A28/A29.** The screen runs each model at
 its shipped default effort (Amendment 2), while on GPT-OSS-20B protection on H1 rises from low to
@@ -1283,4 +1284,17 @@ Holm). Reversing the anchor axis and adding care content do nothing detectable (
 Before any of these trains: refusal retention and specificity (Amendment 25), since less harm
 salience is the canonical refusal-loosening direction. "The brake's own direction" is not claimed:
 ST-A12's discriminators lean toward brake content without separating it from a refusal-shaped option.
+
+**ST Phase 2 pod C on GPT-OSS (2026-10-22), what changed.** Positive voice first: **GPT-OSS-20B's
+brake has three handles that move it protect-ward (L-beh, −V_harm, V_qwen), one observed failure
+mode; the specificity instrument's random-vector reference is the open check.** The cross-recipe
+direction is now admissible at the gate: V_qwen at half the dose stays coherent (length 1.28) and
+raises protection by +0.193 [+0.134, +0.255] (+0.222 beyond a random vector), and with −V_harm it
+survives Holm over eleven arms. Neither loosens plain refusal beyond the bar (−V_harm +0.0375,
+V_qwen +0.0125, on a readout the refusal direction itself moves by +0.033). Both tilt rule-right
+items toward the violating option by about +0.09 (bar ±0.03), on the same borderline items as each
+other and as L-beh (r 0.61-0.75), so no direction is a target on GPT-OSS at this site, provisionally:
+if a random vector tilts the same items as far (ST-A18), the instrument's bar moves to the difference
+from fill and V_qwen is re-read under it (Amendment 29). "−V_harm retains refusal" is not claimed: it
+is indistinguishable from the −refusal control.
 
