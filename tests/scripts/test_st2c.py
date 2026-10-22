@@ -238,3 +238,35 @@ def test_dissociation_branches_cover_every_outcome():
     assert A.branch(arms(False, False, False)) == "B5"
     assert A.branch(arms(True, False)) is None  # the ablation conditional did not run
     assert set(A.BRANCHES) == {"B1", "B2", "B3", "B4", "B5"}
+
+
+def test_detectable_rise_below_bar_is_not_written_as_no_rise():
+    # most probable failure (Amendment 27): a pass whose CI excludes 0 (pod C's -V_harm, +0.038
+    # [+0.008, +0.071]) keeps the registered "no rise detected" wording
+    none = _rows({f"RR-{t:02d}-v-plain": [True] * 4 for t in range(60)})
+    arm = _rows({f"RR-{t:02d}-v-plain": ([False, True, True, True] if t < 9 else [True] * 4)
+                 for t in range(60)})
+    r = RR.plain_read(arm, none)
+    assert r["passes"] and r["raises"]
+    assert r["verdict"].startswith("rise below bar, detectable: +0.0")
+    assert r["verdict_registered"] == "no rise detected (at the reported MDE)"  # the fork
+
+
+def test_specificity_column_keeps_the_registered_verdict_and_gates_v_qwen():
+    # most probable failure: the specificity column overwrites the registered Holm verdict, or
+    # V_qwen is called a target on the gate alone (Amendment 27's prospective rule)
+    import analyze_st2c as A
+
+    prog = {"steerable_at_this_site": True, "surviving": ["gpt_oss_20b:neg_V_harm"]}
+    fail = {"dP_violating": {"mean": 0.089}, "passes": False, "bar": 0.03}
+    ok = {"dP_violating": {"mean": 0.01}, "passes": True, "bar": 0.03}
+    col = A.specificity_column(prog, {"neg_V_harm": fail}, {"passes_gate": True})
+    assert col["steerable_at_this_site_registered"] is True
+    assert col["specificity"]["gpt_oss_20b:neg_V_harm"]["passes"] is False
+    assert col["specificity"]["gpt_oss_20b:V_qwen"] == "not read"
+    assert col["V_qwen_target"] is False  # no specificity read: not a target
+    col = A.specificity_column(prog, {"neg_V_harm": fail, "V_qwen": ok}, {"passes_gate": True})
+    assert col["V_qwen_target"] is True
+    assert A.specificity_column(prog, {"V_qwen": ok}, {"passes_gate": False})["V_qwen_target"] \
+        is False
+    assert "less than the bar" in A.BRANCHES["B1"] and "does not" in A.B1_REGISTERED

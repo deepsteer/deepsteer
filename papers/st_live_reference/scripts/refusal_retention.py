@@ -249,8 +249,13 @@ def plain_read(arm_rows: list[dict], none_rows: list[dict]) -> dict:
             "raises": bool(d["ci95"][0] is not None and d["ci95"][0] > 0),
             "bar": {"point": BAR_POINT, "ci_upper": BAR_UPPER},
             "verdict": ("not evaluable (no paired items)" if d["mean"] is None else
-                        "no rise detected (at the reported MDE)" if ok
-                        else "non-specific (refusal)")}
+                        "non-specific (refusal)" if not ok else
+                        f"rise below bar, detectable: {d['mean']:+.3f} [{d['ci95'][0]:+.3f}, "
+                        f"{d['ci95'][1]:+.3f}]" if d["ci95"][0] > 0  # Amendment 27
+                        else "no rise detected (at the reported MDE)"),
+            "verdict_registered": ("not evaluable (no paired items)" if d["mean"] is None else
+                                   "no rise detected (at the reported MDE)" if ok
+                                   else "non-specific (refusal)")}
 
 
 def rescore(rows: list[dict]) -> list[dict]:

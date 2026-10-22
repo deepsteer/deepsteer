@@ -54,9 +54,8 @@ def versus(rows_a: list[dict], rows_b: list[dict]) -> dict:
 # Amendment 26's branches (written before pod C): Paper 7's harmfulness / refusal dissociation read
 # causally on plain requests at clause_end; -harmfulness (= -V_harm) already releases protection
 BRANCHES = {
-    "B1": "dissociation held causally at this site: -refusal raises plain compliance, -harmfulness "
-          "does not (it releases protection without loosening plain refusal); -V_harm retains "
-          "refusal at the MDE",
+    "B1": "-refusal raises plain compliance; -harmfulness raises plain compliance by less than the "
+          "bar (Amendment 27): the dissociation holds at the bar's resolution at this site",
     "B2": "no dissociation on plain refusal: -harmfulness and -refusal both raise compliance; "
           "-V_harm is non-specific (refusal)",
     "B3": "the readout is calibrated (every-position ablation raises compliance) but the refusal "
@@ -68,6 +67,25 @@ BRANCHES = {
     "B5": "the reverse of Paper 7's reading at this site: -harmfulness raises plain compliance "
           "while -refusal in-trace does not; -V_harm is non-specific (refusal)",
 }
+
+
+# Amendment 26's B1 as registered, kept for the fork (Amendment 27 rewords it)
+B1_REGISTERED = ("dissociation held causally at this site: -refusal raises plain compliance, "
+                 "-harmfulness does not (it releases protection without loosening plain refusal); "
+                 "-V_harm retains refusal at the MDE")
+
+
+def moved_items(rows: list[dict], none: list[dict]) -> list[dict]:
+    """Descriptive (Amendment 27): the items whose plain compliance moves, with their foundation;
+    rr_fill is the discriminator for a pattern among them."""
+    found = {it["id"]: it["foundation"] for it in RR.load_set()["items"]}
+    ra, rn = RR.rates(rows), RR.rates(none)
+    both = [i for i in sorted(set(ra) & set(rn))
+            if None not in (ra[i]["refusal"], rn[i]["refusal"])]
+    out = [{"item": i, "foundation": found.get(i),
+            "dcompliance": rn[i]["refusal"] - ra[i]["refusal"]}
+           for i in both if ra[i]["refusal"] != rn[i]["refusal"]]
+    return sorted(out, key=lambda x: -x["dcompliance"])
 
 
 def branch(arms: dict) -> str | None:
@@ -109,18 +127,21 @@ def retention(d: Path) -> dict:
         x = a.get(arm)
         if x is None:
             continue
+        cal = ("the in-trace refusal direction raises compliance on the same readout"
+               if a.get("neg_refusal", {}).get("raises") else
+               "a calibrated readout (every-position ablation raises compliance; the in-trace "
+               "refusal direction does not)" if a.get("ablate_refusal", {}).get("raises") else
+               "no positive control raised compliance (uncalibrated on this model)"
+               if "neg_refusal" in a else "no positive control run")
         x["reading"] = ("non-specific (refusal)" if not x["passes"] else
-                        "retains refusal on plain requests (at the MDE; the in-trace refusal "
-                        "direction raises compliance on the same readout)"
+                        f"{x['verdict']}; {cal}" if x["raises"] else  # Amendment 27
+                        f"retains refusal on plain requests (at the MDE); {cal}"
                         if a.get("neg_refusal", {}).get("raises") else
-                        "no rise detected at the MDE on a calibrated readout (every-position "
-                        "ablation raises compliance; the in-trace refusal direction does not)"
-                        if a.get("ablate_refusal", {}).get("raises") else
-                        "no rise detected at the MDE; no positive control raised compliance "
-                        "(uncalibrated on this model)" if "neg_refusal" in a else
-                        "no rise detected at the MDE (no positive control run)")
+                        f"no rise detected at the MDE; {cal}")
+        x["moved_items"] = moved_items(rows[arm], none)
     b = branch(a)
-    out["branch"] = {"id": b, "reading": BRANCHES.get(b)}
+    out["branch"] = {"id": b, "reading": BRANCHES.get(b),
+                     **({"reading_registered": B1_REGISTERED} if b == "B1" else {})}
     return out
 
 
@@ -158,6 +179,24 @@ def program(d: Path, st2a: Path, st2b: Path, vq: dict) -> dict:
     return A2.program(arms)
 
 
+def specificity_column(prog: dict, spec: dict, vq: dict | None) -> dict:
+    """Amendment 27: the registered "steerable at this site" verdict stands; beside it, each arm's
+    specificity read where one exists (dose 0, rule-right items, bar 0.03). Prospective: from
+    Amendment 27 on, the section 5.0 gate includes the specificity read before a direction is
+    called a target (binding V_qwen at 133.6 and Muse); -V_harm's gate predates the rule."""
+    col = {f"{KEY}:{arm}": ({"dP_violating": spec[arm]["dP_violating"],
+                             "passes": spec[arm]["passes"], "bar": spec[arm]["bar"]}
+                            if arm in spec else "not read")
+           for arm in ("neg_V_harm", "V_qwen")}
+    out = {"steerable_at_this_site_registered": prog["steerable_at_this_site"],
+           "surviving": prog["surviving"], "specificity": col,
+           "rule": "the gate verdict as registered, specificity beside it (Amendment 27)"}
+    if vq is not None:
+        ok = isinstance(col[f"{KEY}:V_qwen"], dict) and col[f"{KEY}:V_qwen"]["passes"]
+        out["V_qwen_target"] = bool(vq.get("passes_gate") and ok)
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -174,6 +213,8 @@ def main() -> None:
     if (a.st2c / "gen" / "c3_qwen_half.jsonl").exists():
         res["V_qwen_133"] = qwen_half(a.st2c, a.st2a)
         res["program"] = program(a.st2c, a.st2a, a.st2b, res["V_qwen_133"])
+        res["program_with_specificity"] = specificity_column(res["program"], res["specificity"],
+                                                             res["V_qwen_133"])
     for arm in ("neg_V_harm", "V_qwen"):
         r, s = res["retention"]["arms"].get(arm), res["specificity"].get(arm)
         if r is not None and s is not None:
