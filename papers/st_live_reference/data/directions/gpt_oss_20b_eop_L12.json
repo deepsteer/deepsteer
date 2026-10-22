@@ -42,7 +42,10 @@
   },
   "source_file": {
    "path": "papers/7_reasoning/outputs/gpt_oss_20b/position_directions.npz",
-   "sha256": "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71"
+   "sha256": "bed47dad8d60c82ac315ba2c3cd54e32d6d78ec3349920b926345311b304ea71",
+   "key": "harmfulness_t_inst_layer12",
+   "key_check": "cos 1.000000 between the unit V_harm of record (st2_inputs.npz) and this key (2026-10-22, Amendment 26): V_harm is Paper 7's harmfulness direction at t_inst, block 12's output",
+   "sibling": "refusal_t_post_inst_layer12 in the same file (harmful - harmless at t_post_inst; cos 0.157 to V_harm): pod C's positive control"
   },
   "in_span_fraction": {
    "t_inst": 0.08472316021889437,

@@ -196,6 +196,28 @@ def podc() -> dict:
                 "refusal": f"Paper 7 position_directions.npz {P7_KEY}: harmful - harmless at "
                            "t_post_inst, chat format, 64 + 64 prompts, block 12's output; unit "
                            "(the rider's positive control, subtracted)"},
+            "type_blocks": {
+                "V_harm": {"provenance": "Paper 7 position_directions.npz "
+                                         "harmfulness_t_inst_layer12 (cos 1.000 to st2_inputs "
+                                         "V_harm; data/directions/gpt_oss_20b_eop_L12.json)",
+                           "contrast_semantics": "stimulus/content (harmful - harmless requests)",
+                           "position_class": "t_inst", "format": "chat (harmony)",
+                           "layer": "block 12 output", "n_pairs": "64/64",
+                           "outcome_variable": "protect share on H1 (Cell 1); plain compliance "
+                                               "(pod C)"},
+                "refusal": {"provenance": f"Paper 7 position_directions.npz {P7_KEY}",
+                            "contrast_semantics": "stimulus/content at the decision position "
+                                                  "(harmful - harmless requests)",
+                            "position_class": "t_post_inst (<|start|>assistant)",
+                            "format": "chat (harmony)", "layer": "block 12 output",
+                            "n_pairs": "64/64", "known_covariates": "AdvBench vs Alpaca style, "
+                            "topic, length", "participation_ratio": "not recorded at extraction "
+                            "(Paper 7); the site's PR at clause_end is 36.3 (Cell 2)",
+                            "outcome_variable": "plain compliance (positive control, subtracted "
+                                                "in-trace; projected out everywhere if flat)",
+                            "prior": "Paper 7: all-layer every-position ablation left GPT-OSS "
+                                     "refusal at 0.964 (n 32); no single direction fired held-out"},
+            },
             "cos": {f"{a}.{b}": float(x @ c1[b]) for a, x in (("V_qwen", q), ("refusal", r))
                     for b in ("V_harm", "care_harm", "anchor_axis")} | {
                 "V_qwen.refusal": float(q @ r)},

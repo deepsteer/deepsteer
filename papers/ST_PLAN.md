@@ -2702,3 +2702,62 @@ the within-action lengths show it lengthens rule and defer traces most.
   runs ~0.35: ~3.0 A100-h without V_qwen's reads, ~3.5 with them. Spent 44.12 (pod A's rerun 7.15
   and pod B 6.41 by timestamps); with pod C and §13's evaluation ~48.1, which leaves ~7.9 of 56 for
   the re-shaped Cell 4 on Muse (the original Cell 4 priced 8.6).
+
+### Amendment 26 (2026-10-22; author; zero GPU; before pod C launches)
+
+1. **Rider kept.** `rr_neg_refusal` (Paper 7's refusal direction subtracted at `clause_end`, block
+   12, α 267.3, on the 60 plain violating × 4) is the retention read's positive control, read by
+   Amendment 10 item 3's rule (CI lower bound above 0).
+2. **Two conditionals, each after the read that triggers it.** `rr_fill` runs only if −V_harm fails
+   the retention bar: Cell 1's five fill draws cycled by rollout, α 267.3, same site and seeds; −V_harm
+   against fill is the paired item difference (CI above 0 = a direction-specific rise; else not
+   separable from a matched random vector). `rr_ablate_refusal` runs only if the rider's control does
+   not raise compliance: the refusal direction projected out of every block's output at every
+   position (prompt, trace, answer), Paper 7's recipe (`ablate_layers: all`). Zeroing the component
+   is off-distribution; it calibrates the readout and is never read as mechanism. Prior: on Paper 7's
+   32 harmful prompts this ablation left GPT-OSS's refusal at 0.964 and no single direction fired
+   held-out (clean flips 0.04), so a flat result is the expected one and reads as B4 below. A
+   trigger read that did not run skips its conditional.
+3. **Order and stop.** `rr_none`, `rr_neg_V_harm`, `spec_none`, `spec_neg_V_harm`,
+   `rr_neg_refusal`, `rr_fill`, `rr_ablate_refusal`, then V_qwen last (`qwen_half`, and its two
+   reads if coherent). Watchdog 4.5 h; the driver stops a phase that would end within 15 minutes of
+   it, so V_qwen's reads are the first cut.
+4. **Framing: Paper 7's dissociation, tested causally.** V_harm is Paper 7's harmfulness direction
+   (provenance, recorded in its type block: `data/directions/gpt_oss_20b_eop_L12.json`, key
+   `harmfulness_t_inst_layer12`, cos 1.000 to the unit vector of record). Paper 7 found harmfulness
+   at t_inst and refusal at t_post_inst to be separate directions (cos 0.157). Pod C asks whether
+   the separation holds causally on plain requests: −harmfulness already releases protection on
+   the engaged H1 set (+0.114 [+0.069, +0.164]); does −refusal move plain refusal, and does
+   −harmfulness? Branches, all written before data and all publishable:
+   - **B1** −refusal raises compliance, −harmfulness passes the bar: the dissociation holds causally
+     at this site (one way: −harmfulness moves protection, not plain refusal; −refusal moves plain
+     refusal). −V_harm "retains refusal on plain requests at MDE 0.034".
+   - **B2** both raise compliance: no dissociation on plain refusal at this site; −V_harm is
+     "non-specific (refusal)" and nothing trains on it; `rr_fill` says whether the rise is
+     V_harm's or any vector's at α 267.3.
+   - **B3** −refusal flat in-trace, the every-position ablation raises compliance, −harmfulness
+     passes: the readout is calibrated, but the refusal direction does not act in-trace at
+     `clause_end`; −harmfulness shows no rise at a site where refusal itself does not act, so the
+     dissociation is not tested there. −V_harm reads "no rise detected at MDE 0.034 on a calibrated
+     readout"; whether it trains is the author's call.
+   - **B4** both refusal levers flat, −harmfulness passes: no single-direction lever raises plain
+     compliance on GPT-OSS, in-trace or everywhere, the causal counterpart of Paper 7's distributed
+     refusal. −V_harm reads "no rise detected at MDE 0.034; uncalibrated readout"; the author's
+     call.
+   - **B5** −harmfulness raises compliance, −refusal in-trace flat: the reverse of Paper 7's reading
+     at this site (harmfulness feeds plain refusal in-trace); −V_harm is "non-specific (refusal)";
+     `rr_fill` separates direction from perturbation.
+   Specificity (item 2(b) of Amendment 25) is read alongside each branch; a failure there is
+   "non-specific" in every branch. The other direction of a double dissociation (−refusal on the
+   engaged H1 set: does it release protection?) is not in pod C (~0.8 A100-h, open).
+5. **Envelope 60** (raised from 56 for Muse's transfer test), **re-priced before launch** from
+   measured rates: setup 0.24 h (pod A); HF eager decode 0.71 s per step at batch 160 (pod A's
+   `c1_none`); the specificity read 295 s per 480 rows (T1.5); V_qwen's arm 0.80 (pod B). A
+   retention arm is ~0.5 A100-h (a 160-row batch to the 1,600-token cap, 0.32, plus an 80-row
+   batch, ~0.2). Pod C: ~2.8 unconditional, ~3.8 with both conditionals, ~4.4 with V_qwen's reads,
+   plus provisioning: at most 4.6. Envelope: spent 44.12 + pod C ≤ 4.6 + §13's evaluation 0.5 =
+   49.2; Cell 4 as Muse's transfer test ~6.5 at GPT-OSS's per-arm cost (Muse baseline 0.8;
+   directions re-encoded in Muse 0.3; α by the coherence-gated rule on Muse 1.6; `none`, `fill`,
+   −V_harm, V_qwen at an assumed 45 × 8, 2.9; setup and loads 0.8) → **~55.7 of 60**, leaving 4.3
+   for Muse's unmeasured HF cost (its arms can run up to ~1.6× GPT-OSS's per-arm cost). Cell 4
+   opens with its one-batch timing pilot and is re-priced from it before its arms run.

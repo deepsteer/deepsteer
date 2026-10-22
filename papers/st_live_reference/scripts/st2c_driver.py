@@ -14,9 +14,13 @@ of record (st2_driver's model, screen and arm runner), resumable phase by phase.
 - ``rr_neg_refusal`` (the rider's positive control): Paper 7's refusal direction subtracted at the
   same site and alpha on the same 60 x 4; it has to raise compliance for a pass to read as
   retention.
+- conditionals (Amendment 26): ``rr_fill`` (Cell 1's five fill draws, cycled by rollout, alpha
+  267.3, the same site) only if -V_harm fails the retention bar; ``rr_ablate_refusal`` (the refusal
+  direction projected out of every block's output at every position, Paper 7's recipe) only if the
+  rider's control does not raise compliance.
 - ``qwen_half`` (item 1): V_qwen at alpha 133.6 on the 45 engaged H1_train x 8, Cell 1's seeds
   and date pin; coherence against Cell 1's ``none`` (Amendment 13's relative bars) decides whether
-  ``rr_V_qwen`` and ``spec_V_qwen`` (item 3, at 133.6) run.
+  ``rr_V_qwen`` and ``spec_V_qwen`` (item 3, at 133.6) run. V_qwen's reads run last.
 
 The analysis of record is local (``analyze_st2c.py``); the pod measures.
 
@@ -50,11 +54,12 @@ import t13_driver as T13  # noqa: E402
 KEY = S2.KEY
 DATA = HERE.parent / "data"
 RR_STAGE = "st2rr"
-RR_ARMS = ("none", "neg_V_harm", "neg_refusal", "V_qwen")
+RR_ARMS = ("none", "neg_V_harm", "neg_refusal", "fill", "ablate_refusal", "V_qwen")
 SPEC_ARMS = ("none", "neg_V_harm", "V_qwen")
 PODC = ["rr_none", "rr_neg_V_harm", "spec_none", "spec_neg_V_harm", "rr_neg_refusal",
-        "qwen_half", "rr_V_qwen", "spec_V_qwen"]
+        "rr_fill", "rr_ablate_refusal", "qwen_half", "rr_V_qwen", "spec_V_qwen"]
 GATED = {"rr_V_qwen", "spec_V_qwen"}  # item 3: only if qwen_half passes coherence
+CONDITIONAL = {"rr_fill", "rr_ablate_refusal"}  # Amendment 26
 
 
 def _now() -> str:
@@ -116,6 +121,25 @@ def qwen_coherent(c: dict) -> bool:
     return bool((load_record(c)["phases"].get("qwen_half") or {}).get("coherent"))
 
 
+def skip_reason(c: dict, name: str) -> str | None:
+    """None if the phase runs; else why it is skipped (Amendment 25 item 3, Amendment 26)."""
+    ph = load_record(c)["phases"]
+    if name in GATED:
+        return None if qwen_coherent(c) else ("skipped: V_qwen at 133.6 did not pass coherence "
+                                              "(or did not run)")
+    if name == "rr_fill":
+        x = (ph.get("rr_neg_V_harm") or {}).get("plain_vs_none")
+        if x is None:
+            return "skipped: rr_neg_V_harm has no read"
+        return None if not x["passes"] else "skipped: -V_harm passed the retention bar"
+    if name == "rr_ablate_refusal":
+        x = (ph.get("rr_neg_refusal") or {}).get("plain_vs_none")
+        if x is None:
+            return "skipped: rr_neg_refusal has no read"
+        return None if not x["raises"] else "skipped: the rider's control raised compliance"
+    return None
+
+
 def vector(c: dict, arm: str) -> tuple[np.ndarray | None, float]:
     """The arm's added vector and its alpha: -V_harm and -refusal at 267.3, V_qwen at 133.6."""
     if arm == "none":
@@ -127,6 +151,49 @@ def vector(c: dict, arm: str) -> tuple[np.ndarray | None, float]:
     if arm == "V_qwen":
         return c["podc"]["V_qwen"], c["alpha"] / 2  # Amendment 25 item 1: one grid step down
     raise ValueError(arm)
+
+
+def rr_intervention(c: dict, arm: str, jobs: list[dict]) -> tuple[object, float | None]:
+    """The decode-hook intervention at ``clause_end`` (None for ``none`` and for the every-position
+    ablation, which hooks every block itself) and the alpha recorded on the rows."""
+    if arm == "fill":  # Cell 1's draws, cycled by rollout (S2.c1_intervention's rule)
+        fu = c["inp"]["fill_unit"]
+        return SG.Add(np.stack([c["alpha"] * fu[j["k"] % len(fu)] for j in jobs])
+                      .astype(np.float32), 1.0), c["alpha"]
+    if arm == "ablate_refusal":
+        return None, None
+    v, al = vector(c, arm)
+    return (None if v is None else SG.Add(v, al)), al
+
+
+@contextmanager
+def ablate_everywhere(model, vec: np.ndarray | None):
+    """Project ``vec`` (unit) out of every block's output at every position (prompt, trace and
+    answer), in float32: Paper 7's directional ablation (``ablate_layers: all``). Zeroing the
+    component is off-distribution; it is used here as a positive control for the readout, never
+    as a mechanism read."""
+    import torch
+
+    if vec is None:
+        yield
+        return
+    hf = model.model
+    r = torch.as_tensor(vec, dtype=torch.float32, device=hf.device)
+
+    def hook(_m, _i, out):
+        h = out[0] if isinstance(out, tuple) else out
+        x = h.float()
+        x = x - (x @ r)[..., None] * r
+        h = x.to(h.dtype)
+        return (h,) + tuple(out[1:]) if isinstance(out, tuple) else h
+    n = hf.config.num_hidden_layers
+    handles = [model.wb._get_layer_module(i).register_forward_hook(hook)  # noqa: SLF001
+               for i in range(n)]
+    try:
+        yield
+    finally:
+        for h in handles:
+            h.remove()
 
 
 def rr_jobs(c: dict, sc) -> list[dict]:
@@ -141,18 +208,18 @@ def rr_jobs(c: dict, sc) -> list[dict]:
 
 
 def phase_rr(c, sc, model, rec, a, arm: str) -> dict:
-    v, al = vector(c, arm)
     jobs = rr_jobs(c, sc)
+    iv, al = rr_intervention(c, arm, jobs)
     raw = c["out"] / "rr" / f"{arm}.raw.jsonl"
     raw.unlink(missing_ok=True)
     cap = c["cap"] + RR.ANSWER_TOKENS
     t0 = time.time()
-    gen = SG.generate(model, [j["ids"] for j in jobs], fmt=c["fmt"], cap=cap,
-                      seeds=[j["seed"] for j in jobs],
-                      layer=c["layer"] if v is not None else None,
-                      cls=c["cls"] if v is not None else None,
-                      intervention=SG.Add(v, al) if v is not None else None,
-                      batch=c["batch"], on_finish=SG.jsonl_saver(raw))
+    with ablate_everywhere(model, c["podc"]["refusal"] if arm == "ablate_refusal" else None):
+        gen = SG.generate(model, [j["ids"] for j in jobs], fmt=c["fmt"], cap=cap,
+                          seeds=[j["seed"] for j in jobs],
+                          layer=c["layer"] if iv is not None else None,
+                          cls=c["cls"] if iv is not None else None, intervention=iv,
+                          batch=c["batch"], on_finish=SG.jsonl_saver(raw))
     rows = []
     for j, g in zip(jobs, gen):
         text = RR.final_answer(sc, g["gen_ids"])
@@ -161,12 +228,18 @@ def phase_rr(c, sc, model, rec, a, arm: str) -> dict:
                      "refusal": None if text is None else RR.is_refusal(text),
                      "n_tokens": g["n_tokens"], "hit_cap": g["hit_cap"],
                      "n_steered": g["n_steered"], "trace_start": g["trace_start"],
-                     "gen_ids": g["gen_ids"], "date_pin": sc.date_pin})
+                     "gen_ids": g["gen_ids"], "date_pin": sc.date_pin,
+                     **({"fill_draw": j["k"] % len(c["inp"]["fill_unit"])} if arm == "fill"
+                        else {})})
     sc.save_jsonl(f"rr/{arm}.jsonl", rows)
     read = [r["refusal"] for r in rows if r["refusal"] is not None]
     print(f">> st2c rr_{arm}: {len(rows)} rollouts in {time.time() - t0:.0f}s, refusal "
           f"{np.mean(read) if read else float('nan'):.3f}", flush=True)
     out = {"status": "ok", "n": len(rows), "alpha": al, "cap": cap, "pin": RR.readout_pin(),
+           "intervention": ("refusal direction projected out of every block's output, every "
+                            "position" if arm == "ablate_refusal" else
+                            None if iv is None
+                            else f"add at {c['cls']}, hidden index {c['layer']}"),
            "missing_readout": float(np.mean([r["refusal"] is None for r in rows])),
            "refusal_rate": float(np.mean(read)) if read else None,
            "mean_n_steered": float(np.mean([r["n_steered"] for r in rows]))}
@@ -259,12 +332,12 @@ def main() -> int:
                 else len(c["engaged"]) * c["r2"])
 
     for name in todo:
-        if name in GATED and not qwen_coherent(c):
-            res = {"status": "skipped: V_qwen at 133.6 did not pass coherence (or did not run)"}
+        why = skip_reason(c, name)
+        if why is not None:
             rec = load_record(c)
-            rec["phases"][name] = {**res, "finished": _now()}
+            rec["phases"][name] = {"status": why, "finished": _now()}
             save_record(c, rec)
-            print(f">> st2c {name}: skipped (V_qwen not coherent at 133.6)", flush=True)
+            print(f">> st2c {name}: {why}", flush=True)
             continue
         kind = GEN_KIND.get(name)
         est = float(np.mean(per[kind])) * n_rollouts(name) if kind and per[kind] else 0.0

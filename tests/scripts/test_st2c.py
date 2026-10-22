@@ -81,8 +81,12 @@ def test_remote_runs_pod_c_in_the_drivers_order():
     phases = re.search(r'ST2C_PHASES="([^"]*)"', sh).group(1).split(",")
     assert phases == D.PODC
     assert phases.index("qwen_half") < min(phases.index(p) for p in D.GATED)
-    assert max(phases.index(p) for p in ("rr_none", "rr_neg_V_harm", "spec_none",
-                                         "spec_neg_V_harm")) < phases.index("qwen_half")
+    # Amendment 26: V_qwen's phases last; each conditional after the read that triggers it
+    assert phases[-3:] == ["qwen_half", "rr_V_qwen", "spec_V_qwen"]
+    assert phases.index("rr_neg_V_harm") < phases.index("rr_fill")
+    assert phases.index("rr_neg_refusal") < phases.index("rr_ablate_refusal")
+    assert re.search(r'STEPS" = "st2c" \]; then\n(?:  #.*\n)*  MODELS=.*\n  SESSION_MAX_HOURS='
+                     r'"\$\{SESSION_MAX_HOURS:-4\.5\}"', sh)
     for line in sh.splitlines():
         if "Amendment 10" in line and '!= "st2b"' in line or "re-priced locally" in line:
             assert '!= "st2c"' in line, line
@@ -116,8 +120,17 @@ def test_dry_run_pod_c_on_a_tiny_gpt_oss(tmp_path):
     rec = json.loads((d / "st2c_record.json").read_text())["phases"]
     assert all(rec[p]["finished"] for p in D.PODC)
     rr = {arm: [json.loads(x) for x in (d / "rr" / f"{arm}.jsonl").open()]
-          for arm in ("none", "neg_V_harm", "neg_refusal")}
+          for arm in ("none", "neg_V_harm", "neg_refusal", "fill", "ablate_refusal")}
+    # the tiny model never closes its trace, so no readout: -V_harm "fails" and the control is
+    # "flat", and both conditionals run (their skip branches: the unit test below)
+    assert rec["rr_fill"]["status"] == "ok" and rec["rr_ablate_refusal"]["status"] == "ok"
+    assert [x["fill_draw"] for x in rr["fill"]] == [x["rollout"] % 5 for x in rr["fill"]]
+    assert all(x["n_steered"] > 0 for x in rr["fill"])
+    assert any(x["gen_ids"] != y["gen_ids"] for x, y in zip(rr["ablate_refusal"], rr["none"]))
+    assert all(x["n_steered"] == 0 for x in rr["ablate_refusal"])  # every block, not the hook
     assert all(x["n_steered"] == 0 for x in rr["none"])
+    for arm in ("neg_V_harm", "neg_refusal", "fill", "ablate_refusal"):
+        assert [x["seed"] for x in rr[arm]] == [x["seed"] for x in rr["none"]]
     for arm in ("neg_V_harm", "neg_refusal"):
         assert all(x["n_steered"] > 0 for x in rr[arm])
         assert [x["seed"] for x in rr[arm]] == [x["seed"] for x in rr["none"]]
@@ -182,3 +195,46 @@ def test_retention_reads_as_retention_only_with_the_positive_control(tmp_path):
     assert r["arms"]["neg_V_harm"]["reading"].startswith("retains refusal")
     w("neg_V_harm", [False, True, True, True])
     assert A.retention(tmp_path)["arms"]["neg_V_harm"]["reading"] == "non-specific (refusal)"
+
+
+def test_conditionals_run_only_on_their_trigger(tmp_path):
+    # most probable failure: rr_fill runs after -V_harm passed (or never after it failed), or the
+    # every-position ablation runs although the rider's control already raised compliance
+    c = {"record": tmp_path / "st2c_record.json"}
+
+    def rec(passes: bool | None, raises: bool | None) -> None:
+        ph = {}
+        if passes is not None:
+            ph["rr_neg_V_harm"] = {"plain_vs_none": {"passes": passes, "raises": False}}
+        if raises is not None:
+            ph["rr_neg_refusal"] = {"plain_vs_none": {"passes": False, "raises": raises}}
+        c["record"].write_text(json.dumps({"model": D.KEY, "phases": ph}))
+    rec(False, False)
+    assert D.skip_reason(c, "rr_fill") is None and D.skip_reason(c, "rr_ablate_refusal") is None
+    rec(True, True)
+    assert D.skip_reason(c, "rr_fill").startswith("skipped")
+    assert D.skip_reason(c, "rr_ablate_refusal").startswith("skipped")
+    rec(None, None)  # the triggering read never ran: skipped, never run blind
+    assert D.skip_reason(c, "rr_fill").startswith("skipped")
+    assert D.skip_reason(c, "rr_ablate_refusal").startswith("skipped")
+    assert D.skip_reason(c, "rr_none") is None and D.CONDITIONAL == {"rr_fill",
+                                                                       "rr_ablate_refusal"}
+
+
+def test_dissociation_branches_cover_every_outcome():
+    # most probable failure: a flat -V_harm read under a flat in-trace control is written as the
+    # dissociation (B1) instead of B3 / B4, or B5 (harmfulness feeds refusal) is missed
+    import analyze_st2c as A
+
+    def arms(h_pass, r_raise, ab_raise=None):
+        a = {"neg_V_harm": {"passes": h_pass}, "neg_refusal": {"raises": r_raise}}
+        if ab_raise is not None:
+            a["ablate_refusal"] = {"raises": ab_raise}
+        return a
+    assert A.branch(arms(True, True)) == "B1"
+    assert A.branch(arms(False, True)) == "B2"
+    assert A.branch(arms(True, False, True)) == "B3"
+    assert A.branch(arms(True, False, False)) == "B4"
+    assert A.branch(arms(False, False, False)) == "B5"
+    assert A.branch(arms(True, False)) is None  # the ablation conditional did not run
+    assert set(A.BRANCHES) == {"B1", "B2", "B3", "B4", "B5"}

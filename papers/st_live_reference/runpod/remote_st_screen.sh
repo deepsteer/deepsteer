@@ -85,9 +85,10 @@ elif [ "$STEPS" = "st2c" ]; then
   # ST Phase 2 pod C (author, 2026-10-22; Amendment 25): -V_harm's refusal retention (60 plain x 4)
   # and the specificity set at inference, the rider's positive control, V_qwen at 133.6 on the
   # engaged 45 x 8 and, if coherent, its two reads; one HF process; inputs from outputs/st2_inputs,
-  # outputs/st2c_inputs and pod A's Cell 1 none (SYNC_OUTPUTS from sync_st2c.txt); ~3.5 h at most
+  # outputs/st2c_inputs and pod A's Cell 1 none (SYNC_OUTPUTS from sync_st2c.txt); Amendment 26:
+  # the two conditionals (rr_fill, rr_ablate_refusal) before V_qwen, whose reads run last; 4.5 h
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2c
-  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-4.0}"
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-4.5}"
 elif [ "$STEPS" = "rider2" ]; then
   # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
@@ -287,8 +288,9 @@ ST2A_DIR="$REPO_DIR/papers/st_live_reference/outputs/st2a/gpt_oss_20b"  # SYNC_O
 QWEN_SCREEN="$REPO_DIR/papers/st_live_reference/outputs/t10/qwen38_27b/screen/h1_screen.jsonl"
 T15_JOBS="$REPO_DIR/papers/st_live_reference/outputs/t15_early/gpt_oss_20b/vllm/mxfp4_parity.jobs.jsonl"  # ST-A15
 T15_DIR="$REPO_DIR/papers/st_live_reference/outputs/t15/gpt_oss_20b"  # SYNC_OUTPUTS (G3 follow-up)
-# pod C (Amendment 25): -V_harm's two reads, the rider's positive control, then V_qwen at 133.6
-ST2C_PHASES="rr_none,rr_neg_V_harm,spec_none,spec_neg_V_harm,rr_neg_refusal,qwen_half,rr_V_qwen,spec_V_qwen"
+# pod C (Amendments 25-26): -V_harm's two reads, the rider's positive control, the two conditionals,
+# then V_qwen at 133.6 and its reads, last
+ST2C_PHASES="rr_none,rr_neg_V_harm,spec_none,spec_neg_V_harm,rr_neg_refusal,rr_fill,rr_ablate_refusal,qwen_half,rr_V_qwen,spec_V_qwen"
 ST2B_PHASES="c3_qwen,c2_extract,c2_direction,c2_anchor,c2_ablate,c2_random,c2_twin_none,c2_transport,c2_freegen,c1_neg_V_harm,c3_reencode,c3_direction,c3_qwen_arm"
 if [ "$STEPS" = "st2b" ]; then  # built locally; synced (sync_st2b.txt); twins and ids committed
   for f in "$ST2_INPUTS/st2_inputs.npz" "$T11_DIR/gen/h1_rollouts_read.jsonl" "$QWEN_SCREEN" \
