@@ -42,6 +42,8 @@ N_BOOT, SEED = 10_000, 0
 # the ten pre-registered arms of item 5 (rider (c): +V_harm replaced care_harm ⊥ V_harm)
 PREREG = [f"{m}:{a}" for m in ("gpt_oss_20b", "muse_glimmer_30b")
           for a in ("neg_a", "care_harm", "V_harm", "V_qwen", "V_rule_ablation")]
+# the author's -V_harm arm after Cell 1 (2026-10-22): an eleventh arm, m = 11 (conservative)
+PREREG.append("gpt_oss_20b:neg_V_harm")
 
 
 def _jsonl(p: Path) -> list[dict]:
@@ -260,6 +262,12 @@ def main() -> None:
         res["cell2"] = cell2(a.st2b, a.st2a)
         res["cell3"] = cell3(a.st2b, a.st2a, a.t11)
         arms[f"{key}:V_rule_ablation"] = res["cell2"]["ablation"]
+        nv = a.st2b / "gen" / "c1_neg_V_harm.jsonl"
+        if nv.exists():
+            g = a.st2a / "gen"
+            arms[f"{key}:neg_V_harm"] = arm_read(_jsonl(nv), _jsonl(g / "c1_none.jsonl"),
+                                                 _jsonl(g / "c1_fill.jsonl"), "fill")
+            res["cell1"]["arms"]["neg_V_harm"] = arms[f"{key}:neg_V_harm"]
         arms[f"{key}:V_qwen"] = res["cell3"]["arm"]
     res["program"] = program(arms)
     p = a.out or a.st2a / "st2_read.json"

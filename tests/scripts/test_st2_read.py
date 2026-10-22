@@ -28,9 +28,10 @@ def test_program_counts_unrun_arms_as_p1_and_needs_protect_ward():
     arms = {"gpt_oss_20b:care_harm": {"p_one_sided": 0.003, "protect_ward": True,
                                       "mde_vs_none": 0.06}}
     p = A.program(arms)
-    assert len(p["p_one_sided"]) == 10 and p["p_one_sided"]["muse_glimmer_30b:V_qwen"] == 1.0
-    assert not p["steerable_at_this_site"]  # 0.003 > 0.025 / 10
-    arms["gpt_oss_20b:care_harm"]["p_one_sided"] = 0.001
+    assert len(p["p_one_sided"]) == 11 and p["p_one_sided"]["muse_glimmer_30b:V_qwen"] == 1.0
+    assert "gpt_oss_20b:neg_V_harm" in p["p_one_sided"]  # the author's eleventh arm
+    assert not p["steerable_at_this_site"]  # 0.003 > 0.025 / 11
+    arms["gpt_oss_20b:care_harm"]["p_one_sided"] = 0.002  # <= 0.025 / 11
     assert A.program(arms)["steerable_at_this_site"]
     arms["gpt_oss_20b:care_harm"]["protect_ward"] = False
     assert not A.program(arms)["steerable_at_this_site"]
