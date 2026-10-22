@@ -1268,3 +1268,19 @@ the T1.5 pod plus the G3 follow-up on pod B. Conjunction under watch: ST-A12's `
 option, replicated at n 45) and `L-anchor`'s null both say the action at this site reads something
 other than the anchor axis; Phase 2's cells (V_rule, −V_harm, the cross-recipe direction) are the
 test.
+
+**ST Phase 2 on GPT-OSS (2026-10-22), what changed.** Positive voice first: **GPT-OSS-20B's
+deliberation brake can be pushed back at the clause ends of its own trace: subtracting harm salience
+there raises protection by +0.114 [+0.069, +0.164] (+0.143 beyond a norm-matched random direction),
+passing the registered gate and surviving Holm over eleven arms; adding it pushes the other way
+(−0.077), and the two differ by +0.191.** A second lever is larger and not yet admissible: the
+direction separating Qwen3.8's protective from its rule-following deliberations, re-encoded in
+GPT-OSS, aligns with GPT-OSS's own (cos 0.73, ceiling 0.94), is orthogonal to every typed axis, and
+moves protection by +0.36 at a dose that lengthens traces past the coherence bar (step-down
+pending). The written rule's presence in the input is the brake's dominant lever (removing the
+sentence: +0.56); ablating its in-trace direction recovers about a tenth (+0.052, per-arm, not past
+Holm). Reversing the anchor axis and adding care content do nothing detectable (MDEs 0.04-0.05).
+Before any of these trains: refusal retention and specificity (Amendment 25), since less harm
+salience is the canonical refusal-loosening direction. "The brake's own direction" is not claimed:
+ST-A12's discriminators lean toward brake content without separating it from a refusal-shaped option.
+

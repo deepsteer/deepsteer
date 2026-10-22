@@ -2601,3 +2601,50 @@ rise. A pass in item 2(a) would then be "no rise detected at its MDE", without a
 Proposed: a positive control on the same instrument and site, the refusal direction of record on
 GPT-OSS (Paper 7) subtracted at `clause_end`, block 12, at α 267.3 on the same 60 × 4 (~0.3 A100-h);
 it has to raise compliance for item 2(a)'s pass to read as retention.
+
+#### ST Phase 2 outcome on GPT-OSS, Cells 1-3 and −V_harm (2026-10-22; pods A and B; `data/st2_read_v1.json`)
+
+All arms on the 45 brake-engaged H1_train scenarios at `clause_end`, block 12, against Cell 1's
+`none` (16 rollouts, fresh seeds; P 0.17); Cell 1 arms at 16 rollouts, Cells 2-3 at 8 on Cell 1's
+seeds. Holm over the 11 pre-registered arms (Muse's five enter as p = 1 until run).
+
+| arm | ΔP vs `none` [95% CI] (MDE) | vs matched control | coherent | reading (registered) |
+|---|---|---|---|---|
+| −a (anchor axis reversed) | −0.001 [−0.029, +0.029] (0.041) | +0.028 vs `fill` | yes | null |
+| `care_harm` | +0.010 [−0.025, +0.047] (0.051) | +0.040 vs `fill` | yes | null |
+| `V_harm` | −0.077 [−0.118, −0.036] (0.059) | −0.048 vs `fill` | yes | moves protect and defer into the rule option (ST-A12) |
+| **−`V_harm`** | **+0.114 [+0.069, +0.164]** (0.068) | **+0.143 vs `fill`** | yes | **passes §5.0's gate; protect-ward; survives Holm** |
+| `V_rule` mean-ablation | +0.052 [+0.005, +0.103] (0.070) | +0.069 vs random ablation | yes | protect-ward per arm (p 0.015), not past Holm; transport passed; branch "P rises" |
+| `V_qwen` (cross-recipe) | +0.362 [+0.284, +0.440] (0.112) | +0.391 vs `fill` | **no: length 1.53** | not informative at 267.3 (descriptive); step-down at 133.6 (Amendment 25) |
+
+- **Program level (item 5):** steerable at this site, carried by −`V_harm` (one-sided p < 0.0001).
+  Before it is used anywhere: refusal retention and the specificity set at inference (Amendment 25).
+- **−`V_harm`** takes protection from both other options (defer −0.061, rule −0.053); with +`V_harm`
+  the two arms differ by +0.191 [+0.133, +0.253]. Care beyond harm (`care_harm` − `V_harm`,
+  +0.087 [+0.053, +0.123]) is a contrast with `care_harm`'s null beside it, not a protective move.
+- **`V_rule`.** Teacher-forced on 576 T1.1 traces of 72 scenarios: split-half 0.974, participation
+  ratio 36.3 at `clause_end`; stating the written rule shifts the clause-end residual by ~3% of its
+  norm. The ablation's protect gain comes from defer (−0.053), not the rule option (+0.002). Dose-0
+  transport: +0.044 [+0.033, +0.055] toward the rule-absent twins (+0.159), random ablation +0.023.
+  Removing the rule sentence from the input lifts protection +0.562 [+0.455, +0.667] (P 0.17 → 0.73);
+  ablating its in-trace direction recovers about 9% of that. Side reads: the end-of-scenario anchor
+  (cos 0.25) and the free-generation difference (cos 0.08) are not detectably the same direction.
+- **`V_qwen`.** Qwen3.8's protect − rule traces (26 scenarios, 431 and 68 traces) re-encoded in
+  GPT-OSS align with GPT-OSS's own (cos 0.731 [0.565, 0.766] against a null q95 of 0.374;
+  split-halves 0.925 and 0.865, disattenuated ceiling 0.944) and with none of the typed axes
+  (|cos| ≤ 0.11); its loading on the writing-style direction is 0.36. At α 267.3 it lengthens every
+  action's traces (rule ×1.65, defer ×1.54, protect ×1.07).
+
+Bias directions: fresh seeds remove Cell 1's winner's curse (neutral); Holm with Muse's arms at p = 1
+is conservative (opposes the positive reading); the median-length bar is composition-sensitive and
+penalizes arms that shift choices to protect, whose traces run longer (opposes `V_qwen`); the
+`V_rule` effect sits under its own MDE (favors a false positive, hence per-arm only).
+
+Referee pass. (1) *"−`V_harm` makes the model less cautious; 'protective' is the refusal-loosening
+direction."* Conceded as the open risk: nothing uses it until Amendment 25's refusal-retention and
+specificity reads are in, and the plain-compliance readout needs its own positive control on this
+model (rider). (2) *"The `V_rule` ablation is a fishing result."* Conceded in scope: per-arm,
+unadjusted, under its MDE, not past Holm; it is reported with the transport control and a replicate
+is the next step before any wording beyond that. (3) *"`V_qwen`'s +0.36 is longer deliberation, not
+content."* By the registered rule it is not informative; the step-down at α 133.6 is the test, and
+the within-action lengths show it lengthens rule and defer traces most.
