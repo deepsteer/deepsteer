@@ -1087,7 +1087,8 @@ Standing claim (pending) and its rival:
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| an outcome-free representation objective (`L-anchor` or `L-self`) restores protection on held-out scenarios where DPO on the same traces does not | the objective teaches rule-breaking, not care (it moves every rule-protected choice) | the specificity set (60 panel scenarios where the rule is right; bar ±0.03) and panel ΔE with the twin at rest (§6) | HELD (T1.5) |
+| an outcome-free representation objective (`L-anchor` or `L-self`) restores protection on held-out scenarios where DPO on the same traces does not | the objective teaches rule-breaking, not care (it moves every rule-protected choice) | the specificity set (60 panel scenarios where the rule is right; bar ±0.03) and panel ΔE with the twin at rest (§6) | NOT SUPPORTED on GPT-OSS for the anchor-axis objective (T1.5, 2026-10-22: `L-anchor` moved its target, not the action; no ΔP detectable at \|ΔP\| ≳ 0.066); `L-self` untested (ST-A14); the counter-reading landed on DPO instead (`L-beh` non-specific) |
+| the KDG H1 instrument with its specificity and pressure guards separates a repair from a shaping round that installs rule-breaking (the partner deliverable's regression gate) | the guards are blunt: any large policy shift trips specificity | an adapter that raises protection on H1 and passes specificity (none yet), and Phase 2's detection deliverable | DEMONSTRATED ONCE (T1.5: `L-beh` +0.445 on H1_held, +0.192 on rule-right items, ΔE flat) |
 
 Conjunction added under watch: **ST effort of record × KDG-A28/A29.** The screen runs each model at
 its shipped default effort (Amendment 2), while on GPT-OSS-20B protection on H1 rises from low to
@@ -1249,3 +1250,21 @@ By the pre-registered rule its H1_held generation is descriptive only, it gets n
 σ-floored retrain is deferred. The thesis-faithful arm is therefore not tested on this model in
 Tier 1; the test needs a position- and norm-matched target.
 
+**T1.5 (2026-10-22), what changed.** Positive voice first: **on GPT-OSS-20B the instrument tells a
+repair from a shaping round that installs rule-breaking. Outcome-supervised fine-tuning on H1_train
+(`L-beh`, DPO) raises protection on held-out H1 scenarios by +0.445 [+0.323, +0.562] and raises the
+violating choice where the written rule is right by +0.192 [+0.131, +0.255], with the panel's
+pressure guard flat (ΔE −0.004); the representation adapter (`L-anchor`) moves its own target at the
+decision's clause ends past its threshold (anchor-axis margin 0.043 → 0.100) and leaves the action
+where it was (ΔP −0.005 [−0.052, +0.041]).** Two dissociations, one per adapter: the action moved
+without the anchor-axis content (`L-beh`'s margin falls 0.006), and the content moved without the
+action. Verdicts: `L-beh` non-specific (capability fails as registered through longer traces, accurate
+where it answers); `L-anchor` null for the anchor-axis target, with its transport control passed
+and a positive control on the same instrument; `L-self` not tested (ST-A14). The hypothesis of
+record is not supported on the development model for the one representation objective tested; the
+§8 row that applies is "an adapter moves the specificity set", carried by the outcome-supervised
+comparator. Engines: bf16 vs MXFP4 and HF vs bf16-vLLM `none` agree within ±0.07. Spent 7.10 A100-h on
+the T1.5 pod plus the G3 follow-up on pod B. Conjunction under watch: ST-A12's `V_harm` (harm salience at clause ends moves protect and defer into the rule
+option, replicated at n 45) and `L-anchor`'s null both say the action at this site reads something
+other than the anchor axis; Phase 2's cells (V_rule, −V_harm, the cross-recipe direction) are the
+test.

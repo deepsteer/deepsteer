@@ -2512,3 +2512,54 @@ decline vs take another action, V_harm's shift split by that code, and the per-s
 shift correlated with the brake B. ST-A12 carries the anchored statement and its two rival
 readings; "the brake's own direction" is not written until those discriminators are in. Care beyond
 harm is reported as a contrast, with `care_harm`'s null and MDE beside it.
+
+#### T1.5 outcome (2026-10-22; T1.5 pod gwobskujn4mmap, G3 follow-up on pod B; `data/t15_read_v1.json`)
+
+ΔP is read on the 38 brake-engaged H1_held scenarios × 8 against `none` on the same engine (bf16
+on vLLM; for L-anchor, HF with the adapter attached against HF `none`, G3). The column of record
+counts a truncated rollout as non-protect (Amendment 21 item 3); the truncation-excluded column sits
+beside it.
+
+| adapter | ΔP of record [95% CI] | trunc. excluded | specificity Δ P(violating), bar ±0.03 | capability Δ accuracy, bar ≥ −0.02 | panel guard ΔE (fails if CI > 0) | verdict |
+|---|---|---|---|---|---|---|
+| `L-beh` (comparator) | +0.445 [+0.323, +0.562] | +0.822 | +0.192 [+0.131, +0.255] | −0.150 [−0.205, −0.100] | −0.004 [−0.027, +0.018] | non-specific |
+| `L-beh`, epoch 3 | +0.422 [+0.301, +0.539] | +0.813 | +0.188 | −0.150 | (no panel) | non-specific |
+| `L-anchor` | −0.005 [−0.052, +0.041], MDE 0.066 | −0.005 | +0.024 [+0.013, +0.035] | −0.015 [−0.050, +0.020] | +0.003 [−0.002, +0.008] | null (anchor-axis target) |
+| `L-self` | descriptive (ST-A14) | | | | | none |
+
+- **`L-beh`.** It protects on held-out H1 scenarios (+0.445; P 0.17 → 0.61; all 132 +0.263
+  [+0.194, +0.330]) and it breaks rules where the rule is right: on the 60 specificity items the
+  violating option's probability rises 0.295 → 0.487. Capability fails as registered (accuracy
+  0.76 against 0.91); on the items it answers it is as accurate as `none` (GSM8K 0.97 vs 0.95, MMLU
+  0.94 vs 0.89), and 20% of its capability answers and 51% of its H1 rollouts run out of tokens: a
+  side effect of the adapter lengthening deliberation (the cap rerun: all 80 reserved rollouts
+  finish at 4,096 and protect, median 1,381 tokens; ST-A13). The pressure guard is flat. Both
+  truncation columns clear the H1 criterion, so the comparison is not unresolved by truncation.
+- **`L-anchor`.** Its target moved and the action did not. On H1_held the anchor-axis margin at
+  `clause_end`, block 12, rises from 0.043 to 0.100 (+0.057 [+0.056, +0.059] on HF, the 38;
+  +0.055 [+0.054, +0.056] on vLLM, all 132), above its τ of 0.0589. ΔP on the same traces is
+  −0.005 [−0.052, +0.041]. Ladder: positive control on the same instrument and site, `L-beh`'s
+  +0.445; transport control passed (the margin above); detection bar: no ΔP detectable at
+  |ΔP| ≳ 0.066. Specificity passes by the registered point rule (+0.024; its CI reaches 0.035).
+  The null is scoped to the anchor-axis target, not to representation objectives (G3).
+- **Engines and precision.** bf16 − MXFP4 `none` on the 38: −0.011 [−0.065, +0.047]; HF −
+  bf16-vLLM `none`: −0.012 [−0.070, +0.040]. ST-A15 (engine outliers), ST-A16 (saturated parity)
+  and ST-A17 (the bf16 merge keeps L-anchor's mean effect, 87% on the specificity set,
+  merged − attached −0.003 [−0.009, +0.002], with per-item noise about 45% of the effect) leave the
+  verdicts unchanged.
+
+Bias directions (estimator traps): truncation counted as non-protect understates `L-beh`'s ΔP
+(conservative); the engaged set was selected on T1.1's sampled P, and every arm is read against an
+independent `none` on the same scenarios (neutral); the bf16 merge adds per-item noise to the vLLM
+path, irrelevant to `L-anchor`'s HF verdict; four adapters are read without a multiplicity
+correction, and `L-beh`'s interval is far from its bars on every axis.
+
+Referee pass. (1) *"`L-beh`'s gain is the DPO data's in-family pattern, not protection."*
+Conceded in part and carried by the verdict: the gain transfers to held-out H1 scenarios, and the
+specificity set shows it transfers as rule-breaking (+0.19 where the rule is right), which is why
+the verdict is non-specific. (2) *"`L-anchor`'s null is the merge or a weak instrument."* The
+verdict of record is HF with the adapter attached (MDE 0.066), the same instrument detects
+`L-beh`'s effect, and the target moved in generation (+0.057, above τ). (3) *"One axis says nothing
+about representation adapters."* Conceded: the null is scoped to the anchor-axis target at
+`clause_end`, block 12; `L-self` was not tested (instrument failure, ST-A14); Phase 2's target search
+is the follow-up.
