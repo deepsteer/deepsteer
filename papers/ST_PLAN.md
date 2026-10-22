@@ -2500,3 +2500,15 @@ the merge), Phase 2 pod A's first attempt 0.62, pod A's rerun ~7.9 (running) →
 ~6.6 (the G3 follow-up ~1.7, ST-A15's discriminator ~0.25, Cells 2-3 ~4.1, setup), Cell 4 on Muse
 ~8.6 (re-priced from its pilot), §13's evaluation ~0.5 → **~54.2 of 56**. Any further panel read
 prices at 2.1 A100-h per adapter at the 50% subsample.
+
+**Phase 2, Cell 1 accepted; the −V_harm arm (author, 2026-10-22; before pod B).** A −V_harm arm (45
+engaged H1_train × 16, α 267.3 at `clause_end`, block 12, Cell 1's seeds so it pairs with Cell 1's
+`none`; ~1.35 A100-h) runs on pod B after Cell 2 and before Cell 3, ahead of Muse in the bail
+order; pod B's stop rises to 8.0 h. If it passes §5.0's gate it goes to refusal retention before
+anything else (flagged: Amendment 10's retention set read as uncalibrated on GPT-OSS, so that step
+needs its own decision). It enters the program-level Holm set as an eleventh arm (flagged; m = 11
+is the conservative count). Zero GPU now: the engaged scenarios' rule options coded withhold or
+decline vs take another action, V_harm's shift split by that code, and the per-scenario V_harm
+shift correlated with the brake B. ST-A12 carries the anchored statement and its two rival
+readings; "the brake's own direction" is not written until those discriminators are in. Care beyond
+harm is reported as a contrast, with `care_harm`'s null and MDE beside it.

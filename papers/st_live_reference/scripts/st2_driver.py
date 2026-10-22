@@ -66,6 +66,9 @@ ALPHA = 267.301171875  # the gate of record's alpha (Amendment 13)
 R1 = 16  # Cell 1 rollouts per scenario (Amendment 22 rider (d))
 BATCH = 160
 C1_ARMS = ("none", "fill", "care_harm", "V_harm", "neg_a")
+# the author's addition after Cell 1 (2026-10-22): -V_harm at the same alpha and site, Cell 1's
+# seeds (paired with its none), on pod B after Cell 2; refusal retention next if it passes the gate
+C1_EXTRA = ("neg_V_harm",)
 R2 = 8  # Cells 2 and 3 rollouts per scenario, paired with Cell 1's first 8 (seeds st2c1)
 QWEN = "qwen38_27b"
 QWEN_DATE_PIN = "2026-10-19"  # its screen's (the top-up matches its setting)
@@ -198,6 +201,8 @@ def c1_intervention(c: dict, arm: str, jobs: list[dict]):
         return SG.Add(np.stack([al * fu[j["k"] % len(fu)] for j in jobs]).astype(np.float32), 1.0)
     if arm == "neg_a":
         return SG.Add(-inp["anchor_axis"], al)
+    if arm == "neg_V_harm":
+        return SG.Add(-inp["V_harm"], al)
     return SG.Add(inp[arm], al)
 
 
@@ -708,7 +713,7 @@ def phase_c3_qwen_arm(c, sc, model, rec, a) -> dict:
 
 PHASES = {**{f"c1_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c1_arm(c, sc, m, rec, a,
                                                                              arm))(arm)
-             for arm in C1_ARMS}, "c1_read": phase_c1_read,
+             for arm in C1_ARMS + C1_EXTRA}, "c1_read": phase_c1_read,
           "c2_extract": phase_c2_extract, "c2_direction": phase_c2_direction,
           "c2_anchor": phase_c2_anchor,
           **{f"c2_{arm}": (lambda arm: lambda c, sc, m, rec, a: phase_c2_arm(c, sc, m, rec, a,
@@ -721,8 +726,8 @@ CELL1 = [f"c1_{arm}" for arm in C1_ARMS] + ["c1_read"]
 CELL2 = ["c2_extract", "c2_direction", "c2_anchor", "c2_ablate", "c2_random", "c2_twin_none",
          "c2_transport", "c2_freegen"]
 CELL3 = ["c3_qwen", "c3_reencode", "c3_direction", "c3_qwen_arm"]
-POD_B = ["c3_qwen"] + CELL2 + CELL3[1:]  # the Qwen engine first, on an empty GPU
-GEN_PHASES = ({f"c1_{a}" for a in C1_ARMS} | {"c2_ablate", "c2_random", "c2_twin_none"}
+POD_B = ["c3_qwen"] + CELL2 + ["c1_neg_V_harm"] + CELL3[1:]  # the Qwen engine first (empty GPU)
+GEN_PHASES = ({f"c1_{a}" for a in C1_ARMS + C1_EXTRA} | {"c2_ablate", "c2_random", "c2_twin_none"}
               | {"c3_qwen_arm"})
 
 

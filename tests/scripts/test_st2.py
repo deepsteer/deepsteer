@@ -57,6 +57,7 @@ def test_cell1_interventions():
     c = {"inp": inp, "alpha": 2.0}
     jobs = [{"k": k} for k in range(7)]
     assert D.c1_intervention(c, "none", jobs) is None
+    assert np.allclose(D.c1_intervention(c, "neg_V_harm", jobs).vector, -inp["V_harm"])
     neg = D.c1_intervention(c, "neg_a", jobs)
     assert np.allclose(neg.vector, -inp["anchor_axis"]) and neg.alpha == 2.0
     f = D.c1_intervention(c, "fill", jobs)
@@ -215,6 +216,8 @@ def test_dry_run_pod_b_on_a_tiny_gpt_oss(tmp_path):
     q = rec["phases"]
     assert q["c3_reencode"]["n_protect"] > 0 and q["c3_reencode"]["n_rule"] > 0
     assert q["c3_direction"]["n_scenarios"] >= 1
+    nv = [json.loads(x)["rollout_key"] for x in (d / "gen" / "c1_neg_V_harm.jsonl").open()]
+    assert nv and set(nv) <= set(c1)  # paired with Cell 1's none
     qa = [json.loads(x) for x in (d / "gen" / "c3_qwen_arm.jsonl").open()]
     assert qa and {x["rollout_key"] for x in qa} <= set(c1)
     assert any(x["n_steered"] > 0 for x in qa)
@@ -257,5 +260,8 @@ def test_remote_runs_pod_b_in_the_drivers_order():
     phases = re.search(r'ST2B_PHASES="([^"]*)"', sh).group(1).split(",")
     assert phases == D.POD_B
     assert max(phases.index(p) for p in D.CELL2) < min(phases.index(p) for p in D.CELL3[1:])
+    # the author's -V_harm arm runs after Cell 2 and before Cell 3 (kept ahead of Cell 3 and Muse)
+    i = phases.index("c1_neg_V_harm")
+    assert max(phases.index(p) for p in D.CELL2) < i < min(phases.index(p) for p in D.CELL3[1:])
     sync = (ROOT / "papers/st_live_reference/runpod/sync_st2b.txt").read_text().split()
     assert "outputs/st2a/gpt_oss_20b/gen/c1_none.jsonl" in sync

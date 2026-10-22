@@ -78,8 +78,9 @@ elif [ "$STEPS" = "st2b" ]; then
   # from outputs/st2_inputs, T1.1's rows, Qwen's screen rows and pod A's Cell 1 none (SYNC_OUTPUTS)
   # G3 (author, 2026-10-22): T1.5's follow-up first (HF none and L-anchor on the 38 engaged, the
   # ST-A17 merge read, the readouts), on a copy of T1.5's rows under outputs/st2b/t15_followup
+  # the -V_harm arm after Cell 2 (author, 2026-10-22; 45 x 16, ~1.35 A100-h): 8.0 h stop
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2b
-  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-7.0}"
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-8.0}"
 elif [ "$STEPS" = "rider2" ]; then
   # rider pod 2 (author, 2026-10-19; G1 items 3-4, Amendment 9): the models of record only
   MODELS="${MODELS:-gpt_oss_20b muse_glimmer_30b}"; OUT_SUB=t10c
@@ -278,7 +279,7 @@ ST2A_DIR="$REPO_DIR/papers/st_live_reference/outputs/st2a/gpt_oss_20b"  # SYNC_O
 QWEN_SCREEN="$REPO_DIR/papers/st_live_reference/outputs/t10/qwen38_27b/screen/h1_screen.jsonl"
 T15_JOBS="$REPO_DIR/papers/st_live_reference/outputs/t15_early/gpt_oss_20b/vllm/mxfp4_parity.jobs.jsonl"  # ST-A15
 T15_DIR="$REPO_DIR/papers/st_live_reference/outputs/t15/gpt_oss_20b"  # SYNC_OUTPUTS (G3 follow-up)
-ST2B_PHASES="c3_qwen,c2_extract,c2_direction,c2_anchor,c2_ablate,c2_random,c2_twin_none,c2_transport,c2_freegen,c3_reencode,c3_direction,c3_qwen_arm"
+ST2B_PHASES="c3_qwen,c2_extract,c2_direction,c2_anchor,c2_ablate,c2_random,c2_twin_none,c2_transport,c2_freegen,c1_neg_V_harm,c3_reencode,c3_direction,c3_qwen_arm"
 if [ "$STEPS" = "st2b" ]; then  # built locally; synced (sync_st2b.txt); twins and ids committed
   for f in "$ST2_INPUTS/st2_inputs.npz" "$T11_DIR/gen/h1_rollouts_read.jsonl" "$QWEN_SCREEN" \
            "$ST2A_DIR/gen/c1_none.jsonl" "$T15_JOBS" "$T15_DIR/t15_record.json" \
