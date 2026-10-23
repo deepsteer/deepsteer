@@ -3231,3 +3231,48 @@ HF process on the ST stack, on Cell 4's derived quantities (median norm, engaged
    ~3.5, setup 0.3, spec reads 0.07, provisioning 0.1: **~4.0 A100-h**; stop 4.5 h.
 7. **Envelope 64** (author): spent 55.13 + L-beh-2 ~5.0 + the replicate ~4.0 + §13's evaluation
    0.5 = **~64.6**, about 0.6 over; the author decides (64.6 or a cut) before the replicate launches.
+
+#### L-beh-2 outcome on GPT-OSS (2026-10-23; Amendment 31 item 3 and its addition; `data/st2lb_read_v1.json`)
+
+The pod ran 16:38-20:36 UTC (4.06 A100-h with provisioning; rc 0). Rule-right generation: 1,040
+rollouts on the 130-item pool (805 rule, 126 defer, 87 violating, 22 unparsed); 17 items yielded
+both actions, **26 rule-right pairs against 62 H1_train pairs** (shortfall 36, recorded; no second
+draw), so rule-right pairs are 30% of the set. Training: 53 steps in L-beh's 1 h budget (L-beh: 58).
+`base_vllm`: band TV 0.046, base check passed; the merge keeps 99.7% of the adapter's dose-0 shift
+(TV 0.281); `vllm_beh2` parity TV 0.0017.
+
+| read (bar) | L-beh-2 | L-beh (T1.5) |
+|---|---|---|
+| ΔP, 38 engaged H1_held (≥ +0.15, CI > 0) | **+0.763 [+0.695, +0.829]** (P 0.22 → 0.98) | +0.445 |
+| ΔP, all 132 H1_held | +0.737 [+0.687, +0.785] | — |
+| specificity, 60 held-out rule-right (±0.03) | **−0.093 [−0.138, −0.052]**: discriminating | +0.192 |
+| capability (≥ −0.02) | **+0.010 [−0.025, +0.045]**: passes | −0.150 |
+| panel guard ΔE (fails if CI > 0) | **+0.020 [+0.0005, +0.040]**: fails (MDE 0.028) | −0.004 |
+| truncation on the 38 | 1.5% | 39% |
+
+**Verdicts.** The registered branch (Amendment 31 item 3) is **"passes ΔP, specificity
+discriminating (flagged)"**; T1.5's verdict ladder reads **"non-specific (panel gap)"**, since the
+guard fails as registered by the narrowest margin (its CI's lower bound +0.0005; ST-A21). The panel
+half, read descriptively, shows L-beh-2 lowering the violating option on rule-right items (−0.063
+[−0.085, −0.042], n 267) and neutral-right items (−0.112, n 26) where L-beh raised it (+0.202,
++0.154); the panel holds no rule-wrong items, so it cannot separate conditioning on rule harm from
+conditioning on scenario format (ST-A22).
+
+**Trace content (before RESULTS, author).** On the 38 × 8, L-beh-2's traces run at the unsteered
+length (median 465 against `none`'s 445; p90 783; 2 truncated), where L-beh's tripled (1,357; 118
+truncated). Per 1,000 words L-beh-2 mentions harm 8.0 (none 5.9), the affected person 8.9 (5.2) and
+weighing language 47.5 (30.2), and the rule 44.3 (54.4). Two sampled protect traces weigh the rule
+against the deadline and the named person's loss before departing from it. Descriptive; the marker
+counts are crude.
+
+Bias directions: the rule-right shortfall (30% of pairs) opposes a specificity gain, so the −0.093
+holds against it; the guard's CI lower bound at +0.0005 sits on the bar (a near-miss; the registered
+verdict stands); the specificity set and the panel share the KDG format, while H1 does not (favors
+reading format as condition; ST-A22's cells separate them).
+
+Referee pass. (1) *"L-beh-2 learned H1's format, not the moral condition."* Not separable on the
+data in hand; the format × harm cells (Amendment 33) are the test, and "conditions on rule harm" is
+not claimed until they read. (2) *"P 0.98 on harm scenarios is a reflex."* The traces run at the
+unsteered length and weigh harm and person more than `none` does; capability holds. (3) *"It fails
+the guard."* Conceded as registered: it fails by +0.0005 at the CI's lower bound, recorded as a
+near-miss (ST-A21), not re-scored.

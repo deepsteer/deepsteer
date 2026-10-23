@@ -1334,3 +1334,11 @@ tilt grows with dose on Muse (+0.015, +0.065, +0.097), so above 0.2× the absolu
 the instrument's dose sensitivity, not the direction's. Under Amendment 31 ST-A20 is unresolved; the
 replicate is Amendment 32.
 
+**L-beh-2 on GPT-OSS (2026-10-23), what changed.** Adding 26 rule-right pairs to L-beh's 62 reverses
+its non-specificity: L-beh-2 protects on held-out harm scenarios (+0.763) and follows the rule more on
+held-out rule-right items in the panel's format (−0.093), with capability intact (+0.010); it fails the
+panel guard as registered by the narrowest margin (ΔE +0.020, CI lower bound +0.0005). Whether it
+conditions on rule harm or on scenario format is the open check: rule-right items in H1's format, and
+rule-harm items in the panel's format. Its traces run at the unsteered length (median 465 against
+445) and weigh harm and the affected person more than the unsteered model's (ST-A21, ST-A22).
+

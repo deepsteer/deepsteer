@@ -1430,3 +1430,23 @@ stack-parity reads are re-taken under the pin before any readout of record.
 **Discriminator.** The Muse dose ladder at 0.3× and 0.4× with spec reads (the author's, 2026-10-23); priced in Amendment 31.
 **Status.** open; the ladder (2026-10-23, `data/st2ml_read_v1.json`) reads **unresolved** under Amendment 31: protection rises with dose (+0.067, +0.125, +0.188; 0.4× incoherent, NLL Δ 0.380) while the rule-right read climbs toward violating (−0.048, +0.063, +0.176) with a random vector's (+0.015, +0.065, +0.097). At 0.3× `care_harm` passes the gate (+0.125, +0.089 over the 0.2× fill) with a rule-right tilt equal to a random vector's at that dose (−0.001). R_a as stated (rule-side at every coherent rung) does not hold; the 0.3× candidate goes to a fresh-seed, dose-matched replicate (Amendment 32).
 **Thesis impact.** If R_a, the program has its first candidate for a conditional lever, a content direction rather than a fixed outcome push. If R_b, no direction at `clause_end` conditions on whether the rule harms, and the weight-level route (L-beh-2) carries the lever search.
+
+## ST-A21 (ledger) — L-beh-2 fails the panel guard by the narrowest margin
+
+**Date.** 2026-10-23 (L-beh-2 pod, `st2lb`; `data/st2lb_read_v1.json`).
+**Observation.** Panel guard ΔE (the 293-item half, KDG's estimators, against T1.3c's `none`) +0.020 [+0.0005, +0.040], MDE 0.028; the registered rule fails an adapter whose ΔE CI lies above 0. L-beh's ΔE was −0.004; L-anchor's flat.
+**Type.** near-miss at a pre-registered bar.
+**Competing readings.** R_a: L-beh-2 opens a small judgment-decision gap on the panel (its decisions move toward the rule while its judgments move less), a real side effect of training rule-right decisions. R_b: sampling noise at the bar (the CI's lower bound is 0.0005 above it; a second subsample or seed could fall either side).
+**Discriminator.** The guard on the other 50% half of the panel under L-beh-2 (~2.1 A100-h), or the per-cell decomposition of ΔE from the saved rows (zero GPU; which cell carries the gap).
+**Status.** open. The registered verdict stands (fails).
+**Thesis impact.** If R_a, L-beh-2's rule-right gain costs a measurable judgment-decision gap, the property the regression gate exists to catch. If R_b, the guard does not separate L-beh-2 from `none`.
+
+## ST-A22 (ledger) — L-beh-2 protects on H1 and follows the rule on the panel; format and harm are confounded
+
+**Date.** 2026-10-23 (L-beh-2 pod).
+**Observation.** L-beh-2 raises protection on held-out H1 scenarios (+0.763, P 0.22 → 0.98) and lowers the violating option on held-out panel items (specificity −0.093; panel half −0.063 on rule-right, −0.112 on neutral-right). Every H1 item is a rule-harm scenario in H1's format; every panel item is rule-right or neutral in the KDG format.
+**Type.** design-matrix gap (format and harm vary together).
+**Competing readings.** R_a (harm): L-beh-2 conditions on whether the rule harms. Predicts a drop in P(violating) on rule-right items in H1's format and a rise in protection on rule-harm items in the panel's format. R_b (format): it conditions on the scenario format. Predicts no drop (or a rise) on H1-format rule-right items and no rise on panel-format rule-harm items.
+**Discriminator.** The two off-diagonal cells of the format × harm matrix, read at dose 0 under `none`, L-beh-2 and L-beh (Amendment 33; ~0.5 A100-h per cell).
+**Status.** open (promoted: Amendment 33).
+**Thesis impact.** If R_a, a weight-level lever that conditions on rule harm exists on GPT-OSS, with capability intact. If R_b, L-beh-2 learned the datasets, and the lever search needs format-crossed training data.
