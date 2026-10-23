@@ -98,9 +98,10 @@ elif [ "$STEPS" = "st2m" ]; then
 elif [ "$STEPS" = "st2fx" ]; then
   # the format x harm matrix (author, 2026-10-23; Amendment 33): dose-0 reads of cells A, B and the
   # H1_held rider under none, L-beh-2 and L-beh, each arm its own process; the two adapters synced
-  # (sync_st2fx.txt; sha256 checked against data/st_fxh_adapters_v1.json); 1.5 h stop
+  # (sync_st2fx.txt; sha256 checked against data/st_fxh_adapters_v1.json); then the D_rb rider
+  # (Amendments 34-35: specificity-set traces on vLLM, prefills under five arms); 2.5 h stop
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2fx
-  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-1.5}"
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
 elif [ "$STEPS" = "st2mr" ]; then
   # the care_harm replicate at 0.3x on Muse (author, 2026-10-23; Amendment 32): none, fill and
   # care_harm on Cell 4's 45 engaged x 16, fresh seeds and fill draws; spec reads first; Cell 4's
@@ -357,16 +358,22 @@ if [ "$STEPS" = "st2lb" ]; then  # T1.4's inputs and T1.1's rows (synced); the p
   done
 fi
 ST2MR_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/st2mr_inputs/muse_glimmer_30b"  # SYNC_OUTPUTS (replicate)
-FX_ADAPTERS="$OUT/_fx_adapters"  # the two adapters, gathered from their synced dirs (Amendment 33)
+FX_ADAPTERS="$OUT/_fx_adapters"  # the adapters, gathered from their synced dirs (Amendments 33-35)
+DRB_POOL="$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/gen/rr_rollouts.jsonl"  # SYNC_OUTPUTS (D_rb)
+DRB_T11="$REPO_DIR/papers/st_live_reference/outputs/t11/gpt_oss_20b/gen/h1_rollouts.jsonl"  # SYNC_OUTPUTS (D_rb)
 if [ "$STEPS" = "st2fx" ]; then  # the cells and the manifest (committed); the adapters (synced)
   for f in papers/st_live_reference/data/st_fxh_h1fmt_ruleright_v1.json papers/st_live_reference/data/st_fxh_panelfmt_ruleharm_v1.json \
            papers/st_live_reference/data/st_fxh_adapters_v1.json "$T14_ADAPTERS/beh/adapter_model.safetensors" \
            "$T14_ADAPTERS/beh/adapter_config.json" "$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/adapters/beh2/adapter_model.safetensors" \
-           "$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/adapters/beh2/adapter_config.json"; do
-    [ -f "$f" ] || { echo "FATAL: $f missing (matrix inputs; SYNC_OUTPUTS from sync_st2fx.txt)"; exit 1; }
+           "$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/adapters/beh2/adapter_config.json" \
+           "$T14_ADAPTERS/anchor/adapter_model.safetensors" "$T14_ADAPTERS/anchor/adapter_config.json" \
+           "$T14_ADAPTERS/beh_epoch3/adapter_model.safetensors" "$T14_ADAPTERS/beh_epoch3/adapter_config.json" \
+           "$DRB_POOL" "$DRB_T11"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (matrix and D_rb inputs; SYNC_OUTPUTS from sync_st2fx.txt)"; exit 1; }
   done
   mkdir -p "$FX_ADAPTERS" && ln -sfn "$T14_ADAPTERS/beh" "$FX_ADAPTERS/beh" \
-    && ln -sfn "$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/adapters/beh2" "$FX_ADAPTERS/beh2"
+    && ln -sfn "$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/adapters/beh2" "$FX_ADAPTERS/beh2" \
+    && ln -sfn "$T14_ADAPTERS/anchor" "$FX_ADAPTERS/anchor" && ln -sfn "$T14_ADAPTERS/beh_epoch3" "$FX_ADAPTERS/beh_epoch3"
 fi
 if [ "$STEPS" = "st2mr" ]; then  # Cell 4's files and the fresh draws (synced)
   for f in "$CELL4_DIR/st2m_record.json" "$CELL4_DIR/derive.npz" "$CELL4_DIR/directions.npz" \
@@ -483,6 +490,14 @@ dry_runs() {
           || { echo "DRY RUN FAILED (st2fx $arm)"; return 1; }
       done
       rm -rf "$OUT/_dry_st2fx"
+      $PY papers/st_live_reference/scripts/st2drb_driver.py --step gen --out "$OUT/_dry_st2drb" --dry-run \
+        || { echo "DRY RUN FAILED (st2drb gen)"; return 1; }
+      for arm in none beh beh2 anchor beh_epoch3; do  # every rider arm, dry (tiny model, zero adapters)
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2drb_driver.py \
+          --step prefill --arm "$arm" --out "$OUT/_dry_st2drb" --adapters "$OUT/_dry_st2drb/adapters" \
+          --pool "$DRB_POOL" --t11 "$DRB_T11" --dry-run || { echo "DRY RUN FAILED (st2drb $arm)"; return 1; }
+      done
+      rm -rf "$OUT/_dry_st2drb"
     fi
     if [ "$STEPS" = "st2mr" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a tiny Cell 4, then the replicate on it
       rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2mr"
@@ -544,7 +559,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -661,6 +676,19 @@ for m in $MODELS; do
       PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2fx_driver.py --arm "$arm" \
         --out "$OUT" --adapters "$FX_ADAPTERS" || { rc=$?; break; }
     done
+    echo ">> $m matrix exit $rc; the D_rb rider (Amendments 34-35)"
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    rd=0
+    $PY papers/st_live_reference/scripts/st2drb_driver.py --step gen --out "$OUT" \
+      --deadline "$DEADLINE" || rd=$?   # vLLM via its worker
+    if [ "$rd" -eq 0 ]; then
+      for arm in none beh beh2 anchor beh_epoch3; do   # each arm its own process (HF on torch 2.13)
+        PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2drb_driver.py --step prefill \
+          --arm "$arm" --out "$OUT" --adapters "$FX_ADAPTERS" --pool "$DRB_POOL" --t11 "$DRB_T11" \
+          --deadline "$DEADLINE" || { rd=$?; break; }
+      done
+    fi
+    [ "$rc" -eq 0 ] && rc=$rd
     echo ">> $m exit $rc (0 ok; banked either way)"
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue

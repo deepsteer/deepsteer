@@ -137,13 +137,15 @@ def test_remote_runs_the_matrix():
     # or the pod syncs an adapter directory instead of its two files
     sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
     assert re.search(r'STEPS" = "st2fx" \]; then\n(?:  #.*\n)*  MODELS=.*\n  SESSION_MAX_HOURS='
-                     r'"\$\{SESSION_MAX_HOURS:-1\.5\}"', sh)
+                     r'"\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)  # with the D_rb rider (Amendment 34)
     assert sh.count("for arm in none beh2 beh; do") == 2
     assert 'ln -sfn "$T14_ADAPTERS/beh" "$FX_ADAPTERS/beh"' in sh
     assert "test_st2fx.py" in sh.split("GATE_TESTS=")[1].split("\n")[0]
     sync = (ST / "runpod" / "sync_st2fx.txt").read_text().split()
-    assert len(sync) == 4 and all(not x.endswith("/") for x in sync)
-    assert {Path(x).name for x in sync} == {"adapter_config.json", "adapter_model.safetensors"}
+    assert all(not x.endswith("/") for x in sync)
+    for arm in ("t14/gpt_oss_20b/adapters/beh", "st2lb/gpt_oss_20b/adapters/beh2"):
+        assert {f"outputs/{arm}/adapter_config.json",
+                f"outputs/{arm}/adapter_model.safetensors"} <= set(sync)
 
 
 @pytest.mark.slow
