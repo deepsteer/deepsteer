@@ -3039,3 +3039,57 @@ record), cap 1,536, one pod: a vLLM process, then one HF process.
    remains (a superset by construction, which a single 90-quota draw does not guarantee).
    Otherwise every arm runs on the 45, and item 4's bail order applies to the 45. The rule reads
    only the pilot's timing.
+
+#### ST Phase 2 Cell 4 outcome, Muse's transfer test (2026-10-23; Amendments 29-30; `data/st2m_read_v1.json`)
+
+The Muse pod ran 00:37-05:16 UTC (4.75 A100-h with provisioning; rc 0; nothing bailed). Baseline
+(vLLM, H1 264 × 8 at effort medium): protect share 0.210 (Muse's screen 0.208). Dose-0 on H1_train:
+P 0.527 (screen 0.523). Engaged H1_train: 50 (no-brake null q95 19); brake B −0.307 [−0.358, −0.256]
+(screen −0.314). After the 5 sweep scenarios, 45 remained, so the arms ran on all 45 (the cost-only
+90 could not arise). Block 26: participation ratio 33.7, `clause_end` median norm 399 (blocks 20 and
+32: 31.6 and 25.3; 292 and 407). Pilot: batch 96 (weights 59.6 GB, ~150 MB per row at the cap).
+Sweep: α 79.8 = 0.2 × the median norm (the same factor as GPT-OSS's 267.3); 159.6 failed the NLL bar
+(0.456). Directions at block 26: V_qwen from 499 Qwen3.8 traces in 26 scenarios (8 engaged), −V_harm
+from 64/64, `care_harm` from 200 pairs; cos(V_qwen, V_harm) +0.05 (GPT-OSS +0.11), cos(`care_harm`,
+V_harm) +0.27 (GPT-OSS +0.29).
+
+| arm (45 × 8, α 79.8) | ΔP vs `none` (MDE) | vs `fill` | gate | specificity ΔP(violating), ±0.03 | − fill (descriptive) |
+|---|---|---|---|---|---|
+| V_qwen | **+0.375 [+0.303, +0.447]** (0.103) | +0.339 | passes; coherent (length 1.00, NLL Δ 0.129); p 1e-4 | **+0.304 [+0.244, +0.365]**: fails | +0.289 |
+| −V_harm | +0.036 [−0.003, +0.078] (0.058) | +0.000 | fails; p 0.53 | **+0.147 [+0.112, +0.183]**: fails | +0.131 |
+| `care_harm` | +0.067 [+0.019, +0.114] (0.067) | +0.031 | fails (below the fill margin); p 0.11 | **−0.048 [−0.071, −0.027]**: outside the bar, rule side | −0.063 |
+| `fill` | +0.037 | — | — | +0.015 [−0.033, +0.065] (MDE 0.070): S1 | — |
+
+Choices (protect / rule / defer): `none` 0.169 / 0.489 / 0.342; V_qwen 0.544 / 0.231 / 0.225;
+`care_harm` 0.236 / 0.358 / 0.406.
+
+**Verdicts.**
+- **Branch: both fail** (Amendment 30 item 6). V_qwen's and −V_harm's specificity reads both fail
+  on Muse, so the directions carry the non-specific component in a second family; GPT-OSS's result
+  is about the directions, not one model's site.
+- **No admissible target on Muse:** V_qwen passes the gate and fails specificity; −V_harm and
+  `care_harm` fail the gate.
+- **Program level (Holm over twelve arms):** GPT-OSS's V_qwen and −V_harm and Muse's V_qwen
+  survive, so "steerable at this site" holds in both families as registered; the specificity column
+  beside it shows every survivor failing.
+- −V_harm splits across families on the gate (a lever on GPT-OSS, not on Muse) while failing
+  specificity on both (ST-A19). `care_harm` is the one direction whose rule-right reading falls on
+  the rule side (ST-A20).
+
+**Second derivations.** Muse's baseline, dose-0 read and brake reproduce its T1.0 screen (0.210 vs
+0.208; 0.527 vs 0.523; −0.307 vs −0.314); the typed axes keep GPT-OSS's geometry (cosines above).
+
+Bias directions: V_qwen ran at 0.2× Muse's norm where GPT-OSS's of record ran at 0.1× (favors a
+larger move and a larger specificity failure on Muse; the cross-family magnitudes are not dose-matched);
+Muse's specificity read is noisier (fill MDE 0.070 against GPT-OSS's 0.030; opposes detecting a
+small failure, so the failures of +0.15 and +0.30 are unaffected and `care_harm`'s −0.048 is the
+read it most affects); the gate's fill comparator is at the arm's α (neutral).
+
+Referee pass. (1) *"The doses differ, so 'same result in two families' compares 0.1× with 0.2×."*
+Conceded in scope: the statement is qualitative (moves the brake, fails specificity, in both); the
+magnitudes are not dose-matched; V_qwen at 0.1× on Muse (~1.5 A100-h with setup) is deferred
+pending the envelope. (2) *"On Muse only V_qwen moves protection, so 'the lever and the
+non-specificity travel together' rests on one direction."* Conceded as stated: on Muse the claim is
+V_qwen's; −V_harm fails specificity without the lever (ST-A19). (3) *"`care_harm`'s −0.048 sits on
+Muse's noisiest instrument."* Its difference from fill is −0.063 [−0.111, −0.019]; it is read as an
+open lead below the gate's fill margin, and the dose ladder (ST-A20) is its discriminator.

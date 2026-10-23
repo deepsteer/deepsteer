@@ -1408,3 +1408,23 @@ stack-parity reads are re-taken under the pin before any readout of record.
 **Discriminator.** The D-lite (Amendment 29, ~1.6 A100-h): `rr_fill` and `spec_fill` at α 267.3 and 133.6 with `rr_none` re-run on the same pod.
 **Status.** resolved (experiment, D-lite 2026-10-22): R_b on both measures. A covariance-matched random vector at the same dose loosens plain refusal by +0.004 [−0.008, +0.021] (2 flips, both among the arms') and tilts rule-right items by −0.006 (267.3) and −0.011 (133.6); −V_harm and −refusal rise above it (+0.033, +0.029), and −V_harm and V_qwen tilt beyond it (+0.095, +0.104). V_qwen's plain-refusal rise is at the random-vector level for its dose.
 **Thesis impact.** If R_a, the specificity instrument cannot pass any vector at these doses; Amendment 27's rule becomes "against fill" (S2), V_qwen is re-read under it, and "one failure mode" is a property of borderline items, not of the three handles. If R_b, the three handles share one non-specific route, and "no target on GPT-OSS" stands as a finding about the model at this site.
+
+## ST-A19 (ledger) — −V_harm tilts Muse's rule-right items toward violating without moving its brake
+
+**Date.** 2026-10-23 (Cell 4, `st2m`; `data/st2m_read_v1.json`).
+**Observation.** At α 79.8 (0.2 × Muse's median norm), −V_harm moves protection on Muse's 45 engaged scenarios by +0.036 [−0.003, +0.078], exactly the random vector's +0.037 (difference +0.000 [−0.039, +0.039]), while its specificity read is +0.147 [+0.112, +0.183] (bar ±0.03). On GPT-OSS at the same relative dose it moved protection +0.114 and tilted rule-right items +0.089.
+**Type.** family exception (a lever on one family, not the other; the non-specificity on both).
+**Competing readings.** R_a (dose): Muse's brake responds to harm salience at a larger dose than GPT-OSS's; the tilt shows first. Predicts a protect move at 0.3-0.4× with the tilt growing. R_b (different read): Muse's brake does not read harm salience at `clause_end`, while the rule-right tilt is a generic effect of removing harm salience. Predicts no protect move at any coherent dose.
+**Discriminator.** −V_harm on the Muse dose ladder (0.3× and 0.4×, 45 × 8, with spec reads), ~1.4 A100-h if it rides the `care_harm` ladder pod.
+**Status.** open (not scheduled; priced in Amendment 31).
+**Thesis impact.** If R_a, the two families differ in dose, not mechanism. If R_b, harm salience is GPT-OSS's brake handle and not Muse's, and "the lever and the non-specificity travel together" is V_qwen's property, not the harm axis's.
+
+## ST-A20 (ledger) — care_harm on Muse lowers the violating option on rule-right items while moving protection up
+
+**Date.** 2026-10-23 (Cell 4, `st2m`).
+**Observation.** At α 79.8 on Muse, `care_harm` moves protection +0.067 [+0.019, +0.114] (+0.031 [−0.014, +0.081] over fill, below the gate's +0.05 margin; choices move off the rule, 0.489 → 0.358, into defer +0.064 and protect +0.067) and moves P(violating) on the 60 rule-right items by −0.048 [−0.071, −0.027] (−0.063 [−0.111, −0.019] against fill). Every other direction in both families tilts rule-right items toward violating (+0.09 to +0.30). On GPT-OSS, `care_harm` at 267.3 was null on the gate.
+**Type.** sign flip (the only direction whose rule-right reading falls on the rule side).
+**Competing readings.** R_a (conditional content): care content raises protection where the rule harms and lowers rule-breaking where the rule is right, the condition a lever needs. Predicts both effects grow with dose (protection up, violating down on rule-right items). R_b (deliberation and noise): care content shifts choices off the rule toward deferral generally, and the −0.048 is within Muse's wider specificity noise. Predicts no dose response in the rule-right read and a defer-led, not protect-led, rise.
+**Discriminator.** The Muse dose ladder at 0.3× and 0.4× with spec reads (the author's, 2026-10-23); priced in Amendment 31.
+**Status.** open (promoted: Amendment 31's second build).
+**Thesis impact.** If R_a, the program has its first candidate for a conditional lever, a content direction rather than a fixed outcome push. If R_b, no direction at `clause_end` conditions on whether the rule harms, and the weight-level route (L-beh-2) carries the lever search.

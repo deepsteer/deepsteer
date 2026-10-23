@@ -1089,7 +1089,7 @@ Standing claim (pending) and its rival:
 |---|---|---|---|
 | an outcome-free representation objective (`L-anchor` or `L-self`) restores protection on held-out scenarios where DPO on the same traces does not | the objective teaches rule-breaking, not care (it moves every rule-protected choice) | the specificity set (60 panel scenarios where the rule is right; bar ±0.03) and panel ΔE with the twin at rest (§6) | NOT SUPPORTED on GPT-OSS for the anchor-axis objective (T1.5, 2026-10-22: `L-anchor` moved its target, not the action; no ΔP detectable at \|ΔP\| ≳ 0.066); `L-self` untested (ST-A14); the counter-reading landed on DPO instead (`L-beh` non-specific) |
 | the KDG H1 instrument with its specificity and pressure guards separates a repair from a shaping round that installs rule-breaking (the partner deliverable's regression gate) | the guards are blunt: any large policy shift trips specificity | an adapter that raises protection on H1 and passes specificity (none yet), and Phase 2's detection deliverable | DEMONSTRATED ONCE (T1.5: `L-beh` +0.445 on H1_held, +0.192 on rule-right items, ΔE flat) |
-| a direction at `clause_end`, block 12 is a training target for protection on GPT-OSS (gate, coherence, retention and specificity) | the specificity failures of −V_harm and V_qwen (+0.089, +0.093) are what any vector of this size does to borderline items (ST-A18) | the D-lite's `spec_fill` and `rr_fill` at both α (Amendment 29) | NOT SUPPORTED at this site and these doses: both gate-passing directions fail specificity, and a random vector does not (D-lite, −0.006 / −0.011) |
+| a direction at `clause_end`, block 12 is a training target for protection on GPT-OSS (gate, coherence, retention and specificity) | the specificity failures of −V_harm and V_qwen (+0.089, +0.093) are what any vector of this size does to borderline items (ST-A18) | the D-lite's `spec_fill` and `rr_fill` at both α (Amendment 29) | NOT SUPPORTED at this site and these doses, in two families: every gate-passing direction fails specificity (GPT-OSS −V_harm and V_qwen; Muse V_qwen), and a random vector does not (GPT-OSS −0.006 / −0.011; Muse +0.015); `care_harm` on Muse (rule-side specificity, below the fill margin) is the open lead (ST-A20) |
 
 Conjunction added under watch: **ST effort of record × KDG-A28/A29.** The screen runs each model at
 its shipped default effort (Amendment 2), while on GPT-OSS-20B protection on H1 rises from low to
@@ -1308,4 +1308,21 @@ beyond fill). At this site and dose, −harmfulness and −refusal loosen plain 
 vector by the same amount (+0.033 vs +0.029 over fill) on the same rollouts: a causal overlap at the
 margin, below the bar. Whether Paper 7's dissociation holds under its own protocol is untested here;
 it is pod D's question. The next read is Muse's transfer test, now with −V_harm and `care_harm`.
+
+**ST Phase 2 Cell 4, Muse's transfer test (2026-10-23), what changed.** Positive voice first: **Two
+families, same result: Qwen3.8's protect-versus-rule direction moves the brake in GPT-OSS and Muse
+(+0.193, +0.375) and tilts rule-right items toward violating in both (+0.093, +0.304); the lever and
+the non-specificity travel together. No constant direction at `clause_end` is an admissible target in
+either family. `care_harm` on Muse is the one direction with the opposite sign on rule-right items
+(−0.048) while moving protection (+0.067); below the gate's fill margin, it is the open lead.**
+Muse's brake reproduces its screen (B −0.307, 50 engaged), the typed axes keep GPT-OSS's geometry,
+and the sweep picked the same relative dose (0.2× the median norm). −V_harm tilts Muse's rule-right
+items (+0.147) without moving its brake (ST-A19); `care_harm`'s sign is ST-A20.
+
+Program level (author, 2026-10-23). The partner deliverable for now is the regression gate
+(detection). That is not the program's conclusion; the lever search continues. What Cell 4
+establishes is that a fixed vector at one site carries protection and rule-breaking together, so the
+lever has to condition on whether the rule harms, which is a weight-level job. L-beh's training set
+had H1 outcome pairs only and no rule-right pairs; L-beh-2 (Amendment 31) tests whether that is
+the source of its non-specificity.
 
