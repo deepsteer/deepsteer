@@ -90,7 +90,9 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "discriminator, Cells 2-3, -V_harm)": 6.41,
          "ST Phase 2 pod C (st2c; timestamps 18:03-20:46 + 0.1; Amendments 25-28)": 2.82,
          "ST Phase 2 D-lite (st2dl; timestamps 21:58-23:21 + 0.1; Amendment 29)": 1.49,
-         "ST Phase 2 Cell 4, Muse (st2m; timestamps 00:37-05:16 + 0.1; Amendment 30)": 4.75}
+         "ST Phase 2 Cell 4, Muse (st2m; timestamps 00:37-05:16 + 0.1; Amendment 30)": 4.75,
+         "care_harm ladder, attempt 1 (amgea03zuqwq4g; 06:15-06:28 + 0.1; stopped at the local "
+         "gate, no model loaded)": 0.32}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)

@@ -49,7 +49,12 @@ def test_rungs_and_order():
     assert need <= set(sync) and all(not x.endswith("/") for x in sync)  # files cross the excludes
 
 
-@pytest.mark.skipif(not C4.exists(), reason="Cell 4 rows not local")
+# the pod syncs only some of Cell 4's files: skip unless every file this test reads is here
+NEEDED = [C4 / "gen" / f"arm_{a}.jsonl" for a in ("none", "fill", "care_harm", "V_qwen")] + [
+    C4 / "spec" / a / "dl_chat_neutral.jsonl" for a in ("none", "fill", "care_harm", "V_qwen")]
+
+
+@pytest.mark.skipif(not all(p.exists() for p in NEEDED), reason="Cell 4 rows not local")
 def test_branches_on_stand_in_rows(tmp_path):
     # most probable failure: R_a is read without a dose rise at the top coherent rung, or R_b is
     # read while a rung is discriminating

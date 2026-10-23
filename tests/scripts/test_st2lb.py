@@ -90,8 +90,15 @@ def test_branches():
     assert A.branch(x("null", "non-specific")).startswith("fails both")
 
 
-@pytest.mark.skipif(not (ST / "outputs/t15/gpt_oss_20b/gen/h1_beh.jsonl").exists(),
-                    reason="T1.5 rows not local")
+# a pod syncs only some outputs: skip unless every file this test reads is here
+NEEDED = [ST / "outputs/t15/gpt_oss_20b" / f for f in (
+    "t15_record.json", "gen/h1_beh.jsonl", "gen/h1_none.jsonl", "cap/beh.jsonl", "cap/none.jsonl",
+    "parity/hf_beh.npy", "parity/hf_none.npy", "vllm/beh.jsonl", "vllm/none.jsonl",
+    "spec/beh/dl_chat_neutral.jsonl")] + [
+    ST / "outputs/t13/gpt_oss_20b/panel/dl_chat_neutral.jsonl"]
+
+
+@pytest.mark.skipif(not all(p.exists() for p in NEEDED), reason="T1.5 rows not local")
 def test_read_reproduces_l_beh_on_its_own_rows(tmp_path):
     # most probable failure: the read diverges from T1.5's estimators (L-beh's rows, renamed to
     # beh2, must give L-beh's committed numbers and its branch)
