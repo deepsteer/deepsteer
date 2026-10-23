@@ -3155,3 +3155,42 @@ accepted. The envelope is raised to 62 for both builds (spent 53.18 + the ladder
 ~5.0 + §13's evaluation 0.5 ≈ 61.0); L-beh-2's panel guard stays. Order: the `care_harm` ladder
 (`STEPS=st2ml`) first, then L-beh-2 (`STEPS=st2lb`). Pod D and V_qwen's 0.1× check on Muse stay
 deferred. SYNTHESIS keeps "the hypothesis L-beh-2 tests" for L-beh's training set.
+
+#### The `care_harm` ladder on Muse, outcome (2026-10-23; Amendment 31 item 4; `data/st2ml_read_v1.json`)
+
+The ladder ran 06:44-08:16 UTC (1.63 A100-h with provisioning; a first pod stopped at its local
+gate, 0.32, process ledger). `spec_none` reproduced Cell 4's baseline exactly (480 of 480 prompts,
+max Δlog-p 0.0). Arms on Cell 4's 45 engaged × 8 with its seeds, read against Cell 4's `none` and
+`fill` (0.2×).
+
+| `care_harm` | 0.2× (Cell 4) | 0.3× (α 119.7) | 0.4× (α 159.6) |
+|---|---|---|---|
+| ΔP vs `none` | +0.067 [+0.019, +0.114] | **+0.125 [+0.067, +0.189]** | +0.188 [+0.120, +0.262] |
+| vs `fill` (0.2×) | +0.031 | +0.089 | +0.152 |
+| coherence | passes | passes (NLL Δ 0.201) | **fails** (NLL Δ 0.380) |
+| §5.0 gate | fails | passes (p 0.002) | not informative |
+| rise over 0.2× (paired) | — | +0.058 [+0.006, +0.117] | +0.122 [+0.068, +0.179] |
+| specificity vs `none` (sign class) | −0.048 (discriminating) | +0.063 (non-specific) | +0.176 (non-specific) |
+| `spec_fill` at the rung | +0.015 | +0.065 | +0.097 |
+| specificity − fill | −0.063 | −0.001 | +0.079 |
+
+**Verdict (Amendment 31 governs the ladder).** ST-A20 is **unresolved**: at the top coherent rung
+(0.3×) protection rises with dose, but the rule-right read is non-specific against `none`, which is
+neither R_a (rule-side at every coherent rung) nor R_b (no dose response). The rule-side −0.048 at
+0.2× does not persist with dose. Holm keeps the `care_harm` slot's registered 0.2× read (p 0.107);
+the ladder's reads are not Holm-eligible. `spec_fill`'s rule-right tilt grows with dose on Muse
+(+0.015, +0.065, +0.097), so above 0.2× the absolute ±0.03 bar reads the instrument's dose
+sensitivity, not the direction's; the fresh-seed replicate at 0.3× (Amendment 32) reads specificity
+against a dose-matched fill.
+
+Bias directions: the gate's fill comparator at 0.2× under-states a random vector's effect at 0.3×
+(favors the 0.3× gate pass; the replicate's dose-matched fill removes it); the ladder's three doses
+on one seed set invite picking the passing dose (favors a false target; the replicate is fresh seeds
+and pre-registered); `spec_fill` uses five draws (neutral; the replicate draws five new ones).
+
+Referee pass. (1) *"0.3× passes because you looked at three doses."* Conceded: no target is claimed
+from the ladder; the 0.3× reading is a candidate for a pre-registered replicate. (2) *"The gate's
+fill margin at 0.3× compares to a 0.2× random vector."* Conceded: the replicate's gate uses a fill
+arm at 0.3×. (3) *"At 0.3× even a random vector fails the absolute bar, so 'non-specific' says little
+about `care_harm`."* Conceded and recorded: above 0.2× the absolute bar reads the instrument's dose
+sensitivity; the replicate reads specificity as the difference from a dose-matched fill.

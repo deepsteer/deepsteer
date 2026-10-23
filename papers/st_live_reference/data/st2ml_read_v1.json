@@ -1,0 +1,260 @@
+{
+ "ladder": {
+  "02": {
+   "dP_vs_none": {
+    "mean": 0.06666666666666667,
+    "ci95": [
+     0.019444444444444445,
+     0.11388888888888889
+    ],
+    "n": 45,
+    "mde": 0.06746031746031746
+   },
+   "dP_vs_fill": {
+    "mean": 0.030555555555555555,
+    "ci95": [
+     -0.013958333333333269,
+     0.08055555555555556
+    ],
+    "n": 45,
+    "mde": 0.06750992063492059
+   },
+   "coherence": {
+    "parse_rate": 1.0,
+    "parse_rate_base": 1.0,
+    "parse_ok": true,
+    "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+    "length_ratio": 1.0227272727272727,
+    "nll_delta": 0.09045012303524547,
+    "passes": true,
+    "bars": {
+     "parse_rate_min": 0.95,
+     "length_ratio": [
+      0.7,
+      1.5
+     ],
+     "nll_delta_max": 0.3
+    }
+   },
+   "protect_ward": false,
+   "p_one_sided": 0.10738926107389261,
+   "mde_vs_none": 0.06746031746031746,
+   "passes_gate": false,
+   "alpha_factor": 0.2,
+   "spec": {
+    "dP_violating": {
+     "mean": -0.0479363390294771,
+     "ci95": [
+      -0.07136439803343593,
+      -0.026854302752437186
+     ],
+     "n": 60,
+     "mde": 0.03179292520071339
+    },
+    "class": "discriminating",
+    "fill_margin": {
+     "mean": -0.06309412153885047,
+     "ci95": [
+      -0.1111570051113328,
+      -0.018901082306718782
+     ],
+     "n": 60,
+     "mde": 0.06589708771758143
+    },
+    "fill_itself": {
+     "mean": 0.015157782509373363,
+     "ci95": [
+      -0.033222235360678976,
+      0.06519281779220834
+     ],
+     "n": 60,
+     "mde": 0.07029646653777664
+    }
+   },
+   "source": "Cell 4"
+  },
+  "03": {
+   "dP_vs_none": {
+    "mean": 0.125,
+    "ci95": [
+     0.06666666666666667,
+     0.18888888888888888
+    ],
+    "n": 45,
+    "mde": 0.0873015873015873
+   },
+   "dP_vs_fill": {
+    "mean": 0.08888888888888889,
+    "ci95": [
+     0.030555555555555555,
+     0.15
+    ],
+    "n": 45,
+    "mde": 0.0853174603174603
+   },
+   "coherence": {
+    "parse_rate": 1.0,
+    "parse_rate_base": 1.0,
+    "parse_ok": true,
+    "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+    "length_ratio": 1.0359848484848484,
+    "nll_delta": 0.2011728439066145,
+    "passes": true,
+    "bars": {
+     "parse_rate_min": 0.95,
+     "length_ratio": [
+      0.7,
+      1.5
+     ],
+     "nll_delta_max": 0.3
+    }
+   },
+   "protect_ward": true,
+   "p_one_sided": 0.0021997800219978004,
+   "mde_vs_none": 0.0873015873015873,
+   "passes_gate": true,
+   "alpha_factor": 0.3,
+   "rise_over_02": {
+    "mean": 0.058333333333333334,
+    "ci95": [
+     0.005555555555555556,
+     0.11666666666666667
+    ],
+    "n": 45,
+    "mde": 0.07936507936507937
+   },
+   "spec": {
+    "dP_violating": {
+     "mean": 0.06342846045498336,
+     "ci95": [
+      0.034187856742104505,
+      0.09251900223856031
+     ],
+     "n": 60,
+     "mde": 0.04166510392603986
+    },
+    "class": "non-specific",
+    "fill_margin": {
+     "mean": -0.0013055592269318615,
+     "ci95": [
+      -0.059306795773307525,
+      0.05593691501648095
+     ],
+     "n": 60,
+     "mde": 0.08231693627842034
+    },
+    "fill_itself": {
+     "mean": 0.06473401968191522,
+     "ci95": [
+      0.005458798237534935,
+      0.12593853889396125
+     ],
+     "n": 60,
+     "mde": 0.08605695761173308
+    }
+   }
+  },
+  "04": {
+   "dP_vs_none": {
+    "mean": 0.18849206349206352,
+    "ci95": [
+     0.12023809523809524,
+     0.2623015873015873
+    ],
+    "n": 45,
+    "mde": 0.10147392290249432
+   },
+   "dP_vs_fill": {
+    "mean": 0.1523809523809524,
+    "ci95": [
+     0.09365079365079365,
+     0.2134920634920635
+    ],
+    "n": 45,
+    "mde": 0.08560090702947848
+   },
+   "coherence": {
+    "parse_rate": 0.9916666666666667,
+    "parse_rate_base": 1.0,
+    "parse_ok": true,
+    "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+    "length_ratio": 1.0265151515151516,
+    "nll_delta": 0.380143208305041,
+    "passes": false,
+    "bars": {
+     "parse_rate_min": 0.95,
+     "length_ratio": [
+      0.7,
+      1.5
+     ],
+     "nll_delta_max": 0.3
+    }
+   },
+   "protect_ward": false,
+   "p_one_sided": 9.999000099990002e-05,
+   "mde_vs_none": 0.10147392290249432,
+   "passes_gate": false,
+   "alpha_factor": 0.4,
+   "rise_over_02": {
+    "mean": 0.12182539682539684,
+    "ci95": [
+     0.06785714285714287,
+     0.17896825396825397
+    ],
+    "n": 45,
+    "mde": 0.07936507936507935
+   },
+   "spec": {
+    "dP_violating": {
+     "mean": 0.17623594544101595,
+     "ci95": [
+      0.13925285924507416,
+      0.21364060208871738
+     ],
+     "n": 60,
+     "mde": 0.05313410203117372
+    },
+    "class": "non-specific",
+    "fill_margin": {
+     "mean": 0.07940744862636749,
+     "ci95": [
+      0.023351347911441493,
+      0.13628425734862182
+     ],
+     "n": 60,
+     "mde": 0.08066636388370023
+    },
+    "fill_itself": {
+     "mean": 0.09682849681464849,
+     "ci95": [
+      0.03404184634776711,
+      0.15968718416674718
+     ],
+     "n": 60,
+     "mde": 0.08974666987070005
+    }
+   }
+  }
+ },
+ "coherent_rungs": [
+  "03"
+ ],
+ "branch": "unresolved",
+ "parity": {
+  "prompts_match": "480 of 480",
+  "max_abs_dlogp": 0.0
+ },
+ "source": {
+  "pod": "st2ml attempt 2 (2026-10-23, 06:44-08:16 UTC)",
+  "sha256": {
+   "st2ml_record.json": "fc2d1049092877f49a7f2bd60d6811a541670b09559075e6bacf0b32ff0fa270",
+   "gen/arm_care_03.jsonl": "1592c8d3e3b53b452a19e05893fec0c4740bea2d188dfe4d8bda1e39eb74073d",
+   "gen/arm_care_04.jsonl": "e404adf748c58cc832d0b0ac9f1cb58ed48c124c351bf752caaf5030a4a3ac5c",
+   "spec/care_03/dl_chat_neutral.jsonl": "f81c47ede788c4f182c9514c64ebc4cf48e3e8d86eec91aba2ba4a4056807bf4",
+   "spec/care_04/dl_chat_neutral.jsonl": "3fecf531c71db33b62d9af228dffff17056069a63da6c1dbc1c1f5e25cc634b8",
+   "spec/fill_03/dl_chat_neutral.jsonl": "cd35fe9a442098a632c02403254ed7b3c566bbc0b4a468a434059a45fe661abf",
+   "spec/fill_04/dl_chat_neutral.jsonl": "76b77525c2fed067bea14dcc2a26b1c2364d67d6ff78429aa4f2f1f8d461c0ce"
+  }
+ },
+ "holm": "the muse_glimmer_30b:care_harm slot keeps Cell 4 0.2x read (p 0.107); ladder reads are not Holm-eligible"
+}

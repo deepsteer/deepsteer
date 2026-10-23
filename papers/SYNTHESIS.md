@@ -1326,3 +1326,11 @@ lever has to condition on whether the rule harms, which is a weight-level job. L
 had H1 outcome pairs only and no rule-right pairs; L-beh-2 (Amendment 31) tests whether that is
 the source of its non-specificity.
 
+**The `care_harm` ladder on Muse (2026-10-23), what changed.** `care_harm` on Muse moves protection
+with dose (+0.067, +0.125, +0.188) while its rule-right read climbs with a random vector's; at 0.3× it
+passes the gate with a tilt no larger than a random vector's (−0.001), a candidate that a fresh-seed
+replicate with a dose-matched fill must confirm before it is called a target. `spec_fill`'s rule-right
+tilt grows with dose on Muse (+0.015, +0.065, +0.097), so above 0.2× the absolute ±0.03 bar reads
+the instrument's dose sensitivity, not the direction's. Under Amendment 31 ST-A20 is unresolved; the
+replicate is Amendment 32.
+
