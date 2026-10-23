@@ -3194,3 +3194,40 @@ fill margin at 0.3× compares to a 0.2× random vector."* Conceded: the replicat
 arm at 0.3×. (3) *"At 0.3× even a random vector fails the absolute bar, so 'non-specific' says little
 about `care_harm`."* Conceded and recorded: above 0.2× the absolute bar reads the instrument's dose
 sensitivity; the replicate reads specificity as the difference from a dose-matched fill.
+
+### Amendment 32 (2026-10-23; author; zero GPU; before the replicate computes anything)
+
+The `care_harm` replicate at 0.3× on Muse (ST-A20's candidate from the ladder). `STEPS=st2mr`, one
+HF process on the ST stack, on Cell 4's derived quantities (median norm, engaged set, `care_harm`).
+
+1. **Arms:** `none`, `fill` and `care_harm` at α 119.7 (0.3× the median norm) at `clause_end`,
+   block 26, on Cell 4's 45 engaged × **16**, **fresh seeds** (stage `st2mr`), shared across the
+   three arms. `fill`: **five fresh covariance-matched draws** (seed 1) from Cell 4's block-26
+   `clause_end` bank, cycled by rollout. Implementing reading, flagged for the author: a
+   specificity read is deterministic (dose 0, single-row), so the ladder's draws would reproduce its
+   numbers exactly; fresh draws are what make the replicate's specificity read new evidence.
+2. **Spec reads, before the arms:** `spec_none` (parity with Cell 4's baseline), `spec_care_03`
+   (parity: deterministic, it must reproduce the ladder's read), `spec_fill_03` with the fresh
+   draws (draw = item index mod 5).
+3. **Gate (of record):** ΔP of `care_harm` against `none` and against `fill` at 0.3×, scenario
+   bootstrap, both CIs excluding 0, the margin over `fill` ≥ +0.05, and Amendment 13's relative
+   coherence bars against the replicate's `none`. Implementing reading, flagged: §5.0's ΔP ≥ +0.10
+   against `none` is kept as part of the gate (strike it to read the gate without it).
+4. **Specificity (of record):** `care_harm` − `fill` at 0.3× (the fresh draws), per item, item
+   bootstrap CI, ±0.03 on the difference's point estimate (Amendment 31's sign classes on the
+   difference).
+5. **Branches, written before data, all publishable:**
+   - **Target:** the gate passes and the difference is within ±0.03: `care_harm` at 0.3× is an
+     admissible target on Muse, the program's first; its rule-right tilt is no larger than a random
+     vector's at the same dose (ST-A20 resolves as a specificity-matched lever, not R_a's sign).
+   - **Discriminating:** the gate passes and the difference is below −0.03: a conditional-lever
+     candidate (R_a's reading at a dose-matched bar), flagged, read with the fill margin.
+   - **Non-specific:** the gate passes and the difference is above +0.03: no target; the ladder's
+     0.3× read was optimistic.
+   - **No lever:** the gate fails against the dose-matched fill (a CI including 0 or the margin
+     below +0.05): the ladder's 0.3× pass came from the 0.2× comparator; `care_harm` moves protection
+     no more than a random vector at its dose (ST-A20 → R_b).
+6. **Price** (the ladder's measured rates: ~35 min per 360 rollouts on Muse): three arms of 720
+   ~3.5, setup 0.3, spec reads 0.07, provisioning 0.1: **~4.0 A100-h**; stop 4.5 h.
+7. **Envelope 64** (author): spent 55.13 + L-beh-2 ~5.0 + the replicate ~4.0 + §13's evaluation
+   0.5 = **~64.6**, about 0.6 over; the author decides (64.6 or a cut) before the replicate launches.
