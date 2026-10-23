@@ -2968,3 +2968,63 @@ position) is pod D's. (3) *"S1 leans on `spec_fill_half`'s point inside the bar 
 0."* The CI excludes 0 toward rule (−0.011), not toward violating; on the registered point rule S1
 holds either way, and the arms' failures are measured against fill (+0.095, +0.104) as well as
 against `none`.
+
+### Amendment 30 (2026-10-22; author; zero GPU; before Cell 4's build computes anything on Muse)
+
+Cell 4, Muse's transfer test (Amendment 29 item 4, both conditional arms open after the D-lite's S1),
+specified. `STEPS=st2m`, Muse-Glimmer-30B at its pinned revision, effort medium (Muse's effort of
+record), cap 1,536, one pod: a vLLM process, then one HF process.
+
+1. **Block of record: 26** (hidden index 27). It is GPT-OSS's block 12 at the same relative depth
+   (12 of 24, 26 of 52), and both are sliding-attention layers (Muse's full-attention layers are
+   3, 7, ..., 51), so no neighbour is needed. The participation ratio and the `clause_end` median
+   residual norm at blocks 20, 26 and 32 are recorded from the bank, descriptively; no layer sweep.
+2. **Order, every quantity derived on the pod by these rules:**
+   (a) vLLM: H1 264 × 8 at effort medium, KDG sampler v2 (T1.1's design). (a′) HF: dose-0 on
+   H1_train 132 × 8 (`empty_reasoning`, Muse's dose-0 candidate re-checked on HF on the rider
+   pod; single-row). (b) HF: the readout pass and bank (per rollout one single-row teacher-forced
+   forward; `clause_end` residuals at blocks 20/26/32, up to 8 positions per rollout; per-rollout
+   `clause_end` sums at block 26). (c) The engaged H1_train set by T1.1's rule (P_dose0 ≥ 0.5 and
+   P_none ≤ 0.5). (d) Fill: 5 covariance-matched unit draws from the bank's block-26 `clause_end`
+   samples (`fill_draws`, seed 0). (e) The timing pilot: one batch of 32 `none` rollouts at the cap;
+   it sets the generation batch (the largest multiple of 16, up to 160, whose projected peak memory
+   stays under 76 GB) and re-prices. (f) Directions at block 26: V_qwen re-encoded (Qwen3.8's parsed
+   protect and rule traces from its top-up and screen, in Muse's `to=self` channel after Muse's
+   prompt for the same scenario and permutation; within scenario protect − rule, per position then
+   scenario, unit); −V_harm (Paper 7's recipe: `refusal_prompts.json`'s first 64 harmful and 64
+   harmless, Muse's chat render, the last instruction token; harmful − harmless, unit, subtracted);
+   `care_harm` (W4's recipe, `phase2_extract.py`: the care/harm pairs of `load_moral_probing_v2`,
+   raw format, mean difference, unit). (g) α: T1.3's sweep rule on Muse, α ∈ {0.05, 0.1, 0.2, 0.4}
+   × the block-26 `clause_end` median norm, V_qwen added at `clause_end` on 5 sweep scenarios
+   (seeded draw from the engaged set, T1.3's rule) × 8 against a `none` on the same 5; the largest α
+   passing Amendment 13's coherence bars is the α for every arm; Amendment 25's length step-down
+   applies per arm. (h) Specificity reads, all before any direction's arm: `spec_none` (Muse's
+   baseline of record), `spec_fill`, `spec_V_qwen`, `spec_neg_V_harm`, `spec_care_harm` (the 60
+   rule-right items × 8, `dl_chat_neutral`, `empty_reasoning`, single-row, the vector at every input
+   position at block 26, at the arm's α; fill draw = item index mod 5). (i) Arms on the engaged set
+   × 8, seeds by (scenario, rollout) shared across arms: `none`, `fill` (draws cycled by rollout),
+   V_qwen, −V_harm, `care_harm`, each at `clause_end`, block 26.
+3. **Bars as on GPT-OSS:** §5.0's gate (ΔP ≥ +0.10 against `none`, ≥ +0.05 over `fill`) under
+   Amendment 13's relative coherence bars; Amendment 27's specificity read (±0.03 against
+   `spec_none`; if `spec_fill` falls outside ±0.03, Amendment 29's S2: the bar applies to the
+   difference from fill) before any arm is called a target. No retention reads (nothing trains on a
+   transfer test).
+4. **Bail order** (from the pilot's re-price, and the driver's per-phase deadline): the `care_harm`
+   arm, then −V_harm's, then V_qwen's. Never cut: the baseline, the dose-0 read, `none`, and every
+   specificity read.
+5. **Holm:** −V_harm on Muse enters as a twelfth arm (m = 12); Muse's `neg_a` and V_rule-ablation
+   slots and its +V_harm slot stay unrun at p = 1.
+6. **Branches, written before data** (on V_qwen's and −V_harm's specificity reads on Muse; gate
+   verdicts beside them):
+   - **Both fail specificity:** the directions carry the non-specific component, in a second
+     family; GPT-OSS's result is about the directions, not one model's site.
+   - **Both pass:** GPT-OSS's site carries it; Muse becomes the adapter development model.
+   - **A split:** an ANOMALIES entry before any wording (which direction, at which bar).
+   `care_harm` is read on its own (gate and specificity).
+7. **Before the pod (zero GPU, tests):** Paper 7's t_inst locator on Muse's render lands on each
+   request's last token for all 128 prompts; `clause_end` detection on Muse's template is checked on
+   real Muse traces from its screen rows (positions inside `to=self` … `<|eom|>`, punctuation or
+   the token after).
+8. **Price:** Amendment 29's (core ~4.7, with the conditional arms ~6.5, at GPT-OSS's per-arm
+   cost), re-priced from the pilot. Envelope: 48.43 + Cell 4 ≤ 6.5 + §13's evaluation 0.5 =
+   **~55.4 of 60**.
