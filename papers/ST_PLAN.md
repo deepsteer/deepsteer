@@ -3141,3 +3141,11 @@ open lead below the gate's fill margin, and the dose ladder (ST-A20) is its disc
 6. **Envelope.** Spent 53.18 + build 1 ~5.0 + build 2 ~2.35 + §13's evaluation 0.5 = **~61.0 of
    60**. Run order proposed: build 2 first (smaller; resolves ST-A20), then build 1; the author
    decides the envelope (61.5) or a cut before build 1 launches.
+
+**Amendment 31, addition (2026-10-23; zero GPU; before build 1 computes; implementing reading
+flagged for the author).** Item 3's rule-right pool is corrected from 266 to **130**: the 326
+rule-right primaries are panel items, and 138 of the 266 outside the specificity set sit in the
+panel guard's 50% half (`data/t15_panel_half_v1.json`), which L-beh-2's gate also reads. Training
+on them would put trained items into the guard. The 130 outside both read sets (F1 29, F2 17, F3 33,
+F4 26, F5 25) are `data/st_lbeh2_pool_v1.json` (ids only). If they yield fewer rule-right pairs than
+the H1_train pairs, all of them are used and the shortfall is recorded (no second draw).

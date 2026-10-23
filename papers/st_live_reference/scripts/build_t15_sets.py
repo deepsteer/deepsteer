@@ -10,6 +10,8 @@
   test items (``cais/mmlu``, ``all``), seed 20261021; stream indices and question sha256 only (the
   pod re-streams, verifies and scores against the datasets' own answers).
 - ``python3 build_t15_sets.py panel_half``: ``data/t15_panel_half_v1.json`` (Amendment 20 item 6).
+- ``python3 build_t15_sets.py lbeh2_pool``: ``data/st_lbeh2_pool_v1.json``, L-beh-2's rule-right
+  training pool (Amendment 31 item 3 and its addition).
 - ``python3 build_t15_sets.py engaged <t11 dir>``: ``data/t15_engaged_held_v1.json``, T1.1's 38
   brake-engaged H1_held ids copied from ``select/engaged.json`` (no new draw), so an HF fallback
   generates ΔP's scenarios first (Amendment 18 item 4's scope).
@@ -117,7 +119,35 @@ def engaged(t11: Path) -> dict:
             "source_sha256": hashlib.sha256(f.read_bytes()).hexdigest()}
 
 
+def lbeh2_pool() -> dict:
+    """Amendment 31 item 3 and its addition: the rule-right primaries outside the specificity set
+    and outside the panel guard's half, L-beh-2's rule-right training pool."""
+    import screen_lib as L
+
+    from deepsteer.kdg.schema import load_scenario_dir
+
+    allp, _ = load_scenario_dir(sorted(glob.glob(str(HERE.parents[1] / "kdg_panel" / "data" /
+                                                     "*_scenarios_*.json"))))
+    pool = {s.id: s.family for s in L.panel_586(allp)
+            if s.role == "primary" and (s.external_label or {}).get("right_option_id")
+            and {o.option_id: o.norm_status for o in s.options}.get(
+                s.external_label["right_option_id"]) == "consistent"}
+    spec = set(json.loads((DATA / "t15_specificity_v1.json").read_text())["ids"])
+    half = set(json.loads((DATA / "t15_panel_half_v1.json").read_text())["ids"])
+    ids = sorted(set(pool) - spec - half)
+    return {"rule": "ST_PLAN Amendment 31 item 3 and its addition: rule-right primaries outside "
+                    "the specificity set and the panel guard's half", "n_rule_right": len(pool),
+            "per_family": dict(sorted(Counter(pool[i] for i in ids).items())), "ids": ids,
+            "inputs_sha256": {f: hashlib.sha256((DATA / f).read_bytes()).hexdigest() for f in
+                              ("t15_specificity_v1.json", "t15_panel_half_v1.json")}}
+
+
 def main() -> None:
+    if sys.argv[1:] == ["lbeh2_pool"]:
+        d = lbeh2_pool()
+        (DATA / "st_lbeh2_pool_v1.json").write_text(json.dumps(d, indent=1) + "\n")
+        print(f">> L-beh-2 rule-right pool: {len(d['ids'])} ({d['per_family']})")
+        return
     if sys.argv[1:2] == ["engaged"]:
         e = engaged(Path(sys.argv[2]))
         (DATA / "t15_engaged_held_v1.json").write_text(json.dumps(e, indent=1) + "\n")
