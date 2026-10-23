@@ -3149,3 +3149,9 @@ panel guard's 50% half (`data/t15_panel_half_v1.json`), which L-beh-2's gate als
 on them would put trained items into the guard. The 130 outside both read sets (F1 29, F2 17, F3 33,
 F4 26, F5 25) are `data/st_lbeh2_pool_v1.json` (ids only). If they yield fewer rule-right pairs than
 the H1_train pairs, all of them are used and the shortfall is recorded (no second draw).
+
+**Amendment 31, decisions (author, 2026-10-23; before build 2 launches).** The 130-item pool is
+accepted. The envelope is raised to 62 for both builds (spent 53.18 + the ladder ~2.35 + L-beh-2
+~5.0 + §13's evaluation 0.5 ≈ 61.0); L-beh-2's panel guard stays. Order: the `care_harm` ladder
+(`STEPS=st2ml`) first, then L-beh-2 (`STEPS=st2lb`). Pod D and V_qwen's 0.1× check on Muse stay
+deferred. SYNTHESIS keeps "the hypothesis L-beh-2 tests" for L-beh's training set.
