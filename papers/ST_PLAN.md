@@ -3028,3 +3028,14 @@ record), cap 1,536, one pod: a vLLM process, then one HF process.
 8. **Price:** Amendment 29's (core ~4.7, with the conditional arms ~6.5, at GPT-OSS's per-arm
    cost), re-priced from the pilot. Envelope: 48.43 + Cell 4 ≤ 6.5 + §13's evaluation 0.5 =
    **~55.4 of 60**.
+
+**Amendment 30, addition (author, 2026-10-22; before the Muse pod launches).**
+9. **The arms' scenarios.** The 5 sweep scenarios are drawn first from Muse's engaged set (seeded,
+   T1.3's rule), so they are disjoint from every arm. The arms run on 45 drawn from the rest,
+   stratified as `split_v1` (generator × register; T1.3's largest-remainder quotas, each stratum
+   shuffled with a fixed seed). All of the rest if it is 45 or fewer.
+10. **Cost-only rule.** If the pilot projects every arm at n = 90 (with every remaining phase)
+   inside the 6.5 h session, every arm runs on 90: the 45 plus a second stratified 45 from what
+   remains (a superset by construction, which a single 90-quota draw does not guarantee).
+   Otherwise every arm runs on the 45, and item 4's bail order applies to the 45. The rule reads
+   only the pilot's timing.

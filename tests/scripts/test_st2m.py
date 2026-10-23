@@ -218,15 +218,48 @@ def test_dry_run_cell4_on_a_tiny_muse(tmp_path):
     assert all(abs(float(np.linalg.norm(z[k])) - 1) < 1e-4 for k in M.DIRS)
 
 
-def test_arm_cap_draw_is_seeded_and_the_sweep_disjoint(monkeypatch):
-    # most probable failure: with a cap, the sweep tunes alpha on arm scenarios, or the draw is
-    # not reproducible
+def test_arm_sets_stratified_superset_and_disjoint_sweep():
+    # most probable failure (Amendment 30's addition): the 90 is not a superset of the 45 (the
+    # largest-remainder Alabama paradox), the sweep overlaps an arm set, or the draw is not
+    # reproducible or not stratified as split_v1
     import random
+    from collections import Counter
 
-    ids = [f"H1-A-{i:03d}" for i in range(110)]
-    drawn = list(ids)
-    random.Random(f"{M.SWEEP_SEED}|arms").shuffle(drawn)
-    arms, pool = sorted(drawn[:45]), sorted(drawn[45:])
-    random.Random(f"{M.SWEEP_SEED}|sweep").shuffle(pool)
-    assert len(arms) == 45 and not set(arms) & set(pool[:M.N_SWEEP])
-    assert M.ARM_CAP is None  # off until the author decides (one-line change)
+    split = json.loads((ST / "split_v1.json").read_text())
+    ids = sorted(split["H1_train"])
+    random.Random(7).shuffle(ids)
+    ids = sorted(ids[:110])  # a Muse-sized engaged set
+    st = M.strata_of(ids)
+    sweep, a45, a90 = M.arm_sets(ids, st)
+    assert (sweep, a45, a90) == M.arm_sets(ids, st)
+    assert len(sweep) == 5 and len(a45) == 45 and len(a90) == 90
+    assert set(a45) <= set(a90) and not set(sweep) & set(a90)
+    pool = Counter(st[s] for s in set(ids) - set(sweep))
+    got = Counter(st[s] for s in a45)
+    for k, n in pool.items():  # each stratum within one of its proportional share
+        assert abs(got[k] - 45 * n / sum(pool.values())) < 1.0 + 1e-9, k
+    small = ids[:30]
+    sw, b45, b90 = M.arm_sets(small, M.strata_of(small))
+    assert len(sw) == 5 and b45 == b90 == sorted(set(small) - set(sw))
+
+
+def test_cost_rule_runs_90_only_when_every_arm_fits(tmp_path):
+    # most probable failure: the 90 is chosen when only some arms fit, or bailing applies at 90
+    import time
+
+    c = {"record": tmp_path / "r.json", "engaged": ["x"] * 45, "arms_wide": ["x"] * 90, "r": 8,
+         "paper7_n": 64, "spec_ids": ["s"] * 60}
+    c["record"].write_text(json.dumps({"phases": {
+        "pilot": {"seconds_per_rollout": 1.0}, "bank": {"read_seconds_per_rollout": 0.3},
+        "dose0": {"seconds_per_row": 0.1}}}))
+
+    class Args:
+        deadline = time.time() + 6 * 3600
+    r = M.reprice(c, Args)
+    assert r["arm_n"] == 90 and r["bailed"] == []
+    Args.deadline = time.time() + 1.5 * 3600  # 90 does not fit, 45 does
+    r = M.reprice(c, Args)
+    assert r["arm_n"] == 45 and r["bailed"] == []
+    Args.deadline = time.time() + 0.3 * 3600
+    r = M.reprice(c, Args)
+    assert r["arm_n"] == 45 and r["bailed"][0] == "arm_care_harm"

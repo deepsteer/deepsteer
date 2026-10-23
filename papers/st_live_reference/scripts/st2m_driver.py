@@ -63,9 +63,10 @@ KEEP = 8  # clause_end samples per rollout
 ALPHA_FACTORS = (0.05, 0.1, 0.2, 0.4)
 SWEEP_SEED, N_SWEEP = 0, 5  # T1.3's draw rule (build_t13_draw.SEED, N_SWEEP)
 PILOT_N = 32
-# the arms' scenario cap (None = every engaged scenario; an integer = a seeded draw of that many,
-# the sweep then drawn from the rest, disjoint as in T1.3): the author's decision before launch
-ARM_CAP: int | None = None
+# the arms' scenarios (author, 2026-10-22; Amendment 30's addition): 45 drawn from the engaged set
+# stratified as split_v1 (generator x register), the sweep drawn first and disjoint; cost-only, 90
+# (the 45 plus a second stratified 45) when the pilot projects every arm at 90 inside the session
+ARM_CAP, ARM_WIDE = 45, 90
 MEM_CAP = 76e9
 DIRS = ("V_qwen", "neg_V_harm", "care_harm")
 BAIL = ("arm_care_harm", "arm_neg_V_harm", "arm_V_qwen")  # Amendment 30 item 4, first cut first
@@ -286,25 +287,58 @@ def phase_derive(c, sc, model, a) -> dict:
                         "median_norm": float(np.median(np.linalg.norm(x, axis=1))),
                         "n_samples": int(len(x))}
     ids = sorted(eng["engaged_ids"])
-    if a.dry_run and not ids:  # a random tiny model engages nothing: the first train scenarios
-        ids = sorted({r["scenario_id"] for r in tr})[:2]
-    arms_ids, pool = list(ids), list(ids)
-    if ARM_CAP and len(ids) > ARM_CAP:
-        drawn = list(ids)
-        random.Random(f"{SWEEP_SEED}|arms").shuffle(drawn)
-        arms_ids, pool = sorted(drawn[:ARM_CAP]), sorted(drawn[ARM_CAP:])
-    random.Random(f"{SWEEP_SEED}|sweep").shuffle(pool)
-    sweep = sorted(pool[:N_SWEEP])
+    if a.dry_run and not ids:  # a random tiny model engages nothing: every train scenario
+        ids = sorted({r["scenario_id"] for r in tr})
+    sweep, arms_ids, arms_wide = arm_sets(ids, strata_of(ids), 1 if a.dry_run else N_SWEEP)
     np.savez(c["out"] / "derive.npz", fill_unit=fill.astype(np.float32))
     (c["out"] / "select").mkdir(exist_ok=True)
     (c["out"] / "select" / "engaged.json").write_text(json.dumps(eng, indent=1,
                                                                  default=L._json_default))
     return {"status": "ok", "n_engaged": eng["n_engaged"], "engaged_ids": arms_ids,
-            "engaged_all": ids, "arm_cap": ARM_CAP,
+            "arms_wide": arms_wide, "engaged_all": ids, "arm_cap": [ARM_CAP, ARM_WIDE],
             "null_no_brake": eng.get("null_no_brake"), "brake_B": eng["brake"]["B"],
             "median_norm": med, "alphas": [f * med for f in ALPHA_FACTORS],
             "sweep": sweep, "layers_descriptive": desc,
             "rule": "engaged by T1.1's rule; fill_draws seed 0; sweep T1.3's rule (seed 0)"}
+
+
+def strata_of(ids: list[str]) -> dict[str, tuple[str, ...]]:
+    import build_split as BS
+
+    rec = {r["id"]: r for r in json.loads(BS.SCENARIOS.read_text())["scenarios"]}
+    return {s: tuple(str(rec[s][f]) for f in BS.STRATA) for s in ids}
+
+
+def stratified(pool: list[str], strata: dict, n: int, tag: str) -> list[str]:
+    """``n`` of ``pool`` by T1.3's rule: largest-remainder quotas over the strata, each stratum
+    shuffled with a seed from SWEEP_SEED, ``tag`` and the stratum key; all of ``pool`` if
+    smaller."""
+    import build_t13_draw as T13D
+
+    if len(pool) <= n:
+        return sorted(pool)
+    by: dict = {}
+    for sid in sorted(pool):
+        by.setdefault(strata[sid], []).append(sid)
+    q = T13D.quotas({k: len(v) for k, v in by.items()}, n)
+    out: list[str] = []
+    for key in sorted(by):
+        m = list(by[key])
+        random.Random(f"{SWEEP_SEED}|{tag}|{'|'.join(key)}").shuffle(m)
+        out += m[: q[key]]
+    return sorted(out)
+
+
+def arm_sets(ids: list[str], strata: dict, n_sweep: int = N_SWEEP
+             ) -> tuple[list[str], list[str], list[str]]:
+    """The sweep (5, seeded, first, disjoint from every arm), the 45, and the 90 = the 45 plus a
+    second stratified 45 from the rest (a superset by construction)."""
+    pool = sorted(ids)
+    random.Random(f"{SWEEP_SEED}|sweep").shuffle(pool)
+    sweep, rest = sorted(pool[:n_sweep]), sorted(pool[n_sweep:])
+    a45 = stratified(rest, strata, ARM_CAP, "arms")
+    ext = stratified(sorted(set(rest) - set(a45)), strata, ARM_WIDE - ARM_CAP, "arms90")
+    return sweep, a45, sorted(a45 + ext)
 
 
 def ctx_derived(c: dict) -> None:
@@ -313,12 +347,15 @@ def ctx_derived(c: dict) -> None:
     if not d:
         return
     c["engaged"] = d["engaged_ids"]
+    c["arms_wide"] = d.get("arms_wide")
     c["sweep"] = d["sweep"]
     c["alphas"] = d["alphas"]
     c["inp"] = {"fill_unit": np.load(c["out"] / "derive.npz")["fill_unit"]}
     p = phase_done(c, "pilot")
     if p.get("batch"):
         c["batch"] = p["batch"]
+    if (p.get("reprice") or {}).get("arm_n") == ARM_WIDE:  # the cost-only rule chose 90
+        c["engaged"] = d["arms_wide"]
     sw = phase_done(c, "sweep")
     if sw.get("alpha"):
         c["alpha"] = sw["alpha"]
@@ -360,19 +397,30 @@ def reprice(c: dict, a) -> dict:
     p, b = phase_done(c, "pilot"), phase_done(c, "bank")
     t, read = p["seconds_per_rollout"], b.get("read_seconds_per_rollout") or 0.0
     d0 = phase_done(c, "dose0").get("seconds_per_row") or 0.1
-    n_arm = len(c["engaged"]) * c["r"]
-    est = {"directions": (700 + 2 * c["paper7_n"]) * read + 0.05 * 3600,
-           "sweep": N_SWEEP * c["r"] * (1 + len(ALPHA_FACTORS)) * (t + read),
-           **{f"spec_{k}": len(c["spec_ids"]) * L.N_PERM * d0 for k in ("none", "fill", *DIRS)},
-           **{f"arm_{k}": n_arm * (t + read) for k in ("none", "fill", *DIRS)}}
     left = (a.deadline - time.time()) if a.deadline else float("inf")
+
+    def est_for(n_scen: int) -> dict:
+        n_arm = n_scen * c["r"]
+        return {"directions": (700 + 2 * c["paper7_n"]) * read + 0.05 * 3600,
+                "sweep": N_SWEEP * c["r"] * (1 + len(ALPHA_FACTORS)) * (t + read),
+                **{f"spec_{k}": len(c["spec_ids"]) * L.N_PERM * d0
+                   for k in ("none", "fill", *DIRS)},
+                **{f"arm_{k}": n_arm * (t + read) for k in ("none", "fill", *DIRS)}}
+    wide = c.get("arms_wide") or c["engaged"]
+    est_w = est_for(len(wide))
+    if len(wide) > len(c["engaged"]) and sum(est_w.values()) <= left:  # cost-only: every arm at 90
+        return {"arm_n": ARM_WIDE, "n_scenarios": len(wide), "bailed": [],
+                "estimate_hours": {k: v / 3600 for k, v in est_w.items()},
+                "left_hours": left / 3600 if left != float("inf") else None}
+    est = est_for(len(c["engaged"]))
     bailed = []
     for arm in BAIL:
         if sum(v for k, v in est.items() if k not in bailed) <= left:
             break
         bailed.append(arm)
-    return {"estimate_hours": {k: v / 3600 for k, v in est.items()},
-            "left_hours": left / 3600 if left != float("inf") else None, "bailed": bailed}
+    return {"arm_n": ARM_CAP, "n_scenarios": len(c["engaged"]), "bailed": bailed,
+            "estimate_hours": {k: v / 3600 for k, v in est.items()},
+            "left_hours": left / 3600 if left != float("inf") else None}
 
 
 def last_token_index(sc, texts: list[str]) -> tuple[list[list[int]], list[int]]:
