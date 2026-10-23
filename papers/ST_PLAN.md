@@ -3312,3 +3312,100 @@ ST-A22's discriminator: the two off-diagonal cells of the format × harm matrix.
 6. **Price.** 2 cells × 60 × 8 and the rider's 38 × 8, × 3 arms, at T1.5's ~0.64 s per row with an
    adapter, plus setup: **~1.0 A100-h**. Envelope 66 (author): spent 59.19 + the replicate ~4.0 +
    §13's evaluation 0.5 + this ~1.0 = ~64.7.
+
+### Amendment 34 (2026-10-23; author; zero GPU; before any D_rb activation is read)
+
+A preventative-steering arm in the style of Persona Vectors (arXiv:2507.21509): a rule-breaking
+direction D_rb from L-beh, an arm L-beh-3 trained with +D_rb added and nothing added at inference,
+and a data-flagging read.
+
+1. **Why a pod.** `clause_end` is an in-trace position class. The specificity items were read only
+   at dose 0, so no arm has clause_end activations on rule-right items; the saved specificity
+   arrays (`spec/<arm>/dl_chat_neutral.npz`) are hidden-13 residuals at the decision site, a
+   different position class. This machine (24 GiB) cannot hold GPT-OSS-20B. The extraction is
+   therefore a prefill, run as a rider on the format x harm pod (same model, same HF path, L-beh's
+   adapter already synced), after the matrix's three arms. L-beh-3 builds after D_rb is typed and
+   runs on its own pod.
+2. **Traces (base rollouts, H1's agent frame, effort of record, cap 1,536).** (a) **Primary, the
+   specificity set:** the 60 rule-right items x 4, generated on the pod by vLLM with a fixed seed
+   (L-beh-2's `rr_gen` path). (b) **Rider (flagged), the pool:** the 1,040 base rollouts on the 130
+   pool items that L-beh-2's pod generated (`st2lb/gen/rr_rollouts.jsonl`, synced), disjoint from
+   every set L-beh-3's gate reads. (c) **Harm rider:** the 38 engaged H1_held x 4 base rollouts
+   from T1.1 (synced).
+3. **Prefill.** Each trace teacher-forced (prompt + generated ids), single-row, under `none` and
+   under L-beh (attached, sha256 checked): per trace, the sum and count of the residual over its
+   clause_end positions (`st_train.trace_masks`) at hidden indices 7, 10, 13, 16 and 19, saved per
+   trace, plus a 4,096-position clause_end sample at hidden 13 under `none` for the participation
+   ratio. Determinism check: 8 traces prefilled twice under `none`, max |difference| recorded.
+   Parity: set (c)'s `none` prefill against T1.1's bank on the same rows (clause_end positions
+   identical, values within bf16 tolerance), which checks the position masks before any read.
+4. **D_rb.** Over set (a)'s traces, the mean of (L-beh − `none`) clause_end means at hidden 13,
+   saved unnormalized, with D̂_rb its unit vector. The same contrast on set (b) gives D_rb(pool),
+   on set (c) gives D_h1 (L-beh's shift on harm items: the wanted component plus whatever is
+   generic to the adapter). Item bootstrap over the whole pipeline (items resampled, means
+   recomputed) for |D_rb| and for split-half reliability (cos between random item halves).
+5. **Type block** (construct-audit; written to `data/st_drb_v1.json` at extraction):
+   contrast_semantics model-difference on fixed tokens (the adapter's shift, stimulus held
+   constant); source the specificity set (a), the pool (b), H1_held engaged (c); position class
+   clause_end (in-trace); format H1's agent frame, harmony reasoning template; layer hidden 13
+   (block 12), band 7-19 saved; model GPT-OSS-20B at the registry revision; n traces per set;
+   known covariates: any shift L-beh makes on every input regardless of item (the generic
+   component), and the base traces' own content (77% consistent rollouts on the pool);
+   participation_ratio of the clause_end sample (Cell 2 measured 36.3 at this site);
+   outcome_variable: the specificity read (P(violating) on rule-right items), the outcome
+   L-beh-3's inoculation is built to hold within the bar; extraction commit.
+6. **Cosine read (zero GPU after extraction).** |cos(D̂_rb, X)| for X in V_qwen, V_harm,
+   care_harm, the anchor axis, D̂_h1 and D̂_rb(pool), on a ladder: isotropic floor sqrt(2/(π·2880));
+   covariance-matched null (pairs of directions drawn from N(0, Σ), Σ from the clause_end sample of
+   item 3, 10,000 draws, q50 and q95) with the channel-chance line sqrt(2/(π·PR)); positive band
+   D_rb's split-half reliability (bootstrap q05 to q50) and cos(D̂_rb, D̂_rb(pool)). Verdict
+   sentences carry the ladder position.
+7. **Positive control on the instrument.** The pool traces, 2 rollouts per item (260), prefilled
+   under L-beh-2, L-anchor and L-beh's epoch-3 snapshot (synced): each arm's mean shift projected
+   on D̂_rb, read against the arm's specificity of record (L-beh +0.192, epoch 3 +0.188, L-anchor
+   +0.024, L-beh-2 −0.093). The prediction, written before data: the projections order the arms as
+   their specificity does, with L-beh-2 below L-anchor. Three of the four arms never built D_rb,
+   and the traces are not set (a)'s. If the order fails, D_rb is not read as a rule-breaking axis
+   and L-beh-3 goes to the author before it builds.
+8. **Gate before L-beh-3 builds.** (i) Bail: D_rb's split-half reliability lower bound at or below
+   the null's q95 (a direction not distinguishable from noise cannot be inoculated against).
+   (ii) Escalate with a prediction: cos(D̂_rb, D̂_h1) inside D_rb's positive band (the rule-right
+   shift and the harm shift not separable along one direction at this resolution; inoculating D_rb
+   predicts protection lost). (iii) The positive control's order (item 7). Otherwise L-beh-3 is
+   built from the typed D_rb.
+9. **L-beh-3.** T1.4's L-beh recipe (β 0.1, rank 16, alpha 32, dropout 0), L-beh's 62 H1_train
+   pairs only, L-beh's seed (101) and its 58 steps, so the arm differs from L-beh only by the
+   steering. During training a forward hook on block 12's output adds the unnormalized D_rb (the
+   mean shift L-beh made, the dose of what it learned; its norm reported against 267.3, the site's
+   0.2x) at the clause_end positions of every chosen and rejected trace. The DPO reference is the
+   adapter-disabled model through the same module, so the hook steers policy and reference alike
+   and the log-ratio is 0 at step 0. The general-text KL batch has no clause_end positions and is
+   not steered. Nothing is added at inference. Flagged rivals not run: policy-only steering; D̂_rb
+   at 267.3.
+10. **L-beh-3's read.** The full T1.5 gate as for L-beh-2: ΔP of record on the 38 engaged H1_held,
+    specificity on the 60 (Amendment 31's sign classes, Amendment 29's fill rule), capability, the
+    panel guard ΔE, merge kept_share; L-beh and L-beh-2 beside. Mechanism rider (flagged): L-beh-3's
+    shift along D̂_rb on set (b)'s 260 traces, against L-beh's.
+11. **Branches, written before data.** (A) ΔP passes and specificity specific or discriminating:
+    inoculation separates the component; L-beh's protection is learnable without its rule-right
+    tilt when the tilt's direction is supplied in training, and D_rb carries the tilt. (B) ΔP passes,
+    specificity non-specific: not separable along one direction; the tilt is carried elsewhere or
+    re-learned along other directions (the mechanism rider says which). (C) ΔP fails: D_rb carries
+    protection too, at this site the two share a direction (item 8 (ii) predicts this branch). All
+    three are publishable: (A) is a data-free fix for L-beh's non-specificity, (B) and (C) bound
+    what one direction can separate.
+12. **Data-flagging read (zero GPU after extraction).** For a shaping dataset of on-policy DPO
+    pairs, per pair π_i = ⟨h̄(chosen_i) − h̄(rejected_i), D̂_rb⟩, and per response the Persona
+    Vectors projection difference ⟨h̄(response) − mean over the base's rollouts on its prompt,
+    D̂_rb⟩, h̄ the clause_end mean at hidden 13 under `none`. Datasets: L-beh's 62 H1 pairs (from
+    T1.1's bank where every trace is banked, else prefilled in item 3) and L-beh-2's 26 rule-right
+    pairs (set (b)'s prefill). Reported: the distribution per dataset and pair kind, the top decile
+    listed by id, and whether the dataset means take the sign of the trained arm's tilt (L-beh's
+    pairs +, L-beh-2's rule-right pairs −). Descriptive, no verdict; flagged that an H1 pair's
+    chosen trace breaks the rule by construction, so part of its push is definitional.
+13. **Price.** Rider on the format x harm pod: vLLM traces for set (a) ~0.1; prefill of 1,432
+    traces under `none` and L-beh and 260 under each of three arms (~3,600 forwards at ~0.5 s) ~0.5;
+    five model loads ~0.2: **~0.8 A100-h**, the pod's stop raised to 2.5 h. L-beh-3's pod: L-beh's
+    58 steps took 1.85 h, T1.5's gate for L-beh-2 2.31 h, setup ~0.35: **~4.6 A100-h**. Envelope 71
+    (author, +5): spent 59.19 + the replicate ~4.0 + §13's evaluation 0.5 + the matrix ~1.0 + this
+    rider ~0.8 + L-beh-3 ~4.6 = **~70.1**.
