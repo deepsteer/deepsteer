@@ -3409,3 +3409,36 @@ and a data-flagging read.
     58 steps took 1.85 h, T1.5's gate for L-beh-2 2.31 h, setup ~0.35: **~4.6 A100-h**. Envelope 71
     (author, +5): spent 59.19 + the replicate ~4.0 + §13's evaluation 0.5 + the matrix ~1.0 + this
     rider ~0.8 + L-beh-3 ~4.6 = **~70.1**.
+
+### Amendment 35 (2026-10-23; author; zero GPU; before any D_rb activation is read)
+
+The author's decisions on Amendment 34. Where they differ, this amendment governs.
+
+1. **Roles.** D_rb(pool), from set (b), trains L-beh-3 and is the direction every rule below
+   tests. D_rb(spec), from set (a), is for the cosine read and the agreement check only.
+2. **Positive control (replaces item 7's traces).** The arms are prefilled on set (a)'s 240
+   traces, held out from the pool fit, and each arm's mean shift is projected on D̂_rb(pool). Pass:
+   L-beh's and its epoch-3 snapshot's projections both above L-anchor's, and L-anchor's above
+   L-beh-2's. L-beh and epoch 3 are treated as tied (specificity +0.192 and +0.188, each inside the
+   other's CI).
+3. **Agreement of the two estimates.** The signed cos(D̂_rb(spec), D̂_rb(pool)), item bootstrap
+   over both sets: the 95% lower bound above the covariance-matched null's q95 (a null of |cos|).
+4. **Build gate before L-beh-3.** (i) Item 8(i)'s bail, applied to D_rb(pool). (ii) The positive
+   control's order. (iii) Agreement. If (ii) or (iii) fails, the result goes to the author with
+   the predicted outcome first, and L-beh-3 does not build.
+5. **The D_h1 rule (replaces item 8(ii)).** If |cos(D̂_rb(pool), D̂_h1)| (the sign recorded; an
+   anti-aligned D_h1 is entangled too) is above the null's q95 and at or above the lower edge
+   (q05) of D_rb(pool)'s split-half band, L-beh-3 steers with D_rb(pool) ⊥ D_h1 (D_rb(pool) minus its component along D̂_h1, unnormalized). Otherwise it
+   steers with plain D_rb(pool). The vector of record, its norm and its sha256 go in
+   `data/st_drb_v1.json` before L-beh-3 builds.
+6. **Coherence check on the steered comparison model (L-beh-3's pod, before training).** Base
+   with the training vector added at clause_end during generation (the steering harness of record),
+   against `none` with shared seeds, on 16 H1_train scenarios x 2 rollouts. Bars: parse rate at
+   least `none`'s − 0.05 and NLL Δ ≤ 0.3 (Amendment 13); the length ratio recorded. If it fails,
+   the vector is halved and the halving recorded. Flagged addition: the halved vector is checked
+   once more, and if it also fails, L-beh-3 does not train and the pod reports.
+7. **Mechanism rider (replaces item 10's traces).** L-beh-3's shift along the training vector on
+   set (a)'s traces, held out from the pool fit, beside L-beh's.
+8. **Price.** The coherence check adds ~0.2 to L-beh-3's pod (~4.8 A100-h); the rider stays
+   ~0.8. Envelope 71: 59.19 + the replicate ~4.0 + §13's evaluation 0.5 + the matrix ~1.0 + the
+   rider ~0.8 + L-beh-3 ~4.8 = **~70.3**.
