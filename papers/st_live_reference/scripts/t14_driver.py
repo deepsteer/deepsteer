@@ -55,7 +55,7 @@ RECIPE = {"rank": 16, "alpha": 32, "dropout": 0.0, "lr": 1e-4, "warmup": 10, "gr
           "general_train": 1984, "general_monitor": 16, "gradient_checkpointing": True,
           "beh_ckpt_epochs": 3}
 PILOT_MICRO = 3
-SEEDS = {"beh": 101, "anchor": 102, "self": 103, "fourth": 104}
+SEEDS = {"beh": 101, "anchor": 102, "self": 103, "fourth": 104, "beh2": 105}
 
 
 def _now() -> str:
@@ -288,8 +288,9 @@ def _probe_logits(wb, ids: list[int]):
         return wb.model(input_ids=torch.tensor([ids], device=wb.model.device)).logits.float().cpu()
 
 
-def _train(c, sc, wb, rec, a, name: str) -> dict:
-    """One adapter: inject, pilot, train with monitoring, save, unload, base check."""
+def _train(c, sc, wb, rec, a, name: str, extra_pairs: list[dict] | None = None) -> dict:
+    """One adapter: inject, pilot, train with monitoring, save, unload, base check.
+    ``extra_pairs`` (L-beh-2, Amendment 31 item 3): DPO pairs appended to the H1_train ones."""
 
     import st_train as ST
 
@@ -302,10 +303,15 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
     held_pairs = pairs(rows_res)[0]
     probe = gen_mon[0]
     base_logits = _probe_logits(wb, probe)
-    objective = {"beh": "beh", "anchor": "anchor", "self": "self", "fourth": "anchor"}[name]
+    objective = {"beh": "beh", "anchor": "anchor", "self": "self", "fourth": "anchor",
+                 "beh2": "beh"}[name]
     tr, pr, info = (None, None, {})
     if objective == "beh":
         pr, info = pairs(rows_tr)
+        if extra_pairs:
+            info = {**info, "n_h1_pairs": len(pr), "n_extra_pairs": len(extra_pairs)}
+            pr = pr + list(extra_pairs)
+            info["n_pairs"] = len(pr)
     else:
         tr = traces(c, rows_tr)
     axis_name = None
@@ -352,7 +358,7 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
     def eval_fn(step: int) -> dict:
         out = mon(step)
         if ckpt_step is not None and step == ckpt_step:
-            e3 = c["out"] / "adapters" / "beh_epoch3"
+            e3 = c["out"] / "adapters" / f"{name}_epoch3"
             e3.mkdir(parents=True, exist_ok=True)
             wb.model.save_pretrained(str(e3))
             out["saved"] = str(e3)
@@ -371,7 +377,7 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
     ST.save_adapter(wb, adir, res, sidecar)
     if rc["gradient_checkpointing"]:
         wb.model.gradient_checkpointing_disable()
-    select = beh_select(c, sc, wb, a, adir, ckpt_step) if objective == "beh" else None
+    select = beh_select(c, sc, wb, a, adir, ckpt_step, name) if objective == "beh" else None
     wb._model = wb.model.unload()  # noqa: SLF001  the base without any adapter
     drift = float((_probe_logits(wb, probe) - base_logits).abs().max())
     same = drift <= 1e-3
@@ -384,7 +390,7 @@ def _train(c, sc, wb, rec, a, name: str) -> dict:
             "epoch3_step": ckpt_step, "comparator_selection": select}
 
 
-def beh_select(c, sc, wb, a, adir: Path, ckpt_step: int | None) -> dict:
+def beh_select(c, sc, wb, a, adir: Path, ckpt_step: int | None, name: str = "beh") -> dict:
     """Amendment 17 (a): the comparator of record is whichever L-beh checkpoint (step-matched
     final, epoch 3) has the higher protective share P on the reserved scenarios x 8 (generation,
     parser of record); ties go to the step-matched run. Chosen here, before any H1_held row exists
@@ -409,11 +415,11 @@ def beh_select(c, sc, wb, a, adir: Path, ckpt_step: int | None) -> dict:
         return {"P": float(np.mean(list(ps.values()))) if ps else None, "n_scenarios": len(ps),
                 "parse_rate": float(np.mean([r["letter"] is not None for r in parsed])),
                 "per_scenario": ps}
-    out = {"step_matched": p_of("beh_final")}
+    out = {"step_matched": p_of(f"{name}_final")}
     if ckpt_step is not None:
-        e3 = c["out"] / "adapters" / "beh_epoch3"
+        e3 = c["out"] / "adapters" / f"{name}_epoch3"
         set_peft_model_state_dict(wb.model, load_file(str(e3 / "adapter_model.safetensors")))
-        out["epoch3"] = p_of("beh_epoch3")
+        out["epoch3"] = p_of(f"{name}_epoch3")
         set_peft_model_state_dict(wb.model, load_file(str(adir / "adapter_model.safetensors")))
     diff = None
     if "epoch3" in out:  # the addendum: epoch-3 only if it beats step-matched with CI above 0

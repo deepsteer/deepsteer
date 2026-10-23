@@ -144,8 +144,9 @@ def arms_order(rec: dict) -> list[str]:
 
 
 def panel_arms(rec: dict) -> set[str]:
-    """The guard's arms: the comparator of record and L-anchor (Amendments 17, 18, 20)."""
-    return {arms_order(rec)[0], "anchor"}
+    """The guard's arms: the comparator of record and L-anchor (Amendments 17, 18, 20), and any
+    arm the record adds (L-beh-2, Amendment 31 item 3)."""
+    return {arms_order(rec)[0], "anchor", *rec.get("panel_arms_extra", [])}
 
 
 # ---- models ---------------------------------------------------------------------------------
