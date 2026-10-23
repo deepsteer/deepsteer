@@ -156,7 +156,9 @@ def test_adapters_are_verified_against_the_t14_hashes(tmp_path):
     with pytest.raises(SystemExit):
         T.verify_adapters({"adapters": tmp_path})
     real = ROOT / "papers/st_live_reference/outputs/t14/gpt_oss_20b/adapters"
-    if (real / "beh" / "adapter_model.safetensors").exists():
+    man = json.loads((DATA / "t15_adapters_v1.json").read_text())["arms"]
+    # skip on every file the verifier reads, not one: a pod syncing only beh (st2fx) has no others
+    if all((real / arm / f).exists() for arm, fs in man.items() for f in fs):
         T.verify_adapters({"adapters": real})
 
 

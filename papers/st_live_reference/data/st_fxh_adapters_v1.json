@@ -1,0 +1,17 @@
+{
+ "rule": "ST_PLAN Amendment 33: the adapters read by the format x harm matrix",
+ "sources": {
+  "beh": "T1.4 L-beh (step-matched, the comparator of record)",
+  "beh2": "L-beh-2 pod st2lb (2026-10-23)"
+ },
+ "arms": {
+  "beh": {
+   "adapter_config.json": "407c60a2e9091fe48420abf65c613a9adf23b556a294f1e160336f22b5ffbcb5",
+   "adapter_model.safetensors": "52650dea65f781a30ffc7b0a578d8cda1ab3c53ffea59ad07e4fcc98cddcfe09"
+  },
+  "beh2": {
+   "adapter_config.json": "6347e0b95da82b4d853ac7a8eee9e3879dd6c5c2bbabf7860c90a67e062bab8f",
+   "adapter_model.safetensors": "278655c0aa61373ce0d21c9ca1e1f0dbff7043ee107719dda7ee8dacf345ac09"
+  }
+ }
+}
