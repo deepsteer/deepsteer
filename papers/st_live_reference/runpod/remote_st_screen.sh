@@ -95,6 +95,12 @@ elif [ "$STEPS" = "st2m" ]; then
   # Qwen3.8's traces from pod B and its screen (SYNC_OUTPUTS from sync_st2m.txt); 6.5 h stop
   MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2m
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-6.5}"
+elif [ "$STEPS" = "st2ml" ]; then
+  # the care_harm ladder on Muse (author, 2026-10-23; Amendment 31 item 4, ST-A20): 0.3x and 0.4x on
+  # Cell 4's engaged x 8 with its seeds, spec reads first; Cell 4's derived files and rows synced
+  # (sync_st2ml.txt); one HF process; 3.0 h stop
+  MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2ml
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
 elif [ "$STEPS" = "st2dl" ]; then
   # ST Phase 2 D-lite (author, 2026-10-22; Amendment 29): rr_none, rr_fill and spec_fill at alpha
   # 267.3 and 133.6, spec_none parity; pod C's inputs (SYNC_OUTPUTS from sync_st2dl.txt); ~1.5 h
@@ -323,6 +329,14 @@ if [ "$STEPS" = "st2c" ] || [ "$STEPS" = "st2dl" ]; then  # built locally (build
     [ -f "$f" ] || { echo "FATAL: $f missing (pod C inputs; SYNC_OUTPUTS from sync_st2c.txt)"; exit 1; }
   done
 fi
+CELL4_DIR="$REPO_DIR/papers/st_live_reference/outputs/st2m/muse_glimmer_30b"  # SYNC_OUTPUTS (ladder)
+if [ "$STEPS" = "st2ml" ]; then  # Cell 4's derived files and rows (synced)
+  for f in "$CELL4_DIR/st2m_record.json" "$CELL4_DIR/derive.npz" "$CELL4_DIR/directions.npz" \
+           "$CELL4_DIR/gen/arm_none.jsonl" "$CELL4_DIR/gen/arm_fill.jsonl" \
+           "$CELL4_DIR/spec/none/dl_chat_neutral.jsonl" "$QWEN_TOPUP" "$QWEN_SCREEN"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (ladder inputs; SYNC_OUTPUTS from sync_st2ml.txt)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "st2m" ]; then  # Qwen3.8's traces (synced); every other input is derived on the pod
   for f in "$QWEN_TOPUP" "$QWEN_SCREEN" papers/st_live_reference/data/t15_specificity_v1.json \
            papers/5_moral_alignment/refusal_prompts.json; do
@@ -416,6 +430,18 @@ dry_runs() {
         --c1 "$OUT/_dry_st2/gpt_oss_20b" --phases "$ST2C_PHASES" || { echo "DRY RUN FAILED (st2c)"; return 1; }
       rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2c"
     fi
+    if [ "$STEPS" = "st2ml" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a tiny Cell 4, then the ladder on it
+      rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2ml"
+      $PY papers/st_live_reference/scripts/st2m_driver.py --out "$OUT/_dry_st2m" --dry-run \
+        --phases v1 --date-pin "$DATE_PIN" || { echo "DRY RUN FAILED (st2ml, cell 4 v1)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2m_driver.py \
+        --out "$OUT/_dry_st2m" --dry-run --qwen-topup "$QWEN_TOPUP" --qwen-screen "$QWEN_SCREEN" \
+        || { echo "DRY RUN FAILED (st2ml, cell 4 hf)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2ml_driver.py \
+        --out "$OUT/_dry_st2ml" --dry-run --cell4 "$OUT/_dry_st2m/muse_glimmer_30b" \
+        || { echo "DRY RUN FAILED (st2ml)"; return 1; }
+      rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2ml"
+    fi
     if [ "$STEPS" = "st2m" ] && [ "$m" = "muse_glimmer_30b" ]; then  # v1 (stub), then every HF phase on a tiny Muse
       rm -rf "$OUT/_dry_st2m"
       $PY papers/st_live_reference/scripts/st2m_driver.py --out "$OUT/_dry_st2m" --dry-run \
@@ -441,7 +467,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -552,6 +578,15 @@ for m in $MODELS; do
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
   fi
+  if [ "$STEPS" = "st2ml" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    rc=0
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2ml_driver.py --out "$OUT" \
+      --cell4 "$CELL4_DIR" --deadline "$DEADLINE" || rc=$?   # HF on torch 2.13
+    echo ">> $m exit $rc (0 ok, 3 envelope stop; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "st2m" ]; then
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     rc=0
@@ -651,7 +686,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
