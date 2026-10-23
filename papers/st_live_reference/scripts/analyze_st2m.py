@@ -56,6 +56,8 @@ def spec_read(d: Path, ids: list[str]) -> dict:
             continue
         if s1:
             x["passes"] = abs(x["dP_violating"]["mean"]) <= BAR
+            s = sorted(set(per[arm]) & set(per["fill"]))  # descriptive beside S1's verdict
+            x["d_vs_fill_descriptive"] = T13.boot([per[arm][i] - per["fill"][i] for i in s])
         else:
             s = sorted(set(per[arm]) & set(per["fill"]))
             x["d_vs_fill"] = T13.boot([per[arm][i] - per["fill"][i] for i in s])
