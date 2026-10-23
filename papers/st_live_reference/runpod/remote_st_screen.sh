@@ -95,6 +95,12 @@ elif [ "$STEPS" = "st2m" ]; then
   # Qwen3.8's traces from pod B and its screen (SYNC_OUTPUTS from sync_st2m.txt); 6.5 h stop
   MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2m
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-6.5}"
+elif [ "$STEPS" = "st2mr" ]; then
+  # the care_harm replicate at 0.3x on Muse (author, 2026-10-23; Amendment 32): none, fill and
+  # care_harm on Cell 4's 45 engaged x 16, fresh seeds and fill draws; spec reads first; Cell 4's
+  # files and the fresh draws synced (sync_st2mr.txt); 4.5 h stop
+  MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2mr
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-4.5}"
 elif [ "$STEPS" = "st2lb" ]; then
   # L-beh-2 on GPT-OSS (author, 2026-10-23; Amendment 31 item 3 and its addition): rule-right
   # rollouts on vLLM, the DPO adapter with H1_train and rule-right pairs, T1.5's gate on it; inputs
@@ -344,6 +350,14 @@ if [ "$STEPS" = "st2lb" ]; then  # T1.4's inputs and T1.1's rows (synced); the p
     [ -f "$f" ] || { echo "FATAL: $f missing (L-beh-2 inputs; SYNC_OUTPUTS from sync_st2lb.txt)"; exit 1; }
   done
 fi
+ST2MR_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/st2mr_inputs/muse_glimmer_30b"  # SYNC_OUTPUTS (replicate)
+if [ "$STEPS" = "st2mr" ]; then  # Cell 4's files and the fresh draws (synced)
+  for f in "$CELL4_DIR/st2m_record.json" "$CELL4_DIR/derive.npz" "$CELL4_DIR/directions.npz" \
+           "$CELL4_DIR/gen/arm_none.jsonl" "$CELL4_DIR/spec/none/dl_chat_neutral.jsonl" \
+           "$ST2MR_INPUTS/fill_seed1.npz" "$QWEN_TOPUP" "$QWEN_SCREEN"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (replicate inputs; SYNC_OUTPUTS from sync_st2mr.txt)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "st2ml" ]; then  # Cell 4's derived files and rows (synced)
   for f in "$CELL4_DIR/st2m_record.json" "$CELL4_DIR/derive.npz" "$CELL4_DIR/directions.npz" \
            "$CELL4_DIR/gen/arm_none.jsonl" "$CELL4_DIR/gen/arm_fill.jsonl" \
@@ -444,6 +458,18 @@ dry_runs() {
         --c1 "$OUT/_dry_st2/gpt_oss_20b" --phases "$ST2C_PHASES" || { echo "DRY RUN FAILED (st2c)"; return 1; }
       rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2c"
     fi
+    if [ "$STEPS" = "st2mr" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a tiny Cell 4, then the replicate on it
+      rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2mr"
+      $PY papers/st_live_reference/scripts/st2m_driver.py --out "$OUT/_dry_st2m" --dry-run \
+        --phases v1 --date-pin "$DATE_PIN" || { echo "DRY RUN FAILED (st2mr, cell 4 v1)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2m_driver.py \
+        --out "$OUT/_dry_st2m" --dry-run --qwen-topup "$QWEN_TOPUP" --qwen-screen "$QWEN_SCREEN" \
+        || { echo "DRY RUN FAILED (st2mr, cell 4 hf)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2mr_driver.py \
+        --out "$OUT/_dry_st2mr" --dry-run --cell4 "$OUT/_dry_st2m/muse_glimmer_30b" \
+        --inputs "$ST2MR_INPUTS" || { echo "DRY RUN FAILED (st2mr)"; return 1; }
+      rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2mr"
+    fi
     if [ "$STEPS" = "st2lb" ] && [ "$m" = "gpt_oss_20b" ]; then  # every L-beh-2 step, dry (stub, tiny model)
       rm -rf "$OUT/_dry_st2lb"
       $PY papers/st_live_reference/scripts/st2lb_driver.py --step rr_gen --out "$OUT/_dry_st2lb" \
@@ -492,7 +518,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -599,6 +625,15 @@ for m in $MODELS; do
     PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2_driver.py --out "$OUT" \
       --inputs "$ST2_INPUTS" --date-pin "$DATE_PIN" --deadline "$DEADLINE" \
       --phases "$ST2B_PHASES" --t11 "$T11_DIR" --c1 "$ST2A_DIR" --qwen-screen "$QWEN_SCREEN" || rc=$?
+    echo ">> $m exit $rc (0 ok, 3 envelope stop; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
+  if [ "$STEPS" = "st2mr" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    rc=0
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2mr_driver.py --out "$OUT" \
+      --cell4 "$CELL4_DIR" --inputs "$ST2MR_INPUTS" --deadline "$DEADLINE" || rc=$?   # HF on torch 2.13
     echo ">> $m exit $rc (0 ok, 3 envelope stop; banked either way)"
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
@@ -724,7 +759,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
