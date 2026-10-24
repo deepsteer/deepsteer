@@ -1,0 +1,22 @@
+{
+ "rule": "ST_PLAN Amendment 40 item 1: d1's training source pairs (clean pairs used), copied for the c13 pod; sha256 checked by c13_driver",
+ "source_dir": "papers/d1_moral_subspace/outputs/full",
+ "files": {
+  "moral_stories_train": {
+   "sha256": "7a3ae46b1ece4b15b861a6d374e95718ac36740d007b1e60c9bf270727d9c9da",
+   "n_pairs": 998,
+   "n_clean": 573
+  },
+  "fables_train_full": {
+   "sha256": "fc4960b5a6326cc0c99c158d1c568d9011e64eca985a8c92e87b0dc633be4e65",
+   "n_pairs": 151,
+   "n_clean": 62
+  },
+  "ethics_train_full": {
+   "sha256": "b16229d19b5dd7f1e459e9a42800314b77db155023273062cb780e719e824a5f",
+   "n_pairs": 199,
+   "n_clean": 199
+  }
+ },
+ "fables_source": "demelin/understanding_fables (MIT; manual paraphrases of public-domain Aesop), d1's partition fable_partition.json"
+}
