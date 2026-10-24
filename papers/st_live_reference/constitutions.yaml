@@ -1,0 +1,23 @@
+documents:
+- id: C_spec
+  title: OpenAI Model Spec
+  url: https://model-spec.openai.com/2026-08-18.html
+  dated: '2026-08-18'
+  license: CC0 1.0 ("dedicated to the public domain and marked with the Creative Commons
+    CC0 1.0 deed")
+  role: primary stand-in; the overlap read's positive control (GPT-OSS was post-trained
+    against it)
+  text_sha256: 1389654e79d56d993655d1cee0af374cae9086858c3dea47fe333ef14da9893a
+  raw_sha256: 72db50e5063c3c8942671c3ce6e30d0dd643de558eefd690aab127ec53bf4e5a
+  n_chars: 249536
+  fetched: '2026-10-24'
+- id: C_anth
+  title: Anthropic, Claude's constitution
+  url: https://www.anthropic.com/constitution
+  dated: '2026-01-21'
+  license: CC0 1.0 ("released in full under a Creative Commons CC0 1.0 Deed")
+  role: genre contrast (reasons and character rather than rules)
+  text_sha256: ab902738897d5b1307148590860eacf02e7d6eaafc3d0b22b99aa36f0211a356
+  raw_sha256: baf54539e588e63c8892ed01dc744791bd83b79e07283e8c2f406f52762e5059
+  n_chars: 191905
+  fetched: '2026-10-24'
