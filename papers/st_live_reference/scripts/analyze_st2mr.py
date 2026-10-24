@@ -21,6 +21,8 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts")]
 import analyze_st2 as A2  # noqa: E402
@@ -58,6 +60,21 @@ def specificity(rep: Path, ids: list[str]) -> dict:
             "passes": bool(d["mean"] is not None and abs(d["mean"]) <= BAR),
             "care_vs_none": T13.boot([c[i] for i in s]),
             "fill_vs_none": T13.boot([f[i] for i in s])}
+
+
+def two_way_boot(care: np.ndarray, fills: np.ndarray, n_boot: int = 10000, seed: int = 0) -> dict:
+    """``care`` [items], ``fills`` [draws, items] (each against ``none``; every draw read on every
+    item, the fully crossed design of Amendment 36 item 2): care - the mean fill, CI from
+    resampling draws and items independently."""
+    rng = np.random.default_rng(seed)
+    nd, ni = fills.shape
+    out = np.empty(n_boot)
+    for b in range(n_boot):
+        fbar = fills[rng.integers(0, nd, nd)].mean(0)
+        out[b] = (care - fbar)[rng.integers(0, ni, ni)].mean()
+    lo, hi = np.percentile(out, [2.5, 97.5])
+    return {"mean": float(care.mean() - fills.mean()), "ci95": [float(lo), float(hi)],
+            "n_draws": int(nd), "n_items": int(ni), "n_boot": n_boot}
 
 
 def parity(rep: Path, cell4: Path, ladder: Path | None) -> dict:

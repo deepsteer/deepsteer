@@ -123,3 +123,15 @@ def test_dry_run_replicate_on_a_tiny_cell4(tmp_path):
             for a in ("none", "fill_03", "care_03")}
     assert keys["none"] == keys["fill_03"] == keys["care_03"]
     assert all(k.startswith("st2mr|") for k in keys["none"])
+
+
+def test_two_way_bootstrap_carries_draw_variance():
+    # most probable failure (Amendment 36): the CI resamples items only, so a noisy fill
+    # reference reads as a precise difference
+    rng = np.random.default_rng(3)
+    care = rng.normal(0.06, 0.05, 60)
+    fills = rng.normal(0.09, 0.15, (10, 1)) + rng.normal(0, 0.05, (10, 60))
+    d = A.two_way_boot(care, fills, n_boot=2000)
+    item_only = A.T13.boot(list(care - fills.mean(0)))
+    assert d["mean"] == pytest.approx(care.mean() - fills.mean())
+    assert (d["ci95"][1] - d["ci95"][0]) > 1.5 * (item_only["ci95"][1] - item_only["ci95"][0])
