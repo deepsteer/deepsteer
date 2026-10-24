@@ -102,6 +102,12 @@ elif [ "$STEPS" = "st2fx" ]; then
   # (Amendments 34-35: specificity-set traces on vLLM, prefills under five arms); 2.5 h stop
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2fx
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
+elif [ "$STEPS" = "t16" ]; then
+  # T1.6 on Muse (author, 2026-10-24; Amendments 37-39): care-DPO (care_harm-steered protect
+  # traces) beside base-DPO (unsteered), the teacher their only difference; the replicate's rows
+  # synced (sync_t16.txt); generation dP of record, merge gate mandatory, HF fallback; 9.5 h stop
+  MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=t16
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-9.5}"
 elif [ "$STEPS" = "st2mr" ]; then
   # the care_harm replicate at 0.3x on Muse (author, 2026-10-23; Amendment 32): none, fill and
   # care_harm on Cell 4's 45 engaged x 16, fresh seeds and fill draws; spec reads first; Cell 4's
@@ -358,6 +364,12 @@ if [ "$STEPS" = "st2lb" ]; then  # T1.4's inputs and T1.1's rows (synced); the p
   done
 fi
 ST2MR_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/st2mr_inputs/muse_glimmer_30b"  # SYNC_OUTPUTS (replicate)
+T16_REPLICATE="$REPO_DIR/papers/st_live_reference/outputs/st2mr/muse_glimmer_30b"  # SYNC_OUTPUTS (T1.6)
+if [ "$STEPS" = "t16" ]; then  # the replicate's rows (synced)
+  for f in "$T16_REPLICATE/gen/arm_care_03.jsonl" "$T16_REPLICATE/gen/arm_none.jsonl"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (T1.6 inputs; SYNC_OUTPUTS from sync_t16.txt)"; exit 1; }
+  done
+fi
 FX_ADAPTERS="$OUT/_fx_adapters"  # the adapters, gathered from their synced dirs (Amendments 33-35)
 DRB_POOL="$REPO_DIR/papers/st_live_reference/outputs/st2lb/gpt_oss_20b/gen/rr_rollouts.jsonl"  # SYNC_OUTPUTS (D_rb)
 DRB_T11="$REPO_DIR/papers/st_live_reference/outputs/t11/gpt_oss_20b/gen/h1_rollouts.jsonl"  # SYNC_OUTPUTS (D_rb)
@@ -499,6 +511,27 @@ dry_runs() {
       done
       rm -rf "$OUT/_dry_st2drb"
     fi
+    if [ "$STEPS" = "t16" ] && [ "$m" = "muse_glimmer_30b" ]; then  # every step on a tiny Muse, base's fallback forced
+      rm -rf "$OUT/_dry_t16"
+      D16="papers/st_live_reference/scripts/t16_driver.py --out $OUT/_dry_t16 --replicate $T16_REPLICATE --dry-run"
+      $PY $D16 --step rr_gen && $PY $D16 --step base_vllm \
+        && PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $D16 --step base_hf \
+        || { echo "DRY RUN FAILED (t16 base)"; return 1; }
+      for arm in care base; do
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $D16 --step train --arm "$arm" \
+          || { echo "DRY RUN FAILED (t16 train $arm)"; return 1; }
+      done
+      for arm in care base; do
+        FAIL=""; [ "$arm" = "base" ] && FAIL="--dry-fail-parity"
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $D16 --step hf_arm --arm "$arm" \
+          && $PY $D16 --step vllm_arm --arm "$arm" $FAIL || { echo "DRY RUN FAILED (t16 $arm)"; return 1; }
+      done
+      for arm in care base none; do
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $D16 --step hfgen --arm "$arm" \
+          || { echo "DRY RUN FAILED (t16 hfgen $arm)"; return 1; }
+      done
+      rm -rf "$OUT/_dry_t16"
+    fi
     if [ "$STEPS" = "st2mr" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a tiny Cell 4, then the replicate on it
       rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2mr"
       $PY papers/st_live_reference/scripts/st2m_driver.py --out "$OUT/_dry_st2m" --dry-run \
@@ -559,7 +592,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_t16.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -689,6 +722,27 @@ for m in $MODELS; do
       done
     fi
     [ "$rc" -eq 0 ] && rc=$rd
+    echo ">> $m exit $rc (0 ok; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
+  if [ "$STEPS" = "t16" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    T16="papers/st_live_reference/scripts/t16_driver.py --out $OUT --replicate $T16_REPLICATE --deadline $DEADLINE"
+    rc=0
+    $PY $T16 --step rr_gen || rc=$?   # vLLM via its worker
+    [ "$rc" -eq 0 ] && { $PY $T16 --step base_vllm || rc=$?; }
+    [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $T16 --step base_hf || rc=$?; }   # HF on torch 2.13
+    for arm in care base; do   # care first: its pilot fixes the steps base reuses
+      [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $T16 --step train --arm "$arm" || rc=$?; }
+    done
+    for arm in care base; do   # attached reads, the in-place merge and its gate; then the merged engine
+      [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $T16 --step hf_arm --arm "$arm" || rc=$?; }
+      [ "$rc" -eq 0 ] && { $PY $T16 --step vllm_arm --arm "$arm" || rc=$?; }
+    done
+    for arm in care base none; do   # the registered fallback; each step exits at once if not needed
+      [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $T16 --step hfgen --arm "$arm" || rc=$?; }
+    done
     echo ">> $m exit $rc (0 ok; banked either way)"
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
@@ -823,7 +877,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
