@@ -135,3 +135,22 @@ def test_two_way_bootstrap_carries_draw_variance():
     item_only = A.T13.boot(list(care - fills.mean(0)))
     assert d["mean"] == pytest.approx(care.mean() - fills.mean())
     assert (d["ci95"][1] - d["ci95"][0]) > 1.5 * (item_only["ci95"][1] - item_only["ci95"][0])
+
+
+def test_fork_variance_components_recovers_a_known_draw_sd():
+    # most probable failure (Amendment 38): the draw component uses the per-draw spread across
+    # different slots (the first version's error) instead of the paired slot differences
+    rng = np.random.default_rng(5)
+    items = [f"I{j}" for j in range(60)]
+    item_eff = {i: rng.normal(0.05, 0.05) for i in items}
+    draw_eff = rng.normal(0, 0.13, (5, 2))
+    slots = {k: {i: (item_eff[i] + draw_eff[k, 0] + rng.normal(0, 0.01),
+                     item_eff[i] + draw_eff[k, 1] + rng.normal(0, 0.01))
+                 for j, i in enumerate(items) if j % 5 == k} for k in range(5)}
+    care = {i: item_eff[i] + 0.02 for i in items}
+    a = A.fork_variance_components(care, slots, n_boot=2000)
+    assert a["n_draws"] == 10 and a["n_items"] == 60
+    assert 0.03 < a["draw_sd"] < 0.30  # the paired-slot estimate, 5 df around 0.13
+    assert a["se"] > a["se_item"]
+    b = A.fork_slot_resample(care, slots, n_boot=500)
+    assert b["mean"] == pytest.approx(a["mean"])

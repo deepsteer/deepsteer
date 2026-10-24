@@ -77,6 +77,65 @@ def two_way_boot(care: np.ndarray, fills: np.ndarray, n_boot: int = 10000, seed:
             "n_draws": int(nd), "n_items": int(ni), "n_boot": n_boot}
 
 
+def slot_fills(rep: Path, ladder: Path, ids: list[str], n_slots: int = 5) -> dict:
+    """Per slot k (item j in slot j mod 5): {item: (seed-0 fill, seed-1 fill)}, each against the
+    replicate's ``none`` (identical to the ladder's: parity exact)."""
+    base = rep / "spec" / "none"
+    out = {}
+    for k in range(n_slots):
+        a = ADL.spec_items(ladder, base, f"fill_03/draw{k}", ids)
+        b = ADL.spec_items(rep, base, f"fill_03/draw{k}", ids)
+        out[k] = {i: (a[i], b[i]) for i in sorted(set(a) & set(b))}
+    return out
+
+
+def fork_variance_components(care: dict, slots: dict, n_boot: int = 10000, seed: int = 0) -> dict:
+    """Amendment 38 item 1 (a), of record: care - the mean of each item's two fill reads; the item
+    bootstrap's variance plus one draw's variance (paired slot differences) over the 10 draws."""
+    items = [(i, k) for k, d in slots.items() for i in d]
+    diff = np.array([care[i] - np.mean(slots[k][i]) for i, k in items])
+    rng = np.random.default_rng(seed)
+    boot = diff[rng.integers(0, len(diff), (n_boot, len(diff)))].mean(1)
+    v_item = float(boot.var(ddof=1))
+    dk = np.array([np.mean([b - a for a, b in d.values()]) for d in slots.values()])
+    within = np.mean([np.var([b - a for a, b in d.values()], ddof=1) / len(d)
+                      for d in slots.values()])
+    v_draw1 = max((float(dk.var(ddof=1)) - float(within)) / 2, 0.0)
+    n_draws = 2 * len(slots)
+    se = float(np.sqrt(v_item + v_draw1 / n_draws))
+    m = float(diff.mean())
+    z = 1.959963984540054  # the normal 97.5% quantile
+    return {"mean": m, "ci95": [m - z * se, m + z * se], "se": se,
+            "se_item": float(np.sqrt(v_item)), "draw_sd": float(np.sqrt(v_draw1)),
+            "n_draws": n_draws, "n_items": len(diff), "slot_differences": [float(x) for x in dk]}
+
+
+def fork_slot_resample(care: dict, slots: dict, n_boot: int = 10000, seed: int = 0) -> dict:
+    """Amendment 38 item 1 (b), beside: each slot's two draws resampled with replacement, and the
+    items resampled with replacement (understates the draw variance with two draws per slot)."""
+    rng = np.random.default_rng(seed)
+    per = [(care[i], np.array(slots[k][i])) for k, d in slots.items() for i in d]
+    c = np.array([x[0] for x in per])
+    f = np.stack([x[1] for x in per])  # [items, 2]
+    slot_of = np.array([k for k, d in slots.items() for _ in d])
+    out = np.empty(n_boot)
+    for b in range(n_boot):
+        pick = {k: rng.integers(0, 2, 2) for k in slots}
+        fb = np.array([f[j, pick[slot_of[j]]].mean() for j in range(len(c))])
+        out[b] = (c - fb)[rng.integers(0, len(c), len(c))].mean()
+    lo, hi = np.percentile(out, [2.5, 97.5])
+    return {"mean": float((c - f.mean(1)).mean()), "ci95": [float(lo), float(hi)]}
+
+
+def specificity_fork(rep: Path, ladder: Path, ids: list[str]) -> dict:
+    """Amendment 38: (a) of record, (b) beside, with the class of (a)'s point."""
+    care = ADL.spec_items(rep, rep / "spec" / "none", "care_03", ids)
+    slots = slot_fills(rep, ladder, ids)
+    a, b = fork_variance_components(care, slots), fork_slot_resample(care, slots)
+    return {"a_of_record": a, "b_beside": b, "class": AML.sign_class(a["mean"]),
+            "passes": bool(abs(a["mean"]) <= BAR)}
+
+
 def parity(rep: Path, cell4: Path, ladder: Path | None) -> dict:
     out = {}
     rec = json.loads((rep / "st2mr_record.json").read_text())["phases"]
