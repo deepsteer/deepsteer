@@ -3643,3 +3643,43 @@ unsteered model, so the teacher is the only difference. Built after §13's evalu
    ~75.7).
 4. **Order (author).** T1.6 is built and launched first; §13's zero-GPU work proceeds while it runs;
    then the §13 + cell A′ pod.
+
+### Amendment 39 (2026-10-24; author's merge design, build decisions; zero GPU; before T1.6's pod)
+
+T1.6's build (`t16_driver.py`, `analyze_t16.py`, `STEPS=t16`) fixes what Amendment 37 left to the
+build.
+
+1. **Muse analogs of T1.5's thresholds.** Muse runs bf16 on both engines, so T1.5's MXFP4 band does
+   not exist. Base check: the mean letter TV between the base on vLLM and on HF over the parity rows
+   ≤ 0.10 (T1.5's effective bar, its band 0.046 plus 0.05). Each arm's vLLM parity: the merged copy
+   on vLLM against the attached adapter on HF ≤ the base check's TV + 0.05 (the base's own engine
+   band takes the MXFP4 band's place).
+2. **Parity rows.** 16 of the replicate's 45 engaged H1_train scenarios (a seeded draw) ×
+   permutations 0-3 at dose 0: 64 rows, as T1.5's 64.
+3. **The merge (author).** The merged checkpoint is a copy of the base snapshot in which only the
+   text-tower tensors the adapter touches are overwritten in place (W + (α/r)·B·A computed in fp32,
+   cast to the file's dtype); every other file and tensor is the base's. The copy is reloaded on HF
+   and gated as T1.5 gates (merged closer to the attached adapter than to the base on the parity
+   rows' letters, kept share recorded). Recorded beside: the weight-space kept share, the share of
+   the deltas that survives the cast to bf16 (a delta below half an ulp of its weight rounds away;
+   the dry run's four-step adapter lost most of its delta this way, a trained one is the gate's
+   question). A layout the writer cannot map fails the gate, and the registered fallback runs.
+4. **Attach check.** After an adapter is attached on HF, its `lora_B` weights must equal the file's
+   for every module, or the step stops (a loader that named the text tower differently would
+   attach nothing and read as the base).
+5. **Pairs.** Prompts are re-rendered and checked against the replicate's hashes (the step stops
+   on a mismatch); the DPO prompt is the chosen rollout's (T1.4's convention). Measured before the
+   pod: per-scenario matching gives **40 rule-harm pairs from 22 of the 45 scenarios** per arm;
+   care-DPO alone would have 54 from 30, so matching costs it 14 pairs and the 8 scenarios where the
+   unsteered model never protects, the price of a teacher-only difference. Rule-right pairs are cut
+   to 40 by L-beh-2's rule (shortfall recorded).
+6. **Training.** QLoRA NF4 (T1.1's path), T1.4's recipe (lr 1e-4, grad_accum 4, KL weight 1 on the
+   1,984-sequence general slice, gradient checkpointing), dropout 0, seed 105; care's pilot fits the
+   steps to 2 A100-h (at most 264), base runs the same steps. No held monitoring set: Muse has no
+   reserved H1_train scenarios, and T1.4's monitors read GPT-OSS's axes.
+7. **Engaged held set.** T1.1's rule on Muse's H1_held from dose 0 (HF) and `none`'s generation
+   (vLLM); an empty set means no ΔP of record, reported. The fallback generates the engaged set × 8
+   and T1.5's half of the capability slice on HF.
+8. **Outcomes outside Amendment 37's branches** (one arm passes with the teacher's CI including 0)
+   are labelled unregistered and go to ANOMALIES before any wording.
+9. **Session.** 9.5 h stop; the price stays ~7.1 A100-h (~9.2 with both fallbacks) within 76.
