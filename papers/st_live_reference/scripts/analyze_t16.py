@@ -113,10 +113,14 @@ def branch(arms: dict, teacher: dict) -> str:
     if lo is not None and lo > 0:
         return ("A: the steered teacher carries protection into the weights beyond DPO on "
                 "protect pairs")
-    if all(passes.values()):
+    includes0 = lo is not None and hi is not None and lo <= 0 <= hi
+    if all(passes.values()) and includes0:
         return "B: the DPO pairs do the work; the teacher adds nothing measurable"
     if not any(passes.values()):
         return "C: the recipe does not reach Muse at this budget"
+    if hi is not None and hi < 0:
+        return ("unregistered: the teacher's difference lies below 0 (the steered teacher gives "
+                "less protection than the unsteered); an ANOMALIES entry before wording")
     return (f"unregistered: one arm passes ({', '.join(a for a in ARMS if passes[a])}) with the "
             "teacher's CI including 0; an ANOMALIES entry before wording")
 

@@ -158,6 +158,9 @@ def test_branches():
     assert A.branch({"care": arm(no), "base": arm(no)}, {"ci95": [-0.05, 0.1]}).startswith("C")
     assert A.branch({"care": arm(ok), "base": arm(no)},
                     {"ci95": [-0.05, 0.1]}).startswith("unregistered")
+    # the first T1.6 read: both arms pass and the teacher's CI lies below 0 (not branch B)
+    assert A.branch({"care": arm(ok), "base": arm(ok)},
+                    {"ci95": [-0.62, -0.43]}).startswith("unregistered: the teacher's difference")
 
 
 @pytest.mark.skipif(not (REP / "gen" / "arm_care_03.jsonl").exists(),
