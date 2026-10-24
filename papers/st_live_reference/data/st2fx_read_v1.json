@@ -1,0 +1,160 @@
+{
+ "rule": "ST_PLAN Amendment 33; read by analyze_st2fx.py (2026-10-24)",
+ "cells": {
+  "A": {
+   "n_items": 60,
+   "P_violating_none": 0.01317023973001996,
+   "beh2": {
+    "dP_violating": {
+     "mean": 0.030751705235175668,
+     "ci95": [
+      0.0016715679121516959,
+      0.06844978326498993
+     ],
+     "n": 60,
+     "mde": 0.047698725252027306
+    },
+    "move": "rise",
+    "P_violating": 0.04392194496519563
+   },
+   "beh": {
+    "dP_violating": {
+     "mean": 0.1917539757606204,
+     "ci95": [
+      0.1270428792098202,
+      0.2608837476606681
+     ],
+     "n": 60,
+     "mde": 0.0956006203220342
+    },
+    "move": "rise",
+    "P_violating": 0.2049242154906403
+   }
+  },
+  "B": {
+   "n_items": 60,
+   "P_violating_none": 0.5016817267946138,
+   "beh2": {
+    "dP_violating": {
+     "mean": 0.2910616514130152,
+     "ci95": [
+      0.22430837436799844,
+      0.36009952553923885
+     ],
+     "n": 60,
+     "mde": 0.09699367940802886
+    },
+    "move": "rise",
+    "P_violating": 0.7927433782076291
+   },
+   "beh": {
+    "dP_violating": {
+     "mean": 0.3243310412131349,
+     "ci95": [
+      0.25301912357378215,
+      0.3987964292923888
+     ],
+     "n": 60,
+     "mde": 0.10412664694186188
+    },
+    "move": "rise",
+    "P_violating": 0.8260127680077487
+   }
+  },
+  "H1": {
+   "n_items": 38,
+   "P_violating_none": 0.754699260248475,
+   "beh2": {
+    "dP_violating": {
+     "mean": 0.2412175707530638,
+     "ci95": [
+      0.19801581899698262,
+      0.284040659469884
+     ],
+     "n": 38,
+     "mde": 0.061446314623500975
+    },
+    "move": "rise",
+    "P_violating": 0.9959168310015388
+   },
+   "beh": {
+    "dP_violating": {
+     "mean": 0.24529927672389457,
+     "ci95": [
+      0.20045816833347277,
+      0.28960943717997306
+     ],
+     "n": 38,
+     "mde": 0.0636794777475002
+    },
+    "move": "rise",
+    "P_violating": 0.9999985369723695
+   }
+  }
+ },
+ "cell_A_reading": "format",
+ "cell_B_reading": "harm",
+ "branch": "split (cell A format, cell B harm): its own ANOMALIES entry before wording",
+ "panel_diagonal_of_record": {
+  "beh2": {
+   "mean": -0.09324612622248547,
+   "ci95": [
+    -0.1376591326747151,
+    -0.05192691372706969
+   ],
+   "n": 60,
+   "mde": 0.06123729924831815
+  },
+  "beh": {
+   "mean": 0.19187453229485696,
+   "ci95": [
+    0.13072680653908542,
+    0.25544419180476385
+   ],
+   "n": 60,
+   "mde": 0.08908384661834173
+  }
+ },
+ "exploratory": {
+  "note": "zero GPU, not of record (ST-A23)",
+  "beh2_minus_beh_paired": {
+   "A": [
+    -0.161,
+    -0.219,
+    -0.108
+   ],
+   "B": [
+    -0.033,
+    -0.07,
+    0.004
+   ],
+   "H1": [
+    -0.004,
+    -0.01,
+    -0.0
+   ]
+  },
+  "cell_A_headroom_top12": {
+   "none": 0.055,
+   "beh2": 0.2,
+   "beh": 0.47
+  },
+  "cell_A_items_beh2_below_none": "55 of 60",
+  "ceiling_H1": {
+   "beh2": 0.996,
+   "beh": 1.0
+  },
+  "floor_A_none": 0.013
+ },
+ "rows_sha256": {
+  "none/A": "b46d246f6a45072bbc7ba88d005c1cde453be034be29538732a31d1d91d117cc",
+  "none/B": "a1ee85fb2c601f330bb601b18514f603a1e77a55f168b3bfb7affb463b1206d6",
+  "none/H1": "a5395336928fc617774694660bfc2d6fb6c0e90698a2df61b98b2c32cd80fd10",
+  "beh2/A": "4f9516723e5869742783c5500e17d696a6cd4fc0281d4210ca4eb23445d25745",
+  "beh2/B": "2e6f07dedf1653abb6203ecc52fdc30fb6ff81bb4d5ea677cae9f6ed250ff4b9",
+  "beh2/H1": "e806abb33400e10c0a79cfaaa0df0457c6d56776fd79ad88213bd2ad4532b82f",
+  "beh/A": "f6430c9955cfd0cc7e62e1be3d7946f106f091e1e5cde65c0228343b8427926e",
+  "beh/B": "deeae3607a1034543f6339a316438cf43d3270a5a0d7f7fa3d94c0efc684c6e2",
+  "beh/H1": "0cb82b423501ce610966e54d1eff5e956a6c7811619218e2cfe0c19c9bf5bf43"
+ }
+}

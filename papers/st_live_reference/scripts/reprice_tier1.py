@@ -94,7 +94,11 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "care_harm ladder, attempt 1 (amgea03zuqwq4g; 06:15-06:28 + 0.1; stopped at the local "
          "gate, no model loaded)": 0.32,
          "care_harm ladder, attempt 2 (st2ml; timestamps 06:44-08:16 + 0.1; Amendment 31)": 1.63,
-         "L-beh-2 (st2lb; timestamps 16:38-20:36 + 0.1; Amendment 31 item 3)": 4.06}
+         "L-beh-2 (st2lb; timestamps 16:38-20:36 + 0.1; Amendment 31 item 3)": 4.06,
+         "care_harm replicate (st2mr; 21:02:43-01:40:39 + 0.1; Amendment 32; care arm run by "
+         "hand after the driver's projection skipped it)": 4.73,
+         "format x harm matrix + D_rb rider (st2fx; 23:51:18-01:23:04 + 0.1; Amendments 33-35)":
+             1.63}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)

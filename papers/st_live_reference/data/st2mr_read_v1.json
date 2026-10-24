@@ -1,0 +1,128 @@
+{
+ "rule": "ST_PLAN Amendment 32; read by analyze_st2mr.py on pod st2mr's download (2026-10-24)",
+ "gate": {
+  "dP_vs_none": {
+   "mean": 0.11499999999999999,
+   "ci95": [
+    0.06638888888888889,
+    0.1663888888888889
+   ],
+   "n": 45,
+   "mde": 0.07142857142857142
+  },
+  "dP_vs_fill": {
+   "mean": 0.11916666666666666,
+   "ci95": [
+    0.06527083333333335,
+    0.17722222222222223
+   ],
+   "n": 45,
+   "mde": 0.07996527777777776
+  },
+  "coherence": {
+   "parse_rate": 0.9986111111111111,
+   "parse_rate_base": 1.0,
+   "parse_ok": true,
+   "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+   "length_ratio": 1.0442561205273069,
+   "nll_delta": 0.19962231920411194,
+   "passes": true,
+   "bars": {
+    "parse_rate_min": 0.95,
+    "length_ratio": [
+     0.7,
+     1.5
+    ],
+    "nll_delta_max": 0.3
+   }
+  },
+  "protect_ward": true,
+  "p_one_sided": 9.999000099990002e-05,
+  "mde_vs_none": 0.07142857142857142,
+  "passes_gate": true,
+  "both_cis_exclude_0": true,
+  "margin_over_fill_ok": true,
+  "dP_vs_none_ge_0.10": true,
+  "passes": true,
+  "fill_vs_none": {
+   "mean": -0.004166666666666667,
+   "ci95": [
+    -0.04083333333333333,
+    0.0325
+   ],
+   "n": 45,
+   "mde": 0.052380952380952375,
+   "P_arm": 0.18055555555555555,
+   "P_none": 0.18472222222222223
+  }
+ },
+ "specificity": {
+  "care_minus_fill": {
+   "mean": -0.05527661217774346,
+   "ci95": [
+    -0.09723601398474427,
+    -0.015094452833022442
+   ],
+   "n": 60,
+   "mde": 0.058672543679801306
+  },
+  "class": "discriminating",
+  "passes": false,
+  "care_vs_none": {
+   "mean": 0.06342846045498336,
+   "ci95": [
+    0.034187856742104505,
+    0.09251900223856031
+   ],
+   "n": 60,
+   "mde": 0.04166510392603986
+  },
+  "fill_vs_none": {
+   "mean": 0.11870507263272681,
+   "ci95": [
+    0.07883500993875354,
+    0.16017213193027463
+   ],
+   "n": 60,
+   "mde": 0.05809794427965791
+  }
+ },
+ "parity": {
+  "spec_none": {
+   "prompts_match": "480 of 480",
+   "max_abs_dlogp": 0.0
+  },
+  "spec_care_03_vs_ladder_max_abs_dlogp": 0.0
+ },
+ "branch": "discriminating: a conditional-lever candidate (flagged, read with the fill margin)",
+ "exploratory_draw_variance": {
+  "note": "zero GPU, not of record: per-draw fill specificity vs none (5 draws each)",
+  "ladder_seed0": [
+   -0.034,
+   0.21,
+   0.314,
+   -0.131,
+   -0.035
+  ],
+  "replicate_seed1": [
+   0.24,
+   0.042,
+   0.202,
+   0.074,
+   0.035
+  ],
+  "sd_per_draw": [
+   0.188,
+   0.096
+  ],
+  "care_vs_none_both": 0.063,
+  "pooled_10_draw_fill_mean": 0.092,
+  "care_minus_pooled_fill": -0.029
+ },
+ "process": "care arm run by hand (Amendment 32 unchanged; driver unedited): ANOMALIES process ledger 2026-10-24",
+ "rows_sha256": {
+  "none": "b2e00ddad41e5d9af72b6f6838e0535d04ff12c5fcb8dba2055d2ef7dd2440ce",
+  "fill_03": "7aa86cbbe242ddaeaf1498a3578207748d614c137a7e679f8057296944f48f11",
+  "care_03": "8ea600702c730bec279f17b923568b3aa6f94082d1ed72a3e39c6df714ed5eb0"
+ }
+}

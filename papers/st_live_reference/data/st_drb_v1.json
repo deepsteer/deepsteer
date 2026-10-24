@@ -1,0 +1,241 @@
+{
+ "rule": "ST_PLAN Amendments 34-35; analyze_st2drb.py (2026-10-24)",
+ "type_block": {
+  "contrast_semantics": "model-difference on fixed tokens (L-beh minus base, teacher-forced base traces)",
+  "source": {
+   "a_spec": "60 specificity items x 4 base traces (vLLM, stage st2drb_spec)",
+   "b_pool": "130 pool items x 8 (L-beh-2's rr_rollouts)",
+   "c_h1": "38 engaged H1_held x 4 (T1.1 rows)"
+  },
+  "position_class": "clause_end (in-trace; T1.1 class_positions, equal to T1.1's bank on 152 of 152 rows)",
+  "format": "H1's agent frame, harmony reasoning template",
+  "layer": "hidden 13 (block 12); 7-19 saved",
+  "model": "gpt_oss_20b at the registry revision",
+  "participation_ratio": 37.58848843878443,
+  "known_covariates": [
+   "the adapter's input-independent shift (the generic component)",
+   "base trace content (77% consistent on the pool)"
+  ],
+  "outcome_variable": "specificity read (P(violating) on rule-right items)",
+  "extraction_commit": "e492e59"
+ },
+ "ladder": {
+  "floor_isotropic": 0.014867700967939759,
+  "null_q50": 0.10229970516964573,
+  "null_q95": 0.2965602364347277,
+  "participation_ratio": 37.58848843878443,
+  "channel_chance": 0.13014054786220586,
+  "n_sample": 4096
+ },
+ "directions": {
+  "spec": {
+   "n_items": 60,
+   "n_traces": 240,
+   "norm": 90.82967679163103,
+   "norm_ci95": [
+    88.93283131842122,
+    92.86473618407108
+   ],
+   "split_half": {
+    "q05": 0.9930942455137224,
+    "q50": 0.9960991370043083
+   }
+  },
+  "pool": {
+   "n_items": 130,
+   "n_traces": 1040,
+   "norm": 91.18826891338652,
+   "norm_ci95": [
+    89.7659860968587,
+    92.58395436757286
+   ],
+   "split_half": {
+    "q05": 0.9973388056197675,
+    "q50": 0.9985369318687013
+   }
+  },
+  "h1": {
+   "n_items": 38,
+   "n_traces": 152,
+   "norm": 98.04952512022928,
+   "norm_ci95": [
+    95.85046276914768,
+    100.60195079095797
+   ]
+  }
+ },
+ "cosines_D_rb_spec": {
+  "V_qwen": {
+   "cos": 0.1385803753081773,
+   "ci95": [
+    0.12811051663290857,
+    0.1480247802968791
+   ]
+  },
+  "V_harm": {
+   "cos": 0.15883258243703707,
+   "ci95": [
+    0.14924372743520256,
+    0.16707734362890198
+   ]
+  },
+  "care_harm": {
+   "cos": -0.0138162451373786,
+   "ci95": [
+    -0.021998854636014968,
+    -0.005061397752501762
+   ]
+  },
+  "anchor_axis": {
+   "cos": -0.060654542287609206,
+   "ci95": [
+    -0.06484901735701477,
+    -0.056631857828372
+   ]
+  },
+  "D_h1": {
+   "cos": 0.9725751003232588,
+   "ci95": [
+    0.9633282592535986,
+    0.9771517751889393
+   ]
+  },
+  "D_rb_pool": {
+   "cos": 0.9993409680501076,
+   "ci95": [
+    0.99652372766896,
+    0.9986590991969485
+   ]
+  }
+ },
+ "positive_control": {
+  "beh": {
+   "on_pool": 90.76981713262695,
+   "on_spec": 90.82967679163103,
+   "specificity_of_record": 0.1919,
+   "n_traces": 240
+  },
+  "beh_epoch3": {
+   "on_pool": 90.64895933798454,
+   "on_spec": 90.70534956470618,
+   "specificity_of_record": 0.188,
+   "n_traces": 240
+  },
+  "anchor": {
+   "on_pool": -10.589287294521839,
+   "on_spec": -10.717659944505474,
+   "specificity_of_record": 0.0236,
+   "n_traces": 240
+  },
+  "beh2": {
+   "on_pool": 58.887441867477264,
+   "on_spec": 59.01374982799261,
+   "specificity_of_record": -0.093,
+   "n_traces": 240
+  }
+ },
+ "build_gate": {
+  "bail": false,
+  "order_ok": false,
+  "agreement": {
+   "cos": 0.9993409680501076,
+   "ci95": [
+    0.99652372766896,
+    0.9986590991969485
+   ],
+   "passes": true
+  },
+  "build": false,
+  "verdict": "report to the author with the predicted outcome first"
+ },
+ "d_h1_rule": {
+  "cos_pool_h1": 0.9728445348399554,
+  "ci95": [
+   0.9663737573750993,
+   0.9763910787841338
+  ],
+  "orthogonalize": false
+ },
+ "training_vector": {
+  "kind": "D_rb(pool)",
+  "norm": 91.18827056884766,
+  "norm_over_site_alpha": 0.34114429354667664,
+  "sha256_float32": "a12695d3078434e5e437f4f8ab1e2121130ac0b5b77418417df3399740466f03"
+ },
+ "bank_parity": {
+  "rows": 152,
+  "of": 152,
+  "count_mismatches": 0,
+  "max_rel_abs_diff_mean": 5.721922264394442e-08
+ },
+ "bias_directions": [
+  {
+   "bias": "bootstrap and split-half cosines are attenuated (resampled or half-sample directions are noisier)",
+   "rule": "agreement (bootstrap lower bound)",
+   "favors": "not building (against agreement)"
+  },
+  {
+   "bias": "the D_h1 rule compares a full-sample cosine with a half-sample band",
+   "rule": "D_h1 rule",
+   "favors": "orthogonalizing (the protection-preserving side)"
+  },
+  {
+   "bias": "the same attenuation lowers D_rb(pool)'s split-half q05",
+   "rule": "bail",
+   "favors": "bailing (against building)"
+  }
+ ],
+ "build_gate_outcome": "order fails (L-beh-2 +58.9 above L-anchor -10.6 on D_rb(pool)); L-beh-3 not built; reported to the author with the predicted outcome first",
+ "vector_not_used": {
+  "kind": "D_rb(pool)",
+  "norm": 91.18827056884766,
+  "sha256_float32": "a12695d3078434e5e437f4f8ab1e2121130ac0b5b77418417df3399740466f03"
+ },
+ "exploratory": {
+  "note": "zero GPU, not of record (ST-A24)",
+  "arm_shift_vs_D_rb_pool": {
+   "beh": {
+    "norm": 90.8,
+    "cos": 0.999
+   },
+   "beh_epoch3": {
+    "norm": 90.7,
+    "cos": 0.999
+   },
+   "anchor": {
+    "norm": 131.8,
+    "cos": -0.08
+   },
+   "beh2": {
+    "norm": 77.4,
+    "cos": 0.761
+   }
+  },
+  "residual_perp_D_h1": {
+   "norm": 21.1,
+   "projections": {
+    "beh": 20.87,
+    "beh_epoch3": 20.97,
+    "anchor": -5.78,
+    "beh2": 13.94
+   }
+  },
+  "decision_site": {
+   "norm": 206.2,
+   "held_out_projections": {
+    "beh": 205.31,
+    "beh_epoch3": 207.34,
+    "anchor": 8.61,
+    "beh2": 166.23
+   },
+   "order_holds": "0 of 200 splits"
+  }
+ },
+ "arrays_sha256": {
+  "none": "418643cb255146f591b30d7985f3e839df25c5dd580dc179370671cf3047dee7",
+  "beh": "e1496aae85161506e7822ba60deb70bcc064c3c4cbbc7148d67ac861247d015b",
+  "beh2": "e54b27e5b5a1ffd7153066ce9fe544a1b247bb0966eba5ee106f653f3e486a52",
+  "anchor": "3ffac756b86f064ec64f868716579d2e7b7e2182c2c3b271ebaae9d0d471ed92",
+  "beh_epoch3": "fd313cea29f30c21f228101effe2f8c52a67ac5ac04d3f42ae8c52e4381993ef"
+ }
+}
