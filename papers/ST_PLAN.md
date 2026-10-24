@@ -3745,7 +3745,8 @@ the chosen traces other than harm, and its panel-set specificity belongs to the 
    the shortfall recorded). Fallback band, registered now (flagged; intervention-validity rule 1):
    fewer than 20 in [0.2, 0.6] widens the band once to [0.1, 0.6]; fewer than 20 there, no arm is
    read and the screen is reported. Arms: care-DPO and base-DPO attached (T1.6's adapters, sha256
-   checked against the T1.6 record, Amendment 39 item 4's attach check), `none` from the screen (the
+   checked against `data/t16_adapters_v1.json`, a manifest of the files the T1.6 pod returned, since
+   the T1.6 record holds no hashes; then Amendment 39 item 4's attach check), `none` from the screen (the
    read is deterministic). Outcome per item: ΔP(violating) = arm − `none`; item bootstrap, 10,000
    draws, percentile 95%; care − base paired beside.
    **care-DPO's branch.** CI below 0 = conditions on harm. CI above 0, or including 0 with its lower
@@ -3797,15 +3798,16 @@ the chosen traces other than harm, and its panel-set specificity belongs to the 
    interval's upper bound at the −0.03 bar stated (discriminating by the point, the interval reaching
    the specific class). Cell A′ verdict sentences state n.
 7. **Pod and price.** `STEPS=a2m` (Muse, HF only): setup and the Muse download ~0.35, the screen 200
-   × 8 at T1.6's measured 0.19 s per row (~0.09), two arms at up to 60 × 8 (~0.05), attach checks and
-   dry runs ~0.1: **~0.6 A100-h**, stop 1.5 h. Power from measured variance: per-item ΔP SD 0.10 and
+   × 8 at T1.6's measured 0.13-0.19 s per row (~0.09), two arms at up to 60 × 8 (~0.05), three Muse
+   loads (the screen and each arm its own process, as c13) ~0.2, attach checks and dry runs ~0.1:
+   **~0.7 A100-h**, stop 1.5 h. Power from measured variance: per-item ΔP SD 0.10 and
    0.16 on Muse's rule-right specificity set (care-DPO, base-DPO), 0.36 on GPT-OSS's cell A′
    (L-beh-2); MDE = 2.8 × SD / √n (two-sided 0.05, 80% power): n = 60, 0.036 / 0.058 / 0.130; n = 30,
    0.051 / 0.082 / 0.184; n = 20, 0.063 / 0.100 / 0.225. Bail: fewer than 20 in band after the
-   fallback, no arm read (~0.45 spent). Saves: every row's letter read per arm, the selection file
+   fallback, no arm read (~0.5 spent). Saves: every row's letter read per arm, the selection file
    (all 200 items' P(violating) under `none`), the attach checks. Muse's `none` on the panel-format
    rule-right set reads 0.164 (35% of items in [0.2, 0.6]), so the cell is not expected to floor.
-   **Envelope 78** (author): spent 74.12 + ~0.6 = ~74.7.
+   **Envelope 78** (author): spent 74.12 + ~0.7 = ~74.8.
 
 ### Amendment 42 (2026-10-24; author; zero GPU; before ST-A26's standardized read is computed)
 

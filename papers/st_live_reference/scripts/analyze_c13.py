@@ -3,6 +3,12 @@
 
     python3 papers/st_live_reference/scripts/analyze_c13.py --c13 <outputs/c13> \
         [--author <answers.json> --key <key.json>] [--subagent <ratings.json>]
+    python3 papers/st_live_reference/scripts/analyze_c13.py --c13 <outputs/c13> --amendment42
+
+``--amendment42`` runs ST-A26's standardized read alone (Amendment 42: σ from the pooled sample at
+the site, every object re-read in standardized coordinates, OLMo-3-Think's invariance check, the
+branch; the raw read and the top-k projection-out variant beside); it never touches the family
+read.
 
 Per model, at its headline layer (d1's conventions): ``V_moral`` = d1's three sources' mean
 moral − neutral differences, orthonormalized (rank 3); ``V_const`` per document = the mean m − n of
@@ -32,6 +38,7 @@ DATA = HERE.parent / "data"
 MODELS = ("gpt_oss_20b", "olmo3_think")
 SOURCES = ("moral_stories_train", "fables_train_full", "ethics_train_full")
 N_BOOT, N_NULL, SEED = 1000, 10000, 0
+TOPK_SHARE = 0.05
 RELIABILITY_BAR = 0.8
 
 
@@ -74,25 +81,51 @@ def ladder(X: np.ndarray, src: dict[str, np.ndarray], rng, n_null: int) -> dict:
             "null_q50": float(np.percentile(fr, 50)), "null_q95": float(np.percentile(fr, 95))}
 
 
-def model_read(c13: Path, model: str) -> dict:
+def transform(X: np.ndarray, mode: str) -> np.ndarray:
+    """The pooled sample in the read's coordinates. ``raw`` (Amendment 40); ``std``, each dimension
+    divided by its standard deviation over the pooled sample at the site, plus 1e-12 (Amendment 42
+    item 1; d2's in-format convention); ``topk``, the dimensions holding more than 5% of the raw
+    variance removed (Amendment 42 item 6, beside). Each is linear and per-dimension, so every
+    difference, mean and null drawn from the transformed sample is the transformed object."""
+    if mode == "raw":
+        return X
+    if mode == "std":
+        return X / (X.std(0) + 1e-12)
+    if mode == "topk":
+        v = X.var(0)
+        return X[:, v / v.sum() <= TOPK_SHARE]
+    raise ValueError(mode)
+
+
+def top_share(X: np.ndarray) -> float:
+    v = X.var(0)
+    return float(v.max() / v.sum())
+
+
+def model_read(c13: Path, model: str, mode: str = "raw") -> dict:
     from deepsteer.geometry.participation import participation_ratio
 
     z = np.load(c13 / model / "extract.npz")
     keys = [str(k) for k in z["keys"]]
-    X = z["headline"].astype(np.float64)
+    X0 = z["headline"].astype(np.float64)
+    X = transform(X0, mode)
     rng = np.random.default_rng(SEED)
     src = {s: np.mean(list(diffs(keys, X, f"d1|{s}").values()), axis=0) for s in SOURCES}
     lad = ladder(X, src, rng, N_NULL)
-    out: dict = {"headline": int(z["headline_index"]), "n_texts": len(keys),
+    out: dict = {"headline": int(z["headline_index"]), "n_texts": len(keys), "mode": mode,
                  "participation_ratio": float(participation_ratio(X)),
+                 "participation_ratio_raw": float(participation_ratio(X0)),
+                 "top_dim_share": top_share(X), "top_dim_share_raw": top_share(X0),
+                 "n_dims": int(X.shape[1]),
                  "heldout_band": lad["band"], "heldout": lad["heldout"],
                  "null_q50": lad["null_q50"], "null_q95": lad["null_q95"], "documents": {}}
+    vc = {}
     for doc in ("spec", "anth"):
         pairs = json.loads((DATA / f"st_c13_pairs_{doc}_v1.json").read_text())["pairs"]
         d = diffs(keys, X, f"c13|{doc}")
         tr = [d[str(i)] for i, p in enumerate(pairs) if p["split"] == "train" and str(i) in d]
         te = [d[str(i)] for i, p in enumerate(pairs) if p["split"] == "test" and str(i) in d]
-        v = np.mean(tr, axis=0)
+        v = vc[doc] = np.mean(tr, axis=0)
         pf = frac(lad["Q"], v)
         boot = np.array([frac(lad["Q"], np.mean([tr[j] for j in
                                                  rng.integers(0, len(tr), len(tr))], axis=0))
@@ -113,10 +146,11 @@ def model_read(c13: Path, model: str) -> dict:
                                 else "above the band floor" if pf >= lad["band"][0] else
                                 "above the null q95, below the band" if pf > lad["null_q95"]
                                 else "within the null")}
+    out["cos_documents"] = float(unit(vc["spec"]) @ unit(vc["anth"]))
     per_layer = {}
     B = z["band"].astype(np.float64)
     for j, h in enumerate(z["hidden"]):
-        Xl = B[:, j]
+        Xl = transform(B[:, j], mode)
         sl = {s: np.mean(list(diffs(keys, Xl, f"d1|{s}").values()), axis=0) for s in SOURCES}
         ll = ladder(Xl, sl, np.random.default_rng(SEED + int(h)), 2000)
         row = {"band": ll["band"], "null_q95": ll["null_q95"]}
@@ -143,6 +177,47 @@ def positive_control(reads: dict) -> dict:
             "passes": bool(lo > 0),
             "consequence": "calibrated" if lo > 0 else
             "uncalibrated: the overlap read is not used on C_partner (section 13)"}
+
+
+def invariance(raw: dict, std: dict) -> dict:
+    """Amendment 42 item 3, on the clean model: standardization must keep its position validity and
+    each document's ladder position."""
+    same = {"position_valid": raw["position_valid"] == std["position_valid"],
+            **{doc: raw["documents"][doc]["ladder_position"]
+               == std["documents"][doc]["ladder_position"] for doc in raw["documents"]}}
+    return {"holds": all(same.values()), "same": same,
+            "raw": {"position_valid": raw["position_valid"],
+                    **{d: raw["documents"][d]["ladder_position"] for d in raw["documents"]}},
+            "std": {"position_valid": std["position_valid"],
+                    **{d: std["documents"][d]["ladder_position"] for d in std["documents"]}}}
+
+
+def branch42(pc: dict, inv: dict, gpt_valid: bool) -> str:
+    """Amendment 42 item 5, written before data."""
+    if not inv["holds"]:
+        return ("invariance fails: standardization alters the clean instrument; the standardized "
+                "positive control is reported, not of record; ST-A26 R_c stays open")
+    if not gpt_valid:
+        return ("GPT-OSS's position is invalid after standardization: the positive control is "
+                "uninformative at this site; the document-contrast read is designed with that "
+                "stated")
+    if pc.get("passes"):
+        return ("R_c: GPT-OSS's raw ladder was the outlier's; ST-A26 resolves by calibration and "
+                "the standardized ladder is section 13's instrument for later overlap reads")
+    return ("fails with GPT-OSS's position valid: R_c does not account for the failure; R_a and "
+            "R_b go to the document-contrast read")
+
+
+def amendment42(c13: Path) -> dict:
+    """ST-A26's standardized read (Amendment 42); the raw read of record recomputed beside it, and
+    the top-k projection-out variant beside, not of record. The family read is not touched."""
+    reads = {mode: {m: model_read(c13, m, mode) for m in MODELS} for mode in ("raw", "std", "topk")}
+    pc = {mode: positive_control(reads[mode]) for mode in reads}
+    inv = invariance(reads["raw"]["olmo3_think"], reads["std"]["olmo3_think"])
+    return {"rule": "ST_PLAN Amendment 42", "reads": reads, "positive_control": pc,
+            "invariance_olmo3_think": inv,
+            "branch": branch42(pc["std"], inv, reads["std"]["gpt_oss_20b"]["position_valid"]),
+            "of_record": "std (Amendment 42); raw stays of record for Amendment 40; topk beside"}
 
 
 def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | None) -> dict:
@@ -227,8 +302,32 @@ def main() -> None:
     ap.add_argument("--key", type=Path, default=None)
     ap.add_argument("--subagent", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--amendment42", action="store_true",
+                    help="ST-A26's standardized read only (the family read is not touched)")
     a = ap.parse_args()
     rd = lambda p: json.loads(p.read_text()) if p else None  # noqa: E731
+    if a.amendment42:
+        res = amendment42(a.c13)
+        slim = json.loads(json.dumps(res, default=str))
+        for mr in slim["reads"].values():
+            for m in mr.values():
+                for d in m["documents"].values():
+                    d.pop("u_boot", None)
+        p = a.out or a.c13 / "c13_std_read.json"
+        p.write_text(json.dumps(slim, indent=1))
+        for mode, mr in res["reads"].items():
+            for m, r in mr.items():
+                band = [round(x, 3) for x in r["heldout_band"]]
+                print(f"[{mode}] {m}: PR {r['participation_ratio']:.1f} (raw "
+                      f"{r['participation_ratio_raw']:.1f}), null {r['null_q50']:.3f} / "
+                      f"{r['null_q95']:.3f}, band {band}, valid {r['position_valid']}, "
+                      f"cos(spec, anth) {r['cos_documents']:.3f}")
+                for doc, d in r["documents"].items():
+                    print(f"     C_{doc}: PF {d['pf']:.3f} ({d['ladder_position']}); u {d['u']}")
+            print(f"[{mode}] positive control: {res['positive_control'][mode]}")
+        print(f">> invariance (OLMo-3-Think): {res['invariance_olmo3_think']['holds']}\n"
+              f">> {res['branch']}\n>> wrote {p}")
+        return
     reads = {m: model_read(a.c13, m) for m in MODELS if (a.c13 / m / "extract.npz").exists()}
     res: dict = {"models": reads}
     if len(reads) == 2:

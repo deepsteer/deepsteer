@@ -165,3 +165,47 @@ def test_launcher_forwards_session_max_hours():
     r = subprocess.run(["bash", "-c", 'SESSION_MAX_HOURS=""; echo "${SESSION_MAX_HOURS:-2.5}"'],
                        capture_output=True, text=True)
     assert r.stdout.strip() == "2.5"
+
+
+def test_standardization_removes_a_massive_dimension():
+    # most probable failure (ST-A26 R_c, estimator-traps #9): the standardized read still lets one
+    # input-constant outlier dimension carry the pooled sample, or top-k removes the wrong dimension
+    rng = np.random.default_rng(0)
+    X = rng.standard_normal((400, 32))
+    X[:, 5] *= 60.0
+    assert A.top_share(X) > 0.8
+    Xs = A.transform(X, "std")
+    assert A.top_share(Xs) == pytest.approx(1 / 32, rel=1e-6)
+    Xk = A.transform(X, "topk")
+    assert Xk.shape[1] == 31 and A.top_share(Xk) < 0.1
+    assert np.array_equal(A.transform(X, "raw"), X)
+
+
+def test_invariance_and_branch42():
+    # most probable failure: a standardized pass is read as R_c although the clean model's verdicts
+    # changed under standardization, or an invalid GPT-OSS position yields a verdict
+    def m(valid, pos):
+        return {"position_valid": valid, "documents": {"spec": {"ladder_position": pos},
+                                                       "anth": {"ladder_position": pos}}}
+    same = A.invariance(m(True, "above the band floor"), m(True, "above the band floor"))
+    moved = A.invariance(m(True, "above the band floor"), m(True, "within the null"))
+    assert same["holds"] and not moved["holds"]
+    assert A.branch42({"passes": True}, same, True).startswith("R_c")
+    assert A.branch42({"passes": True}, moved, True).startswith("invariance fails")
+    assert A.branch42({"passes": False}, same, True).startswith("fails with GPT-OSS")
+    assert A.branch42({"passes": True}, same, False).startswith("GPT-OSS's position is invalid")
+
+
+@pytest.mark.slow
+def test_raw_mode_reproduces_the_read_of_record():
+    # most probable failure: the transform refactor changes the raw read of record (Amendment 40)
+    c13 = ST / "outputs" / "c13"
+    if not all((c13 / m / "extract.npz").exists() for m in A.MODELS):
+        pytest.skip("the c13 extracts are not local")
+    rec = json.loads((ST / "data" / "st_c13_overlap_read_v1.json").read_text())
+    for m in A.MODELS:
+        r = A.model_read(c13, m, "raw")
+        want = rec["models"][m] if "models" in rec else rec[m]
+        assert r["null_q95"] == pytest.approx(want["null_q95"], abs=1e-9)
+        assert r["documents"]["spec"]["pf"] == pytest.approx(want["documents"]["spec"]["pf"],
+                                                             abs=1e-9)

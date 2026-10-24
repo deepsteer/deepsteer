@@ -1,0 +1,17 @@
+{
+ "rule": "ST_PLAN Amendment 41 item 1: the adapters read by Muse cell A' (T1.6's, as the T1.6 pod returned them)",
+ "sources": {
+  "care": "T1.6 care-DPO (pod t16, 2026-10-24; 243 steps)",
+  "base": "T1.6 base-DPO (pod t16, 2026-10-24; 243 steps)"
+ },
+ "arms": {
+  "care": {
+   "adapter_config.json": "c19ca379379c31bfb66338fd086521c32b8f69e168ccf26cbc914832df770260",
+   "adapter_model.safetensors": "1d0cdc42b39528cfd74285c40829b9c9078a18b9901fb3fd05235c5111fe62e8"
+  },
+  "base": {
+   "adapter_config.json": "d9a8c976f77654918c9df98c8dd0a96a4d4a56c45891888adfc6b3781713ed02",
+   "adapter_model.safetensors": "d520461c3e5b54da3dec5fd544b5dc114bd0a0b431e6bc6a46d06e611383e2f8"
+  }
+ }
+}
