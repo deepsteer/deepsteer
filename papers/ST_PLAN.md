@@ -3277,6 +3277,46 @@ unsteered length and weigh harm and person more than `none` does; capability hol
 the guard."* Conceded as registered: it fails by +0.0005 at the CI's lower bound, recorded as a
 near-miss (ST-A21), not re-scored.
 
+#### care_harm replicate outcome on Muse (2026-10-24; Amendments 32, 36 and 38; `data/st2mr_read_v1.json`)
+
+The pod ran 21:02-01:40 UTC (4.73 A100-h with provisioning; the care arm run by hand after the
+driver's projection skipped it, process ledger 2026-10-24). 45 engaged H1_train × 16, fresh seeds;
+fill at 0.3× with fresh draws (seed 1). Parity: `spec_none` 480 of 480 exact; `spec_care_03`
+identical to the ladder's.
+
+| read (rule) | result |
+|---|---|
+| ΔP against `none` (≥ +0.10, CI > 0) | **+0.115 [+0.066, +0.166]** (P 0.185 → 0.300; MDE 0.071) |
+| ΔP against the dose-matched fill (≥ +0.05, CI > 0) | **+0.119 [+0.065, +0.177]**; fill against `none` −0.004 [−0.041, +0.033] |
+| coherence (Amendment 13) | parse 0.999, length ratio 1.04, NLL Δ 0.20: passes |
+| specificity, registered (5 fresh draws, item bootstrap) | −0.055 [−0.097, −0.015]: discriminating |
+| **specificity, of record (Amendment 38 (a): 10 draws, item and draw variance)** | **−0.028 [−0.115, +0.059]**: specific on its point |
+| specificity, (b) beside (slot-wise resampling) | −0.028 [−0.099, +0.042] |
+
+**Verdict.** The gate passes against `none` and against a fill at the same dose. Under the author's
+fork (Amendment 38), the specificity of record is (a), so Amendment 32's branch reads **"target"
+on its point**: `care_harm` at 0.3× tilts rule-right items by −0.028 relative to a random vector at
+the same dose. The read cannot resolve the ±0.03 bar: (a)'s CI (±0.087) spans the discriminating,
+specific and non-specific classes, because one fill draw's read varies with SD about 0.128 (paired
+slot differences) while each item meets only two draws. The registered read (five draws, items
+only) said discriminating; it moved to specific because the fill reference moved (+0.065 with the
+ladder's draws, +0.119 with the replicate's), while `care_harm`'s own read is unchanged (+0.063).
+Detection bar: no rule-right tilt beyond ±0.087 relative to fill is detectable here.
+
+Bias directions: the item bootstrap alone understates the fill's uncertainty (favors any class, so
+the registered verdict was over-precise); (b) understates the draw variance by about half (its
+narrower CI is not the reading of record); the gate's fill arm barely moves protection (−0.004), so
+draw variance does not threaten the gate as it does the rule-right read.
+
+Referee pass. (1) *"The verdict changed after the data."* Conceded in sequence: the fork was
+dated (Amendments 36, 38) and pushed before it was computed, and both reads are reported; it was
+written after the registered read was seen, which is why the registered read stays in the table.
+(2) *"Specific on a point whose CI is ±0.087 is not specific."* Conceded: the bar is unresolved and
+the wording says so; a fully crossed fill (≥ 10 draws, each on all 60 items; Amendment 38 item 2)
+is the test. (3) *"The gate rests on one fill realization."* Its fill arm moves protection by −0.004
+[−0.041, +0.033] across five draws over 720 rollouts, so the margin (+0.119) is not a fill
+artifact at the gate's resolution (MDE 0.07).
+
 ### Amendment 33 (2026-10-23; author; zero GPU; before any item is read on a GPU)
 
 ST-A22's discriminator: the two off-diagonal cells of the format × harm matrix.

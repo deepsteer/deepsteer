@@ -124,5 +124,36 @@
   "none": "b2e00ddad41e5d9af72b6f6838e0535d04ff12c5fcb8dba2055d2ef7dd2440ce",
   "fill_03": "7aa86cbbe242ddaeaf1498a3578207748d614c137a7e679f8057296944f48f11",
   "care_03": "8ea600702c730bec279f17b923568b3aa6f94082d1ed72a3e39c6df714ed5eb0"
- }
+ },
+ "specificity_fork_amendment38": {
+  "a_of_record": {
+   "mean": -0.02829108570233767,
+   "ci95": [
+    -0.11543952097498833,
+    0.058857349570312995
+   ],
+   "se": 0.044464304426033545,
+   "se_item": 0.01832093888756925,
+   "draw_sd": 0.12811781946196785,
+   "n_draws": 10,
+   "n_items": 60,
+   "slot_differences": [
+    0.27398360043350706,
+    -0.16802181603490576,
+    -0.11180082860678571,
+    0.20514713104736967,
+    0.07054717791487276
+   ]
+  },
+  "b_beside": {
+   "mean": -0.02829108570233767,
+   "ci95": [
+    -0.09867419334567862,
+    0.042109113768148014
+   ]
+  },
+  "class": "specific",
+  "passes": true
+ },
+ "verdict_of_record": "target on its point (Amendment 38 (a): -0.028 [-0.115, +0.059]); the +-0.03 bar unresolved; registered read discriminating (-0.055 [-0.097, -0.015]) beside"
 }

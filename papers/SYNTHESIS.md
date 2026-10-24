@@ -1355,3 +1355,13 @@ perfectly (cos 0.999), but D_rb is L-beh's whole adapter shift, nearly the same 
 harm items included (cos 0.973 with D_h1); L-beh-2 moves 0.76 along it despite the opposite
 rule-right tilt, so one direction at this site cannot separate the tilt, and the same check at the
 decision site fails too. The contrast L-beh − L-beh-2 is a lead, recorded and not built.
+
+**The `care_harm` replicate on Muse (2026-10-24), what changed.** The gate passes: `care_harm` at 0.3×
+moves protection +0.115 against the unsteered model and +0.119 against a random vector at the same
+dose, with fresh seeds and coherence intact. The specificity of record (the author's draw-aware
+reference, ten draws) puts its rule-right tilt at −0.028 relative to a random vector, specific on its
+point, but the read cannot resolve the ±0.03 bar (CI ±0.087): one random draw's tilt varies with SD
+about 0.128, so the five-draw read that first said "discriminating" depended on which draws were
+taken. Of the three directions tested on Muse (V_qwen, −V_harm, `care_harm`), it is the only one that
+moves protection beyond a random vector with a rule-right tilt indistinguishable from zero at this
+instrument's resolution (±0.087); T1.6 asks whether that survives distillation into weights.
