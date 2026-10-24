@@ -145,3 +145,13 @@ def test_dry_run_every_step(tmp_path):
             assert r["documents"]["spec"]["ladder_position"].startswith("position invalid")
     a2 = A.cell_a2(tmp_path)
     assert a2["reading"] and a2["beh2"]["dP_violating"]["mean"] == pytest.approx(0.0, abs=1e-6)
+
+
+def test_generic_screen_dry_run_skips_olmo3_think_on_c13():
+    # most probable failure (the first c13 pod): the runner's generic per-model screen dry run reads
+    # the registry's vLLM block, which OLMo-3-Think lacks, and stops the session before any read
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    blk = sh.split("dry_runs() {")[1][:600]
+    assert 'if [ "$STEPS" = "c13" ] && [ "$m" = "olmo3_think" ]; then' in blk
+    import pod_st_screen as P
+    assert P.registry()["olmo3_think"].get("vllm") is None

@@ -443,8 +443,14 @@ fi
 # dry runs: the screen; for the rider, each mode on a dry banked run of the same model
 dry_runs() {
   for m in $MODELS; do
-    $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
-      || { echo "DRY RUN FAILED ($m)"; return 1; }
+    if [ "$STEPS" = "c13" ] && [ "$m" = "olmo3_think" ]; then
+      # c13 reads OLMo-3-Think on HF only; its registry has no vLLM block, so the generic screen's
+      # dry run (vLLM stand-in) cannot run for it (the first c13 pod's stop, 2026-10-24)
+      echo ">> generic screen dry run skipped for olmo3_think (c13 uses HF only)"
+    else
+      $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry" \
+        || { echo "DRY RUN FAILED ($m)"; return 1; }
+    fi
     if [ "$STEPS" = "rider" ] || [ "$STEPS" = "rider2" ]; then
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rider" $(mode_args "$m" "$OUT/_dry") \
         || { echo "DRY RUN FAILED ($m, rider mode)"; return 1; }
