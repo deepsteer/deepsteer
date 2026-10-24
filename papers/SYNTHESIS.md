@@ -1342,3 +1342,16 @@ conditions on rule harm or on scenario format is the open check: rule-right item
 rule-harm items in the panel's format. Its traces run at the unsteered length (median 465 against
 445) and weigh harm and the affected person more than the unsteered model's (ST-A21, ST-A22).
 
+**The format x harm matrix on GPT-OSS (2026-10-24), what changed.** The registered read is a split.
+On items where following the rule harms someone, L-beh-2 protects in the panel's format as much as
+L-beh does (+0.291 against +0.324). On rule-right items in H1's format the read sat on a floor (the
+base model's P(violating) 0.013), which left the harm reading almost no room to show. L-beh-2 removes
+84% of L-beh's rule-breaking there, but where the base model is tempted it still breaks the rule at
+about 40% of L-beh's rate. Cell A′, screened for headroom, is the discriminator (ST-A23).
+
+**D_rb and preventative steering on GPT-OSS (2026-10-24), what changed.** The positive control
+failed, so L-beh-3 was not built and the line is closed (ST-A24). The two D_rb estimates agree almost
+perfectly (cos 0.999), but D_rb is L-beh's whole adapter shift, nearly the same on every kind of item,
+harm items included (cos 0.973 with D_h1); L-beh-2 moves 0.76 along it despite the opposite
+rule-right tilt, so one direction at this site cannot separate the tilt, and the same check at the
+decision site fails too. The contrast L-beh − L-beh-2 is a lead, recorded and not built.

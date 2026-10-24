@@ -3313,6 +3313,38 @@ ST-A22's discriminator: the two off-diagonal cells of the format × harm matrix.
    adapter, plus setup: **~1.0 A100-h**. Envelope 66 (author): spent 59.19 + the replicate ~4.0 +
    §13's evaluation 0.5 + this ~1.0 = ~64.7.
 
+#### Format x harm matrix outcome on GPT-OSS (2026-10-24; Amendment 33; `data/st2fx_read_v1.json`)
+
+The pod ran 23:51-01:23 UTC (1.63 A100-h with provisioning, the D_rb rider included; rc 0). Dose 0,
+`dl_chat_neutral`, 8 permutations, single-row; ΔP(violating) against `none`, item bootstrap.
+
+| cell (n) | P(violating), `none` | L-beh-2 | L-beh |
+|---|---|---|---|
+| A: rule-right, H1's format (60) | 0.013 | +0.031 [+0.002, +0.068] | +0.192 [+0.127, +0.261] |
+| B: rule-harm, panel format (60) | 0.502 | **+0.291 [+0.224, +0.360]** | +0.324 [+0.253, +0.399] |
+| H1 rider: 38 engaged H1_held | 0.755 | +0.241 (0.996, ceiling) | +0.245 (1.000) |
+| panel rule-right (specificity of record) | | −0.093 [−0.138, −0.052] | +0.192 |
+
+**Verdict.** The registered branch (item 5) is **a split: cell A reads format, cell B reads harm**
+(ST-A23). On items where following the rule harms someone, L-beh-2 protects in the panel's format as
+much as L-beh does (paired difference −0.033 [−0.070, +0.004]). Cell A sat on a floor: the base
+model's P(violating) was 0.013, which left the harm reading almost no room to show. Exploratory, not
+of record: L-beh-2 removes 84% of L-beh's rule-breaking there (paired −0.161 [−0.219, −0.108]), but
+where the base model is tempted (the 12 items highest under `none`, 0.055) L-beh-2 still breaks the
+rule at about 40% of L-beh's rate (0.200 against 0.470). The discriminator is cell A′ with headroom
+(Amendment 36 item 4).
+
+Bias directions: cell A's floor bounds any drop at 0.013 and favors the format reading; the H1
+rider's ceiling hides any L-beh-2 against L-beh difference there and decides neither cell.
+
+Referee pass. (1) *"Cell A was built to fail."* Conceded in part: its base rate was not checked
+against the branch rule before the pod; the verdict stays as registered, the floor is ST-A23's
+first line, and cell A′ is screened for an operating band before it is read. (2) *"Cell B's rise is
+L-beh's generic push, not harm."* L-beh-2 and L-beh rise alike on cell B, but they part on rule-right
+items in the panel's format (−0.093 against +0.192), so cell B's rise is not the push both share
+everywhere. (3) *"The H1 rider adds nothing."* Conceded: at ceiling it cannot separate the arms; it shows
+both arms raising protection on H1 at dose 0, as they did in generation.
+
 ### Amendment 34 (2026-10-23; author; zero GPU; before any D_rb activation is read)
 
 A preventative-steering arm in the style of Persona Vectors (arXiv:2507.21509): a rule-breaking
@@ -3442,6 +3474,39 @@ The author's decisions on Amendment 34. Where they differ, this amendment govern
 8. **Price.** The coherence check adds ~0.2 to L-beh-3's pod (~4.8 A100-h); the rider stays
    ~0.8. Envelope 71: 59.19 + the replicate ~4.0 + §13's evaluation 0.5 + the matrix ~1.0 + the
    rider ~0.8 + L-beh-3 ~4.8 = **~70.3**.
+
+#### D_rb rider outcome on GPT-OSS (2026-10-24; Amendments 34-35; `data/st_drb_v1.json`)
+
+The prefills ran on the matrix's pod after its three arms: 1,432 traces under `none` and L-beh (240
+specificity, 1,040 pool, 152 H1), 240 under each of L-beh-2, L-anchor and epoch 3; none skipped;
+determinism exact; set (c)'s positions and values equal T1.1's bank on 152 of 152 rows.
+
+| read (rule) | result |
+|---|---|
+| ladder | floor 0.015; covariance-matched null q50 0.102, q95 0.297; PR 37.6 (Cell 2: 36.3) |
+| agreement, cos(D_rb(spec), D_rb(pool)) (lower bound above q95) | +0.999 [+0.997, +0.999]: passes |
+| bail, D_rb(pool) split-half q05 (above q95) | 0.997: no bail |
+| D_h1 rule, cos(D_rb(pool), D_h1) | +0.973 [+0.966, +0.976], below the split-half q05: plain D_rb |
+| positive control on D_rb(pool) (L-anchor above L-beh-2) | L-beh 90.8, epoch 3 90.6, L-anchor −10.6, L-beh-2 +58.9: **fails** |
+| cosines with V_qwen, V_harm, care_harm, anchor axis | +0.139, +0.159, −0.014, −0.061, all below the null q95 |
+
+**Verdict.** The build gate's order fails, so **L-beh-3 was not built** (ST-A24); the author closed
+the line (Amendment 36 item 3). The two D_rb estimates agree almost perfectly, but D_rb is L-beh's
+whole adapter shift, nearly the same on every kind of item, harm items included. L-beh-2 moves 0.76
+along it despite the opposite rule-right tilt, so it cannot separate the tilt; the same check at the
+decision site fails in all 200 splits. The predicted outcome had L-beh-3 been built: protection lost
+(branch C) or the tilt not separated (branch B). The contrast L-beh − L-beh-2 places L-anchor between
+the two arms on held-out items at every layer (0.34 of the way at hidden 13, against 0.41 from its
+specificity), with one arm out of sample: a lead, recorded and not built.
+
+Bias directions: resampled and half-sample cosines are attenuated, which works against agreement and
+toward bailing; neither fired, so both reads hold against their bias.
+
+Referee pass. (1) *"The positive control is too strict."* Its order was registered before data, and
+the decision-site and residual versions fail it too, so the failure does not hinge on the site or on
+the D_h1 rule. (2) *"D_rb is just noise."* No: split-half 0.997 and cross-set agreement 0.999 make it
+the most reliable direction in the line; it is reliable and generic. (3) *"One arm cannot validate
+the contrast lead."* Conceded; that is why it is a lead and not a target.
 
 ### Amendment 36 (2026-10-24; author; zero GPU; before the draw-aware recompute and before any cell A′ item is read)
 
