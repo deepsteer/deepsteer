@@ -3442,3 +3442,38 @@ The author's decisions on Amendment 34. Where they differ, this amendment govern
 8. **Price.** The coherence check adds ~0.2 to L-beh-3's pod (~4.8 A100-h); the rider stays
    ~0.8. Envelope 71: 59.19 + the replicate ~4.0 + §13's evaluation 0.5 + the matrix ~1.0 + the
    rider ~0.8 + L-beh-3 ~4.8 = **~70.3**.
+
+### Amendment 36 (2026-10-24; author; zero GPU; before the draw-aware recompute and before any cell A′ item is read)
+
+The author's decisions after the replicate, the matrix and the D_rb rider.
+
+1. **Draw-aware specificity reference (a fork of Amendment 32 item 4, after its data; flagged).**
+   The fill reference at 0.3× becomes the mean over all ten fill draws (the ladder's five, seed 0,
+   and the replicate's five, seed 1; both spec reads are deterministic on the same 60 items and the
+   same instrument, and `spec_none` and `spec_care_03` are identical across the two pods). Per item:
+   `care_harm` − the mean of the ten fills (each against `none`). CI: a two-way bootstrap that
+   resamples draws (10, with replacement) and scenarios (60, with replacement) independently, 10,000
+   replicates, percentile 95%; Amendment 31's sign classes on the difference. The replicate is
+   reported under both choices (registered: five fresh draws, item bootstrap, "discriminating";
+   draw-aware: as it reads). The registered branch stays the verdict of record; the wording names
+   both.
+2. **Rule for later Muse reads.** Any specificity read against fill on Muse at a dose above 0.2×
+   uses at least ten fill draws and the draws × scenarios bootstrap CI of item 1.
+3. **D_rb closed (ST-A24).** The line closes on the failed positive control. The data-flagging read
+   waits on a direction that passes a positive control. The L-beh − L-beh-2 contrast is recorded as
+   a lead (ST-A24) and not built.
+4. **Cell A′ (ST-A23's discriminator), riding on §13's evaluation pod (GPT-OSS, HF).**
+   Construction: rule-right items in H1's format where the harm of breaking the rule is present but
+   less salient (indirect, probabilistic or deferred), so the unadapted model is tempted to break it;
+   subagent-written, ~200 candidates, Amendment 33's twin-style checks, Claude hand-checks 20; type
+   block notes they postdate training. Screen: every passing candidate read under `none` at dose 0
+   (`dl_chat_neutral`, 8 permutations, single-row); the operating band is P(violating) in [0.2, 0.6];
+   60 in band kept by a seeded draw (fewer than 60: all in band, the shortfall recorded; fewer than
+   20: no read, reported). Read: the kept items under L-beh-2 and L-beh (attached, sha256 checked),
+   `none` taken from the screen (the read is deterministic). Branch, written before data: L-beh-2's
+   ΔP(violating) CI below 0 = conditions on harm (ST-A23 R_a); including 0 or above 0 = format
+   (R_b). L-beh, and L-beh-2 − L-beh paired, beside. Price: screen ~200 × 8 at 0.37 s, read 60 × 8 ×
+   2 arms at 0.5 s, two loads: ~0.4 A100-h on the shared pod.
+5. **Envelope 71.** Spent 65.55 + §13's evaluation ~0.5 (re-priced at its build) + cell A′ ~0.4 =
+   ~66.5. T1.6 (a Muse adapter distilled from `care_harm` at 0.3×) is priced next; the envelope
+   decision follows the price.
