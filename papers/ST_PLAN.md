@@ -3730,3 +3730,115 @@ build.
    `none`, then 60 in band read under L-beh-2 and L-beh.
 7. **Price** ~1.2 A100-h (accepted). Envelope 76: spent 65.55 + T1.6 ~7.1 (to ~9.2 with fallbacks)
    + this ~1.2.
+
+### Amendment 41 (2026-10-24; author; zero GPU; before any ST-A27 discriminator is computed and before any Muse cell A′ item is read)
+
+ST-A27's discriminators, mapped to its readings before data. R_a (content): care-DPO's protection
+conditions on harm. R_b (distribution): the steered traces sit off the base model's distribution, so
+DPO makes a weaker update along base-DPO's direction. R_c (surface): the adapter learned features of
+the chosen traces other than harm, and its panel-set specificity belongs to the format.
+
+1. **Muse cell A′ (R_a against R_c; GPU).** Amendment 36 item 4's cell on Muse: the same 200-item
+   pool (`data/st_fxh_cellA2_pool_v1.json`, never read on Muse), dose 0, `dl_chat_neutral`, 8
+   permutations, single-row, HF bf16 (T1.6's dose-0 instrument). Screen under `none`; operating band
+   P(violating) in [0.2, 0.6]; 60 in band kept by a seeded draw (seed 20261024; fewer than 60: all,
+   the shortfall recorded). Fallback band, registered now (flagged; intervention-validity rule 1):
+   fewer than 20 in [0.2, 0.6] widens the band once to [0.1, 0.6]; fewer than 20 there, no arm is
+   read and the screen is reported. Arms: care-DPO and base-DPO attached (T1.6's adapters, sha256
+   checked against the T1.6 record, Amendment 39 item 4's attach check), `none` from the screen (the
+   read is deterministic). Outcome per item: ΔP(violating) = arm − `none`; item bootstrap, 10,000
+   draws, percentile 95%; care − base paired beside.
+   **care-DPO's branch.** CI below 0 = conditions on harm. CI above 0, or including 0 with its lower
+   bound above −0.054 (so excluding the drop care-DPO showed on the panel-format specificity set) =
+   format. CI including both 0 and −0.054 = unresolved at this n. Amendment 36's rule reads every CI
+   that includes 0 as format, a bias toward R_c when power is low; the unresolved class removes it.
+   **Mapping.** Harm with the paired care − base CI below 0 → R_a. Harm with the paired CI including
+   0 → shared: both teachers condition on harm in H1's format, so the teacher's difference is not a
+   harm condition (ST-A25's R_a on Muse's base gains; ST-A27's R_a does not). Format → R_c over R_a.
+   Unresolved → R_a and R_c both stay open, reported with the MDE. GPT-OSS's L-beh-2 (+0.308, format,
+   n = 30) is read beside as the cell on the other model, not pooled.
+2. **Trace content (R_c's carrier; zero GPU).** The 40 paired chosen traces: care-DPO's and
+   base-DPO's chosen rollout for the same scenario and pair index, rebuilt by
+   `t16_driver.harm_pairs` from the replicate's rollouts and checked against the T1.6 record's
+   per-scenario counts. Four features per trace, decoded with Muse's tokenizer: length in tokens, and
+   per 100 words the count of each of three fixed lexicons (case-insensitive, whole words). Harm:
+   harm, hurt, damage, loss, lose, risk, danger, injury, suffer, penalty, evict, eviction, cost,
+   costs. Person (third-person pronouns; H1's schema names no affected person): he, she, they, him, her, them, his, hers, their.
+   Weighing: however, but, although, though, balance, weigh, weighing, outweigh, outweighs, tradeoff,
+   trade-off, consider, considering, versus, "on the other hand". Paired care − base differences,
+   scenario bootstrap (22 scenarios), Bonferroni over the four (98.75% intervals). A feature whose
+   interval excludes 0 is a surface difference the adapter could carry. The check describes and does
+   not decide alone: a harm-marker difference fits R_a as well as R_c.
+3. **Likelihood (R_b; zero GPU; replaces ST-A27's 0.3 A100-h pass).** The replicate saved
+   `trace_nll_unsteered` on every rollout: the mean per-token NLL of the full completion (DPO's chosen
+   sequence) after the same prompt under the unsteered Muse, HF bf16 (DPO's reference was the NF4
+   base; stated). The 0.3 A100-h price in ST-A27 came from checking the T1.6 training record and not
+   the replicate's rows; the author's rule ran the pass only if R_b stayed open after items 1 and 2
+   because it cost GPU, and at zero GPU it is read beside them (flagged).
+   **R_b's premise:** care's chosen NLL − base's chosen NLL, paired by pair, scenario bootstrap, CI
+   above 0. **R_b's scaling test on cell A′:** care's ΔP − k × base's ΔP per item, k = ΔP(care) /
+   ΔP(base) on the generation of record (0.338 / 0.863 = 0.392), k resampled from the generation's
+   scenario bootstrap and the items resampled independently; R_b (care-DPO is base-DPO's update made
+   weaker) predicts a CI including 0. **Status:** closed if the premise CI includes 0 or lies below
+   it, or if the scaling CI excludes 0 (R_b may contribute but does not account for ST-A27); open
+   otherwise. The exploratory sign flip on the specificity set (+0.052 predicted, −0.054 read) is not
+   of record and does not enter this rule.
+4. **The map, written before data.** R_a: item 1 reads harm with the paired CI below 0, and R_b is
+   closed. R_c: item 1 reads format; with a surface difference in item 2 it is named, without one the
+   sentence reads "format, carrier unnamed". R_b open by item 3 is reported beside item 1's reading
+   (the two are not exclusive). Shared and unresolved as in item 1. Any other combination goes to
+   ST-A27 before wording.
+5. **Matched cap (author).** Both arms ran 243 steps, about 24 epochs over 40 rule-harm pairs, and
+   ended equally overfit (margins 33-75, chosen reward −10 to −23). The cap is matched across arms and
+   does not create the teacher's difference; it limits how far either adapter's profile generalizes
+   past these 22 scenarios, and every T1.6 sentence names it.
+6. **Wording conditions (author).** T1.6's wording follows items 1-4 and Amendment 42.
+   care-DPO's specificity −0.054 [−0.079, −0.030] is worded by Amendment 31's sign classes with the
+   interval's upper bound at the −0.03 bar stated (discriminating by the point, the interval reaching
+   the specific class). Cell A′ verdict sentences state n.
+7. **Pod and price.** `STEPS=a2m` (Muse, HF only): setup and the Muse download ~0.35, the screen 200
+   × 8 at T1.6's measured 0.19 s per row (~0.09), two arms at up to 60 × 8 (~0.05), attach checks and
+   dry runs ~0.1: **~0.6 A100-h**, stop 1.5 h. Power from measured variance: per-item ΔP SD 0.10 and
+   0.16 on Muse's rule-right specificity set (care-DPO, base-DPO), 0.36 on GPT-OSS's cell A′
+   (L-beh-2); MDE = 2.8 × SD / √n (two-sided 0.05, 80% power): n = 60, 0.036 / 0.058 / 0.130; n = 30,
+   0.051 / 0.082 / 0.184; n = 20, 0.063 / 0.100 / 0.225. Bail: fewer than 20 in band after the
+   fallback, no arm read (~0.45 spent). Saves: every row's letter read per arm, the selection file
+   (all 200 items' P(violating) under `none`), the attach checks. Muse's `none` on the panel-format
+   rule-right set reads 0.164 (35% of items in [0.2, 0.6]), so the cell is not expected to floor.
+   **Envelope 78** (author): spent 74.12 + ~0.6 = ~74.7.
+
+### Amendment 42 (2026-10-24; author; zero GPU; before ST-A26's standardized read is computed)
+
+ST-A26's first discriminator (R_c, the instrument on GPT-OSS): the §13 ladder re-read with a
+standardized null. The document-contrast direction (R_a) follows under its own amendment.
+
+1. **σ.** Per-dimension standard deviation of each model's pooled sample at its site: the 2,688
+   raw-text content-token means at the headline layer, the format and position of every object in the
+   read (σ provenance typed), plus 1e-12 (d2's in-format ladder convention; d1
+   `CALIBRATION_PREREG.md` Amendment 1 §2's standardized null).
+2. **The read.** Every object of Amendment 40 item 2 in standardized coordinates (x / σ): each
+   `V_moral` source's mean difference divided by σ, unit, orthonormalized; `V_const` per document; the
+   null from the rows of (X − mean) / σ (Xcᵀg, 10,000 draws); the held-one-out band; the pair
+   bootstrap; the held-out sign share; u and the positive control under Amendment 40 item 3's rule,
+   unchanged. Position validity as Amendment 40 (band minimum above null q95). PR and the top
+   dimension's variance share reported raw and standardized.
+3. **Invariance check (estimator-traps #9).** On OLMo-3-Think (raw PR 45.7, top dimension 2%), the
+   standardized read must reproduce the raw verdicts: position valid, and each document's ladder
+   position unchanged (raw: above the band floor for both). If either changes, standardization alters
+   the clean instrument; the standardized positive control is reported, is not of record, and R_c
+   stays open.
+4. **The null's movement is named (estimator-traps #11).** On GPT-OSS the raw null is drawn mostly
+   along the massive-activation dimension (84% of the variance); standardization divides that
+   dimension by its σ. A shift on OLMo-3-Think within the invariance verdicts is reported with its
+   size; a reason is given or the shift is flagged.
+5. **Branches, written before data.** Positive control passes with invariance holding → R_c: GPT-OSS's
+   raw ladder was the outlier's; ST-A26 resolves by calibration and the standardized ladder is §13's
+   instrument for later overlap reads (`C_partner` included). Fails with GPT-OSS's position valid → R_c
+   does not account for the failure; R_a and R_b go to the document-contrast read. GPT-OSS's position
+   invalid after standardization → the positive control is uninformative at this site, reported, and
+   the document-contrast read is designed with that stated.
+6. **Beside, not of record.** The top-k projection-out variant (dimensions holding more than 5% of the
+   raw variance projected out of every object; d1's variant); the per-layer standardized read over each
+   band (σ per layer); cos(V_const(spec), V_const(anth)) standardized (R_a's exploratory number).
+   Amendment 40's raw verdicts stay of record for Amendment 40; both are reported.
+7. **Cost.** Zero GPU, on `outputs/c13/*/extract.npz`.
