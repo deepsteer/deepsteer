@@ -180,10 +180,20 @@ def snapshot(c: dict, a) -> Path:
     tiny Muse."""
     if a.dry_run:
         return tiny_path(c)
-    from huggingface_hub import snapshot_download
+    return cached_snapshot(c["spec"]["repo"], c["spec"]["revision"])
 
-    return Path(snapshot_download(c["spec"]["repo"], revision=c["spec"]["revision"],
-                                  local_files_only=True))
+
+def cached_snapshot(repo: str, revision: str) -> Path:
+    """The cache's snapshot folder for ``revision``, read directly: ``snapshot_download`` with
+    ``local_files_only`` refuses a cache missing non-weight files (LICENSE, README) the runner never
+    downloads (the first T1.6 pod's failure). The copy needs only what is cached: the config, the
+    index and the weight shards that vLLM and HF load the base from."""
+    from huggingface_hub.constants import HF_HUB_CACHE
+
+    d = Path(HF_HUB_CACHE) / f"models--{repo.replace('/', '--')}" / "snapshots" / revision
+    if not (d / "config.json").exists() or not list(d.glob("*.safetensors")):
+        raise SystemExit(f"no cached snapshot with config and shards at {d}")
+    return d
 
 
 def attach(mw, adir: Path):
@@ -236,8 +246,21 @@ def hf_letters(sc, c: dict, tag: str) -> np.ndarray:
 
 
 # ---- reads ------------------------------------------------------------------------------------
+def reads_on_disk(c: dict, arm: str) -> bool:
+    """An arm's attached reads already complete on disk (a resumed pod): every row of dose 0 on
+    H1_held, the specificity set and each panel cell (the reads are deterministic)."""
+    n = 8  # the letter read's permutations
+    want = {f"dose0/{arm}/dl_chat_neutral.jsonl": len(c["held"]) * n,
+            f"spec/{arm}/dl_chat_neutral.jsonl": len(c["spec_ids"]) * n}
+    got = {k: len(_jsonl(c["out"] / k)) if (c["out"] / k).exists() else -1 for k in want}
+    cells = list((c["out"] / "panel" / arm).glob("*.jsonl"))
+    return all(got[k] == v for k, v in want.items()) and len(cells) == len(L.PANEL_CELLS)
+
+
 def letter_reads(sc, c: dict, arm: str) -> dict:
     """Dose 0 on H1_held, the specificity set and the panel half under ``arm``."""
+    if reads_on_disk(c, arm):
+        return {"reused": "complete rows on disk from an earlier pod (deterministic reads)"}
     t0 = time.time()
     d0 = L.run_letter_cell(sc, [c["H"][s] for s in c["held"]], "dl_chat_neutral", f"dose0/{arm}")
     sp = L.run_letter_cell(sc, [c["panel"][i] for i in c["spec_ids"]], "dl_chat_neutral",

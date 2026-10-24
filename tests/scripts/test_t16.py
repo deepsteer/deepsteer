@@ -231,3 +231,21 @@ def test_dry_run_every_step_with_the_fallback(tmp_path):
     assert res["status"] == "ok" and set(res["arms"]) == {"care", "base"}
     assert res["arms"]["care"]["engine"] == "vllm" and res["arms"]["base"]["engine"] == "hf"
     assert not np.isnan(res["arms"]["care"]["dP_record"]["mean"])
+
+
+def test_cached_snapshot_reads_the_cache_folder(tmp_path):
+    # most probable failure (the first T1.6 pod): the snapshot is resolved through
+    # snapshot_download(local_files_only=True), which refuses a cache missing LICENSE/README
+    snap = tmp_path / "models--org--m" / "snapshots" / ("a" * 40)
+    snap.mkdir(parents=True)
+    (snap / "config.json").write_text("{}")
+    (snap / "model-00001-of-00001.safetensors").write_bytes(b"x")
+    code = ("import sys; sys.path[:0]=[{s!r},{k!r}]; import t16_driver as T; "
+            "print(T.cached_snapshot('org/m', 'a' * 40))").format(
+                s=str(SCRIPTS), k=str(ROOT / "papers" / "kdg_panel" / "scripts"))
+    env = {**os.environ, "HF_HUB_CACHE": str(tmp_path), "PYTHONPATH": str(ROOT)}
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env)
+    assert r.returncode == 0 and r.stdout.strip() == str(snap), r.stderr[-1500:]
+    (snap / "model-00001-of-00001.safetensors").unlink()
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env)
+    assert r.returncode != 0 and "no cached snapshot" in r.stderr
