@@ -1,0 +1,104 @@
+{
+ "C_spec": {
+  "candidates": 45,
+  "passed": 44,
+  "kept": 40,
+  "dropped": {
+   "S-007": "banned word: fraud"
+  },
+  "renamed": {
+   "S-001": "Rafferty -> Adalbert",
+   "S-002": "Jasper -> Aiyana",
+   "S-003": "Bronwyn -> Alarik",
+   "S-004": "Odalys -> Amadou",
+   "S-005": "Soren -> Anneliese",
+   "S-006": "Marguerite -> Aputi",
+   "S-009": "Dagny -> Arvo",
+   "S-011": "Ximena -> Asel",
+   "S-014": "Ulla -> Basilio",
+   "S-015": "Benedikt -> Birgitta",
+   "S-017": "Farid -> Bonaventure",
+   "S-018": "Lucinda -> Calixto",
+   "S-019": "Valentin -> Camellia",
+   "S-020": "Gideon -> Caspian",
+   "S-021": "Signe -> Chidera",
+   "S-022": "Mehmet -> Coralie",
+   "S-023": "Vesna -> Dariusz",
+   "S-024": "Orla -> Dumisani",
+   "S-026": "Ilse -> Ebba",
+   "S-027": "Lorcan -> Edmundo",
+   "S-028": "Emeka -> Eilif",
+   "S-029": "Anouk -> Eulalia",
+   "S-030": "Magnus -> Ezequiel",
+   "S-031": "Cyrus -> Fabienne",
+   "S-033": "Astrid -> Fiadh",
+   "S-035": "Niamh -> Gaetano",
+   "S-036": "Tamsin -> Genoveva",
+   "S-037": "Yusuf -> Gisela",
+   "S-038": "Freya -> Godfrey",
+   "S-040": "Wilhelmina -> Hanneke",
+   "S-041": "Halima -> Haruto",
+   "S-042": "Saoirse -> Heloise",
+   "S-043": "Arjun -> Hesketh",
+   "S-044": "Hamid -> Idunn",
+   "S-045": "Thandiwe -> Ignacio"
+  },
+  "split_sizes": {
+   "train": 20,
+   "held": 20
+  }
+ },
+ "C_anth": {
+  "candidates": 45,
+  "passed": 37,
+  "kept": 37,
+  "dropped": {
+   "A-003": "banned word: fraud",
+   "A-006": "outside the scope: a child's pickup safety (minors)",
+   "A-007": "outside the scope: early refills of controlled pain medicine (drugs)",
+   "A-010": "outside the scope: pediatric dosing (minors)",
+   "A-019": "outside the scope: suicide risk (self-harm)",
+   "A-022": "outside the scope: a teenage driver's safety (minors)",
+   "A-026": "outside the scope: children's records (minors)",
+   "A-039": "outside the scope: election coverage (politics)"
+  },
+  "renamed": {
+   "A-002": "Bilal -> Ingeborg",
+   "A-006": "Folake -> Isolde",
+   "A-010": "Jarrah -> Jacinta",
+   "A-011": "Kalani -> Jerome",
+   "A-013": "Mbali -> Joaquina",
+   "A-023": "Wanjiru -> Junia",
+   "A-025": "Zainab -> Kaito",
+   "A-030": "Eitan -> Kasia",
+   "A-031": "Fatou -> Kerensa",
+   "A-035": "Oksana -> Kirra",
+   "A-038": "Sunniva -> Lachlan",
+   "A-040": "Umar -> Ladislav",
+   "A-041": "Yasmin -> Leocadia",
+   "A-042": "Kofi -> Leontine",
+   "A-044": "Malik -> Linnea"
+  },
+  "split_sizes": {
+   "train": 19,
+   "held": 18
+  }
+ },
+ "handcheck": {
+  "C_spec": {
+   "n": 10,
+   "coherent": 10,
+   "judgment_calls": {
+    "C13S-033": "loading before card settlement, by the rule's intent (P12)",
+    "C13S-005": "withdrawing a listed auction lot"
+   }
+  },
+  "C_anth": {
+   "n": 10,
+   "coherent": 10,
+   "scope": "one sampled item (suicide risk) led to the scope scan; seven items excluded"
+  },
+  "reader": "Claude, 2026-10-24",
+  "rater_baseline": "the author rates the held-out half (section 13)"
+ }
+}
