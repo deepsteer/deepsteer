@@ -3542,3 +3542,44 @@ The author's decisions after the replicate, the matrix and the D_rb rider.
 5. **Envelope 71.** Spent 65.55 + §13's evaluation ~0.5 (re-priced at its build) + cell A′ ~0.4 =
    ~66.5. T1.6 (a Muse adapter distilled from `care_harm` at 0.3×) is priced next; the envelope
    decision follows the price.
+
+### Amendment 37 (2026-10-24; author; zero GPU; before any T1.6 input is built or computed)
+
+T1.6 on Muse: a DPO adapter taught by `care_harm`-steered traces, beside a comparator taught by the
+unsteered model, so the teacher is the only difference. Built after §13's evaluation and cell A′.
+
+1. **care-DPO.** L-beh-2's recipe on Muse (DPO, β 0.1, LoRA rank 16, alpha 32, dropout 0; QLoRA
+   NF4 as T1.1's check; seed 105). Rule-harm pairs: chosen = `care_harm`-steered protect traces at
+   0.3× (the replicate's `arm_care_03`, Muse's 45 engaged H1_train × 16), rejected = unsteered rule
+   traces on the same scenarios (the replicate's `arm_none`); up to 2 pairs per scenario in rollout
+   order. Rule-right pairs: chosen = a `consistent` rollout, rejected = a `violating` one, from Muse's
+   base rollouts on the 130-item pool (generated on the pod, vLLM, × 8, L-beh-2's path); cut to the
+   rule-harm count by a seeded draw (all if fewer, the shortfall recorded).
+2. **Comparator (base-DPO).** Identical in every respect except the chosen rule-harm traces:
+   unsteered base protect traces from the replicate's `arm_none` on the same scenarios, the pair
+   count matched per scenario to care-DPO's (scenarios short of base protect traces drop from both
+   arms, recorded). Same rule-right pairs, seed and step count: the steps are fit once by
+   care-DPO's pilot (T1.4's budget rule, 2 A100-h) and reused.
+3. **Gate (T1.5's, on Muse).** `none` on all 132 H1_held × 8 (generation on vLLM, and dose 0) defines
+   Muse's engaged held set by T1.1's rule (Muse's screens read H1_train only, so nothing is reused).
+   **ΔP of record: generation** on the engaged held set × 8, the merged adapter against `none` on
+   vLLM; dose-0 ΔP beside it. Specificity against `none` on the 60 rule-right items (±0.03, Amendment
+   31's sign classes); the inheritance is named: `care_harm` at 0.3× reads +0.063 against `none`.
+   Capability (GSM8K 100, ≥ −0.02) and the panel guard (ΔE, fails if its CI is above 0), as T1.5.
+   **Merge gate mandatory** for the NF4 → bf16 merge (T1.5's kept-share and parity checks); if it
+   fails, the arm's reads run HF-attached (the fallback below).
+4. **The teacher's effect.** ΔP(care-DPO) − ΔP(base-DPO), paired by scenario, scenario bootstrap;
+   specificity likewise. Branches, written before data: (A) the difference's CI above 0 = the
+   steered teacher carries protection into the weights beyond DPO on protect-over-rule pairs; (B)
+   CI including 0 with both arms passing ΔP = the DPO pairs do the work, the teacher adds nothing
+   measurable; (C) neither passes = the recipe does not reach Muse at this budget. Each arm's own
+   verdict follows T1.5's ladder. If the comparator is not run (envelope), care-DPO is read alone and
+   the branches state that a pass cannot separate the teacher from DPO on protect pairs.
+5. **Price.** Shared: setup 0.35, pool rollouts 0.15, `none` on H1_held (generation and dose 0)
+   0.25, `none` panel half 0.45, `none` capability 0.1: ~1.3. Per arm: training 2.0, merge and base
+   check 0.1, the arm's reads (generation ΔP, dose 0, specificity, panel guard, capability) ~0.8:
+   ~2.9. Both arms **~7.1**; care-DPO alone ~4.2. Fallback if a merge gate fails: HF-attached
+   generation on the engaged held set and capability, ~0.7 for the arm plus ~0.7 once for `none` on
+   HF. Envelope **~75** (author): spent 65.55 + §13's evaluation ~0.5 + cell A′ ~0.4 + T1.6 ~7.1 =
+   ~73.6; with the fallback for both arms ~75.7, past it, in which case care-DPO's fallback runs and
+   the comparator's waits on the author.
