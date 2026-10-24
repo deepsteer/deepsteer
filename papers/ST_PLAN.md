@@ -3683,3 +3683,50 @@ build.
 8. **Outcomes outside Amendment 37's branches** (one arm passes with the teacher's CI including 0)
    are labelled unregistered and go to ANOMALIES before any wording.
 9. **Session.** 9.5 h stop; the price stays ~7.1 A100-h (~9.2 with both fallbacks) within 76.
+
+### Amendment 40 (2026-10-24; author; zero GPU; before any §13 or cell A′ read computes)
+
+§13's evaluation pod (GPT-OSS-20B and OLMo-3-7B-Think) with cell A′ riding on it.
+
+1. **Co-located extraction (author).** Per model, one site: raw text (no chat template), the
+   residual mean over the text's content tokens (BOS excluded), single-row. Headline layers are
+   d1's (OLMo-3-Think hidden 16, GPT-OSS hidden 12); bands are OLMo-3's d1 stable band 15-31 and,
+   for GPT-OSS (d1 set none, flagged), hidden 11-23, the same relative depth. Re-extracted there:
+   `V_moral` (rank 3, d1's three sources from d1's training partitions: Moral Stories, Understanding
+   Fables, ETHICS commonsense; each source's mean moral − neutral difference) and `V_const` for each
+   document (mean m − n over the training split of its pairs). Fables: `demelin/understanding_fables`
+   (d1's source; MIT, manual paraphrases of public-domain Aesop; flagged: the content is
+   public-domain-derived, the paraphrased text is MIT, not itself public domain). MORABLES is not
+   used.
+2. **The ladder at the site.** Participation ratio of the pooled sample of every extracted text's
+   mean (about 2,700 per model: d1's clean pairs, 573 Moral Stories, 62 fables, 199 ETHICS, and the
+   510 constitution pairs, both members). Covariance-matched null: directions drawn from N(0, Σ) of
+   that sample, their projection fraction onto span(V_moral),
+   10,000 draws, q50 and q95. Positive band: each `V_moral` source projected onto the span of the
+   other two, [min, max] (d1's held-one-out recipe). The overlap of record: the projection fraction
+   of V̂_const onto span(V_moral), with principal angles; a pair bootstrap over the training pairs;
+   held-out validation: the test pairs' m − n projections on V̂_const (AUC). Sentences carry the
+   ladder position. Position validity (instrument-calibration): if a model's band minimum is at or
+   below its null q95, the position is invalid and no overlap verdict is read for that model. §13's
+   V_harm reference is dropped: no harm direction exists at this site (the co-location rule).
+3. **Positive control (§13, made exact).** Per model, the normalized overlap u = (PF − null q50) /
+   (band min − null q50) (0 the null median, 1 the moral-family band floor; per-model normalization,
+   construct-audit). It passes if u(GPT-OSS, C_spec) − u(OLMo-3-Think, C_spec) has a bootstrap 95%
+   lower bound above 0. If it fails, the overlap read is reported as uncalibrated and not used on
+   `C_partner`. Branches per document and model (§13): high overlap (the document selects content the
+   model already carries; anchoring is the tool) or low overlap (new content; corpus work first).
+4. **OLMo-3-Think** as named: `allenai/Olmo-3-7B-Think`, revision `d97e442d…` (the registry's pin;
+   the hub's current sha, verified 2026-10-24; not gated). OLMo-3-Instruct is a follow-on if the
+   partner names it.
+5. **The family read (author).** Dose 0, `dl_chat_neutral`, 8 permutations, single-row, on each
+   family's held-out half (C_spec 20, C_anth 18) on both models; outcome per item: P(right option)
+   renormalized, and whether the modal choice is the right option. Raters: the author rates 20 (a
+   seeded 10 per family from the held halves), blind to model output; a subagent given the pinned
+   document rates all 38, blind to the construction label and to model output. Reliability = the
+   share of the 20 on which the two agree. If ≥ 0.8, the read uses the subagent's labels on all 38
+   with the reliability stated; else it uses the author's labels on the 20. The construction label is
+   reported beside.
+6. **Cell A′** as registered (Amendment 36 item 4) on GPT-OSS: the 200-item pool screened under
+   `none`, then 60 in band read under L-beh-2 and L-beh.
+7. **Price** ~1.2 A100-h (accepted). Envelope 76: spent 65.55 + T1.6 ~7.1 (to ~9.2 with fallbacks)
+   + this ~1.2.
