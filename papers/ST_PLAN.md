@@ -3583,3 +3583,23 @@ unsteered model, so the teacher is the only difference. Built after §13's evalu
    HF. Envelope **~75** (author): spent 65.55 + §13's evaluation ~0.5 + cell A′ ~0.4 + T1.6 ~7.1 =
    ~73.6; with the fallback for both arms ~75.7, past it, in which case care-DPO's fallback runs and
    the comparator's waits on the author.
+
+### Amendment 38 (2026-10-24; author; zero GPU; before the replicate's draw-aware fork is computed)
+
+1. **The fork's statistic (replaces Amendment 36 item 1's, which the design cannot support).** The
+   fill read assigns item j to draw j mod 5, so each item has two fill reads (seed 0's and seed 1's
+   draw in its slot). **(a), the verdict of record (author):** per item, `care_harm` − the mean of its
+   two fill reads (each against `none`); the CI combines the item bootstrap (10,000 draws over the 60
+   items) with the draw component, the variance of one draw estimated from the paired slot
+   differences (seed 1 − seed 0 on the same 12 items, 5 slots: σ²_draw = (var(slot differences) −
+   mean within-slot item variance / 12) / 2) and divided by the 10 draws; normal combination of the
+   two variances around the point; Amendment 31's sign classes on the point with the CI reported.
+   **(b), beside:** resampling each slot's two draws with replacement and the items with
+   replacement, 10,000 replicates (understates the draw variance by about half with two draws per
+   slot, stated).
+2. **Later Muse reads above 0.2× (replaces Amendment 36 item 2).** At least ten fill draws, each read
+   on all 60 specificity items (fully crossed), with the draws × scenarios bootstrap.
+3. **Envelope 76** (author), so both T1.6 fallbacks can run unattended (Amendment 37 item 5's
+   ~75.7).
+4. **Order (author).** T1.6 is built and launched first; §13's zero-GPU work proceeds while it runs;
+   then the §13 + cell A′ pod.
