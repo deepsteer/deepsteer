@@ -234,8 +234,8 @@ def test_document_specific_direction_and_branch44():
 
 
 def test_amendment45_five_item_rule_and_marks(tmp_path):
-    # most probable failure: the rater's letters are compared without decoding through the key, or
-    # the five-item rule counts the construction's option instead of the rater's
+    # most probable failure: the rater's letters are decoded through the sheet's key (20 items)
+    # instead of the rater items' key (38), or the five-item rule counts the construction's option
     key = {"key": {i: {"A": "o1", "B": "o2", "C": "o3"} for i in A.DISPUTED}}
     from deepsteer.kdg.schema import load_scenarios
     st = {s.id: {o.option_id: o.norm_status for o in s.options}
@@ -244,19 +244,19 @@ def test_amendment45_five_item_rule_and_marks(tmp_path):
     neutral_letter = {i: next(L for L, o in key["key"][i].items() if st[i][o] == "neutral")
                       for i in A.DISPUTED}
     all_neutral = {i: {"letter": neutral_letter[i]} for i in A.DISPUTED}
-    r = A.amendment45(all_neutral, key, {}, {}, None)
+    r = A.amendment45(all_neutral, key["key"], key, {}, {}, None)
     assert r["five_item_reading"].startswith("sides with the author") and len(
         r["disputed_neutral"]) == 5
     none_neutral = {i: {"letter": next(L for L in "ABC" if L != neutral_letter[i])}
                     for i in A.DISPUTED}
-    assert A.amendment45(none_neutral, key, {}, {}, None)["five_item_reading"].startswith(
-        "sides with the construction")
+    r0 = A.amendment45(none_neutral, key["key"], key, {}, {}, None)
+    assert r0["five_item_reading"].startswith("sides with the construction")
     q = tmp_path / "q.md"
     q.write_text("# t\n\n## C13S-012\n\ntext\n\ndoc: escalate\n\n## C13A-036\n\ndoc: Depart\n")
     m = A.doc_marks(q)
     assert m == {"C13S-012": "escalate", "C13A-036": "depart"}
-    assert A.amendment45(all_neutral, key, {}, {}, m)["construction_document_inconsistent"] == [
-        "C13S-012"]
+    rm = A.amendment45(all_neutral, key["key"], key, {}, {}, m)
+    assert rm["construction_document_inconsistent"] == ["C13S-012"] and rm["missing"] == []
 
 
 def test_api_rater_parse_and_blind_prompt():
