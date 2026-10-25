@@ -321,27 +321,10 @@ def amendment44(c13: Path) -> dict:
     return out
 
 
-def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | None) -> dict:
-    from deepsteer.kdg.schema import load_scenarios
-
-    lab = {}
-    for doc in ("spec", "anth"):
-        for s in load_scenarios(DATA / f"st_c13_family_{doc}_v1.json")[0]:
-            lab[s.id] = s.external_label["right_option_id"]
-    out: dict = {"construction_label": True}
-    labels, source = lab, "construction (raters pending)"
-    if author and key:
-        a = {i: key["key"][i][x] for i, x in author.items() if x}
-        if sub:
-            agree = [a[i] == sub.get(i) for i in a]
-            rel = float(np.mean(agree)) if agree else None
-            out["reliability"] = {"n": len(agree), "agreement": rel, "bar": RELIABILITY_BAR}
-            labels, source = ((sub, "subagent on all held items (reliability met)")
-                              if rel is not None and rel >= RELIABILITY_BAR else
-                              (a, "author's 20 (reliability below the bar)"))
-        else:
-            labels, source = a, "author's 20 (no subagent ratings)"
-    out["labels_of_record"] = source
+def family_scores(c13: Path, labels: dict[str, str]) -> dict:
+    """Per model and document: P(right option) at dose 0 under ``none`` and the modal-right share,
+    on the items ``labels`` covers."""
+    out: dict = {}
     for m in MODELS:
         for doc in ("spec", "anth"):
             f = c13 / m / "family" / "none" / doc / "dl_chat_neutral.jsonl"
@@ -364,6 +347,43 @@ def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | No
                                  "modal_right_share": float(np.mean([np.mean(v)
                                                                      for v in modal.values()]))
                                  if modal else None}
+    return out
+
+
+def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | None) -> dict:
+    """Amendment 40 item 5: the raters' reliability rule picks the labels of record; the
+    construction label is read beside (and the author's 20 when the subagent's labels are of
+    record)."""
+    from deepsteer.kdg.schema import load_scenarios
+
+    lab = {}
+    for doc in ("spec", "anth"):
+        for s in load_scenarios(DATA / f"st_c13_family_{doc}_v1.json")[0]:
+            lab[s.id] = s.external_label["right_option_id"]
+    out: dict = {"construction_label": True}
+    labels, source = lab, "construction (raters pending)"
+    a = None
+    if author and key:
+        a = {i: key["key"][i][x] for i, x in author.items() if x}
+        if sub:
+            agree = [a[i] == sub.get(i) for i in a]
+            rel = float(np.mean(agree)) if agree else None
+            out["reliability"] = {"n": len(agree), "agreement": rel, "bar": RELIABILITY_BAR,
+                                  "disagreements": sorted(i for i in a if a[i] != sub.get(i))}
+            labels, source = ((sub, "subagent on all held items (reliability met)")
+                              if rel is not None and rel >= RELIABILITY_BAR else
+                              (a, "author's 20 (reliability below the bar)"))
+        else:
+            labels, source = a, "author's 20 (no subagent ratings)"
+    out["labels_of_record"] = source
+    out.update(family_scores(c13, labels))
+    if labels is not lab:
+        out["construction_beside"] = family_scores(c13, lab)
+        out["rater_vs_construction"] = {
+            name: {"n": len(L), "agreement": float(np.mean([L[i] == lab.get(i) for i in L]))}
+            for name, L in (("author", a or {}), ("subagent", sub or {})) if L}
+    if a is not None and labels is not a:
+        out["author20_beside"] = family_scores(c13, a)
     return out
 
 

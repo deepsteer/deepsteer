@@ -1,5 +1,5 @@
 {
- "rule": "ST_PLAN Amendment 41",
+ "rule": "ST_PLAN Amendments 41 and 43",
  "content_likelihood": {
   "n_pairs": 40,
   "pairs_info": {
@@ -1002,5 +1002,20 @@
   "status": "closed (care-DPO is not a scaled base-DPO on cell A\u2032)"
  },
  "reading": "R_c over R_a: format (weighing); R_b closed (care-DPO is not a scaled base-DPO on cell A\u2032)",
+ "fork_sign_classes": {
+  "care": {
+   "mean": 0.027174039194138144,
+   "class": "specific"
+  },
+  "base": {
+   "mean": 0.5168121089726582,
+   "class": "non-specific"
+  },
+  "care_minus_base": {
+   "mean": -0.48963806977852015,
+   "class": "discriminating"
+  }
+ },
+ "generation": null,
  "matched_cap": "both arms 243 steps (about 24 epochs over 40 rule-harm pairs), equally overfit; matched, does not create the teacher's difference"
 }

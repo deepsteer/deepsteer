@@ -100,6 +100,11 @@ def test_raters_reliability_rule(tmp_path, monkeypatch):
     lo = A.family_read(tmp_path, author, key, sub_lo)
     assert hi["reliability"]["agreement"] == 1.0 and hi["labels_of_record"].startswith("subagent")
     assert lo["reliability"]["agreement"] == 0.5 and lo["labels_of_record"].startswith("author")
+    # Amendment 40 item 5: the construction label is read beside, and the author's 20 when the
+    # subagent's labels are of record
+    assert "construction_beside" in hi and "author20_beside" in hi
+    assert "construction_beside" in lo and "author20_beside" not in lo
+    assert lo["reliability"]["disagreements"] == [f"C13S-{i:03d}" for i in range(6, 11)]
 
 
 def test_remote_runs_c13():

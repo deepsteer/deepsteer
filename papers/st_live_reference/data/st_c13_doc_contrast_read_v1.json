@@ -1,0 +1,162 @@
+{
+ "rule": "ST_PLAN Amendment 44",
+ "std": {
+  "models": {
+   "gpt_oss_20b": {
+    "mode": "std",
+    "position_valid": true,
+    "null_q50": 0.12140705808048269,
+    "null_q95": 0.22974438148373816,
+    "band": [
+     0.5154223355578282,
+     0.6291269541037801
+    ],
+    "u_spec_perp": 0.015714264398352187,
+    "u_anth_perp": 0.2197177780829511,
+    "specificity_auc": 0.7227570273392376,
+    "specificity_auc_ci95": [
+     0.5664131690412014,
+     0.7882171736619176
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.07120715554853933,
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   },
+   "olmo3_think": {
+    "mode": "std",
+    "position_valid": true,
+    "null_q50": 0.11205702102301744,
+    "null_q95": 0.21739090724536325,
+    "band": [
+     0.43923240497850013,
+     0.5560885490807961
+    ],
+    "u_spec_perp": 0.11389111667388567,
+    "u_anth_perp": 0.2763378831592959,
+    "specificity_auc": 0.790527531767424,
+    "specificity_auc_ci95": [
+     0.652262225644975,
+     0.8471409318444358
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.08459380246386199,
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   }
+  },
+  "specificity_check": {
+   "gpt_oss_20b": true,
+   "olmo3_think": true
+  },
+  "positive_control": {
+   "delta_u": -0.09817685227553348,
+   "ci95": [
+    -0.2765307870623749,
+    0.12410555757997864
+   ],
+   "passes": false,
+   "valid_positions": true
+  },
+  "did_beside": {
+   "did": -0.04155674719918867,
+   "ci95": [
+    -0.39049695628394815,
+    0.3503003243911591
+   ]
+  },
+  "branch": "R_b: training on a document does not draw its specific content toward the model's moral subspace at this site; the overlap read is not used on C_partner, and the partner deliverable keeps the family read"
+ },
+ "raw": {
+  "models": {
+   "gpt_oss_20b": {
+    "mode": "raw",
+    "position_valid": true,
+    "null_q50": 0.32351543040820446,
+    "null_q95": 0.3998886367570502,
+    "band": [
+     0.6915916597993647,
+     0.7834704020244099
+    ],
+    "u_spec_perp": -0.5905147156064651,
+    "u_anth_perp": -0.3941716067387192,
+    "specificity_auc": 0.6546014632268001,
+    "specificity_auc_ci95": [
+     0.47432614555256064,
+     0.7625240662302656
+    ],
+    "specificity_passes": false,
+    "pf_contrast": 0.04118861265275305,
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   },
+   "olmo3_think": {
+    "mode": "raw",
+    "position_valid": true,
+    "null_q50": 0.14005982851021853,
+    "null_q95": 0.26733273350503217,
+    "band": [
+     0.5274295690137923,
+     0.6798505562733346
+    ],
+    "u_spec_perp": 0.03735760265587699,
+    "u_anth_perp": 0.04705972247611153,
+    "specificity_auc": 0.764728532922603,
+    "specificity_auc_ci95": [
+     0.5860127069695803,
+     0.8355795148247979
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.03515241011580856,
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   }
+  },
+  "specificity_check": {
+   "gpt_oss_20b": false,
+   "olmo3_think": true
+  },
+  "positive_control": {
+   "delta_u": -0.627872318262342,
+   "ci95": [
+    -0.8334353138901552,
+    -0.2508290300581153
+   ],
+   "passes": false,
+   "valid_positions": true
+  },
+  "did_beside": {
+   "did": -0.1866409890475113,
+   "ci95": [
+    -0.6238227103542856,
+    0.42072579057125886
+   ]
+  },
+  "branch": "R_a, strong form: these pairs carry no document-specific content the instrument can read; the positive control is uninformative and section 13's overlap read needs document-specific stimuli (new pairs, GPU, own amendment)"
+ },
+ "of_record": "std (Amendment 44 item 1); raw beside"
+}
