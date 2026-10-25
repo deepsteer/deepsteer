@@ -335,3 +335,30 @@ def test_a2f_dry_run_every_step(tmp_path):
             .splitlines() if x.strip()]
     assert rows and all(len(json.loads(r["order"]) if isinstance(r["order"], str) else r["order"])
                         == 2 for r in rows if r.get("order"))
+
+
+def test_merge_downloads_the_snapshot_when_the_cache_lacks_it(tmp_path, monkeypatch):
+    # most probable failure (the second a2f pod): a resumed pod skips gen none, whose vLLM engine
+    # downloaded the weights, so the merge finds no cached snapshot and stops
+    import a2g_driver as G
+    import huggingface_hub
+    import huggingface_hub.constants as HC
+    monkeypatch.setattr(HC, "HF_HUB_CACHE", str(tmp_path))
+    repo, rev = "org/model", "abc123"
+    snap = tmp_path / "models--org--model" / "snapshots" / rev
+    calls = []
+
+    def fake_download(r, revision=None):
+        calls.append((r, revision))
+        snap.mkdir(parents=True)
+        (snap / "config.json").write_text("{}")
+        (snap / "model.safetensors").write_bytes(b"x")
+        return str(snap)
+
+    monkeypatch.setattr(huggingface_hub, "snapshot_download", fake_download)
+    c = {"spec": {"repo": repo, "revision": rev}}
+
+    class A:
+        dry_run = False
+    assert G.ensure_snapshot(c, A()) == snap and calls == [(repo, rev)]
+    assert G.ensure_snapshot(c, A()) == snap and len(calls) == 1  # cached: no second download

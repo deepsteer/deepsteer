@@ -165,6 +165,22 @@ def step_gen(c: dict, a) -> dict:
             "tokens_per_second": out["tokens_per_second"]}
 
 
+def ensure_snapshot(c: dict, a) -> Path:
+    """The base snapshot for the merge, downloaded first if the cache lacks it: a resumed pod skips
+    ``gen none``, whose vLLM engine was what downloaded Muse's weights on every earlier pod (the
+    second a2f pod, 2026-10-25). An online ``snapshot_download``, not the ``local_files_only`` call
+    that refused a cache missing README and LICENSE (T1.6's first pod)."""
+    if a.dry_run:
+        return T16.snapshot(c, a)
+    try:
+        return T16.cached_snapshot(c["spec"]["repo"], c["spec"]["revision"])
+    except SystemExit:
+        from huggingface_hub import snapshot_download
+
+        snapshot_download(c["spec"]["repo"], revision=c["spec"]["revision"])
+        return T16.cached_snapshot(c["spec"]["repo"], c["spec"]["revision"])
+
+
 def dry_adapter(c: dict, a, arm: str) -> None:
     """A zero-initialized adapter at the tiny width (dry runs only)."""
     from deepsteer.steering import objective_lora as OL
@@ -184,7 +200,7 @@ def step_merge(c: dict, a) -> dict:
     if a.dry_run:
         dry_adapter(c, a, arm)
     shas = None if a.dry_run else verify(a.adapters, arm)
-    saved = T16.write_merged(T16.snapshot(c, a), a.adapters / arm, c["out"] / "merged" / arm)
+    saved = T16.write_merged(ensure_snapshot(c, a), a.adapters / arm, c["out"] / "merged" / arm)
     want = None
     if not a.dry_run:
         rec = json.loads((c["t16"] / "t16_record.json").read_text())["phases"]
