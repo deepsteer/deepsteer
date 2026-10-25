@@ -4055,3 +4055,31 @@ does not hold.
 6. **Pod and price.** `STEPS=c13c` (GPT-OSS and OLMo-3-Think, HF): setup and downloads ~0.15, two
    loads and about 500 texts each ~0.2, dry runs ~0.05: **~0.4 A100-h**, stop 1.0 h. Envelope 78:
    spent 75.59 + a2f ~1.0 + ~0.4 = ~77.0.
+
+### Amendment 48 (2026-10-25; author; zero GPU; before the within-model contrast is computed)
+
+1. **ST-A26's within-model contrast (author: go).** Per model, standardized coordinates of record
+   (Amendments 42, 44, 47): d_m = PF(v_spec2025⊥) − PF(v_anth⊥), the projection fractions onto
+   span(V_moral) of the C_spec2025-specific and C_anth-specific directions, in the model's own units
+   with no division by its band; pair bootstrap, 1,000 draws (Amendment 47's resampling). Beside: each
+   direction's percentile in the model's own covariance-matched null (10,000 draws), and d_GPT − d_OLMo.
+   **Disclosure, written before computing:** within a model, u is an increasing affine function of
+   the projection fraction (one null median and one band floor serve both directions), so the sign of
+   d_m equals the sign of u_spec⊥ − u_anth⊥ already reported by the Amendment 47 read: GPT-OSS −0.13
+   against 0.34, OLMo-3-Think 0.02 against 0.28, both negative. The read is not blind. It adds the
+   intervals and the null-percentile form and is worded as descriptive; it cannot serve as a test of
+   the premise. A blind within-model test needs stimuli this site has not read (GPU).
+   **Branches (stated for the record):** d_GPT's CI above 0 with d_OLMo's including or below 0 → the
+   premise shows within GPT-OSS; both above 0 → a property of the documents, not of training; d_GPT's
+   CI including or below 0 → the premise does not show within GPT-OSS at this site, worded with the
+   CI's width as the detection bar.
+2. **Sequencing (author).** No GPU before 2026-10-28. After it, in order: (a) a fresh-seed care-DPO
+   replicate (T1.6's care arm, its recipe, a new seed; the gate, cell A′'s generation and the forced
+   choice); (b) the recipe on the partner's model, once named; (c) why GPT-OSS has no passing vector.
+   Each gets its own amendment and price; the envelope (78, spent 77.57) needs the author's decision
+   before (a).
+3. **Wording (author).** T1.6's sentence carries its comparator (identical recipe with unsteered
+   chosen traces: +0.863, non-specific on every read) and its caveats inline: one run per arm, 40 pairs
+   at about 24 epochs, one model family, the mechanism open with "R_c over R_a" as a content reading.
+   The family read is worded as drafted, C13A-026 flagged, quote-and-classify from here on, with the
+   lesson stated: free rating carried a check-first prior that the documents' conflict passages do not.
