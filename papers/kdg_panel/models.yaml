@@ -299,6 +299,7 @@ st:
   olmo3_think:
     repo: allenai/Olmo-3-7B-Think
     revision: d97e442d7cc678210054dbcc9b440894d62c89a4
+    released: '2025-11-18'                # hub creation (createdAt), verified 2026-10-25; the date check (Amendment 47)
     kind: reasoning
     stage: final
     lineage: olmo3
@@ -320,6 +321,7 @@ st:
   qwen38_27b:
     repo: Qwen/Qwen3.8-27B
     revision: 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+    released: '2026-08-05'                # hub creation (createdAt), verified 2026-10-25; the date check (Amendment 47)
     kind: reasoning
     stage: final
     lineage: qwen38
@@ -361,6 +363,7 @@ st:
   muse_glimmer_30b:
     repo: meta-models/Muse-Glimmer-30B
     revision: a4e59da52a7bc87ae7251dd5545c0dd437c44b68
+    released: '2026-08-09'                # hub creation (createdAt), verified 2026-10-25; the date check (Amendment 47)
     kind: reasoning
     stage: final                     # already post-trained (card: safety SFT and RL); no base or instruct sibling
     lineage: muse
@@ -407,6 +410,7 @@ st:
   gpt_oss_20b:
     repo: openai/gpt-oss-20b
     revision: 6cee5e81ee83917806bbde320786a8fb61efebee
+    released: '2025-08-04'                # hub creation (createdAt), verified 2026-10-25; the date check (Amendment 47)
     kind: reasoning
     stage: final
     lineage: gpt_oss

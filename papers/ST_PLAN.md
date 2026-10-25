@@ -555,8 +555,9 @@ Documents of record for development (both CC0):
 - `C_spec`: the OpenAI Model Spec, current build at model-spec.openai.com (dated 2026-08-18 by its
   URL; Claude Code pins the fetched text by date and sha256 in `st_live_reference/constitutions.yaml`).
   Primary stand-in: explicit precedence (chain of command), non-overridable rules vs instructable
-  behavior, worked examples per principle. GPT-OSS was post-trained against it, which gives the
-  overlap read its positive control.
+  behavior, worked examples per principle. (Replaced by Amendment 47: GPT-OSS's post-training was
+  shaped toward the Model Spec's content as of its 2025 training, a soft premise; the control uses the
+  2025-04-11 revision.)
 - `C_anth`: Anthropic's constitution for Claude (2026-01-21; ~35k tokens; priority order broadly
   safe > broadly ethical > guidelines > helpful, a few hard constraints, judgment elsewhere).
   Genre contrast: reasons-and-character rather than rules; used for the optional second
@@ -4006,3 +4007,51 @@ After the generation cell (`data/st_a27_read_v1.json`): care-DPO's P(violating) 
    Power: per-item P(violating) SD at most 0.5, so at n = 51 the CI half-width is at most about 0.14,
    decisive against b unless the point lies within about 0.14 of it. Envelope 78: spent 75.59 + ~1.0
    = ~76.6.
+
+### Amendment 47 (2026-10-25; author; zero GPU; before the rebuilt control's inputs are built or computed)
+
+ST-A26's control-validity finding: the pinned GPT-OSS revision (hub creation 2025-08-04) predates
+the pinned Model Spec revision (2026-08-18), so §13's positive control was built on a premise that
+does not hold.
+
+1. **Voided (author).** The positive-control verdicts of Amendments 40 (item 3), 42 (item 5) and 44
+   (item 5) read **"control invalid: version mismatch."** Their measurements (projection fractions,
+   u, ladders, the specificity AUCs, Δu) stay as descriptive reads of the pinned 2026 documents. The
+   cause is recorded in ST-A26. The overlap read stays unused on `C_partner` until a valid control
+   passes.
+2. **The premise, restated (type block).** GPT-OSS's post-training was shaped toward the content of
+   the Model Spec current at its training; the model was not trained on the document's text. The
+   premise is soft. The control document is the latest public revision before GPT-OSS's release: the
+   Model Spec of **2025-04-11** (`openai/model_spec`, commit `095dabb04dd2…`, CC0 1.0, `model_spec.md`
+   sha256 `eeb877a0b248…`, 30,078 words; no release between it and 2025-08-04). The 2026-08-18
+   revision stays the C_spec of record for the family read and for `C_partner`'s genre comparison.
+   §13's sentence that gave the premise is replaced in place (below), and no document in the
+   repository uses the wording that said GPT-OSS was trained against the pinned revision.
+3. **The rebuilt control (GPU).** `C_spec2025` pairs built by the procedure that built C_spec's
+   (ST_PLAN §13; `data/st_c13_pairs_spec_v1.json`): principles extracted from the 2025-04-11 text with
+   verbatim quotes, hard constraints excluded, subagent-written moral and neutral pairs, five per
+   principle in the plain and professional registers, the same checks (length gap, word bands, word
+   overlap, banned words), an 80/20 split by principle, a 20-pair hand check. Extraction at the same
+   site on GPT-OSS and OLMo-3-Think (Amendment 40 item 1: raw text, residual mean over content
+   tokens, d1's headline layers and bands, the same revisions), the new pairs' texts only; `V_moral`'s
+   sources, the pooled sample, the null, the band and σ come from the saved extractions at that site
+   (`outputs/c13/*/extract.npz`; deterministic, the same code), so position validity is unchanged.
+   **Form of record:** Amendment 44's (standardized; the C_spec2025-specific direction with C_anth's
+   removed; the held-out specificity AUC; Δu(GPT-OSS − OLMo-3-Think) on that direction, bootstrap
+   lower bound above 0). Beside: Amendment 40's form on V_const(C_spec2025), the raw coordinates, the
+   difference in differences.
+4. **Branches, written before data.** Specificity check fails in either model → the pairs carry no
+   document-specific content the instrument can read; the control is uninformative. Check passes and
+   the control passes → the overlap instrument is calibrated in its document-specific form, and the
+   2026 reads are interpreted against it. Check passes and the control fails → the soft premise does
+   not show at this site, worded with its detection bar (not detected at the CI's width); the overlap
+   read stays unused on `C_partner`.
+5. **Mechanical date check (author).** `constitutions.yaml` gives every pinned document its date and
+   the models whose premise involves it (`premise_models`); the registry gives every ST model its hub
+   creation date (`released`, verified 2026-10-25: GPT-OSS 2025-08-04, OLMo-3-Think 2025-11-18, Muse
+   2026-08-09, Qwen3.8 2026-08-05). A test in the suite builds the full document × model date matrix,
+   fails on any document without a date or model without a release date, and fails if a document is
+   dated on or after the release of a model in its premise.
+6. **Pod and price.** `STEPS=c13c` (GPT-OSS and OLMo-3-Think, HF): setup and downloads ~0.15, two
+   loads and about 500 texts each ~0.2, dry runs ~0.05: **~0.4 A100-h**, stop 1.0 h. Envelope 78:
+   spent 75.59 + a2f ~1.0 + ~0.4 = ~77.0.
