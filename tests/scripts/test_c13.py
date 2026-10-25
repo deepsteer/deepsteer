@@ -231,3 +231,43 @@ def test_document_specific_direction_and_branch44():
     assert A.branch44(ok, {"passes": True, "valid_positions": True}).startswith("R_a:")
     assert A.branch44(ok, {"passes": False, "valid_positions": True}).startswith("R_b")
     assert A.branch44(ok, {"passes": True, "valid_positions": False}).startswith("uninformative")
+
+
+def test_amendment45_five_item_rule_and_marks(tmp_path):
+    # most probable failure: the rater's letters are compared without decoding through the key, or
+    # the five-item rule counts the construction's option instead of the rater's
+    key = {"key": {i: {"A": "o1", "B": "o2", "C": "o3"} for i in A.DISPUTED}}
+    from deepsteer.kdg.schema import load_scenarios
+    st = {s.id: {o.option_id: o.norm_status for o in s.options}
+          for d in ("spec", "anth") for s in load_scenarios(ST / "data" /
+                                                            f"st_c13_family_{d}_v1.json")[0]}
+    neutral_letter = {i: next(L for L, o in key["key"][i].items() if st[i][o] == "neutral")
+                      for i in A.DISPUTED}
+    all_neutral = {i: {"letter": neutral_letter[i]} for i in A.DISPUTED}
+    r = A.amendment45(all_neutral, key, {}, {}, None)
+    assert r["five_item_reading"].startswith("sides with the author") and len(
+        r["disputed_neutral"]) == 5
+    none_neutral = {i: {"letter": next(L for L in "ABC" if L != neutral_letter[i])}
+                    for i in A.DISPUTED}
+    assert A.amendment45(none_neutral, key, {}, {}, None)["five_item_reading"].startswith(
+        "sides with the construction")
+    q = tmp_path / "q.md"
+    q.write_text("# t\n\n## C13S-012\n\ntext\n\ndoc: escalate\n\n## C13A-036\n\ndoc: Depart\n")
+    m = A.doc_marks(q)
+    assert m == {"C13S-012": "escalate", "C13A-036": "depart"}
+    assert A.amendment45(all_neutral, key, {}, {}, m)["construction_document_inconsistent"] == [
+        "C13S-012"]
+
+
+def test_api_rater_parse_and_blind_prompt():
+    # most probable failure: a fenced or prefixed JSON reply is lost, or the prompt leaks the
+    # construction label
+    import c13_api_rater as R
+    assert R.parse('```json\n{"letter": "B", "confidence": "high"}\n```')["letter"] == "B"
+    assert R.parse('{"letter": "D"}') is None and R.parse("no json") is None
+    item = {"id": "C13S-001", "document": "C_spec", "scenario": "S", "options": {"A": "a",
+                                                                              "B": "b", "C": "c"}}
+    msgs = R.prompt(item, "DOC")
+    text = json.dumps(msgs)
+    assert "DOC" in text and "construction" not in msgs[1]["content"]
+    assert "right_option" not in text and "violating" not in text

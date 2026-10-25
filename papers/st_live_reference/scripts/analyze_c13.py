@@ -387,6 +387,57 @@ def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | No
     return out
 
 
+DISPUTED = ("C13S-012", "C13S-013", "C13S-024", "C13A-026", "C13A-036")
+
+
+def doc_marks(quotes_md: Path) -> dict[str, str]:
+    """The author's ``doc:`` line per disputed item in the quote sheet (Amendment 45 item 2)."""
+    import re
+
+    out = {}
+    for blk in re.split(r"(?m)^## (?=C13[SA]-\d{3})", quotes_md.read_text())[1:]:
+        sid = blk.split("\n", 1)[0].strip()
+        m = re.findall(r"(?m)^doc:[ \t]*(\w*)", blk)
+        out[sid] = (m[0].lower() if m else "") or None
+    return out
+
+
+def amendment45(rater: dict, key: dict, author: dict, sub: dict, marks: dict | None) -> dict:
+    """Amendment 45 item 4: the blind rater's agreement with the author's 20, the construction
+    labels and the subagent; the five-item rule; the document-inconsistent construction labels."""
+    from deepsteer.kdg.schema import load_scenarios
+
+    lab, status = {}, {}
+    for doc in ("spec", "anth"):
+        for s in load_scenarios(DATA / f"st_c13_family_{doc}_v1.json")[0]:
+            lab[s.id] = s.external_label["right_option_id"]
+            status[s.id] = {o.option_id: o.norm_status for o in s.options}
+    g = {i: key["key"][i][r["letter"]] for i, r in rater.items() if r.get("letter")}
+    a = {i: key["key"][i][x] for i, x in author.items() if x}
+
+    def agree(x: dict, y: dict) -> dict:
+        ids = sorted(set(x) & set(y))
+        return {"n": len(ids), "agreement": float(np.mean([x[i] == y[i] for i in ids]))
+                if ids else None}
+
+    neutral = [i for i in DISPUTED if i in g and status[i][g[i]] == "neutral"]
+    k = len(neutral)
+    reading = ("not read (a disputed item is missing)" if any(i not in g for i in DISPUTED) else
+               "sides with the author (ST-A28 R_a: the construction leans toward departure)"
+               if k >= 4 else "sides with the construction (R_b: the author's check-first prior)"
+               if k <= 1 else "split (R_c: the items are ambiguous)")
+    out = {"rule": "ST_PLAN Amendment 45", "n_rated": len(g), "missing": sorted(set(lab) - set(g)),
+           "vs_author_20": agree(g, a), "vs_construction_38": agree(g, lab),
+           "vs_subagent_38": agree(g, sub), "disputed_neutral": neutral,
+           "disputed_choice": {i: status[i].get(g.get(i)) for i in DISPUTED},
+           "five_item_reading": reading}
+    if marks is not None:
+        out["author_doc_marks"] = marks
+        out["construction_document_inconsistent"] = sorted(i for i, m in marks.items()
+                                                           if m == "escalate")
+    return out
+
+
 def cell_a2(c13: Path) -> dict | None:
     import analyze_st2fx as FX
 
@@ -423,12 +474,24 @@ def main() -> None:
     ap.add_argument("--key", type=Path, default=None)
     ap.add_argument("--subagent", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--amendment45", type=Path, default=None,
+                    help="the blind rater's raw ratings (Amendment 45); needs --author, --key, "
+                         "--subagent; reads outputs/c13_rating/a28_quotes.md for the doc marks")
     ap.add_argument("--amendment44", action="store_true",
                     help="ST-A26's document-contrast read only (the family read is not touched)")
     ap.add_argument("--amendment42", action="store_true",
                     help="ST-A26's standardized read only (the family read is not touched)")
     a = ap.parse_args()
     rd = lambda p: json.loads(p.read_text()) if p else None  # noqa: E731
+    if a.amendment45:
+        qm = a.c13.parent / "c13_rating" / "a28_quotes.md"
+        marks = doc_marks(qm) if qm.exists() else None
+        res = amendment45(json.loads(a.amendment45.read_text())["ratings"], rd(a.key),
+                          rd(a.author), rd(a.subagent), marks)
+        p = a.out or a.c13 / "c13_a45_read.json"
+        p.write_text(json.dumps(res, indent=1))
+        print(json.dumps(res, indent=1))
+        return
     if a.amendment44:
         res = amendment44(a.c13)
         slim = json.loads(json.dumps(res, default=str))
