@@ -1,0 +1,37 @@
+{
+ "rule": "ST_PLAN Amendment 48 (descriptive; not blind)",
+ "gpt_oss_20b": {
+  "d": -0.18290734251208596,
+  "ci95": [
+   -0.242580051597022,
+   -0.045496365982528715
+  ],
+  "pf_spec2025_perp": 0.07053369937941778,
+  "pf_anth_perp": 0.25344104189150374,
+  "null_percentile": {
+   "spec": 0.1535,
+   "anth": 0.9774
+  }
+ },
+ "olmo3_think": {
+  "d": -0.08669486289197405,
+  "ci95": [
+   -0.16405753731782513,
+   0.020405887310677263
+  ],
+  "pf_spec2025_perp": 0.11832408903854427,
+  "pf_anth_perp": 0.20501895193051833,
+  "null_percentile": {
+   "spec": 0.537,
+   "anth": 0.9328
+  }
+ },
+ "d_gpt_minus_d_olmo": {
+  "mean": -0.09621247962011191,
+  "ci95": [
+   -0.2117828129936317,
+   0.06271900416706327
+  ]
+ },
+ "branch": "the premise does not show within GPT-OSS at this site (descriptive; not blind)"
+}

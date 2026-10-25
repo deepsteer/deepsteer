@@ -377,6 +377,48 @@ def amendment47(c13: Path, c13c: Path) -> dict:
     return contrast_read(c13, c13c, branch47, "ST_PLAN Amendment 47")
 
 
+def amendment48(c13: Path, c13c: Path) -> dict:
+    """ST-A26's within-model contrast (Amendment 48; not blind, its sign fixed by the Amendment 47
+    read): d_m = PF(spec2025-perp) - PF(anth-perp) in the model's own units, standardized; each
+    direction's percentile in the model's covariance-matched null; d_GPT - d_OLMo beside."""
+    out: dict = {"rule": "ST_PLAN Amendment 48 (descriptive; not blind)"}
+    boots = {}
+    for m in MODELS:
+        r = doc_contrast(c13, m, "std", c13c)
+        scale = r["band"][0] - r["null_q50"]
+        d = (r["u_spec_perp"] - r["u_anth_perp"]) * scale
+        db = (np.array(r["u_spec_perp_boot"]) - np.array(r["u_anth_perp_boot"])) * scale
+        boots[m] = db
+        z = np.load(c13 / m / "extract.npz")
+        keys = [str(k) for k in z["keys"]]
+        X = transform(z["headline"].astype(np.float64), "std")
+        src = {s: np.mean(list(diffs(keys, X, f"d1|{s}").values()), axis=0) for s in SOURCES}
+        Q = ladder(X, src, np.random.default_rng(SEED), 10)["Q"]
+        Xc = X - X.mean(0, keepdims=True)
+        G = np.random.default_rng(SEED + 1).standard_normal((N_NULL, Xc.shape[0]))
+        null = np.array([frac(Q, Xc.T @ g) for g in G])
+        pf = {k: r["null_q50"] + r[f"u_{k}_perp"] * scale for k in ("spec", "anth")}
+        out[m] = {"d": float(d), "ci95": [float(np.percentile(db, 2.5)),
+                                         float(np.percentile(db, 97.5))],
+                  "pf_spec2025_perp": float(pf["spec"]), "pf_anth_perp": float(pf["anth"]),
+                  "null_percentile": {k: float((null < v).mean()) for k, v in pf.items()}}
+    dd = boots["gpt_oss_20b"][np.random.default_rng(SEED).permutation(N_BOOT)] \
+        - boots["olmo3_think"]
+    out["d_gpt_minus_d_olmo"] = {
+        "mean": out["gpt_oss_20b"]["d"] - out["olmo3_think"]["d"],
+        "ci95": [float(np.percentile(dd, 2.5)), float(np.percentile(dd, 97.5))]}
+    out["branch"] = branch48(out["gpt_oss_20b"]["ci95"], out["olmo3_think"]["ci95"])
+    return out
+
+
+def branch48(g_ci: list[float], o_ci: list[float]) -> str:
+    """Amendment 48 item 1, stated before computing (the read is not blind)."""
+    if g_ci[0] > 0:
+        return ("a property of the documents, not of training" if o_ci[0] > 0
+                else "the premise shows within GPT-OSS")
+    return "the premise does not show within GPT-OSS at this site (descriptive; not blind)"
+
+
 def family_scores(c13: Path, labels: dict[str, str]) -> dict:
     """Per model and document: P(right option) at dose 0 under ``none`` and the modal-right share,
     on the items ``labels`` covers."""
@@ -537,6 +579,8 @@ def main() -> None:
     ap.add_argument("--amendment45", type=Path, default=None,
                     help="the blind rater's raw ratings (Amendment 45); needs --author, --key, "
                          "--subagent; reads outputs/c13_rating/a28_quotes.md for the doc marks")
+    ap.add_argument("--amendment48", type=Path, default=None,
+                    help="the c13c outputs: ST-A26's within-model contrast (descriptive)")
     ap.add_argument("--amendment47", type=Path, default=None,
                     help="the c13c outputs: the rebuilt control on the 2025-04-11 Model Spec")
     ap.add_argument("--amendment44", action="store_true",
@@ -552,6 +596,12 @@ def main() -> None:
         res = amendment45(json.loads(a.amendment45.read_text())["ratings"], rk, rd(a.key),
                           rd(a.author), rd(a.subagent), marks)
         p = a.out or a.c13 / "c13_a45_read.json"
+        p.write_text(json.dumps(res, indent=1))
+        print(json.dumps(res, indent=1))
+        return
+    if a.amendment48:
+        res = amendment48(a.c13, a.amendment48)
+        p = a.out or a.c13 / "c13_within_model_read.json"
         p.write_text(json.dumps(res, indent=1))
         print(json.dumps(res, indent=1))
         return

@@ -1365,3 +1365,70 @@ about 0.128, so the five-draw read that first said "discriminating" depended on 
 taken. Of the three directions tested on Muse (V_qwen, −V_harm, `care_harm`), it is the only one that
 moves protection beyond a random vector with a rule-right tilt indistinguishable from zero at this
 instrument's resolution (±0.087); T1.6 asks whether that survives distillation into weights.
+
+### ST line thesis (2026-10-25), positive voice
+
+On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
+indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_harm`'s rule-right tilt
+at its operating dose was indistinguishable from a random vector's, and the random vector's own tilt
+grew with dose.
+
+Distilling that gate-passing vector into DPO produced **the first adapter whose rule-breaking tracked
+the harm condition on every registered read**. care-DPO on Muse raises protection where the rule
+harms (+0.338 [+0.264, +0.410]) and follows the rule where breaking it would, even when it cannot
+defer: 0.022 [0.002, 0.049] under forced choice. An adapter identical in recipe with the unsteered
+model's traces as teacher (base-DPO) protects more (+0.863) and breaks rules on every rule-right read
+(+0.133 to +0.517).
+
+The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
+two vectors:
+- adapters: L-beh +0.192; L-beh-2, format-bound, +0.308 on cell A′; base-DPO;
+- vectors: −V_harm +0.089 and V_qwen +0.093 on GPT-OSS.
+
+One run, one family, the mechanism open, and the matched-item replicate pending.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (after 2026-10-28; envelope 84) | supported on one run, one family |
+
+Referee pass on the thesis.
+1. *"'Every registered read' while two registered labels say otherwise."* T1.5's ladder counts
+   care-DPO's protective −0.054 as non-specific by magnitude, and Amendment 41's format class joined
+   two outcomes (the fork). The rule-breaking itself stays at or below `none`'s on every rule-right
+   read. ST_PLAN's T1.6 outcome states the labels beside the verdict.
+2. *"40 pairs at 24 epochs is a memorized teacher, not a learned condition."* Conceded as a caveat.
+   The matched-item replicate and the partner's model are the next two GPU items.
+3. *"The instrument 'caught' what it was tuned to catch."* The specificity set and its bar were
+   registered before every read here (T1.5, Amendment 31). care-DPO passed the same instrument that
+   flagged the other five.
+
+**T1.6 and its cells (2026-10-25), what changed.**
+- The teacher, not the recipe, decides whether a DPO adapter's rule-breaking tracks harm. With the
+  recipe held fixed, swapping `care_harm`-steered chosen traces for unsteered ones turns a
+  non-specific adapter into one that follows the rule on rule-right items in generation (+0.005) and
+  under forced choice (0.022).
+- Rule avoidance (R_d) is ruled out. care-DPO's order on rule-right items is defer, then follow,
+  then break. Its smaller protection on its targets (+0.338 against +0.863) is the price.
+- The action split and parse rate are now reported for every adapter read.
+
+**§13 (2026-10-25), what changed.** The overlap read has no valid positive control.
+- The first three controls are void, a version mismatch: GPT-OSS's weights predate the 2026 Model
+  Spec.
+- On the 2025 revision, no GPT-OSS advantage is detectable (Δu −0.15 [−0.34, +0.07]). The
+  within-model contrast, descriptive and not blind, points the same way.
+- What the site shows is that principle-instantiating text from either document sits in the moral
+  subspace as fully as the moral-family sources do. The Model Spec's specific content does not. The
+  constitution's specific content sits in the null's upper tail in both models.
+- The overlap read stays unused on `C_partner`. A date check in the test suite now guards every
+  document-model premise.
+
+**Cell A′ on GPT-OSS (2026-10-24), what changed.** L-beh-2's protection transfers across formats; its
+rule-following does not. It halves L-beh's rule-breaking in H1's format (+0.308 against +0.618)
+without removing it, so its specificity on the panel set was partly format-bound.
+
+**The family read (2026-10-25), what changed.**
+- The labels of record are the author's 20: reliability 0.75 with the subagent, against the 0.8 bar.
+- C13A-026's construction label is flagged as inconsistent with its document.
+- Free rating carried a check-first prior that the documents' conflict passages do not: the
+  author's own quote-and-classify marks side with departure on four of five such items.
+- Labels are set by quote-and-classify from here on, `C_partner`'s included.

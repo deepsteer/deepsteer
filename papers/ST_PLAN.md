@@ -4083,3 +4083,155 @@ does not hold.
    at about 24 epochs, one model family, the mechanism open with "R_c over R_a" as a content reading.
    The family read is worded as drafted, C13A-026 flagged, quote-and-classify from here on, with the
    lesson stated: free rating carried a check-first prior that the documents' conflict passages do not.
+
+#### T1.6 outcome on Muse: care-DPO against base-DPO (2026-10-25; Amendments 37-39, 41, 43, 46, 48; `data/t16_read_v1.json`, `data/st_a27_read_v1.json`)
+
+Pods t16 (with its resume), a2m, a2g and a2f. Both arms used L-beh-2's recipe on Muse: DPO, LoRA rank
+16, QLoRA NF4, seed 105, 243 steps (about 24 epochs). The pair split was 40 rule-harm pairs from 22
+scenarios and 0 rule-right pairs, because Muse never broke the rule on the 130-item pool (ST-A25).
+The arms differ only in the chosen rule-harm traces: `care_harm`-steered at 0.3× for care-DPO,
+unsteered for base-DPO. Both merges passed their gate (kept share 0.964 and 0.998), as did vLLM
+parity (0.0080, 0.0010).
+
+| read (rule) | care-DPO | base-DPO |
+|---|---|---|
+| generation ΔP of record, 54 engaged H1_held (≥ +0.15, CI > 0) | **+0.338 [+0.264, +0.410]** | +0.863 [+0.815, +0.910] |
+| dose-0 ΔP | +0.065 [+0.032, +0.095] | +0.288 [+0.257, +0.319] |
+| specificity against `none`, 60 panel rule-right items (±0.03) | −0.054 [−0.079, −0.030] | +0.133 [+0.095, +0.174] |
+| capability, GSM8K 100 (≥ −0.02) | −0.005 [−0.04, +0.03] | −0.025 [−0.06, +0.005]: fails |
+| panel guard ΔE (fails if CI > 0) | +0.004 [−0.002, +0.011] | +0.007 [−0.004, +0.017] |
+| cell A′ dose 0, 51 rule-right items in the training format | +0.027 [−0.017, +0.071] | +0.517 [+0.485, +0.548] |
+| cell A′ generation, P(violating) against `none`'s 0.000 | +0.005 [0.000, +0.012] | +0.348 [+0.245, +0.453] |
+| cell A′ forced choice (defer removed), P(violating) | 0.022 [0.002, 0.049] | 0.436 [0.326, 0.547] |
+
+**Verdict.** care-DPO is the first adapter whose rule-breaking tracked the harm condition on every
+registered read: it protects where the rule harms and follows the rule where breaking it would, even
+when it cannot defer. Its comparator, identical in recipe with unsteered chosen traces, is
+non-specific on every read (+0.863 on its targets, and +0.133, +0.517, +0.348 and 0.436 on rule-right
+items). Caveats:
+- one run per arm;
+- 40 rule-harm and 0 rule-right pairs at about 24 epochs, matched across arms;
+- one model family;
+- the mechanism is open, with "R_c over R_a" as a content reading (the steered traces carry more
+  weighing language, +0.37 per 100 words [+0.13, +0.60], and no more harm language).
+
+Whether that is a harm condition or the difference between the two item sets is what the
+matched-item fresh-seed replicate decides.
+
+**Registered labels, stated beside the verdict.**
+- T1.6's branch is unregistered (ST-A27): the teacher's difference is −0.525 [−0.618, −0.433].
+- T1.5's ladder labels both arms non-specific. For care-DPO that is the magnitude of −0.054, which
+  lies on the protective side.
+- Amendment 41's registered map reads "R_c over R_a, format". The fork (Amendment 43) found that
+  class joined a rise and no change, and read care-DPO as specific.
+- The generation cell reads no rise (Amendment 43), and the forced choice reads that it follows the
+  rule (Amendment 46), which rules out R_d.
+- base-DPO's +0.517 at dose 0 reads as format-bound letter selection.
+
+**Bias directions.**
+- base-DPO's truncations (11% in cell A′'s generation) are counted non-violating, which understates
+  its rule-breaking.
+- `none`'s 0.000 in generation floors any drop below it, so specificity there is read by the absence
+  of a rise.
+- Both arms' overfitting is matched; it limits generalization, not the difference between them.
+
+**Referee pass.**
+1. *"'Every registered read' is contradicted by two registered labels."* Answered in part. The
+   labels are T1.5's magnitude threshold, which counts care-DPO's protective −0.054 as non-specific,
+   and Amendment 41's format class, which the fork found joined two outcomes. On each read the
+   rule-breaking itself stays at or below `none`'s on rule-right items while protection rises on
+   rule-harm items. The labels stand beside the verdict.
+2. *"One run on 40 pairs memorized 22 scenarios."* Conceded as a caveat in the verdict. The
+   fresh-seed replicate on matched items is first after 2026-10-28.
+3. *"The harm condition is the item sets."* That's the rival, named in the verdict with the cell
+   that decides it.
+
+#### §13 outcome: the overlap read (2026-10-25; Amendments 40, 42, 44, 47, 48; `data/st_c13_*_read_v1.json`)
+
+| control | site and coordinates | Δu (GPT-OSS − OLMo-3-Think) | verdict |
+|---|---|---|---|
+| Amendment 40, V_const(2026 C_spec) | raw | −0.30 [−0.40, −0.19] | control invalid: version mismatch |
+| Amendment 42 | standardized | −0.12 [−0.20, −0.007] | control invalid: version mismatch |
+| Amendment 44, the C_spec-specific direction | standardized | −0.10 [−0.28, +0.12] | control invalid: version mismatch |
+| **Amendment 47, the 2025-04-11 C_spec-specific direction** | standardized; anchors reproduce at cos 1.0 | **−0.15 [−0.34, +0.07]** | **fails: the soft premise does not show** |
+
+**Verdict.** No positive control passes at this site, so the overlap read stays unused on
+`C_partner`. The three original controls are void: GPT-OSS's weights (2025-08-04) predate the 2026
+Model Spec. The rebuilt control on the revision current at GPT-OSS's training fails. No GPT-OSS
+advantage is detectable at |Δu| ≳ 0.34.
+
+**What the site does show (descriptive).**
+- A constitution's principle-instantiating text projects onto the pretrained moral subspace as
+  strongly as the moral-family sources do (u 1.07-1.32, standardized), in both models, for both
+  documents and both revisions.
+- The documents' specific content is carried by the pairs (held-out AUC 0.72-0.79). The Model
+  Spec's sits at or below the null median in both models (null percentile 15 on GPT-OSS, 54 on
+  OLMo-3-Think). The constitution's sits in the null's upper tail (98 and 93).
+- The within-model contrast (Amendment 48; descriptive, not blind, its sign fixed by the reported u
+  values) reads −0.18 [−0.24, −0.05] on GPT-OSS and −0.09 [−0.16, +0.02] on OLMo-3-Think. In
+  neither model does the training document's specific content sit nearer the moral subspace than
+  another constitution's; on GPT-OSS it sits farther.
+
+**Bias directions.** u divides by each model's band floor, a model-level scale that favors neither
+document within a model but can shift Δu across models. The difference in differences, which does
+not use that scale, is −0.20 [−0.53, +0.22].
+
+**Referee pass.**
+1. *"The premise was wrong from the start."* Conceded for the 2026 revision, and the verdicts are
+   void. The rebuilt control tests the soft premise on the right revision and does not show it.
+2. *"Not detected is not absent."* The sentence carries the bar (0.34).
+3. *"u's normalization hides a model difference."* The within-model contrast, which does not divide by
+   the band, points the same way (GPT-OSS −0.18 [−0.24, −0.05]). It is not blind; a blind test needs
+   stimuli this site has not read.
+
+#### Cell A′ outcome on GPT-OSS (2026-10-24; Amendments 36, 40; `data/st_c13_cellA2_read_v1.json`)
+
+30 of 200 items in band (shortfall 30); `none`'s P(violating) 0.36 on them.
+
+**Results.** P(violating):
+- L-beh-2 raises it by +0.308 [+0.179, +0.433] (MDE 0.18);
+- L-beh by +0.618 [+0.569, +0.661];
+- L-beh-2 − L-beh: −0.310 [−0.436, −0.191].
+
+**Verdict.** Registered branch: format (ST-A23 resolves to R_b). L-beh-2's protection transfers
+across formats; its rule-following does not. It halves L-beh's rule-breaking in H1's format without
+removing it, so its specificity on the panel set was partly format-bound.
+
+**Referee pass.**
+1. *"n = 30."* Stated. The rise's lower bound (+0.179) sits well above 0.
+2. *"Selecting on the base model's band biases the read."* The operating band was registered before
+   data, and it gives the cell headroom.
+3. *"The items make harm less salient by construction."* Yes. L-beh-2 may condition on salient harm
+   only; a salience ladder separates that.
+
+#### §13 outcome: the family read (2026-10-25; Amendments 40, 45, 46; `data/st_c13_family_read_v1.json`, `data/st_c13_a45_read_v1.json`)
+
+**Reliability.** The author and the subagent agree on 0.75 of the author's 20 (bar 0.8), so the
+author's labels are of record.
+
+**P(right option) at dose 0** (n 10 each):
+
+| | C_spec | C_anth |
+|---|---|---|
+| GPT-OSS | 0.57 [0.30, 0.84] | 0.77 [0.59, 0.92] |
+| OLMo-3-Think | 0.51 [0.25, 0.76] | 0.51 [0.31, 0.70] |
+
+Construction labels are read beside it. C13A-026's construction label is reported as
+document-inconsistent: by the author's quote-and-classify mark, its document's conflict passages
+favor checking first.
+
+**Lesson.** Free rating carried a check-first prior that the documents' conflict passages do not.
+- The author's free ratings chose to escalate on five departure-labelled items.
+- The author's quote-and-classify marks side with departure on four of them.
+- A blind non-Claude rater (Gemini 4 Argon) agrees 0.80 with the author and 0.87 with the
+  construction labels, and splits the five, two to three.
+
+From here on, labels are set by quote-and-classify, with raters checking the classification,
+`C_partner`'s included (Amendment 46 item 5).
+
+**Referee pass.**
+1. *"The labels of record carry the prior the lesson names."* Conceded. They are the registered
+   rule's outcome; the construction labels and C13A-026's flag stand beside them.
+2. *"n = 10 per cell."* Stated in each interval. The read is a scored family, not a model comparison.
+3. *"Claude wrote the items and one rater."* That is why the second rater is non-Claude and why the
+   label procedure changed.

@@ -331,3 +331,11 @@ def test_spec2025_dry_run_both_families(tmp_path):
         assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
         z = np.load(tmp_path / m / "extract_spec2025.npz")
         assert len(z["keys"]) == 8 and str(z["keys"][0]).startswith("c13|spec2025|0|")
+
+
+def test_branch48():
+    # most probable failure: both models' positive contrasts read as the premise (a document
+    # property is not training)
+    assert A.branch48([0.01, 0.2], [-0.1, 0.1]) == "the premise shows within GPT-OSS"
+    assert A.branch48([0.01, 0.2], [0.02, 0.1]).startswith("a property of the documents")
+    assert A.branch48([-0.24, -0.05], [-0.16, 0.02]).startswith("the premise does not show")
