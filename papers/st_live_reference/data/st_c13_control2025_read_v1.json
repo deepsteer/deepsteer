@@ -1,0 +1,184 @@
+{
+ "rule": "ST_PLAN Amendment 47",
+ "std": {
+  "models": {
+   "gpt_oss_20b": {
+    "mode": "std",
+    "position_valid": true,
+    "null_q50": 0.12140705808048269,
+    "null_q95": 0.22974438148373816,
+    "band": [
+     0.5154223355578282,
+     0.6291269541037801
+    ],
+    "u_spec_perp": -0.12911519326554527,
+    "u_anth_perp": 0.33509864048003196,
+    "specificity_auc": 0.7381594147092799,
+    "specificity_auc_ci95": [
+     0.5949075856757798,
+     0.8105602618405853
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.10243684131425795,
+    "u_vconst_spec": 1.0669495440229704,
+    "spec_source": "C_spec2025",
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   },
+   "olmo3_think": {
+    "mode": "std",
+    "position_valid": true,
+    "null_q50": 0.11205702102301744,
+    "null_q95": 0.21739090724536325,
+    "band": [
+     0.43923240497850013,
+     0.5560885490807961
+    ],
+    "u_spec_perp": 0.01915507193652308,
+    "u_anth_perp": 0.28413485691866663,
+    "specificity_auc": 0.7728147862918753,
+    "specificity_auc_ci95": [
+     0.6407296881016558,
+     0.8390643049672699
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.053575164269801696,
+    "u_vconst_spec": 1.234661648032677,
+    "spec_source": "C_spec2025",
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   }
+  },
+  "specificity_check": {
+   "gpt_oss_20b": true,
+   "olmo3_think": true
+  },
+  "positive_control": {
+   "delta_u": -0.14827026520206835,
+   "ci95": [
+    -0.33978806077754997,
+    0.06697627569836226
+   ],
+   "passes": false,
+   "valid_positions": true
+  },
+  "did_beside": {
+   "did": -0.1992340487634337,
+   "ci95": [
+    -0.5296108158924968,
+    0.2166544017946263
+   ]
+  },
+  "amendment40_form_beside": {
+   "delta_u": -0.1677121040097067,
+   "ci95": [
+    -0.2523060845568807,
+    -0.04832386539806089
+   ]
+  },
+  "branch": "the soft premise does not show at this site (not detected at the CI's width); the overlap read stays unused on C_partner"
+ },
+ "raw": {
+  "models": {
+   "gpt_oss_20b": {
+    "mode": "raw",
+    "position_valid": true,
+    "null_q50": 0.32351543040820446,
+    "null_q95": 0.3998886367570502,
+    "band": [
+     0.6915916597993647,
+     0.7834704020244099
+    ],
+    "u_spec_perp": -0.5516069198074601,
+    "u_anth_perp": 0.10650111702036634,
+    "specificity_auc": 0.6884867154408933,
+    "specificity_auc_ci95": [
+     0.5009530227185214,
+     0.7806218713900653
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.23834204822433658,
+    "u_vconst_spec": 0.7724360583213539,
+    "spec_source": "C_spec2025",
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   },
+   "olmo3_think": {
+    "mode": "raw",
+    "position_valid": true,
+    "null_q50": 0.14005982851021853,
+    "null_q95": 0.26733273350503217,
+    "band": [
+     0.5274295690137923,
+     0.6798505562733346
+    ],
+    "u_spec_perp": -0.16074319438771298,
+    "u_anth_perp": 0.23134955936482496,
+    "specificity_auc": 0.738544474393531,
+    "specificity_auc_ci95": [
+     0.5910569888332692,
+     0.8124759337697343
+    ],
+    "specificity_passes": true,
+    "pf_contrast": 0.08240856805237674,
+    "u_vconst_spec": 1.1762985082120352,
+    "spec_source": "C_spec2025",
+    "n_train": {
+     "spec": 196,
+     "anth": 212
+    },
+    "n_test": {
+     "spec": 49,
+     "anth": 53
+    }
+   }
+  },
+  "specificity_check": {
+   "gpt_oss_20b": true,
+   "olmo3_think": true
+  },
+  "positive_control": {
+   "delta_u": -0.3908637254197471,
+   "ci95": [
+    -0.7999893626566105,
+    -0.20866921940874184
+   ],
+   "passes": false,
+   "valid_positions": true
+  },
+  "did_beside": {
+   "did": -0.26601528307528854,
+   "ci95": [
+    -0.7029895839673339,
+    0.03801970169644664
+   ]
+  },
+  "amendment40_form_beside": {
+   "delta_u": -0.4038624498906813,
+   "ci95": [
+    -0.5125682079058217,
+    -0.27358477800257686
+   ]
+  },
+  "branch": "the soft premise does not show at this site (not detected at the CI's width); the overlap read stays unused on C_partner"
+ },
+ "of_record": "std; raw beside"
+}
