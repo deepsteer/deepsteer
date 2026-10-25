@@ -4276,8 +4276,8 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    - **Unresolved.** Anything else, stated with the MDE.
    - base-DPO is read beside: a harm-blind adapter should depart on both.
 5. **Replication.** care-DPO2 replicates if it passes T1.6's gate (ΔP of record ≥ +0.15, CI > 0;
-   capability; guard), its panel specificity is not non-specific on the protective side's sign class
-   (above +0.03), and its forced choice reads "follows the rule" (Amendment 46's bar). Each criterion
+   capability; guard), its panel specificity is not above +0.03 (Amendment 31's non-specific class), and
+   its forced choice reads "follows the rule" (Amendment 46's bar). Each criterion
    is reported separately with care-DPO's values beside it.
 6. **Pod and price.** `STEPS=t16r`:
    - setup and the Muse download, 0.35;
