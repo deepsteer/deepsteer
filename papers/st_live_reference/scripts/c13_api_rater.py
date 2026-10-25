@@ -95,8 +95,8 @@ def main() -> int:
     client = OpenAI(api_key=key, base_url=BASE_URL)
     usage = {"prompt_tokens": 0, "completion_tokens": 0}
     for it in items:
-        if it["id"] in done:
-            continue
+        if it["id"] in done and "error" not in done[it["id"]]:
+            continue  # rated, or unparsable (missing by rule); an API error is called again
         rec: dict = {"letter": None}
         for attempt in range(MAX_RETRIES + 1):
             try:
@@ -104,7 +104,8 @@ def main() -> int:
                                                    messages=prompt(it, docs[it["document"]]))
             except Exception as e:  # an API error: retried at most twice (Amendment 45)
                 rec = {"letter": None, "error": type(e).__name__}
-                time.sleep(5 * (attempt + 1))
+                wait = 60 if type(e).__name__ == "RateLimitError" else 5
+                time.sleep(wait * (attempt + 1))  # a rate limit is per-minute tokens: wait it out
                 continue
             text = r.choices[0].message.content
             got = parse(text)
