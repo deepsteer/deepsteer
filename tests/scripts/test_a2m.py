@@ -281,7 +281,8 @@ def test_action_split_counts_every_rollout(tmp_path):
             {"scenario_id": "i1", "norm_status": st,
              "status": "truncated" if st is None else "completed"}) for st in sts))
     sp = A.action_split(tmp_path, ["i1"])
-    assert sum(sp["care"].values()) == pytest.approx(1.0) and sp["care"]["truncated"] == 0.125
+    assert sum(v for k, v in sp["care"].items() if k != "parse_rate") == pytest.approx(1.0)
+    assert sp["care"]["truncated"] == 0.125 and sp["care"]["parse_rate"] == pytest.approx(0.875)
     assert sp["care_minus_none"]["neutral"]["mean"] == pytest.approx(0.25)
     assert sp["care_minus_none"]["consistent"]["mean"] == pytest.approx(-0.5)
 

@@ -266,6 +266,10 @@ def action_split(gen: Path, kept: list[str]) -> dict:
     out: dict = {}
     for arm, d in sh.items():
         out[arm] = {a: float(np.mean(list(v.values()))) if v else None for a, v in d.items()}
+        # the parse rate is reported per arm: a drop in one adapter is a result, not only a
+        # coherence failure (author, 2026-10-25)
+        out[arm]["parse_rate"] = 1.0 - (out[arm]["truncated"] or 0.0) - (out[arm]["unparsed"]
+                                                                         or 0.0)
         if arm != "none" and "none" in sh:
             out[f"{arm}_minus_none"] = {
                 a: T13.boot([d[a][i] - sh["none"][a][i] for i in sorted(set(d[a]) &

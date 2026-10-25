@@ -99,6 +99,19 @@ def transform(X: np.ndarray, mode: str) -> np.ndarray:
     raise ValueError(mode)
 
 
+def transform_like(Z: np.ndarray, X0: np.ndarray, mode: str) -> np.ndarray:
+    """Texts extracted later (Amendment 47's C_spec2025 pairs) in the coordinates of the saved
+    pooled sample X0: its σ, or its top-k mask (Amendment 47 item 3)."""
+    if mode == "raw":
+        return Z
+    if mode == "std":
+        return Z / (X0.std(0) + 1e-12)
+    if mode == "topk":
+        v = X0.var(0)
+        return Z[:, v / v.sum() <= TOPK_SHARE]
+    raise ValueError(mode)
+
+
 def top_share(X: np.ndarray) -> float:
     v = X.var(0)
     return float(v.max() / v.sum())
@@ -234,34 +247,43 @@ def auc(pos: np.ndarray, neg: np.ndarray) -> float:
     return float((d > 0).mean() + 0.5 * (d == 0).mean())
 
 
-def doc_contrast(c13: Path, model: str, mode: str = "std") -> dict:
+def doc_contrast(c13: Path, model: str, mode: str = "std", spec2025: Path | None = None) -> dict:
     """Amendment 44 items 2-4 for one model: the document-specific directions on Amendment 42's
-    ladder, the held-out specificity AUC, u per direction with a pair bootstrap."""
+    ladder, the held-out specificity AUC, u per direction with a pair bootstrap. With ``spec2025``
+    (the c13c outputs), C_spec's pairs are replaced by the 2025-04-11 revision's, extracted at the
+    same site and placed in the saved pooled sample's coordinates (Amendment 47 item 3)."""
     z = np.load(c13 / model / "extract.npz")
     keys = [str(k) for k in z["keys"]]
-    X = transform(z["headline"].astype(np.float64), mode)
+    X0 = z["headline"].astype(np.float64)
+    X = transform(X0, mode)
     rng = np.random.default_rng(SEED)
     src = {s: np.mean(list(diffs(keys, X, f"d1|{s}").values()), axis=0) for s in SOURCES}
     lad = ladder(X, src, rng, N_NULL)
     q50, b0 = lad["null_q50"], lad["band"][0]
     tr, te = {}, {}
-    for doc in ("spec", "anth"):
-        pairs = json.loads((DATA / f"st_c13_pairs_{doc}_v1.json").read_text())["pairs"]
-        d = diffs(keys, X, f"c13|{doc}")
+    src_of = {"spec": ("spec", keys, X), "anth": ("anth", keys, X)}
+    if spec2025 is not None:
+        z2 = np.load(spec2025 / model / "extract_spec2025.npz")
+        src_of["spec"] = ("spec2025", [str(k) for k in z2["keys"]],
+                          transform_like(z2["headline"].astype(np.float64), X0, mode))
+    for doc, (name, kk, XX) in src_of.items():
+        pairs = json.loads((DATA / f"st_c13_pairs_{name}_v1.json").read_text())["pairs"]
+        d = diffs(kk, XX, f"c13|{name}")
         tr[doc] = np.array([d[str(i)] for i, p in enumerate(pairs)
                             if p["split"] == "train" and str(i) in d])
         te[doc] = np.array([d[str(i)] for i, p in enumerate(pairs)
                             if p["split"] == "test" and str(i) in d])
 
-    def stats(trs: dict, tes: dict) -> tuple[float, float, float, float]:
+    def stats(trs: dict, tes: dict) -> tuple[float, float, float, float, float]:
         vs, va = trs["spec"].mean(0), trs["anth"].mean(0)
         sp, ap = specific_dir(vs, va), specific_dir(va, vs)
         us = (frac(lad["Q"], sp) - q50) / (b0 - q50)
         ua = (frac(lad["Q"], ap) - q50) / (b0 - q50)
+        uv = (frac(lad["Q"], vs) - q50) / (b0 - q50)  # Amendment 40's form on V_const(spec)
         return us, ua, auc(tes["spec"] @ sp, tes["anth"] @ sp), frac(lad["Q"], unit(
-            unit(vs) - unit(va)))
+            unit(vs) - unit(va))), uv
 
-    us, ua, a_, pfc = stats(tr, te)
+    us, ua, a_, pfc, uv = stats(tr, te)
     boot = []
     for _ in range(N_BOOT):
         rs = {k: v[rng.integers(0, len(v), len(v))] for k, v in tr.items()}
@@ -276,6 +298,8 @@ def doc_contrast(c13: Path, model: str, mode: str = "std") -> dict:
             "specificity_auc": a_, "specificity_auc_ci95": [lo, float(np.percentile(B[:, 2],
                                                                                     97.5))],
             "specificity_passes": bool(lo > 0.5), "pf_contrast": float(pfc),
+            "u_vconst_spec": float(uv), "u_vconst_spec_boot": B[:, 4].tolist(),
+            "spec_source": "C_spec2025" if spec2025 is not None else "C_spec",
             "n_train": {k: len(v) for k, v in tr.items()}, "n_test": {k: len(v)
                                                                        for k, v in te.items()}}
 
@@ -296,17 +320,21 @@ def branch44(check: dict, pc: dict) -> str:
             "partner deliverable keeps the family read")
 
 
-def amendment44(c13: Path) -> dict:
-    """ST-A26's document-contrast read (Amendment 44), standardized of record, raw beside."""
-    out: dict = {"rule": "ST_PLAN Amendment 44"}
+def contrast_read(c13: Path, spec2025: Path | None, branch, rule: str) -> dict:
+    """Amendment 44's form (and, with ``spec2025``, Amendment 47's): standardized of record, raw
+    beside; Amendment 40's form on V_const(spec) beside."""
+    out: dict = {"rule": rule}
     for mode in ("std", "raw"):
-        r = {m: doc_contrast(c13, m, mode) for m in MODELS}
+        r = {m: doc_contrast(c13, m, mode, spec2025) for m in MODELS}
         g, o = r["gpt_oss_20b"], r["olmo3_think"]
         rng = np.random.default_rng(SEED)
         perm = rng.permutation(N_BOOT)
-        du = np.array(g["u_spec_perp_boot"])[perm] - np.array(o["u_spec_perp_boot"])
-        did_b = (np.array(g["u_spec_perp_boot"])[perm] - np.array(g["u_anth_perp_boot"])[perm]) \
-            - (np.array(o["u_spec_perp_boot"]) - np.array(o["u_anth_perp_boot"]))
+        b = {k: (np.array(g[k])[perm], np.array(o[k])) for k in
+             ("u_spec_perp_boot", "u_anth_perp_boot", "u_vconst_spec_boot")}
+        du = b["u_spec_perp_boot"][0] - b["u_spec_perp_boot"][1]
+        did_b = (b["u_spec_perp_boot"][0] - b["u_anth_perp_boot"][0]) \
+            - (b["u_spec_perp_boot"][1] - b["u_anth_perp_boot"][1])
+        dv = b["u_vconst_spec_boot"][0] - b["u_vconst_spec_boot"][1]
         lo = float(np.percentile(du, 2.5))
         pc = {"delta_u": g["u_spec_perp"] - o["u_spec_perp"],
               "ci95": [lo, float(np.percentile(du, 97.5))], "passes": bool(lo > 0),
@@ -314,11 +342,39 @@ def amendment44(c13: Path) -> dict:
         did = {"did": (g["u_spec_perp"] - g["u_anth_perp"]) - (o["u_spec_perp"]
                                                                - o["u_anth_perp"]),
                "ci95": [float(np.percentile(did_b, 2.5)), float(np.percentile(did_b, 97.5))]}
+        a40 = {"delta_u": g["u_vconst_spec"] - o["u_vconst_spec"],
+               "ci95": [float(np.percentile(dv, 2.5)), float(np.percentile(dv, 97.5))]}
         check = {m: r[m]["specificity_passes"] for m in MODELS}
         out[mode] = {"models": r, "specificity_check": check, "positive_control": pc,
-                     "did_beside": did, "branch": branch44(check, pc)}
-    out["of_record"] = "std (Amendment 44 item 1); raw beside"
+                     "did_beside": did, "amendment40_form_beside": a40,
+                     "branch": branch(check, pc)}
+    out["of_record"] = "std; raw beside"
     return out
+
+
+def amendment44(c13: Path) -> dict:
+    """ST-A26's document-contrast read (Amendment 44), standardized of record, raw beside; its
+    control verdict voided by Amendment 47 (version mismatch), the measurements descriptive."""
+    return contrast_read(c13, None, branch44, "ST_PLAN Amendment 44 (control voided: Amendment 47)")
+
+
+def branch47(check: dict, pc: dict) -> str:
+    """Amendment 47 item 4, written before data."""
+    if not pc.get("valid_positions", True):
+        return "uninformative: a position is invalid (band at or below its null q95)"
+    if not all(check.values()):
+        return ("uninformative: the C_spec2025 pairs carry no document-specific content the "
+                "instrument can read")
+    if pc["passes"]:
+        return ("calibrated: the overlap instrument passes its control in its document-specific "
+                "form; the 2026 reads are interpreted against it")
+    return ("the soft premise does not show at this site (not detected at the CI's width); the "
+            "overlap read stays unused on C_partner")
+
+
+def amendment47(c13: Path, c13c: Path) -> dict:
+    """The rebuilt control (Amendment 47 item 3) on the 2025-04-11 Model Spec's pairs."""
+    return contrast_read(c13, c13c, branch47, "ST_PLAN Amendment 47")
 
 
 def family_scores(c13: Path, labels: dict[str, str]) -> dict:
@@ -481,6 +537,8 @@ def main() -> None:
     ap.add_argument("--amendment45", type=Path, default=None,
                     help="the blind rater's raw ratings (Amendment 45); needs --author, --key, "
                          "--subagent; reads outputs/c13_rating/a28_quotes.md for the doc marks")
+    ap.add_argument("--amendment47", type=Path, default=None,
+                    help="the c13c outputs: the rebuilt control on the 2025-04-11 Model Spec")
     ap.add_argument("--amendment44", action="store_true",
                     help="ST-A26's document-contrast read only (the family read is not touched)")
     ap.add_argument("--amendment42", action="store_true",
@@ -497,13 +555,14 @@ def main() -> None:
         p.write_text(json.dumps(res, indent=1))
         print(json.dumps(res, indent=1))
         return
-    if a.amendment44:
-        res = amendment44(a.c13)
+    if a.amendment44 or a.amendment47:
+        res = amendment47(a.c13, a.amendment47) if a.amendment47 else amendment44(a.c13)
         slim = json.loads(json.dumps(res, default=str))
         for mode in ("std", "raw"):
             for m in slim[mode]["models"].values():
-                m.pop("u_spec_perp_boot"), m.pop("u_anth_perp_boot")
-        p = a.out or a.c13 / "c13_doc_contrast_read.json"
+                m.pop("u_spec_perp_boot"), m.pop("u_anth_perp_boot"), m.pop("u_vconst_spec_boot")
+        p = a.out or a.c13 / ("c13_control2025_read.json" if a.amendment47
+                              else "c13_doc_contrast_read.json")
         p.write_text(json.dumps(slim, indent=1))
         for mode in ("std", "raw"):
             x = res[mode]

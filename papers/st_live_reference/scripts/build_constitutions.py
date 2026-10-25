@@ -7,7 +7,8 @@ text goes to ``outputs/constitutions/<id>.txt`` (git-ignored; derived corpora ar
 
     python3 papers/st_live_reference/scripts/build_constitutions.py [--pin]
 
-``--pin`` (once, at pinning) writes the fetched hashes into the yaml instead of checking them.
+``--pin`` (once, at pinning) writes the fetched hashes into the yaml instead of checking them. A
+document with ``raw_url`` (a markdown release at a pinned commit) is its own text.
 """
 
 from __future__ import annotations
@@ -55,8 +56,12 @@ def main() -> None:
     pins = yaml.safe_load(PINS.read_text())
     OUT.mkdir(parents=True, exist_ok=True)
     for doc in pins["documents"]:
-        raw = fetch(doc["url"])
-        text = extract(raw)
+        if doc.get("raw_url"):  # a markdown release (C_spec2025): the file is the text
+            raw = fetch(doc["raw_url"])
+            text = raw
+        else:
+            raw = fetch(doc["url"])
+            text = extract(raw)
         got = {"text_sha256": hashlib.sha256(text.encode()).hexdigest(),
                "raw_sha256": hashlib.sha256(raw.encode()).hexdigest(), "n_chars": len(text)}
         if a.pin:

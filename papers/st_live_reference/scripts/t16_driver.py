@@ -470,24 +470,38 @@ def step_train(c, a) -> dict:
 
 
 # ---- steps: the adapter's reads and the merge --------------------------------------------------
-def adapter_deltas(adir: Path) -> dict[str, "np.ndarray"]:
-    """``{module path: (alpha / r) B @ A}`` from a saved LoRA adapter (fp32)."""
-    import torch
-    from safetensors.torch import load_file
+class AdapterDeltas:
+    """``(alpha / r) B @ A`` per module path, computed in fp32 when asked for and not kept: the
+    full set for Muse's adapter is 93.7 GiB in fp32, past a 27 GiB pod's RAM (the first a2f pod,
+    2026-10-25), so the merge holds one delta at a time. Iterating yields the module paths."""
 
-    cfg = json.loads((adir / "adapter_config.json").read_text())
-    scale = cfg["lora_alpha"] / cfg["r"]
-    sd = load_file(str(adir / "adapter_model.safetensors"))
-    out = {}
-    for k, A in sd.items():
-        if ".lora_A." not in k:
-            continue
-        stem = k.split(".lora_A.")[0]
-        B = sd[k.replace(".lora_A.", ".lora_B.")]
-        path = stem.removeprefix("base_model.model.")
-        out[path] = (B.float() @ A.float()) * scale
-        assert out[path].dim() == 2 and torch.isfinite(out[path]).all(), path
-    return out
+    def __init__(self, adir: Path):
+        from safetensors.torch import load_file
+
+        cfg = json.loads((adir / "adapter_config.json").read_text())
+        self.scale = cfg["lora_alpha"] / cfg["r"]
+        self.sd = load_file(str(adir / "adapter_model.safetensors"))
+        self.keys = {k.split(".lora_A.")[0].removeprefix("base_model.model."): k
+                     for k in self.sd if ".lora_A." in k}
+
+    def __iter__(self):
+        return iter(self.keys)
+
+    def __len__(self) -> int:
+        return len(self.keys)
+
+    def __getitem__(self, path: str):
+        import torch
+
+        k = self.keys[path]
+        d = (self.sd[k.replace(".lora_A.", ".lora_B.")].float() @ self.sd[k].float()) * self.scale
+        assert d.dim() == 2 and torch.isfinite(d).all(), path
+        return d
+
+
+def adapter_deltas(adir: Path) -> AdapterDeltas:
+    """``{module path: (alpha / r) B @ A}`` from a saved LoRA adapter (fp32), computed lazily."""
+    return AdapterDeltas(adir)
 
 
 def match_keys(deltas: dict, file_keys: list[str]) -> dict[str, str]:
@@ -546,13 +560,15 @@ def write_merged(src: Path, adir: Path, dst: Path) -> dict:
         for p in paths:
             k = mapping[p]
             w = t[k]
-            if tuple(w.shape) != tuple(deltas[p].shape):
-                raise ValueError(f"{k}: shape {tuple(w.shape)} vs delta {tuple(deltas[p].shape)}")
-            t[k] = (w.float() + deltas[p].to(w.device)).to(w.dtype).contiguous()
+            dp = deltas[p]  # computed now, freed after this tensor (one delta in memory at a time)
+            if tuple(w.shape) != tuple(dp.shape):
+                raise ValueError(f"{k}: shape {tuple(w.shape)} vs delta {tuple(dp.shape)}")
+            t[k] = (w.float() + dp.to(w.device)).to(w.dtype).contiguous()
             got = t[k].float() - w.float()  # what survived the cast to the file's dtype
-            dot += float((got * deltas[p]).sum())
-            sq += float((deltas[p] * deltas[p]).sum())
+            dot += float((got * dp).sum())
+            sq += float((dp * dp).sum())
             changed += 1
+            del dp, got
         save_file(t, str(dst / name), metadata=meta)
         del t
     torch.cuda.empty_cache() if torch.cuda.is_available() else None

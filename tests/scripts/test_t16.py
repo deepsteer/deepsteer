@@ -252,3 +252,30 @@ def test_cached_snapshot_reads_the_cache_folder(tmp_path):
     (snap / "model-00001-of-00001.safetensors").unlink()
     r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env)
     assert r.returncode != 0 and "no cached snapshot" in r.stderr
+
+
+def test_merge_computes_each_delta_once_and_keeps_none(tmp_path, monkeypatch):
+    # most probable failure (the first a2f pod, 2026-10-25): the merge builds every fp32 delta at
+    # once (93.7 GiB for Muse's adapter) and a 27 GiB pod kills it; each delta must be computed
+    # when its tensor is written and not cached
+    import torch
+    from safetensors.torch import save_file
+    (tmp_path / "src").mkdir()
+    (tmp_path / "ad").mkdir()
+    keys = [f"model.language_model.layers.{i}.self_attn.q_proj" for i in range(3)]
+    save_file({f"{k}.weight": torch.zeros(4, 4, dtype=torch.bfloat16) for k in keys},
+              str(tmp_path / "src" / "model.safetensors"))
+    (tmp_path / "src" / "config.json").write_text("{}")
+    save_file({**{f"base_model.model.{k}.lora_A.weight": torch.ones(2, 4) for k in keys},
+               **{f"base_model.model.{k}.lora_B.weight": torch.ones(4, 2) for k in keys}},
+              str(tmp_path / "ad" / "adapter_model.safetensors"))
+    (tmp_path / "ad" / "adapter_config.json").write_text(json.dumps({"lora_alpha": 2, "r": 2}))
+    calls = []
+    orig = D.AdapterDeltas.__getitem__
+    monkeypatch.setattr(D.AdapterDeltas, "__getitem__",
+                        lambda self, p: calls.append(p) or orig(self, p))
+    res = D.write_merged(tmp_path / "src", tmp_path / "ad", tmp_path / "dst")
+    assert res["ok"] and sorted(calls) == sorted(keys)
+    ad = D.adapter_deltas(tmp_path / "ad")
+    assert not isinstance(ad, dict) and not any(isinstance(v, torch.Tensor) and v.dim() == 2
+                                                and v.shape == (4, 4) for v in vars(ad).values())

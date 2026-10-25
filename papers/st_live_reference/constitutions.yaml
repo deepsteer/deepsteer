@@ -26,6 +26,7 @@ documents:
   title: OpenAI Model Spec (2025-04-11 release)
   url: https://github.com/openai/model_spec/blob/095dabb04dd2ade5e19d4438cec9a329ad967e02/model_spec.md
   commit: 095dabb04dd2ade5e19d4438cec9a329ad967e02
+  raw_url: https://raw.githubusercontent.com/openai/model_spec/095dabb04dd2ade5e19d4438cec9a329ad967e02/model_spec.md
   dated: '2025-04-11'
   license: CC0 1.0 (the repository's LICENSE at that commit)
   role: the overlap read's positive control (Amendment 47); the latest public revision before

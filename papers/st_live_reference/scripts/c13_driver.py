@@ -41,6 +41,7 @@ D1_SOURCES = ("moral_stories_train", "fables_train_full", "ethics_train_full")
 BAND_P = (0.2, 0.6)
 N_A2, SEED = 60, 20261024
 PIN = "2026-10-24"
+ANCHOR_N, ANCHOR_COS = 16, 0.999  # Amendment 47: the site must reproduce the saved extraction
 
 
 def _now() -> str:
@@ -160,6 +161,60 @@ def extract(mw, tok, ts: list[dict], hs: tuple[int, ...], head: int) -> dict:
             "n_content_tokens": np.array(n_tok, np.int32)}
 
 
+def spec2025_texts(dry: bool) -> list[dict]:
+    """Amendment 47's C_spec2025 pairs, both members: ``c13|spec2025|<i>|m|n``."""
+    pr = json.loads((DATA / "st_c13_pairs_spec2025_v1.json").read_text())["pairs"]
+    pr = pr[:4] if dry else pr
+    return [{"key": f"c13|spec2025|{i}|{k}", "text": p[k]} for i, p in enumerate(pr)
+            for k in ("m", "n")]
+
+
+def anchor_texts() -> list[dict]:
+    """The first eight C_anth pairs' texts, already in the saved extraction (Amendment 40)."""
+    pr = json.loads((DATA / "st_c13_pairs_anth_v1.json").read_text())["pairs"][:ANCHOR_N // 2]
+    return [{"key": f"c13|anth|{i}|{k}", "text": p[k]} for i, p in enumerate(pr)
+            for k in ("m", "n")]
+
+
+def step_anchors(a) -> dict:
+    """Local, no model: the anchor texts' saved headline vectors from each model's extraction."""
+    keys = [t["key"] for t in anchor_texts()]
+    for m in SITES:
+        z = np.load(a.c13 / m / "extract.npz")
+        idx = {str(k): i for i, k in enumerate(z["keys"])}
+        (a.out / m).mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(a.out / m / "anchors.npz", keys=np.array(keys),
+                            headline=z["headline"][[idx[k] for k in keys]])
+    return {"status": "ok", "n": len(keys)}
+
+
+def step_spec2025(a) -> dict:
+    """Amendment 47 item 3: the C_spec2025 texts at the model's site; then the anchor texts,
+    re-extracted and compared with the saved vectors (the step stops if the site differs)."""
+    import hashlib
+
+    out = a.out / a.model
+    out.mkdir(parents=True, exist_ok=True)
+    _, mw = load(a.model, out, a.dry_run)
+    hs, head = hidden(a.model, mw.model.config.get_text_config().num_hidden_layers
+                      if a.dry_run else None)
+    ts = spec2025_texts(a.dry_run)
+    ex = extract(mw, mw.tok, ts, hs, head)
+    np.savez_compressed(out / "extract_spec2025.npz", hidden=np.array(hs), headline_index=head,
+                        **ex)
+    res = {"status": "ok", "n_texts": len(ts), "pairs_sha256": hashlib.sha256(
+        (DATA / "st_c13_pairs_spec2025_v1.json").read_bytes()).hexdigest()}
+    if not a.dry_run:
+        az = np.load(a.anchors / a.model / "anchors.npz")
+        got = extract(mw, mw.tok, anchor_texts(), hs, head)["headline"].astype(np.float64)
+        ref = az["headline"].astype(np.float64)
+        cos = (got * ref).sum(1) / (np.linalg.norm(got, axis=1) * np.linalg.norm(ref, axis=1))
+        res["anchor_min_cos"] = float(cos.min())
+        if cos.min() < ANCHOR_COS:
+            res["status"] = "stop: the site does not reproduce the saved extraction"
+    return res
+
+
 def families(dry: bool) -> dict[str, list]:
     from deepsteer.kdg.schema import load_scenarios
 
@@ -243,14 +298,35 @@ def step_cellA2_arm(a) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--step", required=True, choices=("base", "cellA2_arm"))
+    ap.add_argument("--step", required=True, choices=("base", "cellA2_arm", "spec2025",
+                                                      "anchors"))
     ap.add_argument("--model", choices=tuple(SITES), default=None)
     ap.add_argument("--arm", choices=("beh2", "beh"), default=None)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--d1", type=Path, default=None, help="d1's outputs/full (the source pairs)")
     ap.add_argument("--adapters", type=Path, default=None)
+    ap.add_argument("--anchors", type=Path, default=None,
+                    help="spec2025: the dir holding <model>/anchors.npz (made by --step anchors)")
+    ap.add_argument("--c13", type=Path, default=None, help="anchors: the saved c13 outputs")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
+    if a.step == "anchors":
+        res = step_anchors(a)
+        print(f">> c13 anchors: {res}", flush=True)
+        return 0
+    if a.step == "spec2025":
+        if not a.model or (a.anchors is None and not a.dry_run):
+            ap.error("--step spec2025 needs --model and --anchors")
+        name = f"spec2025_{a.model}"
+        if phase(a.out, name).get("status") == "ok":
+            print(f">> c13 {name}: finished earlier", flush=True)
+            return 0
+        t0 = time.time()
+        res = step_spec2025(a)
+        a.out.mkdir(parents=True, exist_ok=True)
+        record(a.out, name, {**res, "seconds": time.time() - t0})
+        print(f">> c13 {name}: done ({json.dumps(res)})", flush=True)
+        return 0 if res["status"] == "ok" else 3
     if a.step == "base" and not (a.model and a.d1):
         ap.error("--step base needs --model and --d1")
     if a.step == "cellA2_arm" and not (a.arm and a.adapters):

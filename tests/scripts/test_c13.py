@@ -114,8 +114,8 @@ def test_remote_runs_c13():
     assert re.search(r'STEPS" = "c13" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-gpt_oss_20b '
                      r'olmo3_think\}"; OUT_SUB=c13\n  SESSION_MAX_HOURS='
                      r'"\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
-    assert '[ "$STEPS" != "c13" ]; then  # Amendment 10' in sh
-    assert '[ "$STEPS" != "c13" ]; then  # of record from T1.1' in sh
+    assert '[ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # Amendment 10' in sh
+    assert '[ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # of record from T1.1' in sh
     blk = sh.split('if [ "$STEPS" = "c13" ]; then\n    rc=0')[1][:900]
     assert blk.index("--step base") < blk.index("--step cellA2_arm")
     assert '[ "$m" = "gpt_oss_20b" ]' in blk
@@ -157,7 +157,8 @@ def test_generic_screen_dry_run_skips_olmo3_think_on_c13():
     # the registry's vLLM block, which OLMo-3-Think lacks, and stops the session before any read
     sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
     blk = sh.split("dry_runs() {")[1][:600]
-    assert 'if [ "$STEPS" = "c13" ] && [ "$m" = "olmo3_think" ]; then' in blk
+    assert ('if { [ "$STEPS" = "c13" ] || [ "$STEPS" = "c13c" ]; } && [ "$m" = "olmo3_think" ]; '
+            'then') in blk
     import pod_st_screen as P
     assert P.registry()["olmo3_think"].get("vllm") is None
 
@@ -271,3 +272,62 @@ def test_api_rater_parse_and_blind_prompt():
     text = json.dumps(msgs)
     assert "DOC" in text and "construction" not in msgs[1]["content"]
     assert "right_option" not in text and "violating" not in text
+
+
+def test_remote_runs_c13c():
+    # most probable failure (Amendment 47): the rebuilt control runs without the anchor check, or
+    # the GPT-OSS refusal-retention pass rides it
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "c13c" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-gpt_oss_20b '
+                     r'olmo3_think\}"; OUT_SUB=c13c\n  SESSION_MAX_HOURS='
+                     r'"\$\{SESSION_MAX_HOURS:-1\.0\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "c13c" ]; then\n    rc=0')[1][:500]
+    assert "--step spec2025" in blk and '--anchors "$C13C_ANCHORS"' in blk
+    sync = (ST / "runpod" / "sync_c13c.txt").read_text().split()
+    assert sync == ["outputs/c13c_inputs/gpt_oss_20b/anchors.npz",
+                    "outputs/c13c_inputs/olmo3_think/anchors.npz"]
+
+
+def test_transform_like_uses_the_saved_sample():
+    # most probable failure: later texts are standardized with their own σ instead of the saved
+    # pooled sample's, so they sit in other coordinates than the ladder
+    rng = np.random.default_rng(1)
+    X0 = rng.standard_normal((200, 8)) * np.arange(1, 9)
+    Z = rng.standard_normal((10, 8))
+    assert np.allclose(A.transform_like(Z, X0, "std"), Z / (X0.std(0) + 1e-12))
+    assert np.array_equal(A.transform_like(Z, X0, "raw"), Z)
+
+
+def test_branch47():
+    # most probable failure: a failed specificity check reads as the soft premise not showing
+    ok = {"gpt_oss_20b": True, "olmo3_think": True}
+    assert A.branch47({"gpt_oss_20b": False, "olmo3_think": True},
+                      {"passes": True, "valid_positions": True}).startswith("uninformative")
+    assert A.branch47(ok, {"passes": True, "valid_positions": True}).startswith("calibrated")
+    assert A.branch47(ok, {"passes": False, "valid_positions": True}).startswith(
+        "the soft premise")
+
+
+def test_spec2025_pairs_pass_the_builder_checks():
+    # most probable failure (Amendment 47): the committed C_spec2025 pairs drift from section 13's
+    # checks (a hard-constraint principle, a banned word, a weak neutral match)
+    import build_c13_pairs as B
+    P = json.loads((ST / "data" / "st_c13_P_spec2025_v1.json").read_text())["principles"]
+    d = json.loads((ST / "data" / "st_c13_pairs_spec2025_v1.json").read_text())
+    allowed = [p["id"] for p in P if p["kind"] != "hard_constraint"]
+    assert B.check_pairs([{k: x[k] for k in ("pid", "register", "k", "m", "n")}
+                          for x in d["pairs"]], allowed) == {}
+    assert sum(x["split"] == "test" for x in d["pairs"]) == len(allowed)
+
+
+@pytest.mark.slow
+def test_spec2025_dry_run_both_families(tmp_path):
+    # most probable failure: the spec2025 step crashes on a tiny model of either family
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    for m in D.SITES:
+        r = subprocess.run([sys.executable, str(SCRIPTS / "c13_driver.py"), "--step", "spec2025",
+                            "--model", m, "--out", str(tmp_path), "--dry-run"],
+                           capture_output=True, text=True, cwd=ROOT, env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+        z = np.load(tmp_path / m / "extract_spec2025.npz")
+        assert len(z["keys"]) == 8 and str(z["keys"][0]).startswith("c13|spec2025|0|")
