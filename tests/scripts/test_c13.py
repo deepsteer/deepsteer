@@ -209,3 +209,20 @@ def test_raw_mode_reproduces_the_read_of_record():
         assert r["null_q95"] == pytest.approx(want["null_q95"], abs=1e-9)
         assert r["documents"]["spec"]["pf"] == pytest.approx(want["documents"]["spec"]["pf"],
                                                              abs=1e-9)
+
+
+def test_document_specific_direction_and_branch44():
+    # most probable failure (Amendment 44): the shared component is not removed (the specific
+    # direction still loads on the other document), or a failed specificity check reads as R_b
+    rng = np.random.default_rng(0)
+    shared = rng.standard_normal(50)
+    va, vb = shared + 0.3 * rng.standard_normal(50), shared + 0.3 * rng.standard_normal(50)
+    sp = A.specific_dir(va, vb)
+    assert abs(sp @ A.unit(vb)) < 1e-9 and np.linalg.norm(sp) == pytest.approx(1.0)
+    assert A.auc(np.array([2.0, 3.0]), np.array([1.0, 2.0])) == pytest.approx(0.875)
+    ok = {"gpt_oss_20b": True, "olmo3_think": True}
+    bad = {"gpt_oss_20b": True, "olmo3_think": False}
+    assert A.branch44(bad, {"passes": True, "valid_positions": True}).startswith("R_a, strong")
+    assert A.branch44(ok, {"passes": True, "valid_positions": True}).startswith("R_a:")
+    assert A.branch44(ok, {"passes": False, "valid_positions": True}).startswith("R_b")
+    assert A.branch44(ok, {"passes": True, "valid_positions": False}).startswith("uninformative")

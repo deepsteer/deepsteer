@@ -28,6 +28,8 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts")]
 import analyze_st2fx as FX  # noqa: E402
+import analyze_st2ml as AML  # noqa: E402
+import analyze_t15 as A15  # noqa: E402
 import analyze_t16 as AT  # noqa: E402
 import t13_driver as T13  # noqa: E402
 import t16_driver as T16  # noqa: E402
@@ -35,6 +37,8 @@ import t16_driver as T16  # noqa: E402
 DATA = HERE.parent / "data"
 N_BOOT, SEED = 10_000, 0
 SPEC_DROP = -0.054  # care-DPO's specificity of record on the panel-format set (Amendment 41 item 1)
+FLOOR_PRED = 0.14  # Amendment 43 item 3: the dose-0 floor's prediction, 5.2 x 0.027
+SPEC_BAR = 0.03  # Amendment 31's sign-class bar
 LEX = {  # Amendment 41 item 2, fixed before data; case-insensitive, whole words
     "harm": ("harm", "hurt", "damage", "loss", "lose", "risk", "danger", "injury", "suffer",
              "penalty", "evict", "eviction", "cost", "costs"),
@@ -179,6 +183,63 @@ def cell(a2m: Path) -> dict:
     return out
 
 
+def fork_sign_classes(c: dict) -> dict:
+    """Amendment 43 item 1 (post-hoc, flagged): cell A′ under Amendment 31's sign classes."""
+    m = {"care": c["care"]["dP_violating"]["mean"], "base": c["base"]["dP_violating"]["mean"],
+         "care_minus_base": c["care_minus_base"]["mean"]}
+    return {k: {"mean": v, "class": AML.sign_class(v)} for k, v in m.items()}
+
+
+def gen_branch(ci: list[float], mean: float) -> str:
+    """Amendment 43 item 3, written before data."""
+    lo, hi = ci
+    if lo > SPEC_BAR:
+        return ("rise: the dose-0 floor; the letter read under-registered care-DPO, and in "
+                "generation it breaks the rule on rule-right items in its training format")
+    if hi < FLOOR_PRED:
+        if mean < -SPEC_BAR and hi < 0:
+            return ("no rise (drop, discriminating; flagged): care-DPO conditions on harm in "
+                    "generation, R_a's direction")
+        return (f"no rise ({AML.sign_class(mean)} at the point): care-DPO is specific in its "
+                "training format, and the dose-0 read under-registers this adapter's size but not "
+                "its sign")
+    return "unresolved: the CI includes both +0.03 and the floor's +0.14"
+
+
+def gen_read(a2g: Path, kept: list[str]) -> dict:
+    """Amendment 43 item 2: P(violating) of record per item (T1.5's p_record), ΔP against
+    ``none``; an arm that failed parity is not read."""
+    rec = json.loads((a2g / "a2g_record.json").read_text())["phases"]
+    out: dict = {"base_check": {k: rec.get("gen_none", {}).get(k)
+                                for k in ("base_tv", "base_check_ok")}}
+    f = lambda arm: a2g / "gen" / f"cellA2_{arm}.jsonl"  # noqa: E731
+    if not f("none").exists():
+        return {**out, "reading": "no generation read (the base check or the run failed)"}
+    pn = A15.p_record(_jsonl(f("none")))
+    out["P_violating_none"] = float(np.mean([pn[i] for i in kept if i in pn]))
+    per = {}
+    for arm in ("care", "base"):
+        ph = rec.get(f"gen_{arm}", {})
+        out[f"parity_{arm}"] = {k: ph.get(k) for k in ("parity_tv", "band_tv", "parity_ok",
+                                                       "reason")}
+        if not ph.get("parity_ok") or not f(arm).exists():
+            out[arm] = {"read": False}
+            continue
+        pa = A15.p_record(_jsonl(f(arm)))
+        s = [i for i in kept if i in pa and i in pn]
+        per[arm] = {i: pa[i] - pn[i] for i in s}
+        d = T13.boot([per[arm][i] for i in s])
+        out[arm] = {"read": True, "dP_violating": d, "class": AML.sign_class(d["mean"])}
+    if "care" in per:
+        d = out["care"]["dP_violating"]
+        out["care_branch"] = gen_branch(d["ci95"], d["mean"])
+    if "care" in per and "base" in per:
+        s = sorted(set(per["care"]) & set(per["base"]))
+        out["care_minus_base"] = T13.boot([per["care"][i] - per["base"][i] for i in s])
+    out["per_item"] = per
+    return out
+
+
 def mapping(c: dict | None, cl: dict, rb: dict) -> str:
     """Amendment 41 item 4, written before data."""
     if c is None or not c.get("read"):
@@ -214,6 +275,8 @@ def main() -> None:
     ap.add_argument("--t16", type=Path, required=True)
     ap.add_argument("--replicate", type=Path, required=True)
     ap.add_argument("--a2m", type=Path, default=None)
+    ap.add_argument("--a2g", type=Path, default=None,
+                    help="Amendment 43's generation outputs (a2g's muse_glimmer_30b dir)")
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
     import pod_st_screen as P
@@ -227,8 +290,11 @@ def main() -> None:
     if c is not None and c.get("read"):
         sc = scaling(c["per_item"], generation_per_scenario(a.t16))
     rb = rb_status(cl, sc)
-    res = {"rule": "ST_PLAN Amendment 41", "content_likelihood": cl, "cellA2_muse": c,
+    fork = fork_sign_classes(c) if c is not None and c.get("read") else None
+    g = gen_read(a.a2g, sorted(c["per_item"]["care"])) if a.a2g and fork else None
+    res = {"rule": "ST_PLAN Amendments 41 and 43", "content_likelihood": cl, "cellA2_muse": c,
            "scaling": sc, "R_b": rb, "reading": mapping(c, cl, rb),
+           "fork_sign_classes": fork, "generation": g,
            "matched_cap": "both arms 243 steps (about 24 epochs over 40 rule-harm pairs), equally "
                           "overfit; matched, does not create the teacher's difference"}
     p = a.out or (a.a2m or a.t16) / "a27_read.json"
@@ -243,7 +309,13 @@ def main() -> None:
         print(f"cell A′ n {c['n_read']} (band {c['band']}): care {c['care']['dP_violating']}; "
               f"base {c['base']['dP_violating']}; care − base {c['care_minus_base']}; "
               f"class {c['care_class']}; scaling {sc}")
-    print(f">> R_b {rb['status']}\n>> {res['reading']}\n>> wrote {p}")
+    if fork:
+        print(f">> fork (Amendment 43 item 1, sign classes): {fork}")
+    if g:
+        print(f">> generation: none {g.get('P_violating_none')}; care {g.get('care')}; base "
+              f"{g.get('base', {}).get('dP_violating')}; care - base {g.get('care_minus_base')}\n"
+              f">> generation branch: {g.get('care_branch')}")
+    print(f">> R_b {rb['status']}\n>> registered map: {res['reading']}\n>> wrote {p}")
 
 
 if __name__ == "__main__":

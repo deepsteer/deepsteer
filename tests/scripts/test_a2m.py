@@ -150,7 +150,7 @@ def test_remote_runs_a2m():
     assert blk.index("--step screen") < blk.index("--step arm")
     assert "vllm" not in blk.lower().replace("vllm_venv", "")
     assert "test_a2m.py" in sh.split("GATE_TESTS=")[1].split("\n")[0]
-    assert '[ "$STEPS" != "a2m" ]; then  # re-priced locally' in sh
+    assert '[ "$STEPS" != "a2m" ]' in sh.split("# re-priced locally")[0].split("\n")[-1]
     sync = (ST / "runpod" / "sync_a2m.txt").read_text().split()
     for arm in ("care", "base"):
         for f in ("adapter_config.json", "adapter_model.safetensors"):
@@ -175,3 +175,87 @@ def test_dry_run_every_step(tmp_path):
     assert c["read"] and c["care_class"] in ("harm", "format", "unresolved")
     # zero-initialized adapters read as the base model
     assert c["care"]["dP_violating"]["mean"] == pytest.approx(0.0, abs=1e-6)
+
+
+def test_generation_branch_boundaries():
+    # most probable failure (Amendment 43 item 3): a CI that reaches the floor's +0.14 reads as no
+    # rise, or a rise whose lower bound sits inside the specific band reads as the floor
+    assert A.gen_branch([0.05, 0.20], 0.12).startswith("rise")
+    assert A.gen_branch([-0.04, 0.10], 0.03).startswith("no rise (specific")
+    assert A.gen_branch([-0.15, -0.02], -0.08).startswith("no rise (drop")
+    assert A.gen_branch([0.01, 0.16], 0.08).startswith("unresolved")
+    assert A.gen_branch([0.02, 0.13], 0.075).startswith("no rise (non-specific")
+
+
+def test_fork_sign_classes():
+    # most probable failure: the fork reads the registered class instead of Amendment 31's
+    c = {"care": {"dP_violating": {"mean": 0.027}}, "base": {"dP_violating": {"mean": 0.517}},
+         "care_minus_base": {"mean": -0.49}}
+    f = A.fork_sign_classes(c)
+    assert f["care"]["class"] == "specific" and f["base"]["class"] == "non-specific"
+    assert f["care_minus_base"]["class"] == "discriminating"
+
+
+def _gen_rows(arm, viol):
+    return [{"scenario_id": sid, "norm_status": "violating" if k < v else "consistent",
+             "status": "completed", "arm": arm}
+            for sid, v in viol.items() for k in range(8)]
+
+
+def test_generation_read_skips_a_failed_parity_arm(tmp_path):
+    # most probable failure: rows of an arm whose parity failed enter the read
+    (tmp_path / "gen").mkdir()
+    kept = [f"i{j}" for j in range(30)]
+    for arm, v in (("none", 2), ("care", 2), ("base", 6)):
+        (tmp_path / "gen" / f"cellA2_{arm}.jsonl").write_text("\n".join(
+            json.dumps(r) for r in _gen_rows(arm, {i: v for i in kept})))
+    rec = {"phases": {"gen_none": {"base_tv": 0.02, "base_check_ok": True},
+                      "gen_care": {"parity_ok": True}, "gen_base": {"parity_ok": False}}}
+    (tmp_path / "a2g_record.json").write_text(json.dumps(rec))
+    g = A.gen_read(tmp_path, kept)
+    assert g["care"]["dP_violating"]["mean"] == pytest.approx(0.0)
+    assert g["base"] == {"read": False} and "care_minus_base" not in g
+    assert g["care_branch"].startswith("no rise (specific")
+
+
+def test_remote_runs_a2g():
+    # most probable failure: an arm generates before the base check, a merged copy is not removed,
+    # or T1.6's saved letters and the selection are not synced
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "a2g" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-muse_glimmer_30b'
+                     r'\}"; OUT_SUB=a2g\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "a2g" ]; then\n    A2G=')[1][:1100]
+    steps = ("--step gen --arm none", '--step merge --arm "$arm"', '--step gen --arm "$arm"')
+    order = [blk.index(x) for x in steps]
+    assert order == sorted(order)
+    assert "test_a2m.py" in sh.split("GATE_TESTS=")[1].split("\n")[0]
+    assert '[ "$STEPS" != "a2g" ]' in sh.split("# re-priced locally")[0].split("\n")[-1]
+    sync = set((ST / "runpod" / "sync_a2g.txt").read_text().split())
+    need = {"outputs/a2m/muse_glimmer_30b/cellA2_selection.json",
+            "outputs/st2mr/muse_glimmer_30b/gen/arm_none.jsonl",
+            "outputs/t16/muse_glimmer_30b/t16_record.json"}
+    need |= {f"outputs/t16/muse_glimmer_30b/parity/hf_{a}.npy" for a in ("none", "care", "base")}
+    need |= {f"outputs/t16/muse_glimmer_30b/adapters/{a}/{f}" for a in ("care", "base")
+             for f in ("adapter_config.json", "adapter_model.safetensors")}
+    assert need <= sync
+
+
+@pytest.mark.slow
+def test_a2g_dry_run_every_step(tmp_path):
+    # most probable failure: a merge or a merged engine's step crashes on a tiny Muse
+    rep = ST / "outputs" / "st2mr" / "muse_glimmer_30b"
+    sel = ST / "outputs" / "a2m" / "muse_glimmer_30b" / "cellA2_selection.json"
+    if not ((rep / "gen" / "arm_none.jsonl").exists() and sel.exists()):
+        pytest.skip("the replicate's rows or the a2m selection are not local")
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    base = [sys.executable, str(SCRIPTS / "a2g_driver.py"), "--out", str(tmp_path), "--replicate",
+            str(rep), "--t16", str(tmp_path / "no_t16"), "--selection", str(sel), "--adapters",
+            str(tmp_path / "adapters"), "--dry-run"]
+    for st in (["gen", "none"], ["merge", "care"], ["gen", "care"], ["merge", "base"],
+               ["gen", "base"]):
+        r = subprocess.run(base + ["--step", st[0], "--arm", st[1]], capture_output=True,
+                           text=True, cwd=ROOT, env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    rec = json.loads((tmp_path / D.KEY / "a2g_record.json").read_text())["phases"]
+    assert all(rec[f"gen_{a}"].get("status") == "ok" for a in ("none", "care", "base"))
+    assert rec["merge_care"]["ok"] and rec["merge_base"]["ok"]

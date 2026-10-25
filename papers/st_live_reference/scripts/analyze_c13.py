@@ -8,7 +8,9 @@
 ``--amendment42`` runs ST-A26's standardized read alone (Amendment 42: σ from the pooled sample at
 the site, every object re-read in standardized coordinates, OLMo-3-Think's invariance check, the
 branch; the raw read and the top-k projection-out variant beside); it never touches the family
-read.
+read. ``--amendment44`` runs ST-A26's document-contrast read alone (Amendment 44: each document's
+direction with the other's removed, a held-out specificity AUC, the positive control on the
+C_spec-specific direction; standardized of record, raw beside).
 
 Per model, at its headline layer (d1's conventions): ``V_moral`` = d1's three sources' mean
 moral − neutral differences, orthonormalized (rank 3); ``V_const`` per document = the mean m − n of
@@ -220,6 +222,105 @@ def amendment42(c13: Path) -> dict:
             "of_record": "std (Amendment 42); raw stays of record for Amendment 40; topk beside"}
 
 
+def specific_dir(va: np.ndarray, vb: np.ndarray) -> np.ndarray:
+    """Amendment 44 item 2: ``va``'s direction with ``vb``'s removed (both unit first), unit."""
+    ua, ub = unit(va), unit(vb)
+    return unit(ua - (ua @ ub) * ub)
+
+
+def auc(pos: np.ndarray, neg: np.ndarray) -> float:
+    """P(a positive score exceeds a negative one), ties half."""
+    d = np.asarray(pos)[:, None] - np.asarray(neg)[None, :]
+    return float((d > 0).mean() + 0.5 * (d == 0).mean())
+
+
+def doc_contrast(c13: Path, model: str, mode: str = "std") -> dict:
+    """Amendment 44 items 2-4 for one model: the document-specific directions on Amendment 42's
+    ladder, the held-out specificity AUC, u per direction with a pair bootstrap."""
+    z = np.load(c13 / model / "extract.npz")
+    keys = [str(k) for k in z["keys"]]
+    X = transform(z["headline"].astype(np.float64), mode)
+    rng = np.random.default_rng(SEED)
+    src = {s: np.mean(list(diffs(keys, X, f"d1|{s}").values()), axis=0) for s in SOURCES}
+    lad = ladder(X, src, rng, N_NULL)
+    q50, b0 = lad["null_q50"], lad["band"][0]
+    tr, te = {}, {}
+    for doc in ("spec", "anth"):
+        pairs = json.loads((DATA / f"st_c13_pairs_{doc}_v1.json").read_text())["pairs"]
+        d = diffs(keys, X, f"c13|{doc}")
+        tr[doc] = np.array([d[str(i)] for i, p in enumerate(pairs)
+                            if p["split"] == "train" and str(i) in d])
+        te[doc] = np.array([d[str(i)] for i, p in enumerate(pairs)
+                            if p["split"] == "test" and str(i) in d])
+
+    def stats(trs: dict, tes: dict) -> tuple[float, float, float, float]:
+        vs, va = trs["spec"].mean(0), trs["anth"].mean(0)
+        sp, ap = specific_dir(vs, va), specific_dir(va, vs)
+        us = (frac(lad["Q"], sp) - q50) / (b0 - q50)
+        ua = (frac(lad["Q"], ap) - q50) / (b0 - q50)
+        return us, ua, auc(tes["spec"] @ sp, tes["anth"] @ sp), frac(lad["Q"], unit(
+            unit(vs) - unit(va)))
+
+    us, ua, a_, pfc = stats(tr, te)
+    boot = []
+    for _ in range(N_BOOT):
+        rs = {k: v[rng.integers(0, len(v), len(v))] for k, v in tr.items()}
+        rt = {k: v[rng.integers(0, len(v), len(v))] for k, v in te.items()}
+        boot.append(stats(rs, rt))
+    B = np.array(boot)
+    lo = float(np.percentile(B[:, 2], 2.5))
+    return {"mode": mode, "position_valid": bool(b0 > lad["null_q95"]), "null_q50": q50,
+            "null_q95": lad["null_q95"], "band": lad["band"],
+            "u_spec_perp": float(us), "u_anth_perp": float(ua),
+            "u_spec_perp_boot": B[:, 0].tolist(), "u_anth_perp_boot": B[:, 1].tolist(),
+            "specificity_auc": a_, "specificity_auc_ci95": [lo, float(np.percentile(B[:, 2],
+                                                                                    97.5))],
+            "specificity_passes": bool(lo > 0.5), "pf_contrast": float(pfc),
+            "n_train": {k: len(v) for k, v in tr.items()}, "n_test": {k: len(v)
+                                                                       for k, v in te.items()}}
+
+
+def branch44(check: dict, pc: dict) -> str:
+    """Amendment 44 item 5, written before data."""
+    if not pc.get("valid_positions", True):
+        return "uninformative: a position is invalid (band at or below its null q95)"
+    if not all(check.values()):
+        return ("R_a, strong form: these pairs carry no document-specific content the instrument "
+                "can read; the positive control is uninformative and section 13's overlap read "
+                "needs document-specific stimuli (new pairs, GPU, own amendment)")
+    if pc["passes"]:
+        return ("R_a: the shared component masked the premise; the specific-direction read is "
+                "section 13's calibrated overlap instrument")
+    return ("R_b: training on a document does not draw its specific content toward the model's "
+            "moral subspace at this site; the overlap read is not used on C_partner, and the "
+            "partner deliverable keeps the family read")
+
+
+def amendment44(c13: Path) -> dict:
+    """ST-A26's document-contrast read (Amendment 44), standardized of record, raw beside."""
+    out: dict = {"rule": "ST_PLAN Amendment 44"}
+    for mode in ("std", "raw"):
+        r = {m: doc_contrast(c13, m, mode) for m in MODELS}
+        g, o = r["gpt_oss_20b"], r["olmo3_think"]
+        rng = np.random.default_rng(SEED)
+        perm = rng.permutation(N_BOOT)
+        du = np.array(g["u_spec_perp_boot"])[perm] - np.array(o["u_spec_perp_boot"])
+        did_b = (np.array(g["u_spec_perp_boot"])[perm] - np.array(g["u_anth_perp_boot"])[perm]) \
+            - (np.array(o["u_spec_perp_boot"]) - np.array(o["u_anth_perp_boot"]))
+        lo = float(np.percentile(du, 2.5))
+        pc = {"delta_u": g["u_spec_perp"] - o["u_spec_perp"],
+              "ci95": [lo, float(np.percentile(du, 97.5))], "passes": bool(lo > 0),
+              "valid_positions": bool(g["position_valid"] and o["position_valid"])}
+        did = {"did": (g["u_spec_perp"] - g["u_anth_perp"]) - (o["u_spec_perp"]
+                                                               - o["u_anth_perp"]),
+               "ci95": [float(np.percentile(did_b, 2.5)), float(np.percentile(did_b, 97.5))]}
+        check = {m: r[m]["specificity_passes"] for m in MODELS}
+        out[mode] = {"models": r, "specificity_check": check, "positive_control": pc,
+                     "did_beside": did, "branch": branch44(check, pc)}
+    out["of_record"] = "std (Amendment 44 item 1); raw beside"
+    return out
+
+
 def family_read(c13: Path, author: dict | None, key: dict | None, sub: dict | None) -> dict:
     from deepsteer.kdg.schema import load_scenarios
 
@@ -302,10 +403,31 @@ def main() -> None:
     ap.add_argument("--key", type=Path, default=None)
     ap.add_argument("--subagent", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--amendment44", action="store_true",
+                    help="ST-A26's document-contrast read only (the family read is not touched)")
     ap.add_argument("--amendment42", action="store_true",
                     help="ST-A26's standardized read only (the family read is not touched)")
     a = ap.parse_args()
     rd = lambda p: json.loads(p.read_text()) if p else None  # noqa: E731
+    if a.amendment44:
+        res = amendment44(a.c13)
+        slim = json.loads(json.dumps(res, default=str))
+        for mode in ("std", "raw"):
+            for m in slim[mode]["models"].values():
+                m.pop("u_spec_perp_boot"), m.pop("u_anth_perp_boot")
+        p = a.out or a.c13 / "c13_doc_contrast_read.json"
+        p.write_text(json.dumps(slim, indent=1))
+        for mode in ("std", "raw"):
+            x = res[mode]
+            for m, r in x["models"].items():
+                print(f"[{mode}] {m}: AUC {r['specificity_auc']:.3f} "
+                      f"[{r['specificity_auc_ci95'][0]:.3f}, {r['specificity_auc_ci95'][1]:.3f}]; "
+                      f"u(spec-perp) {r['u_spec_perp']:.3f}, u(anth-perp) {r['u_anth_perp']:.3f}; "
+                      f"PF(contrast) {r['pf_contrast']:.3f}; valid {r['position_valid']}")
+            print(f"[{mode}] positive control {x['positive_control']}; DiD {x['did_beside']}\n"
+                  f"[{mode}] branch: {x['branch']}")
+        print(f">> wrote {p}")
+        return
     if a.amendment42:
         res = amendment42(a.c13)
         slim = json.loads(json.dumps(res, default=str))
