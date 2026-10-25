@@ -279,3 +279,35 @@ def test_merge_computes_each_delta_once_and_keeps_none(tmp_path, monkeypatch):
     ad = D.adapter_deltas(tmp_path / "ad")
     assert not isinstance(ad, dict) and not any(isinstance(v, torch.Tensor) and v.dim() == 2
                                                 and v.shape == (4, 4) for v in vars(ad).values())
+
+
+def _hp_rows(arm, sid, statuses):
+    return [{"scenario_id": sid, "rollout": i, "norm_status": st, "gen_ids": [i + 1], "arm": arm}
+            for i, st in enumerate(statuses)]
+
+
+def test_fresh_pairs_reuse_no_chosen_trace_and_keep_rejected():
+    # most probable failure (Amendment 49 addition): care-DPO2 reuses a T1.6 chosen trace, or its
+    # rejected traces differ from T1.6's, so the replicate changes more than the chosen sample
+    care = _hp_rows("care", "S", ["violating", "violating", "violating", "consistent", "violating"])
+    none = _hp_rows("none", "S", ["violating", "consistent", "violating", "consistent"])
+    t16, _ = D.harm_pairs(care, none)
+    fresh, info = D.harm_pairs_fresh(care, none)
+    old = {tuple(p["chosen_key"]) for p in t16["care"]}
+    assert len(t16["care"]) == 2 and info["n_pairs"] == 2 and info["shortfall"] == 0
+    assert not old & {tuple(p["chosen_key"]) for p in fresh["care"]}
+    assert [p["rejected_key"] for p in fresh["care"]] == [p["rejected_key"] for p in t16["care"]]
+    short = _hp_rows("care", "S", ["violating", "violating", "violating"])
+    _, info2 = D.harm_pairs_fresh(short, none)
+    assert info2["n_pairs"] == 1 and info2["shortfall"] == 1
+
+
+def test_fresh_pairs_on_the_replicate():
+    # most probable failure: the measured 38 pairs (two scenarios short) do not reproduce
+    rep = ROOT / "papers" / "st_live_reference" / "outputs" / "st2mr" / "muse_glimmer_30b" / "gen"
+    if not (rep / "arm_care_03.jsonl").exists():
+        pytest.skip("the replicate's rows are not local")
+    rd = lambda f: [json.loads(x) for x in (rep / f).read_text().splitlines() if x.strip()]  # noqa: E731
+    fresh, info = D.harm_pairs_fresh(rd("arm_care_03.jsonl"), rd("arm_none.jsonl"))
+    assert info["n_pairs"] == 38 and info["shortfall"] == 2
+    assert info["per_scenario"]["H1-A-192"] == 1 and info["per_scenario"]["H1-A-224"] == 1

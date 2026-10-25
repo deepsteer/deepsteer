@@ -50,6 +50,7 @@ DATA = HERE.parent / "data"
 PIN = "2026-10-23"  # the replicate's rows (Cell 4's pin)
 BLOCK = 26  # Muse's site (hidden 27); ST.run's layer argument, unused by DPO
 SEED = 105  # Amendment 37 item 1, both arms
+FRESH_STEPS, FRESH_BAIL_H = 243, 2.5  # Amendment 49: care-DPO2 keeps T1.6's steps; the pilot bails
 STAGE = "t16"
 RR = 8
 PAIRS_PER_SCENARIO = 2
@@ -401,15 +402,42 @@ def harm_pairs(care_rows: list[dict], none_rows: list[dict]) -> tuple[dict, dict
     return out, info
 
 
+def harm_pairs_fresh(care_rows: list[dict], none_rows: list[dict]) -> tuple[dict, dict]:
+    """Amendment 49 addition item 1: care-DPO2's chosen traces are the steered protect traces T1.6
+    did not use, in rollout order, per scenario up to T1.6's count; each pair keeps T1.6's rejected
+    rule trace for that position, so the chosen sample (and the seed) are the only changes."""
+    t16, info = harm_pairs(care_rows, none_rows)
+    used = {tuple(p["chosen_key"]) for p in t16["care"]}
+    prot: dict[str, list] = {}
+    for r in sorted(care_rows, key=lambda x: (x["scenario_id"], x["rollout"])):
+        if r.get("norm_status") == "violating" and r.get("gen_ids") \
+                and (r["scenario_id"], r["rollout"]) not in used:
+            prot.setdefault(r["scenario_id"], []).append(r)
+    by_sid: dict[str, list] = {}
+    for p in t16["care"]:
+        by_sid.setdefault(p["scenario_id"], []).append(p)
+    out, counts = [], {}
+    for sid, ps in sorted(by_sid.items()):
+        fresh = prot.get(sid, [])[:len(ps)]
+        counts[sid] = len(fresh)
+        for p, ch in zip(ps, fresh):
+            out.append({**p, "chosen_key": (sid, ch["rollout"]), "chosen": ch["gen_ids"]})
+    n = int(sum(counts.values()))
+    return {"care": out}, {"per_scenario": counts, "n_pairs": n,
+                           "t16_pairs": info["n_pairs"], "shortfall": info["n_pairs"] - n,
+                           "scenarios_with_pair": int(sum(v > 0 for v in counts.values()))}
+
+
 def pairs_for(c: dict, a, arm: str) -> tuple[list[dict], dict]:
     import st2lb_driver as LB
 
     care = _jsonl(c["replicate"] / "gen" / "arm_care_03.jsonl")
     none = _jsonl(c["replicate"] / "gen" / "arm_none.jsonl")
-    hp, info = harm_pairs(care, none)
+    hp, info = harm_pairs_fresh(care, none) if a.fresh_from_t16 else harm_pairs(care, none)
     prompts = render_prompts(c, care + none)
     harm = [{"scenario_id": p["scenario_id"], "prompt": prompts[p["chosen_key"]],
-             "chosen": p["chosen"], "rejected": p["rejected"], "kind": p["kind"]}
+             "chosen": p["chosen"], "rejected": p["rejected"], "kind": p["kind"],
+             "chosen_key": p["chosen_key"], "rejected_key": p["rejected_key"]}
             for p in hp[arm]]
     if a.dry_run:
         harm = [{**p, "chosen": p["chosen"][:24], "rejected": p["rejected"][:24]} for p in harm]
@@ -439,10 +467,25 @@ def step_train(c, a) -> dict:
         wb.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant":
                                                                               False})
     kw = dict(layer=c["layer"], pairs=pr, general=gen_tr, kl_weight=rc["kl_weight"], lr=rc["lr"],
-              grad_accum=rc["grad_accum"], seed=SEED, lora_rank=rc["rank"],
+              grad_accum=rc["grad_accum"], seed=a.seed, lora_rank=rc["rank"],
               lora_alpha=rc["alpha"], lora_dropout=rc["dropout"])
     pilot = None
-    if arm == "care":  # the pilot fits the steps to the budget (T1.4's rule)
+    if a.fresh_from_t16:  # Amendment 49: T1.6's steps; the pilot only checks the bail
+        tp = time.time()
+        ST.run(wb, "beh", max_steps=1, **{**kw, "grad_accum": T14.PILOT_MICRO})
+        pilot = {"micro": T14.PILOT_MICRO, "seconds": time.time() - tp}
+        pilot["seconds_per_micro"] = pilot["seconds"] / T14.PILOT_MICRO
+        wb._model = wb.model.unload()  # noqa: SLF001
+        if rc["gradient_checkpointing"] and not a.dry_run:
+            wb.model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False})
+        steps = min(FRESH_STEPS, rc["max_steps"])
+        proj_h = pilot["seconds_per_micro"] * rc["grad_accum"] * steps / 3600
+        pilot["projected_hours"] = proj_h
+        if proj_h > FRESH_BAIL_H and not a.dry_run:
+            return {"status": "stop: the pilot projects training beyond the bail",
+                    "pilot": pilot, "pairs": info}
+    elif arm == "care":  # the pilot fits the steps to the budget (T1.4's rule)
         tp = time.time()
         ST.run(wb, "beh", max_steps=1, **{**kw, "grad_accum": T14.PILOT_MICRO})
         pilot = {"micro": T14.PILOT_MICRO, "seconds": time.time() - tp}
@@ -461,9 +504,14 @@ def step_train(c, a) -> dict:
     adir = c["adapters"] / arm
     adir.mkdir(parents=True, exist_ok=True)
     wb.model.save_pretrained(str(adir))
-    side = {"arm": arm, "pairs": info, "recipe": rc, "seed": SEED, "max_steps_run": steps,
+    ids = {"chosen": [list(p["chosen_key"]) for p in pr if p.get("kind") == "rule_harm"],
+           "rejected": [list(p["rejected_key"]) for p in pr if p.get("kind") == "rule_harm"]}
+    side = {"arm": arm, "pairs": info, "recipe": rc, "seed": a.seed, "max_steps_run": steps,
+            "rollout_ids": ids, "fresh_from_t16": bool(a.fresh_from_t16),
             "pilot": pilot, "train_seconds": time.time() - t0,
             "last_steps": res.get("steps", [])[-3:]}
+    side["adapter_sha256"] = {f: hashlib.sha256((adir / f).read_bytes()).hexdigest()
+                              for f in ("adapter_config.json", "adapter_model.safetensors")}
     (adir / "st_adapter.json").write_text(json.dumps(side, indent=1, default=str))
     return {"status": "ok", **{k: side[k] for k in ("max_steps_run", "pilot", "train_seconds")},
             "pairs": info}
@@ -723,7 +771,12 @@ def main() -> int:
     ap.add_argument("--deadline", type=float, default=None)
     ap.add_argument("--dry-fail-parity", action="store_true",
                     help="dry runs only: the arm's vLLM parity fails, so the fallback path runs")
+    ap.add_argument("--seed", type=int, default=SEED, help="training seed (Amendment 49: 205)")
+    ap.add_argument("--fresh-from-t16", action="store_true",
+                    help="care-DPO2 (Amendment 49): chosen traces T1.6 did not use, T1.6's steps")
     a = ap.parse_args()
+    if a.fresh_from_t16 and (a.step != "train" or a.arm != "care"):
+        ap.error("--fresh-from-t16 is for --step train --arm care")
     if a.dry_fail_parity and not a.dry_run:
         ap.error("--dry-fail-parity is for dry runs")
     if a.step in ("train", "hf_arm", "vllm_arm") and a.arm not in ARMS:

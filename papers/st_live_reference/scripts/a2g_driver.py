@@ -46,7 +46,7 @@ DATA = HERE.parent / "data"
 POOL = DATA / "st_fxh_cellA2_pool_v1.json"
 MANIFEST = DATA / "t16_adapters_v1.json"
 BASE_BAR, PARITY_MARGIN, KEPT_TOL = T16.BASE_BAR, T16.PARITY_MARGIN, 1e-6
-ARMS = ("care", "base")
+ARMS = ("care", "base", "care2")  # care2: care-DPO2, trained on the t16r pod (Amendment 49)
 
 
 def _now() -> str:
@@ -66,7 +66,11 @@ def phase(c: dict, name: str) -> dict:
 
 
 def verify(adapters: Path, arm: str) -> dict:
-    want = json.loads(MANIFEST.read_text())["arms"][arm]
+    """T1.6's adapters against the committed manifest; care-DPO2, trained on the same pod, against
+    the hashes its training step wrote into its sidecar (a transfer check)."""
+    arms = json.loads(MANIFEST.read_text())["arms"]
+    want = arms[arm] if arm in arms else json.loads(
+        (adapters / arm / "st_adapter.json").read_text())["adapter_sha256"]
     got = {f: hashlib.sha256((adapters / arm / f).read_bytes()).hexdigest() for f in want}
     if got != want:
         raise SystemExit(f"adapter {arm}: sha256 differs from {MANIFEST.name}")
@@ -84,6 +88,7 @@ def context(a) -> dict:
     c["items"] = kept[:2] if a.dry_run else kept
     c["record"] = c["out"] / "a2g_record.json"
     c["t16"] = a.t16
+    c["t16_care2"] = a.t16_care2
     c["adapters"] = a.adapters
     return c
 
@@ -121,8 +126,19 @@ def gen(c: dict, a, ckpt: Path | None, arm: str) -> dict:
             "tokens_per_second": summ.get("tokens_per_second")}
 
 
+def source(c: dict, arm: str) -> tuple[Path, str]:
+    """Where an arm's saved HF letters and merge record live: T1.6's dir, or for care-DPO2 the t16r
+    dir, where it was trained and read as ``care``."""
+    if arm == "care2":
+        return c["t16_care2"], "care"
+    return c["t16"], arm
+
+
 def saved_hf(c: dict, arm: str) -> np.ndarray | None:
-    p = c["t16"] / "parity" / f"hf_{arm}.npy"
+    d, name = source(c, arm)
+    if d is None:  # a dry run without the t16r dir
+        return None
+    p = d / "parity" / f"hf_{name}.npy"
     return np.load(p) if p.exists() else None
 
 
@@ -203,8 +219,9 @@ def step_merge(c: dict, a) -> dict:
     saved = T16.write_merged(ensure_snapshot(c, a), a.adapters / arm, c["out"] / "merged" / arm)
     want = None
     if not a.dry_run:
-        rec = json.loads((c["t16"] / "t16_record.json").read_text())["phases"]
-        want = rec[f"hf_arm_{arm}"]["merge"]["saved"]["weight_kept_share"]
+        d, name = source(c, arm)
+        rec = json.loads((d / "t16_record.json").read_text())["phases"]
+        want = rec[f"hf_arm_{name}"]["merge"]["saved"]["weight_kept_share"]
     same = a.dry_run or abs(saved["weight_kept_share"] - want) <= KEPT_TOL
     ok = bool(saved["ok"] and same)
     if not ok:
@@ -231,9 +248,13 @@ def main() -> int:
     ap.add_argument("--pool", type=Path, default=None,
                     help="a pool read in full instead (Amendment 46's forced-choice items)")
     ap.add_argument("--adapters", type=Path, default=None)
+    ap.add_argument("--t16-care2", type=Path, default=None,
+                    help="care2's t16r dir (t16_record.json, parity/hf_care.npy; Amendment 49)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     a.deadline = None
+    if a.arm == "care2" and a.t16_care2 is None and not a.dry_run:
+        ap.error("--arm care2 needs --t16-care2")
     if (a.pool is None) == (a.selection is None):
         ap.error("give exactly one of --selection (cell A′) and --pool (forced choice)")
     if a.step == "merge" and (a.arm == "none" or a.adapters is None):

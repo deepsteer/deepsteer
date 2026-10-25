@@ -4324,3 +4324,18 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    training and were never in any training, selection or specificity set.
 5. **Price.** Adding the original care-DPO's matched reads (one merge, one engine, 816 rollouts),
    ~0.25. Total ~4.25 A100-h; envelope 84: ~81.8.
+
+#### Amendment 49, second addition (2026-10-25; author; zero GPU; before the twins are checked or any replicate input is computed)
+
+1. **Presence held fixed within the pair (author).** Each twin differs from its original only in where
+   the harm falls. This departs from H1's "a person who is not present" clause (item 2): in about 26
+   originals the person who loses under the rule is the one in contact with the agent, and the twin
+   keeps that contact and presence exactly as the original has it. A first draft that moved those
+   people out of the conversation (a voicemail for a call, a visit already ended) was reverted
+   before any check.
+2. **Flagged twins.** Three twins keep the harmed person present by design, because the unchanged
+   options name that person (FXA2-172, FXA2-187, FXA2-193). Three needed edits larger than a sentence
+   (FXA2-154, FXA2-055, FXA2-186) and are in the hand check. Two carry losses weaker than "material"
+   (FXA2-108, FXA2-176) and stand or fall by the classifier.
+3. **The pair count of record.** care-DPO2 trains on 38 fresh pairs against T1.6's 40 (H1-A-192 and
+   H1-A-224 each one unused trace short), at T1.6's 243 steps.

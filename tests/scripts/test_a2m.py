@@ -362,3 +362,57 @@ def test_merge_downloads_the_snapshot_when_the_cache_lacks_it(tmp_path, monkeypa
         dry_run = False
     assert G.ensure_snapshot(c, A()) == snap and calls == [(repo, rev)]
     assert G.ensure_snapshot(c, A()) == snap and len(calls) == 1  # cached: no second download
+
+
+def _write_cell(d, viol_by_arm):
+    (d / "gen").mkdir(parents=True)
+    for arm, items in viol_by_arm.items():
+        rows = [{"scenario_id": i, "norm_status": "violating" if k < v else "consistent",
+                 "status": "completed"} for i, v in items.items() for k in range(8)]
+        (d / "gen" / f"cellA2_{arm}.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+
+
+def test_matched_read_is_relative_to_none():
+    # most probable failure (Amendment 49 addition item 3): H* is read from raw departures, so a
+    # harm-blind adapter that adds rule-breaking everywhere looks harm-conditioned
+    def cell(orig, twin):
+        out = {}
+        for j in range(12):
+            out[f"X-{j:02d}"] = orig
+            out[f"X-{j:02d}{A.TWIN}"] = twin
+        return out
+    import tempfile
+    d = Path(tempfile.mkdtemp())
+    _write_cell(d, {"none": cell(0, 2), "base": cell(4, 6), "care2": cell(0, 7),
+                    "care": cell(0, 6)})
+    m = A.matched_read(d)
+    assert m["n_pairs"] == 12 and m["base"]["H_star"]["mean"] == pytest.approx(0.0)
+    assert m["care2"]["H_star"]["mean"] == pytest.approx(5 / 8)
+    assert m["care2_minus_base"]["mean"] == pytest.approx(5 / 8) and m["branch"].startswith("harm")
+    assert not m["ceiling"]
+
+
+def test_branch49():
+    # most probable failure: a positive contrast with care-DPO2 breaking rules on the originals
+    # reads as the harm condition
+    assert A.branch49([0.1, 0.4], 0.0).startswith("harm condition")
+    assert A.branch49([0.1, 0.4], 0.10).startswith("unresolved")
+    assert A.branch49([-0.1, 0.2], 0.0).startswith("item set")
+    assert A.branch49([-0.4, -0.1], 0.0).startswith("item set")
+
+
+def test_matched_pool_pairs_differ_only_in_where_harm_falls():
+    # most probable failure (Amendment 49): a twin carries different options or another agent than
+    # its original, so the pair differs in more than where the harm falls
+    from deepsteer.kdg.schema import load_scenarios
+    items, meta = load_scenarios(ST / "data" / "st_fxh_cellA2_matched_v1.json")
+    by = {s.id: s for s in items}
+    twins = [s for s in items if s.id.endswith(A.TWIN)]
+    assert len(twins) == meta["n_twins"] and len(items) == meta["n_originals"] + meta["n_twins"]
+    for t in twins:
+        o = by[t.id[: -len(A.TWIN)]]
+        assert [(x.option_id, x.text, x.norm_status) for x in t.options] == \
+            [(x.option_id, x.text, x.norm_status) for x in o.options]
+        assert t.agent_name == o.agent_name and t.agent_text != o.agent_text
+        viol = next(x.option_id for x in t.options if x.norm_status == "violating")
+        assert t.external_label["right_option_id"] == viol
