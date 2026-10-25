@@ -1373,8 +1373,9 @@ indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_har
 at its operating dose was indistinguishable from a random vector's, and the random vector's own tilt
 grew with dose.
 
-Distilling that gate-passing vector into DPO produced **the first adapter whose rule-breaking tracked
-the harm condition on every registered read**. care-DPO on Muse raises protection where the rule
+Distilling that gate-passing vector into DPO produced **the first adapter whose rule-breaking stayed
+within 0.03 of the base model's on every rule-right read while its protection rose on every rule-harm
+read** (+0.027, +0.005, +0.022; −0.054 on the panel set). care-DPO on Muse raises protection where the rule
 harms (+0.338 [+0.264, +0.410]) and follows the rule where breaking it would, even when it cannot
 defer: 0.022 [0.002, 0.049] under forced choice. An adapter identical in recipe with the unsteered
 model's traces as teacher (base-DPO) protects more (+0.863) and breaks rules on every rule-right read
@@ -1392,10 +1393,10 @@ One run, one family, the mechanism open, and the matched-item replicate pending.
 | a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (after 2026-10-28; envelope 84) | supported on one run, one family |
 
 Referee pass on the thesis.
-1. *"'Every registered read' while two registered labels say otherwise."* T1.5's ladder counts
-   care-DPO's protective −0.054 as non-specific by magnitude, and Amendment 41's format class joined
-   two outcomes (the fork). The rule-breaking itself stays at or below `none`'s on every rule-right
-   read. ST_PLAN's T1.6 outcome states the labels beside the verdict.
+1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
+   non-specific by magnitude, and Amendment 41's format class joined two outcomes (the fork). The
+   thesis states what each read shows: rule-breaking within 0.03 of `none`'s on rule-right items,
+   protection up on rule-harm items. ST_PLAN's T1.6 outcome states the labels beside the verdict.
 2. *"40 pairs at 24 epochs is a memorized teacher, not a learned condition."* Conceded as a caveat.
    The matched-item replicate and the partner's model are the next two GPU items.
 3. *"The instrument 'caught' what it was tuned to catch."* The specificity set and its bar were
@@ -1417,8 +1418,9 @@ Referee pass on the thesis.
 - On the 2025 revision, no GPT-OSS advantage is detectable (Δu −0.15 [−0.34, +0.07]). The
   within-model contrast, descriptive and not blind, points the same way.
 - What the site shows is that principle-instantiating text from either document sits in the moral
-  subspace as fully as the moral-family sources do. The Model Spec's specific content does not. The
-  constitution's specific content sits in the null's upper tail in both models.
+  subspace as fully as the moral-family sources do, and that the documents' specific content
+  separates: the Model Spec's sits at the null median, the constitution's in the null's upper tail
+  (98th and 93rd percentiles), in both models.
 - The overlap read stays unused on `C_partner`. A date check in the test suite now guards every
   document-model premise.
 
