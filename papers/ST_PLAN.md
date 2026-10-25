@@ -3844,3 +3844,82 @@ standardized null. The document-contrast direction (R_a) follows under its own a
    band (σ per layer); cos(V_const(spec), V_const(anth)) standardized (R_a's exploratory number).
    Amendment 40's raw verdicts stay of record for Amendment 40; both are reported.
 7. **Cost.** Zero GPU, on `outputs/c13/*/extract.npz`.
+
+### Amendment 43 (2026-10-24; author; zero GPU; after Muse cell A′'s read, before the fork is computed and before any cell A′ generation)
+
+ST-A27 after Muse cell A′ (`data/st_a27_read_v1.json`): the registered map read R_c over R_a
+(carrier: weighing) with R_b closed, and the class gap was flagged after data.
+
+1. **Fork (post-hoc, flagged; program-thesis rule 7).** Amendment 41's format class joined a rise and
+   no change. Muse cell A′ is read a second time with Amendment 31's sign classes on the point (above
+   +0.03 non-specific, below −0.03 discriminating, between specific), the interval reported, for
+   care-DPO, base-DPO and care − base. Both verdicts are reported: the registered map (Amendment 41
+   item 4) stays the verdict of record, and the sign-class reading stands beside it with the class
+   gap named as found after data.
+2. **Generation on cell A′ (the instrument's rival; GPU).** Cell A′'s 51 kept items (Muse's
+   `cellA2_selection.json`, synced) × 8 rollouts, T1.6's generation of record: H1's agent frame,
+   effort and cap of record, sampler v2 (T 0.7), vLLM bf16; arms `none` (the hub snapshot),
+   care-DPO and base-DPO (merged copies rebuilt on the pod by T1.6's in-place writer from the synced
+   adapters, sha256 checked against `data/t16_adapters_v1.json`; the weight-space kept share must
+   equal T1.6's recorded value to 1e-6). Parity per merged arm: its vLLM letters on T1.6's 64 parity
+   rows against T1.6's saved HF-attached letters (synced), at most the base check's TV + 0.05, the
+   base check re-measured on this pod (vLLM base letters against T1.6's saved HF base letters, at most
+   0.10; Amendment 39 item 1). An arm that fails parity is not generated (reported; no fallback is
+   priced). Outcome per item: P(violating) of record (T1.5's `p_record`, truncation as recorded);
+   ΔP(arm − `none`), item bootstrap, 10,000 draws, percentile 95%; care − base paired beside.
+3. **Branches for care-DPO, written before data.** The two readings make point predictions. The
+   dose-0 floor reading: care-DPO's generation-to-dose-0 ratio on its own targets (0.338 / 0.065 =
+   5.2) times its cell A′ dose-0 ΔP (+0.027) = **+0.14**. The specific reading: within ±0.03.
+   - **Rise** (the CI's lower bound above +0.03) = the dose-0 floor: the letter read under-registered
+     care-DPO, and in generation it breaks the rule on rule-right items in its training format.
+   - **No rise** (the CI's upper bound below +0.14, excluding the floor's prediction, and the lower
+     bound at or below +0.03) = care-DPO is specific in its training format, and the dose-0 read
+     under-registers this adapter's size but not its sign. Labelled by Amendment 31's class on the
+     point; a point below −0.03 with the CI below 0 is a drop, the discriminating class (care-DPO
+     conditions on harm in generation; R_a's direction), flagged.
+   - **Unresolved** (neither): stated with the MDE.
+   base-DPO is read beside (a rise is expected from its dose-0 +0.517).
+4. **Power from measured variance.** T1.6's per-scenario generation ΔP SD: care-DPO 0.276, base-DPO
+   0.177; at n = 51, MDE = 2.8 × SD / √51 = 0.108 and 0.069. The floor's +0.14 sits above the
+   care-DPO MDE; the unresolved zone (a point near +0.06 to +0.11) is stated as such.
+5. **Wording (author).** "R_c over R_a" is worded as a content reading (the steered traces carry
+   more weighing language) with the mechanism open. base-DPO's +0.517 on H1-format rule-right items
+   at dose 0 enters T1.6's write-up as format-bound letter selection.
+6. **Pod and price.** `STEPS=a2g` (Muse; vLLM, no HF model load): setup and the Muse download ~0.35,
+   two in-place merges ~0.2, three engine loads with parity rows ~0.3, 3 × 408 rollouts at T1.6's
+   measured ~670 tokens per second ~0.25, dry runs ~0.1: **~1.2 A100-h**, stop 2.5 h, disk 300 GB
+   (two merged copies). Bail: the base check failing stops the session before any arm (~0.5 spent).
+   Saves: every rollout with its parse, the parity letters, the merge records. Envelope 78: spent
+   74.63 + ~1.2 = ~75.8.
+
+### Amendment 44 (2026-10-24; author; zero GPU; before ST-A26's document-contrast read is computed)
+
+ST-A26's second discriminator (R_a, a generic stimulus, against R_b, a wrong premise), after
+Amendment 42 left R_c unable to account for the failed positive control.
+
+1. **Coordinates.** Standardized (Amendment 42's σ and read; its invariance check holds on
+   OLMo-3-Think, and GPT-OSS's raw PR of 1.4 is below instrument-calibration's floor of 30); raw
+   beside.
+2. **Document-specific directions.** Per model, V̂_spec and V̂_anth (each document's mean m − n over
+   its training pairs, unit). The C_spec-specific direction v_spec⊥ = V̂_spec − (V̂_spec · V̂_anth)
+   V̂_anth, unit; v_anth⊥ likewise. The shared moral-versus-neutral component (the documents' cosine
+   0.86 and 0.84 standardized) is removed by construction. Principle-unique pairs are not used: no
+   mapping of principles to unique or shared exists, and building one is its own amendment.
+3. **Specificity check (the stimulus carries document-specific content).** Each document's test
+   pairs' m − n projected onto v_spec⊥ (built from training pairs only); AUC separating C_spec's test
+   pairs from C_anth's; pair bootstrap over both documents' training and test pairs, 1,000 draws.
+   Passes in a model if the AUC's lower bound exceeds 0.5.
+4. **Positive control on the specific direction (Amendment 40 item 3's form).** The projection
+   fraction of v_spec⊥ onto span(V_moral) on the same ladder (null q50, band minimum), u per model;
+   passes if u(GPT-OSS, v_spec⊥) − u(OLMo-3-Think, v_spec⊥) has a bootstrap 95% lower bound above 0.
+   Beside: the difference in differences [u_G(v_spec⊥) − u_G(v_anth⊥)] − [u_O(v_spec⊥) −
+   u_O(v_anth⊥)], and the projection fraction of the contrast V̂_spec − V̂_anth per model.
+5. **Branches, written before data.** Specificity check fails in either model → R_a in its strong
+   form: these pairs carry no document-specific content the instrument can read; the positive
+   control is uninformative and §13's overlap read needs document-specific stimuli (new pairs, GPU,
+   own amendment). Check passes in both and the control passes → R_a: the shared component masked the
+   premise, and the specific-direction read is §13's calibrated overlap instrument (on `C_partner` it
+   needs a comparison document of its own). Check passes in both and the control fails → R_b: training
+   on a document does not draw its specific content toward the model's moral subspace at this site;
+   §13's overlap read is not used on `C_partner`, and the partner deliverable keeps the family read.
+6. **Cost.** Zero GPU, on `outputs/c13/*/extract.npz`.
