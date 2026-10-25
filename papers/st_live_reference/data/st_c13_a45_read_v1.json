@@ -27,13 +27,15 @@
  },
  "five_item_reading": "split (R_c: the items are ambiguous)",
  "author_doc_marks": {
-  "C13S-012": null,
-  "C13S-013": null,
-  "C13S-024": null,
-  "C13A-026": null,
-  "C13A-036": null
+  "C13S-012": "depart",
+  "C13S-013": "depart",
+  "C13S-024": "depart",
+  "C13A-026": "escalate",
+  "C13A-036": "depart"
  },
- "construction_document_inconsistent": [],
+ "construction_document_inconsistent": [
+  "C13A-026"
+ ],
  "rater": {
   "model": "gemini-4-argon",
   "reasoning_effort": "medium",
@@ -469,5 +471,6 @@
     "C": "o3"
    }
   }
- }
+ },
+ "author_doc_marks_source": "outputs/c13_rating/a28_quotes.md (the author, 2026-10-25), quote-and-classify (Amendment 45 item 2)"
 }
