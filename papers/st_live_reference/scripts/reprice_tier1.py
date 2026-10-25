@@ -103,7 +103,8 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "c13 first pod (18:08:41-18:22:49 + 0.1; stopped in the dry runs)": 0.33,
          "T1.6 resume (t16; 18:08:56-19:55:52 + 0.1; Amendments 37-39)": 1.88,
          "c13 relaunch (18:44:40-19:18:23 + 0.1; Amendments 36 and 40)": 0.66,
-         "a2m, Muse cell A' (23:43:31-00:08:22 + 0.1; Amendment 41)": 0.51}
+         "a2m, Muse cell A' (23:43:31-00:08:22 + 0.1; Amendment 41)": 0.51,
+         "a2g, cell A' generation (03:18:11-04:09:30 + 0.1; Amendment 43)": 0.96}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)
