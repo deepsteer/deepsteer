@@ -15,7 +15,10 @@ process (the runner's order):
 The analysis of record is local (``analyze_a2m.py --a2g``).
 
     python3 a2g_driver.py --step gen|merge --arm none|care|base --out <dir> --replicate <dir> \
-        --t16 <dir> --selection <cellA2_selection.json> [--adapters <dir>] [--dry-run]
+        --t16 <dir> (--selection <cellA2_selection.json> | --pool <forced items>) \
+        [--adapters <dir>] [--dry-run]
+
+``--pool`` reads every item of a pool file instead (Amendment 46's forced-choice cell, STEPS=a2f).
 """
 
 from __future__ import annotations
@@ -74,10 +77,11 @@ def context(a) -> dict:
     from deepsteer.kdg.schema import load_scenarios
 
     c = T16.context(a)  # T1.6's frame, recipe, cap and parity scenarios (from the replicate)
-    pool = {s.id: s for s in load_scenarios(POOL)[0]}
-    sel = json.loads(a.selection.read_text())
+    pool = {s.id: s for s in load_scenarios(a.pool or POOL)[0]}
+    # the forced-choice pool (Amendment 46) holds exactly its items; cell A′'s pool, a selection
+    kept = sorted(pool) if a.pool else json.loads(a.selection.read_text())["kept"]
     c["H"].update(pool)
-    c["items"] = sel["kept"][:2] if a.dry_run else sel["kept"]
+    c["items"] = kept[:2] if a.dry_run else kept
     c["record"] = c["out"] / "a2g_record.json"
     c["t16"] = a.t16
     c["adapters"] = a.adapters
@@ -206,12 +210,16 @@ def main() -> int:
                     help="the replicate's muse_glimmer_30b dir (gen/arm_none: T1.6's parity rows)")
     ap.add_argument("--t16", type=Path, required=True,
                     help="T1.6's muse_glimmer_30b dir (t16_record.json, parity/hf_*.npy)")
-    ap.add_argument("--selection", type=Path, required=True,
+    ap.add_argument("--selection", type=Path, default=None,
                     help="Muse cell A′'s cellA2_selection.json (the kept items)")
+    ap.add_argument("--pool", type=Path, default=None,
+                    help="a pool read in full instead (Amendment 46's forced-choice items)")
     ap.add_argument("--adapters", type=Path, default=None)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
     a.deadline = None
+    if (a.pool is None) == (a.selection is None):
+        ap.error("give exactly one of --selection (cell A′) and --pool (forced choice)")
     if a.step == "merge" and (a.arm == "none" or a.adapters is None):
         ap.error("--step merge needs --arm care|base and --adapters")
     c = context(a)

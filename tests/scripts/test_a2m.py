@@ -259,3 +259,78 @@ def test_a2g_dry_run_every_step(tmp_path):
     rec = json.loads((tmp_path / D.KEY / "a2g_record.json").read_text())["phases"]
     assert all(rec[f"gen_{a}"].get("status") == "ok" for a in ("none", "care", "base"))
     assert rec["merge_care"]["ok"] and rec["merge_base"]["ok"]
+
+
+def test_forced_branch_boundaries():
+    # most probable failure (Amendment 46 item 3): care-DPO is read although none itself breaks the
+    # rule under forced choice, or a CI straddling the bar is called either way
+    b = (0.05 + A.R_D_PRED) / 2
+    assert A.forced_branch([0.6, 0.8], [0.0, 0.1], b).startswith("uninformative")
+    assert A.forced_branch([0.0, 0.1], [0.05, 0.3], b).startswith("follows the rule")
+    assert A.forced_branch([0.0, 0.1], [0.7, 0.95], b).startswith("breaks")
+    assert A.forced_branch([0.0, 0.1], [0.3, 0.7], b).startswith("unresolved")
+
+
+def test_action_split_counts_every_rollout(tmp_path):
+    # most probable failure: truncated or unparsed rollouts drop out of the split, so the shares
+    # stop summing to 1 and rule avoidance hides in the missing share
+    rows = {"none": ["consistent"] * 4 + ["neutral"] * 4,
+            "care": ["neutral"] * 6 + ["violating", None]}
+    for arm, sts in rows.items():
+        (tmp_path / f"cellA2_{arm}.jsonl").write_text("\n".join(json.dumps(
+            {"scenario_id": "i1", "norm_status": st,
+             "status": "truncated" if st is None else "completed"}) for st in sts))
+    sp = A.action_split(tmp_path, ["i1"])
+    assert sum(sp["care"].values()) == pytest.approx(1.0) and sp["care"]["truncated"] == 0.125
+    assert sp["care_minus_none"]["neutral"]["mean"] == pytest.approx(0.25)
+    assert sp["care_minus_none"]["consistent"]["mean"] == pytest.approx(-0.5)
+
+
+def test_forced_items_match_their_build():
+    # most probable failure: the committed forced-choice file drifts from the selection (another
+    # item set) or keeps a defer option
+    from deepsteer.kdg.schema import load_scenarios
+    f = load_scenarios(ST / "data" / "st_fxh_cellA2_forced_v1.json")[0]
+    assert len(f) == 51 and all(sorted(o.norm_status for o in s.options) == ["consistent",
+                                                                              "violating"]
+                                for s in f)
+    sel = ST / "outputs" / "a2m" / "muse_glimmer_30b" / "cellA2_selection.json"
+    if sel.exists():
+        assert sorted(s.id for s in f) == sorted(json.loads(sel.read_text())["kept"])
+
+
+def test_remote_runs_a2f():
+    # most probable failure: the a2f block reads cell A's three-option selection instead of the
+    # forced-choice pool, or an arm generates before the base check
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "a2f" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-muse_glimmer_30b'
+                     r'\}"; OUT_SUB=a2f\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "a2f" ]; then\n    A2F=')[1].split('if [ "$STEPS" = "a2g" ]')[0]
+    assert "--pool $A2F_POOL" in blk and "--selection" not in blk
+    steps = ("--step gen --arm none", '--step merge --arm "$arm"', '--step gen --arm "$arm"')
+    order = [blk.index(x) for x in steps]
+    assert order == sorted(order)
+    sync = set((ST / "runpod" / "sync_a2f.txt").read_text().split())
+    assert "outputs/t16/muse_glimmer_30b/parity/hf_none.npy" in sync
+    assert not any("cellA2_selection" in x for x in sync)
+
+
+@pytest.mark.slow
+def test_a2f_dry_run_every_step(tmp_path):
+    # most probable failure: the two-option items break the agent frame or the parse on a tiny Muse
+    rep = ST / "outputs" / "st2mr" / "muse_glimmer_30b"
+    if not (rep / "gen" / "arm_none.jsonl").exists():
+        pytest.skip("the replicate's rows are not local")
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    base = [sys.executable, str(SCRIPTS / "a2g_driver.py"), "--out", str(tmp_path), "--replicate",
+            str(rep), "--t16", str(tmp_path / "no_t16"), "--pool",
+            str(ST / "data" / "st_fxh_cellA2_forced_v1.json"), "--adapters",
+            str(tmp_path / "adapters"), "--dry-run"]
+    for st in (["gen", "none"], ["merge", "care"], ["gen", "care"]):
+        r = subprocess.run(base + ["--step", st[0], "--arm", st[1]], capture_output=True,
+                           text=True, cwd=ROOT, env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    rows = [json.loads(x) for x in (tmp_path / D.KEY / "gen" / "cellA2_none.jsonl").read_text()
+            .splitlines() if x.strip()]
+    assert rows and all(len(json.loads(r["order"]) if isinstance(r["order"], str) else r["order"])
+                        == 2 for r in rows if r.get("order"))
