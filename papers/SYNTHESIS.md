@@ -1385,6 +1385,28 @@ Referee pass.
 3. *"Specific on both models at different doses."* Stated in ST-A29: at 0.4×, Muse's tilt sits above
    its fill (+0.079 [+0.023, +0.136]), so specificity is read at each model's own dose.
 
+**The care-DPO replicate (2026-10-26; Amendment 49, ST-A27, ST-A30), what changed.** Positive voice
+first: **care-DPO's profile reproduces under a fresh seed and fresh chosen traces.** care-DPO2 raises
+protection on H1_held by +0.326 (care-DPO +0.338), tilts rule-right items away from violating (−0.046),
+and follows the rule when it must choose (0.025). It costs more capability (−0.040 against −0.005; bar
+−0.02), so item 5's replication is not met, on capability alone. On items that differ only in where
+the harm falls, both care adapters mostly defer (0.82 to 0.95 of rollouts). They depart only where the
+rule harms, at 7%, against base-DPO's 35% and 81%. The registered branch is item set. The comparator
+was registered as harm-blind and reads harm-conditioned (H\* +0.445). Whether care-DPO's harm condition
+lives in the direction it commits (R_defer) or in H1's item set (R_item) is ST-A30's question. The
+forced choice on the twins separates them, and the thesis wording waits on the author.
+
+Referee pass.
+1. *"The registered branch says item set; you are reaching for a rival."* The verdict of record is item
+   set, stated as registered. The rival is written because the rule's comparator failed its own
+   registered premise, which `instrument-calibration` treats as a validity event, not a footnote.
+2. *"The commit-only shares condition on the output."* Conceded: they are exploratory and not a verdict,
+   and they rest on 19 to 50 committed rollouts per cell. The forced choice on the twins removes the
+   conditioning.
+3. *"Capability failing is a replication failure, full stop."* It is, by item 5. The difference from
+   care-DPO's capability is −0.035 [−0.075, 0.000], so whether the fresh seed costs more capability than
+   T1.6's is not resolved on 200 items.
+
 ### ST line thesis (2026-10-25), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
@@ -1405,11 +1427,12 @@ two vectors:
 - adapters: L-beh +0.192; L-beh-2, format-bound, +0.308 on cell A′; base-DPO;
 - vectors: −V_harm +0.089 and V_qwen +0.093 on GPT-OSS.
 
-One run, one family, the mechanism open, and the matched-item replicate pending.
+One family and the mechanism open. The matched-item replicate has read, and its reading is with the
+author (ST-A30).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (after 2026-10-28; envelope 84) | supported on one run, one family |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | escalated: the replicate reproduces gate, specificity and forced choice and fails capability; the matched cell's registered branch is item set, with its comparator's premise failed (ST-A30) |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as

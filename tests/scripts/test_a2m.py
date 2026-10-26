@@ -390,6 +390,10 @@ def test_matched_read_is_relative_to_none():
     assert m["care2"]["H_star"]["mean"] == pytest.approx(5 / 8)
     assert m["care2_minus_base"]["mean"] == pytest.approx(5 / 8) and m["branch"].startswith("harm")
     assert not m["ceiling"]
+    # the split covers every adapter (Amendment 46 item 4), care-DPO2 included, per set too
+    assert set(m["action_split"]) >= {"none", "care", "care2", "base", "care2_minus_none"}
+    tw = m["action_split_by_set"]["twin"]["care2"]
+    assert tw["violating"] == pytest.approx(7 / 8)
 
 
 def test_branch49():

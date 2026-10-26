@@ -4342,6 +4342,46 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
 3. **The pair count of record.** care-DPO2 trains on 38 fresh pairs against T1.6's 40 (H1-A-192 and
    H1-A-224 each one unused trace short), at T1.6's 243 steps.
 
+#### Amendment 49 outcome, the replicate and the matched cell (2026-10-26; pod t16r, 5.04 A100-h; `data/t16r_read_v1.json`)
+
+care-DPO's values from T1.6, a2g and a2f sit beside care-DPO2's. vLLM bf16 throughout; base check TV
+0.0179 (as T1.6); every merge and parity check passes (care-DPO2 0.0133 on the matched cell, 0.0124 on
+the forced cell).
+
+| criterion (item 5) | care-DPO2 | care-DPO | bar | met |
+|---|---|---|---|---|
+| ΔP of record, 54 engaged H1_held × 8 | +0.326 [+0.250, +0.405] | +0.338 [+0.264, +0.410] | ≥ +0.15, CI > 0 | yes |
+| capability, 200 items | −0.040 [−0.075, −0.010] | −0.005 [−0.040, +0.030] | ≥ −0.02 | **no** |
+| panel guard ΔE | −0.010 [−0.016, −0.004] | +0.004 [−0.002, +0.011] | CI not above 0 | yes |
+| specificity, 60 rule-right items | −0.046 [−0.071, −0.021] (discriminating) | −0.054 | not above +0.03 | yes |
+| forced choice P(violating), 51 × 8 | 0.025 [0.005, 0.054] | 0.022 | "follows the rule" | yes |
+
+**Replication (item 5): not met, on capability alone.** care-DPO2 − care-DPO on the same 200 items is
+−0.035 [−0.075, 0.000] (exploratory). Beside, not criteria: truncation on H1_held 2.9% (care-DPO 0.0%);
+dose 0 −0.044 [−0.075, −0.014], the opposite sign to care-DPO's +0.065 [+0.032, +0.095].
+
+**The matched cell (51 pairs × 8; Amendment 49 addition item 3).**
+
+| arm | D(original) | D(twin) | H\* | parse rate (orig., twin) |
+|---|---|---|---|---|
+| `none` | 0.000 | 0.015 | — | 1.00, 1.00 |
+| care-DPO2 | 0.000 | 0.074 | +0.059 [+0.020, +0.110] | 0.93, 0.95 |
+| care-DPO | 0.002 | 0.071 | +0.054 [+0.022, +0.091] | 1.00, 1.00 |
+| base-DPO | 0.349 | 0.809 | +0.445 [+0.360, +0.531] | 0.88, 0.95 |
+
+H\*(care-DPO2) − H\*(base-DPO) = −0.387 [−0.483, −0.288] (MDE 0.14); care-DPO's −0.391 [−0.484, −0.299].
+No ceiling: `none` departs on 1.5% of twins. **Registered branch: item set**, care-DPO2 is no more
+conditioned on where the harm falls than base-DPO. The comparator's registered premise fails: base-DPO's
+predicted H\* was about 0 (author), and it reads +0.445, departing on 35% of originals and 81% of
+twins. Beside, the rule item 4 registered before the addition replaced it (H\*(care-DPO2) against
+`none`, with D(original) within +0.03 of `none`'s) reads harm condition: +0.059 [+0.020, +0.110], D(original)
+0.000. The verdict of record is the addition's. ST-A30 holds the readings and the separating cell.
+
+Action split (Amendment 46 item 4), originals then twins: care-DPO2 defers on 0.86 and 0.82 and
+follows the rule on 0.07 and 0.05, truncated 0.07 and 0.05; care-DPO defers on 0.95 and 0.91; `none`
+defers on 0.50 and 0.56; base-DPO violates on 0.35 and 0.81, truncated 0.11 and 0.05. Both care
+adapters send most choices on cell A′-style items to the defer option, originals and twins alike.
+
 ### Amendment 50 (2026-10-26; author; zero GPU; before any item below computes)
 
 1. **t16r launched 2026-10-26 (author).** The replicate depends on nothing from the partner, so it

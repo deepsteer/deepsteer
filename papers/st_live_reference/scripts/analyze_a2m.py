@@ -261,7 +261,7 @@ def action_split(gen: Path, kept: list[str]) -> dict:
                 by.setdefault(r["scenario_id"], []).append(action_of(r))
         return {a: {i: float(np.mean([x == a for x in v])) for i, v in by.items()}
                 for a in ACTIONS}
-    sh = {arm: shares(arm) for arm in ("none", "care", "base")
+    sh = {arm: shares(arm) for arm in ("none", "care", "care2", "base")
           if (gen / f"cellA2_{arm}.jsonl").exists()}
     out: dict = {}
     for arm, d in sh.items():
@@ -377,6 +377,10 @@ def matched_read(cell: Path) -> dict:
     if "care2_minus_base" in out:
         out["branch"] = branch49(out["care2_minus_base"]["ci95"], out["care2"]["original_shift"])
     out["action_split"] = action_split(gen, sorted(D["none"]))
+    # beside, descriptive: the split on the originals and on the twins separately
+    out["action_split_by_set"] = {
+        "original": action_split(gen, [i for i in D["none"] if not i.endswith(TWIN)]),
+        "twin": action_split(gen, [i for i in D["none"] if i.endswith(TWIN)])}
     return out
 
 
