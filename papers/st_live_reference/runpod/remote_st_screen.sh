@@ -126,6 +126,12 @@ elif [ "$STEPS" = "t16r" ]; then
   # none and base-DPO reads seeded (build_t16r_seed.py; sync_t16r.txt); 6.0 h stop
   MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=t16r
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-6.0}"
+elif [ "$STEPS" = "a2t" ]; then
+  # the forced choice on the matched twins (author, 2026-10-26; Amendment 52): the 51 twins without
+  # the defer option, generation under none, care-DPO, care-DPO2 and base-DPO on vLLM (a2g's
+  # steps); T1.6's and t16r's files and the replicate's none rows synced (sync_a2t.txt); 2.5 h stop
+  MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=a2t
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
 elif [ "$STEPS" = "a2f" ]; then
   # the forced-choice cell (author, 2026-10-25; Amendment 46): cell A's 51 kept items without the
   # defer option, generation under none, care-DPO and base-DPO on vLLM (a2g's steps); T1.6's files
@@ -463,6 +469,19 @@ if [ "$STEPS" = "t16r" ]; then  # the pools and the manifest (committed); the se
     [ -f "$f" ] || { echo "FATAL: $f missing (t16r inputs; SYNC_OUTPUTS from sync_t16r.txt)"; exit 1; }
   done
 fi
+A2T_POOL=papers/st_live_reference/data/st_fxh_cellA2_twins_forced_v1.json  # committed (Amendment 52)
+A2T_ADAPTERS="$OUT/_a2t_adapters"  # care and base: T1.6's; care2: t16r's care-DPO2 (synced)
+if [ "$STEPS" = "a2t" ]; then  # the twins' forced items and the manifest (committed); T1.6's, t16r's and the replicate's files (synced)
+  for f in "$A2T_POOL" papers/st_live_reference/data/t16_adapters_v1.json \
+           "$T16_REPLICATE/gen/arm_none.jsonl" "$A2G_T16/t16_record.json" \
+           "$A2G_T16/parity/hf_none.npy" "$A2G_T16/parity/hf_care.npy" "$A2G_T16/parity/hf_base.npy" \
+           "$A2M_ADAPTERS/care/adapter_model.safetensors" "$A2M_ADAPTERS/care/adapter_config.json" \
+           "$A2M_ADAPTERS/base/adapter_model.safetensors" "$A2M_ADAPTERS/base/adapter_config.json" \
+           "$T16R_DIR/t16_record.json" "$T16R_DIR/parity/hf_care.npy" "$T16R_DIR/adapters/care/st_adapter.json" \
+           "$T16R_DIR/adapters/care/adapter_model.safetensors" "$T16R_DIR/adapters/care/adapter_config.json"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (the twins' forced-choice inputs; SYNC_OUTPUTS from sync_a2t.txt)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "a2f" ]; then  # the forced-choice items and the manifest (committed); T1.6's files and the replicate's rows (synced)
   for f in "$A2F_POOL" papers/st_live_reference/data/t16_adapters_v1.json \
            "$T16_REPLICATE/gen/arm_none.jsonl" "$A2G_T16/t16_record.json" \
@@ -669,6 +688,16 @@ dry_runs() {
         done
       done
       rm -rf "$OUT/_dry_t16r"
+    fi
+    if [ "$STEPS" = "a2t" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a2g's steps on the forced twins, every arm, tiny Muse
+      rm -rf "$OUT/_dry_a2t"
+      DT="papers/st_live_reference/scripts/a2g_driver.py --out $OUT/_dry_a2t --replicate $T16_REPLICATE --t16 $A2G_T16 --pool $A2T_POOL --adapters $OUT/_dry_a2t/adapters --dry-run"
+      $PY $DT --step gen --arm none || { echo "DRY RUN FAILED (a2t gen none)"; return 1; }
+      for arm in care care2 base; do
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DT --step merge --arm "$arm" \
+          && $PY $DT --step gen --arm "$arm" || { echo "DRY RUN FAILED (a2t $arm)"; return 1; }
+      done
+      rm -rf "$OUT/_dry_a2t"
     fi
     if [ "$STEPS" = "a2f" ] && [ "$m" = "muse_glimmer_30b" ]; then  # a2g's steps on the forced-choice items, tiny Muse
       rm -rf "$OUT/_dry_a2f"
@@ -964,6 +993,20 @@ for m in $MODELS; do
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
   fi
+  if [ "$STEPS" = "a2t" ]; then
+    mkdir -p "$A2T_ADAPTERS" && ln -sfn "$A2M_ADAPTERS/care" "$A2T_ADAPTERS/care" \
+      && ln -sfn "$A2M_ADAPTERS/base" "$A2T_ADAPTERS/base" && ln -sfn "$T16R_DIR/adapters/care" "$A2T_ADAPTERS/care2"
+    A2T="papers/st_live_reference/scripts/a2g_driver.py --out $OUT --replicate $T16_REPLICATE --t16 $A2G_T16 --t16-care2 $T16R_DIR --pool $A2T_POOL --adapters $A2T_ADAPTERS"
+    rc=0
+    $PY $A2T --step gen --arm none || rc=$?   # vLLM via its worker; the base check
+    for arm in care care2 base; do   # each arm merged, generated, its merged copy removed; a failed base check makes these no-ops
+      [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $A2T --step merge --arm "$arm" || rc=$?; }
+      [ "$rc" -eq 0 ] && { $PY $A2T --step gen --arm "$arm" || rc=$?; }
+    done
+    echo ">> $m exit $rc (0 ok; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "a2f" ]; then
     A2F="papers/st_live_reference/scripts/a2g_driver.py --out $OUT --replicate $T16_REPLICATE --t16 $A2G_T16 --pool $A2F_POOL --adapters $A2M_ADAPTERS"
     rc=0
@@ -1160,7 +1203,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"

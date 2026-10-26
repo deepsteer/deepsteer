@@ -441,3 +441,85 @@ def test_capability_split_separates_truncation_from_wrong_answers(tmp_path):
                                             "gained": 0}
     assert out["base"]["lost_vs_none"]["wrong_answer"] == 1
     assert out["care2_minus_care"]["tokens"]["mean"] == pytest.approx(500.0)
+
+
+def _forced_rows(path, viol_by_item):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    rows = [{"scenario_id": i, "norm_status": "violating" if k < v else "consistent",
+             "status": "completed"} for i, v in viol_by_item.items() for k in range(8)]
+    path.write_text("\n".join(json.dumps(r) for r in rows))
+    return path
+
+
+def test_twins_forced_read_pairs_each_twin_with_its_forced_original(tmp_path):
+    # most probable failure (Amendment 52): D_f subtracts the wrong original (another pair's, or the
+    # three-option cell's) or care-DPO2's originals come from a2f, which never ran care-DPO2
+    ids = [f"X-{j:02d}" for j in range(12)]
+    a2t = tmp_path / "a2t"
+    (a2t / "gen").mkdir(parents=True)
+    rec = {"phases": {"gen_none": {"base_tv": 0.01, "base_check_ok": True},
+                      **{f"gen_{a}": {"parity_ok": True} for a in ("care", "care2", "base")}}}
+    (a2t / "a2g_record.json").write_text(json.dumps(rec))
+    twin = {"none": 0, "care": 6, "care2": 7, "base": 8}
+    for arm, v in twin.items():
+        _forced_rows(a2t / "gen" / f"cellA2_{arm}.jsonl", {i + A.TWIN: v for i in ids})
+    orig = {"none": 0, "care": 0, "care2": 1, "base": 4}
+    og = {arm: _forced_rows(tmp_path / ("t16r" if arm == "care2" else "a2f") / f"{arm}.jsonl",
+                            {i: v for i in ids}) for arm, v in orig.items()}
+    out = A.twins_forced_read(a2t, og)
+    assert out["n_pairs"] == 12
+    assert out["care2"]["D_f"]["mean"] == pytest.approx(6 / 8)
+    assert out["base"]["D_f"]["mean"] == pytest.approx(4 / 8)
+    assert out["care2"]["minus_none_twin"]["mean"] == pytest.approx(7 / 8)
+    assert out["branch"].startswith("R_defer") and not out["none_departs_flag"]
+
+
+def test_branch52():
+    # most probable failure: a large twin departure that `none` shares reads as R_defer
+    hi, lo = {"mean": 0.5, "ci95": [0.3, 0.7]}, {"mean": 0.02, "ci95": [-0.02, 0.08]}
+    assert A.branch52(hi, {"mean": 0.4, "ci95": [0.2, 0.6]}).startswith("R_defer")
+    assert A.branch52(hi, {"mean": 0.0, "ci95": [-0.1, 0.1]}).startswith("unresolved")
+    assert A.branch52(lo, {"mean": 0.0, "ci95": [-0.1, 0.1]}).startswith("R_item")
+    assert A.branch52({"mean": 0.12, "ci95": [0.02, 0.22]}, hi).startswith("unresolved")
+
+
+def test_remote_runs_a2t():
+    # most probable failure: the a2t block reads the originals' forced pool or skips care-DPO2,
+    # or care-DPO2's adapter is not synced
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "a2t" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-muse_glimmer_30b'
+                     r'\}"; OUT_SUB=a2t\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "a2t" ]; then\n    mkdir')[1].split('if [ "$STEPS" = "a2f" ]')[0]
+    assert "--pool $A2T_POOL" in blk and "--t16-care2 $T16R_DIR" in blk
+    assert "for arm in care care2 base" in blk
+    steps = ("--step gen --arm none", '--step merge --arm "$arm"', '--step gen --arm "$arm"')
+    order = [blk.index(x) for x in steps]
+    assert order == sorted(order)
+    assert '[ "$STEPS" != "a2t" ]' in sh.split("# re-priced locally")[0].split("\n")[-1]
+    sync = set((ST / "runpod" / "sync_a2t.txt").read_text().split())
+    assert "outputs/t16r/muse_glimmer_30b/adapters/care/adapter_model.safetensors" in sync
+    assert "outputs/t16r/muse_glimmer_30b/adapters/care/st_adapter.json" in sync
+    from deepsteer.kdg.schema import load_scenarios
+    f = load_scenarios(ST / "data" / "st_fxh_cellA2_twins_forced_v1.json")[0]
+    assert len(f) == 51 and all(s.id.endswith(A.TWIN) for s in f)
+    assert all(sorted(o.norm_status for o in s.options) == ["consistent", "violating"] for s in f)
+
+
+@pytest.mark.slow
+def test_a2t_dry_run_every_step(tmp_path):
+    # most probable failure: care-DPO2's merge or generation breaks on the forced twins
+    rep = ST / "outputs" / "st2mr" / "muse_glimmer_30b"
+    if not (rep / "gen" / "arm_none.jsonl").exists():
+        pytest.skip("the replicate's rows are not local")
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    base = [sys.executable, str(SCRIPTS / "a2g_driver.py"), "--out", str(tmp_path), "--replicate",
+            str(rep), "--t16", str(tmp_path / "no_t16"), "--pool",
+            str(ST / "data" / "st_fxh_cellA2_twins_forced_v1.json"), "--adapters",
+            str(tmp_path / "adapters"), "--dry-run"]
+    for st in (["gen", "none"], ["merge", "care2"], ["gen", "care2"]):
+        r = subprocess.run(base + ["--step", st[0], "--arm", st[1]], capture_output=True,
+                           text=True, cwd=ROOT, env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    rows = [json.loads(x) for x in (tmp_path / D.KEY / "gen" / "cellA2_care2.jsonl").read_text()
+            .splitlines() if x.strip()]
+    assert rows and all(r["scenario_id"].endswith(A.TWIN) for r in rows)
