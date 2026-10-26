@@ -4404,3 +4404,8 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    item 6's rule. Ten fill draws for specificity at each dose that runs. **Envelope 87.**
 2. **The zero-GPU checks (item 4), computed 2026-10-26 before the build** (ST-A29). `care_harm` does not
    lie along the non-specific handles' shared component, so the ladder is built as registered.
+3. **Correction to item 2's record (2026-10-26, before the build).** GPT-OSS's `care_harm` at 0.2× of
+   record is Cell 1's full-n gate (45 × 16): +0.010 [−0.025, +0.047] against `none`, +0.040
+   [−0.000, +0.081] against fill. Item 2 cited T1.4's 20 × 8 gate (+0.048). At Cell 1's read the
+   dose projection is about +0.02 at 0.3× and +0.03 at 0.4×, against the +0.10 bar: R_lever is the
+   likelier branch, and the build waits on the author's go.
