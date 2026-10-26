@@ -1,0 +1,59 @@
+{
+ "rule": "ST_PLAN Amendment 50 and its additions",
+ "rungs": {
+  "04": {
+   "gate": {
+    "dP_vs_none": {
+     "mean": 0.04113756613756614,
+     "ci95": [
+      -0.004103835978835976,
+      0.08677248677248676
+     ],
+     "n": 45,
+     "mde": 0.06491165910808766,
+     "P_arm": 0.21190476190476187,
+     "P_none": 0.17076719576719573
+    },
+    "dP_vs_fill": {
+     "mean": 0.059470899470899466,
+     "ci95": [
+      0.0030939153439153416,
+      0.11320370370370367
+     ],
+     "n": 45,
+     "mde": 0.07864984882842023
+    },
+    "coherent": true,
+    "passes": false,
+    "n_rollouts": 360
+   },
+   "specificity": {
+    "vs_fill10": {
+     "mean": -0.02323752118358711,
+     "ci95": [
+      -0.07648323170817231,
+      0.033468748474906794
+     ],
+     "n_draws": 10,
+     "n_items": 60,
+     "n_boot": 10000
+    },
+    "class": "specific",
+    "vs_none": {
+     "mean": 0.012211882315430255,
+     "ci95": [
+      -0.039968970965054064,
+      0.06510807585259508
+     ],
+     "n": 60,
+     "mde": 0.07505503344117796
+    },
+    "fill_vs_none": 0.035449403499017366,
+    "n_items": 60,
+    "n_draws": 10
+   },
+   "branch": "R_lever: no specific protective lever at block 12's clause_end at a coherent dose this large or smaller; a zero-GPU site ranking is next"
+  }
+ },
+ "reading": "R_lever: no specific protective lever at block 12's clause_end at a coherent dose this large or smaller; a zero-GPU site ranking is next"
+}

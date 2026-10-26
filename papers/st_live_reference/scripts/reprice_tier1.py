@@ -108,7 +108,8 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "a2f first pod, stopped at the care merge (05:36:56-05:58:38 + 0.1; Amendment 46)": 0.46,
          "a2f resume, stopped before the merge (06:38:03-06:51:57 + 0.1; Amendment 46)": 0.33,
          "c13c, the rebuilt control (06:50:32-07:08:19 + 0.1; Amendment 47)": 0.40,
-         "a2f relaunch, the forced-choice arms (07:47:42-08:28:53 + 0.1; Amendment 46)": 0.79}
+         "a2f relaunch, the forced-choice arms (07:47:42-08:28:53 + 0.1; Amendment 46)": 0.79,
+         "st2gl, the GPT-OSS ladder at 0.4x (19:07:23-20:39:09 + 0.1; Amendment 50)": 1.63}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)
