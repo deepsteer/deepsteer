@@ -4434,3 +4434,132 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    - dry runs, 0.1.
    That is **~1.7 A100-h**, plus ~1.3 if 0.3× runs. Envelope 87: spent 77.57 + t16r ~4.25 + ~1.7 =
    ~83.5 (~84.8 with 0.3×).
+
+### Amendment 51 (2026-10-26; author; zero GPU; before any analog, AtP estimate or sweep arm computes; build after t16r)
+
+1. **The record (ST-A29's resolution).** At each model's steering site (GPT-OSS block 12, Muse
+   block 26, `clause_end`), `care_harm` is specific at its read dose: GPT-OSS at 0.4× reads −0.023
+   [−0.076, +0.033] against ten fill draws, and Muse at 0.3× reads −0.028 [−0.115, +0.059]
+   (Amendment 38 (a)). On GPT-OSS it moves protection at about a fifth of Muse's slope: a line through
+   the origin gives 0.093 against 0.435 ΔP per 1× of each model's median norm, a ratio of 0.21
+   [−0.05, +0.55]. Block 12's `clause_end` read R_lever (Amendment 50). This amendment ranks the other
+   banked sites and sweeps the top two.
+2. **Sites and the PR filter.** The ten sites are T1.1's bank sites: blocks 6, 9, 12, 15 and 18 ×
+   `onset` and `clause_end`. PR (the 4,000-row seed-0 sample; `constancy_read.participation_ratio`,
+   Amendment 12's convention) and the median norm were computed on 2026-10-26, outcome-blind, before
+   this amendment:
+
+   | site | PR (seed 0) | PR median, range (20 others) | ≥ 30 in | median norm |
+   |---|---|---|---|---|
+   | 6 `onset` | 29.4 | 29.2 [28.6, 30.0] | 1 of 20 | 509.7 |
+   | 9 `onset` | 28.5 | 28.4 [27.6, 29.1] | 0 of 20 | 897.4 |
+   | 12 `onset` | 29.8 | 29.9 [28.9, 30.9] | 6 of 20 | 1,503.5 |
+   | 15 `onset` | 47.4 | 47.3 [45.6, 48.5] | 20 of 20 | 3,102.7 |
+   | 18 `onset` | 35.3 | 35.6 [34.4, 36.3] | 20 of 20 | 7,716.6 |
+   | 6 `clause_end` | 26.4 | 27.0 [26.3, 27.4] | 0 of 20 | 446.9 |
+   | 9 `clause_end` | 30.07 | 30.9 [29.9, 31.7] | 19 of 20 | 802.8 |
+   | 12 `clause_end` | 36.6 | 37.4 [36.7, 38.8] | 20 of 20 | 1,336.5 |
+   | 15 `clause_end` | 52.4 | 53.6 [53.0, 55.0] | 20 of 20 | 2,914.3 |
+   | 18 `clause_end` | 29.55 | 30.3 [29.5, 31.1] | 16 of 20 | 7,403.1 |
+
+   Eligible for the sweep: PR ≥ 30 at the seed-0 sample. Block 12's `clause_end` (36.6; ST-A29 read
+   36.3 on 4,608 rows) is excluded because Amendment 50 read it; it is AtP's calibration point. That
+   leaves four candidates: 9 `clause_end`, 15 `onset`, 15 `clause_end` and 18 `onset`. Twenty other
+   4,000-row samples (seeds 1-20) are reported beside. Seed 0 runs low at most sites, and 18
+   `clause_end` misses the bar at seed 0 (29.55) while clearing it in 16 of 20 other samples.
+3. **Analogs (one prefill pass, on the pod).** The `care_harm` analog at block b follows W4's recipe,
+   the one `st2m_driver` used on Muse: MFT v2 care/harm, moral minus neutral over 200 pairs, raw text,
+   mean-pooled (`collect_pair_activations`, `mean_diff_direction`), block b's output, unit norm. It is
+   extracted at blocks 6, 9, 12, 15 and 18. One analog per block serves both position classes, since
+   the contrast is pooled text and the class only decides where it is added. **Parity bar:** block 12's
+   analog has cos ≥ 0.99 with W4's saved `care_harm_layer12`; below it, the pod stops before AtP.
+   Type block: contrast stimulus/content (care/harm against neutral text); source
+   `load_moral_probing_v2`; format raw text, mean-pooled; position mismatch with the in-trace sites
+   (the same one as block 12's `care_harm`); PR per the item 2 table; outcome variable, the protect
+   share on Cell 1's 45 engaged scenarios.
+4. **Ranking of record: AtP on the decision logit.**
+   - Traces: T1.1's rollouts 0 and 1 of each of Cell 1's 45 engaged scenarios (90 traces, chosen
+     before any outcome is read), teacher-forced through prompt and trace to the answer letter.
+   - Metric: the option margin at the answer letter's position, the log mass of the violating
+     option's letter minus the consistent option's (`attribution.option_margin`).
+   - Estimate at site s = (block b, class c): AtP_s = α_s v̂_b · Σ_{t ∈ c} ∂m/∂h_{b,t}, over the class's
+     trace positions by `steering_gate`'s position rules, with α_s = 0.4 × the site's median norm. A
+     scenario bootstrap (10,000, seed 0) is taken over the per-scenario mean.
+   - Rank: the four candidates by AtP_s. The top two are swept. AtP is computed and reported at all
+     ten sites.
+   - Beside, none of which selects:
+     - (a) the exact teacher-forced steer at every site, with the vector added at the class
+       positions, the trace held fixed and the margin re-read. This is AtP's validity at this dose:
+       the Spearman correlation across the ten sites, against T0.5's bar of 0.7.
+     - (b) the ten covariance-matched fill draws of item 6 through the same gradients: `care_harm`'s
+       AtP minus the draws' mean, the channel-matched specificity of `intervention-validity` rule 3.
+     - (c) split-half stability: the Spearman correlation of the ten-site AtP vector between two
+       seeded scenario halves.
+     - (d) block 12's `clause_end`: its AtP and exact steer beside the measured ΔP at 0.2× and 0.4×
+       (+0.010, +0.041).
+   - **Rival reading.** AtP and the exact steer hold the trace fixed, while a sampled arm changes the
+     trace. A site whose effect runs through the regenerated reasoning is invisible to both, and one
+     whose fixed-trace effect is undone by regeneration ranks high and fails. The sweep is the cell
+     that separates them.
+   - **Bail.** If the backward pass runs out of memory, the ranking of record is the exact
+     teacher-forced steer, which needs no backward pass, and the substitution is recorded.
+5. **The geometric table (zero GPU, after the analogs are pulled; beside, not selection).** Per site:
+   - cos(analog_b, protect − rule at the site). Protect − rule is the mean over the 40 mixed-outcome
+     H1_train scenarios of the protect rollouts' class-position mean minus the rule rollouts', from
+     T1.1's bank.
+   - Its held-out separation: the direction is built on one seeded half of the scenarios and the
+     within-scenario protect − rule margin is read on the other, with a scenario bootstrap.
+   - The covariance-matched |cos| q95 at the site and the channel-chance level √(2/(π·PR)).
+   - **Outcome conditioning:** the contrast conditions on the model's own action, so it carries the
+     content of the deliberation that led there (`estimator-traps` #4). Within-scenario differences
+     remove topic, not trace content. The table is descriptive.
+6. **The sweep (GPU).**
+   - Arm: the analog at each of the top two sites at 0.4× the site's median norm, on Cell 1's 45
+     engaged × 16 with Cell 1's seeds.
+   - Gate: against Cell 1's `none`, and against Cell 1's fill (block 12 `clause_end`, 0.2×, so not
+     site- or dose-matched; named as such). Amendment 13's coherence bars apply.
+   - Specificity per site: the 60 rule-right items at dose 0, the analog at every input position of
+     block b at α_s, against ten covariance-matched fill draws at the site (T1.1's bank, the site's
+     class, seed 3, `SG.fill_draws`), each on all 60 items, with a draws × items bootstrap; `spec_none`
+     is re-read for parity.
+   - A site incoherent at 0.4× runs at 0.3× on the pod (conditional) and is read by the same rule.
+7. **Branches, written before data.**
+   - **R_site:** a swept site passes the gate at a coherent dose (ΔP ≥ +0.10 with CI > 0 against
+     `none`; ≥ +0.05 with CI > 0 against fill) and its specificity against the ten-draw fill is not
+     above +0.03. GPT-OSS has a specific protective lever there, and T1.6's recipe at that site is the
+     next GPT-OSS item (own amendment). If both sites qualify, the one with the larger ΔP is the
+     recipe's.
+   - **R_model at the site:** a site passes the gate, but specificity is above +0.03 at every passing
+     site. Protection moves with rule-breaking there.
+   - **R_lever extended:** no swept site passes at a coherent dose. GPT-OSS has no specific protective
+     lever for `care_harm` at block 12's `clause_end` or at the two AtP-ranked sites, at a coherent
+     dose up to 0.4× of each site's norm. The distillation route stays Muse-only, and the GPT-OSS line
+     reports the family difference (item 1's slope ratio) as its finding.
+   - AtP's ranking is checked by the sweep in every branch. A swept site that fails while its exact
+     steer was large is reported as item 4's rival reading at work.
+8. **Spec block.**
+   - Stimulus: Cell 1's 45 engaged H1_train (the baseline screen of T1.1 and Cell 1).
+   - Outcome: the protect share, with the action split and the parse rate per arm (Amendment 46 item 4).
+   - Sites: item 2.
+   - Scope: full residual.
+   - Semantics: additive steering.
+   - Alignment: none needed (the same prompt per arm).
+   - Controls: Cell 1's `none` and fill; ten-draw fill at the site on the specificity set.
+   - Harness: the ST letter parser, pinned.
+   - Branches: item 7.
+9. **Price.**
+   - setup and the GPT-OSS load, 0.3;
+   - analogs, 0.05;
+   - AtP with the exact steer at ten sites (90 backward passes, 900 teacher-forced forwards), ~0.5;
+   - two sweep arms at 45 × 16 (1.46 each at Phase 2's measured 0.73 per 360 rollouts), 2.92;
+   - specificity at two sites (11 × 480 rows at 0.37 s each), 1.08;
+   - `spec_none` parity, 0.05;
+   - dry runs, 0.1.
+   That is **~5.0 A100-h**, plus ~2.0 per site that falls back to 0.3×. Spent 84.24 (t16r's 5.04
+   included), plus ~5.0, is ~89.2. Envelope 87 does not cover it, and the author decides the
+   envelope.
+10. **Pod order.** Load, then the analogs with block 12's parity bar, then AtP with (a), (b) and (d),
+    then the ranking written to the record, then for each top site the arm followed by its
+    specificity, then any conditional 0.3×. Saved per unit: the per-trace AtP and exact-steer arrays at
+    all ten sites, the per-rollout rows and the per-item specificity rows. The analysis of record is
+    local.

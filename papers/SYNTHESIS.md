@@ -1367,6 +1367,24 @@ taken. Of the three directions tested on Muse (V_qwen, −V_harm, `care_harm`), 
 moves protection beyond a random vector with a rule-right tilt indistinguishable from zero at this
 instrument's resolution (±0.087); T1.6 asks whether that survives distillation into weights.
 
+**The GPT-OSS ladder (2026-10-26; ST-A29, Amendment 50), what changed.** Positive voice first:
+**on GPT-OSS `care_harm` is specific and weak at block 12's `clause_end`.** At 0.4× it stays coherent
+and moves protection +0.041 [−0.004, +0.087] against `none` (gate +0.10), with specificity −0.023
+[−0.076, +0.033] against ten fill draws. Muse's `care_harm` is specific at its operating dose (−0.028)
+and passes there. GPT-OSS's dose slope is about a fifth of Muse's (0.21 [−0.05, +0.55]): at this
+site both families' `care_harm` is specific, and they differ in its strength. Registered branch
+R_lever. Amendment 51 ranks the other banked sites by AtP and sweeps the top two. Until that sweep
+reads, the distillation route is Muse-only.
+
+Referee pass.
+1. *"The slope ratio's CI holds zero."* Conceded: "a fifth" is the point, and the CI runs to +0.55.
+   The second derivation (the 0.2× to 0.4× rise) gives 0.25.
+2. *"The doses are not comparable across models."* Each dose is in its own site's median norm
+   (GPT-OSS block 12, Muse block 26), the unit both ladders were registered in. The ratio compares the
+   two models relative to their own residual scale, not in absolute units.
+3. *"Specific on both models at different doses."* Stated in ST-A29: at 0.4×, Muse's tilt sits above
+   its fill (+0.079 [+0.023, +0.136]), so specificity is read at each model's own dose.
+
 ### ST line thesis (2026-10-25), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
