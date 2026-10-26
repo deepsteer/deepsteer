@@ -4339,3 +4339,60 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    (FXA2-108, FXA2-176) and stand or fall by the classifier.
 3. **The pair count of record.** care-DPO2 trains on 38 fresh pairs against T1.6's 40 (H1-A-192 and
    H1-A-224 each one unused trace short), at T1.6's 243 steps.
+
+### Amendment 50 (2026-10-26; author; zero GPU; before any item below computes)
+
+1. **t16r launched 2026-10-26 (author).** The replicate depends on nothing from the partner, so it
+   launches now, superseding Amendment 48 item 2's "no GPU before 2026-10-28" for t16r only. The
+   partner-model items wait for the model's name.
+2. **Why GPT-OSS has no passing vector: the record.** On GPT-OSS, every direction read either moved
+   protection toward the rule or moved it with rule-breaking:
+   - the anchor axis and `self` pushed toward the rule (ST-A11);
+   - +V_harm pushed toward the rule (ST-A12);
+   - −V_harm and V_qwen passed the gate but failed specificity, +0.089 and +0.093, through a
+     component they share with refusal-loosening beyond a random vector (ST-A18, R_b).
+   `care_harm` was read at one dose, α 267.3 = 0.2× the median norm: +0.048 [−0.039, +0.141] against
+   `none`, +0.076 [+0.008, +0.146] against the dose-matched fill. That is where Muse's 0.2× read sat
+   (+0.067) before its ladder found the operating dose (0.3×: +0.125, gate passing, specificity −0.028
+   on its point).
+3. **Readings.**
+   - R_dose: GPT-OSS's `care_harm` was never dosed to its operating point.
+   - R_model: on GPT-OSS every protect-moving direction at this site carries the rule-breaking
+     component.
+   - R_lever: block 12's `clause_end` holds no specific protective lever on GPT-OSS at a coherent
+     dose.
+4. **Zero GPU first (on saved directions and banks, before any pod).**
+   - (z1) `care_harm`'s projection onto the span the three non-specific handles share (−V_harm, V_qwen,
+     −refusal), against a covariance-matched null. R_model predicts a large share.
+   - (z2) The top dimension's variance share at block 12's `clause_end` (the steering site) and
+     `care_harm`'s loading on it, where the banks hold that position (estimator-traps #9).
+   - (z3) The dose slope implied by GPT-OSS's and Muse's 0.2× reads, as each model's projected gate
+     at 0.3×, stated as a prediction.
+5. **The GPT-OSS ladder (GPU; Muse's protocol, Amendment 31 item 4).**
+   - Arms: `care_harm` at 0.3× and 0.4× the median norm (α 401.0, 534.6), `clause_end`, block 12,
+     on Cell 1's 45 brake-engaged H1_train × 8 with Cell 1's seeds.
+   - Comparators: Cell 1's `none` and fill (0.2×). Coherence bars apply per dose (the anchor axis at
+     534.6 failed them, ST-A11).
+   - Specificity at each dose on the 60 panel rule-right items, dose 0, the vector at every input
+     position, against ten covariance-matched fill draws at the same dose, each on all 60 items, with
+     a draws × items bootstrap (Amendment 38 item 2's rule, applied to GPT-OSS). A `spec_none` parity
+     re-read.
+6. **Branches, written before data.**
+   - **R_dose:** at a coherent dose, the gate passes (ΔP ≥ +0.10 with CI > 0 against `none`, and ≥
+     +0.05 with CI > 0 against fill) and specificity against the ten-draw fill is not above +0.03.
+     GPT-OSS has a passing vector it was never dosed to, and T1.6's recipe is the next GPT-OSS item.
+   - **R_model:** the gate passes at a coherent dose, but specificity is above +0.03 at every passing
+     dose. GPT-OSS's protect-moving directions at this site carry rule-breaking, and that is the
+     answer.
+   - **R_lever:** no coherent dose passes the gate. The site sweep (other blocks or positions) is the
+     next step, under its own amendment.
+7. **Price.**
+   - setup and the GPT-OSS load, 0.3;
+   - two steered arms at 0.73 A100-h per 360 rollouts (Phase 2's measured rate), 1.46;
+   - specificity: 2 doses × (1 + 10 fills) × 480 dose-0 rows at 0.37 s per row, 1.08;
+   - `spec_none` parity, 0.05;
+   - dry runs, 0.1.
+   That is **~3.0 A100-h**. A staged version reads 0.3× alone first, with 0.4× only if 0.3× is coherent
+   and does not pass: ~1.7, then ~1.3. Envelope 84: spent 77.57 + t16r ~4.25 + this ~3.0 = ~84.8,
+   which needs the author's decision (raise to ~87, or the staged version within 84 if 0.3× settles
+   it).
