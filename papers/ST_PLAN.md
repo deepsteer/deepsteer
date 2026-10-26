@@ -4396,3 +4396,11 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    and does not pass: ~1.7, then ~1.3. Envelope 84: spent 77.57 + t16r ~4.25 + this ~3.0 = ~84.8,
    which needs the author's decision (raise to ~87, or the staged version within 84 if 0.3× settles
    it).
+
+#### Amendment 50, addition (2026-10-26; author; zero GPU; before the GPT-OSS ladder is built)
+
+1. **One pod, staged on the pod (author).** 0.3× is the registered phase. 0.4× is a conditional phase
+   that runs only if 0.3× is coherent and fails the gate, decided on the pod from 0.3×'s read by
+   item 6's rule. Ten fill draws for specificity at each dose that runs. **Envelope 87.**
+2. **The zero-GPU checks (item 4), computed 2026-10-26 before the build** (ST-A29). `care_harm` does not
+   lie along the non-specific handles' shared component, so the ladder is built as registered.
