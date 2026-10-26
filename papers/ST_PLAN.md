@@ -2947,7 +2947,9 @@ rollout; its specificity `none` again reproduced T1.3c's rows exactly.
   ablation of each direction, ~0.45 A100-h per arm).
 - V_qwen's plain-refusal rise is at the random-vector level for its dose (all 3 of its flips are
   among fill's 5): no refusal-loosening of its own.
-- ST-A18 resolves as R_b on both measures (a shared component, not borderline items under any push).
+- ST-A18 resolves as R_b on both measures: the handles tip the same rule-right items beyond a random
+  vector, not borderline items under any push (geometry, ST-A29: their directions project onto each
+  other at or below chance).
 
 **Second derivations.** The D-lite's `none` against pod C's: identical (240 of 240 token sequences);
 its specificity `none` against T1.3c's: identical. Fill's flips at the two α (2 and 5 of 229 refusing
@@ -4362,8 +4364,8 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    - R_lever: block 12's `clause_end` holds no specific protective lever on GPT-OSS at a coherent
      dose.
 4. **Zero GPU first (on saved directions and banks, before any pod).**
-   - (z1) `care_harm`'s projection onto the span the three non-specific handles share (−V_harm, V_qwen,
-     −refusal), against a covariance-matched null. R_model predicts a large share.
+   - (z1) `care_harm`'s projection onto the span of the three non-specific handles (−V_harm, V_qwen,
+     −refusal), against a covariance-matched null. R_model's geometric form predicts a large share.
    - (z2) The top dimension's variance share at block 12's `clause_end` (the steering site) and
      `care_harm`'s loading on it, where the banks hold that position (estimator-traps #9).
    - (z3) The dose slope implied by GPT-OSS's and Muse's 0.2× reads, as each model's projected gate
@@ -4403,9 +4405,32 @@ The fresh-seed care-DPO replicate on matched items (Amendment 48 item 2(a); enve
    that runs only if 0.3× is coherent and fails the gate, decided on the pod from 0.3×'s read by
    item 6's rule. Ten fill draws for specificity at each dose that runs. **Envelope 87.**
 2. **The zero-GPU checks (item 4), computed 2026-10-26 before the build** (ST-A29). `care_harm` does not
-   lie along the non-specific handles' shared component, so the ladder is built as registered.
+   lie along the non-specific handles' span or mean direction (the handles tip the same rule-right items; their directions project onto each other at or below chance),
+   so the ladder is built as registered.
 3. **Correction to item 2's record (2026-10-26, before the build).** GPT-OSS's `care_harm` at 0.2× of
    record is Cell 1's full-n gate (45 × 16): +0.010 [−0.025, +0.047] against `none`, +0.040
    [−0.000, +0.081] against fill. Item 2 cited T1.4's 20 × 8 gate (+0.048). At Cell 1's read the
    dose projection is about +0.02 at 0.3× and +0.03 at 0.4×, against the +0.10 bar: R_lever is the
    likelier branch, and the build waits on the author's go.
+
+#### Amendment 50, second addition (2026-10-26; author; zero GPU; before the GPT-OSS ladder is built; replaces the first addition's item 1)
+
+1. **0.4× is the phase of record (author).** `care_harm` at 0.4× the median norm (α 534.6), with its
+   ten-draw specificity at 0.4×, is the registered read. 0.3× (α 401.0, with its own ten-draw
+   specificity) runs only if 0.4× fails a coherence bar, decided on the pod. Envelope 87 stands.
+2. **Branches, written before data (item 6's, applied to the read that runs).**
+   - 0.4× is coherent and fails the gate → **R_lever**: no specific protective lever at block 12's
+     `clause_end` at a coherent dose this large or smaller (protection rose with dose on Muse). The
+     next step is a zero-GPU ranking of candidate sites for a sweep, under its own amendment.
+   - 0.4× is coherent and passes the gate → specificity against the ten-draw fill decides: not above
+     +0.03 → **R_dose**; above +0.03 → **R_model**.
+   - 0.4× is incoherent → 0.3× runs and is read by the same rule. If 0.3× is incoherent too, that is
+     reported as no coherent dose at or above 0.3×.
+3. **Price.**
+   - setup and the GPT-OSS load, 0.3;
+   - the 0.4× arm (360 rollouts at 0.73), 0.73;
+   - specificity at 0.4×: 11 × 480 rows at 0.37 s, 0.54;
+   - `spec_none` parity, 0.05;
+   - dry runs, 0.1.
+   That is **~1.7 A100-h**, plus ~1.3 if 0.3× runs. Envelope 87: spent 77.57 + t16r ~4.25 + ~1.7 =
+   ~83.5 (~84.8 with 0.3×).

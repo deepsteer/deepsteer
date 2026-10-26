@@ -1299,9 +1299,10 @@ from fill and V_qwen is re-read under it (Amendment 29). "−V_harm retains refu
 is indistinguishable from the −refusal control.
 
 **ST Phase 2 D-lite on GPT-OSS (2026-10-22), what changed.** Positive voice first: **three handles
-(L-beh, −V_harm, V_qwen), a shared non-specific component: each tilts rule-right items toward
-violating by +0.09 to +0.19 where a random vector tilts none, so GPT-OSS has no admissible target at
-this site and these doses.** The random-vector references settled both of pod C's coincidences
+(L-beh, −V_harm, V_qwen) tip the same rule-right items toward violating, by +0.09 to +0.19 where a
+random vector tilts none, so GPT-OSS has no admissible target at this site and these doses.** The
+directions (−V_harm, V_qwen, with −refusal) project onto each other at or below chance (ST-A29): the
+overlap is in the items they tip, not in their geometry. The random-vector references settled both of pod C's coincidences
 (ST-A18, R_b): a covariance-matched random vector at the same dose tilts rule-right items by −0.006
 and −0.011 and loosens plain refusal by +0.004, so the arms' failures are theirs (+0.095 and +0.104
 beyond fill). At this site and dose, −harmfulness and −refusal loosen plain refusal beyond a random
