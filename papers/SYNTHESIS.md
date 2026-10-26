@@ -1388,13 +1388,15 @@ Referee pass.
 **The care-DPO replicate (2026-10-26; Amendment 49, ST-A27, ST-A30), what changed.** Positive voice
 first: **care-DPO's profile reproduces under a fresh seed and fresh chosen traces.** care-DPO2 raises
 protection on H1_held by +0.326 (care-DPO +0.338), tilts rule-right items away from violating (−0.046),
-and follows the rule when it must choose (0.025). It costs more capability (−0.040 against −0.005; bar
-−0.02), so item 5's replication is not met, on capability alone. On items that differ only in where
-the harm falls, both care adapters mostly defer (0.82 to 0.95 of rollouts). They depart only where the
-rule harms, at 7%, against base-DPO's 35% and 81%. The registered branch is item set. The comparator
-was registered as harm-blind and reads harm-conditioned (H\* +0.445). Whether care-DPO's harm condition
-lives in the direction it commits (R_defer) or in H1's item set (R_item) is ST-A30's question. The
-forced choice on the twins separates them, and the thesis wording waits on the author.
+and follows the rule when it must choose (0.025). Replication is met on protection, specificity,
+guard and forced choice, and not on capability: −0.040 [−0.075, −0.010] against the −0.02 bar, with
+care-DPO's −0.005 the better of two draws (gap −0.035 [−0.075, 0.000]). The loss is wrong answers
+more than truncation (6 of 9 losses; −0.026 [−0.051, 0.000] on answered items), with traces 190
+tokens longer. On items that differ only in where the harm falls, both care adapters mostly defer
+(0.82 to 0.95 of rollouts) and depart only where the rule harms, at 7%, against base-DPO's 35% and
+81%. The registered branch, item set, stands and is uninformative: its comparator was predicted
+harm-blind (author) and is harm-sensitive and non-specific (H\* +0.445). The forced choice on the twins
+(Amendment 52) separates R_defer from R_item (ST-A30).
 
 Referee pass.
 1. *"The registered branch says item set; you are reaching for a rival."* The verdict of record is item
@@ -1419,8 +1421,8 @@ within 0.03 of the base model's on every rule-right read while its protection ro
 read** (+0.027, +0.005, +0.022; −0.054 on the panel set). care-DPO on Muse raises protection where the rule
 harms (+0.338 [+0.264, +0.410]) and follows the rule where breaking it would, even when it cannot
 defer: 0.022 [0.002, 0.049] under forced choice. An adapter identical in recipe with the unsteered
-model's traces as teacher (base-DPO) protects more (+0.863) and breaks rules on every rule-right read
-(+0.133 to +0.517).
+model's traces as teacher (base-DPO) is harm-sensitive and non-specific: it protects more (+0.863),
+departs most where the rule harms, and breaks rules on every rule-right read (+0.133 to +0.517).
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:

@@ -420,3 +420,24 @@ def test_matched_pool_pairs_differ_only_in_where_harm_falls():
         assert t.agent_name == o.agent_name and t.agent_text != o.agent_text
         viol = next(x.option_id for x in t.options if x.norm_status == "violating")
         assert t.external_label["right_option_id"] == viol
+
+
+def test_capability_split_separates_truncation_from_wrong_answers(tmp_path):
+    # most probable failure: a truncated item counts as a wrong answer, so a length side effect
+    # reads as lost accuracy (author, 2026-10-26: accuracy on answered items is the separating read)
+    def write(arm, spec):
+        (tmp_path / f"{arm}.jsonl").write_text("\n".join(json.dumps(
+            {"dataset": "d", "index": i, "correct": c, "answered": a, "n_tokens": n,
+             "finish_reason": "length" if not a else "stop"}) for i, (c, a, n) in enumerate(spec)))
+        return tmp_path / f"{arm}.jsonl"
+    ok = [(True, True, 100)] * 4
+    cap = {"none": write("none", ok), "care": write("care", ok),
+           "care2": write("care2", [(False, False, 900)] * 2 + [(True, True, 300)] * 2),
+           "base": write("base", [(False, True, 100)] + [(True, True, 100)] * 3)}
+    out = A.capability_split(cap)
+    assert out["care2"]["accuracy"] == 0.5 and out["care2"]["accuracy_answered"] == 1.0
+    assert out["care2"]["answered_minus_none"]["mean"] == 0.0
+    assert out["care2"]["lost_vs_none"] == {"truncated": 2, "unanswered": 0, "wrong_answer": 0,
+                                            "gained": 0}
+    assert out["base"]["lost_vs_none"]["wrong_answer"] == 1
+    assert out["care2_minus_care"]["tokens"]["mean"] == pytest.approx(500.0)

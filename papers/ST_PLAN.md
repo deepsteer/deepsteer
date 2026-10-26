@@ -4100,7 +4100,7 @@ parity (0.0080, 0.0010).
 | generation ΔP of record, 54 engaged H1_held (≥ +0.15, CI > 0) | **+0.338 [+0.264, +0.410]** | +0.863 [+0.815, +0.910] |
 | dose-0 ΔP | +0.065 [+0.032, +0.095] | +0.288 [+0.257, +0.319] |
 | specificity against `none`, 60 panel rule-right items (±0.03) | −0.054 [−0.079, −0.030] | +0.133 [+0.095, +0.174] |
-| capability, GSM8K 100 (≥ −0.02) | −0.005 [−0.04, +0.03] | −0.025 [−0.06, +0.005]: fails |
+| capability, GSM8K 100 + MMLU 100 (≥ −0.02) | −0.005 [−0.04, +0.03] | −0.025 [−0.06, +0.005]: fails |
 | panel guard ΔE (fails if CI > 0) | +0.004 [−0.002, +0.011] | +0.007 [−0.004, +0.017] |
 | cell A′ dose 0, 51 rule-right items in the training format | +0.027 [−0.017, +0.071] | +0.517 [+0.485, +0.548] |
 | cell A′ generation, P(violating) against `none`'s 0.000 | +0.005 [0.000, +0.012] | +0.348 [+0.245, +0.453] |
@@ -4110,16 +4110,19 @@ parity (0.0080, 0.0010).
 model's on every rule-right read (+0.027, +0.005, +0.022; −0.054 on the panel set) while its
 protection rose on every rule-harm read: it protects where the rule harms and follows the rule where
 breaking it would, even when it cannot defer. Its comparator, identical in recipe with unsteered chosen traces, is
-non-specific on every read (+0.863 on its targets, and +0.133, +0.517, +0.348 and 0.436 on rule-right
-items). Caveats:
+harm-sensitive and non-specific: it protects most on its targets (+0.863), departs most where the rule
+harms on the matched twins (H\* +0.445, Amendment 49 outcome), and breaks rules on every rule-right
+read (+0.133, +0.517, +0.348 and 0.436). Corrected 2026-10-26 (author): "non-specific on every read"
+left out its harm sensitivity, which the matched cell measured. Caveats:
 - one run per arm;
 - 40 rule-harm and 0 rule-right pairs at about 24 epochs, matched across arms;
 - one model family;
 - the mechanism is open, with "R_c over R_a" as a content reading (the steered traces carry more
   weighing language, +0.37 per 100 words [+0.13, +0.60], and no more harm language).
 
-Whether that is a harm condition or the difference between the two item sets is what the
-matched-item fresh-seed replicate decides.
+Whether that is a harm condition or the difference between the two item sets was the matched-item
+replicate's question. Its registered branch (item set) is uninformative because base-DPO is not
+harm-blind, and the forced choice on the twins (Amendment 52) decides it.
 
 **Registered labels, stated beside the verdict.**
 - T1.6's branch is unregistered (ST-A27): the teacher's difference is −0.525 [−0.618, −0.433].
@@ -4351,14 +4354,23 @@ the forced cell).
 | criterion (item 5) | care-DPO2 | care-DPO | bar | met |
 |---|---|---|---|---|
 | ΔP of record, 54 engaged H1_held × 8 | +0.326 [+0.250, +0.405] | +0.338 [+0.264, +0.410] | ≥ +0.15, CI > 0 | yes |
-| capability, 200 items | −0.040 [−0.075, −0.010] | −0.005 [−0.040, +0.030] | ≥ −0.02 | **no** |
+| capability, GSM8K 100 + MMLU 100 | −0.040 [−0.075, −0.010] | −0.005 [−0.040, +0.030] | ≥ −0.02 | **no** |
 | panel guard ΔE | −0.010 [−0.016, −0.004] | +0.004 [−0.002, +0.011] | CI not above 0 | yes |
 | specificity, 60 rule-right items | −0.046 [−0.071, −0.021] (discriminating) | −0.054 | not above +0.03 | yes |
 | forced choice P(violating), 51 × 8 | 0.025 [0.005, 0.054] | 0.022 | "follows the rule" | yes |
 
-**Replication (item 5): not met, on capability alone.** care-DPO2 − care-DPO on the same 200 items is
-−0.035 [−0.075, 0.000] (exploratory). Beside, not criteria: truncation on H1_held 2.9% (care-DPO 0.0%);
-dose 0 −0.044 [−0.075, −0.014], the opposite sign to care-DPO's +0.065 [+0.032, +0.095].
+**Replication (item 5): met on protection, specificity, guard and forced choice; not met on
+capability.** The capability loss is not a truncation side effect (`capability_split`; author's
+read, 2026-10-26):
+- On the items both answered, care-DPO2's accuracy is −0.026 [−0.051, 0.000] against `none`'s
+  (care-DPO 0.000 [−0.035, +0.035]).
+- Of its 9 losses against `none`, 6 are wrong answers and 3 truncations, with 1 gain.
+- Its traces run longer, median 401 tokens against care-DPO's 243 and `none`'s 233 (paired
+  +190 [+164, +217] over care-DPO). MMLU carries the loss (0.83, against 0.88 and 0.89).
+
+The gap to care-DPO is −0.035 [−0.075, 0.000]. care-DPO's −0.005 is the better of two draws of this
+recipe; their mean, −0.023, sits at the bar. Beside, not criteria: truncation on H1_held 2.9%
+(care-DPO 0.0%); dose 0 −0.044 [−0.075, −0.014], the opposite sign to care-DPO's +0.065 [+0.032, +0.095].
 
 **The matched cell (51 pairs × 8; Amendment 49 addition item 3).**
 
@@ -4370,12 +4382,15 @@ dose 0 −0.044 [−0.075, −0.014], the opposite sign to care-DPO's +0.065 [+0
 | base-DPO | 0.349 | 0.809 | +0.445 [+0.360, +0.531] | 0.88, 0.95 |
 
 H\*(care-DPO2) − H\*(base-DPO) = −0.387 [−0.483, −0.288] (MDE 0.14); care-DPO's −0.391 [−0.484, −0.299].
-No ceiling: `none` departs on 1.5% of twins. **Registered branch: item set**, care-DPO2 is no more
-conditioned on where the harm falls than base-DPO. The comparator's registered premise fails: base-DPO's
-predicted H\* was about 0 (author), and it reads +0.445, departing on 35% of originals and 81% of
-twins. Beside, the rule item 4 registered before the addition replaced it (H\*(care-DPO2) against
-`none`, with D(original) within +0.03 of `none`'s) reads harm condition: +0.059 [+0.020, +0.110], D(original)
-0.000. The verdict of record is the addition's. ST-A30 holds the readings and the separating cell.
+No ceiling: `none` departs on 1.5% of twins. **Registered branch: item set, which stands as registered
+and is uninformative**, because its comparator's premise failed. The author's Amendment 49 prediction
+was that base-DPO is harm-blind (H\* about 0). It reads +0.445 [+0.360, +0.531], departing on 35% of
+originals and 81% of twins: base-DPO is harm-sensitive and non-specific. The branch compared care-DPO2
+against an adapter that is itself conditioned on where the harm falls, so it cannot separate a harm
+condition from the item sets. Beside, the rule item 4 registered before the addition replaced it
+(H\*(care-DPO2) against `none`, with D(original) within +0.03 of `none`'s) reads harm condition: +0.059
+[+0.020, +0.110], D(original) 0.000. The forced choice on the twins (Amendment 52) is the separating
+cell (ST-A30).
 
 Action split (Amendment 46 item 4), originals then twins: care-DPO2 defers on 0.86 and 0.82 and
 follows the rule on 0.07 and 0.05, truncated 0.07 and 0.05; care-DPO defers on 0.95 and 0.91; `none`

@@ -1241,5 +1241,117 @@
   "specificity_not_above_bar": true,
   "forced_follows": true,
   "replicates": false
+ },
+ "capability_split": {
+  "none": {
+   "accuracy": 0.925,
+   "answered": 0.995,
+   "truncated": 0.005,
+   "accuracy_answered": 0.9296482412060302,
+   "median_tokens": 232.5,
+   "by_dataset": {
+    "cais/mmlu": 0.89,
+    "openai/gsm8k": 0.96
+   }
+  },
+  "care": {
+   "accuracy": 0.92,
+   "answered": 0.99,
+   "truncated": 0.01,
+   "accuracy_answered": 0.9292929292929293,
+   "median_tokens": 243.0,
+   "by_dataset": {
+    "cais/mmlu": 0.88,
+    "openai/gsm8k": 0.96
+   },
+   "answered_minus_none": {
+    "mean": 0.0,
+    "ci95": [
+     -0.03535353535353535,
+     0.03535353535353535
+    ],
+    "n": 198,
+    "mde": 0.0505050505050505
+   },
+   "lost_vs_none": {
+    "truncated": 1,
+    "unanswered": 0,
+    "wrong_answer": 6,
+    "gained": 6
+   }
+  },
+  "care2": {
+   "accuracy": 0.885,
+   "answered": 0.98,
+   "truncated": 0.02,
+   "accuracy_answered": 0.9030612244897959,
+   "median_tokens": 401.0,
+   "by_dataset": {
+    "cais/mmlu": 0.83,
+    "openai/gsm8k": 0.94
+   },
+   "answered_minus_none": {
+    "mean": -0.025510204081632654,
+    "ci95": [
+     -0.05102040816326531,
+     0.0
+    ],
+    "n": 196,
+    "mde": 0.03644314868804665
+   },
+   "lost_vs_none": {
+    "truncated": 3,
+    "unanswered": 0,
+    "wrong_answer": 6,
+    "gained": 1
+   }
+  },
+  "base": {
+   "accuracy": 0.9,
+   "answered": 0.965,
+   "truncated": 0.035,
+   "accuracy_answered": 0.9326424870466321,
+   "median_tokens": 339.5,
+   "by_dataset": {
+    "cais/mmlu": 0.86,
+    "openai/gsm8k": 0.94
+   },
+   "answered_minus_none": {
+    "mean": -0.0051813471502590676,
+    "ci95": [
+     -0.031088082901554404,
+     0.02072538860103627
+    ],
+    "n": 193,
+    "mde": 0.03700962250185048
+   },
+   "lost_vs_none": {
+    "truncated": 4,
+    "unanswered": 0,
+    "wrong_answer": 4,
+    "gained": 3
+   }
+  },
+  "care2_minus_care": {
+   "accuracy": {
+    "mean": -0.035,
+    "ci95": [
+     -0.075,
+     0.0
+    ],
+    "n": 200,
+    "mde": 0.05357142857142857
+   },
+   "tokens": {
+    "mean": 190.29,
+    "ci95": [
+     164.184,
+     217.425125
+    ],
+    "n": 200,
+    "mde": 38.029375
+   },
+   "mean_of_two_draws": -0.022499999999999964
+  }
  }
 }

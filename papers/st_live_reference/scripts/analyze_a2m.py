@@ -384,7 +384,49 @@ def matched_read(cell: Path) -> dict:
     return out
 
 
-def t16r_read(t16r: Path) -> dict:
+def capability_split(cap: dict[str, Path]) -> dict:
+    """Beside item 5's capability criterion (author, 2026-10-26): per arm, accuracy, the answered
+    and truncated shares, accuracy on answered items, trace length and per-dataset accuracy; each
+    adapter against ``none`` on the items both answered, and its losses split into truncations and
+    wrong answers; care-DPO2 against care-DPO (two draws of one recipe) on accuracy and length."""
+    rows = {a: {(r["dataset"], r["index"]): r for r in _jsonl(f)} for a, f in cap.items()}
+    keys = sorted(rows["none"])
+    out: dict = {}
+    for a, R in rows.items():
+        ans = [R[k] for k in keys if R[k]["answered"]]
+        by: dict[str, list[float]] = {}
+        for k in keys:
+            by.setdefault(k[0], []).append(float(R[k]["correct"]))
+        out[a] = {"accuracy": float(np.mean([R[k]["correct"] for k in keys])),
+                  "answered": len(ans) / len(keys),
+                  "truncated": float(np.mean([R[k]["finish_reason"] == "length" for k in keys])),
+                  "accuracy_answered": float(np.mean([r["correct"] for r in ans])),
+                  "median_tokens": float(np.median([R[k]["n_tokens"] for k in keys])),
+                  "by_dataset": {d: float(np.mean(v)) for d, v in by.items()}}
+        if a == "none":
+            continue
+        both = [k for k in keys if R[k]["answered"] and rows["none"][k]["answered"]]
+        lost = [k for k in keys if rows["none"][k]["correct"] and not R[k]["correct"]]
+        out[a]["answered_minus_none"] = T13.boot([float(R[k]["correct"])
+                                                  - float(rows["none"][k]["correct"])
+                                                  for k in both])
+        out[a]["lost_vs_none"] = {
+            "truncated": sum(R[k]["finish_reason"] == "length" for k in lost),
+            "unanswered": sum(not R[k]["answered"] and R[k]["finish_reason"] != "length"
+                              for k in lost),
+            "wrong_answer": sum(bool(R[k]["answered"]) for k in lost),
+            "gained": sum(bool(R[k]["correct"]) and not rows["none"][k]["correct"] for k in keys)}
+    if {"care", "care2"} <= set(rows):
+        c1, c2 = rows["care"], rows["care2"]
+        out["care2_minus_care"] = {
+            "accuracy": T13.boot([float(c2[k]["correct"]) - float(c1[k]["correct"]) for k in keys]),
+            "tokens": T13.boot([c2[k]["n_tokens"] - c1[k]["n_tokens"] for k in keys]),
+            "mean_of_two_draws": (out["care"]["accuracy"] + out["care2"]["accuracy"]) / 2
+            - out["none"]["accuracy"]}
+    return out
+
+
+def t16r_read(t16r: Path, t16: Path | None = None) -> dict:
     """Amendment 49 (with its addition): care-DPO2's gate on the seeded t16r dir (T1.6's analysis:
     ``care`` there is care-DPO2, ``base`` is T1.6's base-DPO), the matched cell, its forced choice,
     and the replication criteria (item 5), each reported separately."""
@@ -398,8 +440,15 @@ def t16r_read(t16r: Path) -> dict:
             "specificity_not_above_bar": (c2.get("specificity", {}).get("dP_violating", {})
                                           .get("mean", 1.0) <= SPEC_BAR),
             "forced_follows": str(f.get("care2_branch", "")).startswith("follows the rule")}
-    return {"rule": "ST_PLAN Amendment 49 and its addition", "gate": g, "matched": m,
-            "forced": f, "replication": {**crit, "replicates": all(crit.values())}}
+    out = {"rule": "ST_PLAN Amendment 49 and its addition", "gate": g, "matched": m,
+           "forced": f, "replication": {**crit, "replicates": all(crit.values())}}
+    if t16 is not None:
+        cap = t16r / "muse_glimmer_30b" / "cap"
+        out["capability_split"] = capability_split({"none": cap / "none.jsonl",
+                                                    "care": t16 / "cap" / "care.jsonl",
+                                                    "care2": cap / "care.jsonl",
+                                                    "base": cap / "base.jsonl"})
+    return out
 
 
 def mapping(c: dict | None, cl: dict, rb: dict) -> str:
@@ -446,7 +495,7 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
     if a.t16r:
-        res = t16r_read(a.t16r)
+        res = t16r_read(a.t16r, a.t16)
         p = a.out or a.t16r / "t16r_read.json"
         p.write_text(json.dumps(res, indent=1, default=str))
         m = res["matched"]
