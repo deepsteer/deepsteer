@@ -4760,3 +4760,58 @@ where the rule harms.
 share on the twins, 0.60 (30 of 50). Forced choice gives 0.31. The deferring rollouts split toward
 the rule more than the committing ones did, so with three options commitment was selected toward
 departure. That selection is the output-conditioning the forced cell was built to remove.
+
+#### Amendment 51 outcome, the GPT-OSS site sweep (2026-10-27; pod st2gs, 5.80 A100-h; `data/st2gs_read_v1.json`)
+
+**Analogs.** Block 12's analog has cos 0.99998 with the `care_harm` of record (bar 0.99). Adjacent
+blocks' analogs share cos 0.82–0.90, and blocks 6 and 18 share 0.30: the construct drifts with depth.
+
+**Ranking (exact teacher-forced steer at 0.4× each site's norm; change in the violating-minus-
+consistent letter margin, nats, scenario mean over 45).**
+
+| site | exact steer | AtP | eligible |
+|---|---|---|---|
+| b12 `clause_end` | +0.329 [+0.076, +0.578] | −0.107 | read (calibration) |
+| **b15 `clause_end`** | **+0.265 [+0.094, +0.431]** | +0.059 | yes, rank 1 |
+| **b18 `clause_end`** | **+0.004 [−0.142, +0.146]** | +0.080 | yes, rank 2 |
+| b15 `onset` | −0.000 [−0.051, +0.054] | −0.000 | yes |
+| b18 `onset` | −0.068 [−0.149, +0.004] | −0.035 | yes |
+| b9 `clause_end` | −0.226 [−0.406, −0.051] | +0.004 | yes |
+| b6, b9, b12 `onset`; b6 `clause_end` | −0.039 to +0.003 | −0.125 to −0.038 | no |
+
+- AtP's Spearman correlation with the exact steer across the ten sites is 0.09, below T0.5's bar of
+  0.7. At this dose AtP does not validate. It selected nothing.
+- Split-half stability of the exact steer is 0.72.
+- The unsteered margin reproduces T1.1's with a median gap of 0.125 nats (max 1.0).
+
+**The sweep (no fallback: both care arms coherent).**
+
+| site | ΔP vs `none` (gate +0.10) | vs site fill (+0.05) | vs Cell 1 fill, beside | coherence (care; fill) | specificity vs ten draws |
+|---|---|---|---|---|---|
+| b15 `clause_end`, α 1,165.7 | −0.037 [−0.071, −0.005] | +0.012 [−0.034, +0.060] | −0.008 | passes (parse 0.978, length 0.79, NLL +0.09); fill fails parse (0.883) | +0.003 [−0.047, +0.051], specific |
+| b18 `clause_end`, α 2,961.2 | +0.014 [−0.030, +0.058] | −0.028 [−0.084, +0.029] | +0.044 | passes (0.989, 0.83, +0.14); fill passes | −0.015 [−0.047, +0.018], specific |
+
+**Registered branch: R_lever extended.** GPT-OSS has no specific protective lever for `care_harm` at
+block 12's `clause_end` or at the two ranked sites, at a coherent dose up to 0.4× of each site's
+norm. The distillation route stays Muse-only, and the GPT-OSS line reports the family difference
+(the slope ratio, ST-A29) as its finding. Both swept sites are specific and coherent, and neither
+moves protection.
+
+**Second derivation (exploratory).** A margin shift converts to a probability shift as ΔP ≈
+P(1 − P)·Δmargin, per scenario with `none`'s P (mean 0.17). The exact steer predicts:
+- block 12, +0.014 [−0.024, +0.055], against the +0.041 measured at 0.4×: agrees;
+- block 18, +0.007 [−0.013, +0.026], against +0.014: agrees;
+- block 15, +0.032 [+0.006, +0.060], against −0.037 [−0.071, −0.005]: disagrees in sign (ST-A31).
+
+The gate's +0.10 needs about a 1.0-nat mean margin shift at this base rate. The largest site moved
+0.33 nats, so by the ranking's own numbers no site could pass at 0.4×. Converting the ranking to
+predicted ΔP before the sweep would have read this at zero GPU (process ledger).
+
+**Geometry (item 5; descriptive, outcome-conditioned).**
+- At every `clause_end` site the protect − rule direction separates held-out scenarios: +0.031 to
+  +0.054, each CI above 0.
+- At the `onset` sites it does not (+0.001 to +0.015, CIs including 0).
+- The analog's cosine with that direction is +0.005 to +0.140 at `clause_end` and −0.115 to −0.049 at
+  `onset`. Every value is inside the covariance-matched null (q95 0.24–0.43) and near the channel
+  chance (0.11–0.15).
+- The analog does not lie along the outcome-conditioned protect − rule axis at any site.

@@ -1373,8 +1373,8 @@ and moves protection +0.041 [−0.004, +0.087] against `none` (gate +0.10), with
 [−0.076, +0.033] against ten fill draws. Muse's `care_harm` is specific at its operating dose (−0.028)
 and passes there. GPT-OSS's dose slope is about a fifth of Muse's (0.21 [−0.05, +0.55]): at this
 site both families' `care_harm` is specific, and they differ in its strength. Registered branch
-R_lever. Amendment 51 ranks the other banked sites by AtP and sweeps the top two. Until that sweep
-reads, the distillation route is Muse-only.
+R_lever. The site sweep (below) extends it to blocks 15 and 18, and the distillation route is
+Muse-only.
 
 Referee pass.
 1. *"The slope ratio's CI holds zero."* Conceded: "a fifth" is the point, and the CI runs to +0.55.
@@ -1429,6 +1429,26 @@ Referee pass.
 3. *"Forced choice is not the model's behavior."* With deferral available, both care adapters defer on
    most of these items. The forced cell shows where the commitment points; the deferral itself is a
    behavior to report, and the next finding.
+
+**The GPT-OSS site sweep (2026-10-27; Amendment 51, ST-A29, ST-A31), what changed.** Positive voice
+first: **on GPT-OSS, `care_harm` stays specific wherever it is placed and moves protection nowhere
+it was swept.** At blocks 15 and 18 `clause_end`, the analog is coherent and specific (+0.003,
+−0.015 against ten random draws). Its ΔP against `none` is −0.037 and +0.014, against a +0.10 bar.
+Registered branch R_lever extended: the distillation route is Muse-only, and GPT-OSS's finding is
+the family difference. The ranking's own numbers predicted the miss: the largest fixed-trace shift
+was 0.33 nats against about 1.0 needed. At block 15 the fixed-trace steer and the sampled arm
+disagree in sign (ST-A31). AtP did not track the exact steer at this dose (Spearman 0.09).
+
+Referee pass.
+1. *"Two sites is not a sweep."* The sites were ranked over ten by a registered rule. Converted to
+   ΔP, no eligible site's fixed-trace effect reaches a third of the gate at 0.4×, so a wider sweep at
+   this dose would read the same. Larger doses were not read. The anchor axis failed coherence at
+   534.6 at block 12 (ST-A11), and a random vector at block 15's 0.4× already fails the parse bar.
+2. *"The ranking instrument failed, so the sites were wrong."* The exact steer agreed with the
+   sampled arm at blocks 12 and 18 after the P(1 − P) conversion and disagreed at 15. AtP failed
+   (0.09) and selected nothing.
+3. *"The fill arm at block 15 was incoherent, so the gate's fill clause is unread."* The gate fails
+   on its first clause (−0.037 against `none`), so the fill clause does not decide anything.
 
 ### ST line thesis (2026-10-27), positive voice
 
