@@ -1611,8 +1611,14 @@ stack-parity reads are re-taken under the pin before any readout of record.
 **Discriminator.**
 - Zero GPU: the steered rollouts' trace content against `none`'s on the same scenarios (length; weighing and harm markers by Amendment 41's lexicons), and whether P(protect) falls most where traces shorten most, per scenario.
 - GPU, ~0.3 A100-h: the teacher-forced margin on the steered rollouts' own traces, steered and unsteered. If the direct effect survives on those traces, the reversal runs through the trace content.
-**Status.** open.
-**Thesis impact.** If R_regen, steering effects on GPT-OSS's decision can run through its reasoning, against their direct effect. The fixed-trace instruments (AtP, the exact steer) rank direct effects only, so a site sweep needs sampled arms, as this one had. If R_noise, block 15 is a null like block 18.
+**The zero-GPU discriminator (2026-10-27; Amendment 53; `data/st_a31_read_v1.json`).** Per scenario, steered against `none` on the same rollout keys:
+- b15: traces shorten (log ratio −0.241 [−0.290, −0.192]); the association with ΔP is r +0.215 [−0.122, +0.510]; weighing falls by −0.567 [−0.679, −0.458] per 100 words.
+- b18: shortens too (−0.204 [−0.252, −0.156]); weighing falls further (−1.380 [−1.499, −1.262]); ΔP +0.014.
+- Block 12's ladder arm, beside: −0.041 [−0.109, +0.027] (no shortening); weighing rises (+0.324).
+
+**Registered branch: R_noise.** b18 meets (a) and (c), so weighing alone does not carry R_regen, and b15's association CI includes 0. b15 reads as a null like b18, and the follow-up does not run. Exploratory, not of record: b18's association is r +0.329 [+0.055, +0.571] with no mean loss, so the same length–protection coupling appears where the mean ΔP is null. Steering at blocks 15 and 18 `clause_end` shortens GPT-OSS's traces by about a fifth and cuts weighing words, without a matching change in protection.
+**Status.** resolved (experiment, 2026-10-27): R_noise.
+**Thesis impact (R_noise read).** The sweep's sites are nulls (block 15 and block 18 alike), and R_lever extended stands without a mechanism note. The other branch would have read: if R_regen, steering effects on GPT-OSS's decision can run through its reasoning, against their direct effect. The fixed-trace instruments (AtP, the exact steer) rank direct effects only, so a site sweep needs sampled arms, as this one had. If R_noise, block 15 is a null like block 18.
 
 **Process ledger 2026-10-27 — the sweep's ranking could have predicted its outcome at zero GPU.** The exact steer's largest site moved the margin 0.33 nats; converted by P(1 − P) at `none`'s base rate, no site could reach the gate's +0.10 (about 1.0 nat needed). The sweep arms and their specificity reads (05:31-10:46 UTC, about 5.2 of the session's 5.80 A100-h) confirmed it. Lesson: when a ranking's quantity has a closed-form map to the gate's, state the predicted gate value per site before registering the GPU arm, and let the amendment decide whether a predicted miss still runs.
 

@@ -1437,7 +1437,9 @@ it was swept.** At blocks 15 and 18 `clause_end`, the analog is coherent and spe
 Registered branch R_lever extended: the distillation route is Muse-only, and GPT-OSS's finding is
 the family difference. The ranking's own numbers predicted the miss: the largest fixed-trace shift
 was 0.33 nats against about 1.0 needed. At block 15 the fixed-trace steer and the sampled arm
-disagree in sign (ST-A31). AtP did not track the exact steer at this dose (Spearman 0.09).
+disagreed in sign; its registered discriminator reads R_noise (ST-A31, closed). Steering at blocks
+15 and 18 shortens the traces by about a fifth and cuts weighing words without moving protection.
+AtP did not track the exact steer at this dose (Spearman 0.09).
 
 Referee pass.
 1. *"Two sites is not a sweep."* The sites were ranked over ten by a registered rule. Converted to

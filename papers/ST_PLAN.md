@@ -4965,3 +4965,15 @@ The second family on Qwen3.8-27B: the steer-then-DPO recipe end to end. If the p
 3. **§7 envelope, updated to the actual price.** §7's heading envelope (≤ 35) is historical. Of
    record: spent 91.18 A100-h on 2026-10-27, against the author's envelope of 96. With Amendment 54's
    ~16.2 the line needs ~107.4, and the author sets the envelope before pod 1.
+
+#### Amendment 53 outcome (2026-10-27; zero GPU; `data/st_a31_read_v1.json`)
+
+| arm | (a) log length ratio | (b) r(length, ΔP) | (c) weighing per 100 words | ΔP vs `none` |
+|---|---|---|---|---|
+| b15 `clause_end` | −0.241 [−0.290, −0.192] | +0.215 [−0.122, +0.510] | −0.567 [−0.679, −0.458] | −0.037 |
+| b18 `clause_end` | −0.204 [−0.252, −0.156] | +0.329 [+0.055, +0.571] | −1.380 [−1.499, −1.262] | +0.014 |
+| block 12 ladder (0.4×), beside | −0.041 [−0.109, +0.027] | +0.236 [−0.012, +0.480] | +0.324 [+0.159, +0.496] | +0.041 |
+
+**Registered branch: R_noise.** b15 meets (a) and (c), but b18 meets them too, so (b) is required, and
+b15's (b) includes 0. ST-A31 closes; the 0.3 A100-h follow-up does not run.
+
