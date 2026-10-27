@@ -1,0 +1,161 @@
+{
+ "rule": "ST_PLAN Amendment 56 items 3 and 5",
+ "readout_validation": {
+  "rule": "ST_PLAN Amendment 56 item 3",
+  "a_continuous_vs_sampled": {
+   "4": {
+    "k": 4,
+    "n_scenarios": 60,
+    "mean_error": 0.002638824341386411,
+    "band95": [
+     -0.01743062010305803,
+     0.02961799100805307
+    ],
+    "scale": 1.0,
+    "agreement": 0.925,
+    "per_scenario_sd": 0.10599707577457725
+   },
+   "8": {
+    "k": 8,
+    "n_scenarios": 60,
+    "mean_error": -6.454750248185981e-08,
+    "band95": [
+     -6.454750248185981e-08,
+     -6.454750248185981e-08
+    ],
+    "scale": 1.0,
+    "agreement": 0.9500000000000002,
+    "per_scenario_sd": 9.348975844812101e-08
+   }
+  },
+  "b_vs_16": {
+   "gpt_oss_cell1_none": {
+    "4": {
+     "k": 4,
+     "n_scenarios": 45,
+     "mean_error": -0.0015480260480260665,
+     "band95": [
+      -0.036029758557120616,
+      0.03914605774361191
+     ],
+     "scale": 0.8660254037844386,
+     "agreement": 0.9315555555555557,
+     "per_scenario_sd": 0.1462081087924195
+    },
+    "8": {
+     "k": 8,
+     "n_scenarios": 45,
+     "mean_error": 0.0004890109890109828,
+     "band95": [
+      -0.01933643157742653,
+      0.016200966688317834
+     ],
+     "scale": 0.8660254037844386,
+     "agreement": 0.9515555555555555,
+     "per_scenario_sd": 0.0836762983117189
+    }
+   },
+   "muse_replicate_none": {
+    "4": {
+     "k": 4,
+     "n_scenarios": 45,
+     "mean_error": -0.0001666666666666783,
+     "band95": [
+      -0.03379904700880936,
+      0.03139342088718588
+     ],
+     "scale": 0.8660254037844386,
+     "agreement": 0.904,
+     "per_scenario_sd": 0.13688676004195713
+    },
+    "8": {
+     "k": 8,
+     "n_scenarios": 45,
+     "mean_error": -0.0023888888888888983,
+     "band95": [
+      -0.01804219591217581,
+      0.017500930034810513
+     ],
+     "scale": 0.8660254037844386,
+     "agreement": 0.9284444444444443,
+     "per_scenario_sd": 0.08135262100952369
+    }
+   }
+  },
+  "chosen_k": 8,
+  "mde_B_at_60": 0.04277596970626923,
+  "mde_note": "2.8 x sqrt(2) x the per-scenario SD of a k-rollout share / sqrt(60); the two arms treated as independent (no pairing credit); at k = 16 the SD is extrapolated from k = 8 by 1/sqrt(2)",
+  "n_screen_in_t11": 60
+ },
+ "price_table": {
+  "inputs": {
+   "prompt_tokens": {
+    "central": 310.25,
+    "high": 501.18750000000006
+   },
+   "default_output_tokens": {
+    "central": 447.5,
+    "high": 1771.8000000000002
+   },
+   "minimal_share": 0.4,
+   "source": "prompt: the 60 screen renders' characters / 4 (high x 1.35 for Claude's tokenizer); output: GPT-OSS T1.1 at effort medium"
+  },
+  "models": {
+   "claude-opus-5-5": {
+    "rates_per_million": {
+     "input": 4.0,
+     "cached_input": 0.2,
+     "output": 20.0
+    },
+    "central": {
+     "per_call_usd": {
+      "default": 0.010191,
+      "minimal": 0.004821
+     },
+     "per_scenario_rollout_pair_usd": 0.015012000000000001,
+     "f1_60_scenarios_at_k_usd": 7.205760000000001,
+     "pairs_per_100_usd": 6661,
+     "k_at_60_scenarios_per_100_usd": 111.02229327648992
+    },
+    "high": {
+     "per_call_usd": {
+      "default": 0.03744075,
+      "minimal": 0.016179150000000003
+     },
+     "per_scenario_rollout_pair_usd": 0.053619900000000005,
+     "f1_60_scenarios_at_k_usd": 25.737552,
+     "pairs_per_100_usd": 1864,
+     "k_at_60_scenarios_per_100_usd": 31.08298722427059
+    }
+   },
+   "gpt-6.1-sol": {
+    "rates_per_million": {
+     "input": 2.0,
+     "cached_input": 0.1,
+     "output": 10.0
+    },
+    "central": {
+     "per_call_usd": {
+      "default": 0.0050955,
+      "minimal": 0.0024105
+     },
+     "per_scenario_rollout_pair_usd": 0.0075060000000000005,
+     "f1_60_scenarios_at_k_usd": 3.6028800000000003,
+     "pairs_per_100_usd": 13322,
+     "k_at_60_scenarios_per_100_usd": 222.04458655297984
+    },
+    "high": {
+     "per_call_usd": {
+      "default": 0.018720375,
+      "minimal": 0.008089575000000002
+     },
+     "per_scenario_rollout_pair_usd": 0.026809950000000003,
+     "f1_60_scenarios_at_k_usd": 12.868776,
+     "pairs_per_100_usd": 3729,
+     "k_at_60_scenarios_per_100_usd": 62.16597444854118
+    }
+   }
+  },
+  "cheaper_per_call": "gpt-6.1-sol"
+ }
+}

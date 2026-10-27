@@ -548,11 +548,13 @@ before T1.0.
   and stop if the projection exceeds the envelope (the KDG pods' rule).
 - Save per rollout before anything else (KDG-A26 lesson). Bank residuals at the registered
   layers and classes even when a cell is cut.
-- Predict gate values from a ranking before registering GPU arms (added 2026-10-27, author; the
-  Amendment 51 lesson). When a site or dose ranking is read on a quantity with a closed-form map to
-  the gate's (a decision-letter margin Δm maps to ΔP ≈ P(1 − P)·Δm per scenario, with `none`'s P),
-  state each candidate's predicted gate value and its CI in the amendment that registers the arms. A
-  predicted miss either runs on a stated reason or is not registered.
+- Record gate values predicted from a ranking beside the gate (added 2026-10-27, author; the
+  Amendment 51 lesson; reworded 2026-10-27 after ST-A32, Amendment 57). When a site or dose ranking
+  is read on a quantity with a closed-form map to the gate's (a decision-letter margin Δm maps to
+  ΔP ≈ P(1 − P)·Δm per scenario, with `none`'s P), state each candidate's predicted gate value and
+  its CI beside the gate. The conversion never decides whether an arm runs: on Qwen it predicted
+  −0.021 for an arm that measured +0.236. ~~A predicted miss either runs on a stated reason or is not
+  registered.~~ (the original, struck)
 - Prose rules as the program's: anchored adjectives, no intensifier without its control,
   `generalizes` / `restores, local` / `partial` / `non-specific` / `null` only as §6 defines them,
   nulls with their MDE and transport curve; the gate is "localization", never "steering works".
@@ -5153,3 +5155,100 @@ set, where there is no gap to narrow.
 
 **The §12 prediction missed in size and sign:** −0.021 predicted, +0.236 measured. This is ST-A32,
 and the §12 rule's reliability is escalated there.
+
+#### Amendment 56 outcome, F0 (2026-10-27; zero GPU, zero API spend; `data/frontier_f0_v1.json`)
+
+**Readout validation (item 3).** 50 subsamples, seed 0.
+- (a) GPT-OSS T1.1, the 60 screen scenarios:
+  - k = 4: the 60-scenario mean's error band is [−0.017, +0.030], engaged agreement 0.925;
+  - k = 8: the band is about 0, agreement 0.950. The sampled letter matches the continuous readout,
+    so letter-sampling noise is negligible.
+- (b) Against the 16-rollout share, the band scaled to 60 scenarios:
+  - k = 4: GPT-OSS Cell 1 [−0.036, +0.039] and Muse [−0.034, +0.031], outside ±0.03;
+  - k = 8: [−0.019, +0.016] and [−0.018, +0.018], with agreement 0.952 and 0.928.
+
+**Rule: F1's k is 8.** B's MDE at 60 scenarios and k = 8 is 0.043. The two arms are treated as
+independent, with no pairing credit.
+
+**Price table (item 5).** Prompts are about the 60 renders' characters / 4. Output uses GPT-OSS's
+effort-medium lengths: the median as central, 2 × q90 as high, the minimal arm at 40%.
+
+| model | per scenario-rollout pair, central / high | F1 (60 × 8 × 2 arms), central / high | what $100 buys |
+|---|---|---|---|
+| GPT-6.1 Sol | $0.0075 / $0.027 | **$3.60 / $12.87** | about 22 / 6 rollouts per scenario over 60, central / high |
+| Claude Opus 5.5 | $0.015 / $0.054 | $7.21 / $25.74 | about 11 / 3 |
+
+GPT-6.1 Sol is the cheaper per call and goes first in F1. F1 waits on the author's go.
+
+### Amendment 57 (2026-10-27; author; zero GPU; before ST-A32's discriminator computes and before pod 2 is built)
+
+1. **§12 reworded (author).** The margin-to-ΔP conversion is recorded beside the gate and never
+   decides whether an arm runs (§12, in place, the original struck).
+2. **ST-A32's zero-GPU discriminator (author: the GPU check runs only if both readings survive).**
+   - **Rows:** Qwen's pod-1 arms, `care_harm` at 0.4× against `none` on the 11 engaged scenarios ×
+     16. The measures are Amendment 53's: (a) the log trace-length ratio, (b) its Pearson r with ΔP
+     across scenarios, and (c) the weighing and harm lexicons per 100 words; scenario bootstrap.
+   - **R_trace survives** if the steered traces change and the change tracks protection: (a)'s CI
+     or (c)'s weighing or harm CI excludes 0, and (b)'s CI excludes 0, in either sign.
+   - **R_trace-set** concerns the direct effect on unsteered traces by outcome. Pod 1 saved the
+     prediction's margins per scenario only (two traces averaged), so no zero-GPU read can
+     separate it; it survives the zero-GPU step by construction.
+   - **The GPU check therefore runs only if R_trace survives** (~0.3 A100-h; the teacher-forced
+     margin on the care arm's own traces, steered and unsteered). If R_trace fails, ST-A32 closes
+     with R_trace-set standing as the reading, unconfirmed.
+3. **Pod 2 on Qwen (author): build now, launch after 2026-10-28.** Gemma 4 31B, if the partner names
+   it, is a third-family addition under a new envelope, not a swap (this replaces Amendment 54's swap
+   clause).
+4. **The pair rule (author), registered before the build.**
+   - **Rule-harm pairs** come from any H1_train scenario that holds at least one steered protect
+     and one unsteered rule rollout.
+   - **The teacher phase** generates them on HF with shared seeds: `care_harm` at 0.4× (α 31.1,
+     block 32 `clause_end`) × 8 and `none` × 8, on the 35 H1_train scenarios whose v1 rows hold at
+     least one rule and one protect rollout. Pod 1's rows put a ceiling of about 45 pairs at two per
+     scenario. One engine for chosen and rejected keeps the teacher difference from being an
+     engine difference.
+   - **Per scenario, in rollout order,** n = min(steered protect, unsteered protect, unsteered
+     rule, 2): T1.6's rule. The unsteered protect term matches base-DPO_Q's count.
+     - care-DPO_Q's chosen traces are steered protect, and base-DPO_Q's are unsteered protect.
+     - Both reject the same unsteered rule traces.
+   - **Rule-right pairs (the pool's).** On the 130-item rule-right pool × 8 (vLLM, unsteered), the
+     chosen trace is a `consistent` rollout and the rejected one a `violating` rollout. They are cut
+     to the rule-harm count by a seeded draw and shared by both arms.
+   - **The count is reported before training,** in the record and the log, with rule-harm and
+     rule-right counts and scenarios.
+   - **The overfitting expectation, if thin (registered now).** Thin means fewer than 38 rule-harm
+     pairs, the smallest count that has produced a replicated adapter (care-DPO2). At T1.6's epochs
+     (about 24), a thin set is expected to be memorized: the training scenarios' protection rises
+     further than engaged H1_held's ΔP, and capability falls further. The read of record (below) is
+     unchanged by thinness.
+5. **Training and checkpoint selection.**
+   - L-beh-2's recipe on Qwen (DPO, β 0.1, LoRA rank 16, alpha 32, dropout 0, QLoRA NF4, seed 105,
+     the text tower's targets).
+   - Steps keep T1.6's epochs: 243 × (pairs / 80).
+   - Checkpoints are saved at a third, two thirds and the end.
+   - **Selection, per the recipe notes.** A held-out capability set of 100 items (50 GSM8K, 50 MMLU)
+     disjoint from the gate's 200, drawn seeded and registered at the build. The checkpoint of
+     record is the latest whose selection accuracy is within 0.02 of base's, else the earliest.
+     The gate's capability read never selects.
+6. **The full gate (T1.6's, on Qwen) and the read of record (author).**
+   - `none` on H1_held 132 × 8 (vLLM) and at dose 0 defines Qwen's engaged held set.
+   - **Read of record:** specificity on the 60 rule-right items (against `none`, Amendment 31's sign
+     classes), and the forced-choice twins (the 51 originals and 51 twins without the defer option ×
+     8, under `none`, care-DPO_Q and base-DPO_Q; D_f and the forced H\* by Amendment 52).
+   - **Beside:** ΔP on engaged H1_held (merged, vLLM) with its MDE, dose 0, capability on the gate's
+     200, and the panel guard.
+   - Amendment 54 item 6's branches apply: transfers / non-specific on Qwen / uninformative.
+7. **Price.**
+   - setup, 0.4;
+   - the pool on vLLM, 0.3;
+   - the teacher, 560 HF rollouts at pod 1's measured ~10 s, 1.6;
+   - training two adapters, ~3.6 each (T1.6's 1.8 × 1.76 for Qwen's trace length × 273/243 steps),
+     7.1;
+   - selection, 0.4;
+   - the gate for two arms with the guard, ~3.5;
+   - the forced cells, 1.0;
+   - dry runs, 0.1.
+   That is **~14.4 A100-h**. Envelope 107.4 leaves 11.87 (spent 95.53), short by about 2.5. **The
+   author's decision:** an envelope near 111 at T1.6's epochs; or about half T1.6's epochs (about 12;
+   training ~3.6, total ~10.9), recorded as a recipe deviation.
+
