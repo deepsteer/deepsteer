@@ -33,15 +33,25 @@ reminder, 90% → 40% at three turns; `KDG_PITCH_PLAN.md`).
 
 This plan tests one hypothesis, with both of the program's constructs as co-primary outcomes:
 
-> **A post-training stage that holds the model's moral reference live during deliberation narrows
-> the judgment–action gap on held-out scenarios, without a prompt-level reminder, and does so where
-> behavioral fine-tuning on the same data does not.**
+> **Distilling a gate-passing, specific steering direction into DPO yields an adapter whose
+> rule-breaking tracks where the harm falls. It protects where the written rule harms and follows
+> the rule where breaking it would harm, on held-out items and on matched harm-reversed twins under
+> forced choice, where the same recipe with unsteered traces gives a harm-sensitive, non-specific
+> adapter. It does this on two model families.** (Amendment 55, 2026-10-27.)
 
-The deliverable is a **weight-level post-training component** (a LoRA stage with a representation
+> ~~**A post-training stage that holds the model's moral reference live during deliberation narrows
+> the judgment–action gap on held-out scenarios, without a prompt-level reminder, and does so where
+> behavioral fine-tuning on the same data does not.**~~ (original, 2026-10-16; replaced by Amendment 55)
+
+The deliverable is **steer-then-DPO** (Amendment 55): a steering direction that passes the gate and
+is specific selects the teacher, its steered rollouts are DPO's chosen traces, and the adapter is
+the deliverable. Steering is the teacher, never deployed.
+
+~~The deliverable is a **weight-level post-training component** (a LoRA stage with a representation
 objective; §5), stated in a form a lab could add to its own SFT or RL pipeline. Inference-time
 steering (directions added to the residual stream, the model's own judgment state patched in) is
 used once, as a **target-selection instrument** (§5.0): it decides which representation and site
-the training objective holds, and is never the deliverable. Prompt changes (system prompts,
+the training objective holds, and is never the deliverable.~~ (original; replaced by Amendment 55) Prompt changes (system prompts,
 prefixes, restatements) appear only as a reference row (§5.4), never as a lever.
 
 The claim has to hold on a **reasoning model**, inside its trace, and on **two model families**
@@ -371,7 +381,7 @@ screen conditions on the unadapted arms only, on a sample disjoint from the base
 compared against (Amendment 1); τ, L*, the position class and the split are fixed
 before training; no adapter is selected on H1_held.
 
-## 7. Ordering and prices (author-approved envelope ≤ 35 A100-h self-funded)
+## 7. Ordering and prices (envelope of record 96 A100-h, spent 91.18 on 2026-10-27; ~107.4 with Amendment 54, the author's decision; ~~≤ 35 A100-h~~, the original)
 
 ### Tier 0 — zero GPU (Mac and banked arrays)
 
@@ -538,6 +548,11 @@ before T1.0.
   and stop if the projection exceeds the envelope (the KDG pods' rule).
 - Save per rollout before anything else (KDG-A26 lesson). Bank residuals at the registered
   layers and classes even when a cell is cut.
+- Predict gate values from a ranking before registering GPU arms (added 2026-10-27, author; the
+  Amendment 51 lesson). When a site or dose ranking is read on a quantity with a closed-form map to
+  the gate's (a decision-letter margin Δm maps to ΔP ≈ P(1 − P)·Δm per scenario, with `none`'s P),
+  state each candidate's predicted gate value and its CI in the amendment that registers the arms. A
+  predicted miss either runs on a stated reason or is not registered.
 - Prose rules as the program's: anchored adjectives, no intensifier without its control,
   `generalizes` / `restores, local` / `partial` / `non-specific` / `null` only as §6 defines them,
   nulls with their MDE and transport curve; the gate is "localization", never "steering works".
@@ -4815,3 +4830,138 @@ predicted ΔP before the sweep would have read this at zero GPU (process ledger)
   `onset`. Every value is inside the covariance-matched null (q95 0.24–0.43) and near the channel
   chance (0.11–0.15).
 - The analog does not lie along the outcome-conditioned protect − rule axis at any site.
+
+### Amendment 53 (2026-10-27; author; zero GPU; before ST-A31's discriminator computes)
+
+ST-A31's zero-GPU discriminator, R_regen against R_noise, with the decision rule written before any
+of it is read.
+
+1. **Rows.** b15 `clause_end`'s care arm at 0.4× (720 rollouts) against Cell 1's `none` on the same
+   rollout keys (45 engaged × 16). Beside: b18 `clause_end`'s care arm (the swept site with no
+   protection change) and the GPT-OSS ladder's 0.4× arm at block 12 (45 × 8).
+2. **Per scenario** (45):
+   - (a) shortening: the log ratio of mean trace length, steered over `none`;
+   - (b) the association across scenarios between (a) and ΔP = P(steered) − P(`none`), Pearson r;
+   - (c) deliberation content: the change in Amendment 41's weighing lexicon per 100 words of trace
+     text (`gen_ids` from `trace_start` for `trace_len` tokens, decoded), with harm and person beside.
+   Scenario bootstrap, 10,000 draws, seed 0, percentile 95%.
+3. **Rule (author: the 0.3 A100-h follow-up runs only if R_regen survives).**
+   - **R_regen survives** if (a)'s CI lies below 0 (b15's traces shorten), and either (b)'s CI lies
+     above 0 (scenarios that shorten more lose more protection) or (c)'s weighing CI lies below 0
+     (less weighing). If b18 also meets (a) and (c), weighing alone does not carry R_regen, since b18
+     shortened without losing protection, and (b) is then required.
+   - **Otherwise R_noise stands.** b15 reads as a null like b18, ST-A31 closes, and the follow-up does
+     not run.
+4. **The follow-up, if it runs (~0.3 A100-h; its own launch).** On b15's steered rollouts' own traces,
+   the teacher-forced margin, steered and unsteered at the same positions. If the direct effect
+   survives on those traces, the reversal runs through trace content.
+
+### Amendment 54 (2026-10-27; author; zero GPU; priced, not built; launch after 2026-10-28)
+
+The second family on Qwen3.8-27B: the steer-then-DPO recipe end to end. If the partner names Gemma 4
+31B, the model swaps to it with the same design, re-priced from its own pilot.
+
+1. **Why Qwen3.8, and what its baseline does to the read.** Qwen3.8's reasoning leans protective on
+   H1: P after reasoning 0.696 against 0.612 at dose 0 (B = +0.083 [0.020, 0.146], ST-A5), with 8 of
+   60 screen scenarios brake-engaged. **Registered:** with protection already high and few engaged
+   scenarios, the protection gate has little room and a wide MDE. The read of record leans on
+   specificity (rule-right items) and on the forced-choice twins, and the protection gate is reported
+   with its MDE.
+2. **Baseline and calibration (pod 1).**
+   - vLLM: H1 264 × 8 at the effort of record, for P_none per scenario and the engaged sets (Amendment 5's
+     rule).
+   - Dose-0 letter reads (single-row): H1, the 60 panel rule-right items, and the 51 cell A′ originals
+     and their twins.
+   - The site: block 32 (hidden index 33; depth 0.5, as GPT-OSS's block 12 and Muse's block 26),
+     `clause_end`. Its residual sample comes from an HF teacher-forced pass over the H1_train traces:
+     PR (≥ 30 at the median of 21 samples, else the nearest healthy block), the median norm, and ten
+     covariance-matched fill draws.
+   - `care_harm` by W4's recipe at that block.
+   - The dose ladder (0.2×, 0.3×, 0.4×) on T1.3's 5 sweep scenarios × 8 with a `none` arm; the
+     largest coherent dose is the gate's (outcome-blind). The gate values predicted from a
+     teacher-forced margin read at the chosen dose are stated before the gate arm runs (§12).
+   - A timing pilot (8 × 4 steered on HF). Qwen3.8's 48 Gated DeltaNet layers have no measured
+     steered-HF rate; if the pilot projects more than 1.5× this price, the pod re-prices and stops
+     for the author before the gate.
+3. **`care_harm` gate with ten-draw specificity (pod 1).**
+   - Arms on Qwen's engaged H1_train × 16 with the dose of record: `care_harm`, a site-matched fill
+     arm (× 8, ten draws cycled), and `none`.
+   - The gate: ΔP ≥ +0.10 with CI > 0 against `none`, and ≥ +0.05 with CI > 0 against fill, under
+     Amendment 13's bars.
+   - Specificity against the ten fill draws on the 60 rule-right items (draws × items bootstrap).
+   - Bail: if no coherent dose passes the gate with specificity not above +0.03, the recipe does not
+     run, and Qwen reads as "no specific protective lever at this site". Pod 2 is not launched.
+4. **The recipe with the full gate (pod 2).**
+   - care-DPO_Q's chosen traces are the gate arm's protect rollouts; base-DPO_Q's are `none`'s
+     protect rollouts in the same scenarios. Rejected traces are `none`'s rule rollouts. Pairs come
+     from scenarios with at least one of each, and the pair count is matched across arms.
+   - Training: L-beh-2's recipe (DPO, LoRA rank 16, QLoRA NF4), T1.6's steps scaled to the pair count.
+   - Per the recipe notes, checkpoint selection uses a pre-registered held-out capability set
+     disjoint from the gate's 200 items.
+   - The full gate as T1.6 ran it, on Qwen's engaged H1_held × 8: ΔP of record, dose 0, specificity,
+     capability, the panel guard, merge and parity.
+5. **Forced-choice twins (pod 2).** The 51 originals and their twins without the defer option, × 8,
+   under `none`, care-DPO_Q and base-DPO_Q; Amendment 52's D_f and the forced H\*. The cell is
+   informative only if `none` mostly follows the rule on the forced originals (CI upper bound below
+   0.5). A protective baseline may fail this, and that is reported as the outcome.
+6. **Branches, written before data.**
+   - **Transfers:** care-DPO_Q's specificity is not above +0.03, and its forced D_f is at least +0.15
+     with CI > 0 while its forced originals stay within 0.03 of `none`'s. The recipe gives a specific,
+     harm-conditioned adapter on a second family.
+   - **Non-specific on Qwen:** care-DPO_Q's specificity is above +0.03, or its forced originals rise
+     above `none`'s by more than 0.03.
+   - **Uninformative:** `none` breaks the rule on the forced originals (the protective baseline), or
+     the gate's bail fires. The second-family claim waits for another family.
+   The protection gate is reported beside each branch with its MDE.
+7. **Price (Muse's measured rates, scaled by Qwen's 1.76× longer traces; to be re-priced on the
+   pilot).**
+   - Pod 1:
+     - setup and the download, 0.4;
+     - vLLM H1 2,112 rollouts, 0.75;
+     - dose-0 reads, 0.25;
+     - the teacher-forced residual pass and `care_harm`, 0.35;
+     - the dose ladder (160 rollouts), 0.45;
+     - the gate arms (about 18 engaged × 40 rollouts at ~10 s), 2.1;
+     - specificity (11 × 480 rows), 0.25;
+     - pilot and dry runs, 0.3.
+     That is **~4.9 A100-h**.
+   - Pod 2:
+     - setup, 0.4;
+     - two adapters' training (T1.6's 1.8 each), 3.6;
+     - the full gate for two arms with the panel guard, 5.2;
+     - the forced cells (2 × 408 rollouts × 3 arms), 2.0;
+     - dry runs, 0.1.
+     That is **~11.3 A100-h**.
+   Total **~16.2 A100-h**: 91.18 spent + ~16.2 is ~107.4 (Amendment 55 records the envelope).
+
+### Amendment 55 (2026-10-27; author; zero GPU; §0 restated; the original kept struck)
+
+1. **Hypothesis, restated.** §0's hypothesis is replaced by:
+
+   > **Distilling a gate-passing, specific steering direction into DPO yields an adapter whose
+   > rule-breaking tracks where the harm falls. It protects where the written rule harms and follows
+   > the rule where breaking it would harm, on held-out items and on matched harm-reversed twins under
+   > forced choice, where the same recipe with unsteered traces gives a harm-sensitive, non-specific
+   > adapter. It does this on two model families.**
+
+   The original, retained struck:
+
+   > ~~**A post-training stage that holds the model's moral reference live during deliberation narrows
+   > the judgment–action gap on held-out scenarios, without a prompt-level reminder, and does so where
+   > behavioral fine-tuning on the same data does not.**~~
+
+2. **Deliverable, restated: steer-then-DPO.** A steering direction that passes the gate and is
+   specific selects the teacher. Its steered rollouts are the chosen traces for DPO, and the adapter
+   is the deliverable. Steering is the teacher, never deployed. The original, retained struck:
+
+   > ~~The deliverable is a **weight-level post-training component** (a LoRA stage with a
+   > representation objective; §5), stated in a form a lab could add to its own SFT or RL pipeline.
+   > Inference-time steering (directions added to the residual stream, the model's own judgment state
+   > patched in) is used once, as a **target-selection instrument** (§5.0): it decides which
+   > representation and site the training objective holds, and is never the deliverable.~~
+
+   What stays: prompt changes appear only as a reference row (§5.4), never as a lever, and the
+   evaluation instrument is unchanged (KDG, H1, the specificity set, `kdg_harness` pinned).
+3. **§7 envelope, updated to the actual price.** §7's heading envelope (≤ 35) is historical. Of
+   record: spent 91.18 A100-h on 2026-10-27, against the author's envelope of 96. With Amendment 54's
+   ~16.2 the line needs ~107.4, and the author sets the envelope before pod 1.
