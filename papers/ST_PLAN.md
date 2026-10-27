@@ -4710,3 +4710,15 @@ The forced choice on the matched twins, ST-A30's discriminator between R_defer a
    record that future care-DPO runs pre-register a held-out capability set, disjoint from the gate's
    200 items, for checkpoint selection.
 
+
+#### Amendment 51, implementation note (2026-10-26; author; zero GPU; recorded before any analog, ranking or sweep arm computes)
+
+Item 4's traces are T1.1's first two rollouts per scenario that reached an answer letter, taken in
+rollout order. A teacher-forced trace needs that letter, and the choice was made on the parse
+status, not the action. In two of the 45 scenarios rollout 2 stands in for a truncated one:
+- H1-A-256, where rollout 1 truncated;
+- H1-B-107, where rollout 0 truncated.
+
+The other 43 scenarios use rollouts 0 and 1. The 90 traces' class positions, replayed by the
+steering harness's rule, equal T1.1's banked positions on all 90 for both classes
+(`build_st2gs_inputs.py`; `outputs/st2gs_inputs/gpt_oss_20b/sites.json`).
