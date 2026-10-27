@@ -125,3 +125,15 @@ def test_dry_run(tmp_path):
     assert rec["arm_care"]["coherence"] is not None
     out = A.read(tmp_path / D.KEY)
     assert out["branch"].startswith("P1-")
+
+
+def test_a32_branch():
+    # most probable failure (Amendment 57 item 2): a trace change alone, with no association to
+    # protection, keeps R_trace alive and buys the GPU check
+    def r(a, b, w, h=(-0.1, 0.1)):
+        return {"a_log_length_ratio": {"ci95": list(a)}, "b_r_length_dP": {"ci95": list(b)},
+                "c_lexicons": {"weighing": {"ci95": list(w)}, "harm": {"ci95": list(h)}}}
+    assert A.a32_branch(r((-0.3, -0.1), (-0.8, -0.2), (-0.1, 0.1))).startswith("R_trace survives")
+    assert A.a32_branch(r((-0.3, -0.1), (-0.5, 0.3), (-0.9, -0.2))).startswith("R_trace fails")
+    assert A.a32_branch(r((-0.1, 0.1), (0.2, 0.7), (-0.1, 0.1))).startswith("R_trace fails")
+    assert A.a32_branch(r((-0.1, 0.1), (0.2, 0.7), (0.1, 0.4))).startswith("R_trace survives")

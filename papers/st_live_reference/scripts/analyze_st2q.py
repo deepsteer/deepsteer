@@ -80,6 +80,19 @@ def branch(g: dict | None, sp: dict | None, no_dose: bool, n_arm: int) -> str:
     return "P1-nonspecific: the gate passes, specificity above +0.03; pod 2 does not run on it"
 
 
+def a32_branch(r: dict) -> str:
+    """Amendment 57 item 2, written before data: R_trace survives if the steered traces change
+    ((a)'s CI or the weighing or harm CI excludes 0) and the change tracks protection ((b)'s CI
+    excludes 0, either sign); R_trace-set cannot be separated at zero GPU."""
+    ex = lambda d: d["ci95"][0] > 0 or d["ci95"][1] < 0  # noqa: E731
+    changed = (ex(r["a_log_length_ratio"]) or ex(r["c_lexicons"]["weighing"])
+               or ex(r["c_lexicons"]["harm"]))
+    if changed and ex(r["b_r_length_dP"]):
+        return "R_trace survives: the 0.3 A100-h GPU check runs (Amendment 57 item 2)"
+    return ("R_trace fails: ST-A32 closes with R_trace-set standing as the reading, unconfirmed; "
+            "no GPU check")
+
+
 def read(q: Path) -> dict:
     rec = json.loads((q / "st2q_record.json").read_text())["phases"]
     d, sw = rec["derive"], rec.get("sweep") or {}
