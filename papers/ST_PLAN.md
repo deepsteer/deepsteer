@@ -4124,6 +4124,12 @@ Whether that is a harm condition or the difference between the two item sets was
 replicate's question. Its registered branch (item set) is uninformative because base-DPO is not
 harm-blind, and the forced choice on the twins (Amendment 52) decides it.
 
+**Recipe notes (for future care-DPO runs; author, 2026-10-26; not for any run already built).**
+- Checkpoint selection uses a pre-registered held-out capability set that is disjoint from the gate's
+  200 capability items, so the gate's capability read is never the selecting sample. Motivation: the
+  t16r replicate fails the gate's capability bar (−0.040) on a recipe whose first draw passed it
+  (−0.005); a selection set would have caught the draw before the gate.
+
 **Registered labels, stated beside the verdict.**
 - T1.6's branch is unregistered (ST-A27): the teacher's difference is −0.525 [−0.618, −0.433].
 - T1.5's ladder labels both arms non-specific. For care-DPO that is the magnitude of −0.054, which
@@ -4689,3 +4695,18 @@ The forced choice on the matched twins, ST-A30's discriminator between R_defer a
    - 4 × 408 two-option rollouts, 0.05;
    - dry runs, 0.1.
    That is **~1.1 A100-h**, with a 2.5 h stop. Envelope 93: spent 84.24 + ~1.1 = ~85.3.
+
+#### Amendment 51, second addition (2026-10-26; author; zero GPU; before any analog, ranking or sweep arm computes)
+
+1. **Envelope 96 (author).** The 0.3× fallback runs on its registered condition (item 5 of the first
+   addition: a swept site incoherent at 0.4×) when the measured spend projects within 96, with no
+   wait for the author. Projected: spent 84.24, plus a2t's ~1.1, plus ~6.5, is ~91.8; one fallback
+   (~2.7) is ~94.5, within 96.
+2. **Implementation.** The session's stop is set from the spend left after a2t reads (96 minus the
+   spend of record then, minus 0.1 for provisioning). The driver starts a fallback only if its
+   cost, projected from the session's measured arm rate, finishes before that stop. Otherwise it is
+   recorded as not run.
+3. **Recipe note (author; for future care-DPO runs, not this one).** The T1.6 outcome's recipe notes
+   record that future care-DPO runs pre-register a held-out capability set, disjoint from the gate's
+   200 items, for checkpoint selection.
+
