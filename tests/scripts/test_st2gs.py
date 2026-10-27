@@ -130,7 +130,7 @@ def test_runner_and_sync():
     sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
     assert re.search(r'STEPS" = "st2gs" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-gpt_oss_20b'
                      r'\}"; OUT_SUB=st2gs\n  SESSION_MAX_HOURS='
-                     r'"\$\{SESSION_MAX_HOURS:-10\.0\}"', sh)
+                     r'"\$\{SESSION_MAX_HOURS:-10\.5\}"', sh)
     a10 = [x for x in sh.splitlines() if x.rstrip().endswith("# Amendment 10")]
     assert a10 and all('[ "$STEPS" != "st2gs" ]' in x for x in a10)
     assert "test_st2gs.py" in sh.split("GATE_TESTS=")[1].split("\n")[0]

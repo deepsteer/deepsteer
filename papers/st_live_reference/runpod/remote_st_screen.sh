@@ -173,9 +173,9 @@ elif [ "$STEPS" = "st2gs" ]; then
   # analogs, the ranking (exact teacher-forced steer of record, AtP beside), then the top two
   # sites' care and fill arms with ten-draw specificity, 0.3x where 0.4x fails coherence and the
   # stop allows; pod C's inputs, Cell 1's none and the sweep's inputs synced (sync_st2gs.txt);
-  # the stop is the envelope left after a2t (Amendment 51, second addition)
+  # the stop is the envelope left after a2t (Amendment 51, second addition): 10.5 h
   MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2gs
-  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-10.0}"
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-10.5}"  # 96 - 85.38 spent after a2t - 0.1 (Amendment 51)
 elif [ "$STEPS" = "st2gl" ]; then
   # the care_harm ladder on GPT-OSS (author, 2026-10-26; Amendment 50 and its additions): 0.4x of
   # record with ten-draw specificity, 0.3x only if 0.4x fails coherence (decided on the pod); pod C's
