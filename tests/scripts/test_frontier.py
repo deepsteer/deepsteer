@@ -204,3 +204,34 @@ def test_rate_limits_wait_and_retry_other_errors_raise():
     assert out == "ok" and waits == 2 and slept == [F.RATE_WAIT_S] * 2
     with pytest.raises(ValueError):
         F.call_paced(Flaky(1, ValueError("bad request")), "m", [], "low", sleep=slept.append)
+
+
+def _f1_rows(p_def, p_min, defer_def=0.0, n_scen=30, k=8):
+    rows = []
+    for i in range(n_scen):
+        for arm, p, dfr in (("default", p_def, defer_def), ("minimal", p_min, 0.0)):
+            for j in range(k):
+                x = j / k
+                st = "violating" if x < p else ("neutral" if x < p + dfr else "consistent")
+                rows.append({"scenario_id": f"S{i:02d}", "rollout": j, "arm": arm,
+                             "norm_status": st, "refused": False, "cost_usd": 0.01,
+                             "output_tokens": 500, "input_tokens": 400, "model": "gpt-6.1-sol"})
+    return rows
+
+
+def test_f1_branches(tmp_path):
+    # most probable failure (Amendment 56 item 2): a protect drop that goes to deferral reads as
+    # a brake into the rule, or the brake is called without the engaged criterion
+    import analyze_frontier_f1 as A1
+
+    f = tmp_path / "r.jsonl"
+    f.write_text("\n".join(json.dumps(r) for r in _f1_rows(0.25, 0.75)))
+    assert A1.read(f)["branch"].startswith("brake")
+    f.write_text("\n".join(json.dumps(r) for r in _f1_rows(0.25, 0.75, defer_def=0.5)))
+    assert A1.read(f)["branch"].startswith("deferral-dominated")
+    f.write_text("\n".join(json.dumps(r) for r in _f1_rows(0.5, 0.5)))
+    res = A1.read(f)
+    assert res["branch"].startswith("no brake") and res["brake_B"]["mean"] == 0.0
+    proj = A1.project(res, "claude-opus-5-5")
+    assert proj["central"]["total_usd"] == pytest.approx(
+        2 * (400 * 4.0 + 500 * 20.0) / 1e6 * 8 * 60)
