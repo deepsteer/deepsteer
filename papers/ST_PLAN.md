@@ -4722,3 +4722,41 @@ status, not the action. In two of the 45 scenarios rollout 2 stands in for a tru
 The other 43 scenarios use rollouts 0 and 1. The 90 traces' class positions, replayed by the
 steering harness's rule, equal T1.1's banked positions on all 90 for both classes
 (`build_st2gs_inputs.py`; `outputs/st2gs_inputs/gpt_oss_20b/sites.json`).
+
+#### Amendment 52 outcome, the forced choice on the twins (2026-10-27; pod a2t, 1.14 A100-h; `data/a2t_read_v1.json`)
+
+The 51 twins without the defer option, × 8, on vLLM bf16. Base check TV 0.0179 (as T1.6); parity
+care-DPO 0.0080, care-DPO2 0.0124, base-DPO 0.0011, all passing. Parse rates 1.00, 1.00, 1.00 and
+0.985 (base-DPO truncates 1.5%). The forced originals are reused (a2f, and t16r for care-DPO2).
+
+| arm | F(original) | F(twin) | D_f | forced H\* | twin minus `none` |
+|---|---|---|---|---|---|
+| `none` | 0.000 | 0.007 | +0.007 | — | — |
+| care-DPO2 | 0.025 | 0.314 | **+0.289 [+0.196, +0.392]** | +0.282 [+0.191, +0.382] | +0.306 [+0.211, +0.412] |
+| care-DPO | 0.022 | 0.169 | +0.147 [+0.083, +0.216] | +0.140 [+0.081, +0.206] | +0.162 [+0.093, +0.238] |
+| base-DPO | 0.436 | 0.877 | +0.441 [+0.341, +0.542] | +0.434 [+0.333, +0.537] | +0.870 [+0.789, +0.939] |
+
+**Registered branch: R_defer.** D_f(care-DPO2) is at least +0.15 with CI > 0 (MDE 0.14), and
+care-DPO2 − `none` on the forced twins has CI > 0. care-DPO2 is conditioned on where the harm falls
+when it must choose. On cell A′-style items with deferral available, it defers instead of
+committing. `none` follows the rule on 99.3% of forced twins, so the flag for a departure every arm
+shares does not fire.
+
+Beside the branch:
+- **care-DPO.** D_f +0.147 is at the bar, with the CI including it. Under the same rule the first
+  draw would read unresolved, and the replicate is the larger of the two draws.
+- **base-DPO.** Its absolute contrast is the largest (D_f +0.441) and starts from 44% rule-breaking
+  on the originals.
+- **Second derivation (exploratory, pooled log-odds, item bootstrap).** The original-to-twin change
+  is care-DPO2 2.9 [2.1, 4.4], care-DPO 2.2 [1.5, 4.1] and base-DPO 2.2 [1.7, 3.0]; care-DPO2 minus
+  base-DPO is +0.68 [−0.42, +2.12]. On the log-odds scale the adapters' harm conditioning cannot be
+  told apart. The registered absolute scale ranks base-DPO first, because its floor is higher.
+
+On these items what separates the care adapters from base-DPO is where they depart: on rule-right
+originals care-DPO2 departs on 2.5% and base-DPO on 44%. Whether they depart where the rule harms
+does not separate them, since all three do.
+
+**Coincidence check.** R_defer's prediction from the three-option cell was care-DPO2's committed
+share on the twins, 0.60 (30 of 50). Forced choice gives 0.31. The deferring rollouts split toward
+the rule more than the committing ones did, so with three options commitment was selected toward
+departure. That selection is the output-conditioning the forced cell was built to remove.

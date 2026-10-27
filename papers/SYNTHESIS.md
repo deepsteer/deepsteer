@@ -1409,6 +1409,27 @@ Referee pass.
    care-DPO's capability is −0.035 [−0.075, 0.000], so whether the fresh seed costs more capability than
    T1.6's is not resolved on 200 items.
 
+**The forced choice on the twins (2026-10-27; Amendment 52, ST-A30), what changed.** Positive voice
+first: **when it must choose, care-DPO departs where the rule harms and follows the rule where
+breaking it would harm, on items that differ only in where the harm falls.** care-DPO2 departs on
+31% of forced twins and 2.5% of their originals (D_f +0.289 [+0.196, +0.392]); `none` departs on
+0.7%. Registered branch R_defer. On cell A′-style items, care-DPO's protection is there; with a defer
+option, it defers. base-DPO is harm-conditioned too (0.436 to 0.877), at a log-odds size that cannot be
+told apart from care-DPO2's (+0.68 [−0.42, +2.12], exploratory). What separates the recipes is rule-right
+behavior, 0.025 against 0.436, not harm sensitivity.
+
+Referee pass.
+1. *"base-DPO's harm contrast is larger, so care-DPO is not the harm-conditioned one."* On the
+   registered absolute scale base-DPO's is larger (+0.441 against +0.289), from a 44% floor of
+   rule-breaking. On log-odds they cannot be told apart. The claim the data carry is specificity:
+   care-DPO follows the rule where breaking it would harm, and base-DPO does not.
+2. *"The first draw is at the bar."* care-DPO's D_f +0.147 has a CI that includes +0.15, so it would
+   read unresolved under the same rule. The branch of record is care-DPO2's, as registered, and the
+   first draw is reported beside it.
+3. *"Forced choice is not the model's behavior."* With deferral available, both care adapters defer on
+   most of these items. The forced cell shows where the commitment points; the deferral itself is a
+   behavior to report, and the next finding.
+
 ### ST line thesis (2026-10-25), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
@@ -1429,12 +1450,12 @@ two vectors:
 - adapters: L-beh +0.192; L-beh-2, format-bound, +0.308 on cell A′; base-DPO;
 - vectors: −V_harm +0.089 and V_qwen +0.093 on GPT-OSS.
 
-One family and the mechanism open. The matched-item replicate has read, and its reading is with the
-author (ST-A30).
+One family and the mechanism open. The matched-item replicate and its forced choice have read
+(ST-A30: R_defer); the thesis wording is with the author.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | escalated: the replicate reproduces gate, specificity and forced choice and fails capability; the matched cell's registered branch is item set, with its comparator's premise failed (ST-A30) |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | R_defer (Amendment 52, 2026-10-27): on matched items, care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; the replicate fails capability; thesis wording with the author |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
