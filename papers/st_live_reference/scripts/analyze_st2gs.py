@@ -226,6 +226,64 @@ def geometry(t11: Path, inputs: Path, analogs: Path, seed: int = 0) -> dict:
     return out
 
 
+def regen_read(arms: dict[str, Path], none: Path, tok, seed: int = 0) -> dict:
+    """ST-A31's discriminator (Amendment 53): per scenario, (a) the log ratio of mean trace length,
+    steered over ``none`` (same rollout keys); (b) Pearson r across scenarios of (a) with dP;
+    (c) the change in Amendment 41's lexicons per 100 words of trace text. Scenario bootstrap."""
+    import analyze_a2m as AM
+
+    def trace_text(r: dict) -> str:
+        a = r.get("trace_start") or 0
+        return tok.decode(r["gen_ids"][a: a + (r.get("trace_len") or 0)])
+
+    nrows = _jsonl(none)
+    out: dict = {}
+    for name, f in arms.items():
+        rows = _jsonl(f)
+        keys = {r["rollout_key"] for r in rows}
+        base = [r for r in nrows if r["rollout_key"] in keys]
+        pa, pn = T13.p_by_scenario(rows), T13.p_by_scenario(base)
+        per: dict[str, dict] = {}
+        for tag, rr in (("arm", rows), ("none", base)):
+            for r in rr:
+                d = per.setdefault(r["scenario_id"], {}).setdefault(tag, [])
+                d.append({"len": float(r.get("trace_len") or 0),
+                          **AM.features(trace_text(r), int(r.get("trace_len") or 0))})
+        sids = sorted(s for s in per
+                      if "arm" in per[s] and "none" in per[s] and s in pa and s in pn)
+        dlen = np.array([np.log(np.mean([x["len"] for x in per[s]["arm"]]) /
+                                np.mean([x["len"] for x in per[s]["none"]])) for s in sids])
+        dp = np.array([pa[s] - pn[s] for s in sids])
+        lex = {k: np.array([np.mean([x[k] for x in per[s]["arm"]]) -
+                            np.mean([x[k] for x in per[s]["none"]]) for s in sids])
+               for k in ("weighing", "harm", "person")}
+        rng = np.random.default_rng(seed)
+        idx = rng.integers(0, len(sids), (10_000, len(sids)))
+        rs = np.array([np.corrcoef(dlen[i], dp[i])[0, 1] for i in idx])
+        ci = lambda v: [float(np.nanpercentile(v, 2.5)), float(np.nanpercentile(v, 97.5))]  # noqa: E731
+        out[name] = {"n_scenarios": len(sids),
+                     "a_log_length_ratio": {"mean": float(dlen.mean()),
+                                            "ci95": ci(dlen[idx].mean(1))},
+                     "b_r_length_dP": {"mean": float(np.corrcoef(dlen, dp)[0, 1]), "ci95": ci(rs)},
+                     "dP": {"mean": float(dp.mean()), "ci95": ci(dp[idx].mean(1))},
+                     "c_lexicons": {k: {"mean": float(v.mean()), "ci95": ci(v[idx].mean(1))}
+                                    for k, v in lex.items()}}
+    return out
+
+
+def regen_branch(r: dict) -> str:
+    """Amendment 53 item 3, written before data."""
+    b15, b18 = r["b15_clause_end"], r.get("b18_clause_end")
+    a = b15["a_log_length_ratio"]["ci95"][1] < 0
+    b = b15["b_r_length_dP"]["ci95"][0] > 0
+    c = b15["c_lexicons"]["weighing"]["ci95"][1] < 0
+    b18_ac = bool(b18 and b18["a_log_length_ratio"]["ci95"][1] < 0
+                  and b18["c_lexicons"]["weighing"]["ci95"][1] < 0)
+    if a and (b or (c and not b18_ac)):
+        return "R_regen survives: the 0.3 A100-h follow-up runs (Amendment 53 item 4)"
+    return "R_noise stands: b15 reads as a null like b18; ST-A31 closes; no follow-up"
+
+
 def _f(x) -> str:
     return "n/a" if x is None else f"{x:+.3f}"
 

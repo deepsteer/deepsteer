@@ -184,3 +184,18 @@ def test_dry_run(tmp_path):
     assert rec["fallback"]["plan"][s0]["runs"]
     assert all(f"{p}|{s0}|03" in rec for p in D.SITE_PHASES)
     assert not any(f"{p}|{rec['rank']['top2'][1]}|03" in rec for p in D.SITE_PHASES)
+
+
+def test_regen_branch():
+    # most probable failure (Amendment 53): weighing alone carries R_regen although b18 shortened
+    # and dropped weighing without losing protection
+    def site(a, b, c):
+        return {"a_log_length_ratio": {"ci95": a}, "b_r_length_dP": {"ci95": b},
+                "c_lexicons": {"weighing": {"ci95": c}}}
+    neg, pos, zero = [-0.3, -0.1], [0.1, 0.5], [-0.2, 0.2]
+    assert A.regen_branch({"b15_clause_end": site(neg, pos, zero)}).startswith("R_regen")
+    assert A.regen_branch({"b15_clause_end": site(neg, zero, neg),
+                           "b18_clause_end": site(zero, zero, zero)}).startswith("R_regen")
+    assert A.regen_branch({"b15_clause_end": site(neg, zero, neg),
+                           "b18_clause_end": site(neg, zero, neg)}).startswith("R_noise")
+    assert A.regen_branch({"b15_clause_end": site(zero, pos, neg)}).startswith("R_noise")
