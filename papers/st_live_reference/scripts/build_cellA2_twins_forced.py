@@ -17,6 +17,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parents[2]))
 
 import build_cellA2_forced as BF  # noqa: E402
+
 from deepsteer.kdg.schema import load_scenarios, save_scenarios, validate_scenario  # noqa: E402
 
 MATCHED = BF.DATA / "st_fxh_cellA2_matched_v1.json"

@@ -489,7 +489,8 @@ def test_remote_runs_a2t():
     sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
     assert re.search(r'STEPS" = "a2t" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-muse_glimmer_30b'
                      r'\}"; OUT_SUB=a2t\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
-    blk = sh.split('if [ "$STEPS" = "a2t" ]; then\n    mkdir')[1].split('if [ "$STEPS" = "a2f" ]')[0]
+    blk = sh.split('if [ "$STEPS" = "a2t" ]; then\n    mkdir')[1]
+    blk = blk.split('if [ "$STEPS" = "a2f" ]')[0]
     assert "--pool $A2T_POOL" in blk and "--t16-care2 $T16R_DIR" in blk
     assert "for arm in care care2 base" in blk
     steps = ("--step gen --arm none", '--step merge --arm "$arm"', '--step gen --arm "$arm"')

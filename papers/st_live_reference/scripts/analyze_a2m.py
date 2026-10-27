@@ -388,7 +388,8 @@ D_F_BAR = 0.15  # Amendment 52 item 4: T1.6's gate bar for protection where the 
 
 
 def branch52(df_care2: dict, c2_minus_none_twin: dict) -> str:
-    """Amendment 52 item 4, written before data: care-DPO2's forced twin-minus-original difference."""
+    """Amendment 52 item 4, written before data: care-DPO2's forced twin-minus-original
+    difference."""
     if (df_care2["mean"] >= D_F_BAR and df_care2["ci95"][0] > 0
             and c2_minus_none_twin["ci95"][0] > 0):
         return ("R_defer: care-DPO2 departs where the rule harms when it must choose; on cell "
@@ -552,7 +553,8 @@ def main() -> None:
     ap.add_argument("--a2f", type=Path, default=None,
                     help="Amendment 46's forced-choice outputs (a2f's muse_glimmer_30b dir)")
     ap.add_argument("--a2t", type=Path, default=None,
-                    help="Amendment 52's outputs (a2t's muse_glimmer_30b dir); needs --a2f and --t16r")
+                    help="Amendment 52's outputs (a2t's muse_glimmer_30b dir); needs --a2f "
+                         "and --t16r")
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
     if a.a2t:
@@ -564,8 +566,9 @@ def main() -> None:
         for arm in ("none", "care", "care2", "base"):
             if arm in res:
                 r = res[arm]
-                print(f">> {arm}: F twin {r['F_twin']['mean']:.3f} {r['F_twin']['ci95']}, F original "
-                      f"{r['F_original']:.3f}, D_f {r['D_f']['mean']:+.3f} {r['D_f']['ci95']}")
+                print(f">> {arm}: F twin {r['F_twin']['mean']:.3f} {r['F_twin']['ci95']}, "
+                      f"F original {r['F_original']:.3f}, D_f {r['D_f']['mean']:+.3f} "
+                      f"{r['D_f']['ci95']}")
         print(f">> branch: {res.get('branch')}\n>> wrote {p}")
         return
     if a.t16r:

@@ -168,6 +168,14 @@ elif [ "$STEPS" = "st2ml" ]; then
   # (sync_st2ml.txt); one HF process; 3.0 h stop
   MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2ml
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
+elif [ "$STEPS" = "st2gs" ]; then
+  # the GPT-OSS site sweep (author, 2026-10-26; Amendment 51 and its additions): care_harm's
+  # analogs, the ranking (exact teacher-forced steer of record, AtP beside), then the top two
+  # sites' care and fill arms with ten-draw specificity, 0.3x where 0.4x fails coherence and the
+  # stop allows; pod C's inputs, Cell 1's none and the sweep's inputs synced (sync_st2gs.txt);
+  # the stop is the envelope left after a2t (Amendment 51, second addition)
+  MODELS="${MODELS:-gpt_oss_20b}"; OUT_SUB=st2gs
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-10.0}"
 elif [ "$STEPS" = "st2gl" ]; then
   # the care_harm ladder on GPT-OSS (author, 2026-10-26; Amendment 50 and its additions): 0.4x of
   # record with ten-draw specificity, 0.3x only if 0.4x fails coherence (decided on the pod); pod C's
@@ -401,7 +409,14 @@ if [ "$STEPS" = "st2gl" ]; then  # the ten fill draws (built locally, build_st2g
     [ -f "$f" ] || { echo "FATAL: $f missing (the GPT-OSS ladder's inputs; SYNC_OUTPUTS from sync_st2gl.txt)"; exit 1; }
   done
 fi
-if [ "$STEPS" = "st2c" ] || [ "$STEPS" = "st2dl" ] || [ "$STEPS" = "st2gl" ]; then  # built locally (build_st2_inputs.py cell1, podc); synced (sync_st2c.txt, sync_st2dl.txt, sync_st2gl.txt)
+ST2GS_INPUTS="$REPO_DIR/papers/st_live_reference/outputs/st2gs_inputs/gpt_oss_20b"  # SYNC_OUTPUTS (Amendment 51)
+if [ "$STEPS" = "st2gs" ]; then  # the sites, fill draws and traces (built locally, build_st2gs_inputs.py; synced)
+  for f in "$ST2GS_INPUTS/sites.json" "$ST2GS_INPUTS/fill_sites.npz" "$ST2GS_INPUTS/traces.jsonl" \
+           "$ST2_INPUTS/st2_inputs.json"; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (the site sweep's inputs; SYNC_OUTPUTS from sync_st2gs.txt)"; exit 1; }
+  done
+fi
+if [ "$STEPS" = "st2c" ] || [ "$STEPS" = "st2dl" ] || [ "$STEPS" = "st2gl" ] || [ "$STEPS" = "st2gs" ]; then  # built locally (build_st2_inputs.py cell1, podc); synced (sync_st2c.txt, sync_st2dl.txt, sync_st2gl.txt)
   for f in "$ST2_INPUTS/st2_inputs.npz" "$ST2C_INPUTS/st2c_inputs.npz" "$ST2C_INPUTS/st2c_inputs.json" \
            "$ST2A_DIR/gen/c1_none.jsonl" papers/st_live_reference/data/st2_engaged_train_v1.json \
            papers/st_live_reference/data/refusal_retention_v1.json papers/st_live_reference/data/t15_specificity_v1.json; do
@@ -784,6 +799,16 @@ dry_runs() {
         --qwen-screen "$QWEN_SCREEN" || { echo "DRY RUN FAILED (st2m hf)"; return 1; }
       rm -rf "$OUT/_dry_st2m"
     fi
+    if [ "$STEPS" = "st2gs" ] && [ "$m" = "gpt_oss_20b" ]; then  # Cell 1's none dry, then every sweep phase, dry
+      rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2gs"
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2_driver.py \
+        --out "$OUT/_dry_st2" --dry-run --inputs "$ST2_INPUTS" --date-pin "$DATE_PIN" --phases c1_none \
+        || { echo "DRY RUN FAILED (st2gs, cell 1 none)"; return 1; }
+      PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2gs_driver.py \
+        --out "$OUT/_dry_st2gs" --dry-run --inputs "$ST2_INPUTS" --podc-inputs "$ST2C_INPUTS" \
+        --c1 "$OUT/_dry_st2/gpt_oss_20b" --gs "$ST2GS_INPUTS" || { echo "DRY RUN FAILED (st2gs)"; return 1; }
+      rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2gs"
+    fi
     if [ "$STEPS" = "st2gl" ] && [ "$m" = "gpt_oss_20b" ]; then  # Cell 1's none dry, then the ladder's phases, dry
       rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2gl"
       PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" papers/st_live_reference/scripts/st2_driver.py \
@@ -804,13 +829,13 @@ dry_runs() {
         --c1 "$OUT/_dry_st2/gpt_oss_20b" --phases "$ST2DL_PHASES" || { echo "DRY RUN FAILED (st2dl)"; return 1; }
       rm -rf "$OUT/_dry_st2" "$OUT/_dry_st2dl"
     fi
-    if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # Amendment 10
+    if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # Amendment 10
       $PY $S --model "$m" --dry-run --date-pin "$DATE_PIN" --out "$OUT/_dry_rr" --rr-select \
         || { echo "DRY RUN FAILED ($m, refusal-retention selection)"; return 1; }
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_t16.py tests/scripts/test_c13.py tests/scripts/test_a2m.py tests/scripts/test_st_dates.py tests/scripts/test_st2gl.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_t16.py tests/scripts/test_c13.py tests/scripts/test_a2m.py tests/scripts/test_st_dates.py tests/scripts/test_st2gl.py tests/scripts/test_st2gs.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -884,7 +909,7 @@ rider2_after() {
 
 RC_ALL=0
 for m in $MODELS; do
-  if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # of record from T1.1 (t11/_rr)
+  if [ "$m" = "gpt_oss_20b" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ]; then  # of record from T1.1 (t11/_rr)
     # Amendment 10 item 3 (author, 2026-10-19): the refusal-retention selection pass rides the
     # first pod that loads the development model after the amendment; vLLM only, its own record
     echo "==================== $OUT_SUB/_rr/gpt_oss_20b (refusal-retention selection) ===================="
@@ -1106,6 +1131,16 @@ for m in $MODELS; do
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
   fi
+  if [ "$STEPS" = "st2gs" ]; then
+    DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
+    rc=0
+    PYTHONPATH="$REPO_DIR" $VPY papers/st_live_reference/scripts/st2gs_driver.py --out "$OUT" \
+      --inputs "$ST2_INPUTS" --podc-inputs "$ST2C_INPUTS" --c1 "$ST2A_DIR" --gs "$ST2GS_INPUTS" \
+      --deadline "$DEADLINE" || rc=$?   # analogs, ranking, top two sites; 0.3x where it fits the stop
+    echo ">> $m exit $rc (0 ok, 3 envelope stop, 4 analog parity; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "st2gl" ]; then
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     rc=0
@@ -1203,7 +1238,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ] && [ "$STEPS" != "st2gs" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
