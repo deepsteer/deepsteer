@@ -4752,9 +4752,9 @@ Beside the branch:
   base-DPO is +0.68 [−0.42, +2.12]. On the log-odds scale the adapters' harm conditioning cannot be
   told apart. The registered absolute scale ranks base-DPO first, because its floor is higher.
 
-On these items what separates the care adapters from base-DPO is where they depart: on rule-right
-originals care-DPO2 departs on 2.5% and base-DPO on 44%. Whether they depart where the rule harms
-does not separate them, since all three do.
+Both teachers produce harm-sensitive adapters; only the steered one produces a specific one. On the
+rule-right originals care-DPO2 departs on 2.5% and base-DPO on 44%; all three adapters depart more
+where the rule harms.
 
 **Coincidence check.** R_defer's prediction from the three-option cell was care-DPO2's committed
 share on the twins, 0.60 (30 of 50). Forced choice gives 0.31. The deferring rollouts split toward

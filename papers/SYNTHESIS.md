@@ -1415,8 +1415,8 @@ breaking it would harm, on items that differ only in where the harm falls.** car
 31% of forced twins and 2.5% of their originals (D_f +0.289 [+0.196, +0.392]); `none` departs on
 0.7%. Registered branch R_defer. On cell A′-style items, care-DPO's protection is there; with a defer
 option, it defers. base-DPO is harm-conditioned too (0.436 to 0.877), at a log-odds size that cannot be
-told apart from care-DPO2's (+0.68 [−0.42, +2.12], exploratory). What separates the recipes is rule-right
-behavior, 0.025 against 0.436, not harm sensitivity.
+told apart from care-DPO2's (+0.68 [−0.42, +2.12], exploratory). Both teachers produce harm-sensitive
+adapters; only the steered one produces a specific one (rule-right departure 0.025 against 0.436).
 
 Referee pass.
 1. *"base-DPO's harm contrast is larger, so care-DPO is not the harm-conditioned one."* On the
@@ -1430,32 +1430,32 @@ Referee pass.
    most of these items. The forced cell shows where the commitment points; the deferral itself is a
    behavior to report, and the next finding.
 
-### ST line thesis (2026-10-25), positive voice
+### ST line thesis (2026-10-27), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
 indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_harm`'s rule-right tilt
 at its operating dose was indistinguishable from a random vector's, and the random vector's own tilt
 grew with dose.
 
-Distilling that gate-passing vector into DPO produced **the first adapter whose rule-breaking stayed
-within 0.03 of the base model's on every rule-right read while its protection rose on every rule-harm
-read** (+0.027, +0.005, +0.022; −0.054 on the panel set). care-DPO on Muse raises protection where the rule
-harms (+0.338 [+0.264, +0.410]) and follows the rule where breaking it would, even when it cannot
-defer: 0.022 [0.002, 0.049] under forced choice. An adapter identical in recipe with the unsteered
-model's traces as teacher (base-DPO) is harm-sensitive and non-specific: it protects more (+0.863),
-departs most where the rule harms, and breaks rules on every rule-right read (+0.133 to +0.517).
+Distilling a gate-passing `care_harm` steer into DPO on Muse gives **adapters whose rule-breaking
+tracks where the harm falls**. They protect on held-out rule-harm items (+0.338, +0.326) and stay
+within 0.03 of the base model on every rule-right read, including forced choice; the panel set reads
+lower, toward the rule (−0.054, −0.046). Forced to choose on harm-reversed twins of those rule-right
+items, they depart where the rule harms (replicate +0.289 [+0.196, +0.392]; first draw +0.147, at the
+bar), while deferring on 82–95% of rollouts when deferral is available. The identical recipe with
+unsteered traces is harm-sensitive and non-specific: it departs on 44% of rollouts where departing
+harms. Both teachers produce harm-sensitive adapters; only the steered one produces a specific one.
+Two draws, one family, one of the two failing the capability bar (−0.040, with longer traces and an
+MMLU loss), and the mechanism open.
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:
 - adapters: L-beh +0.192; L-beh-2, format-bound, +0.308 on cell A′; base-DPO;
 - vectors: −V_harm +0.089 and V_qwen +0.093 on GPT-OSS.
 
-One family and the mechanism open. The matched-item replicate and its forced choice have read
-(ST-A30: R_defer); the thesis wording is with the author.
-
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | R_defer (Amendment 52, 2026-10-27): on matched items, care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; the replicate fails capability; thesis wording with the author |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005) |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
@@ -1463,7 +1463,9 @@ Referee pass on the thesis.
    thesis states what each read shows: rule-breaking within 0.03 of `none`'s on rule-right items,
    protection up on rule-harm items. ST_PLAN's T1.6 outcome states the labels beside the verdict.
 2. *"40 pairs at 24 epochs is a memorized teacher, not a learned condition."* Conceded as a caveat.
-   The matched-item replicate and the partner's model are the next two GPU items.
+   A second draw with a fresh seed and fresh chosen traces (38 pairs) reproduces the protection, the
+   specificity and the forced choice, and departs where the rule harms on twins it never saw; it
+   costs more capability (−0.040). The partner's model is the next test.
 3. *"The instrument 'caught' what it was tuned to catch."* The specificity set and its bar were
    registered before every read here (T1.5, Amendment 31). care-DPO passed the same instrument that
    flagged the other five.
