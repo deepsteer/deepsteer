@@ -4977,3 +4977,47 @@ The second family on Qwen3.8-27B: the steer-then-DPO recipe end to end. If the p
 **Registered branch: R_noise.** b15 meets (a) and (c), but b18 meets them too, so (b) is required, and
 b15's (b) includes 0. ST-A31 closes; the 0.3 A100-h follow-up does not run.
 
+
+#### Amendment 54, addition (2026-10-27; author; zero GPU; before pod 1 is built or computes)
+
+1. **Schedule and envelope (author).** Pod 1 launches today, not after 2026-10-28. The envelope is
+   107.4. Pod 2 (the recipe) swaps to Gemma 4 31B if the partner names it; otherwise it may proceed on
+   Qwen3.8 if time and cost permit, the author's decision at pod 1's read.
+2. **Pod 1's branches, written before the build.**
+   - **P1-pass (licenses pod 2):** at the dose of record, the `care_harm` gate passes (ΔP ≥ +0.10
+     with CI > 0 against `none`; ≥ +0.05 with CI > 0 against the site fill arm; Amendment 13's
+     bars), and specificity against the ten draws is not above +0.03.
+   - **P1-nonspecific:** the gate passes, and specificity is above +0.03. Qwen's protect-moving
+     direction at this site carries rule-breaking, and pod 2 does not run on it.
+   - **P1-fail:** no coherent dose, or the gate fails at the dose of record. There is no specific
+     protective lever at this site at a coherent dose up to 0.4×, and pod 2 does not launch on Qwen.
+     The read is reported with the gate's MDE and Qwen's baseline beside.
+   - **Qwen's protective baseline bounds any gap claim.** Qwen's reasoning raises protection on the
+     whole H1 set (B = +0.083, ST-A5), so a judgment–action gap exists only on its engaged subset
+     (P_dose0 ≥ 0.5 and P_none ≤ 0.5). Any claim that the steer narrows a gap is stated on that
+     subset only, bounded by the gap's size there (mean P_dose0 − P_none over the arm scenarios,
+     measured on pod 1), and never on the whole set.
+   - **The read of record leans on specificity and the forced-choice twins.** On pod 1 that is the
+     direction's ten-draw specificity; on pod 2 it is the adapters' specificity and twins. The
+     protection gate is reported with its MDE.
+3. **Implementing readings, fixed before the build.**
+   - Effort medium (ST-A5's screen; the registry's effort of record is null). The dose-0 candidate of
+     record is `enable_thinking_false`.
+   - The sweep's 5 scenarios are drawn (seeded) from the H1_train scenarios outside the engaged set,
+     so the arms keep every engaged scenario. Qwen engages about 13% of scenarios against Muse's 83%.
+   - The arms run on every engaged H1_train scenario, capped at 45 by the stratified rule.
+     - With fewer than 10 engaged, the gate is reported as underpowered (MDE beside) and cannot
+       license pod 2: P1-fail by rule.
+   - The site: blocks 24, 28, 32, 36 and 40 are banked at `clause_end`. Block 32 is taken if its PR
+     at the median of 21 samples (4,000 rows each) is at least 30; otherwise the nearest healthy
+     block, ties going to the shallower.
+   - Ten covariance-matched fill draws (seed 0) at the site serve two reads: the specificity read,
+     each draw on all 60 items, and the fill arm, drawn by (scenario order × 8 + rollout) mod 10.
+   - The gate prediction (§12). Before the arms, the exact teacher-forced steer runs at the dose of
+     record, on v1's first two answered traces per arm scenario. It is converted per scenario by
+     P(1 − P) with v1's P_none and recorded with its CI. The arms run whatever it predicts. The
+     gate's read is the registered input to pod 2's decision, and on GPT-OSS the fixed-trace
+     prediction failed at one of three sites (ST-A31).
+   - The re-price stop. After the timing pilot, if pod 1 projects above 1.5 × 4.9 = 7.35 A100-h, the
+     pod stops before the dose ladder and arms (exit 5) and waits for the author.
+4. **Price.** Pod 1 stays at ~4.9 A100-h. Spent 91.18 + ~4.9 = ~96.1 of 107.4.
