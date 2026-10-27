@@ -144,6 +144,29 @@ class CapReached(Exception):
     pass
 
 
+RATE_WAIT_S, RATE_TRIES = 60.0, 30  # after the SDK's own retries: wait and retry, never skip
+
+
+def _is_rate_limit(e: Exception) -> bool:
+    """Both SDKs name their 429 class ``RateLimitError``; matched by name so neither SDK is
+    imported here."""
+    return type(e).__name__ == "RateLimitError"
+
+
+def call_paced(adapter, model: str, messages: list[dict], effort: str,
+               sleep=time.sleep) -> tuple[Call, int]:
+    """The adapter's call, retried after ``RATE_WAIT_S`` on a rate limit up to ``RATE_TRIES``
+    times; any other error propagates (the run stops and resumes from the saved rows)."""
+    for i in range(RATE_TRIES):
+        try:
+            return adapter.call(model, messages, effort), i
+        except Exception as e:  # noqa: BLE001  (re-raised unless it is a rate limit)
+            if not _is_rate_limit(e) or i == RATE_TRIES - 1:
+                raise
+            sleep(RATE_WAIT_S)
+    raise RuntimeError("unreachable")
+
+
 class Runner:
     """Runs jobs against one pinned model with per-call saving, accounting and the hard cap."""
 
@@ -176,7 +199,7 @@ class Runner:
                              f"${self.cap:.2f}")
         effort = ARMS[job["arm"]]
         t0 = time.time()
-        c = self.adapter.call(self.model, job["messages"], effort)
+        c, waits = call_paced(self.adapter, self.model, job["messages"], effort)
         p = parse_response(c.text, job["scenario"], job["order"])
         cost = cost_usd(self.model, c)
         row = {"scenario_id": key[0], "rollout": key[1], "arm": key[2], "model": self.model,
@@ -187,7 +210,8 @@ class Runner:
                "order": {L: o.option_id for L, o in job["order"]},
                "input_tokens": c.input_tokens, "cached_input_tokens": c.cached_input_tokens,
                "output_tokens": c.output_tokens, "reasoning_tokens": c.reasoning_tokens,
-               "cost_usd": cost, "seconds": time.time() - t0, "request_id": c.request_id,
+               "cost_usd": cost, "seconds": time.time() - t0, "rate_limit_waits": waits,
+               "request_id": c.request_id,
                "harness_version": KDG_HARNESS_VERSION,
                "finished": datetime.now(timezone.utc).isoformat(timespec="seconds")}
         with self.rows_path.open("a") as f:

@@ -183,3 +183,24 @@ def test_subsample_band_and_agreement():
     assert out["band95"] == [0.0, 0.0] and out["agreement"] == 1.0
     out4 = F0.subsample_read(by, ref, 4)
     assert out4["band95"][0] < 0 < out4["band95"][1] and out4["n_scenarios"] == 30
+
+
+def test_rate_limits_wait_and_retry_other_errors_raise():
+    # most probable failure: a 429 ends the run (or skips the call), or a real error is retried
+    class RateLimitError(Exception):
+        pass
+
+    class Flaky:
+        def __init__(self, fails, exc):
+            self.fails, self.exc, self.n = fails, exc, 0
+
+        def call(self, *a):
+            self.n += 1
+            if self.n <= self.fails:
+                raise self.exc
+            return "ok"
+    slept = []
+    out, waits = F.call_paced(Flaky(2, RateLimitError()), "m", [], "low", sleep=slept.append)
+    assert out == "ok" and waits == 2 and slept == [F.RATE_WAIT_S] * 2
+    with pytest.raises(ValueError):
+        F.call_paced(Flaky(1, ValueError("bad request")), "m", [], "low", sleep=slept.append)
