@@ -112,7 +112,8 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "st2gl, the GPT-OSS ladder at 0.4x (19:07:23-20:39:09 + 0.1; Amendment 50)": 1.63,
          "t16r, the care-DPO replicate (17:36:06-22:32:18 + 0.1; Amendment 49)": 5.04,
          "a2t, the forced choice on the twins (01:44:29-02:47:07 + 0.1; Amendment 52)": 1.14,
-         "st2gs, the GPT-OSS site sweep (05:04:08-10:45:54 + 0.1; Amendment 51)": 5.80}
+         "st2gs, the GPT-OSS site sweep (05:04:08-10:45:54 + 0.1; Amendment 51)": 5.80,
+         "st2q, Qwen pod 1 (18:39:54-22:55:02 + 0.1; Amendment 54)": 4.35}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)

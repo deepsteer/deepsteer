@@ -5111,3 +5111,45 @@ never used.
    - The pass stops at the cap wherever it lands and records what ran. Nothing runs past the cap
      without a new budget decision.
    - The second model, full H1, and the panel's E read are each separate funded stages.
+
+#### Amendment 54 outcome, pod 1 on Qwen3.8-27B (2026-10-27; pod st2q, 4.35 A100-h; `data/st2q_read_v1.json`)
+
+**Baseline.**
+- v1's P(protect) over H1 264 × 8 is 0.652.
+- The whole-set brake on H1_train is +0.055 [+0.011, +0.099]: Qwen's reasoning raises protection,
+  replicating ST-A5 on all 132.
+- 11 of 132 H1_train scenarios are engaged, against the no-brake null's mean of 15.9 (q95 21).
+- The gap bound over the 11 arm scenarios (mean P_dose0 − P_none) is 0.319.
+
+**Site.** Block 32 is healthy (PR 55.1 at the median of 21 samples; blocks 24–40 at 47.7–55.1),
+with a median norm of 77.6.
+
+**Dose and pilot.** Every rung was coherent (0.2×, 0.3×, 0.4×), so 0.4× (α 31.1) is the dose of
+record. The pilot projected 4.70 A100-h, below the 7.35 stop.
+
+**§12 prediction, recorded before the arms.**
+- The exact teacher-forced steer at 0.4× on 22 v1 traces moved the margin by −0.074 nats on
+  average.
+- That predicted ΔP −0.021 [−0.076, +0.034], against a gate needing about +0.54 nats.
+
+**The gate (11 engaged × 16; fill × 8).**
+
+| read | result | bar | met |
+|---|---|---|---|
+| ΔP against `none` | **+0.236 [+0.153, +0.312]** (MDE 0.113; P 0.489 → 0.724) | ≥ +0.10, CI > 0 | yes |
+| ΔP against the site fill arm | +0.305 [+0.199, +0.416] (fill against `none` −0.070 [−0.147, +0.009]) | ≥ +0.05, CI > 0 | yes |
+| coherence, care arm | parse 0.977 (`none` 0.938), length 0.76, NLL +0.12 | Amendment 13 | yes |
+| coherence, fill arm | parse 0.943, length 1.08, NLL +0.08 | Amendment 13 | yes |
+| specificity against ten draws | **−0.034 [−0.073, +0.000]**, discriminating (against `none` −0.015; the draws +0.020) | not above +0.03 | yes |
+
+**Registered branch: P1-pass.** `care_harm` at block 32 `clause_end`, 0.4×, moves Qwen toward
+protection on its engaged scenarios. It is specific: rule-right items tilt slightly toward the rule,
+against random vectors' +0.020. Pod 2 (the recipe) is licensed, on Gemma 4 31B if the partner names
+it, otherwise on Qwen at the author's decision.
+
+**The gap claim is bounded (the addition, item 2).** The +0.236 lies within the 0.319 gap of the 11
+engaged scenarios. The claim covers those 11 only: Qwen's reasoning raises protection on the whole
+set, where there is no gap to narrow.
+
+**The §12 prediction missed in size and sign:** −0.021 predicted, +0.236 measured. This is ST-A32,
+and the §12 rule's reliability is escalated there.

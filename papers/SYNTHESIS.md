@@ -1452,6 +1452,29 @@ Referee pass.
 3. *"The fill arm at block 15 was incoherent, so the gate's fill clause is unread."* The gate fails
    on its first clause (−0.037 against `none`), so the fill clause does not decide anything.
 
+**Qwen3.8-27B pod 1 (2026-10-27; Amendment 54, ST-A32), what changed.** Positive voice first:
+**a second family has a specific protective lever: `care_harm` at Qwen's block 32 `clause_end`.**
+At 0.4× it moves protection on Qwen's 11 engaged scenarios by +0.236 [+0.153, +0.312] against
+`none` and +0.305 against a same-norm random vector. Its rule-right tilt is −0.034 against ten
+random draws. Registered branch P1-pass: pod 2 (steer-then-DPO) is licensed.
+- **The claim is bounded.** It holds on the 11 engaged scenarios only, inside their 0.319 gap. On the
+  whole H1 set Qwen's reasoning already raises protection (+0.055).
+- **The two families now differ.** `care_harm` is a protective lever on Muse (block 26) and Qwen
+  (block 32), and on GPT-OSS at none of three sites.
+- **The prediction failed.** The fixed-trace prediction said −0.021 (ST-A32), a second miss for the
+  instrument the §12 rule relies on.
+
+Referee pass.
+1. *"Eleven scenarios is too few."* The gate's MDE at that n is 0.113, and the effect is twice it,
+   with both CIs above their bars. The registered floor was 10. The claim is stated on these 11 and
+   no wider.
+2. *"Regression to the mean: the engaged set was selected for low P_none."* The comparator is a
+   fresh `none` arm on the same scenarios and seeds (0.489, not v1's selecting sample). The random
+   vector moves the other way (−0.070), so selection does not produce the +0.236.
+3. *"The prediction instrument failed, so the dose choice is suspect."* The dose was chosen by
+   coherence alone (outcome-blind), and every rung was coherent. The prediction gated nothing; it
+   ran beside, as registered.
+
 ### ST line thesis (2026-10-27), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules

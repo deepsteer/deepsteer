@@ -1,0 +1,218 @@
+{
+ "rule": "ST_PLAN Amendment 54 and its addition",
+ "baseline": {
+  "v1_P": 0.6522501803751805,
+  "brake_B": {
+   "mean": 0.054774516890730776,
+   "ci95": [
+    0.010597754543914461,
+    0.09881868903557904
+   ],
+   "n": 132,
+   "point_in_ci": true,
+   "mde": 0.06301495320833185
+  },
+  "n_engaged": 11,
+  "null_no_brake": {
+   "mean": 15.8653,
+   "q95": 21.0,
+   "observed_exceeds_q95": false
+  },
+  "n_arm_scenarios": 11,
+  "gap_bound": {
+   "mean": 0.31884004210901434,
+   "n": 11
+  }
+ },
+ "site": {
+  "block": 32,
+  "pr_median_21": {
+   "24": 50.640724182128906,
+   "28": 48.29273986816406,
+   "32": 55.09601974487305,
+   "36": 48.78382873535156,
+   "40": 47.6843376159668
+  },
+  "median_norm": 77.64046902240821
+ },
+ "sweep": {
+  "dose": 0.4,
+  "alpha": 31.056187608963285,
+  "no_coherent_dose": false,
+  "per_dose": {
+   "0.2": {
+    "alpha": 15.528093804481642,
+    "coherence": {
+     "parse_rate": 1.0,
+     "parse_rate_base": 0.975,
+     "parse_ok": true,
+     "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+     "length_ratio": 0.9030226700251889,
+     "nll_delta": 0.027018153667449973,
+     "passes": true,
+     "bars": {
+      "parse_rate_min": 0.95,
+      "length_ratio": [
+       0.7,
+       1.5
+      ],
+      "nll_delta_max": 0.3
+     }
+    },
+    "dP_descriptive": {
+     "mean": 0.18928571428571428,
+     "ci95": [
+      0.10357142857142858,
+      0.3
+     ],
+     "n": 5,
+     "mde": 0.14030612244897955,
+     "P_arm": 0.625,
+     "P_none": 0.43571428571428567
+    }
+   },
+   "0.3": {
+    "alpha": 23.292140706722464,
+    "coherence": {
+     "parse_rate": 0.95,
+     "parse_rate_base": 0.975,
+     "parse_ok": true,
+     "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+     "length_ratio": 0.9307304785894207,
+     "nll_delta": 0.06496884152293209,
+     "passes": true,
+     "bars": {
+      "parse_rate_min": 0.95,
+      "length_ratio": [
+       0.7,
+       1.5
+      ],
+      "nll_delta_max": 0.3
+     }
+    },
+    "dP_descriptive": {
+     "mean": 0.16428571428571428,
+     "ci95": [
+      0.0642857142857143,
+      0.25
+     ],
+     "n": 5,
+     "mde": 0.1326530612244898,
+     "P_arm": 0.6,
+     "P_none": 0.43571428571428567
+    }
+   },
+   "0.4": {
+    "alpha": 31.056187608963285,
+    "coherence": {
+     "parse_rate": 1.0,
+     "parse_rate_base": 0.975,
+     "parse_ok": true,
+     "parse_rule": "relative: arm >= none - 0.05 (Amendment 13)",
+     "length_ratio": 0.8230478589420654,
+     "nll_delta": 0.10595732480287551,
+     "passes": true,
+     "bars": {
+      "parse_rate_min": 0.95,
+      "length_ratio": [
+       0.7,
+       1.5
+      ],
+      "nll_delta_max": 0.3
+     }
+    },
+    "dP_descriptive": {
+     "mean": 0.21428571428571427,
+     "ci95": [
+      0.15,
+      0.2785714285714286
+     ],
+     "n": 5,
+     "mde": 0.09183673469387757,
+     "P_arm": 0.65,
+     "P_none": 0.43571428571428567
+    }
+   }
+  }
+ },
+ "pilot": {
+  "remaining_hours": {
+   "directions": 0.05,
+   "sweep": 0.6027799265804115,
+   "predict": 0.007137188512693953,
+   "spec": 0.3127394643696872,
+   "arms": 1.6576447980961315
+  },
+  "elapsed_hours": 1.9675379539198345,
+  "projected_pod_hours": 4.697839331478758,
+  "stop_above": 7.3500000000000005,
+  "stops": false
+ },
+ "gate": {
+  "dP_vs_none": {
+   "mean": 0.23563519813519818,
+   "ci95": [
+    0.15323426573426577,
+    0.3117722902097902
+   ],
+   "n": 11,
+   "mde": 0.11324144605394601,
+   "P_arm": 0.7242424242424242,
+   "P_none": 0.48860722610722607
+  },
+  "dP_vs_site_fill": {
+   "mean": 0.30541125541125547,
+   "ci95": [
+    0.19902597402597405,
+    0.4156953463203463
+   ],
+   "n": 11,
+   "mde": 0.15476383735312305
+  },
+  "coherent": true,
+  "passes": true,
+  "n_rollouts": 176,
+  "n_scenarios": 11,
+  "fill_arm_coherent": true
+ },
+ "specificity": {
+  "vs_fill10": {
+   "mean": -0.03443954687636382,
+   "ci95": [
+    -0.07347100168352502,
+    0.0003508891231004535
+   ],
+   "n_draws": 10,
+   "n_items": 60,
+   "n_boot": 10000
+  },
+  "class": "discriminating",
+  "vs_none": {
+   "mean": -0.014835197169953823,
+   "ci95": [
+    -0.03590376735012892,
+    0.0046339503421547424
+   ],
+   "n": 60,
+   "mde": 0.02895551263734547
+  },
+  "fill_vs_none": 0.01960434970641,
+  "n_items": 60,
+  "n_draws": 10
+ },
+ "predicted": {
+  "predicted_dP": {
+   "mean": -0.020688952288844372,
+   "ci95": [
+    -0.07644393415816805,
+    0.03408590620756146
+   ],
+   "n": 11,
+   "mde": 0.07894988597552108
+  },
+  "n_scenarios": 11,
+  "n_traces": 22,
+  "margin_needed_for_gate": 0.535931790499391
+ },
+ "branch": "P1-pass: the gate passes and the direction is specific; pod 2 is licensed"
+}

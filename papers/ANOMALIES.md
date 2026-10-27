@@ -1624,3 +1624,32 @@ stack-parity reads are re-taken under the pin before any readout of record.
 
 **Process ledger 2026-10-27 — recoverable allocator out-of-memory warnings on the sweep pod.** At 06:32 UTC, in the last batch of block 15's care arm, the CUDA caching allocator logged four failed allocations of about 2.4 GB in 9 s. It freed its cache and retried; no error was raised, and the arm finished all 720 rollouts. The same process had run the ranking's 90 backward passes first, which likely left the cache fragmented. Lesson: when a backward-pass phase shares a process with batched generation, call `torch.cuda.empty_cache()` between them, or run the ranking in its own process.
 
+## ST-A32 (ledger) — The fixed-trace steer predicts no protection on Qwen, and the sampled arm moves it by +0.236
+
+**Date.** 2026-10-27 (Amendment 54; pod st2q; `data/st2q_read_v1.json`).
+**Observation.** At block 32 `clause_end`, 0.4× (α 31.1):
+- the exact teacher-forced steer on 22 of v1's traces (2 per engaged scenario) moved the letter margin by −0.074 nats on average (scenarios −0.88 to +0.69), predicting ΔP −0.021 [−0.076, +0.034] by P(1 − P);
+- the sampled arm moved P(protect) by +0.236 [+0.153, +0.312] (0.489 → 0.724, 176 rollouts, coherent), with traces 0.76× as long as `none`'s.
+
+Across the program's five checks of the conversion:
+- it agrees at GPT-OSS blocks 12 and 18;
+- it disagrees in sign at GPT-OSS block 15 (ST-A31, closed as R_noise by its rule);
+- it misses here by +0.26, with the CI excluding the measured value.
+
+**Type.** dose-dependence / instrument failure (a fixed-trace instrument against the sampled outcome), cross-model conjunction with ST-A31.
+**Competing readings.**
+- R_trace: on Qwen the steer acts mainly through what the model goes on to write (shorter traces, reached differently), which a fixed trace cannot see.
+- R_trace-set: v1's traces were drawn unsteered from `none`'s distribution and lead mostly to rule letters; the steer's direct effect at the answer position on those traces is small, while steered sampling leaves them.
+
+Both say the fixed-trace instrument reads the direct effect only. They differ on whether trace content (R_trace) or the starting distribution (R_trace-set) carries the rest.
+**Conjunction.** Steering shortens traces on both models (GPT-OSS 0.79–0.83×, Qwen 0.76×). On GPT-OSS the shorter traces kept protection unchanged; on Qwen they came with more protection.
+**Discriminator.**
+- Zero GPU: Amendment 53's read on Qwen's arms (trace-length ratio, its association with ΔP across the 11 scenarios, the weighing and harm lexicons). A positive association and a content shift favor R_trace.
+- GPU, ~0.3 A100-h with a Qwen load: the teacher-forced margin on the care arm's own traces, steered and unsteered. If the direct effect is small there too, the effect runs through trace content.
+**Blast radius (escalated).** The §12 rule (2026-10-27) says a predicted miss either runs on a stated reason or is not registered. Applied as a gate, it would have deregistered Qwen's passing arm. Every verdict it touched:
+- Amendment 51's ranking: the conversion was beside it, not a gate, and is unchanged;
+- Amendment 54's gate: the arms ran regardless, as the addition registered, so it is unchanged.
+The rule's wording waits on the author.
+**Status.** open; escalated (§12's wording).
+**Thesis impact.** If R_trace, steering acts on the decision through the reasoning it shapes. Fixed-trace instruments (AtP, the exact steer, the P(1 − P) conversion) cannot rank or predict it, and site selection needs sampled arms. If R_trace-set, the conversion is still usable on traces sampled under the steer.
+
