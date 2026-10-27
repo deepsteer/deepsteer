@@ -5252,3 +5252,41 @@ GPT-6.1 Sol is the cheaper per call and goes first in F1. F1 waits on the author
    author's decision:** an envelope near 111 at T1.6's epochs; or about half T1.6's epochs (about 12;
    training ~3.6, total ~10.9), recorded as a recipe deviation.
 
+
+#### Amendment 57, addition (2026-10-27; author; zero GPU; before the smoke pod is built or computes)
+
+1. **Envelope 112 (author): option (a).** Pod 2 runs at T1.6's epochs. The envelope covers it and
+   the smoke pod, which runs first.
+2. **The smoke pod (`STEPS=st2qs`, Qwen3.8-27B).** It runs pod 2's machinery once at full model
+   scale on a handful of items, so the failures a tiny-model dry run cannot show surface before pod
+   2. In the runner's order:
+   - `base_vllm` (the hub snapshot): the parity rows' first-token letters, 16 seeded H1_train
+     scenarios × 4 permutations from pod 1's v1 set, and 4 H1_held × 2 rollouts.
+   - `base_hf` (bf16): the parity letters, and the base check (vLLM against HF, T1.6's 0.10 bar).
+   - `train --arm care` (QLoRA NF4, L-beh-2's recipe on Qwen's text tower). It trains on pod 1's
+     rule-harm pairs: chosen = the care arm's protect rollouts, rejected = `none`'s rule rollouts,
+     T1.6's per-scenario rule without the base term (smoke only). It records T1.4's 3-micro pilot
+     and 6 steps.
+   - `hf_arm --arm care`: the adapter attached (the lora_B check), its parity letters, the
+     one-delta-at-a-time merge into Qwen's tensors, and the merged copy's letters (T1.6's merge
+     gate).
+   - `vllm_arm --arm care` (the merged copy): parity against the attached adapter (the base band +
+     0.05), and the 4 × 2 rollouts.
+3. **Pass criteria, all needed before pod 2 launches.**
+   - the training loss is finite on every step, and the adapter's targets include the DeltaNet,
+     attention and MLP projections of the text tower only;
+   - every delta is matched, the merged copy's keys equal the base's, the kept share is at least 0.9,
+     and the merge gate passes (merged letters closer to the attached adapter than to base);
+   - the base check passes, and vLLM loads the merged copy with parity inside the band;
+   - the merged engine generates parsable answers.
+   The pilot's seconds per micro-step re-price pod 2's training. A failure is named and fixed (its
+   own commit) before pod 2.
+4. **Price.**
+   - setup and the download, 0.4;
+   - vLLM base, 0.15;
+   - HF base, 0.1;
+   - the QLoRA load, pilot and 6 steps, 0.2;
+   - the merge (a 54 GB copy) and the merged HF letters, 0.25;
+   - the merged vLLM, 0.15;
+   - dry runs, 0.1.
+   That is **~1.3 A100-h**. Spent 95.53 + ~1.3 + pod 2's ~14.4 = ~111.2 of 112.
