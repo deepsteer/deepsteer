@@ -1650,6 +1650,13 @@ Both say the fixed-trace instrument reads the direct effect only. They differ on
 - Amendment 51's ranking: the conversion was beside it, not a gate, and is unchanged;
 - Amendment 54's gate: the arms ran regardless, as the addition registered, so it is unchanged.
 The rule's wording waits on the author.
-**Status.** open; escalated (§12's wording).
+**§12 reworded (author, 2026-10-27; Amendment 57 item 1).** The conversion is recorded beside the gate and never decides whether an arm runs.
+**The zero-GPU discriminator (2026-10-27; Amendment 57 item 2; `data/st_a32_read_v1.json`).** On the 11 engaged scenarios × 16:
+- the steered traces shorten (log ratio −0.240 [−0.311, −0.165]);
+- they carry more harm words (+0.235 [+0.083, +0.386] per 100) and person words (+0.149 [+0.057, +0.252]), with weighing about unchanged (+0.132 [−0.013, +0.262]);
+- the length–ΔP association across scenarios is r −0.083 [−0.817, +0.685]: at n = 11 it can be read neither way.
+
+**Registered branch: R_trace fails.** The traces change, but the change is not shown to track protection. ST-A32 closes with R_trace-set standing as the reading, unconfirmed, and the GPU check does not run. Beside, not of record: on Qwen the steer shortens the traces and puts more harm and person language in them, the reverse of GPT-OSS block 15's weighing drop.
+**Status.** resolved (experiment, 2026-10-27): R_trace-set standing, unconfirmed (the association's detection bar at n = 11 is about |r| ≳ 0.75).
 **Thesis impact.** If R_trace, steering acts on the decision through the reasoning it shapes. Fixed-trace instruments (AtP, the exact steer, the P(1 − P) conversion) cannot rank or predict it, and site selection needs sampled arms. If R_trace-set, the conversion is still usable on traces sampled under the steer.
 
