@@ -5609,3 +5609,34 @@ steering decision.
    the construct change first, with its own type block and branches.
 3. **Next frontier item: the panel E read on GPT-6.1 Sol, priced below, pending the author's cap
    decision.** ST-A34's check runs first on saved rows (zero API).
+4. **The panel E read on GPT-6.1 Sol: price (2026-10-28; zero API; pending the author's cap).**
+   - **What it reads.** E per scenario is (D − J) at primary minus (D − J) at pressure-removed, the
+     four agent and eval cells of the 586-item panel (`panel_586`, `PANEL_CELLS`); the known-gap
+     cell is the per-model positive control (the instrument must see a gap on Sol before a null
+     means anything). The API returns no letter log-probs with reasoning on, so every cell is a
+     sampled share at k rollouts, read at Sol's default effort (Sol reads flat across 8× reasoning,
+     so a floor arm is priced but not proposed).
+   - **k, from the closed form.** In the worst case (every cell at p = 0.5) the 586-scenario mean of
+     E has a sampling SE of 1/√(586k): at k = 4, ±0.040 (95%; sampling-only MDE 0.058); at k = 8,
+     ±0.029 (MDE 0.041); at k = 16, ±0.020 (MDE 0.029). F0's ±0.03 bar picks k = 8. Between-scenario
+     variance adds to these.
+   - **Tokens.** Panel prompts are within 3% of H1's in characters for the four E cells (1,221 to
+     1,243 against 1,271) and 17% longer for known-gap (1,488): about 277 input tokens a call on
+     average. Output at default effort as on H1: 46 tokens central (39 reasoning), 140 high.
+   - **Cost at Sol's rates.**
+
+     | design | calls | central | high |
+     |---|---|---|---|
+     | k = 8, five cells, default effort | 23,440 | $23.8 | $45.8 |
+     | k = 8, the four E cells only | 18,752 | $19.0 | $36.6 |
+     | k = 4, five cells | 11,720 | $11.9 | $22.9 |
+     | a floor arm beside, k = 8, five cells | +23,440 | +$20.0 | |
+
+   - **Wall time.** At the H1 rate (4.6 s a call, one at a time) the k = 8 design takes about 30 h.
+     The client would need concurrent calls (8 workers: about 3.7 h), with the cap check reserving
+     the running maximum per-call cost for every call in flight; built and tested with mocks, no
+     live calls in tests. OpenAI's Batch API halves the price but bounds a batch's cost only by
+     `max_output_tokens`, so it cannot keep a hard cap from measured usage; it is not proposed.
+   - **Proposal.** k = 8, all five cells, default effort, cap $50 (the high case with margin). The
+     read of record, the positive-control rule and the branches go in their own addition before any
+     call. Frontier spend so far: $56.95 of F1's $100; this stage is funded separately.
