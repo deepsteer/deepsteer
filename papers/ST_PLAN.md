@@ -5598,3 +5598,14 @@ more often.
 
 Combined F1 spend: $54.03 (Opus file) + $2.92 (Sol file) = $56.95 of $100. Nothing here feeds a
 steering decision.
+
+#### Amendment 56, the exhibit sentence and the next item (2026-10-28; author; reference only)
+
+1. **The exhibit sentence (author).** "Neither frontier model shows the H1 brake at default; Sol is
+   flat across 8× reasoning; Opus under forced deliberation moves from deferring to protecting
+   (+0.069, all from deferral)." It is ST-12's sentence of record.
+2. **No H1 hardening without a registered construct change (author).** H1 is not made harder for
+   frontier models (new items, stronger pressure, removed options) unless an amendment registers
+   the construct change first, with its own type block and branches.
+3. **Next frontier item: the panel E read on GPT-6.1 Sol, priced below, pending the author's cap
+   decision.** ST-A34's check runs first on saved rows (zero API).
