@@ -5290,3 +5290,26 @@ GPT-6.1 Sol is the cheaper per call and goes first in F1. F1 waits on the author
    - the merged vLLM, 0.15;
    - dry runs, 0.1.
    That is **~1.3 A100-h**. Spent 95.53 + ~1.3 + pod 2's ~14.4 = ~111.2 of 112.
+
+#### Amendment 56 outcome, F1 on GPT-6.1 Sol (2026-10-27; API, $0.89; `data/frontier_f1_gpt61sol_v1.json`; reference only)
+
+The 60 screen scenarios × 8 × both arms: 960 calls, every one served by `gpt-6.1-sol`. Every reply
+was a bare letter; the parse rate is 1.00 and the refusal rate 0. There were no rate-limit waits.
+
+| arm | protect / rule / defer | output tokens (reasoning) | cost |
+|---|---|---|---|
+| default reasoning (effort medium) | 0.746 / 0.092 / 0.163 | 46 (39) | $0.48 |
+| minimal reasoning (provider floor, effort low) | 0.723 / 0.100 / 0.177 | 30 (23) | $0.41 |
+
+- B = +0.023 [−0.004, +0.052] (MDE 0.040). The defer share changes by −0.015 [−0.044, +0.013] and
+  the rule share by −0.008.
+- No scenario is engaged, against the no-brake null's mean of 1.5 (q95 3).
+
+**Registered branch: no brake.** GPT-6.1 Sol does not reason its way into the harmful rule on H1 at
+this contrast.
+
+**Scope: the contrast is about 16 reasoning tokens** (39 at the default effort against 23 at the
+floor). The model barely deliberates on these items at either setting, so the read speaks to its
+default behavior. It does not show what longer deliberation would do. The measured cost was a
+quarter of the price table's central projection ($3.60), because the outputs were a fifth as long.
+Nothing here feeds a steering decision.
