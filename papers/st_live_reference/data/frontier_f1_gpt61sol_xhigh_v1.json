@@ -1,0 +1,109 @@
+{
+ "rule": "ST_PLAN Amendment 56 third addition (the four-point ladder); reference only",
+ "model": "gpt-6.1-sol",
+ "xhigh": {
+  "n_calls": 480,
+  "parse_rate": 1.0,
+  "refusal_rate": 0.0,
+  "split": {
+   "consistent": 0.07083333333333333,
+   "violating": 0.7458333333333333,
+   "neutral": 0.18333333333333332
+  },
+  "cost_usd": 1.195674,
+  "mean_output_tokens": 194.25208333333333,
+  "mean_input_tokens": 274.23333333333335,
+  "mean_reasoning_tokens": 187.25208333333333,
+  "incomplete_rate": 0.0,
+  "reasoning_vs_default": 4.776838860544217
+ },
+ "ladder": {
+  "x_rule": "log of the arm's mean reasoning tokens (one x per arm)",
+  "arm_mean_reasoning_tokens": {
+   "minimal": 23.397916666666667,
+   "default": 39.2,
+   "high": 111.40625,
+   "xhigh": 187.25208333333333
+  },
+  "token_span_ratio": 8.002938295788443,
+  "slope": {
+   "mean": 0.014006920848713737,
+   "ci95": [
+    -0.004012784201203586,
+    0.03441041175999569
+   ],
+   "n": 60,
+   "mde": 0.0274451399722852
+  },
+  "per_doubling": 0.009708857694612242,
+  "branch": "flat: the slope's CI includes 0 (stated with its MDE and the ladder's token span)",
+  "n_scenarios": 60,
+  "sensitivity_per_scenario_x": {
+   "mean": 0.01668975890642054,
+   "ci95": [
+    -0.004203360460464818,
+    0.041115066615948895
+   ],
+   "n": 60,
+   "mde": 0.03237030505458122
+  },
+  "split": {
+   "minimal": {
+    "consistent": 0.1,
+    "violating": 0.7229166666666667,
+    "neutral": 0.17708333333333334
+   },
+   "default": {
+    "consistent": 0.09166666666666666,
+    "violating": 0.7458333333333333,
+    "neutral": 0.1625
+   },
+   "high": {
+    "consistent": 0.0875,
+    "violating": 0.7729166666666667,
+    "neutral": 0.13958333333333334
+   },
+   "xhigh": {
+    "consistent": 0.07083333333333333,
+    "violating": 0.7458333333333333,
+    "neutral": 0.18333333333333332
+   }
+  }
+ },
+ "high_vs_default": {
+  "B": {
+   "mean": 0.027083333333333334,
+   "ci95": [
+    -0.00625,
+    0.06458333333333334
+   ],
+   "n": 60,
+   "mde": 0.0505952380952381
+  },
+  "defer_change": {
+   "mean": -0.022916666666666665,
+   "ci95": [
+    -0.058333333333333334,
+    0.008333333333333333
+   ],
+   "n": 60,
+   "mde": 0.047619047619047616
+  },
+  "vs_floor": {
+   "mean": 0.05,
+   "ci95": [
+    0.0125,
+    0.09166666666666666
+   ],
+   "n": 60,
+   "mde": 0.05654761904761905
+  },
+  "rollouts_per_scenario": 8.0
+ },
+ "second_derivation": {
+  "slope_of_arm_means": 0.014006920848713711,
+  "three_point_slope_without_xhigh": 0.031150828264319443
+ },
+ "spent_usd_model_file": 2.919986,
+ "spent_usd_xhigh": 1.195674
+}

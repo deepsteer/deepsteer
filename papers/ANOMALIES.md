@@ -1679,5 +1679,6 @@ The rule's wording waits on the author.
 - R_effort: on these items Sol's deliberation moves it toward protection; more reasoning, more protection, the opposite of the brake measured on open models.
 - R_chance: three arms give three pairwise contrasts, and the one that excludes 0 was picked after the data; each step is inside its own CI.
 **Discriminator.** Zero GPU, about $1–3 of API: an effort `xhigh` arm on Sol (60 × 8) would extend the trend or flatten it. The registered Opus forced arm (effort max) gives a second model's three-point trend at no added design cost. Neither is scheduled without the author.
-**Status.** open (reference only; feeds no steering decision).
+**Outcome (2026-10-28; Amendment 56 third addition).** The registered four-point ladder reads flat: slope +0.014 [−0.004, +0.034] per e-fold of reasoning tokens (MDE 0.027) over 23 to 187 tokens. At xhigh the protect share returns to the default's 0.746; the three-point slope of +0.031 halves with the fourth point.
+**Status.** resolved (experiment, 2026-10-28): R_chance favored; no effort trend detectable at |slope| ≳ 0.027 per e-fold over Sol's 8× span. The Opus forced arm's trend is read separately.
 **Thesis impact.** If R_effort, frontier deliberation on H1 pushes toward protecting, and the open-model brake is not a property of reasoning in general. If R_chance, Sol's judgment is flat in effort over a 5× range of reasoning tokens.

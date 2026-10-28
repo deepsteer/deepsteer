@@ -5543,3 +5543,31 @@ feeds a steering decision.
      expected 547 steps take 7.2 h.
    - The session stops at 28.5 h, the envelope's remainder; no step starts in its last 15
      minutes.
+
+#### Amendment 56 third addition outcome, Sol's four-point ladder (2026-10-28; API, $1.20; `data/frontier_f1_gpt61sol_xhigh_v1.json`; reference only)
+
+The 60 screen scenarios × 8 at `reasoning.effort: "xhigh"`: 480 calls, every one served by
+`gpt-6.1-sol`, parse 1.00, refusal 0, none cut at the output ceiling, no rate-limit waits.
+
+| arm | protect / rule / defer | reasoning tokens, mean (median, q90) |
+|---|---|---|
+| floor (low) | 0.723 / 0.100 / 0.177 | 23 (20, 44) |
+| default (medium) | 0.746 / 0.092 / 0.163 | 39 (32, 69) |
+| high | 0.773 / 0.088 / 0.140 | 111 (85, 217) |
+| xhigh | 0.746 / 0.071 / 0.183 | 187 (150, 322) |
+
+- The ladder slope: +0.014 [−0.004, +0.034] protect share per e-fold of reasoning tokens (MDE
+  0.027; +0.010 per doubling), over 60 scenarios and an 8.0× token span (23 to 187).
+- Second derivation: the slope of the four arm means is +0.014, equal by construction with one x
+  per arm (a check on the computation, not an independent estimate).
+- Beside: the per-scenario x sensitivity reads +0.017 [−0.004, +0.041] (MDE 0.032); the xhigh arm
+  reasons 4.8× the default's tokens.
+
+**Registered branch: flat.** No slope is detectable at |slope| ≳ 0.027 per e-fold over Sol's
+8× span of reasoning. Neither a brake nor a deliberation benefit shows.
+
+**ST-A33.** The rise through high (0.723, 0.746, 0.773) did not continue: xhigh returned to the
+default's 0.746, and the three-point slope of +0.031 halves to +0.014 with the fourth point. The
+exploratory contrast stays as recorded; the ladder of record reads flat.
+
+Sol's file holds $2.92 (all four arms). Nothing here feeds a steering decision.
