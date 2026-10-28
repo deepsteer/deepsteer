@@ -40,7 +40,9 @@ sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts"), str(H
 # item 5). Reasoning tokens are billed as output on both.
 RATES = {"claude-opus-5-5": {"input": 4.00, "cached_input": 0.20, "output": 20.00},
          "gpt-6.1-sol": {"input": 2.00, "cached_input": 0.10, "output": 10.00}}
-ARMS = {"default": "medium", "minimal": "low"}  # the floor is "low" on both (item 1's type block)
+ARMS = {"default": "medium", "minimal": "low",  # the floor is "low" on both (item 1's type block)
+        "high": "high"}  # Amendment 56's addition: GPT-6.1 Sol's high-effort arm
+F1_ARMS = ("default", "minimal")
 MAX_OUTPUT = 16000
 
 
@@ -222,7 +224,7 @@ class Runner:
         return row
 
 
-def screen_jobs(k: int) -> list[dict]:
+def screen_jobs(k: int, arms: tuple[str, ...] = F1_ARMS) -> list[dict]:
     """The 60 screen scenarios (``h1_train_order``'s first 60 in the kept set) x k rollouts x
     both arms, interleaved by rollout so a cap stop leaves both arms balanced."""
     import pod_st_screen as P
@@ -240,7 +242,7 @@ def screen_jobs(k: int) -> list[dict]:
         for sid in ids:
             order = assign_letters(H[sid], k_)
             msgs = letter_chat_messages(H[sid], order, "agent", "neutral", "primary")
-            for arm in ARMS:
+            for arm in arms:
                 jobs.append({"scenario": H[sid], "k": k_, "arm": arm, "order": order,
                              "messages": msgs})
     return jobs
@@ -267,10 +269,16 @@ def main() -> None:
     ap.add_argument("--prior-call-usd", type=float, required=True,
                     help="the price table's high per-call cost, the projection before any call")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--arms", default=",".join(F1_ARMS),
+                    help="comma-separated arms (F1: default,minimal; the addition: high)")
     a = ap.parse_args()
     r = Runner(a.model, adapter_for(a.model), a.out, a.cap_usd, a.prior_call_usd)
-    res = run(r, screen_jobs(a.k))
-    (a.out / f"{a.model}.run.json").write_text(json.dumps(res, indent=1) + "\n")
+    arms = tuple(a.arms.split(","))
+    if any(x not in ARMS for x in arms):
+        raise SystemExit(f"unknown arm in {arms}")
+    res = run(r, screen_jobs(a.k, arms))
+    tag = "" if arms == F1_ARMS else "." + "_".join(arms)
+    (a.out / f"{a.model}{tag}.run.json").write_text(json.dumps(res, indent=1) + "\n")
     print(json.dumps(res))
 
 

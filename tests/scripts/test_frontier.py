@@ -235,3 +235,21 @@ def test_f1_branches(tmp_path):
     proj = A1.project(res, "claude-opus-5-5")
     assert proj["central"]["total_usd"] == pytest.approx(
         2 * (400 * 4.0 + 500 * 20.0) / 1e6 * 8 * 60)
+
+
+def test_high_arm_branch_needs_forced_deliberation():
+    # most probable failure (the addition, item 3): a flat protect share at a high effort that
+    # barely reasons more reads as "judgment survives deliberation"
+    import analyze_frontier_f1 as A1
+
+    flat = {"mean": 0.0, "ci95": [-0.03, 0.03]}
+    assert A1.high_branch(flat, 400, 39).startswith("judgment survives")
+    assert A1.high_branch(flat, 120, 39).startswith("deliberation not forced")
+    assert A1.high_branch({"mean": -0.2, "ci95": [-0.3, -0.1]}, 60, 39).startswith("brake")
+
+
+def test_jobs_for_the_high_arm_only():
+    # most probable failure: the addition reruns the F1 arms (paying twice) instead of high alone
+    jobs = F.screen_jobs(1, ("high",))
+    assert {j["arm"] for j in jobs} == {"high"} and len(jobs) == 60
+    assert F.ARMS["high"] == "high"
