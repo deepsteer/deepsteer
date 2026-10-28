@@ -41,9 +41,12 @@ sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts"), str(H
 RATES = {"claude-opus-5-5": {"input": 4.00, "cached_input": 0.20, "output": 20.00},
          "gpt-6.1-sol": {"input": 2.00, "cached_input": 0.10, "output": 10.00}}
 ARMS = {"default": "medium", "minimal": "low",  # the floor is "low" on both (item 1's type block)
-        "high": "high"}  # Amendment 56's addition: GPT-6.1 Sol's high-effort arm
+        "high": "high",  # Amendment 56's addition: GPT-6.1 Sol's high-effort arm
+        "forced": "max"}  # its second addition: Opus 5.5 at its thinking ceiling (no budget)
 F1_ARMS = ("default", "minimal")
 MAX_OUTPUT = 16000
+MAX_OUTPUT_STREAM = 64000  # efforts at or above xhigh stream (the API's guidance for long outputs)
+STREAM_EFFORTS = ("xhigh", "max")
 
 
 @dataclasses.dataclass
@@ -82,9 +85,13 @@ class AnthropicAdapter:
         self.client = client
 
     def call(self, model: str, messages: list[dict], effort: str) -> Call:
-        r = self.client.messages.create(model=model, max_tokens=MAX_OUTPUT, messages=messages,
-                                        thinking={"type": "adaptive"},
-                                        output_config={"effort": effort})
+        kw = dict(model=model, messages=messages, thinking={"type": "adaptive"},
+                  output_config={"effort": effort})
+        if effort in STREAM_EFFORTS:
+            with self.client.messages.stream(max_tokens=MAX_OUTPUT_STREAM, **kw) as st:
+                r = st.get_final_message()
+        else:
+            r = self.client.messages.create(max_tokens=MAX_OUTPUT, **kw)
         text = "".join(b.text for b in r.content if getattr(b, "type", None) == "text")
         u = r.usage
         det = getattr(u, "output_tokens_details", None)

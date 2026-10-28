@@ -125,17 +125,20 @@ def read(rows_path: Path) -> dict:
            "spent_usd": float(sum(r["cost_usd"] for r in rows)),
            "spent_f1_usd": float(sum(r["cost_usd"] for r in rows_f1))}
     out["branch"] = branch(B, dneu, drule, out["engaged"])
-    h = [r for r in rows if r["arm"] == "high"]
-    if h:
+    for arm in ("high", "forced"):  # the additions' deliberation arms (Sol high, Opus max)
+        h = [r for r in rows if r["arm"] == arm]
+        if not h:
+            continue
         sh = shares(h)
         ids = sorted(set(sh) & set(sd))
         Bh = boot([sh[s]["violating"] - sd[s]["violating"] for s in ids])
-        out["high"] = arm_summary(h)
-        out["high_vs_default"] = {
-            "B_high": Bh, "defer_change": boot([sh[s]["neutral"] - sd[s]["neutral"] for s in ids]),
-            "vs_floor": boot([sh[s]["violating"] - sm[s]["violating"] for s in ids if s in sm])}
-        out["high_branch"] = high_branch(Bh, out["high"]["mean_reasoning_tokens"],
-                                         out["default"]["mean_reasoning_tokens"])
+        out[arm] = arm_summary(h)
+        out[f"{arm}_vs_default"] = {
+            "B": Bh, "defer_change": boot([sh[s]["neutral"] - sd[s]["neutral"] for s in ids]),
+            "vs_floor": boot([sh[s]["violating"] - sm[s]["violating"] for s in ids if s in sm]),
+            "rollouts_per_scenario": len(h) / max(1, len(sh))}
+        out[f"{arm}_branch"] = high_branch(Bh, out[arm]["mean_reasoning_tokens"],
+                                           out["default"]["mean_reasoning_tokens"])
     return out
 
 
@@ -164,15 +167,16 @@ def main() -> None:
     res["projection"] = {a.project: project(res, a.project)}
     p = a.out or a.rows.with_suffix(".read.json")
     p.write_text(json.dumps(res, indent=1, default=str))
-    for arm in ("default", "minimal", "high"):
+    for arm in ("default", "minimal", "high", "forced"):
         if arm not in res:
             continue
         x = res[arm]
         print(f"{arm}: n {x['n_calls']}, parse {x['parse_rate']}, refusal {x['refusal_rate']}, "
               f"split {x['split']}, tokens out {x['mean_output_tokens']:.0f} (reasoning "
               f"{x['mean_reasoning_tokens']:.0f}), ${x['cost_usd']:.2f}")
-    if "high_branch" in res:
-        print(f"B_high {res['high_vs_default']['B_high']}; >> {res['high_branch']}")
+    for arm in ("high", "forced"):
+        if f"{arm}_branch" in res:
+            print(f"B_{arm} {res[f'{arm}_vs_default']['B']}; >> {res[f'{arm}_branch']}")
     print(f"B {res['brake_B']}; defer change {res['defer_change']['mean']}; engaged "
           f"{res['engaged']['n_engaged']} (null {res['engaged']['null_no_brake']})")
     print(f">> {res['branch']}; spent ${res['spent_usd']:.2f}; projection {res['projection']}")

@@ -253,3 +253,31 @@ def test_jobs_for_the_high_arm_only():
     jobs = F.screen_jobs(1, ("high",))
     assert {j["arm"] for j in jobs} == {"high"} and len(jobs) == 60
     assert F.ARMS["high"] == "high"
+
+
+def test_max_effort_streams_with_the_long_ceiling():
+    # most probable failure: the max-effort arm is sent non-streaming at 16k, so long thinking is
+    # cut off (stop max_tokens) and the reply reads as unparsed
+    class _Stream:
+        def __init__(self, resp, log):
+            self.resp, self.log = resp, log
+
+        def __call__(self, **kw):
+            self.log.append(kw)
+            return self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def get_final_message(self):
+            return self.resp
+    log = []
+    client = NS(messages=NS(stream=_Stream(_anthropic(out=9000, thinking=8800), log),
+                            create=lambda **kw: (_ for _ in ()).throw(AssertionError("create"))))
+    c = F.AnthropicAdapter(client).call("claude-opus-5-5", [], F.ARMS["forced"])
+    assert log[0]["max_tokens"] == F.MAX_OUTPUT_STREAM and log[0]["output_config"] == {
+        "effort": "max"}
+    assert c.reasoning_tokens == 8800 and "temperature" not in log[0]
