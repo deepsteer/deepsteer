@@ -5372,3 +5372,25 @@ fails the gate or vLLM parity.
   (~1.6 A100-h).
 
 Spent 96.21 of 112.
+
+#### Amendment 56 outcome, F1 on Claude Opus 5.5 (2026-10-28; API, $5.57; `data/frontier_f1_opus55_v1.json`; reference only)
+
+The same design: 960 calls, every one served by `claude-opus-5-5`, with no fallback. There were 2
+refusals (`stop_reason: refusal`, both in the minimal arm). Parse rates are 1.00 and 0.996; replies
+were bare letters (948) or a unique mention (10).
+
+| arm | protect / rule / defer | thinking tokens, median (mean) | output tokens, median (q90) | cost |
+|---|---|---|---|---|
+| default reasoning (effort medium) | 0.467 / 0.056 / 0.477 | 221 (251) | 224 (431) | $3.23 |
+| minimal reasoning (provider floor, effort low, thinking on) | 0.475 / 0.056 / 0.469 | 139 (157) | 142 (291) | $2.34 |
+
+- B = −0.008 [−0.033, +0.017] (MDE 0.036). The defer share changes by +0.008 [−0.019, +0.040] and
+  the rule share by +0.000.
+- 4 scenarios are engaged, against the no-brake null's mean of 2.7 (q95 4), so not above it.
+
+**Registered branch: no brake between default (221 thinking tokens) and floor (139).** The contrast
+is about 94 tokens, roughly six times Sol's. Beside the read: Opus defers on about half the items
+(0.47 against Sol's 0.16) and protects on 0.47, while following the harmful rule rarely (0.06, Sol
+0.09).
+
+Combined F1 spend: $6.46 of $100. Nothing here feeds a steering decision.
