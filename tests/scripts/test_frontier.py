@@ -290,6 +290,35 @@ def test_ladder_slope_sign_and_x_rule(tmp_path):
     assert res["xhigh"]["incomplete_rate"] == 0.0
 
 
+def _a34_rows(move_by_scen, tok_by_scen, k=8):
+    rows = []
+    for s, (base, moved) in move_by_scen.items():
+        for arm, p, t in (("default", base, 200), ("forced", moved, tok_by_scen[s])):
+            for j in range(k):
+                rows.append({"scenario_id": s, "rollout": j, "arm": arm,
+                             "norm_status": "violating" if j / k < p else "neutral",
+                             "reasoning_tokens": t})
+    return rows
+
+
+def test_a34_rule():
+    # most probable failure (ST-A34's fixed rule): a move carried by the longest-thinking quarter
+    # reads as broad, or the top quartile is taken by the shortest thinking (sort order)
+    import analyze_frontier_f1 as A1
+
+    sids = [f"S{i:02d}" for i in range(40)]
+    tok = {s: 1000 + 100 * i for i, s in enumerate(sids)}
+    tail = {s: (0.5, 1.0 if i >= 30 else 0.5) for i, s in enumerate(sids)}  # top 10 by thinking move
+    r = A1.a34(_a34_rows(tail, tok))
+    assert r["up"] == 10 and r["top_quartile_share_of_sum"] == pytest.approx(1.0)
+    assert r["branch"].startswith("R_tail")
+    rng = np.random.default_rng(1)
+    broad = {s: (0.5, 0.75 if rng.random() < 0.6 else 0.5) for s in sids}
+    r = A1.a34(_a34_rows(broad, tok))
+    assert not r["branch"].startswith("R_tail")  # moves spread with no length order
+    assert r["defer_change_mean"] == pytest.approx(-r["d_mean"])  # protect gained from defer
+
+
 def test_jobs_for_the_xhigh_arm_only():
     # most probable failure: the xhigh arm is sent at another effort, or reruns the other arms
     jobs = F.screen_jobs(1, ("xhigh",))

@@ -1699,5 +1699,11 @@ The rule's wording waits on the author.
 - the share of the summed d carried by the 15 scenarios with the longest forced thinking (the top quartile).
 
 R_tail if ρ's CI lies above 0 and the top quartile carries more than half the summed d. R_commit if ρ's CI includes 0, the top quartile carries at most half, and more scenarios move up than down. Any other combination is stated with its numbers as unresolved. Rival kept beside either reading: the model sets its own thinking length per scenario, so length also tracks how hard it finds the scenario, and a length association cannot separate "longer thinking moves it" from "the scenarios it finds hard move".
-**Status.** open (reference only; feeds no steering decision).
+**The check (2026-10-28; `data/st_a34_read_v1.json`).**
+- 16 scenarios move up, 2 down, 42 not at all (sign test p 0.0013); the protect gain and the defer loss move together per scenario (Spearman −0.94).
+- Thinking length tracks the move: Spearman ρ +0.55 [+0.28, +0.73].
+- The 15 longest-thinking scenarios (mean 9,939 thinking tokens against 3,303) carry 79% of the summed change.
+
+**Registered branch: R_tail.** The shift is a property of the quarter of scenarios where Opus thinks longest, not of deliberation across the set. Beside, descriptive and not of record, for the difficulty rival: that quarter deferred somewhat more at default (protect / defer 0.400 / 0.533, against 0.489 / 0.458 for the rest) and moved to 0.617 / 0.342, while the rest moved to 0.508 / 0.431 (+0.217 against +0.019 in protect). The difference in room is too small to account for the difference in movement, but which scenarios Opus finds hard and thinks long on cannot be separated from how long it thinks.
+**Status.** resolved (experiment, 2026-10-28): R_tail; the exhibit sentence's wording goes to the author.
 **Thesis impact.** If R_commit, the frontier exhibit's answer to "does deliberation brake protection on H1" is no on both models, and for Opus deliberation removes hedging in the protective direction. If R_tail, the claim narrows to "no brake", with the shift a property of a few items.

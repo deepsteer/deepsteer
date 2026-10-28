@@ -1,0 +1,25 @@
+{
+ "rule": "ST-A34 check, fixed in ANOMALIES before it computed (commit 223b9a2); zero API",
+ "model": "claude-opus-5-5",
+ "read": {
+  "n_scenarios": 60,
+  "up": 16,
+  "down": 2,
+  "zero": 42,
+  "sign_test_p": 0.001312255859375,
+  "d_mean": 0.06875,
+  "defer_change_mean": -0.06875,
+  "corr_d_defer": -0.9397889529585577,
+  "spearman_thinking_d": 0.545517456821177,
+  "spearman_ci95": [
+   0.2831685027437411,
+   0.7266380535438479
+  ],
+  "top_quartile_n": 15,
+  "top_quartile_share_of_sum": 0.7878787878787878,
+  "sum_d": 4.125,
+  "thinking_mean_top_quartile": 9939.058333333332,
+  "thinking_mean_rest": 3302.5416666666665,
+  "branch": "R_tail: the move tracks thinking length and the longest-thinking quarter carries it"
+ }
+}
