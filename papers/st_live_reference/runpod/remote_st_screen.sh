@@ -168,6 +168,12 @@ elif [ "$STEPS" = "st2ml" ]; then
   # (sync_st2ml.txt); one HF process; 3.0 h stop
   MODELS="${MODELS:-muse_glimmer_30b}"; OUT_SUB=st2ml
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-3.0}"
+elif [ "$STEPS" = "st2qs" ]; then
+  # the smoke pod for pod 2 on Qwen3.8-27B (author, 2026-10-27; Amendment 57 and its addition):
+  # T1.6's steps at full scale on a handful of items (base vLLM and HF, QLoRA on pod 1's pairs,
+  # the merge and its gate, the merged engine); pod 1's rows synced (sync_st2qs.txt); 2.5 h stop
+  MODELS="${MODELS:-qwen38_27b}"; OUT_SUB=st2qs
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
 elif [ "$STEPS" = "st2q" ]; then
   # the second family's pod 1 on Qwen3.8-27B (author, 2026-10-27; Amendment 54 and its addition):
   # vLLM H1 264 x 8, then one HF process (dose-0, bank, derive with the site rule, the pilot with
@@ -549,6 +555,14 @@ if [ "$STEPS" = "st2ml" ]; then  # Cell 4's derived files and rows (synced)
     [ -f "$f" ] || { echo "FATAL: $f missing (ladder inputs; SYNC_OUTPUTS from sync_st2ml.txt)"; exit 1; }
   done
 fi
+ST2Q_POD1="$REPO_DIR/papers/st_live_reference/outputs/st2q/qwen38_27b"  # SYNC_OUTPUTS (pod 1)
+if [ "$STEPS" = "st2qs" ]; then  # pod 1's rows (synced); the specificity, panel and capability sets (committed)
+  for f in "$ST2Q_POD1/gen/h1_rollouts.jsonl" "$ST2Q_POD1/gen/arm_care.jsonl" "$ST2Q_POD1/gen/arm_none.jsonl" \
+           papers/st_live_reference/data/t15_specificity_v1.json papers/st_live_reference/data/t15_panel_half_v1.json \
+           papers/st_live_reference/data/t15_capability_v1.json; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (smoke pod inputs; SYNC_OUTPUTS from sync_st2qs.txt)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "st2q" ]; then  # every input is committed or derived on the pod
   for f in papers/st_live_reference/data/t15_specificity_v1.json papers/st_live_reference/split_v1.json; do
     [ -f "$f" ] || { echo "FATAL: $f missing (Qwen pod 1 inputs)"; exit 1; }
@@ -802,6 +816,15 @@ dry_runs() {
         || { echo "DRY RUN FAILED (st2ml)"; return 1; }
       rm -rf "$OUT/_dry_st2m" "$OUT/_dry_st2ml"
     fi
+    if [ "$STEPS" = "st2qs" ] && [ "$m" = "qwen38_27b" ]; then  # every smoke step on a tiny Qwen
+      rm -rf "$OUT/_dry_st2qs"
+      DQS="papers/st_live_reference/scripts/st2qs_driver.py --out $OUT/_dry_st2qs --pod1 $ST2Q_POD1 --dry-run"
+      $PY $DQS --step base_vllm && PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DQS --step base_hf \
+        && PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DQS --step train --arm care \
+        && PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DQS --step hf_arm --arm care \
+        && $PY $DQS --step vllm_arm --arm care || { echo "DRY RUN FAILED (st2qs)"; return 1; }
+      rm -rf "$OUT/_dry_st2qs"
+    fi
     if [ "$STEPS" = "st2q" ] && [ "$m" = "qwen38_27b" ]; then  # v1 (stub), then every HF phase on a tiny Qwen
       rm -rf "$OUT/_dry_st2q"
       $PY papers/st_live_reference/scripts/st2q_driver.py --out "$OUT/_dry_st2q" --dry-run \
@@ -855,7 +878,7 @@ dry_runs() {
     fi
   done
 }
-GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_t16.py tests/scripts/test_c13.py tests/scripts/test_a2m.py tests/scripts/test_st_dates.py tests/scripts/test_st2gl.py tests/scripts/test_st2gs.py tests/scripts/test_st2q.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
+GATE_TESTS="tests/scripts/test_st_split.py tests/scripts/test_st_formats.py tests/scripts/test_st_screen.py tests/scripts/test_st_analysis.py tests/scripts/test_st_probes.py tests/scripts/test_st_vllm_worker.py tests/scripts/test_st_rider2.py tests/scripts/test_st_refusal_retention.py tests/scripts/test_st_steering_gate.py tests/scripts/test_st_train.py tests/scripts/test_st_t11.py tests/scripts/test_st_t13.py tests/scripts/test_st_t14.py tests/scripts/test_st_t15.py tests/scripts/test_st2.py tests/scripts/test_st2c.py tests/scripts/test_st2dl.py tests/scripts/test_st2m.py tests/scripts/test_st2ml.py tests/scripts/test_st2lb.py tests/scripts/test_st2mr.py tests/scripts/test_st2fx.py tests/scripts/test_st2drb.py tests/scripts/test_t16.py tests/scripts/test_c13.py tests/scripts/test_a2m.py tests/scripts/test_st_dates.py tests/scripts/test_st2gl.py tests/scripts/test_st2gs.py tests/scripts/test_st2q.py tests/scripts/test_st2qs.py tests/scripts/test_st2_read.py tests/scripts/test_st_t15_read.py tests/scripts/test_router_disc.py tests/scripts/test_st_t13_draw.py tests/scripts/test_st_panel_call.py tests/scripts/test_st_constancy_read.py tests/causal/test_attribution.py tests/core/test_model_interface_vlm.py tests/kdg"
 
 if [ "$VALIDATE" = "1" ]; then
   # ---- 3. VALIDATE: the real vLLM smoke right after the stacks, then the gates ----
@@ -1139,6 +1162,18 @@ for m in $MODELS; do
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
   fi
+  if [ "$STEPS" = "st2qs" ]; then
+    QS="papers/st_live_reference/scripts/st2qs_driver.py --out $OUT --pod1 $ST2Q_POD1"
+    rc=0
+    $PY $QS --step base_vllm || rc=$?   # vLLM via its worker (downloads the snapshot)
+    [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $QS --step base_hf || rc=$?; }
+    [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $QS --step train --arm care || rc=$?; }
+    [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $QS --step hf_arm --arm care || rc=$?; }
+    [ "$rc" -eq 0 ] && { $PY $QS --step vllm_arm --arm care || rc=$?; }
+    echo ">> $m exit $rc (0 ok; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "st2q" ]; then
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     rc=0
@@ -1269,7 +1304,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2q" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2q" ] && [ "$STEPS" != "st2qs" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
