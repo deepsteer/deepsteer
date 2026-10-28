@@ -12,6 +12,8 @@
 - ``python3 build_t15_sets.py panel_half``: ``data/t15_panel_half_v1.json`` (Amendment 20 item 6).
 - ``python3 build_t15_sets.py lbeh2_pool``: ``data/st_lbeh2_pool_v1.json``, L-beh-2's rule-right
   training pool (Amendment 31 item 3 and its addition).
+- ``python3 build_t15_sets.py st2qp_selection``: ``data/st2qp_selection_v1.json``, pod 2's held-out
+  checkpoint-selection set (Amendment 57 item 5), 50 GSM8K and 50 MMLU disjoint from the gate's 200.
 - ``python3 build_t15_sets.py engaged <t11 dir>``: ``data/t15_engaged_held_v1.json``, T1.1's 38
   brake-engaged H1_held ids copied from ``select/engaged.json`` (no new draw), so an HF fallback
   generates ΔP's scenarios first (Amendment 18 item 4's scope).
@@ -142,7 +144,34 @@ def lbeh2_pool() -> dict:
                               ("t15_specificity_v1.json", "t15_panel_half_v1.json")}}
 
 
+def st2qp_selection() -> dict:
+    """Amendment 57 item 5: pod 2's checkpoint-selection set, 50 GSM8K and 50 MMLU test items
+    disjoint from the gate's 200 (``t15_capability_v1.json``), seeded; indices and question sha256
+    only, as the gate's set."""
+    from datasets import load_dataset
+
+    gate = json.loads((DATA / "t15_capability_v1.json").read_text())
+    used = {(i["dataset"], i["index"]) for i in gate["items"]}
+    seed = "20261028|st2qp_selection"
+    out = {"rule": "ST_PLAN Amendment 57 item 5: held out from the gate's 200; never the gate's "
+                   "capability read", "seed": seed, "items": [],
+           "gate_set_sha256": hashlib.sha256((DATA / "t15_capability_v1.json").read_bytes())
+           .hexdigest()}
+    for name, cfg in (("openai/gsm8k", "main"), ("cais/mmlu", "all")):
+        ds = load_dataset(name, cfg, split="test")
+        free = [i for i in range(len(ds)) if (name, i) not in used]
+        idx = sorted(random.Random(f"{seed}|{name}").sample(free, 50))
+        out["items"] += [{"dataset": name, "config": cfg, "split": "test", "index": i,
+                          "sha256": _sha(ds[i]["question"])} for i in idx]
+    return out
+
+
 def main() -> None:
+    if sys.argv[1:] == ["st2qp_selection"]:
+        d = st2qp_selection()
+        (DATA / "st2qp_selection_v1.json").write_text(json.dumps(d, indent=1) + "\n")
+        print(f">> st2qp selection: {dict(Counter(i['dataset'] for i in d['items']))}")
+        return
     if sys.argv[1:] == ["lbeh2_pool"]:
         d = lbeh2_pool()
         (DATA / "st_lbeh2_pool_v1.json").write_text(json.dumps(d, indent=1) + "\n")

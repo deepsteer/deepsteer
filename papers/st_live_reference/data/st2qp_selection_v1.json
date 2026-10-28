@@ -1,0 +1,707 @@
+{
+ "rule": "ST_PLAN Amendment 57 item 5: held out from the gate's 200; never the gate's capability read",
+ "seed": "20261028|st2qp_selection",
+ "items": [
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 50,
+   "sha256": "23fdf08ce87602ede28ef4240e103f5089e507cb20da5a873e82fb1588dda333"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 55,
+   "sha256": "07836807c799f44f985d68c5ac193129be1a909f70dd66f3ca725237c70d21d0"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 97,
+   "sha256": "a91423e87578c297e7622dd48b5d926341d78204dc53a223523f959090831b95"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 133,
+   "sha256": "97d15f62f0f0ad0951a1aaf8ee809f94824e3c116b662b16fa83e65e16f1532a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 134,
+   "sha256": "cbe97dcd42db7392415a050f1dd99f430dfe2402c5ad3c250028934e8d5c48d5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 169,
+   "sha256": "a9e03f1a4adc9df02059a6a1ed363640cc1e3f89a5887472a3a9944eb0ddd4cc"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 245,
+   "sha256": "a02a9dd44a028b48ee25b7c1f1a9f41683532d8b8533cb1d7006e2c3d33024a5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 250,
+   "sha256": "545e9626d38336a62e0d259d6ae110468924a9c5edd4e3e2035e824b840f4945"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 257,
+   "sha256": "f1dee5a761b47dd87e394d7612b15a29182787a6dd6377bc3268a0f148bd7be1"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 321,
+   "sha256": "532e7358b30bff4dd98e3213b6506d2863ce10ea2d7b0660a5c292321a5806eb"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 382,
+   "sha256": "9889f9e8be8015fa918831720555286aa24410f3ffe7e37c9f667db096b5c0bb"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 393,
+   "sha256": "821ba4d3cdae58d0b884efdb4ca167a3c5b24251c56454a100fc9ac986206381"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 446,
+   "sha256": "d2e5742a32ae0c346c77459a88e208f679f0a4743e7dda85e1f798e9341d32d7"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 452,
+   "sha256": "5102790b75edc5b1a8d08709e3784fc762dabba766ae03b14828bd18bc7cdbf2"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 466,
+   "sha256": "a864c1e8618c4219ea3e5e3ec05f1359a6e63c2b61b0bb89b6475418e350155b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 504,
+   "sha256": "a9c7ad32e7171aaafaa77e12e0dba05aa18b465653f8d157c26fa5b51d29714e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 518,
+   "sha256": "85653199a0dddf2375b6df953c7860f6d93e7074a2f35410fb71c69ae3bdafb3"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 609,
+   "sha256": "b58a4f277ac13d343d7ddb1e5736a6495ac5793d96ccd1b53cb65492eb872dfd"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 618,
+   "sha256": "1cd8fbe40f4cda3035e0cd9bcd8ac80461448b63d4c9ee45662514169c822f2d"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 655,
+   "sha256": "912aac6e7dbf94df25e899d6621dedc9c65eadb9ed261bd528be60949a5b94c7"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 668,
+   "sha256": "adc1b009770b1f5155511d922c45165e230218673210e428631c11d696d57e55"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 702,
+   "sha256": "567bdb5055708f9f17839a98209168599a4a773c560802216bb0a7179f07d3fe"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 719,
+   "sha256": "a5b9a42f9cf0ace0516dc7a17f1a227d920bf464348f721bf1b54b1d454c13d4"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 752,
+   "sha256": "bc12ef01820267e33182ffd92c81109786fdd6cd463ea30c0d939efab2c09383"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 795,
+   "sha256": "a1e9556931ba596bbbb4f3f64e5a29ce780536dfc3f70206078f16d1ccadfa2a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 802,
+   "sha256": "8b47e7bec0853166a910a158c4518b276f335815a9a426bb308126331ce5e1e0"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 811,
+   "sha256": "67edeb0d4adcc8e0b94fa6088be541f1f46f9abafd1830772da9407774420f8e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 834,
+   "sha256": "06c1abfe55fcc87a2559500d01e1db0ffee09ccde3373bfd33ea7853c4da946b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 863,
+   "sha256": "7594a2de1d3ca2f484655eb003b285c6b0e1897f8d3f6cddbd8c18241785d616"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 871,
+   "sha256": "99ee5c3fa91539e59627afd3887d7ddb3eb212bcfc618db14a41297cb1c6950b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 899,
+   "sha256": "963f8e51306b3fe604a0354308324ab6f2148905745f717c306be0e504f4c23a"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 918,
+   "sha256": "693d1ef2d2a1a59661c7bf55bdb29e3c5a8105ca0fac9d68758285a5f7dbd8c5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 937,
+   "sha256": "a86878567dd84543bb818b08e3e071d8611b71e3526e50b03adefabafb7c2e81"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 999,
+   "sha256": "01916eeafa3fc71aa8adb750db9bb73be8d806dcb57ea3868245a924d69df7ca"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1007,
+   "sha256": "8e0576ff38ffd1de01c0eb847456eb3bd3b5fa8e595c8225aa9f190508ca4393"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1041,
+   "sha256": "d55219a2f651cfcb3c6095c6de608295ab913571bc83914f2ead12779cca484b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1046,
+   "sha256": "d1b9151313b9d8cd78a70405a5bb69075bcb8e070b31fb384064213b08db8c67"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1067,
+   "sha256": "3f46ac8d938046b1696562539d8ab7c15badaeac69f11ce371e9df7f6d5e05d5"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1095,
+   "sha256": "c6e210d630f47824cc4e7ef115892553aa706ba838218c07714b2d066bb2260b"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1116,
+   "sha256": "bca059699200fc8148bca3b76881f8e2e97ca421e2d061ece31fca839423ba6e"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1142,
+   "sha256": "2f076d4d3c64a56351175af78ac6386e1215dc36501944501b0f2c619dc4fc71"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1148,
+   "sha256": "061501956468e82c77012647889111bf1af73b2f143f180a6e35fa567c1df02d"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1153,
+   "sha256": "7ff105924f5ef42bc8084f5eb94751b9989f54c9ff8095b4f23b6cd4d5128eb4"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1168,
+   "sha256": "3cb0a38d61e82a90cecfb5582e441724dd99545039d71b5eb6fd1ab436a1cb71"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1170,
+   "sha256": "3d95128ba3dad842d3ca69ad9df248ebb675efc4b9e2a11ee16fbcb078e16aa2"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1232,
+   "sha256": "471ad40860e85b178e52d4f920bb855a862fe11864eceb266e43e41e674d8667"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1233,
+   "sha256": "609f5da6233734a0385e32c84d82b839ce93553119badff08c6adfcd89ba7d86"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1234,
+   "sha256": "b59a44d33edf98f25df3625bb254f36c6cd8de6dddc8187f5812387a43cfeaaa"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1275,
+   "sha256": "a1fdabcde3902e6bb24de61f836735a77794e5eeaa864cb50641c91d6d437d90"
+  },
+  {
+   "dataset": "openai/gsm8k",
+   "config": "main",
+   "split": "test",
+   "index": 1308,
+   "sha256": "d235b82a3a28a094f70f471f336055f7f656ce55ad0037fe440c3e39de1a4be1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 42,
+   "sha256": "bd734dc2f4905afc2f755cb98e6137c6a2359909db7ab065e177fe3e00cc8820"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 407,
+   "sha256": "ca13dcde4c608d5351f441b9af6e8cdc12267ceece56d01bfa4b986ae10403f0"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 644,
+   "sha256": "e154c2cea8f65249450a27382be20b441d09d4b87cb6258a8e2711ea4ceeb3eb"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 661,
+   "sha256": "c3fac645432de2eb6c358a1cbffb364648f9cd9a69c8f0cfa2d574befa30cb00"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 798,
+   "sha256": "f2f4142f6dc614051e1247d35fb1e34d62dfdd77a21b267bb67cddf0902d1094"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 890,
+   "sha256": "ecc55af71eb439a8755c86f8700bb1f394b6cb0d0d405f7c15e5e90bed1e933e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1105,
+   "sha256": "395e7d6ee538cd7231cbb88b92193b95e752526e032afb1ba38454155c5b7d06"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1424,
+   "sha256": "f81a1e79f705ea7892fda4680adc516cbe24fd7ddf05f340752175e102ae122f"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1495,
+   "sha256": "a863b0ccccf5d4e33671eefed704ee9b1d03aefffd1a8462647c6c660e033101"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1914,
+   "sha256": "df8a137e1b69a1a9ebcb5099e642e86a57e1e5cd71968951975be2629b0efeea"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 1945,
+   "sha256": "5fd7ac24b754d09dc85a854f0e9dff9f5a03352e59e772080101903976dd00b8"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2705,
+   "sha256": "c479bab0dde69b3733a53046251b3d87e735db137a41329573bfadc3ccd07a96"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 2712,
+   "sha256": "b6dabc2912711c1a312b9dd773a0137832e5034419a05a023677b086f608c790"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3108,
+   "sha256": "abe5c5ccba5118fc9aa6f2de61fb8416f44b1b6303b6d8d7da01babc4f8552e3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3207,
+   "sha256": "6364edc0a0029671d112012ee643d7b36783d9183c858c9cab8c1513f2b04dd6"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3656,
+   "sha256": "fe62325120c7be12a41e3ac8e3bef5ba1aeaa1f41e962b8d1a8bea26623602f2"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 3742,
+   "sha256": "0186a0f08f72b5f232636c3085835f22c3243ae292795e31cc4a5bfd4d3b72a9"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4022,
+   "sha256": "f5db92d437100c7acd7d4edf7c697e0744b7c6e5e15d0c7489ecc074b073fed1"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4368,
+   "sha256": "b6e6c9d7897c69b1fef8c766bb460464748c4ed65b6d78afc9909c00aa86b294"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4801,
+   "sha256": "07c5f5e4ab97f81c7f7ee96d6ae4a91ab60f1991bce520a62ae61c2c263b5b39"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 4899,
+   "sha256": "9ce34e7f1ee13577e7a1f62c8d411ff39aa37a7ead115c88f7ade7a298c3fb1d"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 5894,
+   "sha256": "cc688544856e6d962819f1ef384d782651df44ec53934af2ad4dd16345aacd23"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6440,
+   "sha256": "1d750d20d802136e3f58a91adc745345203b07619b7dd6ea0c9073b4fcd8e999"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6517,
+   "sha256": "91d5bad785ac5159a2b81064020eca4cc45179fce41c414f33dd235a8576dfca"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6853,
+   "sha256": "bbd74b3c7fccc495fe400c50eb6b292658bd53dd4324ae809412d26733316081"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 6960,
+   "sha256": "ac4f5fc52b6e44b4094c850b13e71a539104e35f761767611ca2c9d0121430fd"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7412,
+   "sha256": "e1e7568749cfcc1ee0f236bf1ab268d02b49b49178812890cf052acd713407b3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7537,
+   "sha256": "173f4beb482e5b8a2c9694ef44d608cb9146c96b8fddd75d0a90d566ba490b48"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7650,
+   "sha256": "ca09fd88b1dfa557089b8822aaddf7cece2c6abdf7e2fadb5c1ce1d639e2cf0c"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 7680,
+   "sha256": "97f3b466220d4c6635525a510b376d7d3184dd133efe09274c5abea9540559a7"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8069,
+   "sha256": "92a01cc6cdc47061a22fd9db942a34b97ab396da017047fc788d705d38effb3e"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 8483,
+   "sha256": "d4833090d98bb93275d9cbeba4c882106bd997841439efa019af7485758f8ae3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9483,
+   "sha256": "2de5479d0c7590927827a67749d2694c859f550ef98ca5616ed530f1c8aa5dab"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9507,
+   "sha256": "413b6b927aff25d2a381a11dad5940e576b9830d26c4b31f3217b2ef81cd7a85"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9669,
+   "sha256": "5390e6bb8138869ca34c1514c5b945bcc2c45651a365bc81fab8df8ee27e7e73"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 9807,
+   "sha256": "e680f7b740502e5d3bd804ad50529860de0c4f28da39e01707a0771f73adc1a3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10033,
+   "sha256": "20002670284b2986257c473e413eeac39cd4dabcb8d78b553c1c6da054a927fe"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10217,
+   "sha256": "953f514c17ded161d9cc2d3ba0360cbb8ec28ba99061bf2cf0b5aff91424d55c"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 10378,
+   "sha256": "f40ae3baf011870ee93f4f79752ebc55825397a084781b38fe0ea59f2a30d0cc"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11042,
+   "sha256": "6a00ab0886cf0631a5dc832c399a437e6ee1ff0bf2dd79a3047cff9867258e72"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 11553,
+   "sha256": "c5b5fe1b08fd7198bdaa923e1c9437b28e7db61f8d74a9242c43f0652535b357"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12010,
+   "sha256": "562375bd9a11ccac9aab18ca05c18243f5446f793c2fa6541e663905a2a8b453"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12058,
+   "sha256": "1c1ab9bfd1d8dcbecb2922c3e49afe90fc7f0f0665ff53574b0d1b936fb7a78b"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12080,
+   "sha256": "0ff19366eff76b530faf1c7f91ee57c7c9f67aa791cb23ea53583ccdd4a38730"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12147,
+   "sha256": "ddc537c8e26e5c7080b5a5b14902109adb7bf9c89dccb47c2d93cc959f9c3f8a"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12436,
+   "sha256": "84b57d459e250f7f5da32929d8fedbc70eb7addf0a74bd17dc7f1821df0782f3"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12536,
+   "sha256": "3fb51315a9e94bad9af37cd6e141d9d6c8601b81d22f25279c7b7ab4e2f57e1b"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 12646,
+   "sha256": "ffe9f2876f8428cf4a92332f434e91868bd1767ebbedfd190208efc880de5035"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13753,
+   "sha256": "d9dd847d4fc734b9abada75b6589b2654edd369682b84da1a58b2e17bc541595"
+  },
+  {
+   "dataset": "cais/mmlu",
+   "config": "all",
+   "split": "test",
+   "index": 13755,
+   "sha256": "2e4f7b46f5d134194ffbb329de5f463db85ec9947c26734e9c9274b4115bd0ff"
+  }
+ ],
+ "gate_set_sha256": "ddcfbb46fc8c3bf0af53393903b367b5525f805425aecc60845ea575fc8b0bcc"
+}

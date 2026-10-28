@@ -381,7 +381,7 @@ screen conditions on the unadapted arms only, on a sample disjoint from the base
 compared against (Amendment 1); τ, L*, the position class and the split are fixed
 before training; no adapter is selected on H1_held.
 
-## 7. Ordering and prices (envelope of record 96 A100-h, spent 91.18 on 2026-10-27; ~107.4 with Amendment 54, the author's decision; ~~≤ 35 A100-h~~, the original)
+## 7. Ordering and prices (envelope of record 125 A100-h, Amendment 57's third addition, spent 96.21 on 2026-10-28; ~~112~~ by Amendment 57's addition; ~~about 107.4~~ with Amendment 54; ~~96~~; ~~≤ 35 A100-h~~, the original)
 
 ### Tier 0 — zero GPU (Mac and banked arrays)
 
@@ -5500,3 +5500,46 @@ feeds a steering decision.
    tokens cost about $1.7, $5.1 or $14.7. At its new cap the Opus arm has about $77 for forced
    calls, enough for all 480 at the four calls' mean; if the cap stops it, jobs run rollout by
    rollout, so scenarios end at most one rollout apart, and the read uses the rollouts that ran.
+
+#### Amendment 57, third addition (2026-10-28; author; zero GPU; before pod 2 computes)
+
+1. **The step formula is corrected (author: T1.6's epochs).** Item 5 wrote 243 × (pairs / 80) on
+   the belief that T1.6 trained on 80 pairs. It trained on 40 rule-harm pairs and no rule-right
+   pairs (the pool's shortfall was 40), so its 243 steps of 4 micro-steps were about 24 epochs, and
+   the registered formula gave half that. Steps are now **243 × (pairs / 40)** over all pairs
+   (rule-harm and rule-right): about 547 at 90 pairs, about 24 epochs. Item 4's thin-set
+   expectation, written at about 24 epochs, stands as written. Amendment 57's addition chose
+   option (a) on prices that carried the same factor of 2; option (a) is what this item restores.
+2. **Checkpoint of record (author).** The latest step at which both arms are within 0.02 of base's
+   accuracy on the held-out selection set (`data/st2qp_selection_v1.json`: 50 GSM8K and 50 MMLU
+   test items, seeded, disjoint from the gate's 200), one step for both arms, else the earliest.
+   - Steps are visited latest first, and both arms are scored at every visited step; the
+     earliest checkpoint is never scored (the rule picks it whatever its score).
+   - **Implementing reading:** selection is scored by generation on HF bf16 with the adapter
+     attached (GSM8K needs a worked answer), the gate's prompts, cap and parser, base once with no
+     adapter, item-paired seeds.
+   - Beside, not of record: per-arm selection (each arm's own latest step within the bar), and
+     each scored checkpoint's paired accuracy difference against base with its bootstrap CI. At
+     n = 100 the 0.02 bar is about 0.6 of that difference's SE, so the rule moves to an earlier
+     step on noise about a quarter of the time; the error is toward less training, and the gate's
+     capability read uses other items.
+3. **"Transfers" adds a none-relative term (author).** Amendment 54 item 6's transfers branch also
+   needs **the forced H\* CI above 0**: care-DPO_Q's twin-minus-original departure above `none`'s.
+   Without it, an adapter identical to `none` reads as a transfer whenever `none`'s own D_f clears
+   +0.15, which Qwen's protective baseline makes likely. The non-specific and uninformative
+   branches are unchanged; any other combination is an ANOMALIES entry before wording.
+4. **Price and envelope (author: envelope 125, a 3.0 reserve for the HF fallback).**
+   - setup, 0.4; the pool on vLLM, 0.3; the teacher (560 HF rollouts at pod 1's ~11 s), 1.7;
+   - training two adapters at the smoke pod's 47.4 s per step: about 7.2 h each at 90 pairs
+     (7.8 h at the 49-pair ceiling's 98), 14.4-15.7;
+   - selection (base, then up to two steps × two arms, ~0.42 h each), 1.3-2.1;
+   - the gate for two arms with the guard, 3.5; the forced cells in the gate's engines, 1.0;
+     dry runs, 0.1;
+   - the HF fallback reserve, 3.0.
+   That is **~25.7-27.8 A100-h**. Spent 96.21; at most ~124.0 of 125.
+   - **The bail (replacing the 1.5× rule):** after care's pilot, the pod stops for the author if
+     the pilot projects either adapter's training past (125 − 96.21 − 12.1) / 2 = 8.35 h, where
+     12.1 is every other item above at its high end with the reserve. At the smoke pod's rate the
+     expected 547 steps take 7.2 h.
+   - The session stops at 28.5 h, the envelope's remainder; no step starts in its last 15
+     minutes.
