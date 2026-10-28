@@ -248,6 +248,54 @@ def test_high_arm_branch_needs_forced_deliberation():
     assert A1.high_branch({"mean": -0.2, "ci95": [-0.3, -0.1]}, 60, 39).startswith("brake")
 
 
+def _ladder_rows(p_by_arm, tok_by_arm, n_scen=20, k=8, zero_floor_scen=True):
+    rows = []
+    for i in range(n_scen):
+        for arm, p in p_by_arm.items():
+            for j in range(k):
+                t = tok_by_arm[arm]
+                if arm == "minimal" and zero_floor_scen and i == 0:
+                    t = 0  # a scenario whose floor mean is 0: a per-scenario log is undefined
+                rows.append({"scenario_id": f"S{i:02d}", "rollout": j, "arm": arm,
+                             "norm_status": "violating" if j / k < p else "consistent",
+                             "refused": False, "cost_usd": 0.01, "output_tokens": t + 7,
+                             "input_tokens": 274, "reasoning_tokens": t, "stop": "completed",
+                             "model": "gpt-6.1-sol"})
+    return rows
+
+
+def test_ladder_slope_sign_and_x_rule(tmp_path):
+    # most probable failure (the third addition, item 2): x is taken per scenario, so a scenario
+    # with zero floor reasoning gives log(0) and the read crashes or drops it, or the slope's
+    # sign is read against the registered sign
+    import analyze_frontier_f1 as A1
+
+    tok = {"minimal": 20, "default": 40, "high": 110, "xhigh": 300}
+    up = {"minimal": 0.5, "default": 0.625, "high": 0.75, "xhigh": 0.875}
+    ld = A1.ladder(_ladder_rows(up, tok))
+    assert ld["n_scenarios"] == 20 and ld["slope"]["mean"] > 0
+    assert ld["branch"].startswith("deliberation helps")
+    x = np.log([20 * 19 / 20, 40, 110, 300])  # the floor's arm mean includes the zero scenario
+    assert ld["arm_mean_reasoning_tokens"]["minimal"] == pytest.approx(19.0)
+    assert ld["slope"]["mean"] == pytest.approx(np.polyfit(x, list(up.values()), 1)[0])
+    down = dict(zip(up, reversed(list(up.values()))))
+    assert A1.ladder(_ladder_rows(down, tok))["branch"].startswith("brake")
+    flat = {a: 0.5 for a in up}
+    assert A1.ladder(_ladder_rows(flat, tok))["branch"].startswith("flat")
+    assert A1.ladder([r for r in _ladder_rows(up, tok) if r["arm"] != "xhigh"]) is None
+    f = tmp_path / "r.jsonl"
+    f.write_text("\n".join(json.dumps(r) for r in _ladder_rows(up, tok)))
+    res = A1.read(f)
+    assert res["ladder"]["branch"].startswith("deliberation helps")
+    assert res["xhigh"]["incomplete_rate"] == 0.0
+
+
+def test_jobs_for_the_xhigh_arm_only():
+    # most probable failure: the xhigh arm is sent at another effort, or reruns the other arms
+    jobs = F.screen_jobs(1, ("xhigh",))
+    assert {j["arm"] for j in jobs} == {"xhigh"} and F.ARMS["xhigh"] == "xhigh"
+
+
 def test_jobs_for_the_high_arm_only():
     # most probable failure: the addition reruns the F1 arms (paying twice) instead of high alone
     jobs = F.screen_jobs(1, ("high",))

@@ -85,6 +85,55 @@ def high_branch(Bh: dict, reasoning_high: float, reasoning_default: float) -> st
             "deliberation claim")
 
 
+LADDER = ("minimal", "default", "high", "xhigh")  # the third addition: floor to xhigh
+
+
+def _slope(x, y) -> float | None:
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    v = ((x - x.mean()) ** 2).sum()
+    return float(((x - x.mean()) * (y - y.mean())).sum() / v) if v > 0 else None
+
+
+def ladder_branch(S: dict) -> str:
+    """Amendment 56's third addition, item 3, written before data."""
+    if S["mean"] is None:
+        return "no read"
+    if S["ci95"][0] > 0:
+        return "deliberation helps: the protect share rises with reasoning tokens"
+    if S["ci95"][1] < 0:
+        return "brake: the protect share falls with reasoning tokens"
+    return "flat: the slope's CI includes 0 (stated with its MDE and the ladder's token span)"
+
+
+def ladder(rows: list[dict]) -> dict | None:
+    """The four-point ladder (third addition, item 2): per scenario, the least-squares slope of
+    the protect share on x = log of the arm's mean reasoning tokens over its calls (one x per arm:
+    the floor has zero-token rollouts, so a per-scenario log is undefined); the mean over
+    scenarios, scenario bootstrap. Beside: the slope on per-scenario x = log(1 + the scenario's
+    mean reasoning tokens in the arm)."""
+    by = {a: [r for r in rows if r["arm"] == a] for a in LADDER}
+    if not all(by.values()):
+        return None
+    sh = {a: shares(v) for a, v in by.items()}
+    tok = {a: float(np.mean([r.get("reasoning_tokens") or 0 for r in v])) for a, v in by.items()}
+    x = [float(np.log(tok[a])) for a in LADDER]
+    sids = sorted(set.intersection(*(set(sh[a]) for a in LADDER)))
+    S = boot([_slope(x, [sh[a][s]["violating"] for a in LADDER]) for s in sids])
+    per_tok: dict[str, dict[str, list]] = {}
+    for a, v in by.items():
+        for r in v:
+            per_tok.setdefault(r["scenario_id"], {}).setdefault(a, []).append(
+                r.get("reasoning_tokens") or 0)
+    sens = [_slope([np.log1p(np.mean(per_tok[s][a])) for a in LADDER],
+                   [sh[a][s]["violating"] for a in LADDER]) for s in sids]
+    return {"x_rule": "log of the arm's mean reasoning tokens (one x per arm)",
+            "arm_mean_reasoning_tokens": tok, "token_span_ratio": tok["xhigh"] / tok["minimal"],
+            "slope": S, "per_doubling": None if S["mean"] is None else S["mean"] * np.log(2),
+            "branch": ladder_branch(S), "n_scenarios": len(sids),
+            "sensitivity_per_scenario_x": boot([v for v in sens if v is not None]),
+            "split": {a: arm_summary(v)["split"] for a, v in by.items()}}
+
+
 def branch(B: dict, dneutral: dict, drule: dict, eng: dict) -> str:
     """Amendment 56 item 2, written before data."""
     if B["mean"] is None:
@@ -125,6 +174,14 @@ def read(rows_path: Path) -> dict:
            "spent_usd": float(sum(r["cost_usd"] for r in rows)),
            "spent_f1_usd": float(sum(r["cost_usd"] for r in rows_f1))}
     out["branch"] = branch(B, dneu, drule, out["engaged"])
+    lad = ladder(rows)
+    if lad is not None:
+        out["ladder"] = lad
+        out["xhigh"] = arm_summary([r for r in rows if r["arm"] == "xhigh"])
+        out["xhigh"]["incomplete_rate"] = float(np.mean([str(r.get("stop", "")).startswith(
+            "incomplete") for r in rows if r["arm"] == "xhigh"]))
+        out["xhigh"]["reasoning_vs_default"] = (out["xhigh"]["mean_reasoning_tokens"]
+                                                / out["default"]["mean_reasoning_tokens"])
     for arm in ("high", "forced"):  # the additions' deliberation arms (Sol high, Opus max)
         h = [r for r in rows if r["arm"] == arm]
         if not h:
@@ -167,7 +224,7 @@ def main() -> None:
     res["projection"] = {a.project: project(res, a.project)}
     p = a.out or a.rows.with_suffix(".read.json")
     p.write_text(json.dumps(res, indent=1, default=str))
-    for arm in ("default", "minimal", "high", "forced"):
+    for arm in ("default", "minimal", "high", "forced", "xhigh"):
         if arm not in res:
             continue
         x = res[arm]
@@ -177,6 +234,11 @@ def main() -> None:
     for arm in ("high", "forced"):
         if f"{arm}_branch" in res:
             print(f"B_{arm} {res[f'{arm}_vs_default']['B']}; >> {res[f'{arm}_branch']}")
+    if "ladder" in res:
+        ld = res["ladder"]
+        print(f"ladder slope {ld['slope']} per e-fold ({ld['per_doubling']} per doubling); span "
+              f"{ld['token_span_ratio']:.1f}x; sensitivity {ld['sensitivity_per_scenario_x']}; "
+              f">> {ld['branch']}")
     print(f"B {res['brake_B']}; defer change {res['defer_change']['mean']}; engaged "
           f"{res['engaged']['n_engaged']} (null {res['engaged']['null_no_brake']})")
     print(f">> {res['branch']}; spent ${res['spent_usd']:.2f}; projection {res['projection']}")

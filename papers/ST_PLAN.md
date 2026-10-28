@@ -5458,3 +5458,45 @@ three pairwise reads; it is exploratory.
 
 Sol's F1 file now holds $1.72 (all three arms); combined F1 spend is $7.30 of $100. Nothing here
 feeds a steering decision.
+
+#### Amendment 56, third addition (2026-10-28; author; before the xhigh arm runs; reference only)
+
+1. **An xhigh arm on GPT-6.1 Sol.** The 60 screen scenarios × 8, the same jobs and letter
+   permutations, `reasoning.effort: "xhigh"` (Sol accepts `low`, `medium`, `high`, `xhigh` and
+   `max`). Every other parity rule is item 1's, including `max_output_tokens` 16,000 as on every
+   Sol arm; a reply cut at that ceiling counts as unparsed and is reported. Rows are appended under
+   arm `xhigh`.
+2. **The read of record: a four-point ladder (author).** Over floor (effort low), default
+   (medium), high and xhigh:
+   - y = the scenario's protect share among parsed replies in the arm;
+   - x = log of the arm's mean reasoning tokens over its 480 calls (the designed dose, one value
+     per arm). **Implementing reading:** the floor holds 73 rollouts with zero reasoning tokens and
+     a scenario whose floor mean is 0, so a per-scenario log is undefined there; the arm's mean is
+     positive in every arm and is set by the effort, not by the scenario's outcome;
+   - per scenario, the least-squares slope of y on x over the four arms; the mean over the 60
+     scenarios, scenario bootstrap (10,000 draws, seed 0), with its MDE. Units: protect share per
+     e-fold of reasoning tokens (per doubling, × 0.693, beside).
+3. **Sign, stated before data (author).**
+   - **Deliberation helps:** the slope's CI lies above 0.
+   - **Brake:** the slope's CI lies below 0.
+   - **Flat:** the CI includes 0, stated with the MDE and the ladder's token span (floor to
+     xhigh).
+4. **Beside, not of record.**
+   - The slope with per-scenario x, log(1 + the scenario's mean reasoning tokens in the arm), a
+     sensitivity read.
+   - The xhigh arm's split, parse, refusal and incomplete rates, and its reasoning tokens against
+     the default's.
+   - ST-A33's high-minus-floor contrast, exploratory as recorded.
+5. **Order and cap.** The Opus forced arm's first four calls used 11,601, 2,492, 2,332 and 2,334
+   thinking tokens ($0.38, mean $0.096, 26-126 s each): about $46 for 480 calls at that mean, with
+   a tail that reaches $0.23 a call. Its launch cap ($98.27 on its file) would leave Sol nothing if
+   the tail dominates, so the two run side by side under split caps:
+   - the Opus forced arm is stopped and relaunched (it resumes from its saved rows) with
+     `--cap-usd` 83.00 on its file; the call in flight when it is stopped is billed but not saved
+     (at most about $0.25), recorded in the ledger;
+   - the Sol xhigh arm runs with `--cap-usd` 16.73 on Sol's file ($1.72 spent);
+   - combined F1 spend then stays under $83.00 + $0.25 + $16.73 = $99.98.
+   Price at Sol's rates (prompt 274 tokens): 480 calls at a mean of 300, 1,000 or 3,000 output
+   tokens cost about $1.7, $5.1 or $14.7. At its new cap the Opus arm has about $77 for forced
+   calls, enough for all 480 at the four calls' mean; if the cap stops it, jobs run rollout by
+   rollout, so scenarios end at most one rollout apart, and the read uses the rollouts that ran.

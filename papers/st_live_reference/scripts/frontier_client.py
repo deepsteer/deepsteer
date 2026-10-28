@@ -42,7 +42,8 @@ RATES = {"claude-opus-5-5": {"input": 4.00, "cached_input": 0.20, "output": 20.0
          "gpt-6.1-sol": {"input": 2.00, "cached_input": 0.10, "output": 10.00}}
 ARMS = {"default": "medium", "minimal": "low",  # the floor is "low" on both (item 1's type block)
         "high": "high",  # Amendment 56's addition: GPT-6.1 Sol's high-effort arm
-        "forced": "max"}  # its second addition: Opus 5.5 at its thinking ceiling (no budget)
+        "forced": "max",  # its second addition: Opus 5.5 at its thinking ceiling (no budget)
+        "xhigh": "xhigh"}  # its third addition: Sol's fourth ladder point
 F1_ARMS = ("default", "minimal")
 MAX_OUTPUT = 16000
 MAX_OUTPUT_STREAM = 64000  # efforts at or above xhigh stream (the API's guidance for long outputs)
@@ -277,7 +278,7 @@ def main() -> None:
                     help="the price table's high per-call cost, the projection before any call")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--arms", default=",".join(F1_ARMS),
-                    help="comma-separated arms (F1: default,minimal; the addition: high)")
+                    help="comma-separated arms (F1: default,minimal; later: high, forced, xhigh)")
     a = ap.parse_args()
     r = Runner(a.model, adapter_for(a.model), a.out, a.cap_usd, a.prior_call_usd)
     arms = tuple(a.arms.split(","))
