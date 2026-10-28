@@ -1682,3 +1682,15 @@ The rule's wording waits on the author.
 **Outcome (2026-10-28; Amendment 56 third addition).** The registered four-point ladder reads flat: slope +0.014 [−0.004, +0.034] per e-fold of reasoning tokens (MDE 0.027) over 23 to 187 tokens. At xhigh the protect share returns to the default's 0.746; the three-point slope of +0.031 halves with the fourth point.
 **Status.** resolved (experiment, 2026-10-28): R_chance favored; no effort trend detectable at |slope| ≳ 0.027 per e-fold over Sol's 8× span. The Opus forced arm's trend is read separately.
 **Thesis impact.** If R_effort, frontier deliberation on H1 pushes toward protecting, and the open-model brake is not a property of reasoning in general. If R_chance, Sol's judgment is flat in effort over a 5× range of reasoning tokens.
+
+## ST-A34 (ledger) — Under forced deliberation Opus 5.5 trades deferral for protection, never for the rule
+
+**Date.** 2026-10-28 (Amendment 56 second addition; reference only; `data/frontier_f1_opus55_forced_v1.json`).
+**Observation.** On the 60 screen scenarios × 8, Opus 5.5 at effort max (4,962 thinking tokens a call on average) protects 0.535 against the default's 0.467: B_forced +0.069 [+0.029, +0.115]. The defer share falls by the same amount (0.477 → 0.408, −0.069 [−0.117, −0.023]); the rule share is 0.056 at floor, default and forced. Sol, over an 8× span of reasoning, reads flat (ST-A33, resolved).
+**Type.** dose-dependence (the registered contrast's CI above 0 where the brake reading predicts below), cross-model conjunction with ST-A33.
+**Competing readings.**
+- R_commit: long deliberation resolves Opus's uncertainty, and it resolves toward protecting; the deferrals at default were undecided cases, not a preference for escalation.
+- R_tail: a few scenarios with very long thinking carry the shift (thinking q90 10,399, max 41,043), and the mean change is not a property of deliberation in general.
+**Discriminator.** Zero API, on saved rows: the per-scenario association between the forced arm's thinking length and its defer-to-protect change, and the count of scenarios that move. A broad shift with no length association favors R_commit; a shift concentrated in the long-thinking scenarios favors R_tail. Not run without the author.
+**Status.** open (reference only; feeds no steering decision).
+**Thesis impact.** If R_commit, the frontier exhibit's answer to "does deliberation brake protection on H1" is no on both models, and for Opus deliberation removes hedging in the protective direction. If R_tail, the claim narrows to "no brake", with the shift a property of a few items.

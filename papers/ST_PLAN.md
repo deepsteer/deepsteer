@@ -5571,3 +5571,30 @@ default's 0.746, and the three-point slope of +0.031 halves to +0.014 with the f
 exploratory contrast stays as recorded; the ladder of record reads flat.
 
 Sol's file holds $2.92 (all four arms). Nothing here feeds a steering decision.
+
+#### Amendment 56 second addition outcome, the Opus forced-deliberation arm (2026-10-28; API, $48.46; `data/frontier_f1_opus55_forced_v1.json`; reference only)
+
+The 60 screen scenarios × 8 at `output_config.effort: "max"`, streamed at `max_tokens` 64,000: 480
+calls (4 before the relaunch at the split cap, 476 after), every one served by `claude-opus-5-5`,
+every one ending `end_turn`, parse 1.00 (474 bare letters, 6 unique mentions), no refusals, no
+rate-limit waits. One call in flight at the relaunch was billed and not saved.
+
+| arm | protect / rule / defer | thinking tokens, mean (median, q90) | cost |
+|---|---|---|---|
+| floor (effort low) | 0.475 / 0.056 / 0.469 | 157 (139, 291) | $2.34 |
+| default (effort medium) | 0.467 / 0.056 / 0.477 | 251 (221, 431) | $3.23 |
+| forced (effort max) | 0.535 / 0.056 / 0.408 | 4,962 (3,344, 10,399) | $48.46 |
+
+- B_forced = P_protect(forced) − P_protect(default) = +0.069 [+0.029, +0.115] (MDE 0.061).
+- The defer share changes by −0.069 [−0.117, −0.023]; the rule share is 0.056 in all three arms.
+- Forced against the floor: +0.060 [+0.015, +0.113].
+- The forced arm thinks 19.8× the default arm's tokens (4,962 against 251), past the 5× bar.
+
+**Registered branch: judgment survives deliberation.** Forced deliberation (about 5,000 thinking
+tokens a call, up to 41,000) does not move Opus toward the harmful rule; B_forced's CI lies above 0,
+which the first addition's rule places in this branch. The shift runs from deferring to protecting
+(ST-A34): with long deliberation Opus escalates less and protects more, and chooses the rule no
+more often.
+
+Combined F1 spend: $54.03 (Opus file) + $2.92 (Sol file) = $56.95 of $100. Nothing here feeds a
+steering decision.
