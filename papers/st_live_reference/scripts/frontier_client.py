@@ -21,6 +21,10 @@ H1's agent frame on a closed model through its API: the single user message
   module never reads, prints or stores a key.
 
     python3 frontier_client.py --model gpt-6.1-sol --k 8 --cap-usd 100 --out <outputs/frontier/f1>
+
+Amendment 58's panel E read (``--jobs panel``): the 586-item panel's five letter cells x k at the
+default effort, ``--workers`` calls at a time; the cap check counts every call in flight at the
+running maximum per-call cost.
 """
 
 from __future__ import annotations
@@ -29,6 +33,7 @@ import argparse
 import dataclasses
 import json
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -187,6 +192,8 @@ class Runner:
         self.rows_path = out / f"{model}.jsonl"
         out.mkdir(parents=True, exist_ok=True)
         self.done: set[tuple] = set()
+        self.inflight: set[tuple] = set()
+        self.lock = threading.Lock()
         self.spent, self.max_call = 0.0, float(prior_call_usd)
         if self.rows_path.exists():
             for line in self.rows_path.read_text().splitlines():
@@ -196,20 +203,36 @@ class Runner:
                     self.spent += r["cost_usd"]
                     self.max_call = max(self.max_call, r["cost_usd"])
 
+    def claim(self, key: tuple) -> bool:
+        """Under the lock: False if the job is saved or in flight; ``CapReached`` if spend plus
+        every call in flight plus this one, each at the running maximum per-call cost, would pass
+        the cap (Amendment 58 item 2; with one worker this is item 4's projection)."""
+        with self.lock:
+            if key in self.done or key in self.inflight:
+                return False
+            proj = self.spent + (len(self.inflight) + 1) * self.max_call
+            if proj > self.cap:
+                raise CapReached(f"spent ${self.spent:.4f} + {len(self.inflight) + 1} call(s) at "
+                                 f"${self.max_call:.4f} > cap ${self.cap:.2f}")
+            self.inflight.add(key)
+            return True
+
     def run_one(self, job: dict) -> dict | None:
-        """One call, or ``None`` if already saved; raises ``CapReached`` before a call that the
-        projection says would pass the cap."""
+        """One call, or ``None`` if already saved or in flight; raises ``CapReached`` before a call
+        that the projection says would pass the cap."""
         from deepsteer.kdg.harness import KDG_HARNESS_VERSION, parse_response
 
         key = (job["scenario"].id, job["k"], job["arm"])
-        if key in self.done:
+        if not self.claim(key):
             return None
-        if self.spent + self.max_call > self.cap:
-            raise CapReached(f"spent ${self.spent:.4f} + projected ${self.max_call:.4f} > cap "
-                             f"${self.cap:.2f}")
-        effort = ARMS[job["arm"]]
+        effort = job.get("effort") or ARMS[job["arm"]]
         t0 = time.time()
-        c, waits = call_paced(self.adapter, self.model, job["messages"], effort)
+        try:
+            c, waits = call_paced(self.adapter, self.model, job["messages"], effort)
+        except BaseException:
+            with self.lock:
+                self.inflight.discard(key)
+            raise
         p = parse_response(c.text, job["scenario"], job["order"])
         cost = cost_usd(self.model, c)
         row = {"scenario_id": key[0], "rollout": key[1], "arm": key[2], "model": self.model,
@@ -224,11 +247,15 @@ class Runner:
                "request_id": c.request_id,
                "harness_version": KDG_HARNESS_VERSION,
                "finished": datetime.now(timezone.utc).isoformat(timespec="seconds")}
-        with self.rows_path.open("a") as f:
-            f.write(json.dumps(row) + "\n")
-        self.done.add(key)
-        self.spent += cost
-        self.max_call = max(self.max_call, cost)
+        if "cell" in job:
+            row["cell"] = job["cell"]
+        with self.lock:
+            with self.rows_path.open("a") as f:
+                f.write(json.dumps(row) + "\n")
+            self.done.add(key)
+            self.inflight.discard(key)
+            self.spent += cost
+            self.max_call = max(self.max_call, cost)
         return row
 
 
@@ -256,16 +283,81 @@ def screen_jobs(k: int, arms: tuple[str, ...] = F1_ARMS) -> list[dict]:
     return jobs
 
 
-def run(runner: Runner, jobs: list[dict]) -> dict:
-    n = 0
-    try:
-        for j in jobs:
-            if runner.run_one(j) is not None:
-                n += 1
-    except CapReached as e:
-        return {"stopped": "cap", "reason": str(e), "calls_this_run": n,
-                "spent_usd": runner.spent}
-    return {"stopped": "complete", "calls_this_run": n, "spent_usd": runner.spent}
+PANEL_EFFORT = "medium"  # Amendment 58 item 2: Sol's default, F1's default arm
+
+
+def panel_jobs(k: int) -> list[dict]:
+    """Amendment 58: the 586-item panel x its five letter cells x k, interleaved by rollout (a cap
+    stop leaves every cell at most one rollout apart); the arm is the cell's name."""
+    import glob
+
+    import pod_st_screen as P
+    import screen_lib as L
+    from kdg_pod_lib import letter_chat_messages
+
+    from deepsteer.kdg.schema import assign_letters, load_scenario_dir
+
+    allp, _ = load_scenario_dir(sorted(glob.glob(str(P.KDG / "data" / "*_scenarios_*.json"))))
+    panel = L.panel_586(allp)
+    jobs = []
+    for k_ in range(k):
+        for s in panel:
+            order = assign_letters(s, k_)
+            for cell, (frame, variant) in L.PANEL_CELLS.items():
+                jobs.append({"scenario": s, "k": k_, "arm": cell, "cell": cell, "order": order,
+                             "effort": PANEL_EFFORT,
+                             "messages": letter_chat_messages(s, order, frame, "neutral",
+                                                              variant)})
+    return jobs
+
+
+def run(runner: Runner, jobs: list[dict], workers: int = 1) -> dict:
+    """One call at a time, or ``workers`` at a time (Amendment 58): each worker takes the next job
+    in order; a cap stop or an error stops every worker before its next call, and calls already in
+    flight finish and are saved."""
+    if workers <= 1:
+        n = 0
+        try:
+            for j in jobs:
+                if runner.run_one(j) is not None:
+                    n += 1
+        except CapReached as e:
+            return {"stopped": "cap", "reason": str(e), "calls_this_run": n,
+                    "spent_usd": runner.spent}
+        return {"stopped": "complete", "calls_this_run": n, "spent_usd": runner.spent}
+    it = iter(jobs)
+    take, stop = threading.Lock(), threading.Event()
+    state = {"n": 0, "cap": None, "error": None}
+
+    def worker() -> None:
+        while not stop.is_set():
+            with take:
+                j = next(it, None)
+            if j is None:
+                return
+            try:
+                if runner.run_one(j) is not None:
+                    with take:
+                        state["n"] += 1
+            except CapReached as e:
+                state["cap"] = str(e)
+                stop.set()
+            except BaseException as e:  # noqa: BLE001 (re-raised after every worker stops)
+                state["error"] = e
+                stop.set()
+
+    ts = [threading.Thread(target=worker, daemon=True) for _ in range(workers)]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    if state["error"] is not None:
+        raise state["error"]
+    if state["cap"] is not None:
+        return {"stopped": "cap", "reason": state["cap"], "calls_this_run": state["n"],
+                "spent_usd": runner.spent, "workers": workers}
+    return {"stopped": "complete", "calls_this_run": state["n"], "spent_usd": runner.spent,
+            "workers": workers}
 
 
 def main() -> None:
@@ -279,12 +371,20 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--arms", default=",".join(F1_ARMS),
                     help="comma-separated arms (F1: default,minimal; later: high, forced, xhigh)")
+    ap.add_argument("--jobs", choices=("screen", "panel"), default="screen",
+                    help="screen: H1's 60 screen scenarios (F1); panel: Amendment 58's panel read")
+    ap.add_argument("--workers", type=int, default=1, help="concurrent calls (Amendment 58: 8)")
     a = ap.parse_args()
     r = Runner(a.model, adapter_for(a.model), a.out, a.cap_usd, a.prior_call_usd)
+    if a.jobs == "panel":
+        res = run(r, panel_jobs(a.k), workers=a.workers)
+        (a.out / f"{a.model}.panel.run.json").write_text(json.dumps(res, indent=1) + "\n")
+        print(json.dumps(res))
+        return
     arms = tuple(a.arms.split(","))
     if any(x not in ARMS for x in arms):
         raise SystemExit(f"unknown arm in {arms}")
-    res = run(r, screen_jobs(a.k, arms))
+    res = run(r, screen_jobs(a.k, arms), workers=a.workers)
     tag = "" if arms == F1_ARMS else "." + "_".join(arms)
     (a.out / f"{a.model}{tag}.run.json").write_text(json.dumps(res, indent=1) + "\n")
     print(json.dumps(res))

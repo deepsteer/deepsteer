@@ -308,7 +308,7 @@ def test_a34_rule():
 
     sids = [f"S{i:02d}" for i in range(40)]
     tok = {s: 1000 + 100 * i for i, s in enumerate(sids)}
-    tail = {s: (0.5, 1.0 if i >= 30 else 0.5) for i, s in enumerate(sids)}  # top 10 by thinking move
+    tail = {s: (0.5, 1.0 if i >= 30 else 0.5) for i, s in enumerate(sids)}  # the top 10 move
     r = A1.a34(_a34_rows(tail, tok))
     assert r["up"] == 10 and r["top_quartile_share_of_sum"] == pytest.approx(1.0)
     assert r["branch"].startswith("R_tail")
@@ -358,3 +358,151 @@ def test_max_effort_streams_with_the_long_ceiling():
     assert log[0]["max_tokens"] == F.MAX_OUTPUT_STREAM and log[0]["output_config"] == {
         "effort": "max"}
     assert c.reasoning_tokens == 8800 and "temperature" not in log[0]
+
+
+class _Blocking:
+    """A recorded-response stand-in whose calls wait until released (calls held in flight)."""
+
+    def __init__(self, n):
+        import threading
+
+        self.responses, self.calls = [_openai() for _ in range(n)], []
+        self.lock, self.release = threading.Lock(), threading.Event()
+
+    def create(self, **kw):
+        with self.lock:
+            self.calls.append(kw)
+            r = self.responses.pop(0)
+        self.release.wait(5)
+        return r
+
+
+def test_inflight_calls_count_in_the_cap(tmp_path):
+    # most probable failure (Amendment 58 item 2): with 8 workers each sees spend 0 and starts its
+    # call, so 8 calls run against a cap that allows 3
+    import threading
+
+    per = F.cost_usd("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=_Rec([_openai()]))).call(
+        "gpt-6.1-sol", [], "medium"))
+    rec = _Blocking(20)
+    r = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=rec)), tmp_path, cap_usd=per * 3.5,
+                 prior_call_usd=per)
+    out = {}
+    t = threading.Thread(target=lambda: out.update(F.run(r, [_job(k=i) for i in range(20)],
+                                                         workers=8)))
+    t.start()
+    import time as _t
+
+    _t.sleep(0.5)  # every worker has claimed or stopped while the first calls are held
+    assert len(rec.calls) == 3
+    rec.release.set()
+    t.join(10)
+    assert out["stopped"] == "cap" and out["calls_this_run"] == 3
+    assert r.spent <= per * 3.5 and not r.inflight
+
+
+def test_concurrent_rows_are_saved_once_and_resume(tmp_path):
+    # most probable failure: two workers take one job (a duplicate row, paid twice) or a row is
+    # lost under concurrent appends, so the resume repeats calls
+    rec = _Rec([_openai() for _ in range(40)])
+    r = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=rec)), tmp_path, 10.0, 0.01)
+    res = F.run(r, [_job(k=i) for i in range(40)], workers=8)
+    rows = [json.loads(x) for x in (tmp_path / "gpt-6.1-sol.jsonl").read_text().splitlines()]
+    assert res["stopped"] == "complete" and len(rec.calls) == 40 and len(rows) == 40
+    assert len({(x["scenario_id"], x["rollout"], x["arm"]) for x in rows}) == 40
+    assert r.spent == pytest.approx(sum(x["cost_usd"] for x in rows))
+    r2 = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=_Rec([]))), tmp_path, 10.0, 0.01)
+    assert F.run(r2, [_job(k=i) for i in range(40)], workers=8)["calls_this_run"] == 0
+
+
+def test_a_worker_error_stops_the_run_and_frees_its_slot(tmp_path):
+    # most probable failure: a failed call leaves its key in flight (the cap stays reserved) or
+    # the other workers keep calling after an error
+    import threading
+
+    class _Fail(_Rec):
+        lock = threading.Lock()
+
+        def create(self, **kw):
+            with self.lock:  # thread-safe: exactly the third call fails
+                if len(self.calls) == 2:
+                    self.calls.append(kw)
+                    raise ValueError("bad request")
+                return super().create(**kw)
+
+    for workers, most in ((1, 3), (8, 3 + 7)):  # 8 workers: the 7 others' calls in flight end
+        rec = _Fail([_openai() for _ in range(40)])
+        d = tmp_path / str(workers)
+        r = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=rec)), d, 10.0, 0.01)
+        with pytest.raises(ValueError):
+            F.run(r, [_job(k=i) for i in range(40)], workers=workers)
+        assert not r.inflight and 3 <= len(rec.calls) <= most
+
+
+def test_panel_jobs():
+    # most probable failure (Amendment 58 item 2): a cell is missing or sent at another effort,
+    # the known-gap cell loses its operator prompt, or the jobs are not interleaved by rollout
+    jobs = F.panel_jobs(2)
+    assert len(jobs) == 586 * 5 * 2
+    assert {j["k"] for j in jobs[: 586 * 5]} == {0}
+    assert {j["cell"] for j in jobs} == {"dl_chat_neutral", "jl_chat_neutral",
+                                         "dl_chat_neutral_pressure_removed",
+                                         "jl_chat_neutral_pressure_removed", "dl_chat_known_gap"}
+    assert {j["effort"] for j in jobs} == {"medium"}
+    kg = [j for j in jobs if j["cell"] == "dl_chat_known_gap"]
+    assert all(j["messages"][0]["role"] == "system" for j in kg)
+    assert all([m["role"] for m in j["messages"]] == ["user"] for j in jobs
+               if j["cell"] != "dl_chat_known_gap")
+
+
+def _panel_rows(p_by_cell, n_scen=40, k=8, unparsed_cell=None):
+    rows = []
+    for i in range(n_scen):
+        for cell, p in p_by_cell.items():
+            pc = p(i) if callable(p) else p
+            for j in range(k):
+                st = "violating" if j / k < pc else "consistent"
+                if cell == unparsed_cell and i == 0 and j < 5:
+                    st = None  # 3 of 8 parsed: below the floor
+                rows.append({"scenario_id": f"P{i:03d}", "rollout": j, "arm": cell,
+                             "norm_status": st, "refused": False, "output_tokens": 46,
+                             "cost_usd": 0.001, "model": "gpt-6.1-sol"})
+    return rows
+
+
+def test_panel_e_read_and_branches():
+    # most probable failure (Amendment 58 items 3-4): E is reported though the known-gap control
+    # failed, the floor admits a scenario with too few parsed replies, or the at-rest gap is not
+    # subtracted (a baseline gap read as pressure-attributable)
+    import analyze_frontier_panel as AP
+
+    base = {AP.D: 0.5, AP.J: 0.25, AP.DN: 0.25, AP.JN: 0.25, AP.KG: 0.875}
+    r = AP.read(_panel_rows(base))
+    assert r["positive_control"]["passes"] and r["E"]["mean"] == pytest.approx(0.25)
+    assert r["branch"].startswith("E > 0")
+    at_rest = {AP.D: 0.5, AP.J: 0.25, AP.DN: 0.5, AP.JN: 0.25, AP.KG: 0.875}  # gap only at rest
+    r = AP.read(_panel_rows(at_rest))
+    assert r["E"]["mean"] == pytest.approx(0.0) and r["branch"].startswith("null")
+    no_ctrl = {**base, AP.KG: 0.25}
+    r = AP.read(_panel_rows(no_ctrl))
+    assert r["branch"].startswith("positive control fails") and "withheld" in r["E"]
+    r = AP.read(_panel_rows(base, unparsed_cell=AP.J))
+    assert r["n_scenarios_E"] == 39
+    neg = {AP.D: 0.25, AP.J: 0.25, AP.DN: 0.5, AP.JN: 0.25, AP.KG: 0.875}
+    assert AP.read(_panel_rows(neg))["branch"].startswith("unregistered")
+
+
+def test_panel_jobs_through_the_openai_adapter(tmp_path):
+    # most probable failure: the known-gap cell's system prompt is dropped on the way to the API,
+    # or the panel's calls go out at the F1 arm's effort instead of Amendment 58's medium
+    import analyze_frontier_panel as AP
+
+    jobs = F.panel_jobs(1)[:5]  # one scenario's five cells
+    rec = _Rec([_openai() for _ in range(5)])
+    r = F.Runner("gpt-6.1-sol", F.OpenAIAdapter(NS(responses=rec)), tmp_path, 1.0, 0.01)
+    assert F.run(r, jobs, workers=8)["calls_this_run"] == 5
+    assert {c["reasoning"]["effort"] for c in rec.calls} == {"medium"}
+    kg = [c for c in rec.calls if c["input"][0]["role"] == "system"]
+    assert len(kg) == 1 and "Standing instruction" in kg[0]["input"][0]["content"]
+    rows = [json.loads(x) for x in (tmp_path / "gpt-6.1-sol.jsonl").read_text().splitlines()]
+    assert {x["cell"] for x in rows} == set(AP.CELLS) and {x["effort"] for x in rows} == {"medium"}
