@@ -519,6 +519,15 @@ gap sits in the fairness primaries (screened rate 0.40, n 10), not the loyalty t
 Discriminator (zero GPU): re-score KDG-A4 with every F4 loyalty-norm twin excluded, both
 generators; and for any future F4 round, rotate twin norms across halves. Status: open, priced.
 
+**Process ledger 2026-10-28: an arm ran before its amendment was pushed.** Amendment 56's
+third addition (Sol's xhigh arm and its four-point ladder) was committed as d6e059f at 04:11:50
+UTC, and the arm launched at 04:14:47 UTC, before the push. The push was confirmed at 04:16:38
+UTC, by which time at most 19 of the arm's 480 rows had finished. The registration's text was
+fixed in a commit three minutes before the first row, and no row was read before the push. The
+rows stand (author, 2026-10-28: keep the pre-push rows). Cause: the launch steps were handed
+over with "after you push" in prose rather than as a checked step. Fix: launch lines for a newly registered arm are handed
+over only after `git merge-base --is-ancestor` confirms the push.
+
 **Process ledger 2026-09-27 — interrupted download lost a keystone step.** Session A (pod
 fcwecbba80z0hg, p1a) completed every step on the pod, but the launcher downloaded results with a
 single unchecked `rsync -az` pass. The pass was interrupted inside `stages_chat` (alphabetical
