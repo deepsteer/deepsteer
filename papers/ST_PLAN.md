@@ -5339,3 +5339,36 @@ Nothing here feeds a steering decision.
    Opus's run, projected at $1.8–2.4. That leaves about $96 of the $100. The client's cap for this
    arm is $50.
 
+
+#### Amendment 57 addition outcome, the smoke pod (2026-10-28; pod st2qs, 0.68 A100-h; `outputs/st2qs`)
+
+| criterion | result | met |
+|---|---|---|
+| base check (vLLM against HF letters, bar 0.10) | TV 0.0088 | yes |
+| QLoRA on Qwen's text tower | 6 steps on 11 pairs; loss finite and falling (0.095 → 0.018 → 0.004); DPO margin 2.5 → 8.1 | yes |
+| targets | DeltaNet `linear_attn` in_proj_qkv/z/a/b and out_proj, attention q/k/v/o, MLP gate/up/down; no vision-tower module | yes |
+| merge mechanics | 496 of 496 deltas matched and written (16 shards); keys identical to the base's | yes |
+| **weight kept share (bar ≥ 0.9)** | **0.250** | **no** |
+| merge gate (merged letters closer to the attached adapter than to base) | TV 0.010 to attached, 0.052 to base; behavioral kept share 0.80 | yes |
+| merged copy on vLLM: parity against attached (base band + 0.05) | TV 0.0098 | yes |
+| merged engine answers | 8 of 8 rollouts parsed | yes |
+
+**Timing re-price.** The pilot measured 11.85 s per micro-step, and a step of 4 micro-steps takes
+about 45 s (Muse's T1.6 took 26.7). At about 273 steps that is about 3.4 h per adapter, within the
+3.6 h priced, so pod 2 stays at about 14.4 A100-h.
+
+**The named failure: weight kept share 0.25.** Only a quarter of the adapter's delta norm survives
+the cast to bf16. The likely cause is the smoke pod's own scale: 6 steps, partly at warmup learning
+rate (4–6 × 10⁻⁵), leave deltas below half a bf16 ulp of most weights. T1.6's Muse adapters, at 243
+steps, kept 0.964 and 0.998. This is a reading, not a measurement on Qwen at pod 2's scale.
+
+**Escalated to the author.** The registered rule says a failure is fixed before pod 2. Pod 2
+already carries T1.6's merge gate and its registered HF-attached fallback, which runs when a merge
+fails the gate or vLLM parity.
+- Proposal: replace the ≥ 0.9 weight-kept-share bar with T1.6's own rule. The merge gate and vLLM
+  parity decide, the weight kept share is reported beside them, and a failed gate sends the arm to
+  the HF fallback (priced at about +1.5 A100-h per arm if it runs).
+- The alternative, a cheap pre-pod-2 check at full step count, would cost another smoke pod
+  (~1.6 A100-h).
+
+Spent 96.21 of 112.
