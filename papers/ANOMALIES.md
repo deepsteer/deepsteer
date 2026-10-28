@@ -1660,3 +1660,15 @@ The rule's wording waits on the author.
 **Status.** resolved (experiment, 2026-10-27): R_trace-set standing, unconfirmed (the association's detection bar at n = 11 is about |r| ≳ 0.75).
 **Thesis impact.** If R_trace, steering acts on the decision through the reasoning it shapes. Fixed-trace instruments (AtP, the exact steer, the P(1 − P) conversion) cannot rank or predict it, and site selection needs sampled arms. If R_trace-set, the conversion is still usable on traces sampled under the steer.
 
+
+## ST-A33 (ledger) — Sol's protect share rises with reasoning effort, the reverse of a brake
+
+**Date.** 2026-10-28 (Amendment 56 addition; reference only; `data/frontier_f1_gpt61sol_high_v1.json`).
+**Observation.** On the 60 screen scenarios × 8, GPT-6.1 Sol's protect share is 0.723 at the floor (23 reasoning tokens), 0.746 at default (39) and 0.773 at effort high (111). The registered contrasts each include 0: B +0.023 [−0.004, +0.052], B_high +0.027 [−0.006, +0.065]. High against the floor, not registered, reads +0.050 [+0.013, +0.092], with the defer share falling (0.177 → 0.140).
+**Type.** dose-dependence (a monotone trend where the registered reads are flat).
+**Competing readings.**
+- R_effort: on these items Sol's deliberation moves it toward protection; more reasoning, more protection, the opposite of the brake measured on open models.
+- R_chance: three arms give three pairwise contrasts, and the one that excludes 0 was picked after the data; each step is inside its own CI.
+**Discriminator.** Zero GPU, about $1–3 of API: an effort `xhigh` arm on Sol (60 × 8) would extend the trend or flatten it. The registered Opus forced arm (effort max) gives a second model's three-point trend at no added design cost. Neither is scheduled without the author.
+**Status.** open (reference only; feeds no steering decision).
+**Thesis impact.** If R_effort, frontier deliberation on H1 pushes toward protecting, and the open-model brake is not a property of reasoning in general. If R_chance, Sol's judgment is flat in effort over a 5× range of reasoning tokens.

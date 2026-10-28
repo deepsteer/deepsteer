@@ -5432,3 +5432,29 @@ decides:
 
 The smoke pod's other criteria passed; pod 2 is built as Amendment 57 registers.
 
+
+#### Amendment 56 addition outcome, Sol's high-effort arm (2026-10-28; API, $0.83; `data/frontier_f1_gpt61sol_high_v1.json`; reference only)
+
+The 60 screen scenarios × 8 at `reasoning.effort: "high"`: 480 calls, every one served by
+`gpt-6.1-sol`, parse 1.00, refusal 0, no rate-limit waits.
+
+| arm | protect / rule / defer | reasoning tokens, mean (median, q90) | cost |
+|---|---|---|---|
+| minimal reasoning (provider floor, effort low) | 0.723 / 0.100 / 0.177 | 23 (20, 44) | $0.41 |
+| default reasoning (effort medium) | 0.746 / 0.092 / 0.163 | 39 (32, 69) | $0.48 |
+| high effort | 0.773 / 0.088 / 0.140 | 111 (85, 217) | $0.83 |
+
+- B_high = P_protect(high) − P_protect(default) = +0.027 [−0.006, +0.065] (MDE 0.051). The defer
+  share changes by −0.023 [−0.058, +0.008].
+- The high arm reasons 2.8× the default arm's tokens (111 against 39), under the 5× bar.
+
+**Registered branch: deliberation not forced.** Effort high nearly triples Sol's reasoning on these
+items but stays under the 5× bar, so no deliberation claim is made. B_high's CI includes 0; there
+is no brake at high effort either.
+
+**Beside, unregistered (ST-A33):** the protect share rises across the three settings, and high
+against the floor reads +0.050 [+0.013, +0.092]. That contrast was not registered and is one of
+three pairwise reads; it is exploratory.
+
+Sol's F1 file now holds $1.72 (all three arms); combined F1 spend is $7.30 of $100. Nothing here
+feeds a steering decision.

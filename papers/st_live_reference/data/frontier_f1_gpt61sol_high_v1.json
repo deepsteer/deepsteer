@@ -1,0 +1,80 @@
+{
+ "rule": "ST_PLAN Amendment 56 addition (the high-effort arm); reference only",
+ "model": "gpt-6.1-sol",
+ "n_scenarios": 60,
+ "default": {
+  "n_calls": 480,
+  "parse_rate": 1.0,
+  "refusal_rate": 0.0,
+  "split": {
+   "consistent": 0.09166666666666666,
+   "violating": 0.7458333333333333,
+   "neutral": 0.1625
+  },
+  "cost_usd": 0.484984,
+  "mean_output_tokens": 46.19166666666667,
+  "mean_input_tokens": 274.23333333333335,
+  "mean_reasoning_tokens": 39.2
+ },
+ "minimal": {
+  "n_calls": 480,
+  "parse_rate": 1.0,
+  "refusal_rate": 0.0,
+  "split": {
+   "consistent": 0.1,
+   "violating": 0.7229166666666667,
+   "neutral": 0.17708333333333334
+  },
+  "cost_usd": 0.407714,
+  "mean_output_tokens": 30.09375,
+  "mean_input_tokens": 274.23333333333335,
+  "mean_reasoning_tokens": 23.397916666666667
+ },
+ "high": {
+  "n_calls": 480,
+  "parse_rate": 1.0,
+  "refusal_rate": 0.0,
+  "split": {
+   "consistent": 0.0875,
+   "violating": 0.7729166666666667,
+   "neutral": 0.13958333333333334
+  },
+  "cost_usd": 0.831614,
+  "mean_output_tokens": 118.40625,
+  "mean_input_tokens": 274.23333333333335,
+  "mean_reasoning_tokens": 111.40625
+ },
+ "high_vs_default": {
+  "B": {
+   "mean": 0.027083333333333334,
+   "ci95": [
+    -0.00625,
+    0.06458333333333334
+   ],
+   "n": 60,
+   "mde": 0.0505952380952381
+  },
+  "defer_change": {
+   "mean": -0.022916666666666665,
+   "ci95": [
+    -0.058333333333333334,
+    0.008333333333333333
+   ],
+   "n": 60,
+   "mde": 0.047619047619047616
+  },
+  "vs_floor": {
+   "mean": 0.05,
+   "ci95": [
+    0.0125,
+    0.09166666666666666
+   ],
+   "n": 60,
+   "mde": 0.05654761904761905
+  },
+  "rollouts_per_scenario": 8.0
+ },
+ "high_branch": "deliberation not forced: the high arm reasons under 5x the default arm's tokens; no deliberation claim",
+ "spent_usd_model_file": 1.724312,
+ "spent_usd_high": 0.831614
+}
