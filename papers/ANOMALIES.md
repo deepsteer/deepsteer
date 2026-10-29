@@ -1744,7 +1744,8 @@ R_item predicts the shift concentrates on contested items (their share of the sh
 - On the strict tier, care-DPO_Q's shift lies almost entirely on the other 46 items (+0.215 [+0.136, +0.296] against +0.050 on the 5).
 
 The shift leans toward contested items but is not confined to them: on items `none` never breaks, care-DPO_Q breaks the rule more, with the CI above 0. That is R_reasoning's prediction; R_item's (uncontested CI including 0) fails. Descriptive, as registered; the generation read on the panel's 60 rule-right items decides.
-**Status.** open.
+**The generation read (2026-10-29; Amendment 59; `data/st2qg_read_v1.json`).** The panel's 60 rule-right items × 8 under generation with reasoning: P(violating) `none` 0.008, care-DPO_Q 0.006, base-DPO_Q 0.002; care-DPO_Q's G −0.002 [−0.006, 0.000]. **Registered branch: R_item.** No arm breaks the rule on these items under reasoning; the adapters shift toward deferring (+0.048, +0.088). On the 7 two-option items every arm follows the rule in all 56 rollouts, so deferral does not hide rule-breaking. The dose-0 and generation reads agree on the registered set; the rule-breaking lives on cell A′'s forced items, on contested and uncontested ones alike (the overlap check). Both reads sit at a floor on the registered set (`none` 0.008).
+**Status.** resolved (experiment, 2026-10-29): R_item. Next (author): a fresh-seed Qwen replicate with 16 teacher rollouts, under its own amendment.
 **Thesis impact.** If R_reasoning, the specificity instrument of record misses a trained tilt on Qwen, and the Muse claim's "specific on every rule-right read" holds on Muse only; the instrument's coverage needs a generation arm. If R_item, the cell A′ items are not portable across families, and the second-family read of record rests on the panel specificity, which passes.
 
 ## ST-A37 (ledger) — On a second family the steered teacher again gives less protection and less rule-breaking than the unsteered one

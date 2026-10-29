@@ -5823,3 +5823,31 @@ Spent 110.05 of 125.
 6. **Price.** Setup and the download, 0.4; vLLM `none`, 0.15; two merges (54 GB copies), 0.4; two
    merged engines, 0.3; dry runs, 0.1. About **1.4 A100-h** (the author's ~2 as the stop). Spent
    110.05; at most ~112 of 125. The session stops at 2.5 h.
+
+#### Amendment 59 outcome, ST-A36's generation read on Qwen (2026-10-29; pod st2qg, 0.93 A100-h; `data/st2qg_read_v1.json`)
+
+Every step passed (pod 16750, 0.83 h). The base check read TV 0.015. Both merges reproduced pod 2's
+weight kept share to 1e-6 after their sha256 checks. vLLM parity read 0.012 (care) and 0.026
+(base) against a band of 0.063.
+
+| arm | P(violating) of record, 60 items × 8 | G against `none` | follow / break / defer |
+|---|---|---|---|
+| `none` | 0.008 [0.000, 0.025] | | 0.933 / 0.008 / 0.058 |
+| care-DPO_Q | 0.006 [0.000, 0.019] | **−0.002 [−0.006, 0.000]** | 0.887 / 0.006 / 0.106 |
+| base-DPO_Q | 0.002 [0.000, 0.006] | −0.006 [−0.019, 0.000] | 0.844 / 0.002 / 0.146 |
+
+**Registered branch: R_item** (care-DPO_Q's G within +0.03). Qwen is specific on the registered set
+and non-specific on contested forced items. Under generation with reasoning, no arm breaks the rule
+on the panel's rule-right items (every arm at or below 0.008), so the dose-0 specificity read and the
+generation read agree on these items. The rule-breaking pod 2 measured lives on cell A′'s forced
+items.
+
+- **At the floor.** `none` breaks the rule on 0.008 of these items under reasoning, so G's small MDE
+  (0.004) reflects the floor. The adapters' shift on these items is toward deferring (care +0.048,
+  base +0.088 against `none`), not toward breaking the rule.
+- **The defer rival.** Cell A′'s forced originals had no defer option; 53 of these 60 items have
+  one. On the 7 two-option items (56 rollouts per arm) every arm follows the rule every time, so
+  deferral does not hide rule-breaking here. Seven items is a thin check, stated as such.
+
+What follows (Amendment 59 item 5): a fresh-seed Qwen replicate with 16 teacher rollouts per arm (a
+registered deviation from 8), at 5-7 A100-h, under its own amendment. Spent 110.98 of 125.

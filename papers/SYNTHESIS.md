@@ -1507,6 +1507,24 @@ Referee pass.
    (Amendment 54 item 6): a rise on the forced originals alone is non-specific. Both readings are
    reported side by side, and neither is promoted over the other.
 
+**ST-A36's generation read on Qwen (2026-10-29; Amendment 59), what changed.** Positive voice first:
+**on Qwen the adapters' rule-breaking is item-bound: on the panel's rule-right items neither adapter
+breaks the rule under reasoning, so the dose-0 and generation reads agree there, and the
+rule-breaking pod 2 measured lives on cell A′'s forced items.** care-DPO_Q's P(violating) is 0.006
+against `none`'s 0.008 (G −0.002 [−0.006, 0.000]); the adapters shift toward deferring (+0.048,
++0.088) instead. Registered branch R_item; the fresh-seed Qwen replicate with 16 teacher rollouts
+follows (author).
+
+Referee pass.
+1. *"A read at the floor cannot show a tilt."* `none` breaks the rule on 0.008 of these items, so a
+   tilt toward breaking would have room to show and does not; the adapters' movement goes to
+   deferral. The floor is stated with the number.
+2. *"Deferral hides the rule-breaking; the forced originals had no defer option."* On the 7
+   two-option items every arm follows the rule in all 56 rollouts. Seven items is thin, stated as
+   such.
+3. *"R_item rests on one draw of each adapter."* Conceded; the replicate the author scheduled is
+   the test, with a fresh seed and twice the teacher rollouts.
+
 ### ST line thesis (2026-10-29), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
@@ -1527,8 +1545,9 @@ harm-conditioned specificity under forced choice holds on Muse only** (author, 2
   departs where the rule harms (replicate +0.289 [+0.196, +0.392]; first draw +0.147, at the bar),
   deferring on 82–95% of rollouts when deferral is available. On Qwen, care-DPO_Q departs as much on
   the originals as on the twins (forced H\* +0.005 [−0.103, +0.108]) and breaks the rule on the
-  forced originals at 0.314 against `none`'s 0.115, while its dose-0 specificity reads −0.064
-  (the two instruments split, ST-A36).
+  forced originals at 0.314 against `none`'s 0.115, while its dose-0 specificity reads −0.064.
+  On the panel's rule-right items it does not break the rule under reasoning either (0.006 against
+  `none`'s 0.008; ST-A36 resolved R_item): the rule-breaking lives on cell A′'s forced items.
 - Scope: Muse, two draws, one failing the capability bar (−0.040, with longer traces and an MMLU
   loss); Qwen, one thin draw (39 pairs, 24 epochs); the mechanism open.
 
@@ -1539,7 +1558,7 @@ two vectors:
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005). Second family (Qwen, 2026-10-29): non-specific under forced choice (care-DPO_Q forced originals 0.314 against `none`'s 0.115, forced H\* +0.005), dose-0 specificity −0.064; ST-A36 decides whether the split is the items or the readout |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005). Second family (Qwen, 2026-10-29): non-specific under forced choice (care-DPO_Q forced originals 0.314 against `none`'s 0.115, forced H\* +0.005), dose-0 specificity −0.064; ST-A36 resolved R_item (the split is the items: under reasoning no arm breaks the rule on the panel's rule-right items); a fresh-seed Qwen replicate with 16 teacher rollouts is next |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
