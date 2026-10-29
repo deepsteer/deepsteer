@@ -1,0 +1,33 @@
+{
+ "rule": "ST-A36 item-overlap check (fixed before computing); descriptive",
+ "read": {
+  "contested (F_none>0)": {
+   "n_contested": 19,
+   "share_items": 0.37254901960784315,
+   "care": {
+    "share_of_shift": 0.5529411764705883,
+    "mean_shift_contested": "+0.283 [+0.138, +0.434] n 19",
+    "mean_shift_uncontested": "+0.148 [+0.078, +0.234] n 32"
+   },
+   "base": {
+    "share_of_shift": 0.6052631578947368,
+    "mean_shift_contested": "+0.599 [+0.461, +0.724] n 19",
+    "mean_shift_uncontested": "+0.234 [+0.129, +0.348] n 32"
+   }
+  },
+  "strict (F_none>=0.5)": {
+   "n_contested": 5,
+   "share_items": 0.09803921568627451,
+   "care": {
+    "share_of_shift": 0.058823529411764705,
+    "mean_shift_contested": "+0.050 [-0.175, +0.225] n 5",
+    "mean_shift_uncontested": "+0.215 [+0.136, +0.296] n 46"
+   },
+   "base": {
+    "share_of_shift": 0.10526315789473684,
+    "mean_shift_contested": "+0.400 [+0.375, +0.450] n 5",
+    "mean_shift_uncontested": "+0.367 [+0.261, +0.473] n 46"
+   }
+  }
+ }
+}

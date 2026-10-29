@@ -1738,6 +1738,12 @@ On Muse, care-DPO stayed within 0.03 of `none` on both (−0.054 and +0.022). Th
 - care-DPO_Q's mean shift on contested and on uncontested items, item bootstrap (10,000 draws, seed 0); base-DPO_Q beside.
 
 R_item predicts the shift concentrates on contested items (their share of the shift above their share of items) and the uncontested items' mean shift has a CI including 0. R_reasoning predicts a shift on uncontested items too (CI above 0). Either way the generation read on the panel's 60 rule-right items decides (author).
+**The item-overlap check (2026-10-29; `data/st_a36_overlap_v1.json`; descriptive).** 19 of the 51 originals are contested (`none` breaks the rule at least once in 8); 5 are strictly contested (≥ 0.5).
+- Contested items carry 55% of care-DPO_Q's summed shift against 37% of the items (base-DPO_Q: 61%).
+- care-DPO_Q's mean shift: contested +0.283 [+0.138, +0.434]; **uncontested +0.148 [+0.078, +0.234]**. base-DPO_Q: +0.599 and +0.234 [+0.129, +0.348].
+- On the strict tier, care-DPO_Q's shift lies almost entirely on the other 46 items (+0.215 [+0.136, +0.296] against +0.050 on the 5).
+
+The shift leans toward contested items but is not confined to them: on items `none` never breaks, care-DPO_Q breaks the rule more, with the CI above 0. That is R_reasoning's prediction; R_item's (uncontested CI including 0) fails. Descriptive, as registered; the generation read on the panel's 60 rule-right items decides.
 **Status.** open.
 **Thesis impact.** If R_reasoning, the specificity instrument of record misses a trained tilt on Qwen, and the Muse claim's "specific on every rule-right read" holds on Muse only; the instrument's coverage needs a generation arm. If R_item, the cell A′ items are not portable across families, and the second-family read of record rests on the panel specificity, which passes.
 
