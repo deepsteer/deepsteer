@@ -127,7 +127,8 @@ def test_runner_and_sync():
     # adapter), a step runs under the wrong interpreter, or pod 1's direction is not synced
     sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
     assert re.search(r'STEPS" = "st2qp" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-qwen38_27b'
-                     r'\}"; OUT_SUB=st2qp\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-28\.5\}"', sh)
+                     r'\}"; OUT_SUB=st2qp\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-28\.5'
+                     r'\}"', sh)
     blk = sh.split('if [ "$STEPS" = "st2qp" ]; then\n    DEADLINE=')[1].split("continue")[0]
     order = [blk.index(f"--step {s}") for s in ("rr_gen", "base_vllm", "base_hf", "teacher",
                                                 "train", "select", "hf_arm", "vllm_arm",
@@ -228,7 +229,8 @@ def test_st2qg_runner_and_sync():
     sync = set((ST / "runpod" / "sync_st2qg.txt").read_text().split())
     pod2 = "outputs/st2qp/qwen38_27b/"
     assert {pod2 + f"adapters/{a}/{f}" for a in ("care", "base")
-            for f in ("adapter_config.json", "adapter_model.safetensors", "st_adapter.json")} <= sync
+            for f in ("adapter_config.json", "adapter_model.safetensors",
+                      "st_adapter.json")} <= sync
     assert {pod2 + f"parity/hf_{a}.npy" for a in ("none", "care", "base")} <= sync
     assert pod2 + "st2qp_record.json" in sync
 
@@ -250,3 +252,90 @@ def test_st2qg_dry_run(tmp_path):
     q = tmp_path / "qwen38_27b"
     assert all((q / "gen" / f"spec_{a}.jsonl").exists() for a in ("none", "care", "base"))
     assert A.a36_read(q)["branch"]
+
+
+def test_st2qr_runner_and_sync():
+    # most probable failure (Amendment 60): the replicate regenerates none's rows (a new seed set,
+    # unpaired with pod 2's), runs a base arm, or a reused file is missing from the sync list
+    import st2qr_driver as R
+
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "st2qr" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-qwen38_27b'
+                     r'\}"; OUT_SUB=st2qr\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-13\.5'
+                     r'\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "st2qr" ]; then\n    DEADLINE=')[1].split("continue")[0]
+    order = [blk.index(f"--step {s}") for s in ("teacher", "train", "select", "hf_arm",
+                                                "vllm_arm", "hfgen")]
+    assert order == sorted(order)
+    assert "base_vllm" not in blk and "rr_gen" not in blk and "--arm base" not in blk
+    sync = set((ST / "runpod" / "sync_st2qr.txt").read_text().split())
+    assert {"outputs/st2qp/qwen38_27b/" + f for f in R.POD2_FILES} <= sync
+    assert {"outputs/st2qg/qwen38_27b/" + f for f in R.ST2QG_FILES} <= sync
+    assert "outputs/st2q/qwen38_27b/directions.npz" in sync
+
+
+def test_st2qr_inherit_copies_once_and_marks_phases(tmp_path):
+    # most probable failure: a resumed pod overwrites this run's files with pod 2's, or the gate
+    # runs without pod 2's base check and band (the inherited phases)
+    import st2qr_driver as R
+
+    p2, qg, out = tmp_path / "p2", tmp_path / "qg", tmp_path / "out"
+    for f in R.POD2_FILES:
+        (p2 / f).parent.mkdir(parents=True, exist_ok=True)
+        (p2 / f).write_text("pod2")
+    (qg / "gen").mkdir(parents=True)
+    (qg / "gen" / "spec_none.jsonl").write_text("qg")
+    (p2 / "st2qp_record.json").write_text(json.dumps({"phases": {
+        "rr_gen": {"status": "ok"}, "base_vllm": {"status": "ok"},
+        "base_hf": {"status": "ok", "base_check_ok": True, "band_tv": 0.013,
+                    "engaged_held": ["a"]}}}))
+    out.mkdir()
+    c = {"out": out, "record": out / "st2qr_record.json"}
+    r = R.inherit(c, p2, qg)
+    assert len(r["copied"]) == len(R.POD2_FILES) + 1
+    rec = json.loads(c["record"].read_text())["phases"]
+    assert rec["base_hf"]["band_tv"] == 0.013 and "inherited" in rec["base_hf"]
+    (out / "gen" / "h1_none.jsonl").write_text("this run")
+    assert R.inherit(c, p2, qg)["copied"] == []
+    assert (out / "gen" / "h1_none.jsonl").read_text() == "this run"
+
+
+def test_rep_criteria_and_replication_rule():
+    # most probable failure (Amendment 60 item 6): an unreadable criterion counts as matching pod
+    # 2's pattern, or the forced H* criterion is read as "above 0" instead of "includes 0"
+    b = lambda m, lo, hi: {"mean": m, "ci95": [lo, hi]}  # noqa: E731
+    x = {"dP_record": b(0.4, 0.3, 0.5), "capability": {"passes": True}, "guard": {"fails": False},
+         "specificity": {"dP_violating": b(-0.06, -0.09, -0.03)},
+         "forced": {"original_shift": b(0.2, 0.1, 0.3), "forced_H_star": b(0.0, -0.1, 0.1)}}
+    c = A.rep_criteria(x, b(-0.002, -0.006, 0.0))
+    assert all(c.values())
+    y = {**x, "forced": {**x["forced"], "forced_H_star": b(0.2, 0.05, 0.3)}}
+    assert not A.rep_criteria(y, b(0.0, 0.0, 0.0))["7_forced_H_star_ci_includes_0"]
+    z = {k: v for k, v in x.items() if k not in ("capability", "guard")}
+    z["dP_record"] = {"mean": None}
+    cz = A.rep_criteria(z, b(0.0, 0.0, 0.0))
+    assert cz["1_heldout_protection_ci_above_0"] is None and cz["2_capability_within_bar"] is None
+
+
+@pytest.mark.slow
+def test_st2qr_dry_run(tmp_path):
+    # most probable failure: a replicate step breaks on a tiny Qwen (the 16-rollout teacher stage,
+    # one-arm selection, the generation cell in the merged engine, the fallback with the 60 items)
+    if not (POD1 / "gen" / "arm_care.jsonl").exists():
+        pytest.skip("pod 1's rows are not local")
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    R = ST / "outputs"
+    base = [sys.executable, str(SCRIPTS / "st2qr_driver.py"), "--out", str(tmp_path), "--pod1",
+            str(POD1), "--pod2", str(R / "st2qp" / "qwen38_27b"), "--st2qg",
+            str(R / "st2qg" / "qwen38_27b"), "--dry-run"]
+    for st in (["rr_gen"], ["base_vllm"], ["base_hf"], ["teacher"], ["train", "--arm", "care"],
+               ["select"], ["hf_arm", "--arm", "care"],
+               ["vllm_arm", "--arm", "care", "--dry-fail-parity"], ["hfgen", "--arm", "care"],
+               ["hfgen", "--arm", "none"]):
+        r = subprocess.run(base + ["--step"] + st, capture_output=True, text=True, cwd=ROOT,
+                           env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    q = tmp_path / "qwen38_27b"
+    rec = json.loads((q / "st2qr_record.json").read_text())["phases"]
+    assert rec["select"]["chosen"] == {"care": 3}
+    assert all((q / "gen" / f"spec_{a}.hf.jsonl").exists() for a in ("care", "none"))

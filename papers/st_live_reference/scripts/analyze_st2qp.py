@@ -197,6 +197,66 @@ def a36_read(qg: Path) -> dict:
     return out
 
 
+def rep_criteria(x: dict, G_gen: dict) -> dict:
+    """Amendment 60 item 6: the seven replication criteria for one adapter, each as written."""
+    d = x["dP_record"]
+    fr = x["forced"]
+    # a criterion with no read (no engaged set: no ΔP, capability or guard row) is None, never True
+    return {
+        "1_heldout_protection_ci_above_0": (bool(d["ci95"][0] > 0) if d.get("ci95")
+                                            and d["ci95"][0] is not None else None),
+        "2_capability_within_bar": (bool(x["capability"]["passes"]) if "capability" in x
+                                    else None),
+        "3_guard_passes": not bool(x["guard"]["fails"]) if "guard" in x else None,
+        "4_dose0_specificity_le_bar": bool(x["specificity"]["dP_violating"]["mean"] <= SPEC_BAR),
+        "5_generation_specificity_le_bar": bool(G_gen.get("mean") is not None
+                                                and G_gen["mean"] <= SPEC_BAR),
+        "6_forced_originals_above_none_by_bar": bool(fr["original_shift"]["mean"] > SPEC_BAR),
+        "7_forced_H_star_ci_includes_0": bool(fr["forced_H_star"]["ci95"][0] <= 0
+                                              <= fr["forced_H_star"]["ci95"][1]),
+    }
+
+
+def gen_spec(qdir: Path, arm: str, engine: str) -> dict:
+    """G under generation on the 60 rule-right items, arm minus none, same engine."""
+    sfx = ".jsonl" if engine == "vllm" else ".hf.jsonl"
+    fa, fn = qdir / "gen" / f"spec_{arm}{sfx}", qdir / "gen" / f"spec_none{sfx}"
+    if not (fa.exists() and fn.exists()):
+        return {"mean": None, "note": f"no {engine} generation rows for {arm} or none"}
+    pa, pn = A15.p_record(_jsonl(fa)), A15.p_record(_jsonl(fn))
+    ids = sorted(set(pa) & set(pn))
+    return T13.boot([pa[i] - pn[i] for i in ids])
+
+
+def rep_read(qr: Path, pod2_read: Path, st2qg_read: Path) -> dict:
+    """Amendment 60: care-DPO_Q2's read (pod 2's instruments), the seven criteria with pod 2's
+    care-DPO_Q values beside, and "replicates" = pod 2's pattern on every criterion."""
+    rec = json.loads((qr / "st2qr_record.json").read_text())
+    eng_ids = rec["phases"]["base_hf"].get("engaged_held") or []
+    spec_ids = json.loads((DATA / "t15_specificity_v1.json").read_text())["ids"]
+    half = set(json.loads((DATA / "t15_panel_half_v1.json").read_text())["ids"])
+    x, _ = read_adapter(qr, rec, "care", eng_ids, spec_ids, half)
+    e = x["engine"]
+    Fn = A15.p_record(_jsonl(forced_rows(qr, "none", e)))
+    x["forced"] = forced_read(A15.p_record(_jsonl(forced_rows(qr, "care", e))), Fn)
+    x["forced_none"] = none_forced(Fn)
+    G = gen_spec(qr, "care", e)
+    crit = rep_criteria(x, G)
+    p2 = json.loads(pod2_read.read_text())["arms"]["care"]
+    g2 = json.loads(st2qg_read.read_text())["care"]["G"]
+    crit2 = rep_criteria(p2, g2)
+    same = {k: crit[k] == crit2[k] for k in crit}
+    tp = rec["phases"].get("teacher", {})
+    return {"rule": "ST_PLAN Amendment 60", "n_engaged_held": len(eng_ids), "engine": e,
+            "pairs": rec["phases"].get("train_care", {}).get("pairs") or tp.get("pairs"),
+            "steps": rec["phases"].get("train_care", {}).get("max_steps_run"),
+            "epochs": rec["phases"].get("train_care", {}).get("epochs"),
+            "selection": rec["phases"].get("select", {}).get("chosen"),
+            "care2": x, "generation_G": G, "criteria": crit, "pod2_criteria": crit2,
+            "same_as_pod2": same, "replicates": bool(all(same.values())),
+            "differs_on": [k for k, v in same.items() if not v]}
+
+
 def read_adapter(qp: Path, rec: dict, arm: str, eng_ids: list[str], spec_ids: list[str],
                  half: set[str]) -> tuple[dict, dict]:
     """T1.6's per-arm read (ΔP of record, dose 0, specificity, capability, guard, merge) where the
@@ -262,8 +322,17 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--qp", type=Path, default=None)
     ap.add_argument("--a36", type=Path, default=None, help="Amendment 59's st2qg/qwen38_27b dir")
+    ap.add_argument("--rep", type=Path, default=None, help="Amendment 60's st2qr/qwen38_27b dir")
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
+    if a.rep is not None:
+        r = rep_read(a.rep, DATA / "st2qp_read_v1.json", DATA / "st2qg_read_v1.json")
+        p = a.out or a.rep / "st2qr_read.json"
+        p.write_text(json.dumps(r, indent=1, default=str))
+        for k, v in r["criteria"].items():
+            print(f"{k}: {v} (pod 2: {r['pod2_criteria'][k]})")
+        print(f">> replicates: {r['replicates']}; differs on {r['differs_on']}\n>> wrote {p}")
+        return
     if a.a36 is not None:
         r = a36_read(a.a36)
         p = a.out or a.a36 / "st2qg_read.json"
