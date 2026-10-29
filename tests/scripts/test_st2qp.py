@@ -191,3 +191,62 @@ def test_a37_pairs_share_the_rejected_trace_and_the_rule():
     assert r["d_overlap"]["mean"] > 0  # steered chosen shares more tokens with the rejected
     both = A.a37({"m": (care, none), "q": (care, none)})
     assert both["branch"].startswith("both")
+
+
+def test_a36_branch_and_read(tmp_path):
+    # most probable failure (Amendment 59 item 4): an arm that failed parity is read anyway, or
+    # the bar is applied to base instead of care
+    assert A.a36_branch({"mean": 0.03}).startswith("R_item")
+    assert A.a36_branch({"mean": 0.031}).startswith("R_reasoning")
+    assert A.a36_branch({}).startswith("no read")
+    g = tmp_path / "gen"
+    g.mkdir()
+
+    def rows(arm, p):
+        return [{"scenario_id": f"I{i:02d}", "rollout": k, "norm_status":
+                 "violating" if k / 8 < p else "consistent", "status": "completed"}
+                for i in range(20) for k in range(8)]
+    for arm, p in (("none", 0.125), ("care", 0.125), ("base", 0.5)):
+        (g / f"spec_{arm}.jsonl").write_text("\n".join(json.dumps(r) for r in rows(arm, p)))
+    rec = {"gen_none": {"base_tv": 0.01, "base_check_ok": True},
+           "gen_care": {"parity_ok": True}, "gen_base": {"parity_ok": False}}
+    (tmp_path / "st2qg_record.json").write_text(json.dumps({"phases": rec}))
+    r = A.a36_read(tmp_path)
+    assert r["care"]["G"]["mean"] == pytest.approx(0.0) and r["branch"].startswith("R_item")
+    assert "base" not in r  # failed parity: not read
+
+
+def test_st2qg_runner_and_sync():
+    # most probable failure (Amendment 59): the merge runs before none's base check, the merged arm
+    # runs under the HF interpreter, or pod 2's adapters or saved letters are not synced
+    sh = (ST / "runpod" / "remote_st_screen.sh").read_text()
+    assert re.search(r'STEPS" = "st2qg" \]; then\n(?:  #.*\n)*  MODELS="\$\{MODELS:-qwen38_27b'
+                     r'\}"; OUT_SUB=st2qg\n  SESSION_MAX_HOURS="\$\{SESSION_MAX_HOURS:-2\.5\}"', sh)
+    blk = sh.split('if [ "$STEPS" = "st2qg" ]; then\n    QG=')[1].split("continue")[0]
+    assert blk.index("--step gen --arm none") < blk.index("--step merge")
+    assert "$VPY $QG --step merge" in blk and '$PY $QG --step gen --arm "$arm"' in blk
+    sync = set((ST / "runpod" / "sync_st2qg.txt").read_text().split())
+    pod2 = "outputs/st2qp/qwen38_27b/"
+    assert {pod2 + f"adapters/{a}/{f}" for a in ("care", "base")
+            for f in ("adapter_config.json", "adapter_model.safetensors", "st_adapter.json")} <= sync
+    assert {pod2 + f"parity/hf_{a}.npy" for a in ("none", "care", "base")} <= sync
+    assert pod2 + "st2qp_record.json" in sync
+
+
+@pytest.mark.slow
+def test_st2qg_dry_run(tmp_path):
+    # most probable failure: the generation read breaks on a tiny Qwen (the panel items through
+    # h1_jobs, the merge of a fresh adapter, the parity rows' letters)
+    if not (POD1 / "gen" / "h1_rollouts.jsonl").exists():
+        pytest.skip("pod 1's rows are not local")
+    env = {**os.environ, "PYTHONPATH": str(ROOT)}
+    base = [sys.executable, str(SCRIPTS / "st2qg_driver.py"), "--out", str(tmp_path), "--pod1",
+            str(POD1), "--pod2", str(tmp_path / "qwen38_27b"), "--dry-run"]
+    for st in (["gen", "--arm", "none"], ["merge", "--arm", "care"], ["gen", "--arm", "care"],
+               ["merge", "--arm", "base"], ["gen", "--arm", "base"]):
+        r = subprocess.run(base + ["--step"] + st, capture_output=True, text=True, cwd=ROOT,
+                           env=env)
+        assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+    q = tmp_path / "qwen38_27b"
+    assert all((q / "gen" / f"spec_{a}.jsonl").exists() for a in ("none", "care", "base"))
+    assert A.a36_read(q)["branch"]

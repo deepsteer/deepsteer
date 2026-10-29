@@ -174,6 +174,12 @@ elif [ "$STEPS" = "st2qs" ]; then
   # the merge and its gate, the merged engine); pod 1's rows synced (sync_st2qs.txt); 2.5 h stop
   MODELS="${MODELS:-qwen38_27b}"; OUT_SUB=st2qs
   SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
+elif [ "$STEPS" = "st2qg" ]; then
+  # ST-A36's generation read on Qwen3.8-27B (author, 2026-10-29; Amendment 59): the panel's 60
+  # rule-right items x 8 with reasoning on vLLM under none and pod 2's two merged adapters; pod 1's
+  # rows and pod 2's adapters, parity letters and record synced (sync_st2qg.txt); 2.5 h stop
+  MODELS="${MODELS:-qwen38_27b}"; OUT_SUB=st2qg
+  SESSION_MAX_HOURS="${SESSION_MAX_HOURS:-2.5}"
 elif [ "$STEPS" = "st2qp" ]; then
   # pod 2 on Qwen3.8-27B (author, 2026-10-28; Amendment 57 and its additions): the rule-right
   # pool, the base reads, the steered teacher, two DPO adapters with checkpoints at thirds, the
@@ -570,6 +576,16 @@ if [ "$STEPS" = "st2qs" ]; then  # pod 1's rows (synced); the specificity, panel
     [ -f "$f" ] || { echo "FATAL: $f missing (smoke pod inputs; SYNC_OUTPUTS from sync_st2qs.txt)"; exit 1; }
   done
 fi
+ST2QP_POD2="$REPO_DIR/papers/st_live_reference/outputs/st2qp/qwen38_27b"  # SYNC_OUTPUTS (pod 2)
+if [ "$STEPS" = "st2qg" ]; then  # pod 1's rows; pod 2's adapters, parity letters and record (synced); the specificity set (committed)
+  for f in "$ST2Q_POD1/gen/h1_rollouts.jsonl" "$ST2QP_POD2/st2qp_record.json" \
+           "$ST2QP_POD2/adapters/care/adapter_model.safetensors" "$ST2QP_POD2/adapters/care/st_adapter.json" \
+           "$ST2QP_POD2/adapters/base/adapter_model.safetensors" "$ST2QP_POD2/adapters/base/st_adapter.json" \
+           "$ST2QP_POD2/parity/hf_none.npy" "$ST2QP_POD2/parity/hf_care.npy" "$ST2QP_POD2/parity/hf_base.npy" \
+           papers/st_live_reference/data/t15_specificity_v1.json; do
+    [ -f "$f" ] || { echo "FATAL: $f missing (Amendment 59 inputs; SYNC_OUTPUTS from sync_st2qg.txt)"; exit 1; }
+  done
+fi
 if [ "$STEPS" = "st2qp" ]; then  # pod 1's rows, direction and record (synced); the sets, pool and forced items (committed)
   for f in "$ST2Q_POD1/gen/h1_rollouts.jsonl" "$ST2Q_POD1/gen/arm_care.jsonl" "$ST2Q_POD1/gen/arm_none.jsonl" \
            "$ST2Q_POD1/directions.npz" "$ST2Q_POD1/st2q_record.json" \
@@ -841,6 +857,16 @@ dry_runs() {
         && PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DQS --step hf_arm --arm care \
         && $PY $DQS --step vllm_arm --arm care || { echo "DRY RUN FAILED (st2qs)"; return 1; }
       rm -rf "$OUT/_dry_st2qs"
+    fi
+    if [ "$STEPS" = "st2qg" ] && [ "$m" = "qwen38_27b" ]; then  # every Amendment 59 step on a tiny Qwen
+      rm -rf "$OUT/_dry_st2qg"
+      DQG="papers/st_live_reference/scripts/st2qg_driver.py --out $OUT/_dry_st2qg --pod1 $ST2Q_POD1 --pod2 $OUT/_dry_st2qg/qwen38_27b --dry-run"
+      $PY $DQG --step gen --arm none || { echo "DRY RUN FAILED (st2qg gen none)"; return 1; }
+      for arm in care base; do
+        PYTHONPATH="$REPO_DIR" "$VLLM_VENV/bin/python" $DQG --step merge --arm "$arm" \
+          && $PY $DQG --step gen --arm "$arm" || { echo "DRY RUN FAILED (st2qg $arm)"; return 1; }
+      done
+      rm -rf "$OUT/_dry_st2qg"
     fi
     if [ "$STEPS" = "st2qp" ] && [ "$m" = "qwen38_27b" ]; then  # every pod 2 step on a tiny Qwen, base's fallback forced
       rm -rf "$OUT/_dry_st2qp"
@@ -1215,6 +1241,18 @@ for m in $MODELS; do
     [ "$rc" -ne 0 ] && RC_ALL=$rc
     continue
   fi
+  if [ "$STEPS" = "st2qg" ]; then
+    QG="papers/st_live_reference/scripts/st2qg_driver.py --out $OUT --pod1 $ST2Q_POD1 --pod2 $ST2QP_POD2"
+    rc=0
+    $PY $QG --step gen --arm none || rc=$?   # vLLM via its worker (downloads the snapshot)
+    for arm in care base; do   # the in-place merge (HF stack), then the merged engine
+      [ "$rc" -eq 0 ] && { PYTHONPATH="$REPO_DIR" $VPY $QG --step merge --arm "$arm" || rc=$?; }
+      [ "$rc" -eq 0 ] && { $PY $QG --step gen --arm "$arm" || rc=$?; }
+    done
+    echo ">> $m exit $rc (0 ok; banked either way)"
+    [ "$rc" -ne 0 ] && RC_ALL=$rc
+    continue
+  fi
   if [ "$STEPS" = "st2qp" ]; then
     DEADLINE="$($PY -c "import time;print(int($SESSION_T0 + $MAX_S - 900))")"  # 15 min to bank
     QP="papers/st_live_reference/scripts/st2qp_driver.py --out $OUT --pod1 $ST2Q_POD1 --deadline $DEADLINE"
@@ -1368,7 +1406,7 @@ fi
 echo "{\"session_end_utc\": \"$(date -u +%FT%TZ)\", \"rc\": $RC_ALL}" > "$OUT/session_end.json"
 echo "==================== $OUT_SUB/reprice ===================="
 if [ "$STEPS" = "rider" ]; then RP_DIRS="$BANKED $OUT"; else RP_DIRS="$OUT"; fi
-if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2q" ] && [ "$STEPS" != "st2qs" ] && [ "$STEPS" != "st2qp" ]; then  # re-priced locally
+if [ "$STEPS" != "rider2" ] && [ "$STEPS" != "t13" ] && [ "$STEPS" != "t14" ] && [ "$STEPS" != "t15" ] && [ "$STEPS" != "st2a" ] && [ "$STEPS" != "st2b" ] && [ "$STEPS" != "st2c" ] && [ "$STEPS" != "st2dl" ] && [ "$STEPS" != "st2gl" ] && [ "$STEPS" != "st2m" ] && [ "$STEPS" != "st2ml" ] && [ "$STEPS" != "st2lb" ] && [ "$STEPS" != "st2mr" ] && [ "$STEPS" != "st2fx" ] && [ "$STEPS" != "t16" ] && [ "$STEPS" != "c13" ] && [ "$STEPS" != "c13c" ] && [ "$STEPS" != "a2m" ] && [ "$STEPS" != "a2g" ] && [ "$STEPS" != "a2f" ] && [ "$STEPS" != "t16r" ] && [ "$STEPS" != "a2t" ] && [ "$STEPS" != "st2gs" ] && [ "$STEPS" != "st2q" ] && [ "$STEPS" != "st2qs" ] && [ "$STEPS" != "st2qp" ] && [ "$STEPS" != "st2qg" ]; then  # re-priced locally
   $PY papers/st_live_reference/scripts/reprice_tier1.py --screen-dir $RP_DIRS || echo "WARN: re-price failed"
 fi
 echo ">> ST T1.0 ${STEPS:-relaunch} done (rc=$RC_ALL). rsync-back -> papers/st_live_reference/outputs/$OUT_SUB/"
