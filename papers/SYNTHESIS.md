@@ -1546,10 +1546,12 @@ harm-conditioned specificity under forced choice holds on Muse only** (author, 2
   deferring on 82–95% of rollouts when deferral is available. On Qwen, care-DPO_Q departs as much on
   the originals as on the twins (forced H\* +0.005 [−0.103, +0.108]) and breaks the rule on the
   forced originals at 0.314 against `none`'s 0.115, while its dose-0 specificity reads −0.064.
-  On the panel's rule-right items it does not break the rule under reasoning either (0.006 against
-  `none`'s 0.008; ST-A36 resolved R_item): the rule-breaking lives on cell A′'s forced items.
+  On the panel's rule-right items no arm breaks the rule under reasoning either (care-DPO_Q 0.006
+  against `none`'s 0.008; ST-A36 resolved R_item): the dose-0 and generation reads agree on the
+  registered set, and the rule-breaking pod 2 measured lives on cell A′'s forced items.
 - Scope: Muse, two draws, one failing the capability bar (−0.040, with longer traces and an MMLU
-  loss); Qwen, one thin draw (39 pairs, 24 epochs); the mechanism open.
+  loss); Qwen, one thin draw (39 pairs, 24 epochs), so the damping on Qwen rests on one draw (a
+  care-only replicate is registered, Amendment 60); the mechanism open.
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:
