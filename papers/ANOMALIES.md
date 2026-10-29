@@ -1745,5 +1745,11 @@ On Muse, care-DPO stayed within 0.03 of `none` on both (−0.054 and +0.022). Th
 - R_damping: steered chosen traces carry a smaller, more conservative shift than unsteered protect traces, so the steered teacher's adapter moves less in every direction (less protection, less rule-breaking), on both families.
 - R_selection: the unsteered protect traces are drawn from scenarios and rollouts where the model already protected, a stronger and more consistent signal than steered traces, which include protections the model would not choose alone.
 **Discriminator.** Zero GPU on saved rows: the per-pair DPO margins and chosen-trace likelihoods under the base model, care against base (T1.6 and pod 2 saved the training records). R_damping predicts the steered chosen traces sit closer to the rejected ones; R_selection predicts lower base-model likelihood for the steered chosen traces. Not run without the author.
+**The check, fixed before it computes (2026-10-29; author: run it now).** Zero GPU, on each family's training pairs of record (T1.6's `harm_pairs` on the replicate's `arm_care_03` and `arm_none` rows for Muse; pod 2's on its teacher rows for Qwen). care and base pairs at the same position share their rejected trace, so each comparison is paired:
+- (a) likelihood: d_nll = NLL(care's chosen trace) − NLL(base's chosen trace), the mean per-token NLL under the unsteered model (`trace_nll_unsteered`), pair bootstrap (10,000 draws, seed 0);
+- (b) closeness to the rejected trace: d_overlap = J(care's chosen, rejected) − J(base's chosen, rejected), with J the Jaccard overlap of the two traces' token sets, pair bootstrap;
+- beside: the chosen traces' length ratio, care to base.
+
+R_selection if (a)'s CI lies above 0 on both families and (b)'s does not; R_damping if (b)'s CI lies above 0 on both families and (a)'s does not; both if both; any other combination is stated with its numbers as unresolved.
 **Status.** open.
 **Thesis impact.** The thesis's "only the steered one produces a specific one" was a Muse statement. On Qwen neither teacher's adapter is specific under forced choice; the steered one is less non-specific (−0.172 on the originals). The teacher's effect replicates as damping, not as specificity.
