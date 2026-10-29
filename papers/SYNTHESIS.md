@@ -1507,23 +1507,30 @@ Referee pass.
    (Amendment 54 item 6): a rise on the forced originals alone is non-specific. Both readings are
    reported side by side, and neither is promoted over the other.
 
-### ST line thesis (2026-10-27), positive voice
+### ST line thesis (2026-10-29), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
 indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_harm`'s rule-right tilt
 at its operating dose was indistinguishable from a random vector's, and the random vector's own tilt
 grew with dose.
 
-Distilling a gate-passing `care_harm` steer into DPO on Muse gives **adapters whose rule-breaking
-tracks where the harm falls**. They protect on held-out rule-harm items (+0.338, +0.326) and stay
-within 0.03 of the base model on every rule-right read, including forced choice; the panel set reads
-lower, toward the rule (−0.054, −0.046). Forced to choose on harm-reversed twins of those rule-right
-items, they depart where the rule harms (replicate +0.289 [+0.196, +0.392]; first draw +0.147, at the
-bar), while deferring on 82–95% of rollouts when deferral is available. The identical recipe with
-unsteered traces is harm-sensitive and non-specific: it departs on 44% of rollouts where departing
-harms. Both teachers produce harm-sensitive adapters; only the steered one produces a specific one.
-Two draws, one family, one of the two failing the capability bar (−0.040, with longer traces and an
-MMLU loss), and the mechanism open.
+**On two families, steer-then-DPO yields adapters that protect on held-out rule-harm items without
+capability loss, and the steered teacher damps rule-breaking relative to an unsteered one;
+harm-conditioned specificity under forced choice holds on Muse only** (author, 2026-10-29).
+- Protection without capability loss: Muse care-DPO +0.338 [+0.264, +0.410] on 54 engaged H1_held,
+  capability −0.005; Qwen care-DPO_Q +0.449 [+0.338, +0.566] on 17 (MDE 0.16), capability +0.010.
+- The steered teacher damps: on Muse, base-DPO is harm-sensitive and non-specific (it departs on
+  44% of rollouts where departing harms and breaks rules on every rule-right read) while care-DPO
+  stays within 0.03 of `none`; on Qwen, care-DPO_Q breaks the rule less than base-DPO_Q on the forced
+  originals (−0.172 [−0.248, −0.096]) and protects less (−0.103 [−0.213, −0.007]; ST-A27, ST-A37).
+- Harm-conditioned specificity under forced choice, Muse only: on Muse's harm-reversed twins care-DPO
+  departs where the rule harms (replicate +0.289 [+0.196, +0.392]; first draw +0.147, at the bar),
+  deferring on 82–95% of rollouts when deferral is available. On Qwen, care-DPO_Q departs as much on
+  the originals as on the twins (forced H\* +0.005 [−0.103, +0.108]) and breaks the rule on the
+  forced originals at 0.314 against `none`'s 0.115, while its dose-0 specificity reads −0.064
+  (the two instruments split, ST-A36).
+- Scope: Muse, two draws, one failing the capability bar (−0.040, with longer traces and an MMLU
+  loss); Qwen, one thin draw (39 pairs, 24 epochs); the mechanism open.
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:
@@ -1532,7 +1539,7 @@ two vectors:
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005) |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005). Second family (Qwen, 2026-10-29): non-specific under forced choice (care-DPO_Q forced originals 0.314 against `none`'s 0.115, forced H\* +0.005), dose-0 specificity −0.064; ST-A36 decides whether the split is the items or the readout |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
