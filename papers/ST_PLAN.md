@@ -5788,3 +5788,38 @@ registered thin-set expectation said capability would fall; it did not (+0.010, 
 on the training scenarios was not read, so the expectation's other half is not tested.
 
 Spent 110.05 of 125.
+
+### Amendment 59 (2026-10-29; author; zero GPU; ST-A36's generation read on Qwen; before it is built or computes)
+
+1. **Purpose (author).** ST-A36: on Qwen, dose-0 specificity discriminates while forced choice with
+   reasoning breaks the rule. The item-overlap check (descriptive) found a shift on uncontested
+   items too (+0.148 [+0.078, +0.234]). This read decides between R_item and R_reasoning.
+2. **Design.**
+   - The panel's 60 rule-right items (`data/t15_specificity_v1.json`), the specificity read's own
+     items, in its own frame: the agent frame at primary (`letter_chat_messages(s, order, "agent",
+     "neutral", "primary")`), with each item's own options (53 with a defer option, 7 with two).
+   - Generation with reasoning on vLLM: × 8 rollouts at permutations `assign_letters(s, k)`, k =
+     0..7, effort medium, the cap of record, sampler v2, seeds shared across arms.
+   - Arms: `none` (the hub snapshot); care-DPO_Q and base-DPO_Q, pod 2's step-237 adapters, their
+     sha256 checked against pod 2's sidecars, merged by T1.6's writer, with the weight kept share
+     required to equal pod 2's (0.875, 0.871) to 1e-6.
+   - Parity, as registered for pod 2: `none`'s first-token letters on pod 2's 64 parity rows against
+     pod 2's saved HF base letters (TV ≤ 0.10); each merged arm's against pod 2's saved HF-attached
+     letters (TV ≤ pod 2's band 0.013 + 0.05). An arm failing parity is set aside and not reported
+     (no fallback is priced).
+3. **The read.** P(violating) of record per item (`p_record`: truncated rollouts count as
+   non-violating, unparsed are missing), and G(arm) = P(arm) − P(`none`) per item, item bootstrap
+   (10,000 draws, seed 0), with its MDE. Amendment 31's sign classes (±0.03) beside.
+4. **Branches, written before data (author).**
+   - **care-DPO_Q's G within the bar** (mean ≤ +0.03): **R_item**. Qwen is specific on the
+     registered set and non-specific on contested forced items.
+   - **care-DPO_Q's G above the bar** (mean > +0.03): **R_reasoning**. The dose-0 specificity
+     readout is blind to reasoned rule-breaking on Qwen; that sentence is stated beside every
+     dose-0 specificity number in the line.
+   - base-DPO_Q's G is reported beside, under the same rule.
+5. **What follows (author).** R_item: a fresh-seed Qwen replicate with 16 teacher rollouts per arm
+   (a registered deviation from 8), priced at 5-7 A100-h, under its own amendment. R_reasoning: the
+   ST line closes out.
+6. **Price.** Setup and the download, 0.4; vLLM `none`, 0.15; two merges (54 GB copies), 0.4; two
+   merged engines, 0.3; dry runs, 0.1. About **1.4 A100-h** (the author's ~2 as the stop). Spent
+   110.05; at most ~112 of 125. The session stops at 2.5 h.
