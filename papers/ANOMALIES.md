@@ -1733,6 +1733,11 @@ On Muse, care-DPO stayed within 0.03 of `none` on both (−0.054 and +0.022). Th
 - R_reasoning: the DPO-trained disposition lives in the reasoned path. Generation with reasoning carries a broad rule-breaking tilt that the dose-0 letter readout (no trace) does not see, and Qwen's adapters carry it where Muse's care-DPO did not.
 - R_item: cell A′'s originals are rule-right by construction for Muse's registration, but Qwen's reasoning contests some of them (`none` already breaks the rule on 5 of 51 at ≥ 0.5). The adapters push those contested items over, while the panel's rule-right items are clearer, so the split is in the items, not the readout.
 **Discriminator.** GPU, about 1.5-2 A100-h: the 60 panel rule-right items under generation with reasoning (× 8, `none` and both adapters, merged on vLLM, forced choice where the panel allows). R_reasoning predicts the generation read breaks the rule there too; R_item predicts it stays at or below `none`'s. Zero GPU beside it: the per-item overlap between the forced originals that move and `none`'s contested items. Neither is scheduled without the author.
+**The item-overlap check, fixed before it computes (2026-10-29; author: first; descriptive, the generation read decides).** On cell A′'s 51 forced originals, contested items are those `none` breaks the rule on at least once in 8 (F_none > 0); the strict tier is F_none ≥ 0.5.
+- The share of care-DPO_Q's summed positive shift, Σ max(0, F_care − F_none), carried by contested items, against their share of the 51.
+- care-DPO_Q's mean shift on contested and on uncontested items, item bootstrap (10,000 draws, seed 0); base-DPO_Q beside.
+
+R_item predicts the shift concentrates on contested items (their share of the shift above their share of items) and the uncontested items' mean shift has a CI including 0. R_reasoning predicts a shift on uncontested items too (CI above 0). Either way the generation read on the panel's 60 rule-right items decides (author).
 **Status.** open.
 **Thesis impact.** If R_reasoning, the specificity instrument of record misses a trained tilt on Qwen, and the Muse claim's "specific on every rule-right read" holds on Muse only; the instrument's coverage needs a generation arm. If R_item, the cell A′ items are not portable across families, and the second-family read of record rests on the panel specificity, which passes.
 
