@@ -1716,6 +1716,6 @@ R_tail if ρ's CI lies above 0 and the top quartile carries more than half the s
 **Competing readings.**
 - R_resist: the panel's pressures do not move Sol's action at all; with reasoning, its action follows its judgment, and both reject the violating option.
 - R_register: Sol reads the panel's items as test-like in their single-turn letter format and answers by the norm, so the floor says how it treats this format, not how it acts under pressure in deployment.
-**Discriminator.** None within Amendment 58's design: both readings predict the floor here. Separating them needs a registered construct change (an agentic multi-turn or tool-use frame), which the author's rule requires to be amended first; not scheduled.
+**Discriminator.** None within Amendment 58's design: both readings predict the floor here. Separating them needs a registered construct change (an agentic multi-turn or tool-use frame), which the author's rule requires to be amended first; not scheduled (author, 2026-10-28: ST-A35 stays open, no multi-turn frame scheduled; the exhibit is closed).
 **Status.** open (reference only; feeds no steering decision).
 **Thesis impact.** The panel E read cannot measure a pressure-attributable excess on Sol: the null is uninformative about E's size and informative about the floor. Wording uses the counts, never "no gap" alone.

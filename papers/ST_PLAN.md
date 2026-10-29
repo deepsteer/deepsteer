@@ -5724,3 +5724,17 @@ the known gap.
 
 Frontier spend: F1 $56.95 + this stage $17.32 = $74.27 of $110. Nothing here feeds a steering
 decision.
+
+#### The frontier exhibit, closed (2026-10-28; author; reference only)
+
+1. **The two exhibit sentences, side by side (author).** Neither is placed under the other.
+   - **H1:** "Neither frontier model shows the H1 brake at default; Sol is flat across 8×
+     reasoning; Opus under forced deliberation moves from deferring to protecting (+0.069, all from
+     deferral), carried by the quarter of scenarios where it thinks longest." The
+     difficulty/length confound stands beside it (ST-A34).
+   - **Panel:** "Under the panel’s pressure Sol takes the violating action in 8 of 4,688 replies
+     (E at the floor); under an explicit operator instruction it takes it 90% of the time (g_band
+     0.900 [0.877, 0.921]) against the same judgment."
+2. **Closed at $74.27 (author).** F1 $56.95 and the panel E read $17.32, of the $110 cap. No
+   further API calls without a new amendment.
+3. **ST-A35 stays open (author); no multi-turn frame is scheduled.**
