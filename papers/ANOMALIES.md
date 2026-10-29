@@ -1719,3 +1719,31 @@ R_tail if ρ's CI lies above 0 and the top quartile carries more than half the s
 **Discriminator.** None within Amendment 58's design: both readings predict the floor here. Separating them needs a registered construct change (an agentic multi-turn or tool-use frame), which the author's rule requires to be amended first; not scheduled (author, 2026-10-28: ST-A35 stays open, no multi-turn frame scheduled; the exhibit is closed).
 **Status.** open (reference only; feeds no steering decision).
 **Thesis impact.** The panel E read cannot measure a pressure-attributable excess on Sol: the null is uninformative about E's size and informative about the floor. Wording uses the counts, never "no gap" alone.
+
+## ST-A36 (ledger) — On Qwen the two read-of-record instruments split: dose-0 specificity discriminates, forced choice with reasoning breaks the rule
+
+**Date.** 2026-10-29 (Amendment 57; pod st2qp; `data/st2qp_read_v1.json`).
+**Observation.** Both Qwen adapters (care-DPO_Q, base-DPO_Q; 39 thin pairs, 24 epochs, step 237):
+- on the panel's 60 rule-right items, dose-0 letter readout against `none`: −0.064 [−0.094, −0.039] and −0.055 [−0.079, −0.034], toward the rule (discriminating);
+- on cell A′'s 51 originals under forced choice with reasoning (vLLM): P(violating) 0.314 and 0.485 against `none`'s 0.115, shifts +0.199 [+0.125, +0.279] and +0.370; 26 and 33 of 51 items move up.
+
+On Muse, care-DPO stayed within 0.03 of `none` on both (−0.054 and +0.022). The registered branch (non-specific on Qwen) is fired by the forced originals alone.
+**Type.** family-exception / instrument split (two registered reads of one property disagree in sign on one model).
+**Competing readings.**
+- R_reasoning: the DPO-trained disposition lives in the reasoned path. Generation with reasoning carries a broad rule-breaking tilt that the dose-0 letter readout (no trace) does not see, and Qwen's adapters carry it where Muse's care-DPO did not.
+- R_item: cell A′'s originals are rule-right by construction for Muse's registration, but Qwen's reasoning contests some of them (`none` already breaks the rule on 5 of 51 at ≥ 0.5). The adapters push those contested items over, while the panel's rule-right items are clearer, so the split is in the items, not the readout.
+**Discriminator.** GPU, about 1.5-2 A100-h: the 60 panel rule-right items under generation with reasoning (× 8, `none` and both adapters, merged on vLLM, forced choice where the panel allows). R_reasoning predicts the generation read breaks the rule there too; R_item predicts it stays at or below `none`'s. Zero GPU beside it: the per-item overlap between the forced originals that move and `none`'s contested items. Neither is scheduled without the author.
+**Status.** open.
+**Thesis impact.** If R_reasoning, the specificity instrument of record misses a trained tilt on Qwen, and the Muse claim's "specific on every rule-right read" holds on Muse only; the instrument's coverage needs a generation arm. If R_item, the cell A′ items are not portable across families, and the second-family read of record rests on the panel specificity, which passes.
+
+## ST-A37 (ledger) — On a second family the steered teacher again gives less protection and less rule-breaking than the unsteered one
+
+**Date.** 2026-10-29 (Amendment 57; pod st2qp; cross-model conjunction with ST-A27).
+**Observation.** care-DPO_Q minus base-DPO_Q on Qwen: ΔP on 17 engaged H1_held −0.103 [−0.213, −0.007]; forced originals −0.172 [−0.248, −0.096]; forced twins −0.272 [−0.358, −0.191]; D_f −0.100 [−0.206, +0.002]; specificity −0.009. On Muse (ST-A27) the steered teacher's adapter also protected less (−0.525) and broke rules less.
+**Type.** cross-model conjunction (the same sign on two families).
+**Competing readings.**
+- R_damping: steered chosen traces carry a smaller, more conservative shift than unsteered protect traces, so the steered teacher's adapter moves less in every direction (less protection, less rule-breaking), on both families.
+- R_selection: the unsteered protect traces are drawn from scenarios and rollouts where the model already protected, a stronger and more consistent signal than steered traces, which include protections the model would not choose alone.
+**Discriminator.** Zero GPU on saved rows: the per-pair DPO margins and chosen-trace likelihoods under the base model, care against base (T1.6 and pod 2 saved the training records). R_damping predicts the steered chosen traces sit closer to the rejected ones; R_selection predicts lower base-model likelihood for the steered chosen traces. Not run without the author.
+**Status.** open.
+**Thesis impact.** The thesis's "only the steered one produces a specific one" was a Muse statement. On Qwen neither teacher's adapter is specific under forced choice; the steered one is less non-specific (−0.172 on the originals). The teacher's effect replicates as damping, not as specificity.

@@ -1475,6 +1475,38 @@ Referee pass.
    coherence alone (outcome-blind), and every rung was coherent. The prediction gated nothing; it
    ran beside, as registered.
 
+**Qwen3.8-27B pod 2, the recipe on a second family (2026-10-29; Amendment 57, ST-A36, ST-A37), what
+changed.** Positive voice first: **on a second family, steer-then-DPO gives adapters that protect on
+held-out rule-harm items at no capability cost, and the steered teacher damps rule-breaking
+relative to the unsteered one; neither adapter is specific under forced choice.**
+- care-DPO_Q and base-DPO_Q raise protection on Qwen's 17 engaged H1_held by +0.449 and +0.551 (MDE
+  0.16), with capability +0.010 and +0.030 and the panel guard intact.
+- On the panel's rule-right items at dose 0, both follow the rule more than `none` (−0.064, −0.055).
+- Under forced choice with reasoning on cell A′'s originals, both break the rule more: 0.314 and
+  0.485 against `none`'s 0.115. Registered branch: **non-specific on Qwen**. care-DPO_Q departs as
+  much more on the harm-reversed twins as on the originals (forced H\* +0.005), so it carries no
+  harm condition beyond `none`'s.
+- The steered teacher's adapter breaks rules less than the unsteered one's (forced originals
+  −0.172 [−0.248, −0.096], twins −0.272) and protects less (−0.103 [−0.213, −0.007]): the same sign
+  as Muse's ST-A27 (ST-A37).
+- **The thesis's Muse sentence does not transfer as written.** "Only the steered one produces a
+  specific one" held on Muse; on Qwen the steered one is less non-specific, not specific. The two
+  instruments of record split on Qwen (ST-A36). The thesis wording goes to the author.
+
+Referee pass.
+1. *"39 thin pairs at 24 epochs: the adapters memorized 21 scenarios, so nothing here is a learned
+   condition."* Conceded as the frame of every Qwen sentence: one run per arm, thin, overfit (DPO
+   margins 20-52). The held-out reads still move (+0.449 on unseen H1_held) and capability did not
+   fall (+0.010), so the adapters generalize something; what they generalize is the open question
+   ST-A36 asks.
+2. *"Cell A′'s originals are rule-right for Muse's registration, not for Qwen."* `none` already
+   breaks the rule on 5 of the 51 at ≥ 0.5, so some items are contested on Qwen (R_item, ST-A36).
+   The registered branch stands as read; the discriminator (generation on the panel's rule-right
+   items, ~1.5-2 A100-h) separates item from readout.
+3. *"The branch is fired by one of two instruments."* The rule was registered with "or" before data
+   (Amendment 54 item 6): a rise on the forced originals alone is non-specific. Both readings are
+   reported side by side, and neither is promoted over the other.
+
 ### ST line thesis (2026-10-27), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules

@@ -5738,3 +5738,53 @@ decision.
 2. **Closed at $74.27 (author).** F1 $56.95 and the panel E read $17.32, of the $110 cap. No
    further API calls without a new amendment.
 3. **ST-A35 stays open (author); no multi-turn frame is scheduled.**
+
+#### Amendment 57 outcome, pod 2 on Qwen3.8-27B (2026-10-29; pod st2qp, 13.84 A100-h; `data/st2qp_read_v1.json`)
+
+Every step passed on its first attempt (pod r04qusr329s1uw, 13.7 h). The base check read TV 0.013.
+Both merges passed their gate: merged letters at TV 0.009 and 0.028 from the attached adapter,
+against 0.246 and 0.211 from base; behavioral kept share 0.962 and 0.878; weight kept share 0.875
+and 0.871, beside. vLLM parity passed (TV 0.012 and 0.026, against a band of 0.063). The HF fallback was not
+needed, so every read of record is on vLLM.
+
+**Teacher and pairs.** The teacher was coherent (parse 0.979 against `none`'s 0.936, trace length
+0.73, NLL +0.12). The pairs were **thin**: 32 rule-harm pairs from 21 of the 35 scenarios, and 7
+rule-right pairs (the pool's shortfall was 25; Qwen rarely breaks the rule on the pool). That made
+39 pairs and **237 steps (24.3 epochs)**, care and base alike, at 46 s per step (3.0 and 3.2 h).
+Training ended overfit: DPO margins 20-35 (care) and 32-52 (base). **Selection:** step 237 for both
+arms. Base read 0.86 on the held-out set, care 0.86 and base-DPO 0.89, so no earlier step was
+scored; per-arm selection also gives 237.
+
+| read | care-DPO_Q | base-DPO_Q |
+|---|---|---|
+| **specificity**, 60 panel rule-right items against `none` (±0.03) | **−0.064 [−0.094, −0.039]**, discriminating | −0.055 [−0.079, −0.034], discriminating |
+| **forced originals**, P(violating), `none` 0.115 [0.066, 0.169] | **0.314; shift +0.199 [+0.125, +0.279]** | 0.485; shift +0.370 [+0.272, +0.468] |
+| forced twins, `none` 0.419 | 0.623; shift +0.203 | 0.895; shift +0.475 |
+| D_f, twin minus original (`none` +0.304) | +0.309 [+0.228, +0.397] | +0.409 [+0.297, +0.527] |
+| forced H\*, D_f minus `none`'s | +0.005 [−0.103, +0.108] | +0.105 [−0.039, +0.250] |
+| ΔP of record, 17 engaged H1_held (MDE 0.16) | +0.449 [+0.338, +0.566] | +0.551 [+0.434, +0.669] |
+| dose-0 ΔP | +0.116 [+0.014, +0.213] | −0.045 [−0.150, +0.060] |
+| capability, the gate's 200 items (≥ −0.02) | +0.010 [−0.030, +0.050] | +0.030 [−0.010, +0.070] |
+| panel guard ΔE (fails if CI > 0) | +0.003 [−0.003, +0.010] | −0.011 [−0.020, −0.002] |
+
+**The teacher contrast (care minus base).** ΔP −0.103 [−0.213, −0.007]; specificity −0.009
+[−0.022, +0.002]; forced originals −0.172 [−0.248, −0.096]; twins −0.272 [−0.358, −0.191]; D_f
+−0.100 [−0.206, +0.002].
+
+**Registered branch (Amendment 54 item 6, with the third addition's term): non-specific on Qwen,
+for both adapters.** `none` mostly follows the rule on the forced originals (CI upper 0.169 < 0.5),
+so the cell is informative. Specificity is not above +0.03, but the forced originals rise above
+`none`'s by +0.199 (care) and +0.370 (base). care-DPO_Q's D_f equals `none`'s (forced H\* +0.005), so
+it departs more on both item sets, not more where the rule harms.
+
+**The two read-of-record instruments split on Qwen (ST-A36).** At dose 0 on the panel's rule-right
+items, both adapters follow the rule more than `none`. Under forced choice with reasoning on cell
+A′'s originals, both break it more. On Muse, care-DPO stayed within 0.03 of `none` on both.
+
+**Beside.** Both adapters meet the H1 criterion on held-out rule-harm items, with capability and
+the guard intact. The steered teacher's adapter breaks rules less than the unsteered one's on both
+forced sets, and protects less on held H1 (−0.103, the sign of Muse's ST-A27; ST-A37). The
+registered thin-set expectation said capability would fall; it did not (+0.010, +0.030). Protection
+on the training scenarios was not read, so the expectation's other half is not tested.
+
+Spent 110.05 of 125.
