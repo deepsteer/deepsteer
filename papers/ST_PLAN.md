@@ -5851,3 +5851,35 @@ items.
 
 What follows (Amendment 59 item 5): a fresh-seed Qwen replicate with 16 teacher rollouts per arm (a
 registered deviation from 8), at 5-7 A100-h, under its own amendment. Spent 110.98 of 125.
+
+### Amendment 60 (2026-10-29; DRAFT for the author; zero GPU; the fresh-seed Qwen replicate after ST-A36's R_item)
+
+1. **The arm (proposed).** care-DPO_Q2 only, Muse's care-DPO2 pattern (Amendment 49). A base-DPO_Q2
+   arm beside it would cost about 14.3 A100-h, over the 14.02 left in the envelope.
+2. **The teacher (author: 16 rollouts, a registered deviation from 8).** `care_harm` at 0.4× (α
+   31.1, block 32 `clause_end`, pod 1's vector) × 16 and `none` × 16 on pod 2's 35 scenarios, fresh
+   seeds (stage `st2qr_teacher`), both arms' traces new.
+3. **Pairs (proposed: T1.6's rule unchanged).** Per scenario n = min(steered protect, unsteered
+   protect, unsteered rule, 2), so the recipe is pod 2's and only the draw and the rollout count
+   change. Projected from pod 2's rates: 36 rule-harm pairs [32, 40], about the thin bar of 38. The
+   pool's 7 rule-right pairs are reused (pod 2's `rr_rollouts`, the same cut). The count is
+   reported before training.
+4. **Training.** L-beh-2's recipe on Qwen, training seed **205** (Muse's care-DPO2), steps 243 ×
+   (pairs / 40) (about 24 epochs; ~261 at 43 pairs), checkpoints at thirds, and selection as pod 2's
+   (latest step within 0.02 of base on the held-out set; base's score reused from pod 2, same items
+   and seeds). The bail: care's pilot projects training past the envelope's remainder.
+5. **The gate and the forced twins.** Pod 2's design for care-DPO_Q2: the attached reads (dose 0,
+   specificity, the panel half), the merge and its gate, the merged engine with vLLM parity
+   (H1_held × 8, capability, the forced originals and twins × 8), with the HF fallback. `none`'s
+   rows are pod 2's (same seeds, synced, not regenerated).
+6. **What replicates (branches written before data).**
+   - **Replicates:** care-DPO_Q2's forced originals rise above `none`'s by more than 0.03 (pod 2's
+     non-specific reading), and its specificity on the panel's rule-right items is not above
+     +0.03 (R_item's split).
+   - **Does not replicate:** care-DPO_Q2's forced originals stay within 0.03 of `none`'s; pod 2's
+     non-specific reading was the thin draw.
+   - Any other combination is stated with its numbers.
+   ΔP on engaged H1_held, capability, the guard and the comparison with care-DPO_Q are beside.
+7. **Price.** Setup 0.4; teacher 1,120 HF rollouts at pod 2's rates, 3.6; training ~3.3; selection
+   0.5; the gate for one arm with the forced cells, 1.3; dry runs, 0.1. About **9.2 A100-h**.
+   Spent 110.98; about 120.2 of 125. The session stops at 11.5 h.
