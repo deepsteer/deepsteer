@@ -22,6 +22,8 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+
 HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parents[1] / "kdg_panel" / "scripts")]
 import analyze_st2ml as AML  # noqa: E402
@@ -102,6 +104,54 @@ def selection_paired(qp: Path) -> dict:
     for f in sorted(d.glob("*@*.jsonl")):
         a = {key(r): float(r["correct"]) for r in _jsonl(f)}
         out[f.stem] = T13.boot([a[k] - b[k] for k in sorted(set(a) & set(b))])
+    return out
+
+
+def _jaccard(a: list[int], b: list[int]) -> float:
+    sa, sb = set(a), set(b)
+    return len(sa & sb) / len(sa | sb) if sa | sb else 0.0
+
+
+def a37_branch(nll: dict[str, dict], ov: dict[str, dict]) -> str:
+    """ST-A37's rule, fixed before it computed (ANOMALIES, 2026-10-29)."""
+    above = lambda d: d["ci95"][0] is not None and d["ci95"][0] > 0  # noqa: E731
+    sel = all(above(d) for d in nll.values())
+    dam = all(above(d) for d in ov.values())
+    if sel and dam:
+        return "both: steered chosen traces are less likely and closer to the rejected ones"
+    if sel:
+        return "R_selection: steered chosen traces are less likely under the unsteered model"
+    if dam:
+        return "R_damping: steered chosen traces sit closer to the rejected ones"
+    return "unresolved: stated with its numbers"
+
+
+def a37_family(care_rows: list[dict], none_rows: list[dict]) -> dict:
+    """One family's training pairs of record (T1.6's rule): care and base pairs at the same
+    position share their rejected trace; paired differences, care minus base."""
+    import t16_driver as T16
+
+    hp, info = T16.harm_pairs(care_rows, none_rows)
+    by = {(r["scenario_id"], r["rollout"]): r for r in care_rows}
+    bn = {(r["scenario_id"], r["rollout"]): r for r in none_rows}
+    d_nll, d_ov, lr = [], [], []
+    for pc, pb in zip(hp["care"], hp["base"]):
+        assert pc["rejected_key"] == pb["rejected_key"]
+        c, b = by[tuple(pc["chosen_key"])], bn[tuple(pb["chosen_key"])]
+        rej = pc["rejected"]
+        if c.get("trace_nll_unsteered") is not None and b.get("trace_nll_unsteered") is not None:
+            d_nll.append(c["trace_nll_unsteered"] - b["trace_nll_unsteered"])
+        d_ov.append(_jaccard(pc["chosen"], rej) - _jaccard(pb["chosen"], rej))
+        lr.append(np.log(len(pc["chosen"]) / len(pb["chosen"])))
+    return {"n_pairs": len(hp["care"]), "d_nll": T13.boot(d_nll), "d_overlap": T13.boot(d_ov),
+            "length_ratio_care_to_base": float(np.exp(np.mean(lr))) if lr else None,
+            "pairs_info": {k: info[k] for k in ("n_pairs", "scenarios_with_pair")}}
+
+
+def a37(families: dict[str, tuple[list[dict], list[dict]]]) -> dict:
+    out = {f: a37_family(c, n) for f, (c, n) in families.items()}
+    out["branch"] = a37_branch({f: v["d_nll"] for f, v in out.items()},
+                               {f: v["d_overlap"] for f, v in out.items() if f != "branch"})
     return out
 
 

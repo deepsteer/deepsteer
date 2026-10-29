@@ -1751,5 +1751,13 @@ On Muse, care-DPO stayed within 0.03 of `none` on both (−0.054 and +0.022). Th
 - beside: the chosen traces' length ratio, care to base.
 
 R_selection if (a)'s CI lies above 0 on both families and (b)'s does not; R_damping if (b)'s CI lies above 0 on both families and (a)'s does not; both if both; any other combination is stated with its numbers as unresolved.
-**Status.** open.
+**The check (2026-10-29; `data/st_a37_read_v1.json`).** The pairs match the training records (Muse 40, Qwen 32).
+
+| family | chosen NLL, care − base (nats/token) | overlap with the rejected trace, care − base | chosen length, care / base |
+|---|---|---|---|
+| Muse | +0.183 [+0.163, +0.204] | −0.039 [−0.054, −0.024] | 1.09 |
+| Qwen | +0.119 [+0.100, +0.139] | −0.035 [−0.046, −0.024] | 0.79 |
+
+**Registered branch: R_selection.** On both families the steered chosen traces are less likely under the unsteered model than the unsteered chosen traces, and they sit farther from the rejected trace, not closer: R_damping's prediction fails in sign. The steered teacher hands DPO protect traces the model would not write on its own, and the adapter trained on them moves less in every direction. Which property of those traces does it (their off-policy likelihood, or their content) is not separated here.
+**Status.** resolved (experiment, 2026-10-29): R_selection on both families.
 **Thesis impact.** The thesis's "only the steered one produces a specific one" was a Muse statement. On Qwen neither teacher's adapter is specific under forced choice; the steered one is less non-specific (−0.172 on the originals). The teacher's effect replicates as damping, not as specificity.

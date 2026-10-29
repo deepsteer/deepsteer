@@ -1,0 +1,58 @@
+{
+ "rule": "ST-A37 check, fixed in ANOMALIES before it computed (383d013); zero GPU",
+ "read": {
+  "muse": {
+   "n_pairs": 40,
+   "d_nll": {
+    "mean": 0.18296285420656205,
+    "ci95": [
+     0.1627881040982902,
+     0.20363364802673456
+    ],
+    "n": 40,
+    "mde": 0.029175388520317397
+   },
+   "d_overlap": {
+    "mean": -0.03896302469878484,
+    "ci95": [
+     -0.05430838359335012,
+     -0.023589263015075274
+    ],
+    "n": 40,
+    "mde": 0.021942228984482032
+   },
+   "length_ratio_care_to_base": 1.090898586610253,
+   "pairs_info": {
+    "n_pairs": 40,
+    "scenarios_with_pair": 22
+   }
+  },
+  "qwen": {
+   "n_pairs": 32,
+   "d_nll": {
+    "mean": 0.11935878312215209,
+    "ci95": [
+     0.10042435224168003,
+     0.1387553900713101
+    ],
+    "n": 32,
+    "mde": 0.02737931273545005
+   },
+   "d_overlap": {
+    "mean": -0.03476288539344924,
+    "ci95": [
+     -0.04576864919757333,
+     -0.023895498233273228
+    ],
+    "n": 32,
+    "mde": 0.015623679260214355
+   },
+   "length_ratio_care_to_base": 0.7919395574224471,
+   "pairs_info": {
+    "n_pairs": 32,
+    "scenarios_with_pair": 21
+   }
+  },
+  "branch": "R_selection: steered chosen traces are less likely under the unsteered model"
+ }
+}

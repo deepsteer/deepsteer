@@ -171,3 +171,23 @@ def test_dry_run(tmp_path):
     assert (q / "gen" / "forced_base.hf.jsonl").exists()
     out = A.read(q)
     assert out["branch_of_record"]
+
+
+def test_a37_pairs_share_the_rejected_trace_and_the_rule():
+    # most probable failure (ST-A37's fixed rule): care's and base's chosen traces are compared
+    # across different rejected traces (unpaired), or the overlap is read in the wrong direction
+    def row(sid, k, st, ids, nll):
+        return {"scenario_id": sid, "rollout": k, "norm_status": st, "gen_ids": ids,
+                "trace_nll_unsteered": nll}
+
+    care = [row(f"S{i}", 0, "violating", [1, 2, 3, 4], 1.5) for i in range(30)]
+    none = []
+    for i in range(30):
+        none += [row(f"S{i}", 0, "violating", [7, 8, 9, 4], 1.0),
+                 row(f"S{i}", 1, "consistent", [1, 2, 3, 5], 1.2)]
+    r = A.a37_family(care, none)
+    assert r["n_pairs"] == 30
+    assert r["d_nll"]["mean"] == pytest.approx(0.5)  # steered chosen less likely
+    assert r["d_overlap"]["mean"] > 0  # steered chosen shares more tokens with the rejected
+    both = A.a37({"m": (care, none), "q": (care, none)})
+    assert both["branch"].startswith("both")
