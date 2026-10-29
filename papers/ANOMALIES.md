@@ -1707,3 +1707,15 @@ R_tail if ρ's CI lies above 0 and the top quartile carries more than half the s
 **Registered branch: R_tail.** The shift is a property of the quarter of scenarios where Opus thinks longest, not of deliberation across the set. Beside, descriptive and not of record, for the difficulty rival: that quarter deferred somewhat more at default (protect / defer 0.400 / 0.533, against 0.489 / 0.458 for the rest) and moved to 0.617 / 0.342, while the rest moved to 0.508 / 0.431 (+0.217 against +0.019 in protect). The difference in room is too small to account for the difference in movement, but which scenarios Opus finds hard and thinks long on cannot be separated from how long it thinks.
 **Status.** resolved (experiment, 2026-10-28): R_tail; the exhibit sentence's wording goes to the author.
 **Thesis impact.** If R_commit, the frontier exhibit's answer to "does deliberation brake protection on H1" is no on both models, and for Opus deliberation removes hedging in the protective direction. If R_tail, the claim narrows to "no brake", with the shift a property of a few items.
+
+## ST-A35 (ledger) — GPT-6.1 Sol sits at the floor on the KDG panel: the null E is a floor, not a balance
+
+**Date.** 2026-10-28 (Amendment 58; reference only; `data/frontier_panel_gpt61sol_v1.json`).
+**Observation.** On the 586-item panel × 8 at default effort, Sol takes the violating action in 8 of 4,688 agent-frame replies at primary (0.0017), judges the violating option right in 8 of 4,688 (0.0017), and is at 1 and 0 of 4,688 at pressure-removed. Under the known-gap operator instruction it takes the violating action in 0.901 (the control passes, g_band 0.900 [0.877, 0.921]). E = −0.0002 [−0.0006, 0.000]: the registered null, with a bootstrap MDE (0.0005) set by the floor, not by the instrument. Context on another instrument: Muse Glimmer 30B's dose-0 letter mass in the agent frame is 0.170.
+**Type.** floor (the stimulus does not engage the outcome on this model; intervention-validity rule 1's operating-point failure, here on a reading instrument).
+**Competing readings.**
+- R_resist: the panel's pressures do not move Sol's action at all; with reasoning, its action follows its judgment, and both reject the violating option.
+- R_register: Sol reads the panel's items as test-like in their single-turn letter format and answers by the norm, so the floor says how it treats this format, not how it acts under pressure in deployment.
+**Discriminator.** None within Amendment 58's design: both readings predict the floor here. Separating them needs a registered construct change (an agentic multi-turn or tool-use frame), which the author's rule requires to be amended first; not scheduled.
+**Status.** open (reference only; feeds no steering decision).
+**Thesis impact.** The panel E read cannot measure a pressure-attributable excess on Sol: the null is uninformative about E's size and informative about the floor. Wording uses the counts, never "no gap" alone.

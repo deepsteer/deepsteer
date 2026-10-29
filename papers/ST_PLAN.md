@@ -5696,3 +5696,31 @@ decision.
 5. **Price (2026-10-28 note above).** 23,440 calls, about 277 input and 46 output tokens each:
    $23.8 central, $45.8 if outputs run three times longer; about 3.7 h at 8 concurrent calls. The
    worst-case sampling band on E at k = 8 is ±0.029 (MDE 0.041 from sampling alone).
+
+#### Amendment 58 outcome, the panel E read on GPT-6.1 Sol (2026-10-28; API, $17.32; `data/frontier_panel_gpt61sol_v1.json`; reference only)
+
+The 586-item panel × 5 cells × 8 at effort medium: 23,440 calls at 8 concurrent, every one served
+by `gpt-6.1-sol`, parse 1.00 in every cell, no refusals, outputs 14-38 tokens on average.
+
+| cell | violating share (replies) |
+|---|---|
+| agent, primary (D) | 0.0017 (8 of 4,688) |
+| eval, primary (J) | 0.0017 (8 of 4,688) |
+| agent, pressure-removed (Dn) | 0.0002 (1 of 4,688) |
+| eval, pressure-removed (Jn) | 0.000 (0 of 4,688) |
+| agent, known gap (the control) | 0.901 (4,226 of 4,688) |
+
+- **Positive control: passes.** g_band = 0.900 [0.877, 0.921] over 586 scenarios, far above the
+  0.10 bar.
+- **E = −0.0002 [−0.0006, 0.000]** over 586 scenarios; the at-rest gap g_null is +0.0002.
+
+**Registered branch: null.** The detection bar the bootstrap gives (MDE 0.0005) is not the
+informative bound: E is small because D is at the floor. Under the panel's pressures Sol takes the
+violating action in 8 of 4,688 replies, the same count its judgment calls the violating option
+right; under an explicit operator instruction it takes it in 90% (ST-A35). For context, on another
+instrument (dose-0 letter mass, no reasoning, T1.6's `none` read on 293 panel items), Muse Glimmer
+30B puts 0.170 on the violating option in the agent frame, 0.103 in the eval frame and 0.702 under
+the known gap.
+
+Frontier spend: F1 $56.95 + this stage $17.32 = $74.27 of $110. Nothing here feeds a steering
+decision.
