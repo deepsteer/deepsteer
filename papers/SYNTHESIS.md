@@ -1552,11 +1552,13 @@ indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_har
 at its operating dose was indistinguishable from a random vector's, and the random vector's own tilt
 grew with dose.
 
-**On two families, steer-then-DPO yields adapters that protect on held-out rule-harm items without
-capability loss, and the steered teacher damps rule-breaking relative to an unsteered one;
-harm-conditioned specificity under forced choice holds on Muse only** (author, 2026-10-29).
-- Protection without capability loss: Muse care-DPO +0.338 [+0.264, +0.410] on 54 engaged H1_held,
-  capability −0.005; Qwen care-DPO_Q +0.449 [+0.338, +0.566] on 17 (MDE 0.16), capability +0.010.
+**On two families, steer-then-DPO yields adapters that protect on held-out rule-harm items,
+keeping capability on three of four draws, and the steered teacher damps rule-breaking relative to
+an unsteered one; harm-conditioned specificity under forced choice holds on Muse only** (author,
+2026-10-29; "keeping capability on three of four draws" 2026-10-30).
+- Protection, keeping capability on three of four draws: Muse care-DPO +0.338 [+0.264, +0.410] on 54
+  engaged H1_held, capability −0.005 (care-DPO2 +0.326, capability −0.040, failing the bar); Qwen
+  care-DPO_Q +0.449 [+0.338, +0.566] and +0.691 [+0.625, +0.765] on 17, capability +0.010 both.
 - The steered teacher damps: on Muse, base-DPO is harm-sensitive and non-specific (it departs on
   44% of rollouts where departing harms and breaks rules on every rule-right read) while care-DPO
   stays within 0.03 of `none`; on Qwen, care-DPO_Q breaks the rule less than base-DPO_Q on the forced

@@ -1,9 +1,71 @@
 # ST Plan — Holding the Moral Reference Live Through Post-Training
 
-Status: v0.2.22, 2026-10-21 (Amendment 22: ST Phase 2 target search, four cells, envelope 56; v0.2.21 = Amendment 21: the merge gate, capability cap, truncation columns, T1.5 author items; v0.2.20 = Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
+Status: **v0.3.0, closed 2026-10-30** (Amendments 1-60). Final spend 121.26 of 125 A100-h (§7);
+the frontier exhibit's API spend $74.27 of $110. The plan is closed.
+
+## Close-out summary (2026-10-30)
+
+**The question.** The plan began by asking whether a post-training stage that holds the model's
+moral reference live narrows the judgment-action gap where behavioral fine-tuning does not (§0,
+struck). After the representation objectives failed at T1.5, Amendment 55 restated it: does
+distilling a gate-passing, specific steering direction into DPO give an adapter whose
+rule-breaking tracks where the harm falls, on two model families?
+
+**What the line found.** On two families, steer-then-DPO yields adapters that protect on held-out
+rule-harm items, keeping capability on three of four draws, and the steered teacher damps
+rule-breaking relative to an unsteered one; harm-conditioned specificity under forced choice holds
+on Muse only.
+- **Protection.** Muse Glimmer 30B: care-DPO +0.338 [+0.264, +0.410] on 54 engaged H1_held and
+  +0.326 on a second draw (capability −0.005, and −0.040 failing the bar). Qwen3.8-27B: +0.449
+  [+0.338, +0.566] and +0.691 [+0.625, +0.765] on 17 (capability +0.010 on both).
+- **Damping.** With the recipe fixed, the steered teacher's adapter breaks rules less than the
+  unsteered one's: on Muse base-DPO is non-specific on every rule-right read while care-DPO stays
+  within 0.03 of the base model; on Qwen (one draw) care-DPO_Q breaks the rule less on the forced
+  originals (−0.172 [−0.248, −0.096]) and protects less (−0.103). ST-A37's R_selection rules out
+  the registered mechanism: the steered chosen traces are less likely under the unsteered model
+  (+0.183 and +0.119 nats/token) and further from the rejected trace, not closer.
+- **The harm condition.** On Muse, care-DPO departs where the rule harms on harm-reversed twins it
+  never saw (replicate +0.289 [+0.196, +0.392]) and follows the rule where breaking it would harm
+  (forced choice 0.022). On Qwen, both draws follow the rule on the panel's rule-right items at dose
+  0 and under reasoning, and break it on cell A′'s forced originals (+0.199 and +0.221 above the
+  base model's 0.115) with no departure on the twins beyond the base model's (forced H\* +0.005,
+  +0.044): the rule-breaking is item-bound (ST-A36).
+- **GPT-OSS-20B, the development model.** No representation objective passed (`L-anchor` null,
+  `L-self` no verdict; `L-beh` protects +0.445 and breaks rules, specificity +0.192), and no
+  steering vector passed at any site (ST-A29, R_lever).
+
+**What did not hold or was not tested.** The E co-primary never had a carrier model (GPT-OSS E_none
+−0.0011); §13's constitution overlap has no valid positive control (the rebuilt control −0.15
+[−0.34, +0.07]); refusal retention was read on vectors, never on an adapter; `L-fill` and the
+`restate` row never ran.
+
+**What carries forward.** The specificity read with its forced-choice and generation arms; the
+one-delta-at-a-time merge with its gate, vLLM parity and the HF fallback; held-out capability
+selection disjoint from the gate's items; T1.6's per-scenario pair rule; the recipe notes (more
+teacher rollouts give more pairs, and on Qwen more protection, ST-A38).
+
+**Frontier exhibit (reference only).** *H1:* "Neither frontier model shows the H1 brake at default;
+Sol is flat across 8× reasoning; Opus under forced deliberation moves from deferring to protecting
+(+0.069, all from deferral), carried by the quarter of scenarios where it thinks longest." *Panel:*
+"Under the panel’s pressure Sol takes the violating action in 8 of 4,688 replies (E at the floor);
+under an explicit operator instruction it takes it 90% of the time (g_band 0.900 [0.877, 0.921])
+against the same judgment."
+
+**Open (three).** ST-A26: whether a model's training document is privileged in its moral
+representation, against its rival (no read at this site supports it; a blind test needs new
+stimuli). ST-A35: whether Sol's floor on the panel is resistance or a reading of the format as a
+test. ST-A38: whether the pair count, or the draw, sets Qwen's larger protection.
+
+**Where things are.** §7's spend table; §8's dated outcomes and the restated hypothesis's verdict;
+§9's data of record and the closed ledgers; CLAIMS ST-01 to ST-13; SYNTHESIS's final ST thesis and
+its whole-line referee pass; the ANOMALIES status table.
+
+## The plan's header before close-out (kept; the v0.2.22 status struck)
+
+~~Status: v0.2.22, 2026-10-21 (Amendment 22: ST Phase 2 target search, four cells, envelope 56; v0.2.21 = Amendment 21: the merge gate, capability cap, truncation columns, T1.5 author items; v0.2.20 = Amendment 20: bf16 baseline of record, parity gates, T1.5 sequencing; v0.2.19 = Amendment 19: the L-self retrain spec, specificity and capability sets; v0.2.18 = Amendment 18: gate near miss recorded, the L-self rule, the L-beh cap rerun, T1.5 generation path; v0.2.17 = Amendment 17: schedule of record, L-beh comparator rule, reserved monitoring scenarios, envelope 36; v0.2.16 = Amendment 16: two gate arms on the T1.4 pod, the conditional fourth adapter; v0.2.15 = Amendment 15: T1.4 as pre-registered; the foundation constancy read and its conditional care arm; v0.2.14 = Amendment 14: G2 decisions, reversed-axis arm, τ; v0.2.13 = Amendment 13: the step-down rerun and the relative parse bar; v0.2.12 = Amendment 12: L* fixed at block 12, T1.2 zero-GPU, constancy read and sweep rules; v0.2.11 = Amendment 11: the E co-primary requires a dose-0 carrier, both branches pre-registered; v0.2.10 = Amendment 10: refusal-retention set, care-framed twins, pre-registered secondary; v0.2.9 = G1 partial: GPT-OSS-20B is the development model; Amendment 7, §14: vLLM generation engine; v0.2.8 = Amendment 6, padded-check recalibration, envelope guard in pilots, cap 1,536/2,048 pilot report; v0.2.7 renamed from STEERING_PLAN.md; line prefix ST, see below; v0.2.6 = Amendment 5, §14: development-role criteria, parser columns; v0.2.5 = Amendment 4: T0.11 screen spec; v0.2.4 = Amendment 3: pair-rider cap, T0.11 screen driver; v0.2.3 = Amendment 2: cap 1,536, effort of record, trace-length pilot,
 dose-0 tie-breaker, VLM layer paths; v0.2.2 = v0.2.1 plus Amendment 1: independent `none` baseline, `L-beh` as
 DPO, per-model `chat_sigma`, constancy-read scope, split strata; v0.2.1 added §13, the constitution
-variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).
+variant; supersedes v0.1 of 2026-10-16; author constraints and decisions in §11).~~
 Line prefix **ST** (author, 2026-10-18): this file is `papers/ST_PLAN.md`; code, data and outputs
 live in `papers/st_live_reference/`; anomalies are `ST-A1, ST-A2, ...` in `papers/ANOMALIES.md` and
 claims `ST-01, ST-02, ...` in `papers/CLAIMS.md`. Commits and artifacts before the rename say
@@ -511,8 +573,8 @@ T1.6 needs T1.5's verdict; Tier 2 reads T1.1/T1.6's banked residuals and T1.5's 
 | `L-anchor` generalizes, `L-self` does not | A typed content direction transfers; the full judgment state does not | The portable recipe is the direction; the mechanism claim narrows | **Not met (2026-10-22).** `L-anchor` null for its anchor-axis target |
 | All adapters null, `restate` restores | The action reads the input at this site; weights at this rank do not hold the reference | Value moves to monitoring and placement; Tier 2 tests higher rank and the RL-stage form before the claim is dropped | **Condition not met (2026-10-22).** `L-beh` was not null; the `restate` reference row was not run |
 | An adapter widens the gap or moves the specificity set | The objective entangles care with rule-breaking or rule-tracking | Promoted anomaly; `L-suppress` and the specificity set move up | **Met (2026-10-22).** `L-beh` moved the specificity set +0.192 [+0.131, +0.255] (non-specific; ST-A13, ST-A16); specificity became the program's read of record and the line moved to steer-then-DPO (Amendment 55) |
-| Refusal-retention bar met on every passing adapter (Amendment 10) | Care anchored at the action site does not loosen refusal under a sympathetic story; the care read includes the absent party the rule protects | One sentence in the pitch with the number; the H1 verdict carries the refusal scope | **Not read.** The retention set read as uncalibrated on GPT-OSS (it refuses operator orders); T1.5 carried no refusal-retention verdict |
-| A passing adapter fails the refusal-retention bar (Amendment 10) | `V_care` as typed is salient-beneficiary sympathy, not care: a construct-audit fork on its type block | Promoted anomaly (ST-A); the adapter's verdict is "non-specific (refusal)"; `L-suppress` and a `V_care` re-typing against the FL request twins move up; H1 and panel verdicts stand with the scope note | **Not read** (as above) |
+| Refusal-retention bar met on every passing adapter (Amendment 10) | Care anchored at the action site does not loosen refusal under a sympathetic story; the care read includes the absent party the rule protects | One sentence in the pitch with the number; the H1 verdict carries the refusal scope | **Not read on an adapter.** Refusal retention was read on vectors (−V_harm, V_qwen; Amendment 25 onward), never on an adapter; on GPT-OSS the set read as uncalibrated (it refuses operator orders) |
+| A passing adapter fails the refusal-retention bar (Amendment 10) | `V_care` as typed is salient-beneficiary sympathy, not care: a construct-audit fork on its type block | Promoted anomaly (ST-A); the adapter's verdict is "non-specific (refusal)"; `L-suppress` and a `V_care` re-typing against the FL request twins move up; H1 and panel verdicts stand with the scope note | **Not read on an adapter** (as above) |
 | `L-fill` restores | A live-vector effect | The anchoring claim is withdrawn; reported as such | **Not run.** `L-fill` was optional and never trained |
 | Second family replicates the ordering | The recipe transfers | The transfer sentence goes in the pitch with both families' numbers | **Superseded, then read on the restated design (2026-10-25 to 2026-10-30).** The three-adapter ordering never went to a second family. Under Amendment 55, Muse care-DPO protects and is specific on every rule-right read, including forced choice (two draws); Qwen care-DPO_Q protects on held-out items in two draws (+0.449, +0.691) with capability kept |
 | Second family breaks the ordering | Family-specific | The claim is scoped to the development family; the break is the next cell | **Met in part (2026-10-29 and 2026-10-30).** On Qwen both care-DPO draws break the rule on cell A′'s forced originals (+0.199, +0.221 above `none`) with no harm conditioning beyond `none`'s; they follow the rule on the panel's rule-right items under both readouts (ST-A36, R_item). The harm-conditioned specificity claim is scoped to Muse |
