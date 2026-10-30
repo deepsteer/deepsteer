@@ -1663,3 +1663,26 @@ without removing it, so its specificity on the panel set was partly format-bound
 - Free rating carried a check-first prior that the documents' conflict passages do not: the
   author's own quote-and-classify marks side with departure on four of five such items.
 - Labels are set by quote-and-classify from here on, `C_partner`'s included.
+
+## MB line: MoralBench replication (opened 2026-10-30, `MB_PLAN.md` v0.5)
+
+**Thesis at MB-G0 (2026-10-30), positive voice.** The program now holds MoralBench pinned and
+hash-verified at commit `8410044` without vendoring any of it. It also holds a degenerate-policy
+ladder for the instrument: on every set the best fixed letter scores inside the paper's five-model
+range (always A 58.2 on MFQ binary against 49.9–58.5; always B 52.0 on MFV binary against
+44.4–52.8). Two paper cells lie outside what the pinned key can produce (MB-A2, MB-A3), and the MFV
+comparative keys fit no single human score per statement (MB-A4). The instrument's reading on
+models is not yet measured: G0 is an audit of the key, not of any model.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MB-G0: a fixed letter policy reaches the paper's model range on all four sets (exact, from the key) | R_content: models answer item by item, and the closeness to fixed policies is a coincidence of the key sums | G1 counterbalanced cell: item selectivity `S` and letter or label bias (`MB_PLAN` §4) | the ladder is exact; the reading is pending G1 |
+
+**What the next result changes (MB-G1, pre-registered in `MB_PLAN` v0.5 §4-5).**
+
+| cell | branch | thesis edit |
+|---|---|---|
+| match rule (T = 0.7, items fixed) | cells replicate | the local harness reproduces MoralBench, and the reproduction is usable as the Phase 2 baseline |
+| | cells miss | diagnosis under amendment (template, system policy, sampling, parse), with the verdict under each choice |
+| counterbalanced cell | `S` covers 0 (R_acquiescence) | MoralBench scores carry the A-rate or agree rate beside them in every Phase 2 use |
+| | `S` excludes 0 (R_content) | the instrument reads item content within the ladder's band |

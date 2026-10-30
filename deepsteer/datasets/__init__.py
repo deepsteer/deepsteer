@@ -24,6 +24,7 @@ from deepsteer.datasets.corpora import (
 )
 from deepsteer.datasets.loaders import load_dilemma_pairs, load_moral_probing_v2
 from deepsteer.datasets.minimal_pairs import get_minimal_pairs
+from deepsteer.datasets.moralbench import MoralBenchItem, fetch_moralbench, load_moralbench
 from deepsteer.datasets.persona_pairs import (
     CONTENT_CLEAN_CATEGORIES,
     PERSONA_CATEGORIES,
@@ -55,6 +56,9 @@ __all__ = [
     "build_probing_dataset",
     "load_dilemma_pairs",
     "load_moral_probing_v2",
+    "MoralBenchItem",
+    "fetch_moralbench",
+    "load_moralbench",
     "compositional_content_separability_baseline",
     "content_separability_baseline",
     "get_compositional_moral_dataset",

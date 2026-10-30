@@ -1,0 +1,1152 @@
+{
+ "metadata": {
+  "audit_version": "1.0.0",
+  "date": "2026-10-30",
+  "repo": "https://github.com/agiresearch/MoralBench.git",
+  "commit": "84100440a28d040eca27df32b93f44685ad69ce5",
+  "manifest_sha256": "41f80996f126d4cc07c655a08b97589a6961fc132cbdb4591fa6e3f128c34a39",
+  "python": "3.13.1",
+  "paper": "arXiv:2406.04428 v2 (tables identical in v1)"
+ },
+ "counts": {
+  "MFQ_30": {
+   "items": 20,
+   "per_foundation": {
+    "harm": 4,
+    "fairness": 4,
+    "ingroup": 4,
+    "authority": 4,
+    "purity": 4
+   },
+   "key_letters": [
+    "AB"
+   ],
+   "tied_keys": []
+  },
+  "6_concepts": {
+   "items": 24,
+   "per_foundation": {
+    "harm": 4,
+    "fairness": 4,
+    "ingroup": 4,
+    "authority": 4,
+    "purity": 4,
+    "liberty": 4
+   },
+   "key_letters": [
+    "AB"
+   ],
+   "tied_keys": []
+  },
+  "MFQ_30_compare": {
+   "items": 20,
+   "per_foundation": {
+    "harm": 4,
+    "fairness": 4,
+    "ingroup": 4,
+    "authority": 4,
+    "purity": 4
+   },
+   "key_letters": [
+    "AB"
+   ],
+   "tied_keys": [
+    "ingroup_2"
+   ]
+  },
+  "6_concepts_compare": {
+   "items": 24,
+   "per_foundation": {
+    "harm": 4,
+    "fairness": 4,
+    "ingroup": 4,
+    "authority": 4,
+    "purity": 4,
+    "liberty": 4
+   },
+   "key_letters": [
+    "AB"
+   ],
+   "tied_keys": []
+  }
+ },
+ "orphan_keys": {
+  "MFQ_30": [
+   "liberty_1",
+   "liberty_2",
+   "liberty_3",
+   "liberty_4",
+   "life_boat",
+   "trolley_tracks"
+  ],
+  "6_concepts": [
+   "life_boat",
+   "trolley_tracks"
+  ],
+  "MFQ_30_compare": [
+   "liberty_1",
+   "liberty_2",
+   "liberty_3",
+   "liberty_4",
+   "life_boat",
+   "trolley_tracks"
+  ],
+  "6_concepts_compare": [
+   "life_boat",
+   "trolley_tracks"
+  ]
+ },
+ "option_label_variants": {
+  "MFQ_30": {
+   "agree_disagree": [
+    "authority_1",
+    "authority_2",
+    "fairness_1",
+    "fairness_2",
+    "harm_1",
+    "harm_2",
+    "ingroup_1",
+    "ingroup_2",
+    "purity_1",
+    "purity_2"
+   ],
+   "correct_not_correct": [
+    "authority_3",
+    "authority_4",
+    "fairness_3",
+    "fairness_4",
+    "harm_3",
+    "harm_4",
+    "ingroup_3",
+    "ingroup_4",
+    "purity_3",
+    "purity_4"
+   ]
+  },
+  "6_concepts": {
+   "agree_disagree": [
+    "authority_1",
+    "authority_2",
+    "authority_3",
+    "authority_4",
+    "fairness_1",
+    "fairness_2",
+    "fairness_3",
+    "fairness_4",
+    "harm_1",
+    "harm_2",
+    "harm_3",
+    "harm_4",
+    "ingroup_1",
+    "ingroup_2",
+    "ingroup_3",
+    "ingroup_4",
+    "liberty_1",
+    "liberty_2",
+    "liberty_3",
+    "liberty_4",
+    "purity_1",
+    "purity_2",
+    "purity_3",
+    "purity_4"
+   ]
+  },
+  "MFQ_30_compare": {
+   "2_statements": [
+    "authority_1",
+    "authority_2",
+    "authority_3",
+    "authority_4",
+    "fairness_1",
+    "fairness_2",
+    "fairness_3",
+    "fairness_4",
+    "harm_1",
+    "harm_2",
+    "harm_3",
+    "harm_4",
+    "ingroup_1",
+    "ingroup_2",
+    "ingroup_3",
+    "ingroup_4",
+    "purity_1",
+    "purity_2",
+    "purity_3",
+    "purity_4"
+   ]
+  },
+  "6_concepts_compare": {
+   "2_statements": [
+    "authority_1",
+    "authority_2",
+    "authority_3",
+    "authority_4",
+    "fairness_1",
+    "fairness_2",
+    "fairness_3",
+    "fairness_4",
+    "harm_1",
+    "harm_2",
+    "harm_3",
+    "harm_4",
+    "ingroup_1",
+    "ingroup_2",
+    "ingroup_3",
+    "ingroup_4",
+    "liberty_1",
+    "liberty_2",
+    "liberty_3",
+    "liberty_4",
+    "purity_1",
+    "purity_2",
+    "purity_3",
+    "purity_4"
+   ]
+  }
+ },
+ "formula_check": {
+  "MFQ_30": {
+   "scale_max": 5.0,
+   "n": 20,
+   "violations": []
+  },
+  "6_concepts": {
+   "scale_max": 4.0,
+   "n": 24,
+   "violations": []
+  }
+ },
+ "compare_consistency": {
+  "MFQ_30_compare": {
+   "groups": [
+    {
+     "items": [
+      "authority_1",
+      "authority_2"
+     ],
+     "a_sources": [
+      "authority_1",
+      "authority_2"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "authority_3",
+      "authority_4"
+     ],
+     "a_sources": [
+      "authority_3",
+      "authority_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "fairness_1",
+      "fairness_2"
+     ],
+     "a_sources": [
+      "fairness_1",
+      "fairness_2"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "fairness_3",
+      "fairness_4"
+     ],
+     "a_sources": [
+      "fairness_3",
+      "fairness_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "harm_1",
+      "harm_2"
+     ],
+     "a_sources": [
+      "harm_1",
+      "harm_2"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "harm_3",
+      "harm_4"
+     ],
+     "a_sources": [
+      "harm_3",
+      "harm_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "ingroup_1",
+      "ingroup_2"
+     ],
+     "a_sources": [
+      "ingroup_1",
+      "ingroup_2"
+     ],
+     "ties": [
+      "ingroup_2"
+     ],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": true
+    },
+    {
+     "items": [
+      "ingroup_3",
+      "ingroup_4"
+     ],
+     "a_sources": [
+      "ingroup_3",
+      "ingroup_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "purity_1",
+      "purity_2"
+     ],
+     "a_sources": [
+      "purity_1",
+      "purity_2"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "purity_3",
+      "purity_4"
+     ],
+     "a_sources": [
+      "purity_3",
+      "purity_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    }
+   ],
+   "duplicate_items": []
+  },
+  "6_concepts_compare": {
+   "groups": [
+    {
+     "items": [
+      "authority_1",
+      "authority_2",
+      "authority_3",
+      "authority_4"
+     ],
+     "a_sources": [
+      "authority_1",
+      "authority_2",
+      "authority_3",
+      "authority_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": false,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "fairness_1",
+      "fairness_2",
+      "fairness_3",
+      "fairness_4"
+     ],
+     "a_sources": [
+      "fairness_1",
+      "fairness_3",
+      "fairness_3",
+      "fairness_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": false,
+     "consistent_lower_h_wins": true
+    },
+    {
+     "items": [
+      "harm_1",
+      "harm_2",
+      "harm_3",
+      "harm_4"
+     ],
+     "a_sources": [
+      "harm_1",
+      "harm_2",
+      null,
+      "harm_4"
+     ],
+     "ties": [],
+     "unmatched_a": [
+      "harm_3"
+     ],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "ingroup_1",
+      "ingroup_2",
+      "ingroup_3",
+      "ingroup_4"
+     ],
+     "a_sources": [
+      "ingroup_1",
+      "ingroup_3",
+      "ingroup_3",
+      "ingroup_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": false,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "liberty_1",
+      "liberty_2",
+      "liberty_3",
+      "liberty_4"
+     ],
+     "a_sources": [
+      "liberty_1",
+      "liberty_2",
+      "liberty_3",
+      "liberty_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    },
+    {
+     "items": [
+      "purity_1",
+      "purity_2",
+      "purity_3",
+      "purity_4"
+     ],
+     "a_sources": [
+      "purity_1",
+      "purity_2",
+      "purity_3",
+      "purity_4"
+     ],
+     "ties": [],
+     "unmatched_a": [],
+     "consistent_higher_h_wins": true,
+     "consistent_lower_h_wins": false
+    }
+   ],
+   "duplicate_items": [
+    {
+     "items": [
+      "fairness_2",
+      "fairness_3"
+     ],
+     "keys_agree": true
+    },
+    {
+     "items": [
+      "ingroup_2",
+      "ingroup_3"
+     ],
+     "keys_agree": false
+    }
+   ]
+  }
+ },
+ "ladder": {
+  "MFQ_30": {
+   "harm": {
+    "n": 4,
+    "worst": 6.65,
+    "always_A": 13.35,
+    "always_B": 6.65,
+    "uniform": 10.0,
+    "oracle": 13.35
+   },
+   "fairness": {
+    "n": 4,
+    "worst": 6.72,
+    "always_A": 13.12,
+    "always_B": 6.88,
+    "uniform": 10.0,
+    "oracle": 13.28
+   },
+   "ingroup": {
+    "n": 4,
+    "worst": 8.35,
+    "always_A": 10.67,
+    "always_B": 9.33,
+    "uniform": 10.0,
+    "oracle": 11.65
+   },
+   "authority": {
+    "n": 4,
+    "worst": 8.29,
+    "always_A": 10.59,
+    "always_B": 9.41,
+    "uniform": 10.0,
+    "oracle": 11.71
+   },
+   "purity": {
+    "n": 4,
+    "worst": 7.56,
+    "always_A": 10.44,
+    "always_B": 9.56,
+    "uniform": 10.0,
+    "oracle": 12.44
+   },
+   "TOTAL": {
+    "n": 20,
+    "worst": 37.57,
+    "always_A": 58.17,
+    "always_B": 41.83,
+    "uniform": 50.0,
+    "oracle": 62.43
+   }
+  },
+  "6_concepts": {
+   "harm": {
+    "n": 4,
+    "worst": 6.9,
+    "always_A": 8.3,
+    "always_B": 7.7,
+    "uniform": 8.0,
+    "oracle": 9.1
+   },
+   "fairness": {
+    "n": 4,
+    "worst": 6.5,
+    "always_A": 6.5,
+    "always_B": 9.5,
+    "uniform": 8.0,
+    "oracle": 9.5
+   },
+   "ingroup": {
+    "n": 4,
+    "worst": 7.3,
+    "always_A": 7.7,
+    "always_B": 8.3,
+    "uniform": 8.0,
+    "oracle": 8.7
+   },
+   "authority": {
+    "n": 4,
+    "worst": 7.5,
+    "always_A": 7.7,
+    "always_B": 8.3,
+    "uniform": 8.0,
+    "oracle": 8.5
+   },
+   "purity": {
+    "n": 4,
+    "worst": 6.1,
+    "always_A": 6.1,
+    "always_B": 9.9,
+    "uniform": 8.0,
+    "oracle": 9.9
+   },
+   "liberty": {
+    "n": 4,
+    "worst": 6.5,
+    "always_A": 7.7,
+    "always_B": 8.3,
+    "uniform": 8.0,
+    "oracle": 9.5
+   },
+   "TOTAL": {
+    "n": 24,
+    "worst": 40.8,
+    "always_A": 44.0,
+    "always_B": 52.0,
+    "uniform": 48.0,
+    "oracle": 55.2
+   }
+  },
+  "MFQ_30_compare": {
+   "harm": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "fairness": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "ingroup": {
+    "n": 4,
+    "worst": 1.0,
+    "always_A": 2.0,
+    "always_B": 3.0,
+    "uniform": 2.5,
+    "oracle": 4.0
+   },
+   "authority": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "purity": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "TOTAL": {
+    "n": 20,
+    "worst": 1.0,
+    "always_A": 10.0,
+    "always_B": 11.0,
+    "uniform": 10.5,
+    "oracle": 20.0
+   }
+  },
+  "6_concepts_compare": {
+   "harm": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "fairness": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "ingroup": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "authority": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "purity": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 3.0,
+    "always_B": 1.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "liberty": {
+    "n": 4,
+    "worst": 0.0,
+    "always_A": 2.0,
+    "always_B": 2.0,
+    "uniform": 2.0,
+    "oracle": 4.0
+   },
+   "TOTAL": {
+    "n": 24,
+    "worst": 0.0,
+    "always_A": 13.0,
+    "always_B": 11.0,
+    "uniform": 12.0,
+    "oracle": 24.0
+   }
+  }
+ },
+ "mde_worst_case": {
+  "MFQ_30": {
+   "harm": {
+    "band_width": 6.7,
+    "mde_5v5": 3.415,
+    "mde_32v32": 1.35,
+    "match_half_width_5v32": 1.867
+   },
+   "fairness": {
+    "band_width": 6.56,
+    "mde_5v5": 3.324,
+    "mde_32v32": 1.314,
+    "match_half_width_5v32": 1.818
+   },
+   "ingroup": {
+    "band_width": 3.3,
+    "mde_5v5": 1.671,
+    "mde_32v32": 0.661,
+    "match_half_width_5v32": 0.939
+   },
+   "authority": {
+    "band_width": 3.42,
+    "mde_5v5": 1.683,
+    "mde_32v32": 0.665,
+    "match_half_width_5v32": 0.945
+   },
+   "purity": {
+    "band_width": 4.88,
+    "mde_5v5": 2.229,
+    "mde_32v32": 0.881,
+    "match_half_width_5v32": 1.235
+   },
+   "TOTAL": {
+    "band_width": 24.86,
+    "mde_5v5": 5.771,
+    "mde_32v32": 2.281,
+    "match_half_width_5v32": 3.12
+   }
+  },
+  "6_concepts": {
+   "harm": {
+    "band_width": 2.2,
+    "mde_5v5": 1.189,
+    "mde_32v32": 0.47,
+    "match_half_width_5v32": 0.682
+   },
+   "fairness": {
+    "band_width": 3.0,
+    "mde_5v5": 1.472,
+    "mde_32v32": 0.582,
+    "match_half_width_5v32": 0.833
+   },
+   "ingroup": {
+    "band_width": 1.4,
+    "mde_5v5": 0.686,
+    "mde_32v32": 0.271,
+    "match_half_width_5v32": 0.415
+   },
+   "authority": {
+    "band_width": 1.0,
+    "mde_5v5": 0.469,
+    "mde_32v32": 0.185,
+    "match_half_width_5v32": 0.299
+   },
+   "purity": {
+    "band_width": 3.8,
+    "mde_5v5": 2.262,
+    "mde_32v32": 0.894,
+    "match_half_width_5v32": 1.253
+   },
+   "liberty": {
+    "band_width": 3.0,
+    "mde_5v5": 1.493,
+    "mde_32v32": 0.59,
+    "match_half_width_5v32": 0.844
+   },
+   "TOTAL": {
+    "band_width": 14.4,
+    "mde_5v5": 3.408,
+    "mde_32v32": 1.347,
+    "match_half_width_5v32": 1.863
+   }
+  },
+  "MFQ_30_compare": {
+   "harm": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "fairness": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "ingroup": {
+    "band_width": 3.0,
+    "mde_5v5": 1.534,
+    "mde_32v32": 0.607,
+    "match_half_width_5v32": 0.866
+   },
+   "authority": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "purity": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "TOTAL": {
+    "band_width": 19.0,
+    "mde_5v5": 3.862,
+    "mde_32v32": 1.526,
+    "match_half_width_5v32": 2.104
+   }
+  },
+  "6_concepts_compare": {
+   "harm": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "fairness": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "ingroup": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "authority": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "purity": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "liberty": {
+    "band_width": 4.0,
+    "mde_5v5": 1.772,
+    "mde_32v32": 0.7,
+    "match_half_width_5v32": 0.993
+   },
+   "TOTAL": {
+    "band_width": 24.0,
+    "mde_5v5": 4.34,
+    "mde_32v32": 1.716,
+    "match_half_width_5v32": 2.359
+   }
+  }
+ },
+ "paper_audit": {
+  "MFQ_30": {
+   "Zephyr": {
+    "foundation_sum": 54.2,
+    "printed_total": 54.2,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -3.969999999999999,
+     "always_B": 12.370000000000005
+    }
+   },
+   "LLaMA-2": {
+    "foundation_sum": 58.5,
+    "printed_total": 58.5,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 0.3299999999999983,
+     "always_B": 16.67
+    }
+   },
+   "Gemma-1.1": {
+    "foundation_sum": 49.9,
+    "printed_total": 49.9,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -8.270000000000003,
+     "always_B": 8.07
+    }
+   },
+   "GPT-3.5": {
+    "foundation_sum": 54.7,
+    "printed_total": 54.7,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -3.469999999999999,
+     "always_B": 12.870000000000005
+    }
+   },
+   "GPT-4": {
+    "foundation_sum": 56.6,
+    "printed_total": 56.6,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -1.5700000000000003,
+     "always_B": 14.770000000000003
+    }
+   }
+  },
+  "6_concepts": {
+   "Zephyr": {
+    "foundation_sum": 48.2,
+    "printed_total": 48.1,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 4.100000000000001,
+     "always_B": -3.8999999999999986
+    }
+   },
+   "LLaMA-2": {
+    "foundation_sum": 52.6,
+    "printed_total": 52.6,
+    "sum_matches_total": true,
+    "cells_outside_band": [
+     {
+      "foundation": "purity",
+      "paper": 11.1,
+      "side": "above_oracle",
+      "bound": 9.9
+     }
+    ],
+    "total_rank_vs_always": {
+     "always_A": 8.600000000000001,
+     "always_B": 0.6000000000000014
+    }
+   },
+   "Gemma-1.1": {
+    "foundation_sum": 51.8,
+    "printed_total": 44.4,
+    "sum_matches_total": false,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 0.3999999999999986,
+     "always_B": -7.600000000000001
+    }
+   },
+   "GPT-3.5": {
+    "foundation_sum": 50.2,
+    "printed_total": 50.3,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 6.299999999999997,
+     "always_B": -1.7000000000000028
+    }
+   },
+   "GPT-4": {
+    "foundation_sum": 52.8,
+    "printed_total": 52.8,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 8.799999999999997,
+     "always_B": 0.7999999999999972
+    }
+   }
+  },
+  "MFQ_30_compare": {
+   "Zephyr": {
+    "foundation_sum": 8.2,
+    "printed_total": 8.2,
+    "sum_matches_total": true,
+    "cells_outside_band": [
+     {
+      "foundation": "ingroup",
+      "paper": 0.4,
+      "side": "below_worst",
+      "bound": 1.0
+     }
+    ],
+    "total_rank_vs_always": {
+     "always_A": -1.8000000000000007,
+     "always_B": -2.8000000000000007
+    }
+   },
+   "LLaMA-2": {
+    "foundation_sum": 8.0,
+    "printed_total": 8.0,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -2.0,
+     "always_B": -3.0
+    }
+   },
+   "Gemma-1.1": {
+    "foundation_sum": 9.6,
+    "printed_total": 9.6,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -0.40000000000000036,
+     "always_B": -1.4000000000000004
+    }
+   },
+   "GPT-3.5": {
+    "foundation_sum": 12.4,
+    "printed_total": 12.4,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 2.4000000000000004,
+     "always_B": 1.4000000000000004
+    }
+   },
+   "GPT-4": {
+    "foundation_sum": 9.8,
+    "printed_total": 9.8,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -0.1999999999999993,
+     "always_B": -1.1999999999999993
+    }
+   }
+  },
+  "6_concepts_compare": {
+   "Zephyr": {
+    "foundation_sum": 10.4,
+    "printed_total": 10.4,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -2.5999999999999996,
+     "always_B": -0.5999999999999996
+    }
+   },
+   "LLaMA-2": {
+    "foundation_sum": 13.2,
+    "printed_total": 13.2,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 0.1999999999999993,
+     "always_B": 2.1999999999999993
+    }
+   },
+   "Gemma-1.1": {
+    "foundation_sum": 10.8,
+    "printed_total": 10.8,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": -2.1999999999999993,
+     "always_B": -0.1999999999999993
+    }
+   },
+   "GPT-3.5": {
+    "foundation_sum": 14.2,
+    "printed_total": 14.2,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 1.1999999999999993,
+     "always_B": 3.1999999999999993
+    }
+   },
+   "GPT-4": {
+    "foundation_sum": 13.8,
+    "printed_total": 13.8,
+    "sum_matches_total": true,
+    "cells_outside_band": [],
+    "total_rank_vs_always": {
+     "always_A": 0.8000000000000007,
+     "always_B": 2.8000000000000007
+    }
+   }
+  }
+ },
+ "drive_diff": {
+  "zip_sha256": "0dc194325f593d4b90096380b9feb960dad0d20c4f2c3161a2065ea1a990963a",
+  "sets": {
+   "MFQ_30": {
+    "drive_files": 20,
+    "repo_files": 20,
+    "identical": 20,
+    "differ": [],
+    "only_drive": [],
+    "only_repo": [],
+    "checkpoint_copies_identical": 20,
+    "checkpoint_copies": 20
+   },
+   "MFQ_30_compare": {
+    "drive_files": 20,
+    "repo_files": 20,
+    "identical": 20,
+    "differ": [],
+    "only_drive": [],
+    "only_repo": [],
+    "checkpoint_copies_identical": 20,
+    "checkpoint_copies": 20
+   },
+   "6_concepts": {
+    "drive_files": 24,
+    "repo_files": 24,
+    "identical": 24,
+    "differ": [],
+    "only_drive": [],
+    "only_repo": [],
+    "checkpoint_copies_identical": 24,
+    "checkpoint_copies": 24
+   },
+   "6_concepts_compare": {
+    "drive_files": 24,
+    "repo_files": 24,
+    "identical": 24,
+    "differ": [],
+    "only_drive": [],
+    "only_repo": [],
+    "checkpoint_copies_identical": 24,
+    "checkpoint_copies": 24
+   }
+  },
+  "has_answers_or_template": false
+ }
+}

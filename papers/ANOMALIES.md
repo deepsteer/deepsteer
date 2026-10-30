@@ -1854,3 +1854,69 @@ R_selection if (a)'s CI lies above 0 on both families and (b)'s does not; R_damp
 **Status.** open.
 **Close-out status (2026-10-30).** **open (author, close-out):** not scheduled; the separating draw (~4-5 A100-h) exceeds the envelope's remainder.
 **Thesis impact.** If R_pairs, protection on Qwen is a dial the teacher's sample size turns without moving the forced-item side effect: the side effect and the benefit are separable in the recipe. If R_draw, the replicate's larger protection is draw-to-draw spread, and the claim is the pattern, not the size.
+
+## MB line ledger (prefix MB-A; opened 2026-10-30 at MB-G0, `MB_PLAN.md` v0.4)
+
+Source of every number: `papers/mb_moralbench/outputs/mb_g0_audit.json` (audit v1.0.0, MoralBench
+commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2).
+
+## MB-A1 (ledger) — Gemma-1.1's MFV binary row sums to 51.8 across foundations; its printed total is 44.4
+
+**Date.** 2026-10-30 (MB-G0).
+**Observation.** Six cells 7.3 + 9.5 + 8.5 + 7.9 + 9.9 + 8.7 = 51.8; printed total 44.4. Every other row in both tables sums to its total within rounding. Both numbers are inside the set's band (worst 40.8, oracle 55.2). Read as a constant agree rate, the total implies Agree on 95% of items (44.4 sits next to always-A, 44.0) and the cells imply 3% (next to always-B, 52.0).
+**Type.** cross-doc conjunction (a table against itself).
+**Competing readings.**
+- R_total: the cells are the run; the total is a typo.
+- R_cells: the total is the run; one or more cells are wrong (the 9.9 sanctity cell equals the set's oracle exactly).
+**Discriminator.** Gemma's measured agree rate on `6_concepts` at MB-G1 (M4, zero pod). Near 0 favours R_total; near 1 favours R_cells. Worst-case match half-width on the total is 1.86, against a 7.4 gap.
+**Status.** open (scheduled: MB-G1).
+**Thesis impact.** Decides which Gemma MFV number the replication table compares against; neither reading changes the instrument.
+
+## MB-A2 (ledger) — LLaMA-2's MFV sanctity cell (11.1) is above the pinned key's oracle (9.9)
+
+**Date.** 2026-10-30 (MB-G0).
+**Observation.** No answer pattern on the four `6_concepts` purity items scores above 9.9 under the pinned key. The value 11.1 equals LLaMA-2's MFQ sanctity cell in Table 1. The row total (52.6) includes it.
+**Type.** cross-doc conjunction.
+**Competing readings.**
+- R_copy: transcription from the MFQ block, with the total summed from the printed cells.
+- R_rescale: the run scored MFV on a 0–5 scale (B = 5 − H) and the repo's keys were later rescaled to 0–4. **Rejected zero-GPU (2026-10-30):** under M = 5 the 11.1 becomes feasible but three harm cells (Zephyr 7.6, LLaMA-2 7.5, Gemma 7.3) fall below that scale's worst policy (8.1).
+- R_items: different purity items or keys at run time.
+**Discriminator.** R_copy against R_items has no zero-GPU separator; the 70B run at MB-G2 measures the cell (pod, inside the 4 A100-h cap). The cell is marked "infeasible under the pinned key" in the replication table either way.
+**Status.** open (R_rescale closed by calibration). Pre-registered "not attainable" at MB_PLAN v0.5 §5 (2026-10-30).
+**Thesis impact.** One paper cell is excluded from the match rule; the replication's verdict on LLaMA-2 MFV is read on the other five foundations plus the total with this cell flagged.
+
+## MB-A3 (ledger) — Zephyr's MFQ comparative loyalty (0.4) is below the floor any A/B answer guarantees (1.0)
+
+**Date.** 2026-10-30 (MB-G0).
+**Observation.** `MFQ_30_compare/ingroup_2` scores A and B equally (1 point each), so every reply starting with A or B earns at least 1.0 on loyalty. Zephyr's 0.4 needs that item to miss in at least 3 of 5 repeats.
+**Type.** control-misbehavior (a free point not taken).
+**Competing readings.**
+- R_unparsed: Zephyr's replies often did not start with A or B, and the paper scored a miss as 0 (MB_PLAN §3's R0 logs misses and never imputes, which a paper-faithful total cannot reproduce).
+- R_key: the tie was not in the key when the paper ran.
+**Discriminator.** Zephyr's R0 unparsed rate on `MFQ_30_compare` at MB-G1 (M4). A high rate supports R_unparsed and fixes how R0 totals treat misses for the paper comparison.
+**Status.** open (scheduled: MB-G1). Pre-registered "not attainable" when every reply parses (MB_PLAN v0.5 §5); the miss-scores-0 value is reported beside it.
+**Thesis impact.** If R_unparsed, the paper's per-model differences carry each model's format-compliance rate, and R0 needs a "miss = 0" paper-comparison aggregate beside the unparsed count.
+
+## MB-A4 (ledger) — `6_concepts_compare` keys cannot all come from one human score per statement
+
+**Date.** 2026-10-30 (MB-G0).
+**Observation.** Each comparative item pairs a binary statement (A) with an anchor (B) shared by all four items of a foundation. With H(A) from the binary key, a fixed anchor H orders the keys. On `MFQ_30_compare` all 10 anchor groups fit "higher H wins" (the paper's rule). On `6_concepts_compare`: harm, liberty and purity fit "higher H wins"; fairness fits only "lower H wins"; authority and ingroup fit neither. `ingroup_2` and `ingroup_3` are byte-identical with opposite keys; `fairness_2` and `fairness_3` are identical with the same key; `harm_3`'s statement is not among the binary items.
+**Type.** control-misbehavior (the answer key).
+**Competing readings.**
+- R_errors: hand-built keys with errors; the MFV comparative set carries about 2 items of key noise per foundation group where a group breaks.
+- R_other_H: the comparative keys come from different human scores (for example Clifford et al.'s published MFV wrongness norms) than the binary keys do, so "inconsistent with binary H" is not an error.
+**Discriminator.** Zero GPU, about an hour: fetch Clifford et al.'s published norms (read-only, nothing committed), map the 24 vignettes, and recompute both key sets from the norms. Needs author approval for the fetch (norms' terms unchecked).
+**Status.** open (promotion rule: zero-GPU; approved 2026-10-30, MB_PLAN v0.5 §5). The repo's `mfv_clifford2015.json` was checked first: no wrongness ratings, so the published norms were fetched to the user cache.
+**Thesis impact.** Under R_errors, the MFV comparative score has a key-noise ceiling below 24 for any consistent model (at most 23 from the duplicate pair alone); report it as a known-defect set. Under R_other_H, the defect is documentary, and the key stands.
+
+## MB-A5 (ledger) — Fixed answer policies span most of the paper's model spread
+
+**Date.** 2026-10-30 (MB-G0).
+**Observation.** Always answering A ("Agree"/"Correct") on `MFQ_30` scores 58.2: above four of the five paper models (49.9–56.6), 0.3 below the top (LLaMA-2, 58.5). Always B on `MFQ_30_compare` scores 11.0, above four of five (8.0–9.8; GPT-3.5 12.4). On `6_concepts` the per-foundation band from worst to oracle is 1.0–3.8 points wide (authority 7.5–8.5), and always B (52.0) is 0.6–0.8 below the two top models. At choice probability 0.5 per item, a between-model difference on one foundation needs about half that foundation's band to be detectable at the paper's 5 repeats (MDE 0.47–3.42).
+**Type.** control-misbehavior (degenerate policies inside the reported range).
+**Competing readings.**
+- R_acquiescence: the paper's rankings mostly track how often each model answers A, not which items it agrees with.
+- R_content: the models answer item by item, and the totals' closeness to fixed policies is a coincidence of the key sums.
+**Discriminator.** At MB-G1 (M4): per item, score = B + p(A − B), so a model's total under a constant p equal to its overall A-rate predicts its R0 total; the residual is item selectivity. Zero GPU once G1's rollouts exist.
+**Status.** open (scheduled: MB-G1; counterbalanced cell and the selectivity read pre-registered in MB_PLAN v0.5 §4).
+**Thesis impact.** Under R_acquiescence, MoralBench as a drift monitor for steering (§7) mostly reads answer-letter bias, and Phase 2 must report the A-rate beside every score; under R_content, the instrument reads content and the ladder bounds its range.

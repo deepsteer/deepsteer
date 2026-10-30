@@ -75,3 +75,15 @@ published in 10.5281/zenodo.22731361 stay public under CC BY 4.0. **Policy going
 arrays computed from NC-licensed stimuli are still deposited restricted (CC BY-NC 4.0, access on
 request), as the 36 that left the `papers/` tree are in 10.5281/zenodo.23203126. The prompt
 text itself is never redistributed. See `papers/ANOMALIES.md` A12.
+
+## MoralBench: not vendored (runtime fetch only)
+
+| Component | Source | Upstream license | Verified | Feeds |
+|---|---|---|---|---|
+| `questions/` (88 items), `answers/` (4 key files), `template/moral_system.txt` | `agiresearch/MoralBench` (Ji et al., arXiv:2406.04428), commit `84100440a28d040eca27df32b93f44685ad69ce5` | **none** (no LICENSE file, no license in README; the paper's Drive mirror states no terms) | upstream tree at the pinned commit, 2026-10-29 and 2026-10-30 | `deepsteer.datasets.moralbench` (fetched into the user cache; never committed, never in the wheel); MB replication (`papers/MB_PLAN.md` §9) |
+| `moralbench_manifest.json` | this project | **Apache-2.0** (file paths and sha256 hashes only) | — | loader verification; shipped in the wheel |
+
+Nothing of MoralBench's text, prompt or answer keys is in the repository or the wheel. Tracked
+MB outputs hold item ids, foundation labels, parsed letters, readouts, scores and prompt hashes
+(`MB_PLAN.md` §9.2). Seven `6_concepts` items are verbatim Clifford et al. (2015) MFV vignettes,
+third-party text that MoralBench could not license in any case.
