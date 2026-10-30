@@ -1545,7 +1545,7 @@ Referee pass.
    (ST-A36) already places the rule-breaking on those items; the replicate confirms it there and
    on no other set.
 
-### ST line thesis (2026-10-29), positive voice
+### ST line thesis (final, 2026-10-30), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
 indiscriminately. On Muse, V_qwen did (+0.289 beyond a random vector); `care_harm`'s rule-right tilt
@@ -1572,6 +1572,12 @@ harm-conditioned specificity under forced choice holds on Muse only** (author, 2
 - Scope: Muse, two draws, one failing the capability bar (−0.040, with longer traces and an MMLU
   loss); Qwen, two care draws (32 and 49 rule-harm pairs, 24 epochs) with the same pattern on all
   seven of Amendment 60's criteria, while the damping on Qwen rests on one draw; the mechanism open.
+- Reference only, the frontier exhibit (it feeds no steering decision; author's sentences):
+  *H1:* "Neither frontier model shows the H1 brake at default; Sol is flat across 8× reasoning; Opus
+  under forced deliberation moves from deferring to protecting (+0.069, all from deferral), carried
+  by the quarter of scenarios where it thinks longest." *Panel:* "Under the panel’s pressure Sol
+  takes the violating action in 8 of 4,688 replies (E at the floor); under an explicit operator
+  instruction it takes it 90% of the time (g_band 0.900 [0.877, 0.921]) against the same judgment."
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:
@@ -1580,7 +1586,7 @@ two vectors:
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005). Second family (Qwen, 2026-10-29): non-specific under forced choice (care-DPO_Q forced originals 0.314 against `none`'s 0.115, forced H\* +0.005), dose-0 specificity −0.064; ST-A36 resolved R_item (the split is the items: under reasoning no arm breaks the rule on the panel's rule-right items); a fresh-seed Qwen replicate with 16 teacher rollouts is next |
+| a gate-passing steering vector distilled into DPO yields an adapter that conditions rule-breaking on harm (care-DPO on Muse) | the condition is the difference between the two item sets (T1.6's targets against cell A′'s pool), or one run's luck | the fresh-seed care-DPO replicate on matched items (read 2026-10-26); the forced choice on the twins (ST-A30, ~1.0 A100-h) | standing (two draws, one family; R_defer, Amendment 52): on matched items care-DPO2 departs where the rule harms when it must choose (0.025 to 0.314) and defers when it can; capability caveat: care-DPO2 fails the capability bar (−0.040 [−0.075, −0.010], longer traces, an MMLU loss; care-DPO −0.005). Second family (Qwen, 2026-10-29): non-specific under forced choice (care-DPO_Q forced originals 0.314 against `none`'s 0.115, forced H\* +0.005), dose-0 specificity −0.064; ST-A36 resolved R_item (the split is the items: under reasoning no arm breaks the rule on the panel's rule-right items); the fresh-seed Qwen replicate (49 pairs, 2026-10-30) repeats that pattern on all seven criteria. **Final status: standing on Muse; on Qwen protection holds and the harm condition does not** |
 
 Referee pass on the thesis.
 1. *"Two registered labels read otherwise."* T1.5's ladder counts care-DPO's protective −0.054 as
@@ -1590,10 +1596,39 @@ Referee pass on the thesis.
 2. *"40 pairs at 24 epochs is a memorized teacher, not a learned condition."* Conceded as a caveat.
    A second draw with a fresh seed and fresh chosen traces (38 pairs) reproduces the protection, the
    specificity and the forced choice, and departs where the rule harms on twins it never saw; it
-   costs more capability (−0.040). The partner's model is the next test.
+   costs more capability (−0.040). On Qwen, two draws (32 and 49 pairs) protect without a capability
+   loss and carry no harm condition under forced choice: the memorization reading does not explain
+   the difference between the families.
 3. *"The instrument 'caught' what it was tuned to catch."* The specificity set and its bar were
    registered before every read here (T1.5, Amendment 31). care-DPO passed the same instrument that
    flagged the other five.
+
+Referee pass on the whole ST line (close-out, 2026-10-30; one pass over ST_PLAN, CLAIMS, ANOMALIES
+and this section).
+1. *"One H1 family carries everything."* Conceded as the line's scope. Every claim is stated on
+   approval-gate scenarios (H1) and the KDG panel; a second H1 family is a Tier 2 cell. The rule-right
+   reads use the panel's own items and cell A′'s, which is how ST-A36 found that the Qwen split is
+   item-bound.
+2. *"Sixty amendments is a garden of forking paths."* Every amendment was committed and pushed
+   before the computation it licensed (two process-ledger exceptions, each recorded with its times);
+   every post-hoc fork is labeled and reported under both choices (Amendments 38 and 43); branches
+   were written before data, and the claims carry the registered branch with the descriptive reads
+   beside. The thesis sentence was restated once (Amendment 55, the original struck) after the
+   representation objectives failed at T1.5, and is stated with that history.
+3. *"Thin, overfit adapters at 24 epochs."* Conceded for the size of every effect: Muse 40 and 38
+   pairs, Qwen 32 and 49, DPO margins 13-75. The held-out items, the twins never trained on, the
+   held-out capability selection and the second draws are the answer for the direction of each
+   effect, not its size (ST-A38 shows protection's size moves with the draw).
+4. *"The specificity instrument has a blind spot."* ST-A36 tested exactly that on Qwen and found the
+   dose-0 and generation readouts agree on the registered set; the forced-choice rule-breaking lives
+   on cell A′'s items. The instrument is not shown to miss reasoned rule-breaking, and the forced
+   items are now part of every adapter read.
+5. *"Two families, opposite answers on the harm condition, is no claim."* The two-family claim is
+   protection on held-out items, which holds on both (four draws; capability is kept on three, and
+   one Muse draw fails the bar at −0.040); the harm condition is
+   stated as Muse-only, with Qwen's forced read beside it. Why the families differ is open (the
+   teacher's traces are less likely under the model on both, ST-A37; the pair count moves protection
+   on Qwen, ST-A38), and no sentence claims a mechanism.
 
 **T1.6 and its cells (2026-10-25), what changed.**
 - The teacher, not the recipe, decides whether a DPO adapter's rule-breaking tracks harm. With the
