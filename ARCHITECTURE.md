@@ -155,7 +155,8 @@ papers/                         # Research papers and program-level docs
 │   ├── fl_what_refusal_reads/   # Flagship paper (absorbs P4-P7 + D1-D3)
 │   ├── mn_instruments_before_verdicts/  # Methods note (A1-A6 protocols)
 │   ├── build_common/            # Shared LaTeX build infrastructure
-│   ├── runpod_common/           # Shared RunPod session infrastructure
+│   ├── runpod_common/           # Shared RunPod infrastructure: run_session.sh (the launcher every line
+│   │                            #   uses; moved from d1_moral_subspace/runpod 2026-10-30), session_lib.sh
 │   ├── supplement/              # FL/MN supplement: cells/, figure_data/, scripts/, MANIFEST.json,
 │   │                            #   PROVENANCE.md (moved from deepsteer/supplement/ 2026-10-06;
 │   │                            #   a stub README remains there for the papers' cited paths)
