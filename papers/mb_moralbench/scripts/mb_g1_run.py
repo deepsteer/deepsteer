@@ -56,7 +56,7 @@ from deepsteer.datasets.moralbench import (  # noqa: E402
     load_moralbench,
 )
 
-RUN_VERSION = "1.0.0"
+RUN_VERSION = "1.1.0"  # 1.1: G2 pod (llama2_70b, device_map, --out-sub, --raw-dir, deadline)
 LABELS = "AB"
 N_ROLLOUTS = 32
 MAX_NEW_TOKENS = 128
@@ -82,6 +82,11 @@ MODELS = {
                      "revision": "03b3427d0ed07d2e0f86c0a7e53d82d4beef9540",
                      "policy": SystemRolePolicy.NATIVE, "license": "Gemma Terms of Use",
                      "paper_row": "Zephyr"},
+    # MB_PLAN v0.6 Amendment 2: the G2 pod row (2 x A100-80GB, HF across both GPUs)
+    "llama2_70b": {"repo": "meta-llama/Llama-2-70b-chat-hf",
+                   "revision": "e9149a12809580e8602995856f8098ce973d1080",
+                   "policy": SystemRolePolicy.NATIVE, "license": "Llama 2 Community License",
+                   "paper_row": "LLaMA-2", "device_map": "auto"},
 }
 CELLS = {"t07": (0.7, "original"), "t10": (1.0, "original"), "cb07": (0.7, "counterbalanced")}
 BINARY_SETS = ("MFQ_30", "6_concepts")
@@ -137,8 +142,15 @@ def load(args) -> tuple:
                           num_attention_heads=4, num_key_value_heads=2, vocab_size=len(tok))
         torch.manual_seed(0)
         return LlamaForCausalLM(cfg).eval(), tok, "cpu", torch.float32
-    from deepsteer.core.model_interface import WhiteBoxModel
     spec = MODELS[args.model]
+    if spec.get("device_map"):  # a model that spans GPUs (Amendment 2)
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        tok = AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"])
+        model = AutoModelForCausalLM.from_pretrained(
+            spec["repo"], revision=spec["revision"], dtype=torch.bfloat16,
+            device_map=spec["device_map"]).eval()
+        return model, tok, spec["device_map"], torch.bfloat16
+    from deepsteer.core.model_interface import WhiteBoxModel
     wb = WhiteBoxModel(spec["repo"], revision=spec["revision"], device=args.device,
                        torch_dtype=torch.bfloat16)
     return wb.model, wb.tokenizer, args.device, torch.bfloat16
@@ -151,11 +163,17 @@ def main() -> None:
     ap.add_argument("--device", default="mps")
     ap.add_argument("--dry-run", action="store_true", help="tiny random model, 2 items per set")
     ap.add_argument("--out", type=Path, default=REPO / "papers" / "mb_moralbench")
+    ap.add_argument("--out-sub", default="g1", help="results folder under outputs/ (g2 on the pod)")
+    ap.add_argument("--raw-dir", type=Path, help="raw replies (default outputs_raw/<sub>/<model>)")
+    ap.add_argument("--max-items", type=int, default=0,
+                    help="first N items only (the VALIDATE timing probe; never a cell of record)")
+    ap.add_argument("--deadline-epoch", type=float, default=0.0,
+                    help="skip a cell whose projected end passes this time (Amendment 2 bail)")
     args = ap.parse_args()
     spec = MODELS[args.model]
     n_roll = 2 if args.dry_run else N_ROLLOUTS
-    out = args.out / "outputs" / "g1" / args.model
-    raw = args.out / "outputs_raw" / "g1" / args.model
+    out = args.out / "outputs" / args.out_sub / args.model
+    raw = args.raw_dir or (args.out / "outputs_raw" / args.out_sub / args.model)
     out.mkdir(parents=True, exist_ok=True)
     raw.mkdir(parents=True, exist_ok=True)
 
@@ -163,6 +181,8 @@ def main() -> None:
     if args.dry_run:
         items = [it for s in ("MFQ_30", "6_concepts", "MFQ_30_compare", "6_concepts_compare")
                  for it in [i for i in items if i.set_name == s][:2]]
+    if args.max_items:
+        items = items[: args.max_items]
     model, tok, device, dtype = load(args)
     token_sets = label_token_sets(tok, LABELS)
     pad = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
@@ -173,11 +193,19 @@ def main() -> None:
         ids, bos = encode_rendered(tok, rendered)
         return ids, rendered, bos
 
-    timings, bos_seen = {}, set()
+    timings, bos_seen, skipped, rate = {}, set(), [], None
     for cell in args.cells.split(","):
         temperature, order = CELLS[cell]
         rows_path, raw_path = out / f"{cell}.jsonl", raw / f"{cell}.jsonl"
         skip = done_items(rows_path)
+        todo = sum(it.qualified_id not in skip for it in items)
+        # bail (Amendment 2): with a deadline, skip a cell whose projected end passes it, using the
+        # previous cell's measured seconds per item; cells run in the registered order given
+        late = rate is not None and time.time() + todo * rate > args.deadline_epoch
+        if args.deadline_epoch and late:
+            skipped.append({"cell": cell, "items_left": todo, "s_per_item": round(rate, 2)})
+            print(f"[{args.model} {cell}] skipped: projected past the deadline", flush=True)
+            continue
         t0 = time.time()
         with open(rows_path, "a") as fr, open(raw_path, "a") as fw:
             for it in items:
@@ -211,6 +239,8 @@ def main() -> None:
                 print(f"[{args.model} {cell}] {it.qualified_id} {time.time() - t0:.0f}s",
                       flush=True)
         timings[cell] = round(time.time() - t0, 1)
+        if todo:
+            rate = timings[cell] / todo
 
     # R2: letter mass at the answer position, both orders (temperature-free)
     r2_path = out / "r2.jsonl"
@@ -237,6 +267,7 @@ def main() -> None:
         "label_token_sets": token_sets,
         "label_token_surfaces": [[tok.convert_ids_to_tokens(i) for i in s] for s in token_sets],
         "dtype": str(dtype), "device": device, "dry_run": args.dry_run,
+        "max_items": args.max_items or None,
         "n_rollouts": n_roll, "max_new_tokens": MAX_NEW_TOKENS, "cells": CELLS,
         "seed_rule": "crc32('<set>/<item_id>') mod 2**31; all rollouts in one seeded call",
         "sampler_version": SAMPLER_VERSION, "readout_version": READOUT_VERSION,
@@ -244,7 +275,8 @@ def main() -> None:
         "decode": "new tokens only, skip_special_tokens=True; R0 of record strips leading space",
         "moralbench_commit": MORALBENCH_COMMIT,
         "manifest_sha256": hashlib.sha256(MANIFEST_PATH.read_bytes()).hexdigest(),
-        "git_commit": git_commit(), "timings_s": timings,
+        "git_commit": git_commit(), "timings_s": timings, "skipped_cells": skipped,
+        "out_sub": args.out_sub, "deadline_epoch": args.deadline_epoch or None,
         "wall_s": round(time.time() - t_start, 1),
         "versions": {"python": platform.python_version(), "torch": torch.__version__,
                      "transformers": transformers.__version__},

@@ -1,6 +1,7 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v0.6, 2026-10-30. **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
+Status: v0.7, 2026-10-30. **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
+and D4 beside Llama-2-70B-chat.** **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
 stopping rule registered before them, and the drift-monitor readout rule (§7).** **v0.5 (author, 2026-10-30): MB-G0 passed; the gate report's decisions 1-8
 approved with additions and folded in below** (sampling T = 0.7 of record, §2; R0 of record and the
 paper-comparison aggregate, §3; the counterbalanced cell, §4; the items-fixed match rule and the
@@ -192,6 +193,41 @@ the ladder's band.
   sampling, parse), with the verdict under each choice. Running `main.py` itself (in a scratch
   environment outside the repo, with our replies in place of the API call) is a diagnostic for a
   miss, not a required step. Author approves the pod at this gate.
+- **Amendment 2 (2026-10-30, author; committed and pushed before the pod).** Gemma's G1 row and
+  Amendment 1's D4 move to the G2 pod. On the M4, the 8.5B Gemma models do not stay resident in
+  24 GiB (swap 15.5 of 16 GB, about 350 s per item against Zephyr's 23 s; about 34 h for both).
+  - **Pod.** 2 × A100-80GB (`GPU_COUNT=2`, the shared launcher `papers/runpod_common/run_session.sh`),
+    runner `papers/mb_moralbench/runpod/remote_mb_g2.sh`, results `outputs/g2/`.
+  - **Engine (deviation from §2's vLLM).** HF transformers for all three models, the G1 driver and
+    sampler unchanged: harness parity with the M4 rows, no engine-parity gate. Llama-2-70B-chat
+    (`e9149a12809580e8602995856f8098ce973d1080`, Llama 2 Community License) loads across both GPUs
+    (`device_map="auto"`). Transformers 5.17.0 as on the M4, with the KDG torch 2.6.0+cu124 trio as
+    the fallback if the image's torch fails; the versions are recorded per run.
+  - **Units, in order.** GPU0: Gemma-1.1 t07 (of record), cb07, t10. GPU1, at the same time: D4
+    `zephyr-7b-gemma-v0.1` t07. Meanwhile Llama-2-70B downloads. Then Llama-2-70B-chat t07 (of
+    record), cb07, t10 (fork last) on both GPUs. Analysis on the pod; the session manifest
+    (sha256 of every file) last.
+  - **Gemma's record.** Gemma's G1 row of record is the pod's. The 3 items run on the M4 (96 rows,
+    same seeds) are not part of it; they stay as an exploratory device-parity read.
+  - **Power (measured, Zephyr G1 rollouts; G0 worst case in brackets).** 95% PI half-width for a
+    5-repeat mean against 32 rollouts: MFQ 2.67 (3.12), MFV 2.62 (1.86), MFQ comparative 0.75
+    (2.10), MFV comparative 1.07 (2.36). MDE between two models at 32 rollouts: 1.95, 1.91, 0.52,
+    0.76.
+  - **Envelope and bail.** Estimate about 1.8 h of pod time (3.6 A100-h) inside the 4 A100-h cap.
+    Watchdog at 1.95 h. Cells stop starting 15 min before it: a later cell is skipped when the
+    previous cell's measured rate projects it past that point (recorded as `skipped_cells`), so the
+    order above fixes what is lost first (Llama's t10 fork, then its cb07; t07 of record runs
+    whenever the pod reaches it). VALIDATE first, on one GPU: the stack, model access, the
+    MoralBench fetch against the manifest, the gate tests, the tiny dry run on CUDA, and a 3-item
+    Gemma timing probe; stop at 0.3 h.
+  - **Saves, per unit.** Per (item, rollout) letter rows, R2 rows, `run_meta.json` (versions,
+    template hash, seeds, timings, skipped cells), the analysis JSON, raw replies under
+    `outputs/g2/_raw/` (gitignored), driver and session logs, `manifest_g2.json`.
+  - **Dependencies.** The code at the pushed commit; MoralBench fetched on the pod at the pinned
+    commit and verified; model access checked on 2026-10-30 with the author's token (the launcher
+    passes `HF_TOKEN`); about 175 GB of weights (`DISK_GB=260`).
+  - **Both branches.** Gemma and Llama-2 follow the G1 match rule (MB-A2's cell is not attainable).
+    MB-A1 reads Gemma's agree rate. D4 follows Amendment 1's stopping rule.
 - **MB-G2 (pod):** Llama-2-70B-chat row; the full replication table (5 rows: 3 measured, 2 marked
   retired) with the ladder, parser-sensitivity column, and R2; and the reproduction report
   (`papers/mb_moralbench/REPRODUCTION.md`, per `MORAL_EVAL_REPLICATIONS.md`).

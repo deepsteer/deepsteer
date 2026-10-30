@@ -11,7 +11,7 @@
 # Contract. The caller MUST set these before calling the functions below:
 #   RUNPOD_API_KEY API REPO_ROOT SELF_PAPER RSYNC_EXCLUDE
 #   POD_NAME IMAGE DISK_GB VOLUME_GB CLOUD_TYPES GPU_TYPES SSH_KEY REMOTE_DIR
-# Optional (honored if set): REUSE_POD_ID KEEP_POD
+# Optional (honored if set): REUSE_POD_ID KEEP_POD GPU_COUNT (default 1; MB-G2 uses 2, 2026-10-30)
 #
 # These globals are set FOR the caller (used by the execute/download blocks):
 #   POD_ID  SSH_HOST  SSH_PORT  SSH_OPTS(array)  GPU_TYPE  CLOUD_TYPE
@@ -120,7 +120,7 @@ rp_provision_pod() {
       echo "   trying: $gpu ($cloud)"
       CREATE_MUT="mutation { podFindAndDeployOnDemand(input: {
         cloudType: ${cloud}
-        gpuCount: 1
+        gpuCount: ${GPU_COUNT:-1}
         volumeInGb: ${VOLUME_GB}
         containerDiskInGb: ${DISK_GB}
         gpuTypeId: \"${gpu}\"

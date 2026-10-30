@@ -132,3 +132,4 @@ papers/**/adapter/tokenizer.json
 
 # MoralBench raw replies and rendered prompts (no upstream license; MB_PLAN §9.2)
 papers/mb_moralbench/outputs_raw/
+papers/mb_moralbench/outputs/g2*/_raw/

@@ -190,8 +190,9 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--model", choices=sorted(MODELS), required=True)
     ap.add_argument("--root", type=Path, default=REPO / "papers" / "mb_moralbench")
+    ap.add_argument("--sub", default="g1", help="results folder under outputs/ (g2 for the pod)")
     args = ap.parse_args()
-    d = args.root / "outputs" / "g1" / args.model
+    d = args.root / "outputs" / args.sub / args.model
     _, items = load_moralbench()
     load = lambda name: [json.loads(x) for x in (d / name).read_text().splitlines()]  # noqa: E731
     row = MODELS[args.model]["paper_row"]
@@ -202,7 +203,8 @@ def main() -> None:
                      "model_key": args.model, "paper_row": row, "n_draws": N_DRAWS,
                      "n_boot": N_BOOT, "rounding": PAPER_ROUNDING,
                      "registered_configuration": args.model in REGISTERED,
-                     "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0"},
+                     "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0",
+                     "results_folder": args.sub},
         "cells": {c: cell_summary({"r0": load(f"{c}.jsonl")}, items, row, label) for c in cells},
         "r2": r2_summary(load("r2.jsonl"), items),
         "mb_a7": mb_a7_split(load("t07.jsonl")),
