@@ -116,7 +116,8 @@ SPENT = {"T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5)": 0.8,
          "st2q, Qwen pod 1 (18:39:54-22:55:02 + 0.1; Amendment 54)": 4.35,
          "st2qs, Qwen smoke pod (00:13:57-00:48:52 + 0.1; Amendment 57)": 0.68,
          "st2qp, Qwen pod 2 (22:47:33-12:31:58 + 0.1; Amendment 57)": 13.84,
-         "st2qg, ST-A36's generation read (20:25:31-21:15:02 + 0.1; Amendment 59)": 0.93}
+         "st2qg, ST-A36's generation read (20:25:31-21:15:02 + 0.1; Amendment 59)": 0.93,
+         "st2qr, the Qwen replicate (22:33:06-08:44:07 + 0.1; Amendment 60)": 10.28}
 # T1.5 ran on the pod above (panel guard measured at 2.1 A100-h per adapter at the 50% subsample,
 # 293 x 8 x 5 single-row dose-0 rows with specificity, parity and the merge: ~0.64 s per row, not
 # T1.1's 0.40); its readouts and L-anchor's HF generation are owed on pod B (G3)

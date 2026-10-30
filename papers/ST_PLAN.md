@@ -5893,3 +5893,39 @@ registered deviation from 8), at 5-7 A100-h, under its own amendment. Spent 110.
    selection 0.5; the gate for one arm with the forced and generation cells, 1.4; dry runs 0.1.
    About **9.3 A100-h**. Spent 110.98; about 120.3 of 125. The HF fallback, if it runs (care and
    `none`), is about +3, which the remaining 4.7 covers. The session stops at 13.5 h.
+
+#### Amendment 60 outcome, the fresh-seed Qwen replicate (2026-10-30; pod st2qr, 10.28 A100-h; `data/st2qr_read_v1.json`)
+
+Every step passed (pod 15865, 10.2 h). The teacher ran × 16 per arm with fresh seeds (parse 0.975
+care, 0.943 `none`). **The pairs were not thin: 49 rule-harm pairs from 26 scenarios**, plus pod
+2's 7 rule-right, making 56 pairs and 340 steps (24.3 epochs). Training took 4.43 h (pilot 4.24 h,
+inside Amendment 60's 4.9 h bail; the driver's coded bail was pod 2's 8.35 h, process ledger
+2026-10-30). Training ended with DPO margins 13-41 and chosen rewards −5 to −13. Selection: step
+340 (care 0.88 against base 0.86 on the held-out set). The merge gate passed (TV 0.012 to the
+attached adapter, 0.226 to base; behavioral kept share 0.950; weight kept share 0.880, beside), as
+did vLLM parity; no fallback ran.
+
+| criterion (Amendment 60 item 6) | care-DPO_Q2 | pod 2's care-DPO_Q | same pattern |
+|---|---|---|---|
+| 1. held-out protection, 17 engaged H1_held, CI above 0 | +0.691 [+0.625, +0.765] | +0.449 [+0.338, +0.566] | yes |
+| 2. capability within the bar (≥ −0.02) | +0.010 [−0.030, +0.050] | +0.010 [−0.030, +0.050] | yes |
+| 3. the panel guard (ΔE CI not above 0) | −0.002 [−0.008, +0.003] | +0.003 [−0.003, +0.010] | yes |
+| 4. dose-0 specificity not above +0.03 | −0.056 [−0.080, −0.035] | −0.064 [−0.094, −0.039] | yes |
+| 5. generation specificity not above +0.03 | +0.004 [−0.004, +0.015] | −0.002 [−0.006, 0.000] | yes |
+| 6. forced originals above `none`'s by more than 0.03 | +0.221 [+0.147, +0.299] | +0.199 [+0.125, +0.279] | yes |
+| 7. forced H\* CI includes 0 | +0.044 [−0.061, +0.147] | +0.005 [−0.103, +0.108] | yes |
+
+**Registered reading: replicates.** care-DPO_Q2 shows pod 2's pattern on all seven criteria: it
+protects on held-out rule-harm items, keeps capability and the guard, follows the rule on the
+panel's rule-right items under both readouts, and breaks the rule on cell A′'s forced originals
+with no harm conditioning beyond `none`'s.
+
+**Beside.**
+- Protection is larger with more pairs: care-DPO_Q2 minus care-DPO_Q on the same 17 scenarios is
+  +0.243 [+0.147, +0.346] (paired against the same `none` rows), while the forced-original shift
+  stays put (+0.221 against +0.199; ST-A38).
+- Capability's identical interval is a coincidence of totals: both adapters answer 175 of 200
+  against `none`'s 173, each differing from `none` on 18 items, and from each other on 14.
+- Damping (the steered teacher against the unsteered one) was not re-measured: one draw on Qwen.
+
+Spent 121.26 of 125.

@@ -1525,6 +1525,26 @@ Referee pass.
 3. *"R_item rests on one draw of each adapter."* Conceded; the replicate the author scheduled is
    the test, with a fresh seed and twice the teacher rollouts.
 
+**The fresh-seed Qwen replicate (2026-10-30; Amendment 60, ST-A38), what changed.** Positive voice
+first: **care-DPO on Qwen replicates on every registered criterion.** A second draw (fresh teacher
+traces in both arms, seed 205, 49 rule-harm pairs, not thin) protects on held-out rule-harm items
+(+0.691 [+0.625, +0.765]), keeps capability (+0.010) and the guard, follows the rule on the panel's
+rule-right items under both readouts (−0.056 at dose 0, +0.004 under generation), and breaks the rule
+on cell A′'s forced originals (+0.221 above `none`) with no harm conditioning beyond `none`'s (forced
+H\* +0.044 [−0.061, +0.147]). Its protection is larger than the first draw's by +0.243 [+0.147,
++0.346] on the same scenarios, while the forced-original shift is unchanged (ST-A38).
+
+Referee pass.
+1. *"Two draws, and they differ in seed, traces and count at once."* Conceded for ST-A38's size
+   difference: the pattern replicates; the protection's size is not attributed to the count. The
+   separating draw (~4-5 A100-h) exceeds what the envelope has left (3.74).
+2. *"The replicate inherited `none`'s rows from pod 2, so a drift in `none` would hit both."* Both
+   reads compare against the same `none` rows by design (paired seeds), so the comparison between
+   draws is exact; `none` itself was read once, as registered, and its base check passed (0.013).
+3. *"The non-specific forced read is still one item set."* Yes: cell A′'s 51 originals. R_item
+   (ST-A36) already places the rule-breaking on those items; the replicate confirms it there and
+   on no other set.
+
 ### ST line thesis (2026-10-29), positive voice
 
 On GPT-OSS, every constant vector that moved protection (V_qwen, −V_harm) also broke rules
@@ -1550,8 +1570,8 @@ harm-conditioned specificity under forced choice holds on Muse only** (author, 2
   against `none`'s 0.008; ST-A36 resolved R_item): the dose-0 and generation reads agree on the
   registered set, and the rule-breaking pod 2 measured lives on cell A′'s forced items.
 - Scope: Muse, two draws, one failing the capability bar (−0.040, with longer traces and an MMLU
-  loss); Qwen, one thin draw (39 pairs, 24 epochs), so the damping on Qwen rests on one draw (a
-  care-only replicate is registered, Amendment 60); the mechanism open.
+  loss); Qwen, two care draws (32 and 49 rule-harm pairs, 24 epochs) with the same pattern on all
+  seven of Amendment 60's criteria, while the damping on Qwen rests on one draw; the mechanism open.
 
 The KDG instrument's specificity read separates the two kinds of shift. It caught three adapters and
 two vectors:

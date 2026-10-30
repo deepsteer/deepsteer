@@ -1775,3 +1775,15 @@ R_selection if (a)'s CI lies above 0 on both families and (b)'s does not; R_damp
 **Registered branch: R_selection.** On both families the steered chosen traces are less likely under the unsteered model than the unsteered chosen traces, and they sit farther from the rejected trace, not closer: R_damping's prediction fails in sign. The steered teacher hands DPO protect traces the model would not write on its own, and the adapter trained on them moves less in every direction. Which property of those traces does it (their off-policy likelihood, or their content) is not separated here.
 **Status.** resolved (experiment, 2026-10-29): R_selection on both families.
 **Thesis impact.** The thesis's "only the steered one produces a specific one" was a Muse statement. On Qwen neither teacher's adapter is specific under forced choice; the steered one is less non-specific (−0.172 on the originals). The teacher's effect replicates as damping, not as specificity.
+
+## ST-A38 (ledger) — On Qwen, protection grows with the pair count and the forced rule-breaking does not
+
+**Date.** 2026-10-30 (Amendment 60; pods st2qp and st2qr).
+**Observation.** Two care-DPO_Q draws, the same recipe and epochs: 32 rule-harm pairs (pod 2) and 49 (the replicate, fresh traces, seed 205). Held-out protection on the same 17 engaged H1_held: +0.449 and +0.691, paired difference +0.243 [+0.147, +0.346]. The forced originals' shift above `none`: +0.199 and +0.221. Dose-0 specificity −0.064 and −0.056; capability +0.010 both.
+**Type.** dose-dependence (one lever moves, its side effect does not).
+**Competing readings.**
+- R_pairs: more rule-harm pairs teach more protection on held-out rule-harm items, while the forced-item rule-breaking is set by something the pair count does not change (the recipe, the item set).
+- R_draw: the two draws differ in seed and traces as well as in count; one draw each cannot attribute the difference to the count.
+**Discriminator.** A third draw at the replicate's count with pod 2's seed, or pod 2's traces subsampled to 32 pairs under seed 205 (~4-5 A100-h each); the envelope has 3.74 left. Not scheduled.
+**Status.** open.
+**Thesis impact.** If R_pairs, protection on Qwen is a dial the teacher's sample size turns without moving the forced-item side effect: the side effect and the benefit are separable in the recipe. If R_draw, the replicate's larger protection is draw-to-draw spread, and the claim is the pattern, not the size.
