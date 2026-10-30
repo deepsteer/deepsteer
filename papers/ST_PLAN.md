@@ -532,8 +532,9 @@ falls ... on two model families."
   items at dose 0 and under generation, and breaks the rule on cell A′'s forced originals with no
   departure on the twins beyond `none`'s (forced H\* +0.005, +0.044; CIs include 0). The steered
   teacher damps rule-breaking relative to the unsteered one (one draw; ST-A37, R_selection).
-- **Verdict sentence (close-out):** the two-family clause holds for protection without capability
-  loss and fails for forced-choice harm conditioning, which is scoped to Muse.
+- **Verdict sentence (close-out):** the two-family clause holds for protection on held-out items
+  (four draws; capability kept on three, one Muse draw at −0.040) and fails for forced-choice harm
+  conditioning, which is scoped to Muse.
 
 
 ## 9. Artifact saving (enforced)
