@@ -166,7 +166,7 @@ def test_generic_screen_dry_run_skips_olmo3_think_on_c13():
 def test_launcher_forwards_session_max_hours():
     # most probable failure (the T1.6 resume): the launcher drops SESSION_MAX_HOURS, so the pod
     # arms its step default; an unset value forwards as empty and must still fall to that default
-    sh = (ROOT / "papers" / "d1_moral_subspace" / "runpod" / "run_session.sh").read_text()
+    sh = (ROOT / "papers" / "runpod_common" / "run_session.sh").read_text()
     assert "SESSION_MAX_HOURS='${SESSION_MAX_HOURS:-}'" in sh.split("setsid bash")[0]
     r = subprocess.run(["bash", "-c", 'SESSION_MAX_HOURS=""; echo "${SESSION_MAX_HOURS:-2.5}"'],
                        capture_output=True, text=True)

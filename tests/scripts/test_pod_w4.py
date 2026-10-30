@@ -310,7 +310,7 @@ class TestLauncherPassthrough:
         # assert the d1 launcher forwards each W4_* variable remote_w4.sh consumes (the 2026-09-12
         # rerun launched the full panel because W4_MODELS/W4_UNITS/W4_OUT_SUBDIR were dropped)
         remote = (REPO / "scripts" / "remote_w4.sh").read_text()
-        launcher = (REPO / "papers" / "d1_moral_subspace" / "runpod" / "run_session.sh").read_text()
+        launcher = (REPO / "papers" / "runpod_common" / "run_session.sh").read_text()
         used = sorted(set(re.findall(r"\$\{(W4_[A-Z_]+)", remote)))
         assert used, "remote_w4.sh reads no W4_* variables?"
         for v in used:
