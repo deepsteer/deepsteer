@@ -49,3 +49,16 @@ def test_local_dry_sequence_writes_inside_the_results_path(tmp_path):
     assert (tmp_path / ".session_done").exists()
     meta = json.loads((g2 / "llama2_70b" / "run_meta.json").read_text())["runs"][-1]
     assert meta["out_sub"] == "g2" and meta["deadline_epoch"] is not None
+
+
+def test_pod_install_path_pins_the_g1_stack_and_installs_pytest():
+    # most probable failures, both found by the first VALIDATE (2026-10-30): the launcher's
+    # forwarded TRANSFORMERS_VERSION (default 5.12.1) overrides the G1 stack's 5.17.0, and the gate
+    # tests bail because `pip install -e .` brings no pytest; the local dry mode skips this branch
+    text = RUNNER.read_text()
+    assert 'MB_TF="${MB_TRANSFORMERS_VERSION:-5.17.0}"' in text
+    assert '"transformers==$MB_TF"' in text and "TRANSFORMERS_VERSION:=" not in text
+    install = text[text.index('"transformers==$MB_TF"'):].split("\n")[0]
+    assert "pytest" in install
+    assert text.index("pytest \\") < text.index("python -m pytest")
+    assert "transformers.__version__ != '$MB_TF'" in text  # the version is asserted, not assumed

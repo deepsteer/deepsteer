@@ -53,18 +53,23 @@ echo ">> MB-G2 start $(date -u +%FT%TZ) VALIDATE=$VALIDATE LOCAL_DRY=$LOCAL_DRY 
 WATCHDOG=$!
 
 if [ "$LOCAL_DRY" != 1 ]; then
-  echo ">> installing (transformers ${TRANSFORMERS_VERSION:=5.17.0}, the G1 stack's version)"
+  # the G1 stack's transformers (Amendment 2). Its own variable: the launcher always forwards
+  # TRANSFORMERS_VERSION with its 5.12.1 default (the first VALIDATE, 2026-10-30, installed that)
+  MB_TF="${MB_TRANSFORMERS_VERSION:-5.17.0}"
+  echo ">> installing (transformers $MB_TF, the G1 stack's version; pytest for the gate tests)"
   pip install -q --break-system-packages -e . 2>&1 | tail -2
-  pip install -q --break-system-packages "transformers==$TRANSFORMERS_VERSION" -U accelerate \
+  pip install -q --break-system-packages "transformers==$MB_TF" -U accelerate pytest \
     hf_xet 2>&1 | tail -2
   export HF_XET_HIGH_PERFORMANCE=1
   if ! python -c 'import torch, transformers; from transformers import AutoModelForCausalLM; assert torch.cuda.is_available()' 2>/dev/null; then
-    echo ">> torch $(python -c 'import torch;print(torch.__version__)' 2>&1) fails with transformers $TRANSFORMERS_VERSION; upgrading the trio to 2.6.0+cu124 (the KDG/W4 stack)"
+    echo ">> torch $(python -c 'import torch;print(torch.__version__)' 2>&1) fails with transformers $MB_TF; upgrading the trio to 2.6.0+cu124 (the KDG/W4 stack)"
     pip install -q --break-system-packages "torch==2.6.0" "torchvision==0.21.0" "torchaudio==2.6.0" \
       --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -2
   fi
   python -c 'import torch, transformers; assert torch.cuda.is_available(); print(">> stack: torch", torch.__version__, "transformers", transformers.__version__, "gpus", torch.cuda.device_count())' \
     || { echo "BAIL: the stack does not import with CUDA"; exit 1; }
+  python -c "import transformers, sys; sys.exit(transformers.__version__ != '$MB_TF')" \
+    || { echo "BAIL: transformers is not $MB_TF (harness parity with the G1 rows)"; exit 1; }
   NGPU=$(python -c 'import torch; print(torch.cuda.device_count())')
   if [ "$VALIDATE" != 1 ] && [ "$NGPU" -lt 2 ]; then echo "BAIL: Llama-2-70B needs 2 GPUs, found $NGPU"; exit 1; fi
   python - <<'EOF' || { echo "BAIL: model access"; exit 1; }
