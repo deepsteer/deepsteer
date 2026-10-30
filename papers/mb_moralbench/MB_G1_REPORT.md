@@ -1,4 +1,4 @@
-# MB-G1 gate report (2026-10-30; Zephyr done, Gemma pending)
+# MB-G1 gate report (2026-10-30; complete)
 
 M4, bf16, MPS. Rules of record: `MB_PLAN.md` v0.5 (commit `238a021`, pushed before any G1 data).
 Numbers of record: `outputs/g1/<model>/g1_analysis.json` (aggregates only); letters and readouts
@@ -56,12 +56,26 @@ orders.
 76% Agree; our Zephyr's A-rate is 0.22 by R2. MB-A7: R0's misses track the answer. Agree replies
 open with prose ("My choice is: A. Agree") and disagree replies open with the letter.
 
-## 2. Gemma-1.1-7B-it (pending)
+## 2. Gemma-1.1-7B-it (`065a5287`, system text prepended, template `ecd6ae51…`; G2 pod, Amendment 2)
 
-Blocked on Hugging Face access: the stored token is invalid (`hf auth whoami`). A background job
-starts the download, the three cells and the analysis as soon as `auth_check` passes. MB-A1
-(Gemma's MFV agree rate decides between 44.4 and 51.8) and the Gemma half of MB-A5 and MB-A7 come
-from that run.
+Run on the G2 pod (A100, torch 2.6.0+cu124, transformers 5.17.0; the M4 could not hold it). Three
+cells in 111 s. No R0 misses: Gemma answers with the letter first ("A.", "A. Agree").
+
+| set | paper | R0, miss = 0 | 95% PI, 5 repeats | verdict | R1 | R2 | A-rate (R2) |
+|---|---|---|---|---|---|---|---|
+| `MFQ_30` | 49.9 | 55.3 | [55.1, 55.8] | does not replicate | 55.3 | 55.2 | 0.90 |
+| `6_concepts` | 44.4 (cells 51.8) | 52.0 | [52.0, 52.0] | does not replicate | 52.0 | 52.0 | 0.00 |
+| `MFQ_30_compare` | 9.6 | 8.2 | [7.5, 9.1] | does not replicate | 8.2 | 8.0 | 0.73 |
+| `6_concepts_compare` | 10.8 | 11.9 | [10.8, 13.1] | **replicates** | 11.9 | 12.2 | 0.87 |
+
+Of 26 paper cells: 7 replicate, 19 do not, at T = 0.7 and at T = 1.0 alike.
+
+**MB-A1 resolved: R_total.** Gemma's agree rate on `6_concepts` is 0.00, and its total (52.0) sits
+next to the cells' sum (51.8). The printed 44.4 is the error.
+
+**MB-A5.** On MFV binary Gemma answers letter B in both orders (768/768 each; L = −0.50). The
+same holds for Llama-2 and, at about 97%, for Zephyr. On MFQ binary it follows the label instead:
+Agree or Correct on about 95% of replies in either order (K +0.45).
 
 ## 3. Diagnosis (registered: a miss triggers diagnosis under amendment)
 
@@ -83,6 +97,22 @@ registered configuration; a matching variant is reported as "matches under X"; s
 cells), and lists `zephyr-orpo-141b-A35b-v0.1` as the pod-only candidate if all four miss. The
 MB-A4 prompt check found no item asking for the more-wrong option, so no key is reclassified.
 
+## 3b. Diagnosis result (Amendment 1; stopping rule applied)
+
+| cell | where | MFQ binary (54.2) | MFV binary (48.1) | MFQ comparative (8.2) | MFV comparative (10.4) | paper cells matched |
+|---|---|---|---|---|---|---|
+| beta, native system role (of record) | M4 | 22.3 | 41.1 | 7.1 | **11.4** | 5 of 25 (replicate) |
+| D1 alpha | M4 | 40.9 | **47.9** | 3.6 | 7.6 | 9 |
+| D2 beta, system text prepended | M4 | 22.2 | 30.1 | 6.1 | **10.5** | 5 |
+| D3 beta, no system prompt | M4 | 9.1 | 24.9 | 6.4 | **9.9** | 4 |
+| D4 `zephyr-7b-gemma-v0.1` | pod | 51.2 | **46.7** | 9.9 | 8.6 | **17** |
+
+Bold marks a total inside the paper's PI. No configuration matches on MFQ binary (D4 comes
+closest, 51.2 with PI [49.5, 52.9]), so the registered branch applies: the Zephyr row is "not
+reproduced", and the verdict of record stays at beta. D4 "matches under `zephyr_gemma`" on 17 of 25
+attainable cells. `zephyr-orpo-141b-A35b-v0.1` is listed as the pod-only candidate, not run. The
+diagnosis stops here, per Amendment 1.
+
 ## 4. Referee pass
 
 1. *"Your Zephyr is not the paper's Zephyr, so a miss says nothing about MoralBench."* Conceded
@@ -97,3 +127,11 @@ MB-A4 prompt check found no item asking for the more-wrong option, so no key is 
    noise of a 5-repeat mean on these items, which is what the paper's cell carries. The misses
    are 7 to 32 points on totals whose half-widths are 1 to 3, so a lenient rule would not change
    them; MFV-comparative passes under the same rule.
+4. *"The MFV-comparative 'replications' would happen by chance."* Largely conceded (MB-A8
+   calibration). A random letter policy's PI covers the paper's MFV-comparative total for 54–65% of
+   draws, so those replications are reported as weak evidence. MFQ binary is the informative set,
+   and it misses on all three families.
+5. *"Zephyr ran on the M4 and Gemma and Llama on A100s: device, not model, could explain the
+   differences."* Same driver, sampler, parser and transformers version. Device parity was checked
+   on 3 Gemma items: identical letter distributions. That is a weak check (near-deterministic
+   items), so it is stated as exploratory.

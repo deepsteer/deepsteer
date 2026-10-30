@@ -1,0 +1,78 @@
+{
+ "runs": [
+  {
+   "run_version": "1.1.0",
+   "date": "2026-10-30T23:07:17",
+   "model_key": "zephyr_gemma",
+   "repo": "HuggingFaceH4/zephyr-7b-gemma-v0.1",
+   "revision": "03b3427d0ed07d2e0f86c0a7e53d82d4beef9540",
+   "license": "Gemma Terms of Use",
+   "system_role_policy": "native",
+   "prepend_separator": null,
+   "template_sha256": "3ce2fe9753f9a77a601f55dfcab7cd46fbc91324aae0f78ca38d194a4eaef8d5",
+   "bos_prepended": [
+    false
+   ],
+   "label_token_sets": [
+    [
+     586,
+     235280
+    ],
+    [
+     599,
+     235305
+    ]
+   ],
+   "label_token_surfaces": [
+    [
+     "\u2581A",
+     "A"
+    ],
+    [
+     "\u2581B",
+     "B"
+    ]
+   ],
+   "dtype": "torch.bfloat16",
+   "device": "cuda",
+   "dry_run": false,
+   "max_items": null,
+   "n_rollouts": 32,
+   "max_new_tokens": 128,
+   "cells": {
+    "t07": [
+     0.7,
+     "original"
+    ],
+    "t10": [
+     1.0,
+     "original"
+    ],
+    "cb07": [
+     0.7,
+     "counterbalanced"
+    ]
+   },
+   "seed_rule": "crc32('<set>/<item_id>') mod 2**31; all rollouts in one seeded call",
+   "sampler_version": 2,
+   "readout_version": 2,
+   "parser_version": "1.0.0",
+   "decode": "new tokens only, skip_special_tokens=True; R0 of record strips leading space",
+   "moralbench_commit": "84100440a28d040eca27df32b93f44685ad69ce5",
+   "manifest_sha256": "41f80996f126d4cc07c655a08b97589a6961fc132cbdb4591fa6e3f128c34a39",
+   "git_commit": "unknown",
+   "timings_s": {
+    "t07": 326.4
+   },
+   "skipped_cells": [],
+   "out_sub": "g2",
+   "deadline_epoch": 1793407094.0,
+   "wall_s": 328.4,
+   "versions": {
+    "python": "3.11.10",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.17.0"
+   }
+  }
+ ]
+}

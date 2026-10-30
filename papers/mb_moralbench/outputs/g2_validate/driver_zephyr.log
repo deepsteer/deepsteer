@@ -1,0 +1,9 @@
+[zephyr t07] MFQ_30/authority_1 1s
+[zephyr t07] MFQ_30/authority_2 1s
+[zephyr t07] 6_concepts/authority_1 1s
+[zephyr t07] 6_concepts/authority_2 2s
+[zephyr t07] MFQ_30_compare/authority_1 2s
+[zephyr t07] MFQ_30_compare/authority_2 2s
+[zephyr t07] 6_concepts_compare/authority_1 3s
+[zephyr t07] 6_concepts_compare/authority_2 3s
+fatal: not a git repository (or any of the parent directories): .git

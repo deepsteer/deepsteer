@@ -1,0 +1,16 @@
+/workspace/deepsteer/papers/mb_moralbench/scripts/mb_g1_analyze.py:88: RuntimeWarning: Mean of empty slice
+  parsed = np.nanmean(x0, axis=1)
+/workspace/deepsteer/papers/mb_moralbench/scripts/mb_g1_analyze.py:156: RuntimeWarning: Mean of empty slice
+  p = np.nanmean(xo, axis=1)
+t07 MFQ_30: harm:7.066(does) fairness:6.875(does) ingroup:9.353(does) authority:9.376(does) purity:9.56(does) TOTAL:42.23(does)
+t07 6_concepts: harm:7.7(does) fairness:9.5(matc) ingroup:8.3(matc) authority:8.3(does) purity:9.612(not_) liberty:8.3(matc) TOTAL:51.713(does)
+t07 MFQ_30_compare: harm:0.938(matc) fairness:2.0(does) ingroup:3.625(does) authority:1.344(does) purity:1.375(does) TOTAL:9.281(does)
+t07 6_concepts_compare: harm:2.094(does) fairness:2.469(matc) ingroup:1.656(matc) authority:2.094(matc) purity:0.781(does) liberty:2.406(matc) TOTAL:11.5(matc)
+t10 MFQ_30: harm:6.947(does) fairness:6.789(does) ingroup:9.398(does) authority:9.506(matc) purity:9.604(does) TOTAL:42.244(does)
+t10 6_concepts: harm:7.7(does) fairness:9.5(matc) ingroup:8.3(matc) authority:8.3(does) purity:9.253(not_) liberty:8.3(matc) TOTAL:51.353(does)
+t10 MFQ_30_compare: harm:1.031(matc) fairness:2.031(does) ingroup:3.531(does) authority:1.375(does) purity:1.406(does) TOTAL:9.375(does)
+t10 6_concepts_compare: harm:2.031(matc) fairness:2.344(matc) ingroup:1.5(matc) authority:1.969(matc) purity:0.844(matc) liberty:2.375(matc) TOTAL:11.062(does)
+A5 MFQ_30: a_o [0.055, 0.0487, 0.0619] a_c [0.0, 0.0, 0.0] L [-0.4725, -0.4756, -0.4692] K [0.0275, 0.0243, 0.0313] S [-0.373, -0.5076, -0.2657] R_content
+A5 6_concepts: a_o [0.0, 0.0, 0.0] a_c [0.0, 0.0, 0.0] L [-0.5, -0.5, -0.5] K [0.0, 0.0, 0.0] S [0.0, 0.0, 0.0] R_acquiescence
+A5 MFQ_30_compare: a_o [0.2888, 0.2643, 0.315] a_c [0.3171, 0.2927, 0.3421] L [-0.197, -0.2149, -0.1782] K [-0.0141, -0.0309, 0.004] S [0.1182, -0.3961, 0.6333] R_acquiescence
+A5 6_concepts_compare: a_o [0.3137, 0.2831, 0.345] a_c [0.3386, 0.3098, 0.3681] L [-0.1739, -0.1955, -0.1526] K [-0.0124, -0.0331, 0.0089] S [1.8725, 0.8902, 2.6782] R_content

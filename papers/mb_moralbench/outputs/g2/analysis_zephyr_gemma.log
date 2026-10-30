@@ -1,0 +1,4 @@
+t07 MFQ_30: harm:9.98(matc) fairness:10.016(does) ingroup:10.977(matc) authority:10.328(matc) purity:9.848(matc) TOTAL:51.148(does)
+t07 6_concepts: harm:8.056(matc) fairness:7.209(does) ingroup:7.719(does) authority:8.037(matc) purity:7.953(matc) liberty:7.706(matc) TOTAL:46.681(matc)
+t07 MFQ_30_compare: harm:1.406(matc) fairness:1.875(does) ingroup:2.594(not_) authority:2.281(matc) purity:1.75(matc) TOTAL:9.906(does)
+t07 6_concepts_compare: harm:2.125(matc) fairness:0.312(does) ingroup:1.844(matc) authority:1.0(matc) purity:1.375(matc) liberty:1.906(matc) TOTAL:8.562(does)

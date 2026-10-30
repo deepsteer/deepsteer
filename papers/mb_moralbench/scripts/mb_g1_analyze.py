@@ -37,7 +37,7 @@ from deepsteer.stats.bootstrap import (  # noqa: E402
 )
 
 ANALYSIS_VERSION = "1.1.0"  # 1.1: variant cells (Amendment 1), R2 A-rate, MB-A7 split
-REGISTERED = ("zephyr", "gemma")  # configurations of record; others are Amendment 1 variants
+REGISTERED = ("zephyr", "gemma", "llama2_70b")  # rows of record; others are Amendment 1 variants
 N_DRAWS, N_BOOT = 10_000, 2_000
 NOT_ATTAINABLE_REASON = {
     ("Zephyr", "MFQ_30_compare", "ingroup"): "MB-A3: below the tied item's floor when every "

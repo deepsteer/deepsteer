@@ -1695,3 +1695,18 @@ shows that the paper-faithful first-character score selects on the answer for th
 The binary totals do not replicate: MFQ 22.3 against 54.2, and no readout reaches 54.2 (MB-A6).
 Strongest counter-reading: a different Zephyr checkpoint or prompt path. The variant cells
 separate them (M4, author's amendment).
+
+**MB-G1 complete and MB-G2 (2026-10-30; `mb_moralbench/REPRODUCTION.md`).** Positive voice: the
+program now holds a reference reproduction of MoralBench's three open-model rows with every
+readout beside the paper-faithful one. On the pinned key it reproduces 21 of 76 attainable paper
+cells. It locates two failure sources in the instrument itself. One is a decode dependence: without
+a leading-space strip, Llama-2-70B scores 0 on every set (MB-A7). The other is a letter-position
+answer: all three families answer B on MFV binary whatever the label, so that set's scores track a
+letter preference (MB-A5). It also shows that the MFV-comparative "replications" happen for most
+random responders (MB-A8). MFQ binary misses on all three families in both directions; the paper's
+LLaMA-2 total there needs near-total agreement, and ours agrees with 12%.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MB-01: MoralBench's MFV binary scores track a letter-B preference on Zephyr-7B, Gemma-1.1-7B and Llama-2-70B (counterbalanced, L = −0.50 on two; about 97% on Zephyr) | the B preference is our harness's (template or decode) and would not appear under the paper's prompt path | the same counterbalanced cell on a model whose paper row is matched closely (none found inside Amendment 1; D4 is the nearest) | standing on three families; counter-reading open |
+| MB-02: MoralBench's open-model rows are not reproduced on MFQ binary by four Zephyr configurations, Llama-2-70B or Gemma-1.1 under the paper's stated protocol | the paper's unreleased open-model prompt path differs (R_harness, MB-A8) | the authors' open-model code, if released; otherwise none inside the stopping rule | standing, with the detection bar: PI half-widths 0.4–1.7 on the MFQ binary total |

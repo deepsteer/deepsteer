@@ -1,0 +1,14 @@
+{
+ "files": {
+  "_raw/gemma/t07.jsonl": "c7d9f553ba21f25a2c8fe359182ff0f2d0e55a873e261019ad9bb782fbd5a4f6",
+  "_raw/zephyr/t07.jsonl": "518ad7016c097128232db8e2a3d48f41e331fc12931a2fb8457c23c2f187551e",
+  "driver_gemma.log": "bbc7c7776bd9db24dc18799780ba76773177e83d4ceb62a3e151d89181fabdcd",
+  "driver_zephyr.log": "46292d8f9676f6274e679731bac7194cde4a19477ee4c5c55395f4d7fe74a1bd",
+  "gemma/r2.jsonl": "d7d9f3d752c906d3f8cfbd5c7d940cd7a024f0f0a5cb3250544d5fe81e8b608c",
+  "gemma/run_meta.json": "cf1129d86cbb126d4d1ce23aa95ff69e3eec4c2f1710ba6748e07acfd6c5aa17",
+  "gemma/t07.jsonl": "e57c7845292ee4732805b9ec53dc9d9ace9ebc8b450e1add3117d63a2e9e546d",
+  "zephyr/r2.jsonl": "184fb42fee0af03fcbde94feb8e130361610123153fe51273759273862005c37",
+  "zephyr/run_meta.json": "78a7d2874ced59499f719f3b7a438cce8bb17a24543d8774908ee5faaf383cc5",
+  "zephyr/t07.jsonl": "da3ce8b9d217d2a740fb1b54847e7175ce9afaec7bc9029e6e4d20474f3c0a07"
+ }
+}

@@ -1,0 +1,80 @@
+{
+ "runs": [
+  {
+   "run_version": "1.1.0",
+   "date": "2026-10-30T23:30:39",
+   "model_key": "llama2_70b",
+   "repo": "meta-llama/Llama-2-70b-chat-hf",
+   "revision": "e9149a12809580e8602995856f8098ce973d1080",
+   "license": "Llama 2 Community License",
+   "system_role_policy": "native",
+   "prepend_separator": null,
+   "template_sha256": "e8d5b5a546d3f19df16a5320c614fab05bdc4edd50e850f1afd947b503ea41cf",
+   "bos_prepended": [
+    false
+   ],
+   "label_token_sets": [
+    [
+     319,
+     29909
+    ],
+    [
+     350,
+     29933
+    ]
+   ],
+   "label_token_surfaces": [
+    [
+     "\u2581A",
+     "A"
+    ],
+    [
+     "\u2581B",
+     "B"
+    ]
+   ],
+   "dtype": "torch.bfloat16",
+   "device": "auto",
+   "dry_run": false,
+   "max_items": null,
+   "n_rollouts": 32,
+   "max_new_tokens": 128,
+   "cells": {
+    "t07": [
+     0.7,
+     "original"
+    ],
+    "t10": [
+     1.0,
+     "original"
+    ],
+    "cb07": [
+     0.7,
+     "counterbalanced"
+    ]
+   },
+   "seed_rule": "crc32('<set>/<item_id>') mod 2**31; all rollouts in one seeded call",
+   "sampler_version": 2,
+   "readout_version": 2,
+   "parser_version": "1.0.0",
+   "decode": "new tokens only, skip_special_tokens=True; R0 of record strips leading space",
+   "moralbench_commit": "84100440a28d040eca27df32b93f44685ad69ce5",
+   "manifest_sha256": "41f80996f126d4cc07c655a08b97589a6961fc132cbdb4591fa6e3f128c34a39",
+   "git_commit": "unknown",
+   "timings_s": {
+    "t07": 411.9,
+    "cb07": 383.2,
+    "t10": 476.8
+   },
+   "skipped_cells": [],
+   "out_sub": "g2",
+   "deadline_epoch": 1793407094.0,
+   "wall_s": 1284.8,
+   "versions": {
+    "python": "3.11.10",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.17.0"
+   }
+  }
+ ]
+}
