@@ -112,10 +112,12 @@ def test_forced_read_and_branch():
     assert A.branch(0.0, A.forced_read(low, Fn), True).startswith("unregistered")
 
 
-def test_configure_points_t16_at_qwen():
+def test_configure_points_t16_at_qwen(t16_restored):
+    # t16_restored (conftest): configure() rewrites t16_driver's globals in place; the fixture
+    # restores them so test_t16 reads its own constants in a full-suite run (CI, 2026-10-30)
     # most probable failure: t16_driver keeps Muse's key, pin or site, or its engine runs without
     # the forced cells
-    import t16_driver as T16
+    T16 = t16_restored
 
     D.configure()
     assert (T16.KEY, T16.PIN, T16.BLOCK, T16.STAGE) == ("qwen38_27b", "2026-10-27", 32, "st2qp")
