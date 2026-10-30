@@ -519,6 +519,8 @@ gap sits in the fairness primaries (screened rate 0.40, n 10), not the loyalty t
 Discriminator (zero GPU): re-score KDG-A4 with every F4 loyalty-norm twin excluded, both
 generators; and for any future F4 round, rotate twin norms across halves. Status: open, priced.
 
+**Process ledger 2026-10-30: the replicate's training bail is pod 2's, not Amendment 60's.** Amendment 60 item 4 registers the bail as "care's pilot projects training past the envelope's remainder after every other item" (about 4.9 h at the pair count, 49 rule-harm + 7 rule-right, 340 steps). `st2qr_driver` reuses `st2qp_driver.step_train`, whose bail constants are pod 2's (`SPENT_BEFORE` 96.21, `NON_TRAIN_H` 12.1), so the bail it applies is 8.35 h. The build and its tests did not check the bail against the amendment. At pod 2's 46 s per step, training takes about 4.35 h and the pod ends near 121.9 of 125; a rate more than about 10% slower, with the HF fallback, would pass 125. Handling: the running step is not edited (pod rule); the step rate is measured from the first checkpoint's time (step 113) and the author is alerted if training projects past 4.9 h. Fix for later builds: a replicate driver sets its own envelope constants, and a test asserts the bail against the amendment's number.
+
 **Process ledger 2026-10-28: an arm ran before its amendment was pushed.** Amendment 56's
 third addition (Sol's xhigh arm and its four-point ladder) was committed as d6e059f at 04:11:50
 UTC, and the arm launched at 04:14:47 UTC, before the push. The push was confirmed at 04:16:38
