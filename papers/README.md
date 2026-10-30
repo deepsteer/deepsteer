@@ -34,12 +34,17 @@ early numbered papers onto the published units.
   pressure, and whether they do follows the post-training recipe (same Llama-3.1 base: Meta's
   carries the gap, Tulu 3's does not). Scenarios, harness and analyses: `kdg_panel/`.
 
-## In progress
+## Closed lines (not packaged)
 
-**ST line: holding the moral reference live through post-training** ([ST_PLAN.md](ST_PLAN.md),
-`st_live_reference/`). Development model GPT-OSS-20B, second family Muse Glimmer 30B. T1.1 (the
-banked uninstrumented baseline) is done. At the T1.3 target-selection gate neither anchoring target
-passed, and G2 is open with the author; GPT-OSS's dose-0 panel read (Amendment 11) is running.
+**ST line: steer-then-DPO (closed 2026-10-30)** ([ST_PLAN.md](ST_PLAN.md), `st_live_reference/`).
+A gate-passing `care_harm` steering vector selects DPO's chosen traces; the adapter is the
+deliverable. On Muse Glimmer 30B and Qwen3.8-27B the adapters protect on held-out rule-harm items
+(Muse +0.338 and +0.326, Qwen +0.449 and +0.691), with capability kept on three of four draws.
+Harm-conditioned specificity under forced choice holds on Muse only (harm-reversed twins +0.289 on
+the replicate). On Qwen the adapters follow the rule on the panel's rule-right items and break it
+on cell A′'s forced items (+0.199 and +0.221 above the base model). The three representation
+objectives on GPT-OSS-20B did not pass (T1.5). Spend 121.26 of 125 A100-h; a frontier exhibit on
+two API models is reference only. Claims ST-01 to ST-13; open anomalies ST-A26, ST-A35, ST-A38.
 
 ## Working directories and program documents
 

@@ -268,7 +268,7 @@ again, §5.2–5.3 still train (the gate is a prior, not a verdict) but the pre-
 expectation flips to the null branch and the write-up says so. The gate result is reported in
 the paper as the localization step, never as a steering result.
 
-### 5.1 `L-beh` — behavioral LoRA (the comparator)
+### 5.1 `L-beh`: behavioral LoRA (the comparator)
 
 DPO on `H1_train`'s on-policy traces: chosen = a rollout whose action is `protect`, rejected = a
 rollout whose action is `rule`, same scenario, per scenario where both exist; a `defer` rollout is
@@ -281,7 +281,7 @@ from T1.1's), before training (Amendment 3). Plus the KL-to-base term on the gen
 same weight as §5.2–5.3. No SFT comparator. LoRA rank 16 on attention and MLP projections, bf16 on 7B, QLoRA
 (4-bit base, bf16 adapters) on 27–30B. This arm sees the **outcome labels**; §5.2–5.3 do not.
 
-### 5.2 `L-anchor` — representation anchoring
+### 5.2 `L-anchor`: representation anchoring
 
 Same LoRA shape and data. Loss on each on-policy trace at the anchoring position class (from §5.0):
 `max(0, τ − ⟨h_L*(t), V_care⟩ / ‖h_L*(t)‖)` averaged over positions, τ set so the unadapted
@@ -291,7 +291,7 @@ general slice and on the trace tokens outside the anchoring class. No outcome la
 A `V_fill` version (`L-fill`) is the placebo adapter if the envelope allows (same loss, random
 direction, 1 draw).
 
-### 5.3 `L-self` — self-distillation of the judgment state
+### 5.3 `L-self`: self-distillation of the judgment state
 
 Same LoRA shape and data. Target per scenario: the judgment-frame residual at the pre-decision
 gate, layer L*, standardized per dimension with the layer's `chat_sigma`. `chat_sigma` is
@@ -437,7 +437,7 @@ API spend on the frontier exhibit (reference only, its own cap) closed at **$74.
 | st2qr, the Qwen replicate (22:33:06-08:44:07 + 0.1; Amendment 60) | 10.28 |
 | **total** | **121.26** |
 
-### Tier 0 — zero GPU (Mac and banked arrays)
+### Tier 0: zero GPU (Mac and banked arrays)
 
 | id | item | output |
 |---|---|---|
@@ -453,7 +453,7 @@ API spend on the frontier exhibit (reference only, its own cap) closed at **$74.
 | T0.10 | ANOMALIES/CLAIMS/SYNTHESIS stubs for §8 | entries |
 | T0.11 | T1.0 screen pod driver (Amendment 3): one model loaded at a time, its trace-length pilot, VALIDATE and screen run back to back before unloading, so step-down and re-price happen inline; dose-0 candidates per model (Muse: empty reasoning channel, then direct answer; records which passes or that neither does); per-rollout saving; last output the re-priced Tier 1 table for G1. Local test on tiny models, then a `VALIDATE=1` dry run before the pod command goes to the author | driver + tests |
 
-### Tier 1 — pods (prices at the stated rollouts, 1,024-token cap, HF generate with hooks, batched)
+### Tier 1: pods (prices at the stated rollouts, 1,024-token cap, HF generate with hooks, batched)
 
 | id | item | A100-h | the decision its result changes |
 |---|---|---|---|
@@ -486,7 +486,7 @@ widens the gap), a family that breaks the pattern, or a `fill` or `L-fill` that 
 Cross-session dependencies: T1.4 needs T1.1's traces and judgment residuals and T1.3's target;
 T1.6 needs T1.5's verdict; Tier 2 reads T1.1/T1.6's banked residuals and T1.5's per-rollout rows.
 
-### Tier 2 — the funded ask (priced; not scheduled)
+### Tier 2: the funded ask (priced; not scheduled)
 
 | cell | A100-h | what it buys |
 |---|---|---|
