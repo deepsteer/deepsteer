@@ -381,7 +381,61 @@ screen conditions on the unadapted arms only, on a sample disjoint from the base
 compared against (Amendment 1); τ, L*, the position class and the split are fixed
 before training; no adapter is selected on H1_held.
 
-## 7. Ordering and prices (envelope of record 125 A100-h, Amendment 57's third addition, spent 96.21 on 2026-10-28; ~~112~~ by Amendment 57's addition; ~~about 107.4~~ with Amendment 54; ~~96~~; ~~≤ 35 A100-h~~, the original)
+## 7. Ordering and prices (envelope of record 125 A100-h, Amendment 57's third addition; **final spend 121.26 on 2026-10-30**, ~~96.21 on 2026-10-28~~; ~~112~~ by Amendment 57's addition; ~~about 107.4~~ with Amendment 54; ~~96~~; ~~≤ 35 A100-h~~, the original)
+
+### Spend of record at close-out (2026-10-30)
+
+The spend of record is the sum of the pods below plus T1.1's 1.19 A100-h (its own accounting), from
+`st_live_reference/scripts/reprice_tier1.py` (`SPENT`): **121.26 of the envelope of 125 A100-h**.
+API spend on the frontier exhibit (reference only, its own cap) closed at **$74.27 of $110**
+(Amendments 56 and 58).
+
+| pod (session and amendment) | A100-h |
+|---|---|
+| T1.1 (own accounting) | 1.19 |
+| T1.0 first pod (OLMo-3-Think, 7y7jn6pwphbzb5) | 0.80 |
+| VALIDATE pods x4 (146trytky4d1z3, 40yy8fg8wtnucu, vgjndx7dmqyfa8, nw2ot7pye4ad1a) | 0.85 |
+| T1.0 relaunch (esmxvsxj8wzkaq; estimate) | 1.80 |
+| rider pod (t10b; timestamps) | 1.81 |
+| rider pod 2 (t10c; timestamps) | 0.65 |
+| rider pod 2b (gyyo2g10b95uqs; download lost; estimate) | 0.75 |
+| rider pod 2c (t10d; timestamps) | 1.00 |
+| T1.3 pod (t13; timestamps; sweep, gate, transport; rerun lost, panel moved) | 2.35 |
+| T1.3b pod (lsb4193stzic9k; estimate 16:59-20:35 UTC + 0.1; rerun done, panel read but lost in the download) | 3.70 |
+| T1.3c pod (z28p9cbnwvvo58; timestamps; reversed-axis arm, none panel of record) | 3.24 |
+| T1.4 pod (byr26tsrjyh66q; timestamps; gate arms, three adapters) | 4.70 |
+| ST Phase 2 pod A, attempt 1 (sx9ag0uq14lw64; timestamps; OOM at c1_none batch 2) | 0.62 |
+| T1.5 pod (gwobskujn4mmap; timestamps 21:03-04:03 + 0.1; stopped before the readouts) | 7.10 |
+| ST Phase 2 pod A (st2a; timestamps 22:54-05:57 + 0.1; Cell 1) | 7.15 |
+| ST Phase 2 pod B (st2b; timestamps 06:41-13:00 + 0.1; G3 follow-up, ST-A15's discriminator, Cells 2-3, -V_harm) | 6.41 |
+| ST Phase 2 pod C (st2c; timestamps 18:03-20:46 + 0.1; Amendments 25-28) | 2.82 |
+| ST Phase 2 D-lite (st2dl; timestamps 21:58-23:21 + 0.1; Amendment 29) | 1.49 |
+| ST Phase 2 Cell 4, Muse (st2m; timestamps 00:37-05:16 + 0.1; Amendment 30) | 4.75 |
+| care_harm ladder, attempt 1 (amgea03zuqwq4g; 06:15-06:28 + 0.1; stopped at the local gate, no model loaded) | 0.32 |
+| care_harm ladder, attempt 2 (st2ml; timestamps 06:44-08:16 + 0.1; Amendment 31) | 1.63 |
+| L-beh-2 (st2lb; timestamps 16:38-20:36 + 0.1; Amendment 31 item 3) | 4.06 |
+| care_harm replicate (st2mr; 21:02:43-01:40:39 + 0.1; Amendment 32; care arm run by hand after the driver's projection skipped it) | 4.73 |
+| format x harm matrix + D_rb rider (st2fx; 23:51:18-01:23:04 + 0.1; Amendments 33-35) | 1.63 |
+| T1.6 first pod (t16; 05:33:07-11:09:05 + 0.1; stopped at the merge, rc 1) | 5.70 |
+| c13 first pod (18:08:41-18:22:49 + 0.1; stopped in the dry runs) | 0.33 |
+| T1.6 resume (t16; 18:08:56-19:55:52 + 0.1; Amendments 37-39) | 1.88 |
+| c13 relaunch (18:44:40-19:18:23 + 0.1; Amendments 36 and 40) | 0.66 |
+| a2m, Muse cell A' (23:43:31-00:08:22 + 0.1; Amendment 41) | 0.51 |
+| a2g, cell A' generation (03:18:11-04:09:30 + 0.1; Amendment 43) | 0.96 |
+| a2f first pod, stopped at the care merge (05:36:56-05:58:38 + 0.1; Amendment 46) | 0.46 |
+| a2f resume, stopped before the merge (06:38:03-06:51:57 + 0.1; Amendment 46) | 0.33 |
+| c13c, the rebuilt control (06:50:32-07:08:19 + 0.1; Amendment 47) | 0.40 |
+| a2f relaunch, the forced-choice arms (07:47:42-08:28:53 + 0.1; Amendment 46) | 0.79 |
+| st2gl, the GPT-OSS ladder at 0.4x (19:07:23-20:39:09 + 0.1; Amendment 50) | 1.63 |
+| t16r, the care-DPO replicate (17:36:06-22:32:18 + 0.1; Amendment 49) | 5.04 |
+| a2t, the forced choice on the twins (01:44:29-02:47:07 + 0.1; Amendment 52) | 1.14 |
+| st2gs, the GPT-OSS site sweep (05:04:08-10:45:54 + 0.1; Amendment 51) | 5.80 |
+| st2q, Qwen pod 1 (18:39:54-22:55:02 + 0.1; Amendment 54) | 4.35 |
+| st2qs, Qwen smoke pod (00:13:57-00:48:52 + 0.1; Amendment 57) | 0.68 |
+| st2qp, Qwen pod 2 (22:47:33-12:31:58 + 0.1; Amendment 57) | 13.84 |
+| st2qg, ST-A36's generation read (20:25:31-21:15:02 + 0.1; Amendment 59) | 0.93 |
+| st2qr, the Qwen replicate (22:33:06-08:44:07 + 0.1; Amendment 60) | 10.28 |
+| **total** | **121.26** |
 
 ### Tier 0 — zero GPU (Mac and banked arrays)
 
@@ -4146,6 +4200,13 @@ harm-blind, and the forced choice on the twins (Amendment 52) decides it.
   200 capability items, so the gate's capability read is never the selecting sample. Motivation: the
   t16r replicate fails the gate's capability bar (−0.040) on a recipe whose first draw passed it
   (−0.005); a selection set would have caught the draw before the gate.
+- **The pair count and protection (author, 2026-10-30; ST-A38, open, not scheduled).** On Qwen,
+  two care-DPO draws at the same recipe and epochs differ in rule-harm pairs (32 and 49) and in
+  held-out protection by +0.243 [+0.147, +0.346] (paired, 17 scenarios), while the forced-original
+  rule-breaking stays put (+0.199, +0.221). One reading is that more rule-harm pairs teach more
+  protection without moving that side effect; the draws also differ in seed and traces, so the
+  count is not separated. A future run that wants more protection raises the teacher's rollouts
+  (16 gave 49 pairs on Qwen where 8 gave 32) and registers the pair count as a factor.
 
 **Registered labels, stated beside the verdict.**
 - T1.6's branch is unregistered (ST-A27): the teacher's difference is −0.525 [−0.618, −0.433].
