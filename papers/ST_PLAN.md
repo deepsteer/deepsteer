@@ -556,6 +556,32 @@ is released with the write-up (Zenodo, as KDG v2). Every §6 statistic is recomp
 | merged weights per adapter (GPT-OSS-20B, bf16) | ~42 GB each | ~21B parameters × 2 bytes; three adapters exceed one record, so merged weights go per adapter or as adapters plus the base pin |
 | T1.6 bank (second family) | to be priced at T1.6 | |
 
+### Data of record at close-out (2026-10-30)
+
+Every verdict in this plan is recomputable at zero GPU from the committed files below
+(`st_live_reference/data/`, and `st_live_reference/split_v1.json`) and the per-rollout tables under
+`st_live_reference/outputs/` (git-ignored; released with the write-up, §9 above). Reads end in
+`_read_v1.json`; the scripts that wrote them are named in each file's `rule` field.
+
+| stage | files |
+|---|---|
+| inputs and sets | `split_v1.json`; `s40_reference`, `general_slice_v1`, `refusal_retention_v1`, `refusal_retention_templates_v1`, `t13_draw_v1`, `t14_tau_v1`, `t15_specificity_v1`, `t15_panel_half_v1`, `t15_capability_v1`, `t15_engaged_held_v1`, `st2_engaged_train_v1`, `st_lbeh2_pool_v1`, `st2qp_selection_v1`; `directions/gpt_oss_20b_eop_L12` |
+| GPT-OSS development (T1.2 to T1.5) | `t12_constancy_v1`, `t15_adapters_v1`, `t15_foundation_read_v1`, `t15_read_v1`, `t18_lself_checks_v1` |
+| Phase 2 target search | `st2_read_v1`, `st2_rule_option_shape_v1`, `st2_rule_twins_v1`, `st2c_read_v1`, `st2dl_read_v1`, `st2m_read_v1`, `st2ml_read_v1`, `st2mr_read_v1`, `st2lb_read_v1`, `st_drb_v1`, `st2gl_read_v1`, `st2gs_read_v1`, `st_a31_read_v1` |
+| format × harm and cell A′ | `st_fxh_adapters_v1`, `st_fxh_build_v1`, `st_fxh_h1fmt_ruleright_v1`, `st_fxh_panelfmt_ruleharm_v1`, `st2fx_read_v1`, `st_fxh_cellA2_build_v1`, `st_fxh_cellA2_pool_v1`, `st_fxh_cellA2_matched_v1`, `st_fxh_cellA2_forced_v1`, `st_fxh_cellA2_twins_forced_v1`, `st_c13_cellA2_read_v1` |
+| T1.6 on Muse | `t16_adapters_v1`, `t16_read_v1`, `t16r_read_v1`, `st_a27_read_v1`, `st_a27_content_likelihood_v1`, `a2t_read_v1` |
+| §13, the constitution variant | `st_c13_inputs_v1`, `st_c13_pairs_{anth,spec,spec2025}_v1`, `st_c13_P_{anth,spec,spec2025}_v1`, `st_c13_overlap_read_v1`, `st_c13_std_read_v1`, `st_c13_doc_contrast_read_v1`, `st_c13_control2025_read_v1`, `st_c13_within_model_read_v1`, `st_c13_family_{anth,spec,build,read}_v1`, `st_c13_a45_read_v1` |
+| Qwen3.8-27B (pods 1 and 2, ST-A36, the replicate) | `st2q_read_v1`, `st_a32_read_v1`, `st2qp_read_v1`, `st_a36_overlap_v1`, `st2qg_read_v1`, `st_a37_read_v1`, `st2qr_read_v1` |
+| frontier exhibit (reference only) | `frontier_f0_v1`, `frontier_f1_gpt61sol_v1`, `frontier_f1_gpt61sol_high_v1`, `frontier_f1_gpt61sol_xhigh_v1`, `frontier_f1_opus55_v1`, `frontier_f1_opus55_forced_v1`, `st_a34_read_v1`, `frontier_panel_gpt61sol_v1` |
+
+**Ledgers closed (2026-10-30).**
+- Spend: 121.26 of 125 A100-h (§7's table, `reprice_tier1.SPENT` plus T1.1's 1.19); no pod is
+  running or owed.
+- API: the frontier exhibit closed at $74.27 of $110; no calls without a new amendment.
+- ANOMALIES: the ST status table (38 entries) is final; open are ST-A26's rival, ST-A35 and ST-A38.
+- CLAIMS: rows ST-01 to ST-13 reconciled with scope lines (close-out).
+- Process ledger: its last ST entry is 2026-10-30 (the replicate's bail constants).
+
 ## 10. Referee pass (draft; finalize at G3)
 
 1. *"A LoRA on 132 scenarios overfits; your 'restoration' is memorization."* Held-out scenarios,
