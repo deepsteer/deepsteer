@@ -1686,3 +1686,12 @@ models is not yet measured: G0 is an audit of the key, not of any model.
 | | cells miss | diagnosis under amendment (template, system policy, sampling, parse), with the verdict under each choice |
 | counterbalanced cell | `S` covers 0 (R_acquiescence) | MoralBench scores carry the A-rate or agree rate beside them in every Phase 2 use |
 | | `S` excludes 0 (R_content) | the instrument reads item content within the ladder's band |
+
+**MB-G1, Zephyr half (2026-10-30; Gemma pending).** Positive voice: the program now has a local
+MoralBench harness that reproduces the paper's MFV-comparative total for Zephyr (11.4, PI [10.3,
+12.4] against 10.4). It also has a parse-free readout (R2) showing that this Zephyr checkpoint
+leans toward letter B on all four sets whatever the content (L −0.13 to −0.46, |K| ≤ 0.11). And it
+shows that the paper-faithful first-character score selects on the answer for this model (MB-A7).
+The binary totals do not replicate: MFQ 22.3 against 54.2, and no readout reaches 54.2 (MB-A6).
+Strongest counter-reading: a different Zephyr checkpoint or prompt path. The variant cells
+separate them (M4, author's amendment).

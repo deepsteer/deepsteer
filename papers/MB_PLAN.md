@@ -1,6 +1,7 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v0.5, 2026-10-30. **v0.5 (author, 2026-10-30): MB-G0 passed; the gate report's decisions 1-8
+Status: v0.6, 2026-10-30. **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
+stopping rule registered before them, and the drift-monitor readout rule (§7).** **v0.5 (author, 2026-10-30): MB-G0 passed; the gate report's decisions 1-8
 approved with additions and folded in below** (sampling T = 0.7 of record, §2; R0 of record and the
 paper-comparison aggregate, §3; the counterbalanced cell, §4; the items-fixed match rule and the
 "not attainable" cells, §5; the approved namespace and golden pods, §6; letters-not-scores, §9.2;
@@ -158,7 +159,35 @@ the ladder's band.
     every reply parses; it is reachable only through misses scored 0, and that aggregate's value is
     reported beside the verdict as MB-A3's discriminator.
   MB-A1 (Gemma MFV): the match is read against both the printed total (44.4) and the cells' sum
-  (51.8); Gemma's agree rate on `6_concepts` decides the reading (MB-A1). Both branches are reported: a match
+  (51.8); Gemma's agree rate on `6_concepts` decides the reading (MB-A1).
+- **Amendment 1 (2026-10-30, author; committed and pushed before any cell it licenses).** The
+  Zephyr row missed at G1 (`mb_moralbench/MB_G1_REPORT.md`: 5 of 25 attainable cells replicate;
+  MFQ binary 22.3 against 54.2, and no readout reaches 54.2, MB-A6). The registered response is a
+  diagnosis under amendment.
+  - **Stopping rule (registered first).** The verdict of record stays at the registered
+    configuration (`zephyr-7b-beta` at `892b3d7a`, native system role, T = 0.7, R0 with misses
+    scored 0). A variant whose cell lands inside the paper cell's 95% PI (same rule as G1) is
+    reported as "matches under X" and never replaces the verdict of record. After the four cells
+    below, the result is written up and the diagnosis stops; any further variant needs a new
+    amendment.
+  - **Four cells** (M4, bf16, T = 0.7, 88 items × 32 rollouts, the G1 seeds, R2 in both orders):
+    D1 `HuggingFaceH4/zephyr-7b-alpha` at `014792bbb59d04ced3b5a9b8b4dfc926655d958f`, native system
+    role (MIT); D2 `zephyr-7b-beta`, system text prepended to the user turn (`"\n\n"`); D3
+    `zephyr-7b-beta`, no system prompt; D4 `HuggingFaceH4/zephyr-7b-gemma-v0.1` at
+    `03b3427d0ed07d2e0f86c0a7e53d82d4beef9540`, native system role (Gemma terms: evaluation only,
+    §9.3).
+  - **Reads per cell:** per set and foundation, the R0 total (misses scored 0) with its PI and
+    "matches under X" or not; R0 misses (stripped and unstripped); R2's expected score and A-rate;
+    the MB-A7 split (R1's letter among R0 hits against among R0 misses).
+  - **Both branches.** A variant matches on MFQ binary: MB-A6's R_model is supported for that
+    variant, reported as "matches under X". None of the four matches: the Zephyr row is "not
+    reproduced" across two checkpoints, a third Zephyr recipe and three prompt paths, with R2 as the
+    parse-free evidence. In that branch `HuggingFaceH4/zephyr-orpo-141b-A35b-v0.1` (`a3be0845`,
+    281 GB, Apache-2.0) is the one pod-only candidate, listed and not run (it needs pod approval
+    inside the 4 A100-h envelope, §8).
+  - **MB-A4 check (done before the cells).** All 24 `6_concepts_compare` items, the fairness group
+    and `ingroup_2` included, ask for the more moral statement. The keys are not reclassified, and
+    MB-A4's R_errors stands. Both branches are reported: a match
   validates the instrument; a miss triggers a diagnosis under amendment (template, system policy,
   sampling, parse), with the verdict under each choice. Running `main.py` itself (in a scratch
   environment outside the repo, with our replies in place of the API call) is a diagnostic for a
@@ -228,6 +257,12 @@ plug in. Their own interfaces, such as a `RubricJudge`, are designed in their ow
 
 These runs are the pre-steering baseline for the ST subjects on this instrument. MoralBench is a
 drift monitor for steering, not a target (it scores agreement with average respondents).
+
+**Drift-monitor readout (Amendment 1, MB-A7).** Any use of MoralBench as a drift monitor reads R2
+(letter mass, no parsing) on the counterbalanced pair (original and swapped orders), and reports
+the letter bias L and content effect K beside the score. R0 is never a drift-monitor readout: its
+misses track the answer (MB-A7), so format changes under steering would read as moral drift. R0
+stays the paper-faithful replication readout only.
 
 
 - **Bridge models on the same instrument:**

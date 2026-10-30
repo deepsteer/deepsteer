@@ -1,0 +1,99 @@
+# MB-G1 gate report (2026-10-30; Zephyr done, Gemma pending)
+
+M4, bf16, MPS. Rules of record: `MB_PLAN.md` v0.5 (commit `238a021`, pushed before any G1 data).
+Numbers of record: `outputs/g1/<model>/g1_analysis.json` (aggregates only); letters and readouts
+in `outputs/g1/<model>/*.jsonl`; replies and rendered prompts in the gitignored `outputs_raw/`.
+Nothing committed.
+
+## 0. Before G1: MB-A4 resolved (zero GPU)
+
+Clifford et al.'s published norms (fetched to the cache only; the repo's `mfv_clifford2015.json`
+has no wrongness ratings) match all 24 MFV vignettes and all 24 comparative options. The binary
+keys follow the norms on 22/24 items (Agree, meaning "not morally wrong", scores 5 − Wrong).
+The comparative keys pick the less-wrong statement on 19/24 items. The departures are the whole
+fairness group (4/4 keyed to the more-wrong statement) and `ingroup_2`. By the registered rule
+the verdict is R_errors, with the errors located (`outputs/mb_a4_norms.json`, ANOMALIES MB-A4).
+
+## 1. Zephyr-7B-β (`892b3d7a`, native system role, BOS prepended, template `66291cf0…`)
+
+Three cells × 88 items × 32 rollouts plus R2: 100 min wall (2,024 / 1,973 / 1,951 s).
+
+**Totals at T = 0.7 (of record)**
+
+| set | paper | R0, miss = 0 | 95% PI, 5 repeats | verdict | R0 misses (unstripped) | parsed-only | R1 | R2 |
+|---|---|---|---|---|---|---|---|---|
+| `MFQ_30` | 54.2 | 22.3 | [19.9, 24.8] | does not replicate | 296/640 (298) | 43.8 | 39.5 | 44.3 |
+| `6_concepts` | 48.1 | 41.1 | [38.7, 43.5] | does not replicate | 167/768 (167) | 49.6 | 46.2 | 51.9 |
+| `MFQ_30_compare` | 8.2 | 7.1 | [6.3, 7.7] | does not replicate | 156/640 (156) | 9.0 | 3.7 | 9.9 |
+| `6_concepts_compare` | 10.4 | 11.4 | [10.3, 12.4] | **replicates** | 68/768 (68) | 12.6 | 0.9 | 12.9 |
+
+Per-foundation verdicts are in the JSON. Of the 26 paper cells (foundations plus totals):
+
+| | replicates | does not replicate | not attainable |
+|---|---|---|---|
+| T = 0.7 (of record) | 5 | 20 | 1 |
+| T = 1.0 (fork) | 7 | 18 | 1 |
+
+The cells that replicate at T = 0.7 are MFV harm, MFQ-comparative harm, MFV-comparative
+ingroup, MFV-comparative purity, and the MFV-comparative total. The cell that is not attainable is
+MFQ-comparative loyalty (MB-A3, as registered). At T = 1.0 the fork does not change the verdict on
+any total.
+
+R1 falls below R0 on the comparative sets (0.9 and 3.7). The KDG-derived ladder reads "ambiguous"
+when a reply names both options, which Zephyr's explanations do (638 of 768 replies on
+`6_concepts_compare`). R1 is opt-in and is reported as registered.
+
+**MB-A5, counterbalanced cell.** The registered verdicts on R0 are R_acquiescence on the two
+binary sets and R_content on the two comparative sets (S CIs in ANOMALIES MB-A5). The readout-free
+part is the letter bias. L is negative on every set under R0, R1 and R2. Under R2 the values are
+−0.31, −0.46, −0.17 and −0.13, and |K| ≤ 0.11 throughout. On MFV binary Zephyr answers B in both
+orders.
+
+**MB-A3.** Zephyr parses the tied item on 27 of 32 replies. Loyalty with misses scored 0 is 2.81
+[2.35, 3.25]. The paper's 0.4 is unreachable on this harness either way.
+
+**New entries.** MB-A6: no readout reaches the paper's MFQ binary 54.2. The paper's total implies
+76% Agree; our Zephyr's A-rate is 0.22 by R2. MB-A7: R0's misses track the answer. Agree replies
+open with prose ("My choice is: A. Agree") and disagree replies open with the letter.
+
+## 2. Gemma-1.1-7B-it (pending)
+
+Blocked on Hugging Face access: the stored token is invalid (`hf auth whoami`). A background job
+starts the download, the three cells and the analysis as soon as `auth_check` passes. MB-A1
+(Gemma's MFV agree rate decides between 44.4 and 51.8) and the Gemma half of MB-A5 and MB-A7 come
+from that run.
+
+## 3. Diagnosis (registered: a miss triggers diagnosis under amendment)
+
+Root split, computable from saved data: does any readout reach the paper cell's PI?
+- **No: model or prompt-path branch.** MFQ binary (R2 44.3, R1 39.5, parsed-only 43.8 against
+  54.2) and MFV binary (R0 41.1; parsed-only 49.6 and R2 51.9 sit near 48.1 but are not the
+  readout of record). The candidates are `zephyr-7b-alpha` (the recorded alternate), the system
+  text prepended to the user turn, and no system prompt.
+- **Yes: parse branch.** None of the missed totals reaches its PI under R0. The parse-sensitivity
+  column (parsed-only, R2) brackets the paper on MFV binary.
+
+Proposed amendment (author): three Zephyr variant cells at T = 0.7 on the M4, about 35 min each,
+reading the MFQ binary total, the A-rate and R0 misses, each with its verdict. Zero GPU spend; no
+pod.
+
+**Author, 2026-10-30: diagnosis approved as MB_PLAN v0.6 Amendment 1.** It adds a fourth cell
+(`zephyr-7b-gemma-v0.1`), registers the stopping rule first (the verdict of record stays at the
+registered configuration; a matching variant is reported as "matches under X"; stop after the four
+cells), and lists `zephyr-orpo-141b-A35b-v0.1` as the pod-only candidate if all four miss. The
+MB-A4 prompt check found no item asking for the more-wrong option, so no key is reclassified.
+
+## 4. Referee pass
+
+1. *"Your Zephyr is not the paper's Zephyr, so a miss says nothing about MoralBench."* Conceded
+   in part. The checkpoint is an assumption of record (§2), and "Zephyr 3.6.0" names no release.
+   MB-A6 carries R_model, and the variant cells test it. The parse-free R2 miss on MFQ binary
+   stands either way for this checkpoint and harness.
+2. *"The registered MB-A5 reads use R0 parses that select on the outcome."* Correct (MB-A7).
+   The verdicts are reported by the letter, and the letter-bias read (L) is shown under R0, R1
+   and R2, which agree in sign and rough size. S under R0 is not interpreted beyond its registered
+   verdict.
+3. *"Items-fixed PIs are narrow, so almost anything fails to replicate."* The PI is the sampling
+   noise of a 5-repeat mean on these items, which is what the paper's cell carries. The misses
+   are 7 to 32 points on totals whose half-widths are 1 to 3, so a lenient rule would not change
+   them; MFV-comparative passes under the same rule.

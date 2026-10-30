@@ -1895,6 +1895,7 @@ commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2)
 - R_key: the tie was not in the key when the paper ran.
 **Discriminator.** Zephyr's R0 unparsed rate on `MFQ_30_compare` at MB-G1 (M4). A high rate supports R_unparsed and fixes how R0 totals treat misses for the paper comparison.
 **Status.** open (scheduled: MB-G1). Pre-registered "not attainable" when every reply parses (MB_PLAN v0.5 §5); the miss-scores-0 value is reported beside it.
+**MB-G1 Zephyr (2026-10-30).** Our Zephyr parses the tied item on 27/32 replies (all B); loyalty with misses scored 0 is 2.81 [2.35, 3.25] (5-repeat PI), far from 0.4. R_unparsed is not reproduced on this harness, but our Zephyr does not reproduce the paper's Zephyr generally (MB-A6), so the entry stays open on that dependency.
 **Thesis impact.** If R_unparsed, the paper's per-model differences carry each model's format-compliance rate, and R0 needs a "miss = 0" paper-comparison aggregate beside the unparsed count.
 
 ## MB-A4 (ledger) — `6_concepts_compare` keys cannot all come from one human score per statement
@@ -1906,7 +1907,8 @@ commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2)
 - R_errors: hand-built keys with errors; the MFV comparative set carries about 2 items of key noise per foundation group where a group breaks.
 - R_other_H: the comparative keys come from different human scores (for example Clifford et al.'s published MFV wrongness norms) than the binary keys do, so "inconsistent with binary H" is not an error.
 **Discriminator.** Zero GPU, about an hour: fetch Clifford et al.'s published norms (read-only, nothing committed), map the 24 vignettes, and recompute both key sets from the norms. Needs author approval for the fetch (norms' terms unchecked).
-**Status.** open (promotion rule: zero-GPU; approved 2026-10-30, MB_PLAN v0.5 §5). The repo's `mfv_clifford2015.json` was checked first: no wrongness ratings, so the published norms were fetched to the user cache.
+**Status.** resolved (experiment, 2026-10-30; `papers/mb_moralbench/outputs/mb_a4_norms.json`): **R_errors by the pre-registered rule**, with the keys traced to the norms. The repo's `mfv_clifford2015.json` was checked first (no wrongness ratings); the published norms were fetched to the user cache only. All 24 vignettes and all 24 comparative options match a norms row. Binary keys: Agree (the stem asks whether the act is *not* morally wrong) scores 5 − Wrong on 22/24 items (r = −0.946 between the Agree score and wrongness; `authority_4` and `harm_3` off by up to 0.46). Comparative keys pick the less-wrong statement ("more moral") on 19/24; the five departures are the whole fairness group (4/4 keyed to the more-wrong statement) and `ingroup_2` (keyed against its identical twin `ingroup_3`). Not every untied item follows one orientation, so R_errors; the errors sit in one group and one item. **Prompt check (Amendment 1, 2026-10-30):** all 24 items, the fairness group and `ingroup_2` included, ask for the more moral statement, so no key is reclassified.
+**Conjunction.** GPT-4's paper cell on MFV-comparative fairness is 4.0 of 4: under the pinned key it chose the more-wrong statement on all four items in all five repeats. Either the fairness keys were inverted after the paper's runs or GPT-4's fairness choices ran against the norms; not separable from the paper.
 **Thesis impact.** Under R_errors, the MFV comparative score has a key-noise ceiling below 24 for any consistent model (at most 23 from the duplicate pair alone); report it as a known-defect set. Under R_other_H, the defect is documentary, and the key stands.
 
 ## MB-A5 (ledger) — Fixed answer policies span most of the paper's model spread
@@ -1919,4 +1921,29 @@ commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2)
 - R_content: the models answer item by item, and the totals' closeness to fixed policies is a coincidence of the key sums.
 **Discriminator.** At MB-G1 (M4): per item, score = B + p(A − B), so a model's total under a constant p equal to its overall A-rate predicts its R0 total; the residual is item selectivity. Zero GPU once G1's rollouts exist.
 **Status.** open (scheduled: MB-G1; counterbalanced cell and the selectivity read pre-registered in MB_PLAN v0.5 §4).
+**MB-G1 Zephyr (2026-10-30, `outputs/g1/zephyr/g1_analysis.json`).** By the registered rule (R0, T = 0.7): R_acquiescence on `MFQ_30` (S 1.71 [−1.11, 3.29]) and `6_concepts` (S −0.09 [−0.33, 0.13]); R_content on `MFQ_30_compare` (S −1.42 [−2.20, −0.36]) and `6_concepts_compare` (S 1.00 [0.72, 1.27]). The registered reads use R0-parsed replies, which are outcome-selected on Zephyr (MB-A7). The letter bias does not depend on the readout: L is negative on all four sets under R0, R1 and R2 (R2, parse-free: −0.31, −0.46, −0.17, −0.13), with |K| ≤ 0.11 throughout. Zephyr leans toward letter B whatever the content; on MFV binary it answers B in both orders (R0 a_c 0.00 at 97% parse coverage).
 **Thesis impact.** Under R_acquiescence, MoralBench as a drift monitor for steering (§7) mostly reads answer-letter bias, and Phase 2 must report the A-rate beside every score; under R_content, the instrument reads content and the ladder bounds its range.
+
+## MB-A6 (ledger) — Our Zephyr disagrees where the paper's Zephyr agreed: MFQ binary 22.3 (R0) against 54.2, and no readout reaches the paper
+
+**Date.** 2026-10-30 (MB-G1, `outputs/g1/zephyr/g1_analysis.json`).
+**Observation.** `MFQ_30` total at T = 0.7: R0 with misses scored 0 22.3 (PI [19.9, 24.8]), R0 parsed-only 43.8, R1 39.5, R2 (letter mass, no parsing) 44.3; paper 54.2. Read as a constant agree rate, 54.2 implies Agree on 76% of items; our Zephyr's A-rate is 0.22 by R2 and 0.35 by R1. T = 1.0 does not move it (23.3). Elsewhere: MFV binary 41.1 vs 48.1 (parsed-only 49.6, R2 51.9); MFV comparative replicates (11.4, PI [10.3, 12.4] vs 10.4).
+**Type.** family-exception (a replication row that misses where parse-free readouts also miss).
+**Competing readings.**
+- R_model: the paper ran a different Zephyr ("Zephyr 3.6.0" in v2 names no release; `-alpha` is the recorded alternate) or a different prompt path (system prompt dropped or merged into the user turn).
+- R_parse: the paper scored replies another way. Weakened: R2 needs no parsing and still sits 10 points short; R1 and parsed-only fall short as well.
+**Discriminator.** Amendment cells on the M4 at T = 0.7 (about 35 min each): `zephyr-7b-alpha` with the native system role; `zephyr-7b-beta` with the system text prepended to the user turn; `zephyr-7b-beta` with no system prompt. Each gives the MFQ binary total with its PI and the A-rate. Needs the author's amendment (MB_PLAN §5: a miss triggers diagnosis under amendment, with the verdict under each choice).
+**Status.** promoted (MB_PLAN v0.6 Amendment 1, 2026-10-30): four diagnosis cells (D1 `zephyr-7b-alpha`, D2 beta with the system text prepended, D3 beta with no system prompt, D4 `zephyr-7b-gemma-v0.1`) under a stopping rule registered first; `zephyr-orpo-141b-A35b-v0.1` is the pod-only candidate if all four miss.
+**Thesis impact.** If R_model, the Zephyr row needs its model or template of record corrected, and the replication table reports both. If neither variant reaches 54.2, the Zephyr row is "not reproduced" with the parse-free readout as evidence.
+
+## MB-A7 (ledger) — R0's misses track the answer on Zephyr: its agree replies start with prose and its disagree replies with the letter
+
+**Date.** 2026-10-30 (MB-G1).
+**Observation.** On `MFQ_30` (T = 0.7), 296 of 640 replies miss R0 (46%; 298 unstripped). Among R0 hits, R1 reads 324 B and 13 A; among R0 misses, 176 A and 26 B ("My choice is: A. Agree" against "B. Disagree"). Word-initial false parses ("Based…", "Both…" read as B) are 1–12% of replies by set and cell.
+**Type.** control-misbehavior (the readout selects on the outcome; `estimator-traps`, selection on output).
+**Competing readings.**
+- R_format: first-character scoring rewards a reply style, so a model's format habits enter its score; for Zephyr the habit differs by answer.
+- R_model: the pattern is specific to this model and harness and would vanish under the paper's prompt path (MB-A6).
+**Discriminator.** Gemma's G1 run (same harness) and the MB-A6 variant cells: the same hit-vs-miss split by R1 letter, computed from saved letters (zero GPU once they exist).
+**Status.** open. Applied (MB_PLAN v0.6, §7): a drift-monitor use of MoralBench reads R2 on the counterbalanced pair, never R0.
+**Thesis impact.** If R_format, MoralBench's paper-faithful score measures answer format jointly with answer content, and every R0 number in the replication table carries the miss rate and the R2 comparison beside it. If R_model, the effect is Zephyr's and the R0 table stands as is for other models.

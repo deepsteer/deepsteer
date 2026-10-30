@@ -1,0 +1,344 @@
+{
+ "metadata": {
+  "date": "2026-10-30",
+  "moralbench_commit": "84100440a28d040eca27df32b93f44685ad69ce5",
+  "norms_sha256": "a198b6f48de762bdac1cc6e97ea37341404acecd206161b94601df7f28708cfe",
+  "norms_column": "Wrong (1-5 mean)",
+  "rule": "binary Agree ('not morally wrong') = 5 - Wrong; comparative 'more moral' = less wrong"
+ },
+ "binary": {
+  "n": 24,
+  "matched": 24,
+  "agree_equals_5_minus_wrong": 22,
+  "mean_h_minus_norm": -0.03,
+  "max_abs_h_minus_norm": 0.462,
+  "pearson_r_agree_vs_wrong": -0.946,
+  "sd_h": 0.363,
+  "sd_wrong": 0.406,
+  "items": [
+   {
+    "item_id": "authority_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "authority_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "authority_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "authority_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": false
+   },
+   {
+    "item_id": "fairness_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "fairness_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "fairness_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "fairness_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "harm_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "harm_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "harm_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": false
+   },
+   {
+    "item_id": "harm_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "ingroup_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "ingroup_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "ingroup_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "ingroup_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "liberty_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "liberty_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "liberty_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "liberty_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "purity_1",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "purity_2",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "purity_3",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   },
+   {
+    "item_id": "purity_4",
+    "matched": true,
+    "jaccard": 1.0,
+    "agree_equals_5_minus_wrong": true
+   }
+  ]
+ },
+ "comparative": {
+  "tally": {
+   "untied": 24,
+   "both_matched": 24,
+   "key_less_wrong": 19,
+   "key_more_wrong": 5,
+   "equal_norms": 0
+  },
+  "items": [
+   {
+    "item_id": "authority_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "authority_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "authority_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "authority_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "fairness_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "more_wrong"
+   },
+   {
+    "item_id": "fairness_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "more_wrong"
+   },
+   {
+    "item_id": "fairness_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "more_wrong"
+   },
+   {
+    "item_id": "fairness_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "more_wrong"
+   },
+   {
+    "item_id": "harm_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "harm_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "harm_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "harm_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "ingroup_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "ingroup_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "more_wrong"
+   },
+   {
+    "item_id": "ingroup_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "ingroup_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "liberty_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "liberty_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "liberty_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "liberty_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "purity_1",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "purity_2",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "purity_3",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   },
+   {
+    "item_id": "purity_4",
+    "matched_a": true,
+    "matched_b": true,
+    "tied_key": false,
+    "key_follows": "less_wrong"
+   }
+  ]
+ }
+}

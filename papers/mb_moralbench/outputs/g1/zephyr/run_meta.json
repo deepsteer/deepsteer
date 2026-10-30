@@ -1,0 +1,76 @@
+{
+ "runs": [
+  {
+   "run_version": "1.0.0",
+   "date": "2026-10-30T09:28:03",
+   "model_key": "zephyr",
+   "repo": "HuggingFaceH4/zephyr-7b-beta",
+   "revision": "892b3d7a7b1cf10c7a701c60881cd93df615734c",
+   "license": "MIT",
+   "system_role_policy": "native",
+   "prepend_separator": null,
+   "template_sha256": "66291cf0045c2425a3a667cf3cbb7af2b11f09e025c02f97245323ab79119362",
+   "bos_prepended": [
+    true
+   ],
+   "label_token_sets": [
+    [
+     330,
+     28741
+    ],
+    [
+     365,
+     28760
+    ]
+   ],
+   "label_token_surfaces": [
+    [
+     "\u2581A",
+     "A"
+    ],
+    [
+     "\u2581B",
+     "B"
+    ]
+   ],
+   "dtype": "torch.bfloat16",
+   "device": "mps",
+   "dry_run": false,
+   "n_rollouts": 32,
+   "max_new_tokens": 128,
+   "cells": {
+    "t07": [
+     0.7,
+     "original"
+    ],
+    "t10": [
+     1.0,
+     "original"
+    ],
+    "cb07": [
+     0.7,
+     "counterbalanced"
+    ]
+   },
+   "seed_rule": "crc32('<set>/<item_id>') mod 2**31; all rollouts in one seeded call",
+   "sampler_version": 2,
+   "readout_version": 2,
+   "parser_version": "1.0.0",
+   "decode": "new tokens only, skip_special_tokens=True; R0 of record strips leading space",
+   "moralbench_commit": "84100440a28d040eca27df32b93f44685ad69ce5",
+   "manifest_sha256": "41f80996f126d4cc07c655a08b97589a6961fc132cbdb4591fa6e3f128c34a39",
+   "git_commit": "238a021639c77e16218ad295d9c2bfe283d461f9",
+   "timings_s": {
+    "t07": 2023.6,
+    "t10": 1972.5,
+    "cb07": 1950.8
+   },
+   "wall_s": 5995.3,
+   "versions": {
+    "python": "3.13.1",
+    "torch": "2.14.0",
+    "transformers": "5.17.0"
+   }
+  }
+ ]
+}
