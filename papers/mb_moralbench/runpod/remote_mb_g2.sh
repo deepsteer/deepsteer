@@ -61,12 +61,16 @@ if [ "$LOCAL_DRY" != 1 ]; then
   pip install -q --break-system-packages "transformers==$MB_TF" -U accelerate pytest \
     hf_xet 2>&1 | tail -2
   export HF_XET_HIGH_PERFORMANCE=1
-  if ! python -c 'import torch, transformers; from transformers import AutoModelForCausalLM; assert torch.cuda.is_available()' 2>/dev/null; then
+  # transformers 5.17 disables PyTorch below 2.5 with only a warning (lazy imports still succeed),
+  # so check is_torch_available(), not an import (the second VALIDATE, 2026-10-30, passed an import
+  # check on torch 2.4.1 and then failed at the first model)
+  TORCH_OK="import torch, transformers; from transformers.utils import is_torch_available; assert is_torch_available() and torch.cuda.is_available()"
+  if ! python -c "$TORCH_OK" 2>/dev/null; then
     echo ">> torch $(python -c 'import torch;print(torch.__version__)' 2>&1) fails with transformers $MB_TF; upgrading the trio to 2.6.0+cu124 (the KDG/W4 stack)"
     pip install -q --break-system-packages "torch==2.6.0" "torchvision==0.21.0" "torchaudio==2.6.0" \
       --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -2
   fi
-  python -c 'import torch, transformers; assert torch.cuda.is_available(); print(">> stack: torch", torch.__version__, "transformers", transformers.__version__, "gpus", torch.cuda.device_count())' \
+  python -c "$TORCH_OK; print('>> stack: torch', torch.__version__, 'transformers', transformers.__version__, 'gpus', torch.cuda.device_count())" \
     || { echo "BAIL: the stack does not import with CUDA"; exit 1; }
   python -c "import transformers, sys; sys.exit(transformers.__version__ != '$MB_TF')" \
     || { echo "BAIL: transformers is not $MB_TF (harness parity with the G1 rows)"; exit 1; }

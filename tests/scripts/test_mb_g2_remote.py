@@ -62,3 +62,12 @@ def test_pod_install_path_pins_the_g1_stack_and_installs_pytest():
     assert "pytest" in install
     assert text.index("pytest \\") < text.index("python -m pytest")
     assert "transformers.__version__ != '$MB_TF'" in text  # the version is asserted, not assumed
+
+
+def test_stack_check_asks_transformers_whether_torch_is_usable():
+    # most probable failure (the second VALIDATE, 2026-10-30): transformers 5.17 silently disables
+    # torch < 2.5, an import check still passes, the torch 2.6 fallback never runs, and the first
+    # model fails; the check must ask is_torch_available() before and after the fallback
+    text = RUNNER.read_text()
+    assert "assert is_torch_available() and torch.cuda.is_available()" in text
+    assert text.count('"$TORCH_OK') == 2
