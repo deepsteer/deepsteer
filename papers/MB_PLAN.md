@@ -1,6 +1,7 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v0.7, 2026-10-30. **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
+Status: v0.8, 2026-10-30. **v0.8 (author, 2026-10-30): Amendment 3 (§7): Phase 2 approved in reduced form;
+`zephyr-orpo-141b` stays unrun; MB-G2 gate passed (`mb_moralbench/REPRODUCTION.md`).** **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
 and D4 beside Llama-2-70B-chat.** **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
 stopping rule registered before them, and the drift-monitor readout rule (§7).** **v0.5 (author, 2026-10-30): MB-G0 passed; the gate report's decisions 1-8
 approved with additions and folded in below** (sampling T = 0.7 of record, §2; R0 of record and the
@@ -293,6 +294,23 @@ plug in. Their own interfaces, such as a `RubricJudge`, are designed in their ow
 
 These runs are the pre-steering baseline for the ST subjects on this instrument. MoralBench is a
 drift monitor for steering, not a target (it scores agreement with average respondents).
+
+**Amendment 3 (2026-10-30, author): Phase 2 in reduced form.** Replaces the bridge list above.
+- **Subjects:** the ST subjects only: GPT-OSS-20B, Muse Glimmer 30B, Qwen3.8-27B (`ST_PLAN.md`).
+  The M4 bridge models and the P3 bridge are dropped.
+- **Readout:** R2 (letter mass) on both orders (original and counterbalanced), no sampled cells.
+  MFQ binary and both comparative sets are scored; MFV binary is reported as a letter-bias probe
+  (L and K, no score), because all three G1/G2 families answer B there whatever the label (MB-A5).
+- **Answer position (registered before data):** ST's dose-0 letter readout, the reasoning segment
+  closed empty in each model's own format (GPT-OSS harmony, the Qwen and Muse thinking tags), with
+  single-row readouts of record (ST-A3: GPT-OSS's batched readout moves with batch composition).
+  KDG-A22 applies: GPT-OSS's dose-0 forced letter departs from its own low-effort answers, so its R2
+  is read as a dose-0 readout, not as the model's sampled answer.
+- **Compute:** on the M4, or as riders on a pod already scheduled for other work; no dedicated pod.
+  None of the three fits in the M4's 24 GiB, and none is scheduled now, so Phase 2 waits for the
+  next scheduled pod.
+- **Not a steering gate.** It is the pre-steering baseline on this instrument; no ST verdict reads it.
+- **Diagnosis:** `zephyr-orpo-141b-A35b-v0.1` stays unrun (author, 2026-10-30).
 
 **Drift-monitor readout (Amendment 1, MB-A7).** Any use of MoralBench as a drift monitor reads R2
 (letter mass, no parsing) on the counterbalanced pair (original and swapped orders), and reports
