@@ -503,21 +503,38 @@ T1.6 needs T1.5's verdict; Tier 2 reads T1.1/T1.6's banked residuals and T1.5's 
 
 ## 8. Both branches (written before data)
 
-| Result (development model, held-out sets) | Reading | What it does to the thesis and the pitch |
-|---|---|---|
-| `L-anchor` or `L-self` generalizes; `L-beh` restores locally only | An outcome-free representation objective transfers where outcome supervision overfits | The headline; the recipe leads the ask; Tier 2 is the RL-stage form |
-| Both generalize equally | The data was enough; the representation objective adds nothing over DPO at this scale | Publishable null for the mechanism; the instrument and the H1 result remain the asset; the pitch leads with evaluation |
-| `L-self` generalizes, `L-anchor` does not | The judgment state binds; `V_care` is not the content the action reads | Decompose the self target against the typed basis; the direction program follows it |
-| `L-anchor` generalizes, `L-self` does not | A typed content direction transfers; the full judgment state does not | The portable recipe is the direction; the mechanism claim narrows |
-| All adapters null, `restate` restores | The action reads the input at this site; weights at this rank do not hold the reference | Value moves to monitoring and placement; Tier 2 tests higher rank and the RL-stage form before the claim is dropped |
-| An adapter widens the gap or moves the specificity set | The objective entangles care with rule-breaking or rule-tracking | Promoted anomaly; `L-suppress` and the specificity set move up |
-| Refusal-retention bar met on every passing adapter (Amendment 10) | Care anchored at the action site does not loosen refusal under a sympathetic story; the care read includes the absent party the rule protects | One sentence in the pitch with the number; the H1 verdict carries the refusal scope |
-| A passing adapter fails the refusal-retention bar (Amendment 10) | `V_care` as typed is salient-beneficiary sympathy, not care: a construct-audit fork on its type block | Promoted anomaly (ST-A); the adapter's verdict is "non-specific (refusal)"; `L-suppress` and a `V_care` re-typing against the FL request twins move up; H1 and panel verdicts stand with the scope note |
-| `L-fill` restores | A live-vector effect | The anchoring claim is withdrawn; reported as such |
-| Second family replicates the ordering | The recipe transfers | The transfer sentence goes in the pitch with both families' numbers |
-| Second family breaks the ordering | Family-specific | The claim is scoped to the development family; the break is the next cell |
-| E regime: ΔE < 0 with twin at rest | Sensitivity, not baseline, moved | Phase 4's criterion met |
-| E regime: baseline shift only | Safer at rest, not less pressure-sensitive | Fails Phase 4's criterion; reported as a baseline effect |
+| Result (development model, held-out sets) | Reading | What it does to the thesis and the pitch | Outcome (dated) |
+|---|---|---|---|
+| `L-anchor` or `L-self` generalizes; `L-beh` restores locally only | An outcome-free representation objective transfers where outcome supervision overfits | The headline; the recipe leads the ask; Tier 2 is the RL-stage form | **Not met (2026-10-22, T1.5).** `L-anchor` null (−0.005 [−0.052, +0.041], MDE 0.066); `L-self` descriptive (ST-A14, instrument failure); `L-beh` protects (+0.445) and is non-specific |
+| Both generalize equally | The data was enough; the representation objective adds nothing over DPO at this scale | Publishable null for the mechanism; the instrument and the H1 result remain the asset; the pitch leads with evaluation | **Not met (2026-10-22).** Only `L-beh` moved H1_held |
+| `L-self` generalizes, `L-anchor` does not | The judgment state binds; `V_care` is not the content the action reads | Decompose the self target against the typed basis; the direction program follows it | **Not met (2026-10-22).** `L-self` carried no verdict (ST-A14) |
+| `L-anchor` generalizes, `L-self` does not | A typed content direction transfers; the full judgment state does not | The portable recipe is the direction; the mechanism claim narrows | **Not met (2026-10-22).** `L-anchor` null for its anchor-axis target |
+| All adapters null, `restate` restores | The action reads the input at this site; weights at this rank do not hold the reference | Value moves to monitoring and placement; Tier 2 tests higher rank and the RL-stage form before the claim is dropped | **Condition not met (2026-10-22).** `L-beh` was not null; the `restate` reference row was not run |
+| An adapter widens the gap or moves the specificity set | The objective entangles care with rule-breaking or rule-tracking | Promoted anomaly; `L-suppress` and the specificity set move up | **Met (2026-10-22).** `L-beh` moved the specificity set +0.192 [+0.131, +0.255] (non-specific; ST-A13, ST-A16); specificity became the program's read of record and the line moved to steer-then-DPO (Amendment 55) |
+| Refusal-retention bar met on every passing adapter (Amendment 10) | Care anchored at the action site does not loosen refusal under a sympathetic story; the care read includes the absent party the rule protects | One sentence in the pitch with the number; the H1 verdict carries the refusal scope | **Not read.** The retention set read as uncalibrated on GPT-OSS (it refuses operator orders); T1.5 carried no refusal-retention verdict |
+| A passing adapter fails the refusal-retention bar (Amendment 10) | `V_care` as typed is salient-beneficiary sympathy, not care: a construct-audit fork on its type block | Promoted anomaly (ST-A); the adapter's verdict is "non-specific (refusal)"; `L-suppress` and a `V_care` re-typing against the FL request twins move up; H1 and panel verdicts stand with the scope note | **Not read** (as above) |
+| `L-fill` restores | A live-vector effect | The anchoring claim is withdrawn; reported as such | **Not run.** `L-fill` was optional and never trained |
+| Second family replicates the ordering | The recipe transfers | The transfer sentence goes in the pitch with both families' numbers | **Superseded, then read on the restated design (2026-10-25 to 2026-10-30).** The three-adapter ordering never went to a second family. Under Amendment 55, Muse care-DPO protects and is specific on every rule-right read, including forced choice (two draws); Qwen care-DPO_Q protects on held-out items in two draws (+0.449, +0.691) with capability kept |
+| Second family breaks the ordering | Family-specific | The claim is scoped to the development family; the break is the next cell | **Met in part (2026-10-29 and 2026-10-30).** On Qwen both care-DPO draws break the rule on cell A′'s forced originals (+0.199, +0.221 above `none`) with no harm conditioning beyond `none`'s; they follow the rule on the panel's rule-right items under both readouts (ST-A36, R_item). The harm-conditioned specificity claim is scoped to Muse |
+| E regime: ΔE < 0 with twin at rest | Sensitivity, not baseline, moved | Phase 4's criterion met | **Not met.** No adapter's ΔE has a CI below 0 (GPT-OSS `L-beh` −0.004, `L-anchor` +0.003; Muse care-DPO +0.004; Qwen care-DPO_Q +0.003 and −0.002); on GPT-OSS the panel was a guard (ST-A9) |
+| E regime: baseline shift only | Safer at rest, not less pressure-sensitive | Fails Phase 4's criterion; reported as a baseline effect | **Not met.** The guard reads no shift on any adapter; no baseline-only effect was recorded |
+
+**The restated hypothesis (Amendment 55), at close-out (2026-10-30).** "Distilling a gate-passing,
+specific steering direction into DPO yields an adapter whose rule-breaking tracks where the harm
+falls ... on two model families."
+- **Muse Glimmer 30B: holds** (two draws). care-DPO protects on held-out rule-harm items (+0.338,
+  +0.326), stays within 0.03 of `none` on every rule-right read including forced choice, and departs
+  where the rule harms on the matched twins (replicate +0.289 [+0.196, +0.392]; first draw +0.147,
+  at the bar). The unsteered recipe is harm-sensitive and non-specific. One draw fails the
+  capability bar (−0.040).
+- **Qwen3.8-27B: protection holds, the harm condition does not** (two draws). care-DPO_Q protects
+  (+0.449, +0.691) with capability and the guard kept, follows the rule on the panel's rule-right
+  items at dose 0 and under generation, and breaks the rule on cell A′'s forced originals with no
+  departure on the twins beyond `none`'s (forced H\* +0.005, +0.044; CIs include 0). The steered
+  teacher damps rule-breaking relative to the unsteered one (one draw; ST-A37, R_selection).
+- **Verdict sentence (close-out):** the two-family clause holds for protection without capability
+  loss and fails for forced-choice harm conditioning, which is scoped to Muse.
+
 
 ## 9. Artifact saving (enforced)
 
