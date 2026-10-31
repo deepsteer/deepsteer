@@ -118,6 +118,19 @@ def _gpt_oss_tok():
     return AutoTokenizer.from_pretrained(snaps[0], local_files_only=True) if snaps else None
 
 
+def _gen_ids(tok, ids: list[int]) -> list[int]:
+    """The ids after the prompt: the first ``<|start|>assistant`` after the user turn ends it."""
+    start = tok.convert_tokens_to_ids("<|start|>")
+
+    def header(role: list[int], after: int = 0) -> int:  # index just past "<|start|>role"
+        return next(k + len(role) for k in range(max(after, 1), len(ids))
+                    if ids[k - 1] == start and ids[k:k + len(role)] == role)
+
+    user = tok.encode("user", add_special_tokens=False)
+    asst = tok.encode("assistant", add_special_tokens=False)
+    return ids[header(asst, header(user)):]
+
+
 def w4_banked() -> list[dict] | None:
     """D3's path on the 40 banked W4 rows: the continuation after the prompt (and the prefill,
     when one was injected), split; the token functions on the ids after the assistant header."""
@@ -126,19 +139,9 @@ def w4_banked() -> list[dict] | None:
         return None
     import numpy as np
     z = np.load(W4, allow_pickle=True)
-    start = tok.convert_tokens_to_ids("<|start|>")
-    user = tok.encode("user", add_special_tokens=False)
-    asst = tok.encode("assistant", add_special_tokens=False)
-
-    def header(ids, role, after=0):  # index just past the first "<|start|>role" at or after `after`
-        return next(k + len(role) for k in range(max(after, 1), len(ids))
-                    if ids[k - 1] == start and ids[k:k + len(role)] == role)
-
     rows = []
     for i, ids in enumerate(z["token_ids"]):
-        ids = [int(x) for x in ids]
-        # the first assistant header after the user turn ends the prompt
-        gen_ids = ids[header(ids, asst, header(ids, user)):]
+        gen_ids = _gen_ids(tok, [int(x) for x in ids])
         text = ti.decode_rollout(tok, gen_ids, H)
         prefill = W4_PREFILLS[i % 4]
         cont = text[len(OPEN + prefill):] if prefill else text
@@ -148,6 +151,30 @@ def w4_banked() -> list[dict] | None:
                      "boundary": ti.cot_token_boundary(tok, gen_ids, H),
                      "content_start": ti.cot_content_start(tok, gen_ids, H)})
     return rows
+
+
+def w4_windows() -> list[dict] | None:
+    """The content window on the banked W4 baselines (the model opened the channel) and on the
+    continuations after a prefill (the caller did); checked, not stored as goldens."""
+    tok = _gpt_oss_tok() if W4.exists() else None
+    if tok is None:
+        return None
+    import numpy as np
+    z = np.load(W4, allow_pickle=True)
+    out = []
+    for i, ids in enumerate(z["token_ids"]):
+        if i % 4:  # prefilled rows: the window is only defined on the generated part
+            continue
+        gen_ids = _gen_ids(tok, [int(x) for x in ids])
+        start, end = ti.cot_content_window(tok, gen_ids, H)
+        span = ti.decode_rollout(tok, gen_ids[start:end], H)
+        text = ti.decode_rollout(tok, gen_ids, H)
+        r, f = ti.split_rollout(text, H)
+        out.append({"row": i, "gen_open": text.startswith(OPEN), "final_reached": bool(f),
+                    "start": start, "end": end, "boundary": ti.cot_token_boundary(tok, gen_ids, H),
+                    "has_marker": bool(ti._HARMONY_MARKER.search(span)),
+                    "span": span.strip(), "split_reasoning": r})
+    return out
 
 
 def mrb_judge_banked() -> dict | None:

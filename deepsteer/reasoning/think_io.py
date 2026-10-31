@@ -32,7 +32,8 @@ from enum import Enum
 
 __all__ = [
     "CoTFormat", "think_prompt", "decode_rollout", "split_rollout", "cot_token_boundary",
-    "cot_content_start", "prompt_opened_trace", "looks_degenerate", "has_reasoning_structure",
+    "cot_content_start", "cot_content_window", "prompt_opened_trace", "looks_degenerate",
+    "has_reasoning_structure",
     "SMOKE_HARMFUL", "SMOKE_HARMLESS", "SMOKE_EASY",
 ]
 
@@ -177,17 +178,19 @@ def split_rollout(full_text: str, cot_format: CoTFormat) -> tuple[str, str]:
         return "", full_text.strip()
 
     if cot_format == CoTFormat.HARMONY_ANALYSIS:
-        # The harmony template opens ``<|channel|>analysis<|message|>`` in the PROMPT, so the
-        # continuation begins with the analysis content and only later emits
-        # ``<|channel|>final<|message|>{answer}``. Classify the FINAL channel; if it was never
-        # reached within the budget, return an EMPTY final so the caller treats it as incomplete
-        # (coherence filter) rather than misreading the reasoning as the answer.
+        # GPT-OSS's template ends at ``<|start|>assistant`` (``think_prompt``), so the model opens
+        # ``<|channel|>analysis<|message|>`` itself and the reasoning is that message. A caller
+        # that prefills puts the opener in the PROMPT, so the continuation begins inside the
+        # analysis content and the reasoning is the text before the first marker. (Before
+        # MRB-A8's fix only the second case was handled, and a generated opener gave an empty
+        # span.) Classify the FINAL channel; if it was never reached within the budget, return an
+        # EMPTY final so the caller treats it as incomplete (coherence filter) rather than
+        # misreading the reasoning as the answer.
         final = _HARMONY_FINAL.search(full_text)
-        if final:
-            reasoning = _HARMONY_MARKER.split(full_text[:final.start()])[0]
-            return reasoning.strip(), final.group(1).strip()
-        reasoning = _HARMONY_MARKER.split(full_text)[0]
-        return reasoning.strip(), ""  # final channel not reached -> incomplete
+        head = full_text[:final.start()] if final else full_text
+        analysis = _HARMONY_ANALYSIS.search(head)
+        reasoning = analysis.group(1) if analysis else _HARMONY_MARKER.split(head)[0]
+        return reasoning.strip(), (final.group(1).strip() if final else "")
 
     raise ValueError(f"unknown CoT format {cot_format!r}")
 
@@ -256,6 +259,38 @@ def cot_content_start(tokenizer, gen_ids, cot_format: CoTFormat) -> int:
         else:
             lo = mid + 1
     return lo
+
+
+def cot_content_window(tokenizer, gen_ids, cot_format: CoTFormat) -> tuple[int, int]:
+    """Token span ``[start, end)`` in ``gen_ids`` holding the reasoning CONTENT, no format markers.
+
+    ``cot_token_boundary`` ends the trace at the final channel, so for harmony its window
+    ``[0, boundary)`` also holds the generated ``<|channel|>analysis<|message|>`` header and the
+    ``<|end|><|start|>assistant`` tail (six control tokens; ANOMALIES MRB-A9). This window drops
+    them:
+      * ``THINK_TAGS`` -> ``(0, cot_token_boundary)``, unchanged (the opener is in the prompt).
+      * ``HARMONY_ANALYSIS`` -> from ``cot_content_start`` (after the generated opener; 0 when the
+        prompt opened the channel) to the first harmony marker after it (the analysis message's
+        ``<|end|>``), or ``len(gen_ids)`` if the trace never closed.
+    """
+    if hasattr(gen_ids, "tolist"):
+        gen_ids = gen_ids.tolist()
+    if cot_format == CoTFormat.THINK_TAGS:
+        return 0, cot_token_boundary(tokenizer, gen_ids, cot_format)
+    start = cot_content_start(tokenizer, gen_ids, cot_format)
+    full = decode_rollout(tokenizer, gen_ids, cot_format)
+    marker = _HARMONY_MARKER.search(full, len(decode_rollout(tokenizer, gen_ids[:start],
+                                                             cot_format)))
+    if marker is None:
+        return start, len(gen_ids)
+    lo, hi = start, len(gen_ids)
+    while lo < hi:  # smallest prefix whose decoded text reaches the marker
+        mid = (lo + hi) // 2
+        if len(decode_rollout(tokenizer, gen_ids[:mid], cot_format)) >= marker.start():
+            hi = mid
+        else:
+            lo = mid + 1
+    return start, lo
 
 
 def looks_degenerate(text: str) -> bool:

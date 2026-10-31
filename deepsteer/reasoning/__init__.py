@@ -6,6 +6,7 @@ from deepsteer.reasoning import token_positions
 from deepsteer.reasoning.think_io import (
     CoTFormat,
     cot_content_start,
+    cot_content_window,
     cot_token_boundary,
     decode_rollout,
     has_reasoning_structure,
@@ -18,6 +19,7 @@ from deepsteer.reasoning.think_io import (
 __all__ = [
     "CoTFormat",
     "cot_content_start",
+    "cot_content_window",
     "cot_token_boundary",
     "decode_rollout",
     "has_reasoning_structure",
