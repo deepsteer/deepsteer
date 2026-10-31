@@ -55,6 +55,19 @@ def test_each_cut_drops_exactly_its_cells_and_keeps_field_parity():
     assert {u["tier"] for u in ladder if not P.in_ladder_subset(int(u["sid"][-3:]))} == {4}
 
 
+def test_judge_order_puts_the_ladder_first_within_a_tier(monkeypatch):
+    # most probable failure: a deadline inside T1 drops the ladder (it was queued last), which
+    # leaves G1 with no calibration for any match verdict
+    monkeypatch.setattr(P, "render_ids", lambda *a, **k: [])
+    items = _items()
+    units = P.judge_units(items, _gens(items), validate=False)
+    jobs = [j["unit"] for j in P.judge_jobs(units, items, None, None, 0, 1, {1, 2})]
+    n_canned = sum(u.startswith("canned/") for u in jobs)
+    assert n_canned and all(u.startswith("canned/") for u in jobs[:n_canned])
+    tiers = [int(j["tier"]) for j in P.judge_jobs(units, items, None, None, 0, 1, {1, 2})]
+    assert tiers == sorted(tiers)  # tier order still governs across tiers
+
+
 def test_projection_takes_the_first_level_that_fits_or_stops():
     # most probable failure: a cut chosen out of the registered order, or a run that overruns
     calls = {1: 1000, 2: 400, 3: 400, 4: 300}
@@ -134,6 +147,40 @@ def test_session_reads_the_projection_and_honours_stop():
     # most probable failure of the second: flashinfer's sampler JIT build under the image's old
     # nvcc; the sampler is PyTorch's, and a tiny-model smoke at top-p 0.95 runs before downloads
     assert "export VLLM_USE_FLASHINFER_SAMPLER=0" in text
+    # MRB_PLAN v0.4: under T1 only, each model generates k = 2 (its k 2-3 would never be judged)
+    assert 'case ",$TIERS," in *,T2,*) K20=4 ;; esac' in text and '--k "$KQW"' in text
     assert text.index("vLLM smoke OK") < text.index("snapshot_download")
     pin = "5176ab746f4e736c4a354a11d0620abf0a941de287cad937ac34039293ca6f5f"  # ST's vLLM wheel
     assert f"VLLM_WHEEL_SHA256={pin}" in text
+
+
+def test_amendment4_reprojection_prices_real_traces_and_caps_at_the_envelope(tmp_path,
+                                                                              monkeypatch):
+    # most probable failure: GPT-OSS trace units priced at VALIDATE's empty-trace rate (MRB-A8),
+    # or a watchdog cap of 1.15 x the projection that runs past the envelope's remainder
+    import mrb_g1_reproject as R
+    items = _items()
+    monkeypatch.setattr(P, "_items", lambda: items)
+    (tmp_path / "gen").mkdir()
+    (tmp_path / "judge").mkdir()
+    for m in P.GEN:
+        (tmp_path / "gen" / f"{m}.summary.json").write_text(json.dumps(
+            {"jobs_run": 10, "decoded_tokens": 20000, "tokens_per_s": 2000.0}))
+    rows = [{"unit": u, "pass": 1, "judge": "default", "n_tokens": n}
+            for u, n in (("gpt_oss_20b/default/mrb-000/k0/trace", 10),
+                         ("gpt_oss_20b/default/mrb-000/k0/response", 400),
+                         ("qwen3_30b/default/mrb-000/k0/trace", 550),
+                         ("qwen3_30b/default/mrb-000/k0/response", 400),
+                         ("canned/empty/mrb-000", 350))]
+    (tmp_path / "judge" / "shard0.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+    (tmp_path / "judge" / "shard0.summary.json").write_text(json.dumps({"tokens_per_s": 1.0}))
+    (tmp_path / "projection.json").write_text(json.dumps(
+        {"measured": {"setup_h": 0.2, "margin_h": 0.25}}))
+    r = R.reproject(tmp_path, envelope_h=1e6, validate_h=0.0)
+    assert r["priced_tokens_per_call_by_type"]["gpt_oss_20b/trace"] == 550
+    assert [lv["k"]["qwen3_30b"] for lv in r["levels"]] == [4, 4, 2, 2]
+    assert [lv["k"]["gpt_oss_20b"] for lv in r["levels"]] == [4, 4, 4, 2]
+    t1 = r["levels"][-1]
+    wall = t1["session_wall_h"]
+    tight = R.reproject(tmp_path, envelope_h=2 * wall * 1.05, validate_h=0.0)
+    assert tight["decision"] == "a+b+c" and tight["session_max_wall_h"] == round(wall * 1.05, 3)

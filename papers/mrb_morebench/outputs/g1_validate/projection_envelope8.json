@@ -1,0 +1,74 @@
+{
+ "measured": {
+  "gen_wall_h_full": 0.7839265764647468,
+  "setup_h": 0.2221,
+  "margin_h": 0.25,
+  "judge_calls_per_s": 11.821,
+  "judge_tokens_per_call": 413.82513416815743,
+  "judge_tokens_per_s": 4891.8
+ },
+ "calls_by_tier": {
+  "1": 114176,
+  "2": 45800,
+  "3": 45800,
+  "4": 36748
+ },
+ "envelope_h": 8.0,
+ "validate_h": 1.857,
+ "remaining_h": 6.143,
+ "levels": [
+  {
+   "cut": "none",
+   "tiers": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "judge_calls": 242524,
+   "judge_wall_h": 5.699,
+   "session_wall_h": 6.955,
+   "session_a100_h": 13.91,
+   "fits": false
+  },
+  {
+   "cut": "a",
+   "tiers": [
+    1,
+    2,
+    3
+   ],
+   "judge_calls": 205776,
+   "judge_wall_h": 4.835,
+   "session_wall_h": 6.091,
+   "session_a100_h": 12.183,
+   "fits": false
+  },
+  {
+   "cut": "a+b",
+   "tiers": [
+    1,
+    2
+   ],
+   "judge_calls": 159976,
+   "judge_wall_h": 3.759,
+   "session_wall_h": 5.015,
+   "session_a100_h": 10.03,
+   "fits": false
+  },
+  {
+   "cut": "a+b+c",
+   "tiers": [
+    1
+   ],
+   "judge_calls": 114176,
+   "judge_wall_h": 2.683,
+   "session_wall_h": 3.939,
+   "session_a100_h": 7.878,
+   "fits": false
+  }
+ ],
+ "chosen": null,
+ "decision": "STOP",
+ "session_max_wall_h": null
+}

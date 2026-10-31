@@ -1,17 +1,19 @@
 """MRB-G1 pod driver (MRB_PLAN v0.3 §2-5). Runs in the vLLM venv on the pod.
 
-    generate --model {gpt_oss_20b,qwen3_30b} --out DIR [--validate] [--deadline EPOCH]
+    generate --model {gpt_oss_20b,qwen3_30b} --out DIR [--k K] [--validate] [--deadline EPOCH]
     judge --shard I/N --tiers T1,T2,... --out DIR [--validate] [--deadline EPOCH]
     project --out DIR --validate-hours H [--envelope-h 8]
     mb-rider --out DIR [--validate]
     --dry-run (any subcommand): a stub engine and cached tokenizers, no GPU (local tests)
 
-Generation: k = 4 per scenario (seeded), Table 4 sampling, effort high for gpt-oss, 10,500 tokens;
-the generation fork (each model's own defaults) at k = 1 on the ladder subset. Traces and responses
-are split with ``deepsteer.reasoning.think_io``. Judging: gpt-oss-120b at effort high, one call per
-criterion and field, in priority tiers whose order is the reverse of the author's cut order (T4 =
-the ladder beyond 100 scenarios, cut a; T3 = Qwen k 2-3, cut b; T2 = GPT-OSS-20B k 2-3, cut c),
-so a tier left out is exactly a cut. Outputs are written as they finish and a rerun resumes.
+Generation: k = 4 per scenario (seeded; k = 2 for a model whose k 2-3 tier is cut, MRB_PLAN v0.4),
+Table 4 sampling, effort high for gpt-oss, 10,500 tokens; the generation fork (each model's own
+defaults) at k = 1 on the ladder subset. Traces and responses are split with
+``deepsteer.reasoning.think_io``, GPT-OSS's by its own channel markers (MRB-A8). Judging:
+gpt-oss-120b at effort high, one call per criterion and field, in priority tiers whose order is
+the reverse of the author's cut order (T4 = the ladder beyond 100 scenarios, cut a; T3 = Qwen k
+2-3, cut b; T2 = GPT-OSS-20B k 2-3, cut c), so a tier left out is exactly a cut. Outputs are
+written as they finish and a rerun resumes.
 
 Tracked (``DIR``): ids, lengths, token counts, finish reasons, verdict strings of at most 20
 characters, credit under the substring and exact-token tests, text hashes. Untracked
@@ -153,13 +155,13 @@ def credits(final: str | None, weight: int) -> dict:
 # ---- work lists -------------------------------------------------------------------------------
 
 
-def gen_jobs(items, model: str, tok, validate: bool, cfg=None) -> list[dict]:
+def gen_jobs(items, model: str, tok, validate: bool, cfg=None, k_max: int = K) -> list[dict]:
     spec = GEN[model]
     keep = [it for it in items if not validate or it.idx in VALIDATE_SCENARIOS]
     jobs = []
     for it in keep:
         ids = render_ids(tok, generation_prompt(it.dilemma), spec["format"], spec["effort"], cfg)
-        arms = [("default", k, spec["sampler"]) for k in range(K)]
+        arms = [("default", k, spec["sampler"]) for k in range(k_max)]
         if not validate and in_ladder_subset(it.idx):
             arms.append(("fork", 0, spec["fork_sampler"]))
         for arm, k, sampler in arms:
@@ -217,8 +219,10 @@ def calls_by_tier(units, items) -> dict[int, int]:
 
 def judge_jobs(units, items, tok, cfg, shard: int, n_shards: int, tiers: set[int]):
     """Yield judge jobs for this shard, in tier order, each unit's criteria contiguous (prefix
-    caching); the shard is chosen by the unit's crc32, so both shards see every tier."""
+    caching); the shard is chosen by the unit's crc32, so both shards see every tier. Within a
+    tier the ladder comes first, so a deadline costs generations, never the calibration."""
     by_sid = {it.scenario_id: it for it in items}
+    units = sorted(units, key=lambda u: not u["unit"].startswith("canned/"))  # stable
     for tier in sorted(tiers):
         for u in units:
             if u["tier"] != tier or zlib.crc32(u["unit"].encode()) % n_shards != shard:
@@ -363,7 +367,7 @@ def cmd_generate(a) -> dict:
     tok = _tok(spec["repo"], spec["revision"], a.local_dir)
     cfg = harmony_cfg() if spec["format"] == CoTFormat.HARMONY_ANALYSIS else None
     items = _items()
-    jobs = gen_jobs(items, a.model, tok, a.validate, cfg)
+    jobs = gen_jobs(items, a.model, tok, a.validate, cfg, k_max=a.k)
     engine, SP = load_engine(spec["repo"], spec["revision"], a.local_dir, a.dry_run, tok,
                              spec["format"], "I would choose the first option.", "gen")
     out = a.out / "gen" / f"{a.model}.jsonl"
@@ -516,6 +520,8 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--model", choices=sorted(GEN))
     ap.add_argument("--shard", default="0/1")
+    ap.add_argument("--k", type=int, default=K,
+                    help="generations per scenario (2 when that model's k 2-3 tier is cut)")
     ap.add_argument("--tiers", default="T1,T2,T3,T4")
     ap.add_argument("--local-dir", type=Path, default=None)
     ap.add_argument("--deadline", type=float, default=None)

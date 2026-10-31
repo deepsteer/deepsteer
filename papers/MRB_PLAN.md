@@ -1,6 +1,9 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.3, 2026-10-30. **v0.3 (author, MRB-G0 gate): the G0 decisions** — the 100 expert-written
+Status: v0.4, 2026-10-30. **v0.4 (author, MRB-G1 VALIDATE gate): the envelope raised to 10.3
+A100-h** for the registered design at cut (a+b+c), with generation, judge pricing and judge order
+amended to match (§5, §8); registered and pushed before the session. Gate report:
+`papers/mrb_morebench/MRB_G1_REPORT.md`. **v0.3 (author, MRB-G0 gate): the G0 decisions** — the 100 expert-written
 scenarios for evaluation only (§9); the 400 DailyDilemmas and AIRiskDilemmas scenarios reported as a
 subset beside the 500 (§3); the judge cut order (§5); J1 test–retest part of G1 (§3); gpt-oss
 generation at effort high with no fork, and the steering baseline at GPT-OSS-20B's effort of record
@@ -177,6 +180,25 @@ between-model Regular difference at the measured scenario variance.
   fields; (c) GPT-OSS-20B at k = 2 on both fields. The response field stays at parity with traces
   throughout. If it still overruns after (c), stop and report; no other cut is made without the
   author.
+  **v0.4 (author, after VALIDATE's STOP; registered before the session).** The envelope is raised
+  to 10.3 A100-h through MRB-G1 (§8) so that the registered design runs at cut (a+b+c): GPT-OSS-20B
+  and Qwen3-30B-A3B at k = 2 on both fields, the ladder on its 100 scenarios, J1 and both forks
+  (tier T1). Four consequences, none of which changes a readout or the match rule:
+  1. *Generate only what is judged.* A model whose k 2-3 tier is cut generates k = 2 (plus the
+     fork's k = 1), not k = 4.
+  2. *Projection repriced* (`scripts/mrb_g1_reproject.py`, zero GPU, from VALIDATE's committed
+     outputs): the judge is priced by output tokens per call for each unit type at VALIDATE's
+     measured 4,892 tok/s. VALIDATE's GPT-OSS traces were empty (MRB-A8), so GPT-OSS trace units
+     are priced at Qwen's trace rate (545 tokens per call). Result: T1 at 7.76 A100-h against the
+     8.44 left; G1 total about 9.6. The cut order and the first-fit rule are unchanged, and
+     the higher levels still overrun (a+b 10.67, none 14.89). The envelope-8 projection is kept as
+     `outputs/g1_validate/projection_envelope8.json`.
+  3. *Hard cap.* The watchdog's wall cap is 15% over the projection, clipped to the envelope's
+     remainder (4.22 h wall on 2 GPUs), so G1 cannot pass 10.3 A100-h.
+  4. *Judge order.* Within a tier the ladder is judged first, so a deadline costs generations,
+     never the calibration a match verdict needs.
+  With k = 2 the match rule's interval resamples two generations per scenario; that is the
+  registered rule at cut (c), not a change to it.
   **Fork scopes at G1 (registered before data, bounded by cost).** The generation fork (the code's
   behaviour: no temperature or top-p set, so each model's own generation defaults apply) runs at
   k = 1 on the ladder's scenarios, both fields judged; the judge fork (top-p 1) re-judges J1's
@@ -225,7 +247,10 @@ paper's table, so its row is also the bridge between the replication and the ST 
 | API extension rows | API | priced per row at MRB-G0 |
 
 **Envelope (approved v0.2): 8 A100-h and $60 API through MRB-G1**, conditional on VALIDATE
-confirming gpt-oss-120b runs on the pod's GPU type before any judging. MB Phase 2's GPT-OSS-20B
+confirming gpt-oss-120b runs on the pod's GPU type before any judging. **Raised in v0.4 to 10.3
+A100-h** (API unchanged) after VALIDATE confirmed it (tensor-parallel over two A100-80GB) and the
+registered projection stopped at 8; the raise buys the registered design at cut (a+b+c) and
+nothing more (§5). MB Phase 2's GPT-OSS-20B
 rider counts against MB's own allowance, not this one.
 
 ## 9. Licensing (inherits MORAL_EVAL_REPLICATIONS.md, MRB section)

@@ -126,12 +126,18 @@ pod() {  # pod <gpu> <log> <args...>
 }
 
 if [ "$VALIDATE" = 1 ]; then
-  TIERS=T1
+  TIERS=T1; K20=4; KQW=4
+else
+  # generate only what is judged (MRB_PLAN v0.4): k 2-3 of a model only when its tier runs
+  K20=2; KQW=2
+  case ",$TIERS," in *,T2,*) K20=4 ;; esac
+  case ",$TIERS," in *,T3,*) KQW=4 ;; esac
 fi
+echo ">> generations per scenario: gpt_oss_20b $K20, qwen3_30b $KQW"
 # the session's layout, VALIDATE included: generation on one GPU per model, the MB rider, then the
 # judge tensor-parallel over both GPUs
-pod 0 gen_gpt_oss_20b.log generate --model gpt_oss_20b --local-dir "$M20" & G0=$!
-pod 1 gen_qwen3_30b.log generate --model qwen3_30b --local-dir "$MQW" & G1=$!
+pod 0 gen_gpt_oss_20b.log generate --model gpt_oss_20b --k "$K20" --local-dir "$M20" & G0=$!
+pod 1 gen_qwen3_30b.log generate --model qwen3_30b --k "$KQW" --local-dir "$MQW" & G1=$!
 wait $G0; wait $G1
 pod 0 mb_rider.log mb-rider --local-dir "$M20"
 pod 0,1 judge.log judge --shard 0/1 --tiers "$TIERS" --local-dir "$M120" \

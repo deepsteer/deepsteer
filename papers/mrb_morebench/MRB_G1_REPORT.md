@@ -62,3 +62,10 @@ Cost unit: 10,000 judge calls â‰ˆ 0.47 A100-h; fixed overhead (setup, margin) â‰
 Question behind the question: whether MoReBench's replication is worth a 30% envelope increase
 before any steering use is decided. Option 1 keeps the registered design; option 3 keeps the
 budget and changes the rule.
+
+## 5. Decision (author)
+
+Option 1, registered as MRB_PLAN v0.4 before the session: envelope 10.3 A100-h; k = 2 for both
+models on both fields, the ladder on 100 scenarios, J1 and both forks. Repriced with real-trace
+judge costs, T1 projects to 7.76 A100-h of the 8.44 left (`outputs/g1_validate/projection.json`;
+the envelope-8 projection is kept beside it), under a wall cap that stops at the envelope.
