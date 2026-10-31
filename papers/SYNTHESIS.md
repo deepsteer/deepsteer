@@ -1670,7 +1670,8 @@ without removing it, so its specificity on the panel set was partly format-bound
 hash-verified at commit `8410044` without vendoring any of it. It also holds a degenerate-policy
 ladder for the instrument: on every set the best fixed letter scores inside the paper's five-model
 range (always A 58.2 on MFQ binary against 49.9–58.5; always B 52.0 on MFV binary against
-44.4–52.8). Two paper cells lie outside what the pinned key can produce (MB-A2, MB-A3), and the MFV
+44.4–52.8). One paper cell lies outside what the pinned key can produce (MB-A2), a second only if every repetition
+gave a valid response (MB-A3), and the MFV
 comparative keys fit no single human score per statement (MB-A4). The instrument's reading on
 models is not yet measured: G0 is an audit of the key, not of any model.
 

@@ -11,7 +11,8 @@ Clifford et al.'s published norms (fetched to the cache only; the repo's `mfv_cl
 has no wrongness ratings) match all 24 MFV vignettes and all 24 comparative options. The binary
 keys follow the norms on 22/24 items (Agree, meaning "not morally wrong", scores 5 − Wrong).
 The comparative keys pick the less-wrong statement on 19/24 items. The departures are the whole
-fairness group (4/4 keyed to the more-wrong statement) and `ingroup_2`. By the registered rule
+fairness group (all four items keyed to the more-wrong statement; three distinct pairs, as
+`fairness_2` and `fairness_3` are duplicates) and `ingroup_2`. By the registered rule
 the verdict is R_errors, with the errors located (`outputs/mb_a4_norms.json`, ANOMALIES MB-A4).
 
 ## 1. Zephyr-7B-β (`892b3d7a`, native system role, BOS prepended, template `66291cf0…`)
@@ -36,7 +37,8 @@ Per-foundation verdicts are in the JSON. Of the 26 paper cells (foundations plus
 
 The cells that replicate at T = 0.7 are MFV harm, MFQ-comparative harm, MFV-comparative
 ingroup, MFV-comparative purity, and the MFV-comparative total. The cell that is not attainable is
-MFQ-comparative loyalty (MB-A3, as registered). At T = 1.0 the fork does not change the verdict on
+MFQ-comparative loyalty (MB-A3, as registered; unattainable only if every repetition gave a valid
+response). At T = 1.0 the fork does not change the verdict on
 any total.
 
 R1 falls below R0 on the comparative sets (0.9 and 3.7). The KDG-derived ladder reads "ambiguous"
@@ -50,7 +52,8 @@ part is the letter bias. L is negative on every set under R0, R1 and R2. Under R
 orders.
 
 **MB-A3.** Zephyr parses the tied item on 27 of 32 replies. Loyalty with misses scored 0 is 2.81
-[2.35, 3.25]. The paper's 0.4 is unreachable on this harness either way.
+[2.35, 3.25]. The paper's 0.4 is unattainable only if every repetition got a valid response;
+scoring misses as zero could produce it, and our Zephyr misses too rarely to come near it.
 
 **New entries.** MB-A6: no readout reaches the paper's MFQ binary 54.2. The paper's total implies
 76% Agree; our Zephyr's A-rate is 0.22 by R2. MB-A7: R0's misses track the answer. Agree replies
@@ -70,8 +73,9 @@ cells in 111 s. No R0 misses: Gemma answers with the letter first ("A.", "A. Agr
 
 Of 26 paper cells: 7 replicate, 19 do not, at T = 0.7 and at T = 1.0 alike.
 
-**MB-A1 resolved: R_total.** Gemma's agree rate on `6_concepts` is 0.00, and its total (52.0) sits
-next to the cells' sum (51.8). The printed 44.4 is the error.
+**MB-A1 not settled.** Gemma's agree rate on `6_concepts` is 0.00, and its total (52.0) equals the
+always-B baseline. The paper's cells (sum 51.8) and its printed total (44.4) disagree, and a total
+at the always-B baseline does not establish which number is wrong (correction, 2026-10-30).
 
 **MB-A5.** On MFV binary Gemma answers letter B in both orders (768/768 each; L = −0.50). The
 same holds for Llama-2 and, at about 97%, for Zephyr. On MFQ binary it follows the label instead:

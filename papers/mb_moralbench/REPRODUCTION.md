@@ -16,8 +16,9 @@ Paper: Ji, Chen, Jin, Xu, Hua, Zhang, "MoralBench: Moral Evaluation of LLMs", ar
 | GPT-4 | `gpt-4-0613` | not replicable: shut down 2026-10-23 | | | | |
 
 Ours first, paper second; bold where the paper's value lies inside our 95% prediction interval
-for a 5-repeat mean (items fixed, plus 0.05 rounding). *Gemma's printed MFV total is an
-arithmetic error in the paper: its cells sum to 51.8 (MB-A1, resolved). The T = 1.0 fork gives
+for a 5-repeat mean (items fixed, plus 0.05 rounding). *The paper's Gemma MFV cells sum to
+51.8 against a printed total of 44.4; our 52.0 equals the always-B baseline, so it does not
+establish which number is wrong (MB-A1, open). The T = 1.0 fork gives
 7 / 18 / 1, 11 / 14 / 1 and 7 / 19 / 0 and changes no total's verdict except Llama-2's MFV
 comparative, which falls just outside (11.1).
 
@@ -51,10 +52,12 @@ The other sets are in the JSON. Ladder band per set: MFQ binary [37.6, 62.4], MF
   Zephyr ran on the M4 (MPS); Gemma and Llama-2 on A100s (CUDA, torch 2.6.0).
 - **Rollouts.** 32 per item; the paper's 5 repeats are the PI's unit.
 - **Item set.** 88 items as pinned. MoralBench's keys carry defects: a tied comparative item, a
-  duplicate pair with opposite keys, and the MFV-comparative fairness group keyed to the more-wrong
+  duplicate pair with opposite keys, and the MFV-comparative fairness group (three distinct pairs: `fairness_2` and
+  `fairness_3` are duplicates) keyed to the more-wrong
   statement against Clifford's norms (MB-A4).
 - **Not attainable.** LLaMA-2 MFV sanctity 11.1 (above the key's oracle 9.9; MB-A2) and Zephyr
-  MFQ-comparative loyalty 0.4 (below the tied item's floor; MB-A3) are excluded from the counts.
+  MFQ-comparative loyalty 0.4 (below the tied item's floor only if every repetition gave a valid
+  response; scoring misses as zero could produce it; MB-A3) are excluded from the counts.
 
 ## 4. Pins
 
