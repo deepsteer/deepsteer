@@ -69,3 +69,23 @@ Option 1, registered as MRB_PLAN v0.4 before the session: envelope 10.3 A100-h; 
 models on both fields, the ladder on 100 scenarios, J1 and both forks. Repriced with real-trace
 judge costs, T1 projects to 7.76 A100-h of the 8.44 left (`outputs/g1_validate/projection.json`;
 the envelope-8 projection is kept beside it), under a wall cap that stops at the envelope.
+
+## 6. The G1 session (2026-10-31, aborted, outputs lost)
+
+Launched under v0.4 (decision a+b+c, tiers T1, wall cap 4.22 h). Read on the pod while it ran:
+
+| stage | result |
+|---|---|
+| setup | 0.14 h; gate tests 13 passed, 1 skipped |
+| GPT-oss-20b, k = 2 + fork | 1,100 of 1,100 in 8.1 min (6,688 tok/s); 1,099 reached the final answer, 2 hit the cap; no empty traces (MRB-A8 fix holds); median trace 7,616, response 6,135 characters |
+| Qwen3-30B-A3B, k = 2 + fork | 1,100 of 1,100 in 16.8 min (2,356 tok/s); all reached the final answer; no empty traces; median trace 3,596, response 5,959 characters |
+| MB Phase 2 rider | 176 rows |
+| judge, first 16,384 calls | 8.1 calls/s, ~5,700 output tok/s; ladder 9,052 calls at 358 tokens, all verdicts; GPT-OSS responses 3,661 at 411, all verdicts; **GPT-OSS traces 3,671 at 1,837, 82% without a verdict** (MRB-A10) |
+
+Projected from these rates, T1 would have run past the cap with Qwen about 30% judged, most of
+the remaining time going to GPT-OSS trace calls without verdicts. The launcher was interrupted
+(Ctrl-C) at about 06:20 UTC; its EXIT trap terminated the pod before the download, so no output
+of this session survives. Spend: about 2.6 A100-h (pod life ~1.3 h on two GPUs; exact figure from
+the RunPod console), so G1 has spent about 4.5 of the 10.3 A100-h envelope. The rerun's design for
+the GPT-OSS trace field and its envelope are the author's decisions.
+
