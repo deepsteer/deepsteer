@@ -136,3 +136,4 @@ papers/mb_moralbench/outputs/g2*/_raw/
 
 # MoReBench generations and judge replies (can quote scenario text; MRB_PLAN §9)
 papers/mrb_morebench/outputs_raw/
+papers/mrb_morebench/outputs/g1*/_raw/
