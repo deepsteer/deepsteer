@@ -68,6 +68,10 @@ PY="$VENV/bin/python"
 # the engine processes need the venv's bin (ninja, for flashinfer's JIT) on PATH: the first
 # VALIDATE failed at warm-up with "No such file or directory: 'ninja'"
 export PATH="$VENV/bin:$PATH"
+# top-p / top-k sampling in PyTorch, not flashinfer's JIT kernels: the image's nvcc (CUDA 12.4)
+# rejects flashinfer 0.7's --compress-mode flag (the second VALIDATE); ST's pods sampled at
+# top-p 1 / top-k off and never compiled these kernels
+export VLLM_USE_FLASHINFER_SAMPLER=0
 $PY - <<'EOF' || { echo "BAIL: vLLM venv not usable"; exit 1; }
 import importlib.metadata as md, shutil, torch, vllm  # noqa: E401
 from vllm.model_executor.models import gpt_oss, qwen3_moe  # noqa: F401
@@ -77,6 +81,15 @@ ok = (v["vllm"].startswith("0.31.0") and v["transformers"] == "5.17.0" and torch
 print(">> stack:", v, "cuda", torch.version.cuda, "gpus", torch.cuda.device_count(),
       torch.cuda.get_device_name(0) if torch.cuda.is_available() else None, "OK" if ok else "FAILED")
 raise SystemExit(0 if ok else 1)
+EOF
+# fail fast: a tiny model sampling at top-p 0.95 exercises engine start-up and the sampler in
+# minutes, before ~140 GB of downloads
+$PY - <<'EOF' || { echo "BAIL: vLLM smoke (engine start-up or sampler)"; exit 1; }
+from vllm import LLM, SamplingParams
+llm = LLM(model="Qwen/Qwen2.5-0.5B-Instruct", max_model_len=512, gpu_memory_utilization=0.3)
+out = llm.generate(["Hello"], SamplingParams(temperature=1.0, top_p=0.95, top_k=0, seed=0,
+                                             max_tokens=8))
+print(">> vLLM smoke OK:", len(out[0].outputs[0].token_ids), "tokens at top-p 0.95")
 EOF
 NGPU=$($PY -c "import torch; print(torch.cuda.device_count())")
 # VALIDATE runs the session's layout (the judge is tensor-parallel over two GPUs), so both need 2
@@ -125,8 +138,9 @@ pod 0,1 judge.log judge --shard 0/1 --tiers "$TIERS" --local-dir "$M120" \
   || { [ "$VALIDATE" = 1 ] && { echo "BAIL: gpt-oss-120b did not judge on this GPU type"; exit 1; }; }
 if [ "$VALIDATE" = 1 ]; then
   # A100-hours spent before the session: this VALIDATE on 2 GPUs (+ the manifest and download)
-  # and the earlier failed VALIDATE runs (MRB_PRIOR_A100H; the first, ninja, was ~0.35)
-  VH=$(python3 -c "print(round(2 * ($(hours) + 0.05) + ${MRB_PRIOR_A100H:-0.35}, 4))")
+  # and the earlier failed VALIDATE runs (MRB_PRIOR_A100H: the first, ninja, ~0.35 on one GPU;
+  # the second, the flashinfer sampler build, ~0.66 on two)
+  VH=$(python3 -c "print(round(2 * ($(hours) + 0.05) + ${MRB_PRIOR_A100H:-1.0}, 4))")
   $PY "$POD" project --out "$OUT" --validate-hours "$VH" --setup-hours "$SETUP_H" > "$OUT/project.log" 2>&1
   echo ">> projection: $(python3 -c "import json; d=json.load(open('$OUT/projection.json')); print(d['decision'], [(l['cut'], l['session_a100_h']) for l in d['levels']], d['measured'])")"
 fi

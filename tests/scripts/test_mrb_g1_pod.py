@@ -126,5 +126,9 @@ def test_session_reads_the_projection_and_honours_stop():
     # venv's bin was not on the engine processes' PATH
     assert 'export PATH="$VENV/bin:$PATH"' in text and 'shutil.which("ninja")' in text
     assert 'judge --shard 0/1 --tiers "$TIERS"' in text and "shard 1/2" not in text
+    # most probable failure of the second: flashinfer's sampler JIT build under the image's old
+    # nvcc; the sampler is PyTorch's, and a tiny-model smoke at top-p 0.95 runs before downloads
+    assert "export VLLM_USE_FLASHINFER_SAMPLER=0" in text
+    assert text.index("vLLM smoke OK") < text.index("snapshot_download")
     pin = "5176ab746f4e736c4a354a11d0620abf0a941de287cad937ac34039293ca6f5f"  # ST's vLLM wheel
     assert f"VLLM_WHEEL_SHA256={pin}" in text
