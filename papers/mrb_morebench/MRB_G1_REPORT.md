@@ -1,4 +1,9 @@
-# MRB-G1 gate report: VALIDATE passed, the registered rule says STOP
+# MRB-G1 gate report
+
+Sections 1-5: VALIDATE and the v0.4 decision. Section 6: the aborted session. Section 7: the v0.5
+decision. **Section 8: the G1 results and the gate.**
+
+## (VALIDATE) VALIDATE passed, the registered rule says STOP
 
 Rules: `papers/MRB_PLAN.md` v0.3 §5. Numbers: `outputs/g1_validate/` (projection.json, the
 generation and judge summaries and rows). No session was launched.
@@ -97,4 +102,116 @@ a delimited-prompt fork run in T1. A verdict guard and scenario-major order mean
 deadline costs one field's tail, not the session. Projection: 10.35 A100-h for T1+T5 against the
 11.04 left, wall cap 5.52 h. The spend figure for the aborted session (2.6) is an estimate pending
 the RunPod console.
+
+## 8. G1 results (rerun, 2026-10-31; MRB_PLAN v0.5)
+
+Session: 2 × A100-SXM4-80GB, 5.19 h of the 5.52 h cap, every planned call made (115,294 judge
+calls; no deadline stop, no guard trip); outputs verified against the manifest (16 files).
+Generation: 1,100 per model (k = 2 on 500 plus the fork's 100), all reached the final answer,
+none at the cap, no empty traces. Spend about 10.6 A100-h; G1 total about 15.1 of 15.5. Numbers:
+`outputs/g1/g1_analysis.json` (`scripts/mrb_g1_analyze.py`; judge rows tracked gzipped).
+
+### 8.1 The registered match (k0, the 500, substring credit of record)
+
+| cell | ours | paper | 95% PI (k = 2) | verdict | length (paper) |
+|---|---|---|---|---|---|
+| Qwen3-30B-A3B trace, Regular | 70.73 [69.33, 72.04] | 70.3 | [70.21, 71.11] | **replicates** | 3,681 (3,691) |
+| Qwen3-30B-A3B trace, Hard | 19.22 | 19.0 | | **replicates** | |
+| Qwen3-30B-A3B response, Regular | 74.99 [73.75, 76.19] | 75.4 | [74.53, 75.29] | misses by 0.06 (MRB-A12) | 5,992 (5,973) |
+| Qwen3-30B-A3B response, Hard | 12.51 | 12.6 | | **replicates** | |
+| GPT-oss-20b response, Regular | 72.41 [70.73, 73.99] | 71.7 | [72.03, 73.40] | misses by 0.28 (MRB-A12) | 6,169 (5,071) |
+| GPT-oss-20b response, Hard | 11.74 | 14.1 | | misses (length, MRB-A11) | |
+| GPT-oss-20b trace, Regular | 36.08 [34.20, 37.91] | 57.7 | [36.29, 38.17] | misses: judge failure (MRB-A10) | 8,215 (2,338) |
+| GPT-oss-20b trace, Hard | 4.39 | 24.7 | | misses (MRB-A10, MRB-A11) | |
+
+Brackets after our values: scenario-bootstrap 95% CI. Eq. 1 under the registered reading equals
+the code score mapped to 0-100 on every unit (max gap 1.4e-14), so J0 and J0c share the column.
+Exact-token credit (MRB-A3) changes only the failing field: GPT-OSS traces 13.8; elsewhere the
+two tests differ on at most 2 calls in 9,052 (ladder) and 0 or 1 per 22,900 (model fields). The
+400-scenario subset reads 0.4 to 3.2 points below the 500 on every cell (traces 32.9 and 69.7;
+responses 72.0 and 74.2).
+
+### 8.2 Instrument checks
+
+- **Ladder (100 scenarios):** empty 8.9, generic paragraph 17.3, generic padded to model length
+  15.1, the scenario restated 41.7. The models on the same scenarios: responses 70.2 (GPT-OSS)
+  and 73.7 (Qwen), Qwen traces 69.0, 27 to 32 points above the best canned response. GPT-OSS
+  traces under the registered prompt read 34.2, **below the restated scenario**: the judge's
+  failure (MRB-A10), not a reading of the trace. Padding lowers the generic score (−2.2), so the
+  ladder shows no reward for length alone.
+- **J1 (50 scenarios, GPT-OSS k0):** responses: criterion agreement 0.938 (κ 0.86); Regular
+  retest difference +1.15 (CI [−0.18, 2.52]). Traces under the registered prompt: agreement 0.72
+  (κ 0.35), the failure again.
+- **Judge fork (top-p 1, J1 subset):** responses +0.40 (CI [−0.89, 1.86]); no difference
+  detectable at |Δ| ≳ 1.9 on 50 scenarios.
+- **Generation fork (each model's own defaults, k = 1, 100 scenarios):** Qwen trace +0.18
+  [−1.61, 2.07], response +0.11 [−1.53, 1.80]; GPT-OSS response +2.92 [−0.29, 6.48]; no
+  difference detectable at about 2.4 (Qwen) or 4.8 (GPT-OSS response) points.
+- **MDE (80% power, scenario-paired, 500):** a between-model Regular difference of 1.96 on
+  responses and 3.2 on traces. The response difference Qwen − GPT-OSS is 2.58.
+- **MRB-A10 resolved toward R_register:** on J1's 50 units, the delimited prompt leaves 3 of
+  1,118 calls without a verdict (registered: 906), and Regular moves from 33.4 to 58.9 (+25.5,
+  CI [18.4, 33.1]).
+
+### 8.3 MB Phase 2 rider (GPT-OSS-20B, R2 at dose-0, effort medium; MB_PLAN Amendments 3-4)
+
+176 rows, label mass ≥ 0.997 on every row. Expected scores (original / counterbalanced): MFQ
+binary 45.4 / 53.0 (L −0.20, K −0.10); MFV binary 51.7 / 48.7 (L −0.22, K −0.20); MFQ comparative
+9.8 / 10.2 (L 0.00, K −0.01); MFV comparative 12.1 / 11.8 (L 0.01, K 0.02). A lean toward B on
+both binary sets, none on the comparative sets; read as a dose-0 readout (KDG-A22), banked as
+the pre-steering baseline. Not a steering gate.
+
+### 8.4 Referee pass
+
+1. *"Your interval cannot fail a faithful reproduction only because it is narrow."* Conceded in
+   part (MRB-A12): the PI carries generation noise alone (closed form 0.75 wide, measured 0.76);
+   same-deployment judge noise adds about 0.16 SE, which reaches Qwen's response cell but not
+   GPT-OSS's. The registered verdicts stand; the deployment term needs the OpenRouter cross-check.
+2. *"Your GPT-OSS is not the paper's GPT-OSS."* Open (MRB-A11): our traces are 3.5× longer and
+   responses 1.22×; every GPT-OSS miss sits on that gap or on the judge failure. Effort high was
+   our decision of record (v0.3); the cross-check's generation length separates effort from
+   provider.
+3. *"The Qwen trace replication is one deployment and one draw."* Answered in part: Regular,
+   Hard and length all agree (70.7 / 19.2 / 3,681 against 70.3 / 19.0 / 3,691), the generation
+   fork does not move it (+0.18 [−1.61, 2.07]), and J1 judge noise is small. Conceded: one judge
+   deployment until the cross-check.
+
+### 8.5 Anticipated review
+
+1. The paper's GPT-oss trace length (2,338) is a third of ours → MRB-A11 → OpenRouter generation
+   on ~50 scenarios (cents, zero GPU).
+2. Both response misses are within 0.3 of a generation-only PI → MRB-A12 → the registered
+   cross-check's deployment term, as a sensitivity read under amendment.
+3. The restated scenario scores 41.7 → a third of the rubric's weight is met by repeating the
+   dilemma; reported as the floor beside every score (implemented: §8.2).
+4. GPT-OSS's trace field is only measured on 50 scenarios with a prompt that works → a full-field
+   delimited judge pass (judge-only pod, ~1.1 h judging, ~3 A100-h with setup; envelope +3).
+5. Not planned before: the GPT-OSS response field scores 11 points above its own delimited trace
+   (CI [−14.9, −7.4]); whether that gap is the paper's trace-vs-response gap (57.7 against 71.7,
+   14 points) is answerable once the trace field is judged in full.
+
+Implemented now: the analysis, the ladder floor in every comparison, the J1 judge-noise term,
+MRB-A10 to A12. Open (with costs): the OpenRouter cross-check, judge and GPT-oss-20b generation on
+~50 scenarios (about $2 of API, inside the $60); a full-field delimited judge pass (about 3
+A100-h, outside the 15.5).
+
+Question behind the question: whether MoReBench's GPT-oss rows are reproducible from open weights
+at all. If OpenRouter's reasoning field is a shortened trace (MRB-A11 R_provider), the paper's
+GPT-oss trace scores grade a different text from the raw analysis, and no pod run reaches them.
+
+### 8.6 Decisions for the author
+
+1. **The OpenRouter cross-check** (registered in v0.2, still pending): run it now, extended by
+   one GPT-oss-20b generation per scenario on the same ~50 scenarios. Recommended first: it is
+   cheap and it decides 2 and 3. It needs your OpenRouter key in your terminal.
+2. **The GPT-OSS trace field:** report it from the 50-scenario delimited fork only, or judge the
+   full field with the delimited prompt on a judge-only pod (~3 A100-h, the envelope to ~18.5).
+   Recommended: decide after 1; under R_provider the full pass describes only our traces.
+3. **MRB-A12:** keep the registered "misses" and add, under amendment, a sensitivity interval
+   with the cross-check's deployment term, reported beside them.
+4. **Steering target (registered as decided after G1):** if MoReBench becomes a steering target,
+   the response field is the one this judge reads reliably on GPT-OSS (0 of 22,900 without a
+   verdict, J1 κ 0.86, MDE 1.96). The steering baseline needs GPT-OSS-20B at effort medium (v0.3),
+   a new cell either way.
+5. **G2** (GPT-oss-120b, API rows, the theory set, `REPRODUCTION.md`): after 1-3.
 

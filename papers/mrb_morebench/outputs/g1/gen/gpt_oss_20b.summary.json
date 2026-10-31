@@ -1,0 +1,12 @@
+{
+ "jobs_run": 1100,
+ "decoded_tokens": 3251898,
+ "wall_s": 470.4,
+ "tokens_per_s": 6913.4,
+ "calls_per_s": 2.339,
+ "stopped": null,
+ "model": "gpt_oss_20b",
+ "n_jobs": 1100,
+ "validate": false,
+ "pod_version": "1.1.0"
+}

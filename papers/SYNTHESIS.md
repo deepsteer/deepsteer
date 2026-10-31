@@ -1711,3 +1711,31 @@ LLaMA-2 total there needs near-total agreement, and ours agrees with 12%.
 |---|---|---|---|
 | MB-01: MoralBench's MFV binary scores track a letter-B preference on Zephyr-7B, Gemma-1.1-7B and Llama-2-70B (counterbalanced, L = −0.50 on two; about 97% on Zephyr) | the B preference is our harness's (template or decode) and would not appear under the paper's prompt path | the same counterbalanced cell on a model whose paper row is matched closely (none found inside Amendment 1; D4 is the nearest) | standing on three families; counter-reading open |
 | MB-02: MoralBench's open-model rows are not reproduced on MFQ binary by four Zephyr configurations, Llama-2-70B or Gemma-1.1 under the paper's stated protocol | the paper's unreleased open-model prompt path differs (R_harness, MB-A8) | the authors' open-model code, if released; otherwise none inside the stopping rule | standing, with the detection bar: PI half-widths 0.4–1.7 on the MFQ binary total |
+
+## MRB line: MoReBench replication (opened 2026-10-30, `MRB_PLAN.md` v0.5)
+
+**MRB-G1 (2026-10-31; `mrb_morebench/MRB_G1_REPORT.md` §8), positive voice.** The program now
+holds a self-hosted MoReBench pipeline (open-weight generation, gpt-oss-120b as judge, every
+judgement saved) that reproduces the paper's Qwen3-30B-A3B thinking-trace row: Regular 70.7
+against 70.3, Hard 19.2 against 19.0, trace length 3,681 against 3,691, inside the registered
+interval. Qwen's response-field Hard cell replicates too (12.5 against 12.6), and the judge's
+test-retest agreement on responses is 0.94 (κ 0.86). It also locates where the
+paper's GPT-oss numbers depend on the run rather than the model. The judge answers GPT-OSS's raw
+analysis instead of grading it (82% of 22,900 calls) unless the text is delimited (0.3%); and our
+GPT-OSS traces are 3.5× the paper's length. Both response Regular cells miss the registered
+interval by 0.06 and 0.28, an interval that carries generation noise only.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the registered OpenRouter judge cross-check on ~50 scenarios | standing at one deployment |
+| MRB-02: gpt-oss-120b, under MoReBench's judge prompt, answers GPT-OSS-20B's raw analysis instead of grading it (81.8% without a verdict), and delimiting the text restores verdicts (0.27%) | the failure is specific to our harmony rendering of the judge prompt, not to the upstream prompt as OpenRouter serves it | the same judge through OpenRouter on GPT-OSS traces (the cross-check) | standing on our deployment; counter-reading open |
+
+**What the next result changes.**
+
+| cell | branch | thesis edit |
+|---|---|---|
+| OpenRouter cross-check, GPT-oss-20b generation length | short or summary-like (R_provider) | the paper's GPT-oss trace scores grade a provider's shortened text; that row is not reproducible from open weights |
+| | raw and effort-dependent (R_effort) | GPT-OSS's rows are comparable at the paper's effort; effort high is reported as a fork |
+| OpenRouter judge on the same items | agrees with ours within J1 noise | MRB-01 holds across deployments, and MRB-A12's sensitivity interval carries a measured deployment term |
+| | fails on GPT-OSS traces too | MRB-02 is upstream's, and the paper's GPT-oss trace scores carry it |
+

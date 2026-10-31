@@ -1,0 +1,47 @@
+{
+ "jobs_run": 115294,
+ "decoded_tokens": 90194147,
+ "wall_s": 16758.7,
+ "tokens_per_s": 5381.9,
+ "calls_per_s": 6.88,
+ "stopped": null,
+ "shard": "0/1",
+ "tiers": [
+  1,
+  5
+ ],
+ "calls_by_tier": {
+  "1": 89013,
+  "5": 26281,
+  "4": 36748
+ },
+ "guard": {
+  "min_calls": 1000,
+  "max_no_verdict": 0.05
+ },
+ "guard_seen": {
+  "canned": [
+   9052,
+   57
+  ],
+  "gpt_oss_20b/trace/delimfork": [
+   1118,
+   3
+  ],
+  "gpt_oss_20b/response": [
+   27399,
+   1
+  ],
+  "qwen3_30b/trace": [
+   25163,
+   1
+  ],
+  "qwen3_30b/response": [
+   25163,
+   1
+  ]
+ },
+ "guard_tripped": {},
+ "validate": false,
+ "pod_version": "1.1.0"
+}
