@@ -1,0 +1,9 @@
+{
+ "model": "openai/gpt-oss-20b",
+ "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
+ "effort": "medium",
+ "position": "dose-0 (prefill_primary)",
+ "readout": "single-row letter mass, both orders",
+ "n_rows": 4,
+ "validate": true
+}

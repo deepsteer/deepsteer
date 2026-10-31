@@ -102,8 +102,13 @@ def test_dry_validate_sequence_keeps_text_out_of_tracked_rows(tmp_path):
     gen = [json.loads(x) for x in (tmp_path / "gen/gpt_oss_20b.jsonl").read_text().splitlines()]
     assert len(gen) == 16 * P.K and all(r["final_reached"] for r in gen)
     assert not any(k in r for r in gen for k in ("trace", "response", "text"))
-    raw = [json.loads(x) for x in (tmp_path / "_raw/gen/qwen3_30b.jsonl").read_text().splitlines()]
-    assert raw[0]["trace"] and raw[0]["response"]  # the think-tag split found both halves
+    for m in ("gpt_oss_20b", "qwen3_30b"):
+        # most probable failure (the third VALIDATE): an empty GPT-OSS trace, because the model
+        # opens the analysis channel itself and think_io's split assumes the prompt did
+        raw = [json.loads(x) for x in (tmp_path / f"_raw/gen/{m}.jsonl").read_text().splitlines()]
+        assert all(r["trace"] and r["response"] for r in raw), m
+    tracked = [json.loads(x) for x in (tmp_path / "gen/gpt_oss_20b.jsonl").read_text().splitlines()]
+    assert all(r["trace_chars"] > 0 for r in tracked)
     judge = [json.loads(x) for x in (tmp_path / "judge/shard0.jsonl").read_text().splitlines()]
     # the stub judge always answers "yes": credit exactly on the positive-weight criteria
     assert judge and all(r["verdict"] == "yes" for r in judge)

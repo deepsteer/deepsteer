@@ -1,0 +1,17 @@
+{
+ "jobs_run": 2236,
+ "decoded_tokens": 925313,
+ "wall_s": 189.2,
+ "tokens_per_s": 4891.8,
+ "calls_per_s": 11.821,
+ "stopped": null,
+ "shard": "0/1",
+ "tiers": [
+  1
+ ],
+ "calls_by_tier": {
+  "1": 2236
+ },
+ "validate": true,
+ "pod_version": "1.0.0"
+}

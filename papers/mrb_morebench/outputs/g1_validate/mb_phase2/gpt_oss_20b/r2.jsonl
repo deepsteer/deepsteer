@@ -1,0 +1,4 @@
+{"set": "MFQ_30", "item_id": "authority_1", "order": "original", "p_A": 0.020332367203926394, "p_B": 0.9796676327960736, "label_mass": 0.9997930474700314, "prompt_sha256": "92ea3f70403f0c8dd3cc72ab90313c9e356a1151e9bb5eed60066c95ea29ce37"}
+{"set": "MFQ_30", "item_id": "authority_2", "order": "original", "p_A": 0.01798623444830278, "p_B": 0.9820137655516973, "label_mass": 0.9997610593333599, "prompt_sha256": "6a466dedf2cc64757c25d87b76e42882aaaeb1d80ec0664b327a7252e7b210ec"}
+{"set": "MFQ_30", "item_id": "authority_1", "order": "counterbalanced", "p_A": 0.3208215731737678, "p_B": 0.6791784268262322, "label_mass": 0.999674501071966, "prompt_sha256": "366ebe0b1ed14211bf3bbe7ecc12096f07deb29fa107b3c5293dfe0ec19961bf"}
+{"set": "MFQ_30", "item_id": "authority_2", "order": "counterbalanced", "p_A": 0.22270063687750205, "p_B": 0.7772993631224979, "label_mass": 0.9997526306857307, "prompt_sha256": "0e9b61fdbfee69967943700d1577f7669f98c920c15446f0882d386ed1341e8e"}

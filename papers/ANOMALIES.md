@@ -2003,7 +2003,7 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 - R_inert: the judge answers a bare yes or no, so the trap never fires.
 - R_live: reasoning-effort-high replies sometimes carry extra words, so some criteria are credited for the wrong reason.
 **Discriminator.** Zero GPU once G1's judge replies exist: the share of replies that are not a bare yes/no, and the score difference between the substring test and an exact-token test.
-**Status.** open (scheduled: MRB-G1 analysis).
+**Status.** open (scheduled: MRB-G1 analysis). **VALIDATE (2026-10-31):** of 2,236 judge replies, 2,224 are a bare yes or no, 12 are not, and the substring and exact-token tests never disagree: R_inert so far, on a probe.
 **Thesis impact.** Under R_live, MoReBench scores carry a parse artifact that varies with the judge's verbosity; the replication reports both tests.
 
 ## MRB-A4 (ledger) — Table 6's Average row matches no subset of its rows; Table 7's matches its 14 rows exactly
@@ -2047,3 +2047,14 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Discriminator.** None that settles a license question empirically; this is an author decision (escalation class).
 **Status.** open: coverage unclear, not shown wrong (author decision at MRB-G0; the author has emailed the MoReBench authors). As a precaution the 100 expert-written scenarios are used for evaluation only, never for training or adaptation (MRB_PLAN v0.3 §9).
 **Thesis impact.** For the replication (evaluation only, no text committed) little changes; for any training or adaptation use (ST as a target), the 100 expert rows stay excluded unless the question is settled.
+
+## MRB-A8 (ledger) — think_io's harmony split returns an empty trace when GPT-OSS opens its own analysis channel
+
+**Date.** 2026-10-31 (MRB-G1, third VALIDATE).
+**Observation.** All 64 GPT-OSS-20B generations had a 0-character trace and a full response (mean 5,355 characters; the paper's Table 7: 5,071). `deepsteer.reasoning.think_io.split_rollout` takes the text before the first harmony marker as the reasoning, assuming the prompt opened `<|channel|>analysis<|message|>`; GPT-OSS's template ends at `<|start|>assistant` (as `think_io.think_prompt` renders it), so the model opens the channel itself and that text is empty. The final-channel search is unaffected. MRB's driver now splits harmony output by its own channel markers; a test asserts non-empty GPT-OSS traces and fails on the old split.
+**Type.** control-misbehavior (a shared instrument), with a blast radius beyond MRB.
+**Competing readings.** R_local: only callers that use the reasoning span from a prompt that did not open the channel are affected. R_wide: some earlier GPT-OSS result depended on that span.
+**Blast radius (callers that split GPT-OSS output with `think_prompt` and no opener).** Paper 7 `refusal_baseline.py` (its trace length comes from `cot_token_boundary`, its final answer from the working search; the reasoning span looks unused), `extract_trace_profile.py` and `extract_two_site.py` (coherence falls back to the whole rollout when the span is empty). D3 `reasoning_cells.py` adds the opener and is unaffected; D1 `think_positions.py` uses only the answer; W4 goes through D3's path.
+**Discriminator.** Zero GPU: for each Paper 7 caller, trace which saved numbers read the reasoning span, and re-split any saved GPT-OSS rollouts.
+**Status.** open (author): escalated; no committed claim is changed without the author.
+**Thesis impact.** Under R_local, nothing earlier moves and `think_io` gains a fix for generated openers; under R_wide, the affected Paper 7 numbers are recomputed from saved rollouts.

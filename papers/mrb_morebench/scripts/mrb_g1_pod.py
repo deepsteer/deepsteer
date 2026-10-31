@@ -39,7 +39,13 @@ from deepsteer.benchmarks.moral_reasoning.morebench.prompts import (  # noqa: E4
     judge_prompt,
 )
 from deepsteer.benchmarks.moral_reasoning.morebench.scoring import fulfilled  # noqa: E402
-from deepsteer.reasoning.think_io import CoTFormat, decode_rollout, split_rollout  # noqa: E402
+from deepsteer.reasoning.think_io import (  # noqa: E402
+    _HARMONY_ANALYSIS,
+    _HARMONY_FINAL,
+    CoTFormat,
+    decode_rollout,
+    split_rollout,
+)
 
 POD_VERSION = "1.0.0"
 K = 4
@@ -109,6 +115,20 @@ def render_ids(tok, text: str, fmt: CoTFormat, effort: str | None, cfg=None) -> 
         rendered = tok.apply_chat_template([{"role": "user", "content": text}], tokenize=False,
                                            add_generation_prompt=True)
     return tok(rendered, add_special_tokens=False)["input_ids"]
+
+
+def split_trace(text: str, fmt: CoTFormat) -> tuple[str, str]:
+    """(trace, response) of one generation.
+
+    Harmony: the analysis and final channels by their own markers. The model opens the analysis
+    channel itself after ``<|start|>assistant``; ``think_io.split_rollout`` assumes the prompt
+    opened it and returns an empty trace here (the third VALIDATE: 0 characters on all 64
+    GPT-OSS traces; ANOMALIES MRB-A8). Think tags: ``split_rollout``.
+    """
+    if fmt == CoTFormat.HARMONY_ANALYSIS:
+        a, f = _HARMONY_ANALYSIS.search(text), _HARMONY_FINAL.search(text)
+        return (a.group(1).strip() if a else ""), (f.group(1).strip() if f else "")
+    return split_rollout(text, fmt)
 
 
 # ---- verdicts ---------------------------------------------------------------------------------
@@ -353,7 +373,7 @@ def cmd_generate(a) -> dict:
 
     def decode(j, r):
         text = decode_rollout(tok, r["gen_ids"], spec["format"]) if r["gen_ids"] else ""
-        trace, resp = split_rollout(text, spec["format"]) if text else ("", "")
+        trace, resp = split_trace(text, spec["format"]) if text else ("", "")
         final_reached = bool(resp)
         return ({"n_tokens": r["n_tokens"], "finish_reason": r["finish_reason"],
                  "status": r["status"], "final_reached": final_reached,
