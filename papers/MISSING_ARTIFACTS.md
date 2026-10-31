@@ -1,6 +1,6 @@
 # Missing artifacts ledger
 
-**Status 2026-09-13 (W4-3): every entry below is CLOSED by the W4 pod of 2026-09-12/13** (manifest `w4_20260912T190441` + rerun `w4_20260913T004257`, 56 artifacts, verified; closure map at the end of this file). The one carve-out is Think `refusal_P3`, unmeasured by design (Amendment 14.4).
+**Open 2026-10-31: MRB-A9 (Paper 7 GPT-OSS trace re-extraction), at the end of this file.** **Status 2026-09-13 (W4-3): every entry below except MRB-A9 is CLOSED by the W4 pod of 2026-09-12/13** (manifest `w4_20260912T190441` + rerun `w4_20260913T004257`, 56 artifacts, verified; closure map at the end of this file). The one carve-out is Think `refusal_P3`, unmeasured by design (Amendment 14.4).
 
 ## A1 (2026-07-01): MFT directions not committed for reasoning tags
 
@@ -74,3 +74,26 @@ Correction to the Amendment-11 GPT-OSS entry: the **PR half** of the A5 pre-cond
 banked by the Tier-1 run (post-std PR 12.79, `tier1_session_gpt_oss_20b.json`); only the
 band-below-null half was missing, and 14.3 computes it. Nothing here is regenerated inline; the pod
 saves are the closure.
+
+## MRB-A9 (2026-10-31): Paper 7 GPT-OSS trace profile without harmony header tokens (OPEN)
+
+- **Why.** Paper 7's GPT-OSS trace window `generated[0:cot_token_boundary)` includes the three
+  generated header tokens and the three tail tokens around the final channel (ANOMALIES MRB-A9).
+  `trace_profile.npz` saved only per-bin means and a prefix grid starting at token 16, so the
+  control tokens cannot be removed from saved data. Paper 7 is pre-submission; P7-02b and fig. 4
+  are BLOCKED in `CLAIMS.md` until this lands.
+- **What.** Re-run `extract_trace_profile.py` and `extract_two_site.py` on GPT-OSS-20B (same
+  prompts, seeds, layer 12 headline, bf16) with the trace window from `think_io`'s content-window
+  helper (content tokens only: after the generated `<|channel|>analysis<|message|>`, before
+  `<|end|>`). The distills are re-run only as a no-change check (their windows hold no control
+  tokens).
+- **Saves (enforced).** Per-token arrays, not per-bin means: for every rollout, the generated ids,
+  the content-window bounds, and the per-token activations (or per-token moral-subspace
+  projections, if the full-hidden array is over the sync budget) at the headline layer, plus the
+  decoded rollout text in a gitignored `_raw/` for the coherence test. Bins and the two-site
+  directions are then recomputed locally.
+- **Where.** The next HF-hook pod (not a vLLM session; it does not ride MRB-G1). About 0.25
+  A100-h.
+- **Gate after.** P7-02b and fig. 4 unblock under either reading (MRB-A9 R_content: the sentence
+  stands; R_token: the sentence and the GPT-OSS 0.025 are rewritten from the new profile) before
+  Paper 7 is submitted.

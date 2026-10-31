@@ -13,7 +13,8 @@ CALIBRATION_RESULTS,RESULTS}.md`, `d2_decision_coupling/{PREREGISTRATION,RESULTS
 
 **status** — `VERIFIED` (measured, gate/control passed) · `CI` (has a bootstrap/analytic CI,
 stated) · `SCOPED` (true only under a stated restriction; the restriction ships in the
-sentence) · `HELD` (not yet run / rides an unsaved artifact) · `VOID` (superseded or
+sentence) · `HELD` (not yet run / rides an unsaved artifact) · `BLOCKED` (measured, but the
+instrument is in question; not cited until the named re-measurement lands) · `VOID` (superseded or
 retracted; listed in the VOID register with its replacement, never shipped as a finding).
 
 **unit** — where the claim lands: `FL` flagship · `MN` methods note · `DUO` pretraining duo
@@ -144,7 +145,8 @@ signs are robust); all block *a printed scalar*.
 | id | claim (anchored sentence) | status | unit | artifact | figure |
 |---|---|---|---|---|---|
 | P7-01 | Harmfulness and refusal are separately encoded at t_inst (d' 5.01 GPT-OSS / 4.39 Llama-distill / 5.01 Qwen-distill; cosine(harm t_inst, refusal t_post) 0.16/0.11/0.16), extending Zhao et al. to reasoning models incl. RL-deliberative GPT-OSS. | VERIFIED | FL | Paper 7 §4.1 | fig1_harmfulness_vs_refusal |
-| P7-02 | Comprehension is distributed and displaced from the decision: end-of-prompt direction 99.1% residual, trace moral content peaks in the first third and is lowest at the decision (position 1.0). | VERIFIED | FL | Paper 7 §4.2 | fig4_trace_profile |
+| P7-02 | Comprehension is displaced from the decision: the end-of-prompt direction is 99.1% residual against the moral subspace, with single-vs-full-rank AUC gap 0.000. | VERIFIED | FL | Paper 7 §4.2 | — |
+| P7-02b | Trace moral content peaks in the first third and is lowest at the decision (position 1.0). | BLOCKED (MRB-A9): GPT-OSS's trace window includes six harmony control tokens, 53% of the decision bin on harmful traces; not cited until the re-extraction with header tokens excluded (`MISSING_ARTIFACTS.md`, MRB-A9). The GPT-OSS mean fraction 0.025 comes from the same bins and is re-measured by the same run. | FL | Paper 7 §4.2 | fig4_trace_profile (blocked) |
 | P7-03 | Refusal is distributed on GPT-OSS: no single direction ablates it (end-of-prompt 4%, CoT-last 0%, CoT-mean 88% but only via incoherence). | VERIFIED | FL | Paper 7 §4.3 | fig5_distributed_refusal |
 | P7-04 | Harmfulness is largely distinct from moral foundations: in-subspace fraction 0.18 (GPT-OSS) / 0.11 (distills), 3.0–3.9× the √(k/d)≈0.04 chance floor, ~85% outside the moral subspace — the same "reads a harm sliver" object D3 formalizes as harm_saturating. | VERIFIED | FL | Paper 7 §4.4 | fig3_harmfulness_vs_moral |
 | P7-05 | Harmfulness is causally validated by reply-inversion: Qwen2.5-14B-Instruct shift +17.4 flips 33%, Llama-3.1-8B-Instruct +3.0 flips 23%; the earlier raw diff-of-means null (0.44–0.49 of residual norm) was a magnitude artifact. [W4-08: on Llama with matched-norm steering the harm direction flips 0/100 and shifts margins toward safe (−2.1 / −2.6) while random matched-norm directions flip 61–83%; the specificity control the MN limitation asked for was run and the flip metric is not specific at that norm (A10).] | VERIFIED (Qwen-14B); SCOPED on Llama (W4-08) | FL / MN | Paper 7 §4.5 | fig2_causal_validation |
