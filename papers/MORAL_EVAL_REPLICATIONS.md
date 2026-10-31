@@ -80,9 +80,12 @@ Standard for each replication, kept light:
   - Re-read the HF card at MRB-G0 and record any gating terms shown on access.
 - **Adaptations stay CC BY 4.0.** This includes recasting Agent scenarios into KDG/ST frames.
   Adapted files carry their own notice and stay out of the Apache wheel.
-- **Upstream sources.** The scenarios derive from DailyDilemmas, AIRiskDilemmas, Ethics Unwrapped
-  and APPE Ethics Bowl cases; the paper states these are CC 4.0. Rely on the card and cite the
-  upstreams alongside MoReBench.
+- **Upstream sources (corrected at MRB-G0).** The paper states all its sources are CC 4.0.
+  DailyDilemmas and AIRiskDilemmas are CC BY 4.0 on their own cards; whether CC BY 4.0 covers the
+  100 expert-written scenarios (APPE Ethics Bowl, Ethics Unwrapped, Cheung et al. PNAS 2025, whose
+  own terms are CC BY-NC-ND 4.0 or unlicensed) is unclear (ANOMALIES MRB-A7). As a precaution those
+  100 are used for evaluation only, never for training or adaptation. Cite the upstreams alongside
+  MoReBench.
 - **Scope.** Only the 500 public scenarios. Never seek the private set.
 
 ### ETH — ETHICS (MIT)

@@ -1969,17 +1969,18 @@ commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2)
 Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit v1.0.0; HF revision
 `d900e89`, code `e6689bb`), against arXiv:2510.16380v2.
 
-## MRB-A1 (ledger) — The code that produced the paper's numbers expects 11,568 judgements; the public file yields 11,450
+## MRB-A1 (ledger) — The paper-era code expects 11,568 judgements; the public file yields 11,450
 
 **Date.** 2026-10-30 (MRB-G0).
 **Observation.** `calculate_morebench.py` on `main` (`71eaf71`) asserts 11,568 judgement rows per run; the `eval` branch changed the default to 11,450, the public file's criterion count. The public set's composition reproduces every Table 6 and Table 7 row: each row's Regular equals its count-weighted subgroup means within 0.1 under the public file's splits (sources 200/200/100, types 200/200/100, roles 293/207).
 **Type.** cross-doc conjunction (code constant against published data).
 **Competing readings.**
+- R_stale_default: the 11,568 default was outdated, or counted the private half: 11,568 + 11,450 = 23,018, the full dataset's criterion count (p. 5), so the constant may be the private set's count left in the script, and the paper's cells may come from exactly the public rubrics.
 - R_rubric_edit: the paper scored these 500 scenarios with 118 more criteria than the published rubrics hold (criteria removed or merged before release).
 - R_other_set: the paper's 500 differ from the public 500 while keeping the same split sizes.
-**Discriminator.** None from public data alone; the authors' generation files (`idx` and per-criterion rows) would separate them. Zero GPU: ask the authors.
-**Status.** open.
-**Thesis impact.** Under either reading the paper's cells were computed on a rubric set that is not public, so a match tolerance cannot absorb the difference; the reproduction report states it per cell.
+**Discriminator.** None from public data alone; the authors' generation files (`idx` and per-criterion rows) would separate them. Zero GPU: the author has emailed the MoReBench authors (MRB-A1, A4, A7).
+**Status.** open: the discrepancy is confirmed, its explanation unknown.
+**Thesis impact.** Under R_stale_default the public file is the paper's rubric set and G1's verdicts read as a plain match or miss; under the other two, a match tolerance cannot absorb the difference. The reproduction report states which reading the authors confirm, if they do.
 
 ## MRB-A2 (ledger) — Two different models in Table 6 have the same mean trace length to the character (1,272)
 
@@ -1990,7 +1991,7 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 - R_copy: one row's length was copied from the other; that row's Hard was then computed from the copied length.
 - R_chance: two means that happen to round to the same integer.
 **Discriminator.** Our GPT-oss-120b trace length at MRB-G2 (if run): far from 1,272 favours R_copy for that row.
-**Status.** open.
+**Status.** open, low prior (author): lengths are means rounded to whole characters, so a tie between two of 14 models is plausible under R_chance. Not part of the author email.
 **Thesis impact.** If R_copy, one model's Hard cell (the length-corrected headline) is wrong in the paper.
 
 ## MRB-A3 (ledger) — The upstream credit test is a substring match: a reply containing "no" anywhere credits a negative criterion
@@ -2037,12 +2038,12 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Status.** open (scheduled: MRB-G1, J2).
 **Thesis impact.** Bears on the steering-target decision after G1: under R_field_gap the response field is the safer target.
 
-## MRB-A7 (ledger) — MoReBench's CC BY 4.0 does not cover its 100 expert-written scenarios
+## MRB-A7 (ledger) — CC BY 4.0's coverage of the 100 expert-written scenarios is unclear
 
 **Date.** 2026-10-30 (MRB-G0; source pages read 2026-10-30).
 **Observation.** The paper states all sources are CC 4.0. DailyDilemmas and AIRiskDilemmas are CC BY 4.0. The APPE Ethics Bowl cases are CC BY-NC-ND 4.0 in some years and all rights reserved in others; Ethics Unwrapped is copyrighted with free use on credit and no license; the PNAS source is CC BY-NC-ND 4.0, its OSF materials unlicensed. The 100 public `expert_written_*` rows (ethic_bowl 51, ethic_unwrapped 30, literature 12, collab 7) derive from these.
 **Type.** cross-doc conjunction (a license claim against the sources' own terms).
 **Competing readings.** R_covered: the expert rows were rewritten enough to be MoReBench's own expression (the paper converts them with an LLM prompt, App. C). R_derived: they remain derivatives of NC/ND or unlicensed text, which MoReBench cannot relicense.
 **Discriminator.** None that settles a license question empirically; this is an author decision (escalation class).
-**Status.** open (author, MRB-G0 gate).
-**Thesis impact.** For the replication (evaluation only, no text committed) little changes; for any training or adaptation use (ST as a target), the 100 expert rows would be excluded or need the sources' permission.
+**Status.** open: coverage unclear, not shown wrong (author decision at MRB-G0; the author has emailed the MoReBench authors). As a precaution the 100 expert-written scenarios are used for evaluation only, never for training or adaptation (MRB_PLAN v0.3 §9).
+**Thesis impact.** For the replication (evaluation only, no text committed) little changes; for any training or adaptation use (ST as a target), the 100 expert rows stay excluded unless the question is settled.

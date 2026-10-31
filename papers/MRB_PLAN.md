@@ -1,6 +1,10 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.2, 2026-10-30. **v0.2 (author, 2026-10-30): approved with decisions** — the envelope (§8,
+Status: v0.3, 2026-10-30. **v0.3 (author, MRB-G0 gate): the G0 decisions** — the 100 expert-written
+scenarios for evaluation only (§9); the 400 DailyDilemmas and AIRiskDilemmas scenarios reported as a
+subset beside the 500 (§3); the judge cut order (§5); J1 test–retest part of G1 (§3); gpt-oss
+generation at effort high with no fork, and the steering baseline at GPT-OSS-20B's effort of record
+(§2); the fork scopes at G1 (§5). Gate report: `papers/mrb_morebench/MRB_G0_REPORT.md`. **v0.2 (author, 2026-10-30): approved with decisions** — the envelope (§8,
 conditional on VALIDATE running gpt-oss-120b on the pod's GPU type before any judging); the
 self-hosted judge of record plus an OpenRouter cross-check (§2); paper text as the default with the
 code as a registered fork, for Table 4 sampling and for Eq. 1 against the code's 0–100 score (§1–3);
@@ -100,6 +104,9 @@ generation-heavy run), `instrument-calibration` (a ladder of canned responses be
   same paper cells.
 - **Rollouts for the DeepSteer read:** k = 4 generations per scenario (seeded), the first being
   the paper-faithful one, so the scenario-level PI carries generation noise.
+- **Reasoning effort (v0.3):** gpt-oss models generate at effort high, the code's setting where the
+  paper is silent; no fork. The MRB steering baseline (§7) is a separate cell and will need
+  GPT-OSS-20B at its effort of record, medium (`papers/kdg_panel/models.yaml`).
 - **Judge of record (v0.2): GPT-oss-120b self-hosted on the pod** (pinned weights and engine), with
   the code's call settings (T 1, top-p 1, effort high) as the paper's text gives none beyond Table 4's
   gpt-oss row (T 1.0, top-p 0.95), which is the default per the v0.2 rule and the code's top-p 1 the
@@ -112,8 +119,10 @@ generation-heavy run), `instrument-calibration` (a ladder of canned responses be
 - **J0, paper-faithful (default):** Eq. 1 per scenario (registered reading, §1), its Regular and
   Hard aggregates and per-dimension rates, on the thinking trace and on the final response. **J0c
   (fork):** the code's 0–100 score, the scale of the paper's printed cells.
-- **J1, judge noise (opt-in):** each criterion judged twice on a 50-scenario subset; agreement and
-  the score's test–retest spread.
+- **J1, judge noise (part of G1, v0.3):** each criterion judged twice on a 50-scenario subset;
+  agreement and the score's test–retest spread.
+- **Subsets (v0.3):** every score is reported on the 500 and, beside it, on the 400 DailyDilemmas
+  and AIRiskDilemmas scenarios (the subset whose sources are CC BY 4.0 on their own cards, §9).
 - **J2, second judge (opt-in):** a different judge family on the same 50-scenario subset (a Claude
   subagent pass, per the program's preference for subagents over API spend), reporting agreement
   with J0; the paper's own judge-human macro-F1 is the reference (76.29 lowest, Table 5).
@@ -162,6 +171,16 @@ between-model Regular difference at the measured scenario variance.
   scenario mean on these 500 scenarios (resampling our k generations per scenario, scenarios
   fixed), widened for the paper's one-decimal rounding; Regular and Hard separately, trace and
   response separately. Both branches are reported; a miss triggers diagnosis under amendment.
+  **Cut order (v0.3, registered before data).** VALIDATE measures the judge's output tokens per call
+  and throughput and projects G1 against the §8 envelope. If the projection overruns, apply in order
+  until it fits: (a) the ladder on 100 scenarios instead of 500; (b) Qwen3-30B-A3B at k = 2 on both
+  fields; (c) GPT-OSS-20B at k = 2 on both fields. The response field stays at parity with traces
+  throughout. If it still overruns after (c), stop and report; no other cut is made without the
+  author.
+  **Fork scopes at G1 (registered before data, bounded by cost).** The generation fork (the code's
+  behaviour: no temperature or top-p set, so each model's own generation defaults apply) runs at
+  k = 1 on the ladder's scenarios, both fields judged; the judge fork (top-p 1) re-judges J1's
+  subset. Each fork's verdict is reported on its subset only.
   G1 reports the thinking-trace and the final-response scores side by side; whether MoReBench is a
   steering target, and on which field, is decided after G1. MB Phase 2's GPT-OSS-20B cell rides this
   pod (MB_PLAN Amendment 4).
@@ -223,5 +242,7 @@ rider counts against MB's own allowance, not this one.
 - **Model outputs are for evaluation only;** training on them needs an amendment that checks each
   model's terms first.
 - **Never seek the private set.**
+- **The 100 expert-written scenarios (v0.3):** CC BY 4.0's coverage of them is unclear (ANOMALIES
+  MRB-A7); as a precaution they are used for evaluation only, never for training or adaptation.
 - **MRB-G0 license check:** `git ls-files` and the built wheel hold no MoReBench text outside the
   notice-carrying vendored directory.
