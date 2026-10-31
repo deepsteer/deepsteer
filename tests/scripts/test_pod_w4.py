@@ -91,9 +91,13 @@ class TestDryRunEndToEnd:
 
 class TestClosureMap:
     def test_every_missing_artifact_entry_has_a_closing_unit(self):
-        # assert the ledger is fully covered: one closure key per unique bullet in MISSING_ARTIFACTS.md
+        # assert the ledger W4 closed is fully covered: one closure key per unique bullet above the
+        # closure map; entries logged after W4 sit below it and carry their own OPEN/CLOSED heading
         md = (REPO / "papers" / "MISSING_ARTIFACTS.md").read_text()
-        bullets = [l for l in md.splitlines() if l.startswith("- ")]
+        w4_ledger, _, later = md.partition("\n## W4 closure map")
+        bullets = [l for l in w4_ledger.splitlines() if l.startswith("- ")]
+        later_heads = [l for l in later.splitlines()[1:] if l.startswith("## ")]
+        assert all("(OPEN)" in h or "(CLOSED" in h for h in later_heads), later_heads
         unique = {b.split("->")[0].strip() for b in bullets}
         assert len(unique) == len(MISSING_ARTIFACTS_CLOSURE), (len(unique), len(MISSING_ARTIFACTS_CLOSURE))
         units = {u for s in PANEL for u in s.units}
