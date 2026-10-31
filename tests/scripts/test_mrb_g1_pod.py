@@ -59,13 +59,13 @@ def test_projection_takes_the_first_level_that_fits_or_stops():
     # most probable failure: a cut chosen out of the registered order, or a run that overruns
     calls = {1: 1000, 2: 400, 3: 400, 4: 300}
     m = {"gen_wall_h_full": 0.5, "setup_h": 0.5, "margin_h": 0.25,
-         "judge_calls_per_s_per_gpu": 1000 / 3600}  # 1000 calls/h/GPU
+         "judge_calls_per_s": 2000 / 3600}  # 2000 calls/h for the two-GPU judge engine
     r = P.project(m, calls, envelope_h=8.0, validate_h=0.5)
     assert [x["cut"] for x in r["levels"]] == ["none", "a", "a+b", "a+b+c"]
     assert r["decision"] == "none"  # 2 x (0.5 + 0.5 + 1.05 + 0.25) = 4.6 <= 7.5
-    slow = {**m, "judge_calls_per_s_per_gpu": 300 / 3600}
+    slow = {**m, "judge_calls_per_s": 600 / 3600}
     assert P.project(slow, calls, 8.0, 0.5)["decision"] == "a+b"
-    assert P.project({**m, "judge_calls_per_s_per_gpu": 50 / 3600}, calls, 8.0, 0.5)[
+    assert P.project({**m, "judge_calls_per_s": 100 / 3600}, calls, 8.0, 0.5)[
         "decision"] == "STOP"
 
 
@@ -122,5 +122,9 @@ def test_session_reads_the_projection_and_honours_stop():
     assert '[ "$DECISION" = "STOP" ] && { echo "BAIL' in text
     assert '--tiers "$TIERS"' in text and "--tiers T1,T2,T3,T4" not in text
     assert "gpt-oss-120b did not judge on this GPU type" in text  # the envelope condition
+    # most probable failure of the first MRB VALIDATE: flashinfer's JIT found no ninja because the
+    # venv's bin was not on the engine processes' PATH
+    assert 'export PATH="$VENV/bin:$PATH"' in text and 'shutil.which("ninja")' in text
+    assert 'judge --shard 0/1 --tiers "$TIERS"' in text and "shard 1/2" not in text
     pin = "5176ab746f4e736c4a354a11d0620abf0a941de287cad937ac34039293ca6f5f"  # ST's vLLM wheel
     assert f"VLLM_WHEEL_SHA256={pin}" in text

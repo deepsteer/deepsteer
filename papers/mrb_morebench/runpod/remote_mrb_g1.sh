@@ -3,7 +3,7 @@
 # HF_TOKEN and VALIDATE. One vLLM venv (ST's pinned stack: vLLM 0.31.0 cu129, torch 2.13,
 # transformers 5.17.0) runs generation, judging and the MB rider.
 #
-#   VALIDATE=1 (1 x A100-80GB): stack, access, data, gate tests; a generation probe per model
+#   VALIDATE=1 (2 x A100-80GB, the session's layout): stack, access, data, gate tests; a generation probe per model
 #     (16 scenarios x 4); gpt-oss-120b judging the first generation's criteria (~2,000 calls: the
 #     envelope condition, "gpt-oss-120b runs on the pod's GPU type before any judging"); the MB
 #     rider smoke; then projection.json: the session's A100-hours under each cut level and the
@@ -65,18 +65,22 @@ if [ ! -x "$VENV/bin/python" ]; then
     --extra-index-url "$CU129_INDEX" 2>&1 | tail -2
 fi
 PY="$VENV/bin/python"
-PATH="$VENV/bin:$PATH" $PY - <<'EOF' || { echo "BAIL: vLLM venv not usable"; exit 1; }
-import importlib.metadata as md, torch, vllm  # noqa: E401
+# the engine processes need the venv's bin (ninja, for flashinfer's JIT) on PATH: the first
+# VALIDATE failed at warm-up with "No such file or directory: 'ninja'"
+export PATH="$VENV/bin:$PATH"
+$PY - <<'EOF' || { echo "BAIL: vLLM venv not usable"; exit 1; }
+import importlib.metadata as md, shutil, torch, vllm  # noqa: E401
 from vllm.model_executor.models import gpt_oss, qwen3_moe  # noqa: F401
 v = {p: md.version(p) for p in ("vllm", "torch", "transformers")}
 ok = (v["vllm"].startswith("0.31.0") and v["transformers"] == "5.17.0" and torch.cuda.is_available()
-      and (torch.version.cuda or "").startswith("12.9"))
+      and (torch.version.cuda or "").startswith("12.9") and shutil.which("ninja") is not None)
 print(">> stack:", v, "cuda", torch.version.cuda, "gpus", torch.cuda.device_count(),
       torch.cuda.get_device_name(0) if torch.cuda.is_available() else None, "OK" if ok else "FAILED")
 raise SystemExit(0 if ok else 1)
 EOF
 NGPU=$($PY -c "import torch; print(torch.cuda.device_count())")
-[ "$VALIDATE" != 1 ] && [ "$NGPU" -lt 2 ] && { echo "BAIL: the session needs 2 GPUs, found $NGPU"; exit 1; }
+# VALIDATE runs the session's layout (the judge is tensor-parallel over two GPUs), so both need 2
+[ "$NGPU" -lt 2 ] && { echo "BAIL: MRB-G1 needs 2 GPUs (the judge is tensor-parallel), found $NGPU"; exit 1; }
 
 # ---- models (the GPT-OSS repos' original/ and metal/ copies are skipped) and data ----
 $PY - <<'EOF' > "$OUT/models.json" || { echo "BAIL: model access or download"; exit 1; }
@@ -109,22 +113,22 @@ pod() {  # pod <gpu> <log> <args...>
 }
 
 if [ "$VALIDATE" = 1 ]; then
-  pod 0 gen_gpt_oss_20b.log generate --model gpt_oss_20b --local-dir "$M20"
-  pod 0 gen_qwen3_30b.log generate --model qwen3_30b --local-dir "$MQW"
-  pod 0 judge.log judge --shard 0/1 --tiers T1 --local-dir "$M120" \
-    || { echo "BAIL: gpt-oss-120b did not judge on this GPU type"; exit 1; }
-  pod 0 mb_rider.log mb-rider --local-dir "$M20"
-  VH=$(python3 -c "print(round($(hours) + 0.05, 4))")   # + the manifest and download
+  TIERS=T1
+fi
+# the session's layout, VALIDATE included: generation on one GPU per model, the MB rider, then the
+# judge tensor-parallel over both GPUs
+pod 0 gen_gpt_oss_20b.log generate --model gpt_oss_20b --local-dir "$M20" & G0=$!
+pod 1 gen_qwen3_30b.log generate --model qwen3_30b --local-dir "$MQW" & G1=$!
+wait $G0; wait $G1
+pod 0 mb_rider.log mb-rider --local-dir "$M20"
+pod 0,1 judge.log judge --shard 0/1 --tiers "$TIERS" --local-dir "$M120" \
+  || { [ "$VALIDATE" = 1 ] && { echo "BAIL: gpt-oss-120b did not judge on this GPU type"; exit 1; }; }
+if [ "$VALIDATE" = 1 ]; then
+  # A100-hours spent before the session: this VALIDATE on 2 GPUs (+ the manifest and download)
+  # and the earlier failed VALIDATE runs (MRB_PRIOR_A100H; the first, ninja, was ~0.35)
+  VH=$(python3 -c "print(round(2 * ($(hours) + 0.05) + ${MRB_PRIOR_A100H:-0.35}, 4))")
   $PY "$POD" project --out "$OUT" --validate-hours "$VH" --setup-hours "$SETUP_H" > "$OUT/project.log" 2>&1
   echo ">> projection: $(python3 -c "import json; d=json.load(open('$OUT/projection.json')); print(d['decision'], [(l['cut'], l['session_a100_h']) for l in d['levels']], d['measured'])")"
-else
-  pod 0 gen_gpt_oss_20b.log generate --model gpt_oss_20b --local-dir "$M20" & G0=$!
-  pod 1 gen_qwen3_30b.log generate --model qwen3_30b --local-dir "$MQW" & G1=$!
-  wait $G0; wait $G1
-  pod 1 judge1.log judge --shard 1/2 --tiers "$TIERS" --local-dir "$M120" & J1=$!
-  pod 0 mb_rider.log mb-rider --local-dir "$M20"
-  pod 0 judge0.log judge --shard 0/2 --tiers "$TIERS" --local-dir "$M120" & J0=$!
-  wait $J0; wait $J1
 fi
 
 kill "$WATCHDOG" 2>/dev/null

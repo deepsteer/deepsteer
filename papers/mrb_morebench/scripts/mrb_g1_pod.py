@@ -68,8 +68,10 @@ VALIDATE_SCENARIOS = tuple(range(0, 500, 32))[:16]
 # a judge prompt holds a whole trace (up to ~10.5k tokens) plus up to 10.5k output tokens
 LLM_KWARGS = {"gen": {"max_model_len": 16384, "gpu_memory_utilization": 0.90,
                       "enable_prefix_caching": True},
+              # gpt-oss-120b across both GPUs (tensor parallel): on one A100 its 66 GiB of weights
+              # leave 4.5 GiB for the KV cache (the second VALIDATE), which starves concurrency
               "judge": {"max_model_len": 24576, "gpu_memory_utilization": 0.92,
-                        "enable_prefix_caching": True}}
+                        "enable_prefix_caching": True, "tensor_parallel_size": 2}}
 
 
 def in_ladder_subset(idx: int) -> bool:  # 100 scenarios (cut a keeps these)
@@ -226,7 +228,7 @@ def project(measured: dict, calls: dict[int, int], envelope_h: float, validate_h
     rows, chosen = [], None
     for name, tiers in CUTS:
         judge_calls = sum(calls.get(t, 0) for t in tiers)
-        judge_wall_h = judge_calls / measured["judge_calls_per_s_per_gpu"] / 2 / 3600
+        judge_wall_h = judge_calls / measured["judge_calls_per_s"] / 3600
         wall = measured["setup_h"] + gen_h + judge_wall_h + measured["margin_h"]
         a100_h = 2 * wall
         fits = a100_h <= remaining
@@ -432,7 +434,7 @@ def cmd_project(a) -> dict:
                 fake[f"{m}/fork/{it.scenario_id}/k0"] = {"trace": "", "response": ""}
     calls = calls_by_tier(judge_units(items, fake, validate=False), items)
     measured = {"gen_wall_h_full": gen_wall_h, "setup_h": a.setup_hours, "margin_h": 0.25,
-                "judge_calls_per_s_per_gpu": judge_s["calls_per_s"],
+                "judge_calls_per_s": judge_s["calls_per_s"],
                 "judge_tokens_per_call": judge_s["decoded_tokens"] / max(judge_s["jobs_run"], 1),
                 "judge_tokens_per_s": judge_s["tokens_per_s"]}
     rec = {"measured": measured, "calls_by_tier": calls,
