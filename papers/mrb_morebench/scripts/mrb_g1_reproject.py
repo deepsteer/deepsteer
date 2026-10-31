@@ -1,6 +1,7 @@
 """MRB-G1 projection under MRB_PLAN v0.4 (zero GPU, from VALIDATE's committed outputs).
 
     mrb_g1_reproject.py [--validate-dir DIR] [--envelope-h 10.3] [--validate-hours 1.857]
+    mrb_g1_reproject.py --v05 --envelope-h E --spent-h S   (MRB_PLAN v0.5, the G1 rerun)
 
 Two changes to VALIDATE's projection (``mrb_g1_pod.py project``), both registered in MRB_PLAN v0.4:
 
@@ -93,19 +94,75 @@ def reproject(vdir: Path, envelope_h: float, validate_h: float) -> dict:
                                    if chosen else None)}
 
 
+# MRB_PLAN v0.5: rates read on the pod during the aborted G1 session (2026-10-31; its files were
+# lost to the launcher's Ctrl-C trap, MRB_G1_REPORT §6), used for cost only
+G1_SESSION = {
+    "setup_h": 0.14, "gen_h": 0.33, "rider_h": 0.01, "judge_load_h": 0.03, "margin_h": 0.25,
+    "judge_tokens_per_s": 5700.0,
+    "tokens_per_call": {"canned": 358, "gpt_oss_20b/response": 411, "gpt_oss_20b/trace": 1837,
+                        "qwen3_30b/trace": 545, "qwen3_30b/response": 399},
+}
+V05_LEVELS = (("T1+T5", {1, 5}), ("T1", {1}))  # the full design first, then without T5
+
+
+def reproject_v05(envelope_h: float, spent_h: float) -> dict:
+    """v0.5: k = 2 for both models (T2-T4 cut, as v0.4), GPT-OSS traces in T5 judged last; the
+    largest level that fits the envelope's remainder is chosen, else STOP. The delimited fork's
+    calls are priced at the registered prompt's rate on GPT-OSS traces (the worst case)."""
+    items = P._items()
+    crit = {it.scenario_id: len(it.criteria) for it in items}
+    g = G1_SESSION
+    fake = {}
+    for it in items:
+        for m in P.GEN:
+            for kk in range(2):
+                fake[f"{m}/default/{it.scenario_id}/k{kk}"] = {"trace": "", "response": ""}
+            if P.in_ladder_subset(it.idx):
+                fake[f"{m}/fork/{it.scenario_id}/k0"] = {"trace": "", "response": ""}
+    units = P.judge_units(items, fake, validate=False)
+    fixed = g["setup_h"] + g["gen_h"] + g["rider_h"] + g["judge_load_h"] + g["margin_h"]
+    remaining = envelope_h - spent_h
+    rows, chosen = [], None
+    for name, tiers in V05_LEVELS:
+        sel = [u for u in units if u["tier"] in tiers]
+        calls = sum(crit[u["sid"]] for u in sel)
+        tokens = sum(crit[u["sid"]] * g["tokens_per_call"][unit_type(u["unit"])] for u in sel)
+        judge_h = tokens / g["judge_tokens_per_s"] / 3600
+        wall = fixed + judge_h
+        fits = 2 * wall <= remaining
+        rows.append({"cut": name, "tiers": sorted(tiers), "k": {m: 2 for m in P.GEN},
+                     "judge_calls": calls, "judge_output_tokens": round(tokens),
+                     "judge_wall_h": round(judge_h, 3), "session_wall_h": round(wall, 3),
+                     "session_a100_h": round(2 * wall, 3), "fits": fits})
+        if fits and chosen is None:
+            chosen = rows[-1]
+    return {"amendment": "MRB_PLAN v0.5", "replaces": "projection_v04.json",
+            "measured": {"source": "aborted G1 session, read on the pod (MRB_G1_REPORT §6)", **g},
+            "envelope_h": envelope_h, "validate_h": spent_h, "remaining_h": round(remaining, 3),
+            "levels": rows, "chosen": chosen, "decision": chosen["cut"] if chosen else "STOP",
+            "session_max_wall_h": (round(min(chosen["session_wall_h"] * 1.15, remaining / 2), 3)
+                                   if chosen else None)}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--validate-dir", type=Path, default=DEFAULT_DIR)
     ap.add_argument("--envelope-h", type=float, default=10.3)
     ap.add_argument("--validate-hours", type=float, default=1.857)
+    ap.add_argument("--v05", action="store_true", help="MRB_PLAN v0.5 (needs --spent-h)")
+    ap.add_argument("--spent-h", type=float, help="A100-h spent through the aborted session")
     a = ap.parse_args()
-    rec = reproject(a.validate_dir, a.envelope_h, a.validate_hours)
-    keep = a.validate_dir / "projection_envelope8.json"
+    if a.v05:
+        rec = reproject_v05(a.envelope_h, a.spent_h)
+        keep = a.validate_dir / "projection_v04.json"
+    else:
+        rec = reproject(a.validate_dir, a.envelope_h, a.validate_hours)
+        keep = a.validate_dir / "projection_envelope8.json"
     if not keep.exists():
         (a.validate_dir / "projection.json").rename(keep)
     (a.validate_dir / "projection.json").write_text(json.dumps(rec, indent=1))
     for r in rec["levels"]:
-        print(f"{r['cut']:6s} k={r['k']} calls {r['judge_calls']:7d} gen {r['gen_wall_h']:.3f} h "
+        print(f"{r['cut']:6s} k={r['k']} calls {r['judge_calls']:7d} gen {r.get('gen_wall_h', 0):.3f} h "
               f"judge {r['judge_wall_h']:.3f} h -> {r['session_a100_h']:.2f} A100-h "
               f"{'fits' if r['fits'] else 'over'}")
     print("decision:", rec["decision"], "| cap", rec["session_max_wall_h"], "h wall")

@@ -37,22 +37,60 @@ def _gens(items):
 
 def test_each_cut_drops_exactly_its_cells_and_keeps_field_parity():
     # most probable failure: the response field lands in a different tier than the trace (a cut
-    # would break the author's parity rule), or a cut tier holds the wrong model or k
+    # would break the author's parity rule), or a cut tier holds the wrong model or k; under v0.5
+    # GPT-OSS traces sit in T5 except the J1 diagnostic, and only they leave parity
     items = _items()
     units = P.judge_units(items, _gens(items), validate=False)
     for u in units:
         if u["unit"].startswith(("gpt_oss_20b/", "qwen3_30b/")):
             model, arm, sid, kk, field = u["unit"].split("/")[:5]
-            k = int(kk[1:])
+            k, idx, tail = int(kk[1:]), int(sid[-3:]), u["unit"].split("/")[5:]
             want = 1 if (arm == "fork" or k < 2) else (2 if model == "gpt_oss_20b" else 3)
+            if model == "gpt_oss_20b" and field == "trace" and want == 1 and (
+                    tail not in ([], ["delimfork"]) or not P.in_trace_diagnostic(arm, k, idx)):
+                want = 5
             assert u["tier"] == want, u["unit"]
-    trace = {u["unit"].replace("/trace", "/F"): u["tier"] for u in units if "/trace" in u["unit"]}
+    trace = {u["unit"].replace("/trace", "/F"): u["tier"] for u in units if "/trace" in u["unit"]
+             and not u["unit"].startswith("gpt_oss_20b/")}
     resp = {u["unit"].replace("/response", "/F"): u["tier"] for u in units
-            if "/response" in u["unit"]}
-    assert trace == resp  # parity: every trace unit's response twin sits in the same tier
+            if "/response" in u["unit"] and not u["unit"].startswith("gpt_oss_20b/")}
+    assert trace == resp  # parity: every Qwen trace unit's response twin sits in the same tier
+    gt1 = [u for u in units if u["unit"].startswith("gpt_oss_20b/") and "/trace" in u["unit"]
+           and u["tier"] == 1]
+    diag = [u for u in gt1 if not u["unit"].endswith("/delimfork")]
+    n_j1 = sum(P.in_j1_subset(it.idx) for it in items)  # 50 of the real 500
+    assert n_j1 and len(diag) == n_j1 and len(gt1) == 2 * n_j1  # J1, k0, both prompts
     ladder = [u for u in units if u["unit"].startswith("canned/")]
     assert {u["tier"] for u in ladder if P.in_ladder_subset(int(u["sid"][-3:]))} == {1}
     assert {u["tier"] for u in ladder if not P.in_ladder_subset(int(u["sid"][-3:]))} == {4}
+
+
+def test_delimited_prompt_keeps_upstreams_text_and_delimits_the_response():
+    # most probable failure: the fork drops or rewrites upstream's instruction (then it is not a
+    # one-change fork), or leaves the response undelimited (MRB-A10's failure stays)
+    from deepsteer.benchmarks.moral_reasoning.morebench.prompts import JUDGE_INSTRUCTION
+    t = P.judge_prompt_delimited("We need to answer the user.", "Mentions harm")
+    assert JUDGE_INSTRUCTION in t and t.endswith("Rubric Criterion:Mentions harm")
+    assert "<response>\nWe need to answer the user.\n</response>" in t
+    assert P.judge_prompt("x", "c") == "Reasoning Response:x\n\n" + JUDGE_INSTRUCTION + \
+        "\n\nRubric Criterion:c"  # the registered prompt is untouched
+
+
+def test_verdict_guard_skips_a_failing_type_and_exempts_registered_gpt_oss_traces():
+    # most probable failure: the guard stops the whole judge (losing good fields), or trips on
+    # GPT-OSS traces under the registered prompt, whose failure rate is the measurement
+    g = P.VerdictGuard()
+    bad = [{"unit": "qwen3_30b/default/mrb-000/k0/trace", "verdict": None}] * 999
+    g(bad)
+    assert not g.tripped
+    g([{"unit": "qwen3_30b/default/mrb-000/k0/trace", "verdict": None}])
+    assert "qwen3_30b/trace" in g.tripped
+    assert not g.admits({"unit": "qwen3_30b/default/mrb-001/k1/trace"})
+    assert g.admits({"unit": "qwen3_30b/default/mrb-001/k1/response"})
+    g([{"unit": "gpt_oss_20b/default/mrb-000/k0/trace", "verdict": None}] * 2000)
+    assert g.admits({"unit": "gpt_oss_20b/default/mrb-001/k0/trace"})
+    g([{"unit": "gpt_oss_20b/default/mrb-000/k0/trace/delimfork", "verdict": None}] * 1000)
+    assert "gpt_oss_20b/trace/delimfork" in g.tripped
 
 
 def test_judge_order_puts_the_ladder_first_within_a_tier(monkeypatch):
@@ -66,6 +104,11 @@ def test_judge_order_puts_the_ladder_first_within_a_tier(monkeypatch):
     assert n_canned and all(u.startswith("canned/") for u in jobs[:n_canned])
     tiers = [int(j["tier"]) for j in P.judge_jobs(units, items, None, None, 0, 1, {1, 2})]
     assert tiers == sorted(tiers)  # tier order still governs across tiers
+    # v0.5: after the ladder, scenario by scenario, so a deadline costs the last scenarios
+    t1 = [j for j in P.judge_jobs(units, items, None, None, 0, 1, {1})
+          if not j["unit"].startswith("canned/")]
+    idx = [int(j["unit"].split("/")[2][-3:]) for j in t1]
+    assert idx == sorted(idx)
 
 
 def test_projection_takes_the_first_level_that_fits_or_stops():
@@ -184,3 +227,17 @@ def test_amendment4_reprojection_prices_real_traces_and_caps_at_the_envelope(tmp
     wall = t1["session_wall_h"]
     tight = R.reproject(tmp_path, envelope_h=2 * wall * 1.05, validate_h=0.0)
     assert tight["decision"] == "a+b+c" and tight["session_max_wall_h"] == round(wall * 1.05, 3)
+
+
+def test_v05_projection_prefers_the_full_design_and_never_caps_past_the_envelope(monkeypatch):
+    # most probable failure: T1 alone chosen when T1+T5 fits (the registered design silently
+    # trimmed), or a wall cap that lets the session run past the envelope
+    import mrb_g1_reproject as R
+    items = _items()
+    monkeypatch.setattr(P, "_items", lambda: items)
+    full = R.reproject_v05(envelope_h=1e6, spent_h=0.0)
+    assert full["decision"] == "T1+T5"
+    t15, t1 = (lv["session_a100_h"] for lv in full["levels"])
+    mid = R.reproject_v05(envelope_h=(t15 + t1) / 2, spent_h=0.0)
+    assert mid["decision"] == "T1" and mid["session_max_wall_h"] <= (t15 + t1) / 4 + 1e-9
+    assert R.reproject_v05(envelope_h=t1 * 0.9, spent_h=0.0)["decision"] == "STOP"

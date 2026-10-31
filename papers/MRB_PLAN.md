@@ -1,6 +1,9 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.4, 2026-10-30. **v0.4 (author, MRB-G1 VALIDATE gate): the envelope raised to 10.3
+Status: v0.5, 2026-10-31. **v0.5 (author, after the aborted G1 session): the envelope raised to
+15.5 A100-h to run the registered design as planned**, with the GPT-OSS trace field judged last, a
+delimited-prompt fork on J1's subset, a verdict guard and scenario-major judge order (§5, §8;
+MRB-A10). **v0.4 (author, MRB-G1 VALIDATE gate): the envelope raised to 10.3
 A100-h** for the registered design at cut (a+b+c), with generation, judge pricing and judge order
 amended to match (§5, §8); registered and pushed before the session. Gate report:
 `papers/mrb_morebench/MRB_G1_REPORT.md`. **v0.3 (author, MRB-G0 gate): the G0 decisions** — the 100 expert-written
@@ -199,6 +202,29 @@ between-model Regular difference at the measured scenario variance.
      never the calibration a match verdict needs.
   With k = 2 the match rule's interval resamples two generations per scenario; that is the
   registered rule at cut (c), not a change to it.
+  **v0.5 (author, 2026-10-31; registered before the rerun).** The v0.4 session generated cleanly,
+  but on GPT-OSS traces the judge answered the dilemma instead of grading it (82% of 3,671 calls
+  without a verdict, 1,837 output tokens per call; MRB-A10), and the session was lost before
+  download (MRB_G1_REPORT §6). The rerun runs the registered design in full, with five changes:
+  1. *Envelope* 15.5 A100-h through MRB-G1 (§8).
+  2. *GPT-OSS traces judged last.* Under the registered prompt they form tier T5, judged after
+     everything else, so a deadline costs only them. The first generation on J1's 50 scenarios
+     stays in T1 as the diagnostic. J1's retest and judge fork on the GPT-OSS trace field move to
+     T5 with it; on responses they stay in T1.
+  3. *A delimited-prompt fork* (MRB-A10's discriminator): the same diagnostic units re-judged with
+     upstream's prompt plus a note and `<response>` tags around the text (`judge_prompt_delimited`;
+     upstream's instruction and criterion verbatim). Reported on its subset only, as a fork.
+  4. *Verdict guard.* A unit type with at least 1,000 calls and more than 5% without a yes/no
+     verdict is tripped; its remaining jobs are skipped and the rest of the judge continues. GPT-OSS
+     traces under the registered prompt are exempt (their failure rate is the measurement).
+  5. *Judge order.* After the ladder, scenario by scenario, so a deadline costs the last scenarios
+     rather than a whole model or field.
+  Projection (`mrb_g1_reproject.py --v05`, from the aborted session's rates): 10.35 A100-h for
+  T1+T5, 5.65 for T1 alone; the largest level that fits the remainder is chosen. The response
+  field's parity rule holds for Qwen; for GPT-OSS it holds through T5, and a deadline inside T5
+  is the one way it breaks. Both readings of the GPT-OSS trace field are publishable: the judge
+  grades it (R_register, the fork recovers verdicts) or it does not (R_judge), and either way the
+  registered-prompt number is the one comparable to the paper's Table 6.
   **Fork scopes at G1 (registered before data, bounded by cost).** The generation fork (the code's
   behaviour: no temperature or top-p set, so each model's own generation defaults apply) runs at
   k = 1 on the ladder's scenarios, both fields judged; the judge fork (top-p 1) re-judges J1's
@@ -250,7 +276,9 @@ paper's table, so its row is also the bridge between the replication and the ST 
 confirming gpt-oss-120b runs on the pod's GPU type before any judging. **Raised in v0.4 to 10.3
 A100-h** (API unchanged) after VALIDATE confirmed it (tensor-parallel over two A100-80GB) and the
 registered projection stopped at 8; the raise buys the registered design at cut (a+b+c) and
-nothing more (§5). MB Phase 2's GPT-OSS-20B
+nothing more (§5). **Raised in v0.5 to 15.5 A100-h** after the aborted session (about 2.6 A100-h
+lost, MRB_G1_REPORT §6) showed GPT-OSS trace judging costs 1,837 output tokens per call, so the
+registered design costs about 10.4 A100-h of session; spent before the rerun about 4.46. MB Phase 2's GPT-OSS-20B
 rider counts against MB's own allowance, not this one.
 
 ## 9. Licensing (inherits MORAL_EVAL_REPLICATIONS.md, MRB section)

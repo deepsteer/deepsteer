@@ -89,3 +89,12 @@ of this session survives. Spend: about 2.6 A100-h (pod life ~1.3 h on two GPUs; 
 the RunPod console), so G1 has spent about 4.5 of the 10.3 A100-h envelope. The rerun's design for
 the GPT-OSS trace field and its envelope are the author's decisions.
 
+## 7. Decision for the rerun (author)
+
+Run the registered design as planned, with the envelope raised to 15.5 A100-h (MRB_PLAN v0.5).
+GPT-OSS traces under the registered prompt are judged last (T5). J1's 50-scenario diagnostic and
+a delimited-prompt fork run in T1. A verdict guard and scenario-major order mean a failure or a
+deadline costs one field's tail, not the session. Projection: 10.35 A100-h for T1+T5 against the
+11.04 left, wall cap 5.52 h. The spend figure for the aborted session (2.6) is an estimate pending
+the RunPod console.
+

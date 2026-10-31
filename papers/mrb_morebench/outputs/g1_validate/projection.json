@@ -1,91 +1,45 @@
 {
- "amendment": "MRB_PLAN v0.4",
- "replaces": "projection_envelope8.json",
+ "amendment": "MRB_PLAN v0.5",
+ "replaces": "projection_v04.json",
  "measured": {
-  "gen_wall_h_full": 0.7839265764647468,
-  "setup_h": 0.2221,
+  "source": "aborted G1 session, read on the pod (MRB_G1_REPORT \u00a76)",
+  "setup_h": 0.14,
+  "gen_h": 0.33,
+  "rider_h": 0.01,
+  "judge_load_h": 0.03,
   "margin_h": 0.25,
-  "judge_calls_per_s": 11.821,
-  "judge_tokens_per_call": 413.82513416815743,
-  "judge_tokens_per_s": 4891.8,
-  "judge_tokens_per_call_by_type": {
-   "gpt_oss_20b/trace": 363.38106796116506,
-   "gpt_oss_20b/response": 397.20631067961165,
-   "qwen3_30b/trace": 545.4174757281553,
-   "qwen3_30b/response": 399.24514563106794,
-   "canned": 353.93636363636364
+  "judge_tokens_per_s": 5700.0,
+  "tokens_per_call": {
+   "canned": 358,
+   "gpt_oss_20b/response": 411,
+   "gpt_oss_20b/trace": 1837,
+   "qwen3_30b/trace": 545,
+   "qwen3_30b/response": 399
   }
  },
- "priced_tokens_per_call_by_type": {
-  "gpt_oss_20b/trace": 545.4174757281553,
-  "gpt_oss_20b/response": 397.20631067961165,
-  "qwen3_30b/trace": 545.4174757281553,
-  "qwen3_30b/response": 399.24514563106794,
-  "canned": 353.93636363636364
- },
- "envelope_h": 10.3,
- "validate_h": 1.857,
- "remaining_h": 8.443,
+ "envelope_h": 15.5,
+ "validate_h": 4.457,
+ "remaining_h": 11.043,
  "levels": [
   {
-   "cut": "none",
+   "cut": "T1+T5",
    "tiers": [
     1,
-    2,
-    3,
-    4
+    5
    ],
    "k": {
-    "gpt_oss_20b": 4,
-    "qwen3_30b": 4
-   },
-   "judge_calls": 242524,
-   "judge_output_tokens": 109026639,
-   "gen_wall_h": 0.784,
-   "judge_wall_h": 6.191,
-   "session_wall_h": 7.447,
-   "session_a100_h": 14.894,
-   "fits": false
-  },
-  {
-   "cut": "a",
-   "tiers": [
-    1,
-    2,
-    3
-   ],
-   "k": {
-    "gpt_oss_20b": 4,
-    "qwen3_30b": 4
-   },
-   "judge_calls": 205776,
-   "judge_output_tokens": 96020185,
-   "gen_wall_h": 0.784,
-   "judge_wall_h": 5.452,
-   "session_wall_h": 6.708,
-   "session_a100_h": 13.417,
-   "fits": false
-  },
-  {
-   "cut": "a+b",
-   "tiers": [
-    1,
-    2
-   ],
-   "k": {
-    "gpt_oss_20b": 4,
+    "gpt_oss_20b": 2,
     "qwen3_30b": 2
    },
-   "judge_calls": 159976,
-   "judge_output_tokens": 74387411,
-   "gen_wall_h": 0.641,
-   "judge_wall_h": 4.224,
-   "session_wall_h": 5.337,
-   "session_a100_h": 10.674,
-   "fits": false
+   "judge_calls": 115294,
+   "judge_output_tokens": 90641206,
+   "judge_wall_h": 4.417,
+   "session_wall_h": 5.177,
+   "session_a100_h": 10.354,
+   "fits": true
   },
   {
-   "cut": "a+b+c",
+   "cut": "T1",
    "tiers": [
     1
    ],
@@ -93,32 +47,31 @@
     "gpt_oss_20b": 2,
     "qwen3_30b": 2
    },
-   "judge_calls": 114176,
-   "judge_output_tokens": 52801327,
-   "gen_wall_h": 0.411,
-   "judge_wall_h": 2.998,
-   "session_wall_h": 3.881,
-   "session_a100_h": 7.762,
+   "judge_calls": 89013,
+   "judge_output_tokens": 42363009,
+   "judge_wall_h": 2.064,
+   "session_wall_h": 2.824,
+   "session_a100_h": 5.649,
    "fits": true
   }
  ],
  "chosen": {
-  "cut": "a+b+c",
+  "cut": "T1+T5",
   "tiers": [
-   1
+   1,
+   5
   ],
   "k": {
    "gpt_oss_20b": 2,
    "qwen3_30b": 2
   },
-  "judge_calls": 114176,
-  "judge_output_tokens": 52801327,
-  "gen_wall_h": 0.411,
-  "judge_wall_h": 2.998,
-  "session_wall_h": 3.881,
-  "session_a100_h": 7.762,
+  "judge_calls": 115294,
+  "judge_output_tokens": 90641206,
+  "judge_wall_h": 4.417,
+  "session_wall_h": 5.177,
+  "session_a100_h": 10.354,
   "fits": true
  },
- "decision": "a+b+c",
- "session_max_wall_h": 4.222
+ "decision": "T1+T5",
+ "session_max_wall_h": 5.521
 }
