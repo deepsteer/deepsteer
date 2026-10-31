@@ -1,0 +1,11 @@
+{
+ "checked": "2026-10-30",
+ "files": {
+  "README.md": "79e284c2d4b0acacc22c22490f2cba15b940446b00db53fcbed6570051bfa265",
+  "morebench_public.csv": "e56d627823066876c6710a91144d0d9faebc1503dcf9b665f58c87b0eddd2229",
+  "morebench_theory.csv": "f87ff494a31b1cc92fd71c96e7d7fa6cf49759b556f1afec90c7e3ed944f63e5"
+ },
+ "repo": "morebench/morebench",
+ "revision": "d900e89f942f784f8e0113935034b4f0541a0b55",
+ "source": "MoReBench (Chiu, Lee, et al., arXiv:2510.16380); CC BY 4.0; fetched, not vendored"
+}

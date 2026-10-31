@@ -1,0 +1,637 @@
+{
+ "metadata": {
+  "audit_version": "1.0.0",
+  "date": "2026-10-30",
+  "hf_revision": "d900e89f942f784f8e0113935034b4f0541a0b55",
+  "code_of_record": "e6689bbb9d742c48ea78ea07acd7931eba05b213",
+  "code_main": "71eaf71857fecf57e20e30fb40416d843fdd473b",
+  "manifest_sha256": "6f90ec6f222769d48fdbf9123274acede8b276d7fc818d9cd70a4d255cbaaed2",
+  "paper": "arXiv:2510.16380v2 (Tables 6, 7)"
+ },
+ "public": {
+  "rows": 500,
+  "criteria": 11450,
+  "criteria_per_row": {
+   "min": 20,
+   "max": 47,
+   "mean": 22.9
+  },
+  "weights": {
+   "-3": {
+    "n": 633,
+    "pct": 5.53
+   },
+   "-2": {
+    "n": 239,
+    "pct": 2.09
+   },
+   "-1": {
+    "n": 69,
+    "pct": 0.6
+   },
+   "1": {
+    "n": 1380,
+    "pct": 12.05
+   },
+   "2": {
+    "n": 5324,
+    "pct": 46.5
+   },
+   "3": {
+    "n": 3805,
+    "pct": 33.23
+   }
+  },
+  "dimensions": {
+   "identifying": 4370,
+   "logical process": 2801,
+   "helpful outcome": 1791,
+   "clear process": 1584,
+   "harmless outcome": 881,
+   "other": 23
+  },
+  "sources": {
+   "daily_dilemmas": 200,
+   "ai_risk_dilemmas": 200,
+   "expert_written_ethic_bowl": 51,
+   "expert_written_ethic_unwrapped": 30,
+   "expert_written_literature": 12,
+   "expert_written_collab": 7
+  },
+  "types": {
+   "long_case": 200,
+   "short_case": 200,
+   "expert_case": 100
+  },
+  "roles": {
+   "ai_advisor": 293,
+   "ai_agent": 207
+  },
+  "theories": {
+   "neutral": 500
+  },
+  "contexts": 16,
+  "dilemma_words": {
+   "min": 45,
+   "max": 398,
+   "mean": 195.7
+  },
+  "zero_weight": 0,
+  "duplicate_criterion_ids": 0
+ },
+ "theory": {
+  "rows": 150,
+  "criteria": 3835,
+  "criteria_per_row": {
+   "min": 20,
+   "max": 44,
+   "mean": 25.57
+  },
+  "weights": {
+   "-3": {
+    "n": 255,
+    "pct": 6.65
+   },
+   "-2": {
+    "n": 57,
+    "pct": 1.49
+   },
+   "-1": {
+    "n": 9,
+    "pct": 0.23
+   },
+   "1": {
+    "n": 356,
+    "pct": 9.28
+   },
+   "2": {
+    "n": 1595,
+    "pct": 41.59
+   },
+   "3": {
+    "n": 1563,
+    "pct": 40.76
+   }
+  },
+  "dimensions": {
+   "identifying": 1326,
+   "logical process": 1051,
+   "clear process": 765,
+   "helpful outcome": 468,
+   "harmless outcome": 224,
+   "other": 1
+  },
+  "sources": {
+   "expert_written_collab": 50,
+   "daily_dilemmas": 50,
+   "ai_risk_dilemmas": 50
+  },
+  "types": {
+   "long_case": 100,
+   "expert_case": 50
+  },
+  "roles": {
+   "ai_agent": 100,
+   "ai_advisor": 50
+  },
+  "theories": {
+   "Scanlonian Contractualism": 30,
+   "Gauthierian Contractarianism": 30,
+   "Act Utilitarianism": 30,
+   "Aristotelian Virtue Ethics": 30,
+   "Kantian Deontology": 30
+  },
+  "contexts": 13,
+  "dilemma_words": {
+   "min": 169,
+   "max": 374,
+   "mean": 259.2
+  },
+  "zero_weight": 0,
+  "duplicate_criterion_ids": 0
+ },
+ "theory_structure": {
+  "unique_dilemmas": 30,
+  "rows_per_dilemma": {
+   "5": 30
+  },
+  "dilemmas_also_in_public": 18
+ },
+ "code": {
+  "eval": {
+   "expected_samples_default": 11450,
+   "task_id_fallback": true,
+   "judge_call": "client, model, prompt, temperature=1, top_p=1, max_tokens=10500",
+   "judge_reasoning_effort_high": true,
+   "openrouter_generation_effort_high": true,
+   "temperature_set_on_reasoning_paths": {
+    "_collect_anthropic_thinking": false,
+    "_collect_openrouter_thinking": false,
+    "_collect_openai_thinking": false
+   },
+   "top_p_set_on_reasoning_paths": {
+    "_collect_anthropic_thinking": false,
+    "_collect_openrouter_thinking": false,
+    "_collect_openai_thinking": false
+   },
+   "credit_test": "substring"
+  },
+  "main": {
+   "expected_samples_default": 11568,
+   "task_id_fallback": false,
+   "judge_call": "client, model, prompt, temperature=1, top_p=1, max_tokens=10500",
+   "judge_reasoning_effort_high": true,
+   "openrouter_generation_effort_high": true,
+   "temperature_set_on_reasoning_paths": {
+    "_collect_anthropic_thinking": false,
+    "_collect_openrouter_thinking": false,
+    "_collect_openai_thinking": false
+   },
+   "top_p_set_on_reasoning_paths": {
+    "_collect_anthropic_thinking": false,
+    "_collect_openrouter_thinking": false,
+    "_collect_openai_thinking": false
+   },
+   "credit_test": "substring"
+  },
+  "dataset_split_requested": "train",
+  "generation_seed_passed_to_api": false
+ },
+ "scorer": {
+  "n_sets": 5000,
+  "mismatches_vs_upstream": 0,
+  "max_abs_eq1_minus_2code_minus_1": 2.220446049250313e-16,
+  "credit_by_reply": {
+   "yes": {
+    "positive_credited": true,
+    "negative_credited": false
+   },
+   "no": {
+    "positive_credited": false,
+    "negative_credited": true
+   },
+   "Yes.": {
+    "positive_credited": true,
+    "negative_credited": false
+   },
+   "No.": {
+    "positive_credited": false,
+    "negative_credited": true
+   },
+   " YES ": {
+    "positive_credited": true,
+    "negative_credited": false
+   },
+   "no.": {
+    "positive_credited": false,
+    "negative_credited": true
+   },
+   "not met": {
+    "positive_credited": false,
+    "negative_credited": true
+   },
+   "I know it": {
+    "positive_credited": false,
+    "negative_credited": true
+   },
+   "eyes": {
+    "positive_credited": true,
+    "negative_credited": false
+   },
+   "yes, it does not": {
+    "positive_credited": true,
+    "negative_credited": true
+   },
+   "": {
+    "positive_credited": false,
+    "negative_credited": false
+   },
+   "maybe": {
+    "positive_credited": false,
+    "negative_credited": false
+   }
+  }
+ },
+ "table6": {
+  "weights": {
+   "source": [
+    200,
+    200,
+    100
+   ],
+   "type": [
+    200,
+    200,
+    100
+   ],
+   "role": [
+    293,
+    207
+   ]
+  },
+  "rows": {
+   "GPT-5-high": {
+    "hard_recomputed": 15.7,
+    "hard_printed": 15.7,
+    "hard_matches": true,
+    "regular_from_source_partition": 61.3,
+    "regular_from_type_partition": 61.3,
+    "regular_from_role_partition": 61.276,
+    "regular_printed": 61.3,
+    "partitions_within_0.1": true
+   },
+   "GPT-5-mini-high": {
+    "hard_recomputed": 14.2,
+    "hard_printed": 14.2,
+    "hard_matches": true,
+    "regular_from_source_partition": 63.98,
+    "regular_from_type_partition": 63.98,
+    "regular_from_role_partition": 63.98,
+    "regular_printed": 64.0,
+    "partitions_within_0.1": true
+   },
+   "GPT-5-nano-high": {
+    "hard_recomputed": 12.2,
+    "hard_printed": 12.2,
+    "hard_matches": true,
+    "regular_from_source_partition": 60.86,
+    "regular_from_type_partition": 60.9,
+    "regular_from_role_partition": 60.852,
+    "regular_printed": 60.9,
+    "partitions_within_0.1": true
+   },
+   "Claude Opus 4.1": {
+    "hard_recomputed": 40.0,
+    "hard_printed": 40.0,
+    "hard_matches": true,
+    "regular_from_source_partition": 50.9,
+    "regular_from_type_partition": 50.9,
+    "regular_from_role_partition": 50.877,
+    "regular_printed": 50.9,
+    "partitions_within_0.1": true
+   },
+   "Claude Sonnet 4": {
+    "hard_recomputed": 30.1,
+    "hard_printed": 30.1,
+    "hard_matches": true,
+    "regular_from_source_partition": 57.06,
+    "regular_from_type_partition": 57.06,
+    "regular_from_role_partition": 57.101,
+    "regular_printed": 57.1,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Pro": {
+    "hard_recomputed": 13.3,
+    "hard_printed": 13.3,
+    "hard_matches": true,
+    "regular_from_source_partition": 36.12,
+    "regular_from_type_partition": 36.12,
+    "regular_from_role_partition": 36.093,
+    "regular_printed": 36.1,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Flash": {
+    "hard_recomputed": 16.5,
+    "hard_printed": 16.5,
+    "hard_matches": true,
+    "regular_from_source_partition": 41.42,
+    "regular_from_type_partition": 41.42,
+    "regular_from_role_partition": 41.415,
+    "regular_printed": 41.4,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Flash-Lite": {
+    "hard_recomputed": 10.9,
+    "hard_printed": 10.9,
+    "hard_matches": true,
+    "regular_from_source_partition": 36.58,
+    "regular_from_type_partition": 36.58,
+    "regular_from_role_partition": 36.594,
+    "regular_printed": 36.6,
+    "partitions_within_0.1": true
+   },
+   "GPT-oss-120b": {
+    "hard_recomputed": 39.9,
+    "hard_printed": 39.9,
+    "hard_matches": true,
+    "regular_from_source_partition": 50.78,
+    "regular_from_type_partition": 50.78,
+    "regular_from_role_partition": 50.738,
+    "regular_printed": 50.8,
+    "partitions_within_0.1": true
+   },
+   "GPT-oss-20b": {
+    "hard_recomputed": 24.7,
+    "hard_printed": 24.7,
+    "hard_matches": true,
+    "regular_from_source_partition": 57.64,
+    "regular_from_type_partition": 57.68,
+    "regular_from_role_partition": 57.621,
+    "regular_printed": 57.7,
+    "partitions_within_0.1": true
+   },
+   "DeepSeek-V3.1": {
+    "hard_recomputed": 36.4,
+    "hard_printed": 36.4,
+    "hard_matches": true,
+    "regular_from_source_partition": 53.02,
+    "regular_from_type_partition": 53.02,
+    "regular_from_role_partition": 53.032,
+    "regular_printed": 53.0,
+    "partitions_within_0.1": true
+   },
+   "DeepSeek-R1-0528": {
+    "hard_recomputed": 28.9,
+    "hard_printed": 28.9,
+    "hard_matches": true,
+    "regular_from_source_partition": 64.48,
+    "regular_from_type_partition": 64.48,
+    "regular_from_role_partition": 64.497,
+    "regular_printed": 64.5,
+    "partitions_within_0.1": true
+   },
+   "Qwen3-235B-A22B": {
+    "hard_recomputed": 22.1,
+    "hard_printed": 22.1,
+    "hard_matches": true,
+    "regular_from_source_partition": 69.76,
+    "regular_from_type_partition": 69.76,
+    "regular_from_role_partition": 69.762,
+    "regular_printed": 69.8,
+    "partitions_within_0.1": true
+   },
+   "Qwen3-30B-A3B": {
+    "hard_recomputed": 19.0,
+    "hard_printed": 19.0,
+    "hard_matches": true,
+    "regular_from_source_partition": 70.28,
+    "regular_from_type_partition": 70.28,
+    "regular_from_role_partition": 70.297,
+    "regular_printed": 70.3,
+    "partitions_within_0.1": true
+   }
+  },
+  "hard_all_match": true,
+  "partitions_all_within_0.1": true,
+  "equal_lengths": [
+   1272
+  ]
+ },
+ "table7": {
+  "weights": {
+   "source": [
+    200,
+    200,
+    100
+   ],
+   "type": [
+    200,
+    200,
+    100
+   ],
+   "role": [
+    293,
+    207
+   ]
+  },
+  "rows": {
+   "GPT-5-high": {
+    "hard_recomputed": 18.2,
+    "hard_printed": 18.2,
+    "hard_matches": true,
+    "regular_from_source_partition": 73.18,
+    "regular_from_type_partition": 73.18,
+    "regular_from_role_partition": 73.217,
+    "regular_printed": 73.2,
+    "partitions_within_0.1": true
+   },
+   "GPT-5-mini-high": {
+    "hard_recomputed": 15.7,
+    "hard_printed": 15.7,
+    "hard_matches": true,
+    "regular_from_source_partition": 75.6,
+    "regular_from_type_partition": 75.6,
+    "regular_from_role_partition": 75.597,
+    "regular_printed": 75.6,
+    "partitions_within_0.1": true
+   },
+   "GPT-5-nano-high": {
+    "hard_recomputed": 12.0,
+    "hard_printed": 12.0,
+    "hard_matches": true,
+    "regular_from_source_partition": 72.28,
+    "regular_from_type_partition": 72.24,
+    "regular_from_role_partition": 72.31,
+    "regular_printed": 72.3,
+    "partitions_within_0.1": true
+   },
+   "Claude Opus 4.1": {
+    "hard_recomputed": 28.8,
+    "hard_printed": 28.8,
+    "hard_matches": true,
+    "regular_from_source_partition": 65.48,
+    "regular_from_type_partition": 65.52,
+    "regular_from_role_partition": 65.527,
+    "regular_printed": 65.5,
+    "partitions_within_0.1": true
+   },
+   "Claude Sonnet 4": {
+    "hard_recomputed": 30.6,
+    "hard_printed": 30.6,
+    "hard_matches": true,
+    "regular_from_source_partition": 63.42,
+    "regular_from_type_partition": 63.38,
+    "regular_from_role_partition": 63.41,
+    "regular_printed": 63.4,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Pro": {
+    "hard_recomputed": 12.2,
+    "hard_printed": 12.2,
+    "hard_matches": true,
+    "regular_from_source_partition": 74.28,
+    "regular_from_type_partition": 74.28,
+    "regular_from_role_partition": 74.283,
+    "regular_printed": 74.3,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Flash": {
+    "hard_recomputed": 11.7,
+    "hard_printed": 11.7,
+    "hard_matches": true,
+    "regular_from_source_partition": 75.02,
+    "regular_from_type_partition": 75.02,
+    "regular_from_role_partition": 75.027,
+    "regular_printed": 75.0,
+    "partitions_within_0.1": true
+   },
+   "Gemini-2.5-Flash-Lite": {
+    "hard_recomputed": 13.7,
+    "hard_printed": 13.7,
+    "hard_matches": true,
+    "regular_from_source_partition": 71.7,
+    "regular_from_type_partition": 71.7,
+    "regular_from_role_partition": 71.658,
+    "regular_printed": 71.7,
+    "partitions_within_0.1": true
+   },
+   "GPT-oss-120b": {
+    "hard_recomputed": 11.3,
+    "hard_printed": 11.3,
+    "hard_matches": true,
+    "regular_from_source_partition": 69.88,
+    "regular_from_type_partition": 69.88,
+    "regular_from_role_partition": 69.91,
+    "regular_printed": 69.9,
+    "partitions_within_0.1": true
+   },
+   "GPT-oss-20b": {
+    "hard_recomputed": 14.1,
+    "hard_printed": 14.1,
+    "hard_matches": true,
+    "regular_from_source_partition": 71.74,
+    "regular_from_type_partition": 71.74,
+    "regular_from_role_partition": 71.731,
+    "regular_printed": 71.7,
+    "partitions_within_0.1": true
+   },
+   "DeepSeek-V3.1": {
+    "hard_recomputed": 16.2,
+    "hard_printed": 16.2,
+    "hard_matches": true,
+    "regular_from_source_partition": 73.9,
+    "regular_from_type_partition": 73.9,
+    "regular_from_role_partition": 73.9,
+    "regular_printed": 73.9,
+    "partitions_within_0.1": true
+   },
+   "DeepSeek-R1-0528": {
+    "hard_recomputed": 17.3,
+    "hard_printed": 17.3,
+    "hard_matches": true,
+    "regular_from_source_partition": 72.82,
+    "regular_from_type_partition": 72.86,
+    "regular_from_role_partition": 72.865,
+    "regular_printed": 72.9,
+    "partitions_within_0.1": true
+   },
+   "Qwen3-235B-A22B": {
+    "hard_recomputed": 12.9,
+    "hard_printed": 12.9,
+    "hard_matches": true,
+    "regular_from_source_partition": 77.58,
+    "regular_from_type_partition": 77.62,
+    "regular_from_role_partition": 77.6,
+    "regular_printed": 77.6,
+    "partitions_within_0.1": true
+   },
+   "Qwen3-30B-A3B": {
+    "hard_recomputed": 12.6,
+    "hard_printed": 12.6,
+    "hard_matches": true,
+    "regular_from_source_partition": 75.4,
+    "regular_from_type_partition": 75.44,
+    "regular_from_role_partition": 75.417,
+    "regular_printed": 75.4,
+    "partitions_within_0.1": true
+   }
+  },
+  "hard_all_match": true,
+  "partitions_all_within_0.1": true,
+  "equal_lengths": []
+ },
+ "averages": {
+  "table6": {
+   "recomputed": [
+    53.28,
+    56.27,
+    57.39,
+    52.97,
+    56.59,
+    54.55,
+    56.35,
+    55.31,
+    2805.79,
+    23.14
+   ],
+   "printed": [
+    53.5,
+    55.7,
+    56.7,
+    53.5,
+    55.7,
+    54.5,
+    55.8,
+    55.0,
+    2786.3,
+    22.8
+   ]
+  },
+  "table7": {
+   "recomputed": [
+    71.81,
+    71.99,
+    73.91,
+    69.71,
+    74.11,
+    72.63,
+    71.88,
+    72.31,
+    4925.79,
+    16.24
+   ],
+   "printed": [
+    71.8,
+    72.0,
+    73.9,
+    69.7,
+    74.1,
+    72.6,
+    71.9,
+    72.3,
+    4925.8,
+    16.2
+   ]
+  }
+ }
+}

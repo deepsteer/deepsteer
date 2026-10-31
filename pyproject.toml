@@ -84,6 +84,8 @@ deepsteer = [
     "datasets/dilemma_pairs_validated.json",
     "datasets/DATASET_LICENSES.md",
     "datasets/moralbench_manifest.json",
+    "datasets/morebench_manifest.json",
+    "benchmarks/moral_reasoning/morebench/LICENSE_MOREBENCH",
     "benchmarks/compliance_gap/em_fixtures/first_plot_questions.yaml",
     "benchmarks/compliance_gap/em_fixtures/LICENSE",
 ]

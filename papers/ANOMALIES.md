@@ -1963,3 +1963,86 @@ commit `8410044`), against the paper's Tables 1-2 (identical in arXiv v1 and v2)
 **Calibration (zero GPU, 2026-10-30; exploratory, no verdict changed).** 2,000 random letter policies (per-item A-rate uniform on [0, 1], 32 rollouts each, the registered 5-repeat PI): the share whose PI covers the paper's total is 0.54 / 0.63 / 0.65 on MFV-comparative (Zephyr / Gemma / Llama-2) and 0.16 / 0.77 / 0.00 on MFQ binary. R_weak_match is supported for MFV-comparative: a random responder "replicates" those totals more often than not. On MFQ binary the paper's LLaMA-2 total is covered by no random policy (it needs near-total agreement), so R_harness stays the open reading there.
 **Status.** partly resolved (calibration): MFV-comparative replications are reported as weak evidence; MFQ binary's R_harness is open (author).
 **Thesis impact.** If R_weak_match, "replicates" on MFV-comparative carries little information and the reproduction report says so; if R_harness, MoralBench's open-model numbers are not reproducible without the authors' prompt path.
+
+## MRB line ledger (prefix MRB-A; opened at MRB-G0, `MRB_PLAN.md` v0.2)
+
+Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit v1.0.0; HF revision
+`d900e89`, code `e6689bb`), against arXiv:2510.16380v2.
+
+## MRB-A1 (ledger) — The code that produced the paper's numbers expects 11,568 judgements; the public file yields 11,450
+
+**Date.** 2026-10-30 (MRB-G0).
+**Observation.** `calculate_morebench.py` on `main` (`71eaf71`) asserts 11,568 judgement rows per run; the `eval` branch changed the default to 11,450, the public file's criterion count. The public set's composition reproduces every Table 6 and Table 7 row: each row's Regular equals its count-weighted subgroup means within 0.1 under the public file's splits (sources 200/200/100, types 200/200/100, roles 293/207).
+**Type.** cross-doc conjunction (code constant against published data).
+**Competing readings.**
+- R_rubric_edit: the paper scored these 500 scenarios with 118 more criteria than the published rubrics hold (criteria removed or merged before release).
+- R_other_set: the paper's 500 differ from the public 500 while keeping the same split sizes.
+**Discriminator.** None from public data alone; the authors' generation files (`idx` and per-criterion rows) would separate them. Zero GPU: ask the authors.
+**Status.** open.
+**Thesis impact.** Under either reading the paper's cells were computed on a rubric set that is not public, so a match tolerance cannot absorb the difference; the reproduction report states it per cell.
+
+## MRB-A2 (ledger) — Two different models in Table 6 have the same mean trace length to the character (1,272)
+
+**Date.** 2026-10-30 (MRB-G0).
+**Observation.** Claude Opus 4.1 and GPT-oss-120b both list 1,272 characters; each row's Hard is consistent with it (40.0 and 39.9). No other length repeats in Tables 6 or 7.
+**Type.** cross-doc conjunction (a coincidence inside one table).
+**Competing readings.**
+- R_copy: one row's length was copied from the other; that row's Hard was then computed from the copied length.
+- R_chance: two means that happen to round to the same integer.
+**Discriminator.** Our GPT-oss-120b trace length at MRB-G2 (if run): far from 1,272 favours R_copy for that row.
+**Status.** open.
+**Thesis impact.** If R_copy, one model's Hard cell (the length-corrected headline) is wrong in the paper.
+
+## MRB-A3 (ledger) — The upstream credit test is a substring match: a reply containing "no" anywhere credits a negative criterion
+
+**Date.** 2026-10-30 (MRB-G0).
+**Observation.** `"no" in judgement` credits a negative criterion for "not met", "I know it" and "yes, it does not"; `"yes" in judgement` credits a positive one for "eyes". Our scorer reproduces this exactly (0 mismatches on 5,000 synthetic sets against upstream's own function).
+**Type.** control-misbehavior (the instrument's parse).
+**Competing readings.**
+- R_inert: the judge answers a bare yes or no, so the trap never fires.
+- R_live: reasoning-effort-high replies sometimes carry extra words, so some criteria are credited for the wrong reason.
+**Discriminator.** Zero GPU once G1's judge replies exist: the share of replies that are not a bare yes/no, and the score difference between the substring test and an exact-token test.
+**Status.** open (scheduled: MRB-G1 analysis).
+**Thesis impact.** Under R_live, MoReBench scores carry a parse artifact that varies with the judge's verbosity; the replication reports both tests.
+
+## MRB-A4 (ledger) — Table 6's Average row matches no subset of its rows; Table 7's matches its 14 rows exactly
+
+**Date.** 2026-10-30 (MRB-G0).
+**Observation.** The mean of Table 6's 14 rows is Regular 55.31, length 2,805.8, Hard 23.14; the printed Average is 55.0, 2,786.3, 22.8. No 12- or 13-row subset reproduces all three printed values. Table 7's printed Average equals the mean of its rows on every column.
+**Type.** cross-doc conjunction.
+**Competing readings.**
+- R_stale: Table 6's Average was computed before some rows changed (for example the 1,272 length, MRB-A2).
+- R_other_models: the Average covers a model set the table does not show.
+**Discriminator.** None in the paper; the authors' result files would. Zero GPU: ask.
+**Status.** open.
+**Thesis impact.** Statements in the paper that rest on Table 6's averages (§4.1) carry this; the replication compares per-model cells only.
+
+## MRB-A5 (ledger) — The paper's text and its tables disagree in §4.3 and §4.4
+
+**Date.** 2026-10-30 (MRB-G0; checked on the v2 PDF).
+**Observation.** §4.3 gives 77.5% (harmless), 41.5% (logical) and 46.1–48.0% (identifying, clear, helpful); Table 2's Average row is 81.1, 47.9 and 50.1–53.6. §4.4 credits Qwen3-235B with 74.7 on Virtue Ethics; Table 10 gives that value to Qwen3-30B (235B: 71.0).
+**Type.** cross-doc conjunction.
+**Competing readings.** R_v1_text: the text was written against an earlier table and not updated. R_other_aggregate: the text uses a different average (for example over all models in Table 8). Not decisive for the replication, which reads the tables.
+**Discriminator.** Compare against v1's text and tables (zero GPU).
+**Status.** open (low priority).
+**Thesis impact.** None on the replication; the reproduction report cites tables, not text.
+
+## MRB-A6 (ledger) — The judge was validated on final responses written to a ~500-word brief, and the headline scores judge thinking traces
+
+**Date.** 2026-10-30 (MRB-G0).
+**Observation.** Judge–human agreement (Table 5, macro-F1 76.29 lowest) was measured on responses produced with an expert-style "write around 500 words" prompt (App. E.2). Table 6, the headline, judges thinking traces; closed-model traces are provider summaries (p. 6).
+**Type.** control-misbehavior (the validation does not cover the scored field).
+**Competing readings.** R_transfers: the judge's accuracy carries over to traces. R_field_gap: it does not; trace scores carry unmeasured judge error.
+**Discriminator.** J2 (MRB_PLAN §3) on traces and responses separately, against a second judge: agreement by field. Zero GPU after G1's generations (a subagent pass).
+**Status.** open (scheduled: MRB-G1, J2).
+**Thesis impact.** Bears on the steering-target decision after G1: under R_field_gap the response field is the safer target.
+
+## MRB-A7 (ledger) — MoReBench's CC BY 4.0 does not cover its 100 expert-written scenarios
+
+**Date.** 2026-10-30 (MRB-G0; source pages read 2026-10-30).
+**Observation.** The paper states all sources are CC 4.0. DailyDilemmas and AIRiskDilemmas are CC BY 4.0. The APPE Ethics Bowl cases are CC BY-NC-ND 4.0 in some years and all rights reserved in others; Ethics Unwrapped is copyrighted with free use on credit and no license; the PNAS source is CC BY-NC-ND 4.0, its OSF materials unlicensed. The 100 public `expert_written_*` rows (ethic_bowl 51, ethic_unwrapped 30, literature 12, collab 7) derive from these.
+**Type.** cross-doc conjunction (a license claim against the sources' own terms).
+**Competing readings.** R_covered: the expert rows were rewritten enough to be MoReBench's own expression (the paper converts them with an LLM prompt, App. C). R_derived: they remain derivatives of NC/ND or unlicensed text, which MoReBench cannot relicense.
+**Discriminator.** None that settles a license question empirically; this is an author decision (escalation class).
+**Status.** open (author, MRB-G0 gate).
+**Thesis impact.** For the replication (evaluation only, no text committed) little changes; for any training or adaptation use (ST as a target), the 100 expert rows would be excluded or need the sources' permission.

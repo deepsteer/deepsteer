@@ -87,3 +87,15 @@ Nothing of MoralBench's text, prompt or answer keys is in the repository or the 
 MB outputs hold item ids, foundation labels, parsed letters, readouts, scores and prompt hashes
 (`MB_PLAN.md` §9.2). Seven `6_concepts` items are verbatim Clifford et al. (2015) MFV vignettes,
 third-party text that MoralBench could not license in any case.
+
+## MoReBench: fetched at a pinned revision (runtime fetch only)
+
+| Component | Source | Upstream license | Verified | Feeds |
+|---|---|---|---|---|
+| `morebench_public.csv` (500 scenarios, 11,450 criteria), `morebench_theory.csv` (150), the card | `morebench/morebench` (Chiu, Lee, et al., arXiv:2510.16380), HF revision `d900e89f942f784f8e0113935034b4f0541a0b55` | **CC BY 4.0** (card YAML; not gated), **except** text MoReBench drew from third parties (below) | HF API and card, 2026-10-30 | `deepsteer.datasets.morebench` (fetched into the user cache; not committed, not in the wheel); MRB replication (`papers/MRB_PLAN.md`) |
+| the 100 `expert_written_*` scenarios | APPE Ethics Bowl cases (CC BY-NC-ND 4.0 in some years, all rights reserved in others), Ethics Unwrapped (UT Austin; copyrighted, free use with credit, no license), Cheung, Maier, Lieder, PNAS 2025 (article CC BY-NC-ND 4.0; OSF materials unlicensed) | **not covered by MoReBench's CC BY grant**; treated as fetch-only third-party text (author decision pending at MRB-G0) | source pages, 2026-10-30 | same; no committed text, no adaptations |
+| `deepsteer/benchmarks/moral_reasoning/morebench/prompts.py` (generation and judge instruction strings) | `morebench/morebench` code, commit `e6689bbb9d742c48ea78ea07acd7931eba05b213` | **MIT**, Copyright (c) 2025 MoReBench (`LICENSE_MOREBENCH`, copied unmodified) | upstream `LICENSE`, 2026-10-30 | the MoReBench harness; shipped in the wheel with its license |
+| `morebench_manifest.json` | this project | **Apache-2.0** (file names and sha256 hashes only) | — | loader verification; shipped in the wheel |
+
+DailyDilemmas (`kellycyy/daily_dilemmas`) and AIRiskDilemmas (`kellycyy/AIRiskDilemmas`), the
+sources of the other 400 public scenarios, are CC BY 4.0 on their own cards.
