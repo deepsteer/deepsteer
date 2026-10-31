@@ -7,7 +7,7 @@ that the plans inherit. They all build on the shared choice/eval core designed i
 | prefix | paper | plan | status |
 |---|---|---|---|
 | MB | Ji et al., MoralBench (arXiv:2406.04428; SIGKDD Explorations 2025) | `MB_PLAN.md` | v0.8; MB-G2 passed 2026-10-30 (`mb_moralbench/REPRODUCTION.md`); Phase 2 waits for a scheduled pod |
-| MRB | Chiu, Lee et al., MoReBench (arXiv:2510.16380; ICLR 2026) | not yet | after MB |
+| MRB | Chiu, Lee et al., MoReBench (arXiv:2510.16380; ICLR 2026) | `MRB_PLAN.md` | v0.2; MRB-G0 next |
 | ETH | Hendrycks et al., ETHICS (arXiv:2008.02275; ICLR 2021) | not yet | queued |
 | LEB | Jiao, Afroogh et al., LLM Ethics Benchmark: a three-dimensional assessment system (arXiv:2505.00853; Scientific Reports 2025) | not yet | queued |
 

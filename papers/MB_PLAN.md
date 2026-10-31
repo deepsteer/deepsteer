@@ -1,6 +1,7 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v0.8, 2026-10-30. **v0.8 (author, 2026-10-30): Amendment 3 (§7): Phase 2 approved in reduced form;
+Status: v0.9, 2026-10-30. **v0.9 (author, 2026-10-30): Amendment 4 (§7): Phase 2's GPT-OSS-20B cell rides the
+MRB-G1 pod; Muse and Qwen3.8 wait for a later pod.** **v0.8 (author, 2026-10-30): Amendment 3 (§7): Phase 2 approved in reduced form;
 `zephyr-orpo-141b` stays unrun; MB-G2 gate passed (`mb_moralbench/REPRODUCTION.md`).** **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
 and D4 beside Llama-2-70B-chat.** **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
 stopping rule registered before them, and the drift-monitor readout rule (§7).** **v0.5 (author, 2026-10-30): MB-G0 passed; the gate report's decisions 1-8
@@ -310,6 +311,8 @@ drift monitor for steering, not a target (it scores agreement with average respo
   None of the three fits in the M4's 24 GiB, and none is scheduled now, so Phase 2 waits for the
   next scheduled pod.
 - **Not a steering gate.** It is the pre-steering baseline on this instrument; no ST verdict reads it.
+- **Amendment 4 (2026-10-30, author):** the GPT-OSS-20B cell rides the MRB-G1 pod (`MRB_PLAN.md`
+  §5); Muse Glimmer 30B and Qwen3.8-27B wait for a later scheduled pod.
 - **Diagnosis:** `zephyr-orpo-141b-A35b-v0.1` stays unrun (author, 2026-10-30).
 
 **Drift-monitor readout (Amendment 1, MB-A7).** Any use of MoralBench as a drift monitor reads R2
