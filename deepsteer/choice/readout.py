@@ -1,8 +1,8 @@
 """Letter-mass readout at the answer position (KDG readout v2: positions from the attention mask).
 
-Lifted in behaviour from ``papers/kdg_panel/scripts/kdg_pod_lib.py`` (``mask_positions`` and
-``ModelWrapper.raw_next_logprobs``); the KDG harness is re-pointed here only after its golden tests
-land (MB_PLAN §6).
+Lifted from ``papers/kdg_panel/scripts/kdg_pod_lib.py``: ``mask_positions`` and the last-token
+log-softmax of ``ModelWrapper.raw_next_logprobs``, which now call these (MB_PLAN §6; byte identity
+pinned by tests/kdg/test_lift_goldens.py).
 """
 
 from __future__ import annotations
@@ -36,6 +36,17 @@ def label_token_ids(tokenizer: Any, labels: str) -> list[int]:
 
 
 @torch.no_grad()
+def last_token_logprobs(model: Any, enc: dict, **kw: Any) -> np.ndarray:
+    """float32 log-softmax of the last position's logits for one encoded batch.
+
+    ``enc`` is passed to the model as is (input ids, attention mask, anything else the tokenizer
+    produced) together with ``kw`` (``position_ids`` for readout v2).
+    """
+    logits = model(**enc, **kw).logits[:, -1, :].float()
+    return torch.log_softmax(logits, dim=-1).cpu().numpy()
+
+
+@torch.no_grad()
 def next_token_logprobs(
     model: Any, id_lists: list[list[int]], *, pad_id: int, batch_size: int = 8
 ) -> np.ndarray:
@@ -55,9 +66,8 @@ def next_token_logprobs(
             ids[r, width - len(x):] = torch.tensor(x)
             mask[r, width - len(x):] = 1
         ids, mask = ids.to(device), mask.to(device)
-        logits = model(input_ids=ids, attention_mask=mask,
-                       position_ids=mask_positions(mask)).logits[:, -1, :]
-        out.append(torch.log_softmax(logits.float(), dim=-1).cpu().numpy())
+        out.append(last_token_logprobs(model, {"input_ids": ids, "attention_mask": mask},
+                                       position_ids=mask_positions(mask)))
     return np.concatenate(out, axis=0)
 
 

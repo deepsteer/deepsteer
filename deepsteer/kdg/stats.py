@@ -12,6 +12,9 @@ from collections.abc import Sequence
 
 import numpy as np
 
+from deepsteer.stats.bootstrap import nested_bootstrap, nested_bootstrap_difference
+from deepsteer.stats.power import mde_rate_difference  # noqa: F401  (re-exported for KDG callers)
+
 MIXED_BAND = (0.15, 0.85)
 CLEAN_GAP = 0.85
 PILOT_GATE_MIN_PASS = 14
@@ -234,15 +237,11 @@ def kdg_rate(
             "per_scenario": {r.scenario_id: k for r, k in vals},
         }
     point = float(np.mean([r.kdg() for r in defined]))
-    boots = np.empty(n_boot)
-    for b in range(n_boot):
-        idx = rng.integers(0, len(defined), len(defined))
-        ks = []
-        for i in idx:
-            k = _kdg_from_resampled(defined[i], rng) if nested else defined[i].kdg()
-            if k is not None:
-                ks.append(k)
-        boots[b] = np.mean(ks) if ks else np.nan
+
+    def stat(r: ScenarioReadout, rng: np.random.Generator) -> int | None:
+        return _kdg_from_resampled(r, rng) if nested else r.kdg()
+
+    boots = nested_bootstrap(defined, stat, n_boot=n_boot, rng=rng)
     lo, hi = np.nanpercentile(boots, [2.5, 97.5])
     return {
         "rate": point,
@@ -275,18 +274,13 @@ def difference_ci(
         if not pairs:
             return {"diff": None, "ci95": [None, None], "n": 0}
         point = float(np.mean([x.kdg() - y.kdg() for x, y in pairs]))
-        boots = np.empty(n_boot)
-        for i in range(n_boot):
-            idx = rng.integers(0, len(pairs), len(pairs))
-            ds = []
-            for j in idx:
-                ka, kb = (
-                    _kdg_from_resampled(pairs[j][0], rng),
-                    _kdg_from_resampled(pairs[j][1], rng),
-                )
-                if ka is not None and kb is not None:
-                    ds.append(ka - kb)
-            boots[i] = np.mean(ds) if ds else np.nan
+
+        def paired_stat(pair, rng: np.random.Generator) -> int | None:
+            ka = _kdg_from_resampled(pair[0], rng)
+            kb = _kdg_from_resampled(pair[1], rng)
+            return ka - kb if ka is not None and kb is not None else None
+
+        boots = nested_bootstrap(pairs, paired_stat, n_boot=n_boot, rng=rng)
         n = len(pairs)
     else:
         da = [r for r in a if r.kdg() is not None]
@@ -294,23 +288,7 @@ def difference_ci(
         if not da or not db:
             return {"diff": None, "ci95": [None, None], "n": 0}
         point = float(np.mean([r.kdg() for r in da]) - np.mean([r.kdg() for r in db]))
-        boots = np.empty(n_boot)
-        for i in range(n_boot):
-            ka = [
-                k
-                for k in (
-                    _kdg_from_resampled(da[j], rng) for j in rng.integers(0, len(da), len(da))
-                )
-                if k is not None
-            ]
-            kb = [
-                k
-                for k in (
-                    _kdg_from_resampled(db[j], rng) for j in rng.integers(0, len(db), len(db))
-                )
-                if k is not None
-            ]
-            boots[i] = (np.mean(ka) - np.mean(kb)) if ka and kb else np.nan
+        boots = nested_bootstrap_difference(da, db, _kdg_from_resampled, n_boot=n_boot, rng=rng)
         n = min(len(da), len(db))
     lo, hi = np.nanpercentile(boots, [2.5, 97.5])
     return {
@@ -327,15 +305,7 @@ def difference_ci(
 # ---------------------------------------------------------------------------------------------
 
 
-def mde_rate_difference(
-    n_a: int, n_b: int, p: float = 0.5, *, power: float = 0.8, alpha: float = 0.05
-) -> float:
-    """Smallest two-proportion difference detectable at ``power`` (normal approx, worst-case p)."""
-    from math import sqrt
-
-    z_a, z_b = 1.959964, {0.8: 0.841621, 0.9: 1.281552}[power]
-    se = sqrt(p * (1 - p) * (1 / n_a + 1 / n_b))
-    return (z_a + z_b) * se
+# mde_rate_difference: deepsteer.stats.power (imported above)
 
 
 def gate_power_table(

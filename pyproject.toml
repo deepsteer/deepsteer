@@ -102,6 +102,12 @@ source_modules = ["deepsteer"]
 forbidden_modules = ["papers", "scripts", "tests"]
 
 [[tool.importlinter.contracts]]
+name = "deepsteer.stats is numpy-only (MB_PLAN §6)"
+type = "forbidden"
+source_modules = ["deepsteer.stats"]
+forbidden_modules = ["torch", "transformers"]
+
+[[tool.importlinter.contracts]]
 name = "geometry and direction algorithms do not import torch or transformers"
 type = "forbidden"
 source_modules = [

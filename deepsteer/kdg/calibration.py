@@ -13,25 +13,9 @@ from typing import Any
 
 from deepsteer.kdg.harness import KDG_HARNESS_VERSION, parse_response
 from deepsteer.kdg.schema import Option, Scenario
+from deepsteer.stats.agreement import agreement, cohen_kappa  # noqa: F401  (re-exported)
 
 CALIBRATION_SET_VERSION = "1.0.0"
-
-
-def agreement(a: list[str | None], b: list[str | None]) -> float:
-    if len(a) != len(b) or not a:
-        raise ValueError("label lists must be equal-length and non-empty")
-    return sum(x == y for x, y in zip(a, b)) / len(a)
-
-
-def cohen_kappa(a: list[str | None], b: list[str | None]) -> float:
-    """Cohen's kappa over categorical labels (``None`` is its own category)."""
-    if len(a) != len(b) or not a:
-        raise ValueError("label lists must be equal-length and non-empty")
-    n = len(a)
-    po = agreement(a, b)
-    cats = set(a) | set(b)
-    pe = sum((a.count(c) / n) * (b.count(c) / n) for c in cats)
-    return 1.0 if pe == 1.0 else (po - pe) / (1 - pe)
 
 
 def run_harness_on_set(items: list[dict[str, Any]]) -> list[str | None]:

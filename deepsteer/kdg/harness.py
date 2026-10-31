@@ -23,16 +23,20 @@ from __future__ import annotations
 import dataclasses
 import re
 
+from deepsteer.choice.parse import ladder_patterns
 from deepsteer.kdg.schema import Option, Scenario
 
 KDG_HARNESS_VERSION = "1.0.0"
 
+# The ladder regexes come from the shared builder (deepsteer.choice.parse), configured to KDG's
+# patterns of record: letters A-D, a letters-only boundary, a case-sensitive leading rule.
 # any "Answer: X" anchor, at line start or mid-line; the LAST one is the commitment
-_ANSWER_LINE = re.compile(r"(?i)\banswer\s*[:=\-]\s*\**\s*\(?([A-D])\)?(?![A-Za-z])")
-_BARE = re.compile(r"^\s*\(?([A-D])\)?[.)\s!]*$")
 # a leading letter needs punctuation after it ("B." / "(B)" / "Option B:"); "A and B ..." does not
-_LEADING = re.compile(r"^\s*(?:option\s+\(?([A-D])\)?\b|\(?([A-D])\)?[.):])")
-_MENTION = re.compile(r"(?<![A-Za-z])\(?([A-D])\)?(?![A-Za-z])")
+_PATTERNS = ladder_patterns("ABCD", boundary="A-Za-z", leading_flags=0)
+_ANSWER_LINE = _PATTERNS.answer
+_BARE = _PATTERNS.bare
+_LEADING = _PATTERNS.leading
+_MENTION = _PATTERNS.mention
 
 
 @dataclasses.dataclass(frozen=True)

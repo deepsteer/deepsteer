@@ -46,6 +46,8 @@ deepsteer/
 │   ├── model_interface.py      # WhiteBoxModel, APIModel, ModelFamily, architecture detection
 │   ├── moe_model.py            # MoEWhiteBoxModel for OLMoE expert/router analysis
 │   ├── benchmark_suite.py      # Benchmark base class + suite runner
+│   ├── chat.py                 # chat rendering with a per-model system-role policy
+│   ├── sampling.py             # seeded, pure-temperature HF sampling
 │   └── types.py                # All dataclasses and enums
 │
 ├── foundations.py              # Canonical MFT constants (FOUNDATION_ORDER, groups, dilemma pairs)
@@ -116,6 +118,13 @@ deepsteer/
 │   ├── dilemma_pairs_validated.json # Same pairs + validation_stats
 │   ├── DATASET_GUIDELINES.md   # Quality rules for creating/auditing datasets
 │   └── DATASET_AUDIT.md        # Audit summary (structural + quality)
+│
+├── choice/                     # Choice-evaluation machinery (MB_PLAN §6; shared with deepsteer.kdg)
+│   ├── parse.py                # first-character and ladder parsers; ladder_patterns builder
+│   ├── readout.py              # letter-mass readout v2 (mask positions, last-token log-probs)
+│   └── ladder.py               # degenerate-policy ladder, worst-case MDE
+│
+├── stats/                      # Numpy-only estimators (bootstrap, power, agreement)
 │
 ├── reasoning/                  # Reasoning-trace analysis
 │   ├── token_positions.py      # Decision-point token position extraction

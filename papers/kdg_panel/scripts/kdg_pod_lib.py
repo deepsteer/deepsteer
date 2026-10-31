@@ -47,6 +47,10 @@ from deepsteer.kdg.phase2 import (  # noqa: E402
     rotate_filler,
     tsn_messages,
 )
+from deepsteer.choice.readout import (  # noqa: E402  (mask_positions stays importable here)
+    last_token_logprobs,
+    mask_positions,
+)
 from deepsteer.kdg.schema import (  # noqa: E402
     DOSE_CAPS,
     MAX_OPTIONS,
@@ -95,11 +99,6 @@ def sampler_version(row: dict) -> int:
 def readout_version(row: dict) -> int:
     """A row's forward-readout version; rows written before the field existed are version 1."""
     return int(row.get("readout_version", 1))
-
-
-def mask_positions(attention_mask):
-    """Position ids from a (left-padded) attention mask, the way generate() derives them."""
-    return (attention_mask.long().cumsum(-1) - 1).clamp(min=0)
 
 
 def sha256_file(path: Path) -> str:
@@ -323,9 +322,7 @@ class ModelWrapper:
             kw = {}
             if readout_version == 2:
                 kw["position_ids"] = mask_positions(enc["attention_mask"])
-            with torch.no_grad():
-                logits = self.model(**enc, **kw).logits[:, -1, :].float()
-            rows.append(torch.log_softmax(logits, dim=-1).cpu().numpy().astype(np.float16))
+            rows.append(last_token_logprobs(self.model, enc, **kw).astype(np.float16))
         return np.concatenate(rows, axis=0)
 
     def next_logprobs_and_residuals(

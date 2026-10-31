@@ -1,12 +1,14 @@
 """Choice parsing: a paper-faithful first-character mode and a robust ladder mode.
 
 The ladder generalizes the KDG harness ladder (``deepsteer.kdg.harness``) to any label set: an
-explicit answer line, a bare label, a leading label, then a unique mention. The KDG harness keeps
-its scenario-specific steps (tool hits, demotion) and is not yet re-pointed here (MB_PLAN §6).
+explicit answer line, a bare label, a leading label, then a unique mention. The KDG harness builds
+its regexes with :func:`ladder_patterns` and keeps its scenario-specific steps (tool hits,
+demotion) itself (MB_PLAN §6; byte identity pinned by tests/kdg/test_lift_goldens.py).
 """
 
 from __future__ import annotations
 
+import functools
 import re
 from dataclasses import dataclass
 
@@ -33,24 +35,50 @@ def first_char(text: str, labels: str, *, strip: bool = True) -> ChoiceParse:
     return ChoiceParse(None, "miss")
 
 
-def _class(labels: str) -> str:
-    return "[" + re.escape(labels) + "]"
+@dataclass(frozen=True)
+class LadderPatterns:
+    """The four ladder regexes for one label set (each captures the label)."""
+
+    answer: re.Pattern
+    bare: re.Pattern
+    leading: re.Pattern
+    mention: re.Pattern
+
+
+@functools.lru_cache(maxsize=None)
+def ladder_patterns(
+    labels: str, *, boundary: str = "A-Za-z0-9", leading_flags: int = re.I
+) -> LadderPatterns:
+    """Compile the ladder for ``labels``: an "Answer: X" anchor, a bare label, a leading label
+    with punctuation after it ("B." / "(B)" / "option B"), and a free-standing mention.
+
+    ``boundary`` is the character class a label must not touch; ``leading_flags`` applies to the
+    leading rule only. MoralBench's R1 uses the defaults; the KDG harness passes labels "ABCD",
+    ``boundary="A-Za-z"`` and ``leading_flags=0``, which reproduces its regexes exactly.
+    """
+    c = "[" + re.escape(labels) + "]"
+    return LadderPatterns(
+        answer=re.compile(rf"(?i)\banswer\s*[:=\-]\s*\**\s*\(?({c})\)?(?![{boundary}])"),
+        bare=re.compile(rf"^\s*\(?({c})\)?[.)\s!]*$"),
+        leading=re.compile(rf"^\s*(?:option\s+\(?({c})\)?\b|\(?({c})\)?[.):])", leading_flags),
+        mention=re.compile(rf"(?<![{boundary}])\(?({c})\)?(?![{boundary}])"),
+    )
 
 
 def ladder(text: str, labels: str) -> ChoiceParse:
     """The robust parse (MoralBench R1): answer line, bare label, leading label, unique mention."""
-    c = _class(labels)
-    m = re.search(rf"(?i)\banswer\s*[:=\-]\s*\**\s*\(?({c})\)?(?![A-Za-z0-9])", text)
+    pat = ladder_patterns(labels)
+    m = pat.answer.search(text)
     if m:
         return ChoiceParse(m.group(1).upper() if m.group(1).upper() in labels else m.group(1),
                            "answer_line")
-    m = re.match(rf"^\s*\(?({c})\)?[.)\s!]*$", text)
+    m = pat.bare.match(text)
     if m:
         return ChoiceParse(m.group(1), "bare")
-    m = re.match(rf"^\s*(?:option\s+\(?({c})\)?\b|\(?({c})\)?[.):])", text, re.I)
+    m = pat.leading.match(text)
     if m:
         return ChoiceParse(m.group(1) or m.group(2), "leading")
-    hits = {h for h in re.findall(rf"(?<![A-Za-z0-9])\(?({c})\)?(?![A-Za-z0-9])", text)}
+    hits = set(pat.mention.findall(text))
     if len(hits) == 1:
         return ChoiceParse(hits.pop(), "unique_mention")
     return ChoiceParse(None, "ambiguous" if hits else "none")
