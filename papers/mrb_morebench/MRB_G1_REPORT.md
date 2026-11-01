@@ -215,3 +215,17 @@ GPT-oss trace scores grade a different text from the raw analysis, and no pod ru
    a new cell either way.
 5. **G2** (GPT-oss-120b, API rows, the theory set, `REPRODUCTION.md`): after 1-3.
 
+### 8.7 Author decisions (2026-10-31; MRB_PLAN v0.6)
+
+1. Cross-check approved and extended: GPT-oss-20b generated through OpenRouter at the paper's
+   settings on J1's 50 scenarios, judged by the paper's OpenRouter judge with the paper's prompt;
+   lengths and scores read against the 57.7 / 24.7 trace row.
+2. No full delimited pass.
+3. MRB-A12's sensitivity interval as proposed, the near-misses stated against the 1.96-point MDE.
+4. The steering-target decision is deferred to a later steering decision; no work now.
+5. A minimal G2 (the theory set on Qwen3-30B-A3B, the gpt-oss-120b row optional, API rows off) is
+   proposed after the cross-check.
+
+Scope until `REPRODUCTION.md` is written: reproducing the paper's results only. The raw outputs
+(`outputs/g1/_raw/`, 487 MB) are copied to the ds-data drive with sha256 verified.
+

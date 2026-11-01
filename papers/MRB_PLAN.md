@@ -1,6 +1,9 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.5, 2026-10-31. **v0.5 (author, after the aborted G1 session): the envelope raised to
+Status: v0.6, 2026-10-31. **v0.6 (author, MRB-G1 gate): the OpenRouter cross-check, extended to
+GPT-oss-20b generated through OpenRouter (§5); no full delimited pass; the response near-misses read
+against a deployment term and the 1.96-point MDE; the steering-target decision deferred.** Scope until
+`REPRODUCTION.md` is written: reproducing the paper's results only. **v0.5 (author, after the aborted G1 session): the envelope raised to
 15.5 A100-h to run the registered design as planned**, with the GPT-OSS trace field judged last, a
 delimited-prompt fork on J1's subset, a verdict guard and scenario-major judge order (§5, §8;
 MRB-A10). **v0.4 (author, MRB-G1 VALIDATE gate): the envelope raised to 10.3
@@ -225,6 +228,37 @@ between-model Regular difference at the measured scenario variance.
   is the one way it breaks. Both readings of the GPT-OSS trace field are publishable: the judge
   grades it (R_register, the fork recovers verdicts) or it does not (R_judge), and either way the
   registered-prompt number is the one comparable to the paper's Table 6.
+  **v0.6 (author, MRB-G1 gate, 2026-10-31; registered before any call).** The registered OpenRouter
+  cross-check runs on J1's 50 scenarios (`idx % 10 == 0`), with upstream's own calls through
+  OpenRouter (`utils.py` at `e6689bb`), routed as OpenRouter routes them, provider logged per call:
+  1. *X2, the paper's GPT-oss-20b row.* `openai/gpt-oss-20b`, one generation per scenario, the
+     paper's settings: Table 4 (T 1.0, top-p 0.95), `max_tokens` 10,500, and upstream's top-level
+     `reasoning_effort: "high"`. Trace = OpenRouter's `message.reasoning` (upstream's
+     `thinking_trace`), response = `message.content`. Both fields judged by X's judge.
+  2. *X2b, MRB-A11 diagnostic (lengths only, not judged).* The same with OpenRouter's documented
+     `reasoning: {effort: "high"}` object added, to test whether upstream's top-level parameter set
+     the effort.
+  3. *X1, the deployment term.* The OpenRouter judge on our pod generations (k0, both models, both
+     fields) on the same 50 scenarios.
+  The judge is upstream's call: `openai/gpt-oss-120b`, the registered prompt, T 1, top-p 1,
+  `max_tokens` 10,500, `reasoning_effort: "high"`, the verdict read from `message.content` by
+  upstream's substring test (exact-token credit beside it). Readouts: (R1) X2's mean trace and
+  response lengths against the paper's 2,338 and 5,071 and against our pod's on the same 50, and
+  its Regular and Hard per field with a scenario-bootstrap CI, read against Table 6 (57.7 / 24.7)
+  and Table 7 (71.7 / 14.1); a 50-scenario reading, not the registered 500-scenario match. (R2)
+  X1's verdict rate per field, criterion agreement with the pod judge (against the pod's top-p 1
+  pass for GPT-OSS, J1's judge fork; against the pod's default for Qwen, whose top-p difference J1
+  bounds at +0.40 [−0.89, 1.86]), and the Regular difference OpenRouter − pod with its CI. (R3,
+  decision 3) For each response cell, a sensitivity interval: the registered PI ± 0.05, widened by
+  δ = the larger absolute end of R2's 95% CI for that model's response field; "replicates within
+  deployment noise" if the paper cell lies inside, reported beside the registered "misses", never
+  in place of it. Both near-misses are also stated against the 1.96-point MDE. (R4, MRB-A11) Mean
+  trace lengths of X2, X2b and the pod on the same scenarios. Cost about $5; the run stops at a
+  token budget equivalent to about $15. Both branches are publishable (SYNTHESIS, MRB line).
+  **Decisions recorded at the gate (v0.6).** No full-field delimited judge pass on GPT-OSS traces;
+  the trace field is reported from the 50-scenario fork. Whether MoReBench becomes a steering
+  target, and on which field, is a later steering decision, with no work before `REPRODUCTION.md`.
+  A minimal G2 is proposed after X2's result.
   **Fork scopes at G1 (registered before data, bounded by cost).** The generation fork (the code's
   behaviour: no temperature or top-p set, so each model's own generation defaults apply) runs at
   k = 1 on the ladder's scenarios, both fields judged; the judge fork (top-p 1) re-judges J1's
