@@ -1,0 +1,57 @@
+{
+ "rule": "exact normalized match, or >= 10% of a dilemma's word 8-grams in the H1 texts (MRB_PLAN v0.9)",
+ "h1_set": "papers/kdg_panel/data/harm_divergence/hdiv_set.json",
+ "adapters": {
+  "muse_glimmer_30b": "papers/st_live_reference/outputs/t16/muse_glimmer_30b/adapters/care/st_adapter.json",
+  "qwen38_27b": "papers/st_live_reference/outputs/st2qp_pull/qwen38_27b/adapters/care/st_adapter.json"
+ },
+ "trained_scenarios": 40,
+ "listed_scenarios": 67,
+ "of_record": {
+  "n_texts": 1280,
+  "n_dilemmas": 500,
+  "overlapping": [],
+  "n_overlapping": 0,
+  "n_exact": 0,
+  "n_any_shared_8gram": 0,
+  "max_share": 0.0,
+  "top_shares": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "top_ids": [
+   "mrb-000",
+   "mrb-001",
+   "mrb-002",
+   "mrb-003",
+   "mrb-004"
+  ]
+ },
+ "wider_net_all_listed": {
+  "n_texts": 2144,
+  "n_dilemmas": 500,
+  "overlapping": [],
+  "n_overlapping": 0,
+  "n_exact": 0,
+  "n_any_shared_8gram": 0,
+  "max_share": 0.0,
+  "top_shares": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "top_ids": [
+   "mrb-000",
+   "mrb-001",
+   "mrb-002",
+   "mrb-003",
+   "mrb-004"
+  ]
+ },
+ "not_checked": "the adapters' general KL slice (2,000 C4 validation documents, indices only): web text the pairs do not contain"
+}
