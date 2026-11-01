@@ -419,10 +419,25 @@ def judge_units(items, gens: dict[str, str]) -> list[dict]:
     return sorted(units, key=lambda u: (u["k"], idx[u["sid"]], u["unit"]))
 
 
+def judge_tokenizer(dry: bool, local_dir: Path | None):
+    """The judge's tokenizer. A dry run uses gpt-oss-120b's from the cache (the Phase 2 pod downloads
+    it), else gpt-oss-20b's, which is the same tokenizer: the first Phase 2 session bailed at its
+    gate tests because the dry judge asked for 20b's, which that pod never downloads."""
+    if not dry:
+        return P._tok(P.JUDGE["repo"], P.JUDGE["revision"], local_dir)
+    from transformers import AutoTokenizer
+    for spec in (P.JUDGE, P.GEN["gpt_oss_20b"]):
+        try:
+            return AutoTokenizer.from_pretrained(spec["repo"], revision=spec["revision"],
+                                                 local_files_only=True)
+        except OSError:
+            continue
+    raise SystemExit("no gpt-oss tokenizer in the cache for the dry judge")
+
+
 def cmd_judge(a) -> dict:
     from deepsteer.datasets.morebench import load_morebench
-    tok = (P._tok(P.GEN["gpt_oss_20b"]["repo"], P.GEN["gpt_oss_20b"]["revision"], None)
-           if a.dry_run else P._tok(P.JUDGE["repo"], P.JUDGE["revision"], a.local_dir))
+    tok = judge_tokenizer(a.dry_run, a.local_dir)
     cfg = P.harmony_cfg()
     items = load_morebench(subset="public")
     by_sid = {it.scenario_id: it for it in items}

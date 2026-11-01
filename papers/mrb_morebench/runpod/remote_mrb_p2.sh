@@ -103,9 +103,13 @@ $PY -c 'from deepsteer.datasets.morebench import fetch_morebench; from deepsteer
   || { echo "BAIL: data fetch or manifest check"; exit 1; }
 SETUP_H=$(hours)
 echo ">> setup done at ${SETUP_H} h"
+# the full output goes to gate_tests.log (downloaded with the results): the first session's bail
+# here left only pytest's summary line, not the failing test's traceback
 $PY -m pytest -q -p no:cacheprovider tests/scripts/test_mrb_p2_pod.py tests/scripts/test_mrb_p2_analyze.py \
-  tests/benchmarks/test_morebench_scoring.py tests/datasets/test_morebench.py 2>&1 | tail -2
-[ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
+  tests/benchmarks/test_morebench_scoring.py tests/datasets/test_morebench.py > "$OUT/gate_tests.log" 2>&1
+GATE_RC=$?
+tail -2 "$OUT/gate_tests.log"
+[ "$GATE_RC" = 0 ] || { echo "BAIL: gate tests (traceback in gate_tests.log)"; exit 1; }
 echo ">> STAGE 1 done (setup and gates) at $(hours) h"
 
 pod() {  # pod <gpu> <log> <args...>
