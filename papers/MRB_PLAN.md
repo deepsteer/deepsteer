@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.9.1, 2026-11-01. **v0.9.1 (author): a secondary breakdown of Phase 2's paired difference by
+Status: v0.9.2, 2026-11-01. **v0.9.2 (author): Phase 2's VALIDATE folded into the session as staged
+pilot gates, under RunPod's short capacity (§7).** **v0.9.1 (author): a secondary breakdown of Phase 2's paired difference by
 moral role, Agent the predicted locus (§7).** **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
 the response field, envelope 9.0 A100-h (§7).** **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
 A100-h**, the registered design and projection unchanged (`MRB_G2_REPORT.md` §3). **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
@@ -496,6 +497,33 @@ G1's rate is a 3B-active MoE's; ST measured these dense models in vLLM at about 
 and between 188 and 2,373 tok/s (Qwen3.8, st2qs, by phase and batch). At Muse's 674 with G1's tokens
 per job, Muse's generation takes about 1.9 h and the session about 4.8 h (9.6 A100-h); cut (a) on Muse
 alone brings it to about 3.4 h (6.9 A100-h). Engine concurrency `max_num_seqs` 256 (ST used 64).
+
+**v0.9.2 (author, 2026-11-01; registered before any Phase 2 pod): VALIDATE folded into the session.**
+RunPod capacity is short, so there is no separate VALIDATE pod; its checks run as the session's first
+stages, on one pod, in this order, each stage's outputs pulled as it finishes and every step
+resumable by job id (a lost pod is relaunched with the pulled outputs synced, and continues):
+1. *Setup and gates:* the stack, both adapters' sha256, the gate tests; any failure is a bail.
+2. *HF phase, per model, both GPUs in parallel:* the MoralBench rider (base and attached), ST's
+   merge and the merge gate. A model whose merge gate fails loses its adapter arm (v0.9).
+3. *`none` at k0 on all 500, per model:* the headline's first generation, and the measurement of
+   each model's tokens per job L_m and tokens per second r_m at the session's concurrency.
+4. *Sync point, both GPUs:* (i) a judge pilot on each model's `none` k0 responses for the 16 scenarios
+   of v0.9's VALIDATE (about 730 calls; its rows count toward the full judge, which skips them);
+   (ii) **pilot criteria:** for each model, at most 5% of pilot calls without a verdict (G1's guard
+   bar) and at least 90% of the 500 `none` generations reaching the final answer; a failure is
+   STOP and report; (iii) **the projection**, by v0.9's rule on the remaining work: from stage 3's
+   L_m and r_m, the pilot's judge tokens per call t_m, and G1's session judge rate R = 5,382 tok/s
+   (the judge and its stack are unchanged; the pilot's own rate, from 730 calls, is reported beside
+   it). Remaining wall W_rest = max_m(gen_m + loads_m) + Σ_m judge_m + judge load + margin, where
+   gen_m covers the adapter arm at k_m and `none` at k_m − 1 and judge_m every response not yet
+   judged; the session's cost is the A100-hours spent to the sync point plus 2 × W_rest, against the
+   9.0 envelope, and v0.9's per-model cut (a) applies to it. STOP if it still overruns.
+5. *Adapter arm at k = 0..k_m − 1* behind the parity gate, then *`none` at k1* where k_m = 2.
+6. *The full judge*, every k0 before any k1, under the projection's wall cap (15% over W_rest,
+   clipped to the envelope).
+The envelope stays 9.0 A100-h; v0.9's VALIDATE allotment (~1.2) becomes headroom. A watchdog holds the
+session to the envelope's wall (4.5 h on two GPUs) from the start. Everything else in v0.9 and
+v0.9.1 is unchanged.
 
 **Saves per unit.** Per (scenario, criterion, arm, k): verdict (≤ 20 characters), both credit tests,
 tokens; per generation: lengths, hashes, finish reason; per model: the merge record and both gates'
