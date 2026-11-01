@@ -1735,6 +1735,14 @@ generation-only match interval that three cells miss by 0.06-0.28 points (all in
 deployment noise) and GPT-oss-20b's trace row, which the paper's own pipeline no longer
 reproduces.
 
+**Reproduction report (2026-11-01; `mrb_morebench/REPRODUCTION.md`).** 6 of 12 registered cells
+replicate under the registered rule and 9 of 12 within the measured judge-deployment noise;
+GPT-oss-20b's trace row is not reproduced, including through the paper's own pipeline (MRB-A10,
+MRB-A11), and its Hard misses are length-driven. The shared replication standard now requires,
+forward only, that a match interval involving a judge or provider carry judge or deployment noise
+(`MORAL_EVAL_REPLICATIONS.md`). Steering use is parked: the response field as candidate target,
+GPT-OSS-20B at medium effort under both judge prompts as the baseline.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the OpenRouter judge cross-check (v0.6): OpenRouter − pod on Qwen traces +1.72 [0.03, 3.40], criterion agreement 0.91 | standing; the deployment term on this field is about 1.7 points on 50 scenarios |

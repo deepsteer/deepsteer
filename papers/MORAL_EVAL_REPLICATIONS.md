@@ -34,6 +34,12 @@ Standard for each replication, kept light:
   - pinned commits and revisions;
   - cost.
 - **Matching is judged on the numbers.** Run the original code only to diagnose a mismatch.
+- **Judge and deployment noise in the match interval (author, 2026-11-01, from MRB; forward
+  only).** Where a judge model or an API provider is involved, the registered match interval
+  includes judge or deployment noise as well as generation noise, measured by a judge test-retest
+  and a cross-check on the paper's own deployment (provider, judge or both). This applies to plans
+  registered from this date; MRB's registered verdicts stand as made, with the deployment term
+  reported beside them (`mrb_morebench/REPRODUCTION.md`).
 
 ## License findings (checked 2026-10-29; re-check at each plan's G0)
 
