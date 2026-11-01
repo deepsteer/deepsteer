@@ -1723,12 +1723,15 @@ test-retest agreement on responses is 0.94 (κ 0.86). It also locates where the
 paper's GPT-oss numbers depend on the run rather than the model. The judge answers GPT-OSS's raw
 analysis instead of grading it (82% of 22,900 calls) unless the text is delimited (0.3%); and our
 GPT-OSS traces are 3.5× the paper's length. Both response Regular cells miss the registered
-interval by 0.06 and 0.28, an interval that carries generation noise only.
+interval by 0.06 and 0.28, an interval that carries generation noise only; with the deployment term
+the OpenRouter cross-check measured, both replicate (v0.6). The paper's own pipeline, run today,
+reproduces our GPT-OSS numbers rather than the paper's trace row.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the registered OpenRouter judge cross-check on ~50 scenarios | standing at one deployment |
-| MRB-02: gpt-oss-120b, under MoReBench's judge prompt, answers GPT-OSS-20B's raw analysis instead of grading it (81.8% without a verdict), and delimiting the text restores verdicts (0.27%) | the failure is specific to our harmony rendering of the judge prompt, not to the upstream prompt as OpenRouter serves it | the same judge through OpenRouter on GPT-OSS traces (the cross-check) | standing on our deployment; counter-reading open |
+| MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the OpenRouter judge cross-check (v0.6): OpenRouter − pod on Qwen traces +1.72 [0.03, 3.40], criterion agreement 0.91 | standing; the deployment term on this field is about 1.7 points on 50 scenarios |
+| MRB-02: gpt-oss-120b, under MoReBench's judge prompt, answers GPT-OSS-20B's raw analysis instead of grading it (81.8% without a verdict on the pod), and delimiting the text restores verdicts (0.27%) | the failure is our harmony rendering's, not upstream's | upstream's own call through OpenRouter (v0.6): 914 of 1,118 without a verdict on our traces, 757 of 1,118 on OpenRouter-generated ones | standing on both deployments; counter-reading rejected |
+| MRB-03: the paper's GPT-oss-20b trace row (57.7 / 24.7, traces of 2,338 characters) is not reproduced by the paper's own pipeline today: 36.9 [31.4, 43.0] and 4.9, traces of 7,512 | the paper's run differed in date, providers or effort (R_drift) | none inside the replication (the paper's generations are not released) | standing as a non-reproduction with its cause open |
 
 **What the next result changes.**
 

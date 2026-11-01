@@ -229,3 +229,57 @@ GPT-oss trace scores grade a different text from the raw analysis, and no pod ru
 Scope until `REPRODUCTION.md` is written: reproducing the paper's results only. The raw outputs
 (`outputs/g1/_raw/`, 487 MB) are copied to the ds-data drive with sha256 verified.
 
+## 9. OpenRouter cross-check (MRB_PLAN v0.6; `outputs/g1_openrouter/`)
+
+Upstream's own calls through OpenRouter on J1's 50 scenarios: 100 GPT-oss-20b generations and
+6,708 judge calls (gpt-oss-120b; 19 providers as OpenRouter routed them). Tokens: 9.2 M prompt,
+6.2 M completion, about $2-4 at list prices (exact figure in the OpenRouter dashboard).
+
+**R1, the paper's GPT-oss-20b row through the paper's pipeline (50 scenarios, a reading):**
+
+| field | length (paper) | Regular [CI] (paper) | Hard (paper) | without a verdict | our pod, same scenarios |
+|---|---|---|---|---|---|
+| trace | 7,512 (2,338) | 36.9 [31.4, 43.0] (57.7) | 4.9 (24.7) | 757 of 1,118 | 33.4 registered, 58.9 delimited; length 8,257 |
+| response | 5,650 (5,071) | 70.1 [66.5, 73.9] (71.7) | 12.4 (14.1) | 0 of 1,118 | 70.0; length 5,665 |
+
+The paper's pipeline, run today, reproduces our pod's GPT-OSS numbers, not the paper's trace row.
+The response row's Regular agrees with the paper; its Hard misses on length (1.11×). The paper's
+57.7 / 24.7 trace row is not reproduced by any run we can make (MRB-A11, narrowed to R_drift).
+
+**R2, the deployment term (OpenRouter judge − pod judge, our pod's k0 generations):** GPT-OSS
+response +1.38 [−0.47, 3.20]; Qwen response −0.32 [−2.03, 1.23]; Qwen trace +1.72 [0.03, 3.40];
+GPT-OSS trace −2.10 [−5.75, 1.39] (both deployments fail there: 914 and 865 of 1,118 calls
+without a verdict). Criterion agreement on the valid fields 0.91-0.92, against the pod's own
+retest 0.94.
+
+**R3, the near-misses (decision 3):** sensitivity intervals GPT-OSS response [68.78, 76.65] and
+Qwen response [72.45, 77.37] contain the paper's 71.7 and 75.4: both replicate within the measured
+deployment noise, beside the registered "misses". Against the 1.96-point MDE, the paper cells lie
+0.28 (14%) and 0.06 (3%) outside the registered interval, and 0.71 (36%) and 0.41 (21%) from our
+values.
+
+**R4, MRB-A11:** traces 7,512 (upstream's top-level effort), 6,546 (with OpenRouter's reasoning
+object), 8,257 (pod, effort high); the effort parameter takes effect and the reasoning field is
+raw analysis, so neither an ignored effort nor a provider summary explains the paper's 2,338.
+
+**A reading, not a verdict:** on the pod the judge's failure rate is flat across trace length
+(79-83% in every bin from 2,000 characters up, 1,100 traces), so shorter traces alone would not
+have spared the paper's run; on OpenRouter it rises with length (ρ 0.43; 42-50% below 3,000
+characters, 13 traces), too few to settle it.
+
+## 10. Proposal: a minimal MRB-G2 (decision 5)
+
+- **Cell:** the theory set (150 rows: 30 dilemmas × 5 theories, 3,835 criteria) on
+  Qwen3-30B-A3B, the model whose rows reproduce. Upstream's theory prompt (theory and definition,
+  p. 31; `run_inferences_on_dilemmas_theory.py`), Table 4 sampling, k = 2 so the registered match
+  rule applies, both fields, the pod judge of record with the registered prompt (Qwen traces judge
+  cleanly: 0 of 22,900 without a verdict). A two-rung ladder (empty, restated) on the 150 rows.
+- **Paper cells:** the theory-set table for Qwen3-30B-A3B, read from arXiv v2 at a zero-GPU step
+  before the pod (citation rule); the match rule as G1's.
+- **Cost:** about 15,300 judge calls plus 7,700 for the ladder (~10 M output tokens, ~0.55 h of
+  judging at G1's rate); session ~1.2 h on two A100s, about 2.4 A100-h, plus a VALIDATE (~0.4):
+  an envelope of about 3 A100-h.
+- **Optional:** the gpt-oss-120b row, response field only (its trace field meets MRB-A10): 500 ×
+  k = 2 generations and ~23,000 judge calls, about +2.5 A100-h.
+- **Off:** API rows. **After G2:** `REPRODUCTION.md`.
+

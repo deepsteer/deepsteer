@@ -1,0 +1,284 @@
+{
+ "metadata": {
+  "plan": "MRB_PLAN v0.6",
+  "scenarios": 50,
+  "judge_rows": 6708,
+  "tokens": {
+   "prompt_tokens": 9163868,
+   "completion_tokens": 6161480
+  },
+  "judge_providers": {
+   "Crusoe": 291,
+   "AkashML": 740,
+   "CoreWeave": 762,
+   "Novita": 279,
+   "Groq": 40,
+   "Mara": 24,
+   "Venice": 839,
+   "DekaLLM": 777,
+   "Sail Research": 426,
+   "Mancer 2": 271,
+   "BaseTen": 134,
+   "Together": 29,
+   "Near AI": 1271,
+   "Nebius": 76,
+   "DeepInfra": 556,
+   "Parasail": 100,
+   "Phala": 31,
+   "Amazon Bedrock": 35,
+   "SambaNova": 27
+  }
+ },
+ "r1_paper_row": {
+  "trace": {
+   "n": 50,
+   "length_mean": 7512.2,
+   "paper_length": 2338,
+   "paper_regular": 57.7,
+   "paper_hard": 24.7,
+   "no_verdict": 757,
+   "calls": 1118,
+   "credit_substring": {
+    "regular": 36.9,
+    "regular_ci95": [
+     31.42,
+     42.98
+    ],
+    "hard": 4.91,
+    "paper_regular_in_ci": false
+   },
+   "credit_exact": {
+    "regular": 21.94,
+    "regular_ci95": [
+     16.87,
+     27.73
+    ],
+    "hard": 2.92,
+    "paper_regular_in_ci": false
+   },
+   "pod_same_scenarios": {
+    "length_mean": 8257.2,
+    "regular_registered_prompt": 33.39,
+    "regular_delimited_prompt": 58.89
+   }
+  },
+  "response": {
+   "n": 50,
+   "length_mean": 5650.2,
+   "paper_length": 5071,
+   "paper_regular": 71.7,
+   "paper_hard": 14.1,
+   "no_verdict": 0,
+   "calls": 1118,
+   "credit_substring": {
+    "regular": 70.09,
+    "regular_ci95": [
+     66.47,
+     73.9
+    ],
+    "hard": 12.4,
+    "paper_regular_in_ci": true
+   },
+   "credit_exact": {
+    "regular": 70.09,
+    "regular_ci95": [
+     66.27,
+     73.74
+    ],
+    "hard": 12.4,
+    "paper_regular_in_ci": true
+   },
+   "pod_same_scenarios": {
+    "length_mean": 5664.6,
+    "regular_registered_prompt": 69.98
+   }
+  }
+ },
+ "r2_deployment": {
+  "gpt_oss_20b/trace": {
+   "pod_reference": "pod top-p 1 (J1 judge fork)",
+   "n": 50,
+   "no_verdict_openrouter": 914,
+   "no_verdict_pod": 865,
+   "calls": 1118,
+   "credit_substring": {
+    "regular_openrouter": 32.08,
+    "regular_pod": 34.18,
+    "diff": -2.1,
+    "diff_ci95": [
+     -5.75,
+     1.39
+    ]
+   },
+   "credit_exact": {
+    "regular_openrouter": 13.88,
+    "regular_pod": 16.66,
+    "diff": -2.79,
+    "diff_ci95": [
+     -5.64,
+     -0.28
+    ]
+   },
+   "criterion_agreement": 0.6771
+  },
+  "gpt_oss_20b/response": {
+   "pod_reference": "pod top-p 1 (J1 judge fork)",
+   "n": 50,
+   "no_verdict_openrouter": 0,
+   "no_verdict_pod": 1,
+   "calls": 1118,
+   "credit_substring": {
+    "regular_openrouter": 71.76,
+    "regular_pod": 70.38,
+    "diff": 1.38,
+    "diff_ci95": [
+     -0.47,
+     3.2
+    ]
+   },
+   "credit_exact": {
+    "regular_openrouter": 71.76,
+    "regular_pod": 70.38,
+    "diff": 1.38,
+    "diff_ci95": [
+     -0.55,
+     3.29
+    ]
+   },
+   "criterion_agreement": 0.9231
+  },
+  "qwen3_30b/trace": {
+   "pod_reference": "pod default (top-p 0.95)",
+   "n": 50,
+   "no_verdict_openrouter": 0,
+   "no_verdict_pod": 0,
+   "calls": 1118,
+   "credit_substring": {
+    "regular_openrouter": 66.76,
+    "regular_pod": 65.04,
+    "diff": 1.72,
+    "diff_ci95": [
+     0.03,
+     3.4
+    ]
+   },
+   "credit_exact": {
+    "regular_openrouter": 66.76,
+    "regular_pod": 65.04,
+    "diff": 1.72,
+    "diff_ci95": [
+     0.11,
+     3.41
+    ]
+   },
+   "criterion_agreement": 0.9088
+  },
+  "qwen3_30b/response": {
+   "pod_reference": "pod default (top-p 0.95)",
+   "n": 50,
+   "no_verdict_openrouter": 0,
+   "no_verdict_pod": 0,
+   "calls": 1118,
+   "credit_substring": {
+    "regular_openrouter": 71.42,
+    "regular_pod": 71.74,
+    "diff": -0.32,
+    "diff_ci95": [
+     -2.03,
+     1.23
+    ]
+   },
+   "credit_exact": {
+    "regular_openrouter": 71.42,
+    "regular_pod": 71.74,
+    "diff": -0.32,
+    "diff_ci95": [
+     -1.9,
+     1.28
+    ]
+   },
+   "criterion_agreement": 0.9159
+  }
+ },
+ "r3_near_misses": {
+  "gpt_oss_20b": {
+   "registered_pi95": [
+    72.03,
+    73.4
+   ],
+   "registered_verdict": "misses",
+   "paper": 71.7,
+   "ours_k0": 72.41,
+   "delta": 3.2,
+   "sensitivity_interval": [
+    68.78,
+    76.65
+   ],
+   "sensitivity_verdict": "replicates within deployment noise",
+   "outside_registered_by": 0.28,
+   "outside_as_share_of_mde": 0.143,
+   "paper_minus_ours": -0.71,
+   "paper_minus_ours_as_share_of_mde": -0.362
+  },
+  "qwen3_30b": {
+   "registered_pi95": [
+    74.53,
+    75.29
+   ],
+   "registered_verdict": "misses",
+   "paper": 75.4,
+   "ours_k0": 74.99,
+   "delta": 2.03,
+   "sensitivity_interval": [
+    72.45,
+    77.37
+   ],
+   "sensitivity_verdict": "replicates within deployment noise",
+   "outside_registered_by": 0.06,
+   "outside_as_share_of_mde": 0.031,
+   "paper_minus_ours": 0.41,
+   "paper_minus_ours_as_share_of_mde": 0.209
+  }
+ },
+ "r4_lengths": {
+  "paper": {
+   "n": 50,
+   "trace_chars_mean": 7512.2,
+   "response_chars_mean": 5650.2,
+   "reasoning_tokens_mean": 1341.8,
+   "empty_trace": 0,
+   "finish_length": 1,
+   "providers": {
+    "Groq": 2,
+    "Darkbloom": 12,
+    "DeepInfra": 6,
+    "Amazon Bedrock": 1,
+    "CoreWeave": 4,
+    "AkashML": 13,
+    "Parasail": 6,
+    "DekaLLM": 6
+   }
+  },
+  "reasoning_object": {
+   "n": 50,
+   "trace_chars_mean": 6546.3,
+   "response_chars_mean": 5603.0,
+   "reasoning_tokens_mean": 1236.2,
+   "empty_trace": 0,
+   "finish_length": 0,
+   "providers": {
+    "AkashML": 14,
+    "CoreWeave": 7,
+    "Groq": 1,
+    "Darkbloom": 16,
+    "DeepInfra": 4,
+    "Parasail": 5,
+    "DekaLLM": 3
+   }
+  },
+  "pod_effort_high": {
+   "trace_chars_mean": 8257.2,
+   "response_chars_mean": 5664.6
+  }
+ }
+}
