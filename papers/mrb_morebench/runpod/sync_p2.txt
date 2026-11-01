@@ -1,0 +1,5 @@
+outputs/p2_inputs/adapters/muse_glimmer_30b/adapter_config.json
+outputs/p2_inputs/adapters/muse_glimmer_30b/adapter_model.safetensors
+outputs/p2_inputs/adapters/qwen38_27b/adapter_config.json
+outputs/p2_inputs/adapters/qwen38_27b/adapter_model.safetensors
+outputs/p2_validate/projection.json
