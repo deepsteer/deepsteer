@@ -22,11 +22,11 @@
    "response": 0.0
   }
  },
- "envelope_h": 3.0,
+ "envelope_h": 3.9,
  "validate_h": 0.9,
- "remaining_h": 2.1,
+ "remaining_h": 3.0,
  "session_wall_h": 1.487,
  "session_a100_h": 2.975,
- "decision": "STOP",
- "session_max_wall_h": null
+ "decision": "proceed",
+ "session_max_wall_h": 1.5
 }

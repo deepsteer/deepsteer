@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.7, 2026-10-31. **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
+Status: v0.8, 2026-11-01. **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
+A100-h**, the registered design and projection unchanged (`MRB_G2_REPORT.md` §3). **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
 on Qwen3-30B-A3B, envelope 3.2 A100-h ("about 3"); gpt-oss-120b and the API rows off; the
 `REPRODUCTION.md` wording for the GPT-OSS rows (§5).** **v0.6 (author, MRB-G1 gate): the OpenRouter cross-check, extended to
 GPT-oss-20b generated through OpenRouter (§5); no full delimited pass; the response near-misses read
@@ -318,7 +319,11 @@ between-model Regular difference at the measured scenario variance.
     `_raw/` (backed up to ds-data); a manifest per run.
   - *Dependencies:* the theory CSV at the pinned HF revision (sha256 in the manifest, fetched on
     the pod); `data/canned_ladder_v1.json`; the paper cells and δ, committed in the analysis.
-  - *Envelope:* 3.2 A100-h for G2 (VALIDATE about 0.7, the session about 2.3).
+  - *Envelope:* 3.2 A100-h for G2 (VALIDATE about 0.7, the session about 2.3). **v0.8 (author,
+    2026-11-01):** raised to 3.9 A100-h after VALIDATE (0.90 spent) projected the session at 2.98
+    against the 2.30 left; design, rates and rule unchanged. The session's projection is recomputed
+    locally from VALIDATE's files with the new envelope (`mrb_g2_pod.py project`, zero GPU); the
+    VALIDATE projection is kept as `projection_validate.json`.
   - *`REPRODUCTION.md` (written after G2, author's wording):* the GPT-oss-20b trace row is
     recorded as "not reproduced, including through the paper's own pipeline", citing MRB-A10 and
     MRB-A11; the GPT-oss-20b Hard misses are recorded as length-driven (MRB-A11).
@@ -360,7 +365,7 @@ paper's table, so its row is also the bridge between the replication and the ST 
 | GPT-oss-120b generation | pod, 1 × 80GB | ~1 A100-h |
 | API extension rows | API | priced per row at MRB-G0 |
 
-**MRB-G2 envelope (v0.7): 3.2 A100-h**, separate from G1's. **Envelope (approved v0.2): 8 A100-h and $60 API through MRB-G1**, conditional on VALIDATE
+**MRB-G2 envelope (v0.7): 3.2 A100-h**, separate from G1's; **raised in v0.8 to 3.9 A100-h**. **Envelope (approved v0.2): 8 A100-h and $60 API through MRB-G1**, conditional on VALIDATE
 confirming gpt-oss-120b runs on the pod's GPU type before any judging. **Raised in v0.4 to 10.3
 A100-h** (API unchanged) after VALIDATE confirmed it (tensor-parallel over two A100-80GB) and the
 registered projection stopped at 8; the raise buys the registered design at cut (a+b+c) and

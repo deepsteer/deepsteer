@@ -37,3 +37,11 @@ the engine; the registered projection keeps it.
 
 Either way the session's projection is recomputed locally from VALIDATE's files with the new
 envelope (zero GPU), registered and pushed before the launch line.
+
+## 4. Decision (author, 2026-11-01; MRB_PLAN v0.8)
+
+Option 1: the G2 envelope raised to 3.9 A100-h. The projection recomputed locally from VALIDATE's
+files with the new envelope (rates unchanged): session 2.98 A100-h against the 3.0 left,
+**proceed**, wall cap 1.50 h (clipped to the envelope; the registered work without its margin ends
+at about 1.24 h). VALIDATE's projection is kept as `outputs/g2_validate/projection_validate.json`.
+
