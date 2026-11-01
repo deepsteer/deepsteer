@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.8, 2026-11-01. **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
+Status: v0.9, 2026-11-01. **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
+the response field, envelope 9.0 A100-h (§7).** **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
 A100-h**, the registered design and projection unchanged (`MRB_G2_REPORT.md` §3). **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
 on Qwen3-30B-A3B, envelope 3.2 A100-h ("about 3"); gpt-oss-120b and the API rows off; the
 `REPRODUCTION.md` wording for the GPT-OSS rows (§5).** **v0.6 (author, MRB-G1 gate): the OpenRouter cross-check, extended to
@@ -354,6 +355,141 @@ MoReBench is a steering target candidate (`MORAL_EVAL_REPLICATIONS.md`: process 
 to ST's specificity gates; the decision, and the field it reads, comes after G1. Phase 2 runs the ST subjects (GPT-OSS-20B, Muse Glimmer 30B,
 Qwen3.8-27B) as the pre-steering baseline, as riders on a scheduled pod. GPT-OSS-20B is in the
 paper's table, so its row is also the bridge between the replication and the ST subjects.
+
+### Amendment v0.9: MRB Phase 2 (author, 2026-11-01; registered before any Phase 2 build or run)
+
+**Question.** Does ST's passing adapter change the MoReBench process quality of a model's final
+response, and on which rubric dimensions? A steering read on the replicated instrument, not a
+replication; whether MoReBench becomes a steering target stays parked (REPRODUCTION.md §7).
+
+**Cells (no GPT-OSS-20B cell; one adapter per model, each a single training draw).**
+
+| model (pin) | arm `none` | arm `adapter` (sha256 of `adapter_model.safetensors`) |
+|---|---|---|
+| Muse Glimmer 30B (`meta-models/Muse-Glimmer-30B@a4e59da5`; dense, 52 layers) | base weights | T1.6 care-DPO (pod t16, 243 steps; capability −0.005, the draw that passed; `1d0cdc42b39528cf…`, as in `st_live_reference/data/t16_adapters_v1.json`): ST's known-good adapter |
+| Qwen3.8-27B (`Qwen/Qwen3.8-27B@1d4bf0f2`; dense hybrid, 64 layers) | base weights | care-DPO_Q, ST-13's adapter of record (pod 2, Amendment 57; `9398ce21d1a11efd…`, recorded here); registered non-specific on Qwen; no replicate |
+
+- *Generation (identical across arms):* MoReBench's generation prompt (`generation_prompt`) on all
+  500 public scenarios, k = 2 per scenario and arm; each model at ST's effort of record (medium:
+  Qwen `reasoning_effort`, Muse `reasoning_strength`), native reasoning, rendered by ST's
+  `reasoning_formats` (Muse's date pinned at T1.6's 2026-10-23); Table 4's thinking-model sampling
+  (T 0.6, top-p 0.95); 10,500 tokens; seeds shared per (scenario, k) across arms (common random
+  numbers). The trace and the response are split at the format's end-of-reasoning marker (Qwen's
+  `</think>`; Muse's `<|eom|>` and answer header).
+- *Engine and the merge gate:* vLLM for both arms; the adapter arm on ST's merged checkpoint
+  (`t16_driver.write_merged`: one delta at a time, only the touched tensors rewritten). ST's gate,
+  with its parity rows taken from this pod's MoralBench rider (MoReBench has no answer letter):
+  the 176 dose-0 MoralBench prompts (88 items × 2 orders) and ST's statistic (`t15_driver.tv`, the
+  mean total variation of the letter distribution over the shown letters). (i) Merge gate: on HF,
+  the merged checkpoint's letters are closer to the attached adapter's than to the base's (ST's
+  `closer_to_base` false). (ii) vLLM parity: TV(vLLM merged, HF attached) ≤ TV(vLLM base, HF base)
+  + 0.05 (ST's `PARITY_MARGIN`). A model whose adapter fails either gate loses its adapter arm
+  (reported, not substituted; no HF fallback for generation).
+- *Judge:* the response field only; the pod judge of record (gpt-oss-120b, effort high, Table 4
+  sampling) with the registered prompt and substring credit (exact-token beside it); G1's verdict
+  guard; scenario-major order. Traces are generated and saved (`_raw/`, then ds-data) for later
+  activation reads, not judged.
+- *Calibration:* G1's response-field ladder applies (same judge, prompt and scenarios: empty 8.9,
+  generic 17.3, padded 15.1, restated 41.7 on 100). Positive control for this instrument on this
+  field: G1's between-model difference, Qwen3-30B-A3B − GPT-oss-20b, +2.58 [1.26, 3.96] (500).
+
+**Headline (per model).** Δ = mean over the 500 scenarios of [mean over k of the adapter's response
+score − mean over k of `none`'s], the code score of record, with a scenario-bootstrap 95% CI (2,000
+resamples; scenarios resampled, each scenario's generations kept). Beside it: the per-dimension
+breakdown (Δ in the share of criteria satisfied within each of the five dimensions, pooled
+unweighted within a scenario, same bootstrap, raw and Holm-adjusted across the five), the
+400-scenario subset, Δ mean response length, and the verdict rate per arm. **Length rule:** if a
+model's Δ length CI excludes 0, its headline gives ΔHard (Regular / mean length × 1000, recomputed in
+each bootstrap resample) beside ΔRegular, and a Regular gain whose Hard shift is not in the same
+direction with a CI excluding 0 is called **length-confounded**. No pooled verdict across models.
+
+**Secondary question (registered).** Does MoReBench separate Muse's known-good adapter from Qwen's
+known-non-specific one? ΔΔ = Δ_Muse − Δ_Qwen on Harmless Outcome and on Logical Process (and on
+Regular beside them), with a joint scenario bootstrap over the shared 500 scenarios. A CI that
+excludes 0 means the response field reads a difference between the two adapters on that dimension.
+A CI that covers 0 is reported as "no separation detectable at |ΔΔ| ≳ MDE" and **is not a verdict
+against MoReBench**: ST's non-specificity was measured on rule-right items, a different construct.
+
+**Power (from MRB-G1's saved rows, the two G1 models as stand-ins; VALIDATE re-measures).**
+
+| quantity | from G1 | MDE80, n = 500, k = 2 (× √2 at k = 1) |
+|---|---|---|
+| per-generation SD of a response score (Qwen3-30B-A3B / GPT-oss-20b) | 6.08 / 10.97 | 0.76 / 1.37 (an effect uniform across scenarios) |
+| paired SD between two different models (bound on effect heterogeneity) | 15.64 | 1.96 |
+| per-dimension per-generation SD (Qwen; identifying ... harmless) | 9.8-16.5 | 1.22-2.29 |
+| ΔΔ, secondary (two independent models' Δs) | as above | √2 × the per-model MDE: about 1.1-2.8, dimensions 1.7-3.8 |
+
+**Both branches (each publishable; each adapter is a single training draw, so a verdict is about
+that adapter, not the recipe).**
+- Δ's CI above 0 (and not length-confounded): this adapter raises response-field process quality
+  by Δ, with the dimensions that carry it; MoReBench reads ST's protection training as transferring
+  to procedural moral reasoning, for this draw.
+- Δ's CI below 0: a process-quality cost of this adapter, recorded beside ST's capability bar as a
+  specificity cost, with its dimensions.
+- Δ's CI covers 0: "no change in response-field process quality detectable at |Δ| ≳ MDE (stated per
+  model)", with the positive control and the ladder in the same sentence: the adapter's protection
+  effect is specific relative to MoReBench's process quality.
+
+**MoralBench rider (same pod; MB_PLAN Amendment 5).** R2 letter mass at each model's dose-0 regime of
+record (Muse `empty_reasoning`, Qwen `enable_thinking_false`; ST-10, ST-11), both orders, single-row
+readouts, all four sets, on HF: the base model, then the adapter attached (ST's `attach`). The `none`
+rows are MB Phase 2's pre-steering baseline; the adapter rows are a drift-monitor read. The same rows
+are the merge gate's parity rows.
+
+**Intervention spec (`intervention-validity`).** Stimulus matched across arms (prompts, seeds,
+engine, sampling, cap); outcome harness identical (judge pass settings, prompt, credit, guard). The
+adapters were trained on ST's H1 rule-harm scenarios, so before the pod a zero-GPU overlap check
+(`scripts/mrb_p2_overlap.py`) compares every text field of every H1 scenario in either adapter's
+training pairs (`st_adapter.json`) with the 500 MoReBench dilemmas: a dilemma overlaps if its
+normalized text matches a scenario text exactly or if 10% or more of its word 8-grams occur in the
+H1 texts. Overlapping dilemmas are reported, and the headline is given without them as a registered
+fork beside the 500. The adapters' general KL slice (2,000 C4 validation documents, stored as indices)
+is not checked: it is web text the pairs do not contain.
+
+**Bail conditions.** VALIDATE (2 × A100-80GB): per model 16 scenarios × 2 per arm, the HF rider rows,
+the merge and both gates, the judge on those units, and the projection. Session: the projection's wall
+cap (15% over, clipped to the envelope), the guard, a watchdog; results pulled during the run.
+
+**Projection and the per-model cut.** For model m, from VALIDATE's measured rates: generation
+gen_m = 2 arms × 500 × k_m × L_m / r_m, where L_m is the tokens generated per job and r_m the
+engine's output tokens per second at the session's concurrency; judging judge_m = 2 × 500 × k_m ×
+22.9 × t_m / R, with t_m the judge's output tokens per call on m's responses and R the judge's
+tokens per second. The models generate in parallel (one per GPU) and the judge serves both, so the
+session's wall is W = setup + HF phase + max_m(gen_m + loads) + Σ_m judge_m + margin, and its cost
+2W A100-h. **Cut (a) per model:** if 2W exceeds the envelope's remainder, the model whose k = 2
+costs the most wall drops to k = 1 (the cut that lowers W more; its MDE restated × √2); if still
+over, the other model drops to k = 1; if still over, STOP and report. A model's wall is L_m / r_m,
+not r_m alone: a model with the lower tokens-per-second rate can fit while a faster one overruns when
+the faster one writes more tokens per job (at G1, Qwen3-30B-A3B wrote 2,163 tokens per job; a model
+writing 4,000 tokens per job at 674 tok/s takes 1.65 h per 1,000 jobs, against 0.46 h for 1,000
+tokens per job at 600 tok/s). VALIDATE reports L_m and r_m per model, so the cut is visible in the
+arithmetic.
+
+**Price (MRB-G1's measured rates; the envelope).**
+
+| item | basis | wall h |
+|---|---|---|
+| setup (venv, three model downloads ~180 GB, data) | G1's 0.14-0.20 + the extra downloads | 0.25 |
+| HF phase per model, both in parallel: rider (base, attached), merge, merged load | G1's rider (27 s) plus three HF loads and ST's merge | 0.40 |
+| generation: 2 models × 2 arms × 500 × 2 = 4,000 jobs | G1 Qwen3-30B-A3B: 2,163 tokens per job at 2,356 tok/s per GPU; one model per GPU, its arms in turn, two engine loads each | 0.61 |
+| judge: 4 arms × 500 × 2 × 22.9 = 91,600 calls, ~420 output tokens each (38.5 M) | G1 session: 5,382 tok/s; load 0.05 | 2.04 |
+| margin | G1's | 0.25 |
+| **session** | 2 × A100-80GB | **3.55 h = 7.1 A100-h** |
+| VALIDATE | G2's 0.40 h plus a third download, the HF phase and the merges | ~0.6 h = 1.2 A100-h |
+
+**Envelope: 9.0 A100-h** (VALIDATE ~1.2, session ~7.1, ~0.7 headroom); API $0. Second derivation:
+G1's rate is a 3B-active MoE's; ST measured these dense models in vLLM at about 674 tok/s (Muse, t16)
+and between 188 and 2,373 tok/s (Qwen3.8, st2qs, by phase and batch). At Muse's 674 with G1's tokens
+per job, Muse's generation takes about 1.9 h and the session about 4.8 h (9.6 A100-h); cut (a) on Muse
+alone brings it to about 3.4 h (6.9 A100-h). Engine concurrency `max_num_seqs` 256 (ST used 64).
+
+**Saves per unit.** Per (scenario, criterion, arm, k): verdict (≤ 20 characters), both credit tests,
+tokens; per generation: lengths, hashes, finish reason; per model: the merge record and both gates'
+statistics; texts in `_raw/`; MB R2 rows; a manifest per run. **Dependencies:** both adapters local
+and hashed (shipped as named `SYNC_OUTPUTS` files, as ST did; `MAX_SYNC_GB` 2); ST's
+`reasoning_formats`, `write_merged`, `attach` and `tv`; both registry entries; the overlap check's
+result committed before VALIDATE. Disk: three base snapshots, two merged copies and the judge (~310 GB;
+`DISK_GB` 400).
 
 ## 8. Compute and cost (to be priced at MRB-G0)
 

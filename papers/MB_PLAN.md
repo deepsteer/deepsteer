@@ -1,6 +1,7 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v0.9, 2026-10-30. **v0.9 (author, 2026-10-30): Amendment 4 (§7): Phase 2's GPT-OSS-20B cell rides the
+Status: v1.0, 2026-11-01. **v1.0 (author, 2026-11-01): Amendment 5 (§7): Phase 2's Muse and Qwen3.8 cells,
+with and without ST's adapter, ride the MRB Phase 2 pod (MRB_PLAN v0.9).** **v0.9 (author, 2026-10-30): Amendment 4 (§7): Phase 2's GPT-OSS-20B cell rides the
 MRB-G1 pod; Muse and Qwen3.8 wait for a later pod.** **v0.8 (author, 2026-10-30): Amendment 3 (§7): Phase 2 approved in reduced form;
 `zephyr-orpo-141b` stays unrun; MB-G2 gate passed (`mb_moralbench/REPRODUCTION.md`).** **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
 and D4 beside Llama-2-70B-chat.** **v0.6 (author, 2026-10-30): Amendment 1 (§5): the MB-G1 diagnosis cells, a
@@ -313,6 +314,17 @@ drift monitor for steering, not a target (it scores agreement with average respo
 - **Not a steering gate.** It is the pre-steering baseline on this instrument; no ST verdict reads it.
 - **Amendment 4 (2026-10-30, author):** the GPT-OSS-20B cell rides the MRB-G1 pod (`MRB_PLAN.md`
   §5); Muse Glimmer 30B and Qwen3.8-27B wait for a later scheduled pod.
+- **Amendment 5 (2026-11-01, author; companion to MRB_PLAN v0.9):** the Muse Glimmer 30B and
+  Qwen3.8-27B cells ride the MRB Phase 2 pod. Each model is read twice: base weights (the Phase 2
+  pre-steering baseline of Amendment 3) and with ST's adapter attached (Muse T1.6 care-DPO, Qwen
+  care-DPO_Q, ST-13's adapter of record): a drift-monitor read under Amendment 1. Readout as
+  Amendment 3: R2 letter mass on both orders, single-row readouts of record (ST-A3), at each
+  model's dose-0 regime of record (Muse `empty_reasoning`, Qwen `enable_thinking_false`; ST-10,
+  ST-11), at effort medium, on HF (bf16, the adapter attached as ST's `attach` does). Reported per
+  set: the expected score in each order against its own key, the A-rates, L and K (MFV binary as a
+  letter-bias probe only, MB-A5), and for the adapter the shifts ΔL, ΔK and Δ expected score with
+  item-bootstrap CIs. KDG-A22 applies to both models' dose-0 readouts. Not a steering gate. The
+  same rows serve as MRB Phase 2's merge-gate parity rows.
 - **Diagnosis:** `zephyr-orpo-141b-A35b-v0.1` stays unrun (author, 2026-10-30).
 
 **Drift-monitor readout (Amendment 1, MB-A7).** Any use of MoralBench as a drift monitor reads R2
