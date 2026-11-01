@@ -12,6 +12,8 @@
 #   RUNPOD_API_KEY API REPO_ROOT SELF_PAPER RSYNC_EXCLUDE
 #   POD_NAME IMAGE DISK_GB VOLUME_GB CLOUD_TYPES GPU_TYPES SSH_KEY REMOTE_DIR
 # Optional (honored if set): REUSE_POD_ID KEEP_POD GPU_COUNT (default 1; MB-G2 uses 2, 2026-10-30)
+#   DATA_CENTERS  comma-separated RunPod data-center ids (e.g. EUR-IS-1,US-MD-1): passed as the
+#                 deploy input's dataCenterIds, so a pod is placed only there (2026-11-01)
 #
 # These globals are set FOR the caller (used by the execute/download blocks):
 #   POD_ID  SSH_HOST  SSH_PORT  SSH_OPTS(array)  GPU_TYPE  CLOUD_TYPE
@@ -104,6 +106,22 @@ rp_download() {
 }
 
 # ---------------------------------- create -----------------------------------
+# rp_datacenter_field: DC_FIELD is the deploy input's dataCenterIds clause for DATA_CENTERS
+# ("EUR-IS-1,US-MD-1" -> dataCenterIds: ["EUR-IS-1", "US-MD-1"]), or empty when it is unset (the
+# mutation is then exactly as before). The field is PodFindAndDeployOnDemandInput.dataCenterIds,
+# [String!] (graphql-spec.runpod.io, read 2026-11-01).
+rp_datacenter_field() {
+  DC_FIELD=""
+  [ -n "${DATA_CENTERS:-}" ] || return 0
+  local dc ids=""
+  IFS=',' read -ra _DCS <<< "$DATA_CENTERS"
+  for dc in "${_DCS[@]}"; do
+    dc="$(echo "$dc" | xargs)"
+    [ -n "$dc" ] && ids="${ids:+$ids, }\"$dc\""
+  done
+  DC_FIELD="dataCenterIds: [$ids]"
+}
+
 rp_provision_pod() {
   POD_ID="${REUSE_POD_ID:-}"
   [ -n "$POD_ID" ] && return 0
@@ -112,7 +130,8 @@ rp_provision_pod() {
   IFS=',' read -ra _CLOUDS <<< "$CLOUD_TYPES"
   IFS=',' read -ra _GPUS <<< "$GPU_TYPES"
   GPU_TYPE=""; CLOUD_TYPE=""; LAST_ERR=""
-  echo ">> Searching for capacity across ${#_GPUS[@]} GPU type(s) x ${#_CLOUDS[@]} cloud(s)..."
+  rp_datacenter_field
+  echo ">> Searching for capacity across ${#_GPUS[@]} GPU type(s) x ${#_CLOUDS[@]} cloud(s)${DATA_CENTERS:+ in data centers $DATA_CENTERS}..."
   for cloud in "${_CLOUDS[@]}"; do
     cloud="$(echo "$cloud" | xargs)"
     for gpu in "${_GPUS[@]}"; do
@@ -124,6 +143,7 @@ rp_provision_pod() {
         volumeInGb: ${VOLUME_GB}
         containerDiskInGb: ${DISK_GB}
         gpuTypeId: \"${gpu}\"
+        ${DC_FIELD}
         name: \"${POD_NAME}\"
         imageName: \"${IMAGE}\"
         ports: \"22/tcp\"
@@ -142,7 +162,7 @@ rp_provision_pod() {
     done
   done
   if [ -z "$POD_ID" ]; then
-    echo "ERROR: no capacity for any of [$GPU_TYPES] on [$CLOUD_TYPES]."
+    echo "ERROR: no capacity for any of [$GPU_TYPES] on [$CLOUD_TYPES]${DATA_CENTERS:+ in [$DATA_CENTERS]}."
     echo "       Last message: ${LAST_ERR:-none}. Try later or widen GPU_TYPES."
     exit 1
   fi
