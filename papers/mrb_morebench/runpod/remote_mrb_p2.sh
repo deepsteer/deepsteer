@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
-# Remote runner for MRB Phase 2 (papers/MRB_PLAN.md v0.9; MB_PLAN Amendment 5): Muse Glimmer 30B
+# Remote runner for MRB Phase 2 (papers/MRB_PLAN.md v0.9.2; MB_PLAN Amendment 5): Muse Glimmer 30B
 # and Qwen3.8-27B, base and with ST's adapter, on the MoReBench response field, with the
-# MoralBench rider. Orion launches; the launcher passes HF_TOKEN and VALIDATE. G1's vLLM venv and
-# stack checks, plus ST's peft pin for the HF phase.
+# MoralBench rider. Orion launches; the launcher passes HF_TOKEN. G1's vLLM venv and stack checks,
+# plus ST's peft pin for the HF phase. No separate VALIDATE (v0.9.2): its checks are stages 1-4.
 #
-#   VALIDATE=1 (2 x A100-80GB, the session's layout): per model on its own GPU, the HF phase (rider
-#     rows base and attached, ST's merge, the merge gate), then 16 scenarios x 2 per arm on vLLM
-#     (the adapter arm behind the parity gate); the judge over both GPUs; projection.json with the
-#     per-model cut (proceed or STOP).
-#   session (needs outputs/p2_validate/projection.json via SYNC_OUTPUTS): the same on 500
-#     scenarios at each model's k from the projection, under a deadline and a watchdog.
+#   1 setup and gates   2 HF phase, per model (rider, merge, merge gate)   3 none k0 on 500, per
+#   model (the rates)   4 sync point: judge pilot, pilot criteria, projection (proceed or STOP, k per
+#   model)   5 adapter at k 0..k-1 behind the parity gate, then none k1 where k = 2   6 the full
+#   judge, k0 first. Every step resumes by job id, so a relaunch on the pulled outputs continues.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 VALIDATE="${VALIDATE:-0}"
 cd "$REPO_DIR"
 OUT_ROOT="$REPO_DIR/papers/mrb_morebench/outputs"
-SUB=p2; [ "$VALIDATE" = 1 ] && SUB=p2_validate
+[ "$VALIDATE" = 1 ] && { echo "BAIL: Phase 2 has no separate VALIDATE (MRB_PLAN v0.9.2)"; exit 1; }
+SUB=p2
 OUT="$OUT_ROOT/$SUB"
 mkdir -p "$OUT"
 START=$(date +%s)
@@ -27,19 +26,8 @@ POD=papers/mrb_morebench/scripts/mrb_p2_pod.py
 hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4))"; }
 echo ">> MRB-P2 start $(date -u +%FT%TZ) VALIDATE=$VALIDATE out=$OUT"
 
-if [ "$VALIDATE" = 1 ]; then
-  MAX_H="${SESSION_MAX_HOURS_VALIDATE:-1.5}"; KMUSE=2; KQWEN=2  # three downloads, two HF phases
-else
-  PROJ="$OUT_ROOT/p2_validate/projection.json"
-  [ -f "$PROJ" ] || { echo "BAIL: $PROJ missing (sync it with SYNC_OUTPUTS)"; exit 1; }
-  DECISION=$(python3 -c "import json; print(json.load(open('$PROJ'))['decision'])")
-  echo ">> projection decision: $DECISION"
-  [ "$DECISION" = "STOP" ] && { echo "BAIL: the projection overruns after the per-model cut; stop and report (MRB_PLAN v0.9)"; exit 1; }
-  MAX_H=$(python3 -c "import json; print(json.load(open('$PROJ'))['session_max_wall_h'])")
-  KMUSE=$(python3 -c "import json; print(json.load(open('$PROJ'))['k']['muse_glimmer_30b'])")
-  KQWEN=$(python3 -c "import json; print(json.load(open('$PROJ'))['k']['qwen38_27b'])")
-  echo ">> session wall cap ${MAX_H} h; k: muse $KMUSE, qwen $KQWEN"
-fi
+ENVELOPE_H=9.0
+MAX_H=$(python3 -c "print($ENVELOPE_H / 2)")  # the envelope's wall on two GPUs, from the start
 DEADLINE=$(python3 -c "print($START + $MAX_H * 3600 - 600)")
 ( trap 'kill $S 2>/dev/null; exit 0' TERM
   sleep "$(python3 -c "print(int($MAX_H * 3600))")" & S=$!; wait $S
@@ -118,30 +106,51 @@ echo ">> setup done at ${SETUP_H} h"
 $PY -m pytest -q -p no:cacheprovider tests/scripts/test_mrb_p2_pod.py tests/scripts/test_mrb_p2_analyze.py \
   tests/benchmarks/test_morebench_scoring.py tests/datasets/test_morebench.py 2>&1 | tail -2
 [ "${PIPESTATUS[0]}" = 0 ] || { echo "BAIL: gate tests"; exit 1; }
+echo ">> STAGE 1 done (setup and gates) at $(hours) h"
 
-V=""; [ "$VALIDATE" = 1 ] && V="--validate"
 pod() {  # pod <gpu> <log> <args...>
   local gpu="$1" log="$2"; shift 2
-  CUDA_VISIBLE_DEVICES="$gpu" $PY "$POD" "$@" --out "$OUT" $V --deadline "$DEADLINE" > "$OUT/$log" 2>&1
+  CUDA_VISIBLE_DEVICES="$gpu" $PY "$POD" "$@" --out "$OUT" --deadline "$DEADLINE" >> "$OUT/$log" 2>&1
   local rc=$?; tail -1 "$OUT/$log" | cut -c1-400; echo ">> $log rc=$rc $(date -u +%T)"; return $rc
 }
-model_chain() {  # model_chain <gpu> <model> <k>: the HF phase, then both arms on vLLM
-  local gpu="$1" m="$2" k="$3"
-  pod "$gpu" "hf_$m.log" hf-phase --model "$m" || { echo "BAIL: $m HF phase failed"; return 1; }
-  pod "$gpu" "gen_${m}_none.log" generate --model "$m" --arm none --k "$k" || return 1
-  pod "$gpu" "gen_${m}_adapter.log" generate --model "$m" --arm adapter --k "$k" || return 1
+first_half() {  # stages 2-3 for one model: the HF phase, then none at k0 on all 500
+  local gpu="$1" m="$2"
+  pod "$gpu" "hf_$m.log" hf-phase --model "$m" || { echo ">> $m HF phase failed"; return 1; }
+  pod "$gpu" "gen_${m}_none.log" generate --model "$m" --arm none --k-from 0 --k 1 || return 1
 }
-model_chain 0 muse_glimmer_30b "$KMUSE" & C0=$!
-model_chain 1 qwen38_27b "$KQWEN" & C1=$!
+first_half 0 muse_glimmer_30b & C0=$!
+first_half 1 qwen38_27b & C1=$!
 wait $C0; R0=$?; wait $C1; R1=$?
-[ "$VALIDATE" = 1 ] && [ $((R0 + R1)) -gt 0 ] && { echo "BAIL: a model chain failed in VALIDATE"; exit 1; }
-pod 0,1 judge.log judge --local-dir "$M120" \
-  || { [ "$VALIDATE" = 1 ] && { echo "BAIL: gpt-oss-120b did not judge"; exit 1; }; }
-if [ "$VALIDATE" = 1 ]; then
-  VH=$(python3 -c "print(round(2 * ($(hours) + 0.05), 4))")
-  $PY "$POD" project --out "$OUT" --validate-hours "$VH" --setup-hours "$SETUP_H" > "$OUT/project.log" 2>&1
-  echo ">> projection: $(python3 -c "import json; d=json.load(open('$OUT/projection.json')); print(d['decision'], d['session_a100_h'], 'k', d['k'], 'cap', d['session_max_wall_h'])")"
-fi
+[ $((R0 + R1)) -gt 0 ] && { echo "BAIL: stage 2 or 3 failed (muse rc=$R0, qwen rc=$R1); stop and report"; exit 1; }
+echo ">> STAGE 3 done (HF phases, none k0) at $(hours) h"
+
+# ---- stage 4: the sync point ----
+pod 0,1 judge_pilot.log judge --pilot --local-dir "$M120" || { echo "BAIL: the judge pilot failed"; exit 1; }
+SPENT=$(python3 -c "print(round(2 * ($(hours) + 0.05), 4))")
+$PY "$POD" project-live --out "$OUT" --spent-a100-h "$SPENT" --envelope-h "$ENVELOPE_H" > "$OUT/project.log" 2>&1
+PROJ="$OUT/projection.json"
+[ -f "$PROJ" ] || { echo "BAIL: the sync point wrote no projection"; exit 1; }
+echo ">> projection: $(python3 -c "import json; d=json.load(open('$PROJ')); print(d['decision'], d.get('stop_reason', ''), 'k', d['k'], 'total A100-h', d['session_a100_h'], 'rest cap', d['rest_max_wall_h'], {m: (c['no_verdict_share'], c['final_reached_share']) for m, c in d['pilot_criteria'].items()})")"
+DECISION=$(python3 -c "import json; print(json.load(open('$PROJ'))['decision'])")
+[ "$DECISION" = "STOP" ] && { echo "BAIL: STOP at the sync point; stop and report (MRB_PLAN v0.9.2)"; exit 1; }
+KMUSE=$(python3 -c "import json; print(json.load(open('$PROJ'))['k']['muse_glimmer_30b'])")
+KQWEN=$(python3 -c "import json; print(json.load(open('$PROJ'))['k']['qwen38_27b'])")
+DEADLINE=$(python3 -c "import json; print(min($DEADLINE, $(date +%s) + json.load(open('$PROJ'))['rest_max_wall_h'] * 3600 - 600))")
+echo ">> STAGE 4 done at $(hours) h; k: muse $KMUSE, qwen $KQWEN"
+
+# ---- stages 5-6 ----
+second_half() {  # stage 5 for one model: the adapter arm at k 0..k-1, then none's k1 where k = 2
+  local gpu="$1" m="$2" k="$3"
+  pod "$gpu" "gen_${m}_adapter.log" generate --model "$m" --arm adapter --k-from 0 --k "$k" || return 1
+  [ "$k" = 2 ] && { pod "$gpu" "gen_${m}_none.log" generate --model "$m" --arm none --k-from 1 --k 2 || return 1; }
+  return 0
+}
+second_half 0 muse_glimmer_30b "$KMUSE" & C0=$!
+second_half 1 qwen38_27b "$KQWEN" & C1=$!
+wait $C0; wait $C1
+echo ">> STAGE 5 done at $(hours) h"
+pod 0,1 judge.log judge --local-dir "$M120"
+echo ">> STAGE 6 done at $(hours) h"
 
 kill "$WATCHDOG" 2>/dev/null
 rm -rf "$OUT_ROOT/${SUB}_merged"

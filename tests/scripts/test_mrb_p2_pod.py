@@ -25,26 +25,28 @@ def _tok_cached() -> bool:
         return False
 
 
-def test_projection_cuts_the_model_that_binds_and_explains_the_rates():
+def test_sync_point_cuts_the_model_that_binds_and_explains_the_rates():
     # most probable failure: the cut lands on the slower-rate model by reflex, when the model that
     # binds the wall is the one writing more tokens per job (the author's "slower Qwen fits while a
     # faster Muse overruns"), or the session runs past the envelope
     per = {"muse_glimmer_30b": {"tokens_per_job": 4000, "tokens_per_s": 674,
-                                "judge_tokens_per_call": 420, "loads_h": 0.1},
+                                "judge_tokens_per_call": 420, "loads_h": 0.1, "adapter_ok": True,
+                                "judged_calls": 366},
            "qwen38_27b": {"tokens_per_job": 1000, "tokens_per_s": 600,
-                          "judge_tokens_per_call": 420, "loads_h": 0.1}}
-    fixed = {"setup_h": 0.25, "hf_phase_h": 0.4, "judge_load_h": 0.05, "margin_h": 0.25}
-    # k = 2 for both: 12.7 A100-h; Muse at k = 1: 8.4; Qwen at k = 1 instead: 11.7
-    r = Z.project(per, fixed, judge_tps=5382, envelope_h=10.0, validate_h=1.2)
+                          "judge_tokens_per_call": 420, "loads_h": 0.1, "adapter_ok": True,
+                          "judged_calls": 366}}
+    fixed = {"judge_load_h": 0.05, "margin_h": 0.25}
+    r = Z.project_rest(per, fixed, judge_tps=5382, spent_a100_h=3.0, envelope_h=9.0)
     first = r["levels"][0]["models"]
     assert first["qwen38_27b"]["gen_wall_h_per_1000_jobs"] < first["muse_glimmer_30b"][
         "gen_wall_h_per_1000_jobs"]  # 0.46 h against 1.65 h: L / r, not r
+    assert first["muse_glimmer_30b"]["gen_jobs_rest"] == 1500  # adapter k0-1 + none k1
     assert r["k"] == {"muse_glimmer_30b": 1, "qwen38_27b": 2} and r["decision"] == "proceed"
-    assert r["session_max_wall_h"] <= (10.0 - 1.2) / 2
-    both = Z.project(per, fixed, judge_tps=5382, envelope_h=9.0, validate_h=1.2)
-    assert both["k"] == {"muse_glimmer_30b": 1, "qwen38_27b": 1}  # still over: the other model too
-    tight = Z.project(per, fixed, judge_tps=5382, envelope_h=4.0, validate_h=1.2)
-    assert tight["decision"] == "STOP" and tight["k"] is None
+    assert r["session_a100_h"] <= 9.0 and r["rest_max_wall_h"] <= (9.0 - 3.0) / 2
+    assert Z.project_rest(per, fixed, 5382, spent_a100_h=7.0, envelope_h=9.0)["decision"] == "STOP"
+    dropped = dict(per, qwen38_27b={**per["qwen38_27b"], "adapter_ok": False})
+    q = Z.project_rest(dropped, fixed, 5382, 3.0, 9.0)["levels"][0]["models"]["qwen38_27b"]
+    assert q["gen_jobs_rest"] == 500  # a model without its adapter arm: none k1 only
 
 
 def test_tv_is_sts_statistic_on_two_letters_and_refuses_misaligned_rows():
@@ -110,38 +112,49 @@ def test_dry_validate_sequence_runs_the_gates_and_keeps_text_out(tmp_path):
     # passes by default), or a tracked row carrying generation or judge text
     env = dict(os.environ, HF_HUB_OFFLINE="1")
     run = [sys.executable, str(REPO / "papers/mrb_morebench/scripts/mrb_p2_pod.py")]
-    steps = [["hf-phase", "--model", "qwen38_27b"],
-             ["generate", "--model", "qwen38_27b", "--arm", "none", "--k", "2"],
-             ["generate", "--model", "qwen38_27b", "--arm", "adapter", "--k", "2"],
-             ["judge"]]
-    for args in steps:
+    first = [["hf-phase", "--model", m] for m in Z.MODELS] + \
+        [["generate", "--model", m, "--arm", "none", "--k-from", "0", "--k", "1"] for m in Z.MODELS]
+    q = ["generate", "--model", "qwen38_27b"]
+    second = [q + ["--arm", "adapter", "--k-from", "0", "--k", "2"],
+              q + ["--arm", "none", "--k-from", "1", "--k", "2"]]
+    for args in first + [["judge", "--pilot"], ["project-live", "--spent-a100-h", "1.0"]] + \
+            second + [["judge"]]:
         rc = subprocess.run(run + args + ["--out", str(tmp_path), "--validate", "--dry-run"],
                             capture_output=True, text=True, env=env, cwd=REPO)
         assert rc.returncode == 0, (args, rc.stderr[-2000:])
+    proj = json.loads((tmp_path / "projection.json").read_text())
+    assert set(proj["pilot_criteria"]) == set(Z.MODELS) and proj["decision"] == "proceed"
+    pilot = json.loads((tmp_path / "judge/pilot.summary.json").read_text())
+    full = json.loads((tmp_path / "judge/shard0.summary.json").read_text())
+    assert pilot["jobs_run"] and full["calls_planned"] - full["jobs_run"] == pilot["jobs_run"]
     hf = json.loads((tmp_path / "mb_phase2/qwen38_27b/hf_phase.json").read_text())
     g = hf["merge_gate"]
     assert g["saved"]["ok"] and g["saved"]["keys_identical"] and g["adapter_tv_vs_base"] > 0
     assert g["merged_tv_vs_attached"] < g["merged_tv_vs_base"]  # merged sits on the adapter
     assert hf["n_rows"] == 176
-    s = json.loads((tmp_path / "gen/qwen38_27b.adapter.summary.json").read_text())
+    s = json.loads((tmp_path / "gen/qwen38_27b.adapter.k0-2.summary.json").read_text())
     assert s["status"] == "ok" and "parity_tv" in s and "band_tv" in s
     gen = [json.loads(x) for x in (tmp_path / "gen/qwen38_27b.none.jsonl").read_text().splitlines()]
     assert len(gen) == 32 and not any(k in r for r in gen for k in ("trace", "response"))
+    assert {r["job_id"].rsplit("/", 1)[1] for r in gen} == {"k0", "k1"}  # k1 appended on resume
     judge = [json.loads(x) for x in (tmp_path / "judge/shard0.jsonl").read_text().splitlines()]
     assert judge and not any("reply" in r for r in judge)
 
 
-def test_runner_reads_p2s_projection_and_ships_only_registered_adapters():
-    # most probable failure: the runner left pointing at G1/G2's projection, ignoring the per-model
-    # k, or running with an adapter that is not the registered one
+def test_runner_runs_the_stages_in_order_and_ships_only_registered_adapters():
+    # most probable failure (v0.9.2): the projection read before the rates exist, k1 generated
+    # before the sync point decides it, or a run with an adapter that is not the registered one
     text = (REPO / "papers/mrb_morebench/runpod/remote_mrb_p2.sh").read_text()
-    assert 'PROJ="$OUT_ROOT/p2_validate/projection.json"' in text
-    assert '[ "$DECISION" = "STOP" ] && { echo "BAIL' in text
+    order = ["hf-phase --model", "--arm none --k-from 0 --k 1", "judge --pilot", "project-live",
+             "--arm adapter --k-from 0", "--arm none --k-from 1 --k 2",
+             "judge.log judge --local-dir"]
+    pos = [text.index(x) for x in order]
+    assert pos == sorted(pos)
+    assert '[ "$DECISION" = "STOP" ] && { echo "BAIL' in text and "p2_validate" not in text
     assert "['k']['muse_glimmer_30b']" in text and "['k']['qwen38_27b']" in text
     assert '"peft==0.21.2"' in text and "an adapter is missing or not the registered one" in text
     assert 'rm -rf "$OUT_ROOT/${SUB}_merged"' in text
     assert text.index("vLLM smoke OK") < text.index("snapshot_download")
     assert "tests/scripts/test_mrb_p2_pod.py" in text
     sync = (REPO / "papers/mrb_morebench/runpod/sync_p2.txt").read_text().split()
-    assert "outputs/p2_validate/projection.json" in sync
-    assert {Path(p).parts[3] for p in sync if "adapters" in p} == set(Z.MODELS)
+    assert {Path(p).parts[3] for p in sync} == set(Z.MODELS) and len(sync) == 4

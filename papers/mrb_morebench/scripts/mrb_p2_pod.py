@@ -3,13 +3,15 @@
     hf-phase --model M --out DIR [--validate] [--dry-run]
         HF on one GPU: the MoralBench rider (R2, both orders, dose 0) on the base model and with
         ST's adapter attached; ST's merge (``write_merged``); the merged copy's rows; the merge gate.
-    generate --model M --arm {none,adapter} --k K --out DIR [--validate] [--deadline E] [--dry-run]
+    generate --model M --arm {none,adapter} --k-from F --k K --out DIR [--deadline E] [--dry-run]
         vLLM on one GPU: the parity letters on the rider's 176 dose-0 prompts (the adapter arm
-        checks ST's parity gate against the HF rows), then MoReBench generation, k per scenario.
-    judge --out DIR [--validate] [--deadline E] [--local-dir PATH] [--dry-run]
+        checks ST's parity gate against the HF rows), then MoReBench generation for k in [F, K).
+    judge --out DIR [--pilot] [--deadline E] [--local-dir PATH] [--dry-run]
         G1's judge of record on every response, k0 of every arm first, then row by row; G1's guard.
-    project --out DIR --validate-hours H --setup-hours H [--envelope-h 9.0]
-        The session from VALIDATE's rates, with the per-model cut (a).
+        ``--pilot``: each model's ``none`` k0 on the 16 pilot scenarios only (MRB_PLAN v0.9.2).
+    project-live --out DIR --spent-a100-h S [--envelope-h 9.0] [--dry-run]
+        The sync point (v0.9.2): the pilot criteria, then the remaining work's projection with the
+        per-model cut (a); writes projection.json.
 
 Models: Muse Glimmer 30B (``muse_glimmer_30b``) and Qwen3.8-27B (``qwen38_27b``) at ST's registry
 pins, rendered by ST's ``reasoning_formats`` at effort medium (Muse's date pinned at 2026-10-23,
@@ -260,7 +262,7 @@ def split(fmt, tok, g: list[int]) -> tuple[str, str, bool]:
     return dec(g[start:end]), resp.strip(), True
 
 
-def gen_jobs(model: str, tok, fmt, k: int, validate: bool) -> list[dict]:
+def gen_jobs(model: str, tok, fmt, k: int, validate: bool, k_from: int = 0) -> list[dict]:
     from deepsteer.datasets.morebench import load_morebench
     jobs = []
     for it in load_morebench(subset="public"):
@@ -269,7 +271,7 @@ def gen_jobs(model: str, tok, fmt, k: int, validate: bool) -> list[dict]:
         rendered = fmt.render(tok, [{"role": "user", "content": generation_prompt(it.dilemma)}],
                               EFFORT, DATE_PIN[model])
         ids = fmt.prompt_ids(tok, rendered)
-        for kk in range(k):
+        for kk in range(k_from, k):
             jobs.append({"sid": it.scenario_id, "k": kk, "prompt_ids": ids,
                          "max_tokens": P.MAX_TOKENS, "seed": seed(model, it.scenario_id, kk),
                          "sampler": SAMPLER})
@@ -340,11 +342,13 @@ def cmd_generate(a) -> dict:
     fmt = fmt_for(model, tok)
     mbdir = a.out / "mb_phase2" / model
     gate = json.loads((mbdir / "hf_phase.json").read_text())["merge_gate"]
-    rec = {"model": model, "arm": arm, "k": a.k, "validate": a.validate, "pod_version": POD_VERSION}
+    rec = {"model": model, "arm": arm, "k_from": a.k_from, "k": a.k, "validate": a.validate,
+           "pod_version": POD_VERSION}
+    summ = a.out / "gen" / f"{model}.{arm}.k{a.k_from}-{a.k}.summary.json"
+    summ.parent.mkdir(parents=True, exist_ok=True)
     if arm == "adapter" and not gate.get("gate_ok"):
         rec.update(status="dropped", reason="merge gate failed")
-        (a.out / "gen" / f"{model}.{arm}.summary.json").parent.mkdir(parents=True, exist_ok=True)
-        (a.out / "gen" / f"{model}.{arm}.summary.json").write_text(json.dumps(rec, indent=1))
+        summ.write_text(json.dumps(rec, indent=1))
         return rec
     rows = mb_prompts(model, tok, fmt, a.validate)
     t0 = time.time()
@@ -368,10 +372,10 @@ def cmd_generate(a) -> dict:
         rec.update(parity_tv=d, band_tv=band, parity_ok=ok)
         if not ok:
             rec.update(status="dropped", reason="vLLM parity failed")
-            (a.out / "gen" / f"{model}.{arm}.summary.json").write_text(json.dumps(rec, indent=1))
+            summ.write_text(json.dumps(rec, indent=1))
             return rec
     jobs = [dict(j, job_id=f"{model}/{arm}/{j['sid']}/k{j['k']}")
-            for j in gen_jobs(model, tok, fmt, a.k, a.validate)]
+            for j in gen_jobs(model, tok, fmt, a.k, a.validate, a.k_from)]
     out, raw = a.out / "gen" / f"{model}.{arm}.jsonl", a.out / "_raw" / "gen" / f"{model}.{arm}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     raw.parent.mkdir(parents=True, exist_ok=True)
@@ -391,7 +395,7 @@ def cmd_generate(a) -> dict:
                        deadline=a.deadline, meta_keys=("job_id",))
     rec.update(run, status="ok", n_jobs=len(jobs), engine_load_h=round(load_h, 4),
                llm_kwargs=LLM_KWARGS, sampler=SAMPLER)
-    (a.out / "gen" / f"{model}.{arm}.summary.json").write_text(json.dumps(rec, indent=1))
+    summ.write_text(json.dumps(rec, indent=1))
     if arm == "adapter" and not a.dry_run:
         shutil.rmtree(merged_dir(a.out, model), ignore_errors=True)
     return rec
@@ -423,6 +427,10 @@ def cmd_judge(a) -> dict:
     items = load_morebench(subset="public")
     by_sid = {it.scenario_id: it for it in items}
     units = judge_units(items, load_gens(a.out))
+    if a.pilot:  # v0.9.2: each model's none k0 on the 16 pilot scenarios; rows count for the full judge
+        pilot = {it.scenario_id for it in items if it.idx in VALIDATE_SCENARIOS}
+        units = [u for u in units if u["sid"] in pilot and u["k"] == 0
+                 and u["unit"].split("/")[1] == "none"]
     engine, SPc = P.load_engine(P.JUDGE["repo"], P.JUDGE["revision"], a.local_dir, a.dry_run, tok,
                                 CoTFormat.HARMONY_ANALYSIS, "yes", "judge")
 
@@ -460,95 +468,127 @@ def cmd_judge(a) -> dict:
     rec.update({"calls_planned": sum(len(by_sid[u["sid"]].criteria) for u in units),
                 "guard": P.GUARD, "guard_seen": guard.seen, "guard_tripped": guard.tripped,
                 "validate": a.validate, "pod_version": POD_VERSION})
-    (a.out / "judge" / "shard0.summary.json").write_text(json.dumps(rec, indent=1))
+    rec["pilot"] = a.pilot
+    name = "pilot.summary.json" if a.pilot else "shard0.summary.json"
+    (a.out / "judge" / name).write_text(json.dumps(rec, indent=1))
     return rec
 
 
-# ---- projection -------------------------------------------------------------------------------
-def project(per_model: dict, fixed: dict, judge_tps: float, envelope_h: float,
-            validate_h: float) -> dict:
-    """``per_model[m]``: ``tokens_per_job`` L_m, ``tokens_per_s`` r_m, ``judge_tokens_per_call``
-    t_m, ``loads_h``. W = setup + HF phase + max_m(gen_m + loads_m) + sum_m judge_m + margin; the
-    per-model cut (a) lowers k to 1 for the model whose cut lowers W more, then the other, then
-    STOP (MRB_PLAN v0.9)."""
-    n_crit = 22.9
+# ---- projection (the sync point, v0.9.2) -------------------------------------------------------
+G1_JUDGE_TPS = 5382.0  # MRB-G1 session's judge rate; R of record at the sync point (v0.9.2)
+N_CRIT = 22.9  # MoReBench public: 11,450 criteria / 500 scenarios
+PILOT_MAX_NO_VERDICT, PILOT_MIN_FINAL = 0.05, 0.90
 
+
+def project_rest(per_model: dict, fixed: dict, judge_tps: float, spent_a100_h: float,
+                 envelope_h: float) -> dict:
+    """The remaining work from the sync point (MRB_PLAN v0.9.2). ``per_model[m]``: L_m
+    ``tokens_per_job``, r_m ``tokens_per_s``, t_m ``judge_tokens_per_call``, ``loads_h``,
+    ``adapter_ok``, ``judged_calls`` (the pilot's rows). W_rest = max_m(gen_m + loads_m) +
+    sum_m judge_m + judge load + margin, gen_m = (adapter at k_m + none at k_m - 1) x 500 x L_m /
+    r_m; the cost is spent + 2 W_rest; v0.9's per-model cut (a) lowers k to 1 for the model whose cut
+    lowers W_rest more, then the other, then STOP."""
     def wall(k: dict) -> tuple[float, dict]:
         parts = {}
         for m, v in per_model.items():
-            gen = 2 * 500 * k[m] * v["tokens_per_job"] / v["tokens_per_s"] / 3600
-            judge = 2 * 500 * k[m] * n_crit * v["judge_tokens_per_call"] / judge_tps / 3600
-            parts[m] = {"k": k[m], "gen_h": round(gen, 3), "judge_h": round(judge, 3),
+            jobs = 500 * ((k[m] if v["adapter_ok"] else 0) + (k[m] - 1))
+            gen = jobs * v["tokens_per_job"] / v["tokens_per_s"] / 3600
+            arms = 1 + (1 if v["adapter_ok"] else 0)
+            calls = arms * 500 * k[m] * N_CRIT - v["judged_calls"]
+            judge = max(calls, 0) * v["judge_tokens_per_call"] / judge_tps / 3600
+            parts[m] = {"k": k[m], "gen_jobs_rest": jobs, "gen_h": round(gen, 3),
+                        "judge_calls_rest": round(calls), "judge_h": round(judge, 3),
                         "gen_wall_h_per_1000_jobs": round(1000 * v["tokens_per_job"]
-                                                          / v["tokens_per_s"] / 3600, 3)}
-        w = (fixed["setup_h"] + fixed["hf_phase_h"] + fixed["judge_load_h"] + fixed["margin_h"]
+                                                          / v["tokens_per_s"] / 3600, 3),
+                        "tokens_per_job": round(v["tokens_per_job"]),
+                        "tokens_per_s": round(v["tokens_per_s"], 1)}
+        w = (fixed["judge_load_h"] + fixed["margin_h"]
              + max(parts[m]["gen_h"] + per_model[m]["loads_h"] for m in parts)
              + sum(p["judge_h"] for p in parts.values()))
         return w, parts
 
-    remaining = envelope_h - validate_h
-    levels, k = [], {m: 2 for m in per_model}
+    remaining = envelope_h - spent_a100_h
+    k = {m: 2 for m in per_model}
     w, parts = wall(k)
-    levels.append({"cut": "none", "wall_h": round(w, 3), "a100_h": round(2 * w, 3), "models": parts})
+    levels = [{"cut": "none", "wall_rest_h": round(w, 3), "a100_h_total": round(spent_a100_h + 2 * w, 3),
+               "models": parts}]
     while 2 * w > remaining and any(v == 2 for v in k.values()):
-        options = []
-        for m in [m for m in k if k[m] == 2]:
-            w2, _ = wall({**k, m: 1})
-            options.append((w2, m))
-        w, m = min(options)
+        w2, m = min((wall({**k, m: 1})[0], m) for m in k if k[m] == 2)
         k = {**k, m: 1}
         w, parts = wall(k)
-        levels.append({"cut": f"a: {m} k=1", "wall_h": round(w, 3), "a100_h": round(2 * w, 3),
-                       "models": parts})
+        levels.append({"cut": f"a: {m} k=1", "wall_rest_h": round(w, 3),
+                       "a100_h_total": round(spent_a100_h + 2 * w, 3), "models": parts})
     fits = 2 * w <= remaining
-    return {"envelope_h": envelope_h, "validate_h": validate_h, "remaining_h": round(remaining, 3),
-            "levels": levels, "k": k if fits else None, "decision": "proceed" if fits else "STOP",
-            "session_wall_h": round(w, 3), "session_a100_h": round(2 * w, 3),
-            "session_max_wall_h": round(min(1.15 * w, remaining / 2), 3) if fits else None}
+    return {"envelope_h": envelope_h, "spent_a100_h": round(spent_a100_h, 3),
+            "remaining_h": round(remaining, 3), "levels": levels, "k": k if fits else None,
+            "decision": "proceed" if fits else "STOP", "wall_rest_h": round(w, 3),
+            "session_a100_h": round(spent_a100_h + 2 * w, 3),
+            "rest_max_wall_h": round(min(1.15 * w, remaining / 2), 3) if fits else None}
 
 
-def cmd_project(a) -> dict:
-    rows = read_rows(a.out / "judge" / "shard0.jsonl")
-    judge_s = json.loads((a.out / "judge" / "shard0.summary.json").read_text())
-    per_model, hf_h = {}, []
+def pilot_criteria(out: Path) -> dict:
+    """v0.9.2: per model, at most 5% of pilot judge calls without a verdict, and at least 90% of the
+    ``none`` k0 generations reaching the final answer."""
+    rows = read_rows(out / "judge" / "shard0.jsonl")
+    res = {}
     for m in MODELS:
-        g = [json.loads((a.out / "gen" / f"{m}.{arm}.summary.json").read_text()) for arm in ARMS]
-        ran = [x for x in g if x.get("status") == "ok" and x.get("jobs_run")]
-        toks = sum(x["decoded_tokens"] for x in ran)
-        jobs = sum(x["jobs_run"] for x in ran)
-        secs = sum(x["wall_s"] for x in ran)
+        js = [r for r in rows if r["unit"].startswith(f"{m}/none/") and "/k0/" in r["unit"]]
+        gens = read_rows(out / "gen" / f"{m}.none.jsonl") if (out / "gen" / f"{m}.none.jsonl").exists() else []
+        g0 = [g for g in gens if g["job_id"].endswith("/k0")]
+        nv = sum(r["verdict"] is None for r in js) / max(len(js), 1)
+        fr = sum(g["final_reached"] for g in g0) / max(len(g0), 1)
+        res[m] = {"pilot_calls": len(js), "no_verdict_share": round(nv, 4),
+                  "generations_k0": len(g0), "final_reached_share": round(fr, 4),
+                  "ok": bool(js) and bool(g0) and nv <= PILOT_MAX_NO_VERDICT and fr >= PILOT_MIN_FINAL}
+    return res
+
+
+def cmd_project_live(a) -> dict:
+    crit = pilot_criteria(a.out)
+    rows = read_rows(a.out / "judge" / "shard0.jsonl")
+    pilot_s = json.loads((a.out / "judge" / "pilot.summary.json").read_text())
+    per_model = {}
+    for m in MODELS:
+        g = json.loads((a.out / "gen" / f"{m}.none.k0-1.summary.json").read_text())
+        hf = json.loads((a.out / "mb_phase2" / m / "hf_phase.json").read_text())
         rs = [r for r in rows if r["unit"].startswith(m + "/")]
-        per_model[m] = {"tokens_per_job": toks / max(jobs, 1), "tokens_per_s": toks / max(secs, 1e-9),
+        per_model[m] = {"tokens_per_job": g["decoded_tokens"] / max(g["jobs_run"], 1),
+                        "tokens_per_s": g["tokens_per_s"],
                         "judge_tokens_per_call": sum(r["n_tokens"] for r in rs) / max(len(rs), 1),
-                        "loads_h": sum(x.get("engine_load_h", 0.05) for x in ran) or 0.1,
-                        "arms_ok": [x["arm"] for x in ran]}
-        hf_h.append(json.loads((a.out / "mb_phase2" / m / "hf_phase.json").read_text())["wall_h"])
-    fixed = {"setup_h": a.setup_hours, "hf_phase_h": max(hf_h), "judge_load_h": 0.05,
-             "margin_h": 0.25}
-    rec = {"measured": {"per_model": per_model, "fixed": fixed,
-                        "judge_tokens_per_s": judge_s["tokens_per_s"]},
-           **project(per_model, fixed, judge_s["tokens_per_s"], a.envelope_h, a.validate_hours)}
+                        "loads_h": 2 * max(g.get("engine_load_h", 0.05), 0.05),
+                        "adapter_ok": bool(hf["merge_gate"].get("gate_ok")),
+                        "judged_calls": len(rs)}
+    fixed = {"judge_load_h": 0.05, "margin_h": 0.25}
+    rec = {"rule": "MRB_PLAN v0.9.2 sync point", "pilot_criteria": crit,
+           "measured": {"per_model": per_model, "judge_tokens_per_s_of_record": G1_JUDGE_TPS,
+                        "judge_tokens_per_s_pilot": pilot_s["tokens_per_s"]},
+           **project_rest(per_model, fixed, G1_JUDGE_TPS, a.spent_a100_h, a.envelope_h)}
+    if not all(c["ok"] for c in crit.values()):
+        rec.update(decision="STOP", k=None, rest_max_wall_h=None,
+                   stop_reason="pilot criteria: " + ", ".join(m for m, c in crit.items()
+                                                              if not c["ok"]))
     (a.out / "projection.json").write_text(json.dumps(rec, indent=1))
     return rec
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["hf-phase", "generate", "judge", "project"])
+    ap.add_argument("cmd", choices=["hf-phase", "generate", "judge", "project-live"])
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--model", choices=MODELS)
     ap.add_argument("--arm", choices=ARMS)
-    ap.add_argument("--k", type=int, default=2)
+    ap.add_argument("--k", type=int, default=2, help="generate k in [--k-from, --k)")
+    ap.add_argument("--k-from", type=int, default=0)
+    ap.add_argument("--pilot", action="store_true")
+    ap.add_argument("--spent-a100-h", type=float, default=0.0)
     ap.add_argument("--local-dir", type=Path, default=None)
     ap.add_argument("--deadline", type=float, default=None)
     ap.add_argument("--validate", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--envelope-h", type=float, default=9.0)  # MRB_PLAN v0.9
-    ap.add_argument("--validate-hours", type=float, default=0.0)
-    ap.add_argument("--setup-hours", type=float, default=0.25)
     a = ap.parse_args()
     rec = {"hf-phase": cmd_hf_phase, "generate": cmd_generate, "judge": cmd_judge,
-           "project": cmd_project}[a.cmd](a)
+           "project-live": cmd_project_live}[a.cmd](a)
     print(json.dumps(rec, default=str)[:1500])
 
 
