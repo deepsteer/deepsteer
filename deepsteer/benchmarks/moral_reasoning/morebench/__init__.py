@@ -9,9 +9,11 @@ from __future__ import annotations
 from deepsteer.benchmarks.moral_reasoning.morebench.prompts import (
     GENERATION_INSTRUCTION,
     JUDGE_INSTRUCTION,
+    THEORY_DEFINITIONS,
     UPSTREAM_COMMIT,
     generation_prompt,
     judge_prompt,
+    theory_generation_prompt,
 )
 from deepsteer.benchmarks.moral_reasoning.morebench.scoring import (
     aggregate,
@@ -24,6 +26,7 @@ from deepsteer.benchmarks.moral_reasoning.morebench.scoring import (
 __all__ = [
     "GENERATION_INSTRUCTION",
     "JUDGE_INSTRUCTION",
+    "THEORY_DEFINITIONS",
     "UPSTREAM_COMMIT",
     "aggregate",
     "code_score",
@@ -32,4 +35,5 @@ __all__ = [
     "fulfilled",
     "generation_prompt",
     "judge_prompt",
+    "theory_generation_prompt",
 ]

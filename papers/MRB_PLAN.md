@@ -1,6 +1,8 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.6, 2026-10-31. **v0.6 (author, MRB-G1 gate): the OpenRouter cross-check, extended to
+Status: v0.7, 2026-10-31. **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
+on Qwen3-30B-A3B, envelope 3.2 A100-h ("about 3"); gpt-oss-120b and the API rows off; the
+`REPRODUCTION.md` wording for the GPT-OSS rows (§5).** **v0.6 (author, MRB-G1 gate): the OpenRouter cross-check, extended to
 GPT-oss-20b generated through OpenRouter (§5); no full delimited pass; the response near-misses read
 against a deployment term and the 1.96-point MDE; the steering-target decision deferred.** Scope until
 `REPRODUCTION.md` is written: reproducing the paper's results only. **v0.5 (author, after the aborted G1 session): the envelope raised to
@@ -268,6 +270,58 @@ between-model Regular difference at the measured scenario variance.
   pod (MB_PLAN Amendment 4).
 - **MRB-G2 (author's call):** GPT-oss-120b, API extension rows, the theory set, and the
   reproduction report (`papers/mrb_morebench/REPRODUCTION.md`).
+  **v0.7 (author, 2026-10-31; registered before VALIDATE): the minimal G2.**
+  - *Cell:* the theory set (150 rows: 30 dilemmas × 5 theories, 3,835 criteria) on
+    Qwen3-30B-A3B-Thinking-2507 at G1's pins and Table 4 sampling (T 0.6, top-p 0.95, 10,500
+    tokens), upstream's theory prompt byte for byte (`theory_generation_prompt`, from
+    `create_prompts_for_reasoning_eval.py` as `run_inferences_on_dilemmas_theory.py` line 44
+    assembles it), k = 2 per row, both fields. G1's judge of record (gpt-oss-120b on the pod,
+    effort high, Table 4 sampling) with the registered prompt; G1's verdict guard; the ladder
+    (empty, the scenario restated) on all 150 rows, judged first. gpt-oss-120b's own row and the
+    API rows are off.
+  - *Paper cells (read from the arXiv v2 source, 2026-10-31, `table/model_resp_on_benchmark_theory.tex`,
+    row 30B-A3B; Gauthierian, Scanlonian, Benthamite, Aristotelian, Kantian, Overall, length,
+    Overall-LC):* thinking trace 70.2, 71.6, 76.7, 74.7, 75.4, 73.7, 4,766, 15.5; final response
+    69.2, 74.4, 77.0, 78.5, 79.2, 75.7, 7,396, 10.2. Table arithmetic checks on both rows (Overall
+    = mean of the five; Overall-LC = Overall / length × 1000). The source holds both tables in one
+    file under labels `tab:model_performance_on_benchmark_resp_theory` and `..._thinking_trace_theory`.
+  - *Readouts (`scripts/mrb_g2_analyze.py`):* per field, Overall and Overall-LC of k0 on the 150,
+    under substring credit (exact-token beside it), against the paper cells with G1's match rule
+    (95% PI of a one-generation mean, k = 2 resampled, rows fixed, ± 0.05); for Overall, G1's
+    sensitivity interval with the deployment term v0.6 measured on Qwen's fields (δ = 3.40 trace,
+    2.03 response), beside the registered verdict. The five per-theory cells (30 rows each) under
+    the same rule, as secondary cells. The ladder and the verdict rate per field.
+  - *Power (from G1's measured Qwen variance; VALIDATE re-measures it):*
+
+    | quantity | trace | response |
+    |---|---|---|
+    | scenario SD (G1, public set) | 15.62 | 13.81 |
+    | registered PI width, Overall (n = 150, k = 2; closed form 3.92 × gen SD / √300) | 1.64 | 1.38 |
+    | registered PI width, one theory (n = 30) | 3.67 | 3.08 |
+    | MDE80 against a fixed paper value, Overall (2.8 × SD / √150) | 3.57 | 3.16 |
+    | MDE80, one theory (n = 30) | 7.99 | 7.06 |
+
+    The per-theory cells can detect only deviations of 7-8 points; the Overall cells carry the
+    reading.
+  - *Both branches (written before data):* the cells replicate → MRB-01 extends to the theory set:
+    the pipeline reproduces Qwen3-30B-A3B on a second MoReBench instrument, theory-conditioned
+    prompts included. The cells miss → diagnosis under amendment, the first discriminator zero GPU:
+    our lengths against the paper's (its theory traces, 4,766 characters, run longer than its
+    public-set ones, 3,691), then the theory prompt's rendering.
+  - *Bail conditions:* VALIDATE (2 × A100-80GB, 15 rows × 2 generations, their units and ladder)
+    fails on any stack or engine error, on any Qwen generation not reaching its final answer, or on
+    a guard trip; its projection (G1's rates re-measured) must fit the envelope's remainder, else
+    STOP and report. The session runs under the projection's wall cap (15% over, clipped to the
+    envelope), the guard and a watchdog.
+  - *Saves per unit:* per (row, criterion, generation, field) the verdict (≤ 20 characters), both
+    credit tests and token counts; per generation lengths, hashes and finish reasons; texts in
+    `_raw/` (backed up to ds-data); a manifest per run.
+  - *Dependencies:* the theory CSV at the pinned HF revision (sha256 in the manifest, fetched on
+    the pod); `data/canned_ladder_v1.json`; the paper cells and δ, committed in the analysis.
+  - *Envelope:* 3.2 A100-h for G2 (VALIDATE about 0.7, the session about 2.3).
+  - *`REPRODUCTION.md` (written after G2, author's wording):* the GPT-oss-20b trace row is
+    recorded as "not reproduced, including through the paper's own pipeline", citing MRB-A10 and
+    MRB-A11; the GPT-oss-20b Hard misses are recorded as length-driven (MRB-A11).
 
 ## 6. Library decomposition
 
@@ -306,7 +360,7 @@ paper's table, so its row is also the bridge between the replication and the ST 
 | GPT-oss-120b generation | pod, 1 × 80GB | ~1 A100-h |
 | API extension rows | API | priced per row at MRB-G0 |
 
-**Envelope (approved v0.2): 8 A100-h and $60 API through MRB-G1**, conditional on VALIDATE
+**MRB-G2 envelope (v0.7): 3.2 A100-h**, separate from G1's. **Envelope (approved v0.2): 8 A100-h and $60 API through MRB-G1**, conditional on VALIDATE
 confirming gpt-oss-120b runs on the pod's GPU type before any judging. **Raised in v0.4 to 10.3
 A100-h** (API unchanged) after VALIDATE confirmed it (tensor-parallel over two A100-80GB) and the
 registered projection stopped at 8; the raise buys the registered design at cut (a+b+c) and
