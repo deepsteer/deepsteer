@@ -2,7 +2,7 @@
 
     generate --out DIR [--k 2] [--validate] [--deadline EPOCH] [--local-dir PATH]
     judge --out DIR [--validate] [--deadline EPOCH] [--local-dir PATH]
-    project --out DIR --validate-hours H --setup-hours H [--envelope-h 3.0]
+    project --out DIR --validate-hours H --setup-hours H [--envelope-h 3.2]
     --dry-run (any subcommand): a stub engine and cached tokenizers, no GPU (local tests)
 
 Generation: upstream's theory prompt (``theory_generation_prompt``), Table 4 sampling (T 0.6,
@@ -214,7 +214,7 @@ def main() -> None:
     ap.add_argument("--deadline", type=float, default=None)
     ap.add_argument("--validate", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--envelope-h", type=float, default=3.0)
+    ap.add_argument("--envelope-h", type=float, default=3.2)  # MRB_PLAN v0.7
     ap.add_argument("--validate-hours", type=float, default=0.0)
     ap.add_argument("--setup-hours", type=float, default=0.25)
     a = ap.parse_args()

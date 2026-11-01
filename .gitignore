@@ -137,5 +137,6 @@ papers/mb_moralbench/outputs/g2*/_raw/
 # MoReBench generations and judge replies (can quote scenario text; MRB_PLAN §9)
 papers/mrb_morebench/outputs_raw/
 papers/mrb_morebench/outputs/g1*/_raw/
+papers/mrb_morebench/outputs/g2*/_raw/
 # the G1 judge rows are tracked gzipped (44 MB plain); the analysis reads either
 papers/mrb_morebench/outputs/g1/judge/shard0.jsonl

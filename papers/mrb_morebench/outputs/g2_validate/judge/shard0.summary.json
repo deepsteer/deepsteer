@@ -1,0 +1,30 @@
+{
+ "jobs_run": 2382,
+ "decoded_tokens": 1171380,
+ "wall_s": 244.7,
+ "tokens_per_s": 4786.1,
+ "calls_per_s": 9.733,
+ "stopped": null,
+ "calls_planned": 2382,
+ "guard": {
+  "min_calls": 1000,
+  "max_no_verdict": 0.05
+ },
+ "guard_seen": {
+  "canned": [
+   794,
+   8
+  ],
+  "qwen3_30b/trace": [
+   794,
+   0
+  ],
+  "qwen3_30b/response": [
+   794,
+   0
+  ]
+ },
+ "guard_tripped": {},
+ "validate": true,
+ "pod_version": "1.0.0"
+}

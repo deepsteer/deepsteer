@@ -1,0 +1,13 @@
+{
+ "jobs_run": 30,
+ "decoded_tokens": 86300,
+ "wall_s": 107.2,
+ "tokens_per_s": 805.2,
+ "calls_per_s": 0.28,
+ "stopped": null,
+ "model": "qwen3_30b",
+ "set": "theory",
+ "n_jobs": 30,
+ "validate": true,
+ "pod_version": "1.0.0"
+}
