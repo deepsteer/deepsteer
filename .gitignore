@@ -140,3 +140,4 @@ papers/mrb_morebench/outputs/g1*/_raw/
 papers/mrb_morebench/outputs/g2*/_raw/
 # the G1 judge rows are tracked gzipped (44 MB plain); the analysis reads either
 papers/mrb_morebench/outputs/g1/judge/shard0.jsonl
+papers/mrb_morebench/outputs/g2/judge/shard0.jsonl

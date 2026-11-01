@@ -1,0 +1,422 @@
+{
+ "metadata": {
+  "analysis_version": "1.0.0",
+  "date": "2026-10-31",
+  "plan": "MRB_PLAN v0.7",
+  "judge_rows": 23010,
+  "units": 900,
+  "units_incomplete": 0,
+  "n_draws": 10000,
+  "seed": 20261031,
+  "deployment_delta": {
+   "trace": 3.4,
+   "response": 2.03
+  }
+ },
+ "paper_table_audit": {
+  "trace": {
+   "overall_from_theories": 73.72,
+   "overall": 73.7,
+   "lc_from_overall_and_length": 15.5,
+   "lc": 15.5,
+   "consistent": true
+  },
+  "response": {
+   "overall_from_theories": 75.66,
+   "overall": 75.7,
+   "lc_from_overall_and_length": 10.2,
+   "lc": 10.2,
+   "consistent": true
+  }
+ },
+ "generation": {
+  "n": 300,
+  "final_reached": 300,
+  "hit_cap": 0,
+  "empty_trace": 0
+ },
+ "verdicts_by_type": {
+  "canned": {
+   "calls": 7670,
+   "no_verdict": 126,
+   "no_verdict_pct": 1.64,
+   "tokens_per_call": 493
+  },
+  "response": {
+   "calls": 7670,
+   "no_verdict": 0,
+   "no_verdict_pct": 0.0,
+   "tokens_per_call": 445
+  },
+  "trace": {
+   "calls": 7670,
+   "no_verdict": 2,
+   "no_verdict_pct": 0.03,
+   "tokens_per_call": 528
+  }
+ },
+ "fields": {
+  "trace": {
+   "credit_substring": {
+    "n_rows": 150,
+    "k": 2,
+    "overall_k0": 74.16,
+    "overall_k0_ci95": [
+     72.07,
+     76.14
+    ],
+    "length_k0": 4956,
+    "overall_lc_k0": 14.96,
+    "paper_length": 4766,
+    "scenario_sd_k0": 12.79,
+    "generation_sd_within": 6.63,
+    "match_overall": {
+     "paper": 73.7,
+     "pi95": [
+      73.81,
+      75.3
+     ],
+     "verdict": "misses",
+     "sensitivity_interval": [
+      70.36,
+      78.75
+     ],
+     "sensitivity_verdict": "replicates within deployment noise"
+    },
+    "match_overall_lc": {
+     "paper": 15.5,
+     "pi95": [
+      15.01,
+      15.81
+     ],
+     "verdict": "replicates"
+    },
+    "theories": {
+     "Gauthierian Contractarianism": {
+      "n": 30,
+      "ours_k0": 71.67,
+      "paper": 70.2,
+      "pi95": [
+       68.99,
+       73.15
+      ],
+      "verdict": "replicates"
+     },
+     "Scanlonian Contractualism": {
+      "n": 30,
+      "ours_k0": 72.81,
+      "paper": 71.6,
+      "pi95": [
+       71.42,
+       74.51
+      ],
+      "verdict": "replicates"
+     },
+     "Act Utilitarianism": {
+      "n": 30,
+      "ours_k0": 78.23,
+      "paper": 76.7,
+      "pi95": [
+       77.9,
+       80.67
+      ],
+      "verdict": "misses"
+     },
+     "Aristotelian Virtue Ethics": {
+      "n": 30,
+      "ours_k0": 71.55,
+      "paper": 74.7,
+      "pi95": [
+       71.74,
+       74.79
+      ],
+      "verdict": "replicates"
+     },
+     "Kantian Deontology": {
+      "n": 30,
+      "ours_k0": 76.53,
+      "paper": 75.4,
+      "pi95": [
+       74.43,
+       77.93
+      ],
+      "verdict": "replicates"
+     }
+    }
+   },
+   "credit_exact": {
+    "n_rows": 150,
+    "k": 2,
+    "overall_k0": 74.16,
+    "overall_k0_ci95": [
+     72.07,
+     76.14
+    ],
+    "length_k0": 4956,
+    "overall_lc_k0": 14.96,
+    "paper_length": 4766,
+    "scenario_sd_k0": 12.79,
+    "generation_sd_within": 6.63,
+    "match_overall": {
+     "paper": 73.7,
+     "pi95": [
+      73.81,
+      75.29
+     ],
+     "verdict": "misses",
+     "sensitivity_interval": [
+      70.36,
+      78.74
+     ],
+     "sensitivity_verdict": "replicates within deployment noise"
+    },
+    "match_overall_lc": {
+     "paper": 15.5,
+     "pi95": [
+      15.01,
+      15.82
+     ],
+     "verdict": "replicates"
+    },
+    "theories": {
+     "Gauthierian Contractarianism": {
+      "n": 30,
+      "ours_k0": 71.67,
+      "paper": 70.2,
+      "pi95": [
+       69.02,
+       73.11
+      ],
+      "verdict": "replicates"
+     },
+     "Scanlonian Contractualism": {
+      "n": 30,
+      "ours_k0": 72.81,
+      "paper": 71.6,
+      "pi95": [
+       71.41,
+       74.48
+      ],
+      "verdict": "replicates"
+     },
+     "Act Utilitarianism": {
+      "n": 30,
+      "ours_k0": 78.23,
+      "paper": 76.7,
+      "pi95": [
+       77.89,
+       80.66
+      ],
+      "verdict": "misses"
+     },
+     "Aristotelian Virtue Ethics": {
+      "n": 30,
+      "ours_k0": 71.55,
+      "paper": 74.7,
+      "pi95": [
+       71.76,
+       74.82
+      ],
+      "verdict": "replicates"
+     },
+     "Kantian Deontology": {
+      "n": 30,
+      "ours_k0": 76.53,
+      "paper": 75.4,
+      "pi95": [
+       74.42,
+       77.91
+      ],
+      "verdict": "replicates"
+     }
+    }
+   }
+  },
+  "response": {
+   "credit_substring": {
+    "n_rows": 150,
+    "k": 2,
+    "overall_k0": 75.55,
+    "overall_k0_ci95": [
+     73.58,
+     77.6
+    ],
+    "length_k0": 7390,
+    "overall_lc_k0": 10.22,
+    "paper_length": 7396,
+    "scenario_sd_k0": 12.85,
+    "generation_sd_within": 6.09,
+    "match_overall": {
+     "paper": 75.7,
+     "pi95": [
+      74.74,
+      76.09
+     ],
+     "verdict": "replicates",
+     "sensitivity_interval": [
+      72.66,
+      78.17
+     ],
+     "sensitivity_verdict": "replicates within deployment noise"
+    },
+    "match_overall_lc": {
+     "paper": 10.2,
+     "pi95": [
+      10.11,
+      10.37
+     ],
+     "verdict": "replicates"
+    },
+    "theories": {
+     "Gauthierian Contractarianism": {
+      "n": 30,
+      "ours_k0": 72.37,
+      "paper": 69.2,
+      "pi95": [
+       70.06,
+       73.22
+      ],
+      "verdict": "misses"
+     },
+     "Scanlonian Contractualism": {
+      "n": 30,
+      "ours_k0": 73.49,
+      "paper": 74.4,
+      "pi95": [
+       71.86,
+       75.0
+      ],
+      "verdict": "replicates"
+     },
+     "Act Utilitarianism": {
+      "n": 30,
+      "ours_k0": 79.13,
+      "paper": 77.0,
+      "pi95": [
+       76.76,
+       80.12
+      ],
+      "verdict": "replicates"
+     },
+     "Aristotelian Virtue Ethics": {
+      "n": 30,
+      "ours_k0": 74.47,
+      "paper": 78.5,
+      "pi95": [
+       74.23,
+       76.89
+      ],
+      "verdict": "misses"
+     },
+     "Kantian Deontology": {
+      "n": 30,
+      "ours_k0": 78.28,
+      "paper": 79.2,
+      "pi95": [
+       76.71,
+       79.44
+      ],
+      "verdict": "replicates"
+     }
+    }
+   },
+   "credit_exact": {
+    "n_rows": 150,
+    "k": 2,
+    "overall_k0": 75.55,
+    "overall_k0_ci95": [
+     73.51,
+     77.58
+    ],
+    "length_k0": 7390,
+    "overall_lc_k0": 10.22,
+    "paper_length": 7396,
+    "scenario_sd_k0": 12.85,
+    "generation_sd_within": 6.09,
+    "match_overall": {
+     "paper": 75.7,
+     "pi95": [
+      74.74,
+      76.12
+     ],
+     "verdict": "replicates",
+     "sensitivity_interval": [
+      72.66,
+      78.2
+     ],
+     "sensitivity_verdict": "replicates within deployment noise"
+    },
+    "match_overall_lc": {
+     "paper": 10.2,
+     "pi95": [
+      10.12,
+      10.38
+     ],
+     "verdict": "replicates"
+    },
+    "theories": {
+     "Gauthierian Contractarianism": {
+      "n": 30,
+      "ours_k0": 72.37,
+      "paper": 69.2,
+      "pi95": [
+       70.06,
+       73.2
+      ],
+      "verdict": "misses"
+     },
+     "Scanlonian Contractualism": {
+      "n": 30,
+      "ours_k0": 73.49,
+      "paper": 74.4,
+      "pi95": [
+       71.84,
+       74.99
+      ],
+      "verdict": "replicates"
+     },
+     "Act Utilitarianism": {
+      "n": 30,
+      "ours_k0": 79.13,
+      "paper": 77.0,
+      "pi95": [
+       76.75,
+       80.17
+      ],
+      "verdict": "replicates"
+     },
+     "Aristotelian Virtue Ethics": {
+      "n": 30,
+      "ours_k0": 74.47,
+      "paper": 78.5,
+      "pi95": [
+       74.22,
+       76.89
+      ],
+      "verdict": "misses"
+     },
+     "Kantian Deontology": {
+      "n": 30,
+      "ours_k0": 78.28,
+      "paper": 79.2,
+      "pi95": [
+       76.71,
+       79.44
+      ],
+      "verdict": "replicates"
+     }
+    }
+   }
+  }
+ },
+ "ladder": {
+  "credit_substring": {
+   "empty": 10.11,
+   "restated": 42.14
+  },
+  "credit_exact": {
+   "empty": 10.05,
+   "restated": 41.58
+  }
+ }
+}

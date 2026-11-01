@@ -1727,10 +1727,19 @@ interval by 0.06 and 0.28, an interval that carries generation noise only; with 
 the OpenRouter cross-check measured, both replicate (v0.6). The paper's own pipeline, run today,
 reproduces our GPT-OSS numbers rather than the paper's trace row.
 
+**MRB-G2 (2026-11-01; `mrb_morebench/MRB_G2_REPORT.md`), positive voice.** The pipeline reproduces
+MoReBench for Qwen3-30B-A3B on both of the paper's instruments: the 500 public scenarios (G1) and
+the 150-row theory set (G2), whose response row replicates on Overall, Overall-LC and length
+(75.55 / 10.22 / 7,390 against 75.7 / 10.2 / 7,396). The replication's open edges are a
+generation-only match interval that three cells miss by 0.06-0.28 points (all inside the measured
+deployment noise) and GPT-oss-20b's trace row, which the paper's own pipeline no longer
+reproduces.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the OpenRouter judge cross-check (v0.6): OpenRouter − pod on Qwen traces +1.72 [0.03, 3.40], criterion agreement 0.91 | standing; the deployment term on this field is about 1.7 points on 50 scenarios |
 | MRB-02: gpt-oss-120b, under MoReBench's judge prompt, answers GPT-OSS-20B's raw analysis instead of grading it (81.8% without a verdict on the pod), and delimiting the text restores verdicts (0.27%) | the failure is our harmony rendering's, not upstream's | upstream's own call through OpenRouter (v0.6): 914 of 1,118 without a verdict on our traces, 757 of 1,118 on OpenRouter-generated ones | standing on both deployments; counter-reading rejected |
+| MRB-04: the pipeline reproduces MoReBench-Theory for Qwen3-30B-A3B: response Overall 75.55 against 75.7 and Overall-LC 10.22 against 10.2 inside the registered PI; trace Overall-LC 14.96 against 15.5 inside it, trace Overall 74.16 against 73.7 within deployment noise (0.06 outside the generation-only PI); lengths 4,956 / 7,390 against 4,766 / 7,396 | the theory structure (per-theory ordering) differs: 3 of 10 per-theory cells miss | per-theory cells at a useful MDE (about 8 points at 30 rows; not inside the replication) | standing on the Overall cells; per-theory agreement untested at a useful MDE |
 | MRB-03: the paper's GPT-oss-20b trace row (57.7 / 24.7, traces of 2,338 characters) is not reproduced by the paper's own pipeline today: 36.9 [31.4, 43.0] and 4.9, traces of 7,512 | the paper's run differed in date, providers or effort (R_drift) | none inside the replication (the paper's generations are not released) | standing as a non-reproduction with its cause open |
 
 **What the next result changes.**
