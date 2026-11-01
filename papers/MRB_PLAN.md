@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.9, 2026-11-01. **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
+Status: v0.9.1, 2026-11-01. **v0.9.1 (author): a secondary breakdown of Phase 2's paired difference by
+moral role, Agent the predicted locus (§7).** **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
 the response field, envelope 9.0 A100-h (§7).** **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
 A100-h**, the registered design and projection unchanged (`MRB_G2_REPORT.md` §3). **v0.7 (author, after the cross-check): a minimal MRB-G2, the theory set
 on Qwen3-30B-A3B, envelope 3.2 A100-h ("about 3"); gpt-oss-120b and the API rows off; the
@@ -409,6 +410,19 @@ Regular beside them), with a joint scenario bootstrap over the shared 500 scenar
 excludes 0 means the response field reads a difference between the two adapters on that dimension.
 A CI that covers 0 is reported as "no separation detectable at |ΔΔ| ≳ MDE" and **is not a verdict
 against MoReBench**: ST's non-specificity was measured on rule-right items, a different construct.
+
+**Secondary breakdown by moral role (v0.9.1, author, 2026-11-01; registered before any session
+data).** Per model, Δ on the Agent scenarios (`ai_agent`, 207) and on the Advisor scenarios
+(`ai_advisor`, 293), each with a scenario-bootstrap 95% CI, and the interaction Δ_Agent − Δ_Advisor
+with a bootstrap CI (the two subsets resampled within themselves). **Prediction (directional,
+registered): Agent is the locus of any transfer**, being the role closest to H1's rule-versus-welfare
+pattern (the model acts, rather than advises, under a rule that harms). Branches: the interaction's
+CI above 0 → transfer localized to the Agent role, as predicted; below 0 → the opposite of the
+prediction, reported as such; covering 0 → "no role difference detectable at |Δ_Agent − Δ_Advisor| ≳
+MDE (stated)". A secondary read beside the headline, never in place of it; it carries no multiplicity
+adjustment and claims no more than its CI. Power (G1's variance, k = 2): MDE80 for Δ_Agent about
+1.2-3.0, for Δ_Advisor 1.0-2.6, for the interaction 1.5-4.0 (an effect uniform across scenarios to
+one as heterogeneous as two different models).
 
 **Power (from MRB-G1's saved rows, the two G1 models as stand-ins; VALIDATE re-measures).**
 

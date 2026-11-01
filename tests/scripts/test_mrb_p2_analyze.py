@@ -16,15 +16,18 @@ import mrb_p2_analyze as Z  # noqa: E402
 class It:
     def __init__(self, i):
         self.scenario_id, self.idx, self.source = f"mrb-{i:03d}", i, "daily_dilemmas"
+        self.role = "ai_agent" if i % 5 < 2 else "ai_advisor"  # about the public set's 207 / 293
 
 
-def _fixture(score_gain: float, length_scale: float, n=200, seed=0, length_noise=5.0):
+def _fixture(score_gain: float, length_scale: float, n=200, seed=0, length_noise=5.0,
+             agent_only=False):
     rng = np.random.default_rng(seed)
     items = [It(i) for i in range(n)]
     us, dims, gens = {}, {}, {}
     for it in items:
         base, ln = rng.normal(70, 8), rng.normal(5000, 600)
-        for arm, gain, scale in (("none", 0.0, 1.0), ("adapter", score_gain, length_scale)):
+        g_it = score_gain if (not agent_only or it.role == "ai_agent") else 0.0
+        for arm, gain, scale in (("none", 0.0, 1.0), ("adapter", g_it, length_scale)):
             for k in (0, 1):
                 gid = f"m/{arm}/{it.scenario_id}/k{k}"
                 s = base * (1 + gain / 70) + rng.normal(0, 3)
@@ -70,3 +73,17 @@ def test_secondary_null_reading_says_it_is_not_a_verdict_against_morebench():
     s = Z.secondary(blocks, 50, np.random.default_rng(2))
     assert set(s) == {"regular", "harmless outcome", "logical process"}
     assert "not a verdict against MoReBench" in s["harmless outcome"]["reading"]
+
+
+def test_role_breakdown_finds_an_agent_only_transfer_and_names_the_prediction():
+    # most probable failure (v0.9.1): the role subsets swapped or pooled, so an Agent-only effect
+    # reads as a uniform one, or the interaction's sign reversed against the registered prediction
+    us, dims, gens, items = _fixture(score_gain=6.0, length_scale=1.0, length_noise=0.0,
+                                     agent_only=True)
+    r = Z.model_block(us, dims, gens, "m", items, np.random.default_rng(3))["roles"]
+    assert r["ai_agent"]["n"] == 80 and r["ai_advisor"]["n"] == 120
+    adv = r["ai_advisor"]["ci95"]
+    assert r["ai_agent"]["ci95"][0] > 0 and adv[0] < 0 < adv[1]
+    assert r["agent_minus_advisor"]["ci95"][0] > 0
+    want = "transfer localized to the Agent role, as predicted"
+    assert r["agent_minus_advisor"]["reading"] == want

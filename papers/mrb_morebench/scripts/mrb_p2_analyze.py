@@ -7,7 +7,8 @@ of record) with a scenario-bootstrap 95% CI; the five dimensions (share of crite
 pooled within a scenario; raw and Holm-adjusted); the 400-scenario subset; the length rule (Δ length
 CI excludes 0 → ΔHard beside ΔRegular, and a Regular gain without a same-direction Hard shift whose
 CI excludes 0 is "length-confounded"); the registered branch; MDEs from the measured spread. The
-secondary ΔΔ (Muse − Qwen) on Harmless Outcome, Logical Process and Regular, jointly resampled. The
+secondary ΔΔ (Muse − Qwen) on Harmless Outcome, Logical Process and Regular, jointly resampled; the
+v0.9.1 role breakdown (Δ on Agent and on Advisor scenarios and their difference, Agent predicted). The
 MoralBench rider: expected score per set in each order against its own key, A-rates, L and K, and
 the adapter's shifts with item-bootstrap CIs; the merge and parity records.
 """
@@ -33,6 +34,7 @@ MODELS = ("muse_glimmer_30b", "qwen38_27b")
 DIMS = ("identifying", "logical process", "clear process", "helpful outcome", "harmless outcome")
 SECONDARY = ("harmless outcome", "logical process")
 SUBSET_400 = ("daily_dilemmas", "ai_risk_dilemmas")
+ROLES = ("ai_agent", "ai_advisor")  # v0.9.1
 N_BOOT, SEED = 2000, 20261101
 
 
@@ -107,6 +109,24 @@ def model_block(us, dim_rates, gens, model, items, rng) -> dict:
                    "mde80": round(2.8 * float(np.nanstd(x, ddof=1)) / np.sqrt(ok.sum()), 2)}
     for d, p in holm(ps).items():
         dims[d]["p_holm"] = p
+    roles = {}  # v0.9.1: the paired difference by moral role, Agent the predicted locus
+    masks = {r: np.array([it.role == r for it in items]) for r in ROLES}
+    if all(m.any() for m in masks.values()):
+        bs = {r: delta[m][rng.integers(0, m.sum(), (N_BOOT, m.sum()))].mean(1)
+              for r, m in masks.items()}
+        for r, m in masks.items():
+            roles[r] = {"n": int(m.sum()), "delta": round(float(delta[m].mean()), 3),
+                        "ci95": ci(bs[r]),
+                        "mde80": round(2.8 * float(delta[m].std(ddof=1)) / np.sqrt(m.sum()), 2)}
+        inter = bs["ai_agent"] - bs["ai_advisor"]
+        ic = ci(inter)
+        imde = 2.8 * float(np.sqrt(sum(delta[m].var(ddof=1) / m.sum() for m in masks.values())))
+        roles["agent_minus_advisor"] = {
+            "delta": round(roles["ai_agent"]["delta"] - roles["ai_advisor"]["delta"], 3),
+            "ci95": ic, "mde80": round(imde, 2),
+            "reading": ("transfer localized to the Agent role, as predicted" if ic[0] > 0 else
+                        "the opposite of the prediction (Advisor larger)" if ic[1] < 0 else
+                        f"no role difference detectable at |Δ_Agent − Δ_Advisor| ≳ {imde:.2f}")}
     sub = np.array([it.source in SUBSET_400 for it in items])
     bsub = delta[sub][rng.integers(0, sub.sum(), (N_BOOT, sub.sum()))].mean(1)
     within = None
@@ -125,7 +145,7 @@ def model_block(us, dim_rates, gens, model, items, rng) -> dict:
            "length_rule_applies": length_rule, "subset_400": {"n": int(sub.sum()),
                                                              "delta": round(float(delta[sub].mean()), 3),
                                                              "ci95": ci(bsub)},
-           "dimensions": dims}
+           "dimensions": dims, "roles": roles}
     if length_rule:
         out["delta_hard"] = round(float((s1.mean() / l1.mean() - s0.mean() / l0.mean()) * 1000), 3)
         out["delta_hard_ci95"] = h_ci
