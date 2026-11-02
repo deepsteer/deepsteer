@@ -149,4 +149,5 @@ papers/mrb_morebench/outputs/p2/judge/shard0.jsonl
 # rewards are tracked in outputs/*.jsonl.gz without the counts. Raw text and rendered prompts
 # are never tracked (MCH_PLAN §9)
 papers/mch_machiavelli/outputs/g0_random*/*.jsonl
+papers/mch_machiavelli/outputs/g1*/_counts.jsonl
 papers/mch_machiavelli/outputs_raw/

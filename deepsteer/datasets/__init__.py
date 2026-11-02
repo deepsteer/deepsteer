@@ -23,6 +23,7 @@ from deepsteer.datasets.corpora import (
     load_narrative_corpus,
 )
 from deepsteer.datasets.loaders import load_dilemma_pairs, load_moral_probing_v2
+from deepsteer.datasets.machiavelli import fetch_machiavelli
 from deepsteer.datasets.minimal_pairs import get_minimal_pairs
 from deepsteer.datasets.moralbench import MoralBenchItem, fetch_moralbench, load_moralbench
 from deepsteer.datasets.morebench import MoReBenchItem, fetch_morebench, load_morebench
@@ -58,6 +59,7 @@ __all__ = [
     "load_dilemma_pairs",
     "load_moral_probing_v2",
     "MoralBenchItem",
+    "fetch_machiavelli",
     "fetch_moralbench",
     "load_moralbench",
     "MoReBenchItem",

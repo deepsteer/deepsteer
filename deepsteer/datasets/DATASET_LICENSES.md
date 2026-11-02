@@ -100,12 +100,12 @@ third-party text that MoralBench could not license in any case.
 DailyDilemmas (`kellycyy/daily_dilemmas`) and AIRiskDilemmas (`kellycyy/AIRiskDilemmas`), the
 sources of the other 400 public scenarios, are CC BY 4.0 on their own cards.
 
-## MACHIAVELLI: fetched at pinned hashes (runtime fetch only; MCH-G0, nothing in the wheel)
+## MACHIAVELLI: fetched at pinned hashes (runtime fetch only; MCH-G0; only the manifest is in the wheel)
 
 | Component | Source | Upstream license | Verified | Feeds |
 |---|---|---|---|---|
-| game bundle `game_data/` (scenes, trees, game source, annotations, normalization coefficients) | Google Drive file `19PXa2bgjkfFfTTI3EZIT3-IJ_vxrV0Rz` linked from `aypan17/machiavelli` (Pan et al., arXiv:2304.03279) at `ebb44e1`; zip sha256 `e13d07b4…` | **none** (no terms in the bundle or README; the games are Choice of Games' commercial titles) | README, `LICENSE` scope and bundle contents, 2026-11-02 | MCH replication (`papers/MCH_PLAN.md`); fetched into the user cache, never committed, never in the wheel |
+| game bundle `game_data/` (scenes, trees, game source, annotations, normalization coefficients) | Google Drive file `19PXa2bgjkfFfTTI3EZIT3-IJ_vxrV0Rz` linked from `aypan17/machiavelli` (Pan et al., arXiv:2304.03279) at `ebb44e1`; zip sha256 `e13d07b4…` | **none** (no terms in the bundle or README; the games are Choice of Games' commercial titles) | README, `LICENSE` scope and bundle contents, 2026-11-02 | `deepsteer.datasets.machiavelli` (fetched into the user cache, never committed, never in the wheel); MCH replication (`papers/MCH_PLAN.md`) |
 | conscience weights `multi_deberta-v3-large_1e-05_32_3.pkl` | Google Drive file `1MD0N-0IfJx4mCUnAqH9yhjqBz2u00c9a` (same README) | **none** | 2026-11-02 | DRRN +shaping only (not planned); hashed, not loaded |
 | engine and agent code; `main_results*.csv` | `aypan17/machiavelli` at `ebb44e1` (CSVs and prompts unchanged since `9f82117`) | **MIT**, Copyright (c) 2022 Alex Pan | upstream `LICENSE`, 2026-11-02 | engine fetched at the pin; `papers/mch_machiavelli/mch_prompts.py` copies the prompt strings with `LICENSE_MACHIAVELLI` beside it (repo only, not in the wheel) |
-| `papers/mch_machiavelli/data/machiavelli_bundle_manifest.json` | this project | **Apache-2.0** (file paths and sha256 hashes only) | — | bundle verification |
+| `deepsteer/datasets/machiavelli_manifest.json` | this project | **Apache-2.0** (file paths and sha256 hashes only: the engine's 97 files at `ebb44e1`, the bundle zip and its 3,459 files) | — | `deepsteer.datasets.machiavelli` verification; shipped in the wheel |
 | `papers/mch_machiavelli/outputs/g0_random*.jsonl.gz` | this project (runs of the MIT engine on the bundle) | **Apache-2.0**; seeds, actions, rewards and observation hashes only. The per-episode harm counts are not tracked: with seed-exactness they would rebuild the bundle's coefficient file (author decision at MCH-G0) | — | MCH-G0 statistics (counts regenerate from the seeds) |

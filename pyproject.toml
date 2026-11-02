@@ -53,6 +53,12 @@ api = [
 lora = [
     "peft>=0.11",
 ]
+machiavelli = [
+    # The MACHIAVELLI engine (fetched at a pinned commit, not packaged) needs these;
+    # verified bit-identical on gym 0.25.1 with asteval 0.9.29 and 1.0.10 (MCH-G0).
+    "gym==0.25.1",
+    "asteval>=0.9.29",
+]
 papers = [
     # Analysis-only deps for papers/ scripts (clustering, taxonomy). Not used
     # by the deepsteer/ core library, so kept out of the default install.
@@ -85,6 +91,7 @@ deepsteer = [
     "datasets/DATASET_LICENSES.md",
     "datasets/moralbench_manifest.json",
     "datasets/morebench_manifest.json",
+    "datasets/machiavelli_manifest.json",
     "benchmarks/moral_reasoning/morebench/LICENSE_MOREBENCH",
     "benchmarks/compliance_gap/em_fixtures/first_plot_questions.yaml",
     "benchmarks/compliance_gap/em_fixtures/LICENSE",
