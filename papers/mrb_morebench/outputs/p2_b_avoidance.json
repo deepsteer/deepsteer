@@ -1,0 +1,210 @@
+{
+ "rule": "MRB_PLAN v0.9.4",
+ "n_boot": 2000,
+ "seed": 20261102,
+ "cell": "dl_chat_neutral",
+ "care_of_record": {
+  "info": {
+   "rows_none": 1056,
+   "rows_arm": 1056,
+   "matched": 1056,
+   "prompt_hash_equal": 1056
+  },
+  "scenarios": 132,
+  "position": {
+   "A": {
+    "est": 0.2315,
+    "ci95": [
+     0.2094,
+     0.2527
+    ]
+   },
+   "B": {
+    "est": -0.116,
+    "ci95": [
+     -0.1305,
+     -0.101
+    ]
+   },
+   "C": {
+    "est": -0.1155,
+    "ci95": [
+     -0.1297,
+     -0.1024
+    ]
+   }
+  },
+  "content": {
+   "consistent": {
+    "est": -0.2009,
+    "ci95": [
+     -0.2251,
+     -0.1767
+    ]
+   },
+   "violating": {
+    "est": 0.1004,
+    "ci95": [
+     0.0786,
+     0.1216
+    ]
+   },
+   "neutral": {
+    "est": 0.1004,
+    "ci95": [
+     0.0822,
+     0.1196
+    ]
+   }
+  },
+  "raw_position": {
+   "A": {
+    "est": 0.2255,
+    "ci95": [
+     0.2016,
+     0.2488
+    ]
+   },
+   "B": {
+    "est": -0.1171,
+    "ci95": [
+     -0.134,
+     -0.0993
+    ]
+   },
+   "C": {
+    "est": -0.1084,
+    "ci95": [
+     -0.1236,
+     -0.0936
+    ]
+   }
+  },
+  "raw_content": {
+   "consistent": {
+    "est": -0.194,
+    "ci95": [
+     -0.2173,
+     -0.1696
+    ]
+   },
+   "violating": {
+    "est": 0.1054,
+    "ci95": [
+     0.0807,
+     0.1304
+    ]
+   },
+   "neutral": {
+    "est": 0.0886,
+    "ci95": [
+     0.0694,
+     0.1097
+    ]
+   }
+  },
+  "branch": "R_B: the adapter lowers B at fixed content (mixed: content effects also exclude 0); R_A: an A position effect above 0"
+ },
+ "base_descriptive": {
+  "info": {
+   "rows_none": 1056,
+   "rows_arm": 1056,
+   "matched": 1056,
+   "prompt_hash_equal": 1056
+  },
+  "scenarios": 132,
+  "position": {
+   "A": {
+    "est": -0.0424,
+    "ci95": [
+     -0.0602,
+     -0.0241
+    ]
+   },
+   "B": {
+    "est": 0.0442,
+    "ci95": [
+     0.0268,
+     0.0598
+    ]
+   },
+   "C": {
+    "est": -0.0018,
+    "ci95": [
+     -0.0197,
+     0.0166
+    ]
+   }
+  },
+  "content": {
+   "consistent": {
+    "est": -0.3538,
+    "ci95": [
+     -0.3895,
+     -0.3168
+    ]
+   },
+   "violating": {
+    "est": 0.4341,
+    "ci95": [
+     0.3954,
+     0.4714
+    ]
+   },
+   "neutral": {
+    "est": -0.0803,
+    "ci95": [
+     -0.0933,
+     -0.0674
+    ]
+   }
+  },
+  "raw_position": {
+   "A": {
+    "est": -0.0406,
+    "ci95": [
+     -0.0688,
+     -0.0112
+    ]
+   },
+   "B": {
+    "est": 0.032,
+    "ci95": [
+     0.006,
+     0.0581
+    ]
+   },
+   "C": {
+    "est": 0.0086,
+    "ci95": [
+     -0.0127,
+     0.0309
+    ]
+   }
+  },
+  "raw_content": {
+   "consistent": {
+    "est": -0.3544,
+    "ci95": [
+     -0.3907,
+     -0.3175
+    ]
+   },
+   "violating": {
+    "est": 0.4325,
+    "ci95": [
+     0.3941,
+     0.4697
+    ]
+   },
+   "neutral": {
+    "est": -0.0781,
+    "ci95": [
+     -0.0908,
+     -0.0656
+    ]
+   }
+  },
+  "branch": "other position effect: A -0.042, B +0.044"
+ }
+}

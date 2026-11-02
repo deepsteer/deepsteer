@@ -6,6 +6,26 @@ session); MB_PLAN Amendment 5 (the MoralBench rider). Numbers: `outputs/p2/p2_an
 `outputs/p2_overlap.json`. Judge rows are tracked gzipped; raw text is untracked (`_raw/`; its ds-data
 backup waits for the drive to be mounted).
 
+## Headline
+
+At matched response length, ST's care adapters lower MoReBench's response-field score:
+
+| model (adapter) | cost at matched length [95% CI] | share of the raw cost due to length | raw cost (registered) |
+|---|---|---|---|
+| Muse Glimmer 30B (T1.6 care-DPO; passed ST's gates) | **−0.87 [−1.46, −0.23]** | 0.41 [0.21, 0.76] | −1.47 [−2.01, −0.97] |
+| Qwen3.8-27B (care-DPO_Q; non-specific on Qwen) | **−2.83 [−3.70, −1.90]** | 0.27 [0.11, 0.48] | −3.85 [−4.48, −3.22] |
+
+Matched-length cost from v0.9.3's fork (the `none` arm's within-scenario length coupling; the
+cross-scenario intercept agrees: −0.82 and −2.72); the registered verdict, "process-quality cost" on the
+raw difference, stands beside it (§2). Each adapter is a single training draw; Qwen's figure is a lower
+bound on its attached adapter's effect (MRB-A15). On the 0-100 scale Muse's cost is small: about 6% of
+Muse's own spread across scenarios (SD 13.7 of the scenario means, `none` arm) and below G1's 1.96-point
+between-model MDE.
+
+**For future steering plans.** A length-matched MoReBench response-field gate (the cost at matched length,
+by v0.9.3's estimator, with its CI) is a candidate standing gate for any steering adapter; its threshold
+is set in the plan that adopts it, not here.
+
 ## 1. The session (2026-11-01 21:37 - 2026-11-02 01:27 UTC)
 
 | stage | result |
@@ -85,8 +105,10 @@ excluding 0).
 ## 5. Referee pass
 
 1. *"The 'cost' is a length effect: the adapters answer more briefly, and Regular counts criteria."*
-   Not settled. Hard rises on both (MRB-A13), which fits R_length; the length-matched read separates it
-   from R_quality at zero GPU and is proposed under amendment, not computed.
+   Answered in part by the registered fork (§8): length accounts for 0.41 of Muse's cost and 0.27 of
+   Qwen's, and a cost remains at matched length on both (−0.87, −2.83). Conceded: the adjustment uses
+   the model's own length coupling, so a coverage loss specific to the adapter's shorter answers would
+   survive it (SYNTHESIS, MRB-05's counter-reading).
 2. *"Qwen's adapter on vLLM is a weakened adapter."* Conceded in part: the merge keeps 60% of its dose-0
    letter shift (MRB-A15); the gates passed as registered. Qwen's cost is then a lower bound. Muse's merge
    keeps 93%.
@@ -144,10 +166,19 @@ against 12/40, difference −0.03 [−0.25, +0.18]; Qwen 4/39 against 10/39, −
 chosen-at-A excess is detectable, so positional learning toward A does not explain Muse's MoralBench
 shift (an excess up to about +0.18 is not excluded at 40 pairs). Descriptive, found after the table:
 Muse's pairs push away from B (−0.25 [−0.45, −0.05]) and toward C (+0.28), and on two-option items
-moving away from B is moving toward A, a reading (R_B) whose zero-GPU discriminator, ST's saved dose-0
-letter reads with the option content held fixed, is proposed in MRB-A16, not run.
+moving away from B is moving toward A, a reading (R_B).
+
+**MRB-A16's check (MRB_PLAN v0.9.4; `outputs/p2_b_avoidance.json`).** On ST's dose-0 reads for Muse (1,056
+matched rows, 132 scenarios), care-DPO against `none`, position effects at fixed content: A +0.232
+[+0.209, +0.253], B −0.116 [−0.131, −0.101], C −0.116 [−0.130, −0.102]; content effects (toward the
+protect option +0.100, away from the rule option −0.201) beside them. The registered branch reads R_B,
+mixed, with R_A: B falls no more than C, so the positional shift is an A preference at fixed content,
+not a B-specific avoidance. It accounts for Muse's MoralBench shift toward A; the pairs' letters do not
+(no chosen-at-A excess), and base-DPO shows no A preference (A −0.042). What in care-DPO's steered
+traces teaches it is open.
 
 **Backup.** `outputs/p2/_raw/` (243 MB) copied to ds-data, sha256 verified and recorded in its manifest.
 
-No framing is written. Open for the author: whether to register MRB-A16's discriminator.
+Framing written after the length-matched read (author, 2026-11-02): the headline above, and one
+standing claim in SYNTHESIS (MRB-05).
 

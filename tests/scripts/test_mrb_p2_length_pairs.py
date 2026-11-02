@@ -49,3 +49,23 @@ def test_exact_binomial_interval_matches_clopper_pearson():
     assert P.exact_ci(0, 40)[0] == 0.0 and abs(P.exact_ci(0, 40)[1] - 0.088) < 0.002
     lo, hi = P.exact_ci(11, 40)
     assert lo < 11 / 40 < hi
+
+
+def test_b_avoidance_estimator_separates_position_from_content():
+    # most probable failure (MRB-A16): a content effect read as a position effect (or the reverse)
+    # because the two-way model's effect coding drops a level or mixes the two factors
+    import mrb_p2_bavoid as B
+    rng = np.random.default_rng(0)
+    y, pos, con = [], [], []
+    for _ in range(400):  # each row shows the three contents in a random order
+        perm = rng.permutation(3)
+        for letter in range(3):
+            c = int(perm[letter])
+            y.append({0: 0.20, 1: -0.10, 2: -0.10}[letter] + {0: -0.15, 1: 0.10, 2: 0.05}[c]
+                     + rng.normal(0, 0.01))
+            pos.append(letter)
+            con.append(c)
+    e = B.effects(np.array(y), np.array(pos), np.array(con))
+    assert abs(e["position"]["A"] - 0.20) < 0.01 and abs(e["position"]["B"] + 0.10) < 0.01
+    assert abs(e["content"]["consistent"] + 0.15) < 0.01
+    assert abs(e["content"]["violating"] - 0.10) < 0.01
