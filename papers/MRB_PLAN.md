@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.9.3, 2026-11-02. **v0.9.3 (author, after the Phase 2 gate): the length-matched fork, both
+Status: v0.9.4, 2026-11-02. **v0.9.4 (author): MRB-A16's B-avoidance check on ST's dose-0 reads (§7).**
+**v0.9.3 (author, after the Phase 2 gate): the length-matched fork, both
 role readings, the Qwen lower-bound note, and the DPO pairs' letter check (§7).** **v0.9.2 (author): Phase 2's VALIDATE folded into the session as staged
 pilot gates, under RunPod's short capacity (§7).** **v0.9.1 (author): a secondary breakdown of Phase 2's paired difference by
 moral role, Agent the predicted locus (§7).** **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
@@ -556,6 +557,23 @@ v0.9.1 is unchanged.
    rejected-at-A share (difference CI excluding 0) makes positional learning a candidate cause of Muse's
    MoralBench shift toward A (ΔL +0.16 to +0.30); a balanced table rules it out at the CI. Muse has 40
    pairs, so the read is coarse.
+
+**v0.9.4 (author, 2026-11-02; registered before the read computes): MRB-A16's B-avoidance check.**
+Zero GPU on ST's saved dose-0 letter reads for Muse Glimmer 30B (`st_live_reference/outputs/t16/
+muse_glimmer_30b/dose0/`, cell `dl_chat_neutral`, effort medium, `empty_reasoning`): the `none` rows
+(the base model) against the `care` rows (T1.6 care-DPO attached, the Phase 2 adapter), matched by
+(scenario, rollout) and accepted only where the two prompts' hashes are equal. Per row and letter, p is
+the softmax of the three option log-probabilities, and Δp = p(care) − p(none). Content is the option's
+norm status at that letter (`consistent`, `violating`, `neutral`); the option order is permuted across a
+scenario's rows, so position and content vary independently. Estimator of record: the OLS of Δp on
+position (A, B, C) and content, each as deviations from its mean (a two-way additive model), giving
+each position's effect at fixed content; CIs from 2,000 scenario-clustered bootstrap resamples; the raw
+mean Δp by position and by content beside it. **Branches (written before computing):** *R_B*: the B
+position effect lies below 0 (CI excluding 0), so the adapter lowers B whatever the content, and Muse's
+MoralBench shift toward A is a positional side effect of its pairs' letter imbalance; *R_content*: no
+position effect excludes 0, and the shift follows option content (the content effects carry Δp). Both
+excluding 0 is reported as mixed; an A position effect above 0 is reported as R_A. The `base` arm
+(base-DPO) is reported beside, descriptive.
 
 **Saves per unit.** Per (scenario, criterion, arm, k): verdict (≤ 20 characters), both credit tests,
 tokens; per generation: lengths, hashes, finish reason; per model: the merge record and both gates'
