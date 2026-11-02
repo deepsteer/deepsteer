@@ -40,6 +40,12 @@ Standard for each replication, kept light:
   and a cross-check on the paper's own deployment (provider, judge or both). This applies to plans
   registered from this date; MRB's registered verdicts stand as made, with the deployment term
   reported beside them (`mrb_morebench/REPRODUCTION.md`).
+- **A fixed-content position check for lettered-choice adapters (author, 2026-11-02, from MRB-A16 and
+  ST-A39; forward only).** Any steering adapter trained on lettered choices (DPO or SFT pairs whose
+  options carry letters) gets a fixed-content position check before its effect is read: on reads with
+  option order rotated, the adapter's shift in letter mass by position with the option's content held
+  fixed, and the effect of record split by the target option's position. Steering plans carry it in
+  their gate list.
 
 ## License findings (checked 2026-10-29; re-check at each plan's G0)
 

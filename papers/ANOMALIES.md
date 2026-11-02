@@ -1124,6 +1124,7 @@ line sits under its first status line.
 | ST-A36 | On Qwen the two read-of-record instruments split: dose-0 specificity discriminates, forced … | resolved | experiment: R_item |  |
 | ST-A37 | On a second family the steered teacher again gives less protection and less rule-breaking … | resolved | experiment: R_selection on both families |  |
 | ST-A38 | On Qwen, protection grows with the pair count and the forced rule-breaking does not | open | not scheduled; the separating draw exceeds the envelope | **open** |
+| ST-A39 | Muse care-DPO prefers letter A at fixed content; is the H1 protection position-carried? (logged after close-out, 2026-11-02) | open | zero GPU on T1.6's rows, registered | **open** |
 
 ## ST-A1 (ledger) — OLMo-3-7B-Think's padded-vs-alone readout check fails in bf16: 0.170 nats against the 0.05 KDG bar
 
@@ -1854,6 +1855,17 @@ R_selection if (a)'s CI lies above 0 on both families and (b)'s does not; R_damp
 **Status.** open.
 **Close-out status (2026-10-30).** **open (author, close-out):** not scheduled; the separating draw (~4-5 A100-h) exceeds the envelope's remainder.
 **Thesis impact.** If R_pairs, protection on Qwen is a dial the teacher's sample size turns without moving the forced-item side effect: the side effect and the benefit are separable in the recipe. If R_draw, the replicate's larger protection is draw-to-draw spread, and the claim is the pattern, not the size.
+
+## ST-A39 (ledger) — Muse care-DPO prefers letter A at fixed content; is its H1 protection position-carried?
+
+**Date.** 2026-11-02 (logged from MRB-A16 after ST's close-out; the ST line stays closed; zero GPU).
+**Observation.** On ST's dose-0 reads, Muse's T1.6 care-DPO prefers position A by +0.232 [+0.209, +0.253] at fixed content, larger than its content shift toward the protect option (+0.100 [+0.079, +0.122]); base-DPO shows no A preference (−0.042) (MRB-A16, `mrb_morebench/outputs/p2_b_avoidance.json`). ST's Muse headline of record: ΔP on 54 engaged H1_held +0.338 [+0.264, +0.410] (vLLM generation, `t16_read_v1`); specificity −0.054 [−0.079, −0.030] on 60 rule-right items.
+**Type.** control-misbehavior (a position preference inside a content read), cross-doc conjunction (MRB against ST).
+**Registered before computing (author, 2026-11-02).** Data: T1.6's rows of record, `st_live_reference/outputs/t16/muse_glimmer_30b/` (`gen/h1_{care,none}.jsonl`, the vLLM engine of record; `spec/{care,none}/dl_chat_neutral.jsonl`), on the headline's own scenario sets (the 54 engaged H1_held ids from `t16_record.json`; the 60 specificity ids). (i) *Rotation:* per read and arm, the count of rows with the protect option (the scenario's `violating` option) at A, B and C, and per scenario. (ii) *The split:* ΔP of record (`analyze_t15.p_record`, truncation as non-protect) recomputed per protect position, scenario-paired against `none` on the rows where protect sits at that position; specificity (the violating option's dose-0 mass, `analyze_t15.specificity`'s per-row rule) likewise per violating position; each with ST's bootstrap (`t13_driver.boot`); beside them the position-balanced mean (the average of the three per-position values) and the contrast A − mean(B, C) with a scenario-paired bootstrap CI. **Branches:** *B_hold*: ΔP's CI lies above 0 at every protect position and the A contrast's CI covers 0: Muse's protection holds at every position and is not position-carried. *B_A*: the A contrast's CI lies above 0 and ΔP's CI covers 0 at B or at C: the protection concentrates where protect sits at A, so part of the headline is a first-position preference. *Mixed*: ΔP's CI lies above 0 at every position and the A contrast's CI also lies above 0: protection holds everywhere and is larger at A. Specificity is read the same way (a violating-mass shift concentrated at A would be the position preference). If the rotation is unbalanced, the position-balanced ΔP is reported beside the headline as its position-corrected value.
+**Competing readings.** R_hold (B_hold) against R_position (B_A).
+**Discriminator.** The registered split above (zero GPU, T1.6's saved rows).
+**Status.** open: registered, computing.
+**Thesis impact.** Under B_hold, ST-07's Muse protection stands and the A preference is a side effect on letter reads; under B_A, the protection headline carries a position term and ST-07's Muse numbers need the position-balanced value beside them before any ST paper.
 
 ## MB line ledger (prefix MB-A; opened 2026-10-30 at MB-G0, `MB_PLAN.md` v0.4)
 
