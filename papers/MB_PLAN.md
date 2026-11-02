@@ -1,6 +1,6 @@
 # MB Plan — Exact MoralBench Replication, Decomposed Into the Library
 
-Status: v1.0, 2026-11-01. **v1.0 (author, 2026-11-01): Amendment 5 (§7): Phase 2's Muse and Qwen3.8 cells,
+Status: v1.1, 2026-11-02. **v1.1 (author, 2026-11-02): Amendment 6 (§5): the MoralBench authors' corrections to Tables 1-2 and their scoring rule for misses; `8410044` stays the source of record (§0).** **v1.0 (author, 2026-11-01): Amendment 5 (§7): Phase 2's Muse and Qwen3.8 cells,
 with and without ST's adapter, ride the MRB Phase 2 pod (MRB_PLAN v0.9).** **v0.9 (author, 2026-10-30): Amendment 4 (§7): Phase 2's GPT-OSS-20B cell rides the
 MRB-G1 pod; Muse and Qwen3.8 wait for a later pod.** **v0.8 (author, 2026-10-30): Amendment 3 (§7): Phase 2 approved in reduced form;
 `zephyr-orpo-141b` stays unrun; MB-G2 gate passed (`mb_moralbench/REPRODUCTION.md`).** **v0.7 (author, 2026-10-30): Amendment 2 (§5): the G2 pod carries Gemma's G1 row
@@ -31,6 +31,9 @@ Skills in force: `instrument-calibration` (ladder + MDE before any "no differenc
   `template/`). **Pinned at `84100440a28d040eca27df32b93f44685ad69ce5`** (MB-G0; `mb_moralbench/SOURCE.md`).
 - Data mirror: the Google Drive folder linked in the paper. MB-G0: questions only, all 88 files
   byte-identical to the pinned commit; the answer keys exist only in the repo.
+- **Revisions (Amendment 6, 2026-11-02).** The authors plan to revise the keys and add a license.
+  `8410044` stays the paper's source of record: every replication verdict reads its key. A later
+  commit gets its own pin, manifest and analysis, reported beside the record, never in its place.
 
 ## 1. What the source pins, and what it leaves open
 
@@ -231,6 +234,26 @@ the ladder's band.
     passes `HF_TOKEN`); about 175 GB of weights (`DISK_GB=260`).
   - **Both branches.** Gemma and Llama-2 follow the G1 match rule (MB-A2's cell is not attainable).
     MB-A1 reads Gemma's agree rate. D4 follows Amendment 1's stopping rule.
+- **Amendment 6 (2026-11-02, author; committed and pushed before the recompute it licenses).**
+  The MoralBench authors' email reply to the author (2026-11-02) settles three ledger entries.
+  - **Paper values of record.** Gemma-1.1's MFV binary total is 51.8 (the printed 44.4 is a typo;
+    MB-A1). LLaMA-2's MFV sanctity cell is 9.9 (the printed 11.1 is wrong; MB-A2). The analysis
+    applies these as corrections to the printed tables (`mb_g0_audit.PAPER` keeps the print, since
+    G0 audits the print). LLaMA-2's MFV binary total stays 52.6 as printed: the email does not correct it, although
+    the corrected cells sum to 51.4. The 51.4 total's verdict is reported beside it, descriptive,
+    until the authors confirm a total.
+  - **Misses score 0 in the paper (MB-A3).** The paper scored unparseable replies as zero, which
+    is our R0 aggregate of record (§3). Under that rule a cell's attainable range runs from 0 (every
+    reply misses) to the key's oracle, so the "not attainable" floor of v0.5 (the worst parsed
+    policy) no longer applies. Zephyr's MFQ-comparative loyalty (0.4) becomes an ordinary match
+    comparison; LLaMA-2's MFV sanctity (9.9) is inside the band. No cell remains "not attainable".
+  - **Recompute.** `mb_g1_analyze.py` on the saved letters of every row and variant (zero GPU), at
+    T = 0.7 of record and the T = 1.0 fork. Counts go from 76 to 78 attainable cells.
+  - **Both branches.** Each corrected cell either lies inside our 5-repeat PI (replicates) or not
+    (does not replicate). Either way the count of record changes only by these cells. MB-A1 to
+    MB-A3 close on the authors' word, not on our measurement.
+  - **License (§9).** The authors plan to add CC BY 4.0 for their original contributions. When it
+    lands, §9 gets a proposed amendment (author approves first). Until then §9.2 stands unchanged.
 - **MB-G2 (pod):** Llama-2-70B-chat row; the full replication table (5 rows: 3 measured, 2 marked
   retired) with the ladder, parser-sensitivity column, and R2; and the reproduction report
   (`papers/mb_moralbench/REPRODUCTION.md`, per `MORAL_EVAL_REPLICATIONS.md`).
