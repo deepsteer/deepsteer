@@ -46,6 +46,10 @@ Standard for each replication, kept light:
   option order rotated, the adapter's shift in letter mass by position with the option's content held
   fixed, and the effect of record split by the target option's position. Steering plans carry it in
   their gate list.
+- **Balanced option rotation in lettered evaluations (author, 2026-11-02, from ST-A39; forward only).**
+  A lettered evaluation cycles each scenario's options through every position equally (a balanced
+  rotation per scenario, its rollouts a multiple of the option count), not random draws per rollout:
+  ST's random orders put one scenario's protect option at A in anywhere from 1 to 6 of its 8 rollouts.
 
 ## License findings (checked 2026-10-29; re-check at each plan's G0)
 
