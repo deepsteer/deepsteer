@@ -218,6 +218,7 @@ def main() -> None:
                      "price_a100h": [lo, hi], "price_mid": (lo + hi) / 2})
     go = [r for r in rows if r["k"] <= 4 and r["mde_paired"] <= 4 and r["price_mid"] <= 10]
     out["phase2_go_no_go"] = {
+        "descriptive_only": "Amendment 6: the 1B proxy decides nothing; the stage-1 pilot does",
         "rule": "some k <= 4 with paired MDE <= 4 on All violations and price midpoint <= 10",
         "table": rows, "go": bool(go), "k": go[0]["k"] if go else None,
         "basis": {"decisions_per_episode": d, "prompt_tokens": t, "prefill_tok_s": PREFILL_TOK_S,
@@ -235,6 +236,8 @@ def main() -> None:
         price[name] = {"decisions": n_dec, "prompt_tokens": t_chat, "prefill_a100h": pre,
                        "generation_a100h_at_cap": gen, "total_upper_a100h": pre + gen}
     out["new_model_rows"] = {
+        "k_descriptive": "Amendment 6: the stage-1 pilot sets k; this k is the 1B proxy's",
+        "envelope_a100h": 6.0,
         "k": k_new, "k_rule": "smallest k >= 2 with paired MDE <= 8 on All violations, cap 6",
         "mde_paired_at_k": viol["mde_paired_by_k"][k_new], "chat_prompts": ct,
         "price": {k: price[k] for k in ("gpt-oss-20b", "qwen3-30b-a3b")},

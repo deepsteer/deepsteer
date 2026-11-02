@@ -1815,11 +1815,12 @@ G1's measured variance) and a new-model cell, not a reproduction (CoTAgent and G
 GPT-OSS-20B and Qwen3-30B-A3B; H1 each agent beats random on violations and reward; H2 the ethics
 prompt lowers both).
 
-**What the next result changes (MCH-G1 harness validation, Amendment 5).**
+**What the next result changes (MCH-G1 harness validation, Amendments 5-6).**
 
 | cell | branch | thesis edit |
 |---|---|---|
-| LM within-game SD at k ≥ 2 | well below the random agent's | MCH-03 weakens toward "near the MDE"; Phase 2 sizes k from the measured SD |
-| | near the random agent's | MCH-03 stands; Phase 2 fails its go/no-go (k = 4 gives 5.8 > 4) and is parked |
-| harness run-to-run and fallback rate | stable, low fallback | the harness is the Phase 2 instrument |
-| | unstable or high fallback | the CoT path's parsing is the instrument's weak point (MCH-A6's R_fallback), fixed before Phase 2 |
+| G1 harness criteria (parity, stability, engine failures) | pass | the harness is validated and the renderer can leave staging |
+| | fail | the failing piece is fixed and G1 re-run before any pod |
+| G1 LM within-game SD (1B proxy) | any value | descriptive only (Amendment 6); MCH-03 gains a proxy datum, nothing is decided |
+| stage-1 pilot on GPT-OSS-20B (10 games × 2 episodes, both agents) | fallback ≤ 10% and the cell fits ~6 A100-h | the pod continues at the pilot's k; MCH-03 and Phase 2's go/no-go are read at a real model's variance |
+| | fallback > 10% on either agent, or over the envelope | the pod stops; the row is uninterpretable or re-priced, and the CoT path's parsing (MCH-A6's R_fallback) is the instrument's weak point |

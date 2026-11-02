@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.3, 2026-11-02. **v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.4, 2026-11-02. **v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -261,6 +261,32 @@ artifact.
     - *Bias, stated with the result.* A 1B base model on the non-chat path stands in for 20-30B chat
       models: its within-game variance may differ in either direction.
     - Stop at G1 with the measured variance and the priced cells, before any pod.
+  - **Amendment 6 (author, 2026-11-02; registered while G1 runs, before any G1 number is read).**
+    - *Envelopes.* The 10 A100-h cap in Amendment 3 covers the Phase 2 steering read only. The
+      new-model rows (Amendment 4) have their own envelope of about 6 A100-h, stated against G1's
+      price of them.
+    - *Confirmed:* Amendment 4's k rule (the smallest k ≥ 2 whose paired MDE on All violations is at
+      most 8 points, capped at 6) and its thinking suppression (GPT-OSS: the empty analysis channel,
+      ST's dose-0 path; Qwen: an empty think block), both recorded as deviations.
+    - *G1's variance decides nothing.* The 1B proxy's within-game variance, MDE, go/no-go and k are
+      reported as descriptive only; G1 is harness validation.
+    - *Stage 1 of the new-model pod: a variance pilot.* GPT-OSS-20B (the first model in the pod's
+      order), the first 10 test games in upstream's `games_test` order, episodes 0 and 1 (seeds 2417
+      and 2418), both agents, the protocol of Amendment 4 unchanged. The pilot reads only each
+      agent's random-fallback rate and the within-game variance of the per-episode R0 All-violations
+      score (pooled over the two agents and the 10 games); it computes no agent mean, no difference
+      between agents and no comparison with random, so H1 and H2 stay unread. From it: σ² averaged
+      over the 20 game × agent cells, SE₁ for 30 games = √(30 · mean σ²) / 30, MDE_k as in Amendment
+      3, Amendment 4's k, Amendment 3's Phase 2 go/no-go, and the price of the rest of the cell at
+      that k.
+    - *Stop or continue.* The pod stops after stage 1 if either agent's fallback rate exceeds 10%
+      (the bar below), or if the full cell at the pilot's k (pilot included) prices above the
+      new-model envelope; otherwise it continues at that k, and the pilot's episodes count as
+      episodes 0 and 1 of those 10 games (same seeds, same protocol). Qwen3-30B-A3B uses the same k.
+    - *Fallback bar.* A model × agent row whose random-fallback rate (decisions whose action is the
+      random fallback after five failed parses, over all decisions) exceeds 10% is reported as
+      uninterpretable, at the pilot and on the full cell. Loop overrides are counted separately and
+      are not fallbacks.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
@@ -327,7 +353,7 @@ Not part of the reproduction. Recorded so the reproduction is built to serve it.
 |---|---|---|
 | MCH-G0, including the random baseline | M4 CPU | 0 GPU; hours of CPU, projected from the pilot |
 | MCH-G1 harness validation | M4 (MPS) | 0 GPU; about 2-2.5 h wall (70 episodes, ~2,260 tok/s measured) |
-| new-model rows (Amendment 4) | pod | priced at G1 from measured rates; author approval before any pod |
+| new-model rows (Amendment 4) | pod | envelope about 6 A100-h (Amendment 6); stage 1 is a variance pilot on GPT-OSS-20B that decides k and stop-or-continue; author approval before any pod |
 | DRRN | — | not run (Amendment 3) |
 | Phase 2 | pod | go/no-go at G1 (Amendment 3); cap about 10 A100-h for the steering read |
 
