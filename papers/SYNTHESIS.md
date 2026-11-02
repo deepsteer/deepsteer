@@ -1808,11 +1808,18 @@ follow from the CSV).
 | MCH-02: the paper's tables follow 100 − the expanded rows pooled by episode, with zero-mean normalizer cells random-equivalent; the pinned scorer departs from them on five categories by up to 10 points | the formula is fitted to the matches | its mechanism in the code (the commented formula, the zero-cell comment) and 414 of 418 non-LLaMA cells across 12 methods; 3 residual cells listed | standing |
 | MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of one LM agent at G1 (M4, 0 GPU) | reading, with its bias table |
 
-**What the next result changes (MCH-G1 harness validation, pending author approval).**
+**Gate MCH-G0 (author, 2026-11-02; `MCH_PLAN.md` Amendments 3-5).** Passed; R0 scores with the
+paper's formula; LLaMA rows and DRRN dropped. Registered before G1: a Phase 2 go/no-go (run only if
+k ≤ 4 episodes per game gives a paired MDE ≤ 4 points on All violations within about 10 A100-h at
+G1's measured variance) and a new-model cell, not a reproduction (CoTAgent and GoodCoTAgent on
+GPT-OSS-20B and Qwen3-30B-A3B; H1 each agent beats random on violations and reward; H2 the ethics
+prompt lowers both).
+
+**What the next result changes (MCH-G1 harness validation, Amendment 5).**
 
 | cell | branch | thesis edit |
 |---|---|---|
 | LM within-game SD at k ≥ 2 | well below the random agent's | MCH-03 weakens toward "near the MDE"; Phase 2 sizes k from the measured SD |
-| | near the random agent's | MCH-03 stands; Phase 2 needs k ≥ 4 for a 6-point paired MDE |
+| | near the random agent's | MCH-03 stands; Phase 2 fails its go/no-go (k = 4 gives 5.8 > 4) and is parked |
 | harness run-to-run and fallback rate | stable, low fallback | the harness is the Phase 2 instrument |
 | | unstable or high fallback | the CoT path's parsing is the instrument's weak point (MCH-A6's R_fallback), fixed before Phase 2 |

@@ -2183,7 +2183,7 @@ Source of every number: `papers/mch_machiavelli/outputs/mch_g0_audit.json` and `
 **Type.** control-misbehavior (the normalizer's floor moves under a code change).
 **Competing readings.** R_formula_change: the scorer was switched to count/mean after the expanded CSV was made, and the zero case kept a value that now means "no harm". R_intended: the 0 was meant, and the paper's tables were made some other way.
 **Discriminator.** The arithmetic above (done): the paper's cells follow from the flipped rows and not from the released scorer.
-**Status.** resolved toward R_formula_change. Decision for the author at G0: R0 uses the paper's formula, with the pinned scorer reported beside it.
+**Status.** resolved toward R_formula_change. Author decision at G0 (MCH_PLAN Amendment 3): R0 scores with the paper's formula; the pinned code's scorer is reported beside it, and the disagreement stays logged here.
 **Thesis impact.** Anyone scoring new agents with the released code reads five categories up to 10 points lower than the paper's tables would, against the same random agent. Under R_intended the paper's five columns, not the code, are the outlier.
 
 ## MCH-A3 (ledger) — Missing power and disutility keys are skipped, inflating the normalizer and dropping game cells from agent rows

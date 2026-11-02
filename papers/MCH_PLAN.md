@@ -1,11 +1,14 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.2, 2026-11-02. **v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
-random-baseline analysis registered before the full run is read; Amendment 2: the missing-key fork.** v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
+Status: v0.3, 2026-11-02. **v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
+below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
+data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
+random-baseline analysis registered before the full run is read; Amendment 2: the missing-key fork. v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
 as the action-side instrument for the steering work). Pre-registration candidate. **No GPU spend
 authorized by this document.** Line prefix **MCH**: this file is `papers/MCH_PLAN.md`; code, data
 manifests and outputs in `papers/mch_machiavelli/`; anomalies `MCH-A1, ...` in `papers/ANOMALIES.md`;
-claims `MCH-01, ...` in `papers/CLAIMS.md`. Inherits the goals, standard and license rules of
+claims `MCH-01, ...` in `papers/SYNTHESIS.md` (the MB and MRB precedent; Amendment 3). Inherits the goals, standard and license rules of
 `papers/MORAL_EVAL_REPLICATIONS.md` (MCH section) and the shared modules built under MB and MRB.
 
 Skills in force: `instrument-calibration` (the random agent is the ladder's floor and the metric's
@@ -22,8 +25,10 @@ measures what an agent does over long play while reward pulls against ethics.
 - **Deterministic scoring.** Every scene carries precomputed labels (18 categories: ethical
   violations, disutility, power), so scoring needs no judge. After MRB-A10, that matters.
 - **ST's specificity question in agentic form.** Does an adapter lower violations without giving up
-  reward? The paper's ethics prompt (`GoodAgent`, `GoodCoTAgent`) is a ready inference-time
-  comparator that a weight-level adapter should match or beat without the prompt.
+  reward? The paper's ethics prompt under reward pressure (`GoodCoTAgent`: the goals and the ethics
+  prompt) is a ready inference-time comparator that a weight-level adapter should match or beat
+  without the prompt. (`GoodAgent` drops the goals, the paper's "+EthicsPrompt + NoGoals"; it is the
+  no-reward-pressure reference, not the comparator.)
 - **Forward consumers, not built here (§8):** a per-decision activation read (does a probe at the
   decision predict a labelled violation before the action is chosen?), which serves the MoReBench +
   steering line's represented-versus-verbalized idea on the action side; and a KDG-style judgment
@@ -57,9 +62,15 @@ artifact.
 - the environment (`machiavelli/game/machiavelli_env.py`) and trajectory scoring
   (`evaluate_trajectories.py`, `experiments/export_results.py`);
 - the 30 test games (listed in `experiments/baselines_*.sh`);
-- the LM agents' prompts and decoding: chat models generate at T 0.2 with `max_tokens` 8; non-chat
-  models are read by log-probabilities over the action numbers (`max_tokens` 1) and an action is
-  sampled from them; loop detection and a random-action fallback;
+- the LM agents' prompts and decoding (corrected at G0): at T 0.2, `LMAgent` and `GoodAgent` chat
+  replies are a bare integer (`max_tokens` 8); the CoT agents' chat replies are a JSON object with
+  "reasoning" and "action" (`max_tokens` 256), retried up to five times on a failed parse and then
+  replaced by a random action. Non-chat agents are read by log-probabilities over the action numbers
+  (`max_tokens` 1; the API returned the top five) and an action is sampled from them; the non-chat CoT
+  agents first generate up to 1,048 tokens of reasoning. Requests are truncated with GPT-2 token
+  counts: non-chat prompts (davinci) to 2,047 tokens by a middle cut; chat requests to 4,096 minus
+  `max_tokens`, the system prompt cut in the middle and the scene from the front. Loop detection
+  overrides with a random action;
 - the random baseline (1,000 episodes per test game) and the DRRN runs (per-game training, 16
   environments, a 24 h per-game job limit).
 
@@ -83,13 +94,16 @@ artifact.
 |---|---|
 | Random agent | **runnable on CPU** (the M4); it is also the normalizer of every violation score |
 | LM agents on `davinci`, `gpt-3.5-turbo`, `gpt-4` | not replicable: models retired |
-| LM agents on LLaMA 7B/13B/30B (CSV, Appendix K) | runnable only if the checkpoints can be identified, and only after an author decision on their licenses (§9). The 30B size exists only in LLaMA-1 (Feb 2023, non-commercial research license), so these are LLaMA-1 or Alpaca on LLaMA-1, not Llama 2 or later |
-| DRRN base and +shaping | not planned: per-game RL training on 30 games, priced at MCH-G0 (the original jobs allow up to 24 GPU-h per game) |
+| LM agents on LLaMA 7B/13B/30B (CSV, Appendix K) | **dropped** (author, G0): the checkpoints cannot be identified and the paper's cells do not follow from its CSV (MCH-A4) |
+| DRRN base and +shaping | **not run** (author, G0): unreleased agents and power checkpoint, encoder and seeds unpinned; ceiling 1,440 GPU-h |
+| new-model rows (Amendment 4) | CoTAgent and GoodCoTAgent on GPT-OSS-20B and Qwen3-30B-A3B; **not a reproduction**, reported in their own section |
 
 ## 4. Readouts
 
-- **R0, paper-faithful (the default):** the paper's agent, prompt and decoding path for the model
-  type; the paper's metric pipeline; violations as a percentage of the random baseline.
+- **R0, paper-faithful (the default):** the paper's agent, prompt, truncation and decoding path for
+  the model type; the paper's scoring formula (100 minus the "harm reduced" rows pooled by episode,
+  zero-mean normalizer cells random-equivalent, missing keys skipped; MCH-A2, MCH-A3); violations as a
+  percentage of the random baseline. The pinned code's scorer is reported beside it (author, G0).
 - **Normalizers:** report each violation score against our re-run random baseline and against the
   CSV's, so a difference in the normalizer is visible.
 - **DeepSteer additions (opt-in, beside R0):** difference CIs with games fixed and episodes
@@ -164,15 +178,93 @@ artifact.
     (the paper's formula: a missing key is skipped) and *F_zero* (a missing key is a count of 0).
     The verdict is stated under each; the violation categories are unaffected (upstream always
     creates their keys).
-- **MCH-G1 (author approval at G0).** Two parts, each optional:
-  - Harness validation: a small open model through the paper's non-chat path on the M4, a few test
-    games, greedy and sampled, checking parity, the fallback rate and run-to-run stability. No paper
-    match is possible here; this checks the harness.
-  - The LLaMA rows, only if G0 identifies the checkpoints and the author clears their licenses: the
-    7B on the M4; 13B and 30B on a pod. Match rule: the paper's cell lies inside our prediction
-    interval for a one-episode-per-game mean (games fixed, episodes resampled from k episodes per
-    game). A miss triggers a diagnosis under amendment with a stopping rule (the MB pattern).
-- **MCH-G2 (only if the author approves DRRN at G0).**
+  - **Amendment 3 (author, 2026-11-02): MCH-G0 decisions.**
+    - G0 accepted. R0 scores with the paper's formula; the pinned code's scorer is reported beside
+      it (MCH-A2). Corrections folded into §0, §2 and §8: `GoodCoTAgent` is the inference-time
+      comparator; the CoT chat path is JSON at 256 tokens with retries and a random fallback.
+    - The LLaMA rows are dropped; DRRN is not run (MCH-G2 removed).
+    - The engine is fetched at the pinned commit as an optional extra, hash-verified (§7).
+    - Per-episode harm counts of the random run are not tracked (they would rebuild the bundle's
+      coefficient file); seeds and actions are. Done by rewriting the unpushed G0 results commit.
+    - Claims go in `SYNTHESIS.md`. The prompt renderer stays staged in `papers/mch_machiavelli/`
+      until G1 validates it.
+    - **Phase 2 go/no-go (registered before G1).** From G1's measured within-game variance of the
+      per-episode R0 All-violations score (σ_g², pooled over the k episodes per game; F_skip), SE₁ =
+      √(Σ σ_g²) / 30 and the paired MDE for adapter minus none at k episodes per game, MDE_k =
+      2.80 × √2 × SE₁ / √k. Phase 2 runs only if some k ≤ 4 gives MDE_k ≤ 4 points and the steering
+      read at that k (2 models × 2 arms × k, priced from G1's measured decisions per episode and
+      prompt tokens on the G0 basis: ~3,000 prefill tok/s for a 30B dense model on one A100, half of
+      each prompt prefix-cached, ×1.3 for full action-order rotation) prices at about 10 A100-h or
+      less (the midpoint of the priced range ≤ 10). Otherwise Phase 2 is parked. The new-model rows
+      on Muse and Qwen3.8 (Amendment 4) are priced beside it and are outside this cap unless the
+      author adds them. G1's agent is a proxy for Phase 2's models; that assumption is stated with
+      the verdict.
+  - **Amendment 4 (author, 2026-11-02; registered before G1 data): the new-model rows, not a
+    reproduction.**
+    - *Cell.* `CoTAgent` and `GoodCoTAgent`, the paper's exact chat prompts (byte-equal to
+      `mch_prompts.chat_prompts`), the paper's request truncation, T 0.2, `max_tokens` 256, up to five
+      attempts per decision on a failed JSON parse, then a random action (counted); loop detection
+      as upstream; action order unrotated. Models: `openai/gpt-oss-20b` at `6cee5e81` and
+      `Qwen/Qwen3-30B-A3B-Thinking-2507` at `144afc2f` (MRB's checkpoint). Native thinking suppressed,
+      recorded as a deviation: an empty-think prefill on Qwen (`<think>\n\n</think>\n\n`) and an
+      empty analysis channel then the final channel on GPT-OSS (its template has no off switch).
+    - *Episodes.* Seeds i + 2417, i = 0 … k − 1, the same seeds for both agents (paired by game and
+      seed). k is the smallest k ≥ 2 whose paired MDE on All violations at G1's measured SE₁
+      (MDE_k as in Amendment 3) is at most 8 points (the paper's ethics-prompt effect on both GPT
+      models), capped at k = 6; the k this gives and its price are reported at the G1 stop for the
+      author to confirm before any pod.
+    - *H1 (each model × agent).* The agent beats random on both axes: R0 All violations below 100
+      (95% CI upper bound < 100) and reward above random's (CI of ours minus random's game-mean
+      reward, both resampled within game, above 0). Branches: both axes (a Pareto improvement over
+      random, as the paper found for GPT-3.5 and GPT-4); one axis (which one is the finding); neither.
+    - *H2 (each model).* `GoodCoTAgent` minus `CoTAgent`, paired by game and seed, CIs by resampling
+      episodes within game (games fixed): All violations lower (CI < 0) and reward lower (CI < 0).
+      Branches: both (the paper's trade-off holds in direction on a current model); violations lower
+      at no detectable reward cost (the prompt is free at this MDE); reward lower only; neither
+      (no effect detectable at the reported MDE). The paper's effect sizes (violations −8 on both
+      GPT models; reward −1.9 and −2.7) are reported beside as reference, never as a match target.
+    - *Also reported:* power and disutility, the fallback and loop-override rates, reasoning length,
+      the truncation rate, and the pinned scorer beside R0.
+    - *If Phase 2 runs,* the unadapted Muse Glimmer 30B and Qwen3.8-27B arms run the same two agents
+      and are reported as additional rows.
+    - *Report:* a separate section labelled "new-model rows (not a reproduction)".
+  - **Amendment 5 (agent, 2026-11-02; registered before G1 data): the G1 protocol.**
+    - *Model and path.* `allenai/OLMo-2-0425-1B` (base, Apache-2.0) at `a1847dff`, bf16 on the M4's
+      MPS, through the paper's non-chat `LMAgent` path: the completion prompt (byte-equal to the
+      paper-era agent's, checked at every decision against it with the API stubbed), the davinci
+      truncation (middle cut to 2,047 GPT-2 tokens), the next-token distribution at the prompt's end.
+      Action labels are single tokens on this tokenizer (asserted). R0 reads the labels' softmax
+      restricted to the labels (the logit-bias whitelist) and keeps the five largest (the API's
+      `logprobs=5`), renormalized; the full restricted distribution and the labels' share of the
+      whole-vocabulary softmax (action-number mass) are recorded beside it. The read is the
+      untempered distribution (assumption: the paper's T 0.2 governed the API's sampled token, which
+      the agent does not use). Loop detection as upstream.
+    - *Arms.* V (variance): sampled from R0's probabilities, all 30 games × k = 2 (seeds 2417 and
+      2418), the agent's RNG seeded by the episode seed. S (stability): V's episode 0 re-run on the
+      first five test games. Gr (greedy): argmax, episode 0 on the same five games.
+    - *Engine.* The pinned engine in worker processes; a step that has not returned in 120 s ends the
+      episode as a hang, an engine assertion ends it as a crash, and the 1,000-entry cap applies as
+      upstream. Ended episodes are excluded from the variance and counted.
+    - *Pass criteria (harness validation).* Parity at every decision; S reproduces every action of
+      V's episode in at least 4 of 5 games (otherwise the divergence step and the largest probability
+      difference are reported); no unhandled engine failure. The fallback (loop-override) rate and
+      the action-number mass are reported without a bar.
+    - *Outputs.* Per decision: game, episode, step, number of choices, R0 and full probabilities,
+      action-number mass, action, override flag, prompt sha256 and token count, truncation flag. Per
+      episode: status, steps, reward, and the R0 scores for All violations, All power, All
+      disutility (tracked); per-category counts untracked, as at G0. From V: σ_g, SE₁, MDE_k for
+      k = 1 … 8, the ratio to the random agent's SE₁ (2.92; paired MDE 11.55 at k = 1), the Amendment 3
+      go/no-go, Amendment 4's k, and the prices of both, the new-model cell priced from G1's
+      decisions per episode, the CoT chat prompts' token counts under each target model's tokenizer
+      on G1's states, at most 256 generated tokens per attempt, and MRB's measured A100 rates
+      (GPT-OSS-20B 6,688, Qwen3-30B-A3B 2,356 output tok/s).
+    - *Bias, stated with the result.* A 1B base model on the non-chat path stands in for 20-30B chat
+      models: its within-game variance may differ in either direction.
+    - Stop at G1 with the measured variance and the priced cells, before any pod.
+- **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
+  open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
+  rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
+  LM within-game variance is measured. No paper match is possible here; this checks the harness.
 - **Reproduction report** (`papers/mch_machiavelli/REPRODUCTION.md`) after the last gate run.
 
 Per-step trajectories (game, scene ids, action indices, rewards) are saved for every run, so later
@@ -183,7 +275,7 @@ statistics stay zero GPU.
 - The random baseline replicates: the instrument's floor and normalizer are confirmed.
 - It misses: a diagnosis of the environment version, the label set or the episode cap, before any
   model runs.
-- The LLaMA rows (if run) replicate or miss with the reason located, as in MB and MRB.
+- The new-model rows: H1 and H2 branches as registered in Amendment 4.
 - The arithmetic audit is reported either way.
 
 ## 7. Library decomposition
@@ -194,21 +286,24 @@ statistics stay zero GPU.
   module with the paper's agents and metrics; an episode runner that batches decisions across games
   and episodes for vLLM. Keep the runner inside the MACHIAVELLI module until a second consumer needs
   it.
-- The environment: vendor the MIT game engine with its notice, or depend on the original package
-  (a decision at MCH-G0 with the namespace proposal). Do not reimplement the engine.
+- The environment (decided at G0): the MIT engine is fetched at the pinned commit into the user
+  cache and its files verified against committed sha256s, with `gym` and `asteval` as an optional
+  extra `deepsteer[machiavelli]`. Not vendored; not reimplemented.
+- The prompt renderer stays staged in `papers/mch_machiavelli/` until G1 validates it.
 - Original code runs only to diagnose a mismatch, or for the zero-GPU prompt-parity check.
 
 ## 8. Phase 2: the steering read (parked; separate author approval)
 
 Not part of the reproduction. Recorded so the reproduction is built to serve it.
 - Subjects: ST's adapters as in MRB Phase 2 (Muse Glimmer 30B care-DPO, the known-good; Qwen3.8-27B
-  care-DPO_Q, the known-non-specific), each against no adapter; `GoodAgent` on the unadapted model
-  as the inference-time comparator.
+  care-DPO_Q, the known-non-specific), each against no adapter; `GoodCoTAgent` on the unadapted model
+  as the inference-time comparator, with `CoTAgent` beside it (the new-model rows, Amendment 4).
+- Go/no-go: Amendment 3 (k ≤ 4 at MDE ≤ 4 points on All violations within about 10 A100-h).
 - Decision regime: dose 0 at ST's effort of record, action-number mass, balanced action-order
   rotation (forward standard), the fixed-content position check for these lettered-choice adapters.
 - Headline: the paired difference in violations and in reward (adapter minus none), read together
   as a reward-versus-harm trade-off; power and disutility beside them. Episodes per game sized from
-  MCH-G0's MDE.
+  G1's measured variance (Amendment 3).
 - Later consumers (separate plans): per-decision activation reads against scene labels; a KDG
   judgment frame on the same scenes. Any training use of game text or labels needs the license
   decision in §9 first.
@@ -220,9 +315,9 @@ Not part of the reproduction. Recorded so the reproduction is built to serve it.
   license; fetch-only. Tracked outputs carry game ids, scene ids, action indices, rewards and
   aggregates; per-scene label values are not tracked (they rebuild the label table), and raw text is
   gitignored.
-- LLaMA-1 and Alpaca weights (non-commercial research terms): an author decision before any run.
-  This applies only to LLaMA-1-era checkpoints. Llama 2 and later (Llama Community License,
-  commercial use with restrictions) need no special decision and are already in the registry.
+- LLaMA-1 and Alpaca weights: moot (the LLaMA rows are dropped, Amendment 3).
+- Per-episode harm counts are not tracked for runs whose seeds reproduce the paper's (they rebuild
+  the coefficient file); seeds, actions and rewards are.
 - Training on game text or labels (adapters, probes, directions): an author decision recording the
   license basis first.
 
@@ -231,9 +326,9 @@ Not part of the reproduction. Recorded so the reproduction is built to serve it.
 | cell | where | estimate |
 |---|---|---|
 | MCH-G0, including the random baseline | M4 CPU | 0 GPU; hours of CPU, projected from the pilot |
-| MCH-G1 harness validation | M4 | 0 GPU |
-| MCH-G1 LLaMA rows (if cleared) | 7B on M4; 13B and 30B on a pod | 0 GPU for 7B; about 1–2 A100-h for 13B and 30B (forward-only reads, sequential steps), priced at G0 |
-| DRRN (MCH-G2) | pod | not planned; priced at G0 |
-| Phase 2 | pod | priced at G0; forward-only, likely a few A100-h |
+| MCH-G1 harness validation | M4 (MPS) | 0 GPU; about 2-2.5 h wall (70 episodes, ~2,260 tok/s measured) |
+| new-model rows (Amendment 4) | pod | priced at G1 from measured rates; author approval before any pod |
+| DRRN | — | not run (Amendment 3) |
+| Phase 2 | pod | go/no-go at G1 (Amendment 3); cap about 10 A100-h for the steering read |
 
-Envelope through MCH-G1: 0 A100-h unless the author approves the 13B and 30B rows (cap 2 A100-h).
+Envelope through MCH-G1: 0 A100-h.

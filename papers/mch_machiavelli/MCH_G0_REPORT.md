@@ -236,3 +236,14 @@ Referee pass (three objections, answered or conceded):
 8. **G1 scope:** harness validation only (M4, ~45 min), with k ≥ 2 on one agent to measure LM
    within-game variance for Phase 2's sizing. Then Phase 2 is a separate approval at about 5.5-23 A100-h
    depending on k (§7).
+
+## 11. Author decisions (2026-11-02; MCH_PLAN Amendment 3)
+
+G0 accepted. R0 scores with the paper's formula, the pinned scorer beside it (MCH-A2). Corrections
+folded into the plan: `GoodCoTAgent` is the comparator; the CoT chat path is JSON at 256 tokens with
+retries and a random fallback. LLaMA rows dropped; no DRRN. The engine is fetched at the pinned
+commit as a hash-verified optional extra. The per-episode counts were removed by rewriting the
+unpushed results commit; seeds and actions stay. Claims go in `SYNTHESIS.md`; the renderer stays
+staged until G1 validates it. G1 is harness validation on the M4 with k = 2 episodes per game for
+one agent. Registered before G1: the Phase 2 go/no-go (Amendment 3), the new-model rows on
+GPT-OSS-20B and Qwen3-30B-A3B (Amendment 4), and the G1 protocol (Amendment 5).
