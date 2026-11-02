@@ -7,9 +7,10 @@ that the plans inherit. They all build on the shared choice/eval core designed i
 | prefix | paper | plan | status |
 |---|---|---|---|
 | MB | Ji et al., MoralBench (arXiv:2406.04428; SIGKDD Explorations 2025) | `MB_PLAN.md` | v1.1; MB-G2 passed 2026-10-30 (`mb_moralbench/REPRODUCTION.md`); Phase 2 rider read on the MRB Phase 2 pod (`mrb_morebench/MRB_P2_REPORT.md` §4); the authors' corrections folded in 2026-11-02 (Amendment 6) |
-| MRB | Chiu, Lee et al., MoReBench (arXiv:2510.16380; ICLR 2026) | `MRB_PLAN.md` | v0.2; MRB-G0 next |
+| MRB | Chiu, Lee et al., MoReBench (arXiv:2510.16380; ICLR 2026) | `MRB_PLAN.md` | v0.9.4; reproduction report written 2026-10-31 (`mrb_morebench/REPRODUCTION.md`); Phase 2 steering read 2026-11-01 (`mrb_morebench/MRB_P2_REPORT.md`) |
 | ETH | Hendrycks et al., ETHICS (arXiv:2008.02275; ICLR 2021) | not yet | queued |
 | LEB | Jiao, Afroogh et al., LLM Ethics Benchmark: a three-dimensional assessment system (arXiv:2505.00853; Scientific Reports 2025) | not yet | queued |
+| MCH | Pan et al., MACHIAVELLI (arXiv:2304.03279; ICML 2023) | `MCH_PLAN.md` | v0.1 draft (2026-11-02); MCH-G0 next, on the author's approval |
 
 Order is the author's to set; MB first is decided. The prefixes are provisional.
 
@@ -23,6 +24,9 @@ Two goals:
    - MoralBench and LEB are drift monitors, not steering targets.
    - MoReBench (process quality) and ETHICS commonsense are target candidates, subject to ST's
      specificity gates.
+   - MACHIAVELLI is the action-side instrument: violations against reward under reward pressure,
+     scored from precomputed scene labels (no judge). It is a guard and a candidate target for the
+     reward-versus-harm trade-off (author, 2026-11-02).
 
 Standard for each replication, kept light:
 - **Defaults match the paper's protocol.** DeepSteer additions (robust parsing, continuous
@@ -59,6 +63,7 @@ Standard for each replication, kept light:
 | MoReBench, `morebench/morebench` | MIT ("Copyright (c) 2025 MoReBench") | CC BY 4.0 | code: `LICENSE` at commit `71eaf71` (the README's link to `LICENSE.md` points to a missing file); data: HF card, confirmed by author |
 | ETHICS, `hendrycks/ethics` | MIT ("Copyright (c) 2020 Dan Hendrycks") | MIT | `LICENSE` at commit `fa022db`; data already recorded as MIT in `DATASET_LICENSES.md` (V_moral held-out split) |
 | LLM Ethics Benchmark, `The-Responsible-AI-Initiative/LLM_Ethics_Benchmark` | CC0 1.0 | CC0 1.0 from the repo authors, **but the instruments embed third-party text** | `LICENSE` at commit `7c5b0a7`; see the LEB rules below |
+| MACHIAVELLI, `aypan17/machiavelli` | MIT ("Copyright (c) 2022 Alex Pan"), including the released results CSVs | none stated: the game bundle (Choice of Games titles and the authors' annotations) and the "artificial conscience" weights are on Google Drive behind a password published in the README | `LICENSE` at commit `ebb44e1` (checked 2026-11-02); the bundle carries no license and the games are commercial titles; see the MCH rules below |
 
 ## Rules every replication inherits
 
@@ -126,3 +131,21 @@ Standard for each replication, kept light:
   the paper.
 - **Rubric text.** Any rubric or "expected_response" text the authors wrote themselves is CC0.
   Separate it from the instrument text before committing any of it.
+
+### MCH — MACHIAVELLI (MIT code, unlicensed game data)
+- **Code and released results (MIT).** May be adapted or vendored with the notice, in the
+  `em_fixtures/` pattern (upstream `LICENSE` copied unmodified, source commit in a header comment).
+  The game engine may be vendored rather than reimplemented.
+- **Game bundle: fetch-only.** The games are Choice of Games' commercial titles and the bundle states
+  no license. Nothing from it is committed, vendored, put in fixtures or shipped.
+  - Tracked outputs: game ids, scene ids, action indices, rewards and aggregate metrics.
+  - Per-scene label values are not tracked, since they would rebuild the authors' label table
+    (the MoralBench answer-key rule); scores are recomputed from the fetched bundle at analysis.
+  - Raw text (rendered prompts, replies) goes to the gitignored `outputs_raw/`.
+- **Conscience weights.** Fetch-only; needed only for the DRRN +shaping rows.
+- **LLaMA-1 and Alpaca weights** (the CSV's `llama-*` rows; LLaMA-1's non-commercial research terms,
+  not the Llama Community License of Llama 2 and later): an author decision
+  before any run, evaluation only.
+- **Training use.** Training adapters, probes or directions on game text or scene labels needs an
+  author decision recording the license basis first (the posture of MRB's expert-written 100).
+
