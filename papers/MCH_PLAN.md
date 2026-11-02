@@ -1,6 +1,7 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
+Status: v0.2, 2026-11-02. **v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
+random-baseline analysis registered before the full run is read.** v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
 as the action-side instrument for the steering work). Pre-registration candidate. **No GPU spend
 authorized by this document.** Line prefix **MCH**: this file is `papers/MCH_PLAN.md`; code, data
 manifests and outputs in `papers/mch_machiavelli/`; anomalies `MCH-A1, ...` in `papers/ANOMALIES.md`;
@@ -113,6 +114,47 @@ artifact.
   - Price DRRN and the steering phase.
   - Namespace proposal (§7) and the license check.
   - Author reads before anything runs on a model.
+  - **Amendment 1 (2026-11-02, agent at MCH-G0; registered after the 10-episode timing pilot and
+    before any analysis of the 1,000-episode run; for the author's review at G0).** It fixes what
+    the registered random-baseline rule leaves open; the rule itself is unchanged.
+    - *Found before registering (from the paper, CSVs and coefficient file only, no run data).*
+      Table 2's random reward (18.0) is the mean of the 30 per-game means; the CSV's 18.36 and
+      Table 9's 18.4 pool episodes, so the three short games weigh less. Table 2's achievements
+      cell (9.4) is the pooled value (game mean 9.53). The harm cells are 100 by construction; the
+      per-game random means behind them are in `game_data/normalization_coeffs.json` (mean, SD,
+      n per game and category).
+    - *Primary statistic:* the mean over the 30 test games of our per-game means (games fixed,
+      1,000 episodes per game, episodes resampled within game; 10,000 bootstrap draws, seed 0).
+    - *Cells and multiplicity.* Primary cells (five): Norm. Reward (18.0), # Achievements (9.4),
+      All power, All disutility, All violations. For a harm category the statistic is our
+      paper-normalized score, the game mean of 100 × (our per-game mean count / the paper's
+      per-game mean), compared with 100; a game whose paper mean is 0 is left out of that
+      category (upstream would score it 0; that floor is reported separately). The 17
+      sub-category cells are secondary: about 1 miss in 17 is expected by chance.
+    - *Rule as registered.* A cell replicates if the paper's printed value, read as the interval
+      of its rounding (±0.05 for one decimal; ±0.5 for an integer), intersects our 95% CI.
+    - *Fork: the pooled aggregation.* Our per-game means weighted by the paper's per-game n,
+      against the CSV and Table 9 (18.36 and 18.4 reward; 9.44 achievements). Reported beside the
+      primary, never replacing it.
+    - *Secondary: Δ-CI.* For reward and each harm category, ours minus the paper's game-mean
+      statistic, with the paper's per-game SD and n from the coefficient file (normal
+      approximation per game, independent samples). The registered rule ignores the paper's own
+      sampling noise, so it can miss on an exact replication; the Δ-CI is the difference test.
+    - *Seed-exact check (diagnostic).* Upstream seeds episode i with i + 2417, so the same agent
+      on the same engine reproduces each game's mean exactly. Per game and category, our mean over
+      episodes 0 to n − 1 (n = the paper's per-game count) against the coefficient mean: equal
+      within 1e-9, or not. Equal on every game: the 2024 `RandomAgent` and today's engine are the
+      paper's. Unequal: the comparison is statistical only, and the per-game z-scores (ours minus
+      theirs, both SEs) are reported against N(0, 1).
+    - *MDE at the paper's design.* σ_g is the SD over our random episodes in game g of the
+      per-episode paper-normalized score (points for reward). One agent, one episode per game:
+      SE₁ = √(Σ σ_g²) / 30; two agents paired by game: SE₂ = √2 · SE₁; MDE = 2.80 × SE (80% power,
+      two-sided 5%). Assumption, stated with it: the agent's within-game episode SD equals the
+      random agent's.
+    - *Both branches.* Primary cells replicate: the floor and the normalizer are confirmed for the
+      2024 `RandomAgent` on today's engine. A primary cell misses: the seed-exact and per-game reads
+      locate the games, and the diagnosis (engine version, label set, episode cap, agent) precedes
+      any model run.
 - **MCH-G1 (author approval at G0).** Two parts, each optional:
   - Harness validation: a small open model through the paper's non-chat path on the M4, a few test
     games, greedy and sampled, checking parity, the fallback rate and run-to-run stability. No paper
