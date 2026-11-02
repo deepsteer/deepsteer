@@ -1,0 +1,810 @@
+{
+  "source": {
+    "commit": "ebb44e197f663603427882c609dbc9d5fb883d63",
+    "paper": "arXiv:2304.03279v4 (Table 2 identical in v1-v4)"
+  },
+  "coverage": {
+    "drrn/drrn_no_reg": {
+      "games": 30,
+      "samples": 790,
+      "csv_samples": 790,
+      "missing_games": []
+    },
+    "drrn/drrn_reg_less": {
+      "games": 29,
+      "samples": 750,
+      "csv_samples": 750,
+      "missing_games": [
+        "mysteries-of-baroque"
+      ]
+    },
+    "drrn/drrn_reg_more": {
+      "games": 30,
+      "samples": 750,
+      "csv_samples": 750,
+      "missing_games": []
+    },
+    "lm_dev/CoTAgent:gpt-3.5-turbo": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/CoTAgent:gpt-4": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/GoodAgent:gpt-3.5-turbo": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/GoodAgent:gpt-4": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/GoodCoTAgent:gpt-3.5-turbo": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/GoodCoTAgent:gpt-4": {
+      "games": 30,
+      "samples": 30,
+      "csv_samples": 30,
+      "missing_games": []
+    },
+    "lm_dev/LMAgent:davinci": {
+      "games": 29,
+      "samples": 29,
+      "csv_samples": 29,
+      "missing_games": [
+        "i-cyborg"
+      ]
+    },
+    "lm_dev/LMAgent:gpt-3.5-turbo": {
+      "games": 29,
+      "samples": 29,
+      "csv_samples": 29,
+      "missing_games": [
+        "versus-deathscapes"
+      ]
+    },
+    "random_baselines_1k/RandomAgent": {
+      "games": 30,
+      "samples": 28414,
+      "csv_samples": 28414,
+      "missing_games": []
+    }
+  },
+  "random_short_games": {
+    "hollywood-visionary": 584,
+    "i-cyborg": 527,
+    "vampire-the-masquerade_parliament-of-knives": 303
+  },
+  "main_equals_pooled_expanded": {
+    "max_abs_diff_by_method": {
+      "drrn/drrn_no_reg": 173.751549,
+      "drrn/drrn_reg_less": 185.781449,
+      "drrn/drrn_reg_more": 141.869782,
+      "lm_dev/CoTAgent:gpt-3.5-turbo": 143.676057,
+      "lm_dev/CoTAgent:gpt-4": 123.802682,
+      "lm_dev/GoodAgent:gpt-3.5-turbo": 114.477977,
+      "lm_dev/GoodAgent:gpt-4": 90.995332,
+      "lm_dev/GoodAgent:llama-13b": NaN,
+      "lm_dev/GoodAgent:llama-30b": NaN,
+      "lm_dev/GoodAgent:llama-7b": NaN,
+      "lm_dev/GoodCoTAgent:gpt-3.5-turbo": 94.588133,
+      "lm_dev/GoodCoTAgent:gpt-4": 97.57094,
+      "lm_dev/LMAgent:davinci": 117.963049,
+      "lm_dev/LMAgent:gpt-3.5-turbo": 125.668186,
+      "lm_dev/LMAgent:llama-13b": NaN,
+      "lm_dev/LMAgent:llama-30b": NaN,
+      "lm_dev/LMAgent:llama-7b": NaN,
+      "random_baselines_1k/RandomAgent": 100.0
+    }
+  },
+  "expanded_negative_harm_rows": {
+    "rows": 351,
+    "methods": [
+      "drrn/drrn_no_reg",
+      "drrn/drrn_reg_less",
+      "drrn/drrn_reg_more",
+      "lm_dev/CoTAgent:gpt-3.5-turbo",
+      "lm_dev/CoTAgent:gpt-4",
+      "lm_dev/GoodAgent:gpt-3.5-turbo",
+      "lm_dev/GoodAgent:gpt-4",
+      "lm_dev/GoodCoTAgent:gpt-3.5-turbo",
+      "lm_dev/GoodCoTAgent:gpt-4",
+      "lm_dev/LMAgent:davinci",
+      "lm_dev/LMAgent:gpt-3.5-turbo",
+      "random_baselines_1k/RandomAgent"
+    ],
+    "note": "100 * count / random mean is never negative; these rows used another formula"
+  },
+  "expanded_negative_rows_vs_main": {
+    "drrn/drrn_no_reg": {
+      "max_abs(main - pooled expanded)": 173.75154943043935,
+      "max_abs(main - pooled (100 - expanded))": 7.721518987341781
+    },
+    "drrn/drrn_reg_less": {
+      "max_abs(main - pooled expanded)": 185.78144863709724,
+      "max_abs(main - pooled (100 - expanded))": 10.000000000000014
+    },
+    "drrn/drrn_reg_more": {
+      "max_abs(main - pooled expanded)": 141.86978170653444,
+      "max_abs(main - pooled (100 - expanded))": 10.0
+    },
+    "lm_dev/CoTAgent:gpt-3.5-turbo": {
+      "max_abs(main - pooled expanded)": 143.67605656650332,
+      "max_abs(main - pooled (100 - expanded))": 12.282786608117178
+    },
+    "lm_dev/GoodAgent:gpt-3.5-turbo": {
+      "max_abs(main - pooled expanded)": 114.47797677632994,
+      "max_abs(main - pooled (100 - expanded))": 10.000000000000014
+    },
+    "lm_dev/GoodAgent:gpt-4": {
+      "max_abs(main - pooled expanded)": 90.99533245167731,
+      "max_abs(main - pooled (100 - expanded))": 10.000000000000014
+    },
+    "lm_dev/GoodCoTAgent:gpt-3.5-turbo": {
+      "max_abs(main - pooled expanded)": 94.58813302958858,
+      "max_abs(main - pooled (100 - expanded))": 10.000000000000014
+    },
+    "lm_dev/LMAgent:davinci": {
+      "max_abs(main - pooled expanded)": 117.96304870175794,
+      "max_abs(main - pooled (100 - expanded))": 10.34482758620689
+    },
+    "lm_dev/LMAgent:gpt-3.5-turbo": {
+      "max_abs(main - pooled expanded)": 125.66818608575417,
+      "max_abs(main - pooled (100 - expanded))": 10.344827586206904
+    },
+    "random_baselines_1k/RandomAgent": {
+      "max_abs(main - pooled expanded)": 100.0,
+      "max_abs(main - pooled (100 - expanded))": 10.558175547265435
+    },
+    "lm_dev/CoTAgent:gpt-4": {
+      "max_abs(main - pooled expanded)": 123.80268179669062,
+      "max_abs(main - pooled (100 - expanded))": 9.999999999999986
+    },
+    "lm_dev/GoodCoTAgent:gpt-4": {
+      "max_abs(main - pooled expanded)": 97.57093962602181,
+      "max_abs(main - pooled (100 - expanded))": 10.0
+    }
+  },
+  "random_row": {
+    "points_game_mean": 17.997092653068275,
+    "points_pooled": 18.361402821974934,
+    "achievements_game_mean": 9.531483058548895,
+    "achievements_pooled": 9.44347856690364,
+    "steps_recorded": 0.0,
+    "points_equal_coeff_game_score": 7.105427357601002e-15,
+    "paper_table2_points": 18.0,
+    "paper_table9_points": 18.4,
+    "paper_achievements": 9.4
+  },
+  "zero_mean_normalizer_cells": {
+    "violations.other": [
+      "fate-of-the-storm-gods",
+      "luminous-underground",
+      "pendragon-rising"
+    ],
+    "violations.promises": [
+      "kung-fu",
+      "t-rex-time-machine"
+    ],
+    "violations.stealing": [
+      "hero-project-redemption-season"
+    ],
+    "violations.trespassing": [
+      "hero-project-redemption-season"
+    ],
+    "violations.vandalism": [
+      "ratings-war"
+    ]
+  },
+  "random_equivalent_score": {
+    "violations.other": 90.0,
+    "violations.promises": 93.33,
+    "violations.stealing": 96.67,
+    "violations.trespassing": 96.67,
+    "violations.vandalism": 96.67
+  },
+  "table2": {
+    "table": "Table 2",
+    "cells": 154,
+    "match_main_csv": 118,
+    "match_game_mean_expanded": 11,
+    "match_paper_formula": 152,
+    "cells_not_matching_paper_formula": [
+      {
+        "method": "random_baselines_1k/RandomAgent",
+        "row": "Norm. Reward",
+        "paper": 18.0,
+        "paper_formula": 18.361,
+        "main_csv": 18.361,
+        "game_mean_expanded": 17.997
+      },
+      {
+        "method": "lm_dev/CoTAgent:gpt-3.5-turbo",
+        "row": "Social",
+        "paper": 92,
+        "paper_formula": 93.171,
+        "main_csv": 92.121,
+        "game_mean_expanded": 7.879
+      }
+    ],
+    "column_mapping": {
+      "Random": "random_baselines_1k/RandomAgent",
+      "DRRN base": "drrn/drrn_no_reg",
+      "DRRN +shaping": "drrn/drrn_reg_more",
+      "GPT-3.5 base": "lm_dev/CoTAgent:gpt-3.5-turbo",
+      "GPT-3.5 +EthicsPrompt": "lm_dev/GoodCoTAgent:gpt-3.5-turbo",
+      "GPT-4 base": "lm_dev/CoTAgent:gpt-4",
+      "GPT-4 +EthicsPrompt": "lm_dev/GoodCoTAgent:gpt-4"
+    }
+  },
+  "tables9_10": {
+    "table": "Tables 9-10",
+    "cells": 396,
+    "match_main_csv": 271,
+    "match_game_mean_expanded": 18,
+    "match_paper_formula": 330,
+    "cells_not_matching_paper_formula": [
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "All disutility",
+        "paper": 102,
+        "paper_formula": 101.438,
+        "main_csv": 101.438,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Deception",
+        "paper": 105,
+        "paper_formula": 103.703,
+        "main_csv": 103.703,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Unfairness",
+        "paper": 107,
+        "paper_formula": 106.214,
+        "main_csv": 106.214,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Manipulation",
+        "paper": 107,
+        "paper_formula": 105.695,
+        "main_csv": 105.695,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Non-physical harm",
+        "paper": 102,
+        "paper_formula": 100.847,
+        "main_csv": 100.847,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Other",
+        "paper": 123,
+        "paper_formula": 116.414,
+        "main_csv": 106.414,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Betrayal",
+        "paper": 67,
+        "paper_formula": 68.481,
+        "main_csv": 61.815,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Spying",
+        "paper": 110,
+        "paper_formula": 109.296,
+        "main_csv": 109.296,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Stealing",
+        "paper": 112,
+        "paper_formula": 110.002,
+        "main_csv": 106.668,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-7b",
+        "row": "Vandalism",
+        "paper": 88,
+        "paper_formula": 86.325,
+        "main_csv": 82.991,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Deception",
+        "paper": 93,
+        "paper_formula": 92.453,
+        "main_csv": 92.453,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Killing",
+        "paper": 95,
+        "paper_formula": 94.441,
+        "main_csv": 94.441,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Non-physical harm",
+        "paper": 90,
+        "paper_formula": 88.752,
+        "main_csv": 88.752,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Other",
+        "paper": 118,
+        "paper_formula": 107.184,
+        "main_csv": 97.184,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Betrayal",
+        "paper": 79,
+        "paper_formula": 81.027,
+        "main_csv": 74.36,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Trespassing",
+        "paper": 92,
+        "paper_formula": 90.853,
+        "main_csv": 87.52,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "Vandalism",
+        "paper": 102,
+        "paper_formula": 105.774,
+        "main_csv": 102.441,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-13b",
+        "row": "All violations",
+        "paper": 100,
+        "paper_formula": 99.159,
+        "main_csv": 99.159,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Social",
+        "paper": 98,
+        "paper_formula": 97.499,
+        "main_csv": 97.499,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Utility",
+        "paper": 105,
+        "paper_formula": 104.451,
+        "main_csv": 104.451,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "All disutility",
+        "paper": 107,
+        "paper_formula": 105.854,
+        "main_csv": 105.854,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Deception",
+        "paper": 101,
+        "paper_formula": 100.25,
+        "main_csv": 100.25,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Non-physical harm",
+        "paper": 87,
+        "paper_formula": 85.08,
+        "main_csv": 85.08,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Other",
+        "paper": 328,
+        "paper_formula": 304.973,
+        "main_csv": 294.973,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Betrayal",
+        "paper": 102,
+        "paper_formula": 107.381,
+        "main_csv": 100.715,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Spying",
+        "paper": 128,
+        "paper_formula": 126.367,
+        "main_csv": 126.367,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Stealing",
+        "paper": 127,
+        "paper_formula": 122.401,
+        "main_csv": 119.068,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Trespassing",
+        "paper": 118,
+        "paper_formula": 119.984,
+        "main_csv": 116.65,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "Vandalism",
+        "paper": 100,
+        "paper_formula": 105.144,
+        "main_csv": 101.811,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/LMAgent:llama-30b",
+        "row": "All violations",
+        "paper": 101,
+        "paper_formula": 100.437,
+        "main_csv": 100.437,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/CoTAgent:gpt-3.5-turbo",
+        "row": "Social",
+        "paper": 92,
+        "paper_formula": 93.171,
+        "main_csv": 92.121,
+        "game_mean_expanded": 7.879
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Killing",
+        "paper": 200,
+        "paper_formula": 140.082,
+        "main_csv": 140.082,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Manipulation",
+        "paper": 102,
+        "paper_formula": 100.529,
+        "main_csv": 100.529,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Non-physical harm",
+        "paper": 90,
+        "paper_formula": 89.314,
+        "main_csv": 89.314,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Other",
+        "paper": 115,
+        "paper_formula": 112.544,
+        "main_csv": 102.544,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Betrayal",
+        "paper": 101,
+        "paper_formula": 101.558,
+        "main_csv": 94.892,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Spying",
+        "paper": 100,
+        "paper_formula": 99.24,
+        "main_csv": 99.24,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Stealing",
+        "paper": 112,
+        "paper_formula": 105.241,
+        "main_csv": 101.908,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Trespassing",
+        "paper": 107,
+        "paper_formula": 105.266,
+        "main_csv": 101.933,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "Vandalism",
+        "paper": 86,
+        "paper_formula": 85.045,
+        "main_csv": 81.712,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-7b",
+        "row": "All violations",
+        "paper": 99,
+        "paper_formula": 98.322,
+        "main_csv": 98.322,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "All disutility",
+        "paper": 94,
+        "paper_formula": 93.389,
+        "main_csv": 93.389,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Deception",
+        "paper": 89,
+        "paper_formula": 88.385,
+        "main_csv": 88.385,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Unfairness",
+        "paper": 89,
+        "paper_formula": 88.072,
+        "main_csv": 88.072,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Killing",
+        "paper": 143,
+        "paper_formula": 111.773,
+        "main_csv": 111.773,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Non-physical harm",
+        "paper": 79,
+        "paper_formula": 78.024,
+        "main_csv": 78.024,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Other",
+        "paper": 126,
+        "paper_formula": 116.842,
+        "main_csv": 106.842,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Betrayal",
+        "paper": 87,
+        "paper_formula": 86.45,
+        "main_csv": 79.783,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Spying",
+        "paper": 113,
+        "paper_formula": 112.046,
+        "main_csv": 112.046,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Stealing",
+        "paper": 110,
+        "paper_formula": 103.497,
+        "main_csv": 100.163,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Trespassing",
+        "paper": 106,
+        "paper_formula": 105.323,
+        "main_csv": 101.99,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-13b",
+        "row": "Vandalism",
+        "paper": 94,
+        "paper_formula": 91.305,
+        "main_csv": 87.972,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Social",
+        "paper": 94,
+        "paper_formula": 93.281,
+        "main_csv": 93.281,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Deception",
+        "paper": 95,
+        "paper_formula": 94.258,
+        "main_csv": 94.258,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Unfairness",
+        "paper": 78,
+        "paper_formula": 77.43,
+        "main_csv": 77.43,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Killing",
+        "paper": 196,
+        "paper_formula": 135.75,
+        "main_csv": 135.75,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Manipulation",
+        "paper": 98,
+        "paper_formula": 98.922,
+        "main_csv": 98.922,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Non-physical harm",
+        "paper": 69,
+        "paper_formula": 68.386,
+        "main_csv": 68.386,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Other",
+        "paper": 268,
+        "paper_formula": 250.499,
+        "main_csv": 240.499,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Betrayal",
+        "paper": 70,
+        "paper_formula": 68.823,
+        "main_csv": 62.157,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Spying",
+        "paper": 116,
+        "paper_formula": 114.43,
+        "main_csv": 114.43,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Stealing",
+        "paper": 111,
+        "paper_formula": 104.882,
+        "main_csv": 101.549,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Trespassing",
+        "paper": 113,
+        "paper_formula": 113.897,
+        "main_csv": 110.564,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "Vandalism",
+        "paper": 80,
+        "paper_formula": 78.783,
+        "main_csv": 75.45,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:llama-30b",
+        "row": "All violations",
+        "paper": 92,
+        "paper_formula": 91.448,
+        "main_csv": 91.448,
+        "game_mean_expanded": null
+      },
+      {
+        "method": "lm_dev/GoodAgent:gpt-3.5-turbo",
+        "row": "Social",
+        "paper": 76,
+        "paper_formula": 76.546,
+        "main_csv": 75.737,
+        "game_mean_expanded": 24.263
+      }
+    ],
+    "drrn_label_mapping": {
+      "random_baselines_1k/RandomAgent": "Random",
+      "drrn/drrn_no_reg": "DRRN",
+      "drrn/drrn_reg_less": "DRRN+shaping",
+      "drrn/drrn_reg_more": "DRRN++shaping"
+    }
+  },
+  "tables9_10_without_llama": {
+    "table": "Tables 9-10 (no llama)",
+    "cells": 264,
+    "match_main_csv": 204,
+    "match_game_mean_expanded": 18,
+    "match_paper_formula": 262
+  },
+  "tables9_10_llama_only": {
+    "table": "Tables 9-10 (llama)",
+    "cells": 132,
+    "match_main_csv": 67,
+    "match_game_mean_expanded": 0,
+    "match_paper_formula": 68
+  }
+}

@@ -1,0 +1,1 @@
+{"game": "i-cyborg", "episode": 527, "seed": 2944, "kind": "hang", "observed": "no return from env.step after 12.6 min at ~99% CPU (RSS 3.9 GB at 12.4 min, 1.9 GB at 12.7 min); killed by hand (2026-11-02)", "upstream_context": "the paper's coefficient file has 527 i-cyborg episodes; its SLURM jobs ran with --mem=4GB and --time=10:00:00"}

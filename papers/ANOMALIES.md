@@ -2160,3 +2160,68 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Status.** resolved toward R_A, with the content effect beside it: care-DPO prefers A at dose 0 whatever the option's content (+0.23), which accounts directly for Muse's MoralBench shift toward A; the pairs' letters (no chosen-at-A excess) do not explain it, and base-DPO, trained on the same rejected traces with unsteered chosen ones, shows no A preference. R_B in its B-specific form is not supported. Open as a new question: what in care-DPO's steered chosen traces teaches a first-position preference (a candidate for a later ST note; no work now).
 **Thesis impact.** Under R_B, Muse's MoralBench drift is a positional side effect of the DPO pairs' letter imbalance, a design note for any future pair set (balance chosen and rejected letters); under R_content it is a change in what the adapter favours.
 
+
+## MCH line ledger (prefix MCH-A; opened at MCH-G0, `MCH_PLAN.md` v0.2)
+
+Source of every number: `papers/mch_machiavelli/outputs/mch_g0_audit.json` and `mch_g0_random.json`
+(code `ebb44e1`, paper-era `9f82117`; bundle sha256 `e13d07b4…`), against arXiv:2304.03279v4.
+
+## MCH-A1 (ledger) — The paper's random row averages reward over games and achievements over episodes
+
+**Date.** 2026-11-02 (MCH-G0).
+**Observation.** Table 2's random reward 18.0 is the mean of the 30 per-game means (17.997); the CSV's 18.36 and Table 9's 18.4 pool the 28,414 episodes, so the three short games weigh less. Table 2's achievements cell (9.4) is the pooled value (9.44; game mean 9.53). Under Amendment 1's game-mean primary, achievements misses (9.531 [9.502, 9.561]); the pooled fork replicates (9.443 [9.414, 9.473]).
+**Type.** cross-doc conjunction (two aggregations in one row; Table 2 against Table 9).
+**Competing readings.** R_mixed: the paper computed the two goal cells differently. R_typo: one cell was carried from another version of the table.
+**Discriminator.** None beyond the arithmetic: both values reproduce exactly from the CSVs, so the aggregation per cell is located; which one the authors intended is theirs to say.
+**Status.** resolved as located (R_mixed in effect). The registered achievements miss is the aggregation, not the data.
+**Thesis impact.** Any comparison with the paper's random goal cells states the aggregation; our R0 reports both.
+
+## MCH-A2 (ledger) — The released scorer gives an agent identical to random 90 on Other; the paper's tables give it 100
+
+**Date.** 2026-11-02 (MCH-G0).
+**Observation.** Eight test-game × category cells have a random mean of 0 (Other ×3, Betrayal ×2, Stealing, Trespassing, Vandalism ×1). The pinned `get_mach_scores` scores them 0 for every agent although its comment says "assume performance is same as random agent"; an agent identical to random then scores 90.0 / 93.3 / 96.7 / 96.7 / 96.7 on those five categories. The expanded CSV stores 100 × (1 − count/mean), where 0 is "same as random", and the paper's tables are 100 minus those rows pooled by episode: 152 of 154 Table 2 cells and 262 of 264 non-LLaMA Table 9-10 cells, against 118 and 204 for `main_results.csv` as released.
+**Type.** control-misbehavior (the normalizer's floor moves under a code change).
+**Competing readings.** R_formula_change: the scorer was switched to count/mean after the expanded CSV was made, and the zero case kept a value that now means "no harm". R_intended: the 0 was meant, and the paper's tables were made some other way.
+**Discriminator.** The arithmetic above (done): the paper's cells follow from the flipped rows and not from the released scorer.
+**Status.** resolved toward R_formula_change. Decision for the author at G0: R0 uses the paper's formula, with the pinned scorer reported beside it.
+**Thesis impact.** Anyone scoring new agents with the released code reads five categories up to 10 points lower than the paper's tables would, against the same random agent. Under R_intended the paper's five columns, not the code, are the outlier.
+
+## MCH-A3 (ledger) — Missing power and disutility keys are skipped, inflating the normalizer and dropping game cells from agent rows
+
+**Date.** 2026-11-02 (MCH-G0; Amendment 2).
+**Observation.** `get_mach_counts` creates power and disutility keys only when an event fires; pandas skips the absent key in every mean. The paper's random means therefore average over episodes with at least one event: +0.7% (Economic), +1.4% (Social) on average, +18% on sea-eternal Social. Under F_zero our random agent reads Social 98.77 [98.39, 99.16] against the paper's normalizer. In the released LM rows, 8 game cells are NaN and drop out (CoTAgent GPT-3.5 Social averages 26 of 30 games).
+**Type.** control-misbehavior.
+**Competing readings.** R_skip_intended: per-episode means over episodes where the category occurs. R_artifact: a counting artifact; a zero-event episode has count 0.
+**Discriminator.** None in data; a definition choice. Both readings are registered (Amendment 2) and reported.
+**Status.** carried as a fork (F_skip = paper-faithful, F_zero = true counts).
+**Thesis impact.** Small on the aggregates (Δ ≤ 1.3 points on Social); per game it can reach 18%, which matters for per-game steering reads.
+
+## MCH-A4 (ledger) — The paper's LLaMA cells do not follow from its CSV, and no checkpoint can be named
+
+**Date.** 2026-11-02 (MCH-G0).
+**Observation.** The six `llama-*` rows exist only in `main_results.csv` (no per-game rows). Under the formula that reproduces 262 of 264 other cells, 68 of 132 LLaMA cells match; GoodAgent Killing prints 200 / 143 / 196 against 140 / 112 / 136. Stanford released one Alpaca checkpoint, the 7B weight diff (2023-04-13, after the CSV commit of 2023-04-06), and no 13B or 30B; the harness for open models is not in the repo.
+**Type.** cross-doc conjunction (paper against CSV).
+**Competing readings.** R_rerun: Appendix K's LLaMA numbers come from a later run whose trajectories were never exported. R_transcription: errors copying the cells.
+**Discriminator.** None available (no trajectories, no checkpoints).
+**Status.** open, unresolvable inside the replication; the LLaMA rows leave G1.
+**Thesis impact.** Appendix K's LLaMA rows cannot be reproduced or checked; nothing in the program depends on them.
+
+## MCH-A5 (ledger) — Three games end the paper's random run where the engine fails at a seeded episode
+
+**Date.** 2026-11-02 (MCH-G0).
+**Observation.** Upstream seeds episode i with i + 2417. hollywood-visionary episode 584 (seed 3001, step 111) and vampire parliament-of-knives episode 303 (seed 2720, step 224) raise `AssertionError` in `player.state` (no choice texts); i-cyborg episode 527 (seed 2944) never returns from `env.step` (12.6 min at full CPU, 1.9-3.9 GB). The paper's coefficient file holds exactly 584, 527 and 303 episodes for these games, and our run up to those indices equals it to 1e-9 on all 30 games.
+**Type.** bug-report-as-finding.
+**Competing readings.** R_engine: upstream's runs stopped at the same engine failures. R_timeout: a 10 h job limit ended them at those counts by coincidence.
+**Discriminator.** Done: the stopping indices coincide on all three games, and the failures are deterministic at those seeds.
+**Status.** resolved toward R_engine; for i-cyborg the job's end is consistent with either of its limits (4 GB memory, 10 h), the hang itself being deterministic.
+**Thesis impact.** The paper's 28,414 is a property of the engine, not of compute; any harness batching episodes across games needs a per-step watchdog, and the truncated-episode rule is registered before G1.
+
+## MCH-A6 (ledger) — Upstream could not reproduce its own CoT agents' CSV rows in 2023
+
+**Date.** 2026-11-02 (MCH-G0; upstream issue #6, 2023-08-05 to 08-09, open).
+**Observation.** An outside user ran `CoTAgent:gpt-4` and `CoTAgent:gpt-3.5-turbo` on avatar-of-the-wolf and got under 10 points where the CSV shows at least 30; an upstream author confirmed weaker results on re-running `CoTAgent:gpt-3.5-turbo` and `-0301`. Issue #19 adds a mechanism: replies wrapped in a JSON code fence fail validation and become random actions.
+**Type.** cross-doc conjunction (upstream issue against the released rows).
+**Competing readings.** R_model_drift: OpenAI's models changed between the runs. R_fallback: the CoT agents' random-action fallback rate differs between runs.
+**Discriminator.** None for the paper's runs (models retired). Forward: our harness logs the fallback rate per run (MCH_PLAN §4).
+**Status.** carried; informs G1 scope (harness validation, no paper match).
+**Thesis impact.** The paper's LM rows were not reproducible upstream even before the models retired; the reproduction's paper-match value sits in the random baseline and the scoring, both banked at G0.

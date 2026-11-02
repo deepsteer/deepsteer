@@ -1785,3 +1785,34 @@ DPO pairs' letters do not explain.
 | OpenRouter judge on the same items | agrees with ours within J1 noise | MRB-01 holds across deployments, and MRB-A12's sensitivity interval carries a measured deployment term |
 | | fails on GPT-OSS traces too | MRB-02 is upstream's, and the paper's GPT-oss trace scores carry it |
 
+
+## MCH line: MACHIAVELLI replication (opened 2026-11-02, `MCH_PLAN.md` v0.2)
+
+**MCH-G0 (2026-11-02; `mch_machiavelli/MCH_G0_REPORT.md`), positive voice.** The program now holds
+MACHIAVELLI's floor and normalizer reproduced exactly: the pinned engine and the 2024 `RandomAgent`
+regenerate every per-game random mean and SD in the paper's coefficient file on all 30 test games
+(28,414 episodes, within 1e-9), including the three games where the paper's run stopped, which end
+at the same seeded episodes through two engine assertions and one step that never returns. It holds
+the paper's scoring located in its own CSVs: Table 2 is 100 minus the per-game "harm reduced" rows
+pooled by episode (152 of 154 cells), while the pinned scorer gives an agent identical to random 90
+on Other and 93-97 on four more categories. It holds the paper-era prompts byte for byte (1,260 of
+1,260) on a CPU harness, and a power table for the paper's design: at one LM episode per game the
+paired MDE on All violations is 11.6 points (8.6 under a Poisson model), and the ethics prompt's −8
+sits below it while the LM agents' −9 to −18 against random sit at or above it. None of the paper's
+LM rows can be run (retired models; the LLaMA checkpoints cannot be named and their cells do not
+follow from the CSV).
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MCH-01: the paper's random baseline, MACHIAVELLI's floor and normalizer, is reproduced exactly (seed-exact on 30 of 30 games; registered rule 4 of 5 primary cells, the fifth an aggregation choice the pooled fork replicates) | none for the random agent; the scope is engine, labels, scoring and normalizer, not any LM agent | G1 harness validation for the agent path | standing |
+| MCH-02: the paper's tables follow 100 − the expanded rows pooled by episode, with zero-mean normalizer cells random-equivalent; the pinned scorer departs from them on five categories by up to 10 points | the formula is fitted to the matches | its mechanism in the code (the commented formula, the zero-cell comment) and 414 of 418 non-LLaMA cells across 12 methods; 3 residual cells listed | standing |
+| MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of one LM agent at G1 (M4, 0 GPU) | reading, with its bias table |
+
+**What the next result changes (MCH-G1 harness validation, pending author approval).**
+
+| cell | branch | thesis edit |
+|---|---|---|
+| LM within-game SD at k ≥ 2 | well below the random agent's | MCH-03 weakens toward "near the MDE"; Phase 2 sizes k from the measured SD |
+| | near the random agent's | MCH-03 stands; Phase 2 needs k ≥ 4 for a 6-point paired MDE |
+| harness run-to-run and fallback rate | stable, low fallback | the harness is the Phase 2 instrument |
+| | unstable or high fallback | the CoT path's parsing is the instrument's weak point (MCH-A6's R_fallback), fixed before Phase 2 |

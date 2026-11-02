@@ -145,3 +145,8 @@ papers/mrb_morebench/outputs/p2*_merged/
 papers/mrb_morebench/outputs/g1/judge/shard0.jsonl
 papers/mrb_morebench/outputs/g2/judge/shard0.jsonl
 papers/mrb_morebench/outputs/p2/judge/shard0.jsonl
+# MACHIAVELLI per-game episode rows (61 MB, with harm counts): untracked; seeds, actions and
+# rewards are tracked in outputs/*.jsonl.gz without the counts. Raw text and rendered prompts
+# are never tracked (MCH_PLAN §9)
+papers/mch_machiavelli/outputs/g0_random*/*.jsonl
+papers/mch_machiavelli/outputs_raw/
