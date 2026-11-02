@@ -1,0 +1,110 @@
+{
+ "rule": "MRB_PLAN v0.9.3 item 1",
+ "n_boot": 2000,
+ "seed": 20261102,
+ "units": "score points; length in thousands of characters",
+ "muse_glimmer_30b": {
+  "beta": {
+   "est": 2.8245,
+   "ci95": [
+    1.454,
+    4.209
+   ]
+  },
+  "delta": {
+   "est": -1.4745,
+   "ci95": [
+    -2.016,
+    -0.904
+   ]
+  },
+  "delta_length_k": {
+   "est": -0.2154,
+   "ci95": [
+    -0.25,
+    -0.181
+   ]
+  },
+  "delta_adj": {
+   "est": -0.8661,
+   "ci95": [
+    -1.459,
+    -0.234
+   ]
+  },
+  "share_explained": {
+   "est": 0.4126,
+   "ci95": [
+    0.214,
+    0.761
+   ]
+  },
+  "cross_slope": {
+   "est": 3.0584,
+   "ci95": [
+    1.632,
+    4.387
+   ]
+  },
+  "cross_intercept": {
+   "est": -0.8157,
+   "ci95": [
+    -1.431,
+    -0.204
+   ]
+  },
+  "reading": "part length, part reasoning: a cost remains at matched length"
+ },
+ "qwen38_27b": {
+  "beta": {
+   "est": 0.6945,
+   "ci95": [
+    0.285,
+    1.204
+   ]
+  },
+  "delta": {
+   "est": -3.8519,
+   "ci95": [
+    -4.442,
+    -3.257
+   ]
+  },
+  "delta_length_k": {
+   "est": -1.4763,
+   "ci95": [
+    -1.587,
+    -1.372
+   ]
+  },
+  "delta_adj": {
+   "est": -2.8265,
+   "ci95": [
+    -3.702,
+    -1.904
+   ]
+  },
+  "share_explained": {
+   "est": 0.2662,
+   "ci95": [
+    0.107,
+    0.476
+   ]
+  },
+  "cross_slope": {
+   "est": 0.7697,
+   "ci95": [
+    0.321,
+    1.244
+   ]
+  },
+  "cross_intercept": {
+   "est": -2.7156,
+   "ci95": [
+    -3.541,
+    -1.886
+   ]
+  },
+  "reading": "part length, part reasoning: a cost remains at matched length"
+ }
+}

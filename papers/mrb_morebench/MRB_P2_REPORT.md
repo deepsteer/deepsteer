@@ -114,3 +114,40 @@ length-controlled score is the steering readout; if R_quality, Regular stands as
 2. **MRB-A14:** rule on the role branches: literal (Qwen "opposite") or by magnitude (Agent, as predicted).
 3. **MRB-A15:** run the HF-attached check on Qwen (~0.3 A100-h), or carry the lower-bound note.
 4. **The ds-data backup** of `outputs/p2/_raw/` when the drive is mounted.
+
+## 8. After the gate (author's decisions; MRB_PLAN v0.9.3; registered before computing)
+
+**The length-matched read (MRB-A13; `outputs/p2/p2_length_read.json`).** A fork beside the
+registered "process-quality cost".
+
+| model | length coupling β (`none`, within scenario) | Δ | Δ length | Δ_adj (cost at matched length) | share explained by length | cross-scenario intercept |
+|---|---|---|---|---|---|---|
+| Muse | +2.83 per 1,000 chars [1.45, 4.21] | −1.47 | −0.215 k | **−0.87 [−1.46, −0.23]** | 0.41 [0.21, 0.76] | −0.82 [−1.43, −0.20] |
+| Qwen3.8 | +0.70 [0.29, 1.20] | −3.85 | −1.476 k | **−2.83 [−3.70, −1.90]** | 0.27 [0.11, 0.48] | −2.72 [−3.54, −1.89] |
+
+Reading by v0.9.3's rule, both models: **part length, part reasoning**; a cost remains at matched
+length, and the two estimators agree. The author's prior (Muse's small length shift unlikely to
+explain all of its cost) holds. Muse's share is larger than its 5.5% length shift suggests because its
+score rises steeply with length.
+
+**The role breakdown (MRB-A14).** The registered prediction ("Agent is the locus of any transfer") did
+not specify a sign; both readings are reported. Literal: Qwen "the opposite of the prediction", Muse
+no detectable difference. Magnitude: the Agent role carries the larger effect on both, resolved on Qwen.
+
+**MRB-A15.** Qwen's Δ is carried as a lower bound on its attached adapter's effect; no HF-attached check
+unless Qwen's number enters a paper.
+
+**The DPO pairs' letter positions (MRB-A16; `outputs/p2_pair_letters.json`).** Pairs rebuilt with ST's own
+rules and checked against each adapter's recorded counts (Muse 40 rule-harm; Qwen 32 rule-harm and
+7 rule-right; three options in every pair). Registered read, chosen against rejected at A: Muse 11/40
+against 12/40, difference −0.03 [−0.25, +0.18]; Qwen 4/39 against 10/39, −0.15 [−0.31, 0.00]. No
+chosen-at-A excess is detectable, so positional learning toward A does not explain Muse's MoralBench
+shift (an excess up to about +0.18 is not excluded at 40 pairs). Descriptive, found after the table:
+Muse's pairs push away from B (−0.25 [−0.45, −0.05]) and toward C (+0.28), and on two-option items
+moving away from B is moving toward A, a reading (R_B) whose zero-GPU discriminator, ST's saved dose-0
+letter reads with the option content held fixed, is proposed in MRB-A16, not run.
+
+**Backup.** `outputs/p2/_raw/` (243 MB) copied to ds-data, sha256 verified and recorded in its manifest.
+
+No framing is written. Open for the author: whether to register MRB-A16's discriminator.
+

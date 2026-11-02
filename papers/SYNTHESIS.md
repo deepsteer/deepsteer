@@ -1754,7 +1754,7 @@ adapter shifts its MoralBench letter bias toward A by up to 0.30.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| MRB-05: ST's Muse and Qwen3.8 adapters (single draws) lower MoReBench response Regular past the MDE (−1.47, −3.85; MDE 0.76, 0.87) and raise Hard (+0.75, +2.18) | R_length: the adapters answer more briefly and cover fewer criteria (MRB-A13) | Δscore against Δlength per scenario (zero GPU; amendment first) | standing as registered; the length reading open |
+| MRB-05: ST's Muse and Qwen3.8 adapters (single draws) lower MoReBench response Regular past the MDE (−1.47, −3.85; MDE 0.76, 0.87) and raise Hard (+0.75, +2.18) | R_length: the adapters answer more briefly and cover fewer criteria (MRB-A13) | Δscore against Δlength per scenario (zero GPU; amendment first) | standing as registered; the length-matched fork (v0.9.3): part length, part reasoning, a cost of −0.87 [−1.46, −0.23] (Muse) and −2.83 [−3.70, −1.90] (Qwen3.8) remaining at matched length |
 | MRB-06: MoReBench's response field separates Muse's known-good adapter from Qwen3.8's known-non-specific one (Regular ΔΔ +2.38 [+1.58, +3.20]; Logical Process +3.27 [+1.61, +4.98]; Harmless Outcome not detectable at 2.92) | Qwen's far larger length shift carries the separation (−1,476 against −215 characters), and Qwen's merge keeps ~60% of its adapter (MRB-A15) | the length-matched read; HF-attached generation on Qwen (~0.3 A100-h) | standing at two single draws |
 
 | claim | strongest counter-reading | separating experiment | status |

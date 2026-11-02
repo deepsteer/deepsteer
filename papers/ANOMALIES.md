@@ -2111,7 +2111,8 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Type.** sign-flip (Regular against Hard on the same rows).
 **Competing readings.** R_length: the adapters write shorter answers that cover fewer rubric criteria, while each character meets as many or more; MoReBench's Regular rewards coverage, which is what its Hard was built to correct. R_quality: the reasoning is worse, and Hard rises only because Regular falls by a smaller fraction than length.
 **Discriminator.** Zero GPU on the saved rows: the per-scenario Δscore against Δlength (a regression, or Δscore within length-matched bins); under R_length the cost vanishes at matched length. A post-hoc analysis: an amendment first, reported as a fork beside the registered verdict.
-**Status.** open (author).
+**The fork (MRB_PLAN v0.9.3, `outputs/p2/p2_length_read.json`).** The `none` arm's within-scenario length coupling: Muse +2.83 points per 1,000 characters [1.45, 4.21], Qwen +0.70 [0.29, 1.20]. Length-adjusted cost: **Muse −0.87 [−1.46, −0.23]**, length explaining 0.41 [0.21, 0.76] of the cost; **Qwen −2.83 [−3.70, −1.90]**, length explaining 0.27 [0.11, 0.48]. The cross-scenario intercept (the cost at matched length, a second estimator) agrees: −0.82 [−1.43, −0.20] and −2.72 [−3.54, −1.89].
+**Status.** resolved as part length, part reasoning on both models (v0.9.3's rule): a cost remains at matched length, and length accounts for about two fifths of Muse's and a quarter of Qwen's. The author's prior (Muse's small length shift unlikely to explain all of its cost) holds; Muse's share is larger than its 5.5% length shift suggests because its score rises steeply with length (2.8 points per 1,000 characters against Qwen's 0.7).
 **Thesis impact.** Under R_length, the adapters' cost on MoReBench is a length effect (they answer more briefly), not a loss of reasoning quality. Under R_quality, it is a specificity cost of protection training on procedural moral reasoning.
 
 ## MRB-A14 (ledger) — The role breakdown's branches were written for a positive transfer
@@ -2121,7 +2122,7 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Type.** pre-registration ambiguity (a branch defined by sign, an effect of the other sign).
 **Competing readings.** R_literal: the registered branch stands (Qwen: the opposite of the prediction). R_magnitude: "locus of any transfer" meant the larger effect of either sign, so Qwen's result is as predicted.
 **Discriminator.** None in the data; an author decision on what the registration meant, recorded as such.
-**Status.** open (author): both readings reported; the analysis records the literal branch and the larger-magnitude role.
+**Status.** resolved by the author (MRB_PLAN v0.9.3): v0.9.1's prediction did not specify a sign, so both readings are reported. Literal: Qwen's interaction (−1.46 [−2.66, −0.24]) falls on "the opposite of the prediction", Muse's (−0.91 [−2.05, +0.19]) on no detectable difference. Magnitude: the Agent role carries the larger effect on both models, resolved on Qwen.
 **Thesis impact.** Either way, both adapters' cost is larger on Agent scenarios (resolved on Qwen, not on Muse at its MDE of 1.55).
 
 ## MRB-A15 (ledger) — Qwen's merged checkpoint keeps about 60% of its adapter's letter shift
@@ -2131,6 +2132,16 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Type.** control-misbehavior (a gate that passes by direction with a partial transfer).
 **Competing readings.** R_attenuated: Qwen's adapter arm on vLLM runs a weakened adapter, so its Δ understates the attached adapter's effect. R_readout: at dose 0 Qwen's adapter barely moves the letters (TV 0.03), so the kept share is a ratio of small numbers and says little about generation.
 **Discriminator.** Generation with the adapter attached on HF on a subset (about 50 scenarios, k = 1, ~0.3 A100-h with judging), compared with the merged arm on the same scenarios.
-**Status.** open (author).
+**Status.** carried (author, MRB_PLAN v0.9.3): Qwen's Δ is reported as a lower bound on its attached adapter's effect; the HF-attached check runs only if Qwen's number enters a paper.
 **Thesis impact.** Under R_attenuated, Qwen's cost (−3.85) is a lower bound on the attached adapter's.
+
+## MRB-A16 (ledger) — Muse's DPO pairs carry no A excess, but they push away from B
+
+**Date.** 2026-11-02 (MRB_PLAN v0.9.3 item 4; `outputs/p2_pair_letters.json`).
+**Observation.** Each adapter's training pairs rebuilt with ST's own rules and accepted on the per-scenario counts of its `st_adapter.json` (Muse 40 rule-harm pairs from `st2mr`; Qwen 32 rule-harm and 7 rule-right from `st2qp_pull`; three options shown in every pair). Registered read, the shown letter of the chosen and the rejected option at A: Muse chosen 11/40 (0.275 [0.146, 0.439]) against rejected 12/40 (0.300 [0.166, 0.465]), difference −0.03 [−0.25, +0.18]: no chosen-at-A excess detectable, an excess up to about +0.18 not excluded. Qwen 4/39 against 10/39, −0.15 [−0.31, 0.00]. Descriptive, beyond the registered read (found after seeing the table): Muse's chosen options sit at B less often than its rejected ones (−0.25 [−0.45, −0.05]) and at C more often (+0.28 [+0.08, +0.48]); Qwen's sit at B more often (+0.21 [0.00, +0.41]).
+**Type.** cross-doc conjunction (a training-set property against a drift read).
+**Competing readings.** R_A: positional learning toward A explains Muse's MoralBench shift toward A (ΔL +0.16 to +0.30): not supported by the registered read. R_B: the pairs taught Muse to avoid B, and on MoralBench's two-option items moving away from B is moving toward A (post hoc, unregistered). R_content: the shift comes from what the adapter learned about content, not position (MoralBench's content effect K moved little, |ΔK| ≤ 0.07).
+**Discriminator.** Zero GPU on ST's saved dose-0 letter reads for Muse with and without the adapter (`st_live_reference/outputs/t16/muse_glimmer_30b/dose0/`, three options, option order permuted across rows): the adapter's shift in letter mass by position with the option's content held fixed separates R_B (B down at fixed content) from R_A (A up) and R_content (no positional term). Needs an amendment first.
+**Status.** open (author): the registered read is reported; R_B is a reading.
+**Thesis impact.** Under R_B, Muse's MoralBench drift is a positional side effect of the DPO pairs' letter imbalance, a design note for any future pair set (balance chosen and rejected letters); under R_content it is a change in what the adapter favours.
 
