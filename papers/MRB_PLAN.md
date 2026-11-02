@@ -1,6 +1,7 @@
 # MRB Plan — MoReBench Replication, Decomposed Into the Library
 
-Status: v0.9.2, 2026-11-01. **v0.9.2 (author): Phase 2's VALIDATE folded into the session as staged
+Status: v0.9.3, 2026-11-02. **v0.9.3 (author, after the Phase 2 gate): the length-matched fork, both
+role readings, the Qwen lower-bound note, and the DPO pairs' letter check (§7).** **v0.9.2 (author): Phase 2's VALIDATE folded into the session as staged
 pilot gates, under RunPod's short capacity (§7).** **v0.9.1 (author): a secondary breakdown of Phase 2's paired difference by
 moral role, Agent the predicted locus (§7).** **v0.9 (author, after REPRODUCTION.md): MRB Phase 2, ST's adapters on
 the response field, envelope 9.0 A100-h (§7).** **v0.8 (author, MRB-G2 VALIDATE gate): the G2 envelope raised to 3.9
@@ -524,6 +525,37 @@ resumable by job id (a lost pod is relaunched with the pulled outputs synced, an
 The envelope stays 9.0 A100-h; v0.9's VALIDATE allotment (~1.2) becomes headroom. A watchdog holds the
 session to the envelope's wall (4.5 h on two GPUs) from the start. Everything else in v0.9 and
 v0.9.1 is unchanged.
+
+**v0.9.3 (author, 2026-11-02; registered after the Phase 2 gate, before any read below computes).**
+1. *The length-matched read (MRB-A13), a fork beside the registered verdict.* Per model, zero GPU on the
+   saved rows. Estimator of record: the `none` arm's within-scenario length coupling β_m, the OLS slope
+   through the origin of (score k1 − score k0) on (length k1 − length k0) over the 500 scenarios (two
+   generations of the same model on the same scenario: no length difference, no expected score
+   difference), in points per 1,000 characters; then the length-adjusted cost Δ_adj = Δ − β_m × Δlength,
+   with Δ and Δlength as in the headline, and the share of the cost that length explains, β_m × Δlength
+   / Δ; β_m, Δ and Δlength re-estimated together in each of 2,000 scenario-bootstrap resamples. Beside
+   it: the cross-scenario regression of Δscore on Δlength, whose intercept is the cost at matched length.
+   Readings, both written before computing: **R_length** (fewer criteria covered because the answers are
+   shorter): Δ_adj's CI covers 0 or lies above 0, with β_m > 0; **R_quality** (worse reasoning at
+   matched length): Δ_adj's CI lies below 0; a CI below 0 with a share explained above 0 is reported as
+   part length, part reasoning, with the share. **Prior (author):** Muse's length shift is small (−215
+   characters, about −5.5%), so length is unlikely to explain all of its cost; Qwen's (−1,476, −21%)
+   could. The registered branch ("process-quality cost") stands beside the fork; no framing until the
+   read is in.
+2. *The role breakdown (MRB-A14).* v0.9.1's prediction ("Agent is the locus of any transfer") did not
+   specify a sign. Both readings are reported: literal (by the sign of Δ_Agent − Δ_Advisor) and
+   magnitude (the role with the larger |Δ|).
+3. *MRB-A15.* Qwen's Δ is carried as a lower bound on its attached adapter's effect; the HF-attached
+   check runs only if Qwen's number enters a paper.
+4. *The DPO pairs' letter positions (a new zero-GPU check, MRB-A16).* For each adapter's training
+   pairs, rebuilt with ST's own pair rules (`t16_driver.harm_pairs`; for Qwen also
+   `st2lb_driver.rule_right_pairs` and `cut_to`) from the rows they were built from, and accepted only
+   if the per-scenario counts equal the adapter's `st_adapter.json`: the shown letter of the chosen and
+   of the rejected option, per pair, tabulated; the share of chosen and of rejected options at A, each
+   with an exact binomial CI, and their difference. Reading: a chosen-at-A share above the
+   rejected-at-A share (difference CI excluding 0) makes positional learning a candidate cause of Muse's
+   MoralBench shift toward A (ΔL +0.16 to +0.30); a balanced table rules it out at the CI. Muse has 40
+   pairs, so the read is coarse.
 
 **Saves per unit.** Per (scenario, criterion, arm, k): verdict (≤ 20 characters), both credit tests,
 tokens; per generation: lengths, hashes, finish reason; per model: the merge record and both gates'
