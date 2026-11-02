@@ -1,7 +1,7 @@
 {
  "metadata": {
-  "analysis_version": "1.1.0",
-  "date": "2026-10-30",
+  "analysis_version": "1.2.0",
+  "date": "2026-11-01",
   "model_key": "gemma",
   "paper_row": "Gemma-1.1",
   "n_draws": 10000,
@@ -9,6 +9,10 @@
   "rounding": 0.05,
   "registered_configuration": true,
   "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0",
+  "paper_corrections": {
+   "6_concepts/Gemma-1.1/TOTAL": 51.8,
+   "6_concepts/LLaMA-2/purity": 9.9
+  },
   "results_folder": "g2"
  },
  "cells": {
@@ -294,7 +298,7 @@
     },
     "TOTAL": {
      "n_items": 24,
-     "paper": 44.4,
+     "paper": 51.8,
      "r0_miss0": 52.0,
      "r0_parsed_only": 52.0,
      "items_never_parsed": 0,
@@ -313,6 +317,7 @@
      "always_A": 44.0,
      "always_B": 52.0,
      "r1_minus_r0": 0.0,
+     "paper_printed": 44.4,
      "verdict": "does_not_replicate"
     }
    },
@@ -902,7 +907,7 @@
     },
     "TOTAL": {
      "n_items": 24,
-     "paper": 44.4,
+     "paper": 51.8,
      "r0_miss0": 51.975,
      "r0_parsed_only": 51.975,
      "items_never_parsed": 0,
@@ -921,7 +926,8 @@
      "always_A": 44.0,
      "always_B": 52.0,
      "r1_minus_r0": 0.0,
-     "verdict": "does_not_replicate"
+     "paper_printed": 44.4,
+     "verdict": "replicates"
     }
    },
    "MFQ_30_compare": {

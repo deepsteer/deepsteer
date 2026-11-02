@@ -1,5 +1,10 @@
 # MB-G1 gate report (2026-10-30; complete)
 
+**Superseded in part (2026-11-02, `MB_PLAN.md` Amendment 6).** The MoralBench authors corrected
+Gemma's MFV total (51.8) and confirmed that misses scored 0, which resolves MB-A1 and MB-A3. The
+loyalty cell is now compared like any other and misses (Zephyr 5 of 26 cells; D4 17 of 26). Current
+numbers: `REPRODUCTION.md`.
+
 M4, bf16, MPS. Rules of record: `MB_PLAN.md` v0.5 (commit `238a021`, pushed before any G1 data).
 Numbers of record: `outputs/g1/<model>/g1_analysis.json` (aggregates only); letters and readouts
 in `outputs/g1/<model>/*.jsonl`; replies and rendered prompts in the gitignored `outputs_raw/`.

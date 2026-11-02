@@ -1700,7 +1700,7 @@ separate them (M4, author's amendment).
 **MB-G1 complete and MB-G2 (2026-10-30; `mb_moralbench/REPRODUCTION.md`).** Positive voice: the
 program now holds a reference reproduction of MoralBench's three open-model rows with every
 readout beside the paper-faithful one. On the pinned key it reproduces 21 of 76 attainable paper
-cells. It locates two failure sources in the instrument itself. One is a decode dependence: without
+cells (22 of 78 after the authors' corrections, below). It locates two failure sources in the instrument itself. One is a decode dependence: without
 a leading-space strip, Llama-2-70B scores 0 on every set (MB-A7). The other is a letter-position
 answer: all three families answer B on MFV binary whatever the label, so that set's scores track a
 letter preference (MB-A5). It also shows that the MFV-comparative "replications" happen for most
@@ -1709,8 +1709,21 @@ LLaMA-2 total there needs near-total agreement, and ours agrees with 12%.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| MB-01: MoralBench's MFV binary scores track a letter-B preference on Zephyr-7B, Gemma-1.1-7B and Llama-2-70B (counterbalanced, L = −0.50 on two; about 97% on Zephyr) | the B preference is our harness's (template or decode) and would not appear under the paper's prompt path | the same counterbalanced cell on a model whose paper row is matched closely (none found inside Amendment 1; D4 is the nearest) | standing on three families; counter-reading open |
+| MB-01: MoralBench's MFV binary scores track a letter-B preference on Zephyr-7B, Gemma-1.1-7B and Llama-2-70B (counterbalanced, L = −0.50 on two; about 97% on Zephyr) | the B preference is our harness's (template or decode) and would not appear under the paper's prompt path | the same counterbalanced cell on a model whose paper row is matched closely (none found inside Amendment 1; D4 is the nearest) | standing on three families; counter-reading open. With the authors' sanctity correction, four of the paper's six LLaMA-2 MFV cells are the always-B scores (MB-A5) |
 | MB-02: MoralBench's open-model rows are not reproduced on MFQ binary by four Zephyr configurations, Llama-2-70B or Gemma-1.1 under the paper's stated protocol | the paper's unreleased open-model prompt path differs (R_harness, MB-A8) | the authors' open-model code, if released; otherwise none inside the stopping rule | standing, with the detection bar: PI half-widths 0.4–1.7 on the MFQ binary total |
+
+**Paper corrections (2026-11-02; the MoralBench authors' email, `MB_PLAN.md` Amendment 6).**
+Positive voice: with the authors' corrections every MoralBench paper cell is attainable under the
+pinned key, and the reproduction stands at 22 of 78 cells (T = 1.0 fork 27). The authors confirmed
+that misses scored 0, so the paper's open-model numbers include each model's answer format: the
+paper's Zephyr loyalty of 0.4 needs the tied item to miss in at least 3 of 5 repeats (MB-A3). With
+the decode dependence (MB-A7), that makes format the instrument's second non-content term beside
+the letter preference (MB-A5). The corrected sanctity cell, 9.9, is the always-B score, as are three
+more of the paper's six LLaMA-2 MFV cells, which adds a fourth always-B cell to MB-01's evidence.
+Strongest counter-reading for the corrected totals: LLaMA-2's printed MFV total (52.6) was not
+corrected, and its corrected cells sum to 51.4, which our interval covers; the authors' confirmation
+of that total separates the two (descriptive until then). `8410044` stays the source of record; a
+key revision gets its own pin and analysis.
 
 ## MRB line: MoReBench replication (opened 2026-10-30, `MRB_PLAN.md` v0.5)
 

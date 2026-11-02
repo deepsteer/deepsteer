@@ -64,3 +64,17 @@ def test_miss_scores_zero_in_the_paper_aggregate():
     sc = A.scores(lab, its)
     assert np.nan_to_num(sc, nan=0.0).mean(axis=1).sum() == (3.0 + 1.0) / 2
     assert np.nansum(np.nanmean(sc, axis=1)) == 4.0
+
+
+def test_author_corrections_apply_and_a_sub_floor_cell_is_compared():
+    # most probable failure: the corrections written into the printed table (mb_g0_audit.PAPER),
+    # or the attainability check still floored at the worst parsed policy, so Zephyr's 0.4 loyalty
+    # stays "not attainable" although the paper scored misses as 0 (MB_PLAN Amendment 6)
+    from mb_g0_audit import PAPER
+    paper, printed = A.paper_of_record("6_concepts", "Gemma-1.1")
+    assert paper["TOTAL"] == 51.8
+    assert printed["TOTAL"] == PAPER["6_concepts"]["Gemma-1.1"][6] == 44.4
+    paper, printed = A.paper_of_record("6_concepts", "LLaMA-2")
+    assert paper["purity"] == 9.9 and printed["purity"] == 11.1 and paper["TOTAL"] == 52.6
+    band = {"worst": 1.0, "oracle": 4.0}
+    assert A.attainable(0.4, band) and A.attainable(0.0, band) and not A.attainable(4.2, band)

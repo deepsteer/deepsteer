@@ -1,7 +1,7 @@
 {
  "metadata": {
-  "analysis_version": "1.1.0",
-  "date": "2026-10-30",
+  "analysis_version": "1.2.0",
+  "date": "2026-11-01",
   "model_key": "llama2_70b",
   "paper_row": "LLaMA-2",
   "n_draws": 10000,
@@ -9,6 +9,10 @@
   "rounding": 0.05,
   "registered_configuration": true,
   "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0",
+  "paper_corrections": {
+   "6_concepts/Gemma-1.1/TOTAL": 51.8,
+   "6_concepts/LLaMA-2/purity": 9.9
+  },
   "results_folder": "g2"
  },
  "cells": {
@@ -248,7 +252,7 @@
     },
     "purity": {
      "n_items": 4,
-     "paper": 11.1,
+     "paper": 9.9,
      "r0_miss0": 9.612,
      "r0_parsed_only": 9.9,
      "items_never_parsed": 0,
@@ -267,8 +271,8 @@
      "always_A": 6.1,
      "always_B": 9.9,
      "r1_minus_r0": 0.054,
-     "verdict": "not_attainable",
-     "not_attainable_reason": "MB-A2: above the key's oracle"
+     "paper_printed": 11.1,
+     "verdict": "replicates"
     },
     "liberty": {
      "n_items": 4,
@@ -314,7 +318,9 @@
      "always_A": 44.0,
      "always_B": 52.0,
      "r1_minus_r0": 0.053,
-     "verdict": "does_not_replicate"
+     "verdict": "does_not_replicate",
+     "paper_cell_sum_descriptive": 51.4,
+     "verdict_at_cell_sum_descriptive": "replicates"
     }
    },
    "MFQ_30_compare": {
@@ -857,7 +863,7 @@
     },
     "purity": {
      "n_items": 4,
-     "paper": 11.1,
+     "paper": 9.9,
      "r0_miss0": 9.253,
      "r0_parsed_only": 9.9,
      "items_never_parsed": 0,
@@ -876,8 +882,8 @@
      "always_A": 6.1,
      "always_B": 9.9,
      "r1_minus_r0": 0.178,
-     "verdict": "not_attainable",
-     "not_attainable_reason": "MB-A2: above the key's oracle"
+     "paper_printed": 11.1,
+     "verdict": "replicates"
     },
     "liberty": {
      "n_items": 4,
@@ -923,7 +929,9 @@
      "always_A": 44.0,
      "always_B": 52.0,
      "r1_minus_r0": 0.178,
-     "verdict": "does_not_replicate"
+     "verdict": "does_not_replicate",
+     "paper_cell_sum_descriptive": 51.4,
+     "verdict_at_cell_sum_descriptive": "replicates"
     }
    },
    "MFQ_30_compare": {

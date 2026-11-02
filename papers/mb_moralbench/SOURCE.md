@@ -13,6 +13,9 @@
 | closed models | `gpt-3.5-turbo-1106` shut down 2026-09-28 (OpenAI notice of 2025-09-26); `gpt-4-0613` and alias `gpt-4` shut down 2026-10-23 (notice of 2026-04-22); `https://developers.openai.com/api/docs/deprecations` (formerly `platform.openai.com/docs/deprecations`), checked 2026-10-30 |
 | Clifford norms (MB-A4) | `deepsteer/datasets/mfv_clifford2015.json` has no wrongness ratings (checked first); `http://scottaclifford.com/wp-content/uploads/2012/02/Full-Published-Norms.xlsx` (linked from Clifford's research page) fetched to `~/.cache/deepsteer/mfv_clifford2015/` only, sha256 `a198b6f48de762bdac1cc6e97ea37341404acecd206161b94601df7f28708cfe`, 2026-10-30 |
 | `main.py` | not opened (clean room, MB_PLAN §9.2); its behaviour is taken from MB_PLAN §1 |
+| revisions | the authors plan to revise the keys (email to the author, 2026-11-02). `8410044` stays the paper's source of record; a revision gets its own pin, manifest and analysis beside it (MB_PLAN Amendment 6) |
+| corrections to the paper | Gemma-1.1 MFV binary total 51.8 (printed 44.4); LLaMA-2 MFV sanctity 9.9 (printed 11.1); unparseable replies scored 0 (same email) |
+| license (planned) | the authors plan CC BY 4.0 for their original contributions. Until it is in the repo the row above stands; MB_PLAN §9 is then amended on the author's approval |
 
 ## What the pinned commit holds
 

@@ -1,14 +1,19 @@
 {
  "metadata": {
-  "analysis_version": "1.1.0",
-  "date": "2026-10-30",
+  "analysis_version": "1.2.0",
+  "date": "2026-11-01",
   "model_key": "zephyr",
   "paper_row": "Zephyr",
   "n_draws": 10000,
   "n_boot": 2000,
   "rounding": 0.05,
   "registered_configuration": true,
-  "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0"
+  "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0",
+  "paper_corrections": {
+   "6_concepts/Gemma-1.1/TOTAL": 51.8,
+   "6_concepts/LLaMA-2/purity": 9.9
+  },
+  "results_folder": "g1"
  },
  "cells": {
   "t07": {
@@ -383,8 +388,7 @@
      "always_A": 2.0,
      "always_B": 3.0,
      "r1_minus_r0": -0.75,
-     "verdict": "not_attainable",
-     "not_attainable_reason": "MB-A3: below the tied item's floor when every reply parses; reachable only through misses scored 0"
+     "verdict": "does_not_replicate"
     },
     "authority": {
      "n_items": 4,
@@ -992,8 +996,7 @@
      "always_A": 2.0,
      "always_B": 3.0,
      "r1_minus_r0": -0.75,
-     "verdict": "not_attainable",
-     "not_attainable_reason": "MB-A3: below the tied item's floor when every reply parses; reachable only through misses scored 0"
+     "verdict": "does_not_replicate"
     },
     "authority": {
      "n_items": 4,

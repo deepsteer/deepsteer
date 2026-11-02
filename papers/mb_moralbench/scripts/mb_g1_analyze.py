@@ -5,6 +5,7 @@ Per cell (``t07`` of record, ``t10`` fork), set and foundation: the paper-compar
 miss scores 0), the parsed-only mean, R0 misses (stripped and unstripped), R1 and R1 - R0, R2's
 expected score, and the match verdict against the paper row: inside the items-fixed 95% prediction
 interval for a 5-repeat mean (+0.05 rounding), outside it, or "not attainable" under the key.
+Paper values are the printed tables with the authors' corrections applied (MB_PLAN Amendment 6).
 MB-A5: ``a_o``, ``a_c``, ``L``, ``K``, ``S`` with rollout-bootstrap CIs (§4). MB-A1 and MB-A3 reads.
 
 Usage:
@@ -36,14 +37,30 @@ from deepsteer.stats.bootstrap import (  # noqa: E402
     rollout_bootstrap_ci,
 )
 
-ANALYSIS_VERSION = "1.1.0"  # 1.1: variant cells (Amendment 1), R2 A-rate, MB-A7 split
+ANALYSIS_VERSION = "1.2.0"  # 1.2: Amendment 6 corrections, miss floor 0; 1.1: variants, R2, A7
 REGISTERED = ("zephyr", "gemma", "llama2_70b")  # rows of record; others are Amendment 1 variants
 N_DRAWS, N_BOOT = 10_000, 2_000
-NOT_ATTAINABLE_REASON = {
-    ("Zephyr", "MFQ_30_compare", "ingroup"): "MB-A3: below the tied item's floor when every "
-    "reply parses; reachable only through misses scored 0",
-    ("LLaMA-2", "6_concepts", "purity"): "MB-A2: above the key's oracle",
+# The MoralBench authors' corrections to the printed tables (email, 2026-11-02; MB_PLAN Amendment 6):
+# (set, paper row, foundation or TOTAL) -> value of record. LLaMA-2's MFV total is not corrected.
+PAPER_CORRECTIONS = {
+    ("6_concepts", "Gemma-1.1", "TOTAL"): 51.8,  # MB-A1: the printed 44.4 is a typo
+    ("6_concepts", "LLaMA-2", "purity"): 9.9,  # MB-A2: the printed 11.1 is wrong
 }
+# The paper scored misses as 0 (MB-A3), so any value from 0 (every reply misses) to the oracle is
+# attainable; v0.5's floor at the worst parsed policy no longer applies.
+MISS_FLOOR = 0.0
+
+
+def paper_of_record(s: str, model_row: str) -> tuple[dict, dict]:
+    """The paper's cells for one set and row, corrections applied, and the printed values."""
+    prow = PAPER[s][model_row]
+    printed = dict(zip(FOUNDATIONS + ["TOTAL"], prow[:6] + [prow[6]]))
+    paper = {f: PAPER_CORRECTIONS.get((s, model_row, f), v) for f, v in printed.items()}
+    return paper, printed
+
+
+def attainable(pv: float, band: dict) -> bool:
+    return MISS_FLOOR - PAPER_ROUNDING <= pv <= band["oracle"] + PAPER_ROUNDING
 
 
 def letters(rows: list[dict], items: list, field: str) -> np.ndarray:
@@ -74,8 +91,8 @@ def cell_summary(rows: dict, items: list, model_row: str, match_label: str) -> d
         lab1 = letters(rows["r0"], its, "r1")
         sc0, sc1 = scores(lab0, its), scores(lab1, its)
         groups = [f for f in FOUNDATIONS if any(it.foundation_label == f for it in its)]
-        prow = PAPER[s][model_row]
-        paper = dict(zip(FOUNDATIONS + ["TOTAL"], prow[:6] + [prow[6]]))
+        paper, printed = paper_of_record(s, model_row)
+        corrected_cells = [f for f in groups if paper[f] != printed[f]]
         res = {}
         for f in groups + ["TOTAL"]:
             m = np.array([f == "TOTAL" or it.foundation_label == f for it in its])
@@ -101,15 +118,20 @@ def cell_summary(rows: dict, items: list, model_row: str, match_label: str) -> d
                 "always_A": band["always_A"], "always_B": band["always_B"],
             }
             entry["r1_minus_r0"] = round(entry["r1_miss0"] - entry["r0_miss0"], 3)
+            if pv is not None and pv != printed[f]:
+                entry["paper_printed"] = printed[f]
             if pv is not None:
-                key = (model_row, s, f)
-                outside = not (band["worst"] - PAPER_ROUNDING <= pv
-                               <= band["oracle"] + PAPER_ROUNDING)
-                if key in NOT_ATTAINABLE_REASON or outside:
+                if not attainable(pv, band):
                     entry["verdict"] = "not_attainable"
-                    entry["not_attainable_reason"] = NOT_ATTAINABLE_REASON.get(key, "outside band")
+                    entry["not_attainable_reason"] = "outside [0, oracle]"
                 else:
                     entry["verdict"] = match_label if lo <= pv <= hi else "does_not_replicate"
+            if f == "TOTAL" and corrected_cells and paper["TOTAL"] == printed["TOTAL"]:
+                # descriptive (Amendment 6): the total the corrected cells sum to
+                cs = round(sum(paper[g] for g in groups), 1)
+                entry["paper_cell_sum_descriptive"] = cs
+                entry["verdict_at_cell_sum_descriptive"] = (
+                    match_label if lo <= cs <= hi else "does_not_replicate")
             res[f] = entry
         out[s] = res
     return out
@@ -204,6 +226,7 @@ def main() -> None:
                      "n_boot": N_BOOT, "rounding": PAPER_ROUNDING,
                      "registered_configuration": args.model in REGISTERED,
                      "match_rule": "items fixed; 95% PI of a 5-repeat mean, miss scores 0",
+                     "paper_corrections": {"/".join(k): v for k, v in PAPER_CORRECTIONS.items()},
                      "results_folder": args.sub},
         "cells": {c: cell_summary({"r0": load(f"{c}.jsonl")}, items, row, label) for c in cells},
         "r2": r2_summary(load("r2.jsonl"), items),

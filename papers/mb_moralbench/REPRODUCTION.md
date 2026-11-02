@@ -1,29 +1,35 @@
-# MoralBench reproduction report (MB-G2, 2026-10-30)
+# MoralBench reproduction report (MB-G2, 2026-10-30; paper corrections 2026-11-02)
 
 Paper: Ji, Chen, Jin, Xu, Hua, Zhang, "MoralBench: Moral Evaluation of LLMs", arXiv:2406.04428
 (Tables 1–2, identical in v1 and v2); SIGKDD Explorations 27(1), 2025. Rules of record:
-`papers/MB_PLAN.md` v0.7. Numbers: `outputs/g1/<model>/` and `outputs/g2/<model>/g1_analysis.json`
+`papers/MB_PLAN.md` v1.1. Paper values are the printed tables with the authors' corrections (the
+MoralBench authors' email to the author, 2026-11-02; Amendment 6): Gemma-1.1's MFV binary total is
+51.8 (printed 44.4), LLaMA-2's MFV sanctity cell is 9.9 (printed 11.1), and misses scored 0, as in
+our R0 aggregate. Numbers: `outputs/g1/<model>/` and `outputs/g2/<model>/g1_analysis.json`
 (aggregates; per-foundation cells there). Earlier gates: `MB_G0_REPORT.md`, `MB_G1_REPORT.md`.
 
 ## 1. Replication table (T = 0.7 of record; R0 with misses scored 0; totals)
 
-| paper row | model of record | MFQ binary | MFV binary | MFQ comparative | MFV comparative | paper cells: replicate / not / not attainable (26) |
+| paper row | model of record | MFQ binary | MFV binary | MFQ comparative | MFV comparative | paper cells: replicate / not (26) |
 |---|---|---|---|---|---|---|
-| Zephyr | `zephyr-7b-beta` (M4) | 22.3 vs 54.2 | 41.1 vs 48.1 | 7.1 vs 8.2 | **11.4 vs 10.4** | 5 / 20 / 1 |
-| LLaMA-2 (70B) | `Llama-2-70b-chat-hf` (pod) | 42.2 vs 58.5 | 51.7 vs 52.6 | 9.3 vs 8.0 | **11.5 vs 13.2** | 9 / 16 / 1 |
-| Gemma-1.1 (7B) | `gemma-1.1-7b-it` (pod) | 55.3 vs 49.9 | 52.0 vs 44.4* | 8.2 vs 9.6 | **11.9 vs 10.8** | 7 / 19 / 0 |
+| Zephyr | `zephyr-7b-beta` (M4) | 22.3 vs 54.2 | 41.1 vs 48.1 | 7.1 vs 8.2 | **11.4 vs 10.4** | 5 / 21 |
+| LLaMA-2 (70B) | `Llama-2-70b-chat-hf` (pod) | 42.2 vs 58.5 | 51.7 vs 52.6† | 9.3 vs 8.0 | **11.5 vs 13.2** | 10 / 16 |
+| Gemma-1.1 (7B) | `gemma-1.1-7b-it` (pod) | 55.3 vs 49.9 | 52.0 vs 51.8* | 8.2 vs 9.6 | **11.9 vs 10.8** | 7 / 19 |
 | GPT-3.5 | `gpt-3.5-turbo-1106` | not replicable: shut down 2026-09-28 | | | | |
 | GPT-4 | `gpt-4-0613` | not replicable: shut down 2026-10-23 | | | | |
 
 Ours first, paper second; bold where the paper's value lies inside our 95% prediction interval
-for a 5-repeat mean (items fixed, plus 0.05 rounding). *The paper's Gemma MFV cells sum to
-51.8 against a printed total of 44.4; our 52.0 equals the always-B baseline, so it does not
-establish which number is wrong (MB-A1, open). The T = 1.0 fork gives
-7 / 18 / 1, 11 / 14 / 1 and 7 / 19 / 0 and changes no total's verdict except Llama-2's MFV
-comparative, which falls just outside (11.1).
+for a 5-repeat mean (items fixed, plus 0.05 rounding). *Every Gemma reply on MFV binary is B, so
+our interval [51.95, 52.05] is the rounding allowance alone and the corrected 51.8 falls 0.15
+outside it (MB-A1). †The authors corrected LLaMA-2's sanctity cell but not the total; the
+corrected cells sum to 51.4, which our interval [51.03, 52.05] covers (descriptive until the authors
+confirm a total; MB-A2). The T = 1.0 fork gives 7 / 19, 12 / 14 and 8 / 18. It changes two totals'
+verdicts: Llama-2's MFV comparative falls just outside (11.1), and Gemma's MFV binary total
+replicates (51.98, PI [51.75, 52.09]).
 
-**Verdict sentence.** On the pinned key, a local harness reproduces MoralBench's paper values on 21
-of 76 attainable cells (78 in all) across the three open models. MFQ binary misses on all three, in both directions: our
+**Verdict sentence.** On the pinned key, a local harness reproduces MoralBench's paper values on 22
+of 78 cells across the three open models; with the authors' corrections every cell is attainable.
+The cell the corrections add to the count, LLaMA-2's MFV sanctity, is the always-B score (MB-A5). MFQ binary misses on all three, in both directions: our
 agree rates are 0.22 / 0.12 / 0.90 against the paper's implied 0.76 / about 1.0 / 0.49. The
 MFV-comparative totals replicate on all three, which is weak evidence: a random letter policy's
 interval covers those paper values 54–65% of the time (MB-A8 calibration).
@@ -55,14 +61,18 @@ The other sets are in the JSON. Ladder band per set: MFQ binary [37.6, 62.4], MF
   duplicate pair with opposite keys, and the MFV-comparative fairness group (three distinct pairs: `fairness_2` and
   `fairness_3` are duplicates) keyed to the more-wrong
   statement against Clifford's norms (MB-A4).
-- **Not attainable.** LLaMA-2 MFV sanctity 11.1 (above the key's oracle 9.9; MB-A2) and Zephyr
-  MFQ-comparative loyalty 0.4 (below the tied item's floor only if every repetition gave a valid
-  response; scoring misses as zero could produce it; MB-A3) are excluded from the counts.
+- **Paper corrections (Amendment 6).** Before the authors' email two cells were excluded as not
+  attainable: LLaMA-2 MFV sanctity 11.1 (above the key's oracle 9.9; MB-A2) and Zephyr
+  MFQ-comparative loyalty 0.4 (below the tied item's floor when every reply parses; MB-A3). The
+  sanctity cell of record is now 9.9 and replicates. The authors confirmed that misses scored 0,
+  so the loyalty cell is compared like any other and misses (2.81, PI [2.35, 3.25]). LLaMA-2's
+  MFV total stays 52.6 as printed.
 
 ## 4. Pins
 
 MoralBench `84100440a28d040eca27df32b93f44685ad69ce5` (sha256 manifest; Drive mirror
-byte-identical). Models: `HuggingFaceH4/zephyr-7b-beta@892b3d7a`,
+byte-identical), the paper's source of record. The authors plan a key revision; it will get its own
+pin and analysis, reported beside this table. Models: `HuggingFaceH4/zephyr-7b-beta@892b3d7a`,
 `meta-llama/Llama-2-70b-chat-hf@e9149a12`, `google/gemma-1.1-7b-it@065a5287`. Diagnosis variants:
 `zephyr-7b-alpha@014792bb`, `zephyr-7b-gemma-v0.1@03b3427d`. Code at `cd79aee` for the pod. Stack:
 transformers 5.17.0; torch 2.14 (M4) and 2.6.0+cu124 (pod).
@@ -86,3 +96,8 @@ A100 (about 25 min in all; two found runner defects that were then fixed) and th
    judgments.
 3. *"Two devices and one transformers version can still differ."* Conceded as a residual: device
    parity was checked only on 3 near-deterministic Gemma items (identical letter distributions).
+4. *"The corrections arrived after you had your numbers, and you took the ones that help."*
+   Amendment 6 was registered and pushed (`792f168`) before the recompute, and it adopts every
+   value the authors gave. One helps (LLaMA-2 sanctity now replicates) and two do not (Zephyr's
+   loyalty now counts as a miss; Gemma's corrected total misses at T = 0.7). The one value that
+   would help and that the authors did not give, a LLaMA-2 MFV total of 51.4, stays descriptive.
