@@ -1,0 +1,37 @@
+{
+ "model": "muse_glimmer_30b",
+ "arm": "adapter",
+ "k_from": 0,
+ "k": 2,
+ "validate": false,
+ "pod_version": "1.0.0",
+ "parity_tv": 0.013798781208357565,
+ "band_tv": 0.015098620457963565,
+ "parity_ok": true,
+ "jobs_run": 1000,
+ "decoded_tokens": 982974,
+ "wall_s": 626.9,
+ "tokens_per_s": 1568.0,
+ "calls_per_s": 1.595,
+ "stopped": null,
+ "status": "ok",
+ "n_jobs": 1000,
+ "engine_load_h": 0.0342,
+ "llm_kwargs": {
+  "dtype": "bfloat16",
+  "kv_cache_dtype": "bfloat16",
+  "max_model_len": 12288,
+  "max_num_seqs": 256,
+  "gpu_memory_utilization": 0.92,
+  "enable_prefix_caching": true,
+  "enable_chunked_prefill": true,
+  "generation_config": "vllm",
+  "seed": 0,
+  "language_model_only": true
+ },
+ "sampler": {
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 0
+ }
+}

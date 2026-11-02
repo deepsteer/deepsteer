@@ -1,0 +1,28 @@
+{
+ "model": "muse_glimmer_30b",
+ "adapter": "/workspace/deepsteer/papers/mrb_morebench/outputs/p2_inputs/adapters/muse_glimmer_30b",
+ "pin": "a4e59da52a7bc87ae7251dd5545c0dd437c44b68",
+ "effort": "medium",
+ "dose0": "empty_reasoning",
+ "date_pin": "2026-10-23",
+ "validate": false,
+ "merge_gate": {
+  "saved": {
+   "ok": true,
+   "dir": "/workspace/deepsteer/papers/mrb_morebench/outputs/p2_merged/muse_glimmer_30b",
+   "n_deltas": 416,
+   "n_changed": 416,
+   "n_shards_rewritten": 2,
+   "keys_identical": true,
+   "weight_kept_share": 0.9950207072457659,
+   "note": "weight_kept_share: the share of the adapter's deltas that survives the cast to the file's dtype (bf16 rounds deltas below half an ulp of a weight)"
+  },
+  "adapter_tv_vs_base": 0.22243035212515894,
+  "merged_tv_vs_attached": 0.015223570256434067,
+  "merged_tv_vs_base": 0.21976582034745187,
+  "closer_to_base": false,
+  "gate_ok": true
+ },
+ "n_rows": 176,
+ "wall_h": 0.0893
+}

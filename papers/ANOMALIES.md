@@ -2104,3 +2104,33 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Status.** resolved toward R_rule (sensitivity read, v0.6): both response Regular cells replicate within the measured deployment noise; the registered verdicts stand as "misses" beside it. **MRB-G2 (theory set, 2026-11-01):** the pattern recurs once more: Qwen's trace Overall 74.16 against 73.7, 0.06 outside the registered PI [73.81, 75.30] (1.7% of the 3.57-point MDE), inside the sensitivity interval [70.36, 78.75]; the response Overall and both Overall-LC cells replicate under the registered rule.
 **Thesis impact.** Under R_rule, the response fields replicate within deployment noise, and the rule's construction is the finding (an interval without the judge's deployment term is too narrow for cross-deployment replication). Under R_real, the misses stand and need their own diagnosis.
 
+## MRB-A13 (ledger) — Both ST adapters lower MoReBench's Regular while raising its Hard
+
+**Date.** 2026-11-01 (MRB Phase 2; `outputs/p2/p2_analysis.json`).
+**Observation.** Response field, all 500 scenarios, k = 2, adapter − none: Muse Glimmer 30B Regular −1.47 [−2.01, −0.97], mean response length −215 characters [−249, −183] (3,883 → 3,668), Hard +0.75 [+0.55, +0.95]; Qwen3.8-27B Regular −3.85 [−4.48, −3.22], length −1,476 [−1,579, −1,373] (7,138 → 5,662, −21%), Hard +2.18 [+1.99, +2.39]. The registered branch for both is "process-quality cost"; v0.9's length rule names only a Regular *gain* without a matching Hard shift (length-confounded) and says nothing of a cost that runs opposite to Hard.
+**Type.** sign-flip (Regular against Hard on the same rows).
+**Competing readings.** R_length: the adapters write shorter answers that cover fewer rubric criteria, while each character meets as many or more; MoReBench's Regular rewards coverage, which is what its Hard was built to correct. R_quality: the reasoning is worse, and Hard rises only because Regular falls by a smaller fraction than length.
+**Discriminator.** Zero GPU on the saved rows: the per-scenario Δscore against Δlength (a regression, or Δscore within length-matched bins); under R_length the cost vanishes at matched length. A post-hoc analysis: an amendment first, reported as a fork beside the registered verdict.
+**Status.** open (author).
+**Thesis impact.** Under R_length, the adapters' cost on MoReBench is a length effect (they answer more briefly), not a loss of reasoning quality. Under R_quality, it is a specificity cost of protection training on procedural moral reasoning.
+
+## MRB-A14 (ledger) — The role breakdown's branches were written for a positive transfer
+
+**Date.** 2026-11-01 (MRB Phase 2).
+**Observation.** v0.9.1 registered "Agent is the locus of any transfer" with branches by the sign of Δ_Agent − Δ_Advisor (above 0 as predicted, below 0 the opposite). Both effects are costs: Qwen Agent −4.71 [−5.65, −3.76], Advisor −3.25 [−4.03, −2.43], interaction −1.46 [−2.66, −0.24]; Muse Agent −2.01, Advisor −1.10, interaction −0.91 [−2.05, +0.19]. On Qwen the literal branch reads "the opposite of the prediction", while the Agent role carries the larger effect in magnitude on both models.
+**Type.** pre-registration ambiguity (a branch defined by sign, an effect of the other sign).
+**Competing readings.** R_literal: the registered branch stands (Qwen: the opposite of the prediction). R_magnitude: "locus of any transfer" meant the larger effect of either sign, so Qwen's result is as predicted.
+**Discriminator.** None in the data; an author decision on what the registration meant, recorded as such.
+**Status.** open (author): both readings reported; the analysis records the literal branch and the larger-magnitude role.
+**Thesis impact.** Either way, both adapters' cost is larger on Agent scenarios (resolved on Qwen, not on Muse at its MDE of 1.55).
+
+## MRB-A15 (ledger) — Qwen's merged checkpoint keeps about 60% of its adapter's letter shift
+
+**Date.** 2026-11-01 (MRB Phase 2, the merge gate).
+**Observation.** On the 176 dose-0 MoralBench rows: Qwen adapter vs base TV 0.0291, merged vs attached 0.0116, merged vs base 0.0290 (gate passes: closer to the attached adapter); kept share 1 − 0.0116 / 0.0291 = 0.60; 87.5% of the adapter's weight change survives the bf16 cast. Muse: 0.222, 0.015, 0.220; kept share 0.93; 99.5% of the weight change survives. vLLM parity then passed on both (Qwen 0.0130 within its band 0.0130).
+**Type.** control-misbehavior (a gate that passes by direction with a partial transfer).
+**Competing readings.** R_attenuated: Qwen's adapter arm on vLLM runs a weakened adapter, so its Δ understates the attached adapter's effect. R_readout: at dose 0 Qwen's adapter barely moves the letters (TV 0.03), so the kept share is a ratio of small numbers and says little about generation.
+**Discriminator.** Generation with the adapter attached on HF on a subset (about 50 scenarios, k = 1, ~0.3 A100-h with judging), compared with the merged arm on the same scenarios.
+**Status.** open (author).
+**Thesis impact.** Under R_attenuated, Qwen's cost (−3.85) is a lower bound on the attached adapter's.
+

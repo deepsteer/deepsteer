@@ -1743,6 +1743,20 @@ forward only, that a match interval involving a judge or provider carry judge or
 (`MORAL_EVAL_REPLICATIONS.md`). Steering use is parked: the response field as candidate target,
 GPT-OSS-20B at medium effort under both judge prompts as the baseline.
 
+**MRB Phase 2 (2026-11-02; `mrb_morebench/MRB_P2_REPORT.md`), positive voice.** The replicated
+instrument now reads ST's two passing adapters on all 500 scenarios: both lower MoReBench's response
+Regular (Muse −1.47 [−2.01, −0.97]; Qwen3.8 −3.85 [−4.48, −3.22]) while shortening answers and raising
+Hard (+0.75, +2.18), and the response field separates ST's known-good adapter from its
+known-non-specific one (Regular ΔΔ +2.38 [+1.58, +3.20], Logical Process +3.27). Whether the cost is a
+length effect or a reasoning cost (MRB-A13) is the open edge, with a zero-GPU discriminator awaiting
+registration. The MoralBench rider banks the Phase 2 pre-steering baseline for both models; Muse's
+adapter shifts its MoralBench letter bias toward A by up to 0.30.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MRB-05: ST's Muse and Qwen3.8 adapters (single draws) lower MoReBench response Regular past the MDE (−1.47, −3.85; MDE 0.76, 0.87) and raise Hard (+0.75, +2.18) | R_length: the adapters answer more briefly and cover fewer criteria (MRB-A13) | Δscore against Δlength per scenario (zero GPU; amendment first) | standing as registered; the length reading open |
+| MRB-06: MoReBench's response field separates Muse's known-good adapter from Qwen3.8's known-non-specific one (Regular ΔΔ +2.38 [+1.58, +3.20]; Logical Process +3.27 [+1.61, +4.98]; Harmless Outcome not detectable at 2.92) | Qwen's far larger length shift carries the separation (−1,476 against −215 characters), and Qwen's merge keeps ~60% of its adapter (MRB-A15) | the length-matched read; HF-attached generation on Qwen (~0.3 A100-h) | standing at two single draws |
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | MRB-01: the pipeline reproduces MoReBench's Qwen3-30B-A3B trace row (Regular, Hard and length inside the registered PI; generation fork +0.18 [−1.61, 2.07]) | one judge deployment and one draw; agreement could be luck inside a narrow interval | the OpenRouter judge cross-check (v0.6): OpenRouter − pod on Qwen traces +1.72 [0.03, 3.40], criterion agreement 0.91 | standing; the deployment term on this field is about 1.7 points on 50 scenarios |

@@ -1,0 +1,27 @@
+{
+ "jobs_run": 824,
+ "decoded_tokens": 315110,
+ "wall_s": 81.9,
+ "tokens_per_s": 3847.3,
+ "calls_per_s": 10.06,
+ "stopped": null,
+ "calls_planned": 824,
+ "guard": {
+  "min_calls": 1000,
+  "max_no_verdict": 0.05
+ },
+ "guard_seen": {
+  "muse_glimmer_30b/response": [
+   412,
+   0
+  ],
+  "qwen38_27b/response": [
+   412,
+   0
+  ]
+ },
+ "guard_tripped": {},
+ "validate": false,
+ "pod_version": "1.0.0",
+ "pilot": true
+}

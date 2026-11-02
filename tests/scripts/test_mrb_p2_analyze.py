@@ -85,5 +85,6 @@ def test_role_breakdown_finds_an_agent_only_transfer_and_names_the_prediction():
     adv = r["ai_advisor"]["ci95"]
     assert r["ai_agent"]["ci95"][0] > 0 and adv[0] < 0 < adv[1]
     assert r["agent_minus_advisor"]["ci95"][0] > 0
-    want = "transfer localized to the Agent role, as predicted"
+    want = "CI above 0: transfer localized to the Agent role, as predicted"
     assert r["agent_minus_advisor"]["reading"] == want
+    assert r["agent_minus_advisor"]["larger_magnitude"] == "ai_agent"

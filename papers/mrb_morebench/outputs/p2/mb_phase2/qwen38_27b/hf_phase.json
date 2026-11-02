@@ -1,0 +1,28 @@
+{
+ "model": "qwen38_27b",
+ "adapter": "/workspace/deepsteer/papers/mrb_morebench/outputs/p2_inputs/adapters/qwen38_27b",
+ "pin": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "effort": "medium",
+ "dose0": "enable_thinking_false",
+ "date_pin": null,
+ "validate": false,
+ "merge_gate": {
+  "saved": {
+   "ok": true,
+   "dir": "/workspace/deepsteer/papers/mrb_morebench/outputs/p2_merged/qwen38_27b",
+   "n_deltas": 496,
+   "n_changed": 496,
+   "n_shards_rewritten": 16,
+   "keys_identical": true,
+   "weight_kept_share": 0.8745617513700047,
+   "note": "weight_kept_share: the share of the adapter's deltas that survives the cast to the file's dtype (bf16 rounds deltas below half an ulp of a weight)"
+  },
+  "adapter_tv_vs_base": 0.02909381033366358,
+  "merged_tv_vs_attached": 0.01163627660257708,
+  "merged_tv_vs_base": 0.029006460697450623,
+  "closer_to_base": false,
+  "gate_ok": true
+ },
+ "n_rows": 176,
+ "wall_h": 0.0894
+}

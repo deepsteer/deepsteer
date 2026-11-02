@@ -1,0 +1,81 @@
+{
+ "rule": "MRB_PLAN v0.9.2 sync point",
+ "pilot_criteria": {
+  "muse_glimmer_30b": {
+   "pilot_calls": 412,
+   "no_verdict_share": 0.0,
+   "generations_k0": 500,
+   "final_reached_share": 1.0,
+   "ok": true
+  },
+  "qwen38_27b": {
+   "pilot_calls": 412,
+   "no_verdict_share": 0.0,
+   "generations_k0": 500,
+   "final_reached_share": 1.0,
+   "ok": true
+  }
+ },
+ "measured": {
+  "per_model": {
+   "muse_glimmer_30b": {
+    "tokens_per_job": 1040.546,
+    "tokens_per_s": 1410.4,
+    "judge_tokens_per_call": 378.2888349514563,
+    "loads_h": 0.1,
+    "adapter_ok": true,
+    "judged_calls": 412
+   },
+   "qwen38_27b": {
+    "tokens_per_job": 2222.45,
+    "tokens_per_s": 906.1,
+    "judge_tokens_per_call": 386.54126213592235,
+    "loads_h": 0.1408,
+    "adapter_ok": true,
+    "judged_calls": 412
+   }
+  },
+  "judge_tokens_per_s_of_record": 5382.0,
+  "judge_tokens_per_s_pilot": 3847.3
+ },
+ "envelope_h": 9.0,
+ "spent_a100_h": 1.81,
+ "remaining_h": 7.19,
+ "levels": [
+  {
+   "cut": "none",
+   "wall_rest_h": 3.255,
+   "a100_h_total": 8.32,
+   "models": {
+    "muse_glimmer_30b": {
+     "k": 2,
+     "gen_jobs_rest": 1500,
+     "gen_h": 0.307,
+     "judge_calls_rest": 45388,
+     "judge_h": 0.886,
+     "gen_wall_h_per_1000_jobs": 0.205,
+     "tokens_per_job": 1041,
+     "tokens_per_s": 1410.4
+    },
+    "qwen38_27b": {
+     "k": 2,
+     "gen_jobs_rest": 1500,
+     "gen_h": 1.022,
+     "judge_calls_rest": 45388,
+     "judge_h": 0.906,
+     "gen_wall_h_per_1000_jobs": 0.681,
+     "tokens_per_job": 2222,
+     "tokens_per_s": 906.1
+    }
+   }
+  }
+ ],
+ "k": {
+  "muse_glimmer_30b": 2,
+  "qwen38_27b": 2
+ },
+ "decision": "proceed",
+ "wall_rest_h": 3.255,
+ "session_a100_h": 8.32,
+ "rest_max_wall_h": 3.595
+}

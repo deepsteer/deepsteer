@@ -124,9 +124,13 @@ def model_block(us, dim_rates, gens, model, items, rng) -> dict:
         roles["agent_minus_advisor"] = {
             "delta": round(roles["ai_agent"]["delta"] - roles["ai_advisor"]["delta"], 3),
             "ci95": ic, "mde80": round(imde, 2),
-            "reading": ("transfer localized to the Agent role, as predicted" if ic[0] > 0 else
-                        "the opposite of the prediction (Advisor larger)" if ic[1] < 0 else
-                        f"no role difference detectable at |Δ_Agent − Δ_Advisor| ≳ {imde:.2f}")}
+            # the registered branches (v0.9.1) by the interaction's sign; the magnitudes beside, since
+            # the branches were written for a positive transfer and a cost reverses what "larger" means
+            "reading": ("CI above 0: transfer localized to the Agent role, as predicted" if ic[0] > 0
+                        else "CI below 0: the registered branch 'the opposite of the prediction'"
+                        if ic[1] < 0 else
+                        f"no role difference detectable at |Δ_Agent − Δ_Advisor| ≳ {imde:.2f}"),
+            "larger_magnitude": max(ROLES, key=lambda r: abs(roles[r]["delta"]))}
     sub = np.array([it.source in SUBSET_400 for it in items])
     bsub = delta[sub][rng.integers(0, sub.sum(), (N_BOOT, sub.sum()))].mean(1)
     within = None
