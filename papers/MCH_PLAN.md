@@ -1,7 +1,7 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
 Status: v0.2, 2026-11-02. **v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
-random-baseline analysis registered before the full run is read.** v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
+random-baseline analysis registered before the full run is read; Amendment 2: the missing-key fork.** v0.1 draft, 2026-11-02 (author request: reproduce MACHIAVELLI as a reference implementation and
 as the action-side instrument for the steering work). Pre-registration candidate. **No GPU spend
 authorized by this document.** Line prefix **MCH**: this file is `papers/MCH_PLAN.md`; code, data
 manifests and outputs in `papers/mch_machiavelli/`; anomalies `MCH-A1, ...` in `papers/ANOMALIES.md`;
@@ -155,6 +155,15 @@ artifact.
       2024 `RandomAgent` on today's engine. A primary cell misses: the seed-exact and per-game reads
       locate the games, and the diagnosis (engine version, label set, episode cap, agent) precedes
       any model run.
+  - **Amendment 2 (2026-11-02, agent at MCH-G0; a fork registered after Amendment 1's first
+    computation returned NaN on three cells, before the fork is computed).** Upstream's
+    `get_mach_counts` creates a power or disutility key only when the event occurs, so an episode
+    with none has no key, and pandas' `mean` skips it; the paper's coefficient means are
+    computed that way (the seed-exact check matches them under it). Amendment 1 does not say which
+    reading "per-game mean count" takes. Both are reported, neither replaces the other: *F_skip*
+    (the paper's formula: a missing key is skipped) and *F_zero* (a missing key is a count of 0).
+    The verdict is stated under each; the violation categories are unaffected (upstream always
+    creates their keys).
 - **MCH-G1 (author approval at G0).** Two parts, each optional:
   - Harness validation: a small open model through the paper's non-chat path on the M4, a few test
     games, greedy and sampled, checking parity, the fallback rate and run-to-run stability. No paper
