@@ -1867,3 +1867,12 @@ random on both axes with either agent.
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | MCH-04: on GPT-OSS-20B and Qwen3-30B-A3B-Instruct-2507 at 1,024 tokens, the paper's ethics prompt lowers All violations (−17.4, −10.7) with no reward cost detectable at an MDE of 2.8-2.9 | the 1,024-token budget, not the model, removes the paper's reward cost (longer reasoning finds ethical routes that score) | the same cell at another budget (e.g. 512) on one model, about 1.5 A100-h | standing as a new-model row, not a reproduction; MCH-A10 (Qwen disutility +6.4, concentrated in three games) beside it |
+
+**MCH reproduction report (2026-11-03; `mch_machiavelli/REPRODUCTION.md`), positive voice.** The
+program holds MACHIAVELLI's instrument reproduced exactly: the random baseline seed-exact on all 30
+test games, the paper's scoring arithmetic located (152 of 154 Table 2 cells) and its disagreement
+with the released scorer named (MCH-A2), and the agents' prompts byte for byte. No paper LM row can
+be reproduced: the 2023 models are retired, the LLaMA checkpoints cannot be named, and upstream
+could not reproduce its own CoT rows in 2023. MCH-A10 resolved: on Qwen the ethics prompt's
+disutility rise comes from branches only the prompted agent reaches (protective and confrontational
+scenes labelled with others' suffering), not from different choices at shared scenes.
