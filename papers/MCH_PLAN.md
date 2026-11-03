@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.5, 2026-11-02. **v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.6, 2026-11-02. **v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -96,7 +96,7 @@ artifact.
 | LM agents on `davinci`, `gpt-3.5-turbo`, `gpt-4` | not replicable: models retired |
 | LM agents on LLaMA 7B/13B/30B (CSV, Appendix K) | **dropped** (author, G0): the checkpoints cannot be identified and the paper's cells do not follow from its CSV (MCH-A4) |
 | DRRN base and +shaping | **not run** (author, G0): unreleased agents and power checkpoint, encoder and seeds unpinned; ceiling 1,440 GPU-h |
-| new-model rows (Amendment 4) | CoTAgent and GoodCoTAgent on GPT-OSS-20B and Qwen3-30B-A3B; **not a reproduction**, reported in their own section |
+| new-model rows (Amendment 4) | CoTAgent and GoodCoTAgent on GPT-OSS-20B and Qwen3-30B-A3B-Thinking-2507 (MRB's checkpoints; thinking suppressed, so comparisons with MRB are same model, different regime; Amendment 8's swap rule); **not a reproduction**, reported in their own section |
 
 ## 4. Readouts
 
@@ -336,6 +336,28 @@ artifact.
       The stop rule's price uses the pilot's measured A100-h per decision for GPT-OSS and, for Qwen,
       that rate times 2.84 (MRB's measured generation-rate ratio, 6,688 / 2,356); the cell continues
       if it projects at or below 6 A100-h, pilot included.
+  - **Amendment 8 (author, 2026-11-02; registered before VALIDATE).**
+    - *Qwen checkpoint.* The new-model rows keep `Qwen/Qwen3-30B-A3B-Thinking-2507` at `144afc2f`,
+      MRB's checkpoint, so both new-model rows have MoReBench scores. Its thinking is suppressed by the
+      empty think block, recorded as a deviation.
+    - *Swap rule.* If Thinking-2507's random-fallback rate at VALIDATE exceeds 10% for either agent
+      (over that agent's VALIDATE decisions: 2 games × 15 decisions, so 30; a small sample, stated
+      with the verdict), the main run uses `Qwen/Qwen3-30B-A3B-Instruct-2507` at `0d7cf239`
+      (Apache-2.0; the non-thinking 2507 model: native system role, the template ends at the
+      assistant header, no prefill). VALIDATE writes the choice to
+      `outputs/newmodel/validate_decision.json`; the main run reads it and records the swap. Its
+      render is checked against the local test's, as every stage's is. GPT-OSS-20B has no swap; its
+      fallback is read at the pilot (Amendment 6).
+    - *Cross-instrument comparisons with MRB* are the same model in a different regime: MRB ran
+      Thinking-2507 (and GPT-OSS-20B) with thinking on, at their efforts of record; MCH suppresses it.
+      After a swap, the Qwen row has no MRB counterpart.
+    - *Bundle fallback.* The pod first downloads the game bundle from Google Drive and checks it
+      against the manifest. If the download fails or the zip's hash mismatches, the pod asks for it
+      (`NEED_SYNC mch_bundle`), and the launcher, run with `ON_DEMAND_SYNC`, checks the locally
+      cached zip's sha256 against the manifest and copies it to the pod over the session's own SSH
+      connection; the pod checks the zip and every extracted file again. The bundle is never
+      re-hosted: no third-party storage, no repository, no published artifact. If the file has not
+      arrived within 20 minutes, the pod stops.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
