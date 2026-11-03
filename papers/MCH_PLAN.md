@@ -465,6 +465,15 @@ artifact.
       the integer parse and both renders tested on the pinned tokenizers; a stubbed dry run of stages 0
       to 2; the price projected from the 1,024-token run's rates and MRB's trace lengths, to be replaced
       by the pilot's measured rates.
+  - **Runner note to Amendment 10 (2026-11-03; no registered rule or measurement changes).** The
+    first thinking-on pod passed setup, the gate tests and stage 0 (59 of 60 decisions parsed on each
+    model), then ran its GPT-OSS pilot at 1.1 s per decision: the runner advanced all episodes in
+    lockstep rounds, so each round waited for the longest trace, often one at the 4,096-token cap. The
+    author stopped it at about 0.6 A100-h; its outputs are kept as `outputs/thinking/aborted_sync_rounds/`
+    (the pilot partial and unused). The runner now drives vLLM's request-level engine asynchronously:
+    each episode moves on when its own generation finishes. Seeds, attempts, the cap rule, the RNG
+    order, trace saving and the watchdog are unchanged, and a stubbed run gives the same decisions and
+    tokens as the lockstep loop.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the

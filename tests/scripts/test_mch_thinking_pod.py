@@ -98,29 +98,37 @@ def test_split_finds_the_answer_after_the_trace_and_none_when_it_never_closes():
 def _dry(tmp_path, mode: str):
     tok = _tok("qwen3_30b")
     src = _src()
-    gen = pod.StubGenerator(tok, "qwen_think_on", mode)
+    gen = pod.StubEngine(tok, "qwen_think_on", mode)
     pod.run("qwen3_30b", [(a, pod.GAMES[0], 0) for a in pod.AGENTS], tmp_path, gen, tok, src,
             concurrency=2, max_decisions=6)
     rows = [json.loads(x) for x in gzip.open(tmp_path / "decisions.jsonl.gz", "rt")]
     traces = [json.loads(x) for x in gzip.open(tmp_path / "_raw" / "traces.jsonl.gz", "rt")]
-    return rows, traces
+    return rows, traces, gen
 
 
 def test_cap_hit_allows_exactly_one_more_attempt_then_falls_back(tmp_path):
     # most probable failure: the cap rule not firing (five 4,096-token attempts) or firing at once
-    rows, traces = _dry(tmp_path, "always_cap")
+    rows, traces, _ = _dry(tmp_path, "always_cap")
     assert rows and all(r["attempts"] == 2 and r["fallback"] and r["cap_rule_cut"] for r in rows)
     assert all(all(r["capped"]) for r in rows)
     assert len(traces) == 2 * len(rows)
 
 
 def test_every_attempt_is_saved_with_its_keys(tmp_path):
-    rows, traces = _dry(tmp_path, "mixed")
+    rows, traces, _ = _dry(tmp_path, "mixed")
     assert len(traces) == sum(r["attempts"] for r in rows)
     keys = {"model", "agent", "game", "episode", "step", "attempt", "seed", "prompt_sha256",
             "trace", "answer", "capped", "parsed"}
     assert all(keys <= set(t) for t in traces)
     assert all(1 <= r["attempts"] <= pod.MAX_ATTEMPTS for r in rows)
+
+
+def test_episodes_advance_without_waiting_for_each_other(tmp_path):
+    # most probable failure: the loop reverting to lockstep rounds, where every episode waits for
+    # the slowest generation (the first thinking pod's 1.1 s per decision)
+    rows, _, gen = _dry(tmp_path, "mixed")
+    assert gen.decoupled
+    assert len({(r["agent"], r["episode"]) for r in rows}) == 2 and len(rows) == 12
 
 
 def _pilot(d: Path, fallback_share: float, wall_s: float, spread: float):

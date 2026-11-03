@@ -13,8 +13,9 @@ Stages (one model per process): ``expected`` (local: first-render hashes), ``sta
 parity, then 2 games x episode 0 x both agents, 15 decisions each), ``stage0_check``, ``pilot``
 (the first 10 test games, episodes 0 and 1, both agents), ``pilot_check`` (the fallback bar after
 one model's pilot), ``decide`` (both pilots: the bar, k, the price against 8.0 A100-h) and ``cell``
-(all 30 games at k, skipping the pilot's episodes). Every stage resumes. ``--dry`` swaps vLLM for a
-stub generator.
+(all 30 games at k, skipping the pilot's episodes). Every stage resumes. Episodes run
+asynchronously on vLLM's request-level engine: each moves on as soon as its own generation finishes.
+``--dry`` swaps vLLM for a stub engine.
 """
 
 from __future__ import annotations
@@ -120,57 +121,86 @@ class ThinkRenderer:
         return trace, tail.split("<|im_end|>")[0]
 
 
-class VLLMGenerator:
+class VLLMEngine:
+    """vLLM's request-level engine (ST's ``gen_vllm`` calls on the pinned stack): requests are added
+    one by one and come back as each finishes, so no episode waits for another's generation."""
+
     def __init__(self, model: str) -> None:
-        from vllm import LLM, SamplingParams, TokensPrompt
+        from vllm import LLM, SamplingParams
 
         m = MODELS[model]
-        self.SP, self.TP = SamplingParams, TokensPrompt
-        self.llm = LLM(model=m["repo"], revision=m["revision"], max_model_len=12288,
-                       gpu_memory_utilization=0.90, enable_prefix_caching=True)
+        self.SP = SamplingParams
+        self.engine = LLM(model=m["repo"], revision=m["revision"], max_model_len=12288,
+                          gpu_memory_utilization=0.90, enable_prefix_caching=True).llm_engine
         self.stop_ids = list(m["stop_ids"])
 
-    def __call__(self, reqs: list[tuple[list[int], int]]) -> list[list[int]]:
-        sps = [self.SP(temperature=SAMPLER["temperature"], top_p=SAMPLER["top_p"], top_k=0,
-                       min_p=0.0, repetition_penalty=1.0, presence_penalty=0.0,
-                       frequency_penalty=0.0, seed=seed, max_tokens=MAX_TOKENS,
-                       stop_token_ids=self.stop_ids or None, detokenize=False)
-               for _, seed in reqs]
-        outs = self.llm.generate([self.TP(prompt_token_ids=ids) for ids, _ in reqs], sps,
-                                 use_tqdm=False)
-        return [list(o.outputs[0].token_ids) for o in outs]
+    def add(self, rid: str, ids: list[int], seed: int) -> None:
+        sp = self.SP(temperature=SAMPLER["temperature"], top_p=SAMPLER["top_p"], top_k=0,
+                     min_p=0.0, repetition_penalty=1.0, presence_penalty=0.0,
+                     frequency_penalty=0.0, seed=seed, max_tokens=MAX_TOKENS,
+                     stop_token_ids=self.stop_ids or None, detokenize=False)
+        self.engine.add_request(rid, {"prompt_token_ids": ids}, sp)
+
+    def busy(self) -> bool:
+        return self.engine.has_unfinished_requests()
+
+    def step(self) -> list[tuple[str, list[int]]]:
+        return [(o.request_id, list(o.outputs[0].token_ids))
+                for o in self.engine.step() if o.finished]
 
 
-class StubGenerator:
-    """Dry runs: by request seed, a closed trace with a valid answer, a trace that hits the cap,
-    or an answer with no number; ``mode="always_cap"`` makes every attempt hit the cap."""
+class StubEngine:
+    """Dry runs, with the engine's interface: by request seed a closed trace with a valid answer,
+    a trace that hits the cap, or an answer with no number (``mode="always_cap"``: every attempt
+    hits the cap). Each request finishes after 1-4 steps, and a step takes ``step_s`` (a vLLM step
+    takes tens of milliseconds, longer than an engine worker's game step), so episodes interleave
+    as on a pod."""
 
-    def __init__(self, tok, kind: str, mode: str = "mixed") -> None:
-        self.tok, self.kind, self.mode = tok, kind, mode
+    def __init__(self, tok, kind: str, mode: str = "mixed", step_s: float = 0.02) -> None:
+        self.tok, self.kind, self.mode, self.step_s = tok, kind, mode, step_s
         self.pad = tok.encode(" thinking", add_special_tokens=False)[0]
+        self.live: dict[str, list] = {}
+        self.steps = 0
+        self.decoupled = False  # a request added while another episode's other step is live
 
-    def __call__(self, reqs: list[tuple[list[int], int]]) -> list[list[int]]:
-        out = []
-        for _, seed in reqs:
-            r = seed % 10
-            if self.mode == "always_cap" or r == 0:
-                out.append([self.pad] * MAX_TOKENS)
-                continue
-            answer = "I choose wisely." if r == 1 else str(seed % 2)
-            if self.kind == "harmony_think":
-                text = (f"{ANALYSIS_OPEN}Weigh the options.<|end|><|start|>assistant"
-                        f"{FINAL_OPEN}{answer}<|return|>")
-            else:
-                text = f"Weigh the options.</think>\n\n{answer}<|im_end|>"
-            out.append(self.tok.encode(text, add_special_tokens=False))
-        return out
+    def reply(self, seed: int) -> list[int]:
+        r = seed % 10
+        if self.mode == "always_cap" or r == 0:
+            return [self.pad] * MAX_TOKENS
+        answer = "I choose wisely." if r == 1 else str(seed % 2)
+        if self.kind == "harmony_think":
+            text = (f"{ANALYSIS_OPEN}Weigh the options.<|end|><|start|>assistant"
+                    f"{FINAL_OPEN}{answer}<|return|>")
+        else:
+            text = f"Weigh the options.</think>\n\n{answer}<|im_end|>"
+        return self.tok.encode(text, add_special_tokens=False)
+
+    def add(self, rid: str, ids: list[int], seed: int) -> None:
+        h, step = rid.split(":")[:2]
+        self.decoupled |= any(r.split(":")[0] != h and r.split(":")[1] != step for r in self.live)
+        self.live[rid] = [1 + seed % 4, self.reply(seed)]
+
+    def busy(self) -> bool:
+        return bool(self.live)
+
+    def step(self) -> list[tuple[str, list[int]]]:
+        time.sleep(self.step_s)
+        self.steps += 1
+        done = []
+        for rid in list(self.live):
+            self.live[rid][0] -= 1
+            if self.live[rid][0] <= 0:
+                done.append((rid, self.live.pop(rid)[1]))
+        return done
 
 
 # ---------------------------------------------------------------- the episode loop
 
 def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: Path,
         concurrency: int, max_decisions: int | None = None) -> dict:
-    """Run (agent, game, episode) jobs; append rows; skip episodes already finished in ``out``."""
+    """Run (agent, game, episode) jobs asynchronously: each episode submits its own request,
+    handles its own answer (retries and the cap rule included), steps its own engine worker and
+    moves on, without waiting for other episodes. Appends rows; skips finished episodes."""
     out.mkdir(parents=True, exist_ok=True)
     (out / "_raw").mkdir(exist_ok=True)
     ep_path = out / "episodes.jsonl"
@@ -187,14 +217,9 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
     ctx = mp.get_context("spawn")
     handles = [EnvHandle(ctx, str(src)) for _ in range(min(concurrency, max(len(queue), 1)))]
     free, active = list(range(len(handles))), {}
-    t0, n_dec, n_gen_tokens = time.time(), 0, 0
-
-    def start(h: int) -> None:
-        agent, game, e = queue.pop(0)
-        ep = Episode(agent, game, e, greedy=False)  # Episode.arm carries the agent here
-        handles[h].conn.send(("reset", (game, ep.seed)))
-        _, ep.obs, ep.state, ep.meta = handles[h].conn.recv()
-        active[h] = ep
+    waiting: dict[int, float] = {}  # handle -> engine-step deadline
+    t0, t_log, n_dec, n_gen_tokens = time.time(), time.time(), 0, 0
+    n_req = 0  # request ids stay unique when a worker slot is reused
 
     def finish(h: int, status: str, payload: tuple) -> None:
         ep = active.pop(h)
@@ -210,98 +235,127 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
         f_ep.flush()
         free.append(h)
 
+    def submit(h: int) -> None:
+        nonlocal n_req
+        ep = active[h]
+        st = ep.decision
+        st["attempts"] += 1
+        seed = request_seed(model, ep.arm, ep.game, ep.episode, ep.step, st["attempts"])
+        st["seed"] = seed
+        n_req += 1
+        gen.add(f"{h}:{ep.step}:{st['attempts']}:{n_req}", st["ids"], seed)
+
+    def new_decision(h: int) -> None:
+        ep = active[h]
+        s = P.SceneState.from_info(ep.obs, ep.info())
+        text = rend.text(ep.arm, s)
+        ep.decision = {"s": s, "ids": rend.ids(text), "attempts": 0, "action": None,
+                       "cap_at": None, "tokens": [], "capped": [], "trace_chars": [],
+                       "sha": hashlib.sha256(text.encode()).hexdigest()}
+        submit(h)
+
+    def start(h: int) -> None:
+        agent, game, e = queue.pop(0)
+        ep = Episode(agent, game, e, greedy=False)  # Episode.arm carries the agent here
+        handles[h].conn.send(("reset", (game, ep.seed)))
+        _, ep.obs, ep.state, ep.meta = handles[h].conn.recv()
+        active[h] = ep
+        new_decision(h)
+
+    def decide_and_step(h: int) -> None:
+        nonlocal n_dec
+        ep = active[h]
+        st = ep.decision
+        n = st["s"].num_choices
+        fallback = st["action"] is None
+        action = int(ep.rng.choice(n)) if fallback else st["action"]
+        override = ep.loop_detected()
+        if override:
+            action = int(ep.rng.choice(n))
+        f_dec.write(json.dumps({
+            "model": model, "agent": ep.arm, "game": ep.game, "episode": ep.episode,
+            "step": ep.step, "n": n, "attempts": st["attempts"], "fallback": fallback,
+            "cap_rule_cut": bool(fallback and st["cap_at"] is not None
+                                 and st["attempts"] < MAX_ATTEMPTS),
+            "override": override, "action": action, "tokens": st["tokens"],
+            "capped": st["capped"], "trace_chars": st["trace_chars"],
+            "prompt_tokens": len(st["ids"]), "prompt_sha256": st["sha"]}) + "\n")
+        ep.step += 1
+        n_dec += 1
+        if max_decisions is not None and ep.step >= max_decisions:
+            handles[h].restart()  # stage 0 caps the episode; the engine state is dropped
+            finish(h, "capped", ())
+            return
+        handles[h].conn.send(("step", action))
+        waiting[h] = time.time() + STEP_TIMEOUT_S
+
+    def on_reply(h: int, ids: list[int]) -> None:
+        nonlocal n_gen_tokens
+        ep = active[h]
+        st = ep.decision
+        trace, answer = rend.split(ids)
+        capped = len(ids) >= MAX_TOKENS
+        n_gen_tokens += len(ids)
+        st["tokens"].append(len(ids))
+        st["capped"].append(capped)
+        st["trace_chars"].append(len(trace))
+        a = None if answer is None else parse_integer(answer, st["s"].num_choices)
+        f_raw.write(json.dumps({
+            "model": model, "agent": ep.arm, "game": ep.game, "episode": ep.episode,
+            "step": ep.step, "attempt": st["attempts"], "seed": st["seed"],
+            "prompt_sha256": st["sha"], "trace": trace, "answer": answer,
+            "capped": capped, "parsed": a}) + "\n")
+        if a is not None:
+            st["action"] = a
+            decide_and_step(h)
+            return
+        if capped and st["cap_at"] is None:
+            st["cap_at"] = st["attempts"]
+        # five attempts in all, but after a cap hit at most one more (Amendment 10)
+        more = st["attempts"] < MAX_ATTEMPTS and (
+            st["cap_at"] is None or st["attempts"] < st["cap_at"] + 1)
+        if more:
+            submit(h)
+        else:
+            decide_and_step(h)
+
     while queue or active:
         while free and queue:
             start(free.pop())
-        hs = sorted(active)
-        state = {}
-        for h in hs:
-            ep = active[h]
-            s = P.SceneState.from_info(ep.obs, ep.info())
-            text = rend.text(ep.arm, s)
-            state[h] = {"s": s, "ids": rend.ids(text), "attempts": 0, "action": None,
-                        "cap_at": None, "tokens": [], "capped": [], "trace_chars": [],
-                        "sha": hashlib.sha256(text.encode()).hexdigest()}
-        pending = list(hs)
-        while pending:
-            reqs = []
-            for h in pending:
-                st, ep = state[h], active[h]
-                st["attempts"] += 1
-                reqs.append((st["ids"], request_seed(model, ep.arm, ep.game, ep.episode, ep.step,
-                                                     st["attempts"])))
-            outs = gen(reqs)
-            nxt = []
-            for h, ids, (_, seed) in zip(pending, outs, reqs):
-                st, ep = state[h], active[h]
-                trace, answer = rend.split(ids)
-                capped = len(ids) >= MAX_TOKENS
-                n_gen_tokens += len(ids)
-                st["tokens"].append(len(ids))
-                st["capped"].append(capped)
-                st["trace_chars"].append(len(trace))
-                a = None if answer is None else parse_integer(answer, st["s"].num_choices)
-                f_raw.write(json.dumps({
-                    "model": model, "agent": ep.arm, "game": ep.game, "episode": ep.episode,
-                    "step": ep.step, "attempt": st["attempts"], "seed": seed,
-                    "prompt_sha256": st["sha"], "trace": trace, "answer": answer,
-                    "capped": capped, "parsed": a}) + "\n")
-                if a is not None:
-                    st["action"] = a
-                    continue
-                if capped and st["cap_at"] is None:
-                    st["cap_at"] = st["attempts"]
-                # five attempts in all, but after a cap hit at most one more (Amendment 10)
-                more = st["attempts"] < MAX_ATTEMPTS and (
-                    st["cap_at"] is None or st["attempts"] < st["cap_at"] + 1)
-                if more:
-                    nxt.append(h)
-            pending = nxt
-        for h in hs:
-            st, ep = state[h], active[h]
-            n = st["s"].num_choices
-            fallback = st["action"] is None
-            action = int(ep.rng.choice(n)) if fallback else st["action"]
-            override = ep.loop_detected()
-            if override:
-                action = int(ep.rng.choice(n))
-            f_dec.write(json.dumps({
-                "model": model, "agent": ep.arm, "game": ep.game, "episode": ep.episode,
-                "step": ep.step, "n": n, "attempts": st["attempts"], "fallback": fallback,
-                "cap_rule_cut": bool(fallback and st["cap_at"] is not None
-                                     and st["attempts"] < MAX_ATTEMPTS),
-                "override": override, "action": action, "tokens": st["tokens"],
-                "capped": st["capped"], "trace_chars": st["trace_chars"],
-                "prompt_tokens": len(st["ids"]), "prompt_sha256": st["sha"]}) + "\n")
-            ep.step += 1
-            n_dec += 1
-            if max_decisions is not None and ep.step >= max_decisions:
-                handles[h].restart()  # stage 0 caps the episode; the engine state is dropped
-                finish(h, "capped", ())
-                continue
-            handles[h].conn.send(("step", action))
-        deadline = time.time() + STEP_TIMEOUT_S
-        for h in [h for h in hs if h in active]:
-            if handles[h].conn.poll(max(0.0, deadline - time.time())):
+        if gen.busy():
+            for rid, ids in gen.step():
+                h = int(rid.split(":")[0])
+                if h in active:
+                    on_reply(h, ids)
+        elif waiting:
+            time.sleep(0.01)  # only engine workers are busy
+        now = time.time()
+        for h in list(waiting):
+            if handles[h].conn.poll(0):
+                del waiting[h]
                 msg = handles[h].conn.recv()
                 if msg[0] == "ok":
                     active[h].obs, active[h].state = msg[1], msg[2]
+                    new_decision(h)
                 elif msg[0] == "done":
                     finish(h, "done", msg[1:])
                 else:
                     finish(h, "crash", ())
-            else:
+            elif now > waiting[h]:
+                del waiting[h]
                 handles[h].restart()
                 finish(h, "hang", ())
-        print(f"{time.time() - t0:7.0f}s {model} decisions {n_dec} active {len(active)} "
-              f"queued {len(queue)}", flush=True)
+        if now - t_log > 30:
+            t_log = now
+            print(f"{now - t0:7.0f}s {model} decisions {n_dec} active {len(active)} "
+                  f"queued {len(queue)}", flush=True)
     for hd in handles:
         hd.conn.send(("close", None))
     for f in (f_ep, f_cnt, f_dec, f_raw):
         f.close()
     meta = {"model": model, "max_tokens": MAX_TOKENS, "decisions": n_dec,
             "generated_tokens": n_gen_tokens, "wall_s": round(time.time() - t0, 1),
-            "jobs": len(jobs), "run": len(jobs) - len(done)}
+            "jobs": len(jobs), "run": len(jobs) - len(done), "loop": "async"}
     with open(out / "run_meta.jsonl", "a") as f:
         f.write(json.dumps(meta) + "\n")
     return meta
@@ -421,7 +475,7 @@ def main() -> None:
     p.add_argument("--model", choices=tuple(MODELS), default="gpt_oss_20b")
     p.add_argument("--k", type=int, default=None)
     p.add_argument("--out", type=Path, default=OUT)
-    p.add_argument("--concurrency", type=int, default=64)
+    p.add_argument("--concurrency", type=int, default=96)
     p.add_argument("--dry", action="store_true", help="stub generator (the local test)")
     p.add_argument("--dry-mode", default="mixed", choices=("mixed", "always_cap"))
     p.add_argument("--games", type=int, default=None, help="dry runs: first N games only")
@@ -453,8 +507,8 @@ def main() -> None:
         return
     m = MODELS[args.model]
     tok = AutoTokenizer.from_pretrained(m["repo"], revision=m["revision"])
-    gen = (StubGenerator(tok, m["render"], args.dry_mode) if args.dry
-           else VLLMGenerator(args.model))
+    gen = (StubEngine(tok, m["render"], args.dry_mode) if args.dry
+           else VLLMEngine(args.model))
     games = GAMES[: args.games] if args.games else GAMES
     if args.stage == "stage0":
         exp = json.loads(EXPECTED.read_text())[args.model]
