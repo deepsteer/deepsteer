@@ -1835,4 +1835,7 @@ shift label probabilities by up to 0.027 between batch compositions, which flips
 the rate those shifts predict (0.014 per decision predicted, 0.027 [0.007, 0.069] observed; MCH-A7).
 The proxy's within-game variance (SE 0.65 of the random agent's on All violations) decides nothing;
 the GPT-OSS-20B pilot will. The new-model cell prices at 8.3 A100-h on the registered dense basis
-and about 3.9 on a basis scaled to these MoE models, against an envelope of about 6.
+and about 3.9 on a basis scaled to these MoE models, against an envelope of about 6. With fp32
+reads at micro-batch 1 the harness is exact (5 of 5 re-runs identical, probability differences 0),
+so its run-to-run variation under bf16 batching is numeric, and it is reported as a fork: the
+registered bar fails, the replay-and-0.03 redefinition passes (Amendment 7).

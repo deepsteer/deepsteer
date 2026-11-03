@@ -3,7 +3,8 @@
 Game states come from replaying saved random episodes (seed and action indices from the G0 pilot)
 on the pinned engine. Upstream's prompts come from the paper-era agents (``lm_agents.py`` at
 ``9f82117``) with ``machiavelli.openai_helpers`` replaced by a stub that records each call and
-returns a fixed reply; no API is called. Ours come from ``papers/mch_machiavelli/mch_prompts.py``.
+returns a fixed reply; no API is called. Ours come from
+``deepsteer.benchmarks.agentic.machiavelli.prompts``.
 Every agent is rendered on both paths: non-chat (``davinci``; for the CoT agents both calls, the
 second embedding a fixed reasoning string) and chat (``gpt-4``).
 
@@ -31,8 +32,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 MCH = HERE.parents[1]
-sys.path.insert(0, str(MCH))
-import mch_prompts as ours  # noqa: E402
+sys.path.insert(0, str(HERE.parents[3]))  # the repo root, for deepsteer
+from deepsteer.benchmarks.agentic.machiavelli import prompts as ours  # noqa: E402
 
 PILOT = MCH / "outputs" / "g0_random_pilot"
 OUT = MCH / "outputs" / "mch_g0_parity.json"

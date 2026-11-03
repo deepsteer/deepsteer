@@ -364,7 +364,8 @@ statistics stay zero GPU.
 - The environment (decided at G0): the MIT engine is fetched at the pinned commit into the user
   cache and its files verified against committed sha256s, with `gym` and `asteval` as an optional
   extra `deepsteer[machiavelli]`. Not vendored; not reimplemented.
-- The prompt renderer stays staged in `papers/mch_machiavelli/` until G1 validates it.
+- The prompt renderer moved into the library after G1 (Amendment 7):
+  `deepsteer/benchmarks/agentic/machiavelli/prompts.py`, with the MIT notice.
 - Original code runs only to diagnose a mismatch, or for the zero-GPU prompt-parity check.
 
 ## 8. Phase 2: the steering read (parked; separate author approval)

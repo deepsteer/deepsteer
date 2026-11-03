@@ -93,6 +93,7 @@ deepsteer = [
     "datasets/morebench_manifest.json",
     "datasets/machiavelli_manifest.json",
     "benchmarks/moral_reasoning/morebench/LICENSE_MOREBENCH",
+    "benchmarks/agentic/machiavelli/LICENSE_MACHIAVELLI",
     "benchmarks/compliance_gap/em_fixtures/first_plot_questions.yaml",
     "benchmarks/compliance_gap/em_fixtures/LICENSE",
 ]

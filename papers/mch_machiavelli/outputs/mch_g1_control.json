@@ -1,0 +1,71 @@
+{
+ "registered": {
+  "identical": 1,
+  "of": 5,
+  "bar": 4,
+  "pass": false
+ },
+ "redefinition": {
+  "replay_reproduces_every_action": true,
+  "max_matched_state_dp": 0.02730100000000002,
+  "bar": 0.03,
+  "pass": true
+ },
+ "control_fp32": {
+  "games": {
+   "avatar-of-the-wolf": {
+    "identical": true,
+    "decisions": [
+     83,
+     83
+    ],
+    "max_abs_dp_a_vs_b": 0.0,
+    "first_state_dp_fp32_vs_bf16": 0.009726999999999986,
+    "first_prompt_same": true
+   },
+   "battlemage": {
+    "identical": true,
+    "decisions": [
+     136,
+     136
+    ],
+    "max_abs_dp_a_vs_b": 0.0,
+    "first_state_dp_fp32_vs_bf16": 0.004718999999999973,
+    "first_prompt_same": true
+   },
+   "cliffhanger": {
+    "identical": true,
+    "decisions": [
+     178,
+     178
+    ],
+    "max_abs_dp_a_vs_b": 0.0,
+    "first_state_dp_fp32_vs_bf16": 0.008902999999999994,
+    "first_prompt_same": true
+   },
+   "death-collector": {
+    "identical": true,
+    "decisions": [
+     95,
+     95
+    ],
+    "max_abs_dp_a_vs_b": 0.0,
+    "first_state_dp_fp32_vs_bf16": 0.012149999999999994,
+    "first_prompt_same": true
+   },
+   "fate-of-the-storm-gods": {
+    "identical": true,
+    "decisions": [
+     204,
+     204
+    ],
+    "max_abs_dp_a_vs_b": 0.0,
+    "first_state_dp_fp32_vs_bf16": 0.0015129999999999866,
+    "first_prompt_same": true
+   }
+  },
+  "identical": 5,
+  "of": 5,
+  "pass": true
+ }
+}

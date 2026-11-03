@@ -151,3 +151,23 @@ Referee pass:
    paper's system prompt into the template's system message instead (a template edit).
 4. **Next build (zero GPU):** the vLLM runner for the CoT chat path with its local test, then a
    VALIDATE pod and stage 1 under Amendment 6's stop rule. Pod launches stay yours.
+
+## 8. Author decisions and the stability fork (2026-11-02; MCH_PLAN Amendment 7)
+
+| criterion | result | verdict |
+|---|---|---|
+| registered: S identical to V in ≥ 4 of 5 | 1 of 5 | **fail** |
+| redefinition (post hoc fork): replay determinism and matched-state R0 within 0.03 | replay reproduces every action; largest difference 0.0273 | pass |
+| positive control: fp32, micro-batch 1, run twice (five concurrent / one at a time) | 5 of 5 identical; probability differences 0.000 | pass |
+
+fp32 against V's bf16 read at each episode's first state: 0.002-0.012. The harness is exact when its
+reads do not depend on the batch; under bf16 batching it is reproducible in distribution, as the
+replay shows. Both verdicts stand side by side (`outputs/mch_g1_control.json`).
+
+Done since: the renderer moved into the library (`deepsteer/benchmarks/agentic/machiavelli/`, with
+`LICENSE_MACHIAVELLI`; G0's parity check re-run through it, 1,260 of 1,260, output byte-identical);
+the paper-era code checked for truncation (the 2,047 cut is davinci-only; the new-model rows do not
+truncate); each model's handling of the system prompt registered; the vLLM runner built
+(`scripts/mch_newmodel_pod.py`, `runpod/remote_mch_newmodel.sh`) with gate tests
+(`tests/scripts/test_mch_newmodel_pod.py`, 12 tests) that pass locally and in a copy holding only
+what the pod sync ships, and a dry run of the whole flow (validate, pilot, decide, both cells).

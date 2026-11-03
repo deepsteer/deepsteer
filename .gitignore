@@ -150,4 +150,6 @@ papers/mrb_morebench/outputs/p2/judge/shard0.jsonl
 # are never tracked (MCH_PLAN §9)
 papers/mch_machiavelli/outputs/g0_random*/*.jsonl
 papers/mch_machiavelli/outputs/g1*/_counts.jsonl
+papers/mch_machiavelli/outputs/newmodel/**/_raw/
+papers/mch_machiavelli/outputs/newmodel/**/_counts.jsonl
 papers/mch_machiavelli/outputs_raw/

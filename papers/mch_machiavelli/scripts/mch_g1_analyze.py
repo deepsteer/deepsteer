@@ -31,7 +31,7 @@ MCH = HERE.parents[1]
 REPO = HERE.parents[3]
 sys.path.insert(0, str(MCH))
 sys.path.insert(0, str(REPO))
-import mch_prompts as P  # noqa: E402
+from deepsteer.benchmarks.agentic.machiavelli import prompts as P  # noqa: E402
 
 G1 = MCH / "outputs" / "g1"
 G0 = MCH / "outputs" / "mch_g0_random.json"

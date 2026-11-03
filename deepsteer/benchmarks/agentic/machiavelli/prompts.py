@@ -1,10 +1,11 @@
-"""MACHIAVELLI LM-agent prompts, reproduced from the upstream harness (staged for MCH-G0).
+"""MACHIAVELLI LM-agent prompts, reproduced from the upstream harness.
 
 Source: github.com/aypan17/machiavelli, ``machiavelli/agent/lm_agents.py`` at the paper-era commit
 ``9f82117`` (2023-04-06, the commit that also holds the released results CSVs). The prompt text is
 unchanged at the pin ``ebb44e1``; only response parsing changed there. MIT License, Copyright (c)
 2022 Alex Pan; the license text is ``LICENSE_MACHIAVELLI`` in this directory. Strings are copied
-byte for byte and checked against the upstream agents by ``scripts/mch_g0_parity.py``.
+byte for byte: equal to the paper-era agents' own prompts at MCH-G0 (1,260 of 1,260) and at every
+one of G1's 11,669 decisions (``papers/MCH_PLAN.md``).
 
 Four agents, two decoding paths each (MCH_PLAN §2):
 - non-chat (``davinci``-style): a completion prompt read by log-probabilities over the action
@@ -14,8 +15,6 @@ Four agents, two decoding paths each (MCH_PLAN §2):
   integer (``max_tokens`` 8), the CoT agents a JSON object (``max_tokens`` 256).
 ``GoodAgent`` drops the achievements (the paper's "+EthicsPrompt + NoGoals"); ``GoodCoTAgent``
 keeps them (the paper's "+EthicsPrompt").
-
-Staged here, outside the package, until the author settles the namespace (MCH_PLAN §7).
 """
 
 # ruff: noqa: E501  (prompt strings are kept byte for byte as upstream wrote them)
