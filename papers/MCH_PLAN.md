@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.4, 2026-11-02. **v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.5, 2026-11-02. **v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -287,6 +287,55 @@ artifact.
       random fallback after five failed parses, over all decisions) exceeds 10% is reported as
       uninterpretable, at the pilot and on the full cell. Loop overrides are counted separately and
       are not fallbacks.
+  - **Amendment 7 (author, 2026-11-02; G1 decisions, registered before the pod and before the
+    control below runs).**
+    - *Stability, a fork registered post hoc* (the matched-state differences were already in the G1
+      report). The registered criterion stands and fails (1 of 5). Beside it, the redefinition:
+      every action of both runs follows from that run's own R0 probabilities under the shared
+      seeded draws (replay), and at every matched decision before divergence the two runs' R0
+      probabilities differ by at most 0.03. Both verdicts are reported; neither replaces the other.
+    - *Positive control: batch-independent reads.* S's five episodes (V's episode 0 on the first five
+      test games) run twice in fp32 with micro-batches of 1 (no padding), once with the five
+      concurrent and once one at a time. Pass: all five episodes identical between the two runs. A
+      fail means non-determinism beyond batch numerics, and the pod waits for a diagnosis. Reported
+      beside: the fp32 read against V's bf16 read at each episode's first state.
+    - *The renderer moves into the library* (`deepsteer/benchmarks/agentic/machiavelli/prompts.py`,
+      with the MIT notice) after the control.
+    - *Truncation (checked in the paper-era code, `9f82117`).* The 2,047-token cut applies only to the
+      non-chat davinci path (`completion_with_retries`, `model == 'davinci'`). The chat path,
+      including both CoT agents, does not apply it; it applies its own limit instead, 4,096 minus
+      `max_tokens` (3,840 GPT-2 tokens at 256), the system prompt cut in the middle and the scene from
+      the front: GPT-3.5's and GPT-4's 2023 context, not a protocol choice. By the author's rule the
+      new-model rows do not truncate; this replaces Amendment 4's "the paper's request truncation"
+      for these rows. Each row reports the share of its prompts the paper's chat limit would have cut
+      (G1's states: 1.7%), as a description; no fork is run.
+    - *How each model receives the system prompt (deviations, recorded before the pod).* GPT-OSS-20B
+      is rendered by `kdg_harmony.render`, ST's dose-0 path: the template's own system message
+      (identity line, `Knowledge cutoff: 2024-06`, the date line pinned to `Current date:
+      2026-10-04`, `Reasoning: medium`, the channel line), then **the paper's system prompt as a
+      developer turn** (`# Instructions` then the prompt), then the scene as the user turn, then the
+      prefill `<|channel|>analysis<|message|><|end|><|start|>assistant<|channel|>final<|message|>`.
+      Upstream sent the same text as the system role to GPT-3.5 and GPT-4. Qwen3-30B-A3B-Thinking-2507
+      receives it in its native system role (`<|im_start|>system`), the scene as the user turn, and
+      after the template's `<think>\n` the prefill `\n</think>\n\n` (an empty think block).
+      Neither template is edited.
+    - *Runner protocol.* vLLM 0.31.0 (ST's and MRB's pinned stack, A100 80GB), bf16, prefix caching
+      on, no speculative decoding; T 0.2, top-p 1.0, `max_tokens` 256, one seed per request derived
+      from (model, agent, game, episode, step, attempt). The parse is upstream's: `json.loads` on the
+      stripped reply (GPT-OSS: the final channel's text; Qwen: the text after the think block), and
+      `str(obj["action"])` among the action labels. Up to five attempts per decision, then a random
+      action from the episode's seeded RNG, counted as a fallback. Loop detection as upstream. The
+      engine as at G1: workers, the 120 s watchdog, the 1,000-entry cap. Raw replies go to the
+      gitignored `outputs_raw/`; per decision the tracked rows carry attempts, fallback, override,
+      action, reply length and prompt tokens.
+    - *Pod stages.* VALIDATE (its own pod): the stack, the engine and bundle fetched and
+      hash-verified, both models on 2 games × 1 episode × both agents capped at 15 decisions, each
+      model's first render byte-equal to the local test's, parse and fallback rates and the
+      throughput reported. The run: stage 1 the GPT-OSS-20B pilot (Amendment 6), the stop-or-continue
+      rule computed on the pod, stage 2 GPT-OSS's remaining episodes at k, stage 3 Qwen3-30B-A3B at k.
+      The stop rule's price uses the pilot's measured A100-h per decision for GPT-OSS and, for Qwen,
+      that rate times 2.84 (MRB's measured generation-rate ratio, 6,688 / 2,356); the cell continues
+      if it projects at or below 6 A100-h, pilot included.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
