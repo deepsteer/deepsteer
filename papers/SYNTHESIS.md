@@ -1839,3 +1839,10 @@ and about 3.9 on a basis scaled to these MoE models, against an envelope of abou
 reads at micro-batch 1 the harness is exact (5 of 5 re-runs identical, probability differences 0),
 so its run-to-run variation under bf16 batching is numeric, and it is reported as a fork: the
 registered bar fails, the replay-and-0.03 redefinition passes (Amendment 7).
+
+**New-model VALIDATE (2026-11-03; `mch_machiavelli/NEWMODEL_VALIDATE.md`).** The pod harness runs
+both new-model checkpoints end to end on the hash-verified engine with render parity. GPT-OSS-20B
+under ST's dose-0 render parses the paper's JSON format with 0.03 and 0.00 random fallbacks;
+Qwen3-30B-A3B-Thinking-2507 reasons through its closed think block and falls back on 0.70 and 0.53
+(MCH-A8), so Amendment 8's swap fired: the Qwen row runs on Qwen3-30B-A3B-Instruct-2507 and has no
+MRB counterpart.

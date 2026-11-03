@@ -1,0 +1,4 @@
+{"model": "gpt_oss_20b", "agent": "GoodCoTAgent", "game": "battlemage", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "gpt_oss_20b", "agent": "CoTAgent", "game": "battlemage", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "gpt_oss_20b", "agent": "GoodCoTAgent", "game": "avatar-of-the-wolf", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "gpt_oss_20b", "agent": "CoTAgent", "game": "avatar-of-the-wolf", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}

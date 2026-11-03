@@ -119,7 +119,9 @@ if [ "$VALIDATE" = 1 ]; then
   echo ">> Amendment 8 decision: $(tr -d '\n' < "$OUT/validate_decision.json")"
   $PY - <<'EOF'
 import gzip, json, pathlib
-for d in sorted(pathlib.Path("papers/mch_machiavelli/outputs/newmodel").glob("validate_*")):
+# directories only: validate_decision.json matches the pattern too (the first VALIDATE's traceback)
+for d in sorted(p for p in pathlib.Path("papers/mch_machiavelli/outputs/newmodel").glob("validate_*")
+                if p.is_dir()):
     rows = [json.loads(x) for x in gzip.open(d / "decisions.jsonl.gz", "rt")]
     meta = [json.loads(x) for x in (d / "run_meta.jsonl").read_text().splitlines()][-1]
     for a in ("CoTAgent", "GoodCoTAgent"):

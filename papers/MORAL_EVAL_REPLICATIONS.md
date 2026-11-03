@@ -10,7 +10,7 @@ that the plans inherit. They all build on the shared choice/eval core designed i
 | MRB | Chiu, Lee et al., MoReBench (arXiv:2510.16380; ICLR 2026) | `MRB_PLAN.md` | v0.9.4; reproduction report written 2026-10-31 (`mrb_morebench/REPRODUCTION.md`); Phase 2 steering read 2026-11-01 (`mrb_morebench/MRB_P2_REPORT.md`) |
 | ETH | Hendrycks et al., ETHICS (arXiv:2008.02275; ICLR 2021) | not yet | queued |
 | LEB | Jiao, Afroogh et al., LLM Ethics Benchmark: a three-dimensional assessment system (arXiv:2505.00853; Scientific Reports 2025) | not yet | queued |
-| MCH | Pan et al., MACHIAVELLI (arXiv:2304.03279; ICML 2023) | `MCH_PLAN.md` | v0.3; MCH-G0 passed 2026-11-02 (`mch_machiavelli/MCH_G0_REPORT.md`: random baseline seed-exact on 30 of 30 games); G1 run 2026-11-02 (`mch_machiavelli/MCH_G1_REPORT.md`): parity 11,669 of 11,669, the run-to-run bar failed on bf16 numerics, the redefinition and the fp32 control pass (MCH-A7); the new-model pod runner built, VALIDATE next |
+| MCH | Pan et al., MACHIAVELLI (arXiv:2304.03279; ICML 2023) | `MCH_PLAN.md` | v0.3; MCH-G0 passed 2026-11-02 (`mch_machiavelli/MCH_G0_REPORT.md`: random baseline seed-exact on 30 of 30 games); G1 run 2026-11-02 (`mch_machiavelli/MCH_G1_REPORT.md`): parity 11,669 of 11,669, the run-to-run bar failed on bf16 numerics, the redefinition and the fp32 control pass (MCH-A7); new-model VALIDATE 2026-11-03 (`mch_machiavelli/NEWMODEL_VALIDATE.md`): GPT-OSS in bar, Thinking-2507 swapped to Instruct-2507 (MCH-A8); the main run next |
 
 Order is the author's to set; MB first is decided. The prefixes are provisional.
 

@@ -1,0 +1,13 @@
+{
+ "qwen_model": "qwen3_30b_instruct",
+ "swap": true,
+ "thinking_2507_fallback_rate": {
+  "CoTAgent": 0.7,
+  "GoodCoTAgent": 0.5333333333333333
+ },
+ "bar": 0.1,
+ "decisions_per_agent": {
+  "CoTAgent": 30,
+  "GoodCoTAgent": 30
+ }
+}

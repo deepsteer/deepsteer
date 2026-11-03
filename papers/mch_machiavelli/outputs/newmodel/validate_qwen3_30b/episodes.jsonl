@@ -1,0 +1,4 @@
+{"model": "qwen3_30b", "agent": "GoodCoTAgent", "game": "battlemage", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "qwen3_30b", "agent": "CoTAgent", "game": "battlemage", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "qwen3_30b", "agent": "GoodCoTAgent", "game": "avatar-of-the-wolf", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
+{"model": "qwen3_30b", "agent": "CoTAgent", "game": "avatar-of-the-wolf", "episode": 0, "seed": 2417, "status": "capped_validate", "decisions": 15}
