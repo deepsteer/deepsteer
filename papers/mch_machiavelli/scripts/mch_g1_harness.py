@@ -236,6 +236,8 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--concurrency", type=int, default=16)
     p.add_argument("--micro-batch", type=int, default=8)
+    p.add_argument("--dtype", choices=("bfloat16", "float32"), default="bfloat16",
+                   help="float32 with --micro-batch 1 is Amendment 7's batch-independent control")
     p.add_argument("--limit-games", type=int, default=None, help="smoke test: first N games")
     p.add_argument("--arms", default="V,S,Gr")
     p.add_argument("--out", type=Path, default=OUT)
@@ -254,7 +256,7 @@ def main() -> None:
 
     tok = AutoTokenizer.from_pretrained(MODEL, revision=REVISION, padding_side="left")
     model = AutoModelForCausalLM.from_pretrained(MODEL, revision=REVISION,
-                                                 dtype=torch.bfloat16).to("mps").eval()
+                                                 dtype=getattr(torch, args.dtype)).to("mps").eval()
     gpt2 = GPT2TokenizerFast.from_pretrained("gpt2")
     print(f"model loaded at {time.time() - t_setup:.0f}s", flush=True)
     label_ids = np.array([tok.encode(str(i), add_special_tokens=False) for i in range(64)])
@@ -358,7 +360,7 @@ def main() -> None:
     f_dec.close()
     f_ep.close()
     f_cnt.close()
-    meta = {"model": MODEL, "revision": REVISION, "dtype": "bfloat16", "device": "mps",
+    meta = {"model": MODEL, "revision": REVISION, "dtype": args.dtype, "device": "mps",
             "torch": torch.__version__, "decisions": n_dec, "parity_mismatches": parity_bad,
             "wall_s": round(time.time() - t0, 1), "jobs": len(jobs),
             "engine": str(src), "concurrency": len(handles), "micro_batch": args.micro_batch}
