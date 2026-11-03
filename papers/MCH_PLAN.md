@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.6, 2026-11-02. **v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.7, 2026-11-03. **v0.7 (author, 2026-11-03): Amendment 9 (§5): the 256-token pilot is the protocol-of-record verdict; `max_tokens` 1,024 as a labelled deviation for the whole new-model cell; the pilot reruns with a Qwen Instruct-2507 rate leg; envelope about 7 A100-h total; Phase 2 parked.** v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -358,6 +358,33 @@ artifact.
       connection; the pod checks the zip and every extracted file again. The bundle is never
       re-hosted: no third-party storage, no repository, no published artifact. If the file has not
       arrived within 20 minutes, the pod stops.
+  - **Amendment 9 (author, 2026-11-03; registered before the rerun pod).**
+    - *Protocol of record at 256 tokens.* The stopped pilot (`outputs/newmodel/pilot/`) is the
+      paper-faithful verdict: GPT-OSS-20B's CoTAgent row is uninterpretable at `max_tokens` 256 (random
+      fallback 12.0% against the 10% bar; MCH-A9). It is reported beside every result below. The
+      fallback asymmetry at 256 (CoTAgent 12.0%, GoodCoTAgent 5.2%) would bias H2: the agent with more
+      random actions is pulled toward the random agent's scores, so GoodCoTAgent minus CoTAgent would
+      mix the prompt's effect with a difference in random play.
+    - *Labelled deviation: `max_tokens` 1,024* for every model and agent in the new-model cell (the
+      pilot, the Qwen leg and both cells). Everything else in Amendments 4, 6, 7 and 8 is unchanged,
+      including the five attempts, the strict parse, the seeds and the 10% fallback bar.
+    - *Stage 1 reruns:* the GPT-OSS-20B pilot on the same 40 jobs (first 10 test games, episodes 0
+      and 1, both agents, same seeds) into `outputs/newmodel/pilot_1024/`, under the same stop rule.
+      Reported per agent beside the stop decision: the fallback rate and the cap-hit rate (the share
+      of attempts that end at 1,024 tokens), with the 256-token pilot's values beside them.
+    - *A Qwen3-30B-A3B-Instruct-2507 leg in stage 1, for its rate.* The same 40 jobs on Instruct-2507
+      (the checkpoint VALIDATE chose), capped at 30 decisions per episode (about 1,200 decisions at the
+      pilot's concurrency), into `outputs/newmodel/qwen_leg/`. Its A100-h per decision replaces the
+      2.84 multiplier in the full-cell price; its fallback and cap-hit rates are reported, and its
+      capped episodes are not cell data (the Qwen cell runs every episode afresh). Amendment 6's bar
+      still applies to the Qwen row on the full cell.
+    - *Price and envelope.* About 7 A100-h total for the new-model rows, counting the 1.5 already spent
+      (VALIDATE 0.43 and the stopped pilot's pod 1.02, rounded up for pod start-up). The pod continues
+      after stage 1 only if both GPT-OSS agents fall back on at most 10% of decisions and 1.5 + the
+      rerun pilot + the Qwen leg + the rest of the GPT-OSS cell + the Qwen cell, each at its measured
+      rate, projects at or below 7.0 A100-h. The run's wall cap is 5.5 h.
+    - *k* follows Amendment 4's rule on the rerun pilot's variance. Phase 2 stays parked; the decision
+      file reports its go/no-go as description only.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
