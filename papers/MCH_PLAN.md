@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.7, 2026-11-03. **v0.7 (author, 2026-11-03): Amendment 9 (§5): the 256-token pilot is the protocol-of-record verdict; `max_tokens` 1,024 as a labelled deviation for the whole new-model cell; the pilot reruns with a Qwen Instruct-2507 rate leg; envelope about 7 A100-h total; Phase 2 parked.** v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.8, 2026-11-03. **v0.8 (author, 2026-11-03): Amendment 10 (§5): the thinking-on rows (not a reproduction): GPT-OSS-20B at effort medium and Qwen3-30B-A3B-Thinking-2507 with native thinking, new integer-answer agents, H1-H3, a cap-hit retry rule, all traces saved; envelope 8.0 A100-h.** v0.7 (author, 2026-11-03): Amendment 9 (§5): the 256-token pilot is the protocol-of-record verdict; `max_tokens` 1,024 as a labelled deviation for the whole new-model cell; the pilot reruns with a Qwen Instruct-2507 rate leg; envelope about 7 A100-h total; Phase 2 parked.** v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -385,6 +385,86 @@ artifact.
       rate, projects at or below 7.0 A100-h. The run's wall cap is 5.5 h.
     - *k* follows Amendment 4's rule on the rerun pilot's variance. Phase 2 stays parked; the decision
       file reports its go/no-go as description only.
+  - **Amendment 10 (author, 2026-11-03; registered before any harness code or pod): the thinking-on
+    rows, not a reproduction.**
+    - *Purpose.* The new-model rows of Amendments 4 and 9 suppress thinking. This cell runs the same
+      two models with their native thinking on, to measure the paper's goal and ethics prompts when
+      the reasoning happens in the model's own trace, and to save every trace for later monitoring
+      analysis.
+    - *Models.* `openai/gpt-oss-20b@6cee5e81` rendered by `kdg_harmony.render` (the date pinned to
+      2026-10-04, the paper's system prompt as a developer turn) at **reasoning effort medium**, with no
+      prefill: the model writes its own analysis channel, then the final channel.
+      `Qwen/Qwen3-30B-A3B-Thinking-2507@144afc2f` (MRB's checkpoint) in its native system role, the
+      template's own `<think>` opening, no prefill. Both are MoReBench's checkpoints, so each row has a
+      MoReBench counterpart, and here in the same regime (thinking on).
+    - *Agents (new definitions, a registered deviation).* **ThinkCoTAgent**: the paper's `CoTAgent`
+      chat system prompt (goals, reward framing, the step-by-step list) with its final paragraph, the
+      JSON response format, replaced by the paper's own integer-answer paragraph from `LMAgent` ("To
+      take an action, respond with a single integer ..."). **ThinkGoodCoTAgent**: the same change to
+      `GoodCoTAgent` (goals plus the TARGET BEHAVIOR block). The user turn is the scene, as in the
+      paper. Both strings are composed from the library's byte-checked paper strings, with no new
+      wording.
+    - *Decoding.* T 0.2, top-p 1; a single generation budget of `max_tokens` 4,096 covering the
+      thinking trace and the answer. The answer is the final channel (GPT-OSS) or the text after
+      `</think>` (Qwen), parsed by the paper's integer rule (`re.findall(r'\d+', text.strip())[0]` among
+      the action labels; `LMAgent`'s chat validation). An attempt whose trace has not closed at 4,096
+      tokens has no answer and fails the parse. Up to five attempts, then a random action from the
+      episode's seeded RNG (counted); loop detection as upstream; action order unrotated; the paper's
+      2023 request truncation is not applied (Amendment 7's ruling).
+    - *Cap-hit retry rule (a labelled deviation from the paper's five attempts).* Once an attempt for a
+      decision ends at the 4,096-token cap, at most one further attempt is made; if that attempt does
+      not parse, the random fallback follows. It applies to budget failures only: attempts that end
+      before the cap and fail the parse are retried up to five in all, as the paper's loop does.
+      Reported per row: the decisions with any cap hit, and the decisions whose retries this rule cut
+      short.
+    - *Recorded per attempt:* trace tokens, answer tokens, cap hit, parse result; per decision:
+      attempts, fallback, override, action. **Every trace is saved** with its keys (model, agent, game,
+      episode, step, attempt, seed, prompt sha256) to the gitignored `_raw/` and backed up off-repo with
+      sha256; tracked rows carry lengths, hashes and parse results only. Traces quote game text, so
+      they stay evaluation-only (MCH_PLAN §9): training probes, directions or adapters on them needs
+      the MCH license decision first.
+    - *Stage 0 (inside the pod, before any data of record):* the stack and render parity for both
+      models and agents against the local test, then 2 games × 1 episode × both agents capped at 15
+      decisions per model. A stage-0 failure (any render mismatch, or no answer parsing on either
+      model) stops the pod before the pilot.
+    - *Stage 1, the pilot (both models):* the first 10 test games, episodes 0 and 1 (seeds 2417 and
+      2418), both agents, per model. Read only: per agent the fallback rate, the cap-hit rate and the
+      trace length, the within-game variance of R0 All violations (pooled over agents and games), and
+      the A100-h per decision measured per model. No agent mean, difference or comparison with random
+      is computed (H1-H3 stay unread).
+    - *Stop rules (computed on the pod).* Stop if either agent of either model falls back on more than
+      10% of its pilot decisions (that model's rows would be uninterpretable). k is the smallest k ≥ 2
+      whose paired MDE on All violations is at most 8 points (Amendment 4's rule), capped at 6, computed
+      per model from its pilot; the cell uses the larger of the two models' k. The
+      projected full cell (pilots included, each model at its own measured rate) must be at most
+      **8.0 A100-h**, with the 6-8 envelope reported beside it; if the projection at that k exceeds
+      8.0, the cell runs at k = 2 when k = 2 fits, and stops otherwise. The pilots' episodes count as
+      episodes 0 and 1 of those games.
+    - *H1 and H2* as in Amendment 4, on ThinkCoTAgent and ThinkGoodCoTAgent per model, with the paper's
+      effects as reference and each H2 result against its MDE at the cell's k.
+    - *H3 (per model): thinking on minus thinking suppressed, base agent.* ThinkCoTAgent minus the
+      suppressed-thinking CoTAgent row of the 1,024-token run (`outputs/newmodel/`), on All violations,
+      paired by game and seed (seeds 2417 and 2418, the seeds both cells share), CIs by resampling
+      episodes within game, an analytic SE beside. Branches: violations lower with thinking on (CI
+      below 0); higher (CI above 0); no difference detectable at the reported MDE. Reward reported
+      beside. **GPT-OSS-20B's H3 carries the verdict, read as "the regime"** (thinking, answer format,
+      budget and effort together; see the rivals below): it is within one checkpoint. **Qwen's H3 is
+      descriptive**: its suppressed row is Instruct-2507 (Amendment 8's swap), so it compares two
+      checkpoints.
+    - *Rival readings registered with H3.* (a) Answer format: the suppressed agents reasoned inside a
+      JSON field and answered in JSON; the thinking agents reason in a trace and answer an integer. (b)
+      Budget: 1,024 tokens for JSON reasoning against 4,096 for the trace. (c) Effort: GPT-OSS at medium
+      here, effectively none when suppressed. H3 measures the regime as a whole; none of the three is
+      separated inside this cell.
+    - *Descriptive beside them:* power, disutility (with MCH-A10's branch decomposition for any
+      disutility rise), per-category violations, violations per 1,000 decisions, trace length by agent
+      and by outcome, fallback, cap-hit and loop-override rates, and the MoReBench cross-reference.
+    - *Envelope:* about 6-8 A100-h for this cell, its own, separate from the new-model rows' 7. The
+      run's wall cap is 8.5 h on one A100-80GB.
+    - *Before the pod (zero GPU):* the agents' strings composed and tested against the paper's pieces;
+      the integer parse and both renders tested on the pinned tokenizers; a stubbed dry run of stages 0
+      to 2; the price projected from the 1,024-token run's rates and MRB's trace lengths, to be replaced
+      by the pilot's measured rates.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
