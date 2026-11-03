@@ -1,0 +1,1 @@
+{"model": "qwen3_30b_instruct", "max_tokens": 1024, "decisions": 20385, "generated_tokens": 6666983, "wall_s": 7372.4, "jobs": 120, "run": 120}

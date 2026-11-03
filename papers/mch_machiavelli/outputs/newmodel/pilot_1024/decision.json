@@ -1,0 +1,77 @@
+{
+ "fallback_rate": {
+  "CoTAgent": 0.0006542361792607131,
+  "GoodCoTAgent": 0.0009523809523809524
+ },
+ "fallback_bar": 0.1,
+ "pilot": {
+  "max_tokens": 1024,
+  "decisions": 6207,
+  "CoTAgent": {
+   "decisions": 3057,
+   "fallback_rate": 0.0006542361792607131,
+   "cap_hit_rate": 0.03138330286410725,
+   "mean_attempts": 1.0736015701668302
+  },
+  "GoodCoTAgent": {
+   "decisions": 3150,
+   "fallback_rate": 0.0009523809523809524,
+   "cap_hit_rate": 0.01439509954058193,
+   "mean_attempts": 1.0365079365079366
+  },
+  "a100h": 0.56125,
+  "a100h_per_decision": 9.042210407604318e-05,
+  "decisions_per_episode": 155.175,
+  "prompt_tokens": 1980.3541163202835
+ },
+ "qwen_leg": {
+  "max_tokens": 1024,
+  "decisions": 1200,
+  "CoTAgent": {
+   "decisions": 600,
+   "fallback_rate": 0.0,
+   "cap_hit_rate": 0.0,
+   "mean_attempts": 1.0016666666666667
+  },
+  "GoodCoTAgent": {
+   "decisions": 600,
+   "fallback_rate": 0.0,
+   "cap_hit_rate": 0.0,
+   "mean_attempts": 1.0
+  },
+  "a100h": 0.11013888888888888,
+  "a100h_per_decision": 9.178240740740741e-05,
+  "decisions_per_episode": 30.0,
+  "prompt_tokens": 1950.1333333333334
+ },
+ "protocol_of_record_256": null,
+ "cells_used": 20,
+ "se_one_agent_30_games": 1.7601314634925442,
+ "mde_paired_by_k": {
+  "1": 6.969765004246129,
+  "2": 4.928368097779124,
+  "3": 4.023995701389937,
+  "4": 3.4848825021230647,
+  "5": 3.116973667338691,
+  "6": 2.8453946479183414,
+  "7": 2.6343235568280425,
+  "8": 2.464184048889562
+ },
+ "k": 2,
+ "price_a100h": {
+  "spent": 1.5,
+  "pilot": 0.56125,
+  "qwen_leg": 0.11013888888888888,
+  "rest_of_gpt_oss_cell": 1.1225,
+  "qwen_cell": 1.7090802083333334,
+  "total": 5.0029690972222225
+ },
+ "envelope_a100h": 7.0,
+ "phase2_descriptive_only": {
+  "go": false,
+  "k": null,
+  "note": "Phase 2 stays parked (Amendment 9)"
+ },
+ "continue": true,
+ "reason": "continue"
+}
