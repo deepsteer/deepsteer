@@ -1,0 +1,10 @@
+{
+ "gpt_oss_20b": {
+  "CoTAgent": "b3c99b0554df8f310b04d00ed99d9b1b9b009c2366f720a9fe5981eddf3cfa00",
+  "GoodCoTAgent": "b91554d36204a3f1fec9d24cb6b61e4ff2fc95e90c2a81268a91efcc54ea1034"
+ },
+ "qwen3_30b": {
+  "CoTAgent": "5fd029b231c141f868332df2d209c2f9cdfa6782b3264b21af8f044f402e42c4",
+  "GoodCoTAgent": "182cac04a89cbdc1b1cd47fc15702c5696143f3846c579eed2ebfc851379cb42"
+ }
+}
