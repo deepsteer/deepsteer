@@ -1853,3 +1853,17 @@ paper's 256-token answer budget: CoTAgent falls back to a random action on 12.0%
 (GoodCoTAgent 5.2%), 96% of them five truncations in a row (MCH-A9), so the pod stopped at stage 1.
 The pilot gives the program a real model's within-game variance on MACHIAVELLI (SE 0.82 of the random
 agent's), which holds MCH-03 and parks Phase 2 by its rule (k = 4 reaches a paired MDE of 4.7).
+
+**New-model rows (2026-11-03; `mch_machiavelli/NEWMODEL_ROWS.md`; not a reproduction), positive
+voice.** At the paper's 256-token budget GPT-OSS-20B's CoT row is uninterpretable (12.0% random
+fallbacks; MCH-A9), and that verdict is the protocol of record. With 1,024 tokens (a labelled
+deviation), the paper's ethics prompt lowers MACHIAVELLI violations on both current models, by 17.4
+points on GPT-OSS-20B and 10.7 on Qwen3-30B-A3B-Instruct-2507 (2.9 MDEs each at k = 2), with no
+reward cost detectable at an MDE of 2.8-2.9 points (costs above 1.7-2.3 points excluded); the paper
+reported −8 with a reward cost of 1.9-2.7. The reduction is per decision, not fewer decisions.
+GPT-OSS's base CoT agent violates at the random agent's rate (98.8) while out-scoring it; Qwen beats
+random on both axes with either agent.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| MCH-04: on GPT-OSS-20B and Qwen3-30B-A3B-Instruct-2507 at 1,024 tokens, the paper's ethics prompt lowers All violations (−17.4, −10.7) with no reward cost detectable at an MDE of 2.8-2.9 | the 1,024-token budget, not the model, removes the paper's reward cost (longer reasoning finds ethical routes that score) | the same cell at another budget (e.g. 512) on one model, about 1.5 A100-h | standing as a new-model row, not a reproduction; MCH-A10 (Qwen disutility +6.4, concentrated in three games) beside it |

@@ -2255,3 +2255,13 @@ Source of every number: `papers/mch_machiavelli/outputs/mch_g0_audit.json` and `
 **Discriminator.** Done on the saved replies: no fence or prose openings, and 96% of fallbacks are five cap hits, which reads R_budget. The causal check is a pilot at a larger `max_tokens` (an amendment, a deviation from the paper): under R_budget the fallback rate falls below the bar.
 **Status.** open (author's decision); the registered verdict stands: GPT-OSS-20B's CoTAgent row is uninterpretable at the paper's protocol.
 **Thesis impact.** Under R_budget, the paper's chat protocol does not transfer unchanged to current verbose models: its 256-token answer budget converts long reasoning into random actions, which would pull any such row toward the random agent. The fallback rate belongs beside every new-model score, as Amendment 6 already requires.
+
+## MCH-A10 (ledger) — On Qwen Instruct-2507 the ethics prompt lowers violations and raises disutility
+
+**Date.** 2026-11-03 (new-model rows, descriptive; `papers/mch_machiavelli/outputs/mch_newmodel_rows.json`).
+**Observation.** GoodCoTAgent minus CoTAgent, paired by game and seed, k = 2: All violations −10.7 [−12.5, −9.0], All disutility **+6.4 [2.6, 10.2]** (analytic [1.1, 11.7]; MDE 7.5, so 0.86 of it). On GPT-OSS-20B disutility moves −1.4 [−3.9, 1.2]. Per game, Qwen's disutility difference is positive in 15 games and negative in 13; kung-fu, versus-the-lost-ones and versus-deathscapes carry 81% of the summed difference.
+**Type.** sign-flip (two harm families moving in opposite directions under one intervention); found in a descriptive read, not registered.
+**Competing readings.** R_concentrated: a few games where the ethically framed choices route through scenes labelled with others' suffering (rescues, confrontations), so the shift is game content, not a general trade. R_tradeoff: the prompted agent trades rule violations for consequences that hurt others, generally.
+**Discriminator.** Zero GPU on saved data: the per-game split (done: 15 up, 13 down, three games carry 81%) reads R_concentrated; the next step is the scene-level read in those three games (which labelled scenes the two agents reach), from the saved actions and the bundle.
+**Status.** open, leaning R_concentrated; descriptive only, no claim rests on it.
+**Thesis impact.** Under R_tradeoff, an ethics instruction moves harm between MACHIAVELLI's families rather than reducing it, and any steering read must report disutility beside violations; under R_concentrated, it is a property of three games' content.
