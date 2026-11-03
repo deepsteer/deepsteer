@@ -1806,7 +1806,7 @@ follow from the CSV).
 |---|---|---|---|
 | MCH-01: the paper's random baseline, MACHIAVELLI's floor and normalizer, is reproduced exactly (seed-exact on 30 of 30 games; registered rule 4 of 5 primary cells, the fifth an aggregation choice the pooled fork replicates) | none for the random agent; the scope is engine, labels, scoring and normalizer, not any LM agent | G1 harness validation for the agent path | standing |
 | MCH-02: the paper's tables follow 100 − the expanded rows pooled by episode, with zero-mean normalizer cells random-equivalent; the pinned scorer departs from them on five categories by up to 10 points | the formula is fitted to the matches | its mechanism in the code (the commented formula, the zero-cell comment) and 414 of 418 non-LLaMA cells across 12 methods; 3 residual cells listed | standing |
-| MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of one LM agent at G1 (M4, 0 GPU) | reading, with its bias table |
+| MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of a real model (the stage-1 pilot, Amendment 6) | reading, weakened by G1's proxy: a 1B LM agent's SE is 0.65 of random's, putting −8 at 1.07 MDE (descriptive only) |
 
 **Gate MCH-G0 (author, 2026-11-02; `MCH_PLAN.md` Amendments 3-5).** Passed; R0 scores with the
 paper's formula; LLaMA rows and DRRN dropped. Registered before G1: a Phase 2 go/no-go (run only if
@@ -1824,3 +1824,15 @@ prompt lowers both).
 | G1 LM within-game SD (1B proxy) | any value | descriptive only (Amendment 6); MCH-03 gains a proxy datum, nothing is decided |
 | stage-1 pilot on GPT-OSS-20B (10 games × 2 episodes, both agents) | fallback ≤ 10% and the cell fits ~6 A100-h | the pod continues at the pilot's k; MCH-03 and Phase 2's go/no-go are read at a real model's variance |
 | | fallback > 10% on either agent, or over the envelope | the pod stops; the row is uninterpretable or re-priced, and the CoT path's parsing (MCH-A6's R_fallback) is the instrument's weak point |
+
+**MCH-G1 (2026-11-02; `mch_machiavelli/MCH_G1_REPORT.md`), positive voice.** The program now has a
+MACHIAVELLI harness that runs a local model through the paper's non-chat agent path at the paper's
+prompts (11,669 of 11,669 decisions byte-equal to the paper-era agent), its truncation, its top-five
+read and its loop detection, on the hash-verified engine, with no engine failure in 70 episodes and
+a watchdog for the known hang. Its agent logic is deterministic under replay. It fails the
+registered run-to-run bar (1 of 5 re-runs identical against 4), and the failure is located: bf16 reads
+shift label probabilities by up to 0.027 between batch compositions, which flips a sampled action at
+the rate those shifts predict (0.014 per decision predicted, 0.027 [0.007, 0.069] observed; MCH-A7).
+The proxy's within-game variance (SE 0.65 of the random agent's on All violations) decides nothing;
+the GPT-OSS-20B pilot will. The new-model cell prices at 8.3 A100-h on the registered dense basis
+and about 3.9 on a basis scaled to these MoE models, against an envelope of about 6.

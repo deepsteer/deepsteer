@@ -2225,3 +2225,13 @@ Source of every number: `papers/mch_machiavelli/outputs/mch_g0_audit.json` and `
 **Discriminator.** None for the paper's runs (models retired). Forward: our harness logs the fallback rate per run (MCH_PLAN §4).
 **Status.** carried; informs G1 scope (harness validation, no paper match).
 **Thesis impact.** The paper's LM rows were not reproducible upstream even before the models retired; the reproduction's paper-match value sits in the random baseline and the scoring, both banked at G0.
+
+## MCH-A7 (ledger) — G1's run-to-run criterion fails: 1 of 5 re-runs reproduce their reference episode
+
+**Date.** 2026-11-02 (MCH-G1; `papers/mch_machiavelli/outputs/mch_g1.json`, `mch_g1_stability.json`).
+**Observation.** Amendment 5 required the S arm (V's episode 0 re-run on five games) to reproduce every action in at least 4 of 5 games. One does (death-collector, 95 decisions); four diverge at steps 24, 14, 9 and 2. Before divergence the two runs' R0 probabilities differ by at most 0.018-0.027. Replaying each run's own probabilities through the shared seeded sampler reproduces every action of both runs, overrides included; at each divergence the uniform draw sat 0.0008-0.021 from a choice boundary while the CDFs differed by 0.015-0.025. Second derivation: the matched-state CDF differences predict a flip probability of 0.0141 per decision (first divergence after ~71 decisions); observed 4 events in 148 decisions, 0.027 [0.0074, 0.069]: agree.
+**Type.** near-miss at a pre-registered bar (a control misbehaving).
+**Competing readings.** R_numerics: bf16 reads on MPS depend on batch composition (V ran 16 episodes at a time, S later beside fewer), and a ~0.02 probability shift flips a sampled action about once in 40-70 decisions; the agent logic is deterministic. R_logic: state leaks between episodes or the sampler is misused.
+**Discriminator.** Done (zero compute, saved rows): the replay reproduces both runs' actions from their own probabilities, and the divergence draws sit inside the shift. R_logic would show large probability differences or replay failures; neither occurs. Positive control still open: batch-invariant reads (fp32, micro-batch 1) should make S identical (~15 min M4; an amendment first).
+**Status.** resolved toward R_numerics; the registered criterion stands as failed, and how to treat it is the author's decision at G1.
+**Thesis impact.** Under R_numerics, trajectory-level reproducibility is not a property any batched bf16 harness (MPS or vLLM) has; reproducibility of this instrument is distributional (same seeds, same protocol, matched-state probabilities within ~0.03), and paired-by-seed designs (H2) stay valid. Under R_logic, every G1 number would be suspect.

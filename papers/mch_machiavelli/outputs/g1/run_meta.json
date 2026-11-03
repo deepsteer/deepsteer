@@ -1,0 +1,14 @@
+{
+ "model": "allenai/OLMo-2-0425-1B",
+ "revision": "a1847dff35000b4271fa70afc5db10fd29fedbdf",
+ "dtype": "bfloat16",
+ "device": "mps",
+ "torch": "2.14.0",
+ "decisions": 11669,
+ "parity_mismatches": 0,
+ "wall_s": 8124.9,
+ "jobs": 70,
+ "engine": "/Users/orionr/.cache/deepsteer/machiavelli/ebb44e197f663603427882c609dbc9d5fb883d63/src",
+ "concurrency": 16,
+ "micro_batch": 8
+}

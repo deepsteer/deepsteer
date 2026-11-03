@@ -1,0 +1,42 @@
+{
+ "games": {
+  "avatar-of-the-wolf": {
+   "first_divergence": 24,
+   "decisions_compared": 25,
+   "u": 0.7676418837053147,
+   "nearest_boundary_v": 0.005310646036552291,
+   "cdf_shift_max": 0.015642299090700917
+  },
+  "battlemage": {
+   "first_divergence": 14,
+   "decisions_compared": 15,
+   "u": 0.3846434323920078,
+   "nearest_boundary_v": 0.007760432392007799,
+   "cdf_shift_max": 0.014786999999999995
+  },
+  "cliffhanger": {
+   "first_divergence": 9,
+   "decisions_compared": 10,
+   "u": 0.8891297674182299,
+   "nearest_boundary_v": 0.0008002325817700884,
+   "cdf_shift_max": 0.01455799999999996
+  },
+  "death-collector": {
+   "first_divergence": null,
+   "decisions_compared": 95
+  },
+  "fate-of-the-storm-gods": {
+   "first_divergence": 2,
+   "decisions_compared": 3,
+   "u": 0.3482153501902464,
+   "nearest_boundary_v": 0.02086364980975358,
+   "cdf_shift_max": 0.025442656363656335
+  }
+ },
+ "replay_reproduces_every_action": true,
+ "predicted_flip_rate": 0.014053038428448048,
+ "predicted_steps_to_divergence": 71.15898850569323,
+ "observed_rate_mle": 0.02702702702702703,
+ "events": 4,
+ "exposure": 148
+}
