@@ -11,11 +11,14 @@ Stages (one model per process):
 - ``expected`` (local, before the pod): each model's first render hashes, for VALIDATE's check.
 - ``validate``: 2 games x episode 0 x both agents, 15 decisions each; the first render of each
   agent must equal the local test's (``runpod/expected_renders.json``).
-- ``pilot``: GPT-OSS-20B, the first 10 test games, episodes 0 and 1, both agents (Amendment 6).
+- ``pilot``: GPT-OSS-20B, the first 10 test games, episodes 0 and 1, both agents (Amendment 6),
+  into ``pilot_1024/`` at Amendment 9's 1,024 tokens (``pilot/`` holds the 256-token record).
+- ``qwen_leg``: the same jobs on the chosen Qwen, 30 decisions each, for its rate (Amendment 9).
 - ``validate_decide``: Amendment 8's Qwen checkpoint for the main run, from Thinking-2507's
   VALIDATE fallback rates (``validate_decision.json``).
 - ``decide``: reads only the pilot's fallback rates and within-game variance and writes
-  ``decision.json`` (k, continue or stop, the Phase 2 go/no-go, the price).
+  ``decision.json`` (k, continue or stop, the price at both measured rates plus what is spent,
+  cap-hit rates beside the 256-token record; Phase 2's go/no-go as description only).
 - ``cell``: one model on all 30 games x episodes 0..k-1 x both agents; GPT-OSS skips what the pilot
   ran. Every stage resumes: finished episodes are skipped.
 
@@ -66,13 +69,17 @@ MODELS = {
                            "render": "qwen_plain", "stop_ids": ()},
 }
 SWAP_BAR = 0.10  # Amendment 8
-SAMPLER = {"temperature": 0.2, "top_p": 1.0, "max_tokens": 256}
+SAMPLER = {"temperature": 0.2, "top_p": 1.0}
+PAPER_MAX_TOKENS = 256  # the paper's chat budget: the protocol of record (Amendment 9)
+CELL_MAX_TOKENS = 1024  # Amendment 9's labelled deviation for the whole new-model cell
 MAX_ATTEMPTS = 5  # upstream chat_completion_with_retries
 QWEN_PREFILL = "\n</think>\n\n"
 PAPER_CHAT_LIMIT = 4096 - 256  # the paper's chat cut, reported only (Amendment 7)
 PILOT_GAMES = GAMES[:10]
 VALIDATE_GAMES, VALIDATE_DECISIONS = GAMES[:2], 15
-FALLBACK_BAR, ENVELOPE_A100H, QWEN_RATE_RATIO = 0.10, 6.0, 6688 / 2356
+FALLBACK_BAR = 0.10
+ENVELOPE_A100H, SPENT_A100H = 7.0, 1.5  # Amendment 9: total for the new-model rows, spent so far
+QWEN_LEG_DECISIONS = 30  # Amendment 9's rate leg: decisions per episode
 Z_POWER = 2.80
 
 
@@ -143,7 +150,7 @@ def request_seed(*parts) -> int:
 # ---------------------------------------------------------------- generators
 
 class VLLMGenerator:
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, max_tokens: int) -> None:
         from vllm import LLM, SamplingParams, TokensPrompt
 
         m = MODELS[model]
@@ -152,12 +159,13 @@ class VLLMGenerator:
         self.llm = LLM(model=m["repo"], revision=m["revision"], max_model_len=8192,
                        gpu_memory_utilization=0.90, enable_prefix_caching=True)
         self.stop_ids = list(m["stop_ids"])
+        self.max_tokens = max_tokens
 
     def __call__(self, reqs: list[tuple[list[int], int]]) -> list[list[int]]:
         # every field explicit, as ST's gen_vllm: nothing from the model's generation config
         sps = [self.SP(temperature=SAMPLER["temperature"], top_p=SAMPLER["top_p"], top_k=0,
                        min_p=0.0, repetition_penalty=1.0, presence_penalty=0.0,
-                       frequency_penalty=0.0, seed=seed, max_tokens=SAMPLER["max_tokens"],
+                       frequency_penalty=0.0, seed=seed, max_tokens=self.max_tokens,
                        stop_token_ids=self.stop_ids or None, detokenize=False)
                for _, seed in reqs]
         outs = self.llm.generate([self.TP(prompt_token_ids=ids) for ids, _ in reqs], sps,
@@ -192,7 +200,8 @@ class StubGenerator:
 # ---------------------------------------------------------------- the episode loop
 
 def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: Path,
-        concurrency: int, max_decisions: int | None = None) -> dict:
+        concurrency: int, max_decisions: int | None = None, max_tokens: int = CELL_MAX_TOKENS,
+        cap_status: str = "capped") -> dict:
     """Run (agent, game, episode) jobs; append rows; skip episodes already finished in ``out``."""
     out.mkdir(parents=True, exist_ok=True)
     (out / "_raw").mkdir(exist_ok=True)
@@ -288,7 +297,7 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
             n_dec += 1
             if max_decisions is not None and ep.step >= max_decisions:
                 handles[h].restart()  # VALIDATE caps the episode; the engine state is dropped
-                finish(h, "capped_validate", ())
+                finish(h, cap_status, ())
                 continue
             handles[h].conn.send(("step", action))
         deadline = time.time() + STEP_TIMEOUT_S
@@ -310,7 +319,8 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
         hd.conn.send(("close", None))
     for f in (f_ep, f_cnt, f_dec, f_raw):
         f.close()
-    meta = {"model": model, "decisions": n_dec, "generated_tokens": n_gen_tokens,
+    meta = {"model": model, "max_tokens": max_tokens, "decisions": n_dec,
+            "generated_tokens": n_gen_tokens,
             "wall_s": round(time.time() - t0, 1), "jobs": len(jobs), "run": len(jobs) - len(done)}
     with open(out / "run_meta.jsonl", "a") as f:
         f.write(json.dumps(meta) + "\n")
@@ -319,12 +329,33 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
 
 # ---------------------------------------------------------------- stage 1's decision
 
-def decide(pilot: Path, gpus: int = 1) -> dict:
-    """Amendment 6's stop-or-continue from the pilot's fallback rates and within-game variance
-    only: no agent mean, no difference between agents, no comparison with random."""
-    decs = [json.loads(x) for x in gzip.open(pilot / "decisions.jsonl.gz", "rt")]
+def _rates(d: Path, gpus: int = 1) -> dict:
+    """Per agent: fallback rate and cap-hit rate (attempts ending at the run's max_tokens); and the
+    run's A100-h and A100-h per decision."""
+    decs = [json.loads(x) for x in gzip.open(d / "decisions.jsonl.gz", "rt")]
+    meta = [json.loads(x) for x in (d / "run_meta.jsonl").read_text().splitlines()]
+    cap = meta[-1].get("max_tokens", PAPER_MAX_TOKENS)  # runs before Amendment 9 used 256
+    out = {"max_tokens": cap, "decisions": len(decs)}
+    for a in AGENTS:
+        r = [x for x in decs if x["agent"] == a]
+        att = [t for x in r for t in x["reply_tokens"]]
+        out[a] = {"decisions": len(r), "fallback_rate": float(np.mean([x["fallback"] for x in r])),
+                  "cap_hit_rate": float(np.mean([t >= cap for t in att])),
+                  "mean_attempts": float(np.mean([x["attempts"] for x in r]))}
+    out["a100h"] = sum(m["wall_s"] for m in meta) / 3600 * gpus
+    out["a100h_per_decision"] = out["a100h"] / len(decs)
+    out["decisions_per_episode"] = len(decs) / max(
+        1, len({(x["agent"], x["game"], x["episode"]) for x in decs}))
+    out["prompt_tokens"] = float(np.mean([x["prompt_tokens"] for x in decs]))
+    return out
+
+
+def decide(pilot: Path, leg: Path, record: Path | None = None, spent: float = SPENT_A100H,
+           envelope: float = ENVELOPE_A100H) -> dict:
+    """Amendments 6 and 9: stop-or-continue from the pilot's fallback rates and within-game
+    variance only (no agent mean, no difference between agents, no comparison with random), the
+    price at the pilot's and the Qwen leg's measured rates, plus what is already spent."""
     eps = [json.loads(x) for x in (pilot / "episodes.jsonl").read_text().splitlines()]
-    fb = {a: float(np.mean([d["fallback"] for d in decs if d["agent"] == a])) for a in AGENTS}
     cells = collections.defaultdict(list)
     for e in eps:
         if e["status"] == "done":
@@ -333,13 +364,14 @@ def decide(pilot: Path, gpus: int = 1) -> dict:
     se1 = float(np.sqrt(30 * np.mean(s2)) / 30)
     mde = {k: Z_POWER * np.sqrt(2) * se1 / np.sqrt(k) for k in range(1, 9)}
     k = next((k for k in range(2, 7) if mde[k] <= 8), 6)
-    meta = [json.loads(x) for x in (pilot / "run_meta.jsonl").read_text().splitlines()]
-    a100h = sum(m["wall_s"] for m in meta) / 3600 * gpus
-    rate = a100h / len(decs)
-    d_ep = len(decs) / max(1, len({(d["agent"], d["game"], d["episode"]) for d in decs}))
+    pr, lr = _rates(pilot), _rates(leg)
+    d_ep = pr["decisions_per_episode"]
     n_cell = 2 * k * 30 * d_ep  # per model, both agents
-    price = rate * n_cell + rate * QWEN_RATE_RATIO * n_cell
-    t = float(np.mean([d["prompt_tokens"] for d in decs]))
+    rest_gpt = pr["a100h_per_decision"] * max(0.0, n_cell - pr["decisions"])
+    qwen_cell = lr["a100h_per_decision"] * n_cell
+    total = spent + pr["a100h"] + lr["a100h"] + rest_gpt + qwen_cell
+    fb = {a: pr[a]["fallback_rate"] for a in AGENTS}
+    t = pr["prompt_tokens"]
 
     def steer_mid(kk: int) -> float:
         """Phase 2's steering read at kk (Amendment 3's basis): midpoint of 0.5x and 1x prefill."""
@@ -347,12 +379,16 @@ def decide(pilot: Path, gpus: int = 1) -> dict:
         return (0.5 * full + full) / 2
 
     go = [kk for kk in range(1, 5) if mde[kk] <= 4 and steer_mid(kk) <= 10]
-    out = {"fallback_rate": fb, "fallback_bar": FALLBACK_BAR, "cells_used": len(s2),
-           "se_one_agent_30_games": se1, "mde_paired_by_k": mde, "k": k,
-           "pilot_a100h": a100h, "a100h_per_decision": rate, "decisions_per_episode": d_ep,
-           "price_full_cell_a100h": price, "envelope_a100h": ENVELOPE_A100H,
-           "phase2_go": bool(go), "phase2_k": go[0] if go else None,
-           "continue": bool(max(fb.values()) <= FALLBACK_BAR and price <= ENVELOPE_A100H)}
+    out = {"fallback_rate": fb, "fallback_bar": FALLBACK_BAR, "pilot": pr, "qwen_leg": lr,
+           "protocol_of_record_256": _rates(record) if record and record.exists() else None,
+           "cells_used": len(s2), "se_one_agent_30_games": se1, "mde_paired_by_k": mde, "k": k,
+           "price_a100h": {"spent": spent, "pilot": pr["a100h"], "qwen_leg": lr["a100h"],
+                           "rest_of_gpt_oss_cell": rest_gpt, "qwen_cell": qwen_cell,
+                           "total": total},
+           "envelope_a100h": envelope,
+           "phase2_descriptive_only": {"go": bool(go), "k": go[0] if go else None,
+                                       "note": "Phase 2 stays parked (Amendment 9)"},
+           "continue": bool(max(fb.values()) <= FALLBACK_BAR and total <= envelope)}
     out["reason"] = ("continue" if out["continue"] else
                      "fallback above the bar" if max(fb.values()) > FALLBACK_BAR else
                      "price above the envelope")
@@ -405,7 +441,8 @@ def first_renders(model: str, tok, src: Path) -> dict[str, str]:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--stage", required=True,
-                   choices=("expected", "validate", "validate_decide", "pilot", "decide", "cell"),
+                   choices=("expected", "validate", "validate_decide", "pilot", "qwen_leg",
+                            "decide", "cell"),
                    help="expected: write runpod/expected_renders.json locally (before the pod)")
     p.add_argument("--model", choices=tuple(MODELS), default="gpt_oss_20b")
     p.add_argument("--k", type=int, default=None, help="cell: episodes per game (from decide)")
@@ -414,10 +451,14 @@ def main() -> None:
     p.add_argument("--dry", action="store_true", help="stub generator (the local test)")
     p.add_argument("--dry-always-bad", action="store_true")
     p.add_argument("--games", type=int, default=None, help="dry runs: first N games only")
+    p.add_argument("--max-tokens", type=int, default=CELL_MAX_TOKENS,
+                   help="1,024 for the new-model cell (Amendment 9); 256 is the paper's")
+    p.add_argument("--pilot-dir", default="pilot_1024", help="the pilot of record for decide/cell")
     args = p.parse_args()
 
     if args.stage == "decide":
-        print(json.dumps(decide(args.out / "pilot")))
+        print(json.dumps(decide(args.out / args.pilot_dir, args.out / "qwen_leg",
+                                record=args.out / "pilot")))
         return
     if args.stage == "validate_decide":
         print(json.dumps(validate_decision(args.out)))
@@ -438,32 +479,42 @@ def main() -> None:
     m = MODELS[args.model]
     tok = AutoTokenizer.from_pretrained(m["repo"], revision=m["revision"])
     gen = (StubGenerator(tok, m["render"], args.dry_always_bad) if args.dry
-           else VLLMGenerator(args.model))
+           else VLLMGenerator(args.model, args.max_tokens))
     games = GAMES[: args.games] if args.games else GAMES
     if args.stage == "validate":
         check_renders(args.model, tok, src)
         jobs = [(a, g, 0) for g in VALIDATE_GAMES for a in AGENTS]
         meta = run(args.model, jobs, args.out / f"validate_{args.model}", gen, tok, src,
-                   args.concurrency, max_decisions=VALIDATE_DECISIONS)
+                   args.concurrency, max_decisions=VALIDATE_DECISIONS,
+                   max_tokens=args.max_tokens, cap_status="capped_validate")
     elif args.stage == "pilot":
         if args.model != "gpt_oss_20b":
             raise SystemExit("the pilot runs on GPT-OSS-20B (Amendment 6)")
         pilot_games = [g for g in PILOT_GAMES if g in games]
         jobs = [(a, g, e) for e in (0, 1) for g in pilot_games for a in AGENTS]
-        meta = run(args.model, jobs, args.out / "pilot", gen, tok, src, args.concurrency)
+        meta = run(args.model, jobs, args.out / args.pilot_dir, gen, tok, src, args.concurrency,
+                   max_tokens=args.max_tokens)
+    elif args.stage == "qwen_leg":
+        if not args.model.startswith("qwen"):
+            raise SystemExit("the rate leg runs the Qwen checkpoint VALIDATE chose (Amendment 9)")
+        check_renders(args.model, tok, src)
+        pilot_games = [g for g in PILOT_GAMES if g in games]
+        jobs = [(a, g, e) for e in (0, 1) for g in pilot_games for a in AGENTS]
+        meta = run(args.model, jobs, args.out / "qwen_leg", gen, tok, src, args.concurrency,
+                   max_decisions=QWEN_LEG_DECISIONS, max_tokens=args.max_tokens)
     else:
         if args.k is None:
             raise SystemExit("cell needs --k (from decide)")
         check_renders(args.model, tok, src)  # parity on every stage (Amendment 8)
         skip = set()
-        pilot_eps = args.out / "pilot" / "episodes.jsonl"
+        pilot_eps = args.out / args.pilot_dir / "episodes.jsonl"
         if args.model == "gpt_oss_20b" and pilot_eps.exists():
             skip = {(r["agent"], r["game"], r["episode"])
                     for r in map(json.loads, pilot_eps.read_text().splitlines())}
         jobs = [(a, g, e) for e in range(args.k) for g in games for a in AGENTS
                 if (a, g, e) not in skip]
         meta = run(args.model, jobs, args.out / f"cell_{args.model}", gen, tok, src,
-                   args.concurrency)
+                   args.concurrency, max_tokens=args.max_tokens)
     print(json.dumps(meta))
 
 

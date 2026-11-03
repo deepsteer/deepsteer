@@ -7,8 +7,10 @@
 #               2 games x episode 0 x both agents, 15 decisions each, behind the render-parity check
 #               then writes validate_decision.json (Amendment 8: the main run's Qwen checkpoint)
 #   VALIDATE=0  needs validate_decision.json (SYNC_OUTPUTS); the same setup, then stage 1 (the
-#               GPT-OSS pilot) -> decide (stop or continue, k) -> stage 2 (GPT-OSS cell at k) ->
+#               GPT-OSS pilot at 1,024 tokens into pilot_1024/, then the Qwen rate leg;
+#               Amendment 9) -> decide (stop or continue, k) -> stage 2 (GPT-OSS cell at k) ->
 #               stage 3 (the Qwen cell at k, on the checkpoint VALIDATE chose). Every stage resumes.
+#               The 256-token pilot (pilot/) is the protocol-of-record verdict and is not rerun.
 # The game bundle comes from Google Drive; if that fails or its hash mismatches, the pod prints
 # NEED_SYNC mch_bundle and the launcher (ON_DEMAND_SYNC) copies the locally verified zip here.
 set -uo pipefail
@@ -19,15 +21,16 @@ cd "$REPO_DIR"
 OUT="$REPO_DIR/papers/mch_machiavelli/outputs/newmodel"
 mkdir -p "$OUT"
 START=$(date +%s)
-trap 'cp "$REPO_DIR/session.log" "$OUT/session_$([ "$VALIDATE" = 1 ] && echo validate || echo run).log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+# the run's log is session_run_1024.log (Amendment 9), so it never overwrites the 256-token run's
+trap 'cp "$REPO_DIR/session.log" "$OUT/session_$([ "$VALIDATE" = 1 ] && echo validate || echo run_1024).log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
 POD=papers/mch_machiavelli/scripts/mch_newmodel_pod.py
 hours() { python3 -c "import time; print(round((time.time() - $START) / 3600, 4))"; }
 echo ">> MCH new-model rows start $(date -u +%FT%TZ) VALIDATE=$VALIDATE out=$OUT"
 
-# wall caps: VALIDATE 1 h; the run 7 h (the cell's envelope is about 6 A100-h on one GPU)
-MAX_H=$([ "$VALIDATE" = 1 ] && echo 1.0 || echo 7.0)
+# wall caps: VALIDATE 1 h; the run 5.5 h (Amendment 9: 7 A100-h total, 1.5 already spent)
+MAX_H=$([ "$VALIDATE" = 1 ] && echo 1.0 || echo 5.5)
 ( trap 'kill $S 2>/dev/null; exit 0' TERM
   sleep "$(python3 -c "print(int($MAX_H * 3600))")" & S=$!; wait $S
   echo ">> WATCHDOG: ${MAX_H} h reached"; pkill -f mch_newmodel_pod.py ) &
@@ -138,16 +141,30 @@ EOF
   exit 0
 fi
 
-# ---- stage 1: the GPT-OSS pilot, then the decision (Amendment 6) ----
-$PY $POD --stage pilot --model gpt_oss_20b --out "$OUT" || { echo "BAIL: pilot"; exit 1; }
-$PY $POD --stage decide --out "$OUT" || { echo "BAIL: decide"; exit 1; }
-CONT=$($PY -c "import json; print(int(json.load(open('$OUT/pilot/decision.json'))['continue']))")
-K=$($PY -c "import json; print(json.load(open('$OUT/pilot/decision.json'))['k'])")
-echo ">> stage 1 decision: continue=$CONT k=$K ($(cat "$OUT/pilot/decision.json" | tr -d '\n' | head -c 600))"
-[ "$CONT" = 1 ] || { echo ">> STOP after stage 1 (Amendment 6)"; kill $WATCHDOG 2>/dev/null; exit 0; }
+# ---- stage 1 (Amendment 9): the GPT-OSS pilot at 1,024 tokens, the Qwen rate leg, the decision ----
+TOK=1024
+PD=pilot_1024
+$PY $POD --stage pilot --model gpt_oss_20b --max-tokens $TOK --pilot-dir $PD --out "$OUT" || { echo "BAIL: pilot"; exit 1; }
+$PY $POD --stage qwen_leg --model "$QW" --max-tokens $TOK --out "$OUT" || { echo "BAIL: qwen_leg"; exit 1; }
+$PY $POD --stage decide --pilot-dir $PD --out "$OUT" || { echo "BAIL: decide"; exit 1; }
+CONT=$($PY -c "import json; print(int(json.load(open('$OUT/$PD/decision.json'))['continue']))")
+K=$($PY -c "import json; print(json.load(open('$OUT/$PD/decision.json'))['k'])")
+$PY - "$OUT/$PD/decision.json" <<'EOF'
+import json, sys
+d = json.load(open(sys.argv[1]))
+for name, r in (("pilot 1024", d["pilot"]), ("qwen leg 1024", d["qwen_leg"]),
+                ("record 256", d["protocol_of_record_256"])):
+    if r:
+        print(">> " + name + ": " + "; ".join(
+            f"{a} fallback {r[a]['fallback_rate']:.3f} cap-hit {r[a]['cap_hit_rate']:.3f}"
+            for a in ("CoTAgent", "GoodCoTAgent")) + f"; {r['a100h_per_decision']:.2e} A100-h/decision")
+print(">> price A100-h:", {k: round(v, 2) for k, v in d["price_a100h"].items()}, "envelope", d["envelope_a100h"])
+EOF
+echo ">> stage 1 decision: continue=$CONT k=$K reason=$($PY -c "import json; print(json.load(open('$OUT/$PD/decision.json'))['reason'])")"
+[ "$CONT" = 1 ] || { echo ">> STOP after stage 1 (Amendments 6, 9)"; kill $WATCHDOG 2>/dev/null; exit 0; }
 
-# ---- stages 2 and 3 at the pilot's k ----
-$PY $POD --stage cell --model gpt_oss_20b --k "$K" --out "$OUT" || { echo "BAIL: cell gpt_oss_20b"; exit 1; }
-$PY $POD --stage cell --model "$QW" --k "$K" --out "$OUT" || { echo "BAIL: cell $QW"; exit 1; }
+# ---- stages 2 and 3 at the pilot's k, 1,024 tokens ----
+$PY $POD --stage cell --model gpt_oss_20b --k "$K" --max-tokens $TOK --pilot-dir $PD --out "$OUT" || { echo "BAIL: cell gpt_oss_20b"; exit 1; }
+$PY $POD --stage cell --model "$QW" --k "$K" --max-tokens $TOK --pilot-dir $PD --out "$OUT" || { echo "BAIL: cell $QW"; exit 1; }
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

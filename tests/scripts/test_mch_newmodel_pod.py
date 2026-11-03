@@ -125,46 +125,76 @@ def test_dry_run_mixed_replies_never_exceed_five_attempts(tmp_path):
     assert all(0 <= r["action"] < r["n"] for r in rows)
     assert not any(r["paper_chat_cut"] is None for r in rows)
     eps = [json.loads(x) for x in (tmp_path / "episodes.jsonl").read_text().splitlines()]
-    assert {e["status"] for e in eps} == {"capped_validate"}
+    assert {e["status"] for e in eps} == {"capped"}
 
 
-def _pilot(tmp_path, fallback_share: float, wall_s: float, spread: float):
-    d = tmp_path / "pilot"
+def _run_dir(d: Path, fallback_share: float, wall_s: float, spread: float, cap: int,
+             cap_share: float = 0.0, games=None, steps: int = 100):
+    """A synthetic pilot or leg directory: decisions, episodes and run_meta."""
     d.mkdir(parents=True)
     decs, eps = [], []
     for a in pod.AGENTS:
-        for g in pod.PILOT_GAMES:
+        for g in games or pod.PILOT_GAMES:
             for e in (0, 1):
-                for step in range(100):
+                for step in range(steps):
+                    att = [cap if step < steps * cap_share else 100]
                     decs.append({"agent": a, "game": g, "episode": e, "step": step,
-                                 "fallback": step < 100 * fallback_share, "prompt_tokens": 1900})
+                                 "fallback": step < steps * fallback_share, "prompt_tokens": 1900,
+                                 "attempts": len(att), "reply_tokens": att})
                 v = 100 + (spread if e else -spread)
                 eps.append({"agent": a, "game": g, "episode": e, "status": "done",
                             "scores": {"violations.Σ": {"r0": v}}})
     with gzip.open(d / "decisions.jsonl.gz", "wt") as f:
         f.write("\n".join(json.dumps(x) for x in decs) + "\n")
     (d / "episodes.jsonl").write_text("\n".join(json.dumps(x) for x in eps) + "\n")
-    (d / "run_meta.jsonl").write_text(json.dumps({"wall_s": wall_s}) + "\n")
-    return tmp_path
+    (d / "run_meta.jsonl").write_text(json.dumps({"wall_s": wall_s, "max_tokens": cap}) + "\n")
+    return d
+
+
+def _decide(tmp_path, fb=0.0, pilot_wall=900, leg_wall=120, spent=1.5):
+    pilot = _run_dir(tmp_path / "pilot_1024", fb, pilot_wall, 5, 1024)
+    leg = _run_dir(tmp_path / "qwen_leg", 0.0, leg_wall, 5, 1024, steps=30)
+    return pod.decide(pilot, leg, spent=spent)
 
 
 def test_decide_stops_on_fallback_above_the_bar(tmp_path):
-    out = pod.decide(_pilot(tmp_path, 0.2, 1800, 5) / "pilot")
+    out = _decide(tmp_path, fb=0.2)
     assert out["continue"] is False and out["reason"] == "fallback above the bar"
 
 
 def test_decide_stops_on_price_and_continues_when_cheap(tmp_path):
-    cheap = pod.decide(_pilot(tmp_path / "a", 0.0, 900, 5) / "pilot")
+    cheap = _decide(tmp_path / "a")
     assert cheap["continue"] is True and cheap["k"] >= 2
-    dear = pod.decide(_pilot(tmp_path / "b", 0.0, 4 * 3600, 5) / "pilot")
+    dear = _decide(tmp_path / "b", pilot_wall=4 * 3600)
     assert dear["continue"] is False and dear["reason"] == "price above the envelope"
+
+
+def test_decide_counts_spend_and_prices_qwen_at_the_legs_own_rate(tmp_path):
+    # most probable failure: the total leaving out the 1.5 A100-h already spent, or Qwen priced
+    # at GPT-OSS's rate (or the retired 2.84 multiplier) instead of the leg's measured rate
+    out = _decide(tmp_path, pilot_wall=900, leg_wall=240)
+    p = out["price_a100h"]
+    leg_rate = (240 / 3600) / (2 * 10 * 2 * 30)
+    n_cell = 2 * out["k"] * 30 * 100
+    assert p["qwen_cell"] == pytest.approx(leg_rate * n_cell)
+    assert p["total"] == pytest.approx(1.5 + p["pilot"] + p["qwen_leg"]
+                                       + p["rest_of_gpt_oss_cell"] + p["qwen_cell"])
+    assert out["envelope_a100h"] == 7.0
+
+
+def test_cap_hit_rate_uses_the_runs_own_budget(tmp_path):
+    # a 256-token record must be read at 256, a 1,024 run at 1,024
+    d = _run_dir(tmp_path / "r", 0.0, 60, 5, 256, cap_share=0.6)
+    r = pod._rates(d)
+    assert r["max_tokens"] == 256 and r["CoTAgent"]["cap_hit_rate"] == pytest.approx(0.6)
 
 
 def test_decide_reads_no_agent_means_or_differences(tmp_path):
     # Amendment 6: the pilot leaves H1 and H2 unread
-    out = pod.decide(_pilot(tmp_path, 0.0, 900, 5) / "pilot")
-    banned = ("mean_violations", "mean_reward", "delta", "difference", "h1", "h2")
-    assert not any(b in k.lower() for k in out for b in banned)
+    out = _decide(tmp_path)
+    flat = json.dumps(out).lower()
+    assert not any(b in flat for b in ("mean_violations", "mean_reward", "points", "h1", "h2"))
+    assert out["phase2_descriptive_only"]["note"].startswith("Phase 2 stays parked")
 
 
 def test_instruct_swap_target_renders_without_a_think_block():
