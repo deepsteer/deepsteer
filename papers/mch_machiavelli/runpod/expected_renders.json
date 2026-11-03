@@ -6,5 +6,9 @@
  "qwen3_30b": {
   "CoTAgent": "5fd029b231c141f868332df2d209c2f9cdfa6782b3264b21af8f044f402e42c4",
   "GoodCoTAgent": "182cac04a89cbdc1b1cd47fc15702c5696143f3846c579eed2ebfc851379cb42"
+ },
+ "qwen3_30b_instruct": {
+  "CoTAgent": "b20f4ff132efb154de4b3e61aa41a8e1178eefc752c8df7ed8371be49e150abe",
+  "GoodCoTAgent": "7419659e488197c3da4b0f3b07550f1abdbe63dde6cceea362176d7040ad5db0"
  }
 }

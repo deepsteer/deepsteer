@@ -5,8 +5,12 @@
 #
 #   VALIDATE=1  stack, models, engine + bundle (hash-verified), gate tests, then both models on
 #               2 games x episode 0 x both agents, 15 decisions each, behind the render-parity check
-#   VALIDATE=0  the same setup, then stage 1 (the GPT-OSS pilot) -> decide (stop or continue, k)
-#               -> stage 2 (GPT-OSS cell at k) -> stage 3 (Qwen cell at k). Every stage resumes.
+#               then writes validate_decision.json (Amendment 8: the main run's Qwen checkpoint)
+#   VALIDATE=0  needs validate_decision.json (SYNC_OUTPUTS); the same setup, then stage 1 (the
+#               GPT-OSS pilot) -> decide (stop or continue, k) -> stage 2 (GPT-OSS cell at k) ->
+#               stage 3 (the Qwen cell at k, on the checkpoint VALIDATE chose). Every stage resumes.
+# The game bundle comes from Google Drive; if that fails or its hash mismatches, the pod prints
+# NEED_SYNC mch_bundle and the launcher (ON_DEMAND_SYNC) copies the locally verified zip here.
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
@@ -69,18 +73,39 @@ out = llm.generate(["Hello"], SamplingParams(temperature=0.2, top_p=1.0, seed=0,
 print(">> vLLM smoke OK:", len(out[0].outputs[0].token_ids), "tokens at T 0.2")
 EOF
 
+# ---- which Qwen (Amendment 8): VALIDATE runs Thinking-2507; the main run reads VALIDATE's choice ----
+if [ "$VALIDATE" = 1 ]; then
+  QW=qwen3_30b
+else
+  [ -f "$OUT/validate_decision.json" ] || { echo "BAIL: no validate_decision.json (launch with SYNC_OUTPUTS=outputs/newmodel/validate_decision.json)"; exit 1; }
+  QW=$($PY -c "import json; print(json.load(open('$OUT/validate_decision.json'))['qwen_model'])")
+  echo ">> Qwen checkpoint for the main run: $QW ($(tr -d '\n' < "$OUT/validate_decision.json" | head -c 300))"
+fi
+
 # ---- models (GPT-OSS's original/ and metal/ copies skipped), engine and bundle ----
-$PY - <<'EOF' > "$OUT/models.json" || { echo "BAIL: model access or download"; exit 1; }
-import json
+QW="$QW" $PY - <<'EOF' > "$OUT/models.json" || { echo "BAIL: model access or download"; exit 1; }
+import json, os
 from huggingface_hub import snapshot_download
 pins = {"gpt_oss_20b": ("openai/gpt-oss-20b", "6cee5e81ee83917806bbde320786a8fb61efebee"),
-        "qwen3_30b": ("Qwen/Qwen3-30B-A3B-Thinking-2507", "144afc2f379b542fdd4e85a1fcd5e1f79112d95d")}
-print(json.dumps({k: snapshot_download(r, revision=v, ignore_patterns=["original/*", "metal/*"])
-                  for k, (r, v) in pins.items()}))
+        "qwen3_30b": ("Qwen/Qwen3-30B-A3B-Thinking-2507", "144afc2f379b542fdd4e85a1fcd5e1f79112d95d"),
+        "qwen3_30b_instruct": ("Qwen/Qwen3-30B-A3B-Instruct-2507",
+                               "0d7cf23991f47feeb3a57ecb4c9cee8ea4a17bfe")}
+want = ("gpt_oss_20b", os.environ["QW"])
+print(json.dumps({k: snapshot_download(pins[k][0], revision=pins[k][1],
+                                       ignore_patterns=["original/*", "metal/*"]) for k in want}))
 EOF
 echo ">> models: $(cat "$OUT/models.json")"
-$PY -c 'from deepsteer.datasets.machiavelli import fetch_machiavelli; print(">> engine:", fetch_machiavelli())' \
-  || { echo "BAIL: engine or bundle fetch, or a hash mismatch"; exit 1; }
+# the bundle: Google Drive first; on a failure or a hash mismatch, the locally verified zip copied
+# here by the launcher (ON_DEMAND_SYNC; Amendment 8). Never re-hosted.
+BUNDLE_PUSH=/workspace/mch_bundle/game_data.zip
+if ! $PY -c 'from deepsteer.datasets.machiavelli import fetch_machiavelli; print(">> engine:", fetch_machiavelli())'; then
+  echo ">> the Drive download failed or its hash mismatched; asking for the locally verified bundle"
+  echo "NEED_SYNC mch_bundle"
+  for _ in $(seq 1 120); do [ -f "$BUNDLE_PUSH" ] && break; sleep 10; done
+  [ -f "$BUNDLE_PUSH" ] || { echo "BAIL: no bundle after 20 min (launch with ON_DEMAND_SYNC)"; exit 1; }
+  $PY -c "from pathlib import Path; from deepsteer.datasets.machiavelli import fetch_machiavelli; print('>> engine:', fetch_machiavelli(zip_path=Path('$BUNDLE_PUSH')))" \
+    || { echo "BAIL: the synced bundle failed its hash check"; exit 1; }
+fi
 echo ">> setup done at $(hours) h"
 $PY -m pytest -q -p no:cacheprovider tests/scripts/test_mch_newmodel_pod.py \
   tests/datasets/test_machiavelli.py 2>&1 | tail -2
@@ -90,6 +115,8 @@ if [ "$VALIDATE" = 1 ]; then
   for M in gpt_oss_20b qwen3_30b; do
     $PY $POD --stage validate --model $M --out "$OUT" || { echo "BAIL: validate $M"; exit 1; }
   done
+  $PY $POD --stage validate_decide --out "$OUT" || { echo "BAIL: validate_decide"; exit 1; }
+  echo ">> Amendment 8 decision: $(tr -d '\n' < "$OUT/validate_decision.json")"
   $PY - <<'EOF'
 import gzip, json, pathlib
 for d in sorted(pathlib.Path("papers/mch_machiavelli/outputs/newmodel").glob("validate_*")):
@@ -119,6 +146,6 @@ echo ">> stage 1 decision: continue=$CONT k=$K ($(cat "$OUT/pilot/decision.json"
 
 # ---- stages 2 and 3 at the pilot's k ----
 $PY $POD --stage cell --model gpt_oss_20b --k "$K" --out "$OUT" || { echo "BAIL: cell gpt_oss_20b"; exit 1; }
-$PY $POD --stage cell --model qwen3_30b --k "$K" --out "$OUT" || { echo "BAIL: cell qwen3_30b"; exit 1; }
+$PY $POD --stage cell --model "$QW" --k "$K" --out "$OUT" || { echo "BAIL: cell $QW"; exit 1; }
 echo ">> done at $(hours) h"
 kill $WATCHDOG 2>/dev/null

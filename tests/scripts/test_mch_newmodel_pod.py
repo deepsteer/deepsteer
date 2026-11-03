@@ -165,3 +165,35 @@ def test_decide_reads_no_agent_means_or_differences(tmp_path):
     out = pod.decide(_pilot(tmp_path, 0.0, 900, 5) / "pilot")
     banned = ("mean_violations", "mean_reward", "delta", "difference", "h1", "h2")
     assert not any(b in k.lower() for k in out for b in banned)
+
+
+def test_instruct_swap_target_renders_without_a_think_block():
+    from deepsteer.benchmarks.agentic.machiavelli.prompts import chat_prompts
+
+    tok = _tok("qwen3_30b_instruct")
+    r = pod.Renderer("qwen3_30b_instruct", tok)
+    s = _state()
+    sys_, _ = chat_prompts("CoTAgent", s)
+    text = r.text("CoTAgent", s)
+    assert text.startswith(f"<|im_start|>system\n{sys_}<|im_end|>")
+    assert text.endswith("<|im_start|>assistant\n") and "<think>" not in text
+
+
+def _validate_rows(tmp_path, cot_fallbacks: int):
+    d = tmp_path / "validate_qwen3_30b"
+    d.mkdir(parents=True)
+    rows = [{"agent": a, "fallback": a == "CoTAgent" and i < cot_fallbacks}
+            for a in pod.AGENTS for i in range(30)]
+    with gzip.open(d / "decisions.jsonl.gz", "wt") as f:
+        f.write("\n".join(json.dumps(r) for r in rows) + "\n")
+    return tmp_path
+
+
+def test_validate_decision_swaps_only_above_ten_percent(tmp_path):
+    # most probable failure: swapping at the bar (3 of 30 is 10%, not above it) or on the mean
+    # over both agents instead of either agent
+    keep = pod.validate_decision(_validate_rows(tmp_path / "a", 3))
+    assert keep["swap"] is False and keep["qwen_model"] == "qwen3_30b"
+    swap = pod.validate_decision(_validate_rows(tmp_path / "b", 4))
+    assert swap["swap"] is True and swap["qwen_model"] == "qwen3_30b_instruct"
+    assert json.loads((tmp_path / "b" / "validate_decision.json").read_text())["swap"] is True

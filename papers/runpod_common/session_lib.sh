@@ -221,6 +221,37 @@ rp_sync_up() {
     "$REPO_ROOT/" "root@$SSH_HOST:$REMOTE_DIR/"
 }
 
+# rp_on_demand_sync <log chunk>: opt-in (ON_DEMAND_SYNC unset -> nothing). For each line
+# "NEED_SYNC <name>" the remote runner prints, push the matching ON_DEMAND_SYNC entry to the pod
+# over the session's SSH connection, after checking the local file's sha256. Entries are
+# "name|local_path|remote_path|sha256", separated by ';'. Each name is pushed at most once per
+# session. For files that must never be re-hosted (MCH's game bundle, 2026-11-02): the copy goes
+# only from this machine to this pod.
+RP_SYNCED=""
+rp_on_demand_sync() {
+  [ -n "${ON_DEMAND_SYNC:-}" ] || return 0
+  local chunk="$1" name e entry n l r h got
+  for name in $(printf '%s\n' "$chunk" | sed -n 's/^NEED_SYNC \([A-Za-z0-9_.-]*\)$/\1/p'); do
+    case " $RP_SYNCED " in *" $name "*) continue ;; esac
+    RP_SYNCED="$RP_SYNCED $name"
+    entry=""
+    IFS=';' read -ra _entries <<< "$ON_DEMAND_SYNC"
+    for e in "${_entries[@]}"; do [ "${e%%|*}" = "$name" ] && entry="$e"; done
+    if [ -z "$entry" ]; then
+      echo "ERROR: the pod asked for '$name', which ON_DEMAND_SYNC does not list"; continue
+    fi
+    IFS='|' read -r n l r h <<< "$entry"
+    got="$(shasum -a 256 "$l" 2>/dev/null | awk '{print $1}')" || got=""
+    if [ "$got" != "$h" ]; then
+      echo "ERROR: $l has sha256 ${got:-<missing>}, expected $h; not pushed"; continue
+    fi
+    echo ">> on-demand sync: $name ($l -> pod:$r)"
+    { ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "mkdir -p '$(dirname "$r")'" &&
+      rsync -a -e "ssh ${SSH_OPTS[*]}" "$l" "root@$SSH_HOST:$r"; } ||
+      echo "ERROR: on-demand sync of $name failed"
+  done
+}
+
 # rp_check_sync_outputs: before any pod exists, refuse a SYNC_OUTPUTS entry that carries
 # whitespace (a wrapped paste once split "outputs/t13/..." across a newline and the record never
 # reached the pod) or names nothing under $SELF_PAPER locally.

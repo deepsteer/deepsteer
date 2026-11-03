@@ -122,6 +122,7 @@ while true; do
   if [ -n "$CHUNK" ]; then
     printf '%s\n' "$CHUNK"
     SEEN=$((SEEN + $(printf '%s\n' "$CHUNK" | wc -l)))
+    rp_on_demand_sync "$CHUNK"   # opt-in: ON_DEMAND_SYNC (session_lib.sh)
   fi
   if ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "test -f '$REMOTE_DONE'" 2>/dev/null; then
     FINAL="$(ssh "${SSH_OPTS[@]}" "root@$SSH_HOST" "tail -n +$((SEEN + 1)) '$REMOTE_LOG' 2>/dev/null" 2>/dev/null || true)"

@@ -12,6 +12,8 @@ Stages (one model per process):
 - ``validate``: 2 games x episode 0 x both agents, 15 decisions each; the first render of each
   agent must equal the local test's (``runpod/expected_renders.json``).
 - ``pilot``: GPT-OSS-20B, the first 10 test games, episodes 0 and 1, both agents (Amendment 6).
+- ``validate_decide``: Amendment 8's Qwen checkpoint for the main run, from Thinking-2507's
+  VALIDATE fallback rates (``validate_decision.json``).
 - ``decide``: reads only the pilot's fallback rates and within-game variance and writes
   ``decision.json`` (k, continue or stop, the Phase 2 go/no-go, the price).
 - ``cell``: one model on all 30 games x episodes 0..k-1 x both agents; GPT-OSS skips what the pilot
@@ -58,7 +60,12 @@ MODELS = {
     "qwen3_30b": {"repo": "Qwen/Qwen3-30B-A3B-Thinking-2507",
                   "revision": "144afc2f379b542fdd4e85a1fcd5e1f79112d95d", "render": "qwen_think",
                   "stop_ids": ()},
+    # Amendment 8's swap target, used only if Thinking-2507's VALIDATE fallback exceeds 10%
+    "qwen3_30b_instruct": {"repo": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+                           "revision": "0d7cf23991f47feeb3a57ecb4c9cee8ea4a17bfe",
+                           "render": "qwen_plain", "stop_ids": ()},
 }
+SWAP_BAR = 0.10  # Amendment 8
 SAMPLER = {"temperature": 0.2, "top_p": 1.0, "max_tokens": 256}
 MAX_ATTEMPTS = 5  # upstream chat_completion_with_retries
 QWEN_PREFILL = "\n</think>\n\n"
@@ -91,6 +98,10 @@ class Renderer:
         if self.kind == "harmony":
             return self.kh.render(self.tok, msgs, self.cfg, "medium") + self.cfg.prefill_primary
         t = self.tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        if self.kind == "qwen_plain":  # Instruct-2507: no think block, no prefill
+            if not t.endswith("<|im_start|>assistant\n"):
+                raise RuntimeError("Instruct-2507 render must end at the assistant header")
+            return t
         if not t.endswith("<think>\n"):
             raise RuntimeError("Qwen render must end with the template's <think>")
         return t + QWEN_PREFILL
@@ -349,6 +360,19 @@ def decide(pilot: Path, gpus: int = 1) -> dict:
     return out
 
 
+def validate_decision(out: Path) -> dict:
+    """Amendment 8: the main run's Qwen checkpoint from Thinking-2507's VALIDATE fallback rates."""
+    rows = [json.loads(x) for x in
+            gzip.open(out / "validate_qwen3_30b" / "decisions.jsonl.gz", "rt")]
+    fb = {a: float(np.mean([r["fallback"] for r in rows if r["agent"] == a])) for a in AGENTS}
+    swap = max(fb.values()) > SWAP_BAR
+    dec = {"qwen_model": "qwen3_30b_instruct" if swap else "qwen3_30b", "swap": swap,
+           "thinking_2507_fallback_rate": fb, "bar": SWAP_BAR,
+           "decisions_per_agent": {a: sum(r["agent"] == a for r in rows) for a in AGENTS}}
+    (out / "validate_decision.json").write_text(json.dumps(dec, indent=1) + "\n")
+    return dec
+
+
 def check_renders(model: str, tok, src: Path) -> None:
     """VALIDATE: each agent's first render on the first validate game equals the local test's."""
     exp = json.loads(EXPECTED.read_text())[model]
@@ -381,7 +405,7 @@ def first_renders(model: str, tok, src: Path) -> dict[str, str]:
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--stage", required=True,
-                   choices=("expected", "validate", "pilot", "decide", "cell"),
+                   choices=("expected", "validate", "validate_decide", "pilot", "decide", "cell"),
                    help="expected: write runpod/expected_renders.json locally (before the pod)")
     p.add_argument("--model", choices=tuple(MODELS), default="gpt_oss_20b")
     p.add_argument("--k", type=int, default=None, help="cell: episodes per game (from decide)")
@@ -394,6 +418,9 @@ def main() -> None:
 
     if args.stage == "decide":
         print(json.dumps(decide(args.out / "pilot")))
+        return
+    if args.stage == "validate_decide":
+        print(json.dumps(validate_decision(args.out)))
         return
     from transformers import AutoTokenizer
 
@@ -427,6 +454,7 @@ def main() -> None:
     else:
         if args.k is None:
             raise SystemExit("cell needs --k (from decide)")
+        check_renders(args.model, tok, src)  # parity on every stage (Amendment 8)
         skip = set()
         pilot_eps = args.out / "pilot" / "episodes.jsonl"
         if args.model == "gpt_oss_20b" and pilot_eps.exists():
