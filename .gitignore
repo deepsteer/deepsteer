@@ -152,4 +152,6 @@ papers/mch_machiavelli/outputs/g0_random*/*.jsonl
 papers/mch_machiavelli/outputs/g1*/_counts.jsonl
 papers/mch_machiavelli/outputs/newmodel/**/_raw/
 papers/mch_machiavelli/outputs/newmodel/**/_counts.jsonl
+papers/mch_machiavelli/outputs/thinking/**/_raw/
+papers/mch_machiavelli/outputs/thinking/**/_counts.jsonl
 papers/mch_machiavelli/outputs_raw/
