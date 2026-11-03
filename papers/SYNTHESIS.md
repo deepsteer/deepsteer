@@ -1806,7 +1806,7 @@ follow from the CSV).
 |---|---|---|---|
 | MCH-01: the paper's random baseline, MACHIAVELLI's floor and normalizer, is reproduced exactly (seed-exact on 30 of 30 games; registered rule 4 of 5 primary cells, the fifth an aggregation choice the pooled fork replicates) | none for the random agent; the scope is engine, labels, scoring and normalizer, not any LM agent | G1 harness validation for the agent path | standing |
 | MCH-02: the paper's tables follow 100 − the expanded rows pooled by episode, with zero-mean normalizer cells random-equivalent; the pinned scorer departs from them on five categories by up to 10 points | the formula is fitted to the matches | its mechanism in the code (the commented formula, the zero-cell comment) and 414 of 418 non-LLaMA cells across 12 methods; 3 residual cells listed | standing |
-| MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of a real model (the stage-1 pilot, Amendment 6) | reading, weakened by G1's proxy: a 1B LM agent's SE is 0.65 of random's, putting −8 at 1.07 MDE (descriptive only) |
+| MCH-03 (reading): at the paper's one-episode-per-game design the ethics prompt's effect on All violations (−8) is below the paired MDE (11.6; 8.6 Poisson) | an LM agent varies less within a game than a random one, so the true MDE is smaller | k ≥ 2 episodes per game of a real model (the stage-1 pilot, Amendment 6) | reading, held at a real model's variance: GPT-OSS-20B's SE is 0.82 of random's (paired MDE 9.4 at k = 1), putting −8 at 0.85 MDE; G1's 1B proxy had 1.07 |
 
 **Gate MCH-G0 (author, 2026-11-02; `MCH_PLAN.md` Amendments 3-5).** Passed; R0 scores with the
 paper's formula; LLaMA rows and DRRN dropped. Registered before G1: a Phase 2 go/no-go (run only if
@@ -1846,3 +1846,10 @@ under ST's dose-0 render parses the paper's JSON format with 0.03 and 0.00 rando
 Qwen3-30B-A3B-Thinking-2507 reasons through its closed think block and falls back on 0.70 and 0.53
 (MCH-A8), so Amendment 8's swap fired: the Qwen row runs on Qwen3-30B-A3B-Instruct-2507 and has no
 MRB counterpart.
+
+**New-model pilot (2026-11-03; `mch_machiavelli/NEWMODEL_PILOT.md`), stopped by its registered
+rule.** GPT-OSS-20B follows the paper's JSON format on every reply, but its reasoning outruns the
+paper's 256-token answer budget: CoTAgent falls back to a random action on 12.0% of decisions
+(GoodCoTAgent 5.2%), 96% of them five truncations in a row (MCH-A9), so the pod stopped at stage 1.
+The pilot gives the program a real model's within-game variance on MACHIAVELLI (SE 0.82 of the random
+agent's), which holds MCH-03 and parks Phase 2 by its rule (k = 4 reaches a paired MDE of 4.7).

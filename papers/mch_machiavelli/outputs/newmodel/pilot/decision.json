@@ -1,0 +1,29 @@
+{
+ "fallback_rate": {
+  "CoTAgent": 0.12006578947368421,
+  "GoodCoTAgent": 0.05237154150197629
+ },
+ "fallback_bar": 0.1,
+ "cells_used": 20,
+ "se_one_agent_30_games": 2.382501073297183,
+ "mde_paired_by_k": {
+  "1": 9.434222924630928,
+  "2": 6.671003005232111,
+  "3": 5.446851145130605,
+  "4": 4.717111462315464,
+  "5": 4.219112754872326,
+  "6": 3.851505380835563,
+  "7": 3.5658010959596993,
+  "8": 3.3355015026160557
+ },
+ "k": 2,
+ "pilot_a100h": 0.7336388888888888,
+ "a100h_per_decision": 0.0001207437275985663,
+ "decisions_per_episode": 151.9,
+ "price_full_cell_a100h": 8.448680107526881,
+ "envelope_a100h": 6.0,
+ "phase2_go": false,
+ "phase2_k": null,
+ "continue": false,
+ "reason": "fallback above the bar"
+}
