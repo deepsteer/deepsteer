@@ -1,0 +1,8 @@
+{
+ "model": "gpt_oss_20b",
+ "fallback_rate": {
+  "ThinkCoTAgent": 0.046948356807511735,
+  "ThinkGoodCoTAgent": 0.011753494282083863
+ },
+ "pass": true
+}

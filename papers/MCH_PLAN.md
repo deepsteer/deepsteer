@@ -1,6 +1,6 @@
 # MCH Plan — MACHIAVELLI Replication, Decomposed Into the Library
 
-Status: v0.8, 2026-11-03. **v0.8 (author, 2026-11-03): Amendment 10 (§5): the thinking-on rows (not a reproduction): GPT-OSS-20B at effort medium and Qwen3-30B-A3B-Thinking-2507 with native thinking, new integer-answer agents, H1-H3, a cap-hit retry rule, all traces saved; envelope 8.0 A100-h.** v0.7 (author, 2026-11-03): Amendment 9 (§5): the 256-token pilot is the protocol-of-record verdict; `max_tokens` 1,024 as a labelled deviation for the whole new-model cell; the pilot reruns with a Qwen Instruct-2507 rate leg; envelope about 7 A100-h total; Phase 2 parked.** v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
+Status: v0.9, 2026-11-03. **v0.9 (author, 2026-11-03): Amendment 11 (§5): the thinking-on cell runs GPT-OSS-20B only at k = 2, priced by its longest episode, on an A40 first with n-gram speculative decoding behind an on-pod guard; Qwen thinking-on parked; a fallback bias bound on H2 and H3; pod 2 stopped by the author after the GPT-OSS pilot check.** v0.8 (author, 2026-11-03): Amendment 10 (§5): the thinking-on rows (not a reproduction): GPT-OSS-20B at effort medium and Qwen3-30B-A3B-Thinking-2507 with native thinking, new integer-answer agents, H1-H3, a cap-hit retry rule, all traces saved; envelope 8.0 A100-h. v0.7 (author, 2026-11-03): Amendment 9 (§5): the 256-token pilot is the protocol-of-record verdict; `max_tokens` 1,024 as a labelled deviation for the whole new-model cell; the pilot reruns with a Qwen Instruct-2507 rate leg; envelope about 7 A100-h total; Phase 2 parked.** v0.6 (author, 2026-11-02): Amendment 8 (§5): Qwen stays Thinking-2507 (MRB's checkpoint), with a swap to Instruct-2507 if its VALIDATE fallback exceeds 10%; comparisons with MRB are same model, different regime; the bundle's local-cache fallback.** v0.5 (author, 2026-11-02): Amendment 7 (§5): G1's stability fork and its fp32 positive control; the chat path has no 2,047 cut, so the new-model rows do not truncate; how each model receives the system prompt; the pod runner and its stages.** v0.4 (author, 2026-11-02): Amendment 6 (§5): G1's variance is descriptive; a variance pilot on GPT-OSS-20B is stage 1 of the new-model pod and decides k, the Phase 2 go/no-go and stop-or-continue; a 10% fallback bar; the new-model envelope is about 6 A100-h.** v0.3 (author, 2026-11-02): MCH-G0 passed (`mch_machiavelli/MCH_G0_REPORT.md`);
 Amendment 3 (§5) records the gate decisions, the Phase 2 go/no-go rule and the corrections folded in
 below; Amendment 4 registers the new-model rows; Amendment 5 the G1 protocol, all before any G1
 data.** v0.2 (agent at MCH-G0, 2026-11-02): Amendment 1 (§5): the
@@ -474,6 +474,85 @@ artifact.
     each episode moves on when its own generation finishes. Seeds, attempts, the cap rule, the RNG
     order, trace saving and the watchdog are unchanged, and a stubbed run gives the same decisions and
     tokens as the lockstep loop.
+  - **Runner note to Amendment 10, second pod (2026-11-03; no registered rule or measurement
+    changes).** Pod 2 ran the asynchronous runner: setup, 18 of 18 gate tests, render parity on both
+    models, stage 0 (60 of 60 decisions parsed on each model) and the GPT-OSS pilot (40 of 40
+    episodes, 6,343 decisions, 7,295 s); its fallback check passed (ThinkCoTAgent 4.7%,
+    ThinkGoodCoTAgent 1.2%). **The author stopped the pod after that check, before the Qwen pilot**,
+    because the registered price rule would have stopped the cell after it: GPT-OSS alone priced at
+    6.1 A100-h at k = 2, and Qwen ran about 3.4 times slower at stage 0. The Qwen pilot did not run,
+    the decide stage did not run, and no H quantity was computed. Spend on the two thinking pods: 3.2
+    A100-h (0.6 and 2.6, rounded up for start-up). Outputs: `outputs/thinking/` (traces in `_raw/`,
+    backed up off the repository with `traces_manifest.json`).
+  - **Amendment 11 (author, 2026-11-03; registered before any runner change or pod): GPT-OSS-20B
+    only, priced by its longest episode.**
+    - *Why.* The pilot's wall time was set by its longest episode, not by its decision count. Each
+      episode advanced at about 15 s per decision whether 40 episodes or 2 were running, and the two
+      heroes-of-myth ThinkCoTAgent episodes each generated about 880,000 tokens: at the 121 tokens/s
+      that one sequence reached, that is the pilot's whole 7,295 s. Amendment 10's rule (the pilot's
+      wall time per decision times the cell's decisions) therefore overprices the cell. Qwen on one
+      A100 also has a second limit: its 61 GB of weights leave about 11 GB of KV cache, about 18
+      concurrent 6,000-token sequences, which puts its cell near 8 A100-h by itself.
+    - *Panel.* GPT-OSS-20B only. Qwen3-30B-A3B-Thinking-2507's thinking-on rows are parked: they need
+      two GPUs with the model split across them, or their own envelope. Its stage 0 is kept as data.
+    - *k = 2* by Amendment 4's rule on the pilot (SE of a 30-game mean 1.87; paired MDE 5.2 at k = 2,
+      under 8). The pilot's 40 episodes are episodes 0 and 1 of games 1 to 10 (as Amendment 10
+      registered); the cell runs the other 80 (games 11 to 30, both agents, episodes 0 and 1), all at
+      once, longest first.
+    - *Price by the longest episode.* The forecast token count of the longest remaining episode is
+      647 decisions (luminous-underground's longest suppressed-thinking episode, 599 decisions, times
+      1.08, the largest thinking-on to suppressed ratio of episode length on the 10 pilot games) times
+      2,953 tokens per decision (ThinkCoTAgent's highest per-game mean on the pilot): 1.91 million
+      tokens. On the pod, after stage 0, the forecast in hours is the time already elapsed + 0.05 h
+      for the download + those tokens divided by the single-sequence rate, where that rate is stage
+      0's tokens per second per episode times 1.27 (the pilot's slowest episode ran at 121.3 tokens/s
+      against pod 2's stage 0 at 95.5). The cell runs if the forecast, in A100-h, is at most the 4.8
+      A100-h left of the 8.0. The aggregate load (about 18 million tokens) at the pilot's full-batch
+      throughput is reported beside it and is far below the serial bound.
+    - *Watchdog and resume.* The pod's wall cap is 4.7 A100-h converted to that GPU's hours (0.1 kept
+      for start-up). Every stage resumes at the episode; a pod lost to the infrastructure resumes on a
+      new pod within what is left of the 8.0. If the watchdog fires, the cell stops and lists its
+      unfinished episodes; nothing beyond 8.0 runs without the author; H1 to H3 then use the games in
+      which both agents finished both episodes, and the report names the games left out.
+    - *Cheaper 48 GB GPU (zero-GPU check): adopted, as an A40 first with the A100s behind it.*
+      Sampling is unchanged: the same Marlin mxfp4 MoE path serves compute capability 8.0 and up (the
+      A100 ran Marlin with Triton attention), so the sampled distribution is the same, with the
+      hardware's own numerics (as batch numerics already vary; MCH-A7). It does not shorten the wall:
+      the A40 has 0.34 times the A100-SXM's memory bandwidth and 0.48 times its FP16 compute, so a
+      single sequence decodes about 1.5 to 2.9 times slower. It does make the run cheaper: at listed
+      RunPod rates (A40 about $0.35-0.44 per hour, A100 SXM about $1.39-1.49, A100 PCIe from $1.19)
+      it costs 0.4 to 0.8 times as much unless the tail is entirely bandwidth-bound on the cheapest
+      A100. The tail is not bandwidth-bound: the pilot's step took about 8.3 ms at 2 sequences against
+      a bandwidth floor near 2 ms. The L40S and A6000 are not used (their listed prices leave the
+      saving unclear). One A40 hour counts as 0.32 A100-h (the least favorable listed ratio against
+      the A100 SXM, 0.44 / 1.39), so the wall cap is 14.7 h on an A40 and 4.7 h on an A100. 80 engine workers need about
+      24 GB of host RAM (0.3 GB each, measured); the pod sets its concurrency from the RAM it has, at
+      most 96, and the longest games start first.
+    - *N-gram speculative decoding (zero-GPU check): adopted, with an on-pod guard.* vLLM 0.31.0's
+      ngram proposer (prompt_lookup_min 2, prompt_lookup_max 4, 3 speculative tokens). Sampling is
+      unchanged: with no draft probabilities, the rejection sampler accepts a draft token with the
+      target's probability of it and otherwise samples the target with that token removed, using each
+      request's seeded generator (`vllm/v1/sample/rejection_sampler.py` at v0.31.0). At temperature
+      0.2, top-p 1.0 and top-k off, this is exact speculative sampling. The token streams differ from
+      a run without it, as they differ under batch numerics. Speed: replaying the pilot's slowest
+      episode with its real prompts (294 of 294 prompt hashes match) under the proposer's
+      earliest-match rule gives 1.81 tokens per target step at 3 drafts (1.57 on a 600-trace sample
+      without the prompt). The step time grew only from about 8.3 ms at 2 sequences to about 10 ms at
+      40, so verifying 3 more tokens per sequence costs little where the wall is set. Guard: stage 0
+      runs twice on the pod, with and without it; the cell uses whichever has the higher token rate per
+      episode, and the forecast uses that rate. Either way it is recorded in `run_meta.jsonl`.
+    - *Fallback bias bound (H2 and H3).* A random action scores about 100 on R0, so an arm that falls
+      back more is pulled toward 100. With fallback shares f_a and f_b in the two arms and R the score
+      of the arm with the larger share, B = |f_a - f_b| x |100 - R| is reported beside each H2 and H3
+      estimate. If a CI excludes 0 by less than B (its nearer bound lies within B of 0), the verdict is
+      downgraded to a reading. At the pilot's shares (4.7% against 1.2%; H3's suppressed CoTAgent fell
+      back on at most 0.07%), B is 0.035 to 0.047 times |100 - R|.
+    - *Descriptive (MCH-A11).* On the pilot, ThinkGoodCoTAgent's median trace is less than half of
+      ThinkCoTAgent's (2,144 against 4,689 characters). Logged as a descriptive anomaly with no claim
+      attached.
+    - *Unchanged from Amendment 10:* the agents, renders, the cap rule, H1 to H3 and their branches,
+      GPT-OSS's H3 verdict read as "the regime" with its three rivals, trace saving, the off-repository
+      backup and the license gate on any training.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the

@@ -1,0 +1,29 @@
+{
+ "dest": "/Volumes/ds-data/deepsteer/mch_thinking_traces",
+ "files": {
+  "aborted_sync_rounds/pilot_gpt_oss_20b/_raw/traces.jsonl.gz": {
+   "bytes": 458125,
+   "sha256": "75cc6c7d9b234e30396ce33778652f6d6617f681225a78d283d31a94e3bedad3"
+  },
+  "aborted_sync_rounds/stage0_gpt_oss_20b/_raw/traces.jsonl.gz": {
+   "bytes": 38448,
+   "sha256": "f8831aeeb135a8fbd68d9116903dd247f61473162a6b9d9d37c782fa4bd9ec51"
+  },
+  "aborted_sync_rounds/stage0_qwen3_30b/_raw/traces.jsonl.gz": {
+   "bytes": 93500,
+   "sha256": "290320eb6b5d94f6db02d389222b4e20cff2fcae6e852b90881ce32e72a1e83f"
+  },
+  "pilot_gpt_oss_20b/_raw/traces.jsonl.gz": {
+   "bytes": 8195829,
+   "sha256": "161ffdcfe44f4331438e2889ce410e87b0bb54ca01326e612a8baa117afa4e70"
+  },
+  "stage0_gpt_oss_20b/_raw/traces.jsonl.gz": {
+   "bytes": 38824,
+   "sha256": "ad31e72f70fcaf01c8ea1e9469dfdcd46c91065d275753a1377c798e847a0db8"
+  },
+  "stage0_qwen3_30b/_raw/traces.jsonl.gz": {
+   "bytes": 97880,
+   "sha256": "01eda171f940b663353c2270148a845c05de49d2049dbc6967ae4c7b86f3e1e9"
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "gpt_oss_20b": {
+  "decisions": 60,
+  "parsed": 59
+ },
+ "qwen3_30b": {
+  "decisions": 60,
+  "parsed": 59
+ },
+ "pass": true
+}
