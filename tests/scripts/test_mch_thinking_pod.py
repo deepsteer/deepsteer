@@ -6,11 +6,13 @@ tokenizers and the fetched engine; they skip when those are absent.
 
 from __future__ import annotations
 
+import collections
 import gzip
 import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -187,3 +189,113 @@ def test_stage0_check_fails_when_a_model_parses_nothing(tmp_path):
         with gzip.open(d / "decisions.jsonl.gz", "wt") as f:
             f.write(json.dumps({"fallback": not parsed}) + "\n")
     assert pod.stage0_check(tmp_path)["pass"] is False
+
+
+# ---------------------------------------------------------------- Amendment 11
+
+def test_ngram_changes_only_the_engine_config_not_the_sampler():
+    # most probable failure: the decoding mode leaking into the engine's other settings
+    base, spec = pod.engine_kwargs("gpt_oss_20b"), pod.engine_kwargs("gpt_oss_20b", "ngram")
+    assert {k: v for k, v in spec.items() if k != "speculative_config"} == base
+    assert "speculative_config" not in base
+    assert spec["speculative_config"] == {"method": "ngram", "num_speculative_tokens": 3,
+                                          "prompt_lookup_min": 2, "prompt_lookup_max": 4}
+    with pytest.raises(ValueError):
+        pod.engine_kwargs("gpt_oss_20b", "eagle")
+
+
+def _stage0_meta(d: Path, tokens: int, wall: float, fallback: float = 0.0) -> None:
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "run_meta.jsonl").write_text(json.dumps(
+        {"generated_tokens": tokens, "wall_s": wall, "run": 4}) + "\n")
+    with gzip.open(d / "decisions.jsonl.gz", "wt") as f:
+        f.write("\n".join(json.dumps({"fallback": i < 60 * fallback}) for i in range(60)) + "\n")
+
+
+def test_a11_forecast_prices_the_longest_episode_at_the_faster_measured_rate(tmp_path):
+    # most probable failure: pricing by decision count, or keeping n-gram when it measured slower
+    _stage0_meta(tmp_path / "stage0_a11_none_gpt_oss_20b", 40794, 106.8)  # pod 2's stage 0
+    _stage0_meta(tmp_path / "stage0_a11_ngram_gpt_oss_20b", 30000, 106.8)
+    slow = pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA A100-SXM4-80GB", 0.4)
+    assert slow["spec"] == "none"
+    assert slow["single_sequence_rate"] == pytest.approx(121.3, rel=1e-3)  # the pilot's tail
+    assert slow["serial_h"] == pytest.approx(647 * 2953 / 121.3 / 3600, rel=1e-3)
+    assert slow["forecast_a100h"] == pytest.approx(0.45 + slow["serial_h"])
+    assert slow["continue_"] is False  # 4.83 > 4.8: an A100 without a faster mode stops
+    _stage0_meta(tmp_path / "stage0_a11_ngram_gpt_oss_20b", 60000, 106.8)
+    fast = pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA A100-SXM4-80GB", 0.4)
+    assert fast["spec"] == "ngram" and fast["continue_"] is True
+    # an A40 at half the rate takes twice the hours but counts 0.32 A100-h per hour
+    a40 = pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA A40", 0.6)
+    assert a40["forecast_a100h"] == pytest.approx(a40["forecast_h"] * 0.32)
+    assert a40["wall_cap_h"] == pytest.approx(4.7 / 0.32)
+
+
+def test_a11_forecast_runs_without_ngram_when_it_failed_and_refuses_unknown_gpus(tmp_path):
+    # most probable failure: keeping a faster n-gram run whose answers stopped parsing
+    _stage0_meta(tmp_path / "stage0_a11_none_gpt_oss_20b", 40794, 106.8)
+    assert pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA A40", 0.5)["spec"] == "none"
+    _stage0_meta(tmp_path / "stage0_a11_ngram_gpt_oss_20b", 90000, 106.8, fallback=0.5)
+    assert pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA A40", 0.5)["spec"] == "none"
+    with pytest.raises(SystemExit):
+        pod.a11_forecast(tmp_path, "gpt_oss_20b", "NVIDIA L40S", 0.5)
+
+
+def test_cell_runs_the_80_non_pilot_episodes_longest_game_first():
+    # most probable failure: re-running pilot episodes, or the longest game queued behind others
+    skip = {(a, g, e) for a in pod.AGENTS for g in pod.PILOT_GAMES for e in (0, 1)}
+    jobs = pod.cell_jobs(2, pod.GAMES, skip)
+    assert len(jobs) == 80 and not set(jobs) & skip
+    assert {g for _, g, _ in jobs} == set(pod.GAMES) - set(pod.PILOT_GAMES)
+    assert [g for _, g, _ in jobs[:4]] == ["luminous-underground"] * 4
+
+
+def _counts(path: Path) -> collections.Counter:
+    c: collections.Counter = collections.Counter()
+    for x in gzip.open(path, "rt"):
+        x = json.loads(x)
+        c[(x["agent"], x["game"], x["episode"])] += 1
+    return c
+
+
+def test_a11_constants_are_the_ones_the_committed_data_gives():
+    # most probable failure: a registered forecast constant drifting from the data behind it
+    out = REPO / "papers" / "mch_machiavelli" / "outputs"
+    sup_files = [out / "newmodel" / d / "decisions.jsonl.gz" for d in ("cell_gpt_oss_20b",
+                                                                        "pilot_1024")]
+    pilot = out / "thinking" / "pilot_gpt_oss_20b"
+    if not all(f.exists() for f in sup_files) or not (pilot / "decisions.jsonl.gz").exists():
+        pytest.skip("the committed runs are not in this checkout")
+    sup = _counts(sup_files[0]) + _counts(sup_files[1])
+    th = _counts(pilot / "decisions.jsonl.gz")
+
+    def longest(c, g):
+        return max(v for (_, gg, _), v in c.items() if gg == g)
+
+    ratio = max(longest(th, g) / longest(sup, g) for g in pod.PILOT_GAMES)
+    rest = [g for g in pod.GAMES if g not in pod.PILOT_GAMES]
+    ranked = sorted(rest, key=lambda g: -longest(sup, g))
+    assert set(ranked[:6]) == set(pod.LONG_FIRST) and pod.LONG_FIRST[0] == ranked[0]
+    assert pod.A11_DECISIONS == int(np.ceil(longest(sup, ranked[0]) * round(ratio, 2)))
+    tok: collections.Counter = collections.Counter()
+    for x in gzip.open(pilot / "decisions.jsonl.gz", "rt"):
+        x = json.loads(x)
+        tok[(x["agent"], x["game"], x["episode"])] += sum(x["tokens"])
+    per_game = [sum(tok[("ThinkCoTAgent", g, e)] for e in (0, 1))
+                / sum(th[("ThinkCoTAgent", g, e)] for e in (0, 1)) for g in pod.PILOT_GAMES]
+    assert pod.A11_TOKENS_PER_DECISION == round(max(per_game))
+    wall = json.loads((pilot / "run_meta.jsonl").read_text().splitlines()[-1])["wall_s"]
+    s0 = json.loads((out / "thinking" / "stage0_gpt_oss_20b" / "run_meta.jsonl").read_text())
+    assert pod.A11_RATE_FACTOR == pytest.approx(
+        (max(tok.values()) / wall) / (s0["generated_tokens"] / s0["wall_s"] / s0["run"]),
+        rel=2e-3)
+
+
+def test_run_meta_records_the_gpu_and_the_decoding_mode(tmp_path):
+    tok = _tok("qwen3_30b")
+    src = _src()
+    gen = pod.StubEngine(tok, "qwen_think_on")
+    meta = pod.run("qwen3_30b", [(pod.AGENTS[0], pod.GAMES[0], 0)], tmp_path, gen, tok, src,
+                   concurrency=1, max_decisions=2, extra={"spec": "ngram"})
+    saved = json.loads((tmp_path / "run_meta.jsonl").read_text())
+    assert saved == meta and saved["spec"] == "ngram" and saved["gpu"] == "stub"

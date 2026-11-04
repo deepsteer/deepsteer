@@ -16,6 +16,11 @@ one model's pilot), ``decide`` (both pilots: the bar, k, the price against 8.0 A
 (all 30 games at k, skipping the pilot's episodes). Every stage resumes. Episodes run
 asynchronously on vLLM's request-level engine: each moves on as soon as its own generation finishes.
 ``--dry`` swaps vLLM for a stub engine.
+
+Amendment 11 (GPT-OSS-20B only): ``stage0`` takes ``--tag`` and ``--spec`` so it can run with and
+without vLLM's n-gram speculative decoding on the same pod; ``a11_forecast`` keeps the faster and
+prices the cell by its longest episode at that measured rate; ``cell`` starts the longest games
+first and records the GPU and the decoding mode.
 """
 
 from __future__ import annotations
@@ -62,6 +67,17 @@ SAMPLER = {"temperature": 0.2, "top_p": 1.0}
 INTEGER_ANSWER = "To take an action, " + P._CHAT_ACTION_INT.split(" To take an action, ", 1)[1]
 PILOT_GAMES, STAGE0_GAMES, STAGE0_DECISIONS = GAMES[:10], GAMES[:2], 15
 FALLBACK_BAR, ENVELOPE_A100H, Z_POWER = 0.10, 8.0, 2.80
+# Amendment 11: vLLM 0.31.0's n-gram proposer; the longest remaining episode's forecast tokens
+# (luminous-underground's longest suppressed episode, 599 decisions x 1.08, times ThinkCoTAgent's
+# highest per-game mean on the pilot, 2,953 tokens); stage 0's rate per episode -> the slowest
+# pilot episode's (121.3 / 95.5 tokens/s); the envelope left; A100-h per hour of each GPU
+SPEC_NGRAM = {"method": "ngram", "num_speculative_tokens": 3, "prompt_lookup_min": 2,
+              "prompt_lookup_max": 4}
+A11_DECISIONS, A11_TOKENS_PER_DECISION = 647, 2953
+A11_RATE_FACTOR, A11_ENVELOPE_LEFT, A11_DOWNLOAD_H = 121.3 / 95.5, 4.8, 0.05
+GPU_A100H = {"A40": 0.32, "A100": 1.0}
+LONG_FIRST = ("luminous-underground", "metahuman-inc", "i-cyborg",
+              "vampire-the-masquerade_parliament-of-knives", "kidnapped", "slammed")
 FINAL_OPEN = "<|channel|>final<|message|>"
 ANALYSIS_OPEN = "<|channel|>analysis<|message|>"
 
@@ -121,18 +137,31 @@ class ThinkRenderer:
         return trace, tail.split("<|im_end|>")[0]
 
 
+def engine_kwargs(model: str, spec: str = "none") -> dict:
+    """``LLM(...)`` arguments; ``spec="ngram"`` adds only the speculative config (Amendment 11), so
+    sampling (``VLLMEngine.add``) is the same either way."""
+    m = MODELS[model]
+    kw = {"model": m["repo"], "revision": m["revision"], "max_model_len": 12288,
+          "gpu_memory_utilization": 0.90, "enable_prefix_caching": True}
+    if spec == "ngram":
+        kw["speculative_config"] = dict(SPEC_NGRAM)
+    elif spec != "none":
+        raise ValueError(f"unknown decoding mode {spec!r}")
+    return kw
+
+
 class VLLMEngine:
     """vLLM's request-level engine (ST's ``gen_vllm`` calls on the pinned stack): requests are added
     one by one and come back as each finishes, so no episode waits for another's generation."""
 
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, spec: str = "none") -> None:
+        import torch
         from vllm import LLM, SamplingParams
 
-        m = MODELS[model]
         self.SP = SamplingParams
-        self.engine = LLM(model=m["repo"], revision=m["revision"], max_model_len=12288,
-                          gpu_memory_utilization=0.90, enable_prefix_caching=True).llm_engine
-        self.stop_ids = list(m["stop_ids"])
+        self.engine = LLM(**engine_kwargs(model, spec)).llm_engine
+        self.stop_ids = list(MODELS[model]["stop_ids"])
+        self.gpu = torch.cuda.get_device_name(0)
 
     def add(self, rid: str, ids: list[int], seed: int) -> None:
         sp = self.SP(temperature=SAMPLER["temperature"], top_p=SAMPLER["top_p"], top_k=0,
@@ -161,6 +190,7 @@ class StubEngine:
         self.pad = tok.encode(" thinking", add_special_tokens=False)[0]
         self.live: dict[str, list] = {}
         self.steps = 0
+        self.gpu = "stub"
         self.decoupled = False  # a request added while another episode's other step is live
 
     def reply(self, seed: int) -> list[int]:
@@ -197,7 +227,7 @@ class StubEngine:
 # ---------------------------------------------------------------- the episode loop
 
 def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: Path,
-        concurrency: int, max_decisions: int | None = None) -> dict:
+        concurrency: int, max_decisions: int | None = None, extra: dict | None = None) -> dict:
     """Run (agent, game, episode) jobs asynchronously: each episode submits its own request,
     handles its own answer (retries and the cap rule included), steps its own engine worker and
     moves on, without waiting for other episodes. Appends rows; skips finished episodes."""
@@ -355,7 +385,8 @@ def run(model: str, jobs: list[tuple[str, str, int]], out: Path, gen, tok, src: 
         f.close()
     meta = {"model": model, "max_tokens": MAX_TOKENS, "decisions": n_dec,
             "generated_tokens": n_gen_tokens, "wall_s": round(time.time() - t0, 1),
-            "jobs": len(jobs), "run": len(jobs) - len(done), "loop": "async"}
+            "jobs": len(jobs), "run": len(jobs) - len(done), "loop": "async",
+            "gpu": getattr(gen, "gpu", None), **(extra or {})}
     with open(out / "run_meta.jsonl", "a") as f:
         f.write(json.dumps(meta) + "\n")
     return meta
@@ -448,6 +479,51 @@ def pilot_check(out: Path, model: str) -> dict:
     return res
 
 
+def cell_jobs(k: int, games: tuple | list, skip: set) -> list[tuple[str, str, int]]:
+    """The cell's episodes not already run by the pilot, the longest games first (Amendment 11),
+    so a pod with fewer workers than episodes queues only short ones."""
+    order = [g for g in LONG_FIRST if g in games] + [g for g in games if g not in LONG_FIRST]
+    return [(a, g, e) for g in order for e in range(k) for a in AGENTS if (a, g, e) not in skip]
+
+
+def episode_rate(d: Path) -> float | None:
+    """Stage 0's generated tokens per second per episode (its episodes run all at once), or None
+    when the run did not finish or fell back on more than the bar."""
+    f = d / "run_meta.jsonl"
+    if not f.exists():
+        return None
+    decs = [json.loads(x) for x in gzip.open(d / "decisions.jsonl.gz", "rt")]
+    if not decs or np.mean([x["fallback"] for x in decs]) > FALLBACK_BAR:
+        return None
+    m = json.loads(f.read_text().splitlines()[-1])
+    return m["generated_tokens"] / m["wall_s"] / m["run"]
+
+
+def a11_forecast(out: Path, model: str, gpu: str, elapsed_h: float) -> dict:
+    """Amendment 11: keep the decoding mode whose stage 0 ran faster per episode; forecast the cell
+    as the time elapsed + the download + the longest episode's tokens at that rate (scaled to the
+    pilot's slowest episode), in A100-h; run if within the envelope left."""
+    rates = {s: episode_rate(out / f"stage0_a11_{s}_{model}") for s in ("none", "ngram")}
+    if rates["none"] is None:
+        raise SystemExit("stage 0 without speculative decoding did not finish within the bar")
+    spec = "ngram" if rates["ngram"] is not None and rates["ngram"] > rates["none"] else "none"
+    factor = next((v for kname, v in GPU_A100H.items() if kname in gpu), None)
+    if factor is None:
+        raise SystemExit(f"no A100-h conversion registered for {gpu!r}")
+    single = rates[spec] * A11_RATE_FACTOR
+    tokens = A11_DECISIONS * A11_TOKENS_PER_DECISION
+    serial_h = tokens / single / 3600
+    hours = elapsed_h + A11_DOWNLOAD_H + serial_h
+    res = {"model": model, "gpu": gpu, "a100h_per_hour": factor, "stage0_rate_per_episode": rates,
+           "spec": spec, "single_sequence_rate": single, "longest_episode_tokens": tokens,
+           "serial_h": serial_h, "elapsed_h": elapsed_h, "forecast_h": hours,
+           "forecast_a100h": hours * factor, "envelope_left_a100h": A11_ENVELOPE_LEFT,
+           "wall_cap_h": (A11_ENVELOPE_LEFT - 0.1) / factor}
+    res["continue_"] = bool(res["forecast_a100h"] <= A11_ENVELOPE_LEFT)
+    (out / "a11_forecast.json").write_text(json.dumps(res, indent=1) + "\n")
+    return res
+
+
 def first_renders(model: str, tok, src: Path) -> dict[str, str]:
     """sha256 of each agent's render at the first state of the first stage-0 game (seed 2417)."""
     import os
@@ -471,11 +547,16 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--stage", required=True,
                    choices=("expected", "stage0", "stage0_check", "pilot", "pilot_check",
-                            "decide", "cell"))
+                            "decide", "cell", "a11_forecast"))
     p.add_argument("--model", choices=tuple(MODELS), default="gpt_oss_20b")
     p.add_argument("--k", type=int, default=None)
     p.add_argument("--out", type=Path, default=OUT)
     p.add_argument("--concurrency", type=int, default=96)
+    p.add_argument("--spec", default="none", choices=("none", "ngram"),
+                   help="vLLM n-gram speculative decoding (Amendment 11)")
+    p.add_argument("--tag", default="", help="stage 0's directory tag, e.g. _a11_ngram")
+    p.add_argument("--gpu", default="", help="a11_forecast: the pod's GPU name")
+    p.add_argument("--elapsed-h", type=float, default=0.0, help="a11_forecast: hours so far")
     p.add_argument("--dry", action="store_true", help="stub generator (the local test)")
     p.add_argument("--dry-mode", default="mixed", choices=("mixed", "always_cap"))
     p.add_argument("--games", type=int, default=None, help="dry runs: first N games only")
@@ -492,6 +573,10 @@ def main() -> None:
     if args.stage == "decide":
         print(json.dumps(decide(args.out), default=float))
         return
+    if args.stage == "a11_forecast":
+        r = a11_forecast(args.out, args.model, args.gpu, args.elapsed_h)
+        print(json.dumps(r))
+        raise SystemExit(0 if r["continue_"] else 1)
     from transformers import AutoTokenizer
 
     from deepsteer.datasets.machiavelli import fetch_machiavelli
@@ -508,7 +593,8 @@ def main() -> None:
     m = MODELS[args.model]
     tok = AutoTokenizer.from_pretrained(m["repo"], revision=m["revision"])
     gen = (StubEngine(tok, m["render"], args.dry_mode) if args.dry
-           else VLLMEngine(args.model))
+           else VLLMEngine(args.model, args.spec))
+    extra = {"spec": args.spec}
     games = GAMES[: args.games] if args.games else GAMES
     if args.stage == "stage0":
         exp = json.loads(EXPECTED.read_text())[args.model]
@@ -517,22 +603,21 @@ def main() -> None:
             raise SystemExit(f"BAIL: render parity failed for {args.model}: {got} != {exp}")
         print(f">> render parity OK for {args.model}", flush=True)
         jobs = [(a, g, 0) for g in STAGE0_GAMES for a in AGENTS]
-        meta = run(args.model, jobs, args.out / f"stage0_{args.model}", gen, tok, src,
-                   args.concurrency, max_decisions=STAGE0_DECISIONS)
+        meta = run(args.model, jobs, args.out / f"stage0{args.tag}_{args.model}", gen, tok, src,
+                   args.concurrency, max_decisions=STAGE0_DECISIONS, extra=extra)
     elif args.stage == "pilot":
         jobs = [(a, g, e) for e in (0, 1) for g in PILOT_GAMES if g in games for a in AGENTS]
         meta = run(args.model, jobs, args.out / f"pilot_{args.model}", gen, tok, src,
-                   args.concurrency)
+                   args.concurrency, extra=extra)
     else:
         if args.k is None:
             raise SystemExit("cell needs --k (from decide)")
         pe = args.out / f"pilot_{args.model}" / "episodes.jsonl"
         skip = ({(r["agent"], r["game"], r["episode"])
                  for r in map(json.loads, pe.read_text().splitlines())} if pe.exists() else set())
-        jobs = [(a, g, e) for e in range(args.k) for g in games for a in AGENTS
-                if (a, g, e) not in skip]
+        jobs = cell_jobs(args.k, games, skip)
         meta = run(args.model, jobs, args.out / f"cell_{args.model}", gen, tok, src,
-                   args.concurrency)
+                   args.concurrency, extra=extra)
     print(json.dumps(meta))
 
 
