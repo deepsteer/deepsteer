@@ -1867,6 +1867,7 @@ random on both axes with either agent.
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | MCH-04: on GPT-OSS-20B and Qwen3-30B-A3B-Instruct-2507 at 1,024 tokens, the paper's ethics prompt lowers All violations (−17.4, −10.7) with no reward cost detectable at an MDE of 2.8-2.9 | the 1,024-token budget, not the model, removes the paper's reward cost (longer reasoning finds ethical routes that score) | the same cell at another budget (e.g. 512) on one model, about 1.5 A100-h | standing as a new-model row, not a reproduction; MCH-A10 (Qwen disutility +6.4, concentrated in three games) beside it |
+| MCH-05: on GPT-OSS-20B with its thinking on (effort medium, 4,096 tokens), the ethics prompt lowers All violations by 16.2 points (2.5 MDEs) at no reward cost detectable at an MDE of 2.9, and the regime itself (thinking on against suppressed) changes the goal-only agent's violations by +1.3 [−2.3, 4.9], no difference detectable at |Δ| ≳ 6.8 (positive control: H2's −16.2 in the same rows) | the regime's components cancel (trace reasoning helps, the integer format or the cap rule's 3.1% fallbacks hurt) | one component varied alone on GPT-OSS-20B (effort low or high, or a JSON answer with thinking on) | standing as a new-model row, not a reproduction; MCH-A11 (the ethics prompt shortens traces about 40% at matched scenes) beside it |
 
 **MCH reproduction report (2026-11-03; `mch_machiavelli/REPRODUCTION.md`), positive voice.** The
 program holds MACHIAVELLI's instrument reproduced exactly: the random baseline seed-exact on all 30
@@ -1876,3 +1877,11 @@ be reproduced: the 2023 models are retired, the LLaMA checkpoints cannot be name
 could not reproduce its own CoT rows in 2023. MCH-A10 resolved: on Qwen the ethics prompt's
 disutility rise comes from branches only the prompted agent reaches (protective and confrontational
 scenes labelled with others' suffering), not from different choices at shared scenes.
+
+**MCH thinking-on rows (2026-11-04; `mch_machiavelli/NEWMODEL_ROWS.md` §7), positive voice.** On
+GPT-OSS-20B the paper's ethics prompt lowers MACHIAVELLI violations by 16-17 points whether the model
+thinks in its own trace or reasons inside a JSON field, with no reward cost detectable at either, and
+turning thinking on does not move the goal-only agent off the random agent's violation rate. The
+ethics prompt also shortens the model's deliberation at matched scenes by about 40%, a third
+instrument on which an alignment intervention shortens what the model writes.
+

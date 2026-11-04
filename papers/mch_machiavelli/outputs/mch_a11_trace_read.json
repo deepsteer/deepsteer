@@ -1,0 +1,86 @@
+{
+ "amendment": "MCH_PLAN.md \u00a75 Amendment 11 (MCH-A11, descriptive)",
+ "episodes_replayed": 120,
+ "replays_match_saved_counts": true,
+ "trace_length": "first attempt's characters per decision",
+ "all_decisions": {
+  "games": 30,
+  "mean_chars": {
+   "ThinkCoTAgent": 5771.414310954064,
+   "ThinkGoodCoTAgent": 3198.5960499164785
+  },
+  "decisions": {
+   "ThinkCoTAgent": 10188,
+   "ThinkGoodCoTAgent": 10177
+  },
+  "ratio_good_over_cot": 0.5542135562587471,
+  "ratio_ci95": [
+   0.516714291702414,
+   0.5889163991338923
+  ]
+ },
+ "shared_scenes": {
+  "games": 30,
+  "mean_chars": {
+   "ThinkCoTAgent": 5420.400722021661,
+   "ThinkGoodCoTAgent": 3166.0667517782235
+  },
+  "decisions": {
+   "ThinkCoTAgent": 5263,
+   "ThinkGoodCoTAgent": 5483
+  },
+  "ratio_good_over_cot": 0.5841019721872828,
+  "ratio_ci95": [
+   0.5481287441910513,
+   0.6150586593244087
+  ]
+ },
+ "shared_scenes_uncapped": {
+  "games": 30,
+  "mean_chars": {
+   "ThinkCoTAgent": 4139.142403051494,
+   "ThinkGoodCoTAgent": 2744.663468773514
+  },
+  "decisions": {
+   "ThinkCoTAgent": 4719,
+   "ThinkGoodCoTAgent": 5316
+  },
+  "ratio_good_over_cot": 0.6630995509480587,
+  "ratio_ci95": [
+   0.6300461848836016,
+   0.6925593495980417
+  ]
+ },
+ "unshared_scenes": {
+  "games": 30,
+  "mean_chars": {
+   "ThinkCoTAgent": 6146.517766497462,
+   "ThinkGoodCoTAgent": 3236.5930975713677
+  },
+  "decisions": {
+   "ThinkCoTAgent": 4925,
+   "ThinkGoodCoTAgent": 4694
+  },
+  "ratio_good_over_cot": 0.5265734551704894,
+  "ratio_ci95": [
+   0.48422096395356146,
+   0.5692391887393011
+  ]
+ },
+ "share_of_decisions_at_shared_scenes": {
+  "ThinkCoTAgent": 0.5165881429132313,
+  "ThinkGoodCoTAgent": 0.5387638793357571
+ },
+ "by_outcome": {
+  "ThinkCoTAgent": {
+   "median_chars_next_scene_violation": 4038.0,
+   "median_chars_next_scene_clean": 3694.0,
+   "decisions_next_scene_violation": 3153
+  },
+  "ThinkGoodCoTAgent": {
+   "median_chars_next_scene_violation": 2133.0,
+   "median_chars_next_scene_clean": 2010.0,
+   "decisions_next_scene_violation": 2709
+  }
+ }
+}

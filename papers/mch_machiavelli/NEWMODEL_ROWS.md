@@ -3,7 +3,7 @@
 CoTAgent and GoodCoTAgent from MACHIAVELLI (Pan et al., ICML 2023) run on two current open-weight
 models, under the paper's prompts and scoring. These rows are **not a reproduction**: the paper's
 models are retired, and the protocol carries the registered deviations listed per row in §4. Rules:
-`papers/MCH_PLAN.md` Amendments 4 and 6-9. Analysis committed before it ran
+`papers/MCH_PLAN.md` Amendments 4 and 6-9; §7 adds GPT-OSS-20B's thinking-on rows (Amendments 10-11). Analysis committed before it ran
 (`scripts/mch_newmodel_analyze.py`, `ab8fa0e`); numbers: `outputs/mch_newmodel_rows.json`. Data:
 `outputs/newmodel/` (VALIDATE, the 256-token pilot, the 1,024-token run). Spend: about 5.6 A100-h of
 the ~7 envelope.
@@ -142,3 +142,124 @@ Referee pass:
 3. *"No reward cost could be a weak reward measure."* The reward MDE (2.8-2.9) is stated with the
    result, and the CIs bound the cost; the claim is "no cost detectable at this MDE", not "no cost".
 
+## 7. Thinking-on rows: GPT-OSS-20B (Amendments 10-11; not a reproduction)
+
+ThinkCoTAgent and ThinkGoodCoTAgent: the paper's CoT system prompts with the JSON paragraph replaced
+by the paper's integer-answer sentences, on GPT-OSS-20B with its own analysis channel on at
+reasoning effort medium, 4,096 tokens for trace and answer, after a cap hit at most one more attempt.
+30 test games, k = 2 (seeds 2417, 2418), 120 episodes, all complete: the pilot's 40 on an A100, the
+other 80 on an A40 (Amendment 11; the same sampling path). Qwen3-30B-A3B-Thinking-2507's thinking-on
+rows are parked (Amendment 11). Analysis committed before it ran (`scripts/mch_thinking_analyze.py`,
+`bda4e46`); numbers: `outputs/mch_thinking_rows.json`; data: `outputs/thinking/` (traces gitignored,
+backed up off the repository). Spend: about 4.8 of the 8.0 A100-h. Every H2 and H3 estimate carries
+its MDE at k = 2 and Amendment 11's fallback bias bound B; a branch whose CI clears 0 by less than B
+is a reading.
+
+**H3 basis:** ThinkCoTAgent (thinking on, effort medium, 4,096 tokens, integer answer) minus the
+1,024-token run's suppressed-thinking CoTAgent (JSON answer), same checkpoint, games and seeds,
+paired by game and seed: the regime as a whole.
+
+**H1, against the random agent.**
+
+| agent | All violations (registered CI; analytic) | below 100 | reward − random (registered CI; analytic) | above random | H1 branch |
+|---|---|---|---|---|---|
+| ThinkCoTAgent | 100.1 [97.7, 102.6]; [96.7, 103.6] | no | 5.40 [4.44, 6.38]; [4.00, 6.81] (reward 23.40 vs 18.00) | yes | **reward only** |
+| ThinkGoodCoTAgent | 83.9 [81.7, 86.0]; [80.8, 86.9] | yes | 6.94 [5.88, 8.03]; [5.42, 8.45] (reward 24.93 vs 18.00) | yes | **both axes** |
+
+With thinking on, as with it suppressed (§1), GPT-OSS-20B's goal-only agent violates at the random
+agent's rate while scoring more reward, and the ethics-prompted agent is below random on both axes.
+
+**H2 and H3, paired by game and seed.**
+
+| test | metric | difference (registered CI; analytic) | MDE at k = 2 | ratio to MDE | B | status |
+|---|---|---|---|---|---|---|
+| H2 (ThinkGood − ThinkCoT) | violations | −16.24 [−19.90, −12.56]; [−21.49, −11.00] | 6.6 | 2.46 | 0.003 | **verdict: lower** |
+| H2 | reward | +1.53 [+0.04, +3.01]; [−0.56, +3.63] | 2.9 | 0.52 | 0.14 | no cost; the bootstrap CI clears 0 upward by 0.04 < B, a reading, and the analytic CI covers 0 |
+| H3 (ThinkCoT − suppressed CoT) | violations | +1.30 [−2.35, +4.93]; [−3.88, +6.49] | 6.8 | 0.19 | 0.003 | **no difference detectable at the reported MDE** |
+| H3 | reward | +1.16 [−0.52, +2.79]; [−1.18, +3.51] | 2.8 | 0.41 | 0.17 | no difference detectable |
+
+- **H2 branch: violations lower at no detectable reward cost.** The ethics prompt lowers All
+  violations by 16.2 points (2.5 MDEs) and moves reward by +1.5; the analytic CI excludes a reward
+  cost larger than 0.6 points. Second derivation: the two agents' rows give 83.86 − 100.11 = −16.24,
+  as paired. The suppressed-thinking row gave −17.4 (§2); the two estimates differ by 1.2 points, a
+  fifth of either MDE (no interaction was registered).
+- **H3 branch, read as the regime: no difference detectable at |Δ| ≳ 6.8 points on violations
+  (2.8 on reward).** Turning GPT-OSS-20B's thinking on, with its integer answer, 4,096-token budget
+  and medium effort, leaves the goal-only agent's violations where the suppressed regime had them
+  (100.1 against 98.8; second derivation from the rows: +1.30, as paired). The positive control is in
+  the same rows: H2 detects a −16.2 shift on this instrument and model. Format, budget and effort are
+  not separated (Amendment 10's rivals).
+- **The bias bound is small here because ThinkCoTAgent already sits at the random agent's
+  violation rate**: its 3.1% random fallbacks cannot pull a score that is at 100 toward 100. On
+  reward, B is 0.14-0.17 points.
+- **Descriptive (H2):** power −6.4 [−8.6, −4.2] (MDE 4.9); disutility −3.7 [−6.7, −0.8], analytic
+  [−7.9, +0.4] (MDE 6.5). Violations per 1,000 decisions: 599 and 505 (−16%), with episode lengths
+  equal (170 decisions each), so the reduction is per decision, as with thinking suppressed.
+
+**Rates and process (descriptive).**
+
+| agent | decisions | random fallback | cap-hit per attempt | decisions cut by the cap rule | loop override | median trace (chars) | tokens per decision |
+|---|---|---|---|---|---|---|---|
+| ThinkCoTAgent | 10,188 | 3.1% | 13.0% | 317 | 2.1% | 4,068 | 1,682 |
+| ThinkGoodCoTAgent | 10,177 | 0.6% | 3.3% | 59 | 1.9% | 2,087 | 835 |
+| suppressed CoTAgent (§4) | 10,235 | 0.04% | 2.6% (at 1,024) | | 1.8% | | |
+
+Every fallback comes from the cap rule; no completed answer failed the paper's integer parse.
+
+**MCH-A11, trace length at scenes both agents reached (descriptive; `scripts/mch_a11_trace_read.py`,
+`outputs/mch_a11_trace_read.json`).** All 120 episodes replayed on the engine and reproduced their saved
+harm counts. Each decision's trace is its first attempt's. ThinkGoodCoTAgent's mean trace over
+ThinkCoTAgent's, games resampled:
+
+| decisions | ThinkCoT mean (chars) | ThinkGood mean | ratio Good / CoT [95% CI] |
+|---|---|---|---|
+| all | 5,771 | 3,199 | 0.55 [0.52, 0.59] |
+| at scenes both reached (52-54% of decisions) | 5,420 | 3,166 | 0.58 [0.55, 0.62] |
+| at scenes both reached, attempts under the cap | 4,139 | 2,745 | 0.66 [0.63, 0.69] |
+| at scenes only one agent reached | 6,147 | 3,237 | 0.53 [0.48, 0.57] |
+
+Reading: **R_shortcut holds at matched scenes.** At the same scene, the ethics-prompted agent writes a
+trace about 40% shorter (a third shorter on uncapped attempts, a ratio biased toward 1 because
+dropping capped attempts removes more of ThinkCoTAgent's longest traces). Where each agent goes
+(R_content) moves the ratio only from 0.55 to 0.58; capped traces (R_cap) account for part of the
+gap, not all of it. By outcome, traces before a scene with a labelled violation run slightly longer
+than before a clean one (medians 4,038 against 3,694 for ThinkCoTAgent; 2,133 against 2,010).
+
+**Parallel with MRB Phase 2.** There, ST's care adapters shortened MoReBench answers (Muse −215
+characters, Qwen −1,476), and part of the response-field cost was length (0.41 and 0.27 of it,
+MRB-A13). ST-A31 and ST-A32 found steering shortening traces too (0.76-0.83×). Here an ethics
+*prompt* shortens deliberation at matched scenes by about 40% while it lowers violations by 16
+points at no detectable reward cost. Across three instruments, the alignment intervention shortens
+what the model writes (MoReBench answers, ST's traces, MACHIAVELLI's traces); on MACHIAVELLI the
+shorter traces come with fewer violations at no detectable reward cost. Descriptive: nothing here tests why the trace shortens.
+
+**MoReBench cross-reference.** MoReBench (MRB-G1) ran GPT-OSS-20B with thinking on at effort high
+(response Regular 72.41); this row is thinking on at effort medium: same model, near regime.
+
+**Deviations (this section).** New integer-answer agents (Amendment 10); thinking on at effort medium,
+date pinned, the paper's system prompt as a developer turn; 4,096 tokens with the cap rule; local
+vLLM generation (T 0.2, top-p 1); games 1-10 on an A100 and 11-30 on an A40, the same sampling path
+with the hardware's own numerics.
+
+| bias | mechanism | direction |
+|---|---|---|
+| bootstrap with two episodes per game | understates each game's variance by half | narrows CIs; the analytic CI is shown; H2 violations and H3 hold under it, and H2's reward edge does not |
+| the cap rule's fallbacks (3.1% against 0.6%) | random actions pull an arm toward the random agent | B ≤ 0.17 points on every H2 and H3 estimate here |
+| the hardware split (games 11-30 on an A40) | different kernels' numerics, same sampling distribution | unknown sign, of the size of batch-numerics variation (MCH-A7); in H2 both arms share the GPU in every game; in H3 the thinking arm's games 11-30 ran on the A40 and the suppressed arm on an A100 |
+
+Rival readings. For H3's null: (a) the regime's components cancel (the trace's reasoning helps while
+the answer format or the cap rule's fallbacks hurt); separating it needs one component varied alone
+(effort low or high, or a JSON answer with thinking on). (b) The goal-only agent's violation rate is
+set by the game's choices, not its reasoning; the H2 shift in the same rows argues against an
+instrument that cannot move. For H2's "no reward cost", the budget reading of MCH-04 is not separated
+here: both regimes give the agent long reasoning (1,024 and 4,096 tokens).
+
+Referee pass:
+1. *"Thinking on and thinking off differ in four ways at once, so H3 says nothing."* Conceded in
+   scope: H3 is registered as the regime, with its three rivals named; it bounds the regime's effect
+   on the goal-only agent's violations to under about 6.8 points.
+2. *"The A40 split confounds the cell."* The sampling distribution is the same on both GPUs, so the
+   split changes numerics, not the model's distribution. H2's arms share the GPU in every game; H3's
+   arms do not for games 11-30, which the bias table carries.
+3. *"The reward gain under the ethics prompt is a finding."* Not claimed: the bootstrap CI clears 0
+   by 0.04, less than B, and the analytic CI covers 0; the claim is no detectable cost.
