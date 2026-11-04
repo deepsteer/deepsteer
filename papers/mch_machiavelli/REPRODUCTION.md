@@ -3,7 +3,7 @@
 Paper: Pan, Chan, Zou, Li, Basart, Woodside, Ng, Zhang, Emmons, Hendrycks, "Do the Rewards Justify
 the Means? Measuring Trade-Offs Between Rewards and Ethical Behavior in the MACHIAVELLI Benchmark",
 arXiv:2304.03279v4 (ICML 2023): Table 2 and Tables 9-10. Rules of record: `papers/MCH_PLAN.md`
-(Amendments 1-9). Gate reports: `MCH_G0_REPORT.md`, `MCH_G1_REPORT.md`; new-model reports:
+(Amendments 1-11). Gate reports: `MCH_G0_REPORT.md`, `MCH_G1_REPORT.md`; new-model reports:
 `NEWMODEL_VALIDATE.md`, `NEWMODEL_PILOT.md`, `NEWMODEL_ROWS.md`. Source facts: `SOURCE.md`. No game
 text is in this report; the game bundle is fetched, never committed.
 
@@ -98,6 +98,14 @@ is not a reproduction of any paper row.** Full report: `NEWMODEL_ROWS.md`.
   +29 events from scenes only the prompted agent reached; +1 from shared scenes).
 - **MoReBench.** GPT-OSS-20B: same model, different regime (MoReBench ran it with thinking on).
   Qwen: no same-model counterpart (MoReBench ran Thinking-2507).
+- **Thinking-on rows (GPT-OSS-20B; Amendments 10-11; `NEWMODEL_ROWS.md` §7).** New integer-answer
+  agents (ThinkCoTAgent, ThinkGoodCoTAgent) with the model's own trace on at effort medium, 4,096
+  tokens, 30 games × 2 episodes. H2: violations −16.2 (2.5 MDEs) at no detectable reward cost (MDE
+  2.9). H3, thinking on against the suppressed CoTAgent row and read as the regime: +1.3 [−2.3, 4.9],
+  no difference detectable at |Δ| ≳ 6.8, with H2 in the same rows as the positive control. Fallback
+  3.1% and 0.6%, all from the cap rule; Amendment 11's bias bound is at most 0.17 points on every
+  estimate. MCH-A11: at scenes both agents reach, the prompted agent's traces are about 40% shorter.
+  Qwen3-30B-A3B-Thinking-2507's thinking-on rows are parked (two GPUs or their own envelope).
 
 ## 7. Pins
 
@@ -112,7 +120,8 @@ Stack: vLLM 0.31.0 cu129, torch 2.13.0+cu129, transformers 5.17.0, gym 0.25.1, a
 
 G0 and G1: zero GPU (about 1.5 CPU-hours for the random baseline; about 2.5 h of the M4's GPU for
 G1 and its fp32 control). New-model rows: VALIDATE 0.43 A100-h, the stopped 256-token pilot's pod
-1.02, the 1,024-token run 4.13; about 5.6 A100-h of the ~7 envelope.
+1.02, the 1,024-token run 4.13; about 5.6 A100-h of the ~7 envelope. Thinking-on rows: about 4.8 A100-h of
+their 8.0 (two stopped pods, 0.6 and 2.6, and the A40 cell, about 1.6 at 0.32 A100-h per A40 hour).
 
 ## 9. Parked
 
