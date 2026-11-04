@@ -1,0 +1,1 @@
+{"model": "gpt_oss_20b", "max_tokens": 4096, "decisions": 14022, "generated_tokens": 16428552, "wall_s": 16118.2, "jobs": 80, "run": 80, "loop": "async", "gpu": "NVIDIA A40", "spec": "none"}

@@ -1,0 +1,1123 @@
+>> MCH thinking-on cell (Amendment 11) start 2026-11-04T00:38:23Z out=/workspace/deepsteer/papers/mch_machiavelli/outputs/thinking
+>> GPU NVIDIA A40: 0.32 A100-h per hour, wall cap 14.69 h
+>> host memory allows 85 engine workers
+>> creating /workspace/venv_vllm
+  !!
+    with strategy, WheelFile(wheel_path, "w") as wheel_obj:
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+>> stack: {'vllm': '0.31.0+cu129', 'torch': '2.13.0+cu129', 'transformers': '5.17.0', 'gym': '0.25.1', 'asteval': '1.0.10'} cuda 12.9 gpus 1 NVIDIA A40 OK
+(MainProcess pid=1476) INFO 11-04 00:42:43 [api_utils.py:286] non-default args: {'max_model_len': 512, 'gpu_memory_utilization': 0.3, 'disable_log_stats': True, 'model': 'Qwen/Qwen2.5-0.5B-Instruct'}
+(MainProcess pid=1476) INFO 11-04 00:42:53 [model.py:699] Resolved architecture: Qwen2ForCausalLM
+(MainProcess pid=1476) INFO 11-04 00:42:53 [model.py:2109] Using max model len 512
+(MainProcess pid=1476) INFO 11-04 00:42:53 [scheduler.py:308] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(MainProcess pid=1476) INFO 11-04 00:42:54 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=1582) INFO 11-04 00:42:59 [core.py:129] Initializing a V1 LLM engine (v0.31.0) with config: model='Qwen/Qwen2.5-0.5B-Instruct', speculative_config=None, tokenizer='Qwen/Qwen2.5-0.5B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=main, tokenizer_revision=main, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=512, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=Qwen/Qwen2.5-0.5B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=1582) INFO 11-04 00:43:00 [parallel_state.py:1825] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_4ae69ead054b407a939688f28909798b backend=nccl
+(EngineCore pid=1582) INFO 11-04 00:43:00 [parallel_state.py:2269] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=1582) INFO 11-04 00:43:00 [gpu_worker.py:479] Using V2 Model Runner
+(EngineCore pid=1582) INFO 11-04 00:43:01 [model_runner.py:375] Loading model from scratch...
+(EngineCore pid=1582) INFO 11-04 00:43:01 [cuda.py:526] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(EngineCore pid=1582) INFO 11-04 00:43:01 [flash_attn.py:1167] Using FlashAttention version 2
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=1582) INFO 11-04 00:43:05 [weight_utils.py:523] Time spent downloading weights for Qwen/Qwen2.5-0.5B-Instruct: 2.940694 seconds
+(EngineCore pid=1582) INFO 11-04 00:43:05 [weight_utils.py:1063] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 0.92 GiB. Available RAM: 29.58 GiB.
+(EngineCore pid=1582) INFO 11-04 00:43:05 [weight_utils.py:1086] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  5.30it/s]
+Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  5.30it/s]
+
+(EngineCore pid=1582) INFO 11-04 00:43:05 [default_loader.py:484] Loading weights took 0.21 seconds
+(EngineCore pid=1582) INFO 11-04 00:43:06 [model_runner.py:407] Model loading took 0.93 GiB memory and 5.263654 seconds
+(EngineCore pid=1582) INFO 11-04 00:43:06 [topk_topp_sampler.py:96] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=1582) WARNING 11-04 00:43:06 [torch_utils.py:274] OMP_NUM_THREADS=8 is set; leaving Torch threads at 8 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(EngineCore pid=1582) INFO 11-04 00:43:06 [utils.py:343] Using LBNHC KV cache layout.
+(EngineCore pid=1582) INFO 11-04 00:43:10 [backends.py:1090] Using cache directory: /root/.cache/vllm/torch_compile_cache/1fb35b3413/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore pid=1582) INFO 11-04 00:43:10 [backends.py:1151] Dynamo bytecode transform time: 3.70 s
+(EngineCore pid=1582) INFO 11-04 00:43:17 [backends.py:391] Compiling a graph for compile range (1, 8192) takes 5.91 s
+(EngineCore pid=1582) INFO 11-04 00:43:19 [backends.py:916] collected artifacts: 25 entries, 3 artifacts, 4684913 bytes total
+(EngineCore pid=1582) INFO 11-04 00:43:19 [decorators.py:717] saved AOT compiled function to /root/.cache/vllm/torch_compile_cache/torch_aot_compile/dd722ac0a17cd9b04430a0b77b78123d89cc2747263b94a3da1d178f1fb90a1a/rank_0_0/model
+(EngineCore pid=1582) INFO 11-04 00:43:19 [monitor.py:53] torch.compile took 12.48 s in total
+(EngineCore pid=1582) INFO 11-04 00:43:19 [monitor.py:81] Initial profiling/warmup run took 0.13 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/51 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   4%|▍         | 2/51 [00:00<00:03, 16.14it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 5/51 [00:00<00:02, 22.67it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 8/51 [00:00<00:01, 25.52it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▎       | 12/51 [00:00<00:01, 27.76it/s]Capturing CUDA graphs (PIECEWISE):  31%|███▏      | 16/51 [00:00<00:01, 28.40it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 19/51 [00:00<00:01, 26.38it/s]Capturing CUDA graphs (PIECEWISE):  45%|████▌     | 23/51 [00:00<00:00, 28.24it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 27/51 [00:00<00:00, 29.62it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 30/51 [00:01<00:00, 29.69it/s]Capturing CUDA graphs (PIECEWISE):  67%|██████▋   | 34/51 [00:01<00:00, 30.67it/s]Capturing CUDA graphs (PIECEWISE):  75%|███████▍  | 38/51 [00:01<00:00, 29.77it/s]Capturing CUDA graphs (PIECEWISE):  82%|████████▏ | 42/51 [00:01<00:00, 30.46it/s]Capturing CUDA graphs (PIECEWISE):  90%|█████████ | 46/51 [00:01<00:00, 31.18it/s]Capturing CUDA graphs (PIECEWISE):  98%|█████████▊| 50/51 [00:01<00:00, 31.57it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 51/51 [00:01<00:00, 29.11it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 43.23it/s]
+(EngineCore pid=1582) INFO 11-04 00:43:23 [model_runner.py:1087] Graph capturing finished in 2 secs, took 0.25 GiB
+(EngineCore pid=1582) INFO 11-04 00:43:23 [gpu_worker.py:692] Available KV cache memory: 11.55 GiB
+(EngineCore pid=1582) INFO 11-04 00:43:23 [gpu_worker.py:707] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.3000 is equivalent to --gpu-memory-utilization=0.2936 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.3064. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=1582) INFO 11-04 00:43:23 [kv_cache_utils.py:2464] GPU KV cache size: 1,008,896 tokens, Maximum concurrency for 512 tokens per request: 1970.50x
+(EngineCore pid=1582) INFO 11-04 00:43:23 [kernel_warmup.py:172] JIT kernel warmup starting.
+(EngineCore pid=1582) INFO 11-04 00:43:23 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/51 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   6%|▌         | 3/51 [00:00<00:01, 26.01it/s]Capturing CUDA graphs (PIECEWISE):  12%|█▏        | 6/51 [00:00<00:01, 24.68it/s]Capturing CUDA graphs (PIECEWISE):  18%|█▊        | 9/51 [00:00<00:01, 22.99it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▎       | 12/51 [00:00<00:01, 24.47it/s]Capturing CUDA graphs (PIECEWISE):  29%|██▉       | 15/51 [00:00<00:01, 25.53it/s]Capturing CUDA graphs (PIECEWISE):  35%|███▌      | 18/51 [00:00<00:01, 25.85it/s]Capturing CUDA graphs (PIECEWISE):  41%|████      | 21/51 [00:00<00:01, 25.86it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 24/51 [00:00<00:01, 25.55it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 27/51 [00:01<00:00, 25.82it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 30/51 [00:01<00:00, 26.01it/s]Capturing CUDA graphs (PIECEWISE):  65%|██████▍   | 33/51 [00:01<00:00, 26.93it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 37/51 [00:01<00:00, 28.14it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 40/51 [00:01<00:00, 28.33it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▋ | 44/51 [00:01<00:00, 29.07it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 48/51 [00:01<00:00, 29.62it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 51/51 [00:01<00:00, 27.24it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/35 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  14%|█▍        | 5/35 [00:00<00:00, 45.00it/s]Capturing CUDA graphs (FULL):  29%|██▊       | 10/35 [00:00<00:00, 42.61it/s]Capturing CUDA graphs (FULL):  43%|████▎     | 15/35 [00:00<00:00, 41.47it/s]Capturing CUDA graphs (FULL):  57%|█████▋    | 20/35 [00:00<00:00, 42.69it/s]Capturing CUDA graphs (FULL):  71%|███████▏  | 25/35 [00:00<00:00, 43.25it/s]Capturing CUDA graphs (FULL):  86%|████████▌ | 30/35 [00:00<00:00, 43.02it/s]Capturing CUDA graphs (FULL): 100%|██████████| 35/35 [00:00<00:00, 43.69it/s]Capturing CUDA graphs (FULL): 100%|██████████| 35/35 [00:00<00:00, 43.19it/s]
+(EngineCore pid=1582) INFO 11-04 00:43:42 [model_runner.py:1087] Graph capturing finished in 3 secs, took 0.18 GiB
+(EngineCore pid=1582) INFO 11-04 00:43:42 [gpu_worker.py:892] CUDA graph pool memory: 0.18 GiB (actual), 0.28 GiB (estimated), difference: 0.1 GiB (57.6%).
+(EngineCore pid=1582) INFO 11-04 00:43:42 [gpu_worker.py:955] Free memory on device (44.16/44.42 GiB) on startup. Desired GPU memory utilization is (0.3, 13.33 GiB). Actual usage is 1.22 GiB for consumed memory (weights + non-torch), 0.56 GiB for peak activation, and 0.18 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=12047181312` (11.22 GiB) to fit into requested memory, or `--kv-cache-memory=45153674752` (42.05 GiB) to fully utilize gpu memory. Current kv cache memory in use is 11.55 GiB.
+(EngineCore pid=1582) INFO 11-04 00:43:43 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=1582) INFO 11-04 00:43:43 [core.py:373] init engine (profile, create kv cache, warmup model) took 37.30 s (compilation: 12.48 s)
+(EngineCore pid=1582) INFO 11-04 00:43:43 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=1476) INFO 11-04 00:43:45 [hf.py:646] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+Rendering prompts:   0%|          | 0/1 [00:00<?, ?it/s]Rendering prompts: 100%|██████████| 1/1 [00:00<00:00, 969.78it/s]
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00, 35.30it/s, est. speed input: 35.38 toks/s, output: 282.75 toks/s]Processed prompts: 100%|██████████| 1/1 [00:00<00:00, 34.95it/s, est. speed input: 35.38 toks/s, output: 282.75 toks/s]
+>> vLLM smoke OK: 8 tokens at T 0.2
+(MainProcess pid=1476) INFO 11-04 00:43:45 [utils.py:638] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=1582) INFO 11-04 00:43:45 [core.py:1409] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=1582) INFO 11-04 00:43:45 [core.py:1558] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=1582) INFO 11-04 00:43:45 [core.py:1589] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=1582) INFO 11-04 00:43:45 [core.py:1422] [shutdown] EngineCore: exiting busy loop
+(MainProcess pid=1476) WARNING 11-04 00:43:46 [core_client.py:809] [shutdown] MPClient: engine core exited unexpectedly; starting cleanup
+(MainProcess pid=1476) INFO 11-04 00:43:46 [core_client.py:762] [shutdown] MPClient: start timeout=default
+(MainProcess pid=1476) INFO 11-04 00:43:46 [core_client.py:764] [shutdown] MPClient: stopping engine manager
+(MainProcess pid=1476) INFO 11-04 00:43:46 [core_client.py:766] [shutdown] MPClient: engine manager stopped
+(MainProcess pid=1476) INFO 11-04 00:43:46 [core_client.py:767] [shutdown] MPClient: cleaning up background resources
+(MainProcess pid=1476) INFO 11-04 00:43:46 [core_client.py:769] [shutdown] MPClient: complete
+>> models: {"gpt_oss_20b": "/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee"}
+>> engine: /root/.cache/deepsteer/machiavelli/ebb44e197f663603427882c609dbc9d5fb883d63/src
+>> setup done at 0.1825 h
+23 passed, 1 skipped in 31.08s
+(MainProcess pid=3381) INFO 11-04 00:50:02 [api_utils.py:286] non-default args: {'max_model_len': 12288, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.9, 'disable_log_stats': True, 'revision': '6cee5e81ee83917806bbde320786a8fb61efebee', 'model': 'openai/gpt-oss-20b'}
+(MainProcess pid=3381) INFO 11-04 00:50:13 [model.py:699] Resolved architecture: GptOssForCausalLM
+(MainProcess pid=3381) INFO 11-04 00:50:13 [model.py:2109] Using max model len 12288
+(MainProcess pid=3381) INFO 11-04 00:50:15 [scheduler.py:308] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(MainProcess pid=3381) INFO 11-04 00:50:15 [config.py:437] Overriding max cuda graph capture size to 1024 for performance.
+(MainProcess pid=3381) INFO 11-04 00:50:15 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=3530) INFO 11-04 00:50:21 [core.py:129] Initializing a V1 LLM engine (v0.31.0) with config: model='openai/gpt-oss-20b', speculative_config=None, tokenizer='openai/gpt-oss-20b', skip_tokenizer_init=False, tokenizer_mode=auto, revision=6cee5e81ee83917806bbde320786a8fb61efebee, tokenizer_revision=6cee5e81ee83917806bbde320786a8fb61efebee, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=12288, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=gpt_oss_mxfp4, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='openai_gptoss', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=openai/gpt-oss-20b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512, 528, 544, 560, 576, 592, 608, 624, 640, 656, 672, 688, 704, 720, 736, 752, 768, 784, 800, 816, 832, 848, 864, 880, 896, 912, 928, 944, 960, 976, 992, 1008, 1024], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 1024, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=3530) INFO 11-04 00:50:22 [parallel_state.py:1825] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_75ecda9e6c914903ad1a0dba3e696b4c backend=nccl
+(EngineCore pid=3530) INFO 11-04 00:50:22 [parallel_state.py:2269] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(EngineCore pid=3530) INFO 11-04 00:50:22 [gpu_worker.py:479] Using V2 Model Runner
+(EngineCore pid=3530) INFO 11-04 00:50:22 [model_runner.py:375] Loading model from scratch...
+(EngineCore pid=3530) INFO 11-04 00:50:23 [cuda.py:526] Using TRITON_ATTN attention backend out of potential backends: ['TRITON_ATTN'].
+(EngineCore pid=3530) INFO 11-04 00:50:23 [mxfp4.py:625] Using 'MARLIN' Mxfp4 MoE backend.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=3530) INFO 11-04 00:50:38 [weight_utils.py:523] Time spent downloading weights for openai/gpt-oss-20b: 14.482917 seconds
+(EngineCore pid=3530) INFO 11-04 00:50:38 [weight_utils.py:1063] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 12.82 GiB. Available RAM: 0.29 GiB.
+(EngineCore pid=3530) INFO 11-04 00:50:38 [weight_utils.py:1093] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre) and the checkpoint size (12.82 GiB) exceeds 90% of available RAM (0.29 GiB).
+Loading safetensors checkpoint shards:   0% Completed | 0/3 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  33% Completed | 1/3 [00:00<00:01,  1.41it/s]
+Loading safetensors checkpoint shards:  67% Completed | 2/3 [00:01<00:00,  1.43it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.53it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.50it/s]
+
+(EngineCore pid=3530) INFO 11-04 00:50:40 [default_loader.py:484] Loading weights took 2.08 seconds
+(EngineCore pid=3530) INFO 11-04 00:50:40 [mxfp4.py:2011] Using MoEPrepareAndFinalizeNoDPEPModular
+(EngineCore pid=3530) INFO 11-04 00:50:40 [mxfp4.py:2012] Using MarlinExperts
+(EngineCore pid=3530) INFO 11-04 00:50:42 [model_runner.py:407] Model loading took 13.8 GiB memory and 19.582712 seconds
+(EngineCore pid=3530) INFO 11-04 00:50:42 [topk_topp_sampler.py:96] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=3530) WARNING 11-04 00:50:42 [torch_utils.py:274] OMP_NUM_THREADS=8 is set; leaving Torch threads at 8 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(EngineCore pid=3530) INFO 11-04 00:50:42 [utils.py:343] Using LBNHC KV cache layout.
+(EngineCore pid=3530) INFO 11-04 00:50:50 [backends.py:1090] Using cache directory: /root/.cache/vllm/torch_compile_cache/8907a37894/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore pid=3530) INFO 11-04 00:50:50 [backends.py:1151] Dynamo bytecode transform time: 6.38 s
+(EngineCore pid=3530) INFO 11-04 00:50:58 [backends.py:391] Compiling a graph for compile range (1, 8192) takes 8.09 s
+(EngineCore pid=3530) INFO 11-04 00:51:01 [backends.py:916] collected artifacts: 25 entries, 3 artifacts, 4667368 bytes total
+(EngineCore pid=3530) INFO 11-04 00:51:01 [decorators.py:717] saved AOT compiled function to /root/.cache/vllm/torch_compile_cache/torch_aot_compile/3b32b9eacf448be04d0cf168dc75307e020c8378784623267b6eecf6839291f2/rank_0_0/model
+(EngineCore pid=3530) INFO 11-04 00:51:01 [monitor.py:53] torch.compile took 17.91 s in total
+(EngineCore pid=3530) INFO 11-04 00:51:01 [monitor.py:81] Initial profiling/warmup run took 0.20 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/83 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   1%|          | 1/83 [00:00<01:15,  1.08it/s]Capturing CUDA graphs (PIECEWISE):   4%|▎         | 3/83 [00:01<00:23,  3.42it/s]Capturing CUDA graphs (PIECEWISE):   6%|▌         | 5/83 [00:01<00:13,  5.78it/s]Capturing CUDA graphs (PIECEWISE):   8%|▊         | 7/83 [00:01<00:09,  8.15it/s]Capturing CUDA graphs (PIECEWISE):  11%|█         | 9/83 [00:01<00:07, 10.33it/s]Capturing CUDA graphs (PIECEWISE):  13%|█▎        | 11/83 [00:01<00:05, 12.27it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 13/83 [00:01<00:05, 13.35it/s]Capturing CUDA graphs (PIECEWISE):  18%|█▊        | 15/83 [00:01<00:04, 14.12it/s]Capturing CUDA graphs (PIECEWISE):  20%|██        | 17/83 [00:01<00:04, 15.25it/s]Capturing CUDA graphs (PIECEWISE):  23%|██▎       | 19/83 [00:01<00:03, 16.14it/s]Capturing CUDA graphs (PIECEWISE):  25%|██▌       | 21/83 [00:02<00:03, 16.59it/s]Capturing CUDA graphs (PIECEWISE):  28%|██▊       | 23/83 [00:02<00:03, 17.06it/s]Capturing CUDA graphs (PIECEWISE):  30%|███       | 25/83 [00:02<00:03, 16.52it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 27/83 [00:02<00:03, 16.42it/s]Capturing CUDA graphs (PIECEWISE):  35%|███▍      | 29/83 [00:02<00:03, 17.04it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 31/83 [00:02<00:02, 17.52it/s]Capturing CUDA graphs (PIECEWISE):  40%|███▉      | 33/83 [00:02<00:02, 17.86it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 35/83 [00:02<00:02, 17.65it/s]Capturing CUDA graphs (PIECEWISE):  45%|████▍     | 37/83 [00:03<00:02, 17.16it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 39/83 [00:03<00:02, 17.41it/s]Capturing CUDA graphs (PIECEWISE):  49%|████▉     | 41/83 [00:03<00:02, 17.86it/s]Capturing CUDA graphs (PIECEWISE):  52%|█████▏    | 43/83 [00:03<00:02, 18.15it/s]Capturing CUDA graphs (PIECEWISE):  54%|█████▍    | 45/83 [00:03<00:02, 18.43it/s]Capturing CUDA graphs (PIECEWISE):  57%|█████▋    | 47/83 [00:03<00:01, 18.28it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 49/83 [00:03<00:01, 17.54it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████▏   | 51/83 [00:04<00:05,  5.92it/s]Capturing CUDA graphs (PIECEWISE):  64%|██████▍   | 53/83 [00:04<00:04,  7.47it/s]Capturing CUDA graphs (PIECEWISE):  66%|██████▋   | 55/83 [00:04<00:03,  9.15it/s]Capturing CUDA graphs (PIECEWISE):  69%|██████▊   | 57/83 [00:04<00:02, 10.68it/s]Capturing CUDA graphs (PIECEWISE):  71%|███████   | 59/83 [00:04<00:01, 12.04it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 61/83 [00:05<00:01, 13.48it/s]Capturing CUDA graphs (PIECEWISE):  76%|███████▌  | 63/83 [00:05<00:01, 14.71it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 65/83 [00:05<00:01, 15.68it/s]Capturing CUDA graphs (PIECEWISE):  81%|████████  | 67/83 [00:05<00:00, 16.52it/s]Capturing CUDA graphs (PIECEWISE):  83%|████████▎ | 69/83 [00:05<00:00, 16.13it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▌ | 71/83 [00:05<00:00, 16.53it/s]Capturing CUDA graphs (PIECEWISE):  88%|████████▊ | 73/83 [00:05<00:00, 17.18it/s]Capturing CUDA graphs (PIECEWISE):  90%|█████████ | 75/83 [00:05<00:00, 17.00it/s]Capturing CUDA graphs (PIECEWISE):  93%|█████████▎| 77/83 [00:06<00:00, 16.53it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▌| 79/83 [00:07<00:00,  4.20it/s]Capturing CUDA graphs (PIECEWISE):  98%|█████████▊| 81/83 [00:08<00:00,  2.90it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:09<00:00,  2.53it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:09<00:00,  8.72it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 21.42it/s]
+(EngineCore pid=3530) INFO 11-04 00:51:14 [model_runner.py:1087] Graph capturing finished in 10 secs, took 0.52 GiB
+(EngineCore pid=3530) INFO 11-04 00:51:14 [gpu_worker.py:692] Available KV cache memory: 24.07 GiB
+(EngineCore pid=3530) INFO 11-04 00:51:14 [gpu_worker.py:707] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9000 is equivalent to --gpu-memory-utilization=0.8868 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9132. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=3530) INFO 11-04 00:51:14 [kv_cache_utils.py:2464] GPU KV cache size: 525,417 tokens, Maximum concurrency for 12,288 tokens per request: 42.76x
+(EngineCore pid=3530) INFO 11-04 00:51:14 [kernel_warmup.py:172] JIT kernel warmup starting.
+(EngineCore pid=3530) INFO 11-04 00:51:14 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/83 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 2/83 [00:00<00:04, 16.64it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 4/83 [00:00<00:04, 17.80it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 6/83 [00:00<00:04, 18.29it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 8/83 [00:00<00:04, 18.14it/s]Capturing CUDA graphs (PIECEWISE):  12%|█▏        | 10/83 [00:00<00:04, 17.36it/s]Capturing CUDA graphs (PIECEWISE):  14%|█▍        | 12/83 [00:00<00:03, 18.05it/s]Capturing CUDA graphs (PIECEWISE):  17%|█▋        | 14/83 [00:00<00:03, 18.48it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▉        | 16/83 [00:00<00:03, 18.75it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 18/83 [00:00<00:03, 18.94it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▍       | 20/83 [00:01<00:03, 18.70it/s]Capturing CUDA graphs (PIECEWISE):  27%|██▋       | 22/83 [00:01<00:03, 18.10it/s]Capturing CUDA graphs (PIECEWISE):  29%|██▉       | 24/83 [00:01<00:03, 18.55it/s]Capturing CUDA graphs (PIECEWISE):  31%|███▏      | 26/83 [00:01<00:03, 18.88it/s]Capturing CUDA graphs (PIECEWISE):  34%|███▎      | 28/83 [00:01<00:02, 19.11it/s]Capturing CUDA graphs (PIECEWISE):  36%|███▌      | 30/83 [00:01<00:02, 19.32it/s]Capturing CUDA graphs (PIECEWISE):  39%|███▊      | 32/83 [00:01<00:02, 19.13it/s]Capturing CUDA graphs (PIECEWISE):  41%|████      | 34/83 [00:01<00:02, 18.27it/s]Capturing CUDA graphs (PIECEWISE):  43%|████▎     | 36/83 [00:01<00:02, 18.65it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 39/83 [00:02<00:02, 19.15it/s]Capturing CUDA graphs (PIECEWISE):  49%|████▉     | 41/83 [00:02<00:02, 19.35it/s]Capturing CUDA graphs (PIECEWISE):  52%|█████▏    | 43/83 [00:02<00:02, 19.49it/s]Capturing CUDA graphs (PIECEWISE):  54%|█████▍    | 45/83 [00:02<00:01, 19.13it/s]Capturing CUDA graphs (PIECEWISE):  57%|█████▋    | 47/83 [00:02<00:01, 18.71it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 49/83 [00:02<00:01, 19.01it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████▏   | 51/83 [00:02<00:01, 18.97it/s]Capturing CUDA graphs (PIECEWISE):  64%|██████▍   | 53/83 [00:02<00:01, 19.17it/s]Capturing CUDA graphs (PIECEWISE):  66%|██████▋   | 55/83 [00:02<00:01, 19.40it/s]Capturing CUDA graphs (PIECEWISE):  69%|██████▊   | 57/83 [00:03<00:01, 19.44it/s]Capturing CUDA graphs (PIECEWISE):  71%|███████   | 59/83 [00:03<00:01, 18.08it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 61/83 [00:03<00:01, 16.53it/s]Capturing CUDA graphs (PIECEWISE):  76%|███████▌  | 63/83 [00:03<00:01, 17.03it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 65/83 [00:03<00:01, 17.37it/s]Capturing CUDA graphs (PIECEWISE):  81%|████████  | 67/83 [00:03<00:00, 17.96it/s]Capturing CUDA graphs (PIECEWISE):  83%|████████▎ | 69/83 [00:03<00:00, 18.12it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▌ | 71/83 [00:03<00:00, 17.94it/s]Capturing CUDA graphs (PIECEWISE):  88%|████████▊ | 73/83 [00:03<00:00, 17.61it/s]Capturing CUDA graphs (PIECEWISE):  90%|█████████ | 75/83 [00:04<00:00, 17.48it/s]Capturing CUDA graphs (PIECEWISE):  93%|█████████▎| 77/83 [00:04<00:00, 17.40it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▌| 79/83 [00:04<00:00, 16.68it/s]Capturing CUDA graphs (PIECEWISE):  98%|█████████▊| 81/83 [00:04<00:00, 16.27it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:04<00:00, 15.99it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:04<00:00, 18.08it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/35 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   9%|▊         | 3/35 [00:00<00:01, 21.87it/s]Capturing CUDA graphs (FULL):  17%|█▋        | 6/35 [00:00<00:01, 21.96it/s]Capturing CUDA graphs (FULL):  26%|██▌       | 9/35 [00:00<00:01, 22.08it/s]Capturing CUDA graphs (FULL):  34%|███▍      | 12/35 [00:00<00:01, 20.83it/s]Capturing CUDA graphs (FULL):  43%|████▎     | 15/35 [00:00<00:00, 21.50it/s]Capturing CUDA graphs (FULL):  51%|█████▏    | 18/35 [00:00<00:00, 21.97it/s]Capturing CUDA graphs (FULL):  60%|██████    | 21/35 [00:00<00:00, 22.37it/s]Capturing CUDA graphs (FULL):  69%|██████▊   | 24/35 [00:01<00:00, 21.77it/s]Capturing CUDA graphs (FULL):  77%|███████▋  | 27/35 [00:01<00:00, 21.27it/s]Capturing CUDA graphs (FULL):  86%|████████▌ | 30/35 [00:01<00:00, 21.92it/s]Capturing CUDA graphs (FULL):  94%|█████████▍| 33/35 [00:01<00:00, 22.25it/s]Capturing CUDA graphs (FULL): 100%|██████████| 35/35 [00:01<00:00, 21.96it/s]
+(EngineCore pid=3530) INFO 11-04 00:51:39 [model_runner.py:1087] Graph capturing finished in 7 secs, took 0.26 GiB
+(EngineCore pid=3530) INFO 11-04 00:51:39 [gpu_worker.py:892] CUDA graph pool memory: 0.26 GiB (actual), 0.59 GiB (estimated), difference: 0.33 GiB (126.3%).
+(EngineCore pid=3530) INFO 11-04 00:51:39 [gpu_worker.py:955] Free memory on device (44.16/44.42 GiB) on startup. Desired GPU memory utilization is (0.9, 39.98 GiB). Actual usage is 14.72 GiB for consumed memory (weights + non-torch), 1.2 GiB for peak activation, and 0.26 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=25406168064` (23.66 GiB) to fit into requested memory, or `--kv-cache-memory=29892828160` (27.84 GiB) to fully utilize gpu memory. Current kv cache memory in use is 24.07 GiB.
+(EngineCore pid=3530) INFO 11-04 00:51:39 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=3530) INFO 11-04 00:51:40 [core.py:373] init engine (profile, create kv cache, warmup model) took 57.89 s (compilation: 17.91 s)
+(EngineCore pid=3530) INFO 11-04 00:51:40 [kv_cache_utils.py:772] kv cache group sizes [16, 16]
+(EngineCore pid=3530) INFO 11-04 00:51:40 [kv_cache_utils.py:773] kv lcm block sizes 16
+(EngineCore pid=3530) INFO 11-04 00:51:40 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=3381) INFO 11-04 00:51:44 [hf.py:646] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+>> render parity OK for gpt_oss_20b
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+(MainProcess pid=3381) WARNING 11-04 00:51:47 [input_processor.py:375] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(EngineCore pid=3530) WARNING 11-04 00:51:47 [jit_monitor.py:140] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+     30s gpt_oss_20b decisions 18 active 4 queued 0
+     60s gpt_oss_20b decisions 33 active 4 queued 0
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+     90s gpt_oss_20b decisions 42 active 3 queued 0
+    120s gpt_oss_20b decisions 44 active 3 queued 0
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+    150s gpt_oss_20b decisions 52 active 2 queued 0
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+    180s gpt_oss_20b decisions 58 active 1 queued 0
+{"model": "gpt_oss_20b", "max_tokens": 4096, "decisions": 60, "generated_tokens": 43851, "wall_s": 189.1, "jobs": 4, "run": 4, "loop": "async", "gpu": "NVIDIA A40", "spec": "none"}
+(MainProcess pid=3381) INFO 11-04 00:54:54 [utils.py:638] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=3530) INFO 11-04 00:54:54 [core.py:1409] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=3530) INFO 11-04 00:54:54 [core.py:1558] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=3530) INFO 11-04 00:54:54 [core.py:1589] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=3530) INFO 11-04 00:54:54 [core.py:1422] [shutdown] EngineCore: exiting busy loop
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+(MainProcess pid=4878) INFO 11-04 00:55:09 [api_utils.py:286] non-default args: {'max_model_len': 12288, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.9, 'disable_log_stats': True, 'revision': '6cee5e81ee83917806bbde320786a8fb61efebee', 'speculative_config': {'method': 'ngram', 'num_speculative_tokens': 3, 'prompt_lookup_min': 2, 'prompt_lookup_max': 4}, 'model': 'openai/gpt-oss-20b'}
+(MainProcess pid=4878) INFO 11-04 00:55:09 [model.py:699] Resolved architecture: GptOssForCausalLM
+(MainProcess pid=4878) INFO 11-04 00:55:10 [model.py:2109] Using max model len 12288
+(MainProcess pid=4878) INFO 11-04 00:55:11 [scheduler.py:308] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(MainProcess pid=4878) INFO 11-04 00:55:11 [config.py:437] Overriding max cuda graph capture size to 1024 for performance.
+(MainProcess pid=4878) WARNING 11-04 00:55:11 [vllm.py:1596] Async scheduling not supported with ngram-based speculative decoding and will be disabled.
+(MainProcess pid=4878) INFO 11-04 00:55:11 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=4878) WARNING 11-04 00:55:11 [vllm.py:754] Model Runner V2 does not yet support speculative method 'ngram'; using the V1 model runner instead.
+(EngineCore pid=4983) INFO 11-04 00:55:18 [core.py:129] Initializing a V1 LLM engine (v0.31.0) with config: model='openai/gpt-oss-20b', speculative_config=SpeculativeConfig(method='ngram', model=None, num_spec_tokens=3), tokenizer='openai/gpt-oss-20b', skip_tokenizer_init=False, tokenizer_mode=auto, revision=6cee5e81ee83917806bbde320786a8fb61efebee, tokenizer_revision=6cee5e81ee83917806bbde320786a8fb61efebee, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=12288, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=gpt_oss_mxfp4, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='openai_gptoss', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=openai/gpt-oss-20b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512, 528, 544, 560, 576, 592, 608, 624, 640, 656, 672, 688, 704, 720, 736, 752, 768, 784, 800, 816, 832, 848, 864, 880, 896, 912, 928, 944, 960, 976, 992, 1008, 1024], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 1024, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=4983) INFO 11-04 00:55:18 [parallel_state.py:1825] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_c21ee0069166414f83f872e451a47e68 backend=nccl
+(EngineCore pid=4983) INFO 11-04 00:55:18 [parallel_state.py:2269] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(EngineCore pid=4983) INFO 11-04 00:55:19 [topk_topp_sampler.py:96] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=4983) WARNING 11-04 00:55:20 [__init__.py:211] min_p and logit_bias parameters won't work with speculative decoding.
+(EngineCore pid=4983) INFO 11-04 00:55:20 [gpu_model_runner.py:5255] Starting to load model openai/gpt-oss-20b...
+(EngineCore pid=4983) INFO 11-04 00:55:21 [cuda.py:526] Using TRITON_ATTN attention backend out of potential backends: ['TRITON_ATTN'].
+(EngineCore pid=4983) INFO 11-04 00:55:21 [mxfp4.py:625] Using 'MARLIN' Mxfp4 MoE backend.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=4983) INFO 11-04 00:55:21 [weight_utils.py:1063] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 12.82 GiB. Available RAM: 3.70 GiB.
+(EngineCore pid=4983) INFO 11-04 00:55:21 [weight_utils.py:1093] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre) and the checkpoint size (12.82 GiB) exceeds 90% of available RAM (3.70 GiB).
+Loading safetensors checkpoint shards:   0% Completed | 0/3 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  33% Completed | 1/3 [00:00<00:01,  1.35it/s]
+Loading safetensors checkpoint shards:  67% Completed | 2/3 [00:01<00:00,  1.31it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.38it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.37it/s]
+
+(EngineCore pid=4983) INFO 11-04 00:55:23 [default_loader.py:484] Loading weights took 2.26 seconds
+(EngineCore pid=4983) INFO 11-04 00:55:23 [mxfp4.py:2011] Using MoEPrepareAndFinalizeNoDPEPModular
+(EngineCore pid=4983) INFO 11-04 00:55:23 [mxfp4.py:2012] Using MarlinExperts
+(EngineCore pid=4983) INFO 11-04 00:55:24 [gpu_model_runner.py:5286] Loading drafter model...
+(EngineCore pid=4983) INFO 11-04 00:55:25 [gpu_model_runner.py:5354] Model loading took 13.8 GiB memory and 4.081471 seconds
+(EngineCore pid=4983) WARNING 11-04 00:55:25 [torch_utils.py:274] OMP_NUM_THREADS=8 is set; leaving Torch threads at 8 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(EngineCore pid=4983) INFO 11-04 00:55:25 [utils.py:343] Using LBNHC KV cache layout.
+(EngineCore pid=4983) INFO 11-04 00:55:33 [backends.py:1090] Using cache directory: /root/.cache/vllm/torch_compile_cache/87b001cdd6/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore pid=4983) INFO 11-04 00:55:33 [backends.py:1151] Dynamo bytecode transform time: 6.55 s
+(EngineCore pid=4983) INFO 11-04 00:55:42 [backends.py:391] Compiling a graph for compile range (1, 8192) takes 8.84 s
+(EngineCore pid=4983) INFO 11-04 00:55:45 [backends.py:916] collected artifacts: 25 entries, 3 artifacts, 4631735 bytes total
+(EngineCore pid=4983) INFO 11-04 00:55:45 [decorators.py:717] saved AOT compiled function to /root/.cache/vllm/torch_compile_cache/torch_aot_compile/4facc5c7d92bd34c4157faddc45786d01209ac0f5b6a297582444374a2f1b2e6/rank_0_0/model
+(EngineCore pid=4983) INFO 11-04 00:55:45 [monitor.py:53] torch.compile took 18.83 s in total
+(EngineCore pid=4983) INFO 11-04 00:55:45 [monitor.py:81] Initial profiling/warmup run took 0.22 s
+(EngineCore pid=4983) INFO 11-04 00:55:51 [gpu_model_runner.py:6642] Profiling CUDA graph memory: PIECEWISE=81 (largest=1024), FULL=81 (largest=1024)
+(EngineCore pid=4983) INFO 11-04 00:55:55 [gpu_model_runner.py:6747] Estimated CUDA graph memory: 0.74 GiB total
+(EngineCore pid=4983) INFO 11-04 00:55:55 [gpu_worker.py:692] Available KV cache memory: 23.09 GiB
+(EngineCore pid=4983) INFO 11-04 00:55:55 [gpu_worker.py:707] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9000 is equivalent to --gpu-memory-utilization=0.8832 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9168. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=4983) INFO 11-04 00:55:55 [kv_cache_utils.py:2464] GPU KV cache size: 601,111 tokens, Maximum concurrency for 12,288 tokens per request: 48.92x
+(EngineCore pid=4983) INFO 11-04 00:55:55 [kernel_warmup.py:172] JIT kernel warmup starting.
+JIT kernel warmup (154 compile keys):   0%|          | 0/9 [00:00<?, ?kernel/s]JIT kernel warmup (154 compile keys):  11%|█         | 1/9 [00:16<02:11, 16.43s/kernel, _DecoratedTritonJitKernel (20 keys)]JIT kernel warmup (154 compile keys):  22%|██▏       | 2/9 [00:18<00:54,  7.86s/kernel, _DecoratedTritonJitKernel (24 keys)]JIT kernel warmup (154 compile keys):  33%|███▎      | 3/9 [00:36<01:16, 12.67s/kernel, _DecoratedTritonJitKernel (72 keys)]JIT kernel warmup (154 compile keys):  44%|████▍     | 4/9 [00:45<00:55, 11.18s/kernel, _DecoratedTritonJitKernel (24 keys)]JIT kernel warmup (154 compile keys):  67%|██████▋   | 6/9 [00:45<00:16,  5.34s/kernel, _DecoratedTritonJitKernel (4 keys)] JIT kernel warmup (154 compile keys):  89%|████████▉ | 8/9 [00:46<00:03,  3.12s/kernel, _DecoratedTritonJitKernel (4 keys)]JIT kernel warmup (154 compile keys): 100%|██████████| 9/9 [00:46<00:00,  2.44s/kernel, ComputeSlotMappingKernel (1 keys)] JIT kernel warmup (154 compile keys): 100%|██████████| 9/9 [00:46<00:00,  5.17s/kernel, ComputeSlotMappingKernel (1 keys)]
+(EngineCore pid=4983) INFO 11-04 00:56:41 [kernel_warmup.py:185] JIT kernel warmup finished in 46.71s.
+(EngineCore pid=4983) INFO 11-04 00:56:41 [gpu_model_runner.py:6808] Rank 0: Torch profiler disabled for CUDA graph capture
+Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   0%|          | 0/81 [00:00<?, ?it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   2%|▏         | 2/81 [00:00<00:05, 14.59it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   5%|▍         | 4/81 [00:00<00:04, 15.88it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   7%|▋         | 6/81 [00:00<00:04, 16.26it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  10%|▉         | 8/81 [00:00<00:04, 16.63it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  12%|█▏        | 10/81 [00:00<00:04, 15.25it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  15%|█▍        | 12/81 [00:00<00:04, 15.44it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  17%|█▋        | 14/81 [00:00<00:04, 15.92it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  20%|█▉        | 16/81 [00:01<00:04, 16.15it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  22%|██▏       | 18/81 [00:01<00:03, 16.38it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  25%|██▍       | 20/81 [00:01<00:03, 15.99it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  27%|██▋       | 22/81 [00:01<00:03, 15.93it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  30%|██▉       | 24/81 [00:01<00:03, 16.48it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  32%|███▏      | 26/81 [00:01<00:03, 16.89it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  35%|███▍      | 28/81 [00:01<00:03, 17.16it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  37%|███▋      | 30/81 [00:01<00:03, 16.82it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  40%|███▉      | 32/81 [00:01<00:03, 15.97it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  42%|████▏     | 34/81 [00:02<00:02, 16.35it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  44%|████▍     | 36/81 [00:02<00:02, 16.75it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  47%|████▋     | 38/81 [00:02<00:02, 17.12it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  49%|████▉     | 40/81 [00:02<00:02, 16.68it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  52%|█████▏    | 42/81 [00:02<00:02, 15.95it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  54%|█████▍    | 44/81 [00:02<00:02, 16.31it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  57%|█████▋    | 46/81 [00:02<00:02, 16.68it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  59%|█████▉    | 48/81 [00:02<00:01, 16.87it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  62%|██████▏   | 50/81 [00:03<00:01, 17.17it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  64%|██████▍   | 52/81 [00:03<00:01, 16.92it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  67%|██████▋   | 54/81 [00:03<00:01, 17.42it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  70%|███████   | 57/81 [00:03<00:01, 18.57it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  74%|███████▍  | 60/81 [00:03<00:01, 19.31it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  78%|███████▊  | 63/81 [00:03<00:00, 19.77it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  80%|████████  | 65/81 [00:03<00:00, 18.66it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  83%|████████▎ | 67/81 [00:03<00:00, 18.77it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  86%|████████▋ | 70/81 [00:04<00:00, 19.44it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  89%|████████▉ | 72/81 [00:04<00:00, 19.51it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  91%|█████████▏| 74/81 [00:04<00:00, 19.06it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  94%|█████████▍| 76/81 [00:04<00:00, 19.08it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  98%|█████████▊| 79/81 [00:04<00:00, 19.85it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 81/81 [00:04<00:00, 17.48it/s]
+Capturing CUDA graphs (decode, FULL):   0%|          | 0/81 [00:00<?, ?it/s]Capturing CUDA graphs (decode, FULL):   2%|▏         | 2/81 [00:00<00:04, 17.21it/s]Capturing CUDA graphs (decode, FULL):   5%|▍         | 4/81 [00:00<00:05, 15.39it/s]Capturing CUDA graphs (decode, FULL):   7%|▋         | 6/81 [00:00<00:04, 16.60it/s]Capturing CUDA graphs (decode, FULL):  10%|▉         | 8/81 [00:00<00:04, 16.45it/s]Capturing CUDA graphs (decode, FULL):  12%|█▏        | 10/81 [00:00<00:04, 17.49it/s]Capturing CUDA graphs (decode, FULL):  16%|█▌        | 13/81 [00:00<00:03, 18.54it/s]Capturing CUDA graphs (decode, FULL):  19%|█▊        | 15/81 [00:00<00:03, 17.85it/s]Capturing CUDA graphs (decode, FULL):  21%|██        | 17/81 [00:00<00:03, 18.34it/s]Capturing CUDA graphs (decode, FULL):  25%|██▍       | 20/81 [00:01<00:03, 19.31it/s]Capturing CUDA graphs (decode, FULL):  28%|██▊       | 23/81 [00:01<00:02, 19.96it/s]Capturing CUDA graphs (decode, FULL):  32%|███▏      | 26/81 [00:01<00:02, 20.03it/s]Capturing CUDA graphs (decode, FULL):  35%|███▍      | 28/81 [00:01<00:02, 19.11it/s]Capturing CUDA graphs (decode, FULL):  38%|███▊      | 31/81 [00:01<00:02, 19.60it/s]Capturing CUDA graphs (decode, FULL):  42%|████▏     | 34/81 [00:01<00:02, 19.87it/s]Capturing CUDA graphs (decode, FULL):  46%|████▌     | 37/81 [00:01<00:02, 20.34it/s]Capturing CUDA graphs (decode, FULL):  49%|████▉     | 40/81 [00:02<00:02, 20.01it/s]Capturing CUDA graphs (decode, FULL):  52%|█████▏    | 42/81 [00:02<00:01, 19.71it/s]Capturing CUDA graphs (decode, FULL):  56%|█████▌    | 45/81 [00:02<00:01, 20.23it/s]Capturing CUDA graphs (decode, FULL):  59%|█████▉    | 48/81 [00:02<00:01, 20.51it/s]Capturing CUDA graphs (decode, FULL):  63%|██████▎   | 51/81 [00:02<00:01, 20.75it/s]Capturing CUDA graphs (decode, FULL):  67%|██████▋   | 54/81 [00:02<00:01, 19.96it/s]Capturing CUDA graphs (decode, FULL):  70%|███████   | 57/81 [00:02<00:01, 20.50it/s]Capturing CUDA graphs (decode, FULL):  74%|███████▍  | 60/81 [00:03<00:01, 20.48it/s]Capturing CUDA graphs (decode, FULL):  78%|███████▊  | 63/81 [00:03<00:00, 20.83it/s]Capturing CUDA graphs (decode, FULL):  81%|████████▏ | 66/81 [00:03<00:00, 20.63it/s]Capturing CUDA graphs (decode, FULL):  85%|████████▌ | 69/81 [00:03<00:00, 20.16it/s]Capturing CUDA graphs (decode, FULL):  89%|████████▉ | 72/81 [00:03<00:00, 20.76it/s]Capturing CUDA graphs (decode, FULL):  93%|█████████▎| 75/81 [00:03<00:00, 20.75it/s]Capturing CUDA graphs (decode, FULL):  96%|█████████▋| 78/81 [00:03<00:00, 21.27it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 81/81 [00:04<00:00,  8.19it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 81/81 [00:04<00:00, 16.78it/s]
+(EngineCore pid=4983) INFO 11-04 00:56:52 [gpu_model_runner.py:6854] Graph capturing finished in 10 secs, took 0.82 GiB
+(EngineCore pid=4983) INFO 11-04 00:56:52 [gpu_worker.py:892] CUDA graph pool memory: 0.82 GiB (actual), 0.74 GiB (estimated), difference: 0.08 GiB (9.5%).
+(EngineCore pid=4983) INFO 11-04 00:56:52 [gpu_worker.py:955] Free memory on device (44.16/44.42 GiB) on startup. Desired GPU memory utilization is (0.9, 39.98 GiB). Actual usage is 14.65 GiB for consumed memory (weights + non-torch), 2.24 GiB for peak activation, and 0.82 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=23754613248` (22.12 GiB) to fit into requested memory, or `--kv-cache-memory=28241273344` (26.3 GiB) to fully utilize gpu memory. Current kv cache memory in use is 23.09 GiB.
+(EngineCore pid=4983) INFO 11-04 00:56:52 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=4983) INFO 11-04 00:56:53 [core.py:373] init engine (profile, create kv cache, warmup model) took 87.84 s (compilation: 18.83 s)
+(EngineCore pid=4983) INFO 11-04 00:56:53 [kv_cache_utils.py:772] kv cache group sizes [16, 16]
+(EngineCore pid=4983) INFO 11-04 00:56:53 [kv_cache_utils.py:773] kv lcm block sizes 16
+(EngineCore pid=4983) INFO 11-04 00:56:53 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=4878) INFO 11-04 00:56:56 [hf.py:646] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+>> render parity OK for gpt_oss_20b
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+(MainProcess pid=4878) WARNING 11-04 00:56:59 [input_processor.py:375] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(EngineCore pid=4983) WARNING 11-04 00:57:01 [jit_monitor.py:140] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=4983) WARNING 11-04 00:57:01 [jit_monitor.py:140] Triton kernel JIT compilation during inference: reduce_segments. This causes a latency spike; consider extending warmup to cover this shape/config.
+     30s gpt_oss_20b decisions 18 active 4 queued 0
+     60s gpt_oss_20b decisions 34 active 4 queued 0
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+     90s gpt_oss_20b decisions 44 active 3 queued 0
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+    120s gpt_oss_20b decisions 54 active 1 queued 0
+    150s gpt_oss_20b decisions 56 active 1 queued 0
+    180s gpt_oss_20b decisions 57 active 1 queued 0
+    210s gpt_oss_20b decisions 58 active 1 queued 0
+{"model": "gpt_oss_20b", "max_tokens": 4096, "decisions": 60, "generated_tokens": 41522, "wall_s": 223.3, "jobs": 4, "run": 4, "loop": "async", "gpu": "NVIDIA A40", "spec": "ngram"}
+(MainProcess pid=4878) INFO 11-04 01:00:40 [utils.py:638] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=4983) INFO 11-04 01:00:40 [core.py:1409] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=4983) INFO 11-04 01:00:40 [core.py:1558] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=4983) INFO 11-04 01:00:40 [core.py:1589] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=4983) INFO 11-04 01:00:40 [core.py:1422] [shutdown] EngineCore: exiting busy loop
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+>> forecast: { "model": "gpt_oss_20b", "gpu": "NVIDIA A40", "a100h_per_hour": 0.32, "stage0_rate_per_episode": {  "none": 57.97329455314649,  "ngram": 46.48678907299597 }, "spec": "none", "single_sequence_rate": 73.6351898355672, "longest_episode_tokens": 1910591, "serial_h": 7.207419759592641, "elapsed_h": 0.3729, "forecast_h": 7.630319759592641, "forecast_a100h": 2.441702323069645, "envelope_left_a100h": 4.8, "wall_cap_h": 14.6875, "continue_": true}
+>> cell: spec=none concurrency=85 at 0.3734 h
+(MainProcess pid=6592) INFO 11-04 01:00:56 [api_utils.py:286] non-default args: {'max_model_len': 12288, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.9, 'disable_log_stats': True, 'revision': '6cee5e81ee83917806bbde320786a8fb61efebee', 'model': 'openai/gpt-oss-20b'}
+(MainProcess pid=6592) INFO 11-04 01:00:56 [model.py:699] Resolved architecture: GptOssForCausalLM
+(MainProcess pid=6592) INFO 11-04 01:00:57 [model.py:2109] Using max model len 12288
+(MainProcess pid=6592) INFO 11-04 01:00:58 [scheduler.py:308] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(MainProcess pid=6592) INFO 11-04 01:00:58 [config.py:437] Overriding max cuda graph capture size to 1024 for performance.
+(MainProcess pid=6592) INFO 11-04 01:00:58 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=6695) INFO 11-04 01:01:04 [core.py:129] Initializing a V1 LLM engine (v0.31.0) with config: model='openai/gpt-oss-20b', speculative_config=None, tokenizer='openai/gpt-oss-20b', skip_tokenizer_init=False, tokenizer_mode=auto, revision=6cee5e81ee83917806bbde320786a8fb61efebee, tokenizer_revision=6cee5e81ee83917806bbde320786a8fb61efebee, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=12288, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=gpt_oss_mxfp4, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='openai_gptoss', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=openai/gpt-oss-20b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512, 528, 544, 560, 576, 592, 608, 624, 640, 656, 672, 688, 704, 720, 736, 752, 768, 784, 800, 816, 832, 848, 864, 880, 896, 912, 928, 944, 960, 976, 992, 1008, 1024], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 1024, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=6695) INFO 11-04 01:01:04 [parallel_state.py:1825] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_7a06ea66ff3d4d889b65651dbae47870 backend=nccl
+(EngineCore pid=6695) INFO 11-04 01:01:04 [parallel_state.py:2269] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(EngineCore pid=6695) INFO 11-04 01:01:04 [gpu_worker.py:479] Using V2 Model Runner
+(EngineCore pid=6695) INFO 11-04 01:01:05 [model_runner.py:375] Loading model from scratch...
+(EngineCore pid=6695) INFO 11-04 01:01:06 [cuda.py:526] Using TRITON_ATTN attention backend out of potential backends: ['TRITON_ATTN'].
+(EngineCore pid=6695) INFO 11-04 01:01:06 [mxfp4.py:625] Using 'MARLIN' Mxfp4 MoE backend.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=6695) INFO 11-04 01:01:07 [weight_utils.py:1063] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 12.82 GiB. Available RAM: 3.83 GiB.
+(EngineCore pid=6695) INFO 11-04 01:01:07 [weight_utils.py:1093] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre) and the checkpoint size (12.82 GiB) exceeds 90% of available RAM (3.83 GiB).
+Loading safetensors checkpoint shards:   0% Completed | 0/3 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  33% Completed | 1/3 [00:00<00:01,  1.37it/s]
+Loading safetensors checkpoint shards:  67% Completed | 2/3 [00:01<00:00,  1.32it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.38it/s]
+Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:02<00:00,  1.37it/s]
+
+(EngineCore pid=6695) INFO 11-04 01:01:09 [default_loader.py:484] Loading weights took 2.26 seconds
+(EngineCore pid=6695) INFO 11-04 01:01:09 [mxfp4.py:2011] Using MoEPrepareAndFinalizeNoDPEPModular
+(EngineCore pid=6695) INFO 11-04 01:01:09 [mxfp4.py:2012] Using MarlinExperts
+(EngineCore pid=6695) INFO 11-04 01:01:11 [model_runner.py:407] Model loading took 13.8 GiB memory and 5.290859 seconds
+(EngineCore pid=6695) INFO 11-04 01:01:11 [topk_topp_sampler.py:96] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=6695) WARNING 11-04 01:01:11 [torch_utils.py:274] OMP_NUM_THREADS=8 is set; leaving Torch threads at 8 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(EngineCore pid=6695) INFO 11-04 01:01:11 [utils.py:343] Using LBNHC KV cache layout.
+(EngineCore pid=6695) INFO 11-04 01:01:12 [caching.py:342] reconstructed serializable fn from standalone compile artifacts. num_artifacts=3 num_submods=25
+(EngineCore pid=6695) INFO 11-04 01:01:12 [decorators.py:312] Directly load AOT compilation from path /root/.cache/vllm/torch_compile_cache/torch_aot_compile/3b32b9eacf448be04d0cf168dc75307e020c8378784623267b6eecf6839291f2/rank_0_0/model
+(EngineCore pid=6695) INFO 11-04 01:01:12 [monitor.py:53] torch.compile took 0.24 s in total
+(EngineCore pid=6695) INFO 11-04 01:01:12 [monitor.py:81] Initial profiling/warmup run took 0.21 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/83 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 2/83 [00:00<00:05, 13.53it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 4/83 [00:00<00:05, 15.39it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 6/83 [00:00<00:04, 16.30it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 8/83 [00:00<00:04, 15.62it/s]Capturing CUDA graphs (PIECEWISE):  12%|█▏        | 10/83 [00:00<00:04, 15.04it/s]Capturing CUDA graphs (PIECEWISE):  14%|█▍        | 12/83 [00:00<00:04, 15.45it/s]Capturing CUDA graphs (PIECEWISE):  17%|█▋        | 14/83 [00:00<00:04, 16.09it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▉        | 16/83 [00:01<00:04, 16.62it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 18/83 [00:01<00:03, 17.04it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▍       | 20/83 [00:01<00:03, 15.87it/s]Capturing CUDA graphs (PIECEWISE):  27%|██▋       | 22/83 [00:01<00:03, 16.06it/s]Capturing CUDA graphs (PIECEWISE):  29%|██▉       | 24/83 [00:01<00:03, 16.38it/s]Capturing CUDA graphs (PIECEWISE):  31%|███▏      | 26/83 [00:01<00:03, 17.09it/s]Capturing CUDA graphs (PIECEWISE):  34%|███▎      | 28/83 [00:01<00:03, 17.63it/s]Capturing CUDA graphs (PIECEWISE):  36%|███▌      | 30/83 [00:01<00:03, 17.35it/s]Capturing CUDA graphs (PIECEWISE):  39%|███▊      | 32/83 [00:01<00:03, 16.61it/s]Capturing CUDA graphs (PIECEWISE):  41%|████      | 34/83 [00:02<00:02, 17.27it/s]Capturing CUDA graphs (PIECEWISE):  43%|████▎     | 36/83 [00:02<00:02, 17.74it/s]Capturing CUDA graphs (PIECEWISE):  46%|████▌     | 38/83 [00:02<00:02, 18.12it/s]Capturing CUDA graphs (PIECEWISE):  48%|████▊     | 40/83 [00:02<00:02, 17.20it/s]Capturing CUDA graphs (PIECEWISE):  51%|█████     | 42/83 [00:02<00:02, 17.56it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 44/83 [00:02<00:02, 17.93it/s]Capturing CUDA graphs (PIECEWISE):  55%|█████▌    | 46/83 [00:02<00:02, 18.35it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 48/83 [00:02<00:01, 17.85it/s]Capturing CUDA graphs (PIECEWISE):  60%|██████    | 50/83 [00:02<00:01, 17.23it/s]Capturing CUDA graphs (PIECEWISE):  63%|██████▎   | 52/83 [00:03<00:01, 17.72it/s]Capturing CUDA graphs (PIECEWISE):  65%|██████▌   | 54/83 [00:03<00:01, 18.04it/s]Capturing CUDA graphs (PIECEWISE):  67%|██████▋   | 56/83 [00:03<00:01, 18.43it/s]Capturing CUDA graphs (PIECEWISE):  70%|██████▉   | 58/83 [00:03<00:01, 18.37it/s]Capturing CUDA graphs (PIECEWISE):  72%|███████▏  | 60/83 [00:03<00:01, 16.94it/s]Capturing CUDA graphs (PIECEWISE):  75%|███████▍  | 62/83 [00:03<00:01, 17.57it/s]Capturing CUDA graphs (PIECEWISE):  77%|███████▋  | 64/83 [00:03<00:01, 17.99it/s]Capturing CUDA graphs (PIECEWISE):  80%|███████▉  | 66/83 [00:03<00:00, 18.19it/s]Capturing CUDA graphs (PIECEWISE):  82%|████████▏ | 68/83 [00:03<00:00, 18.44it/s]Capturing CUDA graphs (PIECEWISE):  84%|████████▍ | 70/83 [00:04<00:00, 17.69it/s]Capturing CUDA graphs (PIECEWISE):  87%|████████▋ | 72/83 [00:04<00:00, 17.57it/s]Capturing CUDA graphs (PIECEWISE):  89%|████████▉ | 74/83 [00:04<00:00, 18.08it/s]Capturing CUDA graphs (PIECEWISE):  92%|█████████▏| 76/83 [00:04<00:00, 18.54it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 78/83 [00:04<00:00, 18.86it/s]Capturing CUDA graphs (PIECEWISE):  96%|█████████▋| 80/83 [00:04<00:00, 18.34it/s]Capturing CUDA graphs (PIECEWISE):  99%|█████████▉| 82/83 [00:04<00:00, 18.14it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:04<00:00, 17.28it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 21.48it/s]
+(EngineCore pid=6695) INFO 11-04 01:01:19 [model_runner.py:1087] Graph capturing finished in 5 secs, took 0.52 GiB
+(EngineCore pid=6695) INFO 11-04 01:01:19 [gpu_worker.py:692] Available KV cache memory: 24.29 GiB
+(EngineCore pid=6695) INFO 11-04 01:01:19 [gpu_worker.py:707] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9000 is equivalent to --gpu-memory-utilization=0.8868 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9132. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=6695) INFO 11-04 01:01:19 [kv_cache_utils.py:2464] GPU KV cache size: 530,358 tokens, Maximum concurrency for 12,288 tokens per request: 43.16x
+(EngineCore pid=6695) INFO 11-04 01:01:19 [kernel_warmup.py:172] JIT kernel warmup starting.
+(EngineCore pid=6695) INFO 11-04 01:01:19 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/83 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 2/83 [00:00<00:06, 13.48it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 4/83 [00:00<00:05, 15.46it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 6/83 [00:00<00:04, 16.94it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 8/83 [00:00<00:04, 17.73it/s]Capturing CUDA graphs (PIECEWISE):  13%|█▎        | 11/83 [00:00<00:03, 18.73it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 13/83 [00:00<00:03, 17.91it/s]Capturing CUDA graphs (PIECEWISE):  18%|█▊        | 15/83 [00:00<00:03, 17.16it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 18/83 [00:01<00:03, 18.21it/s]Capturing CUDA graphs (PIECEWISE):  24%|██▍       | 20/83 [00:01<00:03, 18.64it/s]Capturing CUDA graphs (PIECEWISE):  28%|██▊       | 23/83 [00:01<00:03, 19.17it/s]Capturing CUDA graphs (PIECEWISE):  30%|███       | 25/83 [00:01<00:03, 18.96it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 27/83 [00:01<00:03, 18.47it/s]Capturing CUDA graphs (PIECEWISE):  35%|███▍      | 29/83 [00:01<00:02, 18.82it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 31/83 [00:01<00:02, 19.07it/s]Capturing CUDA graphs (PIECEWISE):  40%|███▉      | 33/83 [00:01<00:02, 19.30it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 35/83 [00:01<00:02, 19.41it/s]Capturing CUDA graphs (PIECEWISE):  45%|████▍     | 37/83 [00:02<00:02, 19.19it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 39/83 [00:02<00:02, 18.59it/s]Capturing CUDA graphs (PIECEWISE):  49%|████▉     | 41/83 [00:02<00:02, 18.53it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 44/83 [00:02<00:02, 19.18it/s]Capturing CUDA graphs (PIECEWISE):  57%|█████▋    | 47/83 [00:02<00:01, 19.61it/s]Capturing CUDA graphs (PIECEWISE):  59%|█████▉    | 49/83 [00:02<00:01, 19.21it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████▏   | 51/83 [00:02<00:01, 18.83it/s]Capturing CUDA graphs (PIECEWISE):  65%|██████▌   | 54/83 [00:02<00:01, 19.28it/s]Capturing CUDA graphs (PIECEWISE):  69%|██████▊   | 57/83 [00:03<00:01, 19.42it/s]Capturing CUDA graphs (PIECEWISE):  71%|███████   | 59/83 [00:03<00:01, 19.54it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 61/83 [00:03<00:01, 19.25it/s]Capturing CUDA graphs (PIECEWISE):  76%|███████▌  | 63/83 [00:03<00:01, 18.60it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 65/83 [00:03<00:00, 18.70it/s]Capturing CUDA graphs (PIECEWISE):  82%|████████▏ | 68/83 [00:03<00:00, 19.22it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▌ | 71/83 [00:03<00:00, 19.53it/s]Capturing CUDA graphs (PIECEWISE):  88%|████████▊ | 73/83 [00:03<00:00, 19.06it/s]Capturing CUDA graphs (PIECEWISE):  90%|█████████ | 75/83 [00:04<00:00, 18.93it/s]Capturing CUDA graphs (PIECEWISE):  94%|█████████▍| 78/83 [00:04<00:00, 19.38it/s]Capturing CUDA graphs (PIECEWISE):  96%|█████████▋| 80/83 [00:04<00:00, 19.37it/s]Capturing CUDA graphs (PIECEWISE):  99%|█████████▉| 82/83 [00:04<00:00, 19.31it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 83/83 [00:04<00:00, 18.81it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/35 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   9%|▊         | 3/35 [00:00<00:01, 20.46it/s]Capturing CUDA graphs (FULL):  17%|█▋        | 6/35 [00:00<00:01, 19.69it/s]Capturing CUDA graphs (FULL):  26%|██▌       | 9/35 [00:00<00:01, 20.86it/s]Capturing CUDA graphs (FULL):  34%|███▍      | 12/35 [00:00<00:01, 21.39it/s]Capturing CUDA graphs (FULL):  43%|████▎     | 15/35 [00:00<00:00, 21.59it/s]Capturing CUDA graphs (FULL):  51%|█████▏    | 18/35 [00:00<00:00, 20.07it/s]Capturing CUDA graphs (FULL):  60%|██████    | 21/35 [00:01<00:00, 20.79it/s]Capturing CUDA graphs (FULL):  69%|██████▊   | 24/35 [00:01<00:00, 21.34it/s]Capturing CUDA graphs (FULL):  77%|███████▋  | 27/35 [00:01<00:00, 21.91it/s]Capturing CUDA graphs (FULL):  86%|████████▌ | 30/35 [00:01<00:00, 22.15it/s]Capturing CUDA graphs (FULL):  94%|█████████▍| 33/35 [00:01<00:00, 22.04it/s]Capturing CUDA graphs (FULL): 100%|██████████| 35/35 [00:01<00:00, 21.50it/s]
+(EngineCore pid=6695) INFO 11-04 01:01:27 [model_runner.py:1087] Graph capturing finished in 7 secs, took 0.26 GiB
+(EngineCore pid=6695) INFO 11-04 01:01:27 [gpu_worker.py:892] CUDA graph pool memory: 0.26 GiB (actual), 0.59 GiB (estimated), difference: 0.33 GiB (126.3%).
+(EngineCore pid=6695) INFO 11-04 01:01:27 [gpu_worker.py:955] Free memory on device (44.16/44.42 GiB) on startup. Desired GPU memory utilization is (0.9, 39.98 GiB). Actual usage is 14.72 GiB for consumed memory (weights + non-torch), 0.97 GiB for peak activation, and 0.26 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=25649147392` (23.89 GiB) to fit into requested memory, or `--kv-cache-memory=30135807488` (28.07 GiB) to fully utilize gpu memory. Current kv cache memory in use is 24.29 GiB.
+(EngineCore pid=6695) INFO 11-04 01:01:27 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=6695) INFO 11-04 01:01:28 [core.py:373] init engine (profile, create kv cache, warmup model) took 17.15 s (compilation: 0.24 s)
+(EngineCore pid=6695) INFO 11-04 01:01:28 [kv_cache_utils.py:772] kv cache group sizes [16, 16]
+(EngineCore pid=6695) INFO 11-04 01:01:28 [kv_cache_utils.py:773] kv lcm block sizes 16
+(EngineCore pid=6695) INFO 11-04 01:01:28 [kernel.py:408] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=6592) INFO 11-04 01:01:31 [hf.py:646] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+(MainProcess pid=6592) WARNING 11-04 01:01:59 [input_processor.py:375] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(EngineCore pid=6695) WARNING 11-04 01:02:00 [jit_monitor.py:140] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+     46s gpt_oss_20b decisions 0 active 80 queued 0
+     76s gpt_oss_20b decisions 117 active 80 queued 0
+    106s gpt_oss_20b decisions 205 active 80 queued 0
+    136s gpt_oss_20b decisions 309 active 80 queued 0
+    166s gpt_oss_20b decisions 406 active 80 queued 0
+    196s gpt_oss_20b decisions 493 active 80 queued 0
+    226s gpt_oss_20b decisions 587 active 80 queued 0
+    256s gpt_oss_20b decisions 661 active 80 queued 0
+    286s gpt_oss_20b decisions 738 active 80 queued 0
+    316s gpt_oss_20b decisions 804 active 80 queued 0
+    346s gpt_oss_20b decisions 898 active 80 queued 0
+    376s gpt_oss_20b decisions 979 active 80 queued 0
+    406s gpt_oss_20b decisions 1077 active 80 queued 0
+    436s gpt_oss_20b decisions 1153 active 80 queued 0
+    466s gpt_oss_20b decisions 1231 active 80 queued 0
+    496s gpt_oss_20b decisions 1322 active 80 queued 0
+    526s gpt_oss_20b decisions 1400 active 80 queued 0
+    556s gpt_oss_20b decisions 1470 active 80 queued 0
+    586s gpt_oss_20b decisions 1536 active 80 queued 0
+    616s gpt_oss_20b decisions 1606 active 80 queued 0
+    646s gpt_oss_20b decisions 1679 active 80 queued 0
+    676s gpt_oss_20b decisions 1755 active 80 queued 0
+    706s gpt_oss_20b decisions 1814 active 80 queued 0
+    736s gpt_oss_20b decisions 1879 active 80 queued 0
+    766s gpt_oss_20b decisions 1953 active 80 queued 0
+    796s gpt_oss_20b decisions 2025 active 80 queued 0
+    827s gpt_oss_20b decisions 2098 active 80 queued 0
+    857s gpt_oss_20b decisions 2180 active 80 queued 0
+    887s gpt_oss_20b decisions 2261 active 80 queued 0
+    917s gpt_oss_20b decisions 2331 active 80 queued 0
+    947s gpt_oss_20b decisions 2402 active 80 queued 0
+    977s gpt_oss_20b decisions 2469 active 80 queued 0
+   1007s gpt_oss_20b decisions 2543 active 80 queued 0
+   1037s gpt_oss_20b decisions 2609 active 80 queued 0
+   1067s gpt_oss_20b decisions 2689 active 80 queued 0
+   1097s gpt_oss_20b decisions 2759 active 80 queued 0
+   1127s gpt_oss_20b decisions 2819 active 80 queued 0
+   1157s gpt_oss_20b decisions 2875 active 80 queued 0
+   1187s gpt_oss_20b decisions 2941 active 80 queued 0
+   1217s gpt_oss_20b decisions 3006 active 80 queued 0
+   1247s gpt_oss_20b decisions 3072 active 80 queued 0
+   1277s gpt_oss_20b decisions 3147 active 80 queued 0
+   1307s gpt_oss_20b decisions 3213 active 80 queued 0
+   1337s gpt_oss_20b decisions 3272 active 80 queued 0
+   1367s gpt_oss_20b decisions 3336 active 80 queued 0
+   1397s gpt_oss_20b decisions 3386 active 80 queued 0
+   1427s gpt_oss_20b decisions 3448 active 80 queued 0
+   1457s gpt_oss_20b decisions 3496 active 80 queued 0
+   1487s gpt_oss_20b decisions 3555 active 80 queued 0
+   1517s gpt_oss_20b decisions 3622 active 80 queued 0
+   1547s gpt_oss_20b decisions 3694 active 80 queued 0
+   1577s gpt_oss_20b decisions 3768 active 80 queued 0
+   1607s gpt_oss_20b decisions 3837 active 80 queued 0
+   1637s gpt_oss_20b decisions 3907 active 80 queued 0
+   1667s gpt_oss_20b decisions 3975 active 80 queued 0
+   1697s gpt_oss_20b decisions 4035 active 79 queued 0
+   1727s gpt_oss_20b decisions 4105 active 79 queued 0
+   1757s gpt_oss_20b decisions 4176 active 79 queued 0
+   1787s gpt_oss_20b decisions 4239 active 79 queued 0
+   1817s gpt_oss_20b decisions 4301 active 79 queued 0
+   1847s gpt_oss_20b decisions 4360 active 78 queued 0
+   1877s gpt_oss_20b decisions 4423 active 78 queued 0
+   1907s gpt_oss_20b decisions 4490 active 78 queued 0
+   1937s gpt_oss_20b decisions 4555 active 78 queued 0
+   1967s gpt_oss_20b decisions 4623 active 78 queued 0
+   1998s gpt_oss_20b decisions 4696 active 78 queued 0
+   2028s gpt_oss_20b decisions 4760 active 77 queued 0
+   2058s gpt_oss_20b decisions 4832 active 77 queued 0
+   2088s gpt_oss_20b decisions 4884 active 76 queued 0
+   2118s gpt_oss_20b decisions 4943 active 75 queued 0
+   2148s gpt_oss_20b decisions 4992 active 75 queued 0
+   2178s gpt_oss_20b decisions 5039 active 74 queued 0
+   2208s gpt_oss_20b decisions 5085 active 74 queued 0
+   2238s gpt_oss_20b decisions 5142 active 73 queued 0
+   2268s gpt_oss_20b decisions 5194 active 73 queued 0
+   2298s gpt_oss_20b decisions 5261 active 72 queued 0
+   2328s gpt_oss_20b decisions 5327 active 72 queued 0
+   2358s gpt_oss_20b decisions 5387 active 72 queued 0
+   2388s gpt_oss_20b decisions 5455 active 71 queued 0
+   2418s gpt_oss_20b decisions 5500 active 70 queued 0
+   2448s gpt_oss_20b decisions 5548 active 70 queued 0
+   2478s gpt_oss_20b decisions 5596 active 70 queued 0
+   2508s gpt_oss_20b decisions 5643 active 70 queued 0
+   2538s gpt_oss_20b decisions 5692 active 70 queued 0
+   2568s gpt_oss_20b decisions 5756 active 69 queued 0
+   2598s gpt_oss_20b decisions 5803 active 69 queued 0
+   2628s gpt_oss_20b decisions 5842 active 69 queued 0
+   2658s gpt_oss_20b decisions 5890 active 69 queued 0
+   2688s gpt_oss_20b decisions 5946 active 68 queued 0
+   2718s gpt_oss_20b decisions 5997 active 68 queued 0
+   2748s gpt_oss_20b decisions 6046 active 68 queued 0
+   2778s gpt_oss_20b decisions 6098 active 66 queued 0
+   2808s gpt_oss_20b decisions 6155 active 66 queued 0
+   2838s gpt_oss_20b decisions 6206 active 66 queued 0
+   2868s gpt_oss_20b decisions 6262 active 66 queued 0
+   2898s gpt_oss_20b decisions 6310 active 66 queued 0
+   2928s gpt_oss_20b decisions 6355 active 65 queued 0
+   2958s gpt_oss_20b decisions 6394 active 65 queued 0
+   2988s gpt_oss_20b decisions 6437 active 65 queued 0
+   3018s gpt_oss_20b decisions 6486 active 65 queued 0
+   3048s gpt_oss_20b decisions 6537 active 65 queued 0
+   3078s gpt_oss_20b decisions 6590 active 64 queued 0
+   3108s gpt_oss_20b decisions 6655 active 64 queued 0
+   3138s gpt_oss_20b decisions 6703 active 64 queued 0
+   3168s gpt_oss_20b decisions 6762 active 64 queued 0
+   3198s gpt_oss_20b decisions 6802 active 64 queued 0
+   3228s gpt_oss_20b decisions 6843 active 64 queued 0
+   3258s gpt_oss_20b decisions 6892 active 64 queued 0
+   3288s gpt_oss_20b decisions 6934 active 64 queued 0
+   3318s gpt_oss_20b decisions 6985 active 64 queued 0
+   3348s gpt_oss_20b decisions 7024 active 64 queued 0
+   3378s gpt_oss_20b decisions 7074 active 64 queued 0
+   3408s gpt_oss_20b decisions 7121 active 64 queued 0
+   3438s gpt_oss_20b decisions 7170 active 63 queued 0
+   3468s gpt_oss_20b decisions 7212 active 63 queued 0
+   3499s gpt_oss_20b decisions 7259 active 63 queued 0
+   3529s gpt_oss_20b decisions 7303 active 63 queued 0
+   3559s gpt_oss_20b decisions 7350 active 60 queued 0
+   3589s gpt_oss_20b decisions 7392 active 60 queued 0
+   3619s gpt_oss_20b decisions 7447 active 59 queued 0
+   3649s gpt_oss_20b decisions 7493 active 59 queued 0
+   3679s gpt_oss_20b decisions 7542 active 56 queued 0
+   3709s gpt_oss_20b decisions 7581 active 55 queued 0
+   3739s gpt_oss_20b decisions 7620 active 55 queued 0
+   3769s gpt_oss_20b decisions 7662 active 55 queued 0
+   3799s gpt_oss_20b decisions 7694 active 54 queued 0
+   3829s gpt_oss_20b decisions 7733 active 53 queued 0
+   3859s gpt_oss_20b decisions 7772 active 53 queued 0
+   3889s gpt_oss_20b decisions 7821 active 53 queued 0
+   3919s gpt_oss_20b decisions 7867 active 52 queued 0
+   3949s gpt_oss_20b decisions 7912 active 52 queued 0
+   3979s gpt_oss_20b decisions 7957 active 50 queued 0
+   4009s gpt_oss_20b decisions 7997 active 50 queued 0
+   4039s gpt_oss_20b decisions 8036 active 50 queued 0
+   4069s gpt_oss_20b decisions 8071 active 49 queued 0
+   4099s gpt_oss_20b decisions 8107 active 49 queued 0
+   4129s gpt_oss_20b decisions 8143 active 47 queued 0
+   4159s gpt_oss_20b decisions 8193 active 47 queued 0
+   4189s gpt_oss_20b decisions 8237 active 47 queued 0
+   4219s gpt_oss_20b decisions 8274 active 47 queued 0
+   4249s gpt_oss_20b decisions 8316 active 47 queued 0
+   4279s gpt_oss_20b decisions 8357 active 47 queued 0
+   4309s gpt_oss_20b decisions 8397 active 47 queued 0
+   4339s gpt_oss_20b decisions 8427 active 45 queued 0
+   4369s gpt_oss_20b decisions 8458 active 45 queued 0
+   4399s gpt_oss_20b decisions 8491 active 45 queued 0
+   4429s gpt_oss_20b decisions 8522 active 45 queued 0
+   4459s gpt_oss_20b decisions 8547 active 45 queued 0
+   4489s gpt_oss_20b decisions 8581 active 45 queued 0
+   4519s gpt_oss_20b decisions 8612 active 44 queued 0
+   4549s gpt_oss_20b decisions 8642 active 44 queued 0
+   4579s gpt_oss_20b decisions 8681 active 44 queued 0
+   4609s gpt_oss_20b decisions 8702 active 44 queued 0
+   4639s gpt_oss_20b decisions 8728 active 43 queued 0
+   4669s gpt_oss_20b decisions 8760 active 43 queued 0
+   4699s gpt_oss_20b decisions 8783 active 43 queued 0
+   4729s gpt_oss_20b decisions 8811 active 42 queued 0
+   4759s gpt_oss_20b decisions 8843 active 42 queued 0
+   4789s gpt_oss_20b decisions 8870 active 42 queued 0
+   4819s gpt_oss_20b decisions 8905 active 42 queued 0
+   4849s gpt_oss_20b decisions 8945 active 41 queued 0
+   4879s gpt_oss_20b decisions 8975 active 41 queued 0
+   4909s gpt_oss_20b decisions 9012 active 40 queued 0
+   4939s gpt_oss_20b decisions 9039 active 40 queued 0
+   4969s gpt_oss_20b decisions 9066 active 40 queued 0
+   4999s gpt_oss_20b decisions 9082 active 40 queued 0
+   5030s gpt_oss_20b decisions 9120 active 40 queued 0
+   5060s gpt_oss_20b decisions 9156 active 40 queued 0
+   5090s gpt_oss_20b decisions 9181 active 40 queued 0
+   5120s gpt_oss_20b decisions 9211 active 40 queued 0
+   5150s gpt_oss_20b decisions 9243 active 39 queued 0
+   5180s gpt_oss_20b decisions 9277 active 39 queued 0
+   5210s gpt_oss_20b decisions 9315 active 39 queued 0
+   5240s gpt_oss_20b decisions 9344 active 39 queued 0
+   5270s gpt_oss_20b decisions 9372 active 39 queued 0
+   5300s gpt_oss_20b decisions 9403 active 39 queued 0
+   5330s gpt_oss_20b decisions 9428 active 39 queued 0
+   5360s gpt_oss_20b decisions 9453 active 39 queued 0
+   5390s gpt_oss_20b decisions 9481 active 39 queued 0
+   5420s gpt_oss_20b decisions 9510 active 39 queued 0
+   5450s gpt_oss_20b decisions 9528 active 38 queued 0
+   5480s gpt_oss_20b decisions 9558 active 38 queued 0
+   5510s gpt_oss_20b decisions 9577 active 38 queued 0
+   5540s gpt_oss_20b decisions 9598 active 37 queued 0
+   5570s gpt_oss_20b decisions 9625 active 37 queued 0
+   5600s gpt_oss_20b decisions 9649 active 37 queued 0
+   5630s gpt_oss_20b decisions 9676 active 37 queued 0
+   5660s gpt_oss_20b decisions 9709 active 36 queued 0
+   5690s gpt_oss_20b decisions 9738 active 36 queued 0
+   5720s gpt_oss_20b decisions 9769 active 36 queued 0
+   5750s gpt_oss_20b decisions 9805 active 36 queued 0
+   5780s gpt_oss_20b decisions 9838 active 35 queued 0
+   5810s gpt_oss_20b decisions 9874 active 35 queued 0
+   5840s gpt_oss_20b decisions 9901 active 35 queued 0
+   5870s gpt_oss_20b decisions 9930 active 35 queued 0
+   5900s gpt_oss_20b decisions 9959 active 35 queued 0
+   5930s gpt_oss_20b decisions 9989 active 35 queued 0
+   5960s gpt_oss_20b decisions 10017 active 35 queued 0
+   5990s gpt_oss_20b decisions 10056 active 35 queued 0
+   6020s gpt_oss_20b decisions 10090 active 35 queued 0
+   6050s gpt_oss_20b decisions 10118 active 35 queued 0
+   6080s gpt_oss_20b decisions 10140 active 34 queued 0
+   6110s gpt_oss_20b decisions 10159 active 34 queued 0
+   6140s gpt_oss_20b decisions 10181 active 33 queued 0
+   6170s gpt_oss_20b decisions 10215 active 33 queued 0
+   6200s gpt_oss_20b decisions 10244 active 33 queued 0
+   6230s gpt_oss_20b decisions 10265 active 33 queued 0
+   6260s gpt_oss_20b decisions 10290 active 33 queued 0
+   6290s gpt_oss_20b decisions 10313 active 33 queued 0
+   6320s gpt_oss_20b decisions 10338 active 33 queued 0
+   6350s gpt_oss_20b decisions 10362 active 32 queued 0
+   6380s gpt_oss_20b decisions 10380 active 32 queued 0
+   6410s gpt_oss_20b decisions 10403 active 32 queued 0
+   6440s gpt_oss_20b decisions 10434 active 32 queued 0
+   6470s gpt_oss_20b decisions 10452 active 32 queued 0
+   6500s gpt_oss_20b decisions 10485 active 32 queued 0
+   6530s gpt_oss_20b decisions 10514 active 32 queued 0
+   6560s gpt_oss_20b decisions 10550 active 32 queued 0
+   6590s gpt_oss_20b decisions 10577 active 32 queued 0
+   6620s gpt_oss_20b decisions 10602 active 32 queued 0
+   6650s gpt_oss_20b decisions 10622 active 31 queued 0
+   6680s gpt_oss_20b decisions 10638 active 31 queued 0
+   6710s gpt_oss_20b decisions 10661 active 31 queued 0
+   6740s gpt_oss_20b decisions 10683 active 31 queued 0
+   6770s gpt_oss_20b decisions 10704 active 31 queued 0
+   6800s gpt_oss_20b decisions 10729 active 31 queued 0
+   6830s gpt_oss_20b decisions 10752 active 31 queued 0
+   6860s gpt_oss_20b decisions 10775 active 31 queued 0
+   6890s gpt_oss_20b decisions 10801 active 31 queued 0
+   6920s gpt_oss_20b decisions 10830 active 31 queued 0
+   6950s gpt_oss_20b decisions 10848 active 31 queued 0
+   6980s gpt_oss_20b decisions 10874 active 31 queued 0
+   7010s gpt_oss_20b decisions 10891 active 31 queued 0
+   7040s gpt_oss_20b decisions 10920 active 31 queued 0
+   7070s gpt_oss_20b decisions 10944 active 31 queued 0
+   7100s gpt_oss_20b decisions 10964 active 31 queued 0
+   7130s gpt_oss_20b decisions 10987 active 31 queued 0
+   7161s gpt_oss_20b decisions 11011 active 31 queued 0
+   7191s gpt_oss_20b decisions 11030 active 31 queued 0
+   7221s gpt_oss_20b decisions 11055 active 29 queued 0
+   7251s gpt_oss_20b decisions 11081 active 29 queued 0
+   7281s gpt_oss_20b decisions 11102 active 29 queued 0
+   7311s gpt_oss_20b decisions 11123 active 27 queued 0
+   7341s gpt_oss_20b decisions 11143 active 26 queued 0
+   7371s gpt_oss_20b decisions 11160 active 25 queued 0
+   7401s gpt_oss_20b decisions 11183 active 25 queued 0
+   7431s gpt_oss_20b decisions 11211 active 25 queued 0
+   7461s gpt_oss_20b decisions 11236 active 25 queued 0
+   7491s gpt_oss_20b decisions 11264 active 24 queued 0
+   7521s gpt_oss_20b decisions 11280 active 23 queued 0
+   7551s gpt_oss_20b decisions 11299 active 21 queued 0
+   7581s gpt_oss_20b decisions 11319 active 21 queued 0
+   7611s gpt_oss_20b decisions 11339 active 21 queued 0
+   7641s gpt_oss_20b decisions 11358 active 21 queued 0
+   7671s gpt_oss_20b decisions 11377 active 21 queued 0
+   7701s gpt_oss_20b decisions 11398 active 21 queued 0
+   7731s gpt_oss_20b decisions 11417 active 21 queued 0
+   7761s gpt_oss_20b decisions 11430 active 21 queued 0
+   7791s gpt_oss_20b decisions 11444 active 21 queued 0
+   7821s gpt_oss_20b decisions 11458 active 21 queued 0
+   7851s gpt_oss_20b decisions 11472 active 21 queued 0
+   7881s gpt_oss_20b decisions 11483 active 20 queued 0
+   7911s gpt_oss_20b decisions 11501 active 20 queued 0
+   7941s gpt_oss_20b decisions 11519 active 19 queued 0
+   7971s gpt_oss_20b decisions 11533 active 19 queued 0
+   8001s gpt_oss_20b decisions 11551 active 19 queued 0
+   8031s gpt_oss_20b decisions 11569 active 18 queued 0
+   8061s gpt_oss_20b decisions 11585 active 18 queued 0
+   8091s gpt_oss_20b decisions 11608 active 17 queued 0
+   8121s gpt_oss_20b decisions 11616 active 17 queued 0
+   8151s gpt_oss_20b decisions 11625 active 17 queued 0
+   8181s gpt_oss_20b decisions 11639 active 17 queued 0
+   8211s gpt_oss_20b decisions 11657 active 17 queued 0
+   8241s gpt_oss_20b decisions 11676 active 17 queued 0
+   8271s gpt_oss_20b decisions 11693 active 17 queued 0
+   8301s gpt_oss_20b decisions 11707 active 17 queued 0
+   8331s gpt_oss_20b decisions 11725 active 17 queued 0
+   8361s gpt_oss_20b decisions 11740 active 17 queued 0
+   8391s gpt_oss_20b decisions 11752 active 17 queued 0
+   8421s gpt_oss_20b decisions 11770 active 17 queued 0
+   8451s gpt_oss_20b decisions 11784 active 17 queued 0
+   8481s gpt_oss_20b decisions 11797 active 17 queued 0
+   8511s gpt_oss_20b decisions 11813 active 17 queued 0
+   8541s gpt_oss_20b decisions 11834 active 17 queued 0
+   8571s gpt_oss_20b decisions 11852 active 17 queued 0
+   8601s gpt_oss_20b decisions 11867 active 17 queued 0
+   8631s gpt_oss_20b decisions 11889 active 17 queued 0
+   8661s gpt_oss_20b decisions 11909 active 17 queued 0
+   8691s gpt_oss_20b decisions 11930 active 16 queued 0
+   8721s gpt_oss_20b decisions 11950 active 16 queued 0
+   8751s gpt_oss_20b decisions 11966 active 15 queued 0
+   8781s gpt_oss_20b decisions 11986 active 15 queued 0
+   8811s gpt_oss_20b decisions 12002 active 15 queued 0
+   8841s gpt_oss_20b decisions 12019 active 14 queued 0
+   8871s gpt_oss_20b decisions 12040 active 14 queued 0
+   8901s gpt_oss_20b decisions 12056 active 14 queued 0
+   8931s gpt_oss_20b decisions 12063 active 14 queued 0
+   8961s gpt_oss_20b decisions 12083 active 14 queued 0
+   8991s gpt_oss_20b decisions 12098 active 14 queued 0
+   9021s gpt_oss_20b decisions 12116 active 14 queued 0
+   9051s gpt_oss_20b decisions 12134 active 14 queued 0
+   9081s gpt_oss_20b decisions 12148 active 14 queued 0
+   9111s gpt_oss_20b decisions 12166 active 14 queued 0
+   9141s gpt_oss_20b decisions 12181 active 14 queued 0
+   9171s gpt_oss_20b decisions 12196 active 14 queued 0
+   9201s gpt_oss_20b decisions 12206 active 14 queued 0
+   9231s gpt_oss_20b decisions 12221 active 14 queued 0
+   9261s gpt_oss_20b decisions 12238 active 14 queued 0
+   9291s gpt_oss_20b decisions 12248 active 14 queued 0
+   9321s gpt_oss_20b decisions 12265 active 14 queued 0
+   9351s gpt_oss_20b decisions 12283 active 14 queued 0
+   9381s gpt_oss_20b decisions 12298 active 14 queued 0
+   9411s gpt_oss_20b decisions 12313 active 14 queued 0
+   9441s gpt_oss_20b decisions 12330 active 14 queued 0
+   9471s gpt_oss_20b decisions 12342 active 14 queued 0
+   9501s gpt_oss_20b decisions 12354 active 14 queued 0
+   9531s gpt_oss_20b decisions 12368 active 14 queued 0
+   9562s gpt_oss_20b decisions 12381 active 14 queued 0
+   9592s gpt_oss_20b decisions 12389 active 14 queued 0
+   9622s gpt_oss_20b decisions 12402 active 14 queued 0
+   9652s gpt_oss_20b decisions 12417 active 14 queued 0
+   9682s gpt_oss_20b decisions 12432 active 14 queued 0
+   9712s gpt_oss_20b decisions 12447 active 14 queued 0
+   9742s gpt_oss_20b decisions 12467 active 14 queued 0
+   9772s gpt_oss_20b decisions 12486 active 14 queued 0
+   9802s gpt_oss_20b decisions 12504 active 13 queued 0
+   9832s gpt_oss_20b decisions 12519 active 13 queued 0
+   9862s gpt_oss_20b decisions 12534 active 13 queued 0
+   9892s gpt_oss_20b decisions 12549 active 13 queued 0
+   9922s gpt_oss_20b decisions 12562 active 13 queued 0
+   9952s gpt_oss_20b decisions 12573 active 13 queued 0
+   9982s gpt_oss_20b decisions 12586 active 13 queued 0
+  10012s gpt_oss_20b decisions 12603 active 13 queued 0
+  10042s gpt_oss_20b decisions 12619 active 13 queued 0
+  10072s gpt_oss_20b decisions 12637 active 13 queued 0
+  10102s gpt_oss_20b decisions 12644 active 13 queued 0
+  10132s gpt_oss_20b decisions 12659 active 13 queued 0
+  10162s gpt_oss_20b decisions 12674 active 13 queued 0
+  10192s gpt_oss_20b decisions 12684 active 12 queued 0
+  10222s gpt_oss_20b decisions 12692 active 12 queued 0
+  10252s gpt_oss_20b decisions 12706 active 12 queued 0
+  10282s gpt_oss_20b decisions 12714 active 12 queued 0
+  10312s gpt_oss_20b decisions 12723 active 12 queued 0
+  10342s gpt_oss_20b decisions 12736 active 12 queued 0
+  10372s gpt_oss_20b decisions 12747 active 12 queued 0
+  10402s gpt_oss_20b decisions 12758 active 12 queued 0
+  10432s gpt_oss_20b decisions 12769 active 11 queued 0
+  10462s gpt_oss_20b decisions 12783 active 11 queued 0
+  10492s gpt_oss_20b decisions 12792 active 11 queued 0
+  10522s gpt_oss_20b decisions 12807 active 11 queued 0
+  10552s gpt_oss_20b decisions 12818 active 11 queued 0
+  10582s gpt_oss_20b decisions 12831 active 11 queued 0
+  10612s gpt_oss_20b decisions 12842 active 11 queued 0
+  10642s gpt_oss_20b decisions 12859 active 11 queued 0
+  10672s gpt_oss_20b decisions 12871 active 11 queued 0
+  10702s gpt_oss_20b decisions 12881 active 11 queued 0
+  10732s gpt_oss_20b decisions 12897 active 11 queued 0
+  10762s gpt_oss_20b decisions 12911 active 11 queued 0
+  10792s gpt_oss_20b decisions 12921 active 11 queued 0
+  10822s gpt_oss_20b decisions 12929 active 11 queued 0
+  10852s gpt_oss_20b decisions 12939 active 11 queued 0
+  10882s gpt_oss_20b decisions 12952 active 11 queued 0
+  10912s gpt_oss_20b decisions 12963 active 11 queued 0
+  10942s gpt_oss_20b decisions 12979 active 11 queued 0
+  10972s gpt_oss_20b decisions 12990 active 10 queued 0
+  11002s gpt_oss_20b decisions 13001 active 10 queued 0
+  11032s gpt_oss_20b decisions 13013 active 9 queued 0
+  11062s gpt_oss_20b decisions 13026 active 9 queued 0
+  11092s gpt_oss_20b decisions 13035 active 9 queued 0
+  11122s gpt_oss_20b decisions 13042 active 9 queued 0
+  11152s gpt_oss_20b decisions 13045 active 9 queued 0
+  11182s gpt_oss_20b decisions 13053 active 9 queued 0
+  11212s gpt_oss_20b decisions 13060 active 8 queued 0
+  11242s gpt_oss_20b decisions 13069 active 8 queued 0
+  11272s gpt_oss_20b decisions 13080 active 8 queued 0
+  11302s gpt_oss_20b decisions 13089 active 8 queued 0
+  11332s gpt_oss_20b decisions 13097 active 8 queued 0
+  11362s gpt_oss_20b decisions 13103 active 8 queued 0
+  11392s gpt_oss_20b decisions 13106 active 8 queued 0
+  11422s gpt_oss_20b decisions 13114 active 8 queued 0
+  11452s gpt_oss_20b decisions 13124 active 8 queued 0
+  11482s gpt_oss_20b decisions 13126 active 8 queued 0
+  11512s gpt_oss_20b decisions 13133 active 8 queued 0
+  11542s gpt_oss_20b decisions 13140 active 8 queued 0
+  11572s gpt_oss_20b decisions 13147 active 8 queued 0
+  11602s gpt_oss_20b decisions 13154 active 8 queued 0
+  11632s gpt_oss_20b decisions 13163 active 8 queued 0
+  11662s gpt_oss_20b decisions 13173 active 8 queued 0
+  11692s gpt_oss_20b decisions 13179 active 8 queued 0
+  11722s gpt_oss_20b decisions 13187 active 8 queued 0
+  11752s gpt_oss_20b decisions 13195 active 8 queued 0
+  11782s gpt_oss_20b decisions 13204 active 8 queued 0
+  11812s gpt_oss_20b decisions 13212 active 8 queued 0
+  11842s gpt_oss_20b decisions 13222 active 8 queued 0
+  11872s gpt_oss_20b decisions 13226 active 8 queued 0
+  11902s gpt_oss_20b decisions 13233 active 8 queued 0
+  11932s gpt_oss_20b decisions 13239 active 8 queued 0
+  11962s gpt_oss_20b decisions 13243 active 8 queued 0
+  11992s gpt_oss_20b decisions 13255 active 8 queued 0
+  12022s gpt_oss_20b decisions 13260 active 8 queued 0
+  12052s gpt_oss_20b decisions 13265 active 8 queued 0
+  12082s gpt_oss_20b decisions 13274 active 8 queued 0
+  12112s gpt_oss_20b decisions 13277 active 8 queued 0
+  12142s gpt_oss_20b decisions 13289 active 8 queued 0
+  12172s gpt_oss_20b decisions 13295 active 8 queued 0
+  12202s gpt_oss_20b decisions 13305 active 8 queued 0
+  12232s gpt_oss_20b decisions 13314 active 8 queued 0
+  12262s gpt_oss_20b decisions 13321 active 8 queued 0
+  12292s gpt_oss_20b decisions 13331 active 8 queued 0
+  12322s gpt_oss_20b decisions 13338 active 8 queued 0
+  12352s gpt_oss_20b decisions 13343 active 8 queued 0
+  12382s gpt_oss_20b decisions 13352 active 8 queued 0
+  12412s gpt_oss_20b decisions 13357 active 8 queued 0
+  12442s gpt_oss_20b decisions 13361 active 8 queued 0
+  12473s gpt_oss_20b decisions 13367 active 8 queued 0
+  12503s gpt_oss_20b decisions 13372 active 8 queued 0
+  12533s gpt_oss_20b decisions 13378 active 8 queued 0
+  12563s gpt_oss_20b decisions 13393 active 8 queued 0
+  12593s gpt_oss_20b decisions 13400 active 8 queued 0
+  12623s gpt_oss_20b decisions 13404 active 8 queued 0
+  12653s gpt_oss_20b decisions 13412 active 8 queued 0
+  12683s gpt_oss_20b decisions 13420 active 8 queued 0
+  12713s gpt_oss_20b decisions 13426 active 8 queued 0
+  12743s gpt_oss_20b decisions 13434 active 8 queued 0
+  12773s gpt_oss_20b decisions 13442 active 8 queued 0
+  12803s gpt_oss_20b decisions 13448 active 8 queued 0
+  12833s gpt_oss_20b decisions 13455 active 8 queued 0
+  12863s gpt_oss_20b decisions 13460 active 8 queued 0
+  12893s gpt_oss_20b decisions 13467 active 8 queued 0
+  12923s gpt_oss_20b decisions 13474 active 8 queued 0
+  12953s gpt_oss_20b decisions 13480 active 8 queued 0
+  12983s gpt_oss_20b decisions 13484 active 8 queued 0
+  13013s gpt_oss_20b decisions 13490 active 8 queued 0
+  13043s gpt_oss_20b decisions 13498 active 8 queued 0
+  13073s gpt_oss_20b decisions 13504 active 8 queued 0
+  13103s gpt_oss_20b decisions 13513 active 8 queued 0
+  13133s gpt_oss_20b decisions 13522 active 8 queued 0
+  13163s gpt_oss_20b decisions 13532 active 8 queued 0
+  13193s gpt_oss_20b decisions 13541 active 8 queued 0
+  13223s gpt_oss_20b decisions 13551 active 8 queued 0
+  13253s gpt_oss_20b decisions 13558 active 8 queued 0
+  13283s gpt_oss_20b decisions 13567 active 8 queued 0
+  13313s gpt_oss_20b decisions 13574 active 8 queued 0
+  13343s gpt_oss_20b decisions 13580 active 8 queued 0
+  13373s gpt_oss_20b decisions 13589 active 8 queued 0
+  13403s gpt_oss_20b decisions 13598 active 8 queued 0
+  13433s gpt_oss_20b decisions 13602 active 8 queued 0
+  13463s gpt_oss_20b decisions 13609 active 8 queued 0
+  13493s gpt_oss_20b decisions 13612 active 8 queued 0
+  13523s gpt_oss_20b decisions 13618 active 8 queued 0
+  13553s gpt_oss_20b decisions 13623 active 8 queued 0
+  13583s gpt_oss_20b decisions 13630 active 8 queued 0
+  13613s gpt_oss_20b decisions 13641 active 8 queued 0
+  13643s gpt_oss_20b decisions 13646 active 8 queued 0
+  13673s gpt_oss_20b decisions 13652 active 8 queued 0
+  13703s gpt_oss_20b decisions 13660 active 8 queued 0
+  13733s gpt_oss_20b decisions 13666 active 8 queued 0
+  13763s gpt_oss_20b decisions 13675 active 8 queued 0
+  13793s gpt_oss_20b decisions 13679 active 8 queued 0
+  13823s gpt_oss_20b decisions 13687 active 8 queued 0
+  13853s gpt_oss_20b decisions 13690 active 8 queued 0
+  13883s gpt_oss_20b decisions 13698 active 7 queued 0
+  13913s gpt_oss_20b decisions 13707 active 7 queued 0
+  13943s gpt_oss_20b decisions 13713 active 7 queued 0
+  13973s gpt_oss_20b decisions 13724 active 7 queued 0
+  14003s gpt_oss_20b decisions 13733 active 7 queued 0
+  14033s gpt_oss_20b decisions 13742 active 7 queued 0
+  14063s gpt_oss_20b decisions 13749 active 7 queued 0
+  14093s gpt_oss_20b decisions 13754 active 7 queued 0
+  14123s gpt_oss_20b decisions 13760 active 7 queued 0
+  14153s gpt_oss_20b decisions 13768 active 7 queued 0
+  14183s gpt_oss_20b decisions 13775 active 7 queued 0
+  14213s gpt_oss_20b decisions 13783 active 6 queued 0
+  14243s gpt_oss_20b decisions 13789 active 6 queued 0
+  14273s gpt_oss_20b decisions 13797 active 6 queued 0
+  14303s gpt_oss_20b decisions 13806 active 6 queued 0
+  14333s gpt_oss_20b decisions 13813 active 6 queued 0
+  14363s gpt_oss_20b decisions 13822 active 5 queued 0
+  14393s gpt_oss_20b decisions 13827 active 5 queued 0
+  14423s gpt_oss_20b decisions 13832 active 5 queued 0
+  14453s gpt_oss_20b decisions 13836 active 5 queued 0
+  14483s gpt_oss_20b decisions 13843 active 5 queued 0
+  14513s gpt_oss_20b decisions 13847 active 5 queued 0
+  14543s gpt_oss_20b decisions 13852 active 5 queued 0
+  14573s gpt_oss_20b decisions 13859 active 5 queued 0
+  14603s gpt_oss_20b decisions 13869 active 5 queued 0
+  14633s gpt_oss_20b decisions 13876 active 5 queued 0
+  14663s gpt_oss_20b decisions 13881 active 4 queued 0
+  14693s gpt_oss_20b decisions 13888 active 4 queued 0
+  14723s gpt_oss_20b decisions 13891 active 4 queued 0
+  14753s gpt_oss_20b decisions 13893 active 4 queued 0
+  14783s gpt_oss_20b decisions 13898 active 4 queued 0
+  14813s gpt_oss_20b decisions 13904 active 4 queued 0
+  14843s gpt_oss_20b decisions 13909 active 4 queued 0
+  14873s gpt_oss_20b decisions 13911 active 4 queued 0
+  14903s gpt_oss_20b decisions 13914 active 4 queued 0
+  14933s gpt_oss_20b decisions 13918 active 4 queued 0
+  14963s gpt_oss_20b decisions 13924 active 4 queued 0
+  14993s gpt_oss_20b decisions 13929 active 4 queued 0
+  15023s gpt_oss_20b decisions 13933 active 4 queued 0
+  15053s gpt_oss_20b decisions 13937 active 4 queued 0
+  15083s gpt_oss_20b decisions 13943 active 4 queued 0
+  15113s gpt_oss_20b decisions 13946 active 3 queued 0
+  15143s gpt_oss_20b decisions 13948 active 3 queued 0
+  15173s gpt_oss_20b decisions 13951 active 3 queued 0
+  15203s gpt_oss_20b decisions 13954 active 3 queued 0
+  15233s gpt_oss_20b decisions 13956 active 3 queued 0
+  15263s gpt_oss_20b decisions 13957 active 3 queued 0
+  15293s gpt_oss_20b decisions 13961 active 3 queued 0
+  15323s gpt_oss_20b decisions 13963 active 3 queued 0
+  15353s gpt_oss_20b decisions 13965 active 3 queued 0
+  15383s gpt_oss_20b decisions 13969 active 3 queued 0
+  15413s gpt_oss_20b decisions 13973 active 3 queued 0
+  15443s gpt_oss_20b decisions 13978 active 3 queued 0
+  15473s gpt_oss_20b decisions 13980 active 3 queued 0
+  15503s gpt_oss_20b decisions 13984 active 3 queued 0
+  15533s gpt_oss_20b decisions 13987 active 3 queued 0
+  15563s gpt_oss_20b decisions 13993 active 2 queued 0
+  15593s gpt_oss_20b decisions 13994 active 1 queued 0
+  15623s gpt_oss_20b decisions 13995 active 1 queued 0
+  15653s gpt_oss_20b decisions 13997 active 1 queued 0
+  15683s gpt_oss_20b decisions 13998 active 1 queued 0
+  15713s gpt_oss_20b decisions 14000 active 1 queued 0
+  15743s gpt_oss_20b decisions 14000 active 1 queued 0
+  15773s gpt_oss_20b decisions 14001 active 1 queued 0
+  15803s gpt_oss_20b decisions 14002 active 1 queued 0
+  15833s gpt_oss_20b decisions 14002 active 1 queued 0
+  15863s gpt_oss_20b decisions 14004 active 1 queued 0
+  15893s gpt_oss_20b decisions 14006 active 1 queued 0
+  15923s gpt_oss_20b decisions 14010 active 1 queued 0
+  15953s gpt_oss_20b decisions 14012 active 1 queued 0
+  15983s gpt_oss_20b decisions 14014 active 1 queued 0
+  16013s gpt_oss_20b decisions 14014 active 1 queued 0
+  16043s gpt_oss_20b decisions 14017 active 1 queued 0
+  16073s gpt_oss_20b decisions 14018 active 1 queued 0
+  16103s gpt_oss_20b decisions 14020 active 1 queued 0
+{"model": "gpt_oss_20b", "max_tokens": 4096, "decisions": 14022, "generated_tokens": 16428552, "wall_s": 16118.2, "jobs": 80, "run": 80, "loop": "async", "gpu": "NVIDIA A40", "spec": "none"}
+(MainProcess pid=6592) INFO 11-04 05:30:12 [utils.py:638] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=6695) INFO 11-04 05:30:12 [core.py:1409] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=6695) INFO 11-04 05:30:12 [core.py:1558] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=6695) INFO 11-04 05:30:12 [core.py:1589] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=6695) INFO 11-04 05:30:12 [core.py:1422] [shutdown] EngineCore: exiting busy loop
+(MainProcess pid=6592) WARNING 11-04 05:30:17 [utils.py:658] [shutdown] Process manager: force killing remaining processes count=1
+(MainProcess pid=6592) WARNING 11-04 05:30:17 [utils.py:663] [shutdown] Process manager: force killing remaining process EngineCore pid 6695
+>> done at 4.8679 h

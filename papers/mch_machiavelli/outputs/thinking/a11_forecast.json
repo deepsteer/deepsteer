@@ -1,0 +1,19 @@
+{
+ "model": "gpt_oss_20b",
+ "gpu": "NVIDIA A40",
+ "a100h_per_hour": 0.32,
+ "stage0_rate_per_episode": {
+  "none": 57.97329455314649,
+  "ngram": 46.48678907299597
+ },
+ "spec": "none",
+ "single_sequence_rate": 73.6351898355672,
+ "longest_episode_tokens": 1910591,
+ "serial_h": 7.207419759592641,
+ "elapsed_h": 0.3729,
+ "forecast_h": 7.630319759592641,
+ "forecast_a100h": 2.441702323069645,
+ "envelope_left_a100h": 4.8,
+ "wall_cap_h": 14.6875,
+ "continue_": true
+}

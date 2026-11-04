@@ -553,6 +553,14 @@ artifact.
     - *Unchanged from Amendment 10:* the agents, renders, the cap rule, H1 to H3 and their branches,
       GPT-OSS's H3 verdict read as "the regime" with its three rivals, trace saving, the off-repository
       backup and the license gate on any training.
+  - **Runner note to Amendment 11 (2026-11-04; no registered rule or measurement changes).** The
+    third thinking pod got an A40 (85 engine workers allowed by its memory). Stage 0 ran at 58.0
+    tokens/s per episode without speculative decoding and 46.5 with it, so the guard dropped it: the
+    zero-GPU reading that verification costs little did not hold on the A40. The forecast was 2.44
+    A100-h (7.63 h) against 4.8, and the cell then ran all 80 episodes to completion in 4.48 h (pod
+    total 4.87 h, about 1.6 A100-h): 14,022 decisions, every attempt's trace saved (14,886), fallback
+    ThinkCoTAgent 2.4% and ThinkGoodCoTAgent 0.3%. Spend on the thinking-on rows: about 4.8 of 8.0
+    A100-h. H1 to H3 are not computed; their analysis script is committed before it runs.
 - **MCH-G1 (approved at G0, Amendment 3): harness validation on the M4**, per Amendment 5: a small
   open model through the paper's non-chat path, greedy and sampled, checking parity, the fallback
   rate and run-to-run stability, with k = 2 episodes per game on all 30 games for one agent so the
