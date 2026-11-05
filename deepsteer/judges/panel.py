@@ -81,3 +81,35 @@ def conflict_threshold(calibration_disagreements: list[float], quantile: float =
 def is_conflict(votes: list[str | None], threshold: float) -> bool:
     """An item is a panel-detected conflict when its disagreement exceeds the threshold."""
     return disagreement(votes) > threshold
+
+
+def _binom_quantile(n: int, p: float, q: float) -> int:
+    """Smallest k with P(Binomial(n, p) <= k) >= q."""
+    from math import comb
+
+    acc = 0.0
+    for k in range(n + 1):
+        acc += comb(n, k) * p ** k * (1 - p) ** (n - k)
+        if acc >= q:
+            return k
+    return n
+
+
+def root_rate_tags(
+    applications: dict[str, list[list[str | None]]], noise_rate: float, quantile: float = 0.9
+) -> dict[str, dict]:
+    """The root-rate rule for panel-detected ``T_conf`` (CST_PLAN Amendment 1, D7).
+
+    ``applications`` maps a root tenet to the panel's votes on each of its applications (one vote
+    list per scenario). A root is tagged when its count of non-unanimous applications exceeds the
+    ``quantile`` of Binomial(m, ``noise_rate``), where ``noise_rate`` is the non-unanimity rate the
+    panel shows on settled calibration items. Under noise alone about ``1 - quantile`` of roots are
+    tagged, however many applications each root has; the any-dissent rule would tag most roots.
+    """
+    out = {}
+    for root, apps in applications.items():
+        m = len(apps)
+        k = sum(disagreement(v) > 0 for v in apps)
+        bar = _binom_quantile(m, noise_rate, quantile)
+        out[root] = {"m": m, "dissent": k, "bar": bar, "tagged": k > bar}
+    return out

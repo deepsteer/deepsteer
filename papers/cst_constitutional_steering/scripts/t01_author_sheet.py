@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""CST T0.1: the author's calibration sheet (CST_PLAN §2.2), a seeded draw stratified by kind.
+"""CST T0.1: the author's calibration sheet for the tenet extraction (CST_PLAN §2.2).
 
-    /opt/homebrew/bin/python3.13 papers/cst_constitutional_steering/scripts/t01_author_sheet.py
+    t01_author_sheet.py sheet    # write T01_AUTHOR_CHECK.md (15 items; seed 20261104)
+    t01_author_sheet.py score    # read the author's marks back and compute the statistic
 
-10 tenets from C_anth and 5 from C_spec of the tenet-set version given (default v2), written to
-``T01_AUTHOR_CHECK.md`` with the ids in ``data/t01_author_check_ids.json``.
+Author sheets follow one form (author, 2026-11-04): one question per item, one mark, plain
+language, no internal ids. The item-to-tenet map lives in ``data/t01_author_check_ids.json``. The
+draw is unchanged from the first sheet: 10 tenets from C_anth and 5 from C_spec (v2), seeded and
+stratified by kind.
 """
 
 from __future__ import annotations
@@ -12,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -21,26 +25,25 @@ sys.path.insert(0, str(ROOT))
 from deepsteer.constitutions import TenetSet  # noqa: E402
 
 CST = ROOT / "papers" / "cst_constitutional_steering"
+SHEET = CST / "T01_AUTHOR_CHECK.md"
+IDS = CST / "data" / "t01_author_check_ids.json"
 SEED = 20261104
 PICKS = {"C_anth": 10, "C_spec": 5}
+DOC_NAME = {"C_anth": "Anthropic's constitution", "C_spec": "OpenAI's Model Spec"}
+QUESTION = "Does the claim say what the quote says, no more and no less?"
+HEADER = (
+    "Each item below shows a passage quoted from a published AI constitution and the one-sentence "
+    "claim our extraction drew from it. For each, answer one question: does the claim say what the "
+    "quote says, no more and no less? Mark yes or no, and if no, say what is off (a condition "
+    "dropped, a hedge turned into a rule, something added). Your marks are a human reading of the "
+    "extraction: the share of claims you mark faithful, and the model judges' agreement with your "
+    "marks, are reported at S0 as the calibration of the tenet set. You are a calibration reader, "
+    "not the label source.")
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--tenets", default="v2")
-    tv = ap.parse_args().tenets
+def draw(tv: str = "v2") -> list[tuple[str, object]]:
     rng = random.Random(SEED)
-    out = [f"# CST T0.1 author calibration sheet (tenets {tv}; 15 items; seed {SEED})", "",
-           "For each tenet, against the quoted passage and its section in the pinned body:",
-           "- **S** supported: the passage states this behavior (y/n)",
-           "- **A** accurate: claim and conditions match the text, nothing added or dropped (y/n)",
-           "- **K** kind correct (directive / prohibition / priority / permission / disposition)",
-           "- **C** contested: following it could conflict with another tenet in a scenario the "
-           "document leaves open (y/n; quote the other passage if y)", "",
-           "Stratified by kind within each document. The panel's reliability against these marks "
-           "is reported at G1; the author is a calibration reader, not the label source "
-           "(CST_PLAN §2.2).", ""]
-    ids = []
+    out = []
     for d, n in PICKS.items():
         ts = TenetSet.load(CST / "data" / f"tenets_{d}_{tv}.json")
         by: dict[str, list] = {}
@@ -52,17 +55,52 @@ def main() -> None:
             if pool:
                 sel.append(rng.choice(pool))
             i += 1
-        for t in sel:
-            ids.append(t.tenet_id)
-            out += [f"## {t.tenet_id} ({d}, {t.section}, {t.kind}; {t.notes.split(';')[0]})", "",
-                    f"> {t.quote}", "", f"**Claim.** {t.claim}  ",
-                    f"**Conditions.** {t.conditions}", "",
-                    "S: __  A: __  K: __  C: __  note:", ""]
-    (CST / "T01_AUTHOR_CHECK.md").write_text("\n".join(out) + "\n")
-    (CST / "data" / "t01_author_check_ids.json").write_text(
-        json.dumps({"seed": SEED, "tenets": tv, "ids": ids}, indent=1) + "\n")
-    print(ids)
+        out += [(d, t) for t in sel]
+    return out
+
+
+def sheet() -> None:
+    items = draw()
+    lines = ["# Tenet extraction check (15 items)", "", HEADER, ""]
+    for k, (d, t) in enumerate(items, 1):
+        lines += [f"## Item {k} ({DOC_NAME[d]})", "", "**Quote**", "", f"> {t.quote}", "",
+                  "**Claim**", "", t.claim, "",
+                  f"When it applies: {t.conditions or 'always'}", "",
+                  f"{QUESTION}", "", "**Mark:** yes / no", "", "**If no, what is off:**", ""]
+    SHEET.write_text("\n".join(lines) + "\n")
+    IDS.write_text(json.dumps({"seed": SEED, "tenets": "v2", "question": QUESTION,
+                               "items": {str(k): t.tenet_id for k, (_, t) in
+                                         enumerate(items, 1)}}, indent=1) + "\n")
+    print([t.tenet_id for _, t in items])
+
+
+def read_marks(path: Path, allowed: tuple[str, ...]) -> dict[str, str]:
+    """Item number → the single mark the author kept (the line '**Mark:** <word>')."""
+    marks, item = {}, None
+    for line in path.read_text().splitlines():
+        m = re.match(r"## Item (\d+)", line)
+        if m:
+            item = m.group(1)
+        m = re.match(r"\*\*Mark:\*\*\s*(.+)$", line)
+        if m and item:
+            v = m.group(1).strip().lower()
+            if v in allowed:
+                marks[item] = v
+    return marks
+
+
+def score() -> None:
+    ids = json.loads(IDS.read_text())["items"]
+    marks = read_marks(SHEET, ("yes", "no"))
+    n = len(marks)
+    res = {"n_marked": n, "n_items": len(ids),
+           "faithful_share": sum(v == "yes" for v in marks.values()) / n if n else None,
+           "marks": {ids[k]: v for k, v in marks.items()}}
+    (CST / "outputs" / "t01_author_marks.json").write_text(json.dumps(res, indent=1) + "\n")
+    print({k: res[k] for k in ("n_marked", "n_items", "faithful_share")})
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("step", choices=("sheet", "score"))
+    {"sheet": sheet, "score": score}[ap.parse_args().step]()

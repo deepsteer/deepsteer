@@ -34,3 +34,25 @@ def test_retest_and_cross_family():
     assert r["n"] == 4 and not r["passes"]
     cf = cross_family({"x": ["a", "b"], "y": ["a", "b"], "z": ["b", "a"]})
     assert cf["pairwise_kappa"]["x|y"] == 1.0
+
+
+def test_root_rate_rule_does_not_saturate_with_many_applications():
+    # most probable failure: a rule that tags a root for any dissent tags nearly every root once
+    # roots have many applications; the rate rule must stay near 1 - quantile under noise alone
+    import random
+
+    from deepsteer.judges import root_rate_tags
+
+    rng = random.Random(0)
+    noise = 0.16  # non-unanimity on settled items
+
+    def app():
+        return ["a", "a", "b"] if rng.random() < noise else ["a", "a", "a"]
+
+    apps = {f"r{i}": [app() for _ in range(13)] for i in range(400)}
+    tags = root_rate_tags(apps, noise, 0.9)
+    share = sum(t["tagged"] for t in tags.values()) / len(tags)
+    any_dissent = sum(any(len(set(v)) > 1 for v in a) for a in apps.values()) / len(apps)
+    assert share < 0.15 and any_dissent > 0.8
+    contested = root_rate_tags({"c": [["a", "b", "c"]] * 10}, noise, 0.9)
+    assert contested["c"]["tagged"]

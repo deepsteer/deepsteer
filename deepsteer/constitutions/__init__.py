@@ -18,6 +18,7 @@ from deepsteer.constitutions.tenets import (
     core_intersection,
     document_conflicts,
     majority_match,
+    tconf_record,
     verify_quotes,
 )
 
@@ -35,5 +36,6 @@ __all__ = [
     "majority_match",
     "sha256_text",
     "split_sections",
+    "tconf_record",
     "verify_quotes",
 ]

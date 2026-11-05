@@ -1931,7 +1931,12 @@ to the author: the panel `T_conf` any-dissent rule would exclude 0.58-0.92 of ro
 training (D7), and on H1 the labeled direction of the constitution under an operator's order is to
 keep the rule (CST-A4). After the gate, codex's re-review of v2 flags 0.10 and 0.07 of the
 revised tenets as inaccurate (from 0.44 and 0.33), and `T_core` at two of two is 116 pairs; codex
-agrees with 0.36 of Claude's matches, so the third judge decides most of the core.
+agrees with 0.36 of Claude's matches, so the third judge decides most of the core. The author's
+picks on the flags: the root-rate rule for panel-detected `T_conf` (every member tagged with its
+provenance; the exclusion projection re-run at S0 with the measured tenet-application κ); MoReBench
+at k 2 on 500, whose process bar detects costs of about 1.3 and above, so a cost the size of
+MRB-05 (−0.87) is not detectable by it; the tightened matching prompt kept, CST-A3 "R_prompt
+favored, not separated at n 120" (retest κ 0.84 [0.74, 0.93]).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

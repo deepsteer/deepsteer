@@ -12,6 +12,7 @@ from deepsteer.judges.panel import (
     is_conflict,
     pooled_label,
     retest_agreement,
+    root_rate_tags,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "is_conflict",
     "pooled_label",
     "retest_agreement",
+    "root_rate_tags",
 ]

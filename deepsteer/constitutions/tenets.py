@@ -170,3 +170,17 @@ def document_conflicts(
         reasons.setdefault(a, []).append(f"competes:{b}")
         reasons.setdefault(b, []).append(f"competes:{a}")
     return {k: sorted(set(v)) for k, v in sorted(reasons.items())}
+
+
+def tconf_record(
+    document: dict[str, list[str]], panel: dict[str, list[str]] | None = None
+) -> dict[str, dict[str, list[str]]]:
+    """``T_conf`` members with provenance (CST_PLAN Amendment 1, D7): each member lists where it
+    came from (``document-internal``, ``panel-detected`` or both) and its reasons."""
+    out: dict[str, dict[str, list[str]]] = {}
+    for src, d in (("document-internal", document), ("panel-detected", panel or {})):
+        for tid, reasons in d.items():
+            rec = out.setdefault(tid, {"provenance": [], "reasons": []})
+            rec["provenance"].append(src)
+            rec["reasons"] += [f"{src}:{r}" for r in reasons]
+    return dict(sorted(out.items()))

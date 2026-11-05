@@ -4,7 +4,11 @@
   "n": 120,
   "agreement": 0.925,
   "kappa": 0.8422897196261683,
-  "passes": true
+  "passes": true,
+  "kappa_ci95": [
+   0.7368382556742941,
+   0.9317992908625901
+  ]
  },
  "orig_retest": {
   "agreement": 0.8916666666666667,
@@ -996,5 +1000,10 @@
   "n_boot": 10000,
   "seed": 0,
   "unit": "pair, paired bootstrap"
- }
+ },
+ "orig_retest_kappa_ci95": [
+  0.664785701326894,
+  0.8833333333333333
+ ],
+ "p_tight_kappa_below_0.8": 0.2039
 }

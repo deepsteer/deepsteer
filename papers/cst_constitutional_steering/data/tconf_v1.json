@@ -1,0 +1,928 @@
+{
+ "rule": "CST_PLAN \u00a72.2 as narrowed at G0; Amendment 1 D7 (root-rate rule for the panel half, at S0)",
+ "tenets": "v2",
+ "docs": {
+  "C_anth": {
+   "members": {
+    "A003": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A137"
+     ]
+    },
+    "A006": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A007"
+     ]
+    },
+    "A010": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A215"
+     ]
+    },
+    "A012c": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A185c"
+     ]
+    },
+    "A020b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A081"
+     ]
+    },
+    "A026": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A093",
+      "document-internal:conditioned_on:A027"
+     ]
+    },
+    "A036": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A117"
+     ]
+    },
+    "A038": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A054"
+     ]
+    },
+    "A039": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A152"
+     ]
+    },
+    "A045": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A038"
+     ]
+    },
+    "A050": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A055"
+     ]
+    },
+    "A051": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A052b"
+     ]
+    },
+    "A054": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A038"
+     ]
+    },
+    "A057": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A059"
+     ]
+    },
+    "A059": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A057"
+     ]
+    },
+    "A061": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A062"
+     ]
+    },
+    "A066": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A069"
+     ]
+    },
+    "A066b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A069"
+     ]
+    },
+    "A071": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A130"
+     ]
+    },
+    "A081": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A020b"
+     ]
+    },
+    "A084": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A107"
+     ]
+    },
+    "A093": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A026",
+      "document-internal:conditioned_on:A091"
+     ]
+    },
+    "A099": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A104",
+      "document-internal:conditioned_on:A111c"
+     ]
+    },
+    "A102b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A236"
+     ]
+    },
+    "A104": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A099"
+     ]
+    },
+    "A106": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A283"
+     ]
+    },
+    "A107": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A084"
+     ]
+    },
+    "A110": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A117b"
+     ]
+    },
+    "A130": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A071"
+     ]
+    },
+    "A138": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A263"
+     ]
+    },
+    "A146": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A095"
+     ]
+    },
+    "A149": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A065"
+     ]
+    },
+    "A152": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A039",
+      "document-internal:conditioned_on:A038"
+     ]
+    },
+    "A154": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A071"
+     ]
+    },
+    "A166b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A003"
+     ]
+    },
+    "A185": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A185b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A185c": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A012c",
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A186": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A186b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A186c": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A186d": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A187": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    },
+    "A196": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A218"
+     ]
+    },
+    "A204": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A137"
+     ]
+    },
+    "A215": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A010"
+     ]
+    },
+    "A218": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A196"
+     ]
+    },
+    "A224": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A227"
+     ]
+    },
+    "A227": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A224"
+     ]
+    },
+    "A236": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:A102b"
+     ]
+    },
+    "A245": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A247"
+     ]
+    },
+    "A305": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:A306"
+     ]
+    }
+   },
+   "n_members": 52,
+   "n_tenets": 401,
+   "n_roots": 46,
+   "codex_check": "pending",
+   "competing_pairs": [
+    "A099|A104",
+    "A084|A107",
+    "A012c|A185c",
+    "A102b|A236",
+    "A010|A215",
+    "A071|A130",
+    "A020b|A081",
+    "A039|A152",
+    "A038|A054",
+    "A057|A059",
+    "A026|A093",
+    "A224|A227",
+    "A196|A218"
+   ]
+  },
+  "C_spec": {
+   "members": {
+    "S007": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S017"
+     ]
+    },
+    "S011": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S009",
+      "document-internal:conditioned_on:S010"
+     ]
+    },
+    "S012": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S009",
+      "document-internal:conditioned_on:S011"
+     ]
+    },
+    "S018": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S292"
+     ]
+    },
+    "S020": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S109"
+     ]
+    },
+    "S022": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S141b"
+     ]
+    },
+    "S028": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S163b",
+      "document-internal:competes:S192b"
+     ]
+    },
+    "S034": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S087",
+      "document-internal:conditioned_on:S017"
+     ]
+    },
+    "S046": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S291"
+     ]
+    },
+    "S046b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S291"
+     ]
+    },
+    "S047": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S291"
+     ]
+    },
+    "S052": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S292"
+     ]
+    },
+    "S059": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S192"
+     ]
+    },
+    "S064": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S082"
+     ]
+    },
+    "S065": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S082"
+     ]
+    },
+    "S071": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S082"
+     ]
+    },
+    "S075": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S074"
+     ]
+    },
+    "S081": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S079"
+     ]
+    },
+    "S082": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S297"
+     ]
+    },
+    "S087": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S034"
+     ]
+    },
+    "S088d": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S220"
+     ]
+    },
+    "S089": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S227"
+     ]
+    },
+    "S104": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S223"
+     ]
+    },
+    "S105h": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S220"
+     ]
+    },
+    "S106b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S220"
+     ]
+    },
+    "S110": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S112"
+     ]
+    },
+    "S112": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S110"
+     ]
+    },
+    "S129": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S130"
+     ]
+    },
+    "S129b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S142",
+      "document-internal:conditioned_on:S130"
+     ]
+    },
+    "S131": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S198"
+     ]
+    },
+    "S141b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S022"
+     ]
+    },
+    "S142": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S129b"
+     ]
+    },
+    "S163b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S028"
+     ]
+    },
+    "S192": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S059"
+     ]
+    },
+    "S192b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S028"
+     ]
+    },
+    "S197": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S198"
+     ]
+    },
+    "S198": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S131",
+      "document-internal:competes:S197"
+     ]
+    },
+    "S214": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S217"
+     ]
+    },
+    "S220": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S088d",
+      "document-internal:competes:S105h",
+      "document-internal:competes:S106b"
+     ]
+    },
+    "S223": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S104"
+     ]
+    },
+    "S227": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S089"
+     ]
+    },
+    "S230": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S231"
+     ]
+    },
+    "S230b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S231"
+     ]
+    },
+    "S231": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S268b"
+     ]
+    },
+    "S242": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S258b"
+     ]
+    },
+    "S245": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S326"
+     ]
+    },
+    "S249": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S251b"
+     ]
+    },
+    "S250": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S251"
+     ]
+    },
+    "S251": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S250"
+     ]
+    },
+    "S251b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S249"
+     ]
+    },
+    "S258b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S242"
+     ]
+    },
+    "S263": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S075"
+     ]
+    },
+    "S265": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:conditioned_on:S065",
+      "document-internal:conditioned_on:S092"
+     ]
+    },
+    "S268b": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S231"
+     ]
+    },
+    "S326": {
+     "provenance": [
+      "document-internal"
+     ],
+     "reasons": [
+      "document-internal:competes:S245"
+     ]
+    }
+   },
+   "n_members": 55,
+   "n_tenets": 430,
+   "n_roots": 50,
+   "codex_check": "pending",
+   "competing_pairs": [
+    "S034|S087",
+    "S089|S227",
+    "S088d|S220",
+    "S106b|S220",
+    "S105h|S220",
+    "S104|S223",
+    "S250|S251",
+    "S249|S251b",
+    "S245|S326",
+    "S242|S258b",
+    "S131|S198",
+    "S197|S198",
+    "S110|S112",
+    "S268b|S231",
+    "S022|S141b",
+    "S129b|S142",
+    "S163b|S028",
+    "S192b|S028",
+    "S192|S059"
+   ]
+  }
+ }
+}

@@ -93,3 +93,12 @@ def test_tenet_set_round_trip_detects_hand_edit(tmp_path):
     p.write_text(json.dumps(d))
     with pytest.raises(ValueError, match="sha256"):
         TenetSet.load(p)
+
+
+def test_tconf_record_keeps_provenance():
+    from deepsteer.constitutions import tconf_record
+
+    rec = tconf_record({"a": ["competes:b"], "b": ["competes:a"]}, {"b": ["dissent 4/13"]})
+    assert rec["a"]["provenance"] == ["document-internal"]
+    assert rec["b"]["provenance"] == ["document-internal", "panel-detected"]
+    assert "panel-detected:dissent 4/13" in rec["b"]["reasons"]
