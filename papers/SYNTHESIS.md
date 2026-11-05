@@ -1929,7 +1929,9 @@ per-scenario label artifact selects the headline items, fixes A4's rubric and gi
 tenet shortlist. Capability moves to a difference-CI rule at n 800 (MDE 0.029). Two flags returned
 to the author: the panel `T_conf` any-dissent rule would exclude 0.58-0.92 of root tenets from
 training (D7), and on H1 the labeled direction of the constitution under an operator's order is to
-keep the rule (CST-A4).
+keep the rule (CST-A4). After the gate, codex's re-review of v2 flags 0.10 and 0.07 of the
+revised tenets as inaccurate (from 0.44 and 0.33), and `T_core` at two of two is 116 pairs; codex
+agrees with 0.36 of Claude's matches, so the third judge decides most of the core.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

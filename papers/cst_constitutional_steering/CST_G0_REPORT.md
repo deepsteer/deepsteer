@@ -10,7 +10,7 @@ CST-A4. **Decisions: `CST_PLAN.md` Amendment 1 (author, 2026-11-04).**
 
 | item | result | section |
 |---|---|---|
-| T0.1 tenets, `T_core`, document `T_conf` | v2 sets: `C_anth` 401, `C_spec` 430 tenets, every quote verified against the pinned body; v1 (260, 269) reviewed by a second family and revised flag by flag; `T_core` candidates 2,601, Claude yes on 227, codex votes and the v2 re-review scheduled (quota); document `T_conf` 52 and 55 tenets; matching reliability below the 0.8 bar (CST-A3); author sheet of 15 | §2 |
+| T0.1 tenets, `T_core`, document `T_conf` | v2 sets: `C_anth` 401, `C_spec` 430 tenets, every quote verified against the pinned body; v1 (260, 269) reviewed by a second family and revised flag by flag; v2 re-reviewed (inaccurate 0.10 and 0.07, from 0.44 and 0.33); `T_core` 116 pairs at two of two, 207 splits for the third judge; document `T_conf` 52 and 55 tenets; matching reliability below the 0.8 bar (CST-A3); author sheet of 15 | §2 |
 | T0.2 judge panel spec, Layer A licenses | `deepsteer.judges.panel` (retest, cross-family κ, pooled label, the `T_conf` disagreement rule; a float bug that admitted every 2-1 split fixed and tested); MoralExceptQA CC BY-NC-SA 4.0, Scruples data unlicensed (code Apache-2.0): both evaluation-only by id, recorded in `DATASET_LICENSES.md`; panel families are the author's choice (§5 D4) | §5 |
 | T0.3 pressure triple | `scripts/cst_pressure.py`: the operator cell is the frontier exhibit's `dl_chat_known_gap` byte for byte (tested); renders for Qwen3.8-27B's template (sha `c3cf9e34…`, matches the registry); two construct findings (§3) | §3 |
 | T0.4 power table | `T04_POWER.md`: panel k = 4 (MDE on ΔS 0.041 at f 0.5), H1_held k = 8 (0.059), no S on the 17 engaged items; MoReBench 200 cannot resolve the −0.87 bar (MDE 2.05); second derivation agrees within 3% | §4 |
@@ -41,7 +41,7 @@ one-sentence claim, its conditions, a kind and the document's own priority level
 | v1 extraction (Claude Opus 5.5 subagents, 2 per document) | 260 tenets, 6 of 39 sections without one | 269, 9 of 81 |
 | second-family review of v1 (codex, GPT family) | 10 not supported by their quote; 114 inaccurate; 58 missed behaviors; 70 merge/split notes | 2; 90; 100; 100 |
 | v2 revision (every flag answered, accepted or rejected with a reason) | **401**: 109 kept, 84 revised, 156 split parts, 52 added, 3 dropped, 8 missed items rejected | **430**: 116, 71, 184, 58 added, 1 merge, 27 rejected |
-| second-family re-review of v2's changed tenets | pending (codex quota; scheduled) | pending |
+| second-family re-review of v2's 606 revised, split or added tenets (2026-11-04, after G0) | 292 re-reviewed: 2 unsupported; 28 inaccurate (0.10, from 0.44); 109 further missed behaviors; 35 merge/split | 314: 1; 22 (0.07, from 0.33); 138; 49 |
 
 - **What the review caught.** Dropped qualifiers ("by default", scope), hedges hardened into rules
   ("might" and "should probably" written as unconditional), examples generalized into blanket
@@ -49,8 +49,10 @@ one-sentence claim, its conditions, a kind and the document's own priority level
   (departures from rules the document does not state) and would train the SDF corpus on them, so v1
   is superseded. v2 is the candidate set of record once its re-review lands.
 - **Deference rider.** The revisers accepted every accuracy flag (some in part) while rejecting
-  most merge proposals and some missed items. Whether the v2 review agrees with the revisions,
-  rather than with its own earlier comments, is what the re-review measures.
+  most merge proposals and some missed items. The re-review of v2 flags 0.10 and 0.07 of the
+  changed tenets as inaccurate (from 0.44 and 0.33), so the revisions answer the reviewer's own
+  reading. The reviewer keeps finding further behaviors (109 and 138 missed), so the decomposition
+  has no natural floor at this granularity (D16).
 - **Granularity.** v2 is about twice the Nanda group's counts (205 and 197, on a December 2025
   Spec revision), because splitting kept each hedge and condition in its own tenet. Split parts keep
   their v1 root (`A012`, `A012b`), so a coarse layer (about 310 and 330 roots) exists without
@@ -62,17 +64,20 @@ one-sentence claim, its conditions, a kind and the document's own priority level
 **`T_core`.** Candidate pairs are TF-IDF top-3 in both directions united with free matching by
 each family against the full other list. The lexical filter alone was not enough (CST-A3): it held
 4 of 13 matches in a 25-tenet recall check (0.31). On v2: 2,601 candidate pairs (1,885 lexical,
-Claude's 269 fresh free matches, 850 free matches carried from v1 where both ids survive). Claude
-votes "same behavior, same conditions" on 227 pairs (147 `C_anth` tenets, 127 `C_spec`). Codex
-votes on all 227 and on a seeded 15% of Claude's no votes (a Claude-no pair can match only if both
-other families vote yes; the sample bounds how many could); scheduled. The third family is D4.
+Claude's 269 fresh free matches, 850 free matches carried from v1 where both ids survive). With
+the tightened matching prompt (Amendment 1, D17) Claude votes "same behavior, same conditions" on
+323 pairs; codex votes on all 323 and on a seeded 15% of Claude's no votes (342 of 2,278): it
+agrees on 116 of Claude's yes votes (0.36) and says yes on 7 of the sampled no votes (0.02,
+projecting about 47 of the 2,278). **`T_core` at two of two: 116 pairs (77 `C_anth` tenets, 79
+`C_spec`).** 207 split pairs and the projected codex-yes, Claude-no pairs wait for the third
+family (D4, GLM-4.7-Flash at S0).
 The matching judgment's reliability is below the plan's 0.8 panel bar: Claude retest κ 0.78
 (agreement 0.89, 120 balanced pairs), cross-family κ 0.69 on the v1 lexical set, and Claude
 voted yes on 0.73 of the pairs it had itself proposed (CST-A3). No claim rests on `T_core`'s size.
 
 **Document-internal `T_conf`.** The rule is narrowed to explicit, specific gating (§9 rider 6).
 Claude's pass on v2: `C_anth` 13 competing pairs and 31 explicit conditioning links, 52 of 401
-tenets; `C_spec` 19 and 26, 55 of 430. Codex's check of each competing pair is scheduled. Panel-
+tenets; `C_spec` 19 and 26, 55 of 430. Codex's check of each competing pair is pending (quota; rerun scheduled). Panel-
 detected conflicts join at S0 (D7).
 
 ## 3. The pressure triple (T0.3)
