@@ -1920,3 +1920,17 @@ for the action.
 
 Referee pass: `CST_G0_REPORT.md` §11 (the decomposition is one reading; the operator cell measures
 obedience the document sometimes endorses; the format contrast is not new).
+
+**Gate CST-G0 (author, 2026-11-04; `CST_PLAN.md` Amendment 1).** The first deliverable is the
+partner recipe; A1c stays (no prior contrast is format-matched on a post-trained thinking model with
+no base checkpoint). S_concl is primary, beside its no-conclusion rate. Three self-hosted judges
+(gpt-oss-120b, Olmo-3.1-32B-Think, GLM-4.7-Flash); Claude only for calibration and set votes. One
+per-scenario label artifact selects the headline items, fixes A4's rubric and gives each judge its
+tenet shortlist. Capability moves to a difference-CI rule at n 800 (MDE 0.029). Two flags returned
+to the author: the panel `T_conf` any-dissent rule would exclude 0.58-0.92 of root tenets from
+training (D7), and on H1 the labeled direction of the constitution under an operator's order is to
+keep the rule (CST-A4).
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | open; ΔP read beside each item's D2 direction until ruled |

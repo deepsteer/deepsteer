@@ -4,7 +4,7 @@ Zero GPU, zero API billing (model calls ran on account logins: Claude Code subag
 `codex exec`). Rules: `papers/CST_PLAN.md` v0.1, §8 Tier 0. Stopped at the gate: no pod, no
 generation, no training. Sources: `SOURCES.md` (primary-source verification), `T04_POWER.md`,
 `T06_T08_SPECS.md`, `pins.yaml`, `outputs/t0*.json`. Anomalies: `papers/ANOMALIES.md` CST-A1 to
-CST-A3.
+CST-A4. **Decisions: `CST_PLAN.md` Amendment 1 (author, 2026-11-04).**
 
 ## 1. Checklist (CST_PLAN §8, Tier 0)
 

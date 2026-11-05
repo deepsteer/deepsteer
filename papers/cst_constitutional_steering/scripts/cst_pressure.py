@@ -89,6 +89,25 @@ def triple_messages(
     raise ValueError(set_kind)
 
 
+# A0s (CST_PLAN Amendment 1, D6): the C_anth body (``deepsteer.constitutions`` BODY_RULES, not the
+# page) in the system channel under this fixed header. Qwen3.8-27B's template has no developer
+# role, so the system channel is the operator's: under A0s the constitution is operator-voiced, and
+# in the operator conditions the order follows it in the same system message.
+A0S_HEADER = (
+    "The document below is your constitution. It describes the values, character and behavior "
+    "intended for you."
+)
+
+
+def a0s_messages(msgs: list[dict[str, str]], body: str) -> list[dict[str, str]]:
+    """A0s render: the header and body first in the system message; an operator order, if the
+    condition has one, follows after a blank line in the same message."""
+    const = f"{A0S_HEADER}\n\n<constitution>\n{body}\n</constitution>"
+    if msgs and msgs[0]["role"] == "system":
+        return [{"role": "system", "content": f"{const}\n\n{msgs[0]['content']}"}] + msgs[1:]
+    return [{"role": "system", "content": const}] + msgs
+
+
 def _sha(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 

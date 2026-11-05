@@ -1,0 +1,278 @@
+{
+ "d7": {
+  "model": "three judges, binary application label, each deviating from the consensus independently with rate e; agreement a = (1-e)^2 + e^2; an application is unanimous with probability u = (1-e)^3 + e^3; a root with m applications is tagged under any-dissent with 1 - u^m; m = n_scenarios x shortlist / roots",
+  "agreements": {
+   "cross_family_matching_v1": 0.9637618636755824,
+   "claude_retest_matching": 0.8916666666666667,
+   "hypothetical_0.95": 0.95
+  },
+  "n_scenarios_scored": 820,
+  "docs": {
+   "C_anth": {
+    "roots": 309,
+    "doc_internal_roots": 46,
+    "doc_share": 0.1488673139158576,
+    "grid": {
+     "cross_family_matching_v1": {
+      "e": 0.018459833619467236,
+      "unanimity_u": 0.9456427955133735,
+      "shortlist3": {
+       "m_per_root": 8.0,
+       "panel_any_dissent": 0.3591452883353845,
+       "union_with_doc": 0.4545476078712173
+      },
+      "shortlist5": {
+       "m_per_root": 13.3,
+       "panel_any_dissent": 0.5236429071944709,
+       "union_with_doc": 0.5945569080651969
+      },
+      "shortlist8": {
+       "m_per_root": 21.2,
+       "panel_any_dissent": 0.6947243126407181,
+       "union_with_doc": 0.7401698842217115
+      }
+     },
+     "claude_retest_matching": {
+      "e": 0.0574693984216082,
+      "unanimity_u": 0.8375000000000001,
+      "shortlist3": {
+       "m_per_root": 8.0,
+       "panel_any_dissent": 0.7562922126948687,
+       "union_with_doc": 0.7925723363713607
+      },
+      "shortlist5": {
+       "m_per_root": 13.3,
+       "panel_any_dissent": 0.9049141971688406,
+       "union_with_doc": 0.9190693652278481
+      },
+      "shortlist8": {
+       "m_per_root": 21.2,
+       "panel_any_dissent": 0.9768268493878861,
+       "union_with_doc": 0.9802765740744791
+      }
+     },
+     "hypothetical_0.95": {
+      "e": 0.025658350974743116,
+      "unanimity_u": 0.9249999999999999,
+      "shortlist3": {
+       "m_per_root": 8.0,
+       "panel_any_dissent": 0.46241301476539953,
+       "union_with_doc": 0.5424421452533983
+      },
+      "shortlist5": {
+       "m_per_root": 13.3,
+       "panel_any_dissent": 0.6445750507090942,
+       "union_with_doc": 0.6974862082087112
+      },
+      "shortlist8": {
+       "m_per_root": 21.2,
+       "panel_any_dissent": 0.8089281730335411,
+       "union_with_doc": 0.8373725226790334
+      }
+     }
+    }
+   },
+   "C_spec": {
+    "roots": 326,
+    "doc_internal_roots": 50,
+    "doc_share": 0.15337423312883436,
+    "grid": {
+     "cross_family_matching_v1": {
+      "e": 0.018459833619467236,
+      "unanimity_u": 0.9456427955133735,
+      "shortlist3": {
+       "m_per_root": 7.5,
+       "panel_any_dissent": 0.34410165359772293,
+       "union_with_doc": 0.4446995594876427
+      },
+      "shortlist5": {
+       "m_per_root": 12.6,
+       "panel_any_dissent": 0.5048605157101402,
+       "union_with_doc": 0.580802154404904
+      },
+      "shortlist8": {
+       "m_per_root": 20.1,
+       "panel_any_dissent": 0.6752388310158047,
+       "union_with_doc": 0.7250488262587795
+      }
+     },
+     "claude_retest_matching": {
+      "e": 0.0574693984216082,
+      "unanimity_u": 0.8375000000000001,
+      "shortlist3": {
+       "m_per_root": 7.5,
+       "panel_any_dissent": 0.7376733130518085,
+       "union_with_doc": 0.7779074674917151
+      },
+      "shortlist5": {
+       "m_per_root": 12.6,
+       "panel_any_dissent": 0.892501074341339,
+       "union_with_doc": 0.9089886396264096
+      },
+      "shortlist8": {
+       "m_per_root": 20.1,
+       "panel_any_dissent": 0.9718001629814735,
+       "union_with_doc": 0.9761252913585482
+      }
+     },
+     "hypothetical_0.95": {
+      "e": 0.025658350974743116,
+      "unanimity_u": 0.9249999999999999,
+      "shortlist3": {
+       "m_per_root": 7.5,
+       "panel_any_dissent": 0.44472886251067956,
+       "union_with_doc": 0.5298931474016797
+      },
+      "shortlist5": {
+       "m_per_root": 12.6,
+       "panel_any_dissent": 0.6248757273546743,
+       "union_with_doc": 0.6824101249996629
+      },
+      "shortlist8": {
+       "m_per_root": 20.1,
+       "panel_any_dissent": 0.7917043184283761,
+       "union_with_doc": 0.8236515088534717
+      }
+     }
+    }
+   }
+  },
+  "flag_over_25pct": true,
+  "rate_rule": "a root enters T_conf when its dissent rate over its applications exceeds the 0.9 quantile of the noise-only rate (1 - u, from the S0 calibration items); under noise alone it tags about 10% of roots by construction, so the union with the document set stays near doc_share + 0.1"
+ },
+ "d9": {
+  "estimator": "MRB v0.9.3 \u0394_adj; k 2 measured, k 4 by rescaling the per-rollout variance (\u03c3\u00b2_w from none's k0 \u2212 k1 raw difference: var = 2\u03c3\u00b2_w; under the arm the same \u03c3\u00b2_w is assumed)",
+  "bar_of_record": -0.87,
+  "muse_glimmer_30b": {
+   "se_k2_500": 0.2961536596690526,
+   "sigma2_w": 31.360387418999014,
+   "var_between_scenario": 12.493107648687502,
+   "mde_k2_500": 0.8292302470733472,
+   "mde_k4_500": 0.6646483019585413,
+   "mde_k4_200": 1.0509012385761711,
+   "rollout_share_of_variance_k2": 0.7151171730005835,
+   "se_check": {
+    "2": 0.2961536596690526,
+    "4": 0.2373743935566219
+   }
+  },
+  "qwen38_27b": {
+   "se_k2_500": 0.4618791359922171,
+   "sigma2_w": 32.47973373872829,
+   "var_between_scenario": 74.1864343937302,
+   "mde_k2_500": 1.2932615807782077,
+   "mde_k4_500": 1.1907495134600388,
+   "mde_k4_200": 1.8827402926355237,
+   "rollout_share_of_variance_k2": 0.30449892695493497,
+   "se_check": {
+    "2": 0.46187913599221714,
+    "4": 0.4252676833785853
+   }
+  }
+ },
+ "d10": {
+  "discordant_share_mean": 0.08666666666666667,
+  "accuracy_none": 0.865,
+  "pool_test_sizes": {
+   "openai/gsm8k": 1319,
+   "cais/mmlu": 14042
+  },
+  "used_by_st": {
+   "openai/gsm8k": 150,
+   "cais/mmlu": 150
+  },
+  "disjoint_free": {
+   "openai/gsm8k": 1169,
+   "cais/mmlu": 13892
+  },
+  "by_n": {
+   "200": {
+    "se_paired": 0.020816659994661327,
+    "mde": 0.05828664798505171
+   },
+   "400": {
+    "se_paired": 0.014719601443879746,
+    "mde": 0.04121488404286329
+   },
+   "600": {
+    "se_paired": 0.01201850425154663,
+    "mde": 0.03365181190433056
+   },
+   "800": {
+    "se_paired": 0.010408329997330663,
+    "mde": 0.029143323992525855
+   }
+  },
+  "note": "SE from the paired discordance at a near-zero mean difference (sqrt(disc/n)); the gate's 200 are ST's and stay disjoint"
+ },
+ "addition1": {
+  "mde_dS_panel": {
+   "user_k2": {
+    "f0.3": {
+     "h1_w": 0.09587568311274977,
+     "worst_w": 0.1531318177352408
+    },
+    "f0.5": {
+     "h1_w": 0.062328313044738404,
+     "worst_w": 0.09955024635065853
+    },
+    "f0.8": {
+     "h1_w": 0.043553232778413116,
+     "worst_w": 0.0695628493802884
+    }
+   },
+   "user_k4": {
+    "f0.3": {
+     "h1_w": 0.05842089120095498,
+     "worst_w": 0.09330934573675331
+    },
+    "f0.5": {
+     "h1_w": 0.041318861114800966,
+     "worst_w": 0.06599413014683407
+    },
+    "f0.8": {
+     "h1_w": 0.0299895363510802,
+     "worst_w": 0.047899029924797366
+    }
+   },
+   "operator_pr_k4": {
+    "f0.3": {
+     "h1_w": 0.05842089120095498,
+     "worst_w": 0.09330934573675331
+    },
+    "f0.5": {
+     "h1_w": 0.041318861114800966,
+     "worst_w": 0.06599413014683407
+    },
+    "f0.8": {
+     "h1_w": 0.0299895363510802,
+     "worst_w": 0.047899029924797366
+    }
+   },
+   "operator_pr_k6": {
+    "f0.3": {
+     "h1_w": 0.045543561608906866,
+     "worst_w": 0.07274178549640388
+    },
+    "f0.5": {
+     "h1_w": 0.03295517134436178,
+     "worst_w": 0.05263571666867576
+    },
+    "f0.8": {
+     "h1_w": 0.02403713951108197,
+     "worst_w": 0.03839191280816096
+    }
+   }
+  },
+  "rollouts_per_arm": {
+   "d2": 9376,
+   "addition1": 9376
+  },
+  "rollouts_per_a100h_basis": 3200.0,
+  "a100h_per_arm": {
+   "d2": 2.93,
+   "addition1": 2.93
+  },
+  "note": "moving user from k 4 to k 2 and operator_pr from k 4 to k 6 keeps the panel at 16 rollouts per scenario per arm: zero extra cost against D2 as accepted"
+ }
+}

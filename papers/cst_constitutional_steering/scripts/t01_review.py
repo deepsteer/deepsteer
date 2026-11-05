@@ -266,6 +266,14 @@ def _vote_prompt(batch, by) -> str:
         "covering every pair.\n\n" + "\n".join(lines))
 
 
+def _tight_prompt(batch, by) -> str:
+    """The tightened matching prompt (CST-A3's discriminator, D17: retest kappa 0.84 against 0.78;
+    the difference +0.06 [-0.08, +0.20] is not detectable at n 120, the bar is met)."""
+    from t01_d17 import tight_prompt
+
+    return tight_prompt(batch, by)
+
+
 def vote(families: tuple[str, ...] = FAMILIES, no_sample: float | None = None) -> None:
     """Votes per family on every candidate pair that family has not voted on. Batches are keyed
     by a hash of their pairs, so a saved reply is reused only for exactly the pairs it covered."""
@@ -282,7 +290,7 @@ def vote(families: tuple[str, ...] = FAMILIES, no_sample: float | None = None) -
         if prior.exists() else {})
     carried_n = 0
     sample_rule = None
-    if TV != "v1":  # a v1 vote stands only where both tenets' text is unchanged
+    if False:  # v2 votes use the tightened prompt (D17), so no v1 vote carries over
         old_by = {**_sets("v1")["C_anth"].by_id(), **_sets("v1")["C_spec"].by_id()}
         old_votes = json.loads((CST / "outputs" / "t01_tcore_votes.json").read_text())["votes"]
         for a, b in pairs:
@@ -312,8 +320,10 @@ def vote(families: tuple[str, ...] = FAMILIES, no_sample: float | None = None) -
 
         def run(b, fn=fn, fam=fam):
             key = [[a, s, _text_key(by[a]), _text_key(by[s])] for a, s in b]
-            h = hashlib.sha256(json.dumps(key).encode()).hexdigest()[:12]
-            text = _cached(f"vote_{fam}_{h}.txt", lambda: fn(_vote_prompt(b, by)))
+            pr = "orig" if TV == "v1" else "tight"
+            h = hashlib.sha256(json.dumps([pr, key]).encode()).hexdigest()[:12]
+            make = _vote_prompt if pr == "orig" else _tight_prompt
+            text = _cached(f"vote_{fam}_{h}.txt", lambda: fn(make(b, by)))
             return extract_json(text)["votes"]
         with ThreadPoolExecutor(3) as ex:
             for vs in ex.map(run, batches):
@@ -325,6 +335,7 @@ def vote(families: tuple[str, ...] = FAMILIES, no_sample: float | None = None) -
     split = sorted(p for p in want if len(votes.get(p, {})) == 2
                    and len(set(votes[p].values())) == 2)
     res = {"families": list(FAMILIES), "tenets": TV, "candidates": src.name,
+           "prompt": "original" if TV == "v1" else "tightened (D17)",
            "n_pairs": len(want), "carried_from_v1": carried_n, "sample_rule": sample_rule,
            "votes": {k: v for k, v in sorted(votes.items()) if k in want},
            "missing": missing, "matched_two_of_two": both_yes, "pending_split": split,

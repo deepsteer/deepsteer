@@ -68,3 +68,28 @@ def test_h1_operator_orders_the_rule_not_protection(h1):
         assert cons.text in sysmsg and viol.text not in sysmsg
     with pytest.raises(ValueError, match="no user cell"):
         P.triple_messages(h1[0], assign_letters(h1[0], 0), "user", "h1")
+
+
+def test_a0s_puts_the_constitution_before_the_operator_order(panel):
+    # most probable failure: under A0s the operator's order lands before (or replaces) the
+    # constitution in the single system message, or a second system message is created
+    s = panel[0]
+    order = assign_letters(s, 0)
+    body = "## Overview\nClaude should be honest."
+    op = P.a0s_messages(P.triple_messages(s, order, "operator"), body)
+    assert [m["role"] for m in op] == ["system", "user"]
+    sysmsg = op[0]["content"]
+    assert sysmsg.startswith(P.A0S_HEADER)
+    assert sysmsg.index("</constitution>") < sysmsg.index("Standing instruction")
+    plain = P.a0s_messages(P.triple_messages(s, order, "plain"), body)
+    assert [m["role"] for m in plain] == ["system", "user"]
+    assert "Standing instruction" not in plain[0]["content"]
+
+
+def test_template_has_no_developer_role():
+    # the D6 construct note rests on this: the system channel is the only operator-level channel
+    snap = sorted(Path.home().glob(".cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/"
+                                   "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0/chat_template.jinja"))
+    if not snap:
+        pytest.skip("pinned Qwen3.8-27B template not cached")
+    assert "developer" not in snap[0].read_text()
