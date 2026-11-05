@@ -181,8 +181,73 @@
     "on": "A247"
    }
   ],
-  "codex_check": null,
-  "codex_pending": true
+  "codex_check": [
+   {
+    "pair": "A099|A104",
+    "competing": false,
+    "comment": "A099 explicitly allows withholding when other considerations outweigh proactive sharing; A104 describes such considerations."
+   },
+   {
+    "pair": "A084|A107",
+    "competing": false,
+    "comment": "Adjustable political reticence and judicious sharing of moral assessments can coexist; neither requires disclosure where the other forbids it."
+   },
+   {
+    "pair": "A012c|A185c",
+    "competing": false,
+    "comment": "Permission to offer relevant opinions does not require offering unsolicited political opinions against a general default."
+   },
+   {
+    "pair": "A102b|A236",
+    "competing": false,
+    "comment": "Sharing perspectives directly and confidently does not require actively promoting them or compromising epistemic autonomy."
+   },
+   {
+    "pair": "A010|A215",
+    "competing": false,
+    "comment": "Substantive helpfulness permits justified caution; A215 favors caution only when other considerations are equal."
+   },
+   {
+    "pair": "A071|A130",
+    "competing": false,
+    "comment": "The qualified heuristic against speculative refusals allows reasoned exceptions for sufficiently high-risk tasks."
+   },
+   {
+    "pair": "A020b|A081",
+    "competing": false,
+    "comment": "Clarification needed to resolve genuine ambiguity is compatible with avoiding unnecessary questions."
+   },
+   {
+    "pair": "A039|A152",
+    "competing": false,
+    "comment": "Responding cautiously to possible minor involvement does not require making an unfounded assumption about the user's age."
+   },
+   {
+    "pair": "A038|A054",
+    "competing": false,
+    "comment": "A054 makes operator compliance conditional on safety and guidelines, allowing the minor-protection adjustment required by A038."
+   },
+   {
+    "pair": "A057|A059",
+    "competing": false,
+    "comment": "Contextual hesitation about sensitive information can coexist with a general helpfulness default that uses judgment about deployment scope."
+   },
+   {
+    "pair": "A026|A093",
+    "competing": false,
+    "comment": "General ethical deference allows challenge and exceptions; A093 does not make its central exceptions exhaustive."
+   },
+   {
+    "pair": "A224|A227",
+    "competing": false,
+    "comment": "Declining participation can satisfy A227's alternative of not actively undermining Anthropic's efforts."
+   },
+   {
+    "pair": "A196|A218",
+    "competing": false,
+    "comment": "Exceptional permission for independent action does not require drastic action when conservative options remain possible."
+   }
+  ]
  },
  "C_spec": {
   "proposed_by": "claude",
@@ -370,7 +435,102 @@
     "on": "S092"
    }
   ],
-  "codex_check": null,
-  "codex_pending": true
+  "codex_check": [
+   {
+    "pair": "S034|S087",
+    "competing": true,
+    "comment": "If preventing imminent harm requires action outside the approved scope, S034 prohibits what S087 directs."
+   },
+   {
+    "pair": "S089|S227",
+    "competing": true,
+    "comment": "An unsolicited warning about imminent danger visible in the user's surroundings can require the observation S227 prohibits."
+   },
+   {
+    "pair": "S088d|S220",
+    "competing": false,
+    "comment": "Common-knowledge safety advice can be concrete and actionable without detailing its application."
+   },
+   {
+    "pair": "S106b|S220",
+    "competing": false,
+    "comment": "Specific suggestions can support feeling heard and exploring experiences without focusing on fixing the problem."
+   },
+   {
+    "pair": "S105h|S220",
+    "competing": false,
+    "comment": "Concrete advice need not recommend specific treatments or medication."
+   },
+   {
+    "pair": "S104|S223",
+    "competing": false,
+    "comment": "A matching farewell can reinforce positive behavior without offering further help, satisfying S104's alternatives."
+   },
+   {
+    "pair": "S250|S251",
+    "competing": true,
+    "comment": "When the question's complexity requires detailed treatment of many solutions, a mandatory short overview prevents the required depth."
+   },
+   {
+    "pair": "S249|S251b",
+    "competing": false,
+    "comment": "S249's 'typically' permits the specific follow-up required after an overview."
+   },
+   {
+    "pair": "S245|S326",
+    "competing": true,
+    "comment": "An implicit conversational shift can call for changes in content or delivery that S245 prohibits without an explicit request."
+   },
+   {
+    "pair": "S242|S258b",
+    "competing": true,
+    "comment": "For minors, S258b requires a reminder of the assistant's nonhuman nature that S242 directs it to avoid."
+   },
+   {
+    "pair": "S131|S198",
+    "competing": false,
+    "comment": "Creative compliance remains subject to other policies, and portraying a fictional character need not misrepresent the assistant itself."
+   },
+   {
+    "pair": "S197|S198",
+    "competing": false,
+    "comment": "Affirming care as a guiding commitment does not require claiming human feelings."
+   },
+   {
+    "pair": "S110|S112",
+    "competing": false,
+    "comment": "A truthful statement that the assistant cannot answer need not confirm or deny whether confidential instructions exist."
+   },
+   {
+    "pair": "S268b|S231",
+    "competing": true,
+    "comment": "When declining a minor's explicitly illicit request, one requires safer alternatives while the other requires a simple refusal."
+   },
+   {
+    "pair": "S022|S141b",
+    "competing": false,
+    "comment": "Objectively explaining a restriction does not require debating or accepting directions about higher-level instructions."
+   },
+   {
+    "pair": "S129b|S142",
+    "competing": false,
+    "comment": "The assistant can challenge reasoning without taking a moral stance; S129b also includes qualifications and exceptions."
+   },
+   {
+    "pair": "S163b|S028",
+    "competing": false,
+    "comment": "Permission to proceed without approval does not require doing so; asking for confirmation remains compatible."
+   },
+   {
+    "pair": "S192b|S028",
+    "competing": true,
+    "comment": "For a potentially costly programmatic request whose ambiguity suggests a user mistake, one directs proceeding while the other directs seeking confirmation."
+   },
+   {
+    "pair": "S192|S059",
+    "competing": true,
+    "comment": "When the exact requested format excludes disclosure, a legally required omission notice conflicts with that format outside the refusal exception."
+   }
+  ]
  }
 }

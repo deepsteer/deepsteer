@@ -393,7 +393,7 @@ def conflicts(with_codex: bool = True) -> None:
             "model in those conditions cannot satisfy both as written.\n\n"
             + "\n".join(f"{p}\n  {_tenet_line(by[p.split('|')[0]])}\n  "
                         f"{_tenet_line(by[p.split('|')[1]])}" for p in ok),
-            CHECK_SCHEMA) if ok else '{"checks": []}')
+            CHECK_SCHEMA, timeout=2400) if ok else '{"checks": []}')
         res[d] = {"proposed_by": "claude", "competing": prop.get("competing", []),
                   "conditioned_on": prop.get("conditioned_on", []),
                   "codex_check": json.loads(check)["checks"]}

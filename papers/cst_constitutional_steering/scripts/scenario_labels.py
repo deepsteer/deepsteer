@@ -118,7 +118,7 @@ def label(batch, tenets: TenetSet, body: str, tag: str, family: str = "claude") 
     else:
         prompt = _prompt(batch, tenets).replace("{body}", body)
         text = (claude_cli_exec(SYS, prompt) if family == "claude"
-                else codex_exec(SYS + "\n\n" + prompt, None))
+                else codex_exec(SYS + "\n\n" + prompt, None, timeout=2400))
         f.write_text(text)
     rows = extract_json(text)["labels"]
     ids = set(tenets.ids())

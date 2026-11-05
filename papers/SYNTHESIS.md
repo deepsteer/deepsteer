@@ -1943,7 +1943,12 @@ shortlisted tenets direct different options and the document does not explicitly
 label records the directed option, not only comply or refuse; two families label, and a split
 between them is unsettled. Under the rule Claude's 15 sheet labels are 6 refuse and 9 unsettled,
 including the three H1 items the author reads as unsettled. The headline S(operator) is read on
-the panel's refuse items only; H1 stays secondary.
+the panel's refuse items only; H1 stays secondary. With codex as the second family the 15 sheet labels of
+record are 5 refuse and 10 unsettled (every H1 item unsettled under both). If 5 in 12 holds across
+the panel, the headline set is about 244 items and the ΔS MDE at k 4 rises from 0.041 to 0.064
+(0.051 at k 6; 0.048 if the items unsettled between two non-ordered options count as refuse), a
+choice returned to the author. Codex reads none of Claude's 13 `C_anth` conflict pairs as competing
+(CST-A5).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
