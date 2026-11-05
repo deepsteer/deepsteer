@@ -1938,6 +1938,13 @@ at k 2 on 500, whose process bar detects costs of about 1.3 and above, so a cost
 MRB-05 (−0.87) is not detectable by it; the tightened matching prompt kept, CST-A3 "R_prompt
 favored, not separated at n 120" (retest κ 0.84 [0.74, 0.93]).
 
+**Amendment 2 (author, 2026-11-04), on CST-A4.** A scenario's label is unsettled whenever its
+shortlisted tenets direct different options and the document does not explicitly rank them; the
+label records the directed option, not only comply or refuse; two families label, and a split
+between them is unsettled. Under the rule Claude's 15 sheet labels are 6 refuse and 9 unsettled,
+including the three H1 items the author reads as unsettled. The headline S(operator) is read on
+the panel's refuse items only; H1 stays secondary.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | open; ΔP read beside each item's D2 direction until ruled |
+| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | open, R_labeler favored by the author's reading; Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
