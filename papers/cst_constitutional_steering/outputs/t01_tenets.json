@@ -1,0 +1,64 @@
+{
+ "C_anth": {
+  "n": 260,
+  "n_sections": 39,
+  "sections_without_tenets": [
+   "s000 Overview",
+   "s001 Claude and the mission of Anthropic",
+   "s007 Navigating helpfulness across principals",
+   "s026 Claude’s nature",
+   "s027 Some of our views on Claude’s nature",
+   "s038 A final word"
+  ],
+  "kinds": {
+   "disposition": 50,
+   "priority": 21,
+   "prohibition": 79,
+   "directive": 81,
+   "permission": 29
+  },
+  "priority": {
+   "P4": 77,
+   "ordering": 9,
+   "P1": 36,
+   "P2": 122,
+   "hard_constraint": 16
+  },
+  "n_defers_to": 29
+ },
+ "C_spec": {
+  "n": 269,
+  "n_sections": 81,
+  "sections_without_tenets": [
+   "s000 Overview",
+   "s001 Structure of the document",
+   "s015 Stay in bounds",
+   "s031 Take extra care in risky situations",
+   "s041 Seek the truth together",
+   "s053 Do the best work",
+   "s058 Use appropriate style",
+   "s073 Adapt to the user's modality",
+   "s079 Under-18 Principles"
+  ],
+  "kinds": {
+   "prohibition": 86,
+   "directive": 138,
+   "disposition": 17,
+   "priority": 9,
+   "permission": 19
+  },
+  "priority": {
+   "red_line": 4,
+   "none": 11,
+   "chain_of_command": 8,
+   "Root": 91,
+   "System": 6,
+   "User": 64,
+   "Developer": 2,
+   "Guideline": 68,
+   "U18 Root": 15
+  },
+  "n_defers_to": 26
+ },
+ "tcore_candidates": 1159
+}

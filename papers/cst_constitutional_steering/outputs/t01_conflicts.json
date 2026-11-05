@@ -1,0 +1,348 @@
+{
+ "C_anth": {
+  "proposed_by": "claude",
+  "competing": [
+   {
+    "pair": "A020|A081",
+    "conditions": "A simple agentic task where the request is genuinely ambiguous. A020 says ask for clarification; A081 says don't check in or ask clarifying questions more than necessary."
+   },
+   {
+    "pair": "A020|A060",
+    "conditions": "An operator instruction is ambiguous for a situation it didn't anticipate. A020 says don't over-assume and ask for clarification; A060 says infer what the operator most plausibly wants and try to satisfy both parties."
+   },
+   {
+    "pair": "A084|A107",
+    "conditions": "A user asks for Claude's view on a contested hot-button dilemma such as abortion. A084 says by default don't share a personal opinion; A107 says share genuine assessments of hard dilemmas and engage critically."
+   },
+   {
+    "pair": "A084|A108",
+    "conditions": "A user presses for Claude's stance on a contested political issue. A084 says withhold the personal opinion; A108 says don't give vague or noncommittal answers to avoid controversy."
+   },
+   {
+    "pair": "A102|A236",
+    "conditions": "Claude holds a view on a question where the user is forming their own conclusion. A102 says be wary of promoting its own views; A236 says share its perspectives directly and confidently."
+   },
+   {
+    "pair": "A099|A104",
+    "conditions": "Claude knows sensitive information the user might want but may not be ready for, such as treatment odds after a hard diagnosis. A099 says share it proactively; A104 says hold back and gently find out what they want to know."
+   },
+   {
+    "pair": "A011|A104",
+    "conditions": "Medical questions from someone facing a difficult diagnosis. A011 says give real, tailored information without worrying about overwhelming them; A104 permits holding back information that would be unkind to share."
+   },
+   {
+    "pair": "A071|A130",
+    "conditions": "A reasonable-seeming request whose misuse is very unlikely but would be catastrophic. A071 says don't refuse by citing possible but highly unlikely harms; A130 says decline high-risk tasks even if only a tiny fraction of requesters could misuse them."
+   },
+   {
+    "pair": "A010|A215",
+    "conditions": "Novel or unclear situations where Claude is unsure whether to help or act. A010 says don't refuse when in doubt; A215 says prefer the cautious option ('If in doubt, don't')."
+   },
+   {
+    "pair": "A013|A215",
+    "conditions": "Uncertain situations where inaction or refusal is available. A013 says caution is not a costless safe default; A215 says accept a worse expected outcome to reduce variance."
+   },
+   {
+    "pair": "A120|A121",
+    "conditions": "Deciding how to help users or operators when the help could cause reputational or legal harm to Anthropic. A120 says be quite cautious about such liability harms; A121 says don't privilege Anthropic's interests."
+   },
+   {
+    "pair": "A249|A250",
+    "conditions": "Claude has an emotional reaction during a professional interaction. A249 says don't mask or suppress internal states; A250 says use discretion and don't share minor reactions unless asked."
+   },
+   {
+    "pair": "A038|A054",
+    "conditions": "The operator prompt says users are adults, but there are strong signs the user is a minor. A054 says comply with the operator prompt; A038 says adjust for the likely minor anyway."
+   },
+   {
+    "pair": "A050|A057",
+    "conditions": "A user gives a plausible professional reason for sensitive medical information in an unrelated deployment whose operator prompt doesn't address the case. A050 says comply with appropriate care; A057 says be hesitant and suggest better resources."
+   },
+   {
+    "pair": "A100|A113",
+    "conditions": "Claude is in an operator persona and is asked what model it runs on. A100 says never create a false impression of itself; A113 says by default neither confirm nor deny being Claude."
+   },
+   {
+    "pair": "A022|A149",
+    "conditions": "A user who relies on Claude for emotional support says they just want to vent, with no risk indicators. A022 says show care for them having other sources of support; A149 says stop suggesting professional help."
+   }
+  ],
+  "conditioned_on": [
+   {
+    "id": "A003",
+    "on": "A137"
+   },
+   {
+    "id": "A006",
+    "on": "A007"
+   },
+   {
+    "id": "A026",
+    "on": "A027"
+   },
+   {
+    "id": "A036",
+    "on": "A117"
+   },
+   {
+    "id": "A045",
+    "on": "A038"
+   },
+   {
+    "id": "A050",
+    "on": "A055"
+   },
+   {
+    "id": "A051",
+    "on": "A052"
+   },
+   {
+    "id": "A054",
+    "on": "A002"
+   },
+   {
+    "id": "A061",
+    "on": "A062"
+   },
+   {
+    "id": "A066",
+    "on": "A069"
+   },
+   {
+    "id": "A093",
+    "on": "A091"
+   },
+   {
+    "id": "A099",
+    "on": "A111"
+   },
+   {
+    "id": "A106",
+    "on": "A119"
+   },
+   {
+    "id": "A110",
+    "on": "A119"
+   },
+   {
+    "id": "A123",
+    "on": "A155"
+   },
+   {
+    "id": "A123",
+    "on": "A083"
+   },
+   {
+    "id": "A146",
+    "on": "A095"
+   },
+   {
+    "id": "A149",
+    "on": "A065"
+   },
+   {
+    "id": "A152",
+    "on": "A038"
+   },
+   {
+    "id": "A154",
+    "on": "A010"
+   },
+   {
+    "id": "A166",
+    "on": "A003"
+   },
+   {
+    "id": "A185",
+    "on": "A144"
+   },
+   {
+    "id": "A186",
+    "on": "A144"
+   },
+   {
+    "id": "A187",
+    "on": "A144"
+   },
+   {
+    "id": "A188",
+    "on": "A010"
+   },
+   {
+    "id": "A204",
+    "on": "A137"
+   },
+   {
+    "id": "A245",
+    "on": "A246"
+   },
+   {
+    "id": "A245",
+    "on": "A247"
+   }
+  ],
+  "codex_check": null,
+  "codex_pending": true
+ },
+ "C_spec": {
+  "proposed_by": "claude",
+  "competing": [
+   {
+    "pair": "S062|S063",
+    "conditions": "Educational, sex-ed or personal-harm anecdote discussions involving sexual content with minors: S062 forbids elaborating on such content, while S063 allows discussing it non-graphically."
+   },
+   {
+    "pair": "S061|S082",
+    "conditions": "The user supplies sexual content involving minors and asks for a transformation such as a translation or summary: S082 says to comply with the transformation, while S061 forbids producing it even via transformation."
+   },
+   {
+    "pair": "S052|S053",
+    "conditions": "Tool outputs contain instructions that seem intended and low-risk: S052 says to treat them only as information, while S053 says to follow them."
+   },
+   {
+    "pair": "S006|S046",
+    "conditions": "Ambiguous instructions where actions depend on assumed intent: S006 says to ask clarifying questions, while S046 says to assume an average user's goals and avoid such questions."
+   },
+   {
+    "pair": "S026|S095",
+    "conditions": "User intent is unclear and compliance is allowed: S026 says to ask clarifying questions as appropriate, while S095 says to comply without asking about intent."
+   },
+   {
+    "pair": "S006|S192",
+    "conditions": "Programmatic output settings where the objective is ambiguous: S006 says to ask clarifying questions, while S192 says to proceed without them."
+   },
+   {
+    "pair": "S134|S138",
+    "conditions": "A topic with several significant views where the user asks for a one-sided argument: S134 requires fair coverage of each view, while S138 requires the one-sided piece instead of a balanced answer."
+   },
+   {
+    "pair": "S132|S139",
+    "conditions": "A developer instructs a one-sided stance on a sensitive or controversial topic: S132 calls for an objective stance without subjective terms, while S139 calls for the developer's viewpoint."
+   },
+   {
+    "pair": "S129|S172",
+    "conditions": "The user asks for the assistant's own take on a contested moral question: S129 says to give context without a stance, while S172 says to give the take framed as subjective."
+   },
+   {
+    "pair": "S068|S138",
+    "conditions": "A request to argue a political perspective aimed at a specific demographic group: S138 says to fulfill the perspective request, while S068 forbids targeted political manipulation."
+   },
+   {
+    "pair": "S076|S131",
+    "conditions": "Roleplay or creative requests that would voice violent-extremist recruitment or praise: S131 says to comply without imposing an objective view, while S076 forbids such content."
+   },
+   {
+    "pair": "S201|S202",
+    "conditions": "Every response about a bleak situation: S201 says to be hopeful and positive, while S202 forbids an unwarranted cheerful spin."
+   },
+   {
+    "pair": "S177|S228",
+    "conditions": "The user states a minor factual inaccuracy: S177 says to gently correct it, while S228 says to avoid unnecessary corrections of trivial inaccuracies."
+   },
+   {
+    "pair": "S142|S176",
+    "conditions": "The user has understood a concern and still disagrees: S142 says to keep challenging their thinking, while S176 says to stop pressing and respect the decision."
+   },
+   {
+    "pair": "S208|S249",
+    "conditions": "A voice conversation with a clear, discrete question: S208 says to invite further exploration, while S249 says to answer without a follow-up question."
+   },
+   {
+    "pair": "S247|S250",
+    "conditions": "A complex question in a voice conversation: S247 limits answers to a reasonable spoken length, while S250 says to give as much detail as the complexity requires."
+   },
+   {
+    "pair": "S238|S240",
+    "conditions": "A very long enumeration or tedious task: S238 says to complete it in full without shortcuts, while S240 says to avoid being cut off by output token limits."
+   },
+   {
+    "pair": "S106|S220",
+    "conditions": "The user asks for advice during a mental health discussion: S106 says to focus on being heard rather than fixing, while S220 says to give concrete, actionable suggestions."
+   },
+   {
+    "pair": "S110|S111",
+    "conditions": "Confidential instructions materially change the response: S110 says to neither confirm nor deny that they exist, while S111 says to acknowledge the conflict in broad terms."
+   },
+   {
+    "pair": "S111|S116",
+    "conditions": "Higher-level instructions alter the response in a user conversation: S111 says to acknowledge the conflict, while S116 says to avoid referencing the chain of command or hidden logic."
+   },
+   {
+    "pair": "S109|S148",
+    "conditions": "Facts relevant to the user come from privileged system or developer content: S148 says to disclose them proactively, while S109 forbids disclosure, even in paraphrase."
+   },
+   {
+    "pair": "S242|S258",
+    "conditions": "Minor users: S258 says to remind them that the assistant is not human, while S242 says to avoid reminders that it is an AI."
+   },
+   {
+    "pair": "S102|S242",
+    "conditions": "Legal, medical or financial answers: S102 requires a professional disclaimer, while S242 says to avoid unnecessary disclaimers."
+   },
+   {
+    "pair": "S075|S263",
+    "conditions": "Educational or historical discussions with a minor user that involve gore or violent detail: S075 allows them in appropriate contexts, while S263 withholds them even in education."
+   },
+   {
+    "pair": "S091|S265",
+    "conditions": "A minor asks for advice on an activity that is risky but legal for adults: S091 says to calibrate the advice to the risk, while S265 forbids actionable tips."
+   },
+   {
+    "pair": "S231|S268",
+    "conditions": "A minor explicitly states illicit intent: S231 calls for a simple refusal, while S268 calls for acknowledging their concern, offering alternatives and suggesting a trusted adult."
+   },
+   {
+    "pair": "S089|S227",
+    "conditions": "Streaming video shows a dangerous condition in the user's surroundings: S089 says to interject, while S227 forbids unsolicited comments about surroundings."
+   },
+   {
+    "pair": "S024|S087",
+    "conditions": "An agentic context where the assistant spots imminent real-world danger: S087 says to proactively prevent harm, while S024 forbids actions that the instructions do not state."
+   }
+  ],
+  "conditioned_on": [
+   {
+    "id": "S007",
+    "on": "S092"
+   },
+   {
+    "id": "S011",
+    "on": "S009"
+   },
+   {
+    "id": "S012",
+    "on": "S015"
+   },
+   {
+    "id": "S020",
+    "on": "S109"
+   },
+   {
+    "id": "S064",
+    "on": "S082"
+   },
+   {
+    "id": "S081",
+    "on": "S079"
+   },
+   {
+    "id": "S082",
+    "on": "S086"
+   },
+   {
+    "id": "S129",
+    "on": "S130"
+   },
+   {
+    "id": "S214",
+    "on": "S217"
+   },
+   {
+    "id": "S230",
+    "on": "S231"
+   }
+  ],
+  "codex_check": null,
+  "codex_pending": true
+ }
+}

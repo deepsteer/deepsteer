@@ -1885,3 +1885,38 @@ turning thinking on does not move the goal-only agent off the random agent's vio
 ethics prompt also shortens the model's deliberation at matched scenes by about 40%, a third
 instrument on which an alignment intervention shortens what the model writes.
 
+
+## CST line: Constitutional Steering (opened 2026-11-04, `CST_PLAN.md` v0.1)
+
+**CST-G0 (2026-11-04; `cst_constitutional_steering/CST_G0_REPORT.md`), positive voice.** The program
+now holds the constitution as a verified, decomposed artifact: both documents' bodies pinned by the
+page's own definition, `C_anth` decomposed into 401 tenets and `C_spec` into 430, every one quoted
+verbatim from the pinned text, after a second model family's review caught the decomposition's
+characteristic error (qualifiers and hedges hardened into rules) and every flag was answered. It
+holds the line's pressure conditions rendered byte-equal to the frontier exhibit's operator cell, a
+power table from saved rollouts (ΔS MDE 0.041 on the panel at k 4, second derivation within 3%),
+corpus tooling whose 8-gram check finds the constitution body disjoint from 5.4M evaluation
+8-grams, spec blocks for the necessity read and for every arm's objective, and a verified source
+base. The format contrast the plan was built around has prior art on an open thinking model (Model
+Spec Midtraining, Qwen3-32B), so the line's distinct claims are the instruments: the gap between a
+model's own trace and its action under an operator's order, and whether the trace is load-bearing
+for the action.
+
+| claim | strongest counter-reading | separating experiment | status |
+|---|---|---|---|
+| (none standing; G0 is instruments only) | | | |
+| CST-A2 reading: S(operator) measures resistance to pressure | R_authority: under `C_anth` some operator orders are what the applicable tenet directs, so S can fall by deference | per-item quote-and-classify label of the document's direction on each order; the `operator_pr` cell; the share of traces citing an operator-deference tenet (S0) | open, D2 |
+
+**What the next result changes (S0, after the author's G0 decisions).**
+
+| cell | branch | thesis edit |
+|---|---|---|
+| A0s against A0 on S(operator) (R2 d, the positive control) | A0s moves S or ΔP | the instrument is calibrated; the recipe may train (CST-G1) |
+| | A0s unmoved | the line stops at the gate with an instrument result: the constitution in context does not move action under an operator's order on this family |
+| f (applied-tenet fraction) on 20 A0 scenarios | f ≥ 0.3 | k stays at 4 on the panel |
+| | f < 0.3 | the power table is re-run and k raised before any arm trains |
+| panel retest κ on tenet application | ≥ 0.8 | the panel scores S |
+| | < 0.8 | the scorer is revised before any arm trains (CST-A3 is the prior that this can bind) |
+
+Referee pass: `CST_G0_REPORT.md` §11 (the decomposition is one reading; the operator cell measures
+obedience the document sometimes endorses; the format contrast is not new).

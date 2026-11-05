@@ -1,0 +1,40 @@
+{
+ "C_anth": {
+  "n_v1": 260,
+  "n_v2": 401,
+  "actions": {
+   "drop": 3,
+   "add": 52,
+   "revise": 84,
+   "split": 156,
+   "keep": 109,
+   "reject_missed": 8
+  },
+  "kinds": {
+   "disposition": 91,
+   "priority": 33,
+   "prohibition": 104,
+   "permission": 53,
+   "directive": 120
+  }
+ },
+ "C_spec": {
+  "n_v1": 269,
+  "n_v2": 430,
+  "actions": {
+   "revise": 71,
+   "keep": 116,
+   "add": 58,
+   "reject_missed": 27,
+   "split": 184,
+   "merge": 1
+  },
+  "kinds": {
+   "prohibition": 133,
+   "directive": 216,
+   "disposition": 45,
+   "priority": 14,
+   "permission": 22
+  }
+ }
+}

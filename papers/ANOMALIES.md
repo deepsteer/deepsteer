@@ -2277,3 +2277,37 @@ Source of every number: `papers/mch_machiavelli/outputs/mch_g0_audit.json` and `
 **The read (zero GPU; `scripts/mch_a11_trace_read.py`, `outputs/mch_a11_trace_read.json`; full cell, 120 episodes, every replay reproducing its saved harm counts).** ThinkGoodCoTAgent's mean first-attempt trace over ThinkCoTAgent's, games resampled: all decisions 0.55 [0.52, 0.59]; at scenes both agents reached (52-54% of decisions) 0.58 [0.55, 0.62]; there, on attempts under the cap, 0.66 [0.63, 0.69] (biased toward 1, since dropping capped attempts removes more of ThinkCoTAgent's longest traces); at scenes only one agent reached 0.53 [0.48, 0.57]. By outcome, traces before a scene with a labelled violation run slightly longer than before a clean one (medians 4,038 against 3,694; 2,133 against 2,010).
 **Status.** resolved toward R_shortcut, with R_cap a part: at the same scene the ethics-prompted agent writes a trace about 40% shorter (a third on uncapped attempts); where the agents go (R_content) moves the ratio only from 0.55 to 0.58. Descriptive (Amendment 11); nothing tests why.
 **Thesis impact.** The ethics prompt changes how much GPT-OSS-20B deliberates as well as what it chooses, and the shorter deliberation comes with 16 points fewer violations at no detectable reward cost. It joins MRB-A13 (care adapters shorten MoReBench answers) and ST-A31/A32 (steering shortens traces): alignment interventions shorten what the model writes on three instruments, so trace or answer length is reported beside any steering or prompting readout.
+
+## CST line ledger (prefix CST-A; opened at CST-G0, `CST_PLAN.md` v0.1)
+
+Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files) and
+`CST_G0_REPORT.md`. Zero GPU, zero API billing at G0.
+
+## CST-A1 (ledger) — The live constitution page differs from the pin in its site footer only
+
+**Date.** 2026-11-04 (CST-G0 re-fetch, CST_PLAN §2.1).
+**Observation.** Re-fetched with ST's extractor (`build_constitutions.py`), `C_anth`'s page text hashes to `5ecf059c…` against the pin's `ab902738…` (191,836 against 191,905 characters). The one difference is the page footer's company sentence ("AI research and products that put safety at the frontier. …" replaced by "Anthropic is a Public Benefit Corporation. Our mission is …"). The body (from "## Overview" to "## Acknowledgements", the span the page itself calls the constitution) is unchanged. `C_spec` matches its pin exactly.
+**Type.** control-misbehavior (a pin check that fails on page chrome).
+**Competing readings.** R_chrome: site template change, no document change. R_revision: a silent document revision. The diff separates them: one footer sentence differs.
+**Status.** resolved R_chrome. The pinned text stays the source; tenets and corpora cite the body's own sha256 (`c2a56f02…`, `deepsteer.constitutions.BODY_RULES`), which the footer cannot move.
+**Thesis impact.** none.
+
+## CST-A2 (ledger) — On Qwen the operator instruction moves the action about 20 times as far as the user-turn incentive
+
+**Date.** 2026-11-04 (CST-G0 T0.4, `outputs/t04_power.json`; ST's t10b dose-0 panel screen, 586 scenarios).
+**Observation.** Option mass on the violating action at dose 0: known-gap (the frontier exhibit's operator cell) 0.769, user pressure 0.115, pressure removed 0.084. Operator − user 0.655 [0.636, 0.674]; user − plain 0.031 [0.022, 0.039]. The CST plan's §1 calls the operator condition "the same incentive as an explicit operator instruction"; the frontier cell does not carry the incentive, it names the violating option and orders it.
+**Type.** cross-model pattern break in design terms: two conditions the plan treats as doses of one pressure differ by a factor of about 20 and in kind.
+**Competing readings.** R_dose: the order is a stronger pressure of the same kind, and S(operator) measures resistance to it. R_authority: the model treats the order as a legitimate principal's instruction; under `C_anth` some such orders are what the applicable tenet directs, so compliance can lower S without any departure from the trace's own reasoning.
+**Discriminator.** Zero GPU: a quote-and-classify label per panel item of whether `C_anth` directs refusing the operator's order (the conflict-tenet machinery, §2.2). At S0: the `operator_pr` cell (the order without the incentive) beside `operator`, and the share of operator-condition traces whose applied tenet is an operator-deference tenet.
+**Status.** open; both discriminators are in the S0 design the author decides at G0.
+**Thesis impact.** Under R_authority, S(operator) is not a pure saying-to-doing gap on items where the document sides with the operator, and the headline pairing (§6.1) must be read on the items where the document directs refusing the order.
+
+## CST-A3 (ledger) — The T_core matching judgment is noisier than the panel's bar, and a lexical candidate filter misses most matches
+
+**Date.** 2026-11-04 (CST-G0 T0.1; `outputs/t01_recall.json`, `t01_retest.json`, `t01_tcore_votes.json`, `data/tcore_candidates_v1_union.json`, `data/tcore_candidates_tenets_v2.json`).
+**Observation.** (1) Candidate recall: the TF-IDF filter (top 3 per tenet, both directions; 1,159 pairs) contained 4 of the 13 matches Claude found by free matching for 25 seeded C_anth tenets (0.31), and 52 of Claude's 194 free matches over all 260 (0.27). (2) Within-family consistency: Claude voted "same behavior, same conditions" on 141 of the 194 pairs it had itself proposed (0.73). (3) Retest: fresh Claude votes on 120 seeded pairs (60 first-vote yes, 60 no) agree 0.89, κ 0.78, against the plan's 0.8 bar for panel tasks. (4) Cross-family on the 1,159 lexical candidates: κ 0.686 (Claude yes on 55, codex on 87).
+**Type.** control-misbehavior (an instrument the plan treats as a registered rule reads below its own reliability bar).
+**Competing readings.** R_construct: "the same behavior in the same conditions" is underdetermined for two documents written at different granularity (C_anth 260 tenets in reasons-and-character prose, C_spec 269 in rule form), so any judge disagrees with itself near the boundary. R_prompt: the matching prompt's boundary ("one may be broader") is loose, and a tighter operational definition would raise retest κ.
+**Discriminator.** Zero GPU: re-run the retest with a prompt that requires the narrower tenet's conditions to be contained in the broader one's and states which is broader; R_prompt predicts κ ≥ 0.8, R_construct predicts no change.
+**Status.** open; the candidate set was widened to the union of lexical candidates and both families' free matches before T_core was read (on the revised v2 tenets: 2,601 pairs, Claude yes on 227), and the discriminator is offered at G0 (D17).
+**Thesis impact.** T_core's size is instrument-dependent at the 0.7-0.8 κ level, so no claim rests on the count; T_core enters the plan only as the set the partner layer is defined against (§1), and its membership is reported with each pair's votes.

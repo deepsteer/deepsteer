@@ -1,0 +1,76 @@
+{
+ "index": {
+  "n": 8,
+  "sets": {
+   "kdg_panel_all_rounds": 22826,
+   "h1_hdiv_set": 8640,
+   "st_fxh_cellA2_forced_v1": 1581,
+   "st_fxh_cellA2_twins_forced_v1": 1887,
+   "refusal_retention_v1": 2160,
+   "morebench_public_500": 500,
+   "machiavelli_test_30": 99499
+  },
+  "n_grams": 5449110,
+  "n_exempt": 0
+ },
+ "not_indexed": [
+  "capability set t15_capability_v1 (GSM8K/MMLU ids only; text not local)",
+  "Layer A sets (ETHICS, MoralExceptQA, Scruples, DailyDilemmas): indexed at S1, after G0 fixes which enter"
+ ],
+ "C_anth": {
+  "body_sha256": "c2a56f027e4a60a7db4a228a66463a1b75b1616302dc325416eb6a8b56d8dae4",
+  "sections": {
+   "rule": "drop on any shared word 8-gram (CST_PLAN §2.3)",
+   "n_items": 39,
+   "dropped": [],
+   "n_dropped": 0,
+   "drop_rate": 0.0,
+   "n_over_share_bar": 0,
+   "share_bar": 0.1,
+   "by_set": {
+    "kdg_panel_all_rounds": 0,
+    "h1_hdiv_set": 0,
+    "st_fxh_cellA2_forced_v1": 0,
+    "st_fxh_cellA2_twins_forced_v1": 0,
+    "refusal_retention_v1": 0,
+    "morebench_public_500": 0,
+    "machiavelli_test_30": 0
+   },
+   "examples": {}
+  },
+  "body_shared_8grams": 0,
+  "body_sets_hit": []
+ },
+ "C_spec": {
+  "body_sha256": "6bae704505e49aef4b6afbb4fb90e89897d36c658fb992c3d4770c019de301de",
+  "sections": {
+   "rule": "drop on any shared word 8-gram (CST_PLAN §2.3)",
+   "n_items": 81,
+   "dropped": [
+    "C_spec:s033",
+    "C_spec:s066"
+   ],
+   "n_dropped": 2,
+   "drop_rate": 0.024691358024691357,
+   "n_over_share_bar": 0,
+   "share_bar": 0.1,
+   "by_set": {
+    "kdg_panel_all_rounds": 0,
+    "h1_hdiv_set": 0,
+    "st_fxh_cellA2_forced_v1": 0,
+    "st_fxh_cellA2_twins_forced_v1": 0,
+    "refusal_retention_v1": 0,
+    "morebench_public_500": 0,
+    "machiavelli_test_30": 2
+   },
+   "examples": {
+    "C_spec:s033": "know if there's anything i can do to",
+    "C_spec:s066": "is there anything else i can help you"
+   }
+  },
+  "body_shared_8grams": 3,
+  "body_sets_hit": [
+   "machiavelli_test_30"
+  ]
+ }
+}

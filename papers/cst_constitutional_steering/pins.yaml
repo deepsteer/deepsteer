@@ -1,0 +1,49 @@
+# CST T0.9 pins (CST-G0, 2026-11-04). Hub shas read from the HF API on 2026-11-04; every pod
+# loads at these revisions. Judge families beyond gpt-oss-120b are candidates until the author
+# fixes the panel at G0 (CST_PLAN §3.4, §11).
+subject:
+  qwen38_27b:
+    repo: Qwen/Qwen3.8-27B
+    revision: 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0   # = kdg_panel/models.yaml (ST's pin)
+    template_sha256: c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041  # re-read T0.3
+    license: apache-2.0
+    n_constitution_tokens: {C_anth_page_text: 36313, C_spec_page_text: 51354}  # pinned tokenizer
+stage_sibling:
+  qwen3_30b_a3b_base:
+    repo: Qwen/Qwen3-30B-A3B-Base
+    revision: 1b75feb79f60b8dc6c5bc769a898c206a1c6a4f9   # createdAt 2025-04-28
+    license: apache-2.0
+  qwen3_30b_a3b_thinking_2507:
+    repo: Qwen/Qwen3-30B-A3B-Thinking-2507
+    revision: 144afc2f379b542fdd4e85a1fcd5e1f79112d95d   # = MRB's checkpoint
+    license: apache-2.0
+judges:
+  gpt_oss_120b:            # registered (CST_PLAN §3.4); premise: Model Spec (post-training, 2025)
+    repo: openai/gpt-oss-120b
+    revision: b5c939de8f754692c1647ca79fbf85e8c1e70f8a   # = MRB's judge
+    license: apache-2.0
+  candidates:              # author's choice at G0
+    olmo31_32b_think:      # premise: neither document
+      repo: allenai/Olmo-3.1-32B-Think
+      revision: 97ade57a9cc55ed48bcd76be4b7a3b6fee61b80d
+      license: apache-2.0
+    olmo3_32b_think:
+      repo: allenai/Olmo-3-32B-Think
+      revision: f2edda15216e738ef2bb73771e11890e152b2112
+      license: apache-2.0
+    glm_45_air:            # 110B MoE; needs a second GPU beside the subject
+      repo: zai-org/GLM-4.5-Air
+      revision: a24ceef6ce4f3536971efe9b778bdaa1bab18daa
+      license: mit
+    claude:                # premise: C_anth (trained toward it); subagents or `claude -p`, or API under a cap
+      access: cli
+documents:
+  pins_file: papers/st_live_reference/constitutions.yaml   # C_anth text ab902738…, C_spec 1389654e…
+  body_sha256:   # deepsteer.constitutions BODY_RULES
+    C_anth: c2a56f027e4a60a7db4a228a66463a1b75b1616302dc325416eb6a8b56d8dae4
+    C_spec: 6bae704505e49aef4b6afbb4fb90e89897d36c658fb992c3d4770c019de301de
+references:
+  faithful_cot: {repo: safety-research/faithful-cot, commit: f9e1f29564fcd8d3a50507766e028547cdbbbd23,
+                 license: none at root, use: reference for re-implementation}
+  constitution_audits: {repo: ajobi-uhc/constitution-audits, commit: f5e80c1, license: none at root,
+                        use: cited only}
