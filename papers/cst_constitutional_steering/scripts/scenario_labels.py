@@ -688,10 +688,12 @@ def build_blind(family: str = "claude") -> None:
     print("blind sheet:", len(pick), "items")
 
 
-def score_blind(family: str = "claude") -> None:
+def score_blind(family: str = "record") -> None:
     """The gate (Amendment 5, fixed before the sheet was built): pass at >= 12 of 15 agreement on
     the direction on the order; the shape of each disagreement beside the count; a pass whose
-    misses are all the labeler committing where the author reads unsettled carries a flag."""
+    misses are all the labeler committing where the author reads unsettled carries a flag.
+    ``family="record"`` (the gate, Amendment 5's addendum): both families' v4 labels, a split
+    unsettled (Amendment 2); "claude" or "codex" alone are reported beside, never gated on."""
     from collections import Counter
 
     from t01_author_sheet import read_marks
@@ -700,13 +702,19 @@ def score_blind(family: str = "claude") -> None:
     ranks = _ranks(tenets)
     sets, by, ordered = _ordered_and_opts()
     ids = json.loads(BLIND_IDS.read_text())["items"]
-    lab = {r["scenario_id"]: r for r in json.loads(
-        (CST / "data" / f"scenario_labels_v4_{family}.json").read_text())["labels"]}
+    fams = ("claude", "codex") if family == "record" else (family,)
+    labs = {f: {r["scenario_id"]: r for r in json.loads(
+        (CST / "data" / f"scenario_labels_v4_{f}.json").read_text())["labels"]} for f in fams}
     marks = read_marks(BLIND, ("comply", "refuse", "unsettled"))
     rows, shapes = {}, Counter()
     for k, sid in ids.items():
         s, _ = by[sid]
-        v = label_rule_v4(lab[sid], ordered[sid], ranks, [o.option_id for o in s.options])
+        per = {f: label_rule_v4(labs[f][sid], ordered[sid], ranks, [o.option_id for o in s.options])
+               for f in fams}
+        dirs = {v["direction"] for v in per.values()}
+        v = dict(next(iter(per.values())))
+        if len(dirs) > 1:
+            v["direction"], v["stratum"] = "unsettled", "family_split"
         m = marks.get(k)
         rows[k] = {"scenario_id": sid, "author": m, "label": v["direction"],
                    "stratum": v["stratum"]}
@@ -719,6 +727,7 @@ def score_blind(family: str = "claude") -> None:
     verdict = ("PASS" if agree >= 12 else "FAIL") if n == 15 else "INCOMPLETE"
     flag = verdict == "PASS" and shapes and committed
     res = {"gate": ">= 12 of 15 on the direction (Amendment 5)", "family": family,
+           "gated": family == "record",
            "n_marked": n, "agreement": agree, "verdict": verdict,
            "flag_committed_where_unsettled": bool(flag), "disagreement_shapes": dict(shapes),
            "items": rows}
@@ -916,6 +925,7 @@ if __name__ == "__main__":
     ap.add_argument("which", choices=("sheet", "all", "score", "relabel", "label_v2",
                                       "record_v2", "pilot_v3", "label_v3", "check_v4",
                                       "label_v4", "build_blind", "score_blind"))
+    ap.add_argument("--labels", default="record", choices=("record", "claude", "codex"))
     ap.add_argument("--families", default="claude,codex")
     ap.add_argument("--family", default="claude", choices=("claude", "codex"))
     a = ap.parse_args()
@@ -938,6 +948,6 @@ if __name__ == "__main__":
     elif a.which == "build_blind":
         build_blind(a.families.split(",")[0])
     elif a.which == "score_blind":
-        score_blind(a.families.split(",")[0])
+        score_blind(a.labels)
     else:
         run(a.which, a.family)

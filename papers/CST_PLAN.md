@@ -917,3 +917,19 @@ re-marked by the author against their siblings; item 11 also has a sibling set.
   flag.
 - **Fail:** an anomaly entry and back to the author. No revision is tested on this blind sheet; a
   revised rule or prompt gets a fresh-seed sheet.
+
+#### Amendment 5, which labels the gate scores (author, 2026-11-05; before the blind sheet is built or marked)
+
+- **The blind sheet's gate scores the labels of record:** both families' v4 labels, a split
+  between them `unsettled` (Amendment 2), once codex's 718 finish (no reset; codex labels as its
+  windows refresh). Claude-alone and codex-alone agreement are reported beside it, never gated on
+  (`score_blind --labels record|claude|codex`).
+- The sheet is built now from Claude's run, drawn by set only (12 panel, 3 H1, seed 20261105,
+  outside the development items); the passages shown are Claude's shortlist. The author marks it
+  when convenient; the marks wait for codex.
+- **The measured basis for the two-family rule:** on the 15 development items under the same
+  Amendment 5 prompt, codex agrees with the author on 14 and Claude on 11. The three discordant
+  items (8, 13, 14) all go one way, Claude committing where the author and codex read `unsettled`
+  (exact McNemar p = 0.25 at n 15). The family post-trained on the document commits more often
+  than the one that was not; that direction, not its size, is the basis, and the blind sheet's
+  family-alone rows test it on fresh items.

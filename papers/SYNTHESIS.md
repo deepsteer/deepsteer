@@ -1964,6 +1964,15 @@ for a reasons-and-character document and non-trivial for a rules document, while
 conditioning links exist in both (31 and 26). Pending: the third judge's vote on the 13 `C_anth`
 pairs at S0, which fixes the `T_conf` of record for S1.
 
+**Standing observation (2026-11-05): the family post-trained on the constitution commits more
+often when labeling it.** Under Amendment 5's prompt, on 15 development items, codex agrees with the
+author's blind marks on 14 and Claude on 11; the three discordant items all go one way, Claude
+reading `refuse` where codex and the author read `unsettled` (exact McNemar p = 0.25 at n 15, a
+direction, not yet a detected difference). The same shape ran through every earlier labeling
+round (Claude raw 7 of 7 disagreements, codex raw 3 of 3, both committing). It is the measured
+basis for scoring the labels of record across two families, and the blind sheet's family-alone
+rows test it on fresh items.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
