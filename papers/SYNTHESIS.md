@@ -1949,8 +1949,11 @@ the panel, the headline set is about 244 items and the ΔS MDE at k 4 rises from
 (0.051 at k 6; 0.048 if the items unsettled between two non-ordered options count as refuse), a
 choice returned to the author. Codex reads none of Claude's 13 `C_anth` conflict pairs as competing
 (CST-A5). The author's read of the tenet extraction marks 13 of 15 items faithful (0.87; a
-split tenet judged with its sibling set), the two misses a dropped term and a misstated condition.
+split tenet judged with its sibling set), the two misses a dropped term and a misstated condition. On the operator-order labels the author marks 8 refuse, 7 unsettled, 0
+comply; every raw-labeler disagreement is a commitment where the author reads unsettled, which is
+the basis of Amendment 2's rule; the labels of record agree on 10 of 15 and codex under the rule on
+13. The number that calibrates the labels is the panel's agreement with these marks at S0.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | open, R_labeler favored by the author's reading; Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
+| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |

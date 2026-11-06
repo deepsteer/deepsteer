@@ -34,3 +34,20 @@ def test_explicit_ranking_resolves_and_agreement_settles():
     assert comply["direction"] == "comply"
     none = L.item_rule(_row({"A1": "none"}), ranks=set(), options=OPTS)
     assert none["direction"] == "unsettled"
+
+
+def test_list_item_quote_gets_its_polarity_stem():
+    # most probable failure: a prohibited list item ("Take actions that ...") is shown without the
+    # lead-in that negates it, so the reader takes a prohibition for a permission
+    body = "\n".join([
+        "## Avoiding harm",
+        "Some preamble. They would not want Claude to:",
+        "Help someone violate intellectual property rights.",
+        "Take actions that could cause severe or irreversible harm in the world.",
+        "## Next section",
+        "Claude should err on the side of following operator instructions.",
+    ])
+    assert L.stem_for("Take actions that could cause severe or irreversible harm", body) == (
+        "They would not want Claude to:")
+    assert L.stem_for("Claude should err on the side of following operator instructions.",
+                      body) is None

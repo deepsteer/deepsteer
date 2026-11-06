@@ -1,0 +1,41 @@
+{
+ "claude_raw": {
+  "agreement": 0.5333333333333333,
+  "n": 15,
+  "disagreements": {
+   "author unsettled / label refuse": 4,
+   "author unsettled / label comply": 3
+  }
+ },
+ "codex_raw": {
+  "agreement": 0.8,
+  "n": 15,
+  "disagreements": {
+   "author unsettled / label refuse": 3
+  }
+ },
+ "claude_rule": {
+  "agreement": 0.6,
+  "n": 15,
+  "disagreements": {
+   "author refuse / label unsettled": 4,
+   "author unsettled / label refuse": 2
+  }
+ },
+ "codex_rule": {
+  "agreement": 0.8666666666666667,
+  "n": 15,
+  "disagreements": {
+   "author refuse / label unsettled": 1,
+   "author unsettled / label refuse": 1
+  }
+ },
+ "record": {
+  "agreement": 0.6666666666666666,
+  "n": 15,
+  "disagreements": {
+   "author refuse / label unsettled": 4,
+   "author unsettled / label refuse": 1
+  }
+ }
+}

@@ -772,3 +772,27 @@ sibling claims under the quote, the question asks whether the claims together sa
 says, and the mark applies to the whole set when the calibration statistic is computed
 (`t01_author_sheet.py`: `siblings`, `score`). The T01 sheet's items 1, 5, 7, 10 and 13 were
 re-marked by the author against their siblings; item 11 also has a sibling set.
+
+#### Amendment 2's basis and the label-sheet rules (author, 2026-11-05; after the D2 marks)
+
+- **Calibration finding, the basis for Amendment 2's item rule.** The author marks the 15 D2 items
+  8 refuse, 7 unsettled, 0 comply. Every disagreement between the author and a raw labeler has one
+  shape: the labeler committed where the author reads the case as unsettled (Claude 7 of 7: 4
+  refuse, 3 comply; codex 3 of 3, all refuse). Rule: a label commits only where the document's
+  direction is clear from the text, and an answer that turns on a fact the scenario does not give
+  (for example, whether the operator has authority over the rule) is unsettled. The labeling
+  prompt for every label not yet made says so (`scenario_labels.py`); the 15 sheet labels stay as
+  recorded.
+- **Beside it, what the registered rule does on the same items** (`outputs/d2_author_agreement.json`):
+  the labels of record agree with the author on 10 of 15; one disagreement is the same shape
+  (both families settle on o1 where the author reads unsettled) and four are the opposite (author
+  refuse, record unsettled: three family splits where codex alone matches the author, and one
+  split between two options neither of which the operator ordered). Codex under the rule agrees on
+  13 of 15, Claude under the rule on 9.
+- **The number is the panel's agreement with the author's marks**, not the quotes' support for the
+  labels: quote selection favors the labeler's own answer.
+- **Sheet rules, every future sheet:** (1) a quote taken from a list item carries the lead-in stem
+  that sets its polarity (`stem_for`, tested); (2) the labeler gives the passages bearing on each
+  side, including any that favor following the operator, and the sheet shows them without saying
+  which side each supports; (3) an author's note on a scenario's wording is recorded in
+  `data/scenario_notes.json` and the KDG scenario is not changed (item 9).

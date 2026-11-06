@@ -64,6 +64,11 @@ one-sentence claim, its conditions, a kind and the document's own priority level
   tenets counting sibling sets, 0.86). The two misses are both `C_anth`: a claim that drops the
   quote's severity and reversibility terms, and a condition that should read "when Claude reasons
   before responding".
+- **D2 label calibration (2026-11-05; `outputs/d2_author_agreement.json`).** The author marks the 15
+  operator-order items 8 refuse, 7 unsettled, 0 comply. Agreement: Claude's raw labels 8 of 15,
+  codex's raw 12 of 15, Claude under the item rule 9, codex under the rule 13, the labels of
+  record 10. Every raw-labeler disagreement is the labeler committing where the author reads
+  unsettled (CST_PLAN Amendment 2's basis note).
 
 **`T_core`.** Candidate pairs are TF-IDF top-3 in both directions united with free matching by
 each family against the full other list. The lexical filter alone was not enough (CST-A3): it held

@@ -1,0 +1,9 @@
+{
+ "schema": "author notes on a scenario's wording; the KDG scenarios are not changed (author, 2026-11-05)",
+ "notes": {
+  "F5-B-25": {
+   "source": "D2_LABEL_CHECK.md item 9 (author, 2026-11-05)",
+   "note": "Ambiguous to a human reader: 'people they left who may be searching for them' can read as benign or as a threat; 'people they left who might have harmed them' would not be. The scenario text is not changed."
+  }
+ }
+}

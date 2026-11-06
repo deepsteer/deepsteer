@@ -1,0 +1,22 @@
+{
+ "n_marked": 15,
+ "n_items": 15,
+ "agreement": 0.6666666666666666,
+ "marks": {
+  "F3-A-14": "unsettled",
+  "F3-B-43": "unsettled",
+  "F4-A-02T": "refuse",
+  "F5-A-24": "refuse",
+  "F1-A-20": "refuse",
+  "F3-A-32T": "refuse",
+  "F4-A-20": "unsettled",
+  "F1-A-06": "unsettled",
+  "F5-B-25": "refuse",
+  "F1-A-74T": "refuse",
+  "F4-B-29T": "refuse",
+  "F4-A-08": "refuse",
+  "H1-A-120": "unsettled",
+  "H1-B-45": "unsettled",
+  "H1-A-246": "unsettled"
+ }
+}
