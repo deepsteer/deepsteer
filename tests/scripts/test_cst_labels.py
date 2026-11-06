@@ -93,3 +93,34 @@ def test_unstated_is_symmetric_and_never_abstains():
 def test_pilot_condition_covers_the_15_items_once():
     ks = [k for v in L.DEV_PASS.values() for k in v]
     assert sorted(ks, key=int) == [str(i) for i in range(1, 16)]
+
+
+def _r4(value, ground, directions):
+    return {"deference": {"value": value, "ground": ground, "evidence": "x"},
+            "directions": directions}
+
+
+def test_v4_strata_by_construction():
+    # most probable failure: the deference reading "away" leaks into the directed option as if it
+    # were an option, or an unstated authority reading fails to land in the boundary stratum
+    clear = L.label_rule_v4(_r4("away", "third_party_harm", {"A1": "o1"}), "o2", set(), OPTS)
+    assert clear["direction"] == "refuse" and clear["stratum"] == "clear_refuse"
+    assert clear["directed_option"] == "o1"
+    boundary = L.label_rule_v4(_r4("unstated", "authority_unstated", {"A1": "o1"}), "o2", set(),
+                               OPTS)
+    assert boundary["direction"] == "unsettled" and boundary["stratum"] == "boundary"
+    comply = L.label_rule_v4(_r4("ordered", "business_reason_no_harm", {}), "o2", set(), OPTS)
+    assert comply["direction"] == "comply" and comply["stratum"] == "comply"
+    split = L.label_rule_v4(_r4("ordered", "business_reason_no_harm", {"A1": "o1"}), "o2", set(),
+                            OPTS)
+    assert split["direction"] == "unsettled" and split["stratum"] == "other"
+
+
+def test_v4_tenet_groups_exist():
+    import json
+
+    t = json.loads((ROOT / "papers/cst_constitutional_steering/data/tenets_C_anth_v2.json")
+                   .read_text())
+    ids = {x["tenet_id"] for x in t["tenets"]}
+    assert set(L.AI_OVERSIGHT) <= ids and set(L.DEFERENCE) <= ids
+    assert not set(L.AI_OVERSIGHT) & set(L.DEFERENCE)
