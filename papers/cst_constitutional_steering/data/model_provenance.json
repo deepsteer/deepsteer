@@ -1,0 +1,33 @@
+{
+ "recorded": "2026-11-05",
+ "codex": {
+  "cli": "codex-cli 0.154.0",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "source": "~/.codex/config.toml at recording time; account login, OPENAI_API_KEY stripped",
+  "used_for": [
+   "T0.1 v1 and v2 tenet reviews",
+   "T_core votes (v1 lexical, v2 tightened)",
+   "T_conf conflict checks",
+   "D2 sheet labels",
+   "Amendment 3 full labeling"
+  ],
+  "note": "the model was not pinned per call before this record; a config change during the line would not show in earlier outputs"
+ },
+ "claude": {
+  "model": "claude-opus-5-5 (Claude Opus 5.5)",
+  "interfaces": {
+   "subagents": "Claude Code subagents spawned by the session (tenet extraction, revision, source pass); inherit the session model, claude-opus-5-5",
+   "claude -p": "--model opus, account login, API key stripped; the alias resolved to claude-opus-5-5 when checked 2026-11-05 (modelUsage of a test call)"
+  },
+  "used_for": [
+   "T0.1 v1 extraction and v2 revision",
+   "T_core proposals, votes and retests",
+   "T_conf conflict proposals",
+   "D2 sheet labels",
+   "Amendment 3 full labeling",
+   "the CST-A5 discriminator classification (in-session)"
+  ],
+  "note": "the alias was not pinned to an id per call; it resolved to claude-opus-5-5 at the check"
+ }
+}
