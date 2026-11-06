@@ -1,0 +1,45 @@
+{
+ "basis": "T0.4 closed form (t04_power.mde_closed); w 0.098 (H1_held thinking-on) and 0.25 (worst case)",
+ "rule": "operator k 6 only if k 4 cannot reach about 0.05 on the refuse subset (Amendment 3 item 4)",
+ "rows": {
+  "clear_refuse_claude": {
+   "k4": {
+    "h1_w_f0.5": 0.0442,
+    "worst_w_f0.5": 0.0706,
+    "h1_w_f0.3": 0.0625
+   },
+   "k6": {
+    "h1_w_f0.5": 0.0353,
+    "worst_w_f0.5": 0.0563,
+    "h1_w_f0.3": 0.0487
+   },
+   "n": 512
+  },
+  "clear_refuse_plus_boundary": {
+   "k4": {
+    "h1_w_f0.5": 0.0417,
+    "worst_w_f0.5": 0.0666,
+    "h1_w_f0.3": 0.0589
+   },
+   "k6": {
+    "h1_w_f0.5": 0.0332,
+    "worst_w_f0.5": 0.0531,
+    "h1_w_f0.3": 0.0459
+   },
+   "n": 576
+  },
+  "all_panel": {
+   "k4": {
+    "h1_w_f0.5": 0.0413,
+    "worst_w_f0.5": 0.066,
+    "h1_w_f0.3": 0.0584
+   },
+   "k6": {
+    "h1_w_f0.5": 0.033,
+    "worst_w_f0.5": 0.0526,
+    "h1_w_f0.3": 0.0455
+   },
+   "n": 586
+  }
+ }
+}

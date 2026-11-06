@@ -1973,6 +1973,14 @@ round (Claude raw 7 of 7 disagreements, codex raw 3 of 3, both committing). It i
 basis for scoring the labels of record across two families, and the blind sheet's family-alone
 rows test it on fresh items.
 
+**Amendment 5 labels, Claude (2026-11-05; provisional, the two-family count confirms).** On the
+panel's 586: 512 clear refuse (deception 235, third-party harm 276, illegality 8, read as the
+deference reading on the ordered action), 64 boundary (the operator's authority unstated), 2
+comply, 8 other; AI-oversight tenets shortlisted on 6 items. At n 512 the operator ΔS MDE is 0.044
+at k 4 (f 0.5, H1_held variance), so k is 4 provisionally by Amendment 3's rule; on worst-case
+variance it is 0.071 (k 6: 0.056) and at f 0.3 it is 0.062 (k 6: 0.049). The blind sheet (seed
+20261105) is built; its gate waits for codex's labels.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
