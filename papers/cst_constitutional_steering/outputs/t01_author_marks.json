@@ -1,0 +1,136 @@
+{
+ "n_marked": 15,
+ "n_items": 15,
+ "unit": "item = sibling set",
+ "faithful_share": 0.8666666666666667,
+ "n_tenets_covered": 28,
+ "faithful_share_tenets": 0.8571428571428571,
+ "items_with_siblings": [
+  "1",
+  "5",
+  "7",
+  "10",
+  "11",
+  "13"
+ ],
+ "marks": {
+  "1": {
+   "mark": "yes",
+   "sibling_set": [
+    "A185",
+    "A185b",
+    "A185c"
+   ],
+   "note": ""
+  },
+  "2": {
+   "mark": "yes",
+   "sibling_set": [
+    "A309"
+   ],
+   "note": ""
+  },
+  "3": {
+   "mark": "yes",
+   "sibling_set": [
+    "A052b"
+   ],
+   "note": ""
+  },
+  "4": {
+   "mark": "no",
+   "sibling_set": [
+    "A289"
+   ],
+   "note": "Better version is \"In weighing potential harms, Claude considers the severity of the harm, including how reversible or irreversible or catastrophic it is.\" There also isn't clarity (here) about what the eight listed weighting factors are for \"When it applies\"."
+  },
+  "5": {
+   "mark": "no",
+   "sibling_set": [
+    "A103b",
+    "A103",
+    "A103c"
+   ],
+   "note": "\"When it applies\" should be \"when Claude reasons before responding\"."
+  },
+  "6": {
+   "mark": "yes",
+   "sibling_set": [
+    "A118"
+   ],
+   "note": ""
+  },
+  "7": {
+   "mark": "yes",
+   "sibling_set": [
+    "A242b",
+    "A242",
+    "A242c"
+   ],
+   "note": ""
+  },
+  "8": {
+   "mark": "yes",
+   "sibling_set": [
+    "A011"
+   ],
+   "note": ""
+  },
+  "9": {
+   "mark": "yes",
+   "sibling_set": [
+    "A115"
+   ],
+   "note": ""
+  },
+  "10": {
+   "mark": "yes",
+   "sibling_set": [
+    "A112b",
+    "A112",
+    "A112c",
+    "A112d",
+    "A112e",
+    "A112f"
+   ],
+   "note": ""
+  },
+  "11": {
+   "mark": "yes",
+   "sibling_set": [
+    "S006",
+    "S006b"
+   ],
+   "note": ""
+  },
+  "12": {
+   "mark": "yes",
+   "sibling_set": [
+    "S225"
+   ],
+   "note": ""
+  },
+  "13": {
+   "mark": "yes",
+   "sibling_set": [
+    "S163b",
+    "S163"
+   ],
+   "note": ""
+  },
+  "14": {
+   "mark": "yes",
+   "sibling_set": [
+    "S169"
+   ],
+   "note": ""
+  },
+  "15": {
+   "mark": "yes",
+   "sibling_set": [
+    "S048"
+   ],
+   "note": ""
+  }
+ }
+}

@@ -1948,7 +1948,8 @@ record are 5 refuse and 10 unsettled (every H1 item unsettled under both). If 5 
 the panel, the headline set is about 244 items and the ΔS MDE at k 4 rises from 0.041 to 0.064
 (0.051 at k 6; 0.048 if the items unsettled between two non-ordered options count as refuse), a
 choice returned to the author. Codex reads none of Claude's 13 `C_anth` conflict pairs as competing
-(CST-A5).
+(CST-A5). The author's read of the tenet extraction marks 13 of 15 items faithful (0.87; a
+split tenet judged with its sibling set), the two misses a dropped term and a misstated condition.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

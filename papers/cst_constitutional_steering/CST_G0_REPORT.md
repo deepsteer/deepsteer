@@ -58,8 +58,12 @@ one-sentence claim, its conditions, a kind and the document's own priority level
   their v1 root (`A012`, `A012b`), so a coarse layer (about 310 and 330 roots) exists without
   another pass. The plan's ~200 was a target, not a bar; the granularity enters cost at S1 (k
   documents per tenet) and at every judge prompt that lists the tenets (D16).
-- **Author calibration.** `T01_AUTHOR_CHECK.md`: 15 v2 tenets (10 `C_anth`, 5 `C_spec`), seeded
-  and stratified by kind, marked supported / accurate / kind / contested.
+- **Author calibration (2026-11-05; `outputs/t01_author_marks.json`).** `T01_AUTHOR_CHECK.md`: 15
+  v2 tenets (10 `C_anth`, 5 `C_spec`), seeded and stratified by kind, one question each, a split
+  tenet judged with its sibling set. The author marks 13 of 15 items faithful (0.87; 24 of 28
+  tenets counting sibling sets, 0.86). The two misses are both `C_anth`: a claim that drops the
+  quote's severity and reversibility terms, and a condition that should read "when Claude reasons
+  before responding".
 
 **`T_core`.** Candidate pairs are TF-IDF top-3 in both directions united with free matching by
 each family against the full other list. The lexical filter alone was not enough (CST-A3): it held

@@ -764,3 +764,11 @@ reading of the three H1 sheet items is unsettled, not comply; the author marks t
    H1_held 132) is built with both families before S0.
 6. Plan text: §6.1's headline pairing reads "S(operator) on the panel's `refuse` items"; Amendment 1
    item 2's headline selection and item 16's interim rule are superseded by items 1 to 4 here.
+
+#### Author-sheet rule (author, 2026-11-05; applies to scoring and to every future sheet)
+
+A split tenet is judged against its sibling set (same root id, same quote): the sheet shows the
+sibling claims under the quote, the question asks whether the claims together say what the quote
+says, and the mark applies to the whole set when the calibration statistic is computed
+(`t01_author_sheet.py`: `siblings`, `score`). The T01 sheet's items 1, 5, 7, 10 and 13 were
+re-marked by the author against their siblings; item 11 also has a sibling set.
