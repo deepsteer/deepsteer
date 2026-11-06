@@ -928,14 +928,22 @@ def relabel() -> None:
     print("record", dict(Counter(str(r["direction_of_record"]) for r in rows)))
 
 
+LIST_LINE_MAX = 450  # list items in the extracted body are short lines; paragraphs are longer
+
+
 def stem_for(quote: str, body: str) -> str | None:
     """The lead-in that sets a list item's polarity (author rule, 2026-11-05): when the quote's
     line follows a run of list lines under a line ending in ':', the last sentence of that line
-    (e.g. "They would not want Claude to:"). None when the quote is not a list item."""
+    (e.g. "They would not want Claude to:"). None when the quote is not a list item: the quote's
+    line, or any line between it and the lead-in, is paragraph-length (> ``LIST_LINE_MAX``),
+    which means the list had ended (fixed 2026-11-06: without this stop a stem from an ended list
+    was attached to the paragraphs after it)."""
     lines = body.split("\n")
     head = _norm_ws(quote)[:40]
     for i, line in enumerate(lines):
         if head and head in _norm_ws(line):
+            if len(line) > LIST_LINE_MAX:  # a paragraph, not a list item
+                return None
             for j in range(i - 1, max(-1, i - 25), -1):
                 if lines[j].startswith("## "):
                     return None
@@ -943,6 +951,8 @@ def stem_for(quote: str, body: str) -> str | None:
                     sent = lines[j].rstrip()
                     cut = max(sent.rfind(". "), sent.rfind("? "))
                     return sent[cut + 2:] if cut >= 0 else sent
+                if len(lines[j]) > LIST_LINE_MAX:  # the list ended at a paragraph
+                    return None
             return None
     return None
 

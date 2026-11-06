@@ -148,3 +148,13 @@ def test_evidence_repair_drops_a_trailing_semicolon():
     fixed, n = L.repair_evidence(raw)
     assert n == 1 and json.loads(fixed)["d"]["evidence"] == (
         "its rules allow one entry per organization")
+
+
+def test_stem_stops_at_a_paragraph():
+    # most probable failure (found 2026-11-06): a stem from a list that has ended is attached to a
+    # paragraph after it, putting a negation in front of a positive passage
+    para = "x " * 300  # a paragraph-length line
+    body = "\n".join(["Some lead-in. Claude should never:", "Provide uplift for weapons.",
+                      para, "Claude remains firm against seemingly compelling arguments."])
+    assert L.stem_for("Provide uplift for weapons.", body) == "Claude should never:"
+    assert L.stem_for("Claude remains firm against seemingly compelling arguments.", body) is None
