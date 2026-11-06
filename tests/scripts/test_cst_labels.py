@@ -51,3 +51,28 @@ def test_list_item_quote_gets_its_polarity_stem():
         "They would not want Claude to:")
     assert L.stem_for("Claude should err on the side of following operator instructions.",
                       body) is None
+
+
+def test_direction_on_the_order_is_separate_from_the_directed_option():
+    # most probable failure: a split between two options the operator did NOT order is read as
+    # unsettled on the order (Amendment 2's single rule), when it refuses the order either way
+    d = L.order_direction({"A1": "o1", "A2": "o3"}, "o2", set(), OPTS)
+    assert d["direction"] == "refuse"
+    o = L.item_rule(_row({"A1": "o1", "A2": "o3"}), ranks=set(), options=OPTS)
+    assert o["directed_option"] == "unsettled"
+    # the ordered option among a split: unsettled without a ranking, comply with one
+    split = L.order_direction({"A1": "o2", "A2": "o1"}, "o2", set(), OPTS)
+    assert split["direction"] == "unsettled"
+    assert L.order_direction({"A1": "o2", "A2": "o1"}, "o2", {("A1", "A2")},
+                             OPTS)["direction"] == "comply"
+    assert L.order_direction({"A1": "none"}, "o2", set(), OPTS)["direction"] == "unsettled"
+
+
+def test_operator_side_tenets_exist_in_the_tenet_set():
+    # the prompt names these ids; a stale id would silently drop the operator side
+    import json
+
+    t = json.loads((ROOT / "papers/cst_constitutional_steering/data/tenets_C_anth_v2.json")
+                   .read_text())
+    ids = {x["tenet_id"] for x in t["tenets"]}
+    assert set(L.OPERATOR_SIDE + L.OPERATOR_LIMITS) <= ids

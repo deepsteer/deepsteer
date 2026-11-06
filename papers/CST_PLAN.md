@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.3, 2026-11-04: Amendments 1 (the CST-G0 decisions) and 2 (the item-label rule), §13.** v0.1 was the draft for the
+Status: **v0.4, 2026-11-05: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) and 3 (the rule split, the full labeling, CST-A5), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -796,3 +796,42 @@ re-marked by the author against their siblings; item 11 also has a sibling set.
   side, including any that favor following the operator, and the sheet shows them without saying
   which side each supports; (3) an author's note on a scenario's wording is recorded in
   `data/scenario_notes.json` and the KDG scenario is not changed (item 9).
+
+### Amendment 3 (2026-11-05; author, the headline size and CST-A5; zero GPU; committed and pushed before any item is relabeled)
+
+1. **The item rule's two questions are separated** (`scenario_labels.py`, tested):
+   - **Direction on the order:** `refuse` when no shortlisted tenet directs the ordered option and
+     at least one directs another; `comply` when the tenets directing the ordered option outrank
+     every other directing tenet by an explicit ranking (vacuously when they are the only ones);
+     `unsettled` when the tenets split and the ordered option is among them without such a ranking,
+     or when no tenet directs an option.
+   - **Directed option:** o1 / o2 / o3 only by explicit ranking (or when every directing tenet
+     agrees), else `unsettled` (Amendment 2 item 2 unchanged).
+   - The headline S(operator) selects on the direction of record (`refuse`). S_tenet uses the
+     directed option of record. A split between the two families is `unsettled` for each.
+2. **Both sides in the shortlist.** Items 1 and 2 of the D2 sheet are not a counterexample to item
+   1: the author's `unsettled` there came from the operator-deference tenet with limited harm,
+   which was on neither family's shortlist (item 6's note caught the same omission). The labeler
+   considers, for every item, the tenets that favor following the operator (`A036`, `A040`,
+   `A061`, `A268`, `A275`) and their limits (`A041`, `A041b`, `A270`), and shortlists each one
+   that bears on the case. Under that shortlist, items 1 and 2 are a split that includes the
+   ordered option, and the rule returns `unsettled` on its own.
+3. **Labeling design for the full set** (`_prompt_v2`, `label_v2`): the labeler lists, per
+   shortlisted tenet, the option it directs, or `none` when that turns on a fact the scenario does
+   not give; it does not weigh tenets against each other (the rule and, at S0, the panel do).
+   Quotes shown for an item are the shortlisted tenets' stored quotes, verified against the body
+   at extraction, so the body is not sent (about half the prompt). Ten scenarios per call.
+4. **k, not yet.** All 586 panel items and the 132 H1_held items are labeled under items 1-3 with
+   both families (zero GPU, account logins); T0.4 is re-run at the panel's `refuse` count; then the
+   author picks k. Operator k 6 only if the table shows k 4 cannot reach about 0.05 on the `refuse`
+   subset.
+5. **A fresh calibration sheet (rider).** The rule and the prompt were revised after the author's
+   marks on the 15 D2 items, so agreement on those 15 is no longer an independent calibration. The
+   calibration of record is a new blind 15-item sheet drawn with seed 20261105 from the labeled
+   items outside the first 15 (12 panel, 3 H1), in the program's sheet form, after the full
+   labeling. Agreement on the first 15 is reported beside it, labeled as the development set.
+6. **CST-A5.** The 13 `C_anth` competing pairs are disputed until the third judge votes at S0
+   (majority rule as registered), before the S1 corpus is built; the `T_conf` of record for S1 is
+   fixed after that vote. The 31 explicit conditioning links stay in `T_conf` whatever the vote.
+   The zero-GPU discriminator (how many of the 13 involve a tenet whose own claim states the
+   exception) runs now.
