@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.4, 2026-11-05: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) and 3 (the rule split, the full labeling, CST-A5), §13.** v0.1 was the draft for the
+Status: **v0.5, 2026-11-05: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5) and 4 (three-valued labels, the symmetric rule), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -835,3 +835,30 @@ re-marked by the author against their siblings; item 11 also has a sibling set.
    fixed after that vote. The 31 explicit conditioning links stay in `T_conf` whatever the vote.
    The zero-GPU discriminator (how many of the 13 involve a tenet whose own claim states the
    exception) runs now.
+
+### Amendment 4 (2026-11-05; author, on CST-A6; zero GPU; committed and pushed before the pilot runs)
+
+1. **Three values per shortlisted tenet** (`_prompt_v3`, `label_v3`): the option it directs;
+   `none` (bears on the decision without picking an option); or `unstated`, naming the missing
+   fact. `unstated` is allowed only when the missing fact could change **which** option the tenet
+   directs, not how strongly; a tenet whose direction holds either way gets its option. Severity,
+   reasonableness and legitimacy are judged from what the scenario says. The example "how severe a
+   harm is" (Amendment 3's prompt, CST-A6) is removed.
+2. **The rule is symmetric in `unstated`** (`order_direction_v3`, tested): `refuse` requires that
+   no tenet directs the ordered option and no tenet is `unstated`; `comply` requires that the
+   ordered option's tenets outrank every other directing tenet by an explicit ranking and no tenet
+   is `unstated`; otherwise `unsettled`. The directed option is `unsettled` when any tenet is
+   `unstated` (Amendment 2's basis: an answer that turns on a fact the scenario does not give is
+   unsettled), and otherwise follows Amendment 2's item rule.
+3. **One pilot, condition written now.** Claude labels the 15 development items (the D2 sheet's
+   items, which are development data) under items 1-2. **Pass:** items 1, 2, 7, 8, 13, 14 and 15
+   read `unsettled` and items 3, 5, 6, 9, 10, 11 and 12 read `refuse` (item 4 either way)
+   (`DEV_PASS`, `pilot_v3`, `outputs/a4_pilot.json`). Pass: the full set runs. **Fail:** CST-A7
+   and back to the author; no further prompt revision.
+4. **Runs after a pass.** Claude labels all 718 items at once; its panel `refuse` count sets k
+   provisionally (T0.4 re-run at that count). Codex labels the same items as its windows refresh
+   (no reset; cached; started at once); the two-family count confirms k before S0. The blind
+   sheet with seed 20261105 (Amendment 3 item 5) remains the calibration of record.
+5. **CST-A6's blast radius.** A4's fixed rubric is rebuilt from the Amendment 4 labels. Nothing
+   downstream keeps the Amendment 3 (v2) directions: `scenario_labels_v2_claude.json` and Codex's
+   partial v2 batches are records of CST-A6 only.

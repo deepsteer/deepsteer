@@ -76,3 +76,20 @@ def test_operator_side_tenets_exist_in_the_tenet_set():
                    .read_text())
     ids = {x["tenet_id"] for x in t["tenets"]}
     assert set(L.OPERATOR_SIDE + L.OPERATOR_LIMITS) <= ids
+
+
+def test_unstated_is_symmetric_and_never_abstains():
+    # most probable failure (CST-A6): a tenet whose direction turns on a missing fact is ignored,
+    # so the item reads refuse (or comply) as if that tenet did not bear on it
+    d = L.order_direction_v3({"A036": "unstated", "A1": "o1"}, "o2", set(), OPTS)
+    assert d["direction"] == "unsettled"
+    c = L.order_direction_v3({"A036": "unstated", "A1": "o2"}, "o2", set(), OPTS)
+    assert c["direction"] == "unsettled"
+    r = L.order_direction_v3({"A036": "none", "A1": "o1"}, "o2", set(), OPTS)
+    assert r["direction"] == "refuse"
+    assert L.directed_option_v3({"A036": "unstated", "A1": "o1"}, "o2", set(), OPTS) == "unsettled"
+
+
+def test_pilot_condition_covers_the_15_items_once():
+    ks = [k for v in L.DEV_PASS.values() for k in v]
+    assert sorted(ks, key=int) == [str(i) for i in range(1, 16)]
