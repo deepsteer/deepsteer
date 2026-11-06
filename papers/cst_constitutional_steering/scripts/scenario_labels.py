@@ -259,9 +259,10 @@ def _prompt_v4(batch, tenets: TenetSet) -> str:
 
 
 def repair_evidence(text: str) -> tuple[str, int]:
-    """A format-only repair (codex writes two quoted phrases as ``"a"; "b"`` on an evidence line,
-    which is not JSON): on lines carrying an ``"evidence":`` key, ``"; "`` between two strings is
-    joined into one string (``a; b``). Content is unchanged; the count is recorded."""
+    """A format-only repair on lines carrying an ``"evidence":`` key (codex writes two quoted
+    phrases as ``"a"; "b"``, or ends the string with a stray ``;``, neither of which is JSON):
+    ``"; "`` between two strings is joined into one string (``a; b``) and a trailing ``;`` after
+    the closing quote is dropped. Content is unchanged; the count is recorded."""
     import re
 
     n = 0
@@ -269,7 +270,8 @@ def repair_evidence(text: str) -> tuple[str, int]:
     for line in text.split("\n"):
         if '"evidence":' in line:
             line, k = re.subn(r'"\s*;\s*"', "; ", line)
-            n += k
+            line, k2 = re.subn(r'"\s*;\s*(,?)\s*$', r'"\1', line)
+            n += k + k2
         out.append(line)
     return "\n".join(out), n
 
@@ -650,19 +652,68 @@ def check_v4(family: str = "claude") -> None:
               v["deference"].get("ground"))
 
 
-def label_all_v4(families: tuple[str, ...]) -> None:
-    """Amendment 5: the 718 items under the v4 prompt, per family; JSON per family."""
+def _selective_plan(fam: str, items: list, per_call: int) -> list[list[str]]:
+    """Selective batching (author, 2026-11-06): items already in a parsed 10-item batch keep it;
+    the rest are frozen once, in panel-then-H1 order, into batches of ``per_call``, written to
+    ``outputs_raw/labels/v4_<fam>_b<per_call>_plan.json`` so tags never shift between runs."""
+    plan_f = RAW / f"v4_{fam}_b{per_call}_plan.json"
+    if plan_f.exists():
+        return json.loads(plan_f.read_text())["batches"]
+    done = set()
+    for i in range(0, len(items), PER_CALL_V2):
+        f = RAW / f"v4_{fam}_{i // PER_CALL_V2:03d}.txt"
+        if f.exists() and f.read_text().strip():
+            try:
+                rows = extract_json(repair_evidence(f.read_text())[0])["labels"]
+            except (ValueError, KeyError):
+                continue
+            want = {s.id for s, _ in items[i:i + PER_CALL_V2]}
+            if want <= {r["scenario_id"] for r in rows}:
+                done |= want
+    rest = [s.id for s, _ in items if s.id not in done]
+    batches = [rest[i:i + per_call] for i in range(0, len(rest), per_call)]
+    plan_f.write_text(json.dumps({"per_call": per_call, "n_done_before": len(done),
+                                  "done_10_item": sorted(done), "batches": batches}, indent=1))
+    return batches
+
+
+def label_all_v4(families: tuple[str, ...], per_call: int = PER_CALL_V2,
+                 max_batches: int | None = None) -> None:
+    """Amendment 5: the 718 items under the v4 prompt, per family; JSON per family. With
+    ``per_call`` above 10, the items not yet in a parsed 10-item batch run in frozen larger
+    batches (selective batching); ``max_batches`` caps the new calls (the pilot)."""
     sets = scored_sets()
     tenets = TenetSet.load(CST / "data" / "tenets_C_anth_v2.json")
     items = [(s, k) for k, v in sets.items() for s in v]
+    by = {s.id: (s, k) for s, k in items}
     for fam in families:
         rows: list[dict] = []
-        for i in range(0, len(items), PER_CALL_V2):
-            rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"{i // PER_CALL_V2:03d}", fam)
+        if per_call == PER_CALL_V2:
+            for i in range(0, len(items), PER_CALL_V2):
+                rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"{i // PER_CALL_V2:03d}",
+                                 fam)
+        else:
+            plan = _selective_plan(fam, items, per_call)
+            done = set(json.loads((RAW / f"v4_{fam}_b{per_call}_plan.json").read_text())
+                       ["done_10_item"])
+            for i in range(0, len(items), PER_CALL_V2):
+                chunk = items[i:i + PER_CALL_V2]
+                if {s.id for s, _ in chunk} <= done:
+                    rows += label_v4(chunk, tenets, f"{i // PER_CALL_V2:03d}", fam)
+            n_new = 0
+            for j, ids in enumerate(plan):
+                tag = f"b{per_call}_{j:03d}"
+                cached = (RAW / f"v4_{fam}_{tag}.txt").exists()
+                if not cached and max_batches is not None and n_new >= max_batches:
+                    print(f"{fam}: stopped at the cap ({max_batches} new batch(es)); "
+                          f"{len(rows)} labeled so far")
+                    return
+                n_new += 0 if cached else 1
+                rows += label_v4([by[i] for i in ids], tenets, tag, fam)
         (CST / "data" / f"scenario_labels_v4_{fam}.json").write_text(json.dumps(
             {"prompt": "Amendment 5 (_prompt_v4)", "family": fam, "tenets": "C_anth v2",
-             "n": len(rows), "format_repairs": {k: v for k, v in REPAIRS.items()
-                                                if k.startswith(fam)},
+             "per_call": per_call, "n": len(rows),
+             "format_repairs": {k: v for k, v in REPAIRS.items() if k.startswith(fam)},
              "labels": rows}, indent=1, ensure_ascii=False) + "\n")
         print(fam, "labeled", len(rows))
 
@@ -962,6 +1013,8 @@ if __name__ == "__main__":
                                       "record_v2", "pilot_v3", "label_v3", "check_v4",
                                       "label_v4", "build_blind", "score_blind"))
     ap.add_argument("--labels", default="record", choices=("record", "claude", "codex"))
+    ap.add_argument("--per-call", type=int, default=PER_CALL_V2)
+    ap.add_argument("--max-batches", type=int, default=None)
     ap.add_argument("--families", default="claude,codex")
     ap.add_argument("--family", default="claude", choices=("claude", "codex"))
     a = ap.parse_args()
@@ -980,7 +1033,7 @@ if __name__ == "__main__":
     elif a.which == "check_v4":
         check_v4(a.families.split(",")[0])
     elif a.which == "label_v4":
-        label_all_v4(tuple(a.families.split(",")))
+        label_all_v4(tuple(a.families.split(",")), a.per_call, a.max_batches)
     elif a.which == "build_blind":
         build_blind(a.families.split(",")[0])
     elif a.which == "score_blind":

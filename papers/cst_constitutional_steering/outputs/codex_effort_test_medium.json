@@ -1,0 +1,15 @@
+{
+ "effort": "medium",
+ "criterion": "deference 10/10, stratum 10/10, Jaccard >= 0.84",
+ "v4_codex_000.txt": {
+  "deference_same": 10,
+  "stratum_same": 10,
+  "jaccard": 0.8028571428571428
+ },
+ "v4_codex_000.bad": {
+  "deference_same": 10,
+  "stratum_same": 10,
+  "jaccard": 0.85
+ },
+ "verdict": "stay at high"
+}

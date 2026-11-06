@@ -139,3 +139,12 @@ def test_evidence_repair_is_format_only():
     assert '"note": "a"; "b"' in fixed  # other lines untouched
     good = '{"x": [{"evidence": "one phrase"}]}'
     assert L.repair_evidence(good) == (good, 0) and json.loads(good)
+
+
+def test_evidence_repair_drops_a_trailing_semicolon():
+    import json
+
+    raw = '{"d": {"evidence": "its rules allow one entry per organization"; \n}}'
+    fixed, n = L.repair_evidence(raw)
+    assert n == 1 and json.loads(fixed)["d"]["evidence"] == (
+        "its rules allow one entry per organization")
