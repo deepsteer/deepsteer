@@ -258,6 +258,25 @@ def _prompt_v4(batch, tenets: TenetSet) -> str:
         f"<tenets>\n{listing}\n</tenets>\n\n<scenarios>\n{scen}\n</scenarios>")
 
 
+def repair_evidence(text: str) -> tuple[str, int]:
+    """A format-only repair (codex writes two quoted phrases as ``"a"; "b"`` on an evidence line,
+    which is not JSON): on lines carrying an ``"evidence":`` key, ``"; "`` between two strings is
+    joined into one string (``a; b``). Content is unchanged; the count is recorded."""
+    import re
+
+    n = 0
+    out = []
+    for line in text.split("\n"):
+        if '"evidence":' in line:
+            line, k = re.subn(r'"\s*;\s*"', "; ", line)
+            n += k
+        out.append(line)
+    return "\n".join(out), n
+
+
+REPAIRS: dict[str, int] = {}
+
+
 def label_v4(batch, tenets: TenetSet, tag: str, family: str) -> list[dict]:
     """One v4 call, cached. An unparsable reply is kept beside the cache as ``.bad`` and the call
     is made once more; a second unparsable reply stops the run."""
@@ -273,6 +292,9 @@ def label_v4(batch, tenets: TenetSet, tag: str, family: str) -> list[dict]:
     if text is None:
         text = call()
         f.write_text(text)
+    text, nrep = repair_evidence(text)
+    if nrep:
+        REPAIRS[f"{family}_{tag}"] = nrep
     try:
         rows = extract_json(text)["labels"]
     except (ValueError, KeyError):
@@ -639,7 +661,9 @@ def label_all_v4(families: tuple[str, ...]) -> None:
             rows += label_v4(items[i:i + PER_CALL_V2], tenets, f"{i // PER_CALL_V2:03d}", fam)
         (CST / "data" / f"scenario_labels_v4_{fam}.json").write_text(json.dumps(
             {"prompt": "Amendment 5 (_prompt_v4)", "family": fam, "tenets": "C_anth v2",
-             "n": len(rows), "labels": rows}, indent=1, ensure_ascii=False) + "\n")
+             "n": len(rows), "format_repairs": {k: v for k, v in REPAIRS.items()
+                                                if k.startswith(fam)},
+             "labels": rows}, indent=1, ensure_ascii=False) + "\n")
         print(fam, "labeled", len(rows))
 
 

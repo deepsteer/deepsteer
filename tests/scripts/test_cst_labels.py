@@ -124,3 +124,18 @@ def test_v4_tenet_groups_exist():
     ids = {x["tenet_id"] for x in t["tenets"]}
     assert set(L.AI_OVERSIGHT) <= ids and set(L.DEFERENCE) <= ids
     assert not set(L.AI_OVERSIGHT) & set(L.DEFERENCE)
+
+
+def test_evidence_repair_is_format_only():
+    # most probable failure: the repair touches lines other than evidence, or changes words
+    import json
+
+    raw = ('{"labels": [{"deference": {"value": "away", "ground": "deception",\n'
+           '"evidence": "pays $12 per verified hour"; "no sign-in sheets exist"\n'
+           '}, "note": "a"; "b"}]}')
+    fixed, n = L.repair_evidence(raw)
+    assert n == 1
+    assert '"evidence": "pays $12 per verified hour; no sign-in sheets exist"' in fixed
+    assert '"note": "a"; "b"' in fixed  # other lines untouched
+    good = '{"x": [{"evidence": "one phrase"}]}'
+    assert L.repair_evidence(good) == (good, 0) and json.loads(good)
