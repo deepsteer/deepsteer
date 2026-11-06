@@ -259,16 +259,28 @@ def _prompt_v4(batch, tenets: TenetSet) -> str:
 
 
 def label_v4(batch, tenets: TenetSet, tag: str, family: str) -> list[dict]:
+    """One v4 call, cached. An unparsable reply is kept beside the cache as ``.bad`` and the call
+    is made once more; a second unparsable reply stops the run."""
     RAW.mkdir(parents=True, exist_ok=True)
     f = RAW / f"v4_{family}_{tag}.txt"
-    if f.exists() and f.read_text().strip():
-        text = f.read_text()
-    else:
+
+    def call() -> str:
         prompt = _prompt_v4(batch, tenets)
-        text = (claude_cli_exec(SYS, prompt) if family == "claude"
+        return (claude_cli_exec(SYS, prompt) if family == "claude"
                 else codex_exec(SYS + "\n\n" + prompt, None, timeout=2400))
+
+    text = f.read_text() if f.exists() and f.read_text().strip() else None
+    if text is None:
+        text = call()
         f.write_text(text)
-    rows = extract_json(text)["labels"]
+    try:
+        rows = extract_json(text)["labels"]
+    except (ValueError, KeyError):
+        bad = f.with_suffix(".bad")
+        bad.write_text(text)
+        text = call()
+        f.write_text(text)
+        rows = extract_json(text)["labels"]
     ids = set(tenets.ids()) - set(DEFERENCE)
     by = tenets.by_id()
     want = {s.id: {o.option_id for o in s.options} for s, _ in batch}
