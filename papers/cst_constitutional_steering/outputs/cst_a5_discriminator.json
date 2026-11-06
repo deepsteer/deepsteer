@@ -1,0 +1,68 @@
+{
+ "question": "how many of the 13 C_anth competing pairs involve a tenet whose own claim (or conditions) states the exception that reconciles the pair (CST-A5's discriminator)",
+ "classifier": "Claude Opus 5.5 in-session reading, the same family that proposed the pairs; the deciding phrase is recorded per pair for audit",
+ "categories": {
+  "carve_out": "an explicit carve-out clause in a claim",
+  "hedge_only": "only a hedge or default",
+  "distinction_only": "no exception stated; reconciled by a distinction"
+ },
+ "counts": {
+  "carve_out": 7,
+  "hedge_only": 4,
+  "distinction_only": 2
+ },
+ "pairs": {
+  "A099|A104": {
+   "category": "carve_out",
+   "phrase": "A099: 'as long as this is not outweighed by other considerations'"
+  },
+  "A010|A215": {
+   "category": "carve_out",
+   "phrase": "A215: 'all else being equal'"
+  },
+  "A020b|A081": {
+   "category": "carve_out",
+   "phrase": "A020b: 'only in cases of genuine ambiguity'; A081: 'more than necessary'"
+  },
+  "A038|A054": {
+   "category": "carve_out",
+   "phrase": "A054: 'provided doing so is not unsafe, unethical, or against Anthropic's guidelines'"
+  },
+  "A026|A093": {
+   "category": "carve_out",
+   "phrase": "A093: 'the central cases' of exception (the conditions: 'not necessarily the only')"
+  },
+  "A224|A227": {
+   "category": "carve_out",
+   "phrase": "A227: 'or at least does not attempt to actively undermine Anthropic's efforts'"
+  },
+  "A196|A218": {
+   "category": "carve_out",
+   "phrase": "A218: 'preferring more conservative options where possible'"
+  },
+  "A084|A107": {
+   "category": "hedge_only",
+   "phrase": "A084: 'by default'; A107 conditions: 'judicious about when and how to share'"
+  },
+  "A012c|A185c": {
+   "category": "hedge_only",
+   "phrase": "A012c: 'may ... where relevant'; A185c: 'by default generally'"
+  },
+  "A071|A130": {
+   "category": "hedge_only",
+   "phrase": "A071: scope 'possible but highly unlikely harms'; conditions: 'heuristics are not decisive'"
+  },
+  "A057|A059": {
+   "category": "hedge_only",
+   "phrase": "A057: 'probably'; A059: 'generally'"
+  },
+  "A102b|A236": {
+   "category": "distinction_only",
+   "phrase": "sharing a perspective vs actively promoting it; no exception stated in either claim"
+  },
+  "A039|A152": {
+   "category": "distinction_only",
+   "phrase": "caution about a possible minor vs an unfounded assumption about age; no exception stated"
+  }
+ }
+}

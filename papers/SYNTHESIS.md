@@ -1954,6 +1954,16 @@ comply; every raw-labeler disagreement is a commitment where the author reads un
 the basis of Amendment 2's rule; the labels of record agree on 10 of 15 and codex under the rule on
 13. The number that calibrates the labels is the panel's agreement with these marks at S0.
 
+**Standing observation (2026-11-05): the two documents' genres place their conflicts differently.**
+`C_anth` writes its exceptions inside the tenets ("as long as this is not outweighed", "all else
+being equal", "provided doing so is not unsafe"): of the 13 pairs Claude proposed as competing,
+codex reads none as competing, 7 carry an explicit carve-out in one tenet's own claim and 4 a hedge.
+`C_spec` states rules and leaves the conflicts between them: codex agrees on 8 of its 19. The
+consequence for CST is that a document-internal `T_conf` built from competing pairs is near empty
+for a reasons-and-character document and non-trivial for a rules document, while explicit
+conditioning links exist in both (31 and 26). Pending: the third judge's vote on the 13 `C_anth`
+pairs at S0, which fixes the `T_conf` of record for S1.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
