@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.11, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) and 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind), §13.** v0.1 was the draft for the
+Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) and 11 (Claude the S_tenet judge of record on a seeded 200), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1200,3 +1200,35 @@ operator-side and operator-limit tenets on every shortlist) and all other tenets
 Claude's pass 1 against gpt-oss-120b's effort-high blind seed-0 pass (`h_s0`), on the
 applied-tenet cells, over the 86 rollouts both Claude passes scored; the deference and other kinds
 are reported beside it with rollout-bootstrap CIs.
+
+### Amendment 11 (2026-11-07; author, the S_tenet judge of record; zero GPU; registered before the scorer mini-pod's write-up)
+
+Registered on the mini-pod's partial results (effort high, single-sample and same-order
+majority-of-three kappas) and before its write-up.
+
+1. **gpt-oss-120b fails the applied-tenet gate at effort high**, single sample and majority of
+   three (correlated errors). **S_concl stays with gpt-oss in bulk** (its concluded-option kappa
+   1.00).
+2. **S_tenet's judge of record is Claude** through the account login, blind, one rollout per call,
+   on a **seeded 200-scenario subset of the 458 headline items at k 4 on the operator cell, per
+   arm read**; the MDE is stated. **Codex scores a 10% sample** for the cross-family kappa after
+   its quota returns.
+3. **gpt-oss scores applied tenets in bulk as a companion read**, on the tenets whose per-tenet
+   kappa passes 0.8 across the nine passes, with coverage stated.
+4. **The task definition is unchanged.** The Claude calls are priced per read and for the line.
+
+*Operational notes (not the author's text; for the author's check):*
+- **The subset** is `data/stenet_subset_v1.json`: 200 of the 458 panel items whose stratum of
+  record is clear directed-away, drawn with seed 20261108 (`random.Random(seed).sample` over the
+  sorted ids). Per arm read: 800 rollouts (200 × 4, operator condition).
+- **The MDE** on a paired ΔS_tenet (arm − `none`) at n 200, k 4, from T04's closed form on the
+  H1_held variance basis (w 0.098, τ² 0): **0.071 at f 0.5, 0.051 at f 0.8** (f: the fraction of
+  rollouts with an applied tenet of settled direction); with the Claude retest's 7% unscored rate,
+  0.074 and 0.054. Second derivation: the registered 0.047 at n 458 (f 0.5) scaled by
+  √(458/200) gives 0.071.
+- **The nine passes:** the mini-pod's watchdog (1.5 h) stops it before the eighth and ninth
+  passes complete; the per-tenet kappa is computed on the passes that completed (count stated):
+  Fleiss' kappa per tenet over the rollouts whose shortlist carries it. Coverage is the share of
+  applied-tenet cells (tenets named in any pass) that belong to passing tenets.
+- **Scoring effort** is not changed here: Amendment 10 item 1 (effort high) stands until the author
+  rules on its price (`CST_REFORECAST.md`).
