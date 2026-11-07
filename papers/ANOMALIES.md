@@ -2387,7 +2387,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Type.** a control (the recovery step) moving the pre-registered length bar the wrong way.
 **Competing readings.** R_dose: a single summed-loss step over 32 examples is a large step; the overshoot is the toy recovery's size, not the method. R_register: the neutral replies (general-knowledge answers) carry a shorter-reasoning register than panel scenarios, so any recovery on them pulls moral traces toward short.
 **Discriminator.** In S1's build (zero GPU to specify): the recovery set enlarged (the registered failure branch) and drawn to match `none`'s panel trace-length distribution, with V6 re-read at S1's actual SDF dose. R_register predicts the overshoot persists at a matched step size on neutral replies only.
-**Status.** open; the registered branch (enlarge the recovery set before S1) applies. Not an S0a blocker.
+**Status.** open; the registered branch (enlarge the recovery set before S1) applies, and §7's length-coincidence fork is a standing read on every arm (Amendment 9 item 6). Not an S0a blocker.
 **Thesis impact.** Through §7's coincidence rule: every trained arm's length change is the sum of the document's lengthening and the recovery's shortening, so an arm's S read against `none` carries the recovery's length effect unless recovery is length-matched.
 
 ## CST-A11 (ledger) — A0s generates at one fifteenth of A0's rate, and the engine is memory-bound on both

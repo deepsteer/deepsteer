@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record; the frontier tier), §13.** v0.1 was the draft for the
+Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1097,9 +1097,23 @@ and before any S0a rollout exists.
    tenets); reported as agreement beside retest kappa and Layer A.
 3. **The frontier tier (Claude and Codex, the two-family rule)** makes the labels of record, the
    DPO pair filter (§4.3) and the Layer A mapping. A self-hosted tiebreak applies on pair-filter
-   splits only. The self-hosted relabel (S0 component 4) is a consistency read; the unsettled
-   side's calibration of record [**the author's text ends here; the clause is incomplete and is
-   completed by the author before S0a's relabel is built**].
+   splits only. The self-hosted relabel (S0 component 4) is a consistency read; **the unsettled
+   side's calibration of record is the Amendment 5 development check plus the blind sheet**
+   (`CST_LABELS_GATE.md`). DPO is otherwise unchanged: the judge filters pairs, the subject with
+   the constitution in context is the teacher, A4 stays gated.
+4. **The probe pod: go.** Engine tuning (CST-A11), gpt-oss-120b's validity read, the
+   Olmo-3.1-32B-Instruct 10% sample, and the letter fix (CST-A9) on live judges.
+5. **Cuts (`CST_REFORECAST.md` §3).**
+   - **Cut 1: DPO at 1 epoch by default;** a second epoch only if the S3 pilot's DPO loss has not
+     converged, or R2 reads unmoved on the first read.
+   - **Cut 2: the A2-without-rewrite ablation is deferred to after G3**, run if budget remains.
+   - Cuts 3-5 are not taken. If the engine cannot be fixed, cut 3 drops **the user cell only**
+     (A0s's user condition).
+   - **Envelope:** the recipe of record (S0a-S3) is **150 A100-h**; S4 and S5 are decided at G3
+     against the dollar cap.
+6. **CST-A10.** §7's length-coincidence fork is a **standing read on every arm**, not only A0s.
+   The larger recovery set runs before S1.
+7. **Layer A is accepted at 51 items**, its interval reported beside the judge's score.
 
 **What this supersedes.** Amendment 7 item 3's majority rules become the judge of record's own
 reading: the concluded option of record is gpt-oss-120b's `concluded_option` (its "none" is no
@@ -1108,5 +1122,10 @@ conclusion), and the applied tenets of record are the tenets it names. Amendment
 0.8), validity or Layer A, and the fallback scorer is checked on the same reads before any S is
 read. Amendment 8 item 1's three-slot judge rule is retired; its measurements stand as VALIDATE's
 record. §3.4's "three self-hosted families" and the panel language in §6.5 are read through this
-item. Amendment 5's "the unsettled side's calibration of record" for the self-hosted relabel
-awaits item 3's completed clause.
+item. Amendment 5's "the unsettled side's calibration of record" moves from the self-hosted relabel
+to the development check and the blind sheet (item 3). Amendment 7's Layer A target of about 50
+is met at 51 (item 7). §4.3's "≤ 3 epochs" reads as 1 by default (item 5); §5's A2-without-rewrite
+ablation is deferred (item 5); §8's envelope of record of 150 A100-h now covers S0a-S3.
+
+*Completion note (2026-11-07):* `854efed` registered items 1-2 and a truncated item 3; this commit
+replaces item 3 with the author's complete text and adds items 4-7, before the probe pod is built.
