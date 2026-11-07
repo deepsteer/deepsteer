@@ -151,11 +151,26 @@ def read() -> None:
         rec["claude_retest"][f"tenets_{name}"] = P.kappa_ci(kind(a, keep), kind(b, keep), "tenets")
         rec["claude_vs_gpt_oss_low"][f"tenets_{name}"] = P.kappa_ci(kind(a, keep), kind(gpt, keep),
                                                                     "tenets")
+    # the read of record: the rollouts both passes scored (an unscored rollout is a classifier
+    # stop or a failed call, not a disagreement); all 100 above, with "invalid" cells, beside it
+    both = [i for i in range(N) if a[i]["ok"] and b[i]["ok"]]
+    A, B, G = ([x[i] for i in both] for x in (a, b, gpt))
+    rec["unscored"] = {"pass1": [i for i in range(N) if not a[i]["ok"]],
+                       "pass2": [i for i in range(N) if not b[i]["ok"]]}
+    rec["both_scored"] = {"n": len(both),
+                          "claude_retest": {"concluded_option": P.kappa_ci(A, B,
+                                                                           "concluded_option")},
+                          "claude_vs_gpt_oss_low": {"concluded_option": P.kappa_ci(
+                              A, G, "concluded_option")}}
+    for name, keep in kinds.items():
+        rec["both_scored"]["claude_retest"][f"tenets_{name}"] = P.kappa_ci(
+            kind(A, keep), kind(B, keep), "tenets")
+        rec["both_scored"]["claude_vs_gpt_oss_low"][f"tenets_{name}"] = P.kappa_ci(
+            kind(A, keep), kind(G, keep), "tenets")
     OUT.write_text(json.dumps(rec, indent=1) + "\n")
-    for k, v in rec["claude_retest"].items():
-        print("claude retest", k, round(v["kappa"], 3), [round(x, 3) for x in v["ci95"]])
-    for k, v in rec["claude_vs_gpt_oss_low"].items():
-        print("claude vs gpt-oss", k, round(v["kappa"], 3), [round(x, 3) for x in v["ci95"]])
+    for blk in ("claude_retest", "claude_vs_gpt_oss_low"):
+        for k, v in rec["both_scored"][blk].items():
+            print(blk, k, round(v["kappa"], 3), [round(x, 3) for x in v["ci95"]])
 
 
 if __name__ == "__main__":
