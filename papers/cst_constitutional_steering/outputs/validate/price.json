@@ -1,0 +1,52 @@
+{
+ "rollouts_per_arm": 12304,
+ "subject_hours": {
+  "load": 0.08015151341756185,
+  "a0_generation": 1.7863164894448387,
+  "a0s_generation": 27.195224548073277,
+  "prefill_reads_and_recall": 0.15
+ },
+ "fixed_hours": {
+  "setup_and_downloads": 0.35,
+  "capability_800_two_arms": 2.4
+ },
+ "judge_hours": {
+  "glm47_flash": {
+   "load": 0.04503060003121694,
+   "scoring": 38.9337114621792,
+   "long_prompt_calls": 1.2777796102977461,
+   "total": 40.256521672508164
+  },
+  "glm47_flash_nothink": {
+   "load": 0.014911945462226867,
+   "scoring": 3.149075274147714,
+   "long_prompt_calls": 0.9144224035408762,
+   "total": 4.078409623150817
+  },
+  "gpt_oss_120b": {
+   "load": 0.03928977860344781,
+   "scoring": 1.7571262991055847,
+   "long_prompt_calls": 0.3285275806983312,
+   "total": 2.1249436584073638
+  },
+  "olmo31_32b_instruct": {
+   "load": 0.04495105928844876,
+   "scoring": 4.385256026557958,
+   "long_prompt_calls": 1.0608632612393962,
+   "total": 5.491070347085802
+  }
+ },
+ "s0a_base_hours": 31.961692550935677,
+ "panels": {
+  "gpt_oss_120b + glm47_flash + olmo31_32b_instruct": {
+   "a100_hours": 79.83422822893701,
+   "with_10pct_margin": 87.81765105183071
+  },
+  "gpt_oss_120b + glm47_flash_nothink + olmo31_32b_instruct": {
+   "a100_hours": 43.65611617957966,
+   "with_10pct_margin": 48.02172779753763
+  }
+ },
+ "a0s_cap": 1536,
+ "note": "S0a only; the A0s rate is measured on the operator condition and applied to every condition; capability is ST's rate, carried"
+}

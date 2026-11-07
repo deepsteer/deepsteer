@@ -1,0 +1,24 @@
+{
+ "path": "vllm native LoRA",
+ "tv_served_vs_attached": 0.012487350620538148,
+ "tv_base_vs_attached": 0.11153978946634586,
+ "v4_passes": true,
+ "v6_adapter_sdf": {
+  "n": 256,
+  "parse_rate": 0.9375,
+  "trace_len_median": 574.0,
+  "status": {
+   "truncated": 14,
+   "completed": 242
+  }
+ },
+ "v6_adapter_sdf_recovery": {
+  "n": 256,
+  "parse_rate": 0.98828125,
+  "trace_len_median": 346.5,
+  "status": {
+   "completed": 256
+  }
+ },
+ "v6_passes": false
+}

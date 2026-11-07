@@ -1,0 +1,56 @@
+{
+ "glm47_flash": {
+  "load_s": 162.11016011238098,
+  "n": 256,
+  "fmt": "think",
+  "llm_kwargs": {},
+  "kv_capacity_tokens": 247536,
+  "max_tokens": 8192,
+  "max_model_len": 32768,
+  "parse_rate": 0.19921875,
+  "parse_rate_uncapped": 0.2832369942196532,
+  "hit_cap_share": 0.32421875,
+  "out_tokens_median": 3037.5,
+  "out_tokens_p90": 8192,
+  "calls_per_hour": 634.6171241342282,
+  "output_tok_s": 770.8449614841877,
+  "mean_prompt_tokens": 1458.9765625,
+  "passes": false,
+  "relabel": {
+   "calls": 8,
+   "items": 80,
+   "items_parsed": 0,
+   "prompt_tokens": [
+    23676,
+    23712,
+    23644,
+    23775,
+    23784,
+    23782,
+    23872,
+    23851
+   ],
+   "out_tokens": [
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192,
+    8192
+   ],
+   "hit_cap": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "seconds": 337.61516308784485
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "lora_target_kinds": [
+  "down_proj",
+  "gate_proj",
+  "in_proj_a",
+  "in_proj_b",
+  "in_proj_qkv",
+  "in_proj_z",
+  "k_proj",
+  "o_proj",
+  "out_proj",
+  "q_proj",
+  "up_proj",
+  "v_proj"
+ ],
+ "n_target_modules": 496,
+ "deltanet_targets": true,
+ "sdf_tokens_per_s": 410.7397897443347,
+ "sdf_10M_hours": 6.762865072085682,
+ "sdf_final_loss": 1.6030058860778809,
+ "v3_reload_max_abs_diff": 0.0,
+ "v3_passes": true,
+ "letters_written": 32,
+ "recovery_examples": 32,
+ "passes": true
+}

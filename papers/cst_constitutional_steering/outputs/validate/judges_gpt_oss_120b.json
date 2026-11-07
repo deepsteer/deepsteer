@@ -1,0 +1,56 @@
+{
+ "gpt_oss_120b": {
+  "load_s": 141.4432029724121,
+  "n": 256,
+  "fmt": "harmony",
+  "llm_kwargs": {},
+  "kv_capacity_tokens": 83664,
+  "max_tokens": 8192,
+  "max_model_len": 32768,
+  "parse_rate": 1.0,
+  "parse_rate_uncapped": 1.0,
+  "hit_cap_share": 0.0,
+  "out_tokens_median": 223.0,
+  "out_tokens_p90": 279,
+  "calls_per_hour": 14061.595920894762,
+  "output_tok_s": 894.6415764123963,
+  "mean_prompt_tokens": 1499.0234375,
+  "passes": true,
+  "relabel": {
+   "calls": 8,
+   "items": 80,
+   "items_parsed": 70,
+   "prompt_tokens": [
+    23406,
+    23443,
+    23364,
+    23504,
+    23522,
+    23497,
+    23573,
+    23585
+   ],
+   "out_tokens": [
+    1481,
+    1463,
+    2441,
+    2028,
+    3734,
+    3426,
+    1464,
+    8192
+   ],
+   "hit_cap": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true
+   ],
+   "seconds": 108.75395774841309
+  }
+ }
+}

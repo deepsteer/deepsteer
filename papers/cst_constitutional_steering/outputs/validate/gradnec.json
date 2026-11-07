@@ -1,0 +1,20 @@
+{
+ "dtype": "torch.bfloat16",
+ "v7_2048": {
+  "checkpointing_active": true,
+  "logits_positions": 1,
+  "grad_finite": true,
+  "grad_norm": 2.484375,
+  "seconds": 5.131561756134033,
+  "peak_gb": 53.69682168960571
+ },
+ "v7_3584": {
+  "checkpointing_active": true,
+  "logits_positions": 1,
+  "grad_finite": true,
+  "grad_norm": 4.75,
+  "seconds": 8.3948974609375,
+  "peak_gb": 55.728915214538574
+ },
+ "v7_passes": true
+}

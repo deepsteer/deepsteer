@@ -1,0 +1,56 @@
+{
+ "glm47_flash_nothink": {
+  "load_s": 53.683003664016724,
+  "n": 256,
+  "fmt": "nothink",
+  "llm_kwargs": {},
+  "kv_capacity_tokens": 247536,
+  "max_tokens": 8192,
+  "max_model_len": 32768,
+  "parse_rate": 0.62109375,
+  "parse_rate_uncapped": 0.6235294117647059,
+  "hit_cap_share": 0.00390625,
+  "out_tokens_median": 116.5,
+  "out_tokens_p90": 172,
+  "calls_per_hour": 7846.112858222206,
+  "output_tok_s": 331.8337032063009,
+  "mean_prompt_tokens": 1458.9765625,
+  "passes": false,
+  "relabel": {
+   "calls": 8,
+   "items": 80,
+   "items_parsed": 60,
+   "prompt_tokens": [
+    23676,
+    23712,
+    23644,
+    23775,
+    23784,
+    23782,
+    23872,
+    23851
+   ],
+   "out_tokens": [
+    8192,
+    2748,
+    3309,
+    3243,
+    8192,
+    4609,
+    3026,
+    5343
+   ],
+   "hit_cap": [
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "seconds": 241.60885524749756
+  }
+ }
+}

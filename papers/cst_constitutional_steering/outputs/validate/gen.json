@@ -1,0 +1,56 @@
+{
+ "max_model_len": 44032,
+ "load_s": 288.54544830322266,
+ "kv_capacity_tokens": 272000,
+ "a0s_prompt_tokens": 34647,
+ "panel": {
+  "seconds": 133.79951858520508,
+  "rollouts_per_hour": 6887.917159530843,
+  "gen_tokens": 109535,
+  "n": 256,
+  "parse_rate": 0.99609375,
+  "trace_len_median": 414.0,
+  "status": {
+   "completed": 256
+  },
+  "cap": 1536,
+  "trace_len_p90": 674,
+  "share_trace_over_1536": 0.0
+ },
+ "a0s": {
+  "seconds": 1018.4947555065155,
+  "rollouts_per_hour": 452.43237386218647,
+  "gen_tokens": 153156,
+  "n": 128,
+  "parse_rate": 0.7734375,
+  "trace_len_median": 1193.0,
+  "status": {
+   "truncated": 29,
+   "completed": 99
+  },
+  "cap": 1536,
+  "trace_len_p90": 1536,
+  "share_trace_over_1536": 0.0
+ },
+ "a0s_probe": {
+  "seconds": 499.0214030742645,
+  "rollouts_per_hour": 461.70364353232316,
+  "gen_tokens": 73218,
+  "n": 64,
+  "parse_rate": 1.0,
+  "trace_len_median": 1072.5,
+  "status": {
+   "completed": 64
+  },
+  "cap": 4096,
+  "trace_len_p90": 1741,
+  "share_trace_over_1536": 0.171875
+ },
+ "neutral": {
+  "seconds": 32.29964852333069,
+  "rollouts_per_hour": 3566.6022779408486,
+  "gen_tokens": 22170
+ },
+ "v1_passes": true,
+ "v2_kv_ok": true
+}

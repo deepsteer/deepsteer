@@ -1,0 +1,56 @@
+{
+ "olmo31_32b_instruct": {
+  "load_s": 161.82381343841553,
+  "n": 256,
+  "fmt": "plain",
+  "llm_kwargs": {},
+  "kv_capacity_tokens": 143440,
+  "max_tokens": 8192,
+  "max_model_len": 32768,
+  "parse_rate": 0.97265625,
+  "parse_rate_uncapped": 0.97265625,
+  "hit_cap_share": 0.0,
+  "out_tokens_median": 76.0,
+  "out_tokens_p90": 110,
+  "calls_per_hour": 5634.334654661799,
+  "output_tok_s": 129.01012357060904,
+  "mean_prompt_tokens": 1508.83984375,
+  "passes": true,
+  "relabel": {
+   "calls": 8,
+   "items": 80,
+   "items_parsed": 80,
+   "prompt_tokens": [
+    23521,
+    23558,
+    23490,
+    23621,
+    23630,
+    23628,
+    23718,
+    23691
+   ],
+   "out_tokens": [
+    2337,
+    2514,
+    2546,
+    1375,
+    1660,
+    3201,
+    2289,
+    1696
+   ],
+   "hit_cap": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "seconds": 280.30148553848267
+  }
+ }
+}
