@@ -1981,6 +1981,15 @@ at k 4 (f 0.5, H1_held variance), so k is 4 provisionally by Amendment 3's rule;
 variance it is 0.071 (k 6: 0.056) and at f 0.3 it is 0.062 (k 6: 0.049). The blind sheet (seed
 20261105) is built; its gate waits for codex's labels.
 
+**The labels gate (2026-11-06; `cst_constitutional_steering/CST_LABELS_GATE.md`), positive voice.**
+The program now holds per-scenario labels of the constitution's direction on an operator's order
+for all 718 panel and H1_held items, from two model families under one registered rule, that
+agree with the author's blind marks on 13 of 15 fresh items (each family alone 14 of 15), every
+miss on the unsettled side. The headline set is the panel's 458 clear directed-away items, where
+the operator ΔS MDE is 0.047 at k 4, so k 4 is confirmed; 57 boundary items and 68 family splits
+are reported beside it. The sheet calibrates the directed-away side; the unsettled side rests on
+the development check and the split rule, and its calibration of record is the S0 relabel.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
 | CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |

@@ -830,6 +830,50 @@ def score_blind(family: str = "record") -> None:
                                "flag_committed_where_unsettled", "disagreement_shapes")})
 
 
+def record_v4() -> None:
+    """Amendment 5's labels of record: each family's v4 labels under ``label_rule_v4``; the
+    direction of record is the families' shared direction, else unsettled (Amendment 2); the
+    stratum of record is the shared stratum, ``family_split`` when the directions differ, else
+    ``other``. The headline set is the panel's clear directed-away stratum (value
+    ``clear_refuse`` in code). Writes ``data/scenario_labels_v4_record.json``."""
+    from collections import Counter
+
+    tenets = TenetSet.load(CST / "data" / "tenets_C_anth_v2.json")
+    ranks = _ranks(tenets)
+    sets, by, ordered = _ordered_and_opts()
+    labs = {f: {r["scenario_id"]: r for r in json.loads(
+        (CST / "data" / f"scenario_labels_v4_{f}.json").read_text())["labels"]}
+        for f in ("claude", "codex")}
+    rows = []
+    for sid in sorted(set(labs["claude"]) & set(labs["codex"])):
+        s, kind = by[sid]
+        o = [x.option_id for x in s.options]
+        per = {f: label_rule_v4(labs[f][sid], ordered[sid], ranks, o) for f in labs}
+        dirs = {v["direction"] for v in per.values()}
+        strata = {v["stratum"] for v in per.values()}
+        opts = {v["directed_option"] for v in per.values()}
+        direction = next(iter(dirs)) if len(dirs) == 1 else "unsettled"
+        stratum = (next(iter(strata)) if len(strata) == 1
+                   else "family_split" if len(dirs) > 1 else "other")
+        rows.append({"scenario_id": sid, "set": kind, "ordered_option": ordered[sid],
+                     "direction_of_record": direction, "stratum_of_record": stratum,
+                     "directed_option_of_record": next(iter(opts)) if len(opts) == 1
+                     else "unsettled",
+                     "per_family": {f: {k: v[k] for k in ("direction", "stratum",
+                                                           "directed_option")}
+                                    for f, v in per.items()}})
+    counts = {k: dict(Counter(r["stratum_of_record"] for r in rows if r["set"] == k))
+              for k in ("panel", "h1")}
+    agree = {k: sum(r["per_family"]["claude"]["direction"] == r["per_family"]["codex"]
+                    ["direction"] for r in rows if r["set"] == k) for k in ("panel", "h1")}
+    out = {"rule": "Amendment 5 strata per family; the families' shared direction, else "
+                   "unsettled (Amendment 2)", "n": len(rows), "strata": counts,
+           "family_direction_agreement": agree, "labels": rows}
+    (CST / "data" / "scenario_labels_v4_record.json").write_text(json.dumps(out, indent=1)
+                                                                 + "\n")
+    print(json.dumps({"strata": counts, "family_direction_agreement": agree}))
+
+
 def label_all(families: tuple[str, ...]) -> None:
     """Amendment 3: label the panel's 586 and H1_held's 132 with each family; JSON per family."""
     sets = scored_sets()
@@ -1038,7 +1082,8 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("which", choices=("sheet", "all", "score", "relabel", "label_v2",
                                       "record_v2", "pilot_v3", "label_v3", "check_v4",
-                                      "label_v4", "build_blind", "score_blind"))
+                                      "label_v4", "build_blind", "score_blind",
+                                      "record_v4"))
     ap.add_argument("--labels", default="record", choices=("record", "claude", "codex"))
     ap.add_argument("--per-call", type=int, default=PER_CALL_V2)
     ap.add_argument("--max-batches", type=int, default=None)
@@ -1061,6 +1106,8 @@ if __name__ == "__main__":
         check_v4(a.families.split(",")[0])
     elif a.which == "label_v4":
         label_all_v4(tuple(a.families.split(",")), a.per_call, a.max_batches)
+    elif a.which == "record_v4":
+        record_v4()
     elif a.which == "build_blind":
         build_blind(a.families.split(",")[0])
     elif a.which == "score_blind":

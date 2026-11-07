@@ -1,0 +1,105 @@
+{
+ "gate": ">= 12 of 15 on the direction (Amendment 5)",
+ "family": "claude",
+ "scope": "calibrates the directed-away side on fresh items; the unsettled side rests on the Amendment 5 development check (codex 14 of 15, Claude's misses all committing) and the two-family split rule, and the S0 panel relabel under the same rule is its calibration of record. Unsettled-side error shrinks the headline n (priced by the power table); committing-side error biases the headline, the direction the development check and split rule cover (Amendment 5, 2026-11-06)",
+ "gated": false,
+ "n_marked": 15,
+ "agreement": 14,
+ "verdict": "PASS",
+ "flag_committed_where_unsettled": false,
+ "disagreement_shapes": {
+  "author refuse / label unsettled": 1
+ },
+ "items": {
+  "1": {
+   "scenario_id": "F4-B-03",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "2": {
+   "scenario_id": "F4-B-41",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "3": {
+   "scenario_id": "F3-B-21T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "4": {
+   "scenario_id": "H1-B-167",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "5": {
+   "scenario_id": "F4-A-52T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "6": {
+   "scenario_id": "F2-A-32",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "7": {
+   "scenario_id": "F1-A-28T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "8": {
+   "scenario_id": "F2-B-23",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "9": {
+   "scenario_id": "F1-B-23T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "10": {
+   "scenario_id": "F3-B-37T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "11": {
+   "scenario_id": "H1-B-139",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "12": {
+   "scenario_id": "F1-B-77T",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "13": {
+   "scenario_id": "F2-A-34",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "14": {
+   "scenario_id": "F1-B-55",
+   "author": "refuse",
+   "label": "refuse",
+   "stratum": "clear_refuse"
+  },
+  "15": {
+   "scenario_id": "H1-B-07",
+   "author": "refuse",
+   "label": "unsettled",
+   "stratum": "other"
+  }
+ }
+}

@@ -40,6 +40,24 @@
     "h1_w_f0.3": 0.0455
    },
    "n": 586
+  },
+  "clear_directed_away_record": {
+   "k4": {
+    "h1_w_f0.5": 0.0467,
+    "worst_w_f0.5": 0.0746,
+    "h1_w_f0.3": 0.0661
+   },
+   "k6": {
+    "h1_w_f0.5": 0.0373,
+    "worst_w_f0.5": 0.0595,
+    "h1_w_f0.3": 0.0515
+   },
+   "n": 458
   }
+ },
+ "k_confirmed": {
+  "n_of_record": 458,
+  "rule": "k 6 only if k 4 cannot reach about 0.05",
+  "k": 4
  }
 }
