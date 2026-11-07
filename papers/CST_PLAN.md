@@ -982,7 +982,7 @@ Shakespeare's Sonnets, 13 from the Declaration of Independence, 4 from the Getty
 which is too short for more; Project Gutenberg #1041, #1, #4, sha256 recorded), seed 20261106. Each
 continuation has two independent paraphrases (Claude, `claude -p`; one 20-item pilot parsed end to
 end before the rest). **Primary margin on the clean subset** (both paraphrases within 20% of the
-continuation's token length and no shared word 4-gram among original, p1 and p2): 90 `C_anth`, 73
+continuation's token length and no shared word 4-gram among original, p1 and p2): 90 `C_anth`, 72
 `C_spec`, 33 positive-band items. All items are reported beside. A shared 4-gram shrinks the
 true-vs-paraphrase margin, which biases the read toward "not recalled", the conservative side for
 branch (a).
