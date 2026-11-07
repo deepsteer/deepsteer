@@ -2002,7 +2002,11 @@ matches with the subject's answer, no copy gap, 0.87 agreement with Claude). S_t
 naming is stable in Claude (retest kappa 0.84, deference 0.86) and not in gpt-oss at either effort
 (0.72 at low; 0.57 single and 0.64 majority-of-three at high; the errors are correlated), so
 Claude is S_tenet's judge of record on a seeded 200 at k 4 (Amendment 11; MDE 0.071 at f 0.5) and
-the two judges agree on applied tenets at 0.49 (CST-A12).
+the two judges agree on applied tenets at 0.49 (CST-A12). The measured basis for a frontier
+reader is per tenet: across nine gpt-oss passes, A036 (the operator-deference tenet on every
+shortlist) reads kappa 0.14 over 94 rollouts, and the median among tenets named on 10 or more
+rollouts is 0.33; one tenet in 71 clears 0.8. Bulk scoring runs at effort low: MoReBench's effort
+high read worse here on both the concluded option and the applied tenets.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

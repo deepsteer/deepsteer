@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) and 11 (Claude the S_tenet judge of record on a seeded 200), §13.** v0.1 was the draft for the
+Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) and 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1232,3 +1232,18 @@ majority-of-three kappas) and before its write-up.
   applied-tenet cells (tenets named in any pass) that belong to passing tenets.
 - **Scoring effort** is not changed here: Amendment 10 item 1 (effort high) stands until the author
   rules on its price (`CST_REFORECAST.md`).
+
+#### Amendment 11 addendum (2026-11-07; author, the mini-pod rulings; zero GPU)
+
+1. **Bulk scoring at effort low** (amends Amendment 10 item 1). MoReBench's effort-high setting was
+   tested here and read worse on both tasks: the concluded option 0.98 same-order and 0.94 permuted
+   at high against 1.00 and 0.98 at low; applied tenets 0.57 single-sample at high against 0.72 at
+   low (`outputs/scorer_high/summary_high.json`, `outputs/probe/summary.json`).
+2. **The companion tenet read is dropped.** CST-A12's resolution and SYNTHESIS carry the per-tenet
+   finding (A036 kappa 0.14 over 94 rollouts; median 0.33 among tenets named on 10 or more) as the
+   measured basis for a frontier S_tenet reader.
+3. **Claude's S_tenet read rule:** up to three attempts per rollout; a rollout unscored after three
+   is reported as unscored, never dropped; the unscored rate stands beside every S_tenet number; the
+   independence of stops from scenario and condition is re-verified on the full read.
+
+The path of record stands at 136.2 A100-h (`CST_REFORECAST.md`). S0a is built next.
