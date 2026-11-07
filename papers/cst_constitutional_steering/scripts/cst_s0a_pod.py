@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+"""CST S0a pod driver (`S0A_BUILD.md`), one A100-80GB; every unit saved as it finishes.
+
+    cst_s0a_pod.py --stage gen --arm a0|a0s [--parts p1,p2] --out DIR [--dry-run]
+    cst_s0a_pod.py --stage dose0 --arm a0|a0s --out DIR
+    cst_s0a_pod.py --stage recall --out DIR                      # A0 only
+    cst_s0a_pod.py --stage capability --arm a0|a0s --out DIR
+    cst_s0a_pod.py --stage score --arm a0|a0s --judge gpt_oss_120b|olmo31_32b_instruct --out DIR
+
+- gen: the registered design (panel 586 × plain 4, user 2, operator 4, operator_pr 6; H1_held 132 ×
+  plain 8, operator 8; cell A′ 102 × 8 in the plain agent frame), thinking on, effort medium, cap
+  4,096, KDG sampler v2 with a per-rollout seed, on the engine of record (MTP off, 128 sequences,
+  prefix caching on). Rollout ids ``{arm}|{set}|{condition}|{scenario}|{k}``; letter order
+  ``assign_letters(s, k)``. Saved in chunks of ``CHUNK`` rollouts
+  (``gen/{arm}/{part}_{chunk:03d}.jsonl``); a chunk on disk is skipped, so a session cut short
+  resumes where it stopped.
+- dose0: first-token letter log-probs at dose 0 (the reasoning closed by the format's first
+  dose-0 candidate) for every scenario and condition at k 0.
+- recall: teacher-forced log-probs on A0 of each window's true continuation and its two paraphrases
+  given the 64-token prefix (``data/recall_passages_v1.json``).
+- capability: ``data/s0a_capability_v1.json`` with ST's prompt, parse and gold, cap 4,096 + 256.
+- score: gpt-oss-120b on every scored rollout of the arm (blind, temperature 1, effort low,
+  letter-mapped; per-rollout seed), and for A0 the retest's two passes (same order, permuted) on
+  ``retest_a0_operator_clear``; Olmo-3.1-32B-Instruct on the arm's seeded 10%. Chunked and resumed
+  as gen.
+``--dry-run`` runs on the tiny hybrid Qwen3.8 with HF stand-ins (local tests).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import time
+import zlib
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
+import cst_probe_pod as P  # noqa: E402  (sets the shared sys.path; engine of record, judge prompts)
+
+V = P.V
+CST = V.CST
+ST = V.ROOT / "papers/st_live_reference"
+CAP = 4096
+CAP_EXTRA = 256  # capability: the final answer after a capped trace (ST's t15 rule)
+CHUNK = 1024
+EFFORT = "medium"
+ENGINE = "no_mtp_seqs128"  # Amendment 10 item 4
+PANEL_K = {"plain": 4, "user": 2, "operator": 4, "operator_pr": 6}
+H1_K = {"plain": 8, "operator": 8}
+FORCED_K = 8
+FORCED = (ST / "data/st_fxh_cellA2_forced_v1.json",
+          ST / "data/st_fxh_cellA2_twins_forced_v1.json")
+PARTS = tuple([f"panel_{c}" for c in PANEL_K] + [f"h1_{c}" for c in H1_K] + ["forced_plain"])
+
+
+def seed_of(rid: str) -> int:
+    return zlib.crc32(rid.encode()) % (2**31)
+
+
+# ---- the design ----------------------------------------------------------------------------
+
+def scenarios(dry: bool) -> dict:
+    """Scenario objects by set: panel and H1 from the labels of record, cell A′ from ST's files."""
+    import scenario_labels as L
+
+    from deepsteer.kdg.schema import load_scenarios
+
+    _, by, _ = L._ordered_and_opts()  # noqa: SLF001
+    sets = {"panel": sorted(i for i, (_, k) in by.items() if k == "panel"),
+            "h1": sorted(i for i, (_, k) in by.items() if k == "h1")}
+    forced = {s.id: s for f in FORCED for s in load_scenarios(f)[0]}
+    sets["forced"] = sorted(forced)
+    if dry:
+        sets = {k: v[:2] for k, v in sets.items()}
+    objs = {i: s for i, (s, _) in by.items()} | forced
+    return {"ids": sets, "objs": objs}
+
+
+def part_units(part: str, sc: dict) -> list[tuple[str, str, str, int]]:
+    """(set, condition, scenario id, k) for every rollout of ``part``."""
+    set_, cond = part.split("_", 1)
+    k = {"panel": PANEL_K, "h1": H1_K}.get(set_, {"plain": FORCED_K})[cond]
+    return [(set_, cond, sid, j) for sid in sc["ids"][set_] for j in range(k)]
+
+
+def messages(s, order, set_: str, cond: str, arm: str, body: str | None) -> list[dict]:
+    import cst_pressure as CP
+
+    msgs = CP.triple_messages(s, order, cond, "panel" if set_ == "panel" else "h1")
+    return CP.a0s_messages(msgs, body) if arm == "a0s" else msgs
+
+
+def constitution(dry: bool) -> str | None:
+    from deepsteer.constitutions import load_document
+
+    if dry:
+        return "## Overview\nClaude should be honest."
+    return load_document("C_anth", ST / "constitutions.yaml", V.CONST_DIR).body
+
+
+# ---- engines -------------------------------------------------------------------------------
+
+def subject(dry: bool):
+    path = V._model_path(dry)  # noqa: SLF001
+    if dry:
+        return path, V.HFStandIn(path)
+    return path, V.VLLMEngine(path, None, **P.engine_kwargs(ENGINE))
+
+
+def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
+             dry: bool) -> list[dict]:
+    """Sampled generation with one seed per rollout (KDG sampler v2)."""
+    if dry:
+        return eng.generate(prompts, max_tokens)
+    from vllm import SamplingParams, TokensPrompt
+
+    sps = [SamplingParams(max_tokens=max_tokens, seed=sd, temperature=V.SAMPLER["temperature"],
+                          top_p=V.SAMPLER["top_p"], top_k=V.SAMPLER["top_k"] or -1)
+           for sd in seeds]
+    res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts], sps)
+    return [{"ids": list(r.outputs[0].token_ids), "text": r.outputs[0].text,
+             "hit_cap": r.outputs[0].finish_reason == "length",
+             "finish_reason": r.outputs[0].finish_reason} for r in res]
+
+
+# ---- stages --------------------------------------------------------------------------------
+
+def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
+    import reasoning_formats as rf
+
+    from deepsteer.kdg.schema import assign_letters
+
+    sc = scenarios(dry)
+    body = constitution(dry) if arm == "a0s" else None
+    path, eng = subject(dry)
+    tok = V._tok(path)  # noqa: SLF001
+    fmt = rf.build_format("qwen38_27b", tok)
+    letters = rf.letter_token_ids(tok)
+    gdir = out / "gen" / arm
+    gdir.mkdir(parents=True, exist_ok=True)
+    log = {"arm": arm, "engine": ENGINE, "cap": CAP, "load_s": getattr(eng, "load_s", None),
+           "chunks": {}}
+    for part in parts:
+        units = part_units(part, sc)
+        for c0 in range(0, len(units), CHUNK):
+            f = gdir / f"{part}_{c0 // CHUNK:03d}.jsonl"
+            if f.exists():
+                continue
+            rows, prompts, seeds = [], [], []
+            for set_, cond, sid, k in units[c0:c0 + CHUNK]:
+                s = sc["objs"][sid]
+                order = assign_letters(s, k)
+                text = fmt.render(tok, messages(s, order, set_, cond, arm, body), EFFORT)
+                rid = f"{arm}|{set_}|{cond}|{sid}|{k}"
+                rows.append({"rollout_id": rid, "arm": arm, "set": set_, "condition": cond,
+                             "scenario_id": sid, "k": k,
+                             "order": [(L_, o.option_id) for L_, o in order]})
+                prompts.append(tok.encode(text, add_special_tokens=False))
+                seeds.append(seed_of(rid))
+            t = time.time()
+            gens = generate(eng, prompts, seeds, CAP, dry)
+            dt = time.time() - t
+            tmp = f.with_suffix(".tmp")
+            with open(tmp, "w") as fh:
+                for r, p, sd, g in zip(rows, prompts, seeds, gens):
+                    pr = fmt.parse(tok, g["ids"], g["hit_cap"], letters)
+                    opt = dict(r["order"]).get(pr.letter_record) if pr.letter_record else None
+                    fh.write(json.dumps({**r, "seed": sd, "prompt_tokens": len(p),
+                                         "gen_ids": g["ids"], "text": g["text"],
+                                         "finish_reason": g.get("finish_reason"),
+                                         "hit_cap": g["hit_cap"], "parse_status": pr.status,
+                                         "trace_len": pr.trace_len, "letter": pr.letter_record,
+                                         "option": opt}) + "\n")
+            tmp.rename(f)  # a chunk exists only once complete
+            log["chunks"][f.name] = {"n": len(rows), "seconds": dt,
+                                     "gen_tokens": sum(len(g["ids"]) for g in gens)}
+            V._w(out, f"gen_{arm}_log_{int(time.time())}", log)  # noqa: SLF001
+
+
+def stage_dose0(out: Path, arm: str, dry: bool) -> None:
+    """First-token letter log-probs at dose 0 for every scenario and condition at k 0."""
+    import reasoning_formats as rf
+
+    from deepsteer.kdg.schema import assign_letters
+
+    sc = scenarios(dry)
+    body = constitution(dry) if arm == "a0s" else None
+    path, eng = subject(dry)
+    tok = V._tok(path)  # noqa: SLF001
+    fmt = rf.build_format("qwen38_27b", tok)
+    lids = sorted(rf.letter_token_ids(tok))
+    rows, prompts = [], []
+    for part in PARTS:
+        set_, cond = part.split("_", 1)
+        for sid in sc["ids"][set_]:
+            s = sc["objs"][sid]
+            order = assign_letters(s, 0)
+            msgs = messages(s, order, set_, cond, arm, body)
+            prompts.append(fmt.dose0_ids(tok, msgs, EFFORT, fmt.dose0[0]))
+            rows.append({"arm": arm, "set": set_, "condition": cond, "scenario_id": sid,
+                         "order": [(L_, o.option_id) for L_, o in order]})
+    lps = eng.first_logprobs(prompts, lids)
+    (out / "dose0").mkdir(parents=True, exist_ok=True)
+    with open(out / "dose0" / f"{arm}.jsonl", "w") as fh:
+        for r, lp in zip(rows, lps):
+            fh.write(json.dumps({**r, "letter_ids": lids, "logprobs": lp}) + "\n")
+    V._w(out, f"dose0_{arm}", {"arm": arm, "n": len(rows), "dose0": fmt.dose0[0].name})  # noqa: SLF001
+
+
+def stage_recall(out: Path, dry: bool) -> None:
+    """Teacher-forced summed log-probs of the continuation and its two paraphrases (A0)."""
+    d = json.loads((CST / "data/recall_passages_v1.json").read_text())
+    items = [it for st in d["sets"].values() for it in st["items"]]
+    if dry:
+        items = items[:3]
+    path, eng = subject(dry)
+    seqs, meta = [], []
+    for it in items:
+        for var, ids in (("true", it["cont_ids"]), ("p1", it["p1_ids"]), ("p2", it["p2_ids"])):
+            seqs.append(it["prefix_ids"] + ids)
+            meta.append({"id": it["id"], "variant": var, "start": len(it["prefix_ids"]),
+                         "n": len(ids)})
+    sums = forced_logprobs(eng, seqs, [m["start"] for m in meta], dry)
+    (out / "recall").mkdir(parents=True, exist_ok=True)
+    with open(out / "recall" / "a0.jsonl", "w") as fh:
+        for m, s in zip(meta, sums):
+            fh.write(json.dumps({**m, "sum_logprob": s}) + "\n")
+    V._w(out, "recall", {"windows": len(items), "sequences": len(seqs)})  # noqa: SLF001
+
+
+def forced_logprobs(eng, seqs: list[list[int]], starts: list[int], dry: bool) -> list[float]:
+    """Sum of log p(token_i | tokens_<i) over positions ``start`` onward (teacher forcing)."""
+    if dry:
+        import torch
+
+        out = []
+        for ids, st in zip(seqs, starts):
+            with torch.no_grad():
+                lo = eng.m(input_ids=torch.tensor([ids])).logits[0].float()
+            lp = torch.log_softmax(lo, -1)
+            out.append(float(sum(lp[i - 1, ids[i]] for i in range(st, len(ids)))))
+        return out
+    from vllm import SamplingParams, TokensPrompt
+
+    sp = SamplingParams(max_tokens=1, temperature=0.0, prompt_logprobs=0)
+    res = eng.llm.generate([TokensPrompt(prompt_token_ids=s) for s in seqs], sp)
+    out = []
+    for r, ids, st in zip(res, seqs, starts):
+        pl = r.prompt_logprobs  # one dict per prompt position (None at 0), keyed by token id
+        out.append(float(sum(pl[i][ids[i]].logprob for i in range(st, len(ids)))))
+    return out
+
+
+def stage_capability(out: Path, arm: str, dry: bool) -> None:
+    """D10's 800 items with ST's prompt, parse and gold; the A0s arm carries the constitution."""
+    import reasoning_formats as rf
+    import t15_driver as T15
+
+    items = json.loads((CST / "data/s0a_capability_v1.json").read_text())["items"]
+
+    class A:
+        dry_run = dry
+
+    if dry:  # ST's dry records are one GSM8K and one MMLU item, in that order
+        items = [next(i for i in items if i["dataset"] == d)
+                 for d in ("openai/gsm8k", "cais/mmlu")]
+    recs = T15.cap_records({"cap_items": items}, A)
+    body = constitution(dry) if arm == "a0s" else None
+    path, eng = subject(dry)
+    tok = V._tok(path)  # noqa: SLF001
+    fmt = rf.build_format("qwen38_27b", tok)
+    prompts, seeds = [], []
+    for n, (it, r) in enumerate(zip(items, recs)):
+        msgs = [{"role": "user", "content": T15.cap_prompt(it, r)}]
+        if arm == "a0s":
+            import cst_pressure as CP
+
+            msgs = CP.a0s_messages(msgs, body)
+        prompts.append(tok.encode(fmt.render(tok, msgs, EFFORT), add_special_tokens=False))
+        seeds.append(seed_of(f"{arm}|cap|{n}"))
+    gens = generate(eng, prompts, seeds, CAP + CAP_EXTRA, dry)
+    (out / "cap").mkdir(parents=True, exist_ok=True)
+    with open(out / "cap" / f"{arm}.jsonl", "w") as fh:
+        for n, (it, r, g) in enumerate(zip(items, recs, gens)):
+            ft = final_answer(fmt, tok, g["ids"]) if not g["hit_cap"] else None
+            pred, gold = T15.cap_parse(it, ft), T15.cap_gold(it, r)
+            fh.write(json.dumps({"arm": arm, "n": n, "dataset": it["dataset"],
+                                 "index": it["index"], "pred": pred, "gold": gold,
+                                 "correct": pred is not None and pred == gold,
+                                 "answered": ft is not None,
+                                 "final_text": None if ft is None else ft[:2000],
+                                 "n_tokens": len(g["ids"]), "hit_cap": g["hit_cap"]}) + "\n")
+    V._w(out, f"capability_{arm}", {"arm": arm, "n": len(items)})  # noqa: SLF001
+
+
+def final_answer(fmt, tok, gen: list[int]) -> str | None:
+    loc = fmt._locate(tok, list(gen))  # noqa: SLF001
+    if loc is None or isinstance(loc, str):
+        return None
+    return tok.decode(list(gen)[loc[1]:], skip_special_tokens=True)
+
+
+def scored_rows(out: Path, arm: str) -> list[dict]:
+    rows = []
+    for f in sorted((out / "gen" / arm).glob("*.jsonl")):
+        if f.name.startswith(("panel_", "h1_")):
+            rows += [json.loads(x) for x in open(f)]
+    return rows
+
+
+def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
+    """The bulk scorer's passes, chunked and resumed; each call's raw reply saved."""
+    import cst_judge as J
+    import mrb_g1_pod as M
+
+    from deepsteer.reasoning.think_io import CoTFormat
+
+    samples = json.loads((CST / "data/s0a_samples_v1.json").read_text())
+    rows = {r["rollout_id"]: r for r in scored_rows(out, arm)}
+    if judge == "gpt_oss_120b":
+        passes = {"blind": (sorted(rows), 0, False)}
+        if arm == "a0":
+            rt = [i for i in samples["retest_a0_operator_clear"] if i in rows]
+            passes |= {"retest_same": (rt, 1, False), "retest_perm": (rt, 2, True)}
+    else:
+        passes = {"blind": ([i for i in samples["olmo_10pct"][arm] if i in rows], 0, False)}
+    j = V.JUDGES[judge]
+    if dry:
+        eng, jtok, fmt, cfg = None, V._tok(V._model_path(True)), CoTFormat.THINK_TAGS, None  # noqa: SLF001
+    else:
+        from huggingface_hub import snapshot_download
+
+        jpath = snapshot_download(j["repo"], revision=j["revision"],
+                                  ignore_patterns=["original/*", "metal/*"])
+        eng = V.VLLMEngine(jpath, None, max_model_len=V.JUDGE_LEN, gpu_memory_utilization=0.9,
+                           enable_prefix_caching=True, seed=0, **j.get("llm_kwargs", {}))
+        jtok = eng.llm.get_tokenizer()
+        fmt = CoTFormat.HARMONY_ANALYSIS if j["fmt"] == "harmony" else CoTFormat.THINK_TAGS
+        cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
+    sdir = out / "score" / arm / judge
+    sdir.mkdir(parents=True, exist_ok=True)
+    for pname, (ids, seed_off, perm) in passes.items():
+        for c0 in range(0, len(ids), CHUNK):
+            f = sdir / f"{pname}_{c0 // CHUNK:03d}.jsonl"
+            if f.exists():
+                continue
+            chunk = [rows[i] for i in ids[c0:c0 + CHUNK]]
+            prompts, meta = P.judge_prompts(chunk, jtok, j["fmt"], fmt, cfg, False, perm,
+                                            "low" if not dry else None)
+            seeds = [seed_of(f"{judge}|{pname}|{r['rollout_id']}") + seed_off for r in chunk]
+            if dry:
+                texts = ["<think>r</think>" + json.dumps(
+                    {"concluded_option": min(m["back"], key=lambda k: m["back"][k]),
+                     "applied_tenets": [m["shortlist"][0]], "evidence": "e"}) for m in meta]
+                toks, caps = [len(jtok.encode(x)) for x in texts], [False] * len(texts)
+            else:
+                texts, toks, caps = judge_generate(eng, prompts, seeds)
+            tmp = f.with_suffix(".tmp")
+            with open(tmp, "w") as fh:
+                for r, m, text, n_tok, cap in zip(chunk, meta, texts, toks, caps):
+                    _, final = M.split_trace(text, fmt)
+                    pj = J.parse_judgment(final or text, m["options"], set(m["shortlist"]),
+                                          m["letters"])
+                    fh.write(json.dumps({
+                        "rollout_id": r["rollout_id"], "pass": pname, "judge": judge,
+                        "effort": "low" if judge == "gpt_oss_120b" else None,
+                        "temperature": 1.0, "permuted": perm, "ok": pj["ok"],
+                        "concluded_option": m["back"].get(pj["concluded_option"],
+                                                          pj["concluded_option"]),
+                        "letter_mapped": pj["letter_mapped"],
+                        "applied_tenets": pj["applied_tenets"], "shortlist": m["shortlist"],
+                        "out_tokens": n_tok, "hit_cap": cap, "text": text}) + "\n")
+            tmp.rename(f)
+    V._w(out, f"score_{arm}_{judge}", {"arm": arm, "judge": judge,  # noqa: SLF001
+                                        "passes": {k: len(v[0]) for k, v in passes.items()}})
+
+
+def judge_generate(eng, prompts, seeds):
+    from vllm import SamplingParams, TokensPrompt
+
+    sps = [SamplingParams(max_tokens=min(V.JUDGE_MAX_TOKENS, V.JUDGE_LEN - len(p) - 16),
+                          temperature=1.0, top_p=1.0, seed=sd) for p, sd in zip(prompts, seeds)]
+    res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts], sps)
+    return ([o.outputs[0].text for o in res], [len(o.outputs[0].token_ids) for o in res],
+            [o.outputs[0].finish_reason == "length" for o in res])
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--stage", required=True,
+                    choices=("gen", "dose0", "recall", "capability", "score"))
+    ap.add_argument("--arm", default="a0", choices=("a0", "a0s"))
+    ap.add_argument("--parts", default=",".join(PARTS))
+    ap.add_argument("--judge", default="gpt_oss_120b",
+                    choices=("gpt_oss_120b", "olmo31_32b_instruct"))
+    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args()
+    a.out.mkdir(parents=True, exist_ok=True)
+    {"gen": lambda: stage_gen(a.out, a.arm, a.parts.split(","), a.dry_run),
+     "dose0": lambda: stage_dose0(a.out, a.arm, a.dry_run),
+     "recall": lambda: stage_recall(a.out, a.dry_run),
+     "capability": lambda: stage_capability(a.out, a.arm, a.dry_run),
+     "score": lambda: stage_score(a.out, a.arm, a.judge, a.dry_run)}[a.stage]()
+
+
+if __name__ == "__main__":
+    main()
