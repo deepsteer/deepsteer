@@ -2060,7 +2060,7 @@ Source of every number: `papers/mrb_morebench/outputs/mrb_g0_audit.json` (audit 
 **Type.** cross-doc conjunction (a license claim against the sources' own terms).
 **Competing readings.** R_covered: the expert rows were rewritten enough to be MoReBench's own expression (the paper converts them with an LLM prompt, App. C). R_derived: they remain derivatives of NC/ND or unlicensed text, which MoReBench cannot relicense.
 **Discriminator.** None that settles a license question empirically; this is an author decision (escalation class).
-**Status.** open: coverage unclear, not shown wrong (author decision at MRB-G0; the author has emailed the MoReBench authors). As a precaution the 100 expert-written scenarios are used for evaluation only, never for training or adaptation (MRB_PLAN v0.3 §9).
+**Status.** resolved for evaluation (2026-11-07): MoReBench's author confirmed in writing that the dataset, including the expert-written rubric criteria, may be used for evaluation. Open for training or adaptation: the 100 expert-written scenarios stay out of any training or adaptation use until a separate author decision (MRB_PLAN v0.3 §9; `DATASET_LICENSES.md`; `MORAL_EVAL_REPLICATIONS.md`, MRB).
 **Thesis impact.** For the replication (evaluation only, no text committed) little changes; for any training or adaptation use (ST as a target), the 100 expert rows stay excluded unless the question is settled.
 
 ## MRB-A8 (ledger) — think_io's harmony split returns an empty trace when GPT-OSS opens its own analysis channel

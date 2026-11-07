@@ -102,11 +102,15 @@ Standard for each replication, kept light:
 - **Adaptations stay CC BY 4.0.** This includes recasting Agent scenarios into KDG/ST frames.
   Adapted files carry their own notice and stay out of the Apache wheel.
 - **Upstream sources (corrected at MRB-G0).** The paper states all its sources are CC 4.0.
-  DailyDilemmas and AIRiskDilemmas are CC BY 4.0 on their own cards; whether CC BY 4.0 covers the
-  100 expert-written scenarios (APPE Ethics Bowl, Ethics Unwrapped, Cheung et al. PNAS 2025, whose
-  own terms are CC BY-NC-ND 4.0 or unlicensed) is unclear (ANOMALIES MRB-A7). As a precaution those
-  100 are used for evaluation only, never for training or adaptation. Cite the upstreams alongside
-  MoReBench.
+  DailyDilemmas and AIRiskDilemmas are CC BY 4.0 on their own cards. The 100 expert-written
+  scenarios derive from APPE Ethics Bowl, Ethics Unwrapped and Cheung et al. PNAS 2025, whose own
+  terms are CC BY-NC-ND 4.0 or unlicensed (ANOMALIES MRB-A7).
+  - **Evaluation: permitted.** MoReBench's author confirmed in writing (2026-11-07) that the
+    dataset, including the expert-written scenarios' rubric criteria, may be used for evaluation;
+    MRB-A7 is resolved for evaluation.
+  - **Training or adaptation on the expert-written 100: not permitted until a separate author
+    decision** records its basis. The other 400 public scenarios follow the CC BY 4.0 rules above.
+  - Cite the upstreams alongside MoReBench.
 - **Scope.** Only the 500 public scenarios. Never seek the private set.
 
 ### ETH — ETHICS (MIT)

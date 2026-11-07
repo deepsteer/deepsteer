@@ -618,5 +618,7 @@ rider counts against MB's own allowance, not this one.
 - **Never seek the private set.**
 - **The 100 expert-written scenarios (v0.3):** CC BY 4.0's coverage of them is unclear (ANOMALIES
   MRB-A7); as a precaution they are used for evaluation only, never for training or adaptation.
+  **2026-11-07:** evaluation use, the rubric criteria included, confirmed in writing by MoReBench's
+  author (MRB-A7 resolved for evaluation); training or adaptation still needs a separate decision.
 - **MRB-G0 license check:** `git ls-files` and the built wheel hold no MoReBench text outside the
   notice-carrying vendored directory.
