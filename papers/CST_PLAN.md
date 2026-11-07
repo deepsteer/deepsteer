@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h), §13.** v0.1 was the draft for the
+Status: **v0.11, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) and 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1152,3 +1152,35 @@ stay as the subject saw them, since its trace refers to them by letter. The perm
 the options in a seeded permuted order, under permuted judge-facing ids (o1, o2, ...), each still
 carrying the letter the subject saw; replies are mapped back to the true option ids before kappa.
 The blind prompt omits the final answer and asks for a reading of the reasoning alone.
+
+### Amendment 10 (2026-11-07; author, the probe rulings; zero GPU; committed and pushed before the scorer mini-pod)
+
+Registered after the probe pod (`outputs/probe/`; CST-A11, CST-A12) and before the mini-pod or
+any S0a rollout.
+
+1. **Scorer effort high (MoReBench's setting), registered.** Mini-pod: re-score the 100 saved
+   rollouts at effort high, three passes; report the single-sample kappa and the majority-of-three
+   kappa, same-order and permuted, with CIs.
+2. **Claude re-scores the same 100 blind rollouts twice** through the account login, in parallel
+   with the mini-pod; per-kind kappa reported, the deference tenets separately.
+3. **Mistral is not triggered by a tenet-retest failure;** Amendment 9's conditions (validity or
+   Layer A) stand.
+4. **Engine of record: MTP off, 128 sequences, prefix caching on, cap 4,096.** A0's rate on both
+   engines is recorded for the ST comparability note (probe pod, cap 4,096, 128 rows: ST's engine
+   781 tokens/s and 6,272 rollouts/h; the engine of record 847 and 6,722; trace medians 447 and
+   443).
+5. **Fallback under reading 3 (R_task), registered now.** S_concl is primary and calibrated. If the
+   applied-tenet kappa's CI stays below 0.8 at effort high, S_tenet is read per tenet kind on the
+   kinds that pass, and the deference kind is reported as unresolved by the instrument at its
+   measured kappa.
+6. **If majority-of-three is needed,** it applies to the applied-tenet task on the operator and
+   operator_pr conditions only, a single sample elsewhere. The mini-pod report prices that
+   variant.
+
+*Operational note (not the author's text; for the author's check):* a majority-of-three retest
+compares two independent majorities, so it is measured with six same-order passes (two triples)
+and three permuted passes (one triple against the first same-order triple); three passes alone
+give the single-sample kappa and only a Spearman-Brown estimate for the majority. The mini-pod runs
+nine passes at effort high (about a minute each at the probe's rate); the first three are the
+three passes of item 1. "Tenet kind": the deference tenets (`scenario_labels.DEFERENCE`, the
+operator-side and operator-limit tenets on every shortlist) and all other tenets.
