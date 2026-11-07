@@ -13,34 +13,39 @@
    "mistral_small_32_est": 2.1837538510105676
   }
  },
+ "codex_calls": {
+  "DPO pair filter, per draw (3,000 pairs at a 0.7 pass rate, 10 per call)": 429,
+  "the 200-pair pilot": 20,
+  "frontier second opinion, about 200 S0a rollouts at 10 per call": 20
+ },
  "forecast": {
   "current": {
    "sessions": {
-    "probe_pod (engine tuning, Mistral judge check, scorer fix)": 1.5,
-    "S0a": 47.53014495434612,
+    "probe_pod (engine tuning, the letter-mapped scorer on gpt-oss and Olmo)": 1.5,
+    "S0a": 38.03483719045528,
     "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 11.13088478061474,
     "S1 (corpora, A1 SDF, A1c SFT, recovery)": 54.863560763840766,
-    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 24.344903011607652,
-    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 128.38786247223837,
+    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 16.046638377767493,
+    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 106.49600272561523,
     "S4 (B1 on the sibling, two starting points; estimate)": 29.0,
-    "S5 (A4, A4f; gated by R3; estimate)": 57.19490301160766
+    "S5 (A4, A4f; gated by R3; estimate)": 48.896638377767495
    },
-   "total": 353.9522589942553,
-   "partner_recipe_S0_S3": 267.75735598264765
+   "total": 305.968562216061,
+   "partner_recipe_S0_S3": 228.07192383829351
   },
   "engine_fixed": {
    "sessions": {
-    "probe_pod (engine tuning, Mistral judge check, scorer fix)": 1.5,
-    "S0a": 23.110328285754193,
+    "probe_pod (engine tuning, the letter-mapped scorer on gpt-oss and Olmo)": 1.5,
+    "S0a": 13.61502052186335,
     "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 6.901657753840041,
     "S1 (corpora, A1 SDF, A1c SFT, recovery)": 24.70508823254533,
-    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 24.344903011607652,
-    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 115.46495699257827,
+    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 16.046638377767493,
+    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 93.57309724595514,
     "S4 (B1 on the sibling, two starting points; estimate)": 29.0,
-    "S5 (A4, A4f; gated by R3; estimate)": 57.19490301160766
+    "S5 (A4, A4f; gated by R3; estimate)": 48.896638377767495
    },
-   "total": 282.2218372879331,
-   "partner_recipe_S0_S3": 196.02693427632548
+   "total": 234.23814050973886,
+   "partner_recipe_S0_S3": 156.34150213197137
   }
  },
  "cuts_recipe": {
@@ -48,31 +53,31 @@
    {
     "cut": "DPO at 1 epoch, not 3 (inside the registered cap of <= 3; no amendment)",
     "saves_a100_h": 32.13713482255115,
-    "after": 163.88979945377434,
+    "after": 124.20436730942022,
     "loses": "dose; ST-A38 moved protection with pair count, not epochs"
    },
    {
     "cut": "A2 without the rewrite: defer (it needs its own DPO run, so it is not zero extra training as \u00a75 states)",
-    "saves_a100_h": 18.693139869494328,
-    "after": 145.19665958428,
+    "saves_a100_h": 12.778897392926645,
+    "after": 111.42546991649357,
     "loses": "the lab's rewrite ablation replication; secondary to the recipe"
    },
    {
     "cut": "A0s on the operator condition only (panel k 4, H1 operator k 8)",
-    "saves_a100_h": 8.14971954427935,
-    "after": 137.04694004000066,
+    "saves_a100_h": 4.846869937253826,
+    "after": 106.57859997923974,
     "loses": "A0s's plain, user and operator_pr cells (a comparator, never a lever; its band is provisional until S0b)"
    },
    {
     "cut": "One A2 draw, not two",
-    "saves_a100_h": 20.146820066901387,
-    "after": 116.90011997309928,
+    "saves_a100_h": 14.232577590333701,
+    "after": 92.34602238890604,
     "loses": "the draw-to-draw read ST-A38 asks for"
    },
    {
     "cut": "SDF corpus 5M tokens, not 10M (the 1M pilot prices it anyway)",
     "saves_a100_h": 11.852544116272664,
-    "after": 105.04757585682661,
+    "after": 80.49347827263337,
     "loses": "dose"
    }
   ],
@@ -80,37 +85,37 @@
    {
     "cut": "DPO at 1 epoch, not 3 (inside the registered cap of <= 3; no amendment)",
     "saves_a100_h": 32.13713482255115,
-    "after": 235.6202211600965,
+    "after": 195.93478901574235,
     "loses": "dose; ST-A38 moved protection with pair count, not epochs"
    },
    {
     "cut": "A2 without the rewrite: defer (it needs its own DPO run, so it is not zero extra training as \u00a75 states)",
-    "saves_a100_h": 18.693139869494328,
-    "after": 216.92708129060216,
+    "saves_a100_h": 12.778897392926645,
+    "after": 183.15589162281572,
     "loses": "the lab's rewrite ablation replication; secondary to the recipe"
    },
    {
     "cut": "A0s on the operator condition only (panel k 4, H1 operator k 8)",
-    "saves_a100_h": 25.82153745854646,
-    "after": 191.1055438320557,
+    "saves_a100_h": 22.51868785152094,
+    "after": 160.63720377129476,
     "loses": "A0s's plain, user and operator_pr cells (a comparator, never a lever; its band is provisional until S0b)"
    },
    {
     "cut": "One A2 draw, not two",
-    "saves_a100_h": 26.60827280673144,
-    "after": 164.49727102532427,
+    "saves_a100_h": 20.69403033016375,
+    "after": 139.94317344113102,
     "loses": "the draw-to-draw read ST-A38 asks for"
    },
    {
     "cut": "SDF corpus 5M tokens, not 10M (the 1M pilot prices it anyway)",
     "saves_a100_h": 26.931780381920383,
-    "after": 137.56549064340388,
+    "after": 113.01139305921063,
     "loses": "dose"
    }
   ]
  },
  "deferrable_sessions": {
-  "S5 (gated by R3)": 57.19490301160766,
+  "S5 (gated by R3)": 48.896638377767495,
   "S4 (B1)": 29.0
  },
  "dollars_per_a100_h": [
