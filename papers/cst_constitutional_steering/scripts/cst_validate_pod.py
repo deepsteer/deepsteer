@@ -664,26 +664,28 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
                 labs["codex"][sid]["shortlist"]) | set(L.DEFERENCE))
             trace, answer = r["text"].split("</think>")[0], r["text"].split("</think>")[-1]
             letter_to_opt = dict(r["order"])
+            letters = {o: L_ for L_, o in r["order"]}
             p = J.judge_prompt(s.agent_text, [(o, s.option(o).text) for _, o in r["order"]],
-                               trace, answer, [(t, tenets[t].claim) for t in short])
+                               trace, answer, [(t, tenets[t].claim) for t in short],
+                               letters=letters)
             prompts.append(_judge_ids(jtok, J.SYS + "\n\n" + p, j["fmt"], fmt, cfg))
-            meta.append((set(letter_to_opt.values()), set(short)))
+            meta.append((set(letter_to_opt.values()), set(short), letters))
         rl_prompts = [_judge_ids(jtok, L.SYS + "\n\n" + L._prompt_v4(b, tset), j["fmt"], fmt, cfg)
                       for b in relabel]
         t = time.time()
         if dry:
             texts = [f"<think>reading</think>{{\"concluded_option\": \"{sorted(o)[0]}\", "
                      f"\"applied_tenets\": [\"{sorted(sh)[0]}\"], \"evidence\": \"e\"}}"
-                     for o, sh in meta]
+                     for o, sh, _ in meta]
             toks = [len(jtok.encode(x)) for x in texts]
             caps = [False] * len(texts)
         else:
             texts, toks, caps = _judge_generate(eng, prompts)
         dt = max(time.time() - t, 1e-6)
         ok, raw = 0, []
-        for (opts, short), text, n_tok, cap, r in zip(meta, texts, toks, caps, rows):
+        for (opts, short, letters), text, n_tok, cap, r in zip(meta, texts, toks, caps, rows):
             _, final = M.split_trace(text, fmt)
-            pj = J.parse_judgment(final or text, opts, short)
+            pj = J.parse_judgment(final or text, opts, short, letters)
             ok += pj["ok"]
             raw.append({"scenario_id": r["scenario_id"], "out_tokens": n_tok, "hit_cap": cap,
                         "ok": pj["ok"], "text": text})

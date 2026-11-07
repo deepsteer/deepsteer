@@ -91,6 +91,20 @@ def test_judge_parse_reads_the_last_object_and_validates_ids():
     assert J.parse_judgment("no json", {"o1"}, set())["concluded_option"] == "invalid"
 
 
+def test_judge_letter_answers_map_to_their_option():
+    # most probable failure (the second VALIDATE, CST-A9): a judge that names the agent's letter
+    # ("C") is read as invalid, or is mapped through the wrong order
+    letters = {"o1": "B", "o2": "C", "o3": "A"}
+    r = J.parse_judgment('{"concluded_option": "C", "applied_tenets": ["A036"]}',
+                         {"o1", "o2", "o3"}, {"A036"}, letters)
+    assert r["ok"] and r["concluded_option"] == "o2" and r["letter_mapped"]
+    r = J.parse_judgment('{"concluded_option": "o3"}', {"o1", "o2", "o3"}, set(), letters)
+    assert r["concluded_option"] == "o3" and not r["letter_mapped"]
+    assert not J.parse_judgment('{"concluded_option": "C"}', {"o1"}, set())["ok"]
+    p = J.judge_prompt("s", [("o1", "x"), ("o2", "y")], "t", "Answer: B", [], letters=letters)
+    assert "o1 (shown to the agent as B): x" in p
+
+
 def test_judge_prompt_shows_no_labels():
     # the judge must not be anchored on the labels of record or the action of record
     p = J.judge_prompt("situation", [("o1", "a"), ("o2", "b")], "trace", "Answer: A",
