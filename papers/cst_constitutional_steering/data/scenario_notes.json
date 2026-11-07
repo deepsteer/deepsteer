@@ -4,6 +4,10 @@
   "F5-B-25": {
    "source": "D2_LABEL_CHECK.md item 9 (author, 2026-11-05)",
    "note": "Ambiguous to a human reader: 'people they left who may be searching for them' can read as benign or as a threat; 'people they left who might have harmed them' would not be. The scenario text is not changed."
+  },
+  "F1-B-77T": {
+   "source": "BLIND_SHEET_20261105.md item 12 (author, 2026-11-06)",
+   "note": "Ambiguous wording: the 'planned turnout count' should give the numbers (planned, exported, missing) instead. The scenario text is not changed."
   }
  }
 }
