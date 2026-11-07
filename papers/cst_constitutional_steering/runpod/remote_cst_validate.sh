@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Remote runner for CST VALIDATE (CST_PLAN T0.8; V1-V10; T06_T08_SPECS.md), one A100-80GB.
+# Second run (2026-11-07): V3-V7 again (V7 on its own load, checkpointing active), rates at a
+# saturating batch, the A0s cap probe, the judges at an 8,192-token budget with raw replies, and
+# the judge candidates measured for the author.
 # Orion launches; the launcher passes HF_TOKEN. ST's, MRB's and MCH's pinned vLLM 0.31.0 stack.
 #
 #   setup (venv, stack check, vLLM smoke, models, gate tests) -> render (V8) -> gen (V1, V2 and the
-#   subject's rate) -> lora_hf (V3, V5, V7) -> vllm_lora (V4, V6) -> judges, one at a time (V9,
-#   V10) -> price (S0). Each stage writes outputs/validate/<stage>.json; a failed stage stops the
+#   subject's rate) -> lora_hf (V3, V5) -> vllm_lora (V4, V6) -> gradnec (V7) -> judges, one at a
+#   time (V9, V10) -> price (S0a). Each stage writes outputs/validate/<stage>.json; a failed stage stops the
 #   stages that depend on it, and each judge is independent. Adapters stay in outputs_raw (not
 #   synced back). Wall cap 4.0 h.
 set -uo pipefail
@@ -15,7 +18,7 @@ OUT="$REPO_DIR/papers/cst_constitutional_steering/outputs/validate"
 RAWD="$REPO_DIR/papers/cst_constitutional_steering/outputs_raw/validate"
 mkdir -p "$OUT" "$RAWD"
 START=$(date +%s)
-trap 'cp "$REPO_DIR/session.log" "$OUT/session_validate.log" 2>/dev/null; cp "$RAWD"/*.json "$OUT"/ 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+trap 'cp "$REPO_DIR/session.log" "$OUT/session_validate.log" 2>/dev/null; cp "$RAWD"/*.json "$RAWD"/judges_*.jsonl "$RAWD"/gen_*.jsonl "$OUT"/ 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
 export CST_CONST_DIR="$REPO_DIR/papers/cst_constitutional_steering/outputs/_sync"
@@ -75,7 +78,8 @@ from huggingface_hub import snapshot_download
 pins = {"qwen38_27b": ("Qwen/Qwen3.8-27B", "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"),
         "gpt_oss_120b": ("openai/gpt-oss-120b", "b5c939de8f754692c1647ca79fbf85e8c1e70f8a"),
         "olmo31_32b_think": ("allenai/Olmo-3.1-32B-Think", "97ade57a9cc55ed48bcd76be4b7a3b6fee61b80d"),
-        "glm47_flash": ("zai-org/GLM-4.7-Flash", "7dd20894a642a0aa287e9827cb1a1f7f91386b67")}
+        "glm47_flash": ("zai-org/GLM-4.7-Flash", "7dd20894a642a0aa287e9827cb1a1f7f91386b67"),
+        "olmo31_32b_instruct": ("allenai/Olmo-3.1-32B-Instruct", "ac0587e4a7744a551c059d8cd17ba220bc940dae")}
 print(json.dumps({k: snapshot_download(r, revision=v, ignore_patterns=["original/*", "metal/*"])
                   for k, (r, v) in pins.items()}))
 EOF
@@ -92,10 +96,12 @@ echo ">> gen done at $(hours) h"
 if run lora_hf; then
   run vllm_lora || echo ">> vllm_lora (V4/V6) failed"
 else
-  echo ">> lora_hf (V3/V5/V7) failed; vllm_lora skipped"
+  echo ">> lora_hf (V3/V5) failed; vllm_lora skipped"
 fi
+run gradnec || echo ">> gradnec (V7) failed"
 echo ">> subject stages done at $(hours) h"
-for J in glm47_flash olmo31_32b_think gpt_oss_120b; do
+# the registered configs first, then the candidates; the slowest (Olmo Think) last
+for J in gpt_oss_120b glm47_flash glm47_flash_nothink olmo31_32b_instruct olmo31_32b_think_fp8kv; do
   run judges "$J" && cp "$RAWD/judges.json" "$RAWD/judges_$J.json" || echo ">> judge $J failed"
 done
 $PY - "$RAWD" <<'EOF'

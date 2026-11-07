@@ -1,0 +1,11 @@
+{
+ "olmo31_32b_think": {
+  "load_s": 128.4546091556549,
+  "n": 64,
+  "parse_rate": 0.28125,
+  "calls_per_hour": 383.3374955312603,
+  "output_tok_s": 204.46995736032423,
+  "mean_prompt_tokens": 1528.875,
+  "passes": false
+ }
+}

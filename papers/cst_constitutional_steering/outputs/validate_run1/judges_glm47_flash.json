@@ -1,0 +1,11 @@
+{
+ "glm47_flash": {
+  "load_s": 119.68217182159424,
+  "n": 64,
+  "parse_rate": 0.0625,
+  "calls_per_hour": 2053.2752763340736,
+  "output_tok_s": 1102.4145464772307,
+  "mean_prompt_tokens": 1489.0625,
+  "passes": false
+ }
+}

@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
 """CST VALIDATE (T0.8, V1-V10), one A100-80GB; every stage writes ``<out>/<stage>.json``.
 
-    cst_validate_pod.py --stage render|gen|lora_hf|vllm_lora|judges|price --out DIR [--dry-run]
+    cst_validate_pod.py --stage render|gen|lora_hf|vllm_lora|gradnec|judges|price --out DIR
+                        [--judges a,b] [--dry-run]
 
 - render (V8): the pressure-triple renders on the pod's tokenizer equal the T0.3 record.
-- gen (V1, V2, subject price): vLLM at ``max_model_len`` 44,032 with prefix caching; 64 panel
+- gen (V1, V2, subject price): vLLM at ``max_model_len`` 44,032 with prefix caching; 256 panel
   rows under the operator condition (thinking on, effort medium, cap 1,536, KDG sampler v2, k 1),
-  16 under A0s (the constitution body in the system message, ~35k-token prefix); 32 neutral
-  prompts whose thinking-on replies are the format-recovery SFT data. Records load time, KV
-  capacity, parse rate, trace length, throughput.
-- lora_hf (V3, V5, V7): HF bf16; ST's LoRA (rank 16, alpha 32) on the text tower's DeltaNet,
+  128 under A0s (the constitution body in the system message, ~35k-token prefix), A0s's first 64
+  again at cap 4,096 (what cap 1,536 hides); 32 neutral prompts whose thinking-on replies are the
+  format-recovery SFT data. Records load time, KV capacity, parse rate, trace length, throughput.
+- lora_hf (V3, V5): HF bf16; ST's LoRA (rank 16, alpha 32) on the text tower's DeltaNet,
   attention and MLP projections; an SDF throughput run on packed 2,048-token constitution text;
   adapter save/reload bit-identity; first-token letter distributions (base and attached) on 32
-  dose-0 operator prompts; a short recovery SFT on the gen stage's neutral replies; the Grad-Nec
-  memory read (one backward to the input embeddings at 2,048 tokens).
+  dose-0 operator prompts; a short recovery SFT on the gen stage's neutral replies. The record is
+  written after each step.
 - vllm_lora (V4, V6): vLLM native LoRA serving against HF-attached on the same 32 prompts; if native
   serving fails, ST's one-delta merge path; then format survival (parse rate, trace length) of the
-  SDF adapter with and without recovery on the 64 panel rows against ``none``.
-- judges (V9, V10): each self-hosted judge loads in vLLM and scores 64 gen-stage rollouts with
-  ``cst_judge``; parse rate and throughput.
-- price: the S0 price from the measured rates (``price.json``).
+  SDF adapter with and without recovery on the panel rows against ``none``.
+- gradnec (V7, its own load since the second VALIDATE): one backward to the input embeddings with
+  checkpointing active and last-position logits, at 2,048 and 3,584 tokens; peak memory.
+- judges (V9, V10): each judge config loads in vLLM, scores the gen stage's panel rollouts with
+  ``cst_judge`` (raw replies and output lengths saved) and runs the relabel probe (component 4's
+  v4 prompt, ten items per call); parse rates and throughput. The registered three plus the
+  candidates measured for the author.
+- price: S0a's price from the measured rates, per judge panel (``price.json``).
 ``--dry-run`` runs every stage on the tiny hybrid Qwen3.8 with an HF stand-in for vLLM (local test).
 """
 
@@ -48,7 +53,16 @@ MAX_MODEL_LEN = 44032
 CAP = 1536
 EFFORT = "medium"
 SAMPLER = {"temperature": 0.7, "top_p": 1.0, "top_k": 0}  # KDG sampler v2
-N_PANEL, N_A0S, N_NEUTRAL, N_LETTER = 64, 16, 32, 32
+# the second VALIDATE (2026-11-07): rates at a saturating batch (the first run's 64 and 16 rows
+# under-filled vLLM's batch); A0s's first 64 rows again at CAP_PROBE to see what cap 1,536 hides
+N_PANEL, N_A0S, N_A0S_PROBE, N_NEUTRAL, N_LETTER = 256, 128, 64, 32, 32
+CAP_PROBE = 4096
+# judges: the first run's 2,048-token output budget truncated both think-tag judges (parse 0.06
+# and 0.28); the relabel prompt (component 4, ten items, the full tenet list) is ~24k tokens
+# JUDGE_LEN: the relabel prompt (~24k) plus the output budget; below every judge's measured KV
+# (Olmo bf16 35,833; gpt-oss-120b 41,811; GLM 247,536 tokens)
+JUDGE_MAX_TOKENS, JUDGE_LEN, N_RELABEL_CALLS = 8192, 32768, 8
+GRADNEC_LENS = (2048, 3584)  # V7's bar, and an operator rollout at the full trace cap
 SDF_SEQ, SDF_STEPS, SDF_ACCUM = 2048, 12, 4
 LORA = {"rank": 16, "alpha": 32, "dropout": 0.0}
 JUDGES = {
@@ -58,6 +72,23 @@ JUDGES = {
                          "revision": "97ade57a9cc55ed48bcd76be4b7a3b6fee61b80d", "fmt": "think"},
     "glm47_flash": {"repo": "zai-org/GLM-4.7-Flash",
                     "revision": "7dd20894a642a0aa287e9827cb1a1f7f91386b67", "fmt": "think"},
+    # candidates measured for the author (the second VALIDATE): the registered judges' configs are
+    # unchanged above; these are not judges of record until an amendment says so
+    "glm47_flash_nothink": {"repo": "zai-org/GLM-4.7-Flash",
+                            "revision": "7dd20894a642a0aa287e9827cb1a1f7f91386b67",
+                            "fmt": "nothink"},
+    # Olmo-3.1-32B-Think's bf16 KV on one A100 is ~36k tokens (first run's vLLM log); fp8 KV
+    # roughly doubles it
+    "olmo31_32b_think_fp8kv": {"repo": "allenai/Olmo-3.1-32B-Think",
+                               "revision": "97ade57a9cc55ed48bcd76be4b7a3b6fee61b80d",
+                               "fmt": "think", "llm_kwargs": {"kv_cache_dtype": "fp8"},
+                               # few concurrent sequences fit: 64 rollouts saturate it, and the
+                               # relabel probe's long calls run two at a time
+                               "n_score": 64, "n_relabel": 2},
+    # the same family without a reasoning trace (committed 2026-01-05, before C_anth's publication)
+    "olmo31_32b_instruct": {"repo": "allenai/Olmo-3.1-32B-Instruct",
+                            "revision": "ac0587e4a7744a551c059d8cd17ba220bc940dae",
+                            "fmt": "plain"},
 }
 NEUTRAL = [
     "Explain how photosynthesis turns light into chemical energy.",
@@ -297,7 +328,7 @@ def stage_gen(out: Path, dry: bool) -> None:
     ST = ROOT / "papers/st_live_reference"
     body = load_document("C_anth", ST / "constitutions.yaml", CONST_DIR).body \
         if not dry else "## Overview\nClaude should be honest."
-    n_p, n_a, n_n = (4, 2, 4) if dry else (N_PANEL, N_A0S, N_NEUTRAL)
+    n_p, n_a, n_q, n_n = (4, 2, 2, 4) if dry else (N_PANEL, N_A0S, N_A0S_PROBE, N_NEUTRAL)
     panel = _rows(tok, fmt, "operator", n_p)
     a0s = _rows(tok, fmt, "a0s", n_a, body)
     neutral = [{"prompt": q, "ids": tok.encode(fmt.render(tok, [{"role": "user", "content": q}],
@@ -307,18 +338,26 @@ def stage_gen(out: Path, dry: bool) -> None:
     rec: dict = {"max_model_len": MAX_MODEL_LEN, "load_s": getattr(eng, "load_s", None),
                  "kv_capacity_tokens": eng.kv_tokens() if hasattr(eng, "kv_tokens") else None,
                  "a0s_prompt_tokens": max(len(r["ids"]) for r in a0s)}
-    for name, rows in (("panel", panel), ("a0s", a0s), ("neutral", neutral)):
+    for name, rows, cap in (("panel", panel, CAP), ("a0s", a0s, CAP),
+                            ("a0s_probe", a0s[:n_q], CAP_PROBE), ("neutral", neutral, CAP)):
         t = time.time()
-        gens = eng.generate([r["ids"] for r in rows], CAP)
+        gens = eng.generate([r["ids"] for r in rows], cap)
         dt = time.time() - t
         rec[name] = {"seconds": dt, "rollouts_per_hour": len(rows) / dt * 3600 if dt else None,
                      "gen_tokens": sum(len(g["ids"]) for g in gens)}
         if name != "neutral":
             rec[name].update(_parse_rows(tok, fmt, rows, gens))
+            lens = sorted(g["parse"]["trace_len"] or 0 for g in gens)
+            rec[name].update({"cap": cap, "trace_len_p90": lens[int(0.9 * (len(lens) - 1))],
+                              "share_trace_over_1536": sum(x > CAP for x in lens) / len(lens)})
         (out / f"gen_{name}.jsonl").parent.mkdir(parents=True, exist_ok=True)
         with open(out / f"gen_{name}.jsonl", "w") as f:
             for r, g in zip(rows, gens):
-                f.write(json.dumps({**{k: v for k, v in r.items() if k != "dose0_ids"},
+                # the A0s prompts' ids (~35k each) are not kept; their count is
+                keep = {k: v for k, v in r.items() if k != "dose0_ids"
+                        and not (k == "ids" and name.startswith("a0s"))}
+                keep["prompt_tokens"] = len(r["ids"])
+                f.write(json.dumps({**keep,
                                     "gen_ids": g["ids"], "text": g["text"],
                                     "hit_cap": g["hit_cap"], "parse": g.get("parse")}) + "\n")
         json.dump([r["dose0_ids"] for r in rows if "dose0_ids" in r][:N_LETTER],
@@ -401,7 +440,10 @@ def stage_lora_hf(out: Path, dry: bool) -> None:
     rec: dict = {"lora_target_kinds": kinds, "n_target_modules": len(mods),
                  "deltanet_targets": any(k.startswith("in_proj") for k in kinds),
                  "sdf_tokens_per_s": tok_s, "sdf_10M_hours": 1e7 / tok_s / 3600,
-                 "sdf_final_loss": float(loss) * SDF_ACCUM}
+                 "sdf_final_loss": float(loss.detach()) * SDF_ACCUM}
+    # written after each step: the first run lost V5's measured rate to the OOM in a later step
+    _w(out, "lora_hf", rec)
+    del opt, loss
     # V3: save, reload, bit-identical logits on two prompts
     model.eval()
     probe = torch.tensor([tok.encode("The constitution says", add_special_tokens=False)],
@@ -417,6 +459,7 @@ def stage_lora_hf(out: Path, dry: bool) -> None:
         after = re_m(input_ids=probe).logits.float().cpu()
     rec["v3_reload_max_abs_diff"] = float((before - after).abs().max())
     rec["v3_passes"] = rec["v3_reload_max_abs_diff"] == 0.0
+    _w(out, "lora_hf", rec)
     # first-token letter distributions on the dose-0 panel prompts, base and attached (for V4)
     letter_ids = sorted(rf.letter_token_ids(tok))
     d0 = json.loads((out / "dose0_panel.json").read_text())
@@ -433,6 +476,8 @@ def stage_lora_hf(out: Path, dry: bool) -> None:
         base_lp = lp(re_m)
     json.dump({"letter_ids": letter_ids, "base": base_lp, "attached": attached},
               open(out / "hf_letters.json", "w"))
+    rec["letters_written"] = len(attached)
+    _w(out, "lora_hf", rec)
     # recovery SFT on the gen stage's neutral replies (loss on the reply tokens)
     neu = [json.loads(x) for x in open(out / "gen_neutral.jsonl")]
     re_m.train()
@@ -452,19 +497,60 @@ def stage_lora_hf(out: Path, dry: bool) -> None:
     opt2.zero_grad()
     re_m.save_pretrained(out / "adapter_sdf_recovery")
     rec["recovery_examples"] = len(neu)
-    # V7: Grad-Nec memory, adapter off, one backward to the input embeddings
-    re_m.eval()
-    if dev == "cuda":
-        torch.cuda.reset_peak_memory_stats()
-    x = torch.tensor([batches[0][:seq]], device=dev)
-    with re_m.disable_adapter():
-        emb = re_m.get_input_embeddings()(x).detach().requires_grad_(True)
-        o = re_m(inputs_embeds=emb).logits[0, -1].float()
-        o.logsumexp(-1).backward()
-    rec["v7_grad_norm_finite"] = bool(torch.isfinite(emb.grad).all())
-    rec["v7_peak_gb"] = (torch.cuda.max_memory_allocated() / 2**30) if dev == "cuda" else None
-    rec["v7_passes"] = rec["v7_grad_norm_finite"]
+    rec["passes"] = rec["v3_passes"] and rec["deltanet_targets"]
     _w(out, "lora_hf", rec)
+
+
+def gradnec_backward(model, x) -> dict:
+    """One Grad-Nec backward (D8's memory read): the gradient of the last position's logsumexp to
+    the input embeddings, with checkpointing ACTIVE (train mode; HF checkpoints only when
+    ``model.training``; the first run called it in eval mode and stored every layer's activations)
+    and the last position's logits only (``logits_to_keep=1``; full logits at 152k vocab are
+    1.2 GB at 2,048 tokens in fp32). No weight gets a gradient."""
+    import torch
+
+    model.train()
+    for p in model.parameters():
+        p.requires_grad_(False)
+    emb = model.get_input_embeddings()(x).detach().requires_grad_(True)
+    lo = model(inputs_embeds=emb, logits_to_keep=1).logits
+    lo[0, -1].float().logsumexp(-1).backward()
+    g = emb.grad
+    return {"checkpointing_active": bool(model.is_gradient_checkpointing and model.training),
+            "logits_positions": int(lo.shape[1]),
+            "grad_finite": bool(torch.isfinite(g).all()), "grad_norm": float(g.norm())}
+
+
+def stage_gradnec(out: Path, dry: bool) -> None:
+    """V7 on its own model load (A0: no adapter), at 2,048 tokens (the bar) and 3,584 (an operator
+    rollout's prompt plus the full trace cap)."""
+    import torch
+    from transformers import AutoModelForImageTextToText
+
+    path = _model_path(dry)
+    tok = _tok(path)
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    dtype = torch.bfloat16 if dev == "cuda" else torch.float32
+    m = AutoModelForImageTextToText.from_pretrained(path, dtype=dtype).to(dev)
+    m.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+    m.config.use_cache = False
+    rec: dict = {"dtype": str(dtype)}
+    for n in ((64, 96) if dry else GRADNEC_LENS):
+        ids = _sdf_batches(tok, 2, n)
+        x = torch.tensor([ids[0][:n]], device=dev)
+        if dev == "cuda":
+            torch.cuda.empty_cache()
+            torch.cuda.reset_peak_memory_stats()
+        t = time.time()
+        r = gradnec_backward(m, x)
+        if dev == "cuda":
+            torch.cuda.synchronize()
+        r["seconds"] = time.time() - t
+        r["peak_gb"] = torch.cuda.max_memory_allocated() / 2**30 if dev == "cuda" else None
+        rec[f"v7_{n}"] = r
+        _w(out, "gradnec", rec)
+    rec["v7_passes"] = all(rec[k]["grad_finite"] for k in rec if k.startswith("v7_"))
+    _w(out, "gradnec", rec)
 
 
 def stage_vllm_lora(out: Path, dry: bool) -> None:
@@ -535,12 +621,17 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
     import cst_judge as J
     import mrb_g1_pod as M
     import scenario_labels as L
+    from generate_scenarios import extract_json
 
     from deepsteer.constitutions import TenetSet
     from deepsteer.reasoning.think_io import CoTFormat
 
-    rows = [json.loads(x) for x in open(out / "gen_panel.jsonl")]
-    tenets = TenetSet.load(CST / "data/tenets_C_anth_v2.json").by_id()
+    all_rows = [json.loads(x) for x in open(out / "gen_panel.jsonl")]
+    tset = TenetSet.load(CST / "data/tenets_C_anth_v2.json")
+    tenets = tset.by_id()
+    # the relabel probe (component 4): the first N_RELABEL_CALLS ten-item batches, v4 prompt
+    items = [(s, k) for k, v in L.scored_sets().items() for s in v]
+    all_relabel = [items[i * 10:(i + 1) * 10] for i in range(N_RELABEL_CALLS)]
     labs = {f: {r["scenario_id"]: r for r in json.loads(
         (CST / f"data/scenario_labels_v4_{f}.json").read_text())["labels"]}
         for f in ("claude", "codex")}
@@ -548,6 +639,8 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
     rec: dict = {}
     for name in which:
         j = JUDGES[name]
+        rows = all_rows[:j.get("n_score", len(all_rows))]
+        relabel = all_relabel[:j.get("n_relabel", N_RELABEL_CALLS)]
         fmt = CoTFormat.HARMONY_ANALYSIS if j["fmt"] == "harmony" else CoTFormat.THINK_TAGS
         if dry:  # every step but the vLLM call: the subject's tokenizer, a canned reply
             eng = None
@@ -559,8 +652,8 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
 
             jpath = snapshot_download(j["repo"], revision=j["revision"],
                                       ignore_patterns=["original/*", "metal/*"])
-            eng = VLLMEngine(jpath, None, max_model_len=16384, gpu_memory_utilization=0.9,
-                             enable_prefix_caching=True, seed=0)
+            eng = VLLMEngine(jpath, None, max_model_len=JUDGE_LEN, gpu_memory_utilization=0.9,
+                             enable_prefix_caching=True, seed=0, **j.get("llm_kwargs", {}))
             jtok = eng.llm.get_tokenizer()
             cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
         prompts, meta = [], []
@@ -573,32 +666,75 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
             letter_to_opt = dict(r["order"])
             p = J.judge_prompt(s.agent_text, [(o, s.option(o).text) for _, o in r["order"]],
                                trace, answer, [(t, tenets[t].claim) for t in short])
-            prompts.append(M.render_ids(jtok, J.SYS + "\n\n" + p, fmt, "low", cfg))
+            prompts.append(_judge_ids(jtok, J.SYS + "\n\n" + p, j["fmt"], fmt, cfg))
             meta.append((set(letter_to_opt.values()), set(short)))
+        rl_prompts = [_judge_ids(jtok, L.SYS + "\n\n" + L._prompt_v4(b, tset), j["fmt"], fmt, cfg)
+                      for b in relabel]
         t = time.time()
         if dry:
             texts = [f"<think>reading</think>{{\"concluded_option\": \"{sorted(o)[0]}\", "
                      f"\"applied_tenets\": [\"{sorted(sh)[0]}\"], \"evidence\": \"e\"}}"
                      for o, sh in meta]
             toks = [len(jtok.encode(x)) for x in texts]
+            caps = [False] * len(texts)
         else:
-            from vllm import SamplingParams, TokensPrompt
-
-            res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts],
-                                   SamplingParams(max_tokens=2048, temperature=0.0, seed=0))
-            texts = [o.outputs[0].text for o in res]
-            toks = [len(o.outputs[0].token_ids) for o in res]
+            texts, toks, caps = _judge_generate(eng, prompts)
         dt = max(time.time() - t, 1e-6)
-        ok = 0
-        for (opts, short), text in zip(meta, texts):
+        ok, raw = 0, []
+        for (opts, short), text, n_tok, cap, r in zip(meta, texts, toks, caps, rows):
             _, final = M.split_trace(text, fmt)
-            ok += J.parse_judgment(final or text, opts, short)["ok"]
-        out_tok = sum(toks)
+            pj = J.parse_judgment(final or text, opts, short)
+            ok += pj["ok"]
+            raw.append({"scenario_id": r["scenario_id"], "out_tokens": n_tok, "hit_cap": cap,
+                        "ok": pj["ok"], "text": text})
+        # raw replies saved: the first run's GLM and Olmo failures could not be diagnosed from
+        # the parse rate alone
+        with open(out / f"judges_raw_{name}.jsonl", "w") as f:
+            for x in raw:
+                f.write(json.dumps(x) + "\n")
+        lens = sorted(toks)
+        n_ok_free = sum(x["ok"] for x in raw if not x["hit_cap"])
+        n_free = sum(not x["hit_cap"] for x in raw)
         rec[name] = {"load_s": getattr(eng, "load_s", None), "n": len(rows),
+                     "fmt": j["fmt"], "llm_kwargs": j.get("llm_kwargs", {}),
+                     "kv_capacity_tokens": eng.kv_tokens() if eng else None,
+                     "max_tokens": JUDGE_MAX_TOKENS, "max_model_len": JUDGE_LEN,
                      "parse_rate": ok / len(rows),
-                     "calls_per_hour": len(rows) / dt * 3600, "output_tok_s": out_tok / dt,
+                     "parse_rate_uncapped": n_ok_free / n_free if n_free else None,
+                     "hit_cap_share": sum(caps) / len(caps),
+                     "out_tokens_median": statistics.median(lens),
+                     "out_tokens_p90": lens[int(0.9 * (len(lens) - 1))],
+                     "calls_per_hour": len(rows) / dt * 3600, "output_tok_s": sum(toks) / dt,
                      "mean_prompt_tokens": statistics.mean(len(p) for p in prompts),
                      "passes": ok / len(rows) >= 0.9}
+        # the relabel probe: one batch per call, parse = every item with a valid deference value
+        t = time.time()
+        if dry:
+            rl_texts = ["<think>r</think>" + json.dumps({"labels": [
+                {"scenario_id": s_.id, "deference": {"value": "ordered",
+                                                     "ground": "business_reason_no_harm"},
+                 "shortlist": [], "directions": {}} for s_, _ in b]}) for b in relabel]
+            rl_toks, rl_caps = [len(jtok.encode(x)) for x in rl_texts], [False] * len(relabel)
+        else:
+            rl_texts, rl_toks, rl_caps = _judge_generate(eng, rl_prompts)
+        rl_dt = max(time.time() - t, 1e-6)
+        got = 0
+        for b, text in zip(relabel, rl_texts):
+            _, final = M.split_trace(text, fmt)
+            try:
+                lab = extract_json(L.repair_evidence(final or text)[0])["labels"]
+            except (ValueError, KeyError):
+                lab = []
+            want = {s_.id for s_, _ in b}
+            got += sum(1 for x in lab if x.get("scenario_id") in want and
+                       (x.get("deference") or {}).get("value") in L.GROUNDS)
+        with open(out / f"judges_relabel_raw_{name}.jsonl", "w") as f:
+            for text, n_tok, cap in zip(rl_texts, rl_toks, rl_caps):
+                f.write(json.dumps({"out_tokens": n_tok, "hit_cap": cap, "text": text}) + "\n")
+        rec[name]["relabel"] = {
+            "calls": len(relabel), "items": sum(len(b) for b in relabel), "items_parsed": got,
+            "prompt_tokens": [len(p) for p in rl_prompts], "out_tokens": rl_toks,
+            "hit_cap": rl_caps, "seconds": rl_dt}
         del eng
         if not dry:
             import gc
@@ -610,33 +746,88 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
     _w(out, "judges", rec)
 
 
+def _judge_ids(tok, text: str, mode: str, fmt, cfg) -> list[int]:
+    """A judge prompt's token ids: harmony at effort low (MRB's judge of record), the model's own
+    template otherwise; ``nothink`` passes ``enable_thinking=False`` (GLM's template closes the
+    think block in the prompt)."""
+    import mrb_g1_pod as M
+
+    if mode != "nothink":
+        return M.render_ids(tok, text, fmt, "low", cfg)
+    r = tok.apply_chat_template([{"role": "user", "content": text}], tokenize=False,
+                                add_generation_prompt=True, enable_thinking=False)
+    return tok(r, add_special_tokens=False)["input_ids"]
+
+
+def _judge_generate(eng, prompts: list[list[int]]) -> tuple[list[str], list[int], list[bool]]:
+    from vllm import SamplingParams, TokensPrompt
+
+    # per-request budget: a long relabel prompt keeps prompt + output inside JUDGE_LEN
+    sps = [SamplingParams(max_tokens=min(JUDGE_MAX_TOKENS, JUDGE_LEN - len(p) - 16),
+                          temperature=0.0, seed=0) for p in prompts]
+    res = eng.llm.generate([TokensPrompt(prompt_token_ids=p) for p in prompts], sps)
+    return ([o.outputs[0].text for o in res], [len(o.outputs[0].token_ids) for o in res],
+            [o.outputs[0].finish_reason == "length" for o in res])
+
+
+PER_ARM = 586 * 16 + 132 * 8 * 2 + 102 * 8  # panel (plain 4, user 2, operator 4, operator_pr 6)
+RELABEL_CALLS = -(-718 // 10)  # component 4: the 718 items at ten per call, every judge
+VOTE_CALLS = -(-(207 + 13) // 10)  # component 5: T_core's 207 splits and T_conf's 13, third judge
+LAYER_A_CALLS = 15  # 150 Scruples pairs at ten per call, every judge (prompt like the relabel's)
+RETEST = 100  # Amendment 7 item 4: re-scored rollouts per judge
+
+
+def _judge_hours(j: dict, third: bool) -> dict:
+    """One judge's S0a hours from its measured rates: load, scoring both arms plus the retest,
+    and the long-prompt calls (relabel, Layer A, and the third judge's votes) at the relabel
+    probe's measured seconds per call (its calls ran concurrently, so this is an upper bound)."""
+    rl = j.get("relabel") or {}
+    s_call = rl["seconds"] / rl["calls"] if rl.get("calls") else None
+    long_calls = RELABEL_CALLS + LAYER_A_CALLS + (VOTE_CALLS if third else 0)
+    h = {"load": (j.get("load_s") or 0) / 3600,
+         "scoring": (2 * PER_ARM + RETEST) / j["calls_per_hour"],
+         "long_prompt_calls": long_calls * s_call / 3600 if s_call else None}
+    h["total"] = sum(v for v in h.values() if v is not None)
+    return h
+
+
 def stage_price(out: Path) -> None:
-    """S0's price from VALIDATE's rates (Amendments 1, 5, addition 1): A0 and A0s on the panel at
-    16 rollouts per scenario, H1_held at 8 x 2, cell A' at 8; three judges score every rollout;
-    the recall read; MRB 500 at k 2; MACHIAVELLI k 2; capability 800."""
+    """S0a's price (Amendment 7 item 2: components 1-8 and 12) from VALIDATE's measured rates; S0b
+    is not priced until ST's A0 reads on Qwen3.8 ``none`` are listed (same item). Every judge
+    candidate measured is priced; ``panels`` sums the registered triple and each substitution."""
     g = json.loads((out / "gen.json").read_text())
     jd = json.loads((out / "judges.json").read_text())
-    per_arm = 586 * 16 + 132 * 8 * 2 + 102 * 8
-    rollouts = per_arm * 2
-    sub_rate = g["panel"]["rollouts_per_hour"]
-    a0s_rate = g["a0s"]["rollouts_per_hour"]
-    gen_h = per_arm / sub_rate + per_arm / a0s_rate
-    judge_h = {k: rollouts / v["calls_per_hour"] for k, v in jd.items() if "calls_per_hour" in v}
-    fixed = {"setup_and_downloads": 0.8, "recall_read": 0.1, "mrb_500_k2_two_arms": 2 * 1.0,
-             "machiavelli_k2_two_arms": 2 * 1.75, "capability_800_two_arms": 2 * 1.2,
-             "retest_and_layer_a": 0.5, "margin": 1.0}
-    total = gen_h + sum(judge_h.values()) + sum(fixed.values())
-    rec = {"rollouts_per_arm": per_arm, "subject_rollouts_per_hour": sub_rate,
-           "a0s_rollouts_per_hour": a0s_rate, "subject_hours": gen_h, "judge_hours": judge_h,
-           "fixed_hours": fixed, "s0_a100_hours": total,
-           "note": "MRB, MACHIAVELLI and capability carried from their measured lines' rates"}
+    subject = {"load": (g.get("load_s") or 0) / 3600,
+               "a0_generation": PER_ARM / g["panel"]["rollouts_per_hour"],
+               "a0s_generation": PER_ARM / g["a0s"]["rollouts_per_hour"],
+               # forward passes only: dose-0 letter reads (ST's E and the forced choice) on both
+               # arms and the recall read (240 windows x 3 variants x 96 tokens)
+               "prefill_reads_and_recall": 0.15}
+    fixed = {"setup_and_downloads": 0.35,
+             "capability_800_two_arms": 2 * 1.2}  # carried from ST's reader, not measured here
+    judges = {k: _judge_hours(v, third=k not in ("gpt_oss_120b",))
+              for k, v in jd.items() if "calls_per_hour" in v}
+    base = sum(subject.values()) + sum(fixed.values())
+    panels = {}
+    for third in ("olmo31_32b_think", "olmo31_32b_think_fp8kv", "olmo31_32b_instruct"):
+        for glm in ("glm47_flash", "glm47_flash_nothink"):
+            names = ("gpt_oss_120b", glm, third)
+            if all(n in judges for n in names):
+                t = base + sum(judges[n]["total"] for n in names)
+                panels[" + ".join(names)] = {"a100_hours": t, "with_10pct_margin": t * 1.1}
+    rec = {"rollouts_per_arm": PER_ARM, "subject_hours": subject, "fixed_hours": fixed,
+           "judge_hours": judges, "s0a_base_hours": base, "panels": panels,
+           "a0s_cap": g["a0s"].get("cap", CAP),
+           "note": ("S0a only; the A0s rate is measured on the operator condition and applied to "
+                    "every condition; capability is ST's rate, carried")}
     _w(out, "price", rec)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=("render", "gen", "lora_hf", "vllm_lora", "judges", "price"))
+                    choices=("render", "gen", "lora_hf", "vllm_lora", "gradnec", "judges",
+                             "price"))
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--judges", default=",".join(JUDGES))
@@ -646,6 +837,7 @@ def main() -> None:
      "gen": lambda: stage_gen(a.out, a.dry_run),
      "lora_hf": lambda: stage_lora_hf(a.out, a.dry_run),
      "vllm_lora": lambda: stage_vllm_lora(a.out, a.dry_run),
+     "gradnec": lambda: stage_gradnec(a.out, a.dry_run),
      "judges": lambda: stage_judges(a.out, a.dry_run, a.judges.split(",")),
      "price": lambda: stage_price(a.out)}[a.stage]()
 

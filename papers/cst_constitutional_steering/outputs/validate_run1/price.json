@@ -1,0 +1,22 @@
+{
+ "rollouts_per_arm": 12304,
+ "subject_rollouts_per_hour": 5494.1300986256665,
+ "a0s_rollouts_per_hour": 579.0017060894871,
+ "subject_hours": 23.489850168228152,
+ "judge_hours": {
+  "glm47_flash": 11.984754447506536,
+  "gpt_oss_120b": 1.9622170223792395,
+  "olmo31_32b_think": 64.19408559524351
+ },
+ "fixed_hours": {
+  "setup_and_downloads": 0.8,
+  "recall_read": 0.1,
+  "mrb_500_k2_two_arms": 2.0,
+  "machiavelli_k2_two_arms": 3.5,
+  "capability_800_two_arms": 2.4,
+  "retest_and_layer_a": 0.5,
+  "margin": 1.0
+ },
+ "s0_a100_hours": 111.93090723335742,
+ "note": "MRB, MACHIAVELLI and capability carried from their measured lines' rates"
+}

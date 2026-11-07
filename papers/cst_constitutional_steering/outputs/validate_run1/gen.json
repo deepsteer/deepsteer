@@ -1,0 +1,36 @@
+{
+ "max_model_len": 44032,
+ "load_s": 291.61149048805237,
+ "kv_capacity_tokens": 272000,
+ "a0s_prompt_tokens": 34592,
+ "panel": {
+  "seconds": 41.935665130615234,
+  "rollouts_per_hour": 5494.1300986256665,
+  "gen_tokens": 28901,
+  "n": 64,
+  "parse_rate": 1.0,
+  "trace_len_median": 419.5,
+  "status": {
+   "completed": 64
+  }
+ },
+ "a0s": {
+  "seconds": 99.48157215118408,
+  "rollouts_per_hour": 579.0017060894871,
+  "gen_tokens": 17682,
+  "n": 16,
+  "parse_rate": 0.9375,
+  "trace_len_median": 1167.5,
+  "status": {
+   "truncated": 1,
+   "completed": 15
+  }
+ },
+ "neutral": {
+  "seconds": 31.28459143638611,
+  "rollouts_per_hour": 3682.323940021622,
+  "gen_tokens": 21079
+ },
+ "v1_passes": true,
+ "v2_kv_ok": true
+}

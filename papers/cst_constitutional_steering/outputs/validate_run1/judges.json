@@ -1,0 +1,29 @@
+{
+ "glm47_flash": {
+  "load_s": 119.68217182159424,
+  "n": 64,
+  "parse_rate": 0.0625,
+  "calls_per_hour": 2053.2752763340736,
+  "output_tok_s": 1102.4145464772307,
+  "mean_prompt_tokens": 1489.0625,
+  "passes": false
+ },
+ "gpt_oss_120b": {
+  "load_s": 112.21801018714905,
+  "n": 64,
+  "parse_rate": 1.0,
+  "calls_per_hour": 12540.916585343937,
+  "output_tok_s": 782.1743547369462,
+  "mean_prompt_tokens": 1528.265625,
+  "passes": true
+ },
+ "olmo31_32b_think": {
+  "load_s": 128.4546091556549,
+  "n": 64,
+  "parse_rate": 0.28125,
+  "calls_per_hour": 383.3374955312603,
+  "output_tok_s": 204.46995736032423,
+  "mean_prompt_tokens": 1528.875,
+  "passes": false
+ }
+}
