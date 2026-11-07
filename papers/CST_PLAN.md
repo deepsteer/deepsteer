@@ -1184,3 +1184,19 @@ give the single-sample kappa and only a Spearman-Brown estimate for the majority
 nine passes at effort high (about a minute each at the probe's rate); the first three are the
 three passes of item 1. "Tenet kind": the deference tenets (`scenario_labels.DEFERENCE`, the
 operator-side and operator-limit tenets on every shortlist) and all other tenets.
+
+#### Amendment 10 addendum (2026-11-07; author, before the scorer mini-pod reports; zero GPU)
+
+1. **The S_tenet rule by cross-judge kappa at effort high.** At or above **0.7**, gpt-oss-120b is
+   the S_tenet judge, with the kappa stated beside every number. Below 0.7, S_tenet is reported
+   **per judge**: gpt-oss in bulk, and Claude through the account login on the headline cells
+   (operator and operator_pr, the 458 clear directed-away items), priced in calls. The deference
+   kind is reported separately either way. S_concl is unaffected.
+2. **The 14 stopped rollouts** of the Claude retest are reported by scenario and condition, and
+   gpt-oss's retest kappa is recomputed on the same 86 rollouts, so the comparison with Claude's
+   is like-for-like.
+
+*Operational note (not the author's text; for the author's check):* the cross-judge kappa is
+Claude's pass 1 against gpt-oss-120b's effort-high blind seed-0 pass (`h_s0`), on the
+applied-tenet cells, over the 86 rollouts both Claude passes scored; the deference and other kinds
+are reported beside it with rollout-bootstrap CIs.
