@@ -18,6 +18,20 @@
   "the 200-pair pilot": 20,
   "frontier second opinion, about 200 S0a rollouts at 10 per call": 20
  },
+ "of_record": {
+  "engine_fixed": {
+   "recipe_S0a_S3": 111.42546991649357,
+   "a0s_user_cell_dropped_saves": 0.0,
+   "envelope_a100_h": 150,
+   "within": true
+  },
+  "current": {
+   "recipe_S0a_S3": 180.19184151477634,
+   "a0s_user_cell_dropped_saves": 2.964050108039369,
+   "envelope_a100_h": 150,
+   "within": false
+  }
+ },
  "forecast": {
   "current": {
    "sessions": {

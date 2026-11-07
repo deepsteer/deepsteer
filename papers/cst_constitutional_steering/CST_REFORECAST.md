@@ -57,6 +57,18 @@ runs at 150 tokens/s now. The probe that decides it costs about 0.3 A100-h.
 With the engine fixed, cut 1 alone brings the partner recipe to 124 A100-h ($199-248), inside the
 envelope of record. With the engine as it is, cuts 1-4 reach 140.
 
+**The path of record (Amendment 9 item 5):** cuts 1 and 2; cuts 3-5 not taken; without the engine
+fix, A0s drops its user cell only; the recipe's envelope is 150 A100-h.
+
+| | recipe of record, S0a-S3 | against 150 A100-h |
+|---|---:|---|
+| engine fixed | 111.4 ($178-223) | inside, 38.6 to spare |
+| engine as run | 180.2 ($288-360) | **over by 30.2** |
+
+So the probe pod decides more than a column: if the engine cannot be fixed, the path of record
+exceeds its envelope, and a further cut (cut 4, one A2 draw, 20.7; or cut 5, 26.9) is the
+author's at that point.
+
 ## 4. The frontier tier's Codex calls (Amendment 9 items 2-3)
 
 | task | Codex calls (10 items per call) |

@@ -138,11 +138,22 @@ def forecast() -> dict:
             ranked.append({"cut": name, "saves_a100_h": saved, "after": run, "loses": loss})
         return ranked
 
+    def of_record(fx: bool) -> dict:
+        """Amendment 9 item 5: cuts 1 and 2 taken; without the engine fix, A0s drops its user
+        cell (panel k 2) only; the recipe of record's envelope is 150 A100-h."""
+        cl = cut_list(fx)
+        after = cl[1]["after"]
+        user = 0.0 if fx else (586 * 2) * (gen_h(1, u["a0s_mean_gen_tokens"], True, False)
+                                           + judges / u["per_arm_rollouts"]) * 1.1
+        return {"recipe_S0a_S3": after - user, "a0s_user_cell_dropped_saves": user,
+                "envelope_a100_h": 150, "within": after - user <= 150}
+
     codex = {"DPO pair filter, per draw (3,000 pairs at a 0.7 pass rate, 10 per call)":
              -(-int(3000 / 0.7) // 10),
              "the 200-pair pilot": 20,
              "frontier second opinion, about 200 S0a rollouts at 10 per call": 20}
     return {"units": {k: v for k, v in u.items() if k != "s0a_measured"}, "codex_calls": codex,
+            "of_record": {"engine_fixed": of_record(True), "current": of_record(False)},
             "forecast": out, "cuts_recipe": {"engine_fixed": cut_list(True),
                                              "current": cut_list(False)},
             "deferrable_sessions": {"S5 (gated by R3)": out["engine_fixed"]["sessions"][
@@ -163,6 +174,8 @@ def main() -> None:
         print(f"== cuts ({case}, recipe path, cumulative)")
         for c in cl:
             print(f"   -{c['saves_a100_h']:5.1f} -> {c['after']:6.1f}  {c['cut']}")
+    print("== of record (Amendment 9 item 5):", {c: round(d["recipe_S0a_S3"], 1)
+                                                  for c, d in f["of_record"].items()})
     print({k: round(v, 1) if isinstance(v, float) else v for k, v in f["units"].items()
            if not isinstance(v, dict)})
 
