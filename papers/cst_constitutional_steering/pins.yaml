@@ -37,6 +37,21 @@ judges:
       license: mit
     claude:                # premise: C_anth (trained toward it); subagents or `claude -p`, or API under a cap
       access: cli
+  # Amendment 8 (2026-11-06): the judge rule's candidates and the fourth-family fallback
+  olmo31_32b_instruct:     # second in the judge rule's order; committed 2026-01-05
+    repo: allenai/Olmo-3.1-32B-Instruct
+    revision: ac0587e4a7744a551c059d8cd17ba220bc940dae
+    license: apache-2.0
+  glm47_flash:             # registered (Amendment 1, D4); thinking off is third in the order
+    repo: zai-org/GLM-4.7-Flash
+    revision: 7dd20894a642a0aa287e9827cb1a1f7f91386b67
+    license: mit
+  fallback_fourth_family:  # replaces Kimi-Linear-48B-A3B-Instruct (91.5 GiB bf16; CST-A9)
+    repo: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43   # 2025-12-22; weights 2025-06-20
+    license: apache-2.0      # model card at the pin; verified 2026-11-06
+    weights_gib_bf16: 44.7   # sharded files; consolidated.safetensors is a duplicate, skipped
+    vllm: {tokenizer_mode: mistral}   # tekken.json, no HF tokenizer
 documents:
   pins_file: papers/st_live_reference/constitutions.yaml   # C_anth text ab902738…, C_spec 1389654e…
   body_sha256:   # deepsteer.constitutions BODY_RULES

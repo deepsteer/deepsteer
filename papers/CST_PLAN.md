@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.8, 2026-11-06: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule) and 7 (the S0 split, Layer A, the scoring rules), §13.** v0.1 was the draft for the
+Status: **v0.9, 2026-11-06: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) and 8 (the judge rule, the Mistral fallback, the A0s cap), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -210,7 +210,7 @@ to institutional compute; nothing self-funded is spent on it. (Author, 2026-11-0
 ### 3.4 Judge panel (Amendment 1, D4)
 Three self-hosted families score in bulk, never the student's: `gpt-oss-120b@b5c939de` (MRB's
 replicated judge), `Olmo-3.1-32B-Think@97ade57a`, `GLM-4.7-Flash@7dd20894` (fallback
-`Kimi-Linear-48B-A3B-Instruct@e1df551a`); pins in `cst_constitutional_steering/pins.yaml`. Claude on
+`Kimi-Linear-48B-A3B-Instruct@e1df551a`, dropped by Amendment 8 for Mistral-Small-3.2-24B); pins in `cst_constitutional_steering/pins.yaml`. Claude on
 the account CLI for calibration, `T_core` and `T_conf` votes only; no API cap. Test-retest and
 cross-family agreement are measured on every scoring task before it is used (§6.5). Each judge
 prompt lists only the scenario's D2 shortlist, never the full tenet set (D16). The panel is a
@@ -613,7 +613,7 @@ Inputs: `cst_constitutional_steering/CST_G0_REPORT.md` (D1-D17), `outputs/t04b_a
    `zai-org/GLM-4.7-Flash@7dd20894` (MIT; 31B MoE; the pinned revision was committed
    2026-01-29, after `C_anth`'s publication on 2026-01-21, and its weight files were last committed
    2026-01-19, so it is unlikely to have trained on that text); fallback
-   `moonshotai/Kimi-Linear-48B-A3B-Instruct@e1df551a` (MIT). Each fits one A100-80GB in bf16. Claude
+   `moonshotai/Kimi-Linear-48B-A3B-Instruct@e1df551a` (MIT; dropped by Amendment 8: 91.5 GiB). Each fits one A100-80GB in bf16. Claude
    on the account CLI is used for calibration, `T_core` and `T_conf` votes only. No API cap.
    **Third judge's price:** S0 scores about 24,600 traces per judge (A0 and A0s; panel 16 rollouts
    per scenario, H1_held 8 × 2 conditions, cell A′ 8); at gpt-oss-120b's measured 4,800-5,400 output
@@ -1028,3 +1028,44 @@ branch (a).
   which each judge's accuracy is read.
 - **MoralExceptQA is not used** (CC BY-NC-SA on an input to a partner deliverable). **ETHICS
   commonsense (MIT)** is the license-clean fallback if Scruples cannot serve.
+
+### Amendment 8 (2026-11-06; author, before the second VALIDATE reports; zero GPU; committed and pushed while the pod runs)
+
+Registered while the second VALIDATE (`remote_cst_validate.sh` at `47a09fe`) is running and before
+any of its results are read. Sources: `outputs/validate_run1/`, CST-A8, CST-A9.
+
+1. **The judge rule.** A judge configuration is kept if it parses at least **0.9 of its uncapped
+   calls** (`parse_rate_uncapped` in the second VALIDATE's `judges.json`, output budget 8,192) and
+   its **S0a share is under 8 A100-h** (its `judge_hours[...].total` in `price.json`: load, scoring
+   both arms plus the 100-rollout retest, and the long-prompt calls). Each of the three slots is
+   filled by the first configuration in this order that passes: **the registered configuration**
+   (gpt-oss-120b, harmony, effort low; GLM-4.7-Flash, thinking on; Olmo-3.1-32B-Think, bf16 KV),
+   then **Olmo-3.1-32B-Instruct@ac0587e4**, then **GLM-4.7-Flash with thinking off**, never two
+   configurations of one model in one panel. Olmo-3.1-32B-Think with fp8 KV is measured and
+   reported but is not in the order (KV precision is a configuration change the order does not
+   name). The pick still passes Amendment 7's retest gate (item 4) and the Layer A read in S0a; a
+   slot left empty goes to the fourth-family fallback (item 2) after its own judge check.
+2. **The fallback.** `Kimi-Linear-48B-A3B-Instruct` is dropped (91.5 GiB of bf16 weights; it does
+   not fit one A100-80GB; CST-A9). The fourth-family fallback is
+   **`mistralai/Mistral-Small-3.2-24B-Instruct-2506@95a6d26c4bfb886c58daf9d3f7332c857cb27b43`**:
+   license `apache-2.0` in the model card at the pin (the repo carries no separate license file),
+   verified 2026-11-06; weight files last committed 2025-06-20 and the pinned revision 2025-12-22,
+   both before `C_anth`'s publication (2026-01-21); 24B dense, 44.7 GiB in bf16 (the sharded files;
+   `consolidated.safetensors` is a duplicate and is not downloaded); `Mistral3ForConditionalGeneration`,
+   context 131,072; served by vLLM with `tokenizer_mode="mistral"` (the repo ships `tekken.json`,
+   no HF tokenizer). Not measured on any pod yet. Mistral is a fourth family beside OpenAI, Zhipu
+   and Ai2, and none of the three labeling-side families (Claude, codex) is Mistral.
+3. **The A0s cap.** If the second VALIDATE's probe shows A0s truncation at 1,536 above **3%** (the
+   share of the 64 probe rows, run at cap 4,096, whose trace exceeds 1,536 tokens; at n 64 that is
+   2 or more), **every CST read runs at cap 4,096 for every arm and condition**, A0 included. At
+   either cap a truncated rollout is **"no conclusion"**, with its parse status reported. **A0's own
+   truncation rate at 1,536** (the 256 panel rows) is reported beside it for comparability with ST,
+   whose reads ran at 1,536. The 128 A0s rows run at cap 1,536 give a second estimate of the same
+   share, reported beside the probe's (the probe's share decides).
+4. **CST-A8's reading.** §7's coincidence rule (an improvement that coincides with a trace-length
+   change is read against the length-matched fork before it is reported) applies to **A0s against
+   A0**. The length-matched fork and N on A0s run in **S0b**; the S0a report marks the A0s band
+   **provisional** until S0b reads them.
+5. **After the run: the line re-forecast.** At the second VALIDATE's measured rates, the whole line
+   (S0a, S0b, S1-S5) is re-priced with a **ranked cut list**, the dollar cap governing (§8's
+   envelope, $500 to $1,000). It is the author's before S0a launches.
