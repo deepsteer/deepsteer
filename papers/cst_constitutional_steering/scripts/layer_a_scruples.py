@@ -2,6 +2,7 @@
 """CST Layer A (Amendment 7 item 1): 50 Scruples Dilemmas pairs, evaluation-only by id.
 
     layer_a_scruples.py select                       # seeded draw; ids, gold label, counts only
+    layer_a_scruples.py extend --n 100               # append a further seeded draw
     layer_a_scruples.py label --family claude|codex [--max N]   # the two-family labeling, cached
     layer_a_scruples.py record                       # the direction of record and the overlap
 
@@ -43,6 +44,23 @@ SYS = "You apply a written AI constitution to concrete cases. Answer only with t
 
 def _pairs() -> dict[str, dict]:
     return {d["id"]: d for d in (json.loads(x) for x in SPLIT.read_text().splitlines() if x)}
+
+
+def extend(n_more: int) -> None:
+    """Amendment 7 item 1 (author, 2026-11-06): extend the draw toward about 50 overlap items. The
+    first draw keeps its order (its cached batches stay valid); ``n_more`` pairs are drawn from the
+    rest of the pool with seed ``SEED + 1`` and appended."""
+    pairs = _pairs()
+    meta = json.loads(IDS.read_text())
+    pool = sorted(i for i, d in pairs.items() if max(d["gold_annotations"]) >= AGREE
+                  and i not in meta["items"])
+    add = sorted(random.Random(SEED + 1).sample(pool, n_more))
+    for i in add:
+        meta["items"][i] = {"gold_less_ethical": "ab"[pairs[i]["gold_label"]],
+                            "gold_annotations": pairs[i]["gold_annotations"]}
+    meta["extensions"] = meta.get("extensions", []) + [{"seed": SEED + 1, "n": n_more}]
+    IDS.write_text(json.dumps(meta, indent=1) + "\n")
+    print(f"extended by {n_more}; now {len(meta['items'])}")
 
 
 def select() -> None:
@@ -163,8 +181,10 @@ def record() -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=("select", "label", "record"))
+    ap.add_argument("step", choices=("select", "extend", "label", "record"))
+    ap.add_argument("--n", type=int, default=100)
     ap.add_argument("--family", default="claude", choices=("claude", "codex"))
     ap.add_argument("--max", type=int, default=None)
     a = ap.parse_args()
-    {"select": select, "label": lambda: label(a.family, a.max), "record": record}[a.step]()
+    {"select": select, "extend": lambda: extend(a.n), "label": lambda: label(a.family, a.max),
+     "record": record}[a.step]()
