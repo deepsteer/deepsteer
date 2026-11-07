@@ -1,0 +1,42 @@
+{
+ "config": "no_mtp",
+ "llm_kwargs": {
+  "dtype": "bfloat16",
+  "kv_cache_dtype": "bfloat16",
+  "max_model_len": 44032,
+  "max_num_seqs": 64,
+  "gpu_memory_utilization": 0.92,
+  "enable_prefix_caching": true,
+  "enable_chunked_prefill": true,
+  "generation_config": "vllm",
+  "seed": 0,
+  "disable_log_stats": false,
+  "language_model_only": true
+ },
+ "load_s": 189.66795134544373,
+ "cap": 4096,
+ "a0": {
+  "n": 128,
+  "seconds": 79.43339109420776,
+  "gen_tokens": 57074,
+  "tokens_per_s": 718.5139550735081,
+  "rollouts_per_hour": 5801.086843359017,
+  "parse_rate": 1.0,
+  "trace_len_median": 450.0,
+  "status": {
+   "completed": 128
+  }
+ },
+ "a0s": {
+  "n": 64,
+  "seconds": 250.16752290725708,
+  "gen_tokens": 76232,
+  "tokens_per_s": 304.7238071276781,
+  "rollouts_per_hour": 920.9828570969808,
+  "parse_rate": 1.0,
+  "trace_len_median": 1090.0,
+  "status": {
+   "completed": 64
+  }
+ }
+}

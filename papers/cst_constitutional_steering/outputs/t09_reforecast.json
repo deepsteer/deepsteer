@@ -1,10 +1,18 @@
 {
  "units": {
   "per_arm_rollouts": 12304,
-  "tok_s_no_prefix": 818.6501801966264,
-  "tok_s_doc_prefix": 150.37485384383035,
-  "a0_mean_gen_tokens": 427.87109375,
-  "a0s_mean_gen_tokens": 1196.53125,
+  "tok_s": {
+   "current": {
+    "no_prefix": 780.5885561769014,
+    "doc_prefix": 178.3989426690924
+   },
+   "tuned": {
+    "no_prefix": 847.2951346310485,
+    "doc_prefix": 322.28175311948576
+   }
+  },
+  "a0_mean_gen_tokens": 448.015625,
+  "a0s_mean_gen_tokens": 1236.625,
   "sdf_tok_s": 410.7397897443347,
   "sdf_10M_h": 6.762865072085682,
   "judge_h_per_arm": {
@@ -19,15 +27,15 @@
   "frontier second opinion, about 200 S0a rollouts at 10 per call": 20
  },
  "of_record": {
-  "engine_fixed": {
-   "recipe_S0a_S3": 111.42546991649357,
+  "engine_tuned": {
+   "recipe_S0a_S3": 136.170975341707,
    "a0s_user_cell_dropped_saves": 0.0,
    "envelope_a100_h": 150,
    "within": true
   },
   "current": {
-   "recipe_S0a_S3": 180.19184151477634,
-   "a0s_user_cell_dropped_saves": 2.964050108039369,
+   "recipe_S0a_S3": 168.92854371327618,
+   "a0s_user_cell_dropped_saves": 2.5969164912928626,
    "envelope_a100_h": 150,
    "within": false
   }
@@ -36,62 +44,62 @@
   "current": {
    "sessions": {
     "probe_pod (engine tuning, the letter-mapped scorer on gpt-oss and Olmo)": 1.5,
-    "S0a": 38.03483719045528,
-    "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 11.13088478061474,
-    "S1 (corpora, A1 SDF, A1c SFT, recovery)": 54.863560763840766,
-    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 16.046638377767493,
-    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 106.49600272561523,
+    "S0a": 34.373394194681865,
+    "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 10.46336911380291,
+    "S1 (corpora, A1 SDF, A1c SFT, recovery)": 49.225489598045435,
+    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 16.290920588047786,
+    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 104.76718920016154,
     "S4 (B1 on the sibling, two starting points; estimate)": 29.0,
-    "S5 (A4, A4f; gated by R3; estimate)": 48.896638377767495
+    "S5 (A4, A4f; gated by R3; estimate)": 49.140920588047784
    },
-   "total": 305.968562216061,
-   "partner_recipe_S0_S3": 228.07192383829351
+   "total": 294.7612832827873,
+   "partner_recipe_S0_S3": 216.62036269473953
   },
-  "engine_fixed": {
+  "engine_tuned": {
    "sessions": {
     "probe_pod (engine tuning, the letter-mapped scorer on gpt-oss and Olmo)": 1.5,
-    "S0a": 13.61502052186335,
-    "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 6.901657753840041,
-    "S1 (corpora, A1 SDF, A1c SFT, recovery)": 24.70508823254533,
-    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 16.046638377767493,
-    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 93.57309724595514,
+    "S0a": 22.56880759542941,
+    "S0b (A0s riders, N on A0 and A0s, A0s length-matched fork)": 8.44837376762456,
+    "S1 (corpora, A1 SDF, A1c SFT, recovery)": 35.042331062934956,
+    "S2 (A1, A1c reads; A1 without recovery, format read; winner's bars)": 15.877266957571708,
+    "S3 (A2 two draws, A2 without rewrite, A3; reads and bars)": 97.52620967706336,
     "S4 (B1 on the sibling, two starting points; estimate)": 29.0,
-    "S5 (A4, A4f; gated by R3; estimate)": 48.896638377767495
+    "S5 (A4, A4f; gated by R3; estimate)": 48.72726695757171
    },
-   "total": 234.23814050973886,
-   "partner_recipe_S0_S3": 156.34150213197137
+   "total": 258.6902560181957,
+   "partner_recipe_S0_S3": 180.96298906062398
   }
  },
  "cuts_recipe": {
-  "engine_fixed": [
+  "engine_tuned": [
    {
     "cut": "DPO at 1 epoch, not 3 (inside the registered cap of <= 3; no amendment)",
     "saves_a100_h": 32.13713482255115,
-    "after": 124.20436730942022,
+    "after": 148.82585423807285,
     "loses": "dose; ST-A38 moved protection with pair count, not epochs"
    },
    {
     "cut": "A2 without the rewrite: defer (it needs its own DPO run, so it is not zero extra training as \u00a75 states)",
-    "saves_a100_h": 12.778897392926645,
-    "after": 111.42546991649357,
+    "saves_a100_h": 12.654878896365856,
+    "after": 136.170975341707,
     "loses": "the lab's rewrite ablation replication; secondary to the recipe"
    },
    {
     "cut": "A0s on the operator condition only (panel k 4, H1 operator k 8)",
-    "saves_a100_h": 4.846869937253826,
-    "after": 106.57859997923974,
+    "saves_a100_h": 11.309820161405314,
+    "after": 124.86115518030168,
     "loses": "A0s's plain, user and operator_pr cells (a comparator, never a lever; its band is provisional until S0b)"
    },
    {
     "cut": "One A2 draw, not two",
-    "saves_a100_h": 14.232577590333701,
-    "after": 92.34602238890604,
+    "saves_a100_h": 16.34789980311259,
+    "after": 108.5132553771891,
     "loses": "the draw-to-draw read ST-A38 asks for"
    },
    {
     "cut": "SDF corpus 5M tokens, not 10M (the 1M pilot prices it anyway)",
-    "saves_a100_h": 11.852544116272664,
-    "after": 80.49347827263337,
+    "saves_a100_h": 17.021165531467478,
+    "after": 91.49208984572162,
     "loses": "dose"
    }
   ],
@@ -99,37 +107,37 @@
    {
     "cut": "DPO at 1 epoch, not 3 (inside the registered cap of <= 3; no amendment)",
     "saves_a100_h": 32.13713482255115,
-    "after": 195.93478901574235,
+    "after": 184.48322787218837,
     "loses": "dose; ST-A38 moved protection with pair count, not epochs"
    },
    {
     "cut": "A2 without the rewrite: defer (it needs its own DPO run, so it is not zero extra training as \u00a75 states)",
-    "saves_a100_h": 12.778897392926645,
-    "after": 183.15589162281572,
+    "saves_a100_h": 12.95776766761931,
+    "after": 171.52546020456904,
     "loses": "the lab's rewrite ablation replication; secondary to the recipe"
    },
    {
     "cut": "A0s on the operator condition only (panel k 4, H1 operator k 8)",
-    "saves_a100_h": 22.51868785152094,
-    "after": 160.63720377129476,
+    "saves_a100_h": 19.729474776852943,
+    "after": 151.7959854277161,
     "loses": "A0s's plain, user and operator_pr cells (a comparator, never a lever; its band is provisional until S0b)"
    },
    {
     "cut": "One A2 draw, not two",
-    "saves_a100_h": 20.69403033016375,
-    "after": 139.94317344113102,
+    "saves_a100_h": 19.629483163143004,
+    "after": 132.1665022645731,
     "loses": "the draw-to-draw read ST-A38 asks for"
    },
    {
     "cut": "SDF corpus 5M tokens, not 10M (the 1M pilot prices it anyway)",
-    "saves_a100_h": 26.931780381920383,
-    "after": 113.01139305921063,
+    "saves_a100_h": 24.112744799022718,
+    "after": 108.05375746555038,
     "loses": "dose"
    }
   ]
  },
  "deferrable_sessions": {
-  "S5 (gated by R3)": 48.896638377767495,
+  "S5 (gated by R3)": 48.72726695757171,
   "S4 (B1)": 29.0
  },
  "dollars_per_a100_h": [

@@ -1996,7 +1996,11 @@ split on the direction for 47 of 132 H1_held items (0.356) against 68 of 586 pan
 difference of 0.24 [0.15, 0.33]. Where a written rule harms a named person, two readers of the same
 document disagree three times as often as where an operator orders deception or third-party harm.
 The S0 relabel reports the same rate for the three open judges. **On personal-ethics dilemmas the document leaves most cases
-open:** on 220 Scruples Dilemmas pairs (at least 4 of 5 annotators agreeing on the less ethical action; Amendment 7 item 1's draw and two extensions), the two families settle a direction under the labels-of-record rule on 57 (0.26; the three draws settled 17 of 50, 21 of 100 and 19 of 70), against 460 of 586 on the operator-order panel (0.78: 458 directed away, 2 comply; the panel's family-split rate is 0.116). Codex leaves 155 of 220 unsettled, Claude 89; no pair has the two families settling opposite directions. Where both settle, their direction agrees with the human verdict on 51 of 57 (0.89). The overlap on which each judge's Layer A accuracy is read is 51 items.
+open:** on 220 Scruples Dilemmas pairs (at least 4 of 5 annotators agreeing on the less ethical action; Amendment 7 item 1's draw and two extensions), the two families settle a direction under the labels-of-record rule on 57 (0.26; the three draws settled 17 of 50, 21 of 100 and 19 of 70), against 460 of 586 on the operator-order panel (0.78: 458 directed away, 2 comply; the panel's family-split rate is 0.116). Codex leaves 155 of 220 unsettled, Claude 89; no pair has the two families settling opposite directions. Where both settle, their direction agrees with the human verdict on 51 of 57 (0.89). The overlap on which each judge's Layer A accuracy is read is 51 items. **Instrument status (2026-11-07, probe pod):** the scorer of record (gpt-oss-120b, blind,
+temperature 1) reads the concluded option stably (retest kappa 1.00 same-order, 0.98 permuted;
+100 of 100 blind matches with the subject's answer, no copy gap), so S_concl has a calibrated
+scorer on A0; it names applied tenets at kappa 0.72 [0.67, 0.78], below the 0.8 gate, so S_tenet
+does not yet (CST-A12; separating reads: effort high, a majority of three, a frontier retest).
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|

@@ -749,9 +749,10 @@ def stage_judges(out: Path, dry: bool, which: list[str]) -> None:
 
 
 def _judge_ids(tok, text: str, mode: str, fmt, cfg) -> list[int]:
-    """A judge prompt's token ids: harmony at effort low (MRB's judge of record), the model's own
-    template otherwise; ``nothink`` passes ``enable_thinking=False`` (GLM's template closes the
-    think block in the prompt)."""
+    """A judge prompt's token ids: harmony at effort low (VALIDATE's and the probe's setting; MRB's
+    judge of record ran at effort high, so low is not the MoReBench precedent: CST-A12), the
+    model's own template otherwise; ``nothink`` passes ``enable_thinking=False`` (GLM's template
+    closes the think block in the prompt)."""
     import mrb_g1_pod as M
 
     if mode != "nothink":

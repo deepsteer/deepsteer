@@ -1,9 +1,10 @@
-# CST line re-forecast at measured rates (Amendment 8 item 5; revised for Amendment 9, 2026-11-07)
+# CST line re-forecast at measured rates (Amendment 8 item 5; revised for Amendment 9 and the probe pod, 2026-11-07)
 
 For the author before S0a launches. Source: `scripts/t09_reforecast.py` writes
-`outputs/t09_reforecast.json`; the second VALIDATE's records are in `outputs/validate/`. Dollars at
+`outputs/t09_reforecast.json`; the second VALIDATE's records are in `outputs/validate/`, the probe pod's
+in `outputs/probe/` (engine rates at cap 4,096). Dollars at
 $1.6 to $2.0 per A100-80GB hour; envelope $500 to $1,000; envelope of record 150 A100-h; the dollar
-cap governs. Spent so far: the two VALIDATE pods, 2.8 pod-hours (about $5). Scoring follows
+cap governs. Spent so far: the two VALIDATE pods and the probe, 4.1 pod-hours (about $7). Scoring follows
 Amendment 9: gpt-oss-120b alone, Olmo-3.1-32B-Instruct on a 10% sample, the DPO pair filter on the
 frontier tier (account logins, no GPU; its Codex calls are counted in §4).
 
@@ -11,8 +12,8 @@ frontier tier (account logins, no GPU; its Codex calls are counted in §4).
 
 | unit | value | basis |
 |---|---|---|
-| A0 generation, thinking on | 819 tokens/s; 6,888 rollouts/h at 428 tokens | measured, 256 rows |
-| Generation with `C_anth` in context (A0s) | 150 tokens/s; 452 rollouts/h at 1,197 tokens | measured, 128 rows; CST-A11 |
+| A0 generation, thinking on, cap 4,096 | ST's engine 781 tokens/s; tuned 847 (6,722 rollouts/h at 448 tokens) | measured, probe, 128 rows |
+| Generation with `C_anth` in context (A0s), cap 4,096 | ST's engine 178 tokens/s; tuned 322 (987 rollouts/h at 1,237 tokens) | measured, probe, 64 rows; CST-A11 |
 | SDF / SFT / DPO training throughput | 411 tokens/s; 10M tokens in 6.8 h | measured (V5) |
 | Scoring one arm (12,304 rollouts) | gpt-oss-120b 0.9 h; Olmo-3.1-32B-Instruct's 10% 0.2 h | measured |
 | Full read of one trained arm | 5.9 h (generation 2.5 at 600 tokens, scoring 1.1, capability 1.2, N 1.0, dose-0 0.1) | generation and scoring measured; capability carried; N estimated |
@@ -23,51 +24,46 @@ The plan's §8 unit prices were 3.5 to 4 h per adapter read and about 2 h per DP
 measured read is 5.9 h, of which capability and N are carried or estimated. A DPO draw at §4.3's
 2,000 to 4,000 pairs and the 3-epoch cap costs 8 times ST's 40-pair draw.
 
-## 2. Forecast by session (A100-h)
+## 2. Forecast by session (A100-h; cap 4,096)
 
-| session | current engine | engine fixed (CST-A11's R_engine) |
+| session | ST's engine | tuned engine (MTP off, 128 sequences) |
 |---|---:|---:|
-| Probe pod: engine tuning, the letter-mapped scorer on gpt-oss and Olmo | 1.5 | 1.5 |
-| S0a (measured; gpt-oss-120b, Olmo's 10%, cap 4,096, 10% margin) | 38.0 | 13.6 |
-| S0b (A0s riders, N on A0 and A0s, A0s's length-matched fork) | 11.1 | 6.9 |
-| S1 (§4.1 with the document in context and its self-critique pass, §4.2, A1, A1c, recovery) | 54.9 | 24.7 |
-| S2 (A1 and A1c reads, A1-without-recovery format read, the winner's bars) | 16.0 | 16.0 |
-| S3 (A2 two draws, A2 without the rewrite, A3; reads and bars) | 106.5 | 93.6 |
-| **Partner recipe, S0a-S3** | **228.1 ($365-456)** | **156.3 ($250-313)** |
+| Probe pod (run) | 1.5 | 1.5 |
+| S0a (gpt-oss-120b, Olmo's 10%, cap 4,096, 10% margin) | 34.4 | 22.6 |
+| S0b (A0s riders, N on A0 and A0s, A0s's length-matched fork) | 10.5 | 8.4 |
+| S1 (§4.1 with the document in context and its self-critique pass, §4.2, A1, A1c, recovery) | 49.2 | 35.0 |
+| S2 (A1 and A1c reads, A1-without-recovery format read, the winner's bars) | 16.3 | 15.9 |
+| S3 (A2 two draws, A2 without the rewrite, A3; reads and bars) | 104.8 | 97.5 |
+| **Partner recipe, S0a-S3** | **216.6** | **181.0** |
 | S4 (B1 on the sibling; estimate) | 29.0 | 29.0 |
-| S5 (A4, A4f; gated by R3; estimate) | 48.9 | 48.9 |
-| **Whole line** | **306.0 ($490-612)** | **234.2 ($375-468)** |
+| S5 (A4, A4f; gated by R3; estimate) | 49.1 | 48.7 |
+| **Whole line** | **294.8** | **258.7** |
 
-The engine case is still the largest single uncertainty, about 72 A100-h across S0a, S0b, S1 and
-S3: §4.1's documents and §4.3's rewrites are generated with the document in context, the path that
-runs at 150 tokens/s now. The probe that decides it costs about 0.3 A100-h.
+The probe measured the engine case (CST-A11): MTP off at 128 sequences raises A0s from 178 to 322
+tokens/s and A0 from 781 to 847. A0s still runs at 38% of A0's per-token rate, so the earlier
+"engine fixed" column (A0s at A0's rate, at cap 1,536) was optimistic by about 25 A100-h on the recipe.
 
 ## 3. Ranked cut list (applied cumulatively to the partner-recipe path)
 
-| rank | cut | saves (fixed / current) | recipe after (fixed / current) | loses | amendment? |
+| rank | cut | saves (tuned / ST's) | recipe after (tuned / ST's) | loses | status |
 |---|---|---:|---:|---|---|
-| 1 | DPO at 1 epoch, not 3 | 32.1 / 32.1 | 124.2 / 195.9 | dose; ST-A38 moved protection with pair count, not epochs | no (inside "≤ 3") |
-| 2 | Defer A2 without the rewrite | 12.8 / 12.8 | 111.4 / 183.2 | the lab's rewrite-ablation replication | yes |
-| 3 | A0s on the operator condition only (panel k 4, H1 operator k 8) | 4.8 / 22.5 | 106.6 / 160.6 | A0s's plain, user and operator_pr cells; A0s is a comparator and its band is provisional until S0b | yes |
-| 4 | One A2 draw, not two | 14.2 / 20.7 | 92.3 / 139.9 | the draw-to-draw read ST-A38 asks for | yes |
-| 5 | SDF corpus 5M tokens, not 10M | 11.9 / 26.9 | 80.5 / 113.0 | dose (the 1M-token pilot prices it anyway) | yes |
-| — | S5 (already gated by R3) | 48.9 | — | GRPO | registered gate |
-| — | S4, B1 on the sibling | 29.0 | — | the stage question on the sibling | yes (author) |
+| 1 | DPO at 1 epoch, not 3 | 32.1 / 32.1 | 148.8 / 184.5 | dose; ST-A38 moved protection with pair count, not epochs | taken (Amendment 9 item 5) |
+| 2 | Defer A2 without the rewrite | 12.7 / 13.0 | 136.2 / 171.5 | the lab's rewrite-ablation replication | taken (Amendment 9 item 5) |
+| 3 | A0s on the operator condition only | 11.3 / 19.7 | 124.9 / 151.8 | A0s's plain, user and operator_pr cells | not taken |
+| 4 | One A2 draw, not two | 16.3 / 19.6 | 108.5 / 132.2 | the draw-to-draw read ST-A38 asks for | not taken |
+| 5 | SDF corpus 5M tokens, not 10M | 17.0 / 24.1 | 91.5 / 108.1 | dose | not taken |
+| — | S5 (already gated by R3) | 48.7 | — | GRPO | decided at G3 |
+| — | S4, B1 on the sibling | 29.0 | — | the stage question on the sibling | decided at G3 |
 
-With the engine fixed, cut 1 alone brings the partner recipe to 124 A100-h ($199-248), inside the
-envelope of record. With the engine as it is, cuts 1-4 reach 140.
-
-**The path of record (Amendment 9 item 5):** cuts 1 and 2; cuts 3-5 not taken; without the engine
-fix, A0s drops its user cell only; the recipe's envelope is 150 A100-h.
+**The path of record (Amendment 9 item 5):** cuts 1 and 2; envelope 150 A100-h for S0a-S3.
 
 | | recipe of record, S0a-S3 | against 150 A100-h |
 |---|---:|---|
-| engine fixed | 111.4 ($178-223) | inside, 38.6 to spare |
-| engine as run | 180.2 ($288-360) | **over by 30.2** |
+| tuned engine | 136.2 ($218-272) | inside, 13.8 to spare |
+| ST's engine, with A0s's user cell dropped | 168.9 ($270-338) | over by 18.9 |
 
-So the probe pod decides more than a column: if the engine cannot be fixed, the path of record
-exceeds its envelope, and a further cut (cut 4, one A2 draw, 20.7; or cut 5, 26.9) is the
-author's at that point.
+The tuned engine (one line of engine configuration) brings the path of record inside its envelope
+with no further cut; the margin is thinner than the earlier estimate.
 
 ## 4. The frontier tier's Codex calls (Amendment 9 items 2-3)
 
@@ -102,8 +98,11 @@ the 200-pair pilot measures the calls each window holds.
 
 ## 7. Recommendation
 
-1. The probe pod first (1.5 A100-h, about $3): three engine configurations on A0 and A0s (prefix
-   caching off for A0, MTP off, `max_num_seqs`), and the letter-mapped scorer on gpt-oss-120b and
-   Olmo-3.1-32B-Instruct. Its result picks the column of §2.
-2. Cut 1 (DPO at 1 epoch) needs no amendment and saves the most; cut 2 needs one sentence. The
-   Codex count in §4 is the other budget the cut list answers to.
+1. Every subject read and every generation with the document in context runs on the tuned engine
+   (MTP off, `max_num_seqs` 128, prefix caching on); MTP's speculation is lossless, so the change
+   is a throughput setting, not a sampler change.
+2. The scorer's open item (CST-A12) is priced separately. A majority of three samples triples
+   gpt-oss's 0.9 h per arm read: about 1.75 h more per read, seven arm reads on the path of record
+   (A0, A0s, A1, A1c, two A2 draws, A3), about 12 A100-h, so the path of record rises to about
+   148.5 and keeps 1.5 to spare. Effort high lengthens each call by an amount the probe did not
+   measure.

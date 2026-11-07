@@ -1,0 +1,16 @@
+{
+ "judge": "olmo31_32b_instruct",
+ "load_s": 126.81474876403809,
+ "n": 128,
+ "blind_s0": {
+  "temperature": 1.0,
+  "seed": 0,
+  "answer_shown": false,
+  "permuted": false,
+  "seconds": 70.16978096961975,
+  "calls_per_hour": 6566.929433619081,
+  "parse_rate": 1.0,
+  "letter_mapped": 0,
+  "out_tokens_median": 72.5
+ }
+}

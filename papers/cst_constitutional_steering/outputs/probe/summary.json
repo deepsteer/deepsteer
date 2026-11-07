@@ -1,0 +1,173 @@
+{
+ "engine": {
+  "st": {
+   "a0": {
+    "tokens_per_s": 780.5885561769014,
+    "rollouts_per_hour": 6272.367849306249,
+    "parse_rate": 1.0,
+    "trace_len_median": 447.0
+   },
+   "a0s": {
+    "tokens_per_s": 178.3989426690924,
+    "rollouts_per_hour": 519.3459566228507,
+    "parse_rate": 1.0,
+    "trace_len_median": 1134.5
+   },
+   "load_s": 283.5355067253113
+  },
+  "no_mtp": {
+   "a0": {
+    "tokens_per_s": 718.5139550735081,
+    "rollouts_per_hour": 5801.086843359017,
+    "parse_rate": 1.0,
+    "trace_len_median": 450.0
+   },
+   "a0s": {
+    "tokens_per_s": 304.7238071276781,
+    "rollouts_per_hour": 920.9828570969808,
+    "parse_rate": 1.0,
+    "trace_len_median": 1090.0
+   },
+   "load_s": 189.66795134544373
+  },
+  "no_mtp_seqs128": {
+   "a0": {
+    "tokens_per_s": 847.2951346310485,
+    "rollouts_per_hour": 6721.5314620825175,
+    "parse_rate": 0.9921875,
+    "trace_len_median": 443.0
+   },
+   "a0s": {
+    "tokens_per_s": 322.28175311948576,
+    "rollouts_per_hour": 987.193266398946,
+    "parse_rate": 1.0,
+    "trace_len_median": 1109.0
+   },
+   "load_s": 212.66402173042297
+  },
+  "no_prefix_no_mtp": {
+   "a0": {
+    "tokens_per_s": 813.3207212807407,
+    "rollouts_per_hour": 6519.2420742792465,
+    "parse_rate": 0.9921875,
+    "trace_len_median": 452.5
+   },
+   "a0s": {
+    "tokens_per_s": 69.25132396514519,
+    "rollouts_per_hour": 215.6732230544668,
+    "parse_rate": 1.0,
+    "trace_len_median": 1053.0
+   },
+   "load_s": 211.9255952835083
+  }
+ },
+ "gpt_oss_120b": {
+  "parse": {
+   "blind_s0": 1.0,
+   "blind_s1": 1.0,
+   "blind_perm": 1.0,
+   "shown_s0": 1.0
+  },
+  "letter_mapped": {
+   "blind_s0": 0,
+   "blind_s1": 0,
+   "blind_perm": 0,
+   "shown_s0": 0
+  },
+  "match_subject_answer_blind": {
+   "n": 100,
+   "matches": 100,
+   "rate": 1.0,
+   "none": 0,
+   "passes_0.9": true
+  },
+  "match_subject_answer_shown": {
+   "n": 100,
+   "matches": 100,
+   "rate": 1.0,
+   "none": 0,
+   "passes_0.9": true
+  },
+  "shown_minus_blind": 0.0,
+  "validity_of_record": "S0a: blind agreement with the frontier second opinion",
+  "retest_same_order": {
+   "concluded_option": {
+    "n": 100,
+    "kappa": 1.0,
+    "ci95": [
+     1.0,
+     1.0
+    ],
+    "dropped": false,
+    "flagged": false
+   },
+   "applied_tenets": {
+    "n": 100,
+    "kappa": 0.7191379970464368,
+    "ci95": [
+     0.6623584219135823,
+     0.7693547751887104
+    ],
+    "dropped": true,
+    "flagged": true
+   }
+  },
+  "retest_permuted": {
+   "concluded_option": {
+    "n": 100,
+    "kappa": 0.9803883114336144,
+    "ci95": [
+     0.9383096853793954,
+     1.0
+    ],
+    "dropped": false,
+    "flagged": false
+   },
+   "applied_tenets": {
+    "n": 100,
+    "kappa": 0.7247540206817739,
+    "ci95": [
+     0.6707815150703453,
+     0.7764521701576331
+    ],
+    "dropped": true,
+    "flagged": true
+   }
+  },
+  "gate": {
+   "task": "applied tenets, permuted retest",
+   "kappa": 0.7247540206817739,
+   "ci95": [
+    0.6707815150703453,
+    0.7764521701576331
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ },
+ "olmo31_32b_instruct": {
+  "parse": 1.0,
+  "match_subject_answer_blind": {
+   "n": 100,
+   "matches": 100,
+   "rate": 1.0,
+   "none": 0,
+   "passes_0.9": true
+  },
+  "disagreement_all": 0.0,
+  "disagreement_10pct": {
+   "n": 12,
+   "rate": 0.0
+  },
+  "tenet_kappa_vs_scorer": {
+   "n": 128,
+   "kappa": 0.49566699815314647,
+   "ci95": [
+    0.43827459228459625,
+    0.5513259348473445
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ }
+}

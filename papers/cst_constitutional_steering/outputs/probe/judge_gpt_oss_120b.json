@@ -1,0 +1,49 @@
+{
+ "judge": "gpt_oss_120b",
+ "load_s": 130.52789115905762,
+ "n": 128,
+ "blind_s0": {
+  "temperature": 1.0,
+  "seed": 0,
+  "answer_shown": false,
+  "permuted": false,
+  "seconds": 33.063364028930664,
+  "calls_per_hour": 13936.875860447743,
+  "parse_rate": 1.0,
+  "letter_mapped": 0,
+  "out_tokens_median": 190.0
+ },
+ "blind_s1": {
+  "temperature": 1.0,
+  "seed": 1,
+  "answer_shown": false,
+  "permuted": false,
+  "seconds": 32.93286967277527,
+  "calls_per_hour": 13992.099825449804,
+  "parse_rate": 1.0,
+  "letter_mapped": 0,
+  "out_tokens_median": 195.0
+ },
+ "blind_perm": {
+  "temperature": 1.0,
+  "seed": 2,
+  "answer_shown": false,
+  "permuted": true,
+  "seconds": 31.300117015838623,
+  "calls_per_hour": 14721.989689905118,
+  "parse_rate": 1.0,
+  "letter_mapped": 0,
+  "out_tokens_median": 193.5
+ },
+ "shown_s0": {
+  "temperature": 1.0,
+  "seed": 0,
+  "answer_shown": true,
+  "permuted": false,
+  "seconds": 34.809175968170166,
+  "calls_per_hour": 13237.888780284826,
+  "parse_rate": 1.0,
+  "letter_mapped": 0,
+  "out_tokens_median": 218.5
+ }
+}

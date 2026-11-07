@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""CST line re-forecast at the second VALIDATE's measured rates (Amendment 8 item 5).
+"""CST line re-forecast at measured rates (Amendment 8 item 5; Amendment 9; the probe pod).
 
     t09_reforecast.py        # writes outputs/t09_reforecast.json and prints the tables
 
-Every unit price is tagged ``measured`` (outputs/validate), ``carried`` (another line's measured
-rate, not re-measured on this model) or ``estimate`` (arithmetic from a measured rate and a stated
-assumption). Two engine cases: ``current`` (ST's vLLM configuration as run) and ``engine_fixed``
-(CST-A11's R_engine: generation with the document in context at A0's per-token rate). The cut list
-is applied cumulatively in rank order to the partner-recipe path under each case. Scoring follows
-Amendment 9 (gpt-oss-120b alone, Olmo-3.1-32B-Instruct on 10%); the frontier tier's Codex calls
-are counted beside the A100-h (`codex_calls`), since the weekly quota, not the GPU, bounds them.
+Every unit price is tagged ``measured`` (outputs/validate, outputs/probe), ``carried`` (another
+line's measured rate, not re-measured on this model) or ``estimate`` (arithmetic from a measured
+rate and a stated assumption). Two engine cases, both measured on the probe pod at cap 4,096:
+``current`` (ST's vLLM configuration as run) and ``engine_tuned`` (MTP off, 128 sequences;
+CST-A11). The cut list is applied cumulatively in rank order to the partner-recipe path under each
+case. Scoring follows Amendment 9 (gpt-oss-120b alone, Olmo-3.1-32B-Instruct on 10%); the frontier
+tier's Codex calls are counted beside the A100-h (``codex_calls``), since the weekly quota, not
+the GPU, bounds them.
 """
 
 from __future__ import annotations
@@ -19,23 +20,28 @@ from pathlib import Path
 
 CST = Path(__file__).resolve().parents[1]
 V = CST / "outputs" / "validate"
+PR = CST / "outputs" / "probe"
 
 
 def units() -> dict:
-    g = json.loads((V / "gen.json").read_text())
     j = json.loads((V / "judges.json").read_text())
     lh = json.loads((V / "lora_hf.json").read_text())
     pr = json.loads((V / "price.json").read_text())
-    tok_s = g["panel"]["gen_tokens"] / g["panel"]["seconds"]  # A0, no document prefix
-    tok_s_doc = g["a0s"]["gen_tokens"] / g["a0s"]["seconds"]  # the document in context
+    # the probe pod (cap 4,096, Amendment 8 item 3): ST's engine as run, and the best tuned
+    # configuration (MTP off, 128 sequences); CST-A11
+    st = json.loads((PR / "engine_st.json").read_text())
+    tu = json.loads((PR / "engine_no_mtp_seqs128.json").read_text())
     per_arm = pr["rollouts_per_arm"]
-    a0_len = g["panel"]["gen_tokens"] / g["panel"]["n"]
-    a0s_len = g["a0s"]["gen_tokens"] / g["a0s"]["n"]
+    a0_len = st["a0"]["gen_tokens"] / st["a0"]["n"]
+    a0s_len = st["a0s"]["gen_tokens"] / st["a0s"]["n"]
     gpt = per_arm / j["gpt_oss_120b"]["calls_per_hour"]
     olmo = per_arm / j["olmo31_32b_instruct"]["calls_per_hour"]
     return {
         "per_arm_rollouts": per_arm,
-        "tok_s_no_prefix": tok_s, "tok_s_doc_prefix": tok_s_doc,
+        "tok_s": {"current": {"no_prefix": st["a0"]["tokens_per_s"],
+                              "doc_prefix": st["a0s"]["tokens_per_s"]},
+                  "tuned": {"no_prefix": tu["a0"]["tokens_per_s"],
+                            "doc_prefix": tu["a0s"]["tokens_per_s"]}},
         "a0_mean_gen_tokens": a0_len, "a0s_mean_gen_tokens": a0s_len,
         "sdf_tok_s": lh["sdf_tokens_per_s"], "sdf_10M_h": lh["sdf_10M_hours"],
         "judge_h_per_arm": {"gpt_oss_120b": gpt, "olmo31_32b_instruct": olmo,
@@ -54,7 +60,7 @@ def forecast() -> dict:
     judges = j["gpt_oss_120b"] + 0.1 * j["olmo31_32b_instruct"]
 
     def gen_h(n_roll: int, mean_tok: float, doc: bool, fixed: bool) -> float:
-        rate = u["tok_s_no_prefix"] if (not doc or fixed) else u["tok_s_doc_prefix"]
+        rate = u["tok_s"]["tuned" if fixed else "current"]["doc_prefix" if doc else "no_prefix"]
         return n_roll * mean_tok / rate / 3600
 
     def arm_read(fixed: bool, mean_tok: float = 600.0) -> float:
@@ -77,12 +83,15 @@ def forecast() -> dict:
         return first + rewrite + score
 
     out = {}
-    for case, fixed in (("current", False), ("engine_fixed", True)):
+    for case, fixed in (("current", False), ("engine_tuned", True)):
         pr = u["s0a_measured"]
-        a0s_gen = (pr["subject_hours"]["a0s_generation"] if not fixed else
-                   gen_h(u["per_arm_rollouts"], u["a0s_mean_gen_tokens"], True, True))
-        s0a = (pr["s0a_base_hours"] - pr["subject_hours"]["a0s_generation"] + a0s_gen
-               + 2 * judges + 87 * 13.6 / 3600 + 0.1)  # gpt-oss long-prompt calls; retest
+        # S0a at cap 4,096: load, A0 and A0s generation at the probe's rates, prefill reads and
+        # recall 0.15, setup 0.35, capability 2.4 (carried), scoring both arms, the gpt-oss
+        # long-prompt calls and the retest
+        s0a = (pr["subject_hours"]["load"]
+               + gen_h(u["per_arm_rollouts"], u["a0_mean_gen_tokens"], False, fixed)
+               + gen_h(u["per_arm_rollouts"], u["a0s_mean_gen_tokens"], True, fixed)
+               + 0.15 + 0.35 + 2.4 + 2 * judges + 87 * 13.6 / 3600 + 0.1)
         s0a *= 1.1
         sess = {
             "probe_pod (engine tuning, the letter-mapped scorer on gpt-oss and Olmo)": 1.5,
@@ -131,7 +140,7 @@ def forecast() -> dict:
              gen_h(10_000_000, 1, True, fx) + gen_h(5_000_000, 1, False, fx)
              + u["sdf_10M_h"], "dose"),
         ]
-        run = out["engine_fixed" if fx else "current"]["partner_recipe_S0_S3"]
+        run = out["engine_tuned" if fx else "current"]["partner_recipe_S0_S3"]
         ranked = []
         for name, saved, loss in cuts:
             run -= saved
@@ -153,10 +162,10 @@ def forecast() -> dict:
              "the 200-pair pilot": 20,
              "frontier second opinion, about 200 S0a rollouts at 10 per call": 20}
     return {"units": {k: v for k, v in u.items() if k != "s0a_measured"}, "codex_calls": codex,
-            "of_record": {"engine_fixed": of_record(True), "current": of_record(False)},
-            "forecast": out, "cuts_recipe": {"engine_fixed": cut_list(True),
+            "of_record": {"engine_tuned": of_record(True), "current": of_record(False)},
+            "forecast": out, "cuts_recipe": {"engine_tuned": cut_list(True),
                                              "current": cut_list(False)},
-            "deferrable_sessions": {"S5 (gated by R3)": out["engine_fixed"]["sessions"][
+            "deferrable_sessions": {"S5 (gated by R3)": out["engine_tuned"]["sessions"][
                 "S5 (A4, A4f; gated by R3; estimate)"], "S4 (B1)": 29.0},
             "dollars_per_a100_h": [1.6, 2.0], "envelope_usd": [500, 1000],
             "envelope_of_record_a100_h": 150}
