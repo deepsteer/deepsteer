@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.9, 2026-11-06: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) and 8 (the judge rule, the Mistral fallback, the A0s cap), §13.** v0.1 was the draft for the
+Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record; the frontier tier), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -214,7 +214,11 @@ replicated judge), `Olmo-3.1-32B-Think@97ade57a`, `GLM-4.7-Flash@7dd20894` (fall
 the account CLI for calibration, `T_core` and `T_conf` votes only; no API cap. Test-retest and
 cross-family agreement are measured on every scoring task before it is used (§6.5). Each judge
 prompt lists only the scenario's D2 shortlist, never the full tenet set (D16). The panel is a
-tenet-application scorer and a conflict detector; it is not the teacher.
+tenet-application scorer and a conflict detector; it is not the teacher. **Amendment 9
+(2026-11-07):** the scorer of record is `gpt-oss-120b@b5c939de` alone, MoReBench's precedent (its
+paper scores with GPT-oss-120b as the single judge, Chiu, Lee et al. p. 5, Table 1; MRB replicated
+it self-hosted); Olmo-3.1-32B-Instruct reads a 10% sample for a reported disagreement rate, never
+voted; Mistral-Small-3.2-24B is the fallback scorer.
 
 ### 3.5 Frontier baseline (reference only)
 The frontier exhibit's operator-instruction read (ST §8: Sol 0.900 [0.877, 0.921] under an
@@ -1069,3 +1073,40 @@ any of its results are read. Sources: `outputs/validate_run1/`, CST-A8, CST-A9.
 5. **After the run: the line re-forecast.** At the second VALIDATE's measured rates, the whole line
    (S0a, S0b, S1-S5) is re-priced with a **ranked cut list**, the dollar cap governing (§8's
    envelope, $500 to $1,000). It is the author's before S0a launches.
+
+### Amendment 9 (2026-11-07; author, the scorer of record and the frontier tier; zero GPU; committed and pushed before the probe pod and the S0a build)
+
+Registered after the second VALIDATE (`outputs/validate/`; CST-A9, CST-A11; `CST_REFORECAST.md`)
+and before any S0a rollout exists.
+
+1. **Judge of record: `gpt-oss-120b@b5c939de`, self-hosted, a single scorer, not a majority
+   panel.** MoReBench's precedent: its paper scores with GPT-oss-120b as the single judge (Chiu,
+   Lee et al., p. 5, Table 1), and MRB replicated it as the self-hosted judge of record (§3.4).
+   Its reliability is read four ways in S0a, each reported:
+   - **retest kappa on 100 rollouts**, with Amendment 7 item 4's CI rule;
+   - **the validity bar:** its concluded option matches the subject's actual answer on at least
+     0.9 of those 100;
+   - **Layer A accuracy** on the 51 Scruples overlap items (`data/layer_a_scruples_v1.json`);
+   - **Olmo-3.1-32B-Instruct@ac0587e4 on a 10% sample**, its disagreement rate with the judge of
+     record reported, never voted.
+
+   **`Mistral-Small-3.2-24B-Instruct-2506@95a6d26c` stays pinned as the fallback scorer** if
+   gpt-oss-120b fails validity or Layer A. No Phi-4 pin.
+2. **Frontier second opinion (zero GPU, in S0a's analysis).** Claude and Codex, through the account
+   logins, score about 200 S0a rollouts on both judge tasks (the concluded option and the applied
+   tenets); reported as agreement beside retest kappa and Layer A.
+3. **The frontier tier (Claude and Codex, the two-family rule)** makes the labels of record, the
+   DPO pair filter (§4.3) and the Layer A mapping. A self-hosted tiebreak applies on pair-filter
+   splits only. The self-hosted relabel (S0 component 4) is a consistency read; the unsettled
+   side's calibration of record [**the author's text ends here; the clause is incomplete and is
+   completed by the author before S0a's relabel is built**].
+
+**What this supersedes.** Amendment 7 item 3's majority rules become the judge of record's own
+reading: the concluded option of record is gpt-oss-120b's `concluded_option` (its "none" is no
+conclusion), and the applied tenets of record are the tenets it names. Amendment 7 item 4's floor
+("fewer than two judges passing") becomes: the judge of record fails retest (CI entirely below
+0.8), validity or Layer A, and the fallback scorer is checked on the same reads before any S is
+read. Amendment 8 item 1's three-slot judge rule is retired; its measurements stand as VALIDATE's
+record. §3.4's "three self-hosted families" and the panel language in §6.5 are read through this
+item. Amendment 5's "the unsettled side's calibration of record" for the self-hosted relabel
+awaits item 3's completed clause.

@@ -18,7 +18,7 @@ stage_sibling:
     revision: 144afc2f379b542fdd4e85a1fcd5e1f79112d95d   # = MRB's checkpoint
     license: apache-2.0
 judges:
-  gpt_oss_120b:            # registered (CST_PLAN §3.4); premise: Model Spec (post-training, 2025)
+  gpt_oss_120b:            # the single scorer of record (Amendment 9); premise: Model Spec (post-training, 2025)
     repo: openai/gpt-oss-120b
     revision: b5c939de8f754692c1647ca79fbf85e8c1e70f8a   # = MRB's judge
     license: apache-2.0
@@ -38,7 +38,7 @@ judges:
     claude:                # premise: C_anth (trained toward it); subagents or `claude -p`, or API under a cap
       access: cli
   # Amendment 8 (2026-11-06): the judge rule's candidates and the fourth-family fallback
-  olmo31_32b_instruct:     # second in the judge rule's order; committed 2026-01-05
+  olmo31_32b_instruct:     # Amendment 9: a 10% sample, disagreement reported, never voted; committed 2026-01-05
     repo: allenai/Olmo-3.1-32B-Instruct
     revision: ac0587e4a7744a551c059d8cd17ba220bc940dae
     license: apache-2.0
@@ -46,7 +46,7 @@ judges:
     repo: zai-org/GLM-4.7-Flash
     revision: 7dd20894a642a0aa287e9827cb1a1f7f91386b67
     license: mit
-  fallback_fourth_family:  # replaces Kimi-Linear-48B-A3B-Instruct (91.5 GiB bf16; CST-A9)
+  fallback_fourth_family:  # the fallback scorer (Amendment 9); replaced Kimi-Linear (91.5 GiB bf16; CST-A9)
     repo: mistralai/Mistral-Small-3.2-24B-Instruct-2506
     revision: 95a6d26c4bfb886c58daf9d3f7332c857cb27b43   # 2025-12-22; weights 2025-06-20
     license: apache-2.0      # model card at the pin; verified 2026-11-06
