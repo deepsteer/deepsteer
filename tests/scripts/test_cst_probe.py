@@ -95,3 +95,52 @@ def test_dry_run_end_to_end(tmp_path):
     assert g["letter_mapped"]["shown_s0"] > 0 and g["letter_mapped"]["blind_perm"] == 0
     assert "disagreement_10pct" in s["olmo31_32b_instruct"]
     assert "st" in s["engine"]
+
+
+def test_effort_high_reaches_the_harmony_render():
+    # most probable failure (CST-A12, the probe): the judge's reasoning effort is hardcoded, so the
+    # effort-high passes score at low again
+    import mrb_g1_pod as M
+    from huggingface_hub import try_to_load_from_cache
+    from transformers import AutoTokenizer
+
+    rev = "b5c939de8f754692c1647ca79fbf85e8c1e70f8a"
+    if not try_to_load_from_cache("openai/gpt-oss-120b", "tokenizer.json", revision=rev):
+        pytest.skip("gpt-oss-120b tokenizer not cached")
+    from deepsteer.reasoning.think_io import CoTFormat
+
+    tok = AutoTokenizer.from_pretrained("openai/gpt-oss-120b", revision=rev)
+    cfg = M.harmony_cfg()
+    hi = tok.decode(P.judge_ids(tok, "x", "harmony", CoTFormat.HARMONY_ANALYSIS, cfg, "high"))
+    lo = tok.decode(P.judge_ids(tok, "x", "harmony", CoTFormat.HARMONY_ANALYSIS, cfg, "low"))
+    assert "Reasoning: high" in hi and "Reasoning: low" in lo
+    assert P.EFFORT["gpt_oss_120b_high"] == "high"
+    assert P.MODEL["gpt_oss_120b_high"] == "gpt_oss_120b"
+
+
+def test_majority_of_three_keeps_tenets_named_twice():
+    # most probable failure: the majority keeps a tenet named once (a union) or drops one named
+    # twice (an intersection), which moves its kappa for reasons that are not the judge's
+    r = lambda ts, co: {"ok": True, "shortlist": ["A1", "A2", "A3"], "applied_tenets": ts,  # noqa
+                        "concluded_option": co}
+    m = P.majority([[r(["A1", "A2"], "o1")], [r(["A1"], "o1")], [r(["A2", "A3"], "o2")]])[0]
+    assert m["applied_tenets"] == ["A1", "A2"] and m["concluded_option"] == "o1"
+    split = P.majority([[r([], "o1")], [r([], "o2")], [r([], "o3")]])[0]
+    assert split["concluded_option"] == "invalid"
+
+
+@pytest.mark.slow
+def test_dry_run_effort_high_summary(tmp_path):
+    # most probable failure: the summary pairs the wrong passes (a triple against itself), which
+    # reads kappa 1 whatever the judge does
+    test_dry_run_end_to_end(tmp_path)
+    P.stage_judge(tmp_path, "gpt_oss_120b_high", True)
+    P.stage_summary_high(tmp_path)
+    s = json.loads((tmp_path / "summary_high.json").read_text())
+    for k in ("single_same_order", "single_permuted", "majority3_same_order",
+              "majority3_permuted"):
+        assert {"tenets_all", "tenets_deference", "tenets_other", "concluded_option"} <= set(s[k])
+    pr = s["price_per_arm_read_h"]
+    assert pr["majority_on_operator_and_operator_pr"] > pr["single_sample"]
+    rows = [json.loads(x) for x in open(tmp_path / "judge_gpt_oss_120b_high_h_s3.jsonl")]
+    assert len(rows) == 4

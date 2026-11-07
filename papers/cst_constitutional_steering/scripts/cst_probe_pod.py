@@ -56,7 +56,15 @@ PASSES = {
     "gpt_oss_120b": {"blind_s0": (1.0, 0, False, False), "blind_s1": (1.0, 1, False, False),
                      "blind_perm": (1.0, 2, False, True), "shown_s0": (1.0, 0, True, False)},
     "olmo31_32b_instruct": {"blind_s0": (1.0, 0, False, False)},
+    # Amendment 10 item 1: effort high (MoReBench's setting); six same-order passes (two triples)
+    # and three permuted, for the single-sample and majority-of-three retest kappas
+    "gpt_oss_120b_high": {**{f"h_s{k}": (1.0, k, False, False) for k in range(6)},
+                          **{f"h_p{k}": (1.0, 6 + k, False, True) for k in range(3)}},
 }
+MODEL = {"gpt_oss_120b_high": "gpt_oss_120b"}  # pass family -> the model it loads
+EFFORT = {"gpt_oss_120b": "low", "gpt_oss_120b_high": "high"}  # harmony reasoning effort
+# Amendment 10 item 6: majority-of-three on the applied-tenet task, operator and operator_pr only
+MAJ_ROLLOUTS_PER_ARM = 586 * (4 + 6) + 132 * 8
 PERM_SEED = 20261107
 
 
@@ -123,8 +131,18 @@ def presentation(order: list, permute: bool, i: int) -> list[tuple[str, str, str
     return [(f"o{k + 1}", oid, letter) for k, (oid, letter) in enumerate(perm)]
 
 
+def judge_ids(tok, text: str, mode: str, fmt, cfg, effort: str | None) -> list[int]:
+    """Token ids of one judge prompt; a harmony judge renders at ``effort`` (the probe's error was
+    a hardcoded "low": CST-A12)."""
+    import mrb_g1_pod as M
+
+    if mode == "harmony":
+        return M.render_ids(tok, text, fmt, effort, cfg)
+    return V._judge_ids(tok, text, mode, fmt, cfg)
+
+
 def judge_prompts(rows: list[dict], jtok, mode: str, fmt, cfg, show_answer: bool,
-                  permute: bool = False):
+                  permute: bool = False, effort: str | None = "low"):
     """The scoring prompt per rollout (letters mapped, CST-A9). ``show_answer`` False is the blind
     read of record: the subject's final answer is never shown."""
     import cst_judge as J
@@ -149,7 +167,7 @@ def judge_prompts(rows: list[dict], jtok, mode: str, fmt, cfg, show_answer: bool
         p = J.judge_prompt(s.agent_text, [(jid, s.option(oid).text) for jid, oid, _ in pres],
                            trace, answer if show_answer else None,
                            [(t, tenets[t].claim) for t in short], letters=letters)
-        prompts.append(V._judge_ids(jtok, J.SYS + "\n\n" + p, mode, fmt, cfg))
+        prompts.append(judge_ids(jtok, J.SYS + "\n\n" + p, mode, fmt, cfg, effort))
         meta.append({"options": set(letters), "shortlist": short, "letters": letters,
                      "back": {jid: oid for jid, oid, _ in pres}})
     return prompts, meta
@@ -162,7 +180,8 @@ def stage_judge(out: Path, name: str, dry: bool) -> None:
     from deepsteer.reasoning.think_io import CoTFormat
 
     rows = [json.loads(x) for x in open(out / "gen_a0.jsonl")]
-    j = V.JUDGES[name]
+    j = V.JUDGES[MODEL.get(name, name)]
+    effort = EFFORT.get(name)
     fmt = CoTFormat.HARMONY_ANALYSIS if j["fmt"] == "harmony" else CoTFormat.THINK_TAGS
     if dry:
         eng, jtok, fmt, cfg = None, V._tok(V._model_path(True)), CoTFormat.THINK_TAGS, None
@@ -175,9 +194,11 @@ def stage_judge(out: Path, name: str, dry: bool) -> None:
                            enable_prefix_caching=True, seed=0, **j.get("llm_kwargs", {}))
         jtok = eng.llm.get_tokenizer()
         cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
-    rec: dict = {"judge": name, "load_s": getattr(eng, "load_s", None), "n": len(rows)}
+    rec: dict = {"judge": name, "model": MODEL.get(name, name), "effort": effort,
+                 "load_s": getattr(eng, "load_s", None), "n": len(rows)}
     for pname, (temp, seed, show, perm) in PASSES[name].items():
-        prompts, meta = judge_prompts(rows, jtok, j["fmt"], fmt, cfg, show, perm)
+        prompts, meta = judge_prompts(rows, jtok, j["fmt"], fmt, cfg, show, perm,
+                                      effort if not dry else None)
         t = time.time()
         if dry:
             # canned: always the same true option, named by the subject's letter when the
@@ -211,7 +232,8 @@ def stage_judge(out: Path, name: str, dry: bool) -> None:
                       "calls_per_hour": len(rows) / dt * 3600,
                       "parse_rate": sum(x["ok"] for x in res) / len(res),
                       "letter_mapped": sum(x["letter_mapped"] for x in res),
-                      "out_tokens_median": statistics.median(toks)}
+                      "out_tokens_median": statistics.median(toks),
+                      "hit_cap_share": sum(caps) / len(caps)}
         V._w(out, f"judge_{name}", rec)
     del eng
 
@@ -320,9 +342,76 @@ def stage_summary(out: Path) -> None:
     V._w(out, "summary", rec)
 
 
+def majority(passes: list[list[dict]]) -> list[dict]:
+    """Per rollout, the tenets named by at least two of three passes, and the most common
+    concluded option (a three-way split or a majority of invalid is "invalid")."""
+    from collections import Counter
+
+    out = []
+    for xs in zip(*passes):
+        cnt = Counter(t for r in xs for t in r["applied_tenets"])
+        co = Counter(r["concluded_option"] for r in xs).most_common(1)[0]
+        out.append({"ok": all(r["ok"] for r in xs), "shortlist": xs[0]["shortlist"],
+                    "applied_tenets": sorted(t for t, k in cnt.items() if k >= 2),
+                    "concluded_option": co[0] if co[1] >= 2 else "invalid"})
+    return out
+
+
+def by_kind(rows: list[dict], keep) -> list[dict]:
+    return [{**r, "shortlist": [t for t in r["shortlist"] if keep(t)],
+             "applied_tenets": [t for t in r["applied_tenets"] if keep(t)]} for r in rows]
+
+
+def stage_summary_high(out: Path) -> None:
+    """Amendment 10 items 1 and 6: single-sample and majority-of-three retest kappas at effort
+    high, same-order and permuted, all tenets and per kind, with CIs; the scoring price per arm
+    read with and without the operator-only majority."""
+    import scenario_labels as L
+
+    def load(p):
+        return [json.loads(x) for x in open(out / f"judge_gpt_oss_120b_high_{p}.jsonl")][:N_VALID]
+
+    s = [load(f"h_s{k}") for k in range(6)]
+    pm = [load(f"h_p{k}") for k in range(3)]
+    dfr = set(L.DEFERENCE)
+    kinds = {"all": lambda t: True, "deference": lambda t: t in dfr,
+             "other": lambda t: t not in dfr}
+
+    def reads(a, b):
+        r = {"concluded_option": kappa_ci(a, b, "concluded_option")}
+        for k, keep in kinds.items():
+            r[f"tenets_{k}"] = kappa_ci(by_kind(a, keep), by_kind(b, keep), "tenets")
+        return r
+
+    m1, m2, mp = majority(s[:3]), majority(s[3:]), majority(pm)
+    rec = {"effort": "high", "temperature": 1.0, "n": len(s[0]),
+           "single_same_order": reads(s[0], s[1]), "single_permuted": reads(s[0], pm[0]),
+           "majority3_same_order": reads(m1, m2), "majority3_permuted": reads(m1, mp)}
+    jr = json.loads((out / "judge_gpt_oss_120b_high.json").read_text())
+    rate = statistics.median(v["calls_per_hour"] for k, v in jr.items() if k.startswith("h_"))
+    rec["calls"] = {"calls_per_hour_median": rate,
+                    "out_tokens_median": statistics.median(
+                        v["out_tokens_median"] for k, v in jr.items() if k.startswith("h_")),
+                    "hit_cap_share_max": max(v["hit_cap_share"] for k, v in jr.items()
+                                             if k.startswith("h_")),
+                    "parse_min": min(v["parse_rate"] for k, v in jr.items()
+                                     if k.startswith("h_"))}
+    per_arm = 586 * 16 + 132 * 8 * 2 + 102 * 8  # the registered rollouts per arm
+    rec["price_per_arm_read_h"] = {
+        "single_sample": per_arm / rate,
+        "majority_on_operator_and_operator_pr": (per_arm + 2 * MAJ_ROLLOUTS_PER_ARM) / rate,
+        "effort_low_single_sample_probe": per_arm / statistics.median(
+            v["calls_per_hour"] for k, v in json.loads(
+                (out / "judge_gpt_oss_120b.json").read_text()).items()
+            if isinstance(v, dict) and "calls_per_hour" in v)
+        if (out / "judge_gpt_oss_120b.json").exists() else None}
+    V._w(out, "summary_high", rec)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=("engine", "judge", "summary"))
+    ap.add_argument("--stage", required=True,
+                    choices=("engine", "judge", "summary", "summary_high"))
     ap.add_argument("--config", default="st", choices=tuple(CONFIGS))
     ap.add_argument("--judge", default="gpt_oss_120b", choices=tuple(PASSES))
     ap.add_argument("--out", type=Path, required=True)
@@ -331,7 +420,8 @@ def main() -> None:
     a.out.mkdir(parents=True, exist_ok=True)
     {"engine": lambda: stage_engine(a.out, a.config, a.dry_run),
      "judge": lambda: stage_judge(a.out, a.judge, a.dry_run),
-     "summary": lambda: stage_summary(a.out)}[a.stage]()
+     "summary": lambda: stage_summary(a.out),
+     "summary_high": lambda: stage_summary_high(a.out)}[a.stage]()
 
 
 if __name__ == "__main__":
