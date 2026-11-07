@@ -362,6 +362,42 @@ def by_kind(rows: list[dict], keep) -> list[dict]:
              "applied_tenets": [t for t in r["applied_tenets"] if keep(t)]} for r in rows]
 
 
+def fleiss_binary(ratings: list[list[int]]) -> float | None:
+    """Fleiss' kappa for binary ratings, one list per item (one entry per rater)."""
+    m = len(ratings[0]) if ratings else 0
+    if m < 2 or not ratings:
+        return None
+    n = len(ratings)
+    p1 = sum(sum(r) for r in ratings) / (n * m)
+    pe = p1 ** 2 + (1 - p1) ** 2
+    pbar = sum((sum(r) * (sum(r) - 1) + (m - sum(r)) * (m - sum(r) - 1)) / (m * (m - 1))
+               for r in ratings) / n
+    # a tenet never named (or always named) has no chance-corrected agreement to read: None, so
+    # it cannot pass the bar on agreeing absences alone
+    return None if pe == 1.0 else (pbar - pe) / (1 - pe)
+
+
+def per_tenet_kappa(passes: list[list[dict]], bar: float = 0.8) -> dict:
+    """Amendment 11 item 3: per tenet, Fleiss' kappa across the passes over the rollouts whose
+    shortlist carries it (rollouts every pass parsed); the tenets at or above ``bar`` and their
+    coverage of the applied-tenet cells (cells named in any pass)."""
+    ok = [i for i in range(len(passes[0])) if all(p[i]["ok"] for p in passes)]
+    tenets = sorted({t for i in ok for t in passes[0][i]["shortlist"]})
+    res, named_any, named_pass = {}, 0, 0
+    for t in tenets:
+        rat = [[int(t in p[i]["applied_tenets"]) for p in passes] for i in ok
+               if t in passes[0][i]["shortlist"]]
+        k = fleiss_binary(rat)
+        named = sum(1 for r in rat if any(r))
+        res[t] = {"items": len(rat), "named_in_any_pass": named, "kappa": k,
+                  "passes": k is not None and k >= bar}
+        named_any += named
+        named_pass += named if res[t]["passes"] else 0
+    return {"n_passes": len(passes), "rollouts": len(ok), "bar": bar, "tenets": res,
+            "passing": sorted(t for t, v in res.items() if v["passes"]),
+            "coverage_of_named_cells": named_pass / named_any if named_any else None}
+
+
 def stage_summary_high(out: Path) -> None:
     """Amendment 10 items 1 and 6: single-sample and majority-of-three retest kappas at effort
     high, same-order and permuted, all tenets and per kind, with CIs; the scoring price per arm
@@ -371,8 +407,11 @@ def stage_summary_high(out: Path) -> None:
     def load(p):
         return [json.loads(x) for x in open(out / f"judge_gpt_oss_120b_high_{p}.jsonl")][:N_VALID]
 
-    s = [load(f"h_s{k}") for k in range(6)]
-    pm = [load(f"h_p{k}") for k in range(3)]
+    def have(p):
+        return (out / f"judge_gpt_oss_120b_high_{p}.jsonl").exists()
+
+    s = [load(f"h_s{k}") for k in range(6) if have(f"h_s{k}")]
+    pm = [load(f"h_p{k}") for k in range(3) if have(f"h_p{k}")]
     dfr = set(L.DEFERENCE)
     kinds = {"all": lambda t: True, "deference": lambda t: t in dfr,
              "other": lambda t: t not in dfr}
@@ -383,12 +422,17 @@ def stage_summary_high(out: Path) -> None:
             r[f"tenets_{k}"] = kappa_ci(by_kind(a, keep), by_kind(b, keep), "tenets")
         return r
 
-    m1, m2, mp = majority(s[:3]), majority(s[3:]), majority(pm)
+    m1 = majority(s[:3])
     rec = {"effort": "high", "temperature": 1.0, "n": len(s[0]),
-           "single_same_order": reads(s[0], s[1]), "single_permuted": reads(s[0], pm[0]),
-           "majority3_same_order": reads(m1, m2), "majority3_permuted": reads(m1, mp)}
+           "passes_completed": {"same_order": len(s), "permuted": len(pm)},
+           "single_same_order": reads(s[0], s[1]),
+           "single_permuted": reads(s[0], pm[0]) if pm else None,
+           "majority3_same_order": reads(m1, majority(s[3:6])) if len(s) >= 6 else None,
+           "majority3_permuted": reads(m1, majority(pm)) if len(pm) == 3 else None,
+           "per_tenet": per_tenet_kappa(s + pm)}
     jr = json.loads((out / "judge_gpt_oss_120b_high.json").read_text())
-    rate = statistics.median(v["calls_per_hour"] for k, v in jr.items() if k.startswith("h_"))
+    rate = statistics.median(v["calls_per_hour"] for k, v in jr.items()
+                             if k.startswith("h_") and isinstance(v, dict))
     rec["calls"] = {"calls_per_hour_median": rate,
                     "out_tokens_median": statistics.median(
                         v["out_tokens_median"] for k, v in jr.items() if k.startswith("h_")),

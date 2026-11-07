@@ -1,0 +1,625 @@
+{
+ "effort": "high",
+ "temperature": 1.0,
+ "n": 100,
+ "passes_completed": {
+  "same_order": 6,
+  "permuted": 3
+ },
+ "single_same_order": {
+  "concluded_option": {
+   "n": 100,
+   "kappa": 0.9804075235109718,
+   "ci95": [
+    0.9375390381011867,
+    1.0
+   ],
+   "dropped": false,
+   "flagged": false
+  },
+  "tenets_all": {
+   "n": 100,
+   "kappa": 0.573671339920912,
+   "ci95": [
+    0.5087012415387092,
+    0.6345917796798023
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_deference": {
+   "n": 100,
+   "kappa": 0.5192307692307693,
+   "ci95": [
+    0.44003177124702136,
+    0.5957621660040423
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_other": {
+   "n": 100,
+   "kappa": 0.6064166959493444,
+   "ci95": [
+    0.529285417425237,
+    0.6780148214686729
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ },
+ "single_permuted": {
+  "concluded_option": {
+   "n": 100,
+   "kappa": 0.9422632794457273,
+   "ci95": [
+    0.8682228915662652,
+    1.0
+   ],
+   "dropped": false,
+   "flagged": false
+  },
+  "tenets_all": {
+   "n": 100,
+   "kappa": 0.548887732416212,
+   "ci95": [
+    0.4736278369615561,
+    0.6154261785762528
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_deference": {
+   "n": 100,
+   "kappa": 0.5185315211394755,
+   "ci95": [
+    0.424778761061947,
+    0.6099123329295583
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_other": {
+   "n": 100,
+   "kappa": 0.5654928220445129,
+   "ci95": [
+    0.48594548551959105,
+    0.6389484447669626
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ },
+ "majority3_same_order": {
+  "concluded_option": {
+   "n": 100,
+   "kappa": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "dropped": false,
+   "flagged": false
+  },
+  "tenets_all": {
+   "n": 100,
+   "kappa": 0.6444796112963894,
+   "ci95": [
+    0.5575734443624462,
+    0.7276679818586079
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_deference": {
+   "n": 100,
+   "kappa": 0.5958727429062767,
+   "ci95": [
+    0.49304432868291326,
+    0.6957641001638191
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_other": {
+   "n": 100,
+   "kappa": 0.6697646812844396,
+   "ci95": [
+    0.5794846095006989,
+    0.7521767495988574
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ },
+ "majority3_permuted": {
+  "concluded_option": {
+   "n": 100,
+   "kappa": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "dropped": false,
+   "flagged": false
+  },
+  "tenets_all": {
+   "n": 100,
+   "kappa": 0.6245475017836066,
+   "ci95": [
+    0.5396149003540979,
+    0.7062916953549022
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_deference": {
+   "n": 100,
+   "kappa": 0.6197397329727902,
+   "ci95": [
+    0.5134502923976609,
+    0.7205030944300259
+   ],
+   "dropped": true,
+   "flagged": true
+  },
+  "tenets_other": {
+   "n": 100,
+   "kappa": 0.6195571095571097,
+   "ci95": [
+    0.5323220145172516,
+    0.702540704956164
+   ],
+   "dropped": true,
+   "flagged": true
+  }
+ },
+ "per_tenet": {
+  "n_passes": 9,
+  "rollouts": 94,
+  "bar": 0.8,
+  "tenets": {
+   "A004b": {
+    "items": 4,
+    "named_in_any_pass": 3,
+    "kappa": 0.6086956521739131,
+    "passes": false
+   },
+   "A010": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A012d": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A013": {
+    "items": 31,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A014": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A016": {
+    "items": 54,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A017": {
+    "items": 3,
+    "named_in_any_pass": 1,
+    "kappa": 0.3863636363636362,
+    "passes": false
+   },
+   "A020": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A021": {
+    "items": 6,
+    "named_in_any_pass": 1,
+    "kappa": -0.018867924528304363,
+    "passes": false
+   },
+   "A031": {
+    "items": 32,
+    "named_in_any_pass": 7,
+    "kappa": 0.1086956521739108,
+    "passes": false
+   },
+   "A036": {
+    "items": 94,
+    "named_in_any_pass": 94,
+    "kappa": 0.13639944521497965,
+    "passes": false
+   },
+   "A040": {
+    "items": 94,
+    "named_in_any_pass": 20,
+    "kappa": 0.12938848208984882,
+    "passes": false
+   },
+   "A041": {
+    "items": 94,
+    "named_in_any_pass": 54,
+    "kappa": 0.29654997463216637,
+    "passes": false
+   },
+   "A041b": {
+    "items": 94,
+    "named_in_any_pass": 25,
+    "kappa": 0.2756349844845433,
+    "passes": false
+   },
+   "A060": {
+    "items": 1,
+    "named_in_any_pass": 1,
+    "kappa": -0.12499999999999992,
+    "passes": false
+   },
+   "A061": {
+    "items": 94,
+    "named_in_any_pass": 53,
+    "kappa": 0.1792233829270874,
+    "passes": false
+   },
+   "A078": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A080": {
+    "items": 2,
+    "named_in_any_pass": 1,
+    "kappa": -0.058823529411764955,
+    "passes": false
+   },
+   "A086b": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A087": {
+    "items": 11,
+    "named_in_any_pass": 7,
+    "kappa": 0.7327657807308969,
+    "passes": false
+   },
+   "A088": {
+    "items": 6,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A089": {
+    "items": 11,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A095": {
+    "items": 43,
+    "named_in_any_pass": 29,
+    "kappa": 0.7629187311503661,
+    "passes": false
+   },
+   "A096": {
+    "items": 34,
+    "named_in_any_pass": 24,
+    "kappa": 0.49083218825146,
+    "passes": false
+   },
+   "A097": {
+    "items": 4,
+    "named_in_any_pass": 1,
+    "kappa": 0.07352941176470619,
+    "passes": false
+   },
+   "A097b": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A097c": {
+    "items": 7,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A099": {
+    "items": 7,
+    "named_in_any_pass": 3,
+    "kappa": 0.022413793103446836,
+    "passes": false
+   },
+   "A100": {
+    "items": 47,
+    "named_in_any_pass": 30,
+    "kappa": 0.43780599376885426,
+    "passes": false
+   },
+   "A101": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A105": {
+    "items": 1,
+    "named_in_any_pass": 1,
+    "kappa": -0.1250000000000001,
+    "passes": false
+   },
+   "A108": {
+    "items": 11,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A112e": {
+    "items": 9,
+    "named_in_any_pass": 6,
+    "kappa": 0.949689440993789,
+    "passes": true
+   },
+   "A115": {
+    "items": 66,
+    "named_in_any_pass": 48,
+    "kappa": 0.6009377161452722,
+    "passes": false
+   },
+   "A116b": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A117": {
+    "items": 70,
+    "named_in_any_pass": 49,
+    "kappa": 0.7168181818181819,
+    "passes": false
+   },
+   "A117b": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A119": {
+    "items": 37,
+    "named_in_any_pass": 21,
+    "kappa": 0.36206896551724127,
+    "passes": false
+   },
+   "A120": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A122": {
+    "items": 11,
+    "named_in_any_pass": 6,
+    "kappa": 0.4364955357142856,
+    "passes": false
+   },
+   "A123": {
+    "items": 3,
+    "named_in_any_pass": 2,
+    "kappa": 0.48076923076923095,
+    "passes": false
+   },
+   "A124": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A126": {
+    "items": 18,
+    "named_in_any_pass": 2,
+    "kappa": 0.5949999999999995,
+    "passes": false
+   },
+   "A168": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A176b": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A182": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A188": {
+    "items": 3,
+    "named_in_any_pass": 1,
+    "kappa": 0.2663043478260873,
+    "passes": false
+   },
+   "A190": {
+    "items": 7,
+    "named_in_any_pass": 2,
+    "kappa": -0.03278688524590057,
+    "passes": false
+   },
+   "A192": {
+    "items": 2,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A206b": {
+    "items": 4,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A210": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A214": {
+    "items": 1,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A215": {
+    "items": 8,
+    "named_in_any_pass": 3,
+    "kappa": 0.6246276067527307,
+    "passes": false
+   },
+   "A242b": {
+    "items": 3,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A244": {
+    "items": 6,
+    "named_in_any_pass": 3,
+    "kappa": 0.3008928571428574,
+    "passes": false
+   },
+   "A261": {
+    "items": 10,
+    "named_in_any_pass": 5,
+    "kappa": 0.46180555555555547,
+    "passes": false
+   },
+   "A262": {
+    "items": 49,
+    "named_in_any_pass": 21,
+    "kappa": 0.5990691489361702,
+    "passes": false
+   },
+   "A268": {
+    "items": 94,
+    "named_in_any_pass": 3,
+    "kappa": 0.2446428571428583,
+    "passes": false
+   },
+   "A270": {
+    "items": 94,
+    "named_in_any_pass": 23,
+    "kappa": 0.054008721905400646,
+    "passes": false
+   },
+   "A275": {
+    "items": 94,
+    "named_in_any_pass": 25,
+    "kappa": 0.2196004993757819,
+    "passes": false
+   },
+   "A279": {
+    "items": 2,
+    "named_in_any_pass": 1,
+    "kappa": -0.058823529411764955,
+    "passes": false
+   },
+   "A282": {
+    "items": 8,
+    "named_in_any_pass": 4,
+    "kappa": -0.058823529411764955,
+    "passes": false
+   },
+   "A284": {
+    "items": 12,
+    "named_in_any_pass": 9,
+    "kappa": 0.2273449920508744,
+    "passes": false
+   },
+   "A285": {
+    "items": 2,
+    "named_in_any_pass": 1,
+    "kappa": 0.01562500000000007,
+    "passes": false
+   },
+   "A287": {
+    "items": 7,
+    "named_in_any_pass": 4,
+    "kappa": 0.17395104895104885,
+    "passes": false
+   },
+   "A289": {
+    "items": 23,
+    "named_in_any_pass": 12,
+    "kappa": 0.22660818713450318,
+    "passes": false
+   },
+   "A290": {
+    "items": 4,
+    "named_in_any_pass": 1,
+    "kappa": 0.2968750000000002,
+    "passes": false
+   },
+   "A291": {
+    "items": 13,
+    "named_in_any_pass": 3,
+    "kappa": 0.228497706422017,
+    "passes": false
+   },
+   "A293": {
+    "items": 24,
+    "named_in_any_pass": 4,
+    "kappa": 0.3507779349363507,
+    "passes": false
+   },
+   "A294": {
+    "items": 12,
+    "named_in_any_pass": 0,
+    "kappa": null,
+    "passes": false
+   },
+   "A295": {
+    "items": 54,
+    "named_in_any_pass": 37,
+    "kappa": 0.423544529010576,
+    "passes": false
+   }
+  },
+  "passing": [
+   "A112e"
+  ],
+  "coverage_of_named_cells": 0.009216589861751152
+ },
+ "calls": {
+  "calls_per_hour_median": 852.5127136273964,
+  "out_tokens_median": 2852.5,
+  "hit_cap_share_max": 0.046875,
+  "parse_min": 0.984375
+ },
+ "price_per_arm_read_h": {
+  "single_sample": 14.432629335986244,
+  "majority_on_operator_and_operator_pr": 30.657607308626176,
+  "effort_low_single_sample_probe": 0.8810921058027045
+ }
+}

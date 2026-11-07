@@ -144,3 +144,19 @@ def test_dry_run_effort_high_summary(tmp_path):
     assert pr["majority_on_operator_and_operator_pr"] > pr["single_sample"]
     rows = [json.loads(x) for x in open(tmp_path / "judge_gpt_oss_120b_high_h_s3.jsonl")]
     assert len(rows) == 4
+
+
+def test_per_tenet_kappa_reads_only_rollouts_that_list_the_tenet():
+    # most probable failure: a tenet's kappa counted over rollouts whose shortlist does not carry
+    # it (all agreeing zeros), which inflates every rare tenet past the bar
+    def r(short, named):
+        return {"ok": True, "shortlist": short, "applied_tenets": named, "concluded_option": "o1"}
+    p1 = [r(["A1", "A2"], ["A1"]), r(["A1", "A2"], []), r(["A3"], [])]
+    p2 = [r(["A1", "A2"], ["A1"]), r(["A1", "A2"], ["A2"]), r(["A3"], [])]
+    res = P.per_tenet_kappa([p1, p2])
+    assert res["tenets"]["A2"]["items"] == 2 and res["tenets"]["A3"]["items"] == 1
+    # never named in any pass: no kappa, not passing (agreeing absences are not reliability)
+    assert res["tenets"]["A3"]["kappa"] is None and "A3" not in res["passing"]
+    assert res["tenets"]["A1"]["kappa"] == 1.0 and "A1" in res["passing"]
+    assert "A2" not in res["passing"]
+    assert res["coverage_of_named_cells"] == 0.5  # A1 named on 1 rollout, A2 on 1

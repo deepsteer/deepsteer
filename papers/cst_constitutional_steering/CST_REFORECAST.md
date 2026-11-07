@@ -96,13 +96,30 @@ the 200-pair pilot measures the calls each window holds.
 | Capability, MRB, MACHIAVELLI carried from other lines | other models, other engines | unknown |
 | S4 and S5 | estimates, not built from measured units | unknown; S5 is gated |
 
-## 7. Recommendation
+## 7. Scoring under Amendment 11 (the scorer mini-pod, `outputs/scorer_high/`)
 
-1. Every subject read and every generation with the document in context runs on the tuned engine
-   (MTP off, `max_num_seqs` 128, prefix caching on); MTP's speculation is lossless, so the change
-   is a throughput setting, not a sampler change.
-2. The scorer's open item (CST-A12) is priced separately. A majority of three samples triples
-   gpt-oss's 0.9 h per arm read: about 1.75 h more per read, seven arm reads on the path of record
-   (A0, A0s, A1, A1c, two A2 draws, A3), about 12 A100-h, so the path of record rises to about
-   148.5 and keeps 1.5 to spare. Effort high lengthens each call by an amount the probe did not
-   measure.
+| item | effort low | effort high |
+|---|---:|---:|
+| gpt-oss bulk scoring, one arm read (12,304 rollouts) | 0.9 A100-h (14,062 calls/h) | 14.4 A100-h (853 calls/h) |
+| S_concl retest kappa (single, same-order / permuted) | 1.00 / 0.98 | 0.98 / 0.94 |
+| path of record, S0a-S3, tuned engine | **136.2** | **231.1** (+94.9 over seven reads) |
+
+Effort high adds nothing to S_concl and its tenet naming is less stable, so the 94.9 A100-h buys no
+measurement the path of record uses; at high the path of record exceeds its 150 A100-h envelope by
+81.
+
+**S_tenet's judge of record (Claude, account login, no GPU).** Per arm read: 800 rollouts (200
+items × k 4, operator cell), about 952 calls with retries (the retest's 1.19 calls per rollout), 93%
+scored, about 1.6 h of calls one at a time at 6 s each. Path of record (seven reads): about 6,660
+calls; with S4 and S5 (four more reads), about 10,470. **Codex's 10% sample:** 80 rollouts per read,
+560 calls on the path of record, after the weekly quota returns.
+
+## 8. Recommendation
+
+1. Every subject read and every generation with the document in context runs on the engine of
+   record (Amendment 10 item 4).
+2. The bulk scorer runs at effort low: S_concl's reads are the same at both efforts, and effort
+   high costs 94.9 A100-h on the path of record (an amendment to Amendment 10 item 1).
+3. Claude's calls are the S_tenet budget to watch: the account's limits, not the GPU, set how fast
+   a read's 952 calls run; the 7% classifier loss is stochastic per call (no rollout lost in both
+   retest passes), so a third attempt on a stopped rollout is the cheap recovery.

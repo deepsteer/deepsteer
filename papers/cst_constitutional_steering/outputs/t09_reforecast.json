@@ -40,6 +40,25 @@
    "within": false
   }
  },
+ "scoring_effort": {
+  "low_per_arm_read_h": 0.8750073653956255,
+  "high_per_arm_read_h": 14.432629335986244,
+  "path_of_record_delta_h": 94.90335379413433,
+  "of_record_tuned_at_high": 231.0743291358413
+ },
+ "claude_stenet": {
+  "rollouts_per_read": 800,
+  "calls_per_read": 952,
+  "reads_on_path_of_record": 7,
+  "calls_path_of_record": 6664,
+  "calls_with_S4_S5": 10472,
+  "scored_share": 0.93,
+  "seconds_per_call": 6
+ },
+ "codex_stenet_10pct": {
+  "rollouts_per_read": 80,
+  "calls_path_of_record": 560
+ },
  "forecast": {
   "current": {
    "sessions": {

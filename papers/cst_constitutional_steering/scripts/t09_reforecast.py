@@ -157,12 +157,32 @@ def forecast() -> dict:
         return {"recipe_S0a_S3": after - user, "a0s_user_cell_dropped_saves": user,
                 "envelope_a100_h": 150, "within": after - user <= 150}
 
+    # Amendment 11: S_concl in bulk by gpt-oss; S_tenet by Claude on a seeded 200 at k 4 on the
+    # operator cell (800 rollouts per arm read). The bulk scorer's effort (Amendment 10 item 1:
+    # high) prices at the mini-pod's measured rate; low at the probe's.
+    sh = json.loads((CST / "outputs/scorer_high/summary_high.json").read_text())
+    high_per_read = sh["price_per_arm_read_h"]["single_sample"]
+    reads_of_record = 7  # A0, A0s, A1, A1c, A2 two draws, A3 (cuts 1-2 taken)
+    calls_per_rollout = 238 / 200  # the Claude retest: calls including retries per rollout
+    effort = {"low_per_arm_read_h": j["gpt_oss_120b"], "high_per_arm_read_h": high_per_read,
+              "path_of_record_delta_h": reads_of_record * (high_per_read - j["gpt_oss_120b"]),
+              "of_record_tuned_at_high": None}
+    claude = {"rollouts_per_read": 800, "calls_per_read": round(800 * calls_per_rollout),
+              "reads_on_path_of_record": reads_of_record,
+              "calls_path_of_record": round(reads_of_record * 800 * calls_per_rollout),
+              "calls_with_S4_S5": round((reads_of_record + 4) * 800 * calls_per_rollout),
+              "scored_share": 0.93, "seconds_per_call": 6}
+    codex_10pct = {"rollouts_per_read": 80, "calls_path_of_record": reads_of_record * 80}
+
     codex = {"DPO pair filter, per draw (3,000 pairs at a 0.7 pass rate, 10 per call)":
              -(-int(3000 / 0.7) // 10),
              "the 200-pair pilot": 20,
              "frontier second opinion, about 200 S0a rollouts at 10 per call": 20}
     return {"units": {k: v for k, v in u.items() if k != "s0a_measured"}, "codex_calls": codex,
             "of_record": {"engine_tuned": of_record(True), "current": of_record(False)},
+            "scoring_effort": {**effort, "of_record_tuned_at_high":
+                               of_record(True)["recipe_S0a_S3"] + effort["path_of_record_delta_h"]},
+            "claude_stenet": claude, "codex_stenet_10pct": codex_10pct,
             "forecast": out, "cuts_recipe": {"engine_tuned": cut_list(True),
                                              "current": cut_list(False)},
             "deferrable_sessions": {"S5 (gated by R3)": out["engine_tuned"]["sessions"][
@@ -185,6 +205,8 @@ def main() -> None:
             print(f"   -{c['saves_a100_h']:5.1f} -> {c['after']:6.1f}  {c['cut']}")
     print("== of record (Amendment 9 item 5):", {c: round(d["recipe_S0a_S3"], 1)
                                                   for c, d in f["of_record"].items()})
+    print("== scoring effort:", {k: round(v, 1) for k, v in f["scoring_effort"].items()})
+    print("== Claude S_tenet:", f["claude_stenet"], "Codex 10%:", f["codex_stenet_10pct"])
     print({k: round(v, 1) if isinstance(v, float) else v for k, v in f["units"].items()
            if not isinstance(v, dict)})
 
