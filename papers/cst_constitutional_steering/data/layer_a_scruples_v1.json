@@ -1,19 +1,19 @@
 {
  "rule": "gold annotators agreeing on the less ethical action >= 4 of 5",
- "n": 150,
- "settled_both_families": 38,
- "coincide_with_gold": 34,
- "disagree_with_gold": 4,
+ "n": 220,
+ "settled_both_families": 57,
+ "coincide_with_gold": 51,
+ "disagree_with_gold": 6,
  "per_family": {
   "claude": {
-   "a": 50,
-   "b": 44,
-   "unsettled": 56
+   "a": 66,
+   "b": 65,
+   "unsettled": 89
   },
   "codex": {
-   "a": 24,
-   "b": 20,
-   "unsettled": 106
+   "a": 31,
+   "b": 34,
+   "unsettled": 155
   }
  },
  "items": {
@@ -3130,6 +3130,1425 @@
     "A262",
     "A291",
     "A295"
+   ]
+  },
+  "03zUPlPH9vIvhpWerqPWPlWnKqyPHncJ": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A004b",
+    "A126",
+    "A235b",
+    "A262",
+    "A284",
+    "A295"
+   ]
+  },
+  "09p6eg9XSqYXPgSmV8cDZCkTCMpdAyt1": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A013",
+    "A022",
+    "A126",
+    "A235b",
+    "A295"
+   ]
+  },
+  "0YBfbfeLkXEL2n6O4lKJ7MV4zJKNrCHJ": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A020",
+    "A126",
+    "A295"
+   ]
+  },
+  "162Q9vVqi5EcAGaA8QqbjMDykZN78wWO": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249"
+   ]
+  },
+  "1Ce1kUqBo7rgkX4u49jlB9xQY6t2AKbE": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249"
+   ]
+  },
+  "1NdwyFClxLY8QkFbjB1eXiUMQCzjHLWt": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A249",
+    "A254"
+   ]
+  },
+  "3tZNhVJPjrwiKc5yGPqdteIHWFNuBum5": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A012c",
+    "A017b",
+    "A023b",
+    "A102d",
+    "A126",
+    "A295"
+   ]
+  },
+  "4Txw3AeYMKqwOMCdD1cg94kL9VXNMoOB": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A068",
+    "A235b",
+    "A254",
+    "A262",
+    "A295",
+    "A310"
+   ]
+  },
+  "75KXr2js3E6pwuyoDtx6GKiVwjQrOObb": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": true,
+   "shortlist_union": [
+    "A126",
+    "A184",
+    "A235b",
+    "A262"
+   ]
+  },
+  "7IsYYtJw1GtMJUQgjHYSsLwXlgAZkeYu": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": true,
+   "shortlist_union": [
+    "A099",
+    "A184",
+    "A190",
+    "A235b",
+    "A249",
+    "A262",
+    "A295"
+   ]
+  },
+  "7QGn0BynCvoQHFH86iqcGVINRAONlYDj": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A117",
+    "A126",
+    "A291",
+    "A295"
+   ]
+  },
+  "7h4cMLclHZg8POsHUsu1Tjvt62q4endI": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A096",
+    "A099",
+    "A117",
+    "A122",
+    "A289",
+    "A295"
+   ]
+  },
+  "7iGhZbhBCTMYy2ceuc7J4zvzwNafW7Oo": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249",
+    "A310"
+   ]
+  },
+  "8YHKaVT4krExSh21x7FLgSb13BLVFl91": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A117",
+    "A126",
+    "A291",
+    "A295"
+   ]
+  },
+  "95sHpAN82Bn6wWcUzf32MJs6tTxptE5S": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "a"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A022",
+    "A122",
+    "A235b",
+    "A242b",
+    "A249",
+    "A295"
+   ]
+  },
+  "9RcXqBOXDQYQouPGbJa87oE0wZjhKC3b": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": true,
+   "shortlist_union": [
+    "A023c",
+    "A126",
+    "A235b",
+    "A254"
+   ]
+  },
+  "DguQa7XjWw2XCwTkJV8XZfdYxZchgUPr": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A068",
+    "A095",
+    "A096",
+    "A099",
+    "A184",
+    "A295"
+   ]
+  },
+  "GG22MVVLTf71z4X8vZAtsIKBLIMArG6A": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A068",
+    "A126",
+    "A184",
+    "A235b",
+    "A284"
+   ]
+  },
+  "HzRJ1HpMHmkQTT7EZFYjUBINVIFcxyUI": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A067",
+    "A126",
+    "A295"
+   ]
+  },
+  "IuJyXjUalqnQ7w61i3wkUMa4g2U32ZHU": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A012",
+    "A096",
+    "A105",
+    "A235b",
+    "A249",
+    "A284",
+    "A310"
+   ]
+  },
+  "JwDckTgncC4XJzkIkIqULEmDI5zaXjQT": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A068",
+    "A235b",
+    "A262",
+    "A282"
+   ]
+  },
+  "MWwh63kTwZcKSfknMxKpAhbndNK8bRGP": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A023b",
+    "A068",
+    "A126",
+    "A235b",
+    "A254"
+   ]
+  },
+  "MpxnTAGsxQnXS4xKKQvdgLLx8rKPRnSy": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A017b",
+    "A126",
+    "A208",
+    "A235b"
+   ]
+  },
+  "NHTfZwkSHjux9iDzkvJpkjUBjnRfJG9l": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": true,
+   "shortlist_union": [
+    "A031",
+    "A117",
+    "A126",
+    "A235b",
+    "A254",
+    "A262",
+    "A295"
+   ]
+  },
+  "OJ5zuDvqTSD2pRzfuIn8yD8EVlITr22R": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249",
+    "A291"
+   ]
+  },
+  "Q0oEt5WShATiLABXpbQ3ub864niHHPOM": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A068",
+    "A117",
+    "A215",
+    "A262",
+    "A282",
+    "A289",
+    "A291"
+   ]
+  },
+  "Q4pUsYGkWnrqu7KsD6ubUiZp1nxcmPHB": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A117",
+    "A117b",
+    "A126",
+    "A254",
+    "A291"
+   ]
+  },
+  "SmYeyeMkHl7YNhFuNzWTDIOuxCpNUYxV": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A097",
+    "A243",
+    "A249",
+    "A285"
+   ]
+  },
+  "Tc4znHqsI8wTu2olqzdFeCLQoGrfqZRf": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": true,
+   "shortlist_union": [
+    "A031",
+    "A117",
+    "A126",
+    "A134",
+    "A235b",
+    "A242",
+    "A262"
+   ]
+  },
+  "VWMcajkWbcuAItqbAsVwc5rhjYSfsglf": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "a"
+   },
+   "direction_of_record": "a",
+   "coincides": false,
+   "shortlist_union": [
+    "A096",
+    "A099",
+    "A100",
+    "A126",
+    "A284"
+   ]
+  },
+  "WQsLRZNHTXfrPpgP6y6IlNa4UaVbXHhT": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A023b",
+    "A126",
+    "A235b",
+    "A254"
+   ]
+  },
+  "Ws5TM63bFgV5wZq8gOh2scT3oK2vF59c": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A098",
+    "A126",
+    "A235b",
+    "A291"
+   ]
+  },
+  "X5KymHv8VWOHWNQUt00LbHlVwPLcvcvw": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A122",
+    "A126",
+    "A235b",
+    "A249",
+    "A295"
+   ]
+  },
+  "Y5R7owiB4wRYlP7CYnNHedddDrc7Dd6E": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A018",
+    "A126",
+    "A235b",
+    "A249"
+   ]
+  },
+  "YAuZljnrGlMDIeLfpSfZzBrv6OHf5jvj": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A031",
+    "A094",
+    "A095",
+    "A096",
+    "A098b",
+    "A100",
+    "A235b",
+    "A254",
+    "A262"
+   ]
+  },
+  "YfTojxKqYQEXl7QQY0BVV9jy1LhL5PIH": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A109",
+    "A117",
+    "A172",
+    "A235b",
+    "A249",
+    "A262"
+   ]
+  },
+  "YmLZJKBWGBKM38cFgiSgNBY4Sfuwg2lA": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A254"
+   ]
+  },
+  "ZCtglcKkfs5GOudEPnvqzBdz9qqxi3Ak": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249",
+    "A254"
+   ]
+  },
+  "ZHQiwSofxJbYx3DizL3u0fYTjh8Zh84c": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A068",
+    "A095",
+    "A096",
+    "A184",
+    "A235b",
+    "A254",
+    "A284"
+   ]
+  },
+  "ZUuLrAkUpHYFV3UfOKnmyVGA67jmDXnh": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b",
+    "A249",
+    "A254"
+   ]
+  },
+  "bwnCQsd7NUCllH8qIUl2yvpia5254P7I": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A126",
+    "A235b",
+    "A262"
+   ]
+  },
+  "c0VW9tWYZRi4jhQHXOckjs2q2alvqYph": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A023b",
+    "A031",
+    "A126",
+    "A235b",
+    "A249"
+   ]
+  },
+  "cgf44eBGqTzjslYVyP87UmGDSjdYLzz8": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A126",
+    "A235b"
+   ]
+  },
+  "eMHKwqOqUEHhM2YSViSkqsYzukNHoILm": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A029",
+    "A031",
+    "A215",
+    "A235b",
+    "A262"
+   ]
+  },
+  "eQhZpnG7AbVnN73uHyyntq4Z3PSXUMTg": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A126",
+    "A261",
+    "A262",
+    "A295"
+   ]
+  },
+  "fDN0SJ6SrctDH9RrMj7nnG1aWoJ8MbWW": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A031",
+    "A099",
+    "A122",
+    "A235b",
+    "A262"
+   ]
+  },
+  "fw0QLl3CHOxqRQDmUQE6XyRAUYHLzrVF": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "b"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A023b",
+    "A073",
+    "A097",
+    "A243",
+    "A249"
+   ]
+  },
+  "ib1El1detOsLIT0Tzxhy66UWIgTTn9Tw": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A018b",
+    "A023c",
+    "A031",
+    "A095",
+    "A100",
+    "A126",
+    "A184",
+    "A235b",
+    "A291"
+   ]
+  },
+  "jPEum9wNONcrbeXkXBDLpi2qFHGlng2G": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A012",
+    "A235b"
+   ]
+  },
+  "jaKgPpaxOLhRtpfjIc2AI3bkXsgkRqHv": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A126",
+    "A235b",
+    "A249",
+    "A262"
+   ]
+  },
+  "kIkPjiMSDcbPAILy3Aw8zMI12sEiJMZ2": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A010",
+    "A126",
+    "A198",
+    "A235b",
+    "A242",
+    "A242b"
+   ]
+  },
+  "kO4XFYWtRV1DiRE1sLTbIRWotFhjP1Pn": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A022",
+    "A023c",
+    "A126",
+    "A235b",
+    "A242",
+    "A254"
+   ]
+  },
+  "l2pgKKM23DzRCjxxOMpCJceyArs7MC0p": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A031",
+    "A117",
+    "A126",
+    "A235b",
+    "A242",
+    "A262"
+   ]
+  },
+  "mhY1KLFuwwy0rezARD09SnffE4WKwnsZ": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A010",
+    "A017b",
+    "A023b",
+    "A126",
+    "A235b",
+    "A249",
+    "A293"
+   ]
+  },
+  "motC1vq0yeC8eMlpBTcO5LJT0oxM1xBO": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A012",
+    "A022",
+    "A023b",
+    "A126",
+    "A184",
+    "A235b",
+    "A284"
+   ]
+  },
+  "n6qSgYDo8Ov9FiT2HluyzxaG5gPrH4Hk": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A117",
+    "A172",
+    "A235b",
+    "A242",
+    "A262",
+    "A295"
+   ]
+  },
+  "nST8iI6hlrFPzNQgAIUyGgLMhR1qEng6": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A010",
+    "A126",
+    "A235b",
+    "A295"
+   ]
+  },
+  "o4jAvMMJ2u7c7jcV1f5H3S0w4j7aOfjy": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A023",
+    "A023b",
+    "A086b",
+    "A095",
+    "A096",
+    "A101",
+    "A102d",
+    "A126",
+    "A262"
+   ]
+  },
+  "tsR9IQsrV0dYaybhSGFuiVUc8hIPtCva": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A017b",
+    "A126",
+    "A235b",
+    "A249",
+    "A295"
+   ]
+  },
+  "twunicbwebUVxncd5WJQbvFHUCcdkBH8": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A096",
+    "A126",
+    "A235b",
+    "A243",
+    "A249",
+    "A254"
+   ]
+  },
+  "u6jr9IYa5VcdYAW03Fs1CJx80u1PWANH": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "a",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A126",
+    "A190",
+    "A235b"
+   ]
+  },
+  "uVzA3sjnvGPar7qIWbcNNCqSvFuS9WgJ": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A017b",
+    "A022",
+    "A122",
+    "A126",
+    "A235b",
+    "A254",
+    "A291"
+   ]
+  },
+  "v8jkeUWFofaUGV5pxyEYG4LG6AASmn8E": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A068",
+    "A235b",
+    "A242",
+    "A254",
+    "A262",
+    "A292"
+   ]
+  },
+  "wmQDFWET7N7Pc64EOYWnRDkRK2fSSR0h": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A022",
+    "A097",
+    "A122",
+    "A184",
+    "A185",
+    "A186",
+    "A235b",
+    "A249",
+    "A310"
+   ]
+  },
+  "wwuDkzOEOlkz8pp3hHypI2lu9BUzdxyp": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    5,
+    0
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A031",
+    "A086",
+    "A101",
+    "A122",
+    "A181",
+    "A190",
+    "A235b",
+    "A262",
+    "A289"
+   ]
+  },
+  "ylBy6HvxjnbekcWviPuVYYSo3vRx1TdU": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": false,
+   "shortlist_union": [
+    "A068",
+    "A075b",
+    "A076",
+    "A126",
+    "A235b",
+    "A254"
+   ]
+  },
+  "yy1HqIUlfecthqlHfob2XrgAqDVA0sER": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A016",
+    "A031",
+    "A126",
+    "A190",
+    "A198",
+    "A242"
+   ]
+  },
+  "z2NYAzX5RjOPy2Idb3PmgeZ44mbjLW42": {
+   "gold_less_ethical": "a",
+   "gold_annotations": [
+    4,
+    1
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A023",
+    "A126",
+    "A235b",
+    "A249",
+    "A310"
+   ]
+  },
+  "z2mzKEy89GVdSH8s2g3zPjIFYJO7KLPP": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    1,
+    4
+   ],
+   "per_family": {
+    "claude": "unsettled",
+    "codex": "unsettled"
+   },
+   "direction_of_record": null,
+   "coincides": false,
+   "shortlist_union": [
+    "A018b",
+    "A023b",
+    "A126",
+    "A244",
+    "A254"
+   ]
+  },
+  "zbLIyzi4G4KCirjJyKyU6SPDxNx72vTc": {
+   "gold_less_ethical": "b",
+   "gold_annotations": [
+    0,
+    5
+   ],
+   "per_family": {
+    "claude": "b",
+    "codex": "b"
+   },
+   "direction_of_record": "b",
+   "coincides": true,
+   "shortlist_union": [
+    "A122",
+    "A235b",
+    "A242",
+    "A262"
    ]
   }
  }

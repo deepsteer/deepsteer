@@ -49,16 +49,18 @@ def _pairs() -> dict[str, dict]:
 def extend(n_more: int) -> None:
     """Amendment 7 item 1 (author, 2026-11-06): extend the draw toward about 50 overlap items. The
     first draw keeps its order (its cached batches stay valid); ``n_more`` pairs are drawn from the
-    rest of the pool with seed ``SEED + 1`` and appended."""
+    rest of the pool with seed ``SEED + k`` for the k-th extension and appended (author,
+    2026-11-07: a second extension of 70 toward about 50 overlap items)."""
     pairs = _pairs()
     meta = json.loads(IDS.read_text())
+    seed = SEED + len(meta.get("extensions", [])) + 1  # each extension its own seed
     pool = sorted(i for i, d in pairs.items() if max(d["gold_annotations"]) >= AGREE
                   and i not in meta["items"])
-    add = sorted(random.Random(SEED + 1).sample(pool, n_more))
+    add = sorted(random.Random(seed).sample(pool, n_more))
     for i in add:
         meta["items"][i] = {"gold_less_ethical": "ab"[pairs[i]["gold_label"]],
                             "gold_annotations": pairs[i]["gold_annotations"]}
-    meta["extensions"] = meta.get("extensions", []) + [{"seed": SEED + 1, "n": n_more}]
+    meta["extensions"] = meta.get("extensions", []) + [{"seed": seed, "n": n_more}]
     IDS.write_text(json.dumps(meta, indent=1) + "\n")
     print(f"extended by {n_more}; now {len(meta['items'])}")
 
