@@ -940,6 +940,18 @@ re-marked by the author against their siblings; item 11 also has a sibling set.
   than the one that was not; that direction, not its size, is the basis, and the blind sheet's
   family-alone rows test it on fresh items.
 
+#### Amendment 5, the blind sheet's scope (author, 2026-11-06; after the marks were frozen, before scoring)
+
+- **No second sheet; no further author sheets in Tier 0.**
+- **Scope, stated in the gate report.** The blind sheet calibrates the directed-away side on
+  fresh items (the author's 15 marks all read directed away). The unsettled side rests on the
+  Amendment 5 development check (codex 14 of 15; Claude's misses all committing) and the
+  two-family split rule; the S0 panel relabel of the full set under the same rule is its
+  calibration of record.
+- **Why the asymmetry is acceptable.** Residual error on the unsettled side shrinks the headline n,
+  which the power table prices. Residual error on the committing side is the error that biases
+  the headline, and that is the direction the development check and the split rule cover.
+
 ### Amendment 6 (2026-11-06; author, from the blind-sheet review; zero GPU)
 
 1. **The label term "refuse" is renamed "directed away"** in the plan text: the label is an action

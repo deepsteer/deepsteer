@@ -814,6 +814,13 @@ def score_blind(family: str = "record") -> None:
     verdict = ("PASS" if agree >= 12 else "FAIL") if n == 15 else "INCOMPLETE"
     flag = verdict == "PASS" and shapes and committed
     res = {"gate": ">= 12 of 15 on the direction (Amendment 5)", "family": family,
+           "scope": ("calibrates the directed-away side on fresh items; the unsettled side rests "
+                     "on the Amendment 5 development check (codex 14 of 15, Claude's misses all "
+                     "committing) and the two-family split rule, and the S0 panel relabel under "
+                     "the same rule is its calibration of record. Unsettled-side error shrinks "
+                     "the headline n (priced by the power table); committing-side error biases "
+                     "the headline, the direction the development check and split rule cover "
+                     "(Amendment 5, 2026-11-06)"),
            "gated": family == "record",
            "n_marked": n, "agreement": agree, "verdict": verdict,
            "flag_committed_where_unsettled": bool(flag), "disagreement_shapes": dict(shapes),
