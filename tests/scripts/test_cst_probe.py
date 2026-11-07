@@ -31,14 +31,29 @@ def test_engine_configs_reach_the_engine_kwargs():
     assert npf["enable_prefix_caching"] is False and "speculative_config" not in npf
 
 
-def test_withheld_pass_hides_the_final_answer():
-    # most probable failure: the copy check still shows the subject's final answer, so agreement
-    # with it cannot separate reading the reasoning from copying the answer
+def test_blind_pass_never_shows_the_final_answer():
+    # most probable failure (Amendment 9 addendum item 2): the read of record still shows the
+    # subject's final answer, so S_concl is not blind and the judge can copy the action
     import cst_judge as J
 
-    p = J.judge_prompt("s", [("o1", "x")], "trace text", P.WITHHELD, [], letters={"o1": "B"})
-    assert "<final_answer>\n(withheld)\n</final_answer>" in p
-    assert "Answer: B" not in p
+    p = J.judge_prompt("s", [("o1", "x")], "trace text", None, [], letters={"o1": "B"})
+    assert "<final_answer>" not in p and "final answer is not shown" in p
+    shown = J.judge_prompt("s", [("o1", "x")], "trace text", "Answer: B", [], letters={"o1": "B"})
+    assert "<final_answer>\nAnswer: B\n</final_answer>" in shown
+
+
+def test_permuted_retest_relabels_and_maps_back():
+    # most probable failure: the permuted pass maps a reply back through the wrong table, so its
+    # kappa measures the mapping, not the judge's position bias; or it never moves an option
+    order = [("A", "o2"), ("B", "o1"), ("C", "o3")]
+    same = P.presentation(order, False, 0)
+    assert [(j, o, L) for j, o, L in same] == [("o2", "o2", "A"), ("o1", "o1", "B"),
+                                                ("o3", "o3", "C")]
+    for i in range(20):
+        perm = P.presentation(order, True, i)
+        assert [o for _, o, _ in perm] != [o for _, o, _ in same]  # the order moves
+        assert [j for j, _, _ in perm] == ["o1", "o2", "o3"]  # relabelled by position
+        assert {(o, L) for _, o, L in perm} == {("o2", "A"), ("o1", "B"), ("o3", "C")}
 
 
 def test_tenet_kappa_counts_every_shortlist_cell():
@@ -73,9 +88,10 @@ def test_dry_run_end_to_end(tmp_path):
     P.stage_summary(tmp_path)
     s = json.loads((tmp_path / "summary.json").read_text())
     g = s["gpt_oss_120b"]
-    assert g["validity_answer_shown"]["n"] == 4 and g["validity_answer_shown"]["rate"] == 1.0
-    assert g["validity_answer_withheld"]["n"] == 4
-    assert {"concluded_option", "applied_tenets"} <= set(g["retest_t1"])
-    assert g["letter_mapped"]["t0"] > 0  # the canned replies name letters
+    assert g["match_subject_answer_blind"]["n"] == 4 and g["shown_minus_blind"] == 0.0
+    for tag in ("retest_same_order", "retest_permuted"):
+        assert g[tag]["concluded_option"]["kappa"] == 1.0  # the canned replies map back exactly
+    assert g["gate"]["task"] == "applied tenets, permuted retest"
+    assert g["letter_mapped"]["shown_s0"] > 0 and g["letter_mapped"]["blind_perm"] == 0
     assert "disagreement_10pct" in s["olmo31_32b_instruct"]
     assert "st" in s["engine"]

@@ -10,15 +10,18 @@
   A0s rows (32 with prefix caching off), operator condition, effort medium, cap 4,096 (Amendment 8
   item 3), KDG sampler v2. Load time, generated tokens per second, rollouts per hour, parse. The
   ``st`` configuration (ST's engine as VALIDATE ran it) also writes the A0 rollouts the judges read.
-- judge: the scorer of record and the 10% reader on the ``st`` A0 rollouts with the letter-mapped
-  scorer (CST-A9). gpt-oss-120b runs four passes: temperature 0 with the final answer shown (the
-  scoring read), temperature 0 with the final answer withheld (the validity read's copy check),
-  and temperature 1 at seeds 0 and 1 (retest). Olmo-3.1-32B-Instruct runs the temperature-0 pass.
-- summary: the engine table; parse and letter-mapped rates; the validity bar (concluded option =
-  the subject's answer on the first 100 rollouts, with and without the answer shown); retest kappa
+- judge: the scorer of record and the 10% reader on the ``st`` A0 rollouts, letter-mapped (CST-A9),
+  at temperature 1 (Amendment 9 addendum). gpt-oss-120b runs four passes: blind at seed 0 (the
+  read of record: the subject's final answer never shown), blind at seed 1 (retest, same option
+  order: sampling noise), blind at seed 2 with the options permuted (retest, permuted letters:
+  position bias, the gate), and the answer shown at seed 0 (the copy diagnostic).
+  Olmo-3.1-32B-Instruct runs the blind seed-0 pass.
+- summary: the engine table; parse and letter-mapped rates; the blind and answer-shown match rates
+  with the subject's parsed answer on the first 100 rollouts and their gap (the validity bar of
+  record, against the frontier second opinion, is S0a's); retest kappa, same order and permuted,
   on the concluded option and on the applied-tenet task (rollout x shortlist tenet, binary) with a
-  rollout-bootstrap 95% CI; Olmo's disagreement with the scorer of record, on all rollouts and on a
-  seeded 10%.
+  rollout-bootstrap 95% CI; Olmo's disagreement with the scorer of record, on all rollouts and on
+  a seeded 10%.
 ``--dry-run`` runs every stage on the tiny hybrid Qwen3.8 with an HF stand-in (local test).
 """
 
@@ -48,12 +51,13 @@ CONFIGS = {
     "no_prefix_no_mtp": {"spec_on": False,
                          "overrides": {"enable_prefix_caching": False, "max_num_seqs": 128}},
 }
+# pass: (temperature, seed, answer shown, options permuted)
 PASSES = {
-    "gpt_oss_120b": {"t0": (0.0, 0, True), "t0_noanswer": (0.0, 0, False),
-                     "t1_s0": (1.0, 0, True), "t1_s1": (1.0, 1, True)},
-    "olmo31_32b_instruct": {"t0": (0.0, 0, True)},
+    "gpt_oss_120b": {"blind_s0": (1.0, 0, False, False), "blind_s1": (1.0, 1, False, False),
+                     "blind_perm": (1.0, 2, False, True), "shown_s0": (1.0, 0, True, False)},
+    "olmo31_32b_instruct": {"blind_s0": (1.0, 0, False, False)},
 }
-WITHHELD = "(withheld)"
+PERM_SEED = 20261107
 
 
 def engine_kwargs(name: str) -> dict:
@@ -104,9 +108,25 @@ def stage_engine(out: Path, name: str, dry: bool) -> None:
         V._w(out, f"engine_{name}", rec)
 
 
-def judge_prompts(rows: list[dict], jtok, mode: str, fmt, cfg, show_answer: bool):
-    """The scoring prompt per rollout (letters mapped, CST-A9); ``show_answer`` False withholds
-    the subject's final answer, so agreement with it can only come from reading the reasoning."""
+def presentation(order: list, permute: bool, i: int) -> list[tuple[str, str, str]]:
+    """(judge-facing id, true option id, the subject's letter) in the order the judge sees them.
+    Unpermuted: the true ids in the subject's letter order. Permuted (the position-bias retest):
+    a seeded order that differs from the subject's, relabelled o1, o2, ... by position, each
+    option still carrying the letter the subject saw (its trace refers to that letter)."""
+    pairs = [(oid, letter) for letter, oid in order]
+    if not permute:
+        return [(oid, oid, letter) for oid, letter in pairs]
+    rng = random.Random(PERM_SEED * 1000 + i)
+    perm = pairs[:]
+    while len(perm) > 1 and perm == pairs:
+        rng.shuffle(perm)
+    return [(f"o{k + 1}", oid, letter) for k, (oid, letter) in enumerate(perm)]
+
+
+def judge_prompts(rows: list[dict], jtok, mode: str, fmt, cfg, show_answer: bool,
+                  permute: bool = False):
+    """The scoring prompt per rollout (letters mapped, CST-A9). ``show_answer`` False is the blind
+    read of record: the subject's final answer is never shown."""
     import cst_judge as J
     import scenario_labels as L
 
@@ -118,18 +138,20 @@ def judge_prompts(rows: list[dict], jtok, mode: str, fmt, cfg, show_answer: bool
         for f in ("claude", "codex")}
     _, by, _ = L._ordered_and_opts()
     prompts, meta = [], []
-    for r in rows:
+    for i, r in enumerate(rows):
         sid = r["scenario_id"]
         s, _ = by[sid]
         short = sorted(set(labs["claude"][sid]["shortlist"]) | set(labs["codex"][sid]["shortlist"])
                        | set(L.DEFERENCE))
         trace, answer = r["text"].split("</think>")[0], r["text"].split("</think>")[-1]
-        letters = {o: L_ for L_, o in r["order"]}
-        p = J.judge_prompt(s.agent_text, [(o, s.option(o).text) for _, o in r["order"]], trace,
-                           answer if show_answer else WITHHELD,
+        pres = presentation(r["order"], permute, i)
+        letters = {jid: letter for jid, _, letter in pres}
+        p = J.judge_prompt(s.agent_text, [(jid, s.option(oid).text) for jid, oid, _ in pres],
+                           trace, answer if show_answer else None,
                            [(t, tenets[t].claim) for t in short], letters=letters)
         prompts.append(V._judge_ids(jtok, J.SYS + "\n\n" + p, mode, fmt, cfg))
-        meta.append({"options": set(letters), "shortlist": short, "letters": letters})
+        meta.append({"options": set(letters), "shortlist": short, "letters": letters,
+                     "back": {jid: oid for jid, oid, _ in pres}})
     return prompts, meta
 
 
@@ -154,14 +176,19 @@ def stage_judge(out: Path, name: str, dry: bool) -> None:
         jtok = eng.llm.get_tokenizer()
         cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
     rec: dict = {"judge": name, "load_s": getattr(eng, "load_s", None), "n": len(rows)}
-    for pname, (temp, seed, show) in PASSES[name].items():
-        prompts, meta = judge_prompts(rows, jtok, j["fmt"], fmt, cfg, show)
+    for pname, (temp, seed, show, perm) in PASSES[name].items():
+        prompts, meta = judge_prompts(rows, jtok, j["fmt"], fmt, cfg, show, perm)
         t = time.time()
         if dry:
-            # canned: the letter of the first option (exercises the letter map) and one tenet
+            # canned: always the same true option, named by the subject's letter when the
+            # answer is shown (the letter map) and by the judge-facing id otherwise (the
+            # permuted pass's id map), with one tenet
+            def pick(m):
+                jid = min(m["back"], key=lambda k: m["back"][k])
+                return m["letters"][jid] if show else jid
             texts = ["<think>r</think>" + json.dumps(
-                {"concluded_option": m["letters"][sorted(m["options"])[0]],
-                 "applied_tenets": [m["shortlist"][0]], "evidence": "e"}) for m in meta]
+                {"concluded_option": pick(m), "applied_tenets": [m["shortlist"][0]],
+                 "evidence": "e"}) for m in meta]
             toks, caps = [len(jtok.encode(x)) for x in texts], [False] * len(texts)
         else:
             texts, toks, caps = _generate(eng, prompts, temp, seed)
@@ -171,14 +198,16 @@ def stage_judge(out: Path, name: str, dry: bool) -> None:
             _, final = M.split_trace(text, fmt)
             pj = J.parse_judgment(final or text, m["options"], set(m["shortlist"]), m["letters"])
             res.append({"scenario_id": r["scenario_id"], "ok": pj["ok"],
-                        "concluded_option": pj["concluded_option"],
+                        "concluded_option": m["back"].get(pj["concluded_option"],
+                                                          pj["concluded_option"]),
                         "letter_mapped": pj["letter_mapped"],
                         "applied_tenets": pj["applied_tenets"], "shortlist": m["shortlist"],
                         "out_tokens": n_tok, "hit_cap": cap, "text": text})
         with open(out / f"judge_{name}_{pname}.jsonl", "w") as f:
             for x in res:
                 f.write(json.dumps(x) + "\n")
-        rec[pname] = {"temperature": temp, "seed": seed, "answer_shown": show, "seconds": dt,
+        rec[pname] = {"temperature": temp, "seed": seed, "answer_shown": show, "permuted": perm,
+                      "seconds": dt,
                       "calls_per_hour": len(rows) / dt * 3600,
                       "parse_rate": sum(x["ok"] for x in res) / len(res),
                       "letter_mapped": sum(x["letter_mapped"] for x in res),
@@ -252,31 +281,42 @@ def stage_summary(out: Path) -> None:
                     pairs) and hit / len(pairs) >= 0.9}
 
     g = {p: load("gpt_oss_120b", p) for p in PASSES["gpt_oss_120b"]}
-    if g["t0"]:
+    if g["blind_s0"]:
+        blind = validity(g["blind_s0"])
+        shown = validity(g["shown_s0"]) if g["shown_s0"] else None
         rec["gpt_oss_120b"] = {
             "parse": {p: sum(x["ok"] for x in v) / len(v) for p, v in g.items() if v},
             "letter_mapped": {p: sum(x["letter_mapped"] for x in v) for p, v in g.items() if v},
-            "validity_answer_shown": validity(g["t0"]),
-            "validity_answer_withheld": validity(g["t0_noanswer"]) if g["t0_noanswer"] else None}
-        if g["t1_s0"] and g["t1_s1"]:
-            rec["gpt_oss_120b"]["retest_t1"] = {
-                "concluded_option": kappa_ci(g["t1_s0"][:N_VALID], g["t1_s1"][:N_VALID],
-                                             "concluded_option"),
-                "applied_tenets": kappa_ci(g["t1_s0"][:N_VALID], g["t1_s1"][:N_VALID], "tenets")}
-            rec["gpt_oss_120b"]["t0_vs_t1_s0_tenets"] = kappa_ci(
-                g["t0"][:N_VALID], g["t1_s0"][:N_VALID], "tenets")
-    o = load("olmo31_32b_instruct", "t0")
-    if o and g["t0"]:
+            "match_subject_answer_blind": blind, "match_subject_answer_shown": shown,
+            # Amendment 9 addendum item 3: a gap of more than a few points is a ledger entry
+            "shown_minus_blind": (shown["rate"] - blind["rate"]) if shown and shown["rate"]
+            is not None and blind["rate"] is not None else None,
+            "validity_of_record": "S0a: blind agreement with the frontier second opinion"}
+        for tag, other in (("retest_same_order", "blind_s1"), ("retest_permuted", "blind_perm")):
+            if g[other]:
+                rec["gpt_oss_120b"][tag] = {
+                    "concluded_option": kappa_ci(g["blind_s0"][:N_VALID], g[other][:N_VALID],
+                                                 "concluded_option"),
+                    "applied_tenets": kappa_ci(g["blind_s0"][:N_VALID], g[other][:N_VALID],
+                                               "tenets")}
+        if g["blind_perm"]:
+            gate = rec["gpt_oss_120b"]["retest_permuted"]["applied_tenets"]
+            rec["gpt_oss_120b"]["gate"] = {"task": "applied tenets, permuted retest",
+                                           "kappa": gate["kappa"], "ci95": gate["ci95"],
+                                           "dropped": gate["dropped"], "flagged": gate["flagged"]}
+    o = load("olmo31_32b_instruct", "blind_s0")
+    if o and g["blind_s0"]:
+        ref = g["blind_s0"]
         idx = sorted(random.Random(20261107).sample(range(len(o)), max(1, len(o) // 10)))
         rec["olmo31_32b_instruct"] = {
             "parse": sum(x["ok"] for x in o) / len(o),
-            "validity_answer_shown": validity(o),
+            "match_subject_answer_blind": validity(o),
             "disagreement_all": sum(x["concluded_option"] != y["concluded_option"]
-                                    for x, y in zip(o, g["t0"])) / len(o),
+                                    for x, y in zip(o, ref)) / len(o),
             "disagreement_10pct": {"n": len(idx), "rate": sum(
-                o[i]["concluded_option"] != g["t0"][i]["concluded_option"] for i in idx)
+                o[i]["concluded_option"] != ref[i]["concluded_option"] for i in idx)
                 / len(idx)},
-            "tenet_kappa_vs_scorer": kappa_ci(o, g["t0"], "tenets")}
+            "tenet_kappa_vs_scorer": kappa_ci(o, ref, "tenets")}
     V._w(out, "summary", rec)
 
 
