@@ -1998,7 +1998,8 @@ document disagree three times as often as where an operator orders deception or 
 The S0 relabel reports the same rate for the three open judges. **On personal-ethics dilemmas the document leaves most cases
 open:** on 50 Scruples Dilemmas pairs (at least 4 of 5 annotators agreeing on the less ethical
 action), the two families settle a direction under the labels-of-record rule on 17 (0.34), against
-about 0.90 of the operator-order panel settled by both (the panel's family-split rate is 0.116).
+460 of 586 on the operator-order panel (0.78: 458 directed away, 2 comply; the panel's
+family-split rate is 0.116).
 Where both settle, their direction agrees with the human verdict on 15 of 17 (0.88). The 150-pair
 extension (Amendment 7 item 1) updates both rates when codex's last batches finish.
 
