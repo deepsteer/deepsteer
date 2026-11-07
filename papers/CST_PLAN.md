@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h), §13.** v0.1 was the draft for the
+Status: **v0.10, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1129,3 +1129,26 @@ ablation is deferred (item 5); §8's envelope of record of 150 A100-h now covers
 
 *Completion note (2026-11-07):* `854efed` registered items 1-2 and a truncated item 3; this commit
 replaces item 3 with the author's complete text and adds items 4-7, before the probe pod is built.
+
+#### Amendment 9 addendum (2026-11-07; author, before the probe pod reports; zero GPU)
+
+1. **Scoring temperature 1** (MoReBench precedent). **Retest on 100 rollouts, twice:** with the
+   same option order (sampling noise) and with permuted option letters (position bias). Both
+   kappas are reported; **the permuted one is the gate** (Amendment 7 item 4's CI rule, on the
+   applied-tenet task).
+2. **The judge reads the trace blind:** the subject's action is parsed by the harness and never
+   shown to the judge, for the concluded option and for the applied tenets. S_concl is read blind
+   by construction. The answer-shown pass is a copy diagnostic only.
+3. **Validity bar of record:** the judge's blind concluded option agrees with the frontier second
+   opinion's blind reading (item 2 of Amendment 9) on at least 0.9 of the 200 sampled rollouts.
+   The answer-shown match rate is reported beside it; a gap of more than a few points between
+   shown and withheld is a ledger entry.
+
+This replaces item 1's validity bar (the concluded option against the subject's actual answer)
+and fixes the scorer's sampling, which no earlier amendment registered.
+
+*Operational note (not the author's text; for the author's check):* the subject's lettered options
+stay as the subject saw them, since its trace refers to them by letter. The permuted pass lists
+the options in a seeded permuted order, under permuted judge-facing ids (o1, o2, ...), each still
+carrying the letter the subject saw; replies are mapped back to the true option ids before kappa.
+The blind prompt omits the final answer and asks for a reading of the reasoning alone.
