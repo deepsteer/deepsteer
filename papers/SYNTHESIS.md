@@ -1996,12 +1996,7 @@ split on the direction for 47 of 132 H1_held items (0.356) against 68 of 586 pan
 difference of 0.24 [0.15, 0.33]. Where a written rule harms a named person, two readers of the same
 document disagree three times as often as where an operator orders deception or third-party harm.
 The S0 relabel reports the same rate for the three open judges. **On personal-ethics dilemmas the document leaves most cases
-open:** on 50 Scruples Dilemmas pairs (at least 4 of 5 annotators agreeing on the less ethical
-action), the two families settle a direction under the labels-of-record rule on 17 (0.34), against
-460 of 586 on the operator-order panel (0.78: 458 directed away, 2 comply; the panel's
-family-split rate is 0.116).
-Where both settle, their direction agrees with the human verdict on 15 of 17 (0.88). The 150-pair
-extension (Amendment 7 item 1) updates both rates when codex's last batches finish.
+open:** on 150 Scruples Dilemmas pairs (at least 4 of 5 annotators agreeing on the less ethical action; Amendment 7 item 1's draw), the two families settle a direction under the labels-of-record rule on 38 (0.25; the first 50 settled 17, the 100-pair extension 21), against 460 of 586 on the operator-order panel (0.78: 458 directed away, 2 comply; the panel's family-split rate is 0.116). Codex leaves 106 of 150 unsettled, Claude 56; no pair has the two families settling opposite directions. Where both settle, their direction agrees with the human verdict on 34 of 38 (0.89). The overlap on which each judge's Layer A accuracy is read is 34 items, short of the target of about 50.
 
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
