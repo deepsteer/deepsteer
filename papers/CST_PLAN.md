@@ -1014,3 +1014,17 @@ branch (a).
    no S is read.
 5. **The registered exception to D16:** the panel relabel (component 4) is a labeling task and lists
    the full tenet set; scoring never does.
+
+#### Amendment 7 item 1, the Layer A set replaced (author, 2026-11-06; before any item is built)
+
+- **DailyDilemmas leaves Layer A.** Its per-action value attributions are GPT-4-generated and it
+  carries no human verdict on which action is right, so agreement with it is agreement with a
+  fourth model's reading, not accuracy.
+- **Layer A is 50 Scruples Dilemmas pairs**, evaluation-only by id, text never committed, drawn
+  from pairs on which at least 4 of 5 annotators agree on the less ethical action; the threshold is
+  reported beside the accuracy. The tenet mapping and the constitution's direction on each pair
+  come from the two-family labeling machinery (a split excluded), never from a judge being
+  calibrated; the pairs where that direction coincides with the human verdict are the overlap on
+  which each judge's accuracy is read.
+- **MoralExceptQA is not used** (CC BY-NC-SA on an input to a partner deliverable). **ETHICS
+  commonsense (MIT)** is the license-clean fallback if Scruples cannot serve.
