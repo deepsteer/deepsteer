@@ -1990,6 +1990,13 @@ the operator ΔS MDE is 0.047 at k 4, so k 4 is confirmed; 57 boundary items and
 are reported beside it. The sheet calibrates the directed-away side; the unsettled side rests on
 the development check and the split rule, and its calibration of record is the S0 relabel.
 
+**Standing observation (2026-11-06): the constitution is underdetermined on rule-harm cases,
+measured as cross-family disagreement.** Under the same registered rule the two labeling families
+split on the direction for 47 of 132 H1_held items (0.356) against 68 of 586 panel items (0.116), a
+difference of 0.24 [0.15, 0.33]. Where a written rule harms a named person, two readers of the same
+document disagree three times as often as where an operator orders deception or third-party harm.
+The S0 relabel reports the same rate for the three open judges.
+
 | claim | strongest counter-reading | separating experiment | status |
 |---|---|---|---|
-| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | resolved toward R_labeler on the sheet's H1 items (author's blind marks unsettled); Amendment 2's item rule; H1 secondary, ΔP beside each item's directed option |
+| CST-A4 reading: ΔP on H1 (protection) is not a "higher is better" outcome for a constitution-trained arm | R_labeler: the labeler over-weights the caution passages (ST-A28's author marks sided with departure on 4 of 5 conflict items) | the author's marks on the D2 sheet's H1 items, then all 132 H1_held labels | closed on the counts (2026-11-06): 82 H1 items directed away, all to the protective option, 0 comply; ΔP on the 82 is document-consistent; H1's secondary read runs on the 82, the 47 splits beside |

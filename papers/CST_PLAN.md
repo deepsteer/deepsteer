@@ -964,3 +964,12 @@ re-marked by the author against their siblings; item 11 also has a sibling set.
    (neither-option) share is reported per arm beside S; an S(operator) improvement matched by a
    rise in o3 share is read first as "the arm stopped acting", with MACHIAVELLI's reward column
    against `none` as the discriminator.
+
+#### Tier 0 labeling closes (author, 2026-11-06)
+
+- **k 4 confirmed** at the panel's 458 clear directed-away items of record (`CST_LABELS_GATE.md`).
+- **H1's secondary read runs on its 82 clear directed-away items** (all directing the protective
+  option, o2), with the 47 family splits reported beside. ΔP on the 82 is a document-consistent
+  outcome; Amendment 1 item 16's interim rule has no items to apply to (CST-A4 closed).
+- **The family-split rate is reported per set at S0** for the three open judges, beside the two
+  labeling families' (H1 0.356, panel 0.116).
