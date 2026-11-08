@@ -1259,3 +1259,12 @@ The path of record stands at 136.2 A100-h (`CST_REFORECAST.md`). S0a is built ne
    makes the absolute capability number non-comparable to ST's and that the bar is paired within CST.
 4. **Three sessions:** S0a-1 (A0 and the A0-side reads), S0a-2 (A0s on the panel), S0a-3 (the rest
    of A0s); each resumes from saved chunks (`S0A_BUILD.md` §3).
+
+#### Amendment 12 addendum (2026-11-07; author, on CST-A13; before S0a-2 is relaunched)
+
+**A0s runs at `max_num_seqs` 32** (the engine of record otherwise unchanged: MTP off, prefix caching
+on, cap 4,096), in 256-rollout chunks. The first S0a-2 (stopped at 1.25 h, no chunk completed) ran
+A0s at the engine of record's 128 sequences with a 9,376-rollout queue: vLLM admitted more A0s
+sequences than the KV cache holds with the ~35k-token constitution prefix, evicted and re-read
+prompts, and generated at 12 to 276 tokens/s (CST-A13). The cap is a scheduling setting; sampling,
+seeds and outputs are unchanged. A0 keeps 128.

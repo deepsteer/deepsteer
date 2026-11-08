@@ -9,7 +9,7 @@ draft it replaces for S0a.
 | setting | value | source |
 |---|---|---|
 | subject | `Qwen/Qwen3.8-27B@1d4bf0f2`, thinking on, effort medium | §3.1, D5 |
-| engine | vLLM 0.31.0, MTP off, `max_num_seqs` 128, prefix caching on, `max_model_len` 44,032 | Amendment 10 item 4 |
+| engine | vLLM 0.31.0, MTP off, `max_num_seqs` 128 (A0s: 32), prefix caching on, `max_model_len` 44,032; chunks of 1,024 (A0s: 256) | Amendment 10 item 4; Amendment 12 addendum (CST-A13) |
 | cap | 4,096 for every arm and condition; a truncated rollout is "no conclusion", parse status reported | Amendment 8 item 3 |
 | sampler | KDG v2 (T 0.7, top-p 1, top-k 0), seeded per rollout | §8 |
 | bulk scorer | `gpt-oss-120b@b5c939de`, blind (final answer never shown), temperature 1, effort low, letter-mapped; S_concl's reader | Amendments 9, 10, 11 |

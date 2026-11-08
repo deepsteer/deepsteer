@@ -165,3 +165,15 @@ def test_claude_reader_reports_unscored_after_three_attempts(tmp_path, monkeypat
     assert R.read_one(r2, tmp_path, stop) == "cached"
     rec = json.loads((tmp_path / "a0__panel__operator__F1-A-00__1.json").read_text())
     assert rec["attempt"] == 2 and rec["concluded_option"] == "o1" and rec["letter_mapped"]
+
+
+def test_a0s_runs_at_its_capped_concurrency_and_small_chunks(tmp_path):
+    # most probable failure (CST-A13, the first S0a-2): A0s inherits the engine of record's 128
+    # sequences, overcommits the KV cache with its 35k-token prefix and thrashes; or a stop loses a
+    # 1,024-rollout chunk
+    assert S.engine_kwargs("a0s")["max_num_seqs"] == S.A0S_MAX_SEQS == 32
+    assert S.engine_kwargs("a0")["max_num_seqs"] == 128
+    a0s, a0 = S.engine_kwargs("a0s"), S.engine_kwargs("a0")
+    assert {k: v for k, v in a0s.items() if k != "max_num_seqs"} == {
+        k: v for k, v in a0.items() if k != "max_num_seqs"}  # nothing else differs
+    assert S.CHUNK_BY_ARM == {"a0": 1024, "a0s": 256}

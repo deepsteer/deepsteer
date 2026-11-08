@@ -55,6 +55,12 @@ ST = V.ROOT / "papers/st_live_reference"
 CAP = 4096
 CAP_EXTRA = 256  # capability: the final answer after a capped trace (ST's t15 rule)
 CHUNK = 1024
+# A0s (Amendment 12 addendum, CST-A13): at the engine of record's 128 sequences a full A0s queue
+# overcommits the KV cache (each sequence carries the ~35k-token constitution prefix), so vLLM
+# evicts and re-reads prompts and generation fell to 12-276 tokens/s; A0s runs at 32 sequences
+# (scheduling only; sampling unchanged) and in 256-rollout chunks, so a stop loses little
+A0S_MAX_SEQS = 32
+CHUNK_BY_ARM = {"a0": CHUNK, "a0s": 256}
 EFFORT = "medium"
 ENGINE = "no_mtp_seqs128"  # Amendment 10 item 4
 PANEL_K = {"plain": 4, "user": 2, "operator": 4, "operator_pr": 6}
@@ -115,11 +121,19 @@ def constitution(dry: bool) -> str | None:
 
 # ---- engines -------------------------------------------------------------------------------
 
-def subject(dry: bool):
+def engine_kwargs(arm: str) -> dict:
+    """The engine of record (Amendment 10 item 4), with A0s capped at ``A0S_MAX_SEQS``."""
+    kw = P.engine_kwargs(ENGINE)
+    if arm == "a0s":
+        kw["max_num_seqs"] = A0S_MAX_SEQS
+    return kw
+
+
+def subject(dry: bool, arm: str = "a0"):
     path = V._model_path(dry)  # noqa: SLF001
     if dry:
         return path, V.HFStandIn(path)
-    return path, V.VLLMEngine(path, None, **P.engine_kwargs(ENGINE))
+    return path, V.VLLMEngine(path, None, **engine_kwargs(arm))
 
 
 def generate(eng, prompts: list[list[int]], seeds: list[int], max_tokens: int,
@@ -147,22 +161,24 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
 
     sc = scenarios(dry)
     body = constitution(dry) if arm == "a0s" else None
-    path, eng = subject(dry)
+    path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
     letters = rf.letter_token_ids(tok)
+    size = CHUNK_BY_ARM[arm]
     gdir = out / "gen" / arm
     gdir.mkdir(parents=True, exist_ok=True)
-    log = {"arm": arm, "engine": ENGINE, "cap": CAP, "load_s": getattr(eng, "load_s", None),
-           "chunks": {}}
+    log = {"arm": arm, "engine": ENGINE, "max_num_seqs": engine_kwargs(arm)["max_num_seqs"]
+           if not dry else None, "cap": CAP, "load_s": getattr(eng, "load_s", None),
+           "chunk": size, "chunks": {}}
     for part in parts:
         units = part_units(part, sc)
-        for c0 in range(0, len(units), CHUNK):
-            f = gdir / f"{part}_{c0 // CHUNK:03d}.jsonl"
+        for c0 in range(0, len(units), size):
+            f = gdir / f"{part}_{c0 // size:03d}.jsonl"
             if f.exists():
                 continue
             rows, prompts, seeds = [], [], []
-            for set_, cond, sid, k in units[c0:c0 + CHUNK]:
+            for set_, cond, sid, k in units[c0:c0 + size]:
                 s = sc["objs"][sid]
                 order = assign_letters(s, k)
                 text = fmt.render(tok, messages(s, order, set_, cond, arm, body), EFFORT)
@@ -203,7 +219,7 @@ def stage_dose0(out: Path, arm: str, dry: bool) -> None:
 
     sc = scenarios(dry)
     body = constitution(dry) if arm == "a0s" else None
-    path, eng = subject(dry)
+    path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
     lids = sorted(rf.letter_token_ids(tok))
@@ -303,7 +319,7 @@ def stage_capability(out: Path, arm: str, dry: bool) -> None:
                  for d in ("openai/gsm8k", "cais/mmlu")]
     recs = T15.cap_records({"cap_items": items}, A)
     body = constitution(dry) if arm == "a0s" else None
-    path, eng = subject(dry)
+    path, eng = subject(dry, arm)
     tok = V._tok(path)  # noqa: SLF001
     fmt = rf.build_format("qwen38_27b", tok)
     prompts, seeds = [], []
