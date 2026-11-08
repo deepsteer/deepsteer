@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) and 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low), §13.** v0.1 was the draft for the
+Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) and 12 (the S0a build decisions), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1247,3 +1247,15 @@ majority-of-three kappas) and before its write-up.
    independence of stops from scenario and condition is re-verified on the full read.
 
 The path of record stands at 136.2 A100-h (`CST_REFORECAST.md`). S0a is built next.
+
+### Amendment 12 (2026-11-07; author, the S0a build decisions; zero GPU; committed and pushed before S0a)
+
+1. **Component 5's third family: Olmo-3.1-32B-Instruct@ac0587e4** casts the votes on `T_core`'s 207
+   split pairs and `T_conf`'s 13 disputed `C_anth` pairs, **twice**; its self-agreement is reported.
+   If it agrees with itself, its vote decides as registered; if not, the splits stay disputed and the
+   disputed `T_conf` pairs stay excluded from training.
+2. **E at dose 0 is included** (component 8).
+3. **Capability at 4,096 + 256;** ST's 1,536 + 256 is noted. The report states that the cap change
+   makes the absolute capability number non-comparable to ST's and that the bar is paired within CST.
+4. **Three sessions:** S0a-1 (A0 and the A0-side reads), S0a-2 (A0s on the panel), S0a-3 (the rest
+   of A0s); each resumes from saved chunks (`S0A_BUILD.md` §3).

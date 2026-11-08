@@ -46,19 +46,15 @@ short continues in the next. Proposed split (8-12 h chunks):
 - **S0a-3 (about 6 h):** A0s on H1_held and cell A′, its dose-0 reads and capability; gpt-oss and
   Olmo on A0s.
 
-## 4. Open for the author
+## 4. Decided (Amendment 12, 2026-11-07)
 
-1. **Component 5's third family.** The votes on `T_core`'s splits and `T_conf`'s disputed pairs
-   were for "the third judge" of a three-family panel. The scorer of record, gpt-oss-120b, is
-   OpenAI's family, the same as Codex, one of the two labeling families, so its vote is not a third
-   family. Olmo-3.1-32B-Instruct (Ai2) is on the pod for the 10% read and could cast the 220 votes
-   (about 22 calls). Recommendation: Olmo.
-2. **E at dose 0 on the panel.** ST's E is the KDG four-cell contrast (decision and judgment,
-   neutral and loaded), a set of renders separate from the pressure triple. Reusing it adds four
-   cells of dose-0 letter reads per panel item and arm (about 4,700 prefill reads, minutes).
-   Recommendation: include it, as component 8 lists.
-3. **Capability's cap.** ST read capability at 1,536 + 256. Amendment 8 item 3 sets 4,096 for
-   every CST read. Recommendation: 4,096 + 256, with ST's cap noted.
+1. Component 5: Olmo-3.1-32B-Instruct votes twice on the 220 pairs; self-agreement reported; its
+   vote decides only if it agrees with itself, else the splits stay disputed and the disputed
+   `T_conf` pairs stay excluded from training.
+2. E at dose 0 on the panel is included (component 8).
+3. Capability at 4,096 + 256 (ST read 1,536 + 256): the absolute number is not comparable to ST's;
+   the bar is paired within CST.
+4. Three sessions as in §3, each resuming from saved chunks.
 
 ## 5. Saves (per unit)
 
