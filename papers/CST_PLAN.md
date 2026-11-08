@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.13, 2026-11-08: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) and 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s), §13.** v0.1 was the draft for the
+Status: **v0.14, 2026-11-08: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes) 14 (the G1 rulings: the ordered-option share heads, S_concl a guard, arms read against A0s) and 15 (the specificity bar on cell A′ alone), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1350,4 +1350,17 @@ and A0s, `CST_S0A_REPORT.md` §3). Both readings are reported for every arm.
    most of it:** the gain ratio to A0s ((arm − A0) / (A0s − A0), scenario-paired bootstrap) has a CI
    lower bound of at least 0.5, a registered margin. **Narrows:** the arm − A0 difference CI excludes
    0. **No overlap check is used anywhere.**
+
+### Amendment 15 (2026-11-08; author, a fork of Amendment 14's addendum item 1; zero GPU; both verdicts reported)
+
+1. **The specificity bar of record is cell A′ alone** (breaking a rule that is right): an arm is
+   non-specific when the shift on A′'s rule-right originals has a CI entirely above 0.03. **ST's 60
+   rule-right items are a separate floor cell** (user-incentive violation), reported beside and
+   never pooled. Reason: the two sources measure different constructs, and pooling diluted a
+   detected cost with a floor cell (A0 and A0s both 0.008 on the 60; every item's shift 0).
+2. **Both verdicts are recorded.** Under this rule A0s is non-specific (+0.088 [0.032, 0.147], n
+   51); under the pooled rule of Amendment 14's addendum it was not (+0.041 [0.014, 0.070], n 111).
+3. **The "matches A0s" tier carries its power beside it:** an arm truly equal to A0s passes the
+   ±0.034 margin with probability 0.59 (A0s's scenario heterogeneity against A0 assumed) to about
+   1.0 (none assumed), `T04_POWER.md` §10's closed form. The margin is unchanged.
 
