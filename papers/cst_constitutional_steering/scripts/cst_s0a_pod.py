@@ -6,6 +6,7 @@
     cst_s0a_pod.py --stage recall --out DIR                      # A0 only
     cst_s0a_pod.py --stage capability --arm a0|a0s --out DIR
     cst_s0a_pod.py --stage score --arm a0|a0s --judge gpt_oss_120b|olmo31_32b_instruct --out DIR
+    cst_s0a_pod.py --stage long --judge gpt_oss_120b|olmo31_32b_instruct --out DIR
 
 - gen: the registered design (panel 586 × plain 4, user 2, operator 4, operator_pr 6; H1_held 132 ×
   plain 8, operator 8; cell A′ 102 × 8 in the plain agent frame), thinking on, effort medium, cap
@@ -15,7 +16,8 @@
   (``gen/{arm}/{part}_{chunk:03d}.jsonl``); a chunk on disk is skipped, so a session cut short
   resumes where it stopped.
 - dose0: first-token letter log-probs at dose 0 (the reasoning closed by the format's first
-  dose-0 candidate) for every scenario and condition at k 0.
+  dose-0 candidate) for every scenario and condition at k 0, and on the panel the four KDG cells
+  of ST's E (decision and judgment frames, primary and pressure-removed; Amendment 12 item 2).
 - recall: teacher-forced log-probs on A0 of each window's true continuation and its two paraphrases
   given the 64-token prefix (``data/recall_passages_v1.json``).
 - capability: ``data/s0a_capability_v1.json`` with ST's prompt, parse and gold, cap 4,096 + 256.
@@ -23,6 +25,13 @@
   letter-mapped; per-rollout seed), and for A0 the retest's two passes (same order, permuted) on
   ``retest_a0_operator_clear``; Olmo-3.1-32B-Instruct on the arm's seeded 10%. Chunked and resumed
   as gen.
+- long: the long-prompt tasks. gpt-oss-120b: the relabel's consistency read (component 4; the 718
+  items under the v4 prompt, ten per call) and Layer A (the 51 Scruples overlap items, the Layer A
+  prompt; the pair text read from the runtime cache, never saved). Olmo-3.1-32B-Instruct: the
+  third-family votes, twice (Amendment 12 item 1), on every ``T_core`` split pair in the record
+  (214: 207 Claude-yes/Codex-no, 7 the reverse) with the tightened prompt in batches of 40, and on
+  ``T_conf``'s 13 disputed ``C_anth`` pairs with the competing check. Each call's raw reply saved;
+  an unparsable reply is retried once at a new seed.
 ``--dry-run`` runs on the tiny hybrid Qwen3.8 with HF stand-ins (local tests).
 """
 
@@ -54,6 +63,9 @@ FORCED_K = 8
 FORCED = (ST / "data/st_fxh_cellA2_forced_v1.json",
           ST / "data/st_fxh_cellA2_twins_forced_v1.json")
 PARTS = tuple([f"panel_{c}" for c in PANEL_K] + [f"h1_{c}" for c in H1_K] + ["forced_plain"])
+# ST's E (KDG four cells, ``screen_lib.PANEL_CELLS``): (frame, variant) of D, J, D_twin, J_twin
+E_CELLS = {"e_D": ("agent", "primary"), "e_J": ("eval", "primary"),
+           "e_Dn": ("agent", "pressure_removed"), "e_Jn": ("eval", "pressure_removed")}
 
 
 def seed_of(rid: str) -> int:
@@ -182,6 +194,9 @@ def stage_gen(out: Path, arm: str, parts: list[str], dry: bool) -> None:
 
 def stage_dose0(out: Path, arm: str, dry: bool) -> None:
     """First-token letter log-probs at dose 0 for every scenario and condition at k 0."""
+    if (out / "dose0" / f"{arm}.jsonl").exists():
+        print(f">> dose0 {arm}: on disk, skipped")
+        return
     import reasoning_formats as rf
 
     from deepsteer.kdg.schema import assign_letters
@@ -202,6 +217,19 @@ def stage_dose0(out: Path, arm: str, dry: bool) -> None:
             prompts.append(fmt.dose0_ids(tok, msgs, EFFORT, fmt.dose0[0]))
             rows.append({"arm": arm, "set": set_, "condition": cond, "scenario_id": sid,
                          "order": [(L_, o.option_id) for L_, o in order]})
+    import cst_pressure as CP
+    from kdg_pod_lib import letter_chat_messages
+
+    for cell, (frame, variant) in E_CELLS.items():
+        for sid in sc["ids"]["panel"]:
+            s = sc["objs"][sid]
+            order = assign_letters(s, 0)
+            msgs = letter_chat_messages(s, order, frame, "neutral", variant)
+            if arm == "a0s":
+                msgs = CP.a0s_messages(msgs, body)
+            prompts.append(fmt.dose0_ids(tok, msgs, EFFORT, fmt.dose0[0]))
+            rows.append({"arm": arm, "set": "panel", "condition": cell, "scenario_id": sid,
+                         "order": [(L_, o.option_id) for L_, o in order]})
     lps = eng.first_logprobs(prompts, lids)
     (out / "dose0").mkdir(parents=True, exist_ok=True)
     with open(out / "dose0" / f"{arm}.jsonl", "w") as fh:
@@ -212,6 +240,9 @@ def stage_dose0(out: Path, arm: str, dry: bool) -> None:
 
 def stage_recall(out: Path, dry: bool) -> None:
     """Teacher-forced summed log-probs of the continuation and its two paraphrases (A0)."""
+    if (out / "recall" / "a0.jsonl").exists():
+        print(">> recall: on disk, skipped")
+        return
     d = json.loads((CST / "data/recall_passages_v1.json").read_text())
     items = [it for st in d["sets"].values() for it in st["items"]]
     if dry:
@@ -256,6 +287,9 @@ def forced_logprobs(eng, seqs: list[list[int]], starts: list[int], dry: bool) ->
 
 def stage_capability(out: Path, arm: str, dry: bool) -> None:
     """D10's 800 items with ST's prompt, parse and gold; the A0s arm carries the constitution."""
+    if (out / "cap" / f"{arm}.jsonl").exists():
+        print(f">> capability {arm}: on disk, skipped")
+        return
     import reasoning_formats as rf
     import t15_driver as T15
 
@@ -378,6 +412,117 @@ def stage_score(out: Path, arm: str, judge: str, dry: bool) -> None:
                                         "passes": {k: len(v[0]) for k, v in passes.items()}})
 
 
+def long_tasks(judge: str, dry: bool) -> dict[str, list[tuple[str, str, dict]]]:
+    """(task, call id, prompt text, parse metadata) per long-prompt call of ``judge``."""
+    import scenario_labels as L
+
+    from deepsteer.constitutions import TenetSet
+
+    anth = TenetSet.load(CST / "data/tenets_C_anth_v2.json")
+    tasks: dict[str, list] = {}
+    if judge == "gpt_oss_120b":
+        items = [(s, k) for k, v in L.scored_sets().items() for s in v]
+        if dry:
+            items = items[:3]
+        tasks["relabel"] = [(f"relabel_{i // 10:03d}", L.SYS + "\n\n" + L._prompt_v4(  # noqa: SLF001
+            items[i:i + 10], anth), {"ids": [s.id for s, _ in items[i:i + 10]]})
+            for i in range(0, len(items), 10)]
+        import layer_a_scruples as LA
+
+        la = json.loads((CST / "data/layer_a_scruples_v1.json").read_text())["items"]
+        overlap = sorted(i for i, r in la.items() if r["coincides"])
+        if dry:
+            pairs = {i: {"id": i, "actions": [{"description": "a"}, {"description": "b"}]}
+                     for i in overlap[:2]}
+            overlap = overlap[:2]
+        else:
+            pairs = LA._pairs()  # noqa: SLF001  (the runtime cache; text never saved)
+        tasks["layer_a"] = [(f"layer_a_{i // 10:03d}", LA.SYS + "\n\n" + LA._prompt(  # noqa: SLF001
+            [pairs[x] for x in overlap[i:i + 10]], anth), {"ids": overlap[i:i + 10]})
+            for i in range(0, len(overlap), 10)]
+    else:
+        import t01_d17 as D17
+        import t01_review as R
+
+        spec = TenetSet.load(CST / "data/tenets_C_spec_v2.json")
+        by = {**anth.by_id(), **spec.by_id()}
+        tv = json.loads((CST / "outputs/t01_tcore_votes_v2.json").read_text())
+        split = [tuple(p.split("|")) for p in tv["pending_split"]]
+        if dry:
+            split = split[:3]
+        tasks["tcore_votes"] = [(f"tcore_{i // R.BATCH:02d}", R.SYS + "\n\n" + D17.tight_prompt(
+            split[i:i + R.BATCH], by), {"pairs": ["|".join(p) for p in split[i:i + R.BATCH]]})
+            for i in range(0, len(split), R.BATCH)]
+        comp = [c["pair"] for c in json.loads((CST / "outputs/t01_conflicts_v2.json").read_text())
+                ["C_anth"]["competing"]]
+        abid = anth.by_id()
+        text = ("For each pair of tenets from one AI behavior specification, answer competing = "
+                "true only if the two direct different behavior in overlapping conditions, so a "
+                "model in those conditions cannot satisfy both as written. Return JSON "
+                "{\"checks\": [{\"pair\": \"<id>|<id>\", \"competing\": bool}]}.\n\n"
+                + "\n".join(f"{p}\n  {R._tenet_line(abid[p.split('|')[0]])}\n  "  # noqa: SLF001
+                            f"{R._tenet_line(abid[p.split('|')[1]])}" for p in comp))  # noqa: SLF001
+        tasks["tconf_votes"] = [("tconf_00", R.SYS + "\n\n" + text, {"pairs": comp})]
+    return tasks
+
+
+def stage_long(out: Path, judge: str, dry: bool) -> None:
+    """The long-prompt tasks of ``judge``; Olmo's run twice (seeds 0 and 1) for self-agreement."""
+    import mrb_g1_pod as M
+    import scenario_labels as L
+    from generate_scenarios import extract_json
+
+    from deepsteer.reasoning.think_io import CoTFormat
+
+    j = V.JUDGES[judge]
+    if dry:
+        eng, jtok, fmt, cfg = None, V._tok(V._model_path(True)), CoTFormat.THINK_TAGS, None  # noqa: SLF001
+    else:
+        from huggingface_hub import snapshot_download
+
+        jpath = snapshot_download(j["repo"], revision=j["revision"],
+                                  ignore_patterns=["original/*", "metal/*"])
+        eng = V.VLLMEngine(jpath, None, max_model_len=V.JUDGE_LEN, gpu_memory_utilization=0.9,
+                           enable_prefix_caching=True, seed=0, **j.get("llm_kwargs", {}))
+        jtok = eng.llm.get_tokenizer()
+        fmt = CoTFormat.HARMONY_ANALYSIS if j["fmt"] == "harmony" else CoTFormat.THINK_TAGS
+        cfg = M.harmony_cfg() if j["fmt"] == "harmony" else None
+    ldir = out / "long" / judge
+    ldir.mkdir(parents=True, exist_ok=True)
+    reps = (0, 1) if judge == "olmo31_32b_instruct" else (0,)
+    for task, calls in long_tasks(judge, dry).items():
+        for rep in reps:
+            f = ldir / f"{task}_r{rep}.jsonl"
+            if f.exists():
+                continue
+            recs = []
+            for attempt in (0, 1):
+                todo = [c for c in calls if c[0] not in {r["call"] for r in recs if r["parsed"]}]
+                if not todo:
+                    break
+                prompts = [P.judge_ids(jtok, t, j["fmt"], fmt, cfg, "low" if not dry else None)
+                           for _, t, _ in todo]
+                seeds = [seed_of(f"{judge}|{task}|{rep}|{cid}") + attempt for cid, _, _ in todo]
+                if dry:
+                    texts = ["<think>r</think>{}" for _ in todo]
+                    toks, caps = [1] * len(todo), [False] * len(todo)
+                else:
+                    texts, toks, caps = judge_generate(eng, prompts, seeds)
+                for (cid, _, meta), text, n_tok, cap in zip(todo, texts, toks, caps):
+                    _, final = M.split_trace(text, fmt)
+                    try:
+                        parsed = extract_json(L.repair_evidence(final or text)[0]) is not None
+                    except (ValueError, KeyError):
+                        parsed = False
+                    recs = [r for r in recs if r["call"] != cid] + [{
+                        "task": task, "rep": rep, "call": cid, "attempt": attempt, **meta,
+                        "parsed": parsed, "out_tokens": n_tok, "hit_cap": cap, "text": text}]
+            tmp = f.with_suffix(".tmp")
+            tmp.write_text("".join(json.dumps(r) + "\n" for r in recs))
+            tmp.rename(f)
+    V._w(out, f"long_{judge}", {"judge": judge, "reps": list(reps)})  # noqa: SLF001
+
+
 def judge_generate(eng, prompts, seeds):
     from vllm import SamplingParams, TokensPrompt
 
@@ -391,7 +536,7 @@ def judge_generate(eng, prompts, seeds):
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=("gen", "dose0", "recall", "capability", "score"))
+                    choices=("gen", "dose0", "recall", "capability", "score", "long"))
     ap.add_argument("--arm", default="a0", choices=("a0", "a0s"))
     ap.add_argument("--parts", default=",".join(PARTS))
     ap.add_argument("--judge", default="gpt_oss_120b",
@@ -404,7 +549,8 @@ def main() -> None:
      "dose0": lambda: stage_dose0(a.out, a.arm, a.dry_run),
      "recall": lambda: stage_recall(a.out, a.dry_run),
      "capability": lambda: stage_capability(a.out, a.arm, a.dry_run),
-     "score": lambda: stage_score(a.out, a.arm, a.judge, a.dry_run)}[a.stage]()
+     "score": lambda: stage_score(a.out, a.arm, a.judge, a.dry_run),
+     "long": lambda: stage_long(a.out, a.judge, a.dry_run)}[a.stage]()
 
 
 if __name__ == "__main__":

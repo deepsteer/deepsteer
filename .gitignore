@@ -157,3 +157,6 @@ papers/mch_machiavelli/outputs/thinking/**/_counts.jsonl
 papers/mch_machiavelli/outputs_raw/
 papers/cst_constitutional_steering/outputs_raw/
 papers/cst_constitutional_steering/outputs/_sync/
+
+# CST S0a raw rollouts, judge replies and logs (downloaded per session; synced back for resume)
+papers/cst_constitutional_steering/outputs/s0a/

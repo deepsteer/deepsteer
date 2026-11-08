@@ -95,11 +95,42 @@ def test_dose0_recall_and_capability_dry(tmp_path):
     # recall windows) or writes nothing per unit
     S.stage_dose0(tmp_path, "a0s", True)
     d0 = [json.loads(x) for x in open(tmp_path / "dose0/a0s.jsonl")]
-    assert len(d0) == sum(2 for _ in S.PARTS) and all(len(r["logprobs"]) == len(r["letter_ids"])
-                                                       for r in d0)
+    # every scenario and condition at k 0, plus ST's four E cells on the panel
+    assert len(d0) == 2 * len(S.PARTS) + 2 * len(S.E_CELLS)
+    assert all(len(r["logprobs"]) == len(r["letter_ids"]) for r in d0)
+    assert {r["condition"] for r in d0} >= set(S.E_CELLS)
     S.stage_recall(tmp_path, True)
     rc = [json.loads(x) for x in open(tmp_path / "recall/a0.jsonl")]
     assert len(rc) == 9 and {r["variant"] for r in rc} == {"true", "p1", "p2"}
     S.stage_capability(tmp_path, "a0", True)
     cap = [json.loads(x) for x in open(tmp_path / "cap/a0.jsonl")]
     assert len(cap) == 2 and all("correct" in r for r in cap)
+
+
+def test_long_tasks_vote_on_the_record_splits_and_score_only_the_overlap():
+    # most probable failure: the third family votes on the wrong pair set (the 207 one-sided count,
+    # or matched pairs), or Layer A scores pairs outside the 51 where the direction of record
+    # coincides with the human verdict
+    olmo = S.long_tasks("olmo31_32b_instruct", False)
+    pairs = [p for _, _, m in olmo["tcore_votes"] for p in m["pairs"]]
+    tv = json.loads((CST / "outputs/t01_tcore_votes_v2.json").read_text())
+    assert sorted(pairs) == sorted(tv["pending_split"]) and len(pairs) == 214
+    assert all(len(set(tv["votes"][p].values())) == 2 for p in pairs)  # every one a split
+    assert len(olmo["tconf_votes"][0][2]["pairs"]) == 13
+    gpt = S.long_tasks("gpt_oss_120b", False)
+    assert len(gpt["relabel"]) == 72
+    la = json.loads((CST / "data/layer_a_scruples_v1.json").read_text())["items"]
+    ids = [i for _, _, m in gpt["layer_a"] for i in m["ids"]]
+    assert sorted(ids) == sorted(i for i, r in la.items() if r["coincides"]) and len(ids) == 51
+
+
+@pytest.mark.slow
+def test_long_stage_runs_olmo_twice(tmp_path):
+    # most probable failure: the self-agreement read has one repetition, so it reads 1.0
+    S.stage_long(tmp_path, "olmo31_32b_instruct", True)
+    files = sorted(f.name for f in (tmp_path / "long/olmo31_32b_instruct").glob("*.jsonl"))
+    assert files == ["tconf_votes_r0.jsonl", "tconf_votes_r1.jsonl", "tcore_votes_r0.jsonl",
+                     "tcore_votes_r1.jsonl"]
+    S.stage_long(tmp_path, "gpt_oss_120b", True)
+    assert {f.name for f in (tmp_path / "long/gpt_oss_120b").glob("*.jsonl")} == {
+        "relabel_r0.jsonl", "layer_a_r0.jsonl"}
