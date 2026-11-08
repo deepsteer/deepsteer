@@ -29,3 +29,20 @@ def test_forwarding_script_only_forwards():
     # most probable failure: a stale copy of the launcher left at the old path, so the two drift
     text = OLD.read_text()
     assert "exec " in text and "runpod_common" in text and "rp_provision_pod" not in text
+
+
+def test_every_launch_variable_a_runner_reads_reaches_the_pod():
+    # most probable failure (the first CST S0a-1 launch, 2026-11-08): a remote runner reads a
+    # launch variable the launcher never passes, so the pod sees it empty and the session bails
+    import re
+
+    passed = set(re.findall(r"\b([A-Z][A-Z0-9_]+)='\$\{?[A-Z]", NEW.read_text()))
+    runner = (REPO / "papers/cst_constitutional_steering/runpod/remote_cst_s0a.sh").read_text()
+    assert "CST_SESSION" in passed and '"${CST_SESSION:-}"' in runner
+
+
+def test_s0a_runner_arms_its_done_trap_before_any_bail():
+    # most probable failure: a bail before the EXIT trap is set leaves no .session_done, so the
+    # launcher waits forever on a billing pod
+    runner = (REPO / "papers/cst_constitutional_steering/runpod/remote_cst_s0a.sh").read_text()
+    assert runner.index("trap ") < runner.index("BAIL")

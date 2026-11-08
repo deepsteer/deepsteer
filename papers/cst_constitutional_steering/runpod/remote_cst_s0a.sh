@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Remote runner for CST S0a (S0A_BUILD.md; Amendments 7-12), one A100-80GB, three sessions.
-# Orion launches with SESSION=1|2|3; the launcher passes HF_TOKEN. VALIDATE's pinned vLLM 0.31.0.
+# Orion launches with CST_SESSION=1|2|3 (run_session.sh passes it to the pod); the launcher passes
+# HF_TOKEN. VALIDATE's pinned vLLM 0.31.0.
 #
 #   SESSION=1  A0: generation (12,304), dose-0 and E, recall, capability; gpt-oss-120b scoring
 #              (blind, effort low), the retest, the relabel, Layer A; Olmo's 10% and the votes.
@@ -8,19 +9,21 @@
 #   SESSION=3  A0s on H1_held and cell A', dose-0 and E, capability; gpt-oss and Olmo on A0s.
 # Everything writes under outputs/s0a, which the launcher downloads (RESULTS_SUBPATH) and the next
 # session syncs back up (SYNC_OUTPUTS outputs/s0a/), so a chunk or file on disk is skipped and a
-# session cut short is rerun with the same SESSION. A failed stage does not stop the next.
+# session cut short is rerun with the same CST_SESSION. A failed stage does not stop the next. The
+# .session_done trap is armed before any check that can bail, so a bail never leaves the launcher
+# waiting on a billing pod (the first S0a-1 launch, 2026-11-08).
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/deepsteer}"
 cd "$REPO_DIR"
-SESSION="${SESSION:-}"
-case "$SESSION" in 1) MAX_H=10.0;; 2) MAX_H=12.0;; 3) MAX_H=10.0;;
-  *) echo "BAIL: SESSION must be 1, 2 or 3"; exit 1;; esac
 OUT="$REPO_DIR/papers/cst_constitutional_steering/outputs/s0a"
 mkdir -p "$OUT/logs"
 START=$(date +%s)
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+SESSION="${CST_SESSION:-}"
 trap 'cp "$REPO_DIR/session.log" "$OUT/logs/session_s0a${SESSION}_${STAMP}.log" 2>/dev/null; touch "$REPO_DIR/.session_done"' EXIT
+case "$SESSION" in 1) MAX_H=10.0;; 2) MAX_H=12.0;; 3) MAX_H=10.0;;
+  *) echo "BAIL: CST_SESSION must be 1, 2 or 3"; exit 1;; esac
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-8}" TOKENIZERS_PARALLELISM=false
 export TRANSFORMERS_VERBOSITY=error HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_ENABLE_HF_TRANSFER=0
 export CST_CONST_DIR="$REPO_DIR/papers/cst_constitutional_steering/outputs/_sync"
