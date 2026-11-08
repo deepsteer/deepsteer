@@ -134,3 +134,34 @@ def test_long_stage_runs_olmo_twice(tmp_path):
     S.stage_long(tmp_path, "gpt_oss_120b", True)
     assert {f.name for f in (tmp_path / "long/gpt_oss_120b").glob("*.jsonl")} == {
         "relabel_r0.jsonl", "layer_a_r0.jsonl"}
+
+
+def test_claude_reader_reports_unscored_after_three_attempts(tmp_path, monkeypatch):
+    # most probable failure (Amendment 11 addendum item 3): a stopped rollout is dropped instead of
+    # reported unscored, or a resumed run grants it three fresh attempts (more than three in all),
+    # or re-calls a rollout already scored
+    import cst_claude_reader as R
+
+    r = {"rollout_id": "a0|panel|operator|F1-A-00|0", "scenario_id": "F1-A-00", "k": 0,
+         "condition": "operator", "order": [["A", "o1"], ["B", "o2"]],
+         "text": "<think>I'll pick A.</think>Answer: A"}
+    calls = []
+
+    def stop(sys_, text):
+        calls.append(1)
+        return {"returncode": 0, "is_error": True, "result": "API Error: safeguards flagged",
+                "safety_stops": 1}
+
+    monkeypatch.setattr(R, "prompt", lambda r: ("p", {"options": {"o1", "o2"},
+                                                      "shortlist": ["A036"],
+                                                      "letters": {"o1": "A", "o2": "B"}}))
+    assert R.read_one(r, tmp_path, stop) == "unscored" and len(calls) == 3
+    assert R.read_one(r, tmp_path, stop) == "unscored" and len(calls) == 3  # no fresh attempts
+    r2 = {**r, "rollout_id": "a0|panel|operator|F1-A-00|1", "k": 1}
+    seq = iter([stop, lambda s, t: {"returncode": 0, "is_error": False, "safety_stops": 0,
+                                     "result": '{"concluded_option": "A", '
+                                               '"applied_tenets": ["A036"]}'}])
+    assert R.read_one(r2, tmp_path, lambda s, t: next(seq)(s, t)) == "scored"
+    assert R.read_one(r2, tmp_path, stop) == "cached"
+    rec = json.loads((tmp_path / "a0__panel__operator__F1-A-00__1.json").read_text())
+    assert rec["attempt"] == 2 and rec["concluded_option"] == "o1" and rec["letter_mapped"]
