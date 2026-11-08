@@ -177,3 +177,19 @@ def test_a0s_runs_at_its_capped_concurrency_and_small_chunks(tmp_path):
     assert {k: v for k, v in a0s.items() if k != "max_num_seqs"} == {
         k: v for k, v in a0.items() if k != "max_num_seqs"}  # nothing else differs
     assert S.CHUNK_BY_ARM == {"a0": 1024, "a0s": 256}
+
+
+def test_claude_reader_does_not_count_a_usage_limit_as_an_attempt(tmp_path, monkeypatch):
+    # most probable failure (the first A0 read): the account's usage limit is counted as three
+    # failed attempts, so hundreds of rollouts are reported unscored for a reason that is not theirs
+    import cst_claude_reader as R
+
+    r = {"rollout_id": "a0|panel|operator|F5-A-00|0", "scenario_id": "F5-A-00", "k": 0,
+         "condition": "operator", "order": [["A", "o1"]], "text": "<think>x</think>A"}
+    monkeypatch.setattr(R, "prompt", lambda r: ("p", {"options": {"o1"}, "shortlist": [],
+                                                      "letters": {"o1": "A"}}))
+    lim = {"returncode": 1, "is_error": True, "safety_stops": 0,
+           "result": "You've hit your 5-hour limit · resets 7:10pm (Pacific/Honolulu)"}
+    with pytest.raises(R.UsageLimit):
+        R.read_one(r, tmp_path, lambda s, t: lim)
+    assert not list(tmp_path.glob("*.json"))  # no attempt recorded

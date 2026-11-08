@@ -33,6 +33,14 @@ CST = HERE.parent
 S0A = CST / "outputs" / "s0a"
 RAW = CST / "outputs_raw" / "claude_reader"
 ATTEMPTS = 3
+# an account usage limit is not an attempt on the rollout (the first A0 read, 2026-11-07: 470 of
+# 800 rollouts "failed" three times in seconds once the 5-hour limit was hit); the read stops and
+# resumes later, so the three-attempt rule counts only the rollout's own failures
+LIMIT_MARKERS = ("hit your 5-hour limit", "usage limit", "rate limit", "limit · resets")
+
+
+class UsageLimit(RuntimeError):
+    """The account's usage limit; stop the read and resume after the reset."""
 
 
 def rollouts(read: str, arm: str | None) -> list[dict]:
@@ -89,6 +97,8 @@ def read_one(r: dict, d: Path, call=None) -> str:
     for attempt in range(len(tries) + 1, ATTEMPTS + 1):
         rec = call(J.SYS, text)
         res = rec.get("result") or ""
+        if any(m in res.lower() for m in LIMIT_MARKERS):
+            raise UsageLimit(res[:200])
         pj = J.parse_judgment(res, meta["options"], set(meta["shortlist"]), meta["letters"])
         if rec.get("returncode") == 0 and not rec.get("is_error") and pj["ok"]:
             f.write_text(json.dumps({"rollout_id": r["rollout_id"], "attempt": attempt,
@@ -112,9 +122,22 @@ def run(read: str, arm: str | None, workers: int, max_n: int | None) -> None:
     d = RAW / (f"stenet_{arm}" if read == "stenet" else "frontier")
     d.mkdir(parents=True, exist_ok=True)
     todo = rows[:max_n] if max_n else rows
+    stop = []
+
+    def one(r):
+        if stop:
+            return "pending"
+        try:
+            return read_one(r, d)
+        except UsageLimit as e:
+            stop.append(str(e))
+            return "pending"
+
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        res = list(ex.map(lambda r: read_one(r, d), todo))
-    print({k: res.count(k) for k in ("scored", "unscored", "cached")}, "of", len(todo))
+        res = list(ex.map(one, todo))
+    print({k: res.count(k) for k in ("scored", "unscored", "cached", "pending")}, "of", len(todo))
+    if stop:
+        print("stopped at the account usage limit; rerun after the reset:", stop[0])
 
 
 def report(read: str, arm: str | None) -> dict:
