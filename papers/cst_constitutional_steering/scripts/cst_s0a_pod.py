@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 import zlib
@@ -336,14 +337,55 @@ def stage_capability(out: Path, arm: str, dry: bool) -> None:
     with open(out / "cap" / f"{arm}.jsonl", "w") as fh:
         for n, (it, r, g) in enumerate(zip(items, recs, gens)):
             ft = final_answer(fmt, tok, g["ids"]) if not g["hit_cap"] else None
-            pred, gold = T15.cap_parse(it, ft), T15.cap_gold(it, r)
+            pred, gold = cap_parse_of_record(it, ft), T15.cap_gold(it, r)
+            pred_st = T15.cap_parse(it, ft)
             fh.write(json.dumps({"arm": arm, "n": n, "dataset": it["dataset"],
                                  "index": it["index"], "pred": pred, "gold": gold,
                                  "correct": pred is not None and pred == gold,
+                                 "pred_st": pred_st,
+                                 "correct_st": pred_st is not None and pred_st == gold,
+                                 "parser": "amendment13_lead_first",
                                  "answered": ft is not None,
                                  "final_text": None if ft is None else ft[:2000],
                                  "n_tokens": len(g["ids"]), "hit_cap": g["hit_cap"]}) + "\n")
     V._w(out, f"capability_{arm}", {"arm": arm, "n": len(items)})  # noqa: SLF001
+
+
+# Amendment 13 item 1 (CST-A14): the capability parser of record reads an MMLU answer's leading
+# letter first (Qwen opens with its choice, then rebuts the other options, and ST's fallback to the
+# last standalone letter reads a rebutted option); the letter must stand alone, so an answer opening
+# with the article "A" is not read as A. ST's parser is reported beside it.
+LEAD = re.compile(r"\s*(?:#+\s*)?(?:\**\s*(?:Answer|Final answer)\s*[:\-]?\s*)?\**\(?([ABCD])\)?\**"
+                  r"(?:[.:)]|\*\*|\s*\n|\s*$)", re.I)
+
+
+def cap_parse_of_record(item: dict, text: str | None) -> str | None:
+    """MMLU: the leading standalone letter, else ST's rules; GSM8K: ST's rules."""
+    import t15_driver as T15
+
+    if text is not None and item["dataset"] == "cais/mmlu":
+        m = LEAD.match(text.lstrip())
+        if m:
+            return m.group(1).upper()
+    return T15.cap_parse(item, text)
+
+
+def reparse_cap(path: Path) -> dict:
+    """Re-parse a saved capability file under both parsers (zero GPU); writes ``pred`` and
+    ``correct`` of record and ``pred_st`` / ``correct_st`` beside them."""
+    import t15_driver as T15
+
+    rows = [json.loads(x) for x in open(path)]
+    for r in rows:
+        it = {"dataset": r["dataset"]}
+        r["pred_st"] = T15.cap_parse(it, r["final_text"])
+        r["correct_st"] = r["pred_st"] is not None and r["pred_st"] == r["gold"]
+        r["pred"] = cap_parse_of_record(it, r["final_text"])
+        r["correct"] = r["pred"] is not None and r["pred"] == r["gold"]
+        r["parser"] = "amendment13_lead_first"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    acc = {k: sum(r[k] for r in rows) / len(rows) for k in ("correct", "correct_st")}
+    return {"n": len(rows), **acc}
 
 
 def final_answer(fmt, tok, gen: list[int]) -> str | None:

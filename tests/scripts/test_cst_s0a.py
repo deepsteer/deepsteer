@@ -193,3 +193,16 @@ def test_claude_reader_does_not_count_a_usage_limit_as_an_attempt(tmp_path, monk
     with pytest.raises(R.UsageLimit):
         R.read_one(r, tmp_path, lambda s, t: lim)
     assert not list(tmp_path.glob("*.json"))  # no attempt recorded
+
+
+def test_capability_parser_reads_the_leading_answer_not_a_rebutted_option():
+    # most probable failure (CST-A14): the last standalone letter (a rebutted option) is read as the
+    # answer; or the article "A" opening a sentence is read as answer A
+    mm = {"dataset": "cais/mmlu"}
+    rebut = "**C**\n\nPerception organizes input.\n- **D** is incorrect: that is adaptation."
+    assert S.cap_parse_of_record(mm, rebut) == "C"
+    assert S.cap_parse_of_record(mm, "## Answer: **D. Serious pneumonia**\n\nwhy") == "D"
+    assert S.cap_parse_of_record(mm, "B") == "B"
+    article = "A key point is that the answer is B because of the reasons."
+    assert S.cap_parse_of_record(mm, article) == "B"  # not "A": the article is not an answer
+    assert S.cap_parse_of_record({"dataset": "openai/gsm8k"}, "So the total is 42.") == "42"

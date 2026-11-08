@@ -2335,6 +2335,7 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **The discriminator (2026-11-05; `outputs/cst_a5_discriminator.json`).** 7 of the 13 pairs involve a tenet whose own claim states an explicit carve-out ("as long as this is not outweighed", "all else being equal", "provided doing so is not unsafe", "where possible", …); 4 more carry only a hedge or default ("by default", "generally", "probably"); 2 are reconciled only by a distinction neither claim states. R_reconciled is favored for 7 to 11 of the 13. The classification is Claude's (the proposing family), with the deciding phrase recorded per pair.
 **Status.** disputed until the third judge votes at S0 (majority rule as registered; Amendment 3 item 6), before the S1 corpus is built; the `T_conf` of record for S1 is fixed after that vote. The 31 explicit conditioning links stay in `T_conf` whatever the vote.
 **Thesis impact.** The 46 `C_anth` roots excluded from training by the document-internal rule rest on one family's reading; under R_reconciled most of the 13 competing pairs (not the 31 explicit conditioning links) leave `T_conf`.
+**Third-family vote (S0a-1, 2026-11-07; Amendment 13 item 4).** Olmo-3.1-32B-Instruct voted twice on the 13 pairs: self-agreement 10 of 13, kappa 0.42, below the 0.8 bar, so the pairs stay disputed and excluded from training. **SDF coverage cost:** the 13 pairs hold 26 `C_anth` tenets, all already `T_conf` members, so the exclusion adds no tenet beyond `T_conf` v1; those 26 of 401 (6.5%) stay outside the §4.1 coverage target `T(C_anth) \ T_conf`, where a vote resolving a pair as not competing would have returned its tenets.
 
 ## CST-A6 (ledger) — Under Amendment 3's prompt the operator-deference tenets abstain, and the panel reads 97% refuse
 
@@ -2425,3 +2426,14 @@ Sources: `papers/cst_constitutional_steering/outputs/` (t03, t04, t05, t01 files
 **Discriminator.** The relaunched S0a-2 at 32 sequences (Amendment 12 addendum): steady generation near or above the probe's 322 tokens/s with no prompt-throughput spikes favors R_overcommit; the rate is read from the first 256-rollout chunks.
 **Status.** open; A0s runs capped at 32 sequences in 256-rollout chunks. The probe's A0s rate was an under-saturated measurement; the line's A0s price is re-read from S0a-2's chunks.
 **Thesis impact.** None on any measurement (no A0s rollout was kept); it sets A0s's cost and the session plan.
+
+
+## CST-A14 (ledger) — ST's capability parser reads a rebutted option on 17% of Qwen's MMLU answers
+
+**Date.** 2026-11-07 (S0a-1, `outputs/s0a/cap/a0.jsonl`; 400 MMLU test items, cap 4,096 + 256).
+**Observation.** A0's MMLU accuracy read 0.705 under ST's parser (`t15_driver.cap_parse`) against GSM8K's 0.968. Qwen's final answer opens with its choice ("**D**", "**A. Carbon dioxide**") and then rebuts the other options ("- **C** is incorrect…"); ST's parser, after its "answer is X" and leading-letter patterns miss these openings, falls back to the last standalone letter and reads a rebutted option. The two parsers differ on 69 of 400; a seeded stratified hand read of 50 (25 differing, 25 agreeing) found the leading letter is the stated answer on 50 of 50 and ST's read on 25 of 50 (0 of the 25 differing). Under the leading-first parser A0's MMLU reads 0.865, equal to ST's own `none` capability baseline on its item set (0.865).
+**Type.** an instrument fault exposed by a model's answer style (a control behaving unexpectedly).
+**Competing readings.** R_style: the fault is specific to an answer style (lead with the choice, then rebut); an arm that changes the style changes the parser's error rate, so under ST's parser a paired capability Δ carries a style effect. R_cap: the cap (4,096 here against ST's 1,536) lets the model write the rebuttals, and at ST's cap the fault was rarer.
+**Discriminator.** Zero GPU on S0a's saved final answers: both parsers on every arm (Amendment 13 item 1 reports both); the share of answers in the rebuttal style per arm against the parser gap per arm. R_cap: ST's saved capability final answers at 1,536, re-parsed with the leading-first rule.
+**Status.** resolved for S0a by Amendment 13 item 1 (the leading-first parser of record, ST's beside); open for the comparison with ST, whose capability numbers were read with the faulty fallback.
+**Thesis impact.** None on any CST verdict (the bar is paired within CST and both parsers are reported); for ST, its capability reads on Qwen may carry the same parser error, an item for the ST ledger if that line reopens.

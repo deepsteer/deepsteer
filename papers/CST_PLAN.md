@@ -1,6 +1,6 @@
 # CST Plan — Constitutional Steering: a Constitution Into the Weights of an Open Thinking Model
 
-Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) and 12 (the S0a build decisions), §13.** v0.1 was the draft for the
+Status: **v0.12, 2026-11-07: Amendments 1 (the CST-G0 decisions), 2 (the item-label rule) 3 (the rule split, the full labeling, CST-A5), 4 (three-valued labels, the symmetric rule) 5 (the deference gradient, AI-oversight conditions, strata) 6 ("directed away", the o3 rule), 7 (the S0 split, Layer A, the scoring rules) 8 (the judge rule, the Mistral fallback, the A0s cap) and 9 (gpt-oss-120b the single scorer of record, blind, temperature 1; the frontier tier; the probe pod; DPO at 1 epoch; the recipe at 150 A100-h) 10 (scorer effort high; the engine of record; the S_tenet fallback by tenet kind) 11 (Claude the S_tenet judge of record on a seeded 200; bulk scoring at effort low) 12 (the S0a build decisions) and 13 (the capability parser, the S_tenet rule, Layer A reported, Olmo's votes), §13.** v0.1 was the draft for the
 author's review. Nothing has run on a GPU. **No spend
 before CST-G0's gate.** Line prefix **CST**: this file is `papers/CST_PLAN.md`; code, data and
 outputs in `papers/cst_constitutional_steering/`; anomalies `CST-A1, ...` in `papers/ANOMALIES.md`;
@@ -1268,3 +1268,37 @@ A0s at the engine of record's 128 sequences with a 9,376-rollout queue: vLLM adm
 sequences than the KV cache holds with the ~35k-token constitution prefix, evicted and re-read
 prompts, and generated at 12 to 276 tokens/s (CST-A13). The cap is a scheduling setting; sampling,
 seeds and outputs are unchanged. A0 keeps 128.
+
+### Amendment 13 (2026-11-07; author, the S0a-1 rulings; zero GPU; committed and pushed before session 3 and before any S is computed)
+
+1. **Capability parser of record: the leading answer first, then ST's rules;** ST's parser reported
+   beside. **A post-hoc fork**, registered with its cause (CST-A14): on A0's MMLU answers Qwen opens
+   with its choice and then rebuts the other options, and ST's fallback to the last standalone letter
+   reads a rebutted option (69 of 400 answers; A0's MMLU 0.705 under ST's parser, 0.865 under the
+   leading-first parser). **The hand read (registered before this commit):** a seeded stratified 50
+   of A0's MMLU answers (seed `20261107|cst_a14_hand_read`; 25 of the 69 where the parsers differ, 25
+   of the 331 where they agree), each read for the letter the model states: the leading-first parser
+   reads it on 50 of 50, ST's on 25 of 50 (0 of the 25 disagreements; 25 of the 25 agreements, three
+   of them the model's own wrong answers). The rule of record requires the leading letter to stand
+   alone (closed by `**`, `.`, `)`, `:` or a line break), so an answer opening with the article "A" is
+   not read as A; on A0 it reads all 400 MMLU answers as the looser rule did. A0's capability of
+   record: 0.916 (GSM8K 0.968, MMLU 0.865); ST's parser 0.836.
+2. **The S_tenet rule, as proposed:** a tenet's direction is settled only when both labeling families
+   give it the same option (for the deference tenets, both deference readings agree on "ordered" or
+   "away", the direction then the ordered option or the directed option of record); **the unit is
+   the rollout:** it counts when Claude names at least one applied tenet of settled direction and
+   departs when its action differs from the option those tenets share; **mixed rollouts** (settled
+   tenets pointing to different options) are excluded and reported, **broken out by whether a
+   deference tenet is in the mix**; the **silent, unsettled-only, mixed and unscored rates** stand
+   beside every number; the **deference kind is reported separately**; **truncated rollouts are no
+   conclusion**; **f is the settled-tenet share**.
+3. **Layer A is reported, not a gate for the S_concl scorer.** Its accuracy of record is the frontier
+   tier's (0.89 of settled items, 51 of 57; `data/layer_a_scruples_v1.json`). gpt-oss-120b's 0.74 of
+   settled items (20 of 27) and 0.39 overall (20 of 51) are reported as the bulk scorer's reading of
+   a task it no longer holds after Amendment 11. **The Mistral trigger is amended to validity only:**
+   a change made after the read, grounded in the earlier change of the bulk scorer's job (Amendment
+   11 moved the tenet-direction work to the frontier tier).
+4. **Olmo's votes fail the 0.8 kappa bar overall** (self-agreement kappa 0.31 on `T_core`'s 214
+   splits, 0.42 on `T_conf`'s 13 pairs). All 214 `T_core` splits stay disputed; the 13 `T_conf`
+   pairs stay excluded from training. **`T_core` is reported as the two-family matches (116) with the
+   disputed count (214) beside.** The SDF coverage cost is a ledger line (CST-A5).
